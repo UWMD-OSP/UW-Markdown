@@ -371,7 +371,7 @@ that the assertion is true.
 
 ## receipts.ts
 
-Implements [`spec/UW_RECEIPT_v1.md`](../../spec/UW_RECEIPT_v1.md) (RFC 0016).
+Implements [`spec/UW_RECEIPT.md`](../../spec/UW_RECEIPT.md) (RFC 0016).
 A **receipt** is a detached JSON document binding a canonical digest of a record
 to the deterministic outputs a named calc pack produced from it, so a recipient
 can confirm offline that the numbers follow from the inputs.
@@ -410,7 +410,7 @@ CLI: `uwmd receipt issue <file>` / `uwmd receipt verify <file> <receipt.json>`
 
 ## protocol.ts (the contract surface)
 
-The executable mirror of `UW_PROTOCOL_v1.md`. It **re-uses** types from `types.ts`
+The executable mirror of `UW_PROTOCOL.md`. It **re-uses** types from `types.ts`
 (never duplicates them) and adds the protocol-layer types plus the `BUILTIN_*`
 tables every conforming tool references:
 
@@ -430,7 +430,7 @@ tables every conforming tool references:
   `validator.ts` and the registry is derived from them at module init, so
   the two views cannot disagree.
 - Calc contract: `CalcEvaluationContext`, `CalcResult`, `ModuleCalcDecl`.
-- Modules: `ModuleManifest` (+ section/calc/validation/agent-layer decls);
+- Modules: `ProtocolModuleManifest` mirrors the final schema, with `ModuleConformanceRequirements` (`requires_conformance` plus optional `requires_profiles`). `ModuleManifest` is the staged runtime shape until RFC 0081 Phase 4 (+ section/calc/validation/agent-layer decls);
   `modules.ts` validates and registers declarative v1 manifests.
 - Errors: `ProtocolError`, `ProtocolErrorCategory`.
 - Remediations: `IssueRemediation`, `BUILTIN_REMEDIATIONS` (CC/DQ/INT/POL/FV copy).

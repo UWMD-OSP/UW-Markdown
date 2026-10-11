@@ -1,6 +1,6 @@
 // Canonical display-formatting helpers for the .uw.md format.
 // Pure functions, no I/O. The single source of truth referenced by the renderer
-// and by Part III of UW_PROTOCOL_v1.md (Display Conventions).
+// and by Part III of UW_PROTOCOL.md (Display Conventions).
 //
 // Conformance rationale: the protocol fixes default precision per kind and
 // (RFC 0001) drives every non-en-US locale from the curated

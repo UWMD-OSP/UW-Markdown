@@ -156,7 +156,7 @@ for (const issue of result.issues) console.log(issue.severity, issue.code, issue
 - [Tools and packages](/guide/tools): the CLI command catalog, the library,
   batch indexing, Excel export, and editors.
 - [Building with AI](/ai/): instruction files and the rules an agent must follow.
-- [Format specification](/spec/format-v2), [protocol](/spec/protocol) and
+- [Format specification](/spec/format), [protocol](/spec/protocol) and
   [metric dictionary](/spec/metrics/): the normative contract, which defines
   how any party verifies a record. The tools above are
   [starter products](/starter/) built on it.

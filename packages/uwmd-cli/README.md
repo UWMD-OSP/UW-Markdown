@@ -93,7 +93,7 @@ import { parseUWFile, validateUWFile, evaluateCalc } from '@uwmd/core';
 
 ## Conformance
 
-This CLI is the reference implementation of the UW Markdown protocol's Reader and Verifier tiers and its six optional verification profiles, and it ships the starter-product editor and agent host. See the [protocol spec](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_PROTOCOL_v1.md) for what each tier and profile guarantees.
+This CLI is the reference implementation of the UW Markdown protocol's Reader and Verifier tiers and its six optional verification profiles, and it ships the starter-product editor and agent host. See the [protocol spec](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_PROTOCOL.md) for what each tier and profile guarantees.
 
 ## License
 

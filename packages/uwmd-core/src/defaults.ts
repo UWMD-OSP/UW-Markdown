@@ -1,5 +1,5 @@
 import { toBuiltinAssetClass } from './types.js';
-// Asset-class default tables — Protocol §V.7-§V.8
+// Asset-class default tables — starter guide §V.7-§V.8
 //
 // Published starter defaults for the cascade resolver. Each entry is a
 // {low, central, high} range so refinement/VOI consumers can quantify what's
@@ -1421,7 +1421,7 @@ const REGISTRY: Readonly<Record<string, AssetClassDefaults>> = Object.freeze({
 /**
  * Look up the published defaults for an asset class. Returns null when no
  * table is registered (callers should fall through to `global_default` /
- * `system_default` per the cascade in protocol §V.7).
+ * `system_default` per the cascade in starter guide §V.7).
  */
 export function getAssetClassDefaults(asset_class: string): AssetClassDefaults | null {
   return REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/section-distribution-waterfall.schema.json",
   "title": "UW Markdown Distribution Waterfall Section",
-  "description": "Content payload for the `distribution_waterfall` section (UW_FORMAT_SPEC_v1.md §4.27, RFC 0035 + RFC 0036 + RFC 0051). The tiered LP/GP split of a deal's equity cash flows — return of capital, preferred return, GP catch-up, and promote splits — over a referenced `cash_flow_series` variant (§4.26). The fourth state-and-verify structure (RFC 0021 §6): `verifyWaterfall` recomputes the ENTIRE allocation by the normative Protocol §VIII.10 walk, never trusting the stated splits. This schema enforces structure only. The cross-field rules a validator/verifier adds: the ladder grammar incl. ordering, singleton, terminal-uncapped-split, sum-to-one, gp_share>target_promote, and strictly-increasing hurdle-ladder rules (WF-01); the cash reference resolving in-document (WF-02); at least one contribution in the referenced series (WF-03); and every stated outcome/schedule cell recomputing at its quantization boundary or the verdict is `failed`.",
+  "description": "Content payload for the `distribution_waterfall` section (UW_FORMAT_SPEC.md §4.27, RFC 0035 + RFC 0036 + RFC 0051). The tiered LP/GP split of a deal's equity cash flows — return of capital, preferred return, GP catch-up, and promote splits — over a referenced `cash_flow_series` variant (§4.26). The fourth state-and-verify structure (RFC 0021 §6): `verifyWaterfall` recomputes the ENTIRE allocation by the normative Protocol §VIII.10 walk, never trusting the stated splits. This schema enforces structure only. The cross-field rules a validator/verifier adds: the ladder grammar incl. ordering, singleton, terminal-uncapped-split, sum-to-one, gp_share>target_promote, and strictly-increasing hurdle-ladder rules (WF-01); the cash reference resolving in-document (WF-02); at least one contribution in the referenced series (WF-03); and every stated outcome/schedule cell recomputing at its quantization boundary or the verdict is `failed`.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -288,7 +288,7 @@
                 "simple",
                 "compound_annual"
               ],
-              "description": "compound_annual: unpaid pref itself compounds (Protocol §VIII.10.1)."
+              "description": "compound_annual: unpaid pref itself compounds (Protocol §VIII.10)."
             }
           }
         },

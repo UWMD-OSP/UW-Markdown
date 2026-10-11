@@ -16,11 +16,11 @@ body:
       label: Which document?
       multiple: true
       options:
-        - "Format spec (UW_FORMAT_SPEC_v1.md / v2.md)"
-        - "UW Lite spec (UW_LITE_SPEC_v1.md)"
-        - "Protocol spec (UW_PROTOCOL_v1.md)"
-        - "Receipt spec (UW_RECEIPT_v1.md)"
-        - "Composition spec (UW_COMPOSITION_v1.md)"
+        - "Format spec (UW_FORMAT_SPEC.md)"
+        - "UW Lite spec (UW_LITE_SPEC.md)"
+        - "Protocol spec (UW_PROTOCOL.md)"
+        - "Receipt spec (UW_RECEIPT.md)"
+        - "Composition spec (UW_COMPOSITION.md)"
         - "XML mapping, CSV bundle, or HTTP/MCP bindings"
         - "JSON Schemas (spec/schemas)"
         - "Conformance corpus expectations"
@@ -32,7 +32,7 @@ body:
     id: section
     attributes:
       label: Section, field or fixture
-      description: e.g. "Protocol §VIII.2", "Format v2 §1.3", "schema property `rate_hedge.post_expiration_assumption`", or a fixture path.
+      description: e.g. "Protocol §VIII.2", "Format §2.5", "schema property `rate_hedge.post_expiration_assumption`", or a fixture path.
     validations:
       required: true
 

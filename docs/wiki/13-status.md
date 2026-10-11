@@ -18,6 +18,20 @@ declaration-free compatibility shells and their final version. The owner
 deprecated both module package names on npm on 2026-10-11. RFCs 0078–0080 are
 `implemented`. See the [publication evidence](../releases/3.0.0-publication.md).
 
+**In progress on `main` (unreleased): RFC 0081.** Phase 2 accepted the
+Format 3.0 / Protocol 4.0.0 specifications and schemas
+([UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md),
+[UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md)). **Between Phase 2 and Phase 4
+the reference implementation does not yet enforce them:** the runtime still
+computes the pre-3.0 block digest (over `_meta` as well as content), still
+reads and writes the wrapped and flat block shapes, still accepts the legacy
+scalars the G1 lone-fact groups replace and refuses their lone-fact forms
+(`HDG-01`, `CAPX-01`, `TAX-01`, `REC-02`), and still reads the hotel facts from
+`hotel_metrics` rather than the G3 hospitality `rent_roll`. Phase 3
+re-authors the corpus; Phase 4 narrows the supported versions and deletes the
+old paths; Phase 6 releases 4.0.0. Until then, check a Format 3.0 document
+against the schemas, not the runtime.
+
 Reconciled **2026-10-10** (America/Phoenix) for published and independently
 verified **2.21.0**. Core/CLI **2.21.0**, signing **0.2.25**, batch **0.8.20**
 and both official modules **0.1.13** are published from immutable annotated

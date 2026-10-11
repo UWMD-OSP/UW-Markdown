@@ -2,14 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/tax-reassessment.schema.json",
   "title": "tax-reassessment",
-  "description": "RFC 0053 / format 4.5. Shape validation only; the TAX-01 through TAX-04 arithmetic identities are semantic checks.",
+  "description": "RFC 0081 G1 / Format §4.5. trigger required; assessment group all-or-none. Other fields admitted only with that group. TAX-01–03 evaluate only with the group. A member stated as null is not stated: jurisdiction: null needs no assessment group.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "trigger",
-    "assessed_value",
-    "millage_rate",
-    "indicated_tax"
+    "trigger"
   ],
   "properties": {
     "trigger": {
@@ -58,6 +55,86 @@
         "integer",
         "null"
       ]
+    }
+  },
+  "dependentRequired": {
+    "assessed_value": [
+      "millage_rate",
+      "indicated_tax"
+    ],
+    "millage_rate": [
+      "assessed_value",
+      "indicated_tax"
+    ],
+    "indicated_tax": [
+      "assessed_value",
+      "millage_rate"
+    ]
+  },
+  "dependentSchemas": {
+    "jurisdiction": {
+      "if": {
+        "properties": {
+          "jurisdiction": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "assessed_value",
+          "millage_rate",
+          "indicated_tax"
+        ]
+      }
+    },
+    "value_basis": {
+      "if": {
+        "properties": {
+          "value_basis": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "assessed_value",
+          "millage_rate",
+          "indicated_tax"
+        ]
+      }
+    },
+    "assessment_ratio": {
+      "if": {
+        "properties": {
+          "assessment_ratio": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "assessed_value",
+          "millage_rate",
+          "indicated_tax"
+        ]
+      }
+    },
+    "round_to_decimals": {
+      "if": {
+        "properties": {
+          "round_to_decimals": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "assessed_value",
+          "millage_rate",
+          "indicated_tax"
+        ]
+      }
     }
   }
 }

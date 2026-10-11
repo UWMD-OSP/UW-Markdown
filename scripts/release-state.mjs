@@ -169,9 +169,10 @@ export function checkReleasedTags({ changelog, tags }) {
  * @param {object} input
  * @param {string} input.changelog     CHANGELOG.md
  * @param {string} input.versions      VERSIONS.md
- * @param {string} input.protocolDoc   spec/UW_PROTOCOL_v1.md
+ * @param {string} input.protocolDoc   spec/UW_PROTOCOL.md
  * @param {string} input.coreVersion   packages/uwmd-core/package.json version
  * @param {string|null} input.protocolVersion   PROTOCOL_VERSION in protocol.ts
+ * @param {string} [input.specProtocolVersion] accepted normative target, if staged separately
  * @param {string} [input.cliVersion]           packages/uwmd-cli/package.json version
  * @param {string} [input.cliCoreDependency]    the CLI's `@uwmd/core` dependency
  * @param {string} [input.tag]         the release tag, e.g. `v2.16.0`
@@ -183,6 +184,7 @@ export function checkReleaseState({
   protocolDoc,
   coreVersion,
   protocolVersion,
+  specProtocolVersion = protocolVersion,
   cliVersion,
   cliCoreDependency,
   tag,
@@ -287,10 +289,12 @@ export function checkReleaseState({
     }
     const status = protocolDoc.match(/^\*\*Status:\*\* ([^\r\n]*?) — protocol \*\*([^*]+)\*\*/m);
     if (!status) {
-      failures.push('spec/UW_PROTOCOL_v1.md: could not read the status line.');
-    } else if (NOT_FINAL.test(status[1])) {
+      failures.push('spec/UW_PROTOCOL.md: could not read the status line.');
+    } else if (status[2] !== specProtocolVersion) {
+      failures.push(`spec/UW_PROTOCOL.md: status version ${status[2]} differs from the accepted specification constant ${specProtocolVersion}.`);
+    } else if (NOT_FINAL.test(status[1]) && status[2] === protocolRow.version) {
       failures.push(
-        `spec/UW_PROTOCOL_v1.md: the status line calls protocol ${status[2]} "${status[1]}", but @uwmd/core ${coreVersion} carries it.`,
+        `spec/UW_PROTOCOL.md: the status line calls protocol ${status[2]} "${status[1]}", but @uwmd/core ${coreVersion} carries it.`,
       );
     }
   }

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/module-manifest.schema.json",
   "title": "UW Markdown Module Manifest",
-  "description": "Declarative manifest for a UW Markdown module. Modules extend the standard 21 sections with asset-class-specific schemas, calculations, validations, view models, and agent layer prompts. Modules in v1 are declarative-only \u2014 formulas use a safe-expression language; no executable code. Mirrors the TypeScript ModuleManifest type in @uwmd/core/protocol.ts.",
+  "description": "Declarative third-party module manifest. Normative Protocol §X; no executable code. requires_conformance and requires_profiles replace requires_tier (RFC 0081).",
   "type": "object",
   "required": [
     "manifest_version",
@@ -14,21 +14,21 @@
     "license",
     "requires_protocol",
     "requires_format",
-    "requires_tier"
+    "requires_conformance"
   ],
   "additionalProperties": false,
   "properties": {
     "manifest_version": {
       "type": "string",
       "const": "1",
-      "description": "Manifest schema version. Always '1' for protocol v1."
+      "description": "Manifest schema version; always 1."
     },
     "id": {
       "type": "string",
       "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
       "minLength": 3,
       "maxLength": 128,
-      "description": "Stable identifier. Reverse-DNS recommended (e.g. 'org.uwmd.hospitality')."
+      "description": "Stable identifier; reverse-DNS recommended, e.g. com.example.specialty."
     },
     "name": {
       "type": "string",
@@ -61,21 +61,11 @@
     },
     "requires_protocol": {
       "type": "string",
-      "description": "Semver range against the UW Protocol version (e.g. '>=1.0.0 <2.0.0' or '^1'). Protocol 1.3.0 adds the numeric model in section VIII.5; a module whose calculations depend on a declared round_to being honoured should require '>=1.3.0'. Protocol 1.4.0 makes the irr search procedure normative in section VIII.3; a module declaring an irr calculation should require '>=1.4.0', since under 1.3.0 the returned root is engine-specific. Protocol 2.22.0 adds is_calendar_date (section VIII.3); a module whose calculation or validation calls it must require '>=2.22.0' (section X). Protocol 2.22.0 also defines dependent overrides (section VII.3, RFC 0074); a module that redeclares a section, calculation or view-model id declared by a module it names in depends_on must require '>=2.22.0' (section X)."
+      "description": "Semver range satisfied by Protocol 4.0.0. No older contract is admitted."
     },
     "requires_format": {
       "type": "string",
-      "description": "Semver range against the .uw.md format version."
-    },
-    "requires_tier": {
-      "type": "string",
-      "enum": [
-        "tier-1-reader",
-        "tier-2-editor",
-        "tier-3-calc-host",
-        "tier-4-agent-host"
-      ],
-      "description": "Minimum host tier required to load this module. A module with custom calculations requires at least tier-3-calc-host."
+      "description": "Semver range satisfied by Format 3.0."
     },
     "asset_classes": {
       "type": "array",
@@ -117,7 +107,7 @@
     },
     "sections": {
       "type": "array",
-      "description": "Custom or extended section declarations: extend a standard section with additional optional fields, or add module-namespaced sections. New asset_class VALUES are declared separately, in `declares_asset_classes` (RFC 0003) \u2014 this field is about sections.",
+      "description": "Custom or extended section declarations: extend a standard section with additional optional fields, or add module-namespaced sections. New asset_class VALUES are declared separately, in `declares_asset_classes` (RFC 0003) — this field is about sections.",
       "items": {
         "type": "object",
         "required": [
@@ -171,17 +161,17 @@
           "formula": {
             "type": "string",
             "minLength": 1,
-            "description": "Safe-expression string. Grammar: arithmetic, comparison, conditional, function call only. See UW_PROTOCOL_v1.md \u00a7VIII.1."
+            "description": "Safe-expression string. Grammar: arithmetic, comparison, conditional, function call only. See UW_PROTOCOL.md §VIII.1."
           },
           "unit": {
             "type": "string",
-            "description": "Display unit (e.g. '%', '$', 'x'). Also selects the default round_to when round_to is omitted \u2014 see UW_PROTOCOL_v1.md \u00a7VIII.5."
+            "description": "Display unit (e.g. '%', '$', 'x'). Also selects the default round_to when round_to is omitted — see UW_PROTOCOL.md §VIII.5."
           },
           "round_to": {
             "type": "integer",
             "minimum": 0,
             "maximum": 12,
-            "description": "Decimal places the reported value is quantized to, half away from zero (UW_PROTOCOL_v1.md \u00a7VIII.5). Omit to take the normative default for `unit` ($ = 2, % = 6, x = 4, otherwise 6). This is a precision contract that receipt digests depend on, not a display hint."
+            "description": "Decimal places the reported value is quantized to, half away from zero (UW_PROTOCOL.md §VIII.5). Omit to take the normative default for `unit` ($ = 2, % = 6, x = 4, otherwise 6). This is a precision contract that receipt digests depend on, not a display hint."
           },
           "deterministic": {
             "type": "boolean",
@@ -189,7 +179,7 @@
           },
           "section_roles": {
             "type": "object",
-            "description": "Role preference per section id for this calculation's reads of a role-bearing variant map (UW_PROTOCOL_v1.md \u00a7VIII.2, RFC 0066). The unique eligible block with this _role is read; with none, RFC 0040's generic order applies; with two, the read refuses CALC-RESOLVE-002. An explicit sectionVariants entry still wins. A component is never selected this way.",
+            "description": "Role preference per section id for this calculation's reads of a role-bearing variant map (UW_PROTOCOL.md §VIII.2, RFC 0066). The unique eligible block with this _role is read; with none, RFC 0040's generic order applies; with two, the read refuses CALC-RESOLVE-002. An explicit sectionVariants entry still wins. A component is never selected this way.",
             "propertyNames": {
               "pattern": "^[a-z][a-z0-9_]*$"
             },
@@ -358,7 +348,7 @@
     },
     "declares_asset_classes": {
       "type": "array",
-      "description": "Optional. Custom asset classes this module introduces (\u00a7X.2, RFC 0003). Distinct from `asset_classes`, which names builtin classes the module ENHANCES; a module may do both.",
+      "description": "Optional. Custom asset classes this module introduces (§X.2, RFC 0003). Distinct from `asset_classes`, which names builtin classes the module ENHANCES; a module may do both.",
       "items": {
         "type": "object",
         "required": [
@@ -412,7 +402,29 @@
     },
     "signature": {
       "$ref": "https://uwmd.org/schemas/module-signature.schema.json",
-      "description": "Optional. Detached signature over the canonical manifest (\u00a7X.1, RFC 0002). Advisory: what to do with an unsigned module, or one whose signature fails, is a host-policy decision."
+      "description": "Optional. Detached signature over the canonical manifest (§X.1, RFC 0002). Advisory: what to do with an unsigned module, or one whose signature fails, is a host-policy decision."
+    },
+    "requires_conformance": {
+      "enum": [
+        "reader",
+        "verifier"
+      ],
+      "description": "Minimum claimed conformance tier (Protocol §VII.4). Below it is PROTO-MOD-029; unknown value is PROTO-MOD-006."
+    },
+    "requires_profiles": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "module",
+          "integrity",
+          "representations",
+          "portfolio",
+          "sensitivity",
+          "stochastic"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Every listed profile must be claimed by the host (PROTO-MOD-029); absent means none. Unknown profiles are PROTO-MOD-006."
     }
   },
   "$defs": {

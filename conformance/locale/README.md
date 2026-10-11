@@ -1,6 +1,6 @@
 # conformance/locale
 
-Fixtures for display-locale negotiation (RFC 0001, Protocol §III.1a): the
+Fixtures for display-locale negotiation (RFC 0001, starter guide §III.1a): the
 per-locale rendering table, the `LOC-01` refusal, and the display-only
 boundary. All scenarios share [`deal.uwx.md`](deal.uwx.md); the runner injects
 the scenario's `locale:` frontmatter line, so the canonical content is

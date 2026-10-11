@@ -49,7 +49,7 @@ const csvZip = await encodeUWCSVZip(verified);
 const json = await CORE_CODEC_REGISTRY.encode<string>('uw-json', verified);
 ```
 
-See the [UW XML Mapping 1.0](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_XML_MAPPING_v1.md) and [UW CSV Bundle 1.0](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_CSV_BUNDLE_v1.md) specifications.
+See the [UW XML Mapping 1.0](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_XML_MAPPING.md) and [UW CSV Bundle 1.0](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_CSV_BUNDLE.md) specifications.
 
 ## HTTP and MCP bindings
 

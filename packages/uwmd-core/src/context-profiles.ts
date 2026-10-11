@@ -1,5 +1,5 @@
 // Context Profiles — normative views of a .uw.md for AI consumption
-// Spec: UW_PROTOCOL_v1.md §XI ("Context Profiles")
+// Spec: UW_PROTOCOL.md §XI ("Context Profiles")
 //
 // Five profiles: summary | live | compact | full | relevant
 //

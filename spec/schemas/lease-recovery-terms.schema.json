@@ -2,12 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/lease-recovery-terms.schema.json",
   "title": "lease-recovery-terms",
-  "description": "RFC 0058 / format 4.3. Shape only; the method-input pairing, the pool membership and the cap-accumulation requirement are semantic checks (REC-01..REC-03).",
+  "description": "RFC 0081 G1 / Format §4.3. cap may be stated alone, without method, over or accumulation. method is required whenever any other member is stated non-null; a member stated as null is not stated. REC-02: once method is stated, a stated cap.pct requires cap.accumulation (no default). Method-dependent REC rules run only when method is stated.",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "method"
-  ],
   "properties": {
     "method": {
       "enum": [
@@ -115,5 +112,157 @@
         }
       }
     }
-  }
+  },
+  "dependentSchemas": {
+    "pro_rata_share": {
+      "if": {
+        "properties": {
+          "pro_rata_share": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "method"
+        ]
+      }
+    },
+    "share_basis": {
+      "if": {
+        "properties": {
+          "share_basis": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "method"
+        ]
+      }
+    },
+    "base_year": {
+      "if": {
+        "properties": {
+          "base_year": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "method"
+        ]
+      }
+    },
+    "expense_stop_per_sqft": {
+      "if": {
+        "properties": {
+          "expense_stop_per_sqft": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "method"
+        ]
+      }
+    },
+    "fixed_recovery_annual": {
+      "if": {
+        "properties": {
+          "fixed_recovery_annual": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "method"
+        ]
+      }
+    },
+    "admin_fee_pct": {
+      "if": {
+        "properties": {
+          "admin_fee_pct": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "method"
+        ]
+      }
+    },
+    "gross_up_pct": {
+      "if": {
+        "properties": {
+          "gross_up_pct": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "method"
+        ]
+      }
+    },
+    "recoverable_pool": {
+      "if": {
+        "properties": {
+          "recoverable_pool": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "required": [
+          "method"
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "description": "REC-02: with method stated, a stated cap.pct requires cap.accumulation. A lone cap (no method) needs none.",
+      "if": {
+        "required": [
+          "method",
+          "cap"
+        ],
+        "properties": {
+          "cap": {
+            "type": "object",
+            "required": [
+              "pct"
+            ],
+            "properties": {
+              "pct": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "cap": {
+            "required": [
+              "accumulation"
+            ],
+            "properties": {
+              "accumulation": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

@@ -7,8 +7,8 @@ the single most important diagram in the repo (also in [`ARCHITECTURE.md`](../..
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  Spec (normative text)   spec/UW_FORMAT_SPEC_v1.md             │  defines the
-│                          spec/UW_PROTOCOL_v1.md                │  contract
+│  Spec (normative text)   spec/UW_FORMAT_SPEC.md             │  defines the
+│                          spec/UW_PROTOCOL.md                │  contract
 │                          spec/schemas/*.schema.json            │
 └──────────────────────────────────────────────────────────────┘
                          ▲ implements
@@ -48,7 +48,7 @@ the Protocol 3.0 contract) splits the repo into two layers:
   non-normatively in [`docs/starter/`](../starter/README.md) and versions with
   the packages only.
 
-The Protocol defines two conformance tiers (`UW_PROTOCOL_v1.md` Part II, typed
+The Protocol defines two conformance tiers (`UW_PROTOCOL.md` Part II, typed
 in `protocol.ts` as `ConformanceTier`) and six optional profiles
 (`ConformanceProfile`):
 
@@ -75,12 +75,12 @@ corpus is re-tiered (RFC 0078 phase 3).
 
 ```
 spec/                      Normative specs + JSON Schemas + XML XSD
-  UW_FORMAT_SPEC_v1.md     File shape: frontmatter, 21 standard sections (§4.0-4.20),
+  UW_FORMAT_SPEC.md     File shape: frontmatter, 21 standard sections (§4.0-4.20),
                            extension meta-spec (§4.21), gaps (§4.22), CC-NN checks
-  UW_PROTOCOL_v1.md        Verification: tiers + profiles, provenance rules, calc EBNF, verifiers
-  UW_XML_MAPPING_v1.md     Deterministic Envelope 1.0 XML representation
-  UW_CSV_BUNDLE_v1.md      Normalized CSV directory/ZIP representation
-  UW_RECEIPT_v1.md         Verification receipts
+  UW_PROTOCOL.md        Verification: tiers + profiles, provenance rules, calc EBNF, verifiers
+  UW_XML_MAPPING.md     Deterministic Envelope 1.0 XML representation
+  UW_CSV_BUNDLE.md      Normalized CSV directory/ZIP representation
+  UW_RECEIPT.md         Verification receipts
   metrics/                 Normative metric dictionary (builtin.json)
   bindings/                HTTP/MCP profiles + OpenAPI 3.1 contract
   schemas/                 JSON Schema 2020-12 plus structural UW XML XSD

@@ -1,5 +1,5 @@
 // Receipt issuance and verification for the editor (RFC 0016 /
-// spec/UW_RECEIPT_v1.md). Pure logic, no DOM — the component layer renders what
+// spec/UW_RECEIPT.md). Pure logic, no DOM — the component layer renders what
 // these functions return.
 //
 // Everything here runs client-side against @uwmd/core/browser. Unsigned
@@ -99,7 +99,7 @@ export async function assess(
   return { status: verification.verdict, verification };
 }
 
-/** Suggested sidecar filename for a receipt, per UW_RECEIPT_v1 §2. */
+/** Suggested sidecar filename for a receipt, per UW_RECEIPT §2. */
 export function receiptFilename(dealFilename: string): string {
   const base = dealFilename.replace(/\.(uw|uwx)\.md$/i, '').replace(/\.md$/i, '');
   return `${base || 'deal'}.receipt.json`;

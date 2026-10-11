@@ -427,7 +427,7 @@ issuance/verification). Six tabs:
   mismatch is reclassified as stale only when *this session* issued the receipt
   and the deal has since been edited — spec §6's "editors SHOULD treat any
   existing receipt as stale once a write lands". A mismatch on a receipt that
-  arrived as a file stays `failed`. Per `UW_RECEIPT_v1.md` §1 the panel never
+  arrived as a file stays `failed`. Per `UW_RECEIPT.md` §1 the panel never
   shows a bare checkmark: every verdict states what it attests, and `verified`
   carries the "not correct/complete/audited/approved" caveat inline rather than
   behind a disclosure.
@@ -468,7 +468,7 @@ Verify Receipt for This Deal") checks the `<deal>.receipt.json` sidecar against
 the open document. Verdicts map to notification severity (information / error /
 warning for verified / failed / unverifiable), with the full breakdown in a
 *UW Markdown Receipts* output channel; unsaved editor changes are offered as
-the likely cause of a failure. Per `UW_RECEIPT_v1.md` §1 the verified
+the likely cause of a failure. Per `UW_RECEIPT.md` §1 the verified
 notification states the assurance boundary inline rather than showing a bare
 checkmark.
 

@@ -1,4 +1,4 @@
-// Capability tokens — the reference CapabilityVerifier (Protocol §XIV, RFC 0011).
+// Capability tokens — the reference CapabilityVerifier (starter guide §XIV, RFC 0011).
 //
 // A capability token is a JWS Compact–encoded JWT a coordinator signs:
 // "this actor may write these sections at these stages for this deal, until
@@ -25,7 +25,7 @@ import type { KeyStore, SigningKey } from './keys.js';
 import { signPayload } from './sign.js';
 import { verifyRawSignature } from './verify.js';
 
-/** The claims a capability token carries (Protocol §XIV.2). */
+/** The claims a capability token carries (starter guide §XIV.2). */
 export interface CapabilityTokenClaims {
   /** Coordinator identity (informational; not verified beyond the signature). */
   iss: string;

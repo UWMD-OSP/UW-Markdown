@@ -21,8 +21,8 @@
       "const": "1.0"
     },
     "format_version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+$"
+      "const": "3.0",
+      "description": "Only admitted document format (RFC 0081); envelope_version remains independently versioned."
     },
     "generated_at": {
       "type": "string",
@@ -45,7 +45,8 @@
       ],
       "properties": {
         "uw_version": {
-          "type": "string"
+          "const": "3.0",
+          "description": "Format 3.0 is the only admitted document version (RFC 0081); it agrees with format_version."
         },
         "deal_id": {
           "type": "string"
@@ -57,31 +58,7 @@
           "type": "string"
         }
       },
-      "additionalProperties": true,
-      "allOf": [
-        {
-          "if": {
-            "required": [
-              "asset_class"
-            ],
-            "properties": {
-              "asset_class": {
-                "enum": [
-                  "data_center",
-                  "manufactured_housing"
-                ]
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "uw_version": {
-                "const": "2.1"
-              }
-            }
-          }
-        }
-      ]
+      "additionalProperties": true
     },
     "sections": {
       "type": "object",
@@ -139,36 +116,10 @@
       }
     },
     "meta": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/metaV1"
-        },
-        {
-          "$ref": "https://uwmd.org/schemas/uwmd-block-v2.schema.json#/$defs/UWMetaV2"
-        }
-      ]
+      "$ref": "https://uwmd.org/schemas/uwmd-block.schema.json#/$defs/UWMeta"
     },
     "content": {
-      "type": "object",
-      "required": [
-        "_meta"
-      ],
-      "properties": {
-        "_meta": {
-          "$ref": "#/$defs/meta"
-        },
-        "_role": {
-          "enum": [
-            "primary",
-            "senior",
-            "junior",
-            "summary",
-            "detail",
-            "component"
-          ]
-        }
-      },
-      "additionalProperties": true
+      "$ref": "https://uwmd.org/schemas/uwmd-block.schema.json"
     },
     "block": {
       "type": "object",
@@ -201,174 +152,6 @@
       "items": {
         "$ref": "#/$defs/block"
       }
-    },
-    "metaV1": {
-      "type": "object",
-      "required": [
-        "section",
-        "version",
-        "superseded",
-        "source",
-        "agent_id",
-        "agent_version",
-        "actor",
-        "timestamp",
-        "confidence",
-        "human_review_required",
-        "flags",
-        "input_hash",
-        "notes"
-      ],
-      "properties": {
-        "section": {
-          "type": "string"
-        },
-        "version": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "superseded": {
-          "type": "boolean"
-        },
-        "source": {
-          "type": "string"
-        },
-        "agent_id": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "agent_version": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "actor": {
-          "type": "string"
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "confidence": {
-          "enum": [
-            "high",
-            "medium",
-            "low"
-          ]
-        },
-        "human_review_required": {
-          "type": "boolean"
-        },
-        "flags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "input_hash": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "notes": {
-          "type": [
-            "string",
-            "null"
-          ]
-        }
-      },
-      "additionalProperties": true
-    },
-    "newComponentPayload": {
-      "type": "object",
-      "anyOf": [
-        {
-          "required": [
-            "data_center"
-          ]
-        },
-        {
-          "required": [
-            "manufactured_housing"
-          ]
-        }
-      ]
-    },
-    "newComponentBlock": {
-      "type": "object",
-      "required": [
-        "content"
-      ],
-      "properties": {
-        "content": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/newComponentPayload"
-            },
-            {
-              "type": "object",
-              "required": [
-                "content"
-              ],
-              "properties": {
-                "content": {
-                  "$ref": "#/$defs/newComponentPayload"
-                }
-              }
-            }
-          ]
-        }
-      }
     }
-  },
-  "allOf": [
-    {
-      "if": {
-        "required": [
-          "sections"
-        ],
-        "properties": {
-          "sections": {
-            "required": [
-              "components"
-            ],
-            "properties": {
-              "components": {
-                "anyOf": [
-                  {
-                    "$ref": "#/$defs/newComponentBlock"
-                  },
-                  {
-                    "type": "object",
-                    "not": {
-                      "additionalProperties": {
-                        "not": {
-                          "$ref": "#/$defs/newComponentBlock"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "frontmatter": {
-            "properties": {
-              "uw_version": {
-                "const": "2.1"
-              }
-            }
-          }
-        }
-      }
-    }
-  ]
+  }
 }

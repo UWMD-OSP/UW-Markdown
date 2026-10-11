@@ -1,5 +1,5 @@
 // Tier-3 Calc Host — built-in function implementations.
-// Signatures and semantics per UW_PROTOCOL_v1.md §VIII.3.
+// Signatures and semantics per UW_PROTOCOL.md §VIII.3.
 
 import { parseISODate } from './day-count.js';
 import { CalcError } from './errors.js';

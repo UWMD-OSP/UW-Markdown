@@ -27,8 +27,8 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
         </div>
         <h3 class="uw-card-group">Source tree</h3>
         <dl>
-          <div><dt>Format</dt><dd><code>v{{ versions.format }}</code></dd></div>
-          <div><dt>Protocol</dt><dd><code>v{{ versions.protocol }}</code></dd></div>
+          <div><dt>Format</dt><dd><code>v{{ versions.specFormat }}</code></dd></div>
+          <div><dt>Protocol</dt><dd><code>v{{ versions.specProtocol }}</code></dd></div>
           <div><dt>Core library + CLI</dt><dd><code>v{{ versions.core }}</code></dd></div>
         </dl>
         <h3 class="uw-card-group">Latest published release</h3>
@@ -36,6 +36,7 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
           <div><dt>Generation</dt><dd><code>v{{ versions.published }}</code></dd></div>
         </dl>
         <p>On npm: <span v-for="(name, i) in versions.npm" :key="name"><code>{{ name }}</code><template v-if="i < versions.npm.length - 1"> · </template></span>. Other packages build from source.</p>
+        <p v-if="versions.specFormat !== versions.format || versions.specProtocol !== versions.protocol" class="uw-card-note">The specifications are accepted ahead of the reference implementation, which still reads Format v{{ versions.format }} and Protocol v{{ versions.protocol }} until the RFC 0081 rollout completes.</p>
         <p v-if="versions.unpublishedSource" class="uw-card-note">Core v{{ versions.core }} is prepared in source and not yet published.</p>
         <a href="/about/versions">Version matrix</a>
       </aside>
@@ -265,8 +266,8 @@ the post-sale value.
         <div>
           <h3 class="uw-column-title">The standard</h3>
           <div class="uw-link-list">
-            <a href="/spec/format-v2"><span><strong>Format specification</strong><small>Normative structure of a record</small></span><code>v{{ versions.format }}</code></a>
-            <a href="/spec/protocol"><span><strong>Protocol — verification</strong><small>How any party checks a record: Reader and Verifier tiers, optional profiles</small></span><code>v{{ versions.protocol }}</code></a>
+            <a href="/spec/format"><span><strong>Format specification</strong><small>Normative structure of a record</small></span><code>v{{ versions.specFormat }}</code></a>
+            <a href="/spec/protocol"><span><strong>Protocol — verification</strong><small>How any party checks a record: Reader and Verifier tiers, optional profiles</small></span><code>v{{ versions.specProtocol }}</code></a>
             <a href="/spec/metrics/"><span><strong>Metric dictionary</strong><small>The normative definition of every builtin metric</small></span><code>JSON</code></a>
             <a href="/spec/receipt"><span><strong>Verification receipts</strong><small>An offline, recomputable proof of the arithmetic</small></span><code>spec</code></a>
             <a href="/spec/bindings/"><span><strong>Representations and bindings</strong><small>UW Lite, XML, CSV, and optional HTTP and MCP profiles</small></span><code>spec</code></a>

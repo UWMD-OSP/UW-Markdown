@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/calc-result.schema.json",
   "title": "UW Calc Engine Result",
-  "description": "Output of a single safe-expression evaluation by a Tier-3 Calc Host. Mirrors the CalcResult interface in @uwmd/core/protocol.ts. See UW_PROTOCOL_v1.md §VIII for the safe-expression language and the deterministic-evaluation contract.",
+  "description": "Output of a single safe-expression evaluation by a Tier-3 Calc Host. Mirrors the CalcResult interface in @uwmd/core/protocol.ts. See UW_PROTOCOL.md §VIII for the safe-expression language and the deterministic-evaluation contract.",
   "type": "object",
   "required": ["calc_id", "ok", "value"],
   "additionalProperties": false,

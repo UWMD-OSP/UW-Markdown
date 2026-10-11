@@ -1,5 +1,5 @@
 // Capability tokens — sign/verify roundtrip and every rejection branch
-// (Protocol §XIV, RFC 0011).
+// (starter guide §XIV, RFC 0011).
 
 import { describe, expect, it, beforeAll } from 'vitest';
 import type { CapabilityVerifyContext } from '@uwmd/core';

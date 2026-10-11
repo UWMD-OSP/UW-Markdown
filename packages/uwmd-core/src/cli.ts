@@ -831,7 +831,7 @@ async function cmdConvert(file: string, flags: Record<string, string | boolean>)
   writeFileSync(outPath, encoded, 'utf-8');
   console.log(`Converted ${basename(file)} → ${basename(outPath)} (${targetId})`);
 }
-// ─── Receipts (RFC 0016 / spec/UW_RECEIPT_v1.md) ─────────────────────────────
+// ─── Receipts (RFC 0016 / spec/UW_RECEIPT.md) ─────────────────────────────
 
 async function cmdReceiptIssue(
   file: string,
@@ -1668,7 +1668,7 @@ switch (command) {
       confidence: (flags['confidence'] as 'high' | 'medium' | 'low' | undefined) ?? 'medium',
     };
 
-    // Capability enforcement (Protocol §XIV, RFC 0011). Same optional-peer
+    // Capability enforcement (starter guide §XIV, RFC 0011). Same optional-peer
     // dynamic-import arrangement as `--signing` above: core takes no crypto
     // dependency to satisfy a flag most invocations never pass.
     let result: EditResult;

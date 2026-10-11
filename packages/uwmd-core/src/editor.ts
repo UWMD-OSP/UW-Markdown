@@ -1,5 +1,5 @@
 // Tier-2 Editor — applyEdit() dispatcher for the four EditOperation kinds
-// defined in protocol.ts (UW_PROTOCOL_v1.md §V.2):
+// defined in protocol.ts (UW_PROTOCOL.md §V.2):
 //
 //   - frontmatter_set
 //   - section_replace
@@ -7,7 +7,7 @@
 //   - pipeline_log_append
 //
 // Honors BUILTIN_EDIT_POLICIES authority + supersede_on_edit semantics
-// (UW_PROTOCOL_v1.md §V.3) and protects the immutable frontmatter fields
+// (UW_PROTOCOL.md §V.3) and protects the immutable frontmatter fields
 // from §V.6 (uw_version, deal_id, created).
 //
 // Pure: no I/O. The runner consumes the returned content string and the
@@ -56,7 +56,7 @@ export interface EditContext {
    */
   parentHash?: string | null;
   /**
-   * A capability token authorizing this edit (Protocol §XIV, RFC 0011).
+   * A capability token authorizing this edit (starter guide §XIV, RFC 0011).
    * Required whenever the editor is configured with
    * `EditOptions.capabilityVerifier`; ignored otherwise.
    */
@@ -77,7 +77,7 @@ export interface EditResult {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-/** Frontmatter fields that MUST NOT be modified post-init (UW_PROTOCOL_v1.md §V.6). */
+/** Frontmatter fields that MUST NOT be modified post-init (starter guide §V.6). */
 const IMMUTABLE_FRONTMATTER_FIELDS: readonly string[] = [
   'uw_version',
   'deal_id',
@@ -97,7 +97,7 @@ const IMMUTABLE_FRONTMATTER_FIELDS: readonly string[] = [
 export interface EditOptions {
   maintainGaps?: boolean;
   /**
-   * Enable content_hash chain enforcement (UW_PROTOCOL_v1.md §V.10):
+   * Enable content_hash chain enforcement (UW_PROTOCOL.md §V.10):
    *   - If the section's current head has `_meta.content_hash`, the caller's
    *     `EditContext.parentHash` MUST equal it (else INT-02).
    *   - The new block is stamped with `parent_hash = prior.content_hash`.
@@ -110,7 +110,7 @@ export interface EditOptions {
   /**
    * When supplied, every write MUST present a `capability_token` the verifier
    * accepts; edits without one, or with a rejected one, fail with POL-03
-   * (Protocol §XIV, RFC 0011). The static §V.3 authority check still runs
+   * (starter guide §XIV, RFC 0011). The static §V.3 authority check still runs
    * first — a token narrows authority, it never overrides a policy refusal.
    *
    * Honored by `applyEditAsync` only (verification is async crypto). The sync
@@ -131,7 +131,7 @@ export function applyEdit(
   // A configured capability verifier can only be honored on the async path
   // (verification is Web Crypto). Refusing here is deliberate: silently
   // skipping the check would turn a mis-wired call site into an authorization
-  // bypass (Protocol §XIV, RFC 0011).
+  // bypass (starter guide §XIV, RFC 0011).
   if (options.capabilityVerifier) {
     return {
       ok: false,
@@ -189,7 +189,7 @@ export async function applyEditAsync(
   policies: readonly EditPolicy[] = BUILTIN_EDIT_POLICIES,
   options: EditOptions = {},
 ): Promise<EditResult> {
-  // Capability gate (Protocol §XIV, RFC 0011). Runs before the write, after
+  // Capability gate (starter guide §XIV, RFC 0011). Runs before the write, after
   // nothing — but note the static §V.3 authority check inside dispatchEdit
   // still applies to whatever this gate admits: a token narrows authority,
   // it never overrides a policy refusal. On success the token's jti is
@@ -368,7 +368,7 @@ function applyFrontmatterSet(
       ok: false,
       error: protoError(
         'PROTO-EDIT-002',
-        `Frontmatter field '${top}' is immutable post-init (UW_PROTOCOL_v1.md §V.6).`,
+        `Frontmatter field '${top}' is immutable post-init (starter guide §V.6).`,
         path,
       ),
     };
@@ -753,7 +753,7 @@ function buildFenceAnnotation(
 function stripReservedKeys(content: Record<string, unknown>): Record<string, unknown> {
   // The dispatcher constructs canonical _meta. Drop any caller-supplied _meta
   // or _notes from `content` to mirror Tier-4's _meta substitution rule
-  // (UW_PROTOCOL_v1.md §IX.4) — same logic, applied at Tier-2.
+  // (starter guide §IX.4) — same logic, applied at Tier-2.
   const { _meta: _drop1, _notes: _drop2, _role: _drop3, ...rest } = content;
   void _drop1;
   void _drop2;

@@ -1,6 +1,6 @@
-// Verification receipts (RFC 0016 / spec/UW_RECEIPT_v1.md).
+// Verification receipts (RFC 0016 / spec/UW_RECEIPT.md).
 //
-// UW_RECEIPT_v1 §1 is a requirement on this file, not a suggestion:
+// UW_RECEIPT §1 is a requirement on this file, not a suggestion:
 // implementations MUST NOT present a `verified` receipt with language implying
 // the underwriting is correct, complete, audited, or approved, and interfaces
 // MUST make that distinction available rather than showing an unqualified

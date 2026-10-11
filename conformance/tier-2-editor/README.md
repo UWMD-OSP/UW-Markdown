@@ -10,7 +10,7 @@ Compatible editors apply structured edits to a `.uw.md` file and produce a new
 - Round-trips formatting for unrelated regions (untouched bytes stay
   identical, ignoring trailing whitespace).
 - Honors the supersede vs replace policy from `BUILTIN_EDIT_POLICIES`
-  (`UW_PROTOCOL_v1.md` Part V).
+  (`UW_PROTOCOL.md` Part V).
 - Updates `_meta` provenance correctly (new `version`, `timestamp`,
   `actor`, etc.).
 - Updates frontmatter `last_modified` on every write.

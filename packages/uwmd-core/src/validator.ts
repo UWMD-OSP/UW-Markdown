@@ -3,7 +3,7 @@ import { isScenarioId, RETIRED_SCENARIOS } from './scenario.js';
 import { checkReserveAccountsStructure } from './reserve-accounts-structure.js';
 import { checkReplacementFundingStructure } from './replacement-funding-structure.js';
 // .uw.md validator — financial validity checks (§5.2) + cross-section consistency (§5.3)
-// Spec: UW_FORMAT_SPEC_v1.md Part V
+// Spec: UW_FORMAT_SPEC.md Part V
 
 import type {
   ParsedUWFile,
@@ -35,7 +35,7 @@ import { checkPeriodSeries } from './period-validation.js';
 import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
 import type { RoleResolution } from './block-roles.js';
 
-// ─── BUILTIN_REMEDIATIONS lookup (UW_PROTOCOL_v1.md §III.6) ──────────────────
+// ─── BUILTIN_REMEDIATIONS lookup (Protocol §III.6a) ──────────────────
 //
 // Validator constructs inline messages with deal-specific values, but the
 // registry provides canonical title/remediation/spec_ref copy keyed by code.

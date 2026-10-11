@@ -445,3 +445,11 @@ test('every v2.* tag has an empty [Unreleased]; the 2.18.0 preparation passes an
   assert.match(failures[0], /^CHANGELOG\.md: \[Unreleased\] holds \d+ line\(s\) in the tree being tagged v2\.18\.0, starting "- \*\*The hedge and escrow rules now prefer `senior`/);
   assert.deepEqual(checkReleaseState(later).failures, []);
 });
+
+
+test('a staged accepted spec cannot masquerade as the carried release protocol (RFC 0081)', () => {
+  const staged = { ...RECONCILED, specProtocolVersion: '4.0.0', protocolDoc: '**Status:** Accepted — protocol **4.0.0**' };
+  assert.deepEqual(checkReleaseState(staged).failures, []);
+  assert.match(checkReleaseState({ ...staged, specProtocolVersion: '4.1.0' }).failures.join('\n'), /differs from the accepted specification constant/);
+  assert.match(checkReleaseState({ ...staged, specProtocolVersion: RECONCILED.protocolVersion, protocolDoc: `**Status:** Unreleased — protocol **${RECONCILED.protocolVersion}**` }).failures.join('\n'), /status line calls protocol/);
+});

@@ -13,7 +13,7 @@ writer. **Agents extract and narrate; they never compute financial metrics.**
 - **Location:** [`packages/uwmd-core/src/agents/`](../../packages/uwmd-core/src/agents/)
   + [`src/context.ts`](../../packages/uwmd-core/src/context.ts)
   + [`src/context-profiles.ts`](../../packages/uwmd-core/src/context-profiles.ts)
-- **Normative contract:** `UW_PROTOCOL_v1.md` §IX (provider-neutral). `bancroft.ts`
+- **Normative contract:** `UW_PROTOCOL.md` §IX (provider-neutral). `bancroft.ts`
   is the Claude-backed *reference* implementation.
 - **Public API (via `index.ts`):** `runBancroftAgent`, `runBancroftAgentStreaming`,
   `buildAgentContext`, `buildAgentPrompt`, `isContextReady`, `getLayerDependencies`,

@@ -68,7 +68,7 @@ describe('INIT_SCENARIOS', () => {
   });
 
   it('lists exactly the frontmatter scenario values Format §2.2 lists, in order', () => {
-    const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC_v1.md', import.meta.url));
+    const specPath = fileURLToPath(new URL('../../../spec/UW_FORMAT_SPEC.md', import.meta.url));
     const line = readFileSync(specPath, 'utf-8')
       .split(/\r?\n/)
       .find((l) => l.startsWith('scenario: "'));

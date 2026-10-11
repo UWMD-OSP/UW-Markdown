@@ -13,7 +13,7 @@ For every `<id>.uw.md` in this directory there is a sibling
   "description": "human-readable explanation of what's wrong",
   "must_parse": true,
   "expected_codes": ["VALIDATOR_CODE_1", "VALIDATOR_CODE_2"],
-  "spec_ref": "spec/UW_PROTOCOL_v1.md §III.6a"
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a"
 }
 ```
 

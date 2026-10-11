@@ -1,5 +1,5 @@
 import { ASSET_CLASSES } from './types.js';
-// Verification receipts — RFC 0016 / `spec/UW_RECEIPT_v1.md`.
+// Verification receipts — RFC 0016 / `spec/UW_RECEIPT.md`.
 //
 // A receipt is a small, detached JSON document that binds a canonical digest of
 // an underwriting record to the deterministic outputs a named calc pack produced
@@ -8,7 +8,7 @@ import { ASSET_CLASSES } from './types.js';
 //
 // It deliberately attests NOTHING about whether those inputs are true. A record
 // asserting a fabricated NOI can carry a perfectly valid receipt. See the
-// assurance boundary in `spec/UW_RECEIPT_v1.md` §6 — consumers MUST NOT render a
+// assurance boundary in `spec/UW_RECEIPT.md` §6 — consumers MUST NOT render a
 // `verified` verdict as an unqualified checkmark.
 //
 // Layering: unsigned issuance and verification live here because core already
@@ -56,7 +56,7 @@ import { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
  * because two independent bumps for two simultaneously-accepted RFCs would make
  * the version number meaningless. RFC 0022 landed first; RFC 0021's rollup
  * entries are additive within the section established here and MUST NOT bump
- * this again. See `UW_RECEIPT_v1.md` §10.
+ * this again. See `UW_RECEIPT.md` §10.
  */
 export const UW_RECEIPT_VERSION = '1.1' as const;
 
@@ -275,7 +275,7 @@ export type UWReceiptIssueCode =
    * A stated composite aggregate disagrees with recomputation (RFC 0021 §6).
    * Keeps its `COMP-` prefix rather than taking an `RCP-` number: the failure
    * is a composition claim, and a reader tracing it should land in
-   * `UW_COMPOSITION_v1.md`, not in the receipt spec's own taxonomy.
+   * `UW_COMPOSITION.md`, not in the receipt spec's own taxonomy.
    */
   | 'COMP-ROLLUP-DISAGREES';
 
@@ -612,7 +612,7 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
  *      engine identity (name *and* version) differs from this verifier's, in
  *      which case the disagreement is attributable to the engine and the
  *      verdict is `unverifiable` (RFC 0016 open question, resolved in
- *      `spec/UW_RECEIPT_v1.md` §5).
+ *      `spec/UW_RECEIPT.md` §5).
  *   5. Otherwise `verified`.
  *
  * The verifier always recomputes; `results_digest` is checked only as a cheap

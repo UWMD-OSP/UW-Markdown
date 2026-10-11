@@ -1,6 +1,6 @@
 # conformance/capability
 
-Fixtures for capability-token write authorization (RFC 0011, Protocol §XIV):
+Fixtures for capability-token write authorization (RFC 0011, starter guide §XIV):
 the `POL-03` refusal, every typed rejection reason, the `jti` provenance
 note, and the AND rule (a token never overrides the static §V.3 policy).
 Cases are owed only by hosts claiming the **`capability-verify`** capability.

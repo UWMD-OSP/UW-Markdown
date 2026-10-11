@@ -1,4 +1,4 @@
-// Fallback cascade resolver — Protocol §V.7
+// Fallback cascade resolver — starter guide §V.7
 //
 // Walks the eight cascade steps in order (seven before RFC 0021 §5 added
 // `inherited_assumption` at protocol 1.5.0); first hit wins. The producer that
@@ -296,7 +296,7 @@ export function resolveValue(
   // The returned `source` is the tag found, so `market_data_accepted` survives
   // resolution rather than being flattened into `user_input`. Only the *step*
   // is shared — the cascade is normatively ordered and a producer must not
-  // reorder it (protocol §IX), so a promoted value is a distinctly tagged value
+  // reorder it (starter guide §IX), so a promoted value is a distinctly tagged value
   // resolved at an existing step rather than a step of its own. Extending the
   // cascade is a protocol change, which is what RFC 0021 §5 did for
   // `inherited_assumption`; RFC 0022 deliberately did not need one.

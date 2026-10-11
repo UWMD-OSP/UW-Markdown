@@ -222,7 +222,7 @@ is precisely the situation that third state exists for.
 
 ## Reading further
 
-- [Verification receipt specification (v1.0)](../spec/UW_RECEIPT_v1.md) — the
+- [Verification receipt specification (v1.0)](../spec/UW_RECEIPT.md) — the
   normative document: canonicalizations, issue codes, verifier precedence.
 - [RFC 0016](rfcs/0016-verification-receipts.md) — the design rationale and the
   alternatives that were rejected.

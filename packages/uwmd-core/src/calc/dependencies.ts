@@ -1,5 +1,5 @@
 // Dependency graph extraction for calc formulas.
-// Spec: UW_PROTOCOL_v1.md §X.4 (refinement engine inputs)
+// Spec: UW_PROTOCOL.md §X.4 (refinement engine inputs)
 //
 // Walks the AST of every calc formula and emits the set of input field paths
 // it reads. Used by refinement.ts to compute value-of-information rankings:

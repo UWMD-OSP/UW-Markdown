@@ -16,7 +16,7 @@ DuckDB is just the shortest path to a working demo.
 ## 1. From deals to bundles
 
 Each `.uwx.md` (or `.uw.md` Lite) deal converts to a **UW CSV bundle**
-([`UW_CSV_BUNDLE_v1.md`](../spec/UW_CSV_BUNDLE_v1.md)) — a deterministic ZIP
+([`UW_CSV_BUNDLE.md`](../spec/UW_CSV_BUNDLE.md)) — a deterministic ZIP
 of typed CSV files plus a manifest:
 
 ```bash
@@ -106,7 +106,7 @@ A lake of numbers is only as good as its provenance. Issue a receipt per deal:
 npx @uwmd/cli receipt issue deal.uwx.md --output lake/deal-001/deal.receipt.json
 ```
 
-A receipt ([`UW_RECEIPT_v1.md`](../spec/UW_RECEIPT_v1.md)) attests that the
+A receipt ([`UW_RECEIPT.md`](../spec/UW_RECEIPT.md)) attests that the
 deal's computed outputs follow from its stated inputs under a named calc pack —
 it does **not** attest that the inputs are true. Its `subject.digest` is the
 same semantic digest the bundle manifest carries, which makes the trust join

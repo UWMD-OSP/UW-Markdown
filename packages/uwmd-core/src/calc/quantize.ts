@@ -1,5 +1,5 @@
 // Tier-3 Calc Host — the quantization boundary.
-// Normative model: UW_PROTOCOL_v1.md §VIII.5 ("Numeric model").
+// Normative model: UW_PROTOCOL.md §VIII.5 ("Numeric model").
 //
 // The engine evaluates in IEEE-754 binary64 and does *not* round intermediate
 // values. A calculation's **reported** value is quantized here, at exactly one
@@ -29,7 +29,7 @@ export const MAX_ROUND_TO = 12;
 
 /**
  * Normative default decimal places by declared `unit`, applied when a
- * calculation omits `round_to`. Table per UW_PROTOCOL_v1.md §VIII.5.
+ * calculation omits `round_to`. Table per UW_PROTOCOL.md §VIII.5.
  *
  * The values follow from what the unit means rather than from taste. Money is
  * quantized to cents. A ratio (`x`, e.g. DSCR) reports at four places;

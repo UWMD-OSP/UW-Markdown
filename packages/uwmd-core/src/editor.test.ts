@@ -1,4 +1,4 @@
-// Editor tests — Tier-2 dispatcher behavior per UW_PROTOCOL_v1.md §V.
+// Editor tests — Tier-2 dispatcher behavior per UW_PROTOCOL.md §V.
 
 import { describe, it, expect } from 'vitest';
 import { parseUWFile, getSection } from './parser.js';

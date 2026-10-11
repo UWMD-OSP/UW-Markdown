@@ -10,7 +10,7 @@
     <xs:documentation>
       Structural XSD for UW XML 1.0. Normative JSON-type, member-name,
       duplicate-key, envelope, and semantic-digest checks are performed by the
-      UW XML codec and are specified in UW_XML_MAPPING_v1.md.
+      UW XML codec and are specified in UW_XML_MAPPING.md.
     </xs:documentation>
   </xs:annotation>
 

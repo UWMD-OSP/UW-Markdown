@@ -28,7 +28,7 @@ The document MUST be UTF-8 XML 1.0 with this root:
 <?xml version="1.0" encoding="UTF-8"?>
 <uw:document xmlns:uw="https://uwmd.org/ns/document/1"
              envelope-version="1.0"
-             format-version="1.1">
+             format-version="3.0">
   <!-- envelope members -->
 </uw:document>
 ```

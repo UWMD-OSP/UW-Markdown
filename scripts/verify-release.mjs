@@ -122,10 +122,11 @@ if (!sections.some((s) => s.version === coreVersion)) {
 const state = checkReleaseState({
   changelog,
   versions: read('VERSIONS.md'),
-  protocolDoc: read('spec/UW_PROTOCOL_v1.md'),
+  protocolDoc: read('spec/UW_PROTOCOL.md'),
   coreVersion,
   protocolVersion:
     read('packages/uwmd-core/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)?.[1] ?? null,
+  specProtocolVersion: read('packages/uwmd-core/src/protocol.ts').match(/SPEC_PROTOCOL_VERSION = '([^']+)'/)?.[1],
   cliVersion: cli.version,
   cliCoreDependency: cli.dependencies?.['@uwmd/core'],
   tag,

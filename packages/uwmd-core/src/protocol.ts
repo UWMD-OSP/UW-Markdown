@@ -2,7 +2,7 @@ import { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
 import { toBuiltinAssetClass } from './types.js';
 // UW Protocol — TypeScript contract surface for conforming implementers.
 //
-// This module is the executable counterpart to spec/UW_PROTOCOL_v1.md.
+// This module is the executable counterpart to spec/UW_PROTOCOL.md.
 // Where the prose document defines normative behavior, this module names the
 // types implementers must satisfy and exports the BUILTIN_* tables that a
 // Reader or Verifier (Protocol 3.0, RFC 0078) references. Some tables here
@@ -42,32 +42,39 @@ export const PROTOCOL_VERSION = '3.0.0' as const;
  */
 export const FORMAT_VERSION = '2.1' as const;
 
-/**
- * Every format version this implementation reads and validates. Format 2.0
- * is a delta over v1 and reading v1.x files is part of the 2.0 contract
- * (format spec v2 §1.2) — a 2.0 implementation is a 1.x implementation too.
- * Module `requires_format` ranges are satisfied against ANY member of this
- * set, not just the authoring version: a module written for the 1.x line
- * keeps loading, because the files it declared compatibility with are still
- * fully supported.
- */
-export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0', '2.1'] as const);
+/** Accepted normative targets (RFC 0081 Phase 2); release labels move in Phase 6. */
+export const SPEC_FORMAT_VERSION = '3.0' as const;
+export const SPEC_PROTOCOL_VERSION = '4.0.0' as const;
 
-/**
- * The protocol contracts this implementation honors. Protocol 2.0.0 keeps
- * every 1.x behavior for 1.x files (the boundary is per-file — format spec
- * v2 §1.3), so a module written against the 1.x protocol line still loads:
- * its `requires_protocol` range is satisfied against any member of this set.
- * Protocol 3.0.0 (RFC 0078) changes the conformance claim, not the module
- * system or what any document means, so the last 2.x contract stays here
- * the same way 1.14.0 did at 2.0.0: a module written for `^2` keeps loading.
- */
-export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.1.0', '2.2.0', '2.25.0', PROTOCOL_VERSION] as const);
+/** Final Protocol §X host requirements. Runtime manifest loading moves in Phase 4. */
+export const RESOLUTION_METHODS = Object.freeze([
+  'user_input', 'user_override', 'inherited_assumption', 'investor_profile',
+  'market_data', 'market_data_accepted', 'ai_extracted', 'agent_computed',
+  'asset_class_default', 'scenario_default', 'global_default', 'system_default',
+] as const);
+
+export interface ModuleConformanceRequirements {
+  requires_conformance: ConformanceTier;
+  requires_profiles?: ConformanceProfile[];
+}
+
+/** Final schema mirror; the current loader's ModuleManifest is removed in Phase 4. */
+export type ProtocolModuleManifest = Omit<ModuleManifest, 'requires_tier'> & ModuleConformanceRequirements;
+
+/** Final self-declaration schema; runtime alias removal is Phase 4. */
+export type ProtocolImplementationManifest = Omit<ImplementationManifest, 'tier'> & { tier?: ConformanceTier };
+
+
+/** RFC 0081 Phase 2 staging set; Phase 4 narrows it to SPEC_FORMAT_VERSION only. */
+export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0', '2.1', SPEC_FORMAT_VERSION] as const);
+
+/** RFC 0081 Phase 2 staging set; Phase 4 narrows it to SPEC_PROTOCOL_VERSION only. */
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.1.0', '2.2.0', '2.25.0', PROTOCOL_VERSION, SPEC_PROTOCOL_VERSION] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 
 /**
- * The two conformance tiers of Protocol 3.0 (UW_PROTOCOL_v1.md Part II,
+ * The two conformance tiers of Protocol 3.0 (UW_PROTOCOL.md Part II,
  * RFC 0078). A Verifier satisfies every Reader requirement.
  */
 export type ConformanceTier =
@@ -438,13 +445,13 @@ export interface SectionViewModel {
 
 export type ViewModelRegistry = Readonly<Record<string, SectionViewModel>>;
 
-// ─── Source tags & fallback cascade (Protocol §IX) ────────────────────────────
+// ─── Source tags & fallback cascade (starter guide §IX) ────────────────────────────
 
 /**
  * Ordered cascade steps used to resolve a value that has no explicit
  * user input or document extraction. A producer MUST stamp
  * `_meta.source` with the cascade step that produced the value, and
- * MUST NOT reorder this cascade. See protocol §IX.
+ * MUST NOT reorder this cascade. See starter guide §IX.
  *
  * Step 0 (`user_override`) and step 1 (`user_input`) are detected by
  * walking the parsed file for an existing block at the field path
@@ -1098,11 +1105,11 @@ export interface PeriodSeriesEntry {
 
 /** Standard registry only; module-defined series are deferred (RFC 0041). */
 export const PERIOD_SERIES: readonly PeriodSeriesEntry[] = Object.freeze([
-  Object.freeze({ path: 'dcf.annual_cash_flows', shape: 'rows', period_field: 'year', grammar: 'year_index', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.9' } as const),
-  Object.freeze({ path: 'noi_model.projections', shape: 'keyed', key_pattern: '^year_(\\d+)$', grammar: 'year_index', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.5' } as const),
-  Object.freeze({ path: 'lease_up_schedule.schedule', shape: 'rows', period_field: 'period', grammar: 'calendar_period', cadence_field: 'period_granularity', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.25' } as const),
-  Object.freeze({ path: 'cash_flow_series.series', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.26' } as const),
-  Object.freeze({ path: 'distribution_waterfall.stated_schedule', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.27' } as const),
+  Object.freeze({ path: 'dcf.annual_cash_flows', shape: 'rows', period_field: 'year', grammar: 'year_index', spec_ref: 'UW_FORMAT_SPEC.md §4.9' } as const),
+  Object.freeze({ path: 'noi_model.projections', shape: 'keyed', key_pattern: '^year_(\\d+)$', grammar: 'year_index', spec_ref: 'UW_FORMAT_SPEC.md §4.5' } as const),
+  Object.freeze({ path: 'lease_up_schedule.schedule', shape: 'rows', period_field: 'period', grammar: 'calendar_period', cadence_field: 'period_granularity', spec_ref: 'UW_FORMAT_SPEC.md §4.25' } as const),
+  Object.freeze({ path: 'cash_flow_series.series', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC.md §4.26' } as const),
+  Object.freeze({ path: 'distribution_waterfall.stated_schedule', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC.md §4.27' } as const),
 ]);
 
 /** Trusted workbook names bound to one canonical selector path (RFC 0043). */
@@ -1206,7 +1213,8 @@ export interface AgentHostCapability {
 
 /**
  * A loaded module declaration. Mirrors the JSON Schema in
- * spec/schemas/module-manifest.schema.json — keep in lockstep.
+ * the runtime loader while RFC 0081 Phases 3–4 are pending.
+ * ProtocolModuleManifest mirrors the final spec/schemas/module-manifest.schema.json.
  */
 export interface ModuleManifest {
   manifest_version: '1';
@@ -1366,7 +1374,7 @@ export interface ModuleLoadResult {
 // ─── Standard section registry (FORMAT_SPEC Part IV) ─────────────────────────
 
 /**
- * The section ids the format registers in `UW_FORMAT_SPEC_v1.md` Part IV: the
+ * The section ids the format registers in `UW_FORMAT_SPEC.md` Part IV: the
  * 21 standard data sections (§ 4.0 – § 4.20) plus `gaps` (§ 4.22). Each entry is
  * the `**ID:**` that subsection declares. § 4.21 is the `x_` extension
  * meta-spec, which registers a namespace rather than a section, so it has no id
@@ -1753,7 +1761,7 @@ export interface ProtocolError {
 // ─── Built-in tables ──────────────────────────────────────────────────────────
 
 /**
- * View models for the standard sections defined in UW_FORMAT_SPEC_v1.md §4.
+ * View models for the standard sections defined in UW_FORMAT_SPEC.md §4.
  * Implementers SHOULD use these as the default rendering layout. Modules MAY
  * override per-section by declaring their own `view_models` entry.
  */
@@ -2073,7 +2081,7 @@ export const BUILTIN_EDIT_POLICIES: readonly EditPolicy[] = Object.freeze([
   { source_pattern: '*', authority: 'either', supersede_on_edit: true },
 ]);
 
-// ─── Capability tokens (Protocol §XIV, RFC 0011) ─────────────────────────────
+// ─── Capability tokens (starter guide §XIV, RFC 0011) ─────────────────────────────
 //
 // An optional second gate on writes, for orchestrator-bound deployments: a
 // short-lived, scope-limited JWT the editor verifies before accepting an edit.
@@ -2083,7 +2091,7 @@ export const BUILTIN_EDIT_POLICIES: readonly EditPolicy[] = Object.freeze([
 // never widen it: the §V.3 static policy check runs first and a token cannot
 // override its refusal.
 
-/** Why a capability token was rejected (Protocol §XIV.3). */
+/** Why a capability token was rejected (starter guide §XIV.3). */
 export type CapabilityRejection =
   | 'expired'
   | 'not_yet_valid'
@@ -2157,7 +2165,7 @@ export interface ValidatorCodeFamily {
  * neither owes neither — a claim §II.5 always allowed and nothing enforced.
  */
 export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.freeze([
-  { prefix: 'CLS', description: 'Official builtin compatibility and field contracts (RFC 0080)', capabilities: ['validate'] },
+  { prefix: 'CLS', description: 'Official builtin field contracts (RFC 0080, RFC 0081)', capabilities: ['validate'] },
   { prefix: 'CC', description: 'Cross-section consistency', capabilities: ['validate'] },
   { prefix: 'FV', description: 'Single-section financial validity', capabilities: ['validate'] },
   { prefix: 'DQ', description: 'Data quality / incomplete data', capabilities: ['validate'] },
@@ -2200,6 +2208,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   },
   // Protocol-level refusals are owed by every implementation: they report that a
   // request was malformed, which is not a capability one can decline to have.
+  { prefix: 'UNSUPPORTED_FORMAT_VERSION', description: 'Unsupported or absent document version (RFC 0081)', capabilities: ['parse'] },
   { prefix: 'PROTO', description: 'Protocol-level refusal', capabilities: [] },
   { prefix: 'RCP', description: 'Verification receipt', capabilities: [] },
 ] as const);
@@ -2268,28 +2277,30 @@ export const DEFAULT_RETURN_TAX_BASIS = 'pre_tax' as const;
 
 /**
  * Remediation copy for the cross-cutting consistency checks CC-01..CC-10
- * (see UW_FORMAT_SPEC_v1.md §5.3). Renderers SHOULD surface these strings
+ * (see UW_FORMAT_SPEC.md §5.3). Renderers SHOULD surface these strings
  * verbatim in any validation issue list — the goal is uniform UX across
  * every conforming implementation.
  */
 export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
-  { code: 'RDB-01', severity: 'error', title: 'Invalid reserve draw binding plan shape or declaration', description: 'Invalid reserve draw binding plan shape or declaration.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RDB-02', severity: 'error', title: 'Reserve draw binding source digest is stale', description: 'Reserve draw binding source digest is stale.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RDB-03', severity: 'error', title: 'Exact reserve draw or gross expenditure reference is unresolved', description: 'Exact reserve draw or gross expenditure reference is unresolved.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RDB-04', severity: 'error', title: 'Selected reserve or expenditure source is invalid or unverified', description: 'Selected reserve or expenditure source is invalid or unverified.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RDB-05', severity: 'error', title: 'Duplicate reserve draw, expenditure identity or allocation edge', description: 'Duplicate reserve draw, expenditure identity or allocation edge.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RDB-06', severity: 'error', title: 'Draw class, gross sign, category or currency disagrees', description: 'Draw class, gross sign, category or currency disagrees.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RDB-07', severity: 'error', title: 'Selected reserve draw is not fully allocated', description: 'Selected reserve draw is not fully allocated.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RDB-08', severity: 'error', title: 'Stated expenditure funding disagrees or exceeds gross expenditure', description: 'Stated expenditure funding disagrees or exceeds gross expenditure.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RDB-09', severity: 'error', title: 'Reserve draw allocation arithmetic is nonfinite', description: 'Reserve draw allocation arithmetic is nonfinite.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL_v1.md §VIII.12 / RFC 0065' },
-  { code: 'RSV-01', severity: 'error', title: 'Invalid reserve-account shape, amount, currency or source provenance', description: 'Invalid reserve-account shape, amount, currency or source provenance.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
-  { code: 'RSV-02', severity: 'error', title: 'Duplicate reserve account, period or movement identity', description: 'Duplicate reserve account, period or movement identity.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
-  { code: 'RSV-03', severity: 'error', title: 'Invalid reserve statement or movement calendar dates', description: 'Invalid reserve statement or movement calendar dates.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
-  { code: 'RSV-04', severity: 'error', title: 'Unsupported reserve class or unclassified movement', description: 'Unsupported reserve class or unclassified movement.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
-  { code: 'RSV-05', severity: 'error', title: 'Unordered reserve periods/movements or invalid continuity claim', description: 'Unordered reserve periods/movements or invalid continuity claim.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
-  { code: 'RSV-06', severity: 'error', title: 'Reserve ending balance disagrees at the currency quantum', description: 'Reserve ending balance disagrees at the currency quantum.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
-  { code: 'RSV-07', severity: 'error', title: 'Claimed consecutive reserve opening balance disagrees', description: 'Claimed consecutive reserve opening balance disagrees.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
-  { code: 'RSV-08', severity: 'error', title: 'Reserve arithmetic cannot be represented finitely', description: 'Reserve arithmetic cannot be represented finitely.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC_v1.md §4.28 / UW_PROTOCOL_v1.md §VIII.11' },
+  { code: 'UNSUPPORTED_FORMAT_VERSION', severity: 'error', title: 'Unsupported format version', description: 'uw_version is absent or differs from 3.0.', remediation: 'State a Format 3.0 document; no other format version is admitted.', spec_ref: 'UW_FORMAT_SPEC.md §2.2 / UW_PROTOCOL.md §XII.3' },
+  { code: 'META-01', severity: 'error', title: 'Block is not in the Format 3.0 shape', description: 'A block uses a section_id wrapper member or lacks nested provenance and lifecycle.', remediation: 'State the bare payload with inline nested _meta and _meta.section matching the fence.', spec_ref: 'UW_FORMAT_SPEC.md §2.4–§2.5' },
+  { code: 'RDB-01', severity: 'error', title: 'Invalid reserve draw binding plan shape or declaration', description: 'Invalid reserve draw binding plan shape or declaration.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-02', severity: 'error', title: 'Reserve draw binding source digest is stale', description: 'Reserve draw binding source digest is stale.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-03', severity: 'error', title: 'Exact reserve draw or gross expenditure reference is unresolved', description: 'Exact reserve draw or gross expenditure reference is unresolved.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-04', severity: 'error', title: 'Selected reserve or expenditure source is invalid or unverified', description: 'Selected reserve or expenditure source is invalid or unverified.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-05', severity: 'error', title: 'Duplicate reserve draw, expenditure identity or allocation edge', description: 'Duplicate reserve draw, expenditure identity or allocation edge.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-06', severity: 'error', title: 'Draw class, gross sign, category or currency disagrees', description: 'Draw class, gross sign, category or currency disagrees.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-07', severity: 'error', title: 'Selected reserve draw is not fully allocated', description: 'Selected reserve draw is not fully allocated.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-08', severity: 'error', title: 'Stated expenditure funding disagrees or exceeds gross expenditure', description: 'Stated expenditure funding disagrees or exceeds gross expenditure.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-09', severity: 'error', title: 'Reserve draw allocation arithmetic is nonfinite', description: 'Reserve draw allocation arithmetic is nonfinite.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RSV-01', severity: 'error', title: 'Invalid reserve-account shape, amount, currency or source provenance', description: 'Invalid reserve-account shape, amount, currency or source provenance.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-02', severity: 'error', title: 'Duplicate reserve account, period or movement identity', description: 'Duplicate reserve account, period or movement identity.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-03', severity: 'error', title: 'Invalid reserve statement or movement calendar dates', description: 'Invalid reserve statement or movement calendar dates.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-04', severity: 'error', title: 'Unsupported reserve class or unclassified movement', description: 'Unsupported reserve class or unclassified movement.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-05', severity: 'error', title: 'Unordered reserve periods/movements or invalid continuity claim', description: 'Unordered reserve periods/movements or invalid continuity claim.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-06', severity: 'error', title: 'Reserve ending balance disagrees at the currency quantum', description: 'Reserve ending balance disagrees at the currency quantum.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-07', severity: 'error', title: 'Claimed consecutive reserve opening balance disagrees', description: 'Claimed consecutive reserve opening balance disagrees.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-08', severity: 'error', title: 'Reserve arithmetic cannot be represented finitely', description: 'Reserve arithmetic cannot be represented finitely.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
   {
     code: 'HDG-07',
     severity: 'error',
@@ -2443,25 +2454,25 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'PS-01', severity: 'warning', title: 'Malformed period series',
     description: 'A registered series has an invalid shape or period identity.',
     remediation: 'State valid periods in the registered grammar; do not infer dates or years.',
-    spec_ref: 'UW_PROTOCOL_v1.md §VIII.2a',
+    spec_ref: 'UW_PROTOCOL.md §VIII.2a',
   },
   {
     code: 'PS-02', severity: 'error', title: 'Duplicate period identity',
     description: 'A registered series other than cash_flow_series.series states the same canonical period more than once.',
     remediation: 'Resolve the duplicate statements with the responsible producer; do not choose by row order.',
-    spec_ref: 'UW_PROTOCOL_v1.md §VIII.2a',
+    spec_ref: 'UW_PROTOCOL.md §VIII.2a',
   },
   {
     code: 'PS-03', severity: 'warning', title: 'Period kind mismatch',
     description: 'A static selector uses a different period kind from its registered series.',
     remediation: 'Use the series period kind; calendar dates and holding years do not convert implicitly.',
-    spec_ref: 'UW_PROTOCOL_v1.md §VIII.2a',
+    spec_ref: 'UW_PROTOCOL.md §VIII.2a',
   },
   {
     code: 'ROLE-01', severity: 'error', title: 'Invalid block role',
     description: 'A block declares a role outside the closed scalar vocabulary.',
     remediation: 'Have the responsible host correct or remove _role; do not infer a role from financial values.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.8',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.8',
   },
   {
     code: 'CC-16', severity: 'info',
@@ -2622,65 +2633,65 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Provisional block without gap entry',
     description: 'A block is marked _meta.provisional=true but no entry in the `gaps` section references it.',
     remediation: 'Add a `gaps` item naming this section/path (or run editor with --maintain-gaps), or remove the provisional flag.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §3.4 / §4.22',
+    spec_ref: 'UW_FORMAT_SPEC.md §3.4 / §4.22',
   },
   {
     code: 'DQ-02', severity: 'error',
     title: 'Provisional value consumed at incompatible stage',
     description: 'A provisional / placeholder value is being consumed at a stage whose policy requires real data.',
     remediation: 'Replace the provisional value with observed data, downgrade deal_stage, or update INCOMPLETE_DATA_POLICIES if appropriate.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.7-§V.8',
+    spec_ref: 'UW_FORMAT_SPEC.md §3.4 / docs/starter/defaults-and-cascade.md §V.7-§V.8',
   },
   {
     code: 'DQ-03', severity: 'warning',
     title: 'Partial block without field-level enumeration',
     description: 'A block is marked _meta.partial=true but has no _meta.field_overrides[] enumeration.',
     remediation: 'List the affected paths in field_overrides with reason ("missing"|"illegible"|"estimated").',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §3.4',
+    spec_ref: 'UW_FORMAT_SPEC.md §3.4',
   },
   {
     code: 'DQ-04', severity: 'error',
     title: 'Scope-stage readiness gap',
     description: 'A field required for scope-stage readiness is missing.',
     remediation: 'Provide the missing scope-stage field (property.address, property.asset_class, and at least one of property.units or property.asking_price) or downgrade deal_stage.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2',
   },
   {
     code: 'DQ-05', severity: 'info',
     title: 'Stale gap',
     description: 'A `gaps` item has not been re-checked recently and may be obsolete.',
     remediation: 'Re-check the gap and refresh `last_checked`, or close the gap if it has been resolved.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §4.22',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.22',
   },
   {
     code: 'DQ-06', severity: 'info',
     title: 'Declared-stage section gap',
     description: 'A section required by the declared deal_stage (format spec §5.1) is missing — the issues-stream mirror of stage_readiness (RFC 0028).',
     remediation: 'Add the named section, or restate deal_stage to the stage the file actually satisfies; stage_readiness lists what each stage needs.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §5.1',
+    spec_ref: 'UW_FORMAT_SPEC.md §5.1',
   },
 
-  // RFC 0072 — descriptive identity, warnings in both format generations.
+  // RFC 0072 — descriptive identity; always warnings.
   {
     code: 'DQ-07', severity: 'warning',
     title: 'Unrecognized business plan',
     description: 'Scenario is unlisted, retired or structurally invalid.',
     remediation: 'Use a standard business plan or reverse-DNS scenario identifier; do not rewrite historical documents automatically.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2b',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2b',
   },
   {
     code: 'DQ-08', severity: 'warning',
     title: 'BTR subtype carriers disagree',
     description: 'The two subtype carriers disagree when either states build_to_rent.',
     remediation: 'State the same subtype in both carriers or omit the property duplicate; frontmatter governs identity.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2c',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2c',
   },
   {
     code: 'DQ-09', severity: 'warning',
     title: 'BTR subtype outside multifamily',
     description: 'The defined build_to_rent subtype is stated outside multifamily.',
     remediation: 'Use multifamily for the defined single-site BTR identity; other free subtype values remain open.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2c',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2c',
   },
 
   // ─── Integrity (INT-NN) — content_hash / parent_hash chain checks ──────────
@@ -2689,28 +2700,28 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Parent hash mismatch',
     description: 'A block\'s _meta.parent_hash does not equal the prior block\'s _meta.content_hash in the supersede chain.',
     remediation: 'Recompute the block from the current head: stamp parent_hash with the prior block\'s content_hash and bump the version.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.10',
+    spec_ref: 'UW_PROTOCOL.md §V.10',
   },
   {
     code: 'INT-02', severity: 'error',
     title: 'Stale parent hash on edit',
     description: 'applyEdit was invoked with a parent_hash that does not match the current head of the section.',
     remediation: 'Re-read the file, take the latest head\'s content_hash, and retry the edit with the fresh parent_hash.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.10',
+    spec_ref: 'UW_PROTOCOL.md §V.10',
   },
   {
     code: 'INT-03', severity: 'warning',
     title: 'Partially hashed chain',
     description: 'Some blocks in a supersede chain carry _meta.content_hash and others do not.',
     remediation: 'Once any block in a chain is hashed, every subsequent block MUST be hashed; rehash the unstamped blocks.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.10',
+    spec_ref: 'UW_PROTOCOL.md §V.10',
   },
   {
     code: 'INT-04', severity: 'warning',
     title: 'Content hash does not recompute',
     description: 'A block\'s stamped _meta.content_hash does not match the SHA-256 of its current canonicalized content.',
     remediation: 'Either restore the original content or re-stamp content_hash from the current canonicalized form.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.9',
+    spec_ref: 'UW_PROTOCOL.md §V.9',
   },
 
   {
@@ -2718,28 +2729,28 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Signature without content hash',
     description: 'A block carries _meta.signature but no _meta.content_hash, so the signature commits to no content.',
     remediation: 'Stamp content_hash first, then re-sign the block; a signature over an absent hash is structurally void.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+    spec_ref: 'UW_PROTOCOL.md §V.11',
   },
   {
     code: 'INT-06', severity: 'error',
     title: 'Unknown signing key',
     description: 'A block signature names a key id that the supplied key store does not hold.',
     remediation: 'Add the public key to the key store under that kid, or re-sign with a key the verifier trusts.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+    spec_ref: 'UW_PROTOCOL.md §V.11',
   },
   {
     code: 'INT-07', severity: 'error',
     title: 'Block signature does not verify',
     description: 'A block signature failed to validate against the canonicalized signing input, or declares an algorithm outside the admitted set.',
     remediation: 'Restore the signed content and provenance fields, or re-sign the block as it now stands.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+    spec_ref: 'UW_PROTOCOL.md §V.11',
   },
   {
     code: 'INT-08', severity: 'warning',
     title: 'Deprecated signature algorithm',
     description: 'A block signature uses an algorithm the verifying deployment has deprecated.',
     remediation: 'Re-sign the block with a current algorithm before the deprecated one is withdrawn.',
-    spec_ref: 'UW_PROTOCOL_v1.md §V.11',
+    spec_ref: 'UW_PROTOCOL.md §V.11',
   },
 
   // ─── Asset-class identifiers (RFC 0003) ────────────────────────────────────
@@ -2748,49 +2759,49 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Malformed asset-class identifier',
     description: 'frontmatter.asset_class is neither a builtin nor a well-formed namespaced identifier.',
     remediation: 'Use a builtin, or a reverse-DNS identifier of at least three lower-snake-case segments (e.g. com.example.specialty_facility).',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2a',
   },
   {
     code: 'INVALID-ASSET-CLASS-002', severity: 'error',
     title: 'Asset-class identifier shadows a builtin',
     description: 'A namespaced identifier whose final segment is one of the twelve builtin names.',
     remediation: 'Rename the final segment so it does not shadow a builtin; a suffix such as _specialty both disambiguates and says more.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2a',
   },
   {
     code: 'MOD-DEPENDENCY-UNDECLARED', severity: 'warning',
     title: 'Module-declared asset class with no modules list',
     description: 'A document with a namespaced asset_class does not name the modules that declare it.',
     remediation: 'Add a frontmatter `modules` list naming the declaring module, so a reader without it can say what to load rather than only that something is missing.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md §2.2a',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2a',
   },
   {
     code: 'MOD-FALLBACK-001', severity: 'warning',
     title: 'Asset class rendered via fallback',
     description: 'The module declaring this asset class is not loaded; the document was rendered with the declared builtin fallback.',
     remediation: 'Load the declaring module to read the document fully. Values shown come from the fallback view models and may omit what the custom class adds.',
-    spec_ref: 'UW_PROTOCOL_v1.md §X.2.2',
+    spec_ref: 'UW_PROTOCOL.md §X.2.2',
   },
   {
     code: 'MOD-MISSING-001', severity: 'error',
     title: 'Asset class unresolvable',
     description: 'The module declaring this asset class is not loaded and no fallback is available.',
     remediation: 'Load the module named in the frontmatter `modules` list of the document.',
-    spec_ref: 'UW_PROTOCOL_v1.md §X.2.2',
+    spec_ref: 'UW_PROTOCOL.md §X.2.2',
   },
   {
     code: 'MOD-ASSET-CLASS-CONFLICT-001', severity: 'error',
     title: 'Two modules declare the same asset class',
     description: 'A reverse-DNS identifier names one owner, so two declarations mean one module is squatting.',
     remediation: 'Load only one of the two modules, or ask the second to declare an identifier inside its own namespace.',
-    spec_ref: 'UW_PROTOCOL_v1.md §X.2.3',
+    spec_ref: 'UW_PROTOCOL.md §X.2.3',
   },
   {
     code: 'MOD-DISPLAY-CONFLICT-001', severity: 'info',
     title: 'Two asset classes share a display name',
     description: 'Confusing for a reader, irrelevant to a machine.',
     remediation: 'Disambiguate one display name, or show the identifier alongside it.',
-    spec_ref: 'UW_PROTOCOL_v1.md §X.2.3',
+    spec_ref: 'UW_PROTOCOL.md §X.2.3',
   },
 
   // ─── Module runtime (MOD-*) — findings a loaded module produced (RFC 0006) ──
@@ -2804,21 +2815,21 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Required module section missing',
     description: 'A loaded module declares a section as required and the document does not carry it.',
     remediation: 'Add the section, or stop loading that module for this document.',
-    spec_ref: 'UW_PROTOCOL_v1.md §X',
+    spec_ref: 'UW_PROTOCOL.md §X',
   },
   {
     code: 'MOD-CALC-ERROR', severity: 'error',
     title: 'Module calculation failed to evaluate',
     description: 'A calculation declared by a loaded module could not be evaluated.',
     remediation: 'Fix the formula in the module. Any rule reading that calc is silently inconclusive until it is corrected.',
-    spec_ref: 'UW_PROTOCOL_v1.md §X',
+    spec_ref: 'UW_PROTOCOL.md §X',
   },
   {
     code: 'MOD-RULE-ERROR', severity: 'error',
     title: 'Module validation rule failed to evaluate',
     description: 'A validation rule declared by a loaded module could not be evaluated, so it neither passed nor failed.',
     remediation: 'Fix the rule expression in the module, or stop loading it until it is corrected.',
-    spec_ref: 'UW_PROTOCOL_v1.md §X',
+    spec_ref: 'UW_PROTOCOL.md §X',
   },
 
   // ─── Provenance / policy (POL-NN) — actor and operation authority ──────────
@@ -2827,35 +2838,35 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     title: 'Unauthorized actor',
     description: 'The block\'s _meta.actor is not authorized to write this section per its EditPolicy.',
     remediation: 'Re-issue the edit from an actor allowed by the section\'s policy (see BUILTIN_EDIT_POLICIES).',
-    spec_ref: 'UW_PROTOCOL_v1.md §VIII',
+    spec_ref: 'UW_PROTOCOL.md §VIII',
   },
   {
     code: 'POL-02', severity: 'error',
     title: 'Replace where supersede is required',
     description: 'The section\'s policy requires supersede_on_edit but the head version > 1 has no superseded prior versions.',
     remediation: 'Re-issue the edit as section_supersede so the prior version is preserved as a superseded block.',
-    spec_ref: 'UW_PROTOCOL_v1.md §VIII',
+    spec_ref: 'UW_PROTOCOL.md §VIII',
   },
   {
     code: 'LOC-01', severity: 'error',
     title: 'Unsupported display locale',
     description: 'The file declares a `locale` this implementation does not list in `supported_locales` (or an unregistered tag). Display renders are refused — never silently produced in a different locale; parsing, validation, editing, and calc are unaffected (RFC 0001).',
     remediation: 'Render with an implementation that supports the declared locale, or change the file\'s `locale` to one this implementation supports. Content is canonical and locale-free, so no data conversion is involved.',
-    spec_ref: 'UW_PROTOCOL_v1.md §III.1a',
+    spec_ref: 'docs/starter/display.md §III.1a',
   },
   {
     code: 'CUR-01', severity: 'error',
     title: 'Malformed currency identity',
     description: 'The document declares currency_code, but it is not three uppercase ASCII letters. Currency identity is never inferred from a symbol or display locale (RFC 0046).',
     remediation: 'Set frontmatter.currency_code to the authored three-letter currency identity, or omit it when the source does not establish one. Do not infer it from locale or a display symbol.',
-    spec_ref: 'UW_PROTOCOL_v1.md §III.1b',
+    spec_ref: 'UW_PROTOCOL.md §III.1b',
   },
   {
     code: 'POL-03', severity: 'error',
     title: 'Capability token rejected',
     description: 'The editor is configured with a capability verifier and the write presented no token, or a token the verifier rejected (expired, out of scope, bad signature — the reason travels in the issue detail). RFC 0011.',
     remediation: 'Obtain a fresh token from the coordinator scoped to this deal, section, stage, and operation, issued to the sub that matches the write\'s _meta.source. A token never overrides the static §V.3 policy — an edit the policy table refuses needs a different actor, not a token.',
-    spec_ref: 'UW_PROTOCOL_v1.md §XIV',
+    spec_ref: 'docs/starter/capability-tokens.md §XIV',
   },
   {
     code: 'META-V2-IN-V1', severity: 'error',
@@ -2874,23 +2885,23 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'SRC-01', severity: 'error',
     title: 'Unrecognized actor source',
-    description: '_meta.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (RFC 0031). Severity is per-file (format v2 §1.3): error in a uw_version 2.0 file, warning in 1.x — where the block still parses and edits resolve only the conservative catch-all policy.',
-    remediation: 'Rewrite _meta.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`. `uwmd migrate --source-tags` rewrites a file mechanically.',
-    spec_ref: '§2.6, UW_FORMAT_SPEC_v2.md §4.2',
+    description: '_meta.provenance.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (Format §2.6, RFC 0031). Always an error.',
+    remediation: 'Rewrite _meta.provenance.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.6',
   },
   {
     code: 'SRC-02', severity: 'error',
     title: 'Resolution tag in the actor field',
-    description: '_meta.source holds a canonical SOURCE_TAGS value (a resolution method) where an actor belongs. Severity is per-file (format v2 §1.3): error in a uw_version 2.0 file; warning in 1.x, where readers interpret it as `resolution` and treat the actor as absent (the read-time interpretation never applies inside a 2.0 file).',
-    remediation: 'Move the tag to _meta.resolution and state the actual actor in _meta.source (or omit it as manual). `uwmd migrate --source-tags` performs the move mechanically.',
-    spec_ref: '§2.6, UW_FORMAT_SPEC_v2.md §4.2',
+    description: '_meta.provenance.source holds a resolution tag where an actor belongs (Format §2.6). Always an error; readers never reinterpret it as a resolution.',
+    remediation: 'Move the tag to _meta.provenance.resolution and state the actual actor (for example `manual`) in _meta.provenance.source.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.6',
   },
   {
     code: 'SRC-03', severity: 'error',
-    title: "Retired resolution 'manual'",
-    description: "provenance.resolution is 'manual' in a uw_version 2.0 file. 'manual' left the resolution vocabulary at 2.0 (RFC 0009 resolved question 4) — it is actor-only; 'user_input' is the resolution-method spelling for human-typed values. Never emitted for 1.x files, where the dual membership remains legal.",
-    remediation: "Change the resolution to 'user_input' (or the accurate method). `uwmd migrate --to-v2` performs the rewrite mechanically and records it in provenance.notes.",
-    spec_ref: 'UW_FORMAT_SPEC_v2.md §4.1',
+    title: 'Unknown resolution method',
+    description: 'provenance.resolution is outside the closed Format §2.6 vocabulary.',
+    remediation: 'State the source-established resolution method; manual is actor-only, human input uses user_input.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.6',
   },
 
   // ─── Financial validity (FV-NN) — renamed from FV_* in v1.1 ────────────────
@@ -2998,8 +3009,8 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'UNSUPPORTED_YAML_FEATURE', severity: 'error',
     title: 'Unsupported YAML feature in frontmatter',
     description: 'Frontmatter uses a YAML feature outside the .uw.md subset (anchors, tags, block scalars, complex keys, or directives).',
-    remediation: 'Rewrite the frontmatter using only the YAML subset documented in UW_FORMAT_SPEC_v1.md Appendix D — scalars, simple mappings, and dash-prefixed sequences.',
-    spec_ref: 'UW_FORMAT_SPEC_v1.md Appendix D',
+    remediation: 'Rewrite the frontmatter using only the YAML subset documented in UW_FORMAT_SPEC.md Appendix D — scalars, simple mappings, and dash-prefixed sequences.',
+    spec_ref: 'UW_FORMAT_SPEC.md Appendix D',
   },
 ]);
 

@@ -1,7 +1,7 @@
 // .uw.md renderer — converts a ParsedUWFile to output formats
 // Formats: json | csv | chat | summary
 // PDF and DOCX require dedicated external rendering pipelines.
-// Spec: UW_FORMAT_SPEC_v1.md §6.4
+// Spec: UW_FORMAT_SPEC.md §6.4
 
 import type { ParsedUWFile, UWBlock, ValidationResult } from './types.js';
 import { getSection, getSectionVariant, deepGet } from './parser.js';

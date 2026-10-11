@@ -1,5 +1,7 @@
 # 09 — Conformance & testing
 
+> RFC 0081 Phase 2 schemas describe the final Format 3.0 / Protocol 4.0.0 contract. Test-only `scripts/rfc-0081-schema-projections.mjs` projects the unchanged corpus to the new manifest and ownership schemas. Invalid and unknown values are preserved so negative controls still refuse. Phase 3 re-authors the fixtures; Phases 4–5 remove the projections and old runtime vocabulary. No production reader uses the projections.
+
 Two test systems guard this repo: **unit tests** (Vitest, per package) and the
 **conformance corpus** (fixture/expected pairs that any implementation — including
 this one — runs to prove behavior). CI runs both.
@@ -229,7 +231,7 @@ projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 ### UW Lite — representation + bridge
 
 `conformance/lite/` is **named, not numbered**: UW Lite
-([`spec/UW_LITE_SPEC_v1.md`](../../spec/UW_LITE_SPEC_v1.md)) is a source
+([`spec/UW_LITE_SPEC.md`](../../spec/UW_LITE_SPEC.md)) is a source
 representation rather than a protocol conformance tier. It runs by default.
 
 - `fixtures/*.uw.md` must parse with **zero** error-severity issues *and*
@@ -320,7 +322,7 @@ matching `protocol.ts` types (notably `ModuleManifest` ↔
 ### Receipts — issuance, verification, refusal
 
 `conformance/receipts/` is likewise **named, not numbered**: a verification
-receipt ([`spec/UW_RECEIPT_v1.md`](../../spec/UW_RECEIPT_v1.md), RFC 0016) is a
+receipt ([`spec/UW_RECEIPT.md`](../../spec/UW_RECEIPT.md), RFC 0016) is a
 detached artifact, not a protocol tier. It runs by default.
 
 - `issue/<scenario>/` — `deal.uw.md` or `deal.uwx.md` plus

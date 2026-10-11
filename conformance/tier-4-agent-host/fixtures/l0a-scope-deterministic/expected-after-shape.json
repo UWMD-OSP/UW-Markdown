@@ -7,5 +7,5 @@
     "provisional": true
   },
   "must_advance_stage_to": "scope",
-  "spec_ref": "spec/UW_PROTOCOL_v1.md §IX.5 (Bancroft layer registry)"
+  "spec_ref": "spec/UW_PROTOCOL.md §IX.5 (Bancroft layer registry)"
 }

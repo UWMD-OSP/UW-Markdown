@@ -8,7 +8,7 @@ Compatible agent hosts run the Bancroft layer DAG (or a module-contributed
 equivalent) and apply the resulting `write_uw_section` / `write_multiple_sections`
 tool calls back into the file. Hosts MUST:
 
-- Honor the layer dependency graph in `BANCROFT_LAYERS` (`UW_PROTOCOL_v1.md`
+- Honor the layer dependency graph in `BANCROFT_LAYERS` (`UW_PROTOCOL.md`
   Part IX).
 - Validate every agent tool call against the schemas in
   `WRITE_UW_SECTION_TOOL` and `WRITE_MULTIPLE_SECTIONS_TOOL`.

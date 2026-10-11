@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/uw-receipt.schema.json",
   "title": "UW Verification Receipt 1.1",
-  "description": "A detached JSON document binding a canonical digest of an underwriting record to the deterministic outputs a named calc pack produced from it. Normative definition: UW_RECEIPT_v1.md (RFC 0016). A receipt attests that the stated outputs follow from the record's canonical financial content — it attests nothing about whether that content is true.",
+  "description": "A detached JSON document binding a canonical digest of an underwriting record to the deterministic outputs a named calc pack produced from it. Normative definition: UW_RECEIPT.md (RFC 0016). A receipt attests that the stated outputs follow from the record's canonical financial content — it attests nothing about whether that content is true.",
   "type": "object",
   "required": ["receipt_version", "subject", "computation", "policy", "issued_at", "issuer"],
   "additionalProperties": false,
   "properties": {
     "receipt_version": {
-      "enum": ["1.0", "1.1"],
-      "description": "Receipt document version. Independent of format, protocol, and package versions. 1.1 adds the optional `inputs_provenance` section (UW_RECEIPT_v1 §10); every 1.1 addition is optional, so a 1.0 receipt remains valid and a verifier MUST accept both. The 1.0 → 1.1 bump covers RFC 0021 and RFC 0022 together and is not repeated for the second of them."
+      "const": "1.1",
+      "description": "Only admitted receipt version, independent of format/protocol/package versions. inputs_provenance remains optional (UW_RECEIPT §10)."
     },
     "subject": {
       "type": "object",
@@ -38,7 +38,7 @@
         "canonicalization_version": {
           "type": "string",
           "minLength": 1,
-          "description": "Version of the canonicalization rules, versioned independently of `representation_version` — the rules for producing canonical bytes can change without the source grammar changing, so an implementation MUST NOT stamp one from the other. Digests computed under different versions are not comparable; see UW_RECEIPT_v1 §5.5 (`RCP-10`)."
+          "description": "Version of the canonicalization rules, versioned independently of `representation_version` — the rules for producing canonical bytes can change without the source grammar changing, so an implementation MUST NOT stamp one from the other. Digests computed under different versions are not comparable; see UW_RECEIPT §5.5 (`RCP-10`)."
         },
         "digest": {
           "type": "string",
@@ -110,7 +110,7 @@
     },
     "inputs_provenance": {
       "type": "array",
-      "description": "Artifacts beyond the subject record that the computation depended on (format 1.1, UW_RECEIPT_v1 §10). One section shared by RFC 0022 (market-data observation sets) and RFC 0021 (composite child records), discriminated by `source`, because a verifier handles both identically: resolve, compare digest, and keep 'cannot find it' (RCP-11, unverifiable) distinct from 'does not match' (RCP-12, failed). Optional — a record that consumed no external input omits it.",
+      "description": "Artifacts beyond the subject record that the computation depended on (receipt_version 1.1, UW_RECEIPT §10). One section shared by RFC 0022 (market-data observation sets) and RFC 0021 (composite child records), discriminated by `source`, because a verifier handles both identically: resolve, compare digest, and keep 'cannot find it' (RCP-11, unverifiable) distinct from 'does not match' (RCP-12, failed). Optional — a record that consumed no external input omits it.",
       "items": {
         "type": "object",
         "required": ["source", "document_id", "digest"],

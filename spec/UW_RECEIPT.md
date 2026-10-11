@@ -1,9 +1,9 @@
-# UW Verification Receipt 1.0
+# UW Verification Receipt 1.1
 
 **Media type:** `application/vnd.uwmd.receipt+json`
 **Schema:** [`schemas/uw-receipt.schema.json`](schemas/uw-receipt.schema.json)
 **Defining RFC:** [0016](../docs/rfcs/0016-verification-receipts.md) (accepted 2026-08-09)
-**Status:** normative for receipt version `1.0`
+**Status:** normative for receipt version `1.1`
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT, and MAY are to be interpreted
 as described in RFC 2119.
@@ -33,7 +33,7 @@ Implementations **MUST NOT** present a `verified` receipt using language that
 implies the underwriting is correct, complete, audited, or approved. Interfaces
 surfacing receipt status **MUST** make the distinction in this section available
 to the reader rather than displaying an unqualified checkmark. This raises the
-language in `UW_LITE_SPEC_v1.md` §9 to a requirement on every consumer.
+language in `UW_LITE_SPEC.md` §9 to a requirement on every consumer.
 
 ## 2. Detachment
 
@@ -49,12 +49,12 @@ conventional sidecar spelling is `<record>.receipt.json`.
 
 ```json
 {
-  "receipt_version": "1.0",
+  "receipt_version": "1.1",
   "subject": {
     "representation": "uw-lite-markdown",
     "representation_version": "1.0",
     "canonicalization": "uw-lite-financial",
-    "canonicalization_version": "1.0",
+    "canonicalization_version": "1.1",
     "digest": "sha256:f930ebf20c9b0cc1159b65cc653f50a728fa07858080be5f6592ab307953d216"
   },
   "computation": {
@@ -87,11 +87,11 @@ behavior.
 ### 3.1 Canonicalizations
 
 `subject.canonicalization` names the canonical form the digest covers. Version
-1.0 defines two:
+This specification defines two:
 
 | Name | Applies to | Definition |
 | --- | --- | --- |
-| `uw-lite-financial` | `uw-lite-markdown` | `UW_LITE_SPEC_v1.md` §6 financial canonical form |
+| `uw-lite-financial` | `uw-lite-markdown` | `UW_LITE_SPEC.md` §6 financial canonical form |
 | `uw-envelope-semantic` | `uwx-markdown` | RFC 8785 canonicalization of the Document Envelope semantic value (envelope minus `generated_at`, `generator`, `semantic_digest`) |
 
 Both bind to a *semantic* form rather than raw bytes, so a receipt survives
@@ -123,12 +123,12 @@ never authorizes skipping recomputation (§5).
 `signature`, when present, uses the wire shape RFC 0010 defines for block
 signatures (`algorithm`, `key_id`, `value`) and covers the RFC 8785
 canonicalization of the receipt with `signature` set to `null`. Key
-distribution and revocation are out of band for 1.0.
+distribution and revocation are out of band.
 
 ## 4. Issuance
 
 An issuer **MUST NOT** emit a receipt for a document whose parse produced any
-`error`-severity issue. This extends the existing `UW_LITE_SPEC_v1.md` §5
+`error`-severity issue. This extends the existing `UW_LITE_SPEC.md` §5
 refusal to every representation.
 
 Issuance is total: an implementation either returns a complete receipt or raises
@@ -269,7 +269,7 @@ This is the same carve-out §5.3 makes for engine identity, one step earlier in
 the precedence and for the same reason: a verifier must not report that a
 document was tampered with when the only thing that changed is its own
 arithmetic. The concrete case is UW Lite canonicalization `1.1`, which fixed
-percent scaling (`UW_LITE_SPEC_v1.md` §4.1) and so moved the digest of every
+percent scaling (`UW_LITE_SPEC.md` §4.1) and so moved the digest of every
 Lite document containing a percent that does not divide exactly — while the
 documents themselves stayed byte-identical.
 
@@ -329,7 +329,7 @@ free of cryptographic dependencies; a verifier without a backend returns
 
 CLI: `uwmd receipt issue <file>` and `uwmd receipt verify <file> <receipt.json>`.
 
-## 10. Input provenance (format 1.1)
+## 10. Input provenance (receipt 1.1)
 
 *Established by [RFC 0022](../docs/rfcs/0022-market-data-documents.md) §3;
 amended by [RFC 0021](../docs/rfcs/0021-composable-documents.md) §6.*
@@ -364,9 +364,7 @@ and not a comment field.
 ```
 
 - `inputs_provenance` is OPTIONAL. A receipt over a record that consumed no
-  external input omits it entirely. This is what keeps a 1.0 receipt readable
-  under 1.1: every addition is optional, so absence means *the issuer stated
-  nothing*, never *non-conforming*.
+  external input omits it entirely. Absence means the issuer stated no external input; it never implies non-conformance.
 - `source`, `document_id`, and `digest` are REQUIRED on each entry. `digest`
   MUST match `sha256:[0-9a-f]{64}`.
 - `as_of` is OPTIONAL at this layer, because not every source has a vintage. A
@@ -410,15 +408,7 @@ accurate, current, representative, or that the provider is competent.
 
 ### 10.4 Versioning
 
-This section takes `receipt_version` from `1.0` to **`1.1`**, and that bump
-covers **both** RFC 0021 and RFC 0022. RFC 0021's rollup entries are additive
-within this section — `source: "child_record"` — and MUST NOT bump the version
-again. Two independent bumps for two simultaneously-accepted RFCs would make the
-version meaningless, so the discipline RFC 0018 §5 established for the edge
-registry applies here: RFC 0016 owns this format, and later amendments extend
-this section rather than forking a parallel one.
-
-A verifier MUST accept both `1.0` and `1.1`.
+`receipt_version` MUST be `"1.1"`; no other receipt version is admitted. Input provenance is optional. The receipt version is independent of representation, canonicalization, engine and Protocol versions. The mismatch verdicts RCP-06/07/10 remain; a verifier unable to check the named pack, engine or canonicalization reports unverifiable, not verified.
 
 ## 11. Rollup receipts
 

@@ -8,8 +8,7 @@ This walks you from a blank file to a parseable, validatable deal in
 about ten minutes. No prior CRE knowledge required.
 
 If you're already familiar with markdown frontmatter and want the full
-schema, skip to the [format spec](/spec/format) and the
-[format 2.0 delta](/spec/format-v2).
+schema, skip to the [format spec](/spec/format).
 
 ## Goal
 
@@ -154,7 +153,7 @@ Three things to notice:
   **`provenance`** (who wrote it, when, from what source),
   **`quality`** (confidence, review flags), and **`lifecycle`**
   (revision number, superseded or not). Every section block carries
-  one — see the [format 2.0 spec](/spec/format-v2) for each field.
+  one — see the [format spec](/spec/format) for each field.
 - The section's actual data (`total_units`, `year_built`, …) sits at
   the top level of the block, right beside `_meta`.
 

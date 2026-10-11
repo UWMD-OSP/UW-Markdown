@@ -1,5 +1,7 @@
 # .uwx.md — UW Markdown Extended Format Specification
-## Version 1.1 | April 2026
+## Format 3.0 | October 2026
+
+Normative contract accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md). Implementation and release preparation follow separately. Only `uw_version: "3.0"` is admitted. A reader MUST refuse an absent or different value at parse stage with `UNSUPPORTED_FORMAT_VERSION`, naming the declared value and the supported value; no partial read is permitted.
 
 ---
 
@@ -17,7 +19,7 @@ disk is `.docx`. The precision matters when it matters:
 |---|---|
 | **UW Markdown** | The standard as a whole — this spec, the protocol, and the representations below. Use it in prose. |
 | **UWX** / `.uwx.md` | **The complete underwriting record**, specified by this document: full section model, append-only provenance, calc inputs. Lossless. |
-| **UW Lite** / `.uw.md` | A constrained, human-readable *summary*, specified separately in [`UW_LITE_SPEC_v1.md`](UW_LITE_SPEC_v1.md). Semantics come from `<!-- uw:path -->` anchors. Explicitly lossy. |
+| **UW Lite** / `.uw.md` | A constrained, human-readable *summary*, specified separately in [`UW_LITE_SPEC.md`](UW_LITE_SPEC.md). Semantics come from `<!-- uw:path -->` anchors. Explicitly lossy. |
 
 Where the Word analogy stops: `.doc` is a superseded predecessor, whereas **UW
 Lite is neither older nor deprecated**. It is a current, deliberately lossy
@@ -25,10 +27,7 @@ Lite is neither older nor deprecated**. It is a current, deliberately lossy
 *is*; Lite is one way of showing it. The projection UWX → Lite MUST report every
 path it omits ([RFC 0017](../docs/rfcs/0017-uw-lite-source-representation.md)).
 
-Structured content carrying the legacy `.uw.md` extension predates this split.
-It remains readable — detected by sniffing rather than by extension — but
-**extension no longer implies structure**, and a byte-identical `.uwx.md`
-sibling is the migration output. Do not write new structured files as `.uw.md`.
+Structured fences in a file named `.uw.md` MUST be refused with `SOURCE_CONTENT_MISMATCH`. Structured records use `.uwx.md`; `.uw.md` is the Lite representation.
 
 ---
 
@@ -39,18 +38,18 @@ The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**",
 "**OPTIONAL**" in this document are to be interpreted as described in
 [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119). For
 implementation requirements (what tools must *do* with these bytes), see
-the companion [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md).
+the companion [`UW_PROTOCOL.md`](UW_PROTOCOL.md).
 
 ### Section count
 
-Part IV registers **29 numbered subsections (§ 4.0 – § 4.28)**:
+Part IV registers **36 numbered subsections (§ 4.0 – § 4.35)**:
 21 standard data sections (§ 4.0 – § 4.20), the extension-section
 meta-spec (§ 4.21) that defines the `x_` namespace for non-standard
 content, the `gaps` inventory (§ 4.22), the mixed-use `components`
 section (§ 4.23), the `capital_stack` section (§ 4.24), the
 `lease_up_schedule` section (§ 4.25), the `cash_flow_series`
 section (§ 4.26), the `distribution_waterfall` section (§ 4.27), and the
-optional `reserve_accounts` section (§ 4.28).
+optional `reserve_accounts` section (§ 4.28), and official class sections (§ 4.29–§ 4.35).
 When this and the protocol document refer to "the 21 standard
 sections" they mean § 4.0 through § 4.20.
 
@@ -74,7 +73,7 @@ A `.uwx.md` file solves this by being structured enough for machines while stayi
 
 **Provenance on every block.** Every data block carries a `_meta` object that records who wrote it, when, with what confidence, and whether it requires human review. No fact in the file is anonymous.
 
-**Source-tagged assumptions.** Every assumption carries a `source` tag: `scenario_default | market_data | ai_extracted | user_override | investor_profile | agent_computed`. Users and reviewers always know whether a number came from AI, from market data, or from their own input.
+**Resolution-tagged assumptions.** Every assumption carries a resolution tag: `scenario_default | market_data | ai_extracted | user_override | investor_profile | agent_computed`. Users and reviewers always know whether a number came from AI, from market data, or from their own input.
 
 **Pipeline-stateful.** The frontmatter tracks which pipeline stages have run. A tool reading a `.uwx.md` knows immediately what work has been done, what is pending, and what is blocked.
 
@@ -130,7 +129,7 @@ The frontmatter is YAML. All fields shown; `*` = required.
 ```yaml
 ---
 # ── Identity ──────────────────────────────────────────────
-uw_version: "1.0"                   # * format version
+uw_version: "3.0"                   # * format version
 deal_id: "uw_YYYY_[hash8]"          # * globally unique deal identifier
 deal_name: "string"                 # human label, e.g. "Parkview Apts — Phoenix"
 created: "ISO8601"                  # * timestamp of file creation
@@ -140,7 +139,7 @@ locale: "en-US"                     # display locale (RFC 0001); absent = en-US.
                                     # content stays canonical (JSON numbers,
                                     # ISO dates, fraction rates). Registered
                                     # values: en-US, en-GB, de-DE, fr-FR,
-                                    # ja-JP, zh-CN (Protocol §III.1a). An
+                                    # ja-JP, zh-CN (starter guide §III.1a). An
                                     # unregistered value is LOC-01: display
                                     # renders are refused, never silently
                                     # produced in a different locale.
@@ -163,7 +162,7 @@ scenario: "stabilized_acquisition | ground_up_development | value_add | lease_up
 # ── Pipeline State ────────────────────────────────────────
 # Layer keys correspond 1:1 to BANCROFT_LAYERS in the reference library.
 # L3 is intentionally reserved for a future pre-structuring layer and is
-# omitted from v1; conforming files MUST NOT define L3_* keys. A layer key
+# omitted; conforming files MUST NOT define L3_* keys. A layer key
 # absent from pipeline_state is treated as "pending" by default. Use
 # "skipped" only when a layer is explicitly bypassed for this deal
 # (e.g. a refinance with no L0 ingestion).
@@ -213,18 +212,19 @@ source_documents: []                 # list of filenames ingested via L0
 **Pipeline stages.** The `deal_stage` enum advances monotonically as
 the deal progresses. The `scope` stage indicates a back-of-napkin
 readiness level: a `scope`-stage file MAY consist almost entirely of
-provisional blocks (see Part III §3.4 `_meta.provisional`) and
+provisional blocks (see Part III §3.4 `_meta.quality.provisional`) and
 represents triage rather than commitment. The minimum content for
 `scope` is a `property` section with at least an address, an asset
 class, and one of `units` or `asking_price`; everything else MAY be
-filled in from the fallback cascade (see Protocol §IX). Advancing
+filled in from the fallback cascade (see the
+[starter guide](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)). Advancing
 past `scope` requires real documents, not better assumptions —
 producers MUST re-stamp defaulted blocks with observed data before
 setting `deal_stage: screening` or later.
 
 ### 2.2a Asset-class identifiers (RFC 0003)
 
-`asset_class` is one of the twelve official builtin values (the two new values require Format 2.1), **or** a
+`asset_class` is one of the twelve official builtin values **or** a
 module-declared custom identifier.
 
 ```
@@ -237,7 +237,7 @@ custom      := segment ('.' segment){2,}
 segment     := [a-z][a-z0-9_]*
 ```
 
-The official builtin set grows by RFC with full standard and starter support. Every official class is builtin (RFC 0080); the namespaced extension space is for third-party private or unofficial classes. Exactly `org.uwmd.data_center` is a legacy official alias; other ids ending in `.data_center` or `.manufactured_housing` remain refused.
+The official builtin set grows by RFC with full standard and starter support. Every official class is builtin (RFC 0080); the namespaced extension space is for third-party private or unofficial classes. All namespaced ids ending in a builtin name, including `org.uwmd.data_center`, are refused by `INVALID-ASSET-CLASS-002`.
 
 **Three segments minimum.** `com.data_center` reads as a namespace with
 no owner, and two segments is where squatting on a short prefix starts
@@ -263,14 +263,13 @@ whose `asset_class` is custom SHOULD carry a `modules` list naming what
 declares it:
 
 ```yaml
-asset_class: com.example.data_center
+asset_class: com.example.specialty_facility
 modules:
   - id: com.example.datacenters
     version: ">=0.1.0 <1.0.0"
 ```
 
-Each entry is either a bare module id or an object with `id` and an
-optional semver-range `version`. Omitting the list is
+Each entry is an object with `id` and an optional semver-range `version`. Omitting the list is
 `MOD-DEPENDENCY-UNDECLARED` (**warning**, not error): the document is
 well-formed, and a host that happens to hold the module reads it
 correctly. The cost falls on every other reader, who can then say only
@@ -312,14 +311,7 @@ there is no automatic precedence among axes or inference of an unstated plan.
 Stress tests, custom scenarios and analytical section variants keep their
 separate meanings.
 
-`build_to_rent`, `nnn_single_tenant`, `lihtc_section8` and `distressed_reo` are
-**retired scenario vocabulary**, not standard business plans. A reader MUST
-preserve them and emit `DQ-07` (warning), never reject or rewrite them solely
-for this reason. The same warning applies to any other unlisted bare value
-(including `entitled_land_acquisition`) or non-null malformed structure.
-There is no automatic migration: a retired value alone cannot identify the
-actual execution plan. Existing documents remain admissible in both 1.x and
-2.x; no later-format escalation is specified.
+Any unlisted bare scenario value or non-null malformed structure receives `DQ-07` (warning). A reader MUST preserve it and MUST NOT reject or rewrite it solely for this reason. A value outside the standard vocabulary cannot identify an execution plan; readers do not infer one.
 
 Scenario and subtype identity are **descriptive and routable only**. No
 calculation, default, pack or underwriting behavior MAY depend on either
@@ -395,107 +387,150 @@ Every data block is a fenced JSON code block. The opening fence carries a struct
 ```json uw:section=rent_roll source=agent/L0-01 ts=2026-04-24T10:12:00Z v=1 confidence=high
 ```
 
+A Format 3.0 block body is an object containing section payload fields and reserved members. `_meta` is REQUIRED and MUST be the first key; `_role`, `_overrides` and `_notes` are OPTIONAL. Every other member is payload, including a member named `content`. The section id is stated in the fence annotation and `_meta.section`, never as a block member. A top-level `section_id` is refused with `META-01`.
+
+The Document Envelope has a separate block structure: `{ annotation, content, prose? }`, where `content` is the complete fenced object. Conversion is mechanical because the annotation carries the section id.
+
 ### 2.5 The `_meta` Object
 
-Every data block MUST contain a `_meta` object as its first key. This is the canonical provenance record.
+Every data block MUST carry `_meta` as its first key,
+organized into four named sub-objects by concern:
 
 ```json
 "_meta": {
   "section": "rent_roll",
-  "version": 1,
-  "superseded": false,
-  "source": "agent/L0-01",
-  "agent_id": "L0-01",
-  "agent_version": "1.0.0",
-  "actor": "system",
-  "timestamp": "2026-04-24T10:12:00Z",
-  "confidence": "high",
-  "human_review_required": false,
-  "flags": [],
-  "input_hash": "sha256:abc123...",
-  "notes": null
+  "provenance": {
+    "source": "agent/L2-01",
+    "resolution": "ai_extracted",
+    "actor": "jared@example.com",
+    "agent_id": "L2-01",
+    "agent_version": "1.0.0",
+    "timestamp": "2026-09-01T10:12:00Z",
+    "notes": null
+  },
+  "quality": {
+    "confidence": "medium",
+    "human_review_required": true,
+    "flags": [],
+    "partial": false,
+    "provisional": false
+  },
+  "lifecycle": {
+    "revision": 1,
+    "superseded": false
+  },
+  "integrity": {
+    "input_hash": null,
+    "content_hash": "3f0c2a9e5b7d14c86a1e2f9b0d4c7a35e8f61b2d9c0a7e4f3b5d81c6a2e9f07b",
+    "parent_hash": null
+  }
 }
 ```
 
+#### 2.5a Routing
+
 | Field | Type | Description |
 |---|---|---|
-| `section` | string | Section ID |
-| `version` | integer | Monotonically increasing per section per file |
-| `superseded` | boolean | True if a newer version exists in this file |
-| `source` | string | Who wrote the block — actor identifier (see 2.6) |
-| `resolution` | string | *(optional)* How the value was resolved — canonical tag (see 2.6) |
-| `agent_id` | string | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"` |
-| `agent_version` | semver | Version of the agent/tool that produced this block |
-| `actor` | string | `"system"` or user identifier |
-| `timestamp` | ISO8601 | When this block was written |
-| `confidence` | enum | `"high"` / `"medium"` / `"low"` |
-| `human_review_required` | boolean | Whether a human should review before advancing pipeline |
-| `flags` | string[] | Flags raised by this specific block |
-| `input_hash` | string | Hash of the inputs that produced this block (for reproducibility) |
-| `notes` | string | Free-text notes from the agent or user |
+| `section` | string | REQUIRED section ID; MUST equal the fence annotation. `section_id` is not admitted. |
 
-Blocks MAY also carry the optional fields `partial`, `provisional`,
-`field_overrides`, `content_hash`, `parent_hash`, and `signature`. See Part III
-§3.4 for their semantics. These fields are additive: a block omitting
-them is well-formed, and validators MUST NOT reject blocks for their
-absence.
+#### 2.5b `provenance` — who wrote this block, and how its values were resolved
 
-**The flat shape above is the only valid `_meta` form for
-`uw_version: "1.x"` files.** Format 2.0
-([`UW_FORMAT_SPEC_v2.md`](./UW_FORMAT_SPEC_v2.md), RFC 0009) reorganizes
-`_meta` into nested sub-objects (`provenance` / `quality` / `lifecycle` /
-`integrity`); that nested shape belongs to files declaring
-`uw_version: "2.0"` or later. A file's `uw_version` is global and decides
-the shape for every block in it: a nested `_meta` in a 1.x file is a
-`META-V2-IN-V1` error, and a flat `_meta` in a 2.0 file is
-`META-V1-IN-V2`. `uwmd migrate --to-v2` converts a whole file. The v2
-document is a delta specification: this document continues to govern 2.0
-files except where it amends it.
+| Field | Type | Req | Description |
+|---|---|---|---|
+| `source` | string | yes | The actor (§2.6 grammar, RFC 0031): `manual` or `<namespace>/<id>` with a registered namespace. The grammar is enforced (§2.6). |
+| `resolution` | string | no | How the value was resolved — one member of the closed resolution vocabulary (§2.6). Orthogonal to `source`. |
+| `actor` | string | yes | The principal that initiated the write. Distinct from `source`: `source` is the policy-vocabulary identity of the writer, `actor` is who asked for the write. |
+| `agent_id` | string\|null | no | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"`. REQUIRED when `source` matches `agent/*`. |
+| `agent_version` | string\|null | no | Version (semver) of the agent or tool that produced this block. |
+| `timestamp` | ISO 8601 | yes | When this block was written. |
+| `notes` | string\|null | no | Free-text notes from the agent or user. |
+| `market_data_ref` | object | cond. | RFC 0022 §4 — REQUIRED when `resolution` is `market_data_accepted`. |
+| `inherited_from` | object | cond. | RFC 0021 §5 — REQUIRED when `resolution` is `inherited_assumption`. |
+
+`market_data_ref` and `inherited_from` sit in `provenance`, not `integrity`:
+each names *where a value came from*, and each is coupled to a `resolution`
+value. The conditional-requirement rules are defined against `provenance.resolution`.
+
+#### 2.5c `quality` — how trustworthy or complete the data is
+
+| Field | Type | Req | Description |
+|---|---|---|---|
+| `confidence` | enum | yes | `high` / `medium` / `low`, as §3.2. |
+| `human_review_required` | boolean | yes | See §3.3. |
+| `flags` | string[] | no | Flags raised by this specific block. |
+| `partial` | boolean | no | See §3.4. When true, `_overrides` (§2.5f) SHOULD enumerate which paths and why. |
+| `provisional` | boolean | no | See §3.4. |
+
+Per-field exceptions are stated only in block-level `_overrides` (§2.5f).
+
+#### 2.5d `lifecycle` — where this block sits in the supersede chain
+
+| Field | Type | Req | Description |
+|---|---|---|---|
+| `revision` | integer ≥ 1 | yes | 1-based supersede-chain position; monotonically increasing per section per file. |
+| `superseded` | boolean | yes | True on every block that is not the chain head (a newer revision exists in this file). |
+
+#### 2.5e `integrity` — cryptographic / structural verification (all optional)
+
+| Field | Type | Description |
+|---|---|---|
+| `algorithm` | `"sha256"` | Hash algorithm for the three hash fields. **Absent means `sha256`**, and `sha256` is the only admitted value — the field exists for forward agility, not present choice (RFC 0009 resolved question 2). The entire `_meta` object is outside the block digest. |
+| `input_hash` | string\|null | Hash of the inputs that produced this block: a reproducibility anchor. |
+| `content_hash` | string | SHA-256 of JCS of the fenced object with its `_meta` member removed (Protocol §V.9). |
+| `parent_hash` | string\|null | The `content_hash` of the superseded predecessor; null on a chain root. |
+| `signature` | object | See §3.4 and Protocol §V.11 (RFC 0010). |
+
+The whole sub-object is optional: integrity remains opt-in.
+
+---
+
+#### 2.5f The `_overrides` block annotation
+
+
+Per-field exceptions to the block-level metadata are stated in a
+top-level block annotation, a sibling of `_meta`:
+
+```json
+{
+  "_meta": { "section": "rent_roll", "provenance": { "source": "manual", "actor": "analyst", "timestamp": "2026-10-11T00:00:00Z" }, "quality": { "confidence": "high", "human_review_required": false }, "lifecycle": { "revision": 1, "superseded": false } },
+  "_overrides": [
+    {
+      "path": "units[7].current_rent",
+      "confidence": "low",
+      "resolution": "ai_extracted",
+      "reason": "illegible"
+    }
+  ]
+}
+```
+
+Each entry states a dot-notated `path` relative to the block's payload root
+and MAY carry its own `confidence`, `source` (actor, §2.6 grammar),
+`resolution` (closed vocabulary, §2.6), `reason` and `note`. `reason` is a
+closed vocabulary: `illegible | missing | overridden | estimated | computed`.
+The
+precedence rule is unchanged and remains as RFC 0031 stated it: `_overrides`
+wins for the paths it covers — `confidence`, `source`, and `resolution`
+alike — `_meta.quality` / `_meta.provenance` apply elsewhere.
+
+`_overrides` is **block content for integrity purposes**: it is inside the
+digest, including every stated override.
+
+---
+
+A `_meta` without nested `provenance` and `lifecycle` is `META-01`. The provenance-completeness codes remain `META_MISSING`, `META_FIELD_MISSING_<FIELD>` and `META_LOW_CONFIDENCE_NO_REVIEW_FLAG`.
 
 ### 2.6 Source Identifiers
 
-*Rewritten by [RFC 0031](../docs/rfcs/0031-source-vocabulary.md).
-`_meta.source` used to be asked to carry two unrelated facts — who wrote
-the block, and how its value was resolved — and this section used to
-answer with two vocabularies that reconciled with neither each other nor
-the executable policy table. The facts now live in two fields.*
+`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); a resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
 
-**`_meta.source` names the actor** — who wrote the block. It MUST be
-one of:
-
-```
-manual | agent/<id> | document/<id> | system/<id> | institution/<id>
-```
-
-where `<id>` matches `[A-Za-z0-9][A-Za-z0-9._-]*`. The namespace set is
-closed at format 1.x (the runtime registry is `ACTOR_NAMESPACES` in
-`protocol.ts`); `/` is the sole delimiter. These are exactly the
-patterns `BUILTIN_EDIT_POLICIES` matches, so every well-formed source
-resolves a specific edit policy (Protocol §V.3). Examples:
-`agent/L0-01`, `document/om.pdf`, `system/calculations.ts`,
-`institution/threshold-override`.
-
-The colon forms this section previously listed (`agent:L0-01`,
-`engine:calculations.ts`, `user:override`, `import:filename.pdf`, …)
-are **retired**. They differ from the policy patterns only in
-delimiter, which made them a trap: a producer following this section
-literally wrote blocks that resolved no specific policy and whose
-writes were classified incorrectly. A validator reports them as
-`SRC-01` (warning).
-
-**`_meta.resolution` names the resolution method** — how the value was
-produced. It is OPTIONAL and holds one canonical tag from
-`SOURCE_TAGS` (`@uwmd/core`); the cascade tags are normative for
-cascade resolution (Protocol §V.7 — the authoritative table). Producers
-stamping a value resolved by the fallback cascade MUST use the tag of
-the cascade step that produced the value.
+`_meta.provenance.resolution` is OPTIONAL and describes how values were resolved. It MUST be one member of this closed vocabulary; any other value is `SRC-03` (error). `manual` is actor-only; human-typed values use `user_input`.
 
 | Tag | Meaning |
 |---|---|
 | `user_input` | The user typed the value (initial entry). |
 | `user_override` | The user explicitly overrode a prior value. |
-| `manual` | A human-authored value, method not otherwise classified. |
-| `inherited_assumption` | Inherited from an ancestor in the composition DAG (Protocol §V.7.1). |
+| `inherited_assumption` | Inherited from an ancestor in the composition DAG ([starter guide §V.7.1](../docs/starter/defaults-and-cascade.md#v71-inherited-assumptions)). |
 | `investor_profile` | Resolved from the active investor profile / buy box. |
 | `market_data` | Resolved from a market-data lookup at write time. |
 | `market_data_accepted` | A market observation an analyst explicitly accepted as the underwritten value (RFC 0022 §4). |
@@ -506,34 +541,21 @@ the cascade step that produced the value.
 | `global_default` | Pulled from a non-asset-class fallback table. |
 | `system_default` | Hardcoded constant in the reference library or institution config. Producers SHOULD avoid relying on this layer for normative values. |
 
+Block-level source and resolution also have leaf counterparts in `_overrides`. Defaults and their precedence are starter-product behavior, described in [the starter guide](../docs/starter/defaults-and-cascade.md); these tags record provenance and do not authorize inference by a verifier. The cascade tags are nonetheless normative for cascade resolution: a producer stamping a value resolved by the fallback cascade MUST use the tag of the cascade step that produced the value ([starter guide §V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade) holds the authoritative step table).
+
 Both fields MAY be present; they answer different questions. A block
-written by agent L6-01 from the asset-class default table is:
-
-```jsonc
-"_meta": { "source": "agent/L6-01", "resolution": "asset_class_default" }
-```
-
-`field_overrides[].source` / `field_overrides[].resolution` carry the
-same split at leaf granularity (§3.4).
-
-**Read-time interpretation (transition).** A reader encountering a
-canonical `SOURCE_TAGS` value in `_meta.source` MUST interpret it as
-`resolution`, and MUST treat the actor as absent rather than inventing
-one — the value can still say *how* it was resolved, but it no longer
-passes for *who* wrote it (in particular it satisfies no authority
-class in Protocol §V.3). Validators report it as `SRC-02` — a warning
-for all of format 1.x, an error at 2.0. `uwmd migrate --source-tags`
-rewrites a file mechanically.
+written by agent L6-01 from the asset-class default table carries
+`"provenance": { "source": "agent/L6-01", "resolution": "asset_class_default", ... }`.
 
 ### 2.7 Update Semantics
 
 When an agent or tool updates a section, it:
 
 1. Locates the most recent non-superseded block for that `uw:section`
-2. Sets `"superseded": true` in that block's `_meta` and in the fence tag
-3. Appends a new block with `version = previous_version + 1`
+2. Sets `"superseded": true` in that block's `_meta.lifecycle` and in the fence tag
+3. Appends a new block with `lifecycle.revision = previous_revision + 1`
 
-This means the file grows; history is always recoverable. The canonical current value of any section is the **last block** where `_meta.superseded === false` for that `uw:section`.
+This means the file grows; history is always recoverable. The canonical current value of any section is the **last block** where `_meta.lifecycle.superseded === false` for that `uw:section`.
 
 The `uwmd compact` command strips superseded blocks and leaves only current versions.
 
@@ -567,29 +589,21 @@ editing. Parse and representation conversion MUST preserve this annotation.
 
 ---
 
+**Markdown opt-in.** When an active section declares `_role` and has explicit
+`variant=` fences, readers collect all its active named variants, even outside
+the standard multi-variant section registry. Collect before choosing a version,
+so fence order cannot discard an unannotated peer. Superseded roles do not
+activate selection. Role-free Markdown retains its existing routing behavior;
+removing a section's last role ends this opt-in. UW JSON envelopes already
+represent variant maps on every section.
+
+---
+
 ## Part III — Provenance Model
 
 ### 3.1 Assumption Source Hierarchy
 
-*Non-normative since [RFC 0031](../docs/rfcs/0031-source-vocabulary.md).*
-The normative precedence for assumption values is the fallback cascade
-in **Protocol §V.7** (`CASCADE_ORDER` in `protocol.ts`): explicit user
-decisions first, then inherited assumptions, then the investor profile,
-then market data, then the default tables. Where an earlier revision of
-this section and §V.7 disagreed — this section ranked market data
-*above* the investor profile, §V.7 the reverse — **§V.7 wins**: a
-standing investor profile is a declared decision, a market lookup is an
-observation, and a declared decision outranks a scraped comp.
-
-This section also used to rank `ai_extracted` and `agent_computed`,
-which are not cascade steps at all — they describe how observed data
-entered the file, not a fallback layer. Those rankings are removed
-rather than reinterpreted.
-
-The `assumptions` section (§ 4.16) records every assumption with its
-resolution method. The UI displays source badges. A producer resolving
-a missing value walks the §V.7 cascade in order and takes the first
-step that yields one.
+Assumption resolution precedence is non-normative starter-product guidance in [defaults and cascade](../docs/starter/defaults-and-cascade.md). The `assumptions` section (§4.16) records stated methods; a verifier checks stated facts without producing missing ones.
 
 ### 3.2 Confidence Levels
 
@@ -611,45 +625,28 @@ The pipeline respects two types of human review requirements:
 
 ### 3.4 Optional Integrity / Quality Fields
 
-Beyond the required and recommended `_meta` fields described above
-(§2.5), blocks MAY carry the following optional fields. A block
-lacking any of these fields is well-formed; validators MUST NOT
-reject blocks for omitting them.
+The nested fields of §2.5 are optional except where explicitly required. A
+block omitting an optional field is well-formed; validators MUST NOT reject a
+block for its absence.
 
 | Field | Type | Meaning |
 |---|---|---|
-| `partial` | boolean | The block is present but at least one field inside it is missing or unknown. When `partial: true`, an enumeration of which paths and why SHOULD be provided in `field_overrides`. |
-| `provisional` | boolean | The entire block is a placeholder, derived from defaults rather than observed data. Stronger signal than `confidence: 'low'`. Downstream consumers SHOULD label outputs derived from provisional blocks accordingly. |
-| `field_overrides` | array | Per-field overrides where the block-level `confidence`, `source`, `resolution`, or annotations do not apply uniformly. Each entry has a dot-notated `path` relative to the block's content root and may carry its own `confidence`, `source` (actor, §2.6 grammar), `resolution` (canonical tag, §2.6), `reason` (`illegible | missing | overridden | estimated | computed`), and `note`. |
-| `content_hash` | string | The SHA-256 hash of the block's canonicalized JSON content. The canonicalization rule (RFC 8785 JCS, with `_meta.content_hash` and `_meta.signature` removed before hashing) is defined in Protocol §IX.2. Producers MAY emit; consumers MAY ignore. |
-| `parent_hash` | string \| null | The `content_hash` of the block this one supersedes. `null` on a chain root. Required only when participating in an integrity-checked supersede chain — once any block in a supersede chain carries `content_hash`, every later block in that chain MUST carry both `content_hash` and `parent_hash`. |
-| `signature` | object | A detached signature over the block's signing input, for deployments that need cryptographic chain of custody. Fields: `alg` (`ed25519` \| `es256` \| `es384`), `kid`, `sig` (base64url, unpadded), `signed_at` (ISO 8601), optional `v`. Requires `content_hash` — a signature with no hash beside it commits to nothing (`INT-05`). Defined normatively in Protocol §V.11. |
+| `_meta.quality.partial` | boolean | The block is present but at least one field inside it is missing or unknown. When `partial: true`, an enumeration of which paths and why SHOULD be provided in `_overrides` (§2.5f). |
+| `_meta.quality.provisional` | boolean | The entire block is a placeholder, derived from defaults rather than observed data. Stronger signal than `confidence: "low"`. Downstream consumers SHOULD label outputs derived from provisional blocks accordingly. |
 
-**Precedence with `field_overrides`.** A `field_overrides` entry
-whose `path` matches a field replaces, for that field only, the
-block-level `confidence`, `source`, and `resolution` — the leaf wins
-over the block for its path. The block-level values still
-apply to every field not enumerated. This produces two surfaces for
-expressing confidence; the consolidation lives in the v2 `_meta`
-reorganization (RFC 0009).
+Leaf exceptions belong only to block-level `_overrides`. **Precedence:** an
+`_overrides` entry whose `path` matches a field replaces, for that field only,
+the block-level `confidence`, `source` and `resolution`; the block-level values
+still apply to every field not enumerated. **Path syntax:** paths use dot
+notation with bracketed array indices, such as `units[7].current_rent`; keys
+containing a literal `.` are not expressible, and no section schema uses
+dotted keys.
 
-**Path syntax.** `field_overrides[].path` uses dot-notation with
-bracketed array indices (e.g. `units[7].current_rent`). Paths whose
-key segments contain a literal `.` are not expressible; no current
-section schema uses dotted keys.
+`_meta.integrity.content_hash` is lowercase hexadecimal SHA-256 of the UTF-8 RFC 8785 (JCS) canonical JSON of the fenced object **with its `_meta` member removed** (Protocol §V.9). All other members, including `_role`, `_overrides`, `_notes`, and any payload member named `content`, are included. Nothing else is excluded or defaulted. Metadata-only changes keep the hash; payload edits change it.
 
-**Integrity opt-in.** A file containing zero `content_hash` fields is
-indistinguishable from a pre-integrity file; chain verification is a
-no-op. To benefit from chain verification, a producer SHOULD stamp
-`content_hash` on every block it writes once it adopts the integrity
-path.
+`parent_hash` is the predecessor's `content_hash`, or null at a chain root. Once any block in a supersede chain carries `content_hash`, every later block in that chain MUST carry both `content_hash` and `parent_hash`. **Integrity opt-in:** a file containing no `content_hash` is unchecked, and chain verification is a no-op. A producer that adopts the integrity path SHOULD stamp `content_hash` on every block it writes.
 
-**Signing opt-in.** `signature` is optional on top of an optional
-field: it is meaningful only where `content_hash` is already stamped,
-and reading, validating, editing, and computing over a `.uw.md` never
-require cryptography. A consumer with no key store MUST treat a
-signature as opaque metadata and MUST report it as present but
-unchecked rather than as verified. See Protocol §V.11.
+`signature` is optional: `{ alg, kid, sig, signed_at, v? }`, with `alg` one of `ed25519`, `es256`, `es384`, `sig` unpadded base64url and `signed_at` an ISO timestamp. It requires `content_hash` (`INT-05`). The signing input is unchanged (Protocol §V.11): content hash, section, actor, timestamp, kid and signed_at. It binds author and time to content, but does not transitively bind `parent_hash`. **Signing opt-in:** a signature is meaningful only where `content_hash` is stamped, and reading, validating and computing over a document never require cryptography. A consumer with no key store MUST treat a signature as opaque metadata and MUST report it as present but unchecked, never as verified (Protocol §V.11.3).
 
 ### 3.5 `confidence` vs `human_review_required`
 
@@ -703,9 +700,24 @@ The Deal Context section has two distinct layers:
 
 The `ai_synthesis` sub-object is populated by `agent/L7-01` after the full underwriting runs. It summarizes what the data actually shows in one paragraph, identifies strengths and risks from the model's perspective, and gives an overall impression. It is appended as a separate versioned block — the user's narrative is never touched.
 
-```json uw:section=deal_context source=user ts=ISO8601 v=1 confidence=high
+```json uw:section=deal_context source=manual ts=ISO8601 v=1 confidence=high
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "deal_context",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "_notes": null,
 
   "deal_summary": "string | null",
@@ -790,7 +802,22 @@ frontmatter fallback. Other free values are unchanged.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "address": {
     "street": "string",
     "city": "string",
@@ -880,7 +907,22 @@ Field notes:
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "ownership",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "transaction_type": "acquisition | refinance | cash_out_refi | recapitalization",
   "current_owner": "string | null",
   "acquisition_date": "YYYY-MM-DD | null",
@@ -923,7 +965,22 @@ Field notes:
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "rent_roll",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "rent_roll_type": "multifamily",
   "as_of_date": "YYYY-MM-DD",
   "total_units": 0,
@@ -1068,7 +1125,22 @@ stated values with each other, never with the current date or file metadata.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "rent_roll",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "rent_roll_type": "commercial",
   "as_of_date": "YYYY-MM-DD",
   "total_nra_sqft": 0,
@@ -1134,7 +1206,6 @@ stated values with each other, never with the current date or file metadata.
       "guarantee_amount": null,
       "guarantee_type": "personal | corporate | both | null",
       "anchor_tenant": false,
-      "cam_cap_pct": null,
       "recovery_terms": {
         "method": "net | base_year_stop | fixed_stop | fixed_amount | none",
         "pro_rata_share": 0.0412,
@@ -1188,8 +1259,7 @@ stated values with each other, never with the current date or file metadata.
 ```
 
 **Expense recoveries and the CAM true-up (RFC 0058).** `recovery_terms` and
-`recovery_true_up` are OPTIONAL. A tenant stating neither is unchanged, and the
-legacy `cam_cap_pct` keeps working. Like the RFC 0055 clauses these are
+`recovery_true_up` are OPTIONAL. A tenant stating neither adds no requirement. A cap may be stated alone; method is required as soon as any other member of recovery_terms is stated non-null. A lone `cap` needs neither `over` nor `accumulation`. Rules reading method evaluate only when it is stated. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). Like the RFC 0055 clauses these are
 **attributes of a lease** plus a reconciliation of a **closed** period — not a
 periodic ledger, which RFC 0054 placed behind a named consumer.
 
@@ -1205,9 +1275,11 @@ and is a modeling decision, not a recorded fact; each tenant states its own shar
   recovery by a hundred, which is why this is an error and not a warning.
 - `REC-02` — the `method` vocabulary is closed, and `base_year_stop`,
   `fixed_stop` and `fixed_amount` each REQUIRE their input (`base_year`,
-  `expense_stop_per_sqft`, `fixed_recovery_annual`). A stated `cap.pct` REQUIRES
+  `expense_stop_per_sqft`, `fixed_recovery_annual`). Once `method` is stated, a stated `cap.pct` REQUIRES
   `cap.accumulation`: there is **no default**, because `cumulative`,
   `non_cumulative` and `compounding` diverge materially inside three years.
+  A lone `cap` with no `method` is the G1 lone fact and is valid without
+  `accumulation`; REC-02 does not reach it (RFC 0081 G1).
 - `REC-03` — every `recoverable_pool` entry names a § 4.4
   `operating_statement.expenses` key. `total_operating_expenses` (a total),
   `management_fee_pct_egi` (a ratio), `capital_expenditures_actual` and
@@ -1232,8 +1304,7 @@ and is a modeling decision, not a recorded fact; each tenant states its own shar
   already verify it. A dangling reference is the one failure that looks like
   success: the row claims the settled amount reached the cash flows, and nothing
   else checks that it did.
-- `REC-10` — a **warning** when `cam_cap_pct` sits beside `recovery_terms.cap`.
-  The legacy field is superseded, not removed; stating both lets them drift.
+
 
 Nothing here is projected: no future recovery is forecast, no pool is grossed up
 from occupancy, and `gross_up_pct` records the occupancy a pool was grossed up
@@ -1277,6 +1348,12 @@ escalated, no break is taken, no remedy is applied and no balance is amortized.
 
 ---
 
+#### Hospitality Variant (RFC 0081 G3)
+
+**Normative schema:** [rent-roll-hospitality.schema.json](schemas/rent-roll-hospitality.schema.json) (the class contract for a hospitality `rent_roll`; other members of the section are unconstrained by it).
+
+Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `rent_roll` is stage-required (§5.1); when stated it MUST contain `available_room_nights` (integer ≥ 0), otherwise `CLS-04`. Optional fields: `occupied_room_nights` (integer ≥ 0), `adr` (number ≥ 0), and `occupancy` (fraction in [0,1]). `rent_roll.keys` is not admitted. `hotel_metrics` (§4.32) is optional and holds only market_revpar. No hotel class-required section is added. RevPAR stays rooms_revenue / available_room_nights. ADR, occupancy and available room nights also feed total_room_revenue; room_revenue_per_key divides its 2dp rounded total by property.keys. The dictionary supplies the unchanged null guards, units and round_to.
+
 ### § 4.4 — Operating Statement
 
 **ID:** `operating_statement`  
@@ -1289,7 +1366,22 @@ escalated, no break is taken, no remedy is applied and no balance is amortized.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "operating_statement",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "period_type": "T12 | T3 | YTD | Budget | T24",
   "period_start": "YYYY-MM-DD",
   "period_end": "YYYY-MM-DD",
@@ -1364,7 +1456,22 @@ escalated, no break is taken, no remedy is applied and no balance is amortized.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "noi_model",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "underwriting_basis": "stabilized | value_add | lease_up | as_is | stressed",
   "income": {
     "gross_potential_rent": {
@@ -1403,7 +1510,6 @@ escalated, no break is taken, no remedy is applied and no balance is amortized.
       "value": 0.0,
       "per_unit": null,
       "source": "actual | reassessment_estimate | benchmark",
-      "sale_triggers_reassessment": false,
       "reassessment_basis": null,
       "benchmark_low": null,
       "benchmark_high": null,
@@ -1515,6 +1621,8 @@ property taxes, and this section holds the second:
 unchanged. Rates are fractions, not percents. The prose `reassessment_basis`
 is retained as narrative; when `reassessment` is present it governs.
 
+Only `trigger` is required. `assessed_value`, `millage_rate` and `indicated_tax` form an all-or-none assessment group. `jurisdiction`, `value_basis`, `assessment_ratio` and `round_to_decimals` are admitted only with that group. `TAX-01`–`TAX-03` evaluate only when the group is stated. A lone `reassessment: {"trigger": "sale"}` states the sale-trigger fact. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence).
+
 - `TAX-01` — `trigger` is one of the four listed values, `assessed_value`,
   `millage_rate` and `indicated_tax` are finite, and when `value_basis` and
   `assessment_ratio` are both stated, `assessed_value` MUST equal their product.
@@ -1524,8 +1632,7 @@ is retained as narrative; when `reassessment` is present it governs.
   `round_to_decimals`, which MUST be an integer and MAY be negative to round to
   a magnitude. Omitting it means the §VIII.9.4 currency quantum, so an unrounded
   value MUST foot exactly.
-- `TAX-04` — `sale_triggers_reassessment`, when stated as a boolean, MUST agree
-  with `trigger === "sale"`.
+
 - `TAX-05` — abatement `schedule` periods are RFC 0041 selectors (`Y1`+,
   `YYYY-Qn`, `YYYY-MM`, or `YYYY-MM-DD`), all of one granularity, strictly
   increasing, without duplicates. Holding years order numerically, so `Y10`
@@ -1553,7 +1660,22 @@ from `jurisdiction`, which is a label.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "valuation",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "purchase_price": null,
   "purchase_price_per_unit": null,
   "purchase_price_per_sqft": null,
@@ -1601,7 +1723,22 @@ from `jurisdiction`, which is a label.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "debt_structure",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "loan_amount": 0.0,
   "loan_purpose": "acquisition | refinance | cash_out_refi | construction | bridge | supplement",
   "loan_type": "conventional | agency_fannie | agency_freddie | cmbs | sba_504 | sba_7a | bridge | construction | life_co | hud_221d4 | hud_223f | mezzanine | null",
@@ -1610,7 +1747,6 @@ from `jurisdiction`, which is a label.
   "rate_index": "sofr | prime | treasury_5yr | treasury_10yr | fixed | null",
   "rate_spread_bps": null,
   "rate_floor_pct": null,
-  "rate_cap_pct": null,
   "rate_hedge": null,
   "note_rate_at_close": null,
   "amortization_years": 30,
@@ -1658,8 +1794,7 @@ from `jurisdiction`, which is a label.
 }
 ```
 
-**Rate hedges (RFC 0056).** `rate_hedge` is OPTIONAL and types what
-`rate_cap_pct` only gestures at. A loan stating neither is unchanged.
+**Rate hedges (RFC 0056, RFC 0081 G1).** `rate_hedge` is OPTIONAL. Only `instrument` and `strike_rate` are required. `notional`, `index`, `effective_date`, `expiration_date` and `post_expiration_assumption` form an all-or-none terms group (`HDG-01`). A strike-only hedge may also state premium; no other fact is inferred. `HDG-01` validates stated members; `HDG-02`/`HDG-03` apply to every hedge. `HDG-06`–`HDG-10`, replacement_funding and the hedge clauses of `ESC-04` evaluate only when the terms group is stated. The premium is the single home of the cap cost. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). `replacement_funding: null` therefore requires no terms group.
 When `debt_structure` is a variant map, the hedge rules read the one block
 §5.3 selects for them, preferring `senior` (RFC 0075). A hedge on any other
 block is not read.
@@ -1694,11 +1829,8 @@ crossing is projected.
   matters. They wait for their own contract.
 - `HDG-03` — a stated `rate_hedge` requires `rate_type` to be `floating` or
   `hybrid`. A fixed-rate loan does not carry a rate cap.
-- `HDG-04` — `strike_rate` agrees with the legacy `rate_cap_pct` when both are
-  stated.
-- `HDG-05` — `premium` agrees with `sources_uses.uses.rate_cap_cost` at the
-  currency quantum (protocol § VIII.5) when both are stated. It is the same
-  cash seen from the debt side and from the use that funds it.
+
+
 - `HDG-06` — `post_expiration_assumption` is stated and from the closed set.
   It has no default on purpose: a cap's term is the fact the reader came for,
   and leaving it unstated is the answer that hides the cliff. `replace` is tied
@@ -1755,7 +1887,22 @@ identically.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "sources_uses",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "total_project_cost": 0.0,
   "sources": {
     "senior_loan": 0.0,
@@ -1785,12 +1932,7 @@ identically.
       "other": null,
       "total": 0.0
     },
-    "renovation_budget": null,
-    "renovation_contingency": null,
     "renovation": null,
-    "operating_reserves": null,
-    "interest_reserve": null,
-    "rate_cap_cost": null,
     "other_reserves": null,
     "escrows": null,
     "total": 0.0
@@ -1807,7 +1949,7 @@ identically.
 ```
 
 **Escrows (RFC 0056).** `uses.escrows` is OPTIONAL and types the cash lines the
-four flat scalars above cannot describe: which are lender-required, which fund
+a single amount cannot describe: which are lender-required, which fund
 monthly rather than at close, and that the tax and insurance escrows exist at
 all. A document stating none of them is unchanged.
 
@@ -1836,12 +1978,10 @@ consumer.
 - `ESC-02` — `other` requires a nonempty `label` and every other name refuses
   one, since it names itself. `name` is unique across the array, and `other`
   entries are distinguished by unique labels.
-- `ESC-03` — `uses.interest_reserve` and `uses.operating_reserves` agree with
-  the `interest` and `operating` escrows' `upfront` at the currency quantum
-  (protocol § VIII.5) when both are stated.
+
 - `ESC-04` — `replace` MUST have a valid replacement-funding path.
   Absent/null replacement_funding and explicit escrow mode MUST state the
-  lawful existing `rate_cap_replacement` escrow (ESC-01/02/03 unchanged).
+  lawful existing `rate_cap_replacement` escrow (ESC-01/02).
   Explicit outright mode requires the exact RFC 0070 payment binding and
   MUST NOT coexist with a replacement escrow, even a zero-funded one.
   A replacement escrow requires `replace`. Missing sources_uses or uses is
@@ -1850,9 +1990,7 @@ consumer.
   `sources_uses` selection refuses. `HDG-08` reports that instead (RFC 0076).
   Existing valid escrow-funded documents need no edits or new currency field.
 
-**The renovation draw (RFC 0057).** `uses.renovation` is OPTIONAL and types what
-`renovation_budget` and `renovation_contingency` leave unsaid: whether either was
-spent. Two deals stating the same contingency are indistinguishable when one has
+**The renovation draw (RFC 0057, RFC 0081 G1).** `uses.renovation` is OPTIONAL and requires at least one of budget or contingency. `contingency_used`, `drawn_to_date`, `as_of_date` form an all-or-none draw group (`CAPX-01`); stating it requires both budget and contingency. `contingency_remaining` is admitted only with that group. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). `CAPX-01` validates stated members; `CAPX-02`–`CAPX-04` evaluate only with the draw group. Two deals stating the same contingency are indistinguishable when one has
 drawn none of it and the other has drawn all of it.
 
 ```json
@@ -1883,9 +2021,7 @@ time is periodic, which RFC 0054 placed behind a named consumer.
   `contingency − contingency_used` at the currency quantum (protocol § VIII.5).
   It is stated and verified rather than left to the reader's subtraction, the
   posture RFC 0052 took with `net_sale_proceeds`.
-- `CAPX-05` — `budget` and `contingency` agree with the legacy
-  `uses.renovation_budget` and `uses.renovation_contingency` at the currency
-  quantum when both are stated.
+
 
 **Expense-targeted capex (RFC 0057).** `renovation.expense_targeted` is OPTIONAL
 and names capital spend bought specifically to reduce an operating expense. A
@@ -1929,6 +2065,8 @@ occupancy carrying its own `ti_lc_capex`, which is what downtime is.
 
 ---
 
+**Derived uses footing (RFC 0081 G1).** When uses is stated, its derived total is the sum of its numeric leaves, plus each interest/operating escrow upfront once and each rate_hedge premium in active debt_structure once. Other escrow names remain uncounted. Typed renovation leaves retain their existing sum; this does not change the separate renovation draw-field double-count defect deferred by owner Q3. A producer states each fact in one home only.
+
 ### § 4.9 — DCF & Hold Period Analysis
 
 **ID:** `dcf`  
@@ -1940,7 +2078,22 @@ occupancy carrying its own `ti_lc_capex`, which is what downtime is.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "dcf",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "hold_period_years": 5,
   "analysis_start_date": null,
   "assumptions": {
@@ -2077,7 +2230,22 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "stress_tests",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "base_dscr": 0.0,
   "base_debt_yield": 0.0,
   "base_noi": 0.0,
@@ -2134,7 +2302,22 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "market_analysis",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "market": "string",
   "submarket": "string",
   "market_tier": "1 | 2 | 3 | null",
@@ -2224,7 +2407,22 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "borrower_sponsor",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "principals": [
     {
       "name": "string",
@@ -2291,7 +2489,22 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "due_diligence",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "appraisal": {
     "received": false,
     "appraiser_name": null,
@@ -2412,7 +2625,22 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "risk_assessment",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "scoring_model_version": "string",
   "component_scores": {
     "property": {
@@ -2505,7 +2733,22 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "compliance",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "hvcre": {
     "classification": "hvcre | non_hvcre | uncertain | not_applicable | null",
     "contributing_capital_test_met": null,
@@ -2581,7 +2824,22 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "assumptions",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "assumptions": [
     {
       "key": "string",
@@ -2641,7 +2899,22 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 
 ```json
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "validation",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "overall_status": "clean | warnings_only | errors_present | blocking",
   "financial_validity": [
     {
@@ -2722,7 +2995,22 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 
 ```json
 {
-  "_meta": { "...": "see §2.5 (note: pipeline_log _meta has no superseded field — it is always append-only)" },
+  "_meta": {
+    "section": "pipeline_log",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "entries": [
     {
       "entry_id": "string",
@@ -2766,9 +3054,24 @@ file orders them so readers see the most recent run history at the bottom.
 
 **Live reference syntax:** `"source_ref": "noi_model.net_operating_income"` — the engine substitutes the current value of that field into the calculation. If the field is null or the section doesn't exist yet, `status` is set to `awaiting_inputs` and `result` remains null.
 
-```json uw:section=custom_calculations source=user ts=ISO8601 v=1
+```json uw:section=custom_calculations source=manual ts=2026-10-11T00:00:00Z v=1
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "custom_calculations",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "_notes": null,
   "calculations": [
     {
@@ -2811,7 +3114,7 @@ file orders them so readers see the most recent run history at the bottom.
 
 | Use Case | Formula Description | Inputs |
 |---|---|---|
-| True all-in yield | NOI ÷ (purchase price + closing costs + reserves) | `valuation.purchase_price`, `sources_uses.closing_costs.total`, `sources_uses.uses.operating_reserves`, `noi_model.net_operating_income` |
+| True all-in yield | NOI ÷ (purchase price + closing costs + reserves) | `valuation.purchase_price`, `sources_uses.closing_costs.total`, `sources_uses.uses.escrows` (operating upfront), `noi_model.net_operating_income` |
 | Cash-on-cash in a specific year | Year N levered cash flow ÷ total equity invested | `dcf.annual_cash_flows[N].net_cash_flow_levered`, `sources_uses.equity_metrics.equity_total` |
 | NOI/door vs. portfolio average | Subject NOI/door ÷ portfolio average NOI/door | `noi_model.noi_per_unit`, user-supplied `portfolio_avg_noi_per_door` |
 | Preferred equity coverage | NOI − senior debt service − preferred return annual | `noi_model.net_operating_income`, `debt_structure.annual_debt_service`, user-supplied `pref_return_annual` |
@@ -2833,9 +3136,24 @@ file orders them so readers see the most recent run history at the bottom.
 
 The `sensitivity_sweeps` array supports single-variable sweeps: the user specifies a range of values for one assumption and the engine computes the target metric at each point, producing a result series for charting or tabular display.
 
-```json uw:section=custom_scenarios source=user ts=ISO8601 v=1
+```json uw:section=custom_scenarios source=manual ts=2026-10-11T00:00:00Z v=1
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "custom_scenarios",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "_notes": null,
   "scenarios": [
     {
@@ -2900,7 +3218,7 @@ The `sensitivity_sweeps` array supports single-variable sweeps: the user specifi
 
 | Scenario | Type | Key Override |
 |---|---|---|
-| Renovation budget overrun +20% | construction | `sources_uses.renovation_budget` +20% |
+| Renovation budget overrun +20% | construction | `sources_uses.uses.renovation.budget` +20% |
 | Anchor tenant vacates | tenant_event | Override specific tenant status to vacant; recompute NOI |
 | Rate cap expires at year 3 | rate | `debt_structure.interest_rate` from capped to index+spread at year 3 |
 | Lease-up 6 months longer than underwritten | stress | Delay year-1 revenue growth by 2 quarters |
@@ -2932,22 +3250,30 @@ The `sensitivity_sweeps` array supports single-variable sweeps: the user specifi
 5. Cross-section consistency checks do not apply to extension sections
 6. The `schema_version` field signals a stable schema ready for standardization review — set it to a semver string when the schema has stabilized across deals
 
-```json uw:section=x_{user_defined_id} source=user ts=ISO8601 v=1
+```json uw:section=x_{user_defined_id} source=manual ts=2026-10-11T00:00:00Z v=1
 {
   "_meta": {
     "section": "x_your_id",
-    "version": 1,
-    "superseded": false,
-    "source": "user",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "string",
-    "timestamp": "ISO8601",
-    "confidence": "high | medium | low",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": []
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": null
+    }
   },
   "_notes": null,
   "render_hint": {
@@ -2994,9 +3320,24 @@ The `content` object is entirely free-form. Any valid JSON is accepted.
 
 A gap entry names a missing or low-quality field by `(section, field_path)` and records *why* it is open (`missing | illegible | out_of_scope | deferred | blocked_by_dependency | awaiting_external`). Optional metadata declares the lowest stage the gap blocks, who owns resolving it, and how stale the entry is.
 
-```json uw:section=gaps source=system/gaps-maintainer ts=ISO8601 v=1 confidence=high
+```json uw:section=gaps source=system/gaps-maintainer ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "gaps",
+    "provenance": {
+      "source": "system/gaps-maintainer",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "_notes": null,
   "items": [
     {
@@ -3025,9 +3366,9 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 }
 ```
 
-**Auto-maintenance.** When an editor (a starter product since RFC 0078, Protocol §II.4) is invoked with the `--maintain-gaps` flag, the editor runs `inferGaps()` after every successful write and either updates the existing `gaps` section or creates one. The auto-write is stamped `_meta.source: 'system/gaps-maintainer'` and `_meta.actor: 'system'` so it is filterable from human-authored entries.
+**Auto-maintenance.** When an editor (a starter product since RFC 0078, Protocol §II.4) is invoked with the `--maintain-gaps` flag, the editor runs `inferGaps()` after every successful write and either updates the existing `gaps` section or creates one. The auto-write is stamped `_meta.provenance.source: 'system/gaps-maintainer'` and `_meta.provenance.actor: 'system'` so it is filterable from human-authored entries.
 
-**Validator codes.** A `provisional` block with no matching gap entry triggers `DQ-01`; a `partial` block with no `field_overrides` triggers `DQ-03`; consuming a provisional block at a stage whose policy is `halt` triggers `DQ-02`; a stale entry (older than the institution's freshness threshold) triggers `DQ-05`. See Protocol §III.6a.
+**Validator codes.** A `provisional` block with no matching gap entry triggers `DQ-01`; a `partial` block with no `_overrides` triggers `DQ-03`; consuming a provisional block at a stage whose policy is `halt` triggers `DQ-02`; a stale entry (older than the institution's freshness threshold) triggers `DQ-05`. See Protocol §III.6a.
 
 ---
 
@@ -3058,9 +3399,24 @@ The section is a **bounded map keyed by the component's own asset class**, not a
 
 **Allocation.** One purchase price and one loan cover the whole property, so use-level intensive metrics (price per apartment, loan per retail square foot) require splitting those single figures across components. There is no deterministic way to derive that split — income share, area share, and appraised-value share all disagree, and the choice is an underwriter's judgment. Therefore `allocation_pct` is an **input**, never a derivation: it is user-supplied, MUST sum to `1.0` across present components within `0.0001`, and an agent MUST NOT populate it. When `allocation_pct` is absent, every use-level intensive metric MUST evaluate to `null` rather than fall back to an area- or income-share guess.
 
-```json uw:section=components source=manual ts=ISO8601 v=1 confidence=high
+```json uw:section=components source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "components",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "_notes": null,
   "multifamily": {
     "component_class": "multifamily",
@@ -3106,7 +3462,7 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 - `position` — integer, `1` = most senior. Positions MUST be unique within the stack.
 - `amount` — the committed dollar amount.
 - `rate` — the coupon (debt) or preferred return (pref), as a fraction. REQUIRED for every debt tranche and for `preferred_equity`; MUST NOT appear on `common_equity`.
-- `accrual` — `cash` (current‑pay; enters cash coverage), `accrued` (PIK; compounds on balance and does **not** enter cash coverage), or `split` (RFC 0050; preferred-equity current-pay plus accrued components). `split` is permitted only on `preferred_equity` in Protocol 2.x.
+- `accrual` — `cash` (current‑pay; enters cash coverage), `accrued` (PIK; compounds on balance and does **not** enter cash coverage), or `split` (RFC 0050; preferred-equity current-pay plus accrued components). `split` is permitted only on `preferred_equity`.
 - `cash_rate` — fraction required only when `accrual` is `split`; the current-pay component that enters cash coverage. MUST NOT appear for another accrual mode.
 - `accrued_rate` — fraction required only when `accrual` is `split`; the accrued/PIK component that does not enter cash coverage. MUST NOT appear for another accrual mode.
 - For `accrual: "split"`, `rate` is required and MUST equal `cash_rate + accrued_rate`; disagreement is `CS-02b`.
@@ -3134,9 +3490,24 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 
 An accrued/PIK tranche contributes **zero** to `blended_coverage` but its balance still counts in `debt_yield_through` — accrual changes cash coverage, not the capital ahead of you. A split preferred tranche contributes only its `cash_rate` service to coverage and its full stated rate to `weighted_cost`.
 
-```json uw:section=capital_stack source=manual ts=ISO8601 v=1 confidence=high
+```json uw:section=capital_stack source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "capital_stack",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "tranches": [
     { "id": "senior", "class": "senior_debt",      "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "io_months": 24, "term_months": 120, "accrual": "cash" },
     { "id": "mezz_a", "class": "mezzanine_debt",    "position": 2, "amount": 6000000,  "rate": 0.11,   "amortization_months": 0,   "io_months": 120, "term_months": 120, "accrual": "cash" },
@@ -3186,9 +3557,24 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 - **Stated figures are verified, never trusted.** A verifier MUST recompute, three-state (`verified` / `failed` / `unverifiable`), quantizing both sides at the same quantum (Protocol § VIII.5 posture): each period's `net_cash_flow` = `rent_revenue + concessions + ti_lc_capex` (a period omitting a stated component is `unverifiable` for that row, never `failed`); `stabilized_summary.occupied_sf` against the final period; and `stabilized_summary.occupancy_rate` = final occupied SF ÷ the § XIII size denominator (no resolvable square-foot denominator → `unverifiable`, never a guess).
 - **Endpoint agreement (`CC-15`, warning, § 5.3).** The **base** variant's `stabilized_summary.annualized_noi` MUST agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%, a named exported constant). The tolerance is deliberate, not softness: unlike `CC-01` (one number restated in two places, exact), the trajectory endpoint and the stabilized-year projection are two different models of stabilization, and demanding exact agreement would force producers to hand-tune one to echo the other — destroying the independent-model signal the check exists to read. Non-base variants are exempt: a downside scenario is *supposed* to disagree with stabilized NOI.
 
-```json uw:section=lease_up_schedule variant=base source=manual ts=ISO8601 v=1 confidence=high
+```json uw:section=lease_up_schedule variant=base source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "lease_up_schedule",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "model_type": "natural_turnover",
   "period_granularity": "quarterly",
   "stabilization_target": "2027-Q4",
@@ -3249,9 +3635,24 @@ Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **st
 - **A stated `xirr` needs a sign change (`CF-03`, error).** A stated `xirr` on a series whose amounts do not include at least one negative and at least one positive value MUST be refused: the stated number cannot be the root of anything.
 - **Stated figures are verified, never trusted.** A verifier MUST recompute, three-state (`verified` / `failed` / `unverifiable`), quantizing both sides at the same quantum (Protocol § VIII.5 posture; § VIII.9.4): `total_net` and `moic` directly; `xnpv` closed-form at the stated `rate` (§ VIII.9.2); `xirr` by the § VIII.9.3 procedure. A stated metric whose recomputation *raises* (an `xirr` that fails to bracket) is `failed` — the document asserts a number the procedure cannot produce. A `moic` stated on a series with no outflows is `unverifiable` (an undefined ratio is not evidence of tampering). A metric absent from `stated_metrics` is simply not checked.
 
-```json uw:section=cash_flow_series variant=base source=manual ts=ISO8601 v=1 confidence=high
+```json uw:section=cash_flow_series variant=base source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
-  "_meta": { "...": "see §2.5" },
+  "_meta": {
+    "section": "cash_flow_series",
+    "provenance": {
+      "source": "manual",
+      "actor": "example-author",
+      "timestamp": "2026-10-11T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
   "label": "Levered hold-period cash flow",
   "day_count": "actual/365f",
   "series": [
@@ -3331,7 +3732,7 @@ records property cash custody. Its closed payload is `{accounts: [...] }`
 (nonempty), beside the universal `_meta`, `_role` and `_notes` members.
 The normative structural schema is
 [section-reserve-accounts.schema.json](schemas/section-reserve-accounts.schema.json).
-This section is available to v1.x and v2.x documents and is never required.
+This section is optional and never required.
 
 Each account states `account_id`, `class: "property_reserve"`, `purpose`,
 `owner` (economic owner), `currency_code` (three uppercase letters),
@@ -3401,6 +3802,148 @@ identities. It adds no document field or section requirement and changes no
 gross amount or RFC 0045 reserve refusal. See the
 [plan schema](schemas/reserve-draw-binding-plan.schema.json) and
 [result schema](schemas/reserve-draw-binding-verification.schema.json).
+
+### Official class sections (RFC 0080, RFC 0081)
+
+These additive sections use the same bare block body and role/variant resolution as existing standard sections. Fixed field contracts are enforced by core (CLS-03 missing required section, CLS-04 invalid stated field). The normative schemas below govern their payloads; additional annotations do not change the calculations. Primary size is always stated on property, never synthesized: `critical_it_load_kw` for data centers and `total_sites` for manufactured housing. The matching detailed-section quantity must agree exactly when both are stated.
+
+### 4.29 Capacity & Topology
+
+**ID:** `dc_capacity`
+
+**Class:** `data_center`. **Presence:** required.
+
+**Normative schema:** [section-dc-capacity.schema.json](schemas/section-dc-capacity.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `critical_it_load_kw` | number; {'minimum': 0} |
+| `planned_it_load_kw` | number; {'minimum': 0} |
+| `contracted_it_load_kw` | number; {'minimum': 0} |
+| `utility_feed_kw` | number; {'minimum': 0} |
+| `design_pue` | number; {'minimum': 1} |
+| `measured_pue` | ['number', 'null']; {'minimum': 1} |
+| `redundancy` | string; {'enum': ['n', 'n_plus_1', 'n_plus_2', '2n', '2n_plus_1']} |
+| `raised_floor_sf` | ['integer', 'null']; {'minimum': 0} |
+| `design_density_kw_per_rack` | ['number', 'null']; {'minimum': 0} |
+### 4.30 Power Economics
+
+**ID:** `dc_power`
+
+**Class:** `data_center`. **Presence:** optional.
+
+**Normative schema:** [section-dc-power.schema.json](schemas/section-dc-power.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `utility_rate_per_kwh` | number; {'minimum': 0} |
+| `billing` | string; {'enum': ['metered_pass_through', 'all_in', 'breakered']} |
+| `power_margin` | ['number', 'null']; {'minimum': 0} |
+| `stated_annual_power_cost` | ['number', 'null']; {'minimum': 0} |
+### 4.31 Revenue
+
+**ID:** `dc_revenue`
+
+**Class:** `data_center`. **Presence:** optional.
+
+**Normative schema:** [section-dc-revenue.schema.json](schemas/section-dc-revenue.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `lease_type` | string; {'enum': ['powered_shell', 'wholesale_turnkey', 'retail_colocation', 'hyperscale_build_to_suit']} |
+| `rent_per_kw_month` | number; {'minimum': 0} |
+| `interconnection_revenue_annual` | number; {'minimum': 0} |
+| `services_revenue_annual` | number; {'minimum': 0} |
+| `market_rent_per_kw_month` | ['number', 'null']; {'minimum': 0} |
+### 4.32 Hotel Operating Metrics
+
+**ID:** `hotel_metrics`
+
+**Class:** `hospitality`. **Presence:** optional.
+
+**Normative schema:** [section-hotel-metrics.schema.json](schemas/section-hotel-metrics.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `market_revpar` | ['number', 'null']; {} |
+### 4.33 Brand & Franchise
+
+**ID:** `hotel_brand`
+
+**Class:** `hospitality`. **Presence:** optional.
+
+**Normative schema:** [section-hotel-brand.schema.json](schemas/section-hotel-brand.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `flag` | ['string', 'null']; {} |
+| `franchise_fee_pct_of_rooms` | number; {'minimum': 0, 'maximum': 0.2} |
+| `marketing_fund_pct` | number; {'minimum': 0, 'maximum': 0.1} |
+| `loyalty_program_pct` | number; {'minimum': 0, 'maximum': 0.1} |
+| `term_years` | ['integer', 'null']; {'minimum': 0} |
+### 4.34 Food & Beverage
+
+**ID:** `hotel_food_beverage`
+
+**Class:** `hospitality`. **Presence:** optional.
+
+**Normative schema:** [section-hotel-food-beverage.schema.json](schemas/section-hotel-food-beverage.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `fb_revenue` | number; {'minimum': 0} |
+| `fb_cogs` | number; {'minimum': 0} |
+| `fb_labor` | number; {'minimum': 0} |
+| `complimentary_breakfast_cost_per_occupied_room` | number; {'minimum': 0} |
+### 4.35 Manufactured Housing Sites
+
+**ID:** `mhc_sites`
+
+**Class:** `manufactured_housing`. **Presence:** required.
+
+**Normative schema:** [section-mhc-sites.schema.json](schemas/section-mhc-sites.schema.json).
+
+| Field | Type / constraint |
+|---|---|
+| `total_sites` | integer; {'minimum': 1} |
+| `occupied_sites` | integer; {'minimum': 0} |
+| `park_owned_homes` | integer; {'minimum': 0} |
+| `weighted_pad_rent_monthly` | number; {'minimum': 0} |
+| `poh_home_rent_monthly` | ['number', 'null']; {'minimum': 0} |
+| `as_of_date` | presence only; calendar/date validity is deferred |
+
+POH home rent is required and numeric when `park_owned_homes > 0`; it is absent or null when no homes are park-owned. Zero pad or home rent is permitted. `as_of_date` is presence-only in this scope.
+
+### Class verification rules
+
+Rules use Protocol §VIII.1 safe expressions. A false result emits the listed finding; absent inputs do not become zero. A type/evaluation error emits MOD-RULE-ERROR. Reporting and statement comparisons use the dictionary and existing §VIII.5 quantizer.
+
+| Code | Severity | Assertion |
+|---|---|---|
+| `CC-DC-01` | error | `dc_capacity.design_pue >= 1` |
+| `CC-DC-02` | warning | `dc_capacity.design_pue <= 1.6` |
+| `CC-DC-03` | error | `dc_capacity.critical_it_load_kw <= dc_capacity.planned_it_load_kw` |
+| `CC-DC-04` | warning | `dc_capacity.contracted_it_load_kw <= dc_capacity.critical_it_load_kw` |
+| `CC-DC-05` | warning | `facility_load_kw <= dc_capacity.utility_feed_kw` |
+| `CC-DC-06` | warning | `dc_capacity.measured_pue == null &#124;&#124; dc_capacity.measured_pue <= dc_capacity.design_pue * 1.15` |
+| `CC-DC-07` | warning | `dc_revenue.market_rent_per_kw_month == null &#124;&#124; rent_index >= 0.85` |
+| `CC-HOSP-01` | warning | `hotel_metrics.market_revpar == null &#124;&#124; revpar >= hotel_metrics.market_revpar * 0.85` |
+| `CC-HOSP-02` | error | `rent_roll.occupancy == null &#124;&#124; (rent_roll.occupancy >= 0 && rent_roll.occupancy <= 1)` |
+| `CC-HOSP-03` | warning | `hotel_brand.franchise_fee_pct_of_rooms + hotel_brand.marketing_fund_pct + hotel_brand.loyalty_program_pct <= 0.13` |
+| `CC-HOSP-04` | warning | `hotel_metrics.market_revpar` is stated but RevPAR (`noi_model.income.rooms_revenue / rent_roll.available_room_nights`) is uncomputable, so `CC-HOSP-01` is not evaluated. The finding names the missing canonical inputs; RevPAR is never inferred from ADR × occupancy. |
+| `CC-MH-01` | error | `mhc_sites == null &#124;&#124; (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` |
+| `CC-MH-02` | error | `mhc_sites == null &#124;&#124; (mhc_sites.occupied_sites != null && mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites)` |
+| `CC-MH-03` | error | `mhc_sites == null &#124;&#124; (mhc_sites.park_owned_homes != null && mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites)` |
+| `CC-MH-04` | error | `mhc_sites == null &#124;&#124; (mhc_sites.weighted_pad_rent_monthly != null && mhc_sites.weighted_pad_rent_monthly >= 0)` |
+| `CC-MH-05` | error | `mhc_sites == null &#124;&#124; mhc_sites.as_of_date != null` |
+| `CC-MH-06` | error | `mhc_sites == null &#124;&#124; mhc_sites.park_owned_homes != 0 &#124;&#124; mhc_sites.poh_home_rent_monthly == null` |
+| `CC-MH-07` | error | `mhc_sites == null &#124;&#124; mhc_sites.park_owned_homes == null &#124;&#124; mhc_sites.park_owned_homes <= 0 &#124;&#124; (mhc_sites.poh_home_rent_monthly != null && mhc_sites.poh_home_rent_monthly >= 0)` |
+| `CC-DC-08` | error | Stated property critical IT kW equals stated dc_capacity critical IT kW. |
+| `CC-MH-08` | error | Stated property sites equal stated mhc_sites total_sites. |
+| `CLS-03` | error | A required official class section is absent. |
+| `CLS-04` | error | A stated official field violates its fixed field contract; hospitality rent_roll requires available_room_nights when stated. |
+
+---
 
 ## Part V — Validation Rules
 
@@ -3610,11 +4153,10 @@ model, not a second.
 
 ### 5.4 Descriptive identity guidance (RFC 0072)
 
-These diagnostics MUST be warnings in **both** format generations, never errors.
-No new error is introduced for a document that was valid before this RFC.
+These diagnostics MUST be warnings, never errors.
 
 - `DQ-07`: non-null `scenario` outside the eight standard plans and reverse-DNS
-  extension grammar, including unlisted or retired values and non-string
+  extension grammar, including unlisted values and non-string
   structures (§2.2b). Absent/null is valid and emits nothing.
 - `DQ-08`: either subtype carrier states `build_to_rent` and both non-null
   carriers differ (§2.2c). Frontmatter governs; preserve both values.
@@ -3649,14 +4191,13 @@ Reads a `.uwx.md` file and outputs a structured JSON object containing:
     "property": "string — the markdown prose block for this section",
     "...": "..."
   },
-  "pipeline_log": [ "...entries..." ],
-  "superseded_blocks": { "...": "all superseded blocks, keyed by section + version" }
+  "pipeline_log": [ "...entries..." ]
 }
 ```
 
 ### 6.2 `uwmd validate <file> [--stage <stage>]`
 
-Runs all validation rules (§5) and returns:
+Runs all validation rules (Part V) and returns:
 
 ```json
 {
@@ -3697,7 +4238,7 @@ The `--tier screener` flag renders only the Tier 1 sections (no Bancroft-generat
 
 ### 6.5 `uwmd compact <file>`
 
-Removes all blocks where `_meta.superseded === true`. Preserves the pipeline log. Outputs the compacted file. Appends a `compact` entry to the pipeline log.
+Removes all blocks where `_meta.lifecycle.superseded === true`. Preserves the pipeline log. Outputs the compacted file. Appends a `compact` entry to the pipeline log.
 
 ### 6.6 `uwmd diff <file_a> <file_b>`
 
@@ -3706,12 +4247,11 @@ Compares two `.uwx.md` files (or two versions of the same file at different time
 ### 6.7 `uwmd init --scenario <scenario> --address <address>`
 
 `--scenario` writes a standard business plan (§2.2b) or a well-formed
-reverse-DNS extension; omitted means null. It refuses retired, unlisted bare
-or malformed values before writing. Readers still preserve these values and
+reverse-DNS extension; omitted means null. It refuses unlisted bare or malformed values before writing. Readers still preserve these values and
 warn rather than reject (§5.4). `--asset-subtype` writes the open subtype
 carrier; for single-site BTR use `--asset-class multifamily --asset-subtype
 build_to_rent --scenario stabilized_acquisition` (or the actual plan).
-The library generator remains able to serialize legacy strings losslessly.
+`uwmd init` writes only bare nested Format 3.0 blocks, with `uw_version: "3.0"`; it takes no `--format`. Lite compilation emits the same Format 3.0 contract for all twelve builtin classes. No migrate command is part of the toolchain.
 
 Creates a new `.uwx.md` file with:
 - Populated frontmatter
@@ -3726,9 +4266,9 @@ Any Bancroft agent writing to a `.uwx.md` file MUST:
 1. Read the current state of its input sections before running
 2. Produce a single data block JSON object matching the section schema exactly
 3. Include a valid `_meta` object as the first key
-4. Set `_meta.version` to `previous_version + 1` (or `1` if no previous block exists)
-5. Set `_meta.superseded = false`
-6. Never write to sections outside its defined scope (see §4 "Written by" field)
+4. Set `_meta.lifecycle.revision` to `previous_revision + 1` (or `1` if no previous block exists)
+5. Set `_meta.lifecycle.superseded = false`
+6. Never write to sections outside its defined scope (see the Part IV "Written by" field)
 7. Never set `human_review_required: false` if the block contains any `low` confidence values
 8. Return `{ "status": "awaiting_input", "required": ["section_id", ...] }` if required input sections are missing, rather than failing
 
@@ -3798,7 +4338,8 @@ uw_2026_a3f9b1_1234-main-st-phoenix-az_20260424_v3.uwx.md
 
 **RFC 0072 clarification:** this legacy heading and `scenario_defaults.json`
 reference do not refer to frontmatter `scenario` (§2.2b). That field MUST NOT
-select defaults. The operative cascade/default contract is Protocol §V.7,
+select defaults. Defaults and the fallback cascade are starter-product
+guidance ([starter guide §V.7–§V.8](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)),
 whose published defaults are keyed by asset class. Repair of the vestigial
 file reference and broader terminology is deferred separately.
 
@@ -3943,171 +4484,6 @@ If you need long-form prose in a section, put it in the markdown body (between f
 
 ---
 
-*Specification version 1.1 | underwriter.cc | April 2026*  
-*v1.0 → v1.1: Added §4.0 (Deal Context), §4.19 (Custom Calculations), §4.20 (Custom Scenarios), §4.21 (Extension Sections); expanded Appendix C; added universal `_notes` field and reference path notation.*  
+*Format 3.0 | UW Markdown | October 2026*
 *This document is itself a reference artifact. The canonical format for a deal is a `.uwx.md` file. This spec defines what valid means.*
 
-**Markdown opt-in.** When an active section declares `_role` and has explicit
-`variant=` fences, readers collect all its active named variants, even outside
-the legacy multi-variant section registry. Collect before choosing a version,
-so fence order cannot discard an unannotated peer. Superseded roles do not
-activate selection. Role-free Markdown retains its existing routing behavior;
-removing a section's last role ends this opt-in. UW JSON envelopes already
-represent variant maps on every section.
-
-## Official class sections (RFC 0080; Format 2.1)
-
-These additive sections use the same block envelope and role/variant resolution as existing standard sections. Fixed field contracts are enforced by core (CLS-03 missing required section, CLS-04 invalid stated field). The normative schemas below govern their payloads; additional annotations do not change the calculations. Primary size is always stated on property, never synthesized: `critical_it_load_kw` for data centers and `total_sites` for manufactured housing. The matching detailed-section quantity must agree exactly when both are stated.
-
-### 4.29 Capacity & Topology
-
-**ID:** `dc_capacity`
-
-**Class:** `data_center`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
-
-**Normative schema:** [section-dc-capacity.schema.json](schemas/section-dc-capacity.schema.json).
-
-| Field | Type / constraint |
-|---|---|
-| `critical_it_load_kw` | number; {'minimum': 0} |
-| `planned_it_load_kw` | number; {'minimum': 0} |
-| `contracted_it_load_kw` | number; {'minimum': 0} |
-| `utility_feed_kw` | number; {'minimum': 0} |
-| `design_pue` | number; {'minimum': 1} |
-| `measured_pue` | ['number', 'null']; {'minimum': 1} |
-| `redundancy` | string; {'enum': ['n', 'n_plus_1', 'n_plus_2', '2n', '2n_plus_1']} |
-| `raised_floor_sf` | ['integer', 'null']; {'minimum': 0} |
-| `design_density_kw_per_rack` | ['number', 'null']; {'minimum': 0} |
-### 4.30 Power Economics
-
-**ID:** `dc_power`
-
-**Class:** `data_center`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
-
-**Normative schema:** [section-dc-power.schema.json](schemas/section-dc-power.schema.json).
-
-| Field | Type / constraint |
-|---|---|
-| `utility_rate_per_kwh` | number; {'minimum': 0} |
-| `billing` | string; {'enum': ['metered_pass_through', 'all_in', 'breakered']} |
-| `power_margin` | ['number', 'null']; {'minimum': 0} |
-| `stated_annual_power_cost` | ['number', 'null']; {'minimum': 0} |
-### 4.31 Revenue
-
-**ID:** `dc_revenue`
-
-**Class:** `data_center`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
-
-**Normative schema:** [section-dc-revenue.schema.json](schemas/section-dc-revenue.schema.json).
-
-| Field | Type / constraint |
-|---|---|
-| `lease_type` | string; {'enum': ['powered_shell', 'wholesale_turnkey', 'retail_colocation', 'hyperscale_build_to_suit']} |
-| `rent_per_kw_month` | number; {'minimum': 0} |
-| `interconnection_revenue_annual` | number; {'minimum': 0} |
-| `services_revenue_annual` | number; {'minimum': 0} |
-| `market_rent_per_kw_month` | ['number', 'null']; {'minimum': 0} |
-### 4.32 Hotel Operating Metrics
-
-**ID:** `hotel_metrics`
-
-**Class:** `hospitality`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
-
-**Normative schema:** [section-hotel-metrics.schema.json](schemas/section-hotel-metrics.schema.json).
-
-| Field | Type / constraint |
-|---|---|
-| `adr` | number; {'minimum': 0} |
-| `occupancy` | number; {'minimum': 0, 'maximum': 1} |
-| `available_room_nights` | integer; {'minimum': 0} |
-| `key_count` | integer; {'minimum': 0} |
-| `market_revpar` | ['number', 'null']; {} |
-### 4.33 Brand & Franchise
-
-**ID:** `hotel_brand`
-
-**Class:** `hospitality`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
-
-**Normative schema:** [section-hotel-brand.schema.json](schemas/section-hotel-brand.schema.json).
-
-| Field | Type / constraint |
-|---|---|
-| `flag` | ['string', 'null']; {} |
-| `franchise_fee_pct_of_rooms` | number; {'minimum': 0, 'maximum': 0.2} |
-| `marketing_fund_pct` | number; {'minimum': 0, 'maximum': 0.1} |
-| `loyalty_program_pct` | number; {'minimum': 0, 'maximum': 0.1} |
-| `term_years` | ['integer', 'null']; {'minimum': 0} |
-### 4.34 Food & Beverage
-
-**ID:** `hotel_food_beverage`
-
-**Class:** `hospitality`. **Presence:** optional. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
-
-**Normative schema:** [section-hotel-food-beverage.schema.json](schemas/section-hotel-food-beverage.schema.json).
-
-| Field | Type / constraint |
-|---|---|
-| `fb_revenue` | number; {'minimum': 0} |
-| `fb_cogs` | number; {'minimum': 0} |
-| `fb_labor` | number; {'minimum': 0} |
-| `complimentary_breakfast_cost_per_occupied_room` | number; {'minimum': 0} |
-### 4.35 Manufactured Housing Sites
-
-**ID:** `mhc_sites`
-
-**Class:** `manufactured_housing`. **Presence:** required. For hospitality, the requirement applies to explicit legacy module dependencies; existing builtin rent-roll/NOI records remain valid.
-
-**Normative schema:** [section-mhc-sites.schema.json](schemas/section-mhc-sites.schema.json).
-
-| Field | Type / constraint |
-|---|---|
-| `total_sites` | integer; {'minimum': 1} |
-| `occupied_sites` | integer; {'minimum': 0} |
-| `park_owned_homes` | integer; {'minimum': 0} |
-| `weighted_pad_rent_monthly` | number; {'minimum': 0} |
-| `poh_home_rent_monthly` | ['number', 'null']; {'minimum': 0} |
-| `as_of_date` | presence only; calendar/date validity is deferred |
-
-POH home rent is required and numeric when `park_owned_homes > 0`; it is absent or null when no homes are park-owned. Zero pad or home rent is permitted. `as_of_date` is presence-only in this scope.
-
-### Class verification rules
-
-Rules use Protocol §VIII.1 safe expressions. A false result emits the listed finding; absent inputs do not become zero. A type/evaluation error emits MOD-RULE-ERROR. Reporting and statement comparisons use the dictionary and existing §VIII.5 quantizer.
-
-| Code | Severity | Assertion |
-|---|---|---|
-| `CC-DC-01` | error | `dc_capacity.design_pue >= 1` |
-| `CC-DC-02` | warning | `dc_capacity.design_pue <= 1.6` |
-| `CC-DC-03` | error | `dc_capacity.critical_it_load_kw <= dc_capacity.planned_it_load_kw` |
-| `CC-DC-04` | warning | `dc_capacity.contracted_it_load_kw <= dc_capacity.critical_it_load_kw` |
-| `CC-DC-05` | warning | `facility_load_kw <= dc_capacity.utility_feed_kw` |
-| `CC-DC-06` | warning | `dc_capacity.measured_pue == null &#124;&#124; dc_capacity.measured_pue <= dc_capacity.design_pue * 1.15` |
-| `CC-DC-07` | warning | `dc_revenue.market_rent_per_kw_month == null &#124;&#124; rent_index >= 0.85` |
-| `CC-HOSP-01` | warning | `hotel_metrics.market_revpar == null &#124;&#124; revpar >= hotel_metrics.market_revpar * 0.85` |
-| `CC-HOSP-02` | error | `hotel_metrics.occupancy >= 0 && hotel_metrics.occupancy <= 1` |
-| `CC-HOSP-03` | warning | `hotel_brand.franchise_fee_pct_of_rooms + hotel_brand.marketing_fund_pct + hotel_brand.loyalty_program_pct <= 0.13` |
-| `CC-HOSP-04` | warning | `hotel_metrics.market_revpar` is stated but RevPAR (`noi_model.income.rooms_revenue / rent_roll.available_room_nights`) is uncomputable, so `CC-HOSP-01` is not evaluated. The finding names the missing canonical inputs; RevPAR is never inferred from ADR × occupancy. |
-| `CC-MH-01` | error | `mhc_sites == null &#124;&#124; (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` |
-| `CC-MH-02` | error | `mhc_sites == null &#124;&#124; (mhc_sites.occupied_sites != null && mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites)` |
-| `CC-MH-03` | error | `mhc_sites == null &#124;&#124; (mhc_sites.park_owned_homes != null && mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites)` |
-| `CC-MH-04` | error | `mhc_sites == null &#124;&#124; (mhc_sites.weighted_pad_rent_monthly != null && mhc_sites.weighted_pad_rent_monthly >= 0)` |
-| `CC-MH-05` | error | `mhc_sites == null &#124;&#124; mhc_sites.as_of_date != null` |
-| `CC-MH-06` | error | `mhc_sites == null &#124;&#124; mhc_sites.park_owned_homes != 0 &#124;&#124; mhc_sites.poh_home_rent_monthly == null` |
-| `CC-MH-07` | error | `mhc_sites == null &#124;&#124; mhc_sites.park_owned_homes == null &#124;&#124; mhc_sites.park_owned_homes <= 0 &#124;&#124; (mhc_sites.poh_home_rent_monthly != null && mhc_sites.poh_home_rent_monthly >= 0)` |
-| `CC-DC-08` | error | Stated property critical IT kW equals stated dc_capacity critical IT kW. |
-| `CC-MH-08` | error | Stated property sites equal stated mhc_sites total_sites. |
-| `CLS-01` | warning | The exact legacy official data-center id is deprecated. |
-| `CLS-02` | info | An official module-list dependency is satisfied by core. |
-| `CLS-03` | error | A required official class section is absent. |
-| `CLS-04` | error / warning | A stated official field violates its fixed field contract. Error on canonical-id documents declaring Format 2.1 or later; warning on documents using the legacy `org.uwmd.data_center` id or declaring an earlier format, which predate the contract (RFC 0080 §5). |
-| `CLS-05` | error | New builtin class IDs require declared Format 2.1 or later. The legacy official alias is exempt. |
-
-**Compatibility severities (RFC 0080 §5).** A document that predates the
-builtin content — one declaring a format before 2.1 that does not name the
-legacy official module (`org.uwmd.hospitality` or `org.uwmd.datacenters`) —
-receives any error-severity class finding above (a rule, `MOD-RULE-ERROR` or
-`MOD-CALC-ERROR`) as a warning, so a previously valid document gains no error.
-Hospitality calculations that predate RFC 0080 (`revpar`) fail as every
-builtin pack calculation does — uncomputed, with no finding — and the migrated
-hospitality calculations report `MOD-CALC-ERROR` only for documents naming
-`org.uwmd.hospitality`, as the module runtime did.

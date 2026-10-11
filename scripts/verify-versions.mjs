@@ -179,8 +179,8 @@ if (pairChecks > 0) {
 // status line and §0.3. Both are useful to readers, so keep them as checked
 // mirrors instead of allowing prose to silently drift from the matrix.
 
-const protocolDoc = read('spec/UW_PROTOCOL_v1.md');
-const authoritativeProtocol = statedVersion('UW Protocol');
+const protocolDoc = read('spec/UW_PROTOCOL.md');
+const authoritativeProtocol = read('packages/uwmd-core/src/protocol.ts').match(/SPEC_PROTOCOL_VERSION = '([^']+)'/)?.[1] ?? statedVersion('UW Protocol');
 const PROTOCOL_DOC_LABELS = [
   {
     label: 'protocol status line',
@@ -195,12 +195,12 @@ const PROTOCOL_DOC_LABELS = [
 for (const { label, pattern } of PROTOCOL_DOC_LABELS) {
   const actual = protocolDoc.match(pattern)?.[1] ?? null;
   if (actual === null) {
-    failures.push(`spec/UW_PROTOCOL_v1.md: could not read the ${label}.`);
+    failures.push(`spec/UW_PROTOCOL.md: could not read the ${label}.`);
     continue;
   }
   if (actual !== authoritativeProtocol) {
     failures.push(
-      `spec/UW_PROTOCOL_v1.md: ${label} is ${actual}, but VERSIONS.md declares ${authoritativeProtocol}.`,
+      `spec/UW_PROTOCOL.md: ${label} is ${actual}, but the accepted protocol constant declares ${authoritativeProtocol}.`,
     );
     continue;
   }

@@ -343,11 +343,11 @@ graph. Two surfaces RFC 0021 introduces are owned elsewhere, and are specified
 there rather than duplicated here:
 
 - **Inherited assumptions** (`inherited_assumption`, `COMP-AMBIGUOUS-INHERIT`)
-  are a cascade step, so they belong to the protocol: see
-  [`UW_PROTOCOL_v1.md`](UW_PROTOCOL_v1.md) §V.7.1.
+  are a cascade step, which is starter-product guidance: see
+  [starter guide §V.7.1](../docs/starter/defaults-and-cascade.md#v71-inherited-assumptions).
 - **Rollup receipts** (`COMP-ROLLUP-DISAGREES`, the fixed `fn` vocabulary,
   two-stage verification) amend the receipt format, which RFC 0016 owns: see
-  [`UW_RECEIPT_v1.md`](UW_RECEIPT_v1.md) §11.
+  [`UW_RECEIPT.md`](UW_RECEIPT.md) §11.
 
 Packages, member links, and the edge registry are RFC 0018's; this document
 assumes them and does not restate them.

@@ -8,6 +8,15 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Accepted contract — RFC 0081 Phase 2
+
+- Consolidated the two Format specifications into `spec/UW_FORMAT_SPEC.md`, describing only Format 3.0: bare payloads with inline nested `_meta`, the block digest excluding the whole `_meta` member, lone-fact structured replacements and single-home hospitality fields. Renamed the Protocol and Lite/Receipt/XML/CSV/Composition specifications without version suffixes and removed all 34 starter-product stubs.
+- Merged the block schemas, fixed UTF-8 descriptions, and aligned manifest, ownership, G1 field-group and hotel schemas with the accepted contract. Re-pathed the two hotel dictionary metrics without changing arithmetic or rounding.
+- Added accepted spec constants 3.0/4.0.0 and staged supported-version entries, final module requirements/types and new refusal registrations. Release labels, runtime readers and corpus authoring stay in later RFC phases. Test projections preserve all existing checks across that boundary; historical RFC/release filenames resolve through the docs-site build map.
+- Review fixes: Protocol §V.11.2 now states the RFC 0081 §3 digest everywhere (a `_meta`-only change keeps `content_hash` and the signature; `parent_hash` is not bound transitively). Restored normative text the merge dropped: the `partial`/`provisional` definitions and the SHOULD to label outputs derived from provisional blocks, the closed `_overrides[].reason` vocabulary, the cascade-tag MUST, §V.9's non-finite-number and `undefined` rules, the `META_FIELD_MISSING_<FIELD>` list, the `DQ-07` preserve MUST and the RFC 0071/0074 module floors restated for 4.0.0. In every G1 group a member stated as `null` is not stated; a lone recovery `cap` needs no `accumulation`, which REC-02 requires once `method` is stated. Added the hospitality `rent_roll` class-contract schema (`rent-roll-hospitality.schema.json`), removed the retired Format 2.1 conditionals from the envelope schema, and fixed the Format examples' `_meta.section`. `npm run verify-indexes` now checks that every spec `§` reference, `spec_ref` and spec link resolves (`scripts/spec-refs.mjs`). `@uwmd/core` and `@uwmd/core/browser` export `BUILTIN_CLASS_CONTENT`.
+- **Interim state (Phase 2 → Phase 4).** The specifications and schemas describe Format 3.0 / Protocol 4.0.0, but until RFC 0081 Phase 4 lands the reference implementation does not yet enforce them: it still computes the pre-3.0 block digest (over `_meta` as well as content), still reads and writes the wrapped and flat block shapes, still accepts the legacy scalars the G1 groups replace and refuses their lone-fact forms (`HDG-01`, `CAPX-01`, `TAX-01`, `REC-02`), and still reads the hotel facts from `hotel_metrics` rather than the G3 `rent_roll` home. Validate a Format 3.0 document against the schemas, not the runtime, until then.
+
+
 ## [3.0.0] - 2026-10-11
 
 ### Released

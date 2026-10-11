@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 //
-// UW_RECEIPT_v1 §1 is a requirement on the interface, not just on the library:
+// UW_RECEIPT §1 is a requirement on the interface, not just on the library:
 // a `verified` receipt MUST NOT be presented as an unqualified checkmark, and
 // the reader MUST be able to see what it does and does not attest. That is a
 // UI property, so it needs a UI test — a passing core test cannot prove the

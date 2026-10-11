@@ -9,7 +9,7 @@ interchangeable. Pick the one that matches what you're trying to do.
 
 Every tool on this page is a **starter product**: a non-normative reference
 tool built on the standard ([RFC 0078](rfcs/0078-protocol-is-verification.md)).
-The standard is the format, the [Protocol](../spec/UW_PROTOCOL_v1.md) as
+The standard is the format, the [Protocol](../spec/UW_PROTOCOL.md) as
 verification, receipts and the [metric dictionary](../spec/metrics/README.md);
 a lender can verify a record with none of these tools. Their behavior is
 described in the [starter products guide](starter/README.md).
@@ -70,7 +70,7 @@ It checks mathematical consistency, not economic completeness.
 | Check a receipt a counterparty sent you | any of the [CLI](#uwmd-cli), [web editor](#web-editor), or [VS Code extension](#vs-code-extension) | 3 |
 
 If you're not sure what conformance tier means, see the
-[protocol spec §II](../spec/UW_PROTOCOL_v1.md) or the
+[protocol spec §II](../spec/UW_PROTOCOL.md) or the
 [tier overview in the conformance corpus](../conformance/README.md).
 
 ---
@@ -198,7 +198,7 @@ the calc engine by construction. The asset class's calc pack drives
 both paths, and both quantize at the same declared precision. For the
 metrics the workbook covers, native recalculation tests require the
 workbook to match the engine's quantized value exactly
-([protocol §VIII.5](../spec/UW_PROTOCOL_v1.md)).
+([protocol §VIII.5](../spec/UW_PROTOCOL.md)).
 
 Best for: handing a deal to someone who lives in Excel. Producing
 deliverables for credit committee. Bridging legacy review processes.

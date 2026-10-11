@@ -18,8 +18,8 @@ the promotion path documented in [`GOVERNANCE.md`](./GOVERNANCE.md#promotion-pat
 When the maintainer count grows, the following areas get assigned
 owners (reflected in [`.github/CODEOWNERS`](./.github/CODEOWNERS)):
 
-- **Format spec** — `spec/UW_FORMAT_SPEC_v1.md`
-- **Protocol spec** — `spec/UW_PROTOCOL_v1.md`
+- **Format spec** — `spec/UW_FORMAT_SPEC.md`
+- **Protocol spec** — `spec/UW_PROTOCOL.md`
 - **JSON Schemas** — `spec/schemas/**`
 - **Reference library** — `packages/uwmd-core/`
 - **Conformance corpus** — `conformance/`, `scripts/run-conformance.mjs`

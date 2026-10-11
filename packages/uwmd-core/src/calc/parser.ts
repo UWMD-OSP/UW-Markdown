@@ -1,5 +1,5 @@
 // Tier-3 Calc Host — recursive-descent parser for the safe-expression
-// grammar in UW_PROTOCOL_v1.md §VIII.1. Produces an AST that evaluator.ts
+// grammar in UW_PROTOCOL.md §VIII.1. Produces an AST that evaluator.ts
 // walks. Any input that does not parse against the grammar is rejected
 // with CALC-PARSE-001.
 

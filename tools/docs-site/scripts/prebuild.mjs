@@ -10,7 +10,7 @@ import { mkdir, copyFile, readFile, writeFile, rm, readdir, stat } from 'node:fs
 import { existsSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { rfcCopies, docsVersions, docsSiteVersions } from '../../../scripts/docs-site-sources.mjs';
+import { rfcCopies, docsSiteVersions } from '../../../scripts/docs-site-sources.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_ROOT = resolve(__dirname, '..');
@@ -30,7 +30,6 @@ if (process.argv.includes('--clean')) {
 // ─── Copy plan ────────────────────────────────────────────────────────────────
 // Each entry: { from: repo-relative path, to: site-relative path, transform?: fn }
 
-const versions = docsVersions(REPO_ROOT);
 
 // The non-normative starter products guide (RFC 0078). Listed rather than
 // discovered so each page carries a site title, like the other copies.
@@ -47,14 +46,13 @@ const STARTER_PAGES = [
 
 const COPIES = [
   // Spec
-  { from: 'spec/UW_FORMAT_SPEC_v1.md',   to: 'spec/format.md',   title: 'UW Format Specification (v1.1)' },
-  { from: 'spec/UW_FORMAT_SPEC_v2.md',   to: 'spec/format-v2.md', title: 'UW Format Specification (v2.0)' },
-  { from: 'spec/UW_PROTOCOL_v1.md',      to: 'spec/protocol.md', title: `UW Protocol — verification (${versions.protocol})` },
-  { from: 'spec/UW_XML_MAPPING_v1.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
-  { from: 'spec/UW_CSV_BUNDLE_v1.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
-  { from: 'spec/UW_LITE_SPEC_v1.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },
-  { from: 'spec/UW_RECEIPT_v1.md',       to: 'spec/receipt.md',  title: 'UW Verification Receipt (v1.0)' },
-  { from: 'spec/UW_COMPOSITION_v1.md',   to: 'spec/composition.md', title: 'UW Composition Specification (v1.0)' },
+  { from: 'spec/UW_FORMAT_SPEC.md',   to: 'spec/format.md',   title: 'UW Format Specification (3.0)' },
+  { from: 'spec/UW_PROTOCOL.md',      to: 'spec/protocol.md', title: 'UW Protocol — verification (4.0.0)' },
+  { from: 'spec/UW_XML_MAPPING.md',   to: 'spec/xml.md',      title: 'UW XML Mapping (v1.0)' },
+  { from: 'spec/UW_CSV_BUNDLE.md',    to: 'spec/csv.md',      title: 'UW CSV Bundle (v1.0)' },
+  { from: 'spec/UW_LITE_SPEC.md',     to: 'spec/lite.md',     title: 'UW Lite Specification (v1.0)' },
+  { from: 'spec/UW_RECEIPT.md',       to: 'spec/receipt.md',  title: 'UW Verification Receipt (1.1)' },
+  { from: 'spec/UW_COMPOSITION.md',   to: 'spec/composition.md', title: 'UW Composition Specification (v1.0)' },
   { from: 'spec/bindings/README.md', to: 'spec/bindings/index.md', title: 'Transport Bindings' },
   { from: 'spec/bindings/UW_HTTP_BINDING_v1.md', to: 'spec/http.md', title: 'UW HTTP Binding (v1.0)' },
   { from: 'spec/bindings/UW_MCP_BINDING_v1.md', to: 'spec/mcp.md', title: 'UW MCP Binding (v1.0)' },
@@ -205,17 +203,36 @@ const NORMALIZED_LINK_MAP = new Map([
     [`starter/${file}`, `/starter/${file.replace(/\.md$/, '')}`],
   ]),
 
-  // Spec
+  // Historical RFC/release filenames (RFC 0081 §2), not redirects.
+  ['UW_FORMAT_SPEC_v1.md', '/spec/format'],
   ['spec/UW_FORMAT_SPEC_v1.md', '/spec/format'],
-  ['spec/UW_FORMAT_SPEC_v2.md', '/spec/format-v2'],
+  ['UW_FORMAT_SPEC_v2.md', '/spec/format'],
+  ['spec/UW_FORMAT_SPEC_v2.md', '/spec/format'],
+  ['UW_PROTOCOL_v1.md', '/spec/protocol'],
   ['spec/UW_PROTOCOL_v1.md', '/spec/protocol'],
-  ['spec/UW_XML_MAPPING_v1.md', '/spec/xml'],
-  ['spec/UW_CSV_BUNDLE_v1.md', '/spec/csv'],
+  ['UW_LITE_SPEC_v1.md', '/spec/lite'],
   ['spec/UW_LITE_SPEC_v1.md', '/spec/lite'],
-  ['spec/UW_RECEIPT_v1.md', '/spec/receipt'],
-  ['spec/UW_COMPOSITION_v1.md', '/spec/composition'],
   ['UW_RECEIPT_v1.md', '/spec/receipt'],
+  ['spec/UW_RECEIPT_v1.md', '/spec/receipt'],
+  ['UW_XML_MAPPING_v1.md', '/spec/xml'],
+  ['spec/UW_XML_MAPPING_v1.md', '/spec/xml'],
+  ['UW_CSV_BUNDLE_v1.md', '/spec/csv'],
+  ['spec/UW_CSV_BUNDLE_v1.md', '/spec/csv'],
   ['UW_COMPOSITION_v1.md', '/spec/composition'],
+  ['spec/UW_COMPOSITION_v1.md', '/spec/composition'],
+
+  // Spec
+  ['schemas/uwmd-block-v2.schema.json', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/schemas/uwmd-block.schema.json'],
+  ['spec/schemas/uwmd-block-v2.schema.json', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/schemas/uwmd-block.schema.json'],
+  ['spec/UW_FORMAT_SPEC.md', '/spec/format'],
+  ['spec/UW_PROTOCOL.md', '/spec/protocol'],
+  ['spec/UW_XML_MAPPING.md', '/spec/xml'],
+  ['spec/UW_CSV_BUNDLE.md', '/spec/csv'],
+  ['spec/UW_LITE_SPEC.md', '/spec/lite'],
+  ['spec/UW_RECEIPT.md', '/spec/receipt'],
+  ['spec/UW_COMPOSITION.md', '/spec/composition'],
+  ['UW_RECEIPT.md', '/spec/receipt'],
+  ['UW_COMPOSITION.md', '/spec/composition'],
   ['spec/bindings/', '/spec/bindings/'],
   ['spec/bindings/README.md', '/spec/bindings/'],
   ['bindings/', '/spec/bindings/'],
@@ -229,12 +246,11 @@ const NORMALIZED_LINK_MAP = new Map([
   ['UW_HTTP_BINDING_v1.md', '/spec/http'],
   ['UW_MCP_BINDING_v1.md', '/spec/mcp'],
   ['UW_HTTP_API_v1.openapi.json', '/spec/UW_HTTP_API_v1.openapi.json'],
-  ['UW_FORMAT_SPEC_v1.md', '/spec/format'],
-  ['UW_FORMAT_SPEC_v2.md', '/spec/format-v2'],
-  ['UW_PROTOCOL_v1.md', '/spec/protocol'],
-  ['UW_XML_MAPPING_v1.md', '/spec/xml'],
-  ['UW_CSV_BUNDLE_v1.md', '/spec/csv'],
-  ['UW_LITE_SPEC_v1.md', '/spec/lite'],
+  ['UW_FORMAT_SPEC.md', '/spec/format'],
+  ['UW_PROTOCOL.md', '/spec/protocol'],
+  ['UW_XML_MAPPING.md', '/spec/xml'],
+  ['UW_CSV_BUNDLE.md', '/spec/csv'],
+  ['UW_LITE_SPEC.md', '/spec/lite'],
   ['spec/metrics/README.md', '/spec/metrics/'],
   ['metrics/README.md', '/spec/metrics/'],
   ['builtin.json', '/spec/metrics/builtin.json'],
@@ -368,6 +384,9 @@ function withRfcStatusBanner(md, toPath) {
 }
 
 // ─── Run copies ───────────────────────────────────────────────────────────────
+
+// Do not let a retired generated page mask dead links in an incremental build.
+await rm(join(SITE_ROOT, 'spec', 'format-v2.md'), { force: true });
 
 let count = 0;
 for (const c of COPIES) {

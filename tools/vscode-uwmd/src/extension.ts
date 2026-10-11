@@ -63,7 +63,7 @@ export function deactivate(): void {
  * editor — "someone sent me this deal and this receipt; do they agree?"
  *
  * Each verdict gets the notification severity it deserves, and per
- * UW_RECEIPT_v1 §1 the `verified` case is never a bare checkmark: the summary
+ * UW_RECEIPT §1 the `verified` case is never a bare checkmark: the summary
  * states the assurance boundary inline, and the full breakdown is one click
  * away in the output channel.
  */

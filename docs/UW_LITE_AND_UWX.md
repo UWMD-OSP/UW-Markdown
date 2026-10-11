@@ -43,4 +43,4 @@ A legacy structured `.uw.md` (one whose sections are `uw:section` JSON fences) i
 - Purchase price: $12,500,000 <!-- uw:acquisition.purchase_price -->
 ```
 
-The visible text stays easy to read. The anchor provides the stable machine field path, while the parser normalizes the currency value deterministically. See the [UW Lite specification](../spec/UW_LITE_SPEC_v1.md) for the complete grammar and supported bridge profile.
+The visible text stays easy to read. The anchor provides the stable machine field path, while the parser normalizes the currency value deterministically. See the [UW Lite specification](../spec/UW_LITE_SPEC.md) for the complete grammar and supported bridge profile.
