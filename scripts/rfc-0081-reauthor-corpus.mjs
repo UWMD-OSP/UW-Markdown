@@ -9,7 +9,7 @@ import { migrateSourceTags, migrateToV2, reshapeMetaV1toV2, reshapeMetaV2toV1, p
 import { canonicalizeExact } from '../packages/uwmd-core/dist/integrity-canonical.js';
 import { importPrivateKey, signBlock, stampModuleSignature } from '../packages/uwmd-signing/dist/index.js';
 
-const root = resolve('.');
+const _root = resolve('.');
 const write = process.argv.includes('--write');
 const files = execFileSync('git',['ls-files','-z']).toString().split('\0').filter(Boolean);
 const key = { kid: 'uwmd-conformance-ed25519', alg:'ed25519', privateKey: await importPrivateKey('ed25519',{jwk:JSON.parse(readFileSync('conformance/signing/keys/signer-private.jwk.json','utf8'))}) };
@@ -37,7 +37,7 @@ function moveGroups(payload,section,file) {
         uses.escrows ??= [];
         if (Array.isArray(uses.escrows)) {
           let escrow = uses.escrows.find(e => obj(e)&&e.name===name);
-          if(!escrow) uses.escrows.push(escrow={name});
+          if(!escrow) { escrow={name}; uses.escrows.push(escrow); }
           mergeFact(escrow,'upfront',uses[legacy],file);
         }
       }
@@ -85,10 +85,10 @@ function bare(value,section,file) {
 function preserveNumbers(original,json) {
   const tokens = new Map();
   for(const m of original.matchAll(/"([^"\n]+)"\s*:\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g)) {
-    const id=m[1]+'='+Number(m[2]);
+    const id=`${m[1]}=${Number(m[2])}`;
     if(!tokens.has(id)) tokens.set(id,m[2]);
   }
-  return json.replace(/"([^"\n]+)"\s*:\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,(s,k,v)=>s.slice(0,s.lastIndexOf(v))+(tokens.get(k+'='+Number(v))??v));
+  return json.replace(/"([^"\n]+)"\s*:\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,(s,k,v)=>s.slice(0,s.lastIndexOf(v))+(tokens.get(`${k}=${Number(v)}`)??v));
 }
 async function document(source,file) {
   if(!/uw_version\s*:/.test(source) && !source.includes('```json uw:')) return source;
@@ -162,7 +162,7 @@ async function document(source,file) {
     if(integrity && (integrity.content_hash || integrity.signature)) {
       const {_meta:_m,...payload}=b.body;
       const hash=createHash('sha256').update(canonicalizeExact(payload)).digest('hex');
-      const chain=b.section+'#'+(/\bvariant=(\S+)/.exec(b.match[2])?.[1]??'');
+      const chain=`${b.section}#${/\bvariant=(\S+)/.exec(b.match[2])?.[1]??''}`;
       if(integrity.content_hash) integrity.content_hash=hash;
       if(integrity.parent_hash && priorHashes.has(chain)) integrity.parent_hash=priorHashes.get(chain);
       priorHashes.set(chain,hash);
@@ -173,10 +173,10 @@ async function document(source,file) {
     }
   }
   for(const b of blocks.reverse()) {
-    const replacement=b.match[0].replace(b.match[3],preserveNumbers(original,JSON.stringify(b.body,null,2))+'\n');
+    const replacement=b.match[0].replace(b.match[3],`${preserveNumbers(original,JSON.stringify(b.body,null,2))}\n`);
     source=source.slice(0,b.match.index)+replacement+source.slice(b.match.index+b.match[0].length);
   }
-  for(const b of active.filter(b=>b.match===null)) source+='\n```json uw:section='+b.section+'\n'+preserveNumbers(original,JSON.stringify(b.body,null,2))+'\n```\n';
+  for(const b of active.filter(b=>b.match===null)) source+=`\n\`\`\`json uw:section=${b.section}\n${preserveNumbers(original,JSON.stringify(b.body,null,2))}\n\`\`\`\n`;
   return source;
 }
 function jsonValue(value,file) {
@@ -199,20 +199,20 @@ async function processFile(file) {
   const before=readFileSync(file,'utf8'); let after=before;
   if(/\.md$/.test(file)) after=await document(before,file);
   else if(/\.json$/.test(file) && !/package(-lock)?\.json$|keys\//.test(file)) {
-    try { const parsed=JSON.parse(before); const value=jsonValue(structuredClone(parsed),file); if(JSON.stringify(value)!==JSON.stringify(parsed)) after=preserveNumbers(before,JSON.stringify(value,null,2))+'\n'; } catch { return; }
+    try { const parsed=JSON.parse(before); const value=jsonValue(structuredClone(parsed),file); if(JSON.stringify(value)!==JSON.stringify(parsed)) after=`${preserveNumbers(before,JSON.stringify(value,null,2))}\n`; } catch { return; }
   } else if(/\.[cm]?[jt]sx?$/.test(file) && !file.startsWith('scripts/rfc-0081-')) {
     const source=ts.createSourceFile(file,before,ts.ScriptTarget.Latest,true); const edits=[];
     async function visit(node) {
       if (ts.isTemplateExpression(node) && /uw_version\s*:/.test(node.getText(source))) {
-        const text=node.getText(source).replace(/(uw_version:\s*(?:\\?["'])?)[12]\.[012]/g, (_m,head)=>head+'3.0');
+        const text=node.getText(source).replace(/(uw_version:\s*(?:\\?["'])?)[12]\.[012]/g, (_m,head)=>`${head}3.0`);
         if(text!==node.getText(source)) edits.push({start:node.getStart(),end:node.end,text});
         return;
       }
       if((ts.isStringLiteral(node)||ts.isNoSubstitutionTemplateLiteral(node)) && (/^---[\r\n]/.test(node.text) || node.text.includes('```json uw:'))) {
-        const replacement=await document(node.text,file+':'+source.getLineAndCharacterOfPosition(node.getStart()).line);
+        const replacement=await document(node.text,`${file}:${source.getLineAndCharacterOfPosition(node.getStart()).line}`);
         if(replacement!==node.text) {
           const quote=before[node.getStart()];
-          const encoded=quote==='`' ? '`'+replacement.replaceAll('\\','\\\\').replaceAll('`','\\`').replaceAll('${','\\${')+'`' : JSON.stringify(replacement);
+          const encoded=quote==='`' ? `\`${replacement.replaceAll('\\','\\\\').replaceAll('`','\\`').replaceAll('${','\\${')}\`` : JSON.stringify(replacement);
           edits.push({start:node.getStart(),end:node.end,text:encoded});
         }
       } else {const children=[];node.forEachChild(child=>{children.push(child);});for(const child of children) await visit(child);}
@@ -224,44 +224,44 @@ async function processFile(file) {
 }
 async function refreshArtifacts() {
   const dirs = path => readdirSync(path,{withFileTypes:true}).filter(e=>e.isDirectory()).map(e=>e.name);
-  for(const suite of ['issue','verify']) for(const name of dirs('conformance/receipts/'+suite)) {
-    const dir='conformance/receipts/'+suite+'/'+name;const entries=readdirSync(dir);
+  for(const suite of ['issue','verify']) for(const name of dirs(`conformance/receipts/${suite}`)) {
+    const dir=`conformance/receipts/${suite}/${name}`;const entries=readdirSync(dir);
     const deal=entries.find(f=>/^deal\.uwx?\.md$/.test(f));const receiptFile=entries.find(f=>f==='receipt.json'||f==='expected-receipt.json');if(!deal||!receiptFile)continue;
-    const old=JSON.parse(readFileSync(dir+'/'+receiptFile,'utf8'));
-    const fresh=await issueReceipt(readFileSync(dir+'/'+deal,'utf8'),{issued_at:old.issued_at,issuer:old.issuer});
-    if(suite==='issue') writeFileSync(dir+'/'+receiptFile,JSON.stringify(fresh,null,2)+'\n');
+    const old=JSON.parse(readFileSync(`${dir}/${receiptFile}`,'utf8'));
+    const fresh=await issueReceipt(readFileSync(`${dir}/${deal}`,'utf8'),{issued_at:old.issued_at,issuer:old.issuer});
+    if(suite==='issue') writeFileSync(`${dir}/${receiptFile}`,`${JSON.stringify(fresh,null,2)}\n`);
     else {
       const oldCanonical=old.subject.canonicalization_version;old.subject=fresh.subject;old.receipt_version='1.1';
-      const expected=JSON.parse(readFileSync(dir+'/expected-verdict.json','utf8'));
+      const expected=JSON.parse(readFileSync(`${dir}/expected-verdict.json`,'utf8'));
       if(expected.expected_codes?.includes('RCP-10')) { old.subject.canonicalization_version=oldCanonical; old.subject.digest=old.subject.digest.slice(0,-1)+(old.subject.digest.endsWith('0')?'1':'0'); }
       if((expected.expected_codes??expected.codes)?.includes('RCP-01')) old.subject.digest=old.subject.digest.slice(0,-1)+(old.subject.digest.endsWith('0')?'1':'0');
-      writeFileSync(dir+'/'+receiptFile,JSON.stringify(old,null,2)+'\n');
+      writeFileSync(`${dir}/${receiptFile}`,`${JSON.stringify(old,null,2)}\n`);
     }
-    report.receipts.push(dir+'/'+receiptFile);
+    report.receipts.push(`${dir}/${receiptFile}`);
   }
   for(const name of dirs('conformance/reserve-draw-bindings')) {
-    const dir='conformance/reserve-draw-bindings/'+name;const entries=readdirSync(dir);if(!entries.includes('plan.json')||name==='stale-digest')continue;
-    const plan=JSON.parse(readFileSync(dir+'/plan.json','utf8'));const deal=entries.find(f=>/^deal\.uwx?\.md$/.test(f));
+    const dir=`conformance/reserve-draw-bindings/${name}`;const entries=readdirSync(dir);if(!entries.includes('plan.json')||name==='stale-digest')continue;
+    const plan=JSON.parse(readFileSync(`${dir}/plan.json`,'utf8'));const deal=entries.find(f=>/^deal\.uwx?\.md$/.test(f));
     if(!deal||!plan||typeof plan.source_digest!=='string'||!/^sha256:[0-9a-f]{64}$/.test(plan.source_digest))continue;
-    plan.source_digest=await computeEnvelopeDigest(toUWEnvelope(parseUWFile(readFileSync(dir+'/'+deal,'utf8'))));
-    writeFileSync(dir+'/plan.json',JSON.stringify(plan,null,2)+'\n');
+    plan.source_digest=await computeEnvelopeDigest(toUWEnvelope(parseUWFile(readFileSync(`${dir}/${deal}`,'utf8'))));
+    writeFileSync(`${dir}/plan.json`,`${JSON.stringify(plan,null,2)}\n`);
   }
-  const dir='examples/standalone/package';const manifest=JSON.parse(readFileSync(dir+'/manifest.json','utf8'));const payloads={};
+  const dir='examples/standalone/package';const manifest=JSON.parse(readFileSync(`${dir}/manifest.json`,'utf8'));const payloads={};
   for(const member of manifest.members) {
-    const bytes=readFileSync(dir+'/'+member.path);payloads[member.path]=bytes;member.sha256='sha256:'+createHash('sha256').update(bytes).digest('hex');
+    const bytes=readFileSync(`${dir}/${member.path}`);payloads[member.path]=bytes;member.sha256=`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
     if(member.semantic_digest&&member.path.endsWith('.uwx.md')) member.semantic_digest=await computeEnvelopeDigest(toUWEnvelope(parseUWFile(bytes.toString())));
   }
-  writeFileSync(dir+'/manifest.json',JSON.stringify(manifest,null,2)+'\n');
-  writeFileSync(dir+'/standalone-demo.uwpkg.zip',await encodeUWDealPackageZip({manifest,payloads}));
+  writeFileSync(`${dir}/manifest.json`,`${JSON.stringify(manifest,null,2)}\n`);
+  writeFileSync(`${dir}/standalone-demo.uwpkg.zip`,await encodeUWDealPackageZip({manifest,payloads}));
   execFileSync(process.execPath,['scripts/gen-signing-fixtures.mjs'],{stdio:'inherit'});
   const replay='conformance/tier-4-agent-host/replay/l6-risk-rating';
-  const cassette=JSON.parse(readFileSync(replay+'/cassette.json','utf8'));let cursor=0;
+  const cassette=JSON.parse(readFileSync(`${replay}/cassette.json`,'utf8'));let cursor=0;
   const provider={id:'replay',async complete(request) {const exchange=cassette.exchanges[cursor++];if(!exchange)throw new Error('Replay added a provider call');exchange.request=request;return exchange.completion;}};
-  const agent=await runBancroftAgent(readFileSync(replay+'/before.uwx.md','utf8'),'L6-01',{provider,now:()=>Date.parse('2026-08-13T00:00:00.000Z')});
+  const agent=await runBancroftAgent(readFileSync(`${replay}/before.uwx.md`,'utf8'),'L6-01',{provider,now:()=>Date.parse('2026-08-13T00:00:00.000Z')});
   if(!agent.success)throw new Error(agent.error);if(cursor!==cassette.exchanges.length)throw new Error('Replay dropped a provider call');
-  writeFileSync(replay+'/cassette.json',JSON.stringify(cassette,null,2)+'\n');writeFileSync(replay+'/after.uwx.md',agent.updatedContent);
+  writeFileSync(`${replay}/cassette.json`,`${JSON.stringify(cassette,null,2)}\n`);writeFileSync(`${replay}/after.uwx.md`,agent.updatedContent);
 }
 if(!process.argv.includes('--artifacts-only')) for(const file of files.filter(f=>!/^docs\/(rfcs|releases)\//.test(f) && !f.startsWith('spec/') && !['CHANGELOG.md','VERSIONS.md'].includes(f) && !/^(spec\/metrics\/builtin|conformance\/runner\/cases\/)/.test(f) && /\.(?:md|json|[cm]?[jt]sx?)$/.test(f))) if (!process.argv.includes('--test-headers-only') || file.endsWith('.test.ts')) await processFile(file);
 if(write && !process.argv.includes('--test-headers-only')) await refreshArtifacts();
-if(process.argv.includes('--report')) writeFileSync(process.argv[process.argv.indexOf('--report')+1],JSON.stringify(report,null,2)+'\n');
+if(process.argv.includes('--report')) writeFileSync(process.argv[process.argv.indexOf('--report')+1],`${JSON.stringify(report,null,2)}\n`);
 console.log(JSON.stringify({write,files:Object.keys(report.files).length,areas:Object.values(report.files).reduce((a,k)=>(a[k]=(a[k]??0)+1,a),{}),refusals:report.refusals.length,conflicts:report.conflicts.length,dropped:report.dropped,uses_differences:report.uses_differences}));

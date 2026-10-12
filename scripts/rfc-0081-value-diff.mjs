@@ -19,8 +19,8 @@ if (args.includes('--compare')) {
   for (const [file,value] of Object.entries(before.uses)) if (file in after.uses && !same(value,after.uses[file])) changes.uses.push({file,before:value,after:after.uses[file]});
   for (const [file,value] of Object.entries(before.receipts)) if (!same(value,after.receipts[file])) changes.receipts.push({file,before:value,after:after.receipts[file]});
   for (const [file,value] of Object.entries(before.codes)) if (file in after.codes && !same(value,after.codes[file])) changes.codes.push({file,before:value,after:after.codes[file]});
-  const next = new Map(after.conformance.map(c=>[c.suite+'/'+c.scenario,c]));
-  for (const value of before.conformance) {const key=value.suite+'/'+value.scenario; const current=next.get(key); if(!current)changes.removed_cases.push(value);else if(!same(value,current))changes.changed_cases.push({before:value,after:current});}
+  const next = new Map(after.conformance.map(c=>[`${c.suite}/${c.scenario}`,c]));
+  for (const value of before.conformance) {const key=`${value.suite}/${value.scenario}`; const current=next.get(key); if(!current)changes.removed_cases.push(value);else if(!same(value,current))changes.changed_cases.push({before:value,after:current});}
   const lender_identical = same(before.lender,after.lender);
   const totals = after.lender.reduce((a,r) => {for(const k of Object.keys(a))a[k]+=r.counts[k];return a;},{verified:0,failed:0,unverifiable:0});
   const expectedAdditions = {total_room_revenue: 6080000, room_revenue_per_key: 42816.9};
@@ -28,7 +28,7 @@ if (args.includes('--compare')) {
   const expectedUses = {"conformance/capex/accept-draw-with-verified-remaining/deal.uwx.md#": [11350000, 6850000], "conformance/hedge/0070-ambiguous-debt/deal.uwx.md#": [1150000, 1550000], "conformance/hedge/0076-sources-refused-malformed-hedge/deal.uwx.md#alpha": [1150000, 750000], "conformance/hedge/0076-sources-refused-malformed-hedge/deal.uwx.md#beta": [1150000, 750000], "conformance/hedge/0076-two-seniors-no-hedge-escrow/deal.uwx.md#": [1150000, 750000]};
   const unexpectedUses = changes.uses.filter(c=>!same([c.before,c.after], expectedUses[c.file]));
   const expectedRemoved = new Set(["tax/reject-flag-disagrees-with-trigger", "recoveries/warn-legacy-cam-cap-beside-typed-cap", "hedge/reject-legacy-reserve-disagrees", "hedge/reject-premium-disagrees-with-use", "hedge/reject-strike-disagrees-with-legacy", "capex/reject-legacy-budget-disagrees"]);
-  const unexpectedRemoved = changes.removed_cases.filter(c=>!expectedRemoved.has(c.suite+'/'+c.scenario));
+  const unexpectedRemoved = changes.removed_cases.filter(c=>!expectedRemoved.has(`${c.suite}/${c.scenario}`));
   const report={summary:{calc_baselines:Object.keys(after.baselineValues).length,baseline_changes:changes.baselines.length,lender:totals,lender_evidence_identical:lender_identical,receipt_changes:changes.receipts.length,uses_changes:changes.uses.length,calculation_changes:changes.calculations.length,code_documents_changed:changes.codes.length,conformance_before:before.conformance.length,conformance_after:after.conformance.length,conformance_changed:changes.changed_cases.length,conformance_removed:changes.removed_cases.length},changes};
   console.log(JSON.stringify(report,null,2));
   process.exit(!lender_identical || changes.baselines.length || changes.receipts.length || changes.changed_cases.length || unexpectedExamples.length || unexpectedUses.length || unexpectedRemoved.length ? 1 : 0);
@@ -67,6 +67,6 @@ for (const file of files.filter(f => /^conformance\/receipts\/verify\/.*\/receip
 const run = args.includes('--no-conformance') ? {results:[], summary:{}} : JSON.parse(execFileSync(process.execPath, ['scripts/run-conformance.mjs', '--json'], { cwd: root, maxBuffer: 32 * 1024 * 1024 }).toString());
 snapshot.conformance = run.results.map(({ suite, scenario, status }) => ({ suite, scenario, status }));
 if (args.includes('--out')) {
-  writeFileSync(args[args.indexOf('--out') + 1], JSON.stringify(snapshot, null, 2) + '\n');
+  writeFileSync(args[args.indexOf('--out') + 1], `${JSON.stringify(snapshot, null, 2)}\n`);
   console.log(JSON.stringify({ documents: Object.keys(snapshot.codes).length, calc_baselines: Object.keys(snapshot.baselineValues).length, uses: Object.keys(snapshot.uses).length, receipts: Object.keys(snapshot.receipts).length, lender: snapshot.lender.reduce((a,r) => { for(const k of Object.keys(a)) a[k] += r.counts[k]; return a; }, {verified:0,failed:0,unverifiable:0}), conformance: run.summary }));
 } else throw new Error('Use --out <snapshot.json>; compare snapshots after building each tree.');

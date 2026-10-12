@@ -91,10 +91,10 @@ uw_version: "3.0"
 asset_class: office
 ---
 \`\`\`json uw:section=debt_structure variant=alpha
-{"rate_hedge":{"instrument":"rate_cap","premium":400000}}
+{"loan_name":"alpha","rate_hedge":{"instrument":"rate_cap","premium":400000}}
 \`\`\`
 \`\`\`json uw:section=debt_structure variant=beta
-{"rate_hedge":{"instrument":"rate_cap","premium":400000}}
+{"loan_name":"beta","rate_hedge":{"instrument":"rate_cap","premium":400000}}
 \`\`\`
 `);
   it('counts each stated premium and the two named upfront escrows once; monthly deposits and other escrows do not enter uses', () => {

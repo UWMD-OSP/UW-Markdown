@@ -1,4 +1,4 @@
-import { reshapeMetaV1toV2 } from './meta-shape.js';
+import { nestedFixtureMeta } from '../../../test/rfc-0081-corpus.js';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -359,7 +359,7 @@ describe('promoteMarketObservation', () => {
         '',
         '```json uw:section=valuation v=1',
         JSON.stringify({
-          _meta: reshapeMetaV1toV2({
+          _meta: nestedFixtureMeta({
             section: 'valuation',
             version: 1,
             superseded: false,
@@ -422,7 +422,7 @@ describe('parseMarketDataDocument', () => {
     '```json uw:section=market_observations v=1',
     JSON.stringify(
       {
-        _meta: reshapeMetaV1toV2({
+        _meta: nestedFixtureMeta({
           section: 'market_observations',
           version: 1,
           superseded: false,

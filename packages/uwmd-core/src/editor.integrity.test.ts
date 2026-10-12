@@ -11,7 +11,7 @@ function stampFixtureHash(source: string, hash: string): string {
   return source.replace(/(^```json uw:section=property[^\n]*\n)([\s\S]*?)(^```)/m, (_match, open, raw, close) => {
     const body = JSON.parse(raw);
     body._meta.integrity = { ...body._meta.integrity, content_hash: hash };
-    return open+JSON.stringify(body,null,2)+'\n'+close;
+    return `${open+JSON.stringify(body,null,2)}\n${close}`;
   });
 }
 
