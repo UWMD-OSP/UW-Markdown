@@ -2,6 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { parseUWFile } from './parser.js';
 import { deriveSourcesUses } from './sourcesuses.js';
 
+// A Format 3.0 document with no debt_structure: no hedge premium enters uses.
+const doc = parseUWFile(`---
+uw_version: "3.0"
+asset_class: multifamily
+---
+`);
+
 function field(d: ReturnType<typeof deriveSourcesUses>, path: string): number | undefined {
   return d.fields.find((f) => f.path === path)?.value;
 }
@@ -32,7 +39,7 @@ describe('deriveSourcesUses — multifamily (nested closing costs, project-cost 
       total: 0,
     },
   };
-  const d = deriveSourcesUses(content);
+  const d = deriveSourcesUses(content, doc);
 
   it('foots the nested closing-costs total', () => {
     expect(field(d, 'uses.closing_costs.total')).toBe(139_000);
@@ -54,7 +61,7 @@ describe('deriveSourcesUses — office (flat closing costs, top-level mirrors)',
     total_sources: 0,
     total_uses: 0,
   };
-  const d = deriveSourcesUses(content);
+  const d = deriveSourcesUses(content, doc);
 
   it('foots flat buckets and the top-level mirrors', () => {
     expect(field(d, 'sources.total')).toBe(5_400_000);
@@ -71,7 +78,7 @@ describe('deriveSourcesUses — office (flat closing costs, top-level mirrors)',
 
 describe('deriveSourcesUses — imbalance & empty', () => {
   it('reports the gap when sources do not equal uses', () => {
-    const d = deriveSourcesUses({ sources: { loan: 100 }, uses: { cost: 150 } });
+    const d = deriveSourcesUses({ sources: { loan: 100 }, uses: { cost: 150 } }, doc);
     expect(d.sourcesTotal).toBe(100);
     expect(d.usesTotal).toBe(150);
     expect(d.gap).toBe(-50);
@@ -79,7 +86,7 @@ describe('deriveSourcesUses — imbalance & empty', () => {
   });
 
   it('foots nothing for an empty block', () => {
-    const d = deriveSourcesUses({});
+    const d = deriveSourcesUses({}, doc);
     expect(d.fields).toHaveLength(0);
     expect(d.balanced).toBe(true);
   });

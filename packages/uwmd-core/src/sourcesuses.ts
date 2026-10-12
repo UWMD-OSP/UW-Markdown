@@ -43,8 +43,14 @@ function sumLines(obj: Row): number {
   return total;
 }
 
-/** Foot a sources_uses content block. Pure: never mutates `content`. */
-export function deriveSourcesUses(content: Row, parsed?: ParsedUWFile): SourcesUsesDerivation {
+/**
+ * Foot a sources_uses content block. Pure: never mutates `content` or `parsed`.
+ *
+ * `parsed` is the document the block belongs to and is required: the uses
+ * total includes each stated `rate_hedge.premium` from its `debt_structure`
+ * (RFC 0081 §7), so a footing without the document would understate it.
+ */
+export function deriveSourcesUses(content: Row, parsed: ParsedUWFile): SourcesUsesDerivation {
   const c = collector();
   const sources = isObj(content['sources']) ? content['sources'] : {};
   const uses = isObj(content['uses']) ? content['uses'] : {};
@@ -58,11 +64,11 @@ export function deriveSourcesUses(content: Row, parsed?: ParsedUWFile): SourcesU
   const sourcesTotal = sumLines(sources);
   let usesTotal = sumLines(uses);
   // RFC 0081 Phase 4: delete the old-format footing branch.
-  if (isObj(content['uses']) && (!parsed || parsed.frontmatter.uw_version === '3.0')) {
+  if (isObj(content['uses']) && parsed.frontmatter.uw_version === '3.0') {
     if (Array.isArray(uses['escrows'])) for (const escrow of uses['escrows']) {
       if (isObj(escrow) && ['interest', 'operating'].includes(String(escrow['name']))) usesTotal += num(escrow['upfront']) ?? 0;
     }
-    const debt = parsed?.sections.debt_structure;
+    const debt = parsed.sections.debt_structure;
     const blocks = !debt ? [] : 'annotation' in debt ? [debt as UWBlock] : Object.values(debt as Record<string, UWBlock>);
     for (const block of blocks) {
       const hedge = (blockPayload(block) as Row)['rate_hedge'];

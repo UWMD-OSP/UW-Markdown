@@ -27,7 +27,7 @@ function scalarInputs(content: Row, parentPath: string): InputDef[] {
 }
 
 export function SourcesUsesModel(props: {
-  parsed?: ParsedUWFile;
+  parsed: ParsedUWFile;
   sectionId: string;
   variant: string | undefined;
   block: UWBlock;
@@ -137,6 +137,6 @@ function BalanceBanner({ gap, balanced }: { gap: number; balanced: boolean }) {
 }
 
 /** Footed paths — locked out of the generic scalar editor by SectionView. */
-export function sourcesUsesDerivedPaths(block: UWBlock): Set<string> {
-  return new Set(deriveSourcesUses(block.content as Row).fields.map((f) => f.path));
+export function sourcesUsesDerivedPaths(block: UWBlock, parsed: ParsedUWFile): Set<string> {
+  return new Set(deriveSourcesUses(block.content as Row, parsed).fields.map((f) => f.path));
 }

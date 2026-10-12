@@ -39,7 +39,7 @@ export type Dispatch = (op: EditOperation) => void;
 
 // Per-section "footed paths" — totals a model surface owns, locked out of the
 // generic scalar editor so each has exactly one editing path.
-const DERIVED_PATHS: Record<string, (block: UWBlock) => Set<string>> = {
+const DERIVED_PATHS: Record<string, (block: UWBlock, parsed: ParsedUWFile) => Set<string>> = {
   rent_roll: derivedPaths,
   operating_statement: operatingStatementDerivedPaths,
   debt_structure: debtDerivedPaths,
@@ -191,7 +191,7 @@ function BlockView(props: {
   const fields = fieldsForSection(sectionId, assetClass);
   // Paths a section model foots automatically — lock them out of the generic
   // scalar editor so each total has exactly one editing path.
-  const lockedPaths = DERIVED_PATHS[sectionId]?.(block);
+  const lockedPaths = DERIVED_PATHS[sectionId]?.(block, parsed);
 
   return (
     <section className="mt-5 rounded border border-rule bg-paper">
