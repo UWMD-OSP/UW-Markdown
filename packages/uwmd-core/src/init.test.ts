@@ -99,7 +99,7 @@ describe('generateBlankUWFile — every stamped source is governed by a policy',
     });
     expect(blocks.length).toBeGreaterThan(0);
     for (const block of blocks) {
-      const source = (block as { meta?: { source?: string } })?.meta?.source;
+      const source = (block as { meta?: { source?: string } })?.meta?.provenance?.source;
       if (!source) continue;
       const policy = resolvePolicy(source);
       expect(policy?.source_pattern, `'${source}' fell through to the catch-all`).not.toBe('*');
@@ -110,7 +110,7 @@ describe('generateBlankUWFile — every stamped source is governed by a policy',
     // Not `system/init`: that resolves to `system/*`, authority `system_only`,
     // and these stubs exist to be filled in by a human.
     const property = parsed.sections.property as { meta?: { source?: string } };
-    expect(property?.meta?.source).toBe('manual');
+    expect(property?.meta?.provenance?.source).toBe('manual');
     expect(resolvePolicy('manual')?.authority).toBe('either');
   });
 });

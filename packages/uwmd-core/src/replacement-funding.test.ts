@@ -253,7 +253,7 @@ describe('RFC 0070 canonical snapshot controls', () => {
   });
   it('rejects an explicitly superseded source even in an externally constructed parse view', async () => {
     const parsed = parseUWFile(source('outright-payment'));
-    sectionBlocks(parsed.sections.cash_flow_series)[0]!.meta.superseded = true;
+    sectionBlocks(parsed.sections.cash_flow_series)[0]!.meta.lifecycle?.superseded = true;
     expect(await verifyReplacementFundingBindings(parsed)).toMatchObject({
       state: 'unverifiable',
       reason: 'unresolvable_source',

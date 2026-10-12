@@ -55,7 +55,7 @@ const spendKey = (r: ReserveGrossExpenditureReference) =>
 const root = (section: string, v: string | null) => `sections.${section}[${JSON.stringify(v)}]`;
 const exact = (p: ParsedUWFile, section: string, v: string | null): UWBlock | undefined => {
   const blocks = sectionBlocks(p.sections[section]).filter(
-    (b) => !b.annotation.superseded && !b.meta.superseded && (b.annotation.variant ?? null) === v,
+    (b) => !b.annotation.superseded && !b.meta.lifecycle?.superseded && (b.annotation.variant ?? null) === v,
   );
   return blocks.length === 1 ? blocks[0] : undefined;
 };

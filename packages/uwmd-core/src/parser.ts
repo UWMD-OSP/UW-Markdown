@@ -1,4 +1,3 @@
-// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
 // .uw.md parser — extracts frontmatter, section blocks, prose, and pipeline log
 // Spec: UW_FORMAT_SPEC.md §2.4 (annotation syntax), §2.7 (update semantics), §2.8 (multi-variant)
 
@@ -11,11 +10,7 @@ import type {
   ParsedSections,
   ParseOptions,
   ConfidenceLevel,
-  UWFieldOverride,
 } from './types.js';
-import { SOURCE_TAGS } from './types.js';
-import type { UWMetaV2 } from './meta-shape.js';
-import { detectMetaShape, reshapeMetaV2toV1 } from './meta-shape.js';
 import { maskQuotedScalar, readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from './yaml-scalar.js';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
@@ -304,6 +299,10 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
   // Collect prose lines between blocks; route each block to the right collection.
 
   let proseLines: string[] = [];
+  if (result.frontmatter.uw_version !== '3.0') {
+    throw new UWMDParseError('UNSUPPORTED_FORMAT_VERSION',
+      `Declared uw_version ${JSON.stringify(result.frontmatter.uw_version) ?? 'absent'} is unsupported; supported value is "3.0".`);
+  }
   const scanned: UWBlock[] = [];
 
   while (i < lines.length) {
@@ -316,7 +315,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       continue;
     }
 
-    // ── We hit a section block ─────────────────────────────────────────────────
+    // â”€â”€ We hit a section block â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const sectionId = fenceMatch[1];
     const restAnnotation = fenceMatch[2] ?? '';
     const annotation = parseFenceAnnotation(sectionId, restAnnotation);
@@ -359,24 +358,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       parsed = { _parse_error: String(err), _raw: rawJson };
     }
 
-    // RFC 0009: a nested v2 `_meta` is flattened to the v1 in-memory view at
-    // parse time (the back-compat shim's read direction), so every consumer
-    // keeps reading `meta.version` / `.superseded` / `.source` unchanged. The
-    // on-disk shape is recorded on the block for the validator's
-    // META-V2-IN-V1 / META-V1-IN-V2 enforcement; `content` stays bytes-derived
-    // and untouched either way.
-    const rawMeta = parsed['_meta'] as Record<string, unknown> | undefined;
-    const metaShape = detectMetaShape(rawMeta);
-    // The §2.6 read-time interpretation applies to v1-shaped metas only: in a
-    // nested (2.0) block a legacy tag in provenance.source is an error to be
-    // fixed (SRC-02), never information to be recovered (format v2 §4.2).
-    const meta =
-      metaShape === 'v2'
-        ? reshapeMetaV2toV1(
-            rawMeta as unknown as UWMetaV2,
-            parsed['_overrides'] as UWFieldOverride[] | undefined,
-          )
-        : interpretMetaSource((rawMeta as UWMeta | undefined) ?? ({} as UWMeta));
+    const meta = (parsed['_meta'] ?? {}) as UWMeta;
 
     const block: UWBlock = {
       annotation,
@@ -386,50 +368,22 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       rawJson,
       lineStart,
       lineEnd,
-      ...(rawMeta !== undefined ? { meta_shape: metaShape } : {}),
     };
 
     scanned.push(block);
   }
 
-  const roleSections = new Set(scanned.filter(block => !block.meta?.superseded
+  const roleSections = new Set(scanned.filter(block => !block.meta?.lifecycle?.superseded
     && block.annotation.superseded !== true && Object.prototype.hasOwnProperty.call(block.content, '_role'))
     .map(block => block.annotation.section));
   const roleVariantSections = new Set(scanned.filter(block => roleSections.has(block.annotation.section)
-    && !block.meta?.superseded && block.annotation.superseded !== true && block.annotation.variant !== undefined)
+    && !block.meta?.lifecycle?.superseded && block.annotation.superseded !== true && block.annotation.variant !== undefined)
     .map(block => block.annotation.section));
   for (const block of scanned) routeBlock(result, block, block.annotation.section, block.annotation, block.prose, roleVariantSections);
   return result;
 }
 
-// ─── §2.6 read-time source interpretation (RFC 0031) ─────────────────────────
-
-/** The canonical resolution tags. `manual` needs no exemption any more — it
- *  left SOURCE_TAGS at format 2.0 (actor-only; RFC 0009 resolved question 4),
- *  so a flat block's `source: "manual"` was never in this set to begin with. */
-const LEGACY_RESOLUTION_TAGS: ReadonlySet<string> = new Set(SOURCE_TAGS);
-
-/**
- * A canonical `SOURCE_TAGS` value found in `_meta.source` is a resolution
- * method in the actor field (the pre-RFC-0031 spelling). Readers MUST
- * interpret it as `resolution` and MUST NOT invent an actor from it — so the
- * parsed view gains `resolution` while `source` keeps the raw spelling for
- * diagnostics (`SRC-02` warns on it, and authority classification treats it
- * as no actor class at all).
- *
- * Returns a **clone** when it rewrites: `content._meta` is bytes-derived and
- * feeds canonicalization/digests, so the interpreted view must never mutate
- * it. A producer that already stamped its own `resolution` wins — the legacy
- * spelling is then merely wrong, not information.
- */
-function interpretMetaSource(meta: UWMeta): UWMeta {
-  const src = meta.source;
-  if (typeof src !== 'string' || !LEGACY_RESOLUTION_TAGS.has(src)) return meta;
-  if (meta.resolution !== undefined) return meta;
-  return { ...meta, resolution: src };
-}
-
-// ─── Block routing ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Block routing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function routeBlock(
   result: ParsedUWFile,
@@ -439,13 +393,13 @@ function routeBlock(
   prose: string,
   roleVariantSections: ReadonlySet<string>,
 ): void {
-  // Pipeline log — always append
+  // Pipeline log â€” always append
   if (sectionId === 'pipeline_log') {
     result.pipeline_log.push(block);
     return;
   }
 
-  // Custom sections — always append (order matters; last is newest)
+  // Custom sections â€” always append (order matters; last is newest)
   if (sectionId === 'custom_calculations') {
     result.custom_calculations.push(block);
     return;
@@ -461,14 +415,14 @@ function routeBlock(
     return;
   }
 
-  // Explicitly superseded block — goes to superseded archive, not current sections
-  if (annotation.superseded === true || block.meta?.superseded === true) {
+  // Explicitly superseded block â€” goes to superseded archive, not current sections
+  if (annotation.superseded === true || block.meta?.lifecycle?.superseded === true) {
     if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
     result.superseded[sectionId].push(block);
     return;
   }
 
-  // Multi-variant sections — keyed by variant, multiple concurrent instances allowed
+  // Multi-variant sections â€” keyed by variant, multiple concurrent instances allowed
   if (MULTI_VARIANT_SECTIONS.has(sectionId) || roleVariantSections.has(sectionId)) {
     const variant = annotation.variant ?? 'default';
     const existing = result.sections[sectionId];
@@ -483,8 +437,8 @@ function routeBlock(
         variantMap[variant] = block;
       } else {
         // Replace if newer version
-        const currentV = current.annotation.v ?? current.meta?.version ?? 1;
-        const newV = annotation.v ?? block.meta?.version ?? 1;
+        const currentV = current.annotation.v ?? current.meta?.lifecycle?.revision ?? 1;
+        const newV = annotation.v ?? block.meta?.lifecycle?.revision ?? 1;
         if (newV > currentV) {
           if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
           result.superseded[sectionId].push(current);
@@ -510,8 +464,8 @@ function routeBlock(
 
   // Resolve version conflict: keep higher version as current
   const existingBlock = existing as UWBlock;
-  const existingV = existingBlock.annotation.v ?? existingBlock.meta?.version ?? 1;
-  const newV = annotation.v ?? block.meta?.version ?? 1;
+  const existingV = existingBlock.annotation.v ?? existingBlock.meta?.lifecycle?.revision ?? 1;
+  const newV = annotation.v ?? block.meta?.lifecycle?.revision ?? 1;
 
   if (newV > existingV) {
     if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
@@ -526,24 +480,22 @@ function routeBlock(
 
 function isMultiVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
-  // A UWBlock has annotation, meta, content — a variant map has string keys pointing to blocks
+  // A UWBlock has annotation, meta, content â€” a variant map has string keys pointing to blocks
   return !('annotation' in (val as object));
 }
 
-// ─── Convenience: get current block for a section ─────────────────────────────
+// â”€â”€â”€ Convenience: get current block for a section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
- * A block's user payload: Protocol §VIII.2's "canonical block's `content`".
+ * A block's user payload: Protocol Â§VIII.2's "canonical block's `content`".
  * A flat block keeps its fields beside `_meta`; a block written in the content
  * envelope keeps them one level down at `content`. Every reader of calc inputs
  * reads through here, so both shapes yield the same values: the evaluator,
  * period paths, the cascade, refinement and the Excel converter.
  */
 export function blockPayload(block: UWBlock): unknown {
-  const body: unknown = block.content;
-  return body !== null && typeof body === 'object' && Object.prototype.hasOwnProperty.call(body, 'content')
-    ? getPathSegment(body, 'content')
-    : body;
+  const { _meta, _role, _overrides, _notes, ...payload } = block.content;
+  return payload;
 }
 
 export function getSection(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
@@ -563,7 +515,7 @@ export function getSectionVariant(
   return (entry as { [v: string]: UWBlock })[variant] ?? null;
 }
 
-// ─── Path segment safety ─────────────────────────────────────────────────────
+// â”€â”€â”€ Path segment safety â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Paths and keys in a `.uw.md` file are document-authored: a path can name any
 // segment the author types. These three are the doors from a plain property
 // lookup back onto JS internals, so navigation never follows them and key
@@ -578,8 +530,8 @@ export function isBlockedSegment(segment: string): boolean {
 
 /**
  * One step of path navigation, own-properties only. A blocked segment or an
- * inherited member resolves to `undefined` — the same answer a missing path
- * gives, which callers already handle (protocol §VIII.2: a missing path
+ * inherited member resolves to `undefined` â€” the same answer a missing path
+ * gives, which callers already handle (protocol Â§VIII.2: a missing path
  * resolves to null, not an error).
  */
 export function getPathSegment(current: unknown, segment: string): unknown {
@@ -589,7 +541,7 @@ export function getPathSegment(current: unknown, segment: string): unknown {
   return (current as Record<string, unknown>)[segment];
 }
 
-// ─── Deep get utility (for cross-section checks) ─────────────────────────────
+// â”€â”€â”€ Deep get utility (for cross-section checks) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Resolves dot-path notation: "noi_model.net_operating_income"
 // Array indices: "dcf.annual_cash_flows[0].net_cash_flow_levered"
 

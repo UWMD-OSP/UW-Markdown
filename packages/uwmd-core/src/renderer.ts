@@ -514,7 +514,7 @@ Amenities: ${(deepGet(c, 'amenities') as string[] | undefined)?.join(', ') || 'n
     // division, still reads only the legacy top-level totals, so no ratio is
     // derived from §4.5 figures that the document does not state.
     const legacyOpexRatio = deepGet(c, 'opex_ratio') ?? (deepGet(c, 'total_operating_expenses') != null && deepGet(c, 'effective_gross_income') != null ? ((deepGet(c, 'total_operating_expenses') as number) / (deepGet(c, 'effective_gross_income') as number)).toFixed(4) : null);
-    sections.push(`## NOI MODEL (${noiBlock.meta?.confidence ?? 'n/a'} confidence)
+    sections.push(`## NOI MODEL (${noiBlock.meta?.quality?.confidence ?? 'n/a'} confidence)
 GPR: ${money(noiField(c, 'income.gross_potential_rent', ['gross_potential_rent', 'scheduled_gross_revenue']))}
 Vacancy Loss: ${money(noiField(c, 'income.vacancy_credit_loss', ['vacancy_loss']))} (${pct(noiField(c, 'income.vacancy_credit_loss.rate_applied', ['vacancy_rate']))})
 Other Income: ${money(noiField(c, 'income.other_income', ['other_income']))}

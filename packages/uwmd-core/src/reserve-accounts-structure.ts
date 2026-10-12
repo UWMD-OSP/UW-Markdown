@@ -23,7 +23,7 @@ export interface ReserveAccountsStructure {
 }
 export function checkReserveAccountsStructure(parsed: ParsedUWFile): ReserveAccountsStructure {
   const blocks = sectionBlocks(parsed.sections.reserve_accounts).filter(
-    (b) => !b.annotation.superseded && !b.meta.superseded,
+    (b) => !b.annotation.superseded && !b.meta.lifecycle?.superseded,
   );
   const out: ReserveAccountsStructure = { present: blocks.length > 0, issues: [], sections: [] };
   for (const block of blocks) {

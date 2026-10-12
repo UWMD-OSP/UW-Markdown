@@ -418,10 +418,10 @@ function writePipelineLogSheet(wb: ExcelJS.Workbook, parsed: ParsedUWFile): void
   for (const block of parsed.pipeline_log) {
     const c = block.content as Record<string, unknown>;
     ws.addRow([
-      block.meta.timestamp ?? '',
-      block.meta.actor     ?? '',
-      block.meta.source    ?? '',
-      block.meta.version   ?? '',
+      block.meta.provenance?.timestamp ?? '',
+      block.meta.provenance?.actor     ?? '',
+      block.meta.provenance?.source    ?? '',
+      block.meta.lifecycle?.revision   ?? '',
       typeof c.stage  === 'string' ? c.stage  : '',
       typeof c.action === 'string' ? c.action : '',
     ]);

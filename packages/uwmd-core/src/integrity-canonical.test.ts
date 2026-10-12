@@ -36,14 +36,7 @@ describe('canonicalize — RFC 8785 (JCS) with uwmd exclusions', () => {
   });
 
   it('strips _meta.content_hash and _meta.signature from meta-shaped sub-objects', () => {
-    const meta = {
-      section: 'property',
-      version: 1,
-      source: 'manual',
-      content_hash: 'deadbeef',
-      signature: 'sig...',
-      actor: 'tester',
-    };
+    const meta = { section: 'property', lifecycle: { revision: 1 }, provenance: { source: 'manual', actor: 'tester' }, integrity: { content_hash: 'deadbeef', signature: 'sig...' } };
     const out = canonicalize({ _meta: meta, content: { x: 1 } });
     expect(out).not.toContain('content_hash');
     expect(out).not.toContain('signature');
@@ -58,7 +51,7 @@ describe('canonicalize — RFC 8785 (JCS) with uwmd exclusions', () => {
 
 describe('canonicalizeExact', () => {
   it('preserves integrity fields for document-level semantic digests', () => {
-    const value = { _meta: { section: 'x', version: 1, source: 'manual', content_hash: 'abc' } };
+    const value = { _meta: { section: 'x', lifecycle: { revision: 1 }, provenance: { source: 'manual' }, integrity: { content_hash: 'abc' } } };
     expect(canonicalizeExact(value)).toContain('content_hash');
     expect(canonicalize(value)).not.toContain('content_hash');
   });

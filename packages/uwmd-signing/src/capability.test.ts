@@ -38,13 +38,7 @@ const CLAIMS: CapabilityTokenClaims = {
   jti: 'JTI-ROUNDTRIP',
 };
 
-const CTX: CapabilityVerifyContext = {
-  deal_id: 'DEAL-CAP-01',
-  section: 'noi_model',
-  stage: 'screening',
-  op: 'section_supersede',
-  source: 'agent/L2.inst-A',
-};
+const CTX: CapabilityVerifyContext = { deal_id: 'DEAL-CAP-01', section: 'noi_model', stage: 'screening', op: 'section_supersede', source: 'agent/L2.inst-A' };
 
 function verifier(s: InMemoryKeyStore = store) {
   return createCapabilityVerifier(s, { now: () => NOW });

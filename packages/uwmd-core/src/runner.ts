@@ -12,16 +12,9 @@
 //
 // Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §6.3 (uwmd run)
 
+import { stampMetaIntoBlockContent, bumpRawMetaVersion } from './metadata.js';
 import type { ParsedUWFile, UWBlock, UWMeta, PipelineStatus, UWFrontmatter } from './types.js';
 import { getSection, getSectionVariant, parseUWFile } from './parser.js';
-import type { UWMetaV2 } from './meta-shape.js';
-import {
-  bumpRawMetaVersion,
-  detectMetaShape,
-  isV2File,
-  reshapeMetaV2toV1,
-  stampMetaIntoBlockContent,
-} from './meta-shape.js';
 
 // Lightweight re-parse used only to get fresh line numbers after block insertion.
 // parseUWFile is the same function — alias for clarity.
@@ -92,13 +85,13 @@ export function writeAgentBlock(
     existingBlock = getSection(parsed, sectionId);
   }
 
-  const newVersion = (existingBlock?.meta?.version ?? 0) + 1;
+  const newVersion = (existingBlock?.meta?.lifecycle?.revision ?? 0) + 1;
 
   // ── Step 1: Mark existing block as superseded ─────────────────────────────
   let lines = fileContent.split('\n');
   let supersededPriorBlock = false;
 
-  if (existingBlock && !existingBlock.meta?.superseded) {
+  if (existingBlock && !existingBlock.meta?.lifecycle?.superseded) {
     lines = markBlockSuperseded(lines, existingBlock);
     supersededPriorBlock = true;
   }
@@ -109,13 +102,8 @@ export function writeAgentBlock(
   // falling back to the raw agentId only when the caller supplied no _meta.
   // Callers build flat _meta (buildMeta); a nested one is read via the shim.
   const rawOutMeta = output.content['_meta'] as Record<string, unknown> | undefined;
-  const outMeta: UWMeta | undefined =
-    rawOutMeta === undefined
-      ? undefined
-      : detectMetaShape(rawOutMeta) === 'v2'
-        ? reshapeMetaV2toV1(rawOutMeta as unknown as UWMetaV2)
-        : (rawOutMeta as unknown as UWMeta);
-  const annotation = `\`\`\`json uw:section=${sectionId}${variantPart} source=${outMeta?.source ?? agentId} ts=${now} v=${newVersion} confidence=${outMeta?.confidence ?? 'medium'}`;
+  const outMeta = rawOutMeta as unknown as UWMeta | undefined;
+  const annotation = `\`\`\`json uw:section=${sectionId}${variantPart} source=${outMeta?.provenance?.source ?? agentId} ts=${now} v=${newVersion} confidence=${outMeta?.quality?.confidence ?? 'medium'}`;
   // Emit the shape the file's uw_version demands (RFC 0009): the host owns
   // _meta, so the reshape happens here, not in agent output.
   const emitted: Record<string, unknown> = { ...output.content };
@@ -126,7 +114,7 @@ export function writeAgentBlock(
   }
   if (outMeta !== undefined) {
     // Values pass through untouched — only the shape is the host's call.
-    stampMetaIntoBlockContent(emitted, outMeta, isV2File(parsed.frontmatter));
+    stampMetaIntoBlockContent(emitted, outMeta);
   }
   const blockJson = JSON.stringify(emitted, null, 2);
   const newBlockText = `${annotation}\n${blockJson}\n\`\`\``;
@@ -257,7 +245,7 @@ function appendPipelineLogEntry(
   if (parsed.pipeline_log.length === 0) {
     // No pipeline_log yet — append a new one at the end
     const now = (entry['timestamp'] as string) ?? new Date().toISOString();
-    const newLogBlock = buildNewPipelineLogBlock(entry, now, isV2File(parsed.frontmatter));
+    const newLogBlock = buildNewPipelineLogBlock(entry, now);
     return [...lines, '', newLogBlock, ''];
   }
 
@@ -273,7 +261,7 @@ function appendPipelineLogEntry(
   } catch {
     // Fallback: append a new pipeline_log block
     const now = (entry['timestamp'] as string) ?? new Date().toISOString();
-    return [...lines, '', buildNewPipelineLogBlock(entry, now, isV2File(parsed.frontmatter)), ''];
+    return [...lines, '', buildNewPipelineLogBlock(entry, now), ''];
   }
 
   const entries = (blockContent['entries'] as unknown[]) ?? [];
@@ -310,28 +298,10 @@ function appendPipelineLogEntry(
 function buildNewPipelineLogBlock(
   entry: Record<string, unknown>,
   now: string,
-  v2: boolean,
 ): string {
-  const flatMeta: UWMeta = {
-    section: 'pipeline_log',
-    version: 1,
-    superseded: false,
-    // `system/uwmd`, not the retired colon form `engine:uwmd` — the RFC 0031
-    // actor grammar, and it resolves the system/* policy instead of the
-    // catch-all.
-    source: 'system/uwmd',
-    agent_id: null,
-    agent_version: '1.0.0',
-    actor: 'system',
-    timestamp: now,
-    confidence: 'high',
-    human_review_required: false,
-    flags: [],
-    input_hash: null,
-    notes: null,
-  };
+  const flatMeta: UWMeta = { section: 'pipeline_log', lifecycle: { revision: 1, superseded: false }, provenance: { source: 'system/uwmd', agent_id: null, agent_version: '1.0.0', actor: 'system', timestamp: now, notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } };
   const content: Record<string, unknown> = { entries: [entry] };
-  stampMetaIntoBlockContent(content, flatMeta, v2);
+  stampMetaIntoBlockContent(content, flatMeta);
   // _meta first in the serialized block, matching every other writer.
   const ordered = { _meta: content['_meta'], entries: content['entries'] };
   return `\`\`\`json uw:section=pipeline_log source=system/uwmd ts=${now} v=1 confidence=high\n${JSON.stringify(ordered, null, 2)}\n\`\`\``;
@@ -445,19 +415,5 @@ export function buildMeta(
     timestamp?: string;
   },
 ): UWMeta {
-  return {
-    section: sectionId,
-    version,
-    superseded: false,
-    source: opts.source,
-    agent_id: opts.agentId ?? null,
-    agent_version: opts.agentVersion ?? null,
-    actor: opts.actor ?? 'system',
-    timestamp: opts.timestamp ?? new Date().toISOString(),
-    confidence: opts.confidence ?? 'medium',
-    human_review_required: opts.humanReviewRequired ?? false,
-    flags: opts.flags ?? [],
-    input_hash: opts.inputHash ? `sha256:${opts.inputHash}` : null,
-    notes: opts.notes ?? null,
-  };
+  return { section: sectionId, lifecycle: { revision: version, superseded: false }, provenance: { source: opts.source, agent_id: opts.agentId ?? null, agent_version: opts.agentVersion ?? null, actor: opts.actor ?? 'system', timestamp: opts.timestamp ?? new Date().toISOString(), notes: opts.notes ?? null }, quality: { confidence: opts.confidence ?? 'medium', human_review_required: opts.humanReviewRequired ?? false, flags: opts.flags ?? [] }, integrity: { input_hash: opts.inputHash ? `sha256:${opts.inputHash}` : null } };
 }

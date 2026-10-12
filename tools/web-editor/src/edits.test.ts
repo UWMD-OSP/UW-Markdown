@@ -70,14 +70,14 @@ describe('runEdit — EditSettings are threaded onto section edits', () => {
     const outcome = replaceProperty({ confidence: 'high' });
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
-    expect(getSection(outcome.state.parsed, 'property')?.meta?.confidence).toBe('high');
+    expect(getSection(outcome.state.parsed, 'property')?.meta?.quality?.confidence).toBe('high');
   });
 
   it('drives human_review_required from the humanReview toggle', () => {
     const off = replaceProperty({ humanReview: false });
     const on = replaceProperty({ humanReview: true });
-    expect(off.ok && getSection(off.state.parsed, 'property')?.meta?.human_review_required).toBe(false);
-    expect(on.ok && getSection(on.state.parsed, 'property')?.meta?.human_review_required).toBe(true);
+    expect(off.ok && getSection(off.state.parsed, 'property')?.meta?.quality?.human_review_required).toBe(false);
+    expect(on.ok && getSection(on.state.parsed, 'property')?.meta?.quality?.human_review_required).toBe(true);
   });
 });
 

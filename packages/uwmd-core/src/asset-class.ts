@@ -1,7 +1,3 @@
-// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
-// Builtin and third-party asset identities (RFC 0080). The sole legacy
-// official alias is resolved without rewriting the document or its digest.
-
 import type { AssetClass, UWAssetClassId } from './types.js';
 import { ASSET_CLASSES, toBuiltinAssetClass } from './types.js';
 import type { ModuleAssetClassDecl, ModuleManifest, ProtocolError } from './protocol.js';
@@ -241,14 +237,6 @@ export function declaredModuleDependencies(
   if (!Array.isArray(raw)) return [];
   const out: { id: string; version?: string }[] = [];
   for (const entry of raw) {
-    if (typeof entry === 'string') {
-      // Historical official examples used an object-list spelling which the
-      // restricted YAML reader retains as a literal scalar. Recognize exactly
-      // these core-satisfied dependencies without rewriting parsed frontmatter.
-      const legacyOfficial = /^id:\s*(org\.uwmd\.(?:datacenters|hospitality))$/.exec(entry);
-      out.push({ id: legacyOfficial?.[1] ?? entry });
-      continue;
-    }
     if (typeof entry === 'object' && entry !== null && typeof (entry as { id?: unknown }).id === 'string') {
       const record = entry as { id: string; version?: unknown };
       out.push({

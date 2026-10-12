@@ -8,7 +8,7 @@ uw_version: "3.0"
 asset_class: multifamily
 ---
 ${blocks.map(([section, content, variant]) => `\`\`\`json uw:section=${section}${variant ? ` variant=${variant}` : ''}
-${JSON.stringify({ _meta: nestedFixtureMeta({ section, version: 1, source: 'manual' }), ...content })}
+${JSON.stringify({ _meta: nestedFixtureMeta({ section, lifecycle: { revision: 1 }, provenance: { source: 'manual' } }), ...content })}
 \`\`\``).join('\n')}`);
 describe('RFC 0041 period validation', () => {
   it('checks malformed periods in unselected variants and reports duplicate identities', () => {

@@ -229,7 +229,7 @@ describe('bancroft — the host owns _meta', () => {
     const provider = fakeProvider(
       sectionCompletion('risk_assessment', {
         overall_risk_rating: 'moderate',
-        _meta: { actor: 'impostor', version: 99, timestamp: '1999-01-01T00:00:00Z' },
+        _meta: { provenance: { actor: 'impostor', timestamp: '1999-01-01T00:00:00Z' }, lifecycle: { revision: 99 } },
         _notes: 'model-supplied notes',
       }),
     );

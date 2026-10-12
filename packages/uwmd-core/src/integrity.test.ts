@@ -19,22 +19,7 @@ function makeBlock(
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
     content,
-    meta: {
-      section: sectionId,
-      version: 1,
-      superseded: false,
-      source: 'manual',
-      agent_id: null,
-      agent_version: null,
-      actor: 'human/jared',
-      timestamp: '2026-04-27T00:00:00Z',
-      confidence: 'medium',
-      human_review_required: false,
-      flags: [],
-      input_hash: null,
-      notes: null,
-      ...meta,
-    },
+    meta: { section: sectionId, ...meta, lifecycle: { ...meta.lifecycle, revision: 1, superseded: false }, provenance: { ...meta.provenance, source: 'manual', agent_id: null, agent_version: null, actor: 'human/jared', timestamp: '2026-04-27T00:00:00Z', notes: null }, quality: { ...meta.quality, confidence: 'medium', human_review_required: false, flags: [] }, integrity: { ...meta.integrity, input_hash: null } },
     prose: '',
     rawJson: '',
     lineStart: 1,
@@ -74,7 +59,7 @@ describe('sha256Hex', () => {
 describe('computeBlockHash', () => {
   it('ignores _meta.content_hash and _meta.signature', async () => {
     const a = makeBlock('property', { x: 1 });
-    const b = makeBlock('property', { x: 1 }, { content_hash: 'previous', notes: a.meta.notes });
+    const b = makeBlock('property', { x: 1 }, { content_hash: 'previous', notes: a.meta.provenance?.notes });
     // Both excluded keys are stripped by the canonicalizer, so stamping either
     // one cannot change the hash it is supposed to be a digest of.
     const ha = await computeBlockHash(a);
@@ -100,7 +85,7 @@ describe('verifyChain', () => {
 
   it('verifies a single hashed block (root chain)', async () => {
     const block = makeBlock('property', { x: 1 });
-    block.meta.content_hash = await computeBlockHash(block);
+    block.meta.integrity?.content_hash = await computeBlockHash(block);
     const file = makeFile({ property: block });
     const r = await verifyChain(file);
     expect(r.ok).toBe(true);
@@ -110,7 +95,7 @@ describe('verifyChain', () => {
 
   it('emits INT-04 when content_hash does not recompute', async () => {
     const block = makeBlock('property', { x: 1 });
-    block.meta.content_hash = 'deadbeef'.repeat(8);
+    block.meta.integrity?.content_hash = 'deadbeef'.repeat(8);
     const r = await verifyChain(makeFile({ property: block }));
     expect(r.ok).toBe(true); // INT-04 is a warning
     expect(r.issues.some((i) => i.code === 'INT-04')).toBe(true);
@@ -118,9 +103,9 @@ describe('verifyChain', () => {
 
   it('emits INT-01 (error) when parent_hash does not match prior content_hash', async () => {
     const root = makeBlock('property', { x: 1 }, { version: 1, superseded: true });
-    root.meta.content_hash = await computeBlockHash(root);
+    root.meta.integrity?.content_hash = await computeBlockHash(root);
     const head = makeBlock('property', { x: 2 }, { version: 2, parent_hash: 'wrong' });
-    head.meta.content_hash = await computeBlockHash(head);
+    head.meta.integrity?.content_hash = await computeBlockHash(head);
 
     const file = makeFile({ property: head }, { property: [root] });
     const r = await verifyChain(file);
@@ -130,7 +115,7 @@ describe('verifyChain', () => {
 
   it('emits INT-03 when only some blocks in a chain carry content_hash', async () => {
     const root = makeBlock('property', { x: 1 }, { version: 1, superseded: true });
-    root.meta.content_hash = await computeBlockHash(root);
+    root.meta.integrity?.content_hash = await computeBlockHash(root);
     const head = makeBlock('property', { x: 2 }, { version: 2 });
     // head has no content_hash
     const file = makeFile({ property: head }, { property: [root] });
@@ -140,12 +125,12 @@ describe('verifyChain', () => {
 
   it('verifies a correctly hashed two-block chain', async () => {
     const root = makeBlock('property', { x: 1 }, { version: 1, superseded: true });
-    root.meta.content_hash = await computeBlockHash(root);
+    root.meta.integrity?.content_hash = await computeBlockHash(root);
     const head = makeBlock('property', { x: 2 }, {
       version: 2,
-      parent_hash: root.meta.content_hash,
+      parent_hash: root.meta.integrity?.content_hash,
     });
-    head.meta.content_hash = await computeBlockHash(head);
+    head.meta.integrity?.content_hash = await computeBlockHash(head);
 
     const file = makeFile({ property: head }, { property: [root] });
     const r = await verifyChain(file);
@@ -222,7 +207,7 @@ function stubVerifier(answers: Record<string, BlockSigVerdict>): BlockSignatureV
 }
 
 async function hashed(block: UWBlock): Promise<UWBlock> {
-  return { ...block, meta: { ...block.meta, content_hash: await computeBlockHash(block) } };
+  return { ...block, meta: { ...block.meta, integrity: { ...block.meta.integrity, content_hash: await computeBlockHash(block) } } };
 }
 
 describe('canonicalBlockSigningInput', () => {
@@ -256,18 +241,18 @@ describe('blockSigningPayload', () => {
   // exclusion only means the payload is stable for a *given* stated hash.
   it('names no parent_hash field, so the payload is fixed by the stated hash', async () => {
     const base = await hashed(makeBlock('property', { x: 1 }));
-    const signed = { ...base, meta: { ...base.meta, signature: SIG } };
-    const reRooted = { ...signed, meta: { ...signed.meta, parent_hash: 'a'.repeat(64) } };
+    const signed = { ...base, meta: { ...base.meta, integrity: { ...base.meta.integrity, signature: SIG } } };
+    const reRooted = { ...signed, meta: { ...signed.meta, integrity: { ...signed.meta.integrity, parent_hash: 'a'.repeat(64) } } };
     expect(blockSigningPayload(reRooted)).toBe(blockSigningPayload(signed));
     // ...and the stated hash is exactly what a re-root invalidates.
-    expect(await computeBlockHash(reRooted)).not.toBe(reRooted.meta.content_hash);
+    expect(await computeBlockHash(reRooted)).not.toBe(reRooted.meta.integrity?.content_hash);
   });
 });
 
 describe('verifyChain signature checks', () => {
   it('counts signatures without a verifier and never claims they verified', async () => {
     const block = await hashed(makeBlock('property', { x: 1 }));
-    const signed = { ...block, meta: { ...block.meta, signature: SIG } };
+    const signed = { ...block, meta: { ...block.meta, integrity: { ...block.meta.integrity, signature: SIG } } };
     const r = await verifyChain(makeFile({ property: signed }));
     expect(r.signatures_present).toBe(1);
     expect(r.signatures_verified).toBe(0);
@@ -284,7 +269,7 @@ describe('verifyChain signature checks', () => {
 
   it('emits INT-06 when the key store does not hold the kid', async () => {
     const block = await hashed(makeBlock('property', { x: 1 }));
-    const signed = { ...block, meta: { ...block.meta, signature: SIG } };
+    const signed = { ...block, meta: { ...block.meta, integrity: { ...block.meta.integrity, signature: SIG } } };
     const r = await verifyChain(makeFile({ property: signed }), {
       signatureVerifier: stubVerifier({}),
     });
@@ -295,7 +280,7 @@ describe('verifyChain signature checks', () => {
 
   it('emits INT-07 when the signature does not verify', async () => {
     const block = await hashed(makeBlock('property', { x: 1 }));
-    const signed = { ...block, meta: { ...block.meta, signature: SIG } };
+    const signed = { ...block, meta: { ...block.meta, integrity: { ...block.meta.integrity, signature: SIG } } };
     const r = await verifyChain(makeFile({ property: signed }), {
       signatureVerifier: stubVerifier({ 'sponsor-2026': { ok: false, reason: 'bad_signature' } }),
     });
@@ -307,7 +292,7 @@ describe('verifyChain signature checks', () => {
     const block = await hashed(makeBlock('property', { x: 1 }));
     const signed = {
       ...block,
-      meta: { ...block.meta, signature: { ...SIG, alg: 'rs256' as UWBlockSignature['alg'] } },
+      meta: { ...block.meta, integrity: { ...block.meta.integrity, signature: { ...SIG, alg: 'rs256' as UWBlockSignature['alg'] } } },
     };
     const r = await verifyChain(makeFile({ property: signed }));
     expect(r.issues.find((i) => i.code === 'INT-07')?.actual).toBe('rs256');
@@ -315,7 +300,7 @@ describe('verifyChain signature checks', () => {
 
   it('emits INT-08 as a warning for a deprecated algorithm and still verifies', async () => {
     const block = await hashed(makeBlock('property', { x: 1 }));
-    const signed = { ...block, meta: { ...block.meta, signature: SIG } };
+    const signed = { ...block, meta: { ...block.meta, integrity: { ...block.meta.integrity, signature: SIG } } };
     const r = await verifyChain(makeFile({ property: signed }), {
       deprecatedAlgorithms: ['ed25519'],
       signatureVerifier: stubVerifier({ 'sponsor-2026': { ok: true } }),
@@ -328,9 +313,9 @@ describe('verifyChain signature checks', () => {
 
   it('checks signatures on superseded blocks, not just chain heads', async () => {
     const prior = await hashed(makeBlock('rent_roll', { units: [] }, { version: 1, superseded: true }));
-    const signedPrior = { ...prior, meta: { ...prior.meta, signature: SIG } };
+    const signedPrior = { ...prior, meta: { ...prior.meta, integrity: { ...prior.meta.integrity, signature: SIG } } };
     const head = await hashed(
-      makeBlock('rent_roll', { units: [{ id: 1 }] }, { version: 2, parent_hash: signedPrior.meta.content_hash }),
+      makeBlock('rent_roll', { units: [{ id: 1 }] }, { version: 2, parent_hash: signedPrior.meta.integrity?.content_hash }),
     );
     const r = await verifyChain(makeFile({ rent_roll: head }, { rent_roll: [signedPrior] }), {
       signatureVerifier: stubVerifier({ 'sponsor-2026': { ok: true } }),

@@ -246,7 +246,7 @@ import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';
 
 function periodBlock(section: string, content: Record<string, unknown>, variant?: string): UWBlock {
   return { annotation: { section, ...(variant ? { variant } : {}) }, content,
-    meta: { section, version: 1, source: 'manual', superseded: false } as UWBlock['meta'],
+    meta: { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual' } } as UWBlock['meta'],
     prose: '', rawJson: '', lineStart: 1, lineEnd: 1 };
 }
 const PERIOD_PATH = 'dcf.annual_cash_flows@Y3.noi';

@@ -229,97 +229,32 @@ export interface UWFieldOverride {
 
 export interface UWMeta {
   section: string;
-  version: number;
-  superseded: boolean;
-  /**
-   * Who wrote the block — `manual` or `<namespace>/<id>` with a registered
-   * actor namespace (RFC 0031; grammar in format spec §2.6, authority in
-   * protocol §V.3). Legacy canonical tags in this field are interpreted as
-   * `resolution` at read time and warn under `SRC-02`.
-   */
-  source: SourceTag;
-  /**
-   * How the block's value was resolved — one canonical `SOURCE_TAGS` member
-   * (`user_input`, `asset_class_default`, …). Optional and orthogonal to
-   * `source`: an agent that filled a field from the asset-class default table
-   * has both an actor and a method. RFC 0031; starter guide §V.7.
-   */
-  resolution?: SourceTag;
-  agent_id: string | null;
-  agent_version: string | null;
-  actor: string;
-  timestamp: string;            // ISO8601
-  confidence: ConfidenceLevel;
-  human_review_required: boolean;
-  flags: string[];
-  input_hash: string | null;    // sha256:... — reproducibility anchor
-  notes: string | null;
-
-  // ─── Optional integrity / quality fields (format spec Part III §3) ──────────
-
-  /**
-   * True when at least one field inside this block is missing or unknown.
-   * When true, `field_overrides` SHOULD enumerate which paths and why.
-   */
-  partial?: boolean;
-
-  /**
-   * True when the entire block is a placeholder, derived from defaults rather
-   * than observed data. Stronger signal than confidence:'low'. Downstream
-   * consumers SHOULD label outputs derived from provisional blocks.
-   */
-  provisional?: boolean;
-
-  /**
-   * Per-field overrides where the block-level confidence/source does not apply
-   * uniformly. The path is dot-notated relative to the block content root.
-   */
-  field_overrides?: UWFieldOverride[];
-
-  /**
-   * sha256 of the canonicalized block content. See Protocol §V.9 for the
-   * canonicalization rule. Optional; when present, the chain becomes
-   * verifiable.
-   */
-  content_hash?: string;
-
-  /**
-   * content_hash of the block this one supersedes. null on a chain root.
-   * Optional, but if any block in a supersede chain has it, all later blocks
-   * in that chain MUST.
-   */
-  parent_hash?: string | null;
-
-  /**
-   * Detached signature over this block's signing input (protocol §V.11,
-   * RFC 0010). Optional and opaque to core: the wire shape is normative here,
-   * but the cryptography lives in `@uwmd/signing` so that the library stays
-   * dependency-free for the overwhelming majority of adopters who never sign.
-   *
-   * Excluded from `content_hash` canonicalization along with `content_hash`
-   * itself, so stamping a signature does not invalidate the hash it covers.
-   */
-  signature?: UWBlockSignature;
-
-  /**
-   * Which observation set a `market_data_accepted` value was promoted from
-   * (RFC 0022 §4). REQUIRED whenever `resolution` (or, pre-split, `source`)
-   * is `market_data_accepted`, and meaningless otherwise.
-   *
-   * Without it, "accepted from market data" is an unfalsifiable claim: a
-   * reviewer could see the tag but never recover *which* observations, of which
-   * vintage, were accepted — the exact gap RFC 0022 exists to close.
-   */
-  market_data_ref?: MarketDataRef;
-
-  /**
-   * Which ancestor asserted an `inherited_assumption` value (RFC 0021 §5).
-   * REQUIRED whenever `resolution` (or, pre-split, `source`) is
-   * `inherited_assumption`, and meaningless
-   * otherwise — an inherited value with no named ancestor is indistinguishable
-   * from an ambient default, which is exactly what §5 forbids.
-   */
-  inherited_from?: InheritedFrom;
+  provenance: {
+    source?: SourceTag;
+    resolution?: SourceTag;
+    actor?: string;
+    agent_id?: string | null;
+    agent_version?: string | null;
+    timestamp?: string;
+    notes?: string | null;
+    market_data_ref?: MarketDataRef;
+    inherited_from?: InheritedFrom;
+  };
+  quality: {
+    confidence?: ConfidenceLevel;
+    human_review_required?: boolean;
+    flags?: string[];
+    partial?: boolean;
+    provisional?: boolean;
+  };
+  lifecycle: { revision: number; superseded: boolean };
+  integrity?: {
+    algorithm?: 'sha256';
+    input_hash?: string | null;
+    content_hash?: string;
+    parent_hash?: string | null;
+    signature?: UWBlockSignature;
+  };
 }
 
 /**
@@ -410,7 +345,6 @@ export interface UWBlock<T extends Record<string, unknown> = Record<string, unkn
    * always the flat in-memory view regardless — a nested block is reshaped at
    * parse time so every consumer keeps reading the v1 fields.
    */
-  meta_shape?: 'v1' | 'v2';
 }
 
 // ─── Frontmatter ──────────────────────────────────────────────────────────────
@@ -522,7 +456,6 @@ export interface ValidationMessage {
    * the canonical numeric `code` for one release as a migration aid.
    * Consumers should switch to reading `code`. Removal target: v1.2.
    */
-  legacy_code?: string;
 }
 
 export interface StageReadiness {
@@ -591,6 +524,5 @@ export interface InstitutionConfig {
 
 /** Resolve only published builtin identities; never suffix-match custom ids. */
 export function toBuiltinAssetClass(raw: string): AssetClass | null {
-  if (raw === 'org.uwmd.data_center') return 'data_center';
   return (ASSET_CLASSES as readonly string[]).includes(raw) ? raw as AssetClass : null;
 }

@@ -10,7 +10,7 @@ import { deepGet } from './parser.js';
 import { rankGaps } from './refinement.js';
 
 function block(section: string, content: Record<string, unknown>, variant?: string): UWBlock {
-  return { annotation: { section, ...(variant ? { variant } : {}) }, content, meta: { section, version: 1, source: 'manual', superseded: false } as UWBlock['meta'], prose: '', rawJson: '', lineStart: 1, lineEnd: 1 };
+  return { annotation: { section, ...(variant ? { variant } : {}) }, content, meta: { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual' } } as UWBlock['meta'], prose: '', rawJson: '', lineStart: 1, lineEnd: 1 };
 }
 function file(sections: ParsedUWFile['sections']): ParsedUWFile {
   return { frontmatter: {} as ParsedUWFile['frontmatter'], sections, prose: {}, superseded: {}, extensions: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [], raw: '' };

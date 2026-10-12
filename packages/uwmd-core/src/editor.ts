@@ -13,6 +13,7 @@
 // Pure: no I/O. The runner consumes the returned content string and the
 // caller writes it back to disk.
 
+import { stampMetaIntoBlockContent, bumpRawMetaVersion } from './metadata.js';
 import { isBlockRole } from './block-roles.js';
 import type { ParsedUWFile, UWBlock, UWMeta } from './types.js';
 import type {
@@ -27,7 +28,6 @@ import { getSection, getSectionVariant, parseUWFile } from './parser.js';
 import { buildMeta } from './runner.js';
 import { inferGaps, summarizeGaps } from './gaps.js';
 import { computeBlockHash } from './integrity.js';
-import { isV2File, stampMetaIntoBlockContent, bumpRawMetaVersion, reshapeMetaV1toV2 } from './meta-shape.js';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
@@ -147,7 +147,7 @@ export function applyEdit(
   // the new block's content_hash happens in applyEditAsync.
   if ((op.kind === 'section_replace' || op.kind === 'section_supersede')) {
     const head = lookupSection(parsed, op.section_id, op.variant);
-    const headHash = head?.meta?.content_hash;
+    const headHash = head?.meta?.integrity?.content_hash;
     if (headHash && ctx.parentHash != null && ctx.parentHash !== headHash) {
       return {
         ok: false,
@@ -210,13 +210,7 @@ export async function applyEditAsync(
         ),
       };
     }
-    const verdict = await capabilityVerifier.verify(ctx.capability_token, {
-      deal_id: parsed.frontmatter.deal_id ?? '',
-      section,
-      stage: parsed.frontmatter.deal_stage ?? null,
-      op: op.kind,
-      source: ctx.source,
-    });
+    const verdict = await capabilityVerifier.verify(ctx.capability_token, { deal_id: parsed.frontmatter.deal_id ?? '', section, stage: parsed.frontmatter.deal_stage ?? null, op: op.kind, source: ctx.source });
     if (!verdict.ok) {
       return {
         ok: false,
@@ -236,7 +230,7 @@ export async function applyEditAsync(
   if (op.kind !== 'section_replace' && op.kind !== 'section_supersede') return result;
 
   const priorHead = lookupSection(parsed, op.section_id, op.variant);
-  const priorHash = priorHead?.meta?.content_hash;
+  const priorHash = priorHead?.meta?.integrity?.content_hash;
   if (!priorHash) return result; // chain stays opt-out when prior is unhashed
 
   const reparsed = parseUWFile(result.content);
@@ -245,12 +239,12 @@ export async function applyEditAsync(
 
   // Stamp parent_hash + content_hash on the new head. Canonicalization is
   // versioned by the file's uw_version (RFC 0009 — the v2 rule for 2.0 files).
-  const v2 = isV2File(reparsed.frontmatter);
-  newHead.meta.parent_hash = priorHash;
+  newHead.meta.integrity ??= {};
+  newHead.meta.integrity!.parent_hash = priorHash;
   // Compute over the block (canonicalizer strips content_hash itself).
-  newHead.meta.content_hash = await computeBlockHash(newHead, { shape: reparsed.frontmatter.uw_version === '3.0' ? 'v3' : v2 ? 'v2' : 'v1' } /* RFC 0081 Phase 4: delete old digest selection. */);
+  newHead.meta.integrity!.content_hash = await computeBlockHash(newHead);
 
-  const stamped = restampBlockMeta(result.content, newHead, v2);
+  const stamped = restampBlockMeta(result.content, newHead);
   return { ...result, content: stamped };
 }
 
@@ -260,21 +254,11 @@ export async function applyEditAsync(
  * `block.meta` is always the flat in-memory view; for a v2 file it is
  * reshaped back to the nested on-disk form (with the `_overrides` lift).
  */
-function restampBlockMeta(content: string, block: UWBlock, v2: boolean): string {
+function restampBlockMeta(content: string, block: UWBlock): string {
   const lines = content.split('\n');
   const fence = lines[block.lineStart - 1] ?? '';
   const closing = lines[block.lineEnd - 1] ?? '```';
-  let updatedContent: Record<string, unknown>;
-  if (v2) {
-    const { field_overrides, ...rest } = block.meta;
-    updatedContent = { ...block.content, _meta: reshapeMetaV1toV2(rest as UWMeta) as unknown };
-    delete updatedContent['_overrides'];
-    if (field_overrides !== undefined && field_overrides.length > 0) {
-      updatedContent['_overrides'] = field_overrides;
-    }
-  } else {
-    updatedContent = { ...block.content, _meta: block.meta };
-  }
+  const updatedContent: Record<string, unknown> = { _meta: block.meta, ...Object.fromEntries(Object.entries(block.content).filter(([key]) => key !== '_meta')) };
   const json = JSON.stringify(updatedContent, null, 2);
   const before = lines.slice(0, block.lineStart - 1);
   const after = lines.slice(block.lineEnd);
@@ -339,13 +323,13 @@ function maintainGapsAfterEdit(prior: EditResult, policies: readonly EditPolicy[
         kind: 'section_replace',
         section_id: 'gaps',
         content: gapsContent as unknown as Record<string, unknown>,
-        meta: { confidence: 'high' },
+        meta: { quality: { confidence: 'high' } },
       }
     : {
         kind: 'section_supersede',
         section_id: 'gaps',
         content: gapsContent as unknown as Record<string, unknown>,
-        meta: { confidence: 'high' },
+        meta: { quality: { confidence: 'high' } },
       };
 
   const after = dispatchEdit(prior.content, reparsed, op, ctx, policies);
@@ -458,7 +442,7 @@ function applySectionReplace(
     };
   }
 
-  const existingSource = existing.meta?.source ?? 'manual';
+  const existingSource = existing.meta?.provenance?.source ?? 'manual';
   const policy = resolvePolicy(existingSource, policies);
   const auth = checkAuthority(ctx.source, policy);
   if (!auth.ok) {
@@ -479,7 +463,7 @@ function applySectionReplace(
     };
   }
 
-  const newVersion = (existing.meta?.version ?? 0) + 1;
+  const newVersion = (existing.meta?.lifecycle?.revision ?? 0) + 1;
   const now = new Date().toISOString();
   const meta = buildMeta(op.section_id, newVersion, {
     source: ctx.source,
@@ -490,10 +474,15 @@ function applySectionReplace(
     notes: ctx.notes,
   });
   // buildMeta uses Date.now() — pin to the timestamp that frontmatter is also bumped to.
-  meta.timestamp = now;
+  meta.provenance.timestamp = now;
 
   // Allow the operation's `meta` partial to override scalar fields (e.g. flags, confidence).
-  const finalMeta: UWMeta = { ...meta, ...op.meta, version: newVersion, superseded: false } as UWMeta;
+  const finalMeta: UWMeta = {
+    ...meta, ...op.meta,
+    provenance: { ...meta.provenance, ...op.meta?.provenance },
+    quality: { ...meta.quality, ...op.meta?.quality },
+    lifecycle: { revision: newVersion, superseded: false },
+  };
   if (op.role !== undefined && op.role !== null && !isBlockRole(op.role)) {
     return { ok: false, error: protoError('PROTO-EDIT-002', 'role must be a valid block role or null', op.section_id) };
   }
@@ -504,9 +493,9 @@ function applySectionReplace(
     blockContent['_role'] = existing.content['_role'];
   }
   // Emit the shape the file's uw_version demands (RFC 0009: nested for 2.0).
-  stampMetaIntoBlockContent(blockContent, finalMeta, isV2File(parsed.frontmatter));
+  stampMetaIntoBlockContent(blockContent, finalMeta);
 
-  const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.confidence);
+  const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.quality.confidence ?? 'medium');
   const blockJson = JSON.stringify(blockContent, null, 2);
   const newBlockText = `${annotation}\n${blockJson}\n\`\`\``;
 
@@ -531,7 +520,7 @@ function applySectionSupersede(
   const existing = lookupSection(parsed, op.section_id, op.variant);
 
   if (existing) {
-    const existingSource = existing.meta?.source ?? 'manual';
+    const existingSource = existing.meta?.provenance?.source ?? 'manual';
     const policy = resolvePolicy(existingSource, policies);
     const auth = checkAuthority(ctx.source, policy);
     if (!auth.ok) {
@@ -543,7 +532,7 @@ function applySectionSupersede(
   }
   // No existing block → new section. Allowed regardless of policy.
 
-  const newVersion = (existing?.meta?.version ?? 0) + 1;
+  const newVersion = (existing?.meta?.lifecycle?.revision ?? 0) + 1;
   const now = new Date().toISOString();
   const meta = buildMeta(op.section_id, newVersion, {
     source: ctx.source,
@@ -553,8 +542,13 @@ function applySectionSupersede(
     confidence: ctx.confidence ?? 'medium',
     notes: ctx.notes,
   });
-  meta.timestamp = now;
-  const finalMeta: UWMeta = { ...meta, ...op.meta, version: newVersion, superseded: false } as UWMeta;
+  meta.provenance.timestamp = now;
+  const finalMeta: UWMeta = {
+    ...meta, ...op.meta,
+    provenance: { ...meta.provenance, ...op.meta?.provenance },
+    quality: { ...meta.quality, ...op.meta?.quality },
+    lifecycle: { revision: newVersion, superseded: false },
+  };
   if (op.role !== undefined && op.role !== null && !isBlockRole(op.role)) {
     return { ok: false, error: protoError('PROTO-EDIT-002', 'role must be a valid block role or null', op.section_id) };
   }
@@ -564,16 +558,16 @@ function applySectionSupersede(
   } else if (existing && Object.prototype.hasOwnProperty.call(existing.content, '_role')) {
     blockContent['_role'] = existing.content['_role'];
   }
-  stampMetaIntoBlockContent(blockContent, finalMeta, isV2File(parsed.frontmatter));
+  stampMetaIntoBlockContent(blockContent, finalMeta);
 
   let lines = fileContent.split('\n');
   let supersededPriorBlock = false;
-  if (existing && !existing.meta?.superseded) {
+  if (existing && !existing.meta?.lifecycle?.superseded) {
     lines = markBlockSuperseded(lines, existing);
     supersededPriorBlock = true;
   }
 
-  const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.confidence);
+  const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.quality.confidence ?? 'medium');
   const blockJson = JSON.stringify(blockContent, null, 2);
   const newBlockText = `${annotation}\n${blockJson}\n\`\`\``;
 
@@ -624,7 +618,7 @@ function applyPipelineLogAppend(
   blockContent['entries'] = entries;
 
   const now = new Date().toISOString();
-  const meta = (blockContent['_meta'] as Record<string, unknown> | undefined) ?? {};
+  const meta = blockContent['_meta'] as UWMeta;
   // Shape-aware bump: v2 pipeline blocks carry lifecycle.revision /
   // provenance.timestamp (RFC 0009); the fence v= mirror gets either.
   const nextVersion = bumpRawMetaVersion(meta, now);

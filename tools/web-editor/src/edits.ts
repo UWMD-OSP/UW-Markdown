@@ -124,11 +124,7 @@ function carryForwardOverrides(op: EditOperation, parsed: ParsedUWFile): EditOpe
 function applySettingsToOp(op: EditOperation, settings: EditSettings): EditOperation {
   if (op.kind !== 'section_replace' && op.kind !== 'section_supersede') return op;
 
-  const meta = {
-    ...op.meta,
-    confidence: settings.confidence,
-    ...(settings.humanReview ? { human_review_required: true } : {}),
-  };
+  const meta = { ...op.meta, ...(settings.humanReview ? { human_review_required: true } : {}), quality: { ...op.meta.quality, ...(settings.humanReview ? { human_review_required: true } : {}).quality, confidence: settings.confidence } };
 
   // Promote replace → supersede when in append mode.
   const kind = settings.mode === 'supersede' ? 'section_supersede' : op.kind;

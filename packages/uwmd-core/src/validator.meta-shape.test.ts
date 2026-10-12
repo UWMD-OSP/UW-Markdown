@@ -100,10 +100,10 @@ describe('parser flat view over nested blocks', () => {
     const parsed = parseUWFile(file('2.0', NESTED_BLOCK));
     const block = getSection(parsed, 'noi_model');
     expect(block?.meta_shape).toBe('v2');
-    expect(block?.meta.version).toBe(1);
-    expect(block?.meta.superseded).toBe(false);
-    expect(block?.meta.source).toBe('manual');
-    expect(block?.meta.actor).toBe('jared');
+    expect(block?.meta.lifecycle?.revision).toBe(1);
+    expect(block?.meta.lifecycle?.superseded).toBe(false);
+    expect(block?.meta.provenance?.source).toBe('manual');
+    expect(block?.meta.provenance?.actor).toBe('jared');
     // content._meta stays bytes-derived and nested.
     expect((block?.content['_meta'] as Record<string, unknown>)['lifecycle']).toBeDefined();
   });
@@ -143,11 +143,11 @@ describe('editor writes v2 files natively (the 2.0 cut retired PROTO-EDIT-010)',
     const after = parseUWFile(result.content as string);
     const head = getSection(after, 'rent_roll');
     expect(head?.meta_shape).toBe('v2');
-    expect(head?.meta.version).toBe(2);
+    expect(head?.meta.lifecycle?.revision).toBe(2);
     expect((head?.content['_meta'] as Record<string, unknown>)['lifecycle']).toBeDefined();
     expect(metaIssues(result.content as string)).toEqual([]);
     // The superseded prior stays nested and marked.
-    expect(after.superseded['rent_roll']?.[0]?.meta.superseded).toBe(true);
+    expect(after.superseded['rent_roll']?.[0]?.meta.lifecycle?.superseded).toBe(true);
     expect(after.superseded['rent_roll']?.[0]?.meta_shape).toBe('v2');
   });
 

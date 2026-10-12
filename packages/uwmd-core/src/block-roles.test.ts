@@ -16,9 +16,7 @@ import { stringifyUWXml, parseUWXml } from './uwxml.js';
 import { encodeUWCSVBundle, decodeUWCSVBundle } from './uwcsv.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 
-const meta = (section: string) => ({ section, version: 1, superseded: false, source: 'manual', agent_id: null,
-  agent_version: null, actor: 'host', timestamp: '2026-09-11T00:00:00Z', confidence: 'high' as const,
-  human_review_required: false, flags: [], input_hash: null, notes: null });
+const meta = (section: string) => ({ section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor: 'host', timestamp: '2026-09-11T00:00:00Z', notes: null }, quality: { confidence: 'high' as const, human_review_required: false, flags: [] }, integrity: { input_hash: null } });
 function block(content: Record<string, unknown>, section = 'debt_structure', variant?: string): UWBlock {
   return { annotation: { section, ...(variant ? { variant } : {}) }, content, meta: meta(section),
     prose: '', rawJson: JSON.stringify(content), lineStart: 1, lineEnd: 1 };

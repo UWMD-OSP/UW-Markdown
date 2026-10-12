@@ -19,11 +19,7 @@ function block(section: string, content: Record<string, unknown>, annotation: Re
   return {
     annotation: { section, ...annotation },
     content,
-    meta: {
-      section, version: 1, superseded: false, source: 'manual', agent_id: null, agent_version: null,
-      actor: 'test', timestamp: '2026-08-26T00:00:00Z', confidence: 'high', human_review_required: false,
-      flags: [], input_hash: null, notes: null,
-    },
+    meta: { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor: 'test', timestamp: '2026-08-26T00:00:00Z', notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } },
     prose: '', rawJson: JSON.stringify(content), lineStart: 1, lineEnd: 1,
   };
 }

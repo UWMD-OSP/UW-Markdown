@@ -30,7 +30,6 @@ import { CASH_FLOW_KINDS, CASH_FLOW_VERIFY_DECIMALS, quantizeAtDecimals } from '
 import { dayOrdinal, isDayCountConvention, parseISODate } from './calc/day-count.js';
 import type { WaterfallTier } from './waterfall.js';
 import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
-import { isV2File } from './meta-shape.js';
 import { checkPeriodSeries } from './period-validation.js';
 import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
 import type { RoleResolution } from './block-roles.js';
@@ -3093,14 +3092,6 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     });
     return;
   }
-  for (const dependency of declaredModuleDependencies(parsed.frontmatter as Record<string, unknown>)) {
-    if (['org.uwmd.datacenters', 'org.uwmd.hospitality'].includes(dependency.id)) issues.push({
-      code: 'CLS-02', severity: 'info', field: 'modules',
-      message: `Module '${dependency.id}' is satisfied by core (RFC 0080).`,
-    });
-  }
-  if (raw === 'org.uwmd.data_center') issues.push({ code: 'CLS-01', severity: 'warning', field: 'asset_class',
-    message: "Deprecated official class id 'org.uwmd.data_center'; use 'data_center'. The source document is unchanged." });
   if (identity.kind === 'builtin') return;
 
   // A namespaced class with no `modules` list is unreadable by anyone who does
@@ -3137,7 +3128,7 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       }
 
       for (const field of REQUIRED_META_FIELDS) {
-        if ((block.meta as unknown as Record<string, unknown>)[field] == null) {
+        if (({ section: block.meta.section, version: block.meta.lifecycle?.revision, source: block.meta.provenance?.source, timestamp: block.meta.provenance?.timestamp, confidence: block.meta.quality?.confidence } as Record<string, unknown>)[field] == null) {
           issues.push({ code: `META_FIELD_MISSING_${field.toUpperCase()}`, severity: 'warning', section: sectionId, field, message: `Section ${sectionId} _meta is missing required field: ${field}` });
         }
       }
@@ -3148,7 +3139,7 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       // smell — drafts often forget to flag — but it is not normatively wrong.
       // This emission is therefore informational only; do not promote it to a
       // warning without changing the spec.
-      if (block.meta.confidence === 'low' && !block.meta.human_review_required) {
+      if (block.meta.quality?.confidence === 'low' && !block.meta.quality?.human_review_required) {
         issues.push({ code: 'META_LOW_CONFIDENCE_NO_REVIEW_FLAG', severity: 'info', section: sectionId, message: `Section ${sectionId} has low confidence but human_review_required is not set to true` });
       }
     }
@@ -3175,8 +3166,7 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
   // SRC-03 rejects the retired `resolution: "manual"` spelling); a 1.x file
   // keeps the 1.x warnings under this same validator — the only reading
   // consistent with the round-trip guarantee.
-  const fileIsV2 = isV2File(parsed.frontmatter);
-  const severity = fileIsV2 ? ('error' as const) : ('warning' as const);
+  const severity = 'error' as const;
 
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     const blocks = isVariantMap(entry)
@@ -3184,15 +3174,15 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
       : [entry as UWBlock];
 
     for (const block of blocks) {
-      if (fileIsV2 && block.meta?.resolution === 'manual') {
+      if (block.meta?.provenance?.resolution !== undefined && !SOURCE_TAGS.includes(block.meta.provenance.resolution as typeof SOURCE_TAGS[number])) {
         issues.push({
           code: 'SRC-03',
           severity: 'error',
           section: sectionId,
-          message: `Section ${sectionId} resolution is 'manual', which left the resolution vocabulary at 2.0 (actor-only). Use 'user_input' — 'uwmd migrate --to-v2' rewrites it mechanically.`,
+          message: `Section ${sectionId} provenance.resolution is outside the closed resolution vocabulary.`,
         });
       }
-      const src = block.meta?.source;
+      const src = block.meta?.provenance?.source;
       if (typeof src !== 'string' || src.length === 0) continue; // absence is META/DQ territory
 
       if (NON_MANUAL_SOURCE_TAGS.has(src)) {
@@ -3226,42 +3216,17 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
 // all carry no `meta_shape` and are exempt — absence stays META/DQ territory.
 
 function checkMetaShape(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
-  const fileIsV2 = isV2File(parsed.frontmatter);
-
   const walk = (sectionId: string, block: UWBlock): void => {
-    if (block.meta_shape === undefined) return;
-    if (block.meta_shape === 'v2' && !fileIsV2) {
-      issues.push({
-        code: 'META-V2-IN-V1',
-        severity: 'error',
-        section: sectionId,
-        message: `Section ${sectionId} carries the nested v2 _meta shape in a uw_version '${parsed.frontmatter.uw_version ?? '1.x'}' file. The nested shape requires uw_version "2.0" — run 'uwmd migrate --to-v2' to convert the whole file.`,
-      });
-      return;
-    }
-    if (block.meta_shape === 'v1' && fileIsV2) {
-      issues.push({
-        code: 'META-V1-IN-V2',
-        severity: 'error',
-        section: sectionId,
-        message: `Section ${sectionId} carries the flat v1 _meta shape in a uw_version '${parsed.frontmatter.uw_version}' file. v2 writers MUST emit the nested shape for every block.`,
-      });
+    const meta = block.content['_meta'];
+    const object = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
+    if (Object.hasOwn(block.content, 'section_id') || (meta !== undefined && (!object(meta) || !object(meta.provenance) || !object(meta.lifecycle)))) {
+      issues.push({ code: 'META-01', severity: 'error', section: sectionId, message: 'Block is not in the Format 3.0 shape.' });
     }
   };
-
-  for (const [sectionId, entry] of Object.entries(parsed.sections)) {
-    const blocks = isVariantMap(entry)
-      ? Object.values(entry as Record<string, UWBlock>)
-      : [entry as UWBlock];
-    for (const block of blocks) walk(sectionId, block);
-  }
-  for (const [sectionId, blocks] of Object.entries(parsed.superseded)) {
-    for (const block of blocks) walk(sectionId, block);
-  }
-  for (const block of parsed.pipeline_log) walk('pipeline_log', block);
-  for (const block of parsed.custom_calculations) walk('custom_calculations', block);
-  for (const block of parsed.custom_scenarios) walk('custom_scenarios', block);
-  for (const [extId, block] of Object.entries(parsed.extensions)) walk(extId, block);
+  for (const [id, entry] of Object.entries(parsed.sections)) for (const block of isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock]) walk(id, block);
+  for (const [id, blocks] of Object.entries(parsed.superseded)) for (const block of blocks) walk(id, block);
+  for (const block of [...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios]) walk(block.annotation.section, block);
+  for (const [id, block] of Object.entries(parsed.extensions)) walk(id, block);
 }
 
 // ─── Stage readiness ──────────────────────────────────────────────────────────

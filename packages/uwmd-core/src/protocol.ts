@@ -43,8 +43,6 @@ export const PROTOCOL_VERSION = '3.0.0' as const;
 export const FORMAT_VERSION = '2.1' as const;
 
 /** Accepted normative targets (RFC 0081 Phase 2); release labels move in Phase 6. */
-export const SPEC_FORMAT_VERSION = '3.0' as const;
-export const SPEC_PROTOCOL_VERSION = '4.0.0' as const;
 
 /** Final Protocol §X host requirements. Runtime manifest loading moves in Phase 4. */
 export const RESOLUTION_METHODS = Object.freeze([
@@ -59,17 +57,17 @@ export interface ModuleConformanceRequirements {
 }
 
 /** Final schema mirror; the current loader's ModuleManifest is removed in Phase 4. */
-export type ProtocolModuleManifest = Omit<ModuleManifest, 'requires_tier'> & ModuleConformanceRequirements;
+export type ProtocolModuleManifest = ModuleManifest;
 
 /** Final self-declaration schema; runtime alias removal is Phase 4. */
 export type ProtocolImplementationManifest = Omit<ImplementationManifest, 'tier'> & { tier?: ConformanceTier };
 
 
 /** RFC 0081 Phase 2 staging set; Phase 4 narrows it to SPEC_FORMAT_VERSION only. */
-export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['1.0', '1.1', '2.0', '2.1', SPEC_FORMAT_VERSION] as const);
+export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['3.0'] as const);
 
 /** RFC 0081 Phase 2 staging set; Phase 4 narrows it to SPEC_PROTOCOL_VERSION only. */
-export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['1.14.0', '2.0.0', '2.1.0', '2.2.0', '2.25.0', PROTOCOL_VERSION, SPEC_PROTOCOL_VERSION] as const);
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.0.0'] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 
@@ -103,50 +101,9 @@ export type ConformanceProfile = (typeof CONFORMANCE_PROFILES)[number];
  * vocabulary of `ModuleManifest.requires_tier` and of module-host
  * negotiation, which RFC 0078 leaves unchanged (§VII.4).
  */
-export type ViewerTier =
-  | 'tier-1-reader'        // parse + display, read-only
-  | 'tier-2-editor'        // round-trip writes, supersede semantics
-  | 'tier-3-calc-host'     // evaluate custom_calculations / custom_scenarios
-  | 'tier-4-agent-host';   // host AI agents that produce write_uw_section calls
-
-/** How a manifest's `tier` reads under Protocol 3.0 (§II.5). */
-export interface ConformanceTierReading {
-  tier: ConformanceTier;
-  /** The deprecated Protocol 2.x value the manifest carried, if any. */
-  legacy?: ViewerTier;
-  /**
-   * The non-normative starter-product claim a legacy value carried:
-   * `tier-2-editor` claimed an editor, `tier-4-agent-host` an agent host.
-   * Neither is Protocol conformance any more (§II.4).
-   */
-  starter_product_claim?: 'editor' | 'agent-host';
-}
-
-const LEGACY_TIER_READINGS: Readonly<Record<ViewerTier, ConformanceTierReading>> = Object.freeze({
-  'tier-1-reader': { tier: 'reader', legacy: 'tier-1-reader' },
-  'tier-2-editor': { tier: 'reader', legacy: 'tier-2-editor', starter_product_claim: 'editor' },
-  'tier-3-calc-host': { tier: 'verifier', legacy: 'tier-3-calc-host' },
-  // Protocol 2.x tiers were cumulative: Tier 4 required Tier 3's calc engine,
-  // so an agent host could already reproduce metrics and reads as a verifier.
-  'tier-4-agent-host': { tier: 'verifier', legacy: 'tier-4-agent-host', starter_product_claim: 'agent-host' },
-});
-
-/**
- * Read an `ImplementationManifest.tier` under the Protocol 3.0 model
- * (§II.5, RFC 0078). Current values pass through; the four deprecated
- * Protocol 2.x values map as the RFC fixes them (tier-1 → reader,
- * tier-2 → reader, tier-3 and tier-4 → verifier, with the editor and
- * agent-host claims kept as starter-product claims). The
- * mapping never infers a profile. Anything else is outside the closed
- * vocabulary and returns `null` rather than a guess.
- */
-// RFC 0081 Phase 4: delete legacy tier aliases; retain the final vocabulary.
+export interface ConformanceTierReading { tier: ConformanceTier }
 export function readConformanceTier(tier: unknown): ConformanceTierReading | null {
-  if (tier === 'reader' || tier === 'verifier') return { tier };
-  if (typeof tier === 'string' && Object.hasOwn(LEGACY_TIER_READINGS, tier)) {
-    return { ...LEGACY_TIER_READINGS[tier as ViewerTier] };
-  }
-  return null;
+  return tier === 'reader' || tier === 'verifier' ? { tier } : null;
 }
 
 /** Single owner of each corpus case (RFC 0078 Phase 3, §II.6a). */
@@ -250,7 +207,7 @@ export interface ImplementationManifest {
    * The four Protocol 2.x values stay accepted during 3.x and are
    * **deprecated**; read them with {@link readConformanceTier}.
    */
-  tier?: ConformanceTier | ViewerTier;
+  tier?: ConformanceTier;
   /** Optional verification profiles claimed (§II.3, RFC 0078). Absent = none. */
   profiles?: ConformanceProfile[];
   /** Optional finer-grained capability list. */
@@ -777,9 +734,6 @@ export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
  * `StageRequirement` shape; new code SHOULD consult `STAGE_CONTRACT` (or
  * `requiredSectionsFor` when the asset class is known).
  */
-export function getRequiredSections(stage: DealStage): readonly string[] {
-  return STAGE_REQUIREMENTS[stage].required_sections;
-}
 
 /**
  * Per-class adjustments to the base stage lists (format spec §5.1 class
@@ -1229,8 +1183,7 @@ export interface ModuleManifest {
   requires_format: string;          // semver range
   /** Protocol 2.x tier vocabulary, unchanged by RFC 0078 (§VII.4). */
   // RFC 0081 Phase 4: delete the interim requires_tier spelling.
-  requires_tier?: ViewerTier;
-  requires_conformance?: ConformanceTier;
+  requires_conformance: ConformanceTier;
   requires_profiles?: ConformanceProfile[];
   asset_classes?: AssetClass[];
   deal_stages?: DealStage[];

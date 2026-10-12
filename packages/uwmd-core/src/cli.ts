@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { verifyReserveDrawBindings } from './reserve-draw-bindings.js';
 import { verifyReserveAccounts } from './reserve-accounts.js';
 import { verifyReplacementFundingBindings } from './replacement-funding.js';

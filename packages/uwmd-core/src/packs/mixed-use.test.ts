@@ -30,21 +30,7 @@ const byId = (id: string): ModuleCalcDecl => {
 
 // Standard block-provenance envelope so parseUWFile accepts each section.
 function block(id: string, content: Record<string, unknown>): string {
-  const meta = {
-    section: id,
-    version: 1,
-    superseded: false,
-    source: 'manual',
-    agent_id: null,
-    agent_version: null,
-    actor: 'test-fixture',
-    timestamp: '2026-08-18T00:00:00Z',
-    confidence: 'high',
-    human_review_required: false,
-    flags: [],
-    input_hash: null,
-    notes: null,
-  };
+  const meta = { section: id, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor: 'test-fixture', timestamp: '2026-08-18T00:00:00Z', notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } };
   return [
     `## ${id} {#${id}}`,
     '',

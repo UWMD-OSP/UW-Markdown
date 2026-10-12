@@ -1,4 +1,3 @@
-// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
 import type {
   UWDocumentEnvelope,
   UWEnvelopeBlock,
@@ -7,14 +6,12 @@ import type {
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import type { ParsedUWLite, UWLiteFieldNode, UWLiteScalar } from './lite.js';
 import { isBlockedSegment } from './parser.js';
-import { canonicalV2BlockContent } from './meta-shape.js';
 
-const FORMAT_21_CLASSES = new Set(['data_center', 'manufactured_housing']);
 
 // Existing classes retain the RFC 0017 flat Format 1.1 bridge. RFC 0080
 // adds Format 2.1 authoring for the two new official classes; explicit source
 // versions are preserved, and no financial values are inferred.
-const UW_LITE_BRIDGE_FORMAT_VERSION = '1.1' as const;
+const UW_LITE_BRIDGE_FORMAT_VERSION = '3.0' as const;
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import type { UWFrontmatter, UWMeta } from './types.js';
 
@@ -318,7 +315,7 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     left.localeCompare(right),
   )) {
     const block = createEnvelopeBlock(section, values, timestamp, actor);
-    if (FORMAT_21_CLASSES.has(frontmatter.asset_class) && frontmatter.uw_version.startsWith('2.')) block.content = { section_id: section, _meta: canonicalV2BlockContent(block.content)._meta, content: values };
+
     sections[section] = block;
   }
 
@@ -334,13 +331,12 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     actor,
   );
 
-  if (FORMAT_21_CLASSES.has(frontmatter.asset_class) && frontmatter.uw_version.startsWith('2.')) sourceExtension.content = { section_id: UW_LITE_SOURCE_EXTENSION, _meta: canonicalV2BlockContent(sourceExtension.content)._meta, content: Object.fromEntries(Object.entries(sourceExtension.content).filter(([key]) => key !== '_meta')) };
 
   return {
     ok: true,
     envelope: {
       envelope_version: '1.0',
-      format_version: FORMAT_21_CLASSES.has(frontmatter.asset_class) ? frontmatter.uw_version : UW_LITE_BRIDGE_FORMAT_VERSION,
+      format_version: UW_LITE_BRIDGE_FORMAT_VERSION,
       frontmatter,
       sections,
       pipeline_log: [],
@@ -507,20 +503,12 @@ function compileFrontmatter(
   const dealName = readRequiredString(document.frontmatter, 'deal_name', report);
   const created = readRequiredString(document.frontmatter, 'created', report);
   if (!dealId || !dealName || !created) return null;
-  const bridgeVersion = FORMAT_21_CLASSES.has(String(document.frontmatter['asset_class'])) ? '2.1' : UW_LITE_BRIDGE_FORMAT_VERSION;
-  const semanticVersion =
-    typeof document.frontmatter['uw_version'] === 'string'
-      ? document.frontmatter['uw_version']
-      : bridgeVersion;
-  if (document.frontmatter['uw_version'] === undefined) {
-    report.defaults.push({
-      path: 'frontmatter.uw_version',
-      value: bridgeVersion,
-      reason: bridgeVersion === '2.1'
-        ? 'RFC 0080 new official classes require Format 2.1 with nested provenance.'
-        : 'RFC 0017 pins the Lite bridge to UW semantic format 1.1; Lite is a 1.x-format source representation until its own RFC moves it (format v2 spec §7).',
-    });
+  const semanticVersion = UW_LITE_BRIDGE_FORMAT_VERSION;
+  if (document.frontmatter['uw_version'] !== undefined && document.frontmatter['uw_version'] !== semanticVersion) {
+    report.issues.push({ code: 'UNSUPPORTED_FORMAT_VERSION', severity: 'error', message: 'The Lite bridge supports uw_version "3.0" only.' });
+    return null;
   }
+  if (document.frontmatter['uw_version'] === undefined) report.defaults.push({ path: 'frontmatter.uw_version', value: semanticVersion, reason: 'The Lite bridge emits Format 3.0.' });
 
   const output: Record<string, unknown> = {
     ...document.frontmatter,
@@ -582,29 +570,9 @@ function createEnvelopeBlock(
   timestamp: string,
   actor: string,
 ): UWEnvelopeBlock {
-  const meta: UWMeta = {
-    section,
-    version: 1,
-    superseded: false,
-    source: 'manual',
-    agent_id: null,
-    agent_version: null,
-    actor,
-    timestamp,
-    confidence: 'high',
-    human_review_required: false,
-    flags: [],
-    input_hash: null,
-    notes: null,
-  };
+  const meta: UWMeta = { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor, timestamp, notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } };
   return {
-    annotation: {
-      section,
-      source: 'manual',
-      ts: timestamp,
-      v: 1,
-      confidence: 'high',
-    },
+    annotation: { section, ts: timestamp, v: 1, source: 'manual', confidence: 'high' },
     content: { _meta: meta, ...values },
   };
 }

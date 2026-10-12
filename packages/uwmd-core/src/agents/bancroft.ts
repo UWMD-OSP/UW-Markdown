@@ -424,7 +424,7 @@ function writeSectionOutputs(
 
     const existingBlock = currentParsed.sections[toolOut.section_id];
     const existingVersion = existingBlock && 'meta' in existingBlock
-      ? ((existingBlock as { meta: { version: number } }).meta?.version ?? 0)
+      ? ((existingBlock as { meta: { version: number } }).meta?.lifecycle?.revision ?? 0)
       : 0;
     const newVersion = existingVersion + 1;
 

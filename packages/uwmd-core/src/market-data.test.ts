@@ -359,21 +359,11 @@ describe('promoteMarketObservation', () => {
         '',
         '```json uw:section=valuation v=1',
         JSON.stringify({
-          _meta: nestedFixtureMeta({
-            section: 'valuation',
-            version: 1,
-            superseded: false,
-            source: 'market_data_accepted',
-            agent_id: null,
-            agent_version: null,
-            actor: 'analyst@example.com',
-            ts: '2026-07-01T00:00:00Z',
-            market_data_ref: {
+          _meta: nestedFixtureMeta({ section: 'valuation', ts: '2026-07-01T00:00:00Z', lifecycle: { revision: 1, superseded: false }, provenance: { source: 'market_data_accepted', agent_id: null, agent_version: null, actor: 'analyst@example.com', market_data_ref: {
               document_id: 'md:phx-multifamily:2026-Q2',
               as_of: AS_OF,
               digest: DIGEST,
-            },
-          }),
+            } } }),
           exit_cap_rate_pct: 0.0595,
         }),
         '```',
@@ -422,16 +412,7 @@ describe('parseMarketDataDocument', () => {
     '```json uw:section=market_observations v=1',
     JSON.stringify(
       {
-        _meta: nestedFixtureMeta({
-          section: 'market_observations',
-          version: 1,
-          superseded: false,
-          source: 'market_data',
-          agent_id: null,
-          agent_version: null,
-          actor: 'conformance',
-          ts: '2026-06-30T00:00:00Z',
-        }),
+        _meta: nestedFixtureMeta({ section: 'market_observations', ts: '2026-06-30T00:00:00Z', lifecycle: { revision: 1, superseded: false }, provenance: { source: 'market_data', agent_id: null, agent_version: null, actor: 'conformance' } }),
         observations: [
           {
             field_path: 'valuation.going_in_cap_rate',

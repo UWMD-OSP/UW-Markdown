@@ -322,7 +322,7 @@ describe('applyEdit — section_replace', () => {
       kind: 'section_replace',
       section_id: 'property',
       content: { total_units: 30, year_built: 1995, asset_class: 'multifamily' },
-      meta: { confidence: 'high' },
+      meta: { quality: { confidence: 'high' } },
     };
     const result = applyEdit(FILE, parsed, op, MANUAL_CTX);
     expectOk(result);
@@ -332,9 +332,9 @@ describe('applyEdit — section_replace', () => {
     const reparsed = parseUWFile(result.content);
     const block = getSection(reparsed, 'property');
     expect(block?.content['total_units']).toBe(30);
-    expect(block?.meta.version).toBe(2);
-    expect(block?.meta.source).toBe('manual');
-    expect(block?.meta.actor).toBe('jared');
+    expect(block?.meta.lifecycle?.revision).toBe(2);
+    expect(block?.meta.provenance?.source).toBe('manual');
+    expect(block?.meta.provenance?.actor).toBe('jared');
     expect(reparsed.superseded['property']).toBeUndefined();
   });
 
@@ -396,7 +396,7 @@ describe('applyEdit — section_replace', () => {
       section_id: 'property',
       content: {
         total_units: 28,
-        _meta: { section: 'property', version: 99, source: 'forged' },
+        _meta: { section: 'property', lifecycle: { revision: 99 }, provenance: { source: 'forged' } },
         _notes: 'should be dropped',
       },
       meta: {},
@@ -406,8 +406,8 @@ describe('applyEdit — section_replace', () => {
 
     const reparsed = parseUWFile(result.content);
     const block = getSection(reparsed, 'property');
-    expect(block?.meta.version).toBe(2);
-    expect(block?.meta.source).toBe('manual');
+    expect(block?.meta.lifecycle?.revision).toBe(2);
+    expect(block?.meta.provenance?.source).toBe('manual');
     expect(block?.content['_notes']).toBeUndefined();
   });
 });
@@ -431,10 +431,10 @@ describe('applyEdit — section_supersede', () => {
     const reparsed = parseUWFile(result.content);
     const block = getSection(reparsed, 'risk_assessment');
     expect(block?.content['risk_score']).toBe(3);
-    expect(block?.meta.version).toBe(3);
-    expect(block?.meta.source).toBe('agent/L6');
+    expect(block?.meta.lifecycle?.revision).toBe(3);
+    expect(block?.meta.provenance?.source).toBe('agent/L6');
     expect(reparsed.superseded['risk_assessment']?.length).toBe(1);
-    expect(reparsed.superseded['risk_assessment']?.[0].meta.version).toBe(2);
+    expect(reparsed.superseded['risk_assessment']?.[0].meta.lifecycle?.revision).toBe(2);
   });
 
   it('chains supersedes — version increments each time, prior is archived', () => {
@@ -453,7 +453,7 @@ describe('applyEdit — section_supersede', () => {
     }
     const final = parseUWFile(content);
     const block = getSection(final, 'risk_assessment');
-    expect(block?.meta.version).toBe(5); // started at 2 → +3 = 5
+    expect(block?.meta.lifecycle?.revision).toBe(5); // started at 2 → +3 = 5
     expect(final.superseded['risk_assessment']?.length).toBe(3);
   });
 

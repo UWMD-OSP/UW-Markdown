@@ -250,7 +250,7 @@ describe('writeAgentBlock', () => {
 
     // Write v1 of property (already exists in fixture)
     const existingProperty = getSection(parsed, 'property');
-    expect(existingProperty?.meta.version).toBe(1);
+    expect(existingProperty?.meta.lifecycle?.revision).toBe(1);
 
     // Write v2 — should supersede v1
     const v2 = {
@@ -270,7 +270,7 @@ describe('writeAgentBlock', () => {
     // Re-parse: current version is 2, v1 is in superseded
     const reparsed = parseUWFile(result.content);
     const current = getSection(reparsed, 'property');
-    expect(current?.meta.version).toBe(2);
+    expect(current?.meta.lifecycle?.revision).toBe(2);
     expect(reparsed.superseded['property']?.length).toBe(1);
   });
 });
@@ -281,12 +281,12 @@ describe('buildMeta', () => {
   it('produces valid UWMeta with required fields', () => {
     const meta = buildMeta('debt_structure', 1, { source: 'wizard', confidence: 'high' });
     expect(meta.section).toBe('debt_structure');
-    expect(meta.version).toBe(1);
-    expect(meta.superseded).toBe(false);
-    expect(meta.source).toBe('wizard');
-    expect(meta.confidence).toBe('high');
-    expect(meta.timestamp).toBeTruthy();
-    expect(Array.isArray(meta.flags)).toBe(true);
+    expect(meta.lifecycle?.revision).toBe(1);
+    expect(meta.lifecycle?.superseded).toBe(false);
+    expect(meta.provenance?.source).toBe('wizard');
+    expect(meta.quality?.confidence).toBe('high');
+    expect(meta.provenance?.timestamp).toBeTruthy();
+    expect(Array.isArray(meta.quality?.flags)).toBe(true);
   });
 });
 

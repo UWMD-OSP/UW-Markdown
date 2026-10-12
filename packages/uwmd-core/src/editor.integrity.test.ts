@@ -79,7 +79,7 @@ function makeReplaceOp(content: Record<string, unknown>): EditOperation {
     kind: 'section_replace',
     section_id: 'property',
     content,
-    meta: { confidence: 'high' },
+    meta: { quality: { confidence: 'high' } },
   };
 }
 
@@ -101,9 +101,9 @@ describe('editor — INT-02 stale parent_hash (sync)', () => {
     // hashed prior. Use computeBlockHash on the parsed result.
     const parsed2 = parseUWFile(r1.content!);
     const head = getSection(parsed2, 'property')!;
-    head.meta.content_hash = await computeBlockHash(head, {shape: 'v3'});
+    head.meta.integrity?.content_hash = await computeBlockHash(head, {shape: 'v3'});
     // Splice it back into the file content.
-    const content2 = stampFixtureHash(r1.content!, head.meta.content_hash);
+    const content2 = stampFixtureHash(r1.content!, head.meta.integrity?.content_hash);
     const parsed3 = parseUWFile(content2);
 
     // Edit with WRONG parent hash → INT-02.
@@ -121,7 +121,7 @@ describe('editor — INT-02 stale parent_hash (sync)', () => {
       content2,
       parsed3,
       makeReplaceOp({ total_units: 99, year_built: 1995, asset_class: 'multifamily' }),
-      { ...CTX, parentHash: head.meta.content_hash },
+      { ...CTX, parentHash: head.meta.integrity?.content_hash },
     );
     expect(good.ok).toBe(true);
   });
@@ -152,8 +152,8 @@ describe('applyEditAsync — content_hash stamping', () => {
     );
     expect(r.ok).toBe(true);
     const head = getSection(parseUWFile(r.content!), 'property')!;
-    expect(head.meta.content_hash).toBeUndefined();
-    expect(head.meta.parent_hash).toBeUndefined();
+    expect(head.meta.integrity?.content_hash).toBeUndefined();
+    expect(head.meta.integrity?.parent_hash).toBeUndefined();
   });
 
   it('stamps content_hash + parent_hash when prior head is hashed', async () => {
@@ -174,8 +174,8 @@ describe('applyEditAsync — content_hash stamping', () => {
     );
     expect(r.ok).toBe(true);
     const newHead = getSection(parseUWFile(r.content!), 'property')!;
-    expect(newHead.meta.parent_hash).toBe(seedHash);
-    expect(newHead.meta.content_hash).toMatch(/^[0-9a-f]{64}$/);
+    expect(newHead.meta.integrity?.parent_hash).toBe(seedHash);
+    expect(newHead.meta.integrity?.content_hash).toMatch(/^[0-9a-f]{64}$/);
 
     // verifyChain should be ok on the result (single-block chain — head only).
     const ver = await verifyChain(parseUWFile(r.content!));

@@ -42,26 +42,6 @@ export type {
 } from './source-representation.js';
 
 // RFC 0031 source-tag migration (`uwmd migrate --source-tags`)
-export { migrateSourceTags, mapLegacySource } from './migrate-source-tags.js';
-export type { SourceTagMigration } from './migrate-source-tags.js';
-export { migrateToV2 } from './migrate-to-v2.js';
-export type { MigrateToV2Options, MigrateToV2Result, ResignRequest } from './migrate-to-v2.js';
-export {
-  detectMetaShape,
-  isV2File,
-  uwVersionMajor,
-  reshapeMetaV1toV2,
-  reshapeMetaV2toV1,
-  canonicalV2BlockContent,
-} from './meta-shape.js';
-export type {
-  MetaShape,
-  UWMetaV2,
-  UWMetaV2Provenance,
-  UWMetaV2Quality,
-  UWMetaV2Lifecycle,
-  UWMetaV2Integrity,
-} from './meta-shape.js';
 
 export {
   UWLiteError,
@@ -585,7 +565,7 @@ export type {
   VerifyChainOptions,
 } from './integrity.js';
 
-export { canonicalize, canonicalizeV2 } from './integrity-canonical.js';
+export { canonicalize } from './integrity-canonical.js';
 
 export { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
 export { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';

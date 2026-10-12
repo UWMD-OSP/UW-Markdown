@@ -20,16 +20,7 @@ import {
 import { computeEnvelopeDigest, toUWEnvelope, canonicalizeUWEnvelope } from './envelope.js';
 
 const META = (section: string) =>
-  JSON.stringify({
-    section,
-    version: 1,
-    superseded: false,
-    source: 'document/rent_roll',
-    agent_id: null,
-    agent_version: null,
-    actor: 'conformance',
-    ts: '2026-06-01T00:00:00Z',
-  });
+  JSON.stringify({ section, ts: '2026-06-01T00:00:00Z', lifecycle: { revision: 1, superseded: false }, provenance: { source: 'document/rent_roll', agent_id: null, agent_version: null, actor: 'conformance' } });
 
 const ROWS = [
   { unit_id: '210', tenant_name: 'Anchor Tenant LLC', monthly_rent: 15400 },
@@ -368,16 +359,7 @@ describe('inherited_assumption (RFC 0021 §5)', () => {
         '',
         '```json uw:section=valuation v=1',
         JSON.stringify({
-          _meta: nestedFixtureMeta({
-            section: 'valuation',
-            version: 1,
-            superseded: false,
-            source: 'user_input',
-            agent_id: null,
-            agent_version: null,
-            actor: 'analyst',
-            ts: '2026-06-01T00:00:00Z',
-          }),
+          _meta: nestedFixtureMeta({ section: 'valuation', ts: '2026-06-01T00:00:00Z', lifecycle: { revision: 1, superseded: false }, provenance: { source: 'user_input', agent_id: null, agent_version: null, actor: 'analyst' } }),
           exit_cap_rate_pct: 0.0625,
         }),
         '```',

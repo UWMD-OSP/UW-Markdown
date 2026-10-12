@@ -14,22 +14,7 @@ export function makeBlock(
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
     content,
-    meta: {
-      section: sectionId,
-      version: 1,
-      superseded: false,
-      source: 'manual',
-      agent_id: null,
-      agent_version: null,
-      actor: 'human/jared',
-      timestamp: '2026-08-27T00:00:00Z',
-      confidence: 'medium',
-      human_review_required: false,
-      flags: [],
-      input_hash: null,
-      notes: null,
-      ...meta,
-    },
+    meta: { section: sectionId, ...meta, lifecycle: { ...meta.lifecycle, revision: 1, superseded: false }, provenance: { ...meta.provenance, source: 'manual', agent_id: null, agent_version: null, actor: 'human/jared', timestamp: '2026-08-27T00:00:00Z', notes: null }, quality: { ...meta.quality, confidence: 'medium', human_review_required: false, flags: [] }, integrity: { ...meta.integrity, input_hash: null } },
     prose: '',
     rawJson: '',
     lineStart: 1,
@@ -43,7 +28,7 @@ export async function hashedBlock(
   meta: Partial<UWBlock['meta']> = {},
 ): Promise<UWBlock> {
   const block = makeBlock(sectionId, content, meta);
-  return { ...block, meta: { ...block.meta, content_hash: await computeBlockHash(block) } };
+  return { ...block, meta: { ...block.meta, integrity: { ...block.meta.integrity, content_hash: await computeBlockHash(block) } } };
 }
 
 export function makeFile(

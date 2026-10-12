@@ -1,6 +1,5 @@
 // UW Document Envelope — format-neutral semantic model shared by machine codecs.
 
-import { detectMetaShape, reshapeMetaV2toV1, type UWMetaV2 } from './meta-shape.js';
 import { canonicalizeExact } from './integrity-canonical.js';
 import { sha256TextHex } from './integrity.js';
 import type {
@@ -314,7 +313,7 @@ function fromEnvelopeBlock(block: UWEnvelopeBlock, pointer: string): UWBlock {
   }
   return {
     annotation: block.annotation as UWFenceAnnotation,
-    meta: detectMetaShape(meta) === 'v2' ? reshapeMetaV2toV1(meta as unknown as UWMetaV2) : meta as unknown as UWMeta,
+    meta: meta as unknown as UWMeta,
     content: block.content,
     prose: typeof block.prose === 'string' ? block.prose : '',
     rawJson: JSON.stringify(block.content),

@@ -18,9 +18,9 @@ describe.each(ALGORITHMS)('round trip - %s', (alg) => {
     const block = await hashedBlock('property', { total_units: 100 });
     const signed = stampBlockSignature(block, await signBlock(block, signing));
 
-    expect(signed.meta.signature?.alg).toBe(alg);
-    expect(signed.meta.signature?.kid).toBe(`k-${alg}`);
-    expect(signed.meta.signature?.sig).toMatch(/^[A-Za-z0-9_-]+$/);
+    expect(signed.meta.integrity?.signature?.alg).toBe(alg);
+    expect(signed.meta.integrity?.signature?.kid).toBe(`k-${alg}`);
+    expect(signed.meta.integrity?.signature?.sig).toMatch(/^[A-Za-z0-9_-]+$/);
 
     const store = new InMemoryKeyStore([verifying]);
     await expect(verifyBlockSignature(signed, store)).resolves.toEqual({ ok: true, kid: `k-${alg}` });
@@ -77,7 +77,7 @@ describe('signBlock', () => {
     const { signing } = await generateSigningKeyPair('ed25519', 'k');
     const block = await hashedBlock('property', { total_units: 100 });
     await signBlock(block, signing);
-    expect(block.meta.signature).toBeUndefined();
+    expect(block.meta.integrity?.signature).toBeUndefined();
   });
 
   // RFC 0010 asserts that excluding `parent_hash` from the signing input means
@@ -92,7 +92,7 @@ describe('signBlock', () => {
     const { signing, verifying } = await generateSigningKeyPair('ed25519', 'k');
     const block = await hashedBlock('property', { total_units: 100 });
     const signed = stampBlockSignature(block, await signBlock(block, signing));
-    const reRooted = { ...signed, meta: { ...signed.meta, parent_hash: 'b'.repeat(64) } };
+    const reRooted = { ...signed, meta: { ...signed.meta, integrity: { ...signed.meta.integrity, parent_hash: 'b'.repeat(64) } } };
 
     await expect(verifyBlockSignature(reRooted, new InMemoryKeyStore([verifying]))).resolves.toEqual({
       ok: false,
@@ -102,7 +102,7 @@ describe('signBlock', () => {
     // Re-stamping the hash and re-signing is the supported path.
     const rehashed = {
       ...reRooted,
-      meta: { ...reRooted.meta, content_hash: await computeBlockHash(reRooted) },
+      meta: { ...reRooted.meta, integrity: { ...reRooted.meta.integrity, content_hash: await computeBlockHash(reRooted) } },
     };
     const resigned = stampBlockSignature(rehashed, await signBlock(rehashed, signing));
     await expect(verifyBlockSignature(resigned, new InMemoryKeyStore([verifying]))).resolves.toEqual({
@@ -170,7 +170,7 @@ describe('verifyChain with a real verifier', () => {
     const other = await generateSigningKeyPair('es384', 'k');
     const block = await hashedBlock('property', { total_units: 100 });
     const signed = stampBlockSignature(block, await signBlock(block, signing));
-    const signature = signed.meta.signature as NonNullable<typeof signed.meta.signature>;
+    const signature = signed.meta.integrity?.signature as NonNullable<typeof signed.meta.integrity?.signature>;
 
     const verifier = createBlockSignatureVerifier(new InMemoryKeyStore([other.verifying]));
     await expect(verifier.verify('irrelevant', signature)).resolves.toEqual({
@@ -195,7 +195,7 @@ describe('RFC 0040 signed block roles', () => {
 it('detects role tampering in a signed format 2.0 chain', async () => {
   const { signing, verifying } = await generateSigningKeyPair('ed25519', 'role-v2');
   const block = makeBlock('property', { _role: 'primary', total_units: 100 }, { parent_hash: null });
-  block.meta.content_hash = await computeBlockHash(block, { shape: 'v2' });
+  block.meta.integrity?.content_hash = await computeBlockHash(block, { shape: 'v2' });
   const signed = stampBlockSignature(block, await signBlock(block, signing));
   const parsed = makeFile({ property: signed });
   parsed.frontmatter.uw_version = '2.0';
@@ -241,7 +241,7 @@ describe('Format 3.0 documents select the RFC 0081 §3 digest', () => {
       signedAt: '2026-08-27T00:00:00Z',
     });
     const contentHash = await computeBlockHash(unsigned, { shape: 'v3' });
-    expect(contentHash).toBe(property.meta.content_hash);
+    expect(contentHash).toBe(property.meta.integrity?.content_hash);
     const signed = stampBlockSignature(unsigned, signature, contentHash);
 
     const store = await loadKeyStoreFile(resolve(SIGNING, 'keys/keystore.json'));
@@ -256,7 +256,7 @@ describe('Format 3.0 documents select the RFC 0081 §3 digest', () => {
 
   it('keeps the signature across a _meta-only (parent_hash) change', async () => {
     const store = await loadKeyStoreFile(resolve(SIGNING, 'keys/keystore.json'));
-    const reRooted = { ...property, meta: { ...property.meta, parent_hash: 'b'.repeat(64) } };
+    const reRooted = { ...property, meta: { ...property.meta, integrity: { ...property.meta.integrity, parent_hash: 'b'.repeat(64) } } };
     await expect(verifyBlockSignature(reRooted, store, { uwVersion })).resolves.toMatchObject({ ok: true });
   });
 });

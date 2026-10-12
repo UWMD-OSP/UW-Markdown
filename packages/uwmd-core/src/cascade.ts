@@ -215,8 +215,8 @@ function findFieldOverride(block: UWBlock, rest: string): UWFieldOverride | unde
 /**
  * Walk the parsed sections looking for a value at `field_path` whose effective
  * resolution tag matches one of the wanted tags. Effective tag, per RFC 0031:
- * field_override.resolution → field_override.source → block.meta.resolution →
- * block.meta.source, most specific first. The two `source` fallbacks carry the
+ * field_override.resolution → field_override.source → block.meta.provenance?.resolution →
+ * block.meta.provenance?.source, most specific first. The two `source` fallbacks carry the
  * pre-split spelling (a tag in the actor field), which §2.6 read-time
  * interpretation keeps meaningful; a properly-split file matches on
  * `resolution` and its actor never collides with a tag.
@@ -243,7 +243,7 @@ function findBySource(
   if (value === undefined) return null;
   const override = findFieldOverride(block, split.rest);
   const effective =
-    override?.resolution ?? override?.source ?? block.meta.resolution ?? block.meta.source;
+    override?.resolution ?? override?.source ?? block.meta.provenance?.resolution ?? block.meta.provenance?.source;
   return effective !== undefined && wanted.includes(effective)
     ? { block, value, source: effective }
     : null;

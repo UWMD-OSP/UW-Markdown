@@ -1,4 +1,5 @@
 ---
+uw_version: "3.0"
 uwpart_version: "1.0"
 part_id: operating-statement-t12
 section: operating_statement

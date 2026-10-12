@@ -161,7 +161,7 @@ export function checkReplacementFundingStructure(
     return out;
   }
   const sources = sectionBlocks(parsed.sections.cash_flow_series).filter(
-    (b) => b.annotation.variant === ref.variant && !b.annotation.superseded && !b.meta.superseded
+    (b) => b.annotation.variant === ref.variant && !b.annotation.superseded && !b.meta.lifecycle?.superseded
   );
   if (sources.length !== 1) {
     out.unresolvable = true;

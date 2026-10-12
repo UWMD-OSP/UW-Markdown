@@ -256,9 +256,9 @@ ${makeBlock(2, false)}
 `;
     const parsed = parseUWFile(content);
     const current = getSection(parsed, 'property');
-    expect(current?.meta.version).toBe(2);
+    expect(current?.meta.lifecycle?.revision).toBe(2);
     expect(parsed.superseded['property']).toHaveLength(1);
-    expect(parsed.superseded['property']?.[0]?.meta.version).toBe(1);
+    expect(parsed.superseded['property']?.[0]?.meta.lifecycle?.revision).toBe(1);
   });
 
   it('parses fence annotation key-value pairs', () => {
@@ -824,13 +824,13 @@ asset_class: multifamily
 \`\`\`
 `;
 
-  it('surfaces a canonical tag as meta.resolution while keeping the raw spelling', () => {
+  it('surfaces a canonical tag as meta.provenance?.resolution while keeping the raw spelling', () => {
     const parsed = parseUWFile(fileWithSource('market_data'));
     const block = parsed.sections['property'] as import('./types.js').UWBlock;
-    expect(block.meta.resolution).toBe('market_data');
+    expect(block.meta.provenance?.resolution).toBe('market_data');
     // The raw spelling is preserved for diagnostics (SRC-02 warns on it);
     // authority classification treats it as no actor at all.
-    expect(block.meta.source).toBe('market_data');
+    expect(block.meta.provenance?.source).toBe('market_data');
   });
 
   it('never mutates content._meta — the bytes-derived object feeds digests', () => {
@@ -845,7 +845,7 @@ asset_class: multifamily
     for (const source of ['manual', 'agent/L6-01', 'system/init']) {
       const parsed = parseUWFile(fileWithSource(source));
       const block = parsed.sections['property'] as import('./types.js').UWBlock;
-      expect(block.meta.resolution, source).toBeUndefined();
+      expect(block.meta.provenance?.resolution, source).toBeUndefined();
       expect(block.meta, source).toBe(block.content['_meta']);
     }
   });
@@ -857,7 +857,7 @@ asset_class: multifamily
     );
     const parsed = parseUWFile(file);
     const block = parsed.sections['property'] as import('./types.js').UWBlock;
-    expect(block.meta.resolution).toBe('user_input');
+    expect(block.meta.provenance?.resolution).toBe('user_input');
   });
 });
 
