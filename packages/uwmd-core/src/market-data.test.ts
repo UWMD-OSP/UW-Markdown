@@ -1,3 +1,4 @@
+import { reshapeMetaV1toV2 } from './meta-shape.js';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -358,7 +359,7 @@ describe('promoteMarketObservation', () => {
         '',
         '```json uw:section=valuation v=1',
         JSON.stringify({
-          _meta: {
+          _meta: reshapeMetaV1toV2({
             section: 'valuation',
             version: 1,
             superseded: false,
@@ -372,7 +373,7 @@ describe('promoteMarketObservation', () => {
               as_of: AS_OF,
               digest: DIGEST,
             },
-          },
+          }),
           exit_cap_rate_pct: 0.0595,
         }),
         '```',
@@ -421,7 +422,7 @@ describe('parseMarketDataDocument', () => {
     '```json uw:section=market_observations v=1',
     JSON.stringify(
       {
-        _meta: {
+        _meta: reshapeMetaV1toV2({
           section: 'market_observations',
           version: 1,
           superseded: false,
@@ -430,7 +431,7 @@ describe('parseMarketDataDocument', () => {
           agent_version: null,
           actor: 'conformance',
           ts: '2026-06-30T00:00:00Z',
-        },
+        }),
         observations: [
           {
             field_path: 'valuation.going_in_cap_rate',

@@ -1,3 +1,4 @@
+import { reshapeMetaV1toV2 } from './meta-shape.js';
 import { describe, expect, it } from 'vitest';
 import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
@@ -7,7 +8,7 @@ uw_version: "3.0"
 asset_class: multifamily
 ---
 ${blocks.map(([section, content, variant]) => `\`\`\`json uw:section=${section}${variant ? ` variant=${variant}` : ''}
-${JSON.stringify({ _meta: { section, version: 1, source: 'manual' }, ...content })}
+${JSON.stringify({ _meta: reshapeMetaV1toV2({ section, version: 1, source: 'manual' }), ...content })}
 \`\`\``).join('\n')}`);
 describe('RFC 0041 period validation', () => {
   it('checks malformed periods in unselected variants and reports duplicate identities', () => {

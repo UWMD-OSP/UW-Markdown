@@ -31,7 +31,7 @@ const frontmatter = "---\nuw_version: \"3.0\"\ndeal_id: roles\nasset_class: mult
 const document = (role: unknown = 'primary') => `${frontmatter}Untouched prose.
 
 \`\`\`json uw:section=property source=manual v=1
-${JSON.stringify({ _role: role, _meta: meta('property'), total_units: 100 }, null, 2)}
+${JSON.stringify({ _role: role, _meta: reshapeMetaV1toV2(meta('property')), total_units: 100 }, null, 2)}
 \`\`\`
 
 Untouched tail.
@@ -161,7 +161,7 @@ describe('RFC 0040 trusted writers and integrity', () => {
 });
 
 describe('RFC 0040 Markdown variant routing', () => {
-  const fence = (variant: string, content: Record<string, unknown>) => `\n\`\`\`json uw:section=debt_structure variant=${variant} source=manual v=1\n${JSON.stringify({ _meta: meta('debt_structure'), ...content })}\n\`\`\`\n`;
+  const fence = (variant: string, content: Record<string, unknown>) => `\n\`\`\`json uw:section=debt_structure variant=${variant} source=manual v=1\n${JSON.stringify({ _meta: reshapeMetaV1toV2(meta('debt_structure')), ...content })}\n\`\`\`\n`;
   it.each([false, true])('keeps unannotated peers when the role appears first=%s', (first) => {
     const parts = [fence('a', { _role: 'senior', loan_amount: 600 }), fence('b', { loan_amount: 100 }), fence('c', { _role: 'junior', loan_amount: 200 })];
     const parsed = parseUWFile(frontmatter + (first ? parts : [...parts].reverse()).join(''));

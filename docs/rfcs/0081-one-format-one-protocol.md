@@ -764,6 +764,12 @@ dominate any diff they share.
 | hedge/0070-ambiguous-debt | $1,150,000 → $1,550,000: each of two stated $400,000 premiums counts once, alongside the $750,000 interest escrow. Keep its live refusal. | §7 footing; owner approved exception. |
 | hedge/0076-sources-refused-malformed-hedge | Each sources variant: $1,150,000 → $750,000. Drop the $400,000 cost because the malformed hedge supplies no usable attributable home; keep its live refusal. | No invented attribution; owner approved exception. |
 
+| Deferred product writers and retiring tests | Lite/init emission remains unchanged until Phase 4; test-only projections synthesize old migration/reader inputs from the authored 3.0 corpus. No product compatibility shim is added. | Phase 3 boundary explicitly retains the old readers and migrators. |
+| Retired conflict controls | Delete the six conflict-only conformance cases for CAPX-05, ESC-03, HDG-04/05, REC-10 and TAX-04, plus their conflict-only unit test groups. Keep every live refusal assertion. | Owner follow-up; a removed spelling has no meaningful conflict assertion. |
+| Negative artifact controls | Re-stamp valid hashes/signatures/receipts, then preserve intentional tampering, invalid source vocabulary, malformed parent links and stale digests. | Existing conformance refusals must remain evidence, not become passing documents. |
+| Historical forensic record | Preserve docs/reviews/2026-10-02-outright-cap-replacement.evidence.json's captured attempted document verbatim; it is immutable evidence cited by an RFC, not an authored fixture. Release history and staged version labels also remain. | PROCESS historical design reviews; D13 and Phase 6 boundary. |
+| Null group members | Treat null as unstated when deciding whether G1's full terms/draw/assessment group is present. | Phase 2 review clarification; no invented facts. |
+
 ## Alternatives considered
 
 1. **Keep the read path and drop only the write path** (readers accept

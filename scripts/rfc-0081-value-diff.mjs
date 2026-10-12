@@ -23,12 +23,15 @@ if (args.includes('--compare')) {
   for (const value of before.conformance) {const key=value.suite+'/'+value.scenario; const current=next.get(key); if(!current)changes.removed_cases.push(value);else if(!same(value,current))changes.changed_cases.push({before:value,after:current});}
   const lender_identical = same(before.lender,after.lender);
   const totals = after.lender.reduce((a,r) => {for(const k of Object.keys(a))a[k]+=r.counts[k];return a;},{verified:0,failed:0,unverifiable:0});
-  const expectedAdditions = new Set(['total_room_revenue','room_revenue_per_key']);
-  const unexpectedExamples = changes.calculations.filter(c=>c.file.startsWith('examples/') && !(c.file.endsWith('Saguaro-Select-Hotel-Tempe-AZ.uwx.md') && expectedAdditions.has(c.id) && c.before.value===null));
-  const unexpectedUses = changes.uses.filter(c=>c.file.startsWith('examples/'));
+  const expectedAdditions = {total_room_revenue: 6080000, room_revenue_per_key: 42816.9};
+  const unexpectedExamples = changes.calculations.filter(c=>c.file.startsWith('examples/') && !(c.file.endsWith('Saguaro-Select-Hotel-Tempe-AZ.uwx.md') && c.id in expectedAdditions && c.before.value===null && c.after.value === expectedAdditions[c.id]));
+  const expectedUses = {"conformance/capex/accept-draw-with-verified-remaining/deal.uwx.md#": [11350000, 6850000], "conformance/hedge/0070-ambiguous-debt/deal.uwx.md#": [1150000, 1550000], "conformance/hedge/0076-sources-refused-malformed-hedge/deal.uwx.md#alpha": [1150000, 750000], "conformance/hedge/0076-sources-refused-malformed-hedge/deal.uwx.md#beta": [1150000, 750000], "conformance/hedge/0076-two-seniors-no-hedge-escrow/deal.uwx.md#": [1150000, 750000]};
+  const unexpectedUses = changes.uses.filter(c=>!same([c.before,c.after], expectedUses[c.file]));
+  const expectedRemoved = new Set(["tax/reject-flag-disagrees-with-trigger", "recoveries/warn-legacy-cam-cap-beside-typed-cap", "hedge/reject-legacy-reserve-disagrees", "hedge/reject-premium-disagrees-with-use", "hedge/reject-strike-disagrees-with-legacy", "capex/reject-legacy-budget-disagrees"]);
+  const unexpectedRemoved = changes.removed_cases.filter(c=>!expectedRemoved.has(c.suite+'/'+c.scenario));
   const report={summary:{calc_baselines:Object.keys(after.baselineValues).length,baseline_changes:changes.baselines.length,lender:totals,lender_evidence_identical:lender_identical,receipt_changes:changes.receipts.length,uses_changes:changes.uses.length,calculation_changes:changes.calculations.length,code_documents_changed:changes.codes.length,conformance_before:before.conformance.length,conformance_after:after.conformance.length,conformance_changed:changes.changed_cases.length,conformance_removed:changes.removed_cases.length},changes};
   console.log(JSON.stringify(report,null,2));
-  process.exit(!lender_identical || changes.baselines.length || changes.receipts.length || changes.changed_cases.length || unexpectedExamples.length || unexpectedUses.length ? 1 : 0);
+  process.exit(!lender_identical || changes.baselines.length || changes.receipts.length || changes.changed_cases.length || unexpectedExamples.length || unexpectedUses.length || unexpectedRemoved.length ? 1 : 0);
 }
 const core = await import(pathToFileURL(resolve(root, 'packages/uwmd-core/dist/index.js')));
 const { verifyExamples } = await import(pathToFileURL(resolve(root, 'conformance/metrics/verifier.mjs')));

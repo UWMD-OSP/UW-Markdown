@@ -1,3 +1,4 @@
+import { reshapeMetaV1toV2 } from './meta-shape.js';
 import { describe, expect, it } from 'vitest';
 import {
   CompositionError,
@@ -48,7 +49,7 @@ function fragment(row: Record<string, unknown>): UWPart {
     '## Rent Roll {#rent_roll}',
     '',
     '```json uw:section=rent_roll v=1',
-    JSON.stringify({ _meta: JSON.parse(META('rent_roll')), ...row }, null, 2),
+    JSON.stringify({ _meta: reshapeMetaV1toV2(JSON.parse(META('rent_roll'))), ...row }, null, 2),
     '```',
     '',
   ].join('\n');
@@ -69,7 +70,7 @@ function externalRecord(partIds: string[]): string {
     '```json uw:section=rent_roll external=true v=1',
     JSON.stringify(
       {
-        _meta: JSON.parse(META('rent_roll')),
+        _meta: reshapeMetaV1toV2(JSON.parse(META('rent_roll'))),
         rent_roll_type: 'multifamily',
         external: {
           parts: partIds,
@@ -100,7 +101,7 @@ function inlineRecord(rows: Record<string, unknown>[]): string {
     '```json uw:section=rent_roll v=1',
     JSON.stringify(
       {
-        _meta: JSON.parse(META('rent_roll')),
+        _meta: reshapeMetaV1toV2(JSON.parse(META('rent_roll'))),
         rent_roll_type: 'multifamily',
         units: rows,
       },
@@ -367,7 +368,7 @@ describe('inherited_assumption (RFC 0021 §5)', () => {
         '',
         '```json uw:section=valuation v=1',
         JSON.stringify({
-          _meta: {
+          _meta: reshapeMetaV1toV2({
             section: 'valuation',
             version: 1,
             superseded: false,
@@ -376,7 +377,7 @@ describe('inherited_assumption (RFC 0021 §5)', () => {
             agent_version: null,
             actor: 'analyst',
             ts: '2026-06-01T00:00:00Z',
-          },
+          }),
           exit_cap_rate_pct: 0.0625,
         }),
         '```',
@@ -508,7 +509,7 @@ describe('parseUWPart', () => {
       '## Rent Roll {#rent_roll}',
       '',
       '```json uw:section=rent_roll v=1',
-      JSON.stringify({ _meta: JSON.parse(META('rent_roll')), unit_id: '210' }),
+      JSON.stringify({ _meta: reshapeMetaV1toV2(JSON.parse(META('rent_roll'))), unit_id: '210' }),
       '```',
       '',
     ].join('\n');
@@ -538,7 +539,7 @@ describe('parseUWPart', () => {
       '## Valuation {#valuation}',
       '',
       '```json uw:section=valuation v=1',
-      JSON.stringify({ _meta: JSON.parse(META('valuation')), purchase_price: 1 }),
+      JSON.stringify({ _meta: reshapeMetaV1toV2(JSON.parse(META('valuation'))), purchase_price: 1 }),
       '```',
       '',
     ].join('\n');
