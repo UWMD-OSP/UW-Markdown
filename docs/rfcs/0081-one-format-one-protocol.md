@@ -770,6 +770,10 @@ dominate any diff they share.
 | Historical forensic record | Preserve docs/reviews/2026-10-02-outright-cap-replacement.evidence.json's captured attempted document verbatim; it is immutable evidence cited by an RFC, not an authored fixture. Release history and staged version labels also remain. | PROCESS historical design reviews; D13 and Phase 6 boundary. |
 | Null group members | Treat null as unstated when deciding whether G1's full terms/draw/assessment group is present. | Phase 2 review clarification; no invented facts. |
 
+| Canonical parse projection | Apply the same block projection to extension blocks as standard sections; portable parse evidence stays a declaration of content, not private reader objects. | Protocol §II.6a.6 and the existing reference-runner projection. |
+| G3 validation deltas | Moving existing keys to property.keys removes nine CC-13 warnings; 3.0 applies the class-contract severity consistently. Re-author the missing-hotel-input control to a rent_roll missing available_room_nights, preserving its required-field refusal as CLS-04. | G3, D6 and the Phase 2 hospitality schema; no stated financial value changes. |
+| Package guard metadata | Check source manifests' requires_conformance instead of requires_tier, and update VERSIONS.md's compatibility columns without changing package versions or pins. | D9, existing source/build/JSON parity guards; release remains Phase 6. |
+
 ## Alternatives considered
 
 1. **Keep the read path and drop only the write path** (readers accept

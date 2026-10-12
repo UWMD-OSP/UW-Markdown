@@ -984,7 +984,8 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
             }
           }
           // TAX-04: the legacy boolean has to agree with the typed trigger.
-          const flag = t['sale_triggers_reassessment'];
+          // RFC 0081 Phase 4: delete the retired scalar agreement path.
+  const flag = t['sale_triggers_reassessment'];
           if (typeof flag === 'boolean' && flag !== (rr['trigger'] === 'sale')) {
             taxIssue(issues, 'TAX-04', 'noi_model', `${TAX_PATH}.sale_triggers_reassessment`,
               `TAX-04: sale_triggers_reassessment ${flag} disagrees with reassessment.trigger ${JSON.stringify(rr['trigger'])}`, flag);
@@ -1438,6 +1439,7 @@ function checkRecoveryTerms(
   }
 
   // REC-10: the legacy field and the typed cap can contradict each other.
+  // RFC 0081 Phase 4: delete the retired scalar agreement path.
   if (t['cam_cap_pct'] != null && cap != null) {
     recIssue(issues, 'REC-10', `${at}.cam_cap_pct`,
       'REC-10: cam_cap_pct is superseded by recovery_terms.cap; stating both lets the two drift apart',
@@ -1785,6 +1787,7 @@ function checkRateHedge(
   }
 
   // HDG-04: the legacy scalar has to agree with the typed body.
+  // RFC 0081 Phase 4: delete the retired scalar agreement path.
   if (finiteNum(legacyCapPct) && finiteNum(strike) && legacyCapPct !== strike) {
     hedgeIssue(issues, 'HDG-04', 'debt_structure', 'rate_cap_pct',
       `HDG-04: rate_cap_pct ${legacyCapPct} disagrees with rate_hedge.strike_rate ${strike}`, legacyCapPct);
@@ -1872,7 +1875,8 @@ function checkEscrows(
 
   // ESC-03: the legacy scalars have to agree with the typed lines.
   for (const [legacyKey, name] of [
-    ['interest_reserve', 'interest'],
+    // RFC 0081 Phase 4: delete the retired scalar agreement path.
+  ['interest_reserve', 'interest'],
     ['operating_reserves', 'operating'],
   ] as const) {
     const legacy = uses[legacyKey];
@@ -1904,7 +1908,8 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
         const rec = h as Record<string, unknown>;
         assumption = rec['post_expiration_assumption'];
         checkRateHedge(rec, deepGet(debt.content, 'rate_type'), deepGet(debt.content, 'rate_cap_pct'), issues, parsed.frontmatter.uw_version === '3.0');
-        // HDG-05: the premium is the same cash as the use that funds it.
+        // RFC 0081 Phase 4: delete the retired scalar agreement path.
+  // HDG-05: the premium is the same cash as the use that funds it.
         const premium = rec['premium'];
         const cost = su ? deepGet(su.content, 'uses.rate_cap_cost') : undefined;
         if (finiteNum(premium) && finiteNum(cost) && !sameMoney(premium, cost)) {
@@ -2114,7 +2119,8 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
 
   // CAPX-05: the legacy scalars have to agree with the typed body.
   for (const [legacyKey, typedKey] of [
-    ['renovation_budget', 'budget'],
+    // RFC 0081 Phase 4: delete the retired scalar agreement path.
+  ['renovation_budget', 'budget'],
     ['renovation_contingency', 'contingency'],
   ] as const) {
     const legacy = deepGet(su.content, `uses.${legacyKey}`);
