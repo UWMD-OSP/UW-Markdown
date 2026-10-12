@@ -1,4 +1,5 @@
 ---
+uw_version: "3.0"
 uwpart_version: "1.0"
 part_id: rent-roll-210
 section: rent_roll
@@ -13,7 +14,6 @@ collection_member: true
     "section": "rent_roll",
     "provenance": {
       "source": "system/uwmd",
-      "resolution": "source_document",
       "actor": "example-kit",
       "agent_id": null,
       "agent_version": null,

@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/mixed-use-two-component-price-per-unit",
   "target": "verifier",
-  "legacy_id": "tier-3/mixed-use-two-component-price-per-unit",
   "requires_capabilities": [
     "calc-evaluate"
   ],

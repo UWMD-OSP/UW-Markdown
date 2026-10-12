@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-1/13-period-identities/validate",
   "target": "verifier",
-  "legacy_id": "tier-1/13-period-identities/validate",
   "requires_capabilities": [
     "validate"
   ],

@@ -159,21 +159,22 @@ describe('.uw.json 1.0', () => {
     expect(() => parseUWJson('not json {')).toThrow(UWJsonError);
     expect(() => parseUWJson('{"uwjson_version":"1.1"}')).toThrow(
       /ENVELOPE_UNSUPPORTED_VERSION/,
-    );    expect(() =>
-      parseUWJson(
-        JSON.stringify({
-          envelope_version: '1.0',
-          format_version: '1.1',
-          frontmatter: {},
-          sections: { property: { annotation: { section: 'property' }, content: {} } },
-          pipeline_log: [],
-          custom_calculations: [],
-          custom_scenarios: [],
-          extensions: {},
-          superseded: {},
-        }),
-      ),
-    ).toThrow(/ENVELOPE_MISSING_META/);
+    );
+    const envelope = (format_version: string, uw_version: string) => JSON.stringify({
+      envelope_version: '1.0',
+      format_version,
+      frontmatter: { uw_version },
+      sections: { property: { annotation: { section: 'property' }, content: {} } },
+      pipeline_log: [],
+      custom_calculations: [],
+      custom_scenarios: [],
+      extensions: {},
+      superseded: {},
+    });
+    expect(() => parseUWJson(envelope('3.0', '3.0'))).toThrow(/ENVELOPE_MISSING_META/);
+    // One format (RFC 0081 D1): either version statement naming another is refused.
+    expect(() => parseUWJson(envelope('1.1', '3.0'))).toThrow(/UNSUPPORTED_FORMAT_VERSION/);
+    expect(() => parseUWJson(envelope('3.0', '2.1'))).toThrow(/UNSUPPORTED_FORMAT_VERSION/);
 
     const text = await stringifyUWJsonWithDigest(parseUWFile(FIXTURE));
     const tampered = text.replace('"total_units": 24', '"total_units": 25');

@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-stale-index",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-stale-index",
   "requires_capabilities": [
     "validate"
   ],

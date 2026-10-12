@@ -246,7 +246,7 @@ import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';
 
 function periodBlock(section: string, content: Record<string, unknown>, variant?: string): UWBlock {
   return { annotation: { section, ...(variant ? { variant } : {}) }, content,
-    meta: { section, version: 1, source: 'manual', superseded: false } as UWBlock['meta'],
+    meta: { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual' } } as UWBlock['meta'],
     prose: '', rawJson: '', lineStart: 1, lineEnd: 1 };
 }
 const PERIOD_PATH = 'dcf.annual_cash_flows@Y3.noi';
@@ -422,10 +422,10 @@ describe('RFC 0042 stated period refinement', () => {
 });
 
 
-it('refinement resolves a v2 content envelope and reads each repeated period value once', () => {
+it('refinement reads each repeated period value once', () => {
   const parsed = periodFile(`${PERIOD_PATH} + ${PERIOD_PATH} + ${GAP}`);
   let reads = 0;
-  (parsed.sections['dcf'] as UWBlock).content = { content: { annual_cash_flows: [{ year: 3, get noi() { reads++; return 300; } }] } };
+  (parsed.sections['dcf'] as UWBlock).content = { annual_cash_flows: [{ year: 3, get noi() { reads++; return 300; } }] };
   const result = ranked(parsed);
   expect(reads).toBe(1);
   expect(result.diagnostics.period_inputs).toEqual([]);
@@ -447,23 +447,11 @@ it('refinement never calls a cascade provider for a selector-only target', () =>
   expect(result.diagnostics.period_inputs?.[0]?.code).toBe('REFINE-PERIOD-MISSING');
 });
 
-/** The same document with each standard block's user fields moved into a content envelope. */
-function toContentEnvelope(source: string): string {
-  return source.replace(/(```json uw:section=([a-z_]+)[^\n]*\n)([\s\S]*?)(\n```)/g, (all, open: string, section: string, body: string, close: string) => {
-    if (section.startsWith('x_') || section.startsWith('custom_') || section === 'pipeline_log') return all;
-    const { _meta, _role, _notes, ...fields } = JSON.parse(body) as Record<string, unknown>;
-    if ('content' in fields) return all;
-    const envelope = { _meta, ...(_role !== undefined ? { _role } : {}), ...(_notes !== undefined ? { _notes } : {}), content: fields };
-    return `${open}${JSON.stringify(envelope, null, 2)}${close}`;
-  });
-}
-
-describe('content-envelope blocks (Protocol §VIII.2 payload)', () => {
-  it('ranks the same gaps from flat and content-envelope blocks', () => {
+describe('stated inputs read from the bare payload (Protocol §VIII.2)', () => {
+  it('ranks only the published-default gap when the other inputs are stated', () => {
     const parkview = readFileSync(new URL('../../../examples/Parkview-Apts-Glendale-AZ.uwx.md', import.meta.url), 'utf8');
     // loan_amount and total_units are stated in the file; io_months is a
-    // published-default gap. Read as a wrapper, the stated inputs would be NaN
-    // and the ranking would silently empty.
+    // published-default gap.
     const packs = [{
       ...MULTIFAMILY_PACK,
       calculations: [{
@@ -473,9 +461,8 @@ describe('content-envelope blocks (Protocol §VIII.2 payload)', () => {
         deterministic: true,
       }],
     }];
-    const flat = rankGaps(parseUWFile(parkview), { packs });
-    expect(flat.by_voi.map((g) => g.field_path)).toEqual(['debt_structure.io_months']);
-    expect(rankGaps(parseUWFile(toContentEnvelope(parkview)), { packs })).toEqual(flat);
+    const ranked = rankGaps(parseUWFile(parkview), { packs });
+    expect(ranked.by_voi.map((g) => g.field_path)).toEqual(['debt_structure.io_months']);
   });
 });
 

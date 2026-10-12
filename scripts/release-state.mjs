@@ -64,7 +64,7 @@
 // precedent. Its CHANGELOG said Released, its tag was never pushed, and no 1.4.0
 // of any package exists.
 
-import { OFFICIAL_MODULE_PACKAGES, releasePackagesForGeneration } from './release-packages.mjs';
+import { RETIRED_MODULE_PACKAGES, releasePackagesForGeneration } from './release-packages.mjs';
 /** Wording that describes a generation as not yet final. */
 const NOT_FINAL = /\b(candidate|unreleased|unpublished)\b/i;
 /** A row annotation that names a publication, e.g. the stale "published 2.14.0". */
@@ -254,7 +254,7 @@ export function checkReleaseState({
     }
   }
 
-  for (const { row: label } of OFFICIAL_MODULE_PACKAGES) {
+  for (const { row: label } of RETIRED_MODULE_PACKAGES) {
     if (!publishedRows.includes(label)) continue;
     const moduleRow = row(label);
     if (moduleRow && !new RegExp(`@uwmd/core\\s+${escapeRegExp(coreVersion)}(?![\\d.])`).test(moduleRow.pairsWith)) {

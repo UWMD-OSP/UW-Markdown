@@ -5,21 +5,7 @@ import type { ParsedUWFile, UWBlock } from './types.js';
 function block(section: string, content: Record<string, unknown>): UWBlock {
   return {
     annotation: { section },
-    meta: {
-      section,
-      version: 1,
-      superseded: false,
-      source: 'manual',
-      agent_id: null,
-      agent_version: null,
-      actor: 'user',
-      timestamp: '2026-07-25T00:00:00Z',
-      confidence: 'high',
-      human_review_required: false,
-      flags: [],
-      input_hash: null,
-      notes: null,
-    },
+    meta: { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor: 'user', timestamp: '2026-07-25T00:00:00Z', notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } },
     content,
     prose: '',
     rawJson: JSON.stringify(content),

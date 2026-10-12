@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/23-btr-reverse-conflict",
   "target": "verifier",
-  "legacy_id": "scenario/23-btr-reverse-conflict",
   "requires_capabilities": [
     "validate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/lease-up-component",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/lease-up-component",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

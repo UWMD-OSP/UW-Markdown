@@ -1,7 +1,6 @@
 {
   "id": "starter-products/tier-1/01-minimal-screening/render-summary",
   "target": "starter-products",
-  "legacy_id": "tier-1/01-minimal-screening/render-summary",
   "requires_capabilities": [
     "render-summary"
   ],

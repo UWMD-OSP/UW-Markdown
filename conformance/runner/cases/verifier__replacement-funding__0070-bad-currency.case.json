@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-bad-currency",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-bad-currency",
   "requires_capabilities": [
     "validate"
   ],

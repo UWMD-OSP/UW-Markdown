@@ -3,6 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseUWFile, getSection } from './parser.js';
 import { writeAgentBlock, writeErrorEntry, buildMeta } from './runner.js';
+import { resolveValue } from './cascade.js';
 import { buildAgentContext, isContextReady, BANCROFT_LAYERS } from './context.js';
 
 // ─── Shared fixture ───────────────────────────────────────────────────────────
@@ -140,6 +141,21 @@ Garden-style multifamily in Phoenix.
 // ─── writeAgentBlock tests ────────────────────────────────────────────────────
 
 describe('writeAgentBlock', () => {
+  it('drops an agent-written _overrides so model output cannot forge a human override (invariant 5)', () => {
+    const parsed = parseUWFile(MINIMAL_FILE);
+    const content = {
+      _meta: buildMeta('property', 1, { source: 'agent/L1', agentId: 'L1', confidence: 'medium' }),
+      total_units: 999,
+      _overrides: [{ path: 'total_units', resolution: 'user_override', source: 'manual', reason: 'overridden' }],
+    };
+    const result = writeAgentBlock(MINIMAL_FILE, parsed, { sectionId: 'property', content });
+    const block = getSection(parseUWFile(result.content), 'property');
+    expect(block?.content['total_units']).toBe(999);
+    expect(block?.content).not.toHaveProperty('_overrides');
+    const resolved = resolveValue('property.total_units', parseUWFile(result.content), {});
+    expect(resolved.step).not.toBe('user_override');
+  });
+
   it('writes a new section block and produces a parseable file', () => {
     const parsed = parseUWFile(MINIMAL_FILE);
     const newContent = {
@@ -250,7 +266,7 @@ describe('writeAgentBlock', () => {
 
     // Write v1 of property (already exists in fixture)
     const existingProperty = getSection(parsed, 'property');
-    expect(existingProperty?.meta.version).toBe(1);
+    expect(existingProperty?.meta.lifecycle?.revision).toBe(1);
 
     // Write v2 — should supersede v1
     const v2 = {
@@ -270,7 +286,7 @@ describe('writeAgentBlock', () => {
     // Re-parse: current version is 2, v1 is in superseded
     const reparsed = parseUWFile(result.content);
     const current = getSection(reparsed, 'property');
-    expect(current?.meta.version).toBe(2);
+    expect(current?.meta.lifecycle?.revision).toBe(2);
     expect(reparsed.superseded['property']?.length).toBe(1);
   });
 });
@@ -281,12 +297,12 @@ describe('buildMeta', () => {
   it('produces valid UWMeta with required fields', () => {
     const meta = buildMeta('debt_structure', 1, { source: 'wizard', confidence: 'high' });
     expect(meta.section).toBe('debt_structure');
-    expect(meta.version).toBe(1);
-    expect(meta.superseded).toBe(false);
-    expect(meta.source).toBe('wizard');
-    expect(meta.confidence).toBe('high');
-    expect(meta.timestamp).toBeTruthy();
-    expect(Array.isArray(meta.flags)).toBe(true);
+    expect(meta.lifecycle?.revision).toBe(1);
+    expect(meta.lifecycle?.superseded).toBe(false);
+    expect(meta.provenance?.source).toBe('wizard');
+    expect(meta.quality?.confidence).toBe('high');
+    expect(meta.provenance?.timestamp).toBeTruthy();
+    expect(Array.isArray(meta.quality?.flags)).toBe(true);
   });
 });
 

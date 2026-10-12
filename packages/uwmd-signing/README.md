@@ -17,7 +17,7 @@ appraiser each sign their own sections, and agent-host accountability where a
 signature proves *which* agent instance wrote a block rather than merely what
 the `actor` field claims.
 
-Core owns the normative, crypto-free half — the wire shape (`_meta.signature`)
+Core owns the normative, crypto-free half — the wire shape (`_meta.integrity.signature`)
 and the canonical signing input. This package owns the algorithms. Two seams
 connect them:
 

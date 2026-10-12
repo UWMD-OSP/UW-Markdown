@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/mixed-use-manufactured_housing_price_per_site",
   "target": "verifier",
-  "legacy_id": "tier-3/mixed-use-manufactured_housing_price_per_site",
   "requires_capabilities": [
     "calc-evaluate"
   ],

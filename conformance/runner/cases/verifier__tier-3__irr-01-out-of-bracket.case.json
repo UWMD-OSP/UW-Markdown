@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/irr-01-out-of-bracket",
   "target": "verifier",
-  "legacy_id": "tier-3/irr-01-out-of-bracket",
   "requires_capabilities": [
     "calc-evaluate"
   ],

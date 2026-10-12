@@ -62,13 +62,11 @@ Profiles: `module`, `integrity`, `representations`, `portfolio`, `sensitivity`,
 `ImplementationManifest` (`protocol.ts`); the reference claims `verifier` with
 all six.
 
-The four Protocol 2.x tiers (Reader, Editor, Calc Host, Agent Host; the
-`ViewerTier` type) are retired as implementation tiers. Their manifest values
-stay readable, deprecated, during 3.x: tier-1 and tier-2 → reader, tier-3 and
-tier-4 → verifier (2.x Tier 4 included Tier 3), with the editor and agent-host
-claims kept as non-normative starter-product claims
-(`readConformanceTier` in `protocol.ts`). Module manifests now declare `requires_conformance` and optional `requires_profiles`
-in the reader/verifier vocabulary. The re-tiered corpus retains its historical
+`reader` and `verifier` are the only tier values (`isConformanceTier` in
+`protocol.ts`); the Protocol 2.x tier names are not read. Editor and agent-host
+behavior is a non-normative starter-product claim. Module manifests declare
+`requires_conformance` and optional `requires_profiles` in the same
+vocabulary. The re-tiered corpus retains its historical
 directory names until RFC 0081 Phase 5 renames them.
 
 ## Repository map

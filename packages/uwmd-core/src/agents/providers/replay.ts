@@ -21,7 +21,7 @@
 //
 // No vendor SDK, no node built-ins: this file is safe wherever core runs.
 
-import { canonicalizeExact } from '../../integrity-canonical.js';
+import { canonicalize } from '../../integrity-canonical.js';
 import {
   AgentProviderError,
   type AgentCompletion,
@@ -67,7 +67,7 @@ function comparableRequest(request: AgentRequest): unknown {
 
 /** Stable fingerprint of a request, used for comparison and error messages. */
 export function agentRequestFingerprint(request: AgentRequest): string {
-  return canonicalizeExact(comparableRequest(request));
+  return canonicalize(comparableRequest(request));
 }
 
 /**
@@ -136,7 +136,7 @@ function describeDrift(recorded: AgentRequest, actual: AgentRequest): string {
   ];
   const a = asRecord(recorded);
   const b = asRecord(actual);
-  const changed = fields.filter((f) => canonicalizeExact(a[f]) !== canonicalizeExact(b[f]));
+  const changed = fields.filter((f) => canonicalize(a[f]) !== canonicalize(b[f]));
   return changed.length ? `changed: ${changed.join(', ')}` : 'no field-level difference found';
 }
 

@@ -2,7 +2,7 @@
 //
 // Walks the eight cascade steps in order (seven before RFC 0021 §5 added
 // `inherited_assumption` at protocol 1.5.0); first hit wins. The producer that
-// uses this stamps the resulting `_meta.source` with the cascade step that
+// uses this stamps the resulting `_meta.provenance.source` with the cascade step that
 // produced the value. See FORMAT_SPEC §3.4 (provisional flag) and §2.6
 // (source tags).
 
@@ -11,6 +11,7 @@ import { getAssetClassDefaults, type DefaultRange } from './defaults.js';
 import { blockPayload, deepGet } from './parser.js';
 import { resolveSectionBlock, type SectionSelectionOptions } from './section-resolution.js';
 import type { BlockRole, ParsedUWFile, SourceTag, UWBlock, UWFieldOverride } from './types.js';
+import { blockOverrides } from './metadata.js';
 
 // ─── Inputs ──────────────────────────────────────────────────────────────────
 
@@ -85,7 +86,7 @@ export class AmbiguousInheritanceError extends Error {
  * Select the inherited value for `field_path`: the nearest ancestor wins.
  *
  * Exported because a host often needs the winning ancestor's identity to stamp
- * `_meta.inherited_from`, not merely the value.
+ * `_meta.provenance.inherited_from`, not merely the value.
  */
 export function selectInheritedAssumption(
   field_path: string,
@@ -204,22 +205,22 @@ function readFromSection(parsed: ParsedUWFile, field_path: string, ctx: CascadeC
 }
 
 /**
- * If a block has a `field_overrides` entry whose path matches `rest`, return it.
- * Used to surface per-field source tags that may be more specific than the
- * block-level `_meta.source`.
+ * If a block's `_overrides` has an entry whose path matches `rest`, return it.
+ * Used to surface a per-field resolution more specific than the block-level
+ * `_meta.provenance.resolution`.
  */
 function findFieldOverride(block: UWBlock, rest: string): UWFieldOverride | undefined {
-  return block.meta.field_overrides?.find((o) => o.path === rest);
+  return blockOverrides(block).find((o) => o.path === rest);
 }
 
 /**
  * Walk the parsed sections looking for a value at `field_path` whose effective
- * resolution tag matches one of the wanted tags. Effective tag, per RFC 0031:
- * field_override.resolution → field_override.source → block.meta.resolution →
- * block.meta.source, most specific first. The two `source` fallbacks carry the
- * pre-split spelling (a tag in the actor field), which §2.6 read-time
- * interpretation keeps meaningful; a properly-split file matches on
- * `resolution` and its actor never collides with a tag.
+ * tag matches one of the wanted tags. The effective tag is the stated
+ * resolution — the `_overrides` entry's, else the block's
+ * `_meta.provenance.resolution` (RFC 0031) — and, when none is stated, the
+ * actor `manual`: a person typed the value, which the user_input step reads.
+ * A resolution tag in an actor field is `SRC-02` and is never read as a
+ * resolution (Format §2.6).
  *
  * Used to detect user_override / user_input / market_data values already
  * recorded in the file. A variant-map section consults only the block §VIII.2
@@ -242,8 +243,8 @@ function findBySource(
   const value = deepGet(blockPayload(block), split.rest);
   if (value === undefined) return null;
   const override = findFieldOverride(block, split.rest);
-  const effective =
-    override?.resolution ?? override?.source ?? block.meta.resolution ?? block.meta.source;
+  const actor = override?.source ?? block.meta.provenance?.source;
+  const effective = override?.resolution ?? block.meta.provenance?.resolution ?? (actor === 'manual' ? actor : undefined);
   return effective !== undefined && wanted.includes(effective)
     ? { block, value, source: effective }
     : null;

@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-nonreplacement-loan_matures_first-escrow",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-nonreplacement-loan_matures_first-escrow",
   "requires_capabilities": [
     "validate"
   ],

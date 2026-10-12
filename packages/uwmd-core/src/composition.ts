@@ -28,6 +28,7 @@
 
 import { isStandardSectionId, type ProtocolError } from './protocol.js';
 import type { ParsedUWFile, UWBlock, UWFenceAnnotation } from './types.js';
+import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 
 // ─── Representation ──────────────────────────────────────────────────────────
 
@@ -784,8 +785,11 @@ function sectionHeading(section: string): string {
  * the file readable only in the context of its parent.
  */
 export function stringifyUWPart(part: UWPart): string {
+  // A fragment parses standalone, so it states the one format its blocks are
+  // written in (RFC 0081 D1, Composition §2.1).
   const lines = [
     '---',
+    `uw_version: "${SUPPORTED_FORMAT_VERSIONS[0]}"`,
     `uwpart_version: "${UWPART_VERSION}"`,
     `part_id: ${part.part_id}`,
     `section: ${part.section}`,

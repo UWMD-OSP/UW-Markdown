@@ -37,7 +37,7 @@ function registryWith(...declarations: ModuleAssetClassDecl[][]) {
       id: `com.example.mod${i}`,
       declares_asset_classes: decls,
     })),
-    hostTier: 'tier-4-agent-host',
+    hostConformance: 'verifier',
   });
 }
 
@@ -205,7 +205,7 @@ describe('renamed identifiers under the current contract', () => {
   const renamed = (decls: ModuleAssetClassDecl[]) =>
     createModuleRegistry({
       modules: [{ ...BASE, id: 'com.example-new.datacenters', declares_asset_classes: decls }],
-      hostTier: 'tier-4-agent-host',
+      hostConformance: 'verifier',
     });
 
   it('resolves by the class id alone, so renaming only the module id changes nothing', () => {
@@ -231,15 +231,15 @@ describe('renamed identifiers under the current contract', () => {
 });
 
 describe('declaredModuleDependencies', () => {
-  it('reads both the string and object forms', () => {
+  it('reads only the object-list spelling (RFC 0081 §5)', () => {
     expect(
       declaredModuleDependencies({
         modules: ['com.example.plain', { id: 'com.example.pinned', version: '>=0.1.0 <1.0.0' }],
       }),
-    ).toEqual([
-      { id: 'com.example.plain' },
-      { id: 'com.example.pinned', version: '>=0.1.0 <1.0.0' },
-    ]);
+    ).toEqual([{ id: 'com.example.pinned', version: '>=0.1.0 <1.0.0' }]);
+    // The Markdown frontmatter subset delivers `- id: x` as its scalar line.
+    expect(declaredModuleDependencies({ modules: ['id: com.example.listed', 'id: org.uwmd.hospitality'] }))
+      .toEqual([{ id: 'com.example.listed' }, { id: 'org.uwmd.hospitality' }]);
   });
 
   it('ignores entries with no usable id rather than inventing one', () => {

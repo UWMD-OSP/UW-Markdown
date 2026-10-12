@@ -1,0 +1,6 @@
+{
+  "description": "org.uwmd.data_center is refused by INVALID-ASSET-CLASS-002 like any namespaced builtin suffix (RFC 0081 \u00a75).",
+  "expected_codes": [
+    "INVALID-ASSET-CLASS-002"
+  ]
+}

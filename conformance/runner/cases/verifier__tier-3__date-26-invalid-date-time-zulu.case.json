@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-26-invalid-date-time-zulu",
   "target": "verifier",
-  "legacy_id": "tier-3/date-26-invalid-date-time-zulu",
   "requires_capabilities": [
     "calc-evaluate"
   ],

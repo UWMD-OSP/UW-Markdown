@@ -25,7 +25,6 @@ the reviewed materials. No rent or cash-flow figure is calculated here.
     "section": "deal_context",
     "provenance": {
       "source": "system/uwmd",
-      "resolution": "source_document",
       "actor": "example-kit",
       "agent_id": null,
       "agent_version": null,

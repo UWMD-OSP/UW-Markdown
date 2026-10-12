@@ -99,11 +99,25 @@ describe('loadModuleManifest', () => {
     expect(result.errors.some((e) => e.code === 'PROTO-MOD-008')).toBe(true);
   });
 
-  it('rejects modules requiring a higher host tier', () => {
-    const result = loadModuleManifest(BASE, { hostTier: 'tier-1-reader' });
+  it('rejects modules requiring a higher host conformance tier or an unclaimed profile', () => {
+    const reader = loadModuleManifest(BASE, { hostConformance: 'reader' });
+    expect(reader.ok).toBe(false);
+    expect(reader.errors.some((e) => e.code === 'PROTO-MOD-029')).toBe(true);
+    const profile = loadModuleManifest({ ...BASE, requires_profiles: ['module'] }, { hostProfiles: ['integrity'] });
+    expect(profile.errors.some((e) => e.code === 'PROTO-MOD-029')).toBe(true);
+    expect(loadModuleManifest({ ...BASE, requires_conformance: 'reader' }, { hostConformance: 'reader' }).ok).toBe(true);
+    expect(loadModuleManifest({ ...BASE, requires_profiles: ['module'] }).ok).toBe(true);
+  });
 
-    expect(result.ok).toBe(false);
-    expect(result.errors.some((e) => e.code === 'PROTO-MOD-029')).toBe(true);
+  it('refuses any vocabulary but reader/verifier and the closed profile list (PROTO-MOD-006)', () => {
+    for (const value of ['tier-3-calc-host', 'editor', '']) {
+      const result = loadModuleManifest({ ...BASE, requires_conformance: value as ModuleManifest['requires_conformance'] });
+      expect(result.errors.some((e) => e.code === 'PROTO-MOD-006' || e.code === 'PROTO-MOD-001'), value).toBe(true);
+    }
+    for (const profiles of [['module', 'module'], ['tier-3'], 'module']) {
+      const result = loadModuleManifest({ ...BASE, requires_profiles: profiles as ModuleManifest['requires_profiles'] });
+      expect(result.errors.some((e) => e.code === 'PROTO-MOD-006'), JSON.stringify(profiles)).toBe(true);
+    }
   });
 
   // A typo'd construct name used to load clean and contribute nothing, which is
@@ -128,7 +142,7 @@ describe('loadModuleManifest', () => {
       ...BASE,
       requires_conformance: 'verifier',
       agent_layers: [{ id: 'NOT_A_LAYER', reads: 'noi_model', writes: [''], prompt_template: 42 }],
-    }, { hostTier: 'tier-4-agent-host' });
+    }, { hostConformance: 'verifier' });
 
     expect(result.ok).toBe(false);
     expect(result.errors.map((e) => e.code)).toEqual(
@@ -143,7 +157,7 @@ describe('loadModuleManifest', () => {
       agent_layers: [
         { id: 'L7_storage', reads: ['property'], writes: ['risk_assessment'], prompt_template: 'x' },
       ],
-    }, { hostTier: 'tier-4-agent-host' });
+    }, { hostConformance: 'verifier' });
 
     expect(result.errors).toHaveLength(0);
     expect(result.ok).toBe(true);
@@ -155,7 +169,7 @@ describe('loadModuleManifest', () => {
       ...BASE,
       requires_conformance: 'verifier',
       agent_layers: [layer, { ...layer }],
-    }, { hostTier: 'tier-4-agent-host' });
+    }, { hostConformance: 'verifier' });
 
     expect(result.ok).toBe(false);
     expect(result.errors.some((e) => e.code === 'PROTO-MOD-058')).toBe(true);
@@ -219,22 +233,23 @@ describe('loadModuleManifest', () => {
   // `X.Y` was padded to full semver, so a bare major never parsed and every
   // range containing one was silently unsatisfiable.
   it('accepts partial semver ranges down to a bare major', () => {
-    for (const range of ['^1', '^1.1', '^1.1.0', '>=1 <2', '*']) {
-      const result = loadModuleManifest({ ...BASE, requires_protocol: range, requires_format: range });
+    for (const [protocol, format] of [['^4', '^3'], ['^4.0', '^3.0'], ['^4.0.0', '^3.0.0'], ['>=4 <5', '>=3 <4'], ['*', '*']]) {
+      const result = loadModuleManifest({ ...BASE, requires_protocol: protocol!, requires_format: format! });
       expect(result.errors.filter((e) => e.code === 'PROTO-MOD-030' || e.code === 'PROTO-MOD-031')).toEqual([]);
     }
   });
 
-  // Protocol 3.0.0 changed the conformance claim, not the module system
-  // (RFC 0078), so a module written for the 2.x line keeps loading, as `^1`
-  // modules did across 2.0.0. An explicit 3.x host still refuses `^2`.
-  it('keeps loading modules written for the 2.x protocol line on a 3.0 host', () => {
-    for (const range of ['^2', '^2.22.0', '>=2.22.0 <3', '>=2.25.0', '>=3']) {
+  // One protocol and one format (RFC 0081 D1): a range is checked against
+  // 4.0.0 and 3.0 alone, so modules written for earlier lines are refused.
+  it('refuses modules whose ranges only earlier protocol or format lines satisfy', () => {
+    for (const range of ['^2', '^3.0.0', '>=2.25.0 <4', '^1.1.0']) {
       const result = loadModuleManifest({ ...BASE, requires_protocol: range });
-      expect(result.errors.filter((e) => e.code === 'PROTO-MOD-030')).toEqual([]);
+      expect(result.errors.some((e) => e.code === 'PROTO-MOD-030'), range).toBe(true);
     }
-    expect(loadModuleManifest({ ...BASE, requires_protocol: '^2' }, { protocolVersion: '3.0.0' })
-      .errors.some((e) => e.code === 'PROTO-MOD-030')).toBe(true);
+    for (const range of ['^2.1', '>=2.1 <3', '^1.1']) {
+      const result = loadModuleManifest({ ...BASE, requires_format: range });
+      expect(result.errors.some((e) => e.code === 'PROTO-MOD-031'), range).toBe(true);
+    }
   });
 });
 

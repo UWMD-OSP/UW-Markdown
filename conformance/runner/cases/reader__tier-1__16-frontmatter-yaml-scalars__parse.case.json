@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/16-frontmatter-yaml-scalars/parse",
   "target": "reader",
-  "legacy_id": "tier-1/16-frontmatter-yaml-scalars/parse",
   "requires_capabilities": [
     "parse"
   ],

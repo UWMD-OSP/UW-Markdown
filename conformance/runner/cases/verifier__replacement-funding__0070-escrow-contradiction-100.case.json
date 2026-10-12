@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-escrow-contradiction-100",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-escrow-contradiction-100",
   "requires_capabilities": [
     "validate"
   ],

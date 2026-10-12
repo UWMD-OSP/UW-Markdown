@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-payment-on-effective",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-payment-on-effective",
   "requires_capabilities": [
     "validate"
   ],

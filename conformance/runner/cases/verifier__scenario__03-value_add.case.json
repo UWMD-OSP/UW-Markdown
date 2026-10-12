@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/03-value_add",
   "target": "verifier",
-  "legacy_id": "scenario/03-value_add",
   "requires_capabilities": [
     "validate"
   ],

@@ -1,7 +1,7 @@
 // Base64url (RFC 4648 §5, unpadded) and base64 helpers.
 //
 // Hand-rolled rather than reaching for Node's Buffer: this package is
-// browser-usable, and `_meta.signature.sig` must round-trip identically on both
+// browser-usable, and `_meta.integrity.signature.sig` must round-trip identically on both
 // sides or every signature written by a browser fails in Node.
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

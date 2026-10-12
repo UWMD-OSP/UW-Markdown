@@ -1,5 +1,5 @@
 import { checkBuiltinClassContent } from './builtin-class-validation.js';
-import { isScenarioId, RETIRED_SCENARIOS } from './scenario.js';
+import { isScenarioId } from './scenario.js';
 import { checkReserveAccountsStructure } from './reserve-accounts-structure.js';
 import { checkReplacementFundingStructure } from './replacement-funding-structure.js';
 // .uw.md validator — financial validity checks (§5.2) + cross-section consistency (§5.3)
@@ -29,11 +29,11 @@ import { checkLeaseUpContent } from './lease-up-structure.js';
 import { CASH_FLOW_KINDS, CASH_FLOW_VERIFY_DECIMALS, quantizeAtDecimals } from './cash-flow-series.js';
 import { dayOrdinal, isDayCountConvention, parseISODate } from './calc/day-count.js';
 import type { WaterfallTier } from './waterfall.js';
-import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
-import { isV2File } from './meta-shape.js';
+import { parseAssetClass, declaredModuleDependencies, moduleListEntries } from './asset-class.js';
 import { checkPeriodSeries } from './period-validation.js';
 import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
 import type { RoleResolution } from './block-roles.js';
+import { blockOverrides } from './metadata.js';
 
 // ─── BUILTIN_REMEDIATIONS lookup (Protocol §III.6a) ──────────────────
 //
@@ -63,48 +63,18 @@ function enrichWithRemediation(msg: ValidationMessage): ValidationMessage {
   };
 }
 
-// ─── Financial-validity code mapping (Phase 1.4) ─────────────────────────────
-//
-// Legacy `FV_*` string codes are renamed to `FV-NN` numeric form. The legacy
-// code travels alongside the new code as `legacy_code` for one release; v1.2
-// drops `legacy_code` entirely. See protocol §III.6a.
+// ─── Financial-validity codes (Protocol §III.6a) ────────────────────────────
 
-const FV_CODE_MAP: Readonly<Record<string, string>> = Object.freeze({
-  FV_CAP_RATE_BELOW_THRESHOLD:        'FV-01',
-  FV_CAP_RATE_ABOVE_THRESHOLD:        'FV-02',
-  FV_DEBT_YIELD_BELOW_THRESHOLD:      'FV-03',
-  FV_DSCR_BELOW_THRESHOLD:            'FV-04',
-  FV_EQUITY_MULTIPLE_BELOW_MIN:       'FV-05',
-  FV_EQUITY_MULTIPLE_ABOVE_MAX:       'FV-06',
-  FV_IRR_PROJECTED_BELOW_THRESHOLD:   'FV-07',
-  FV_IRR_PROJECTED_ABOVE_THRESHOLD:   'FV-08',
-  FV_LTV_ABOVE_THRESHOLD:             'FV-09',
-  FV_OPEX_BELOW_MIN:                  'FV-10',
-  FV_OPEX_ABOVE_MAX:                  'FV-11',
-  FV_RENT_GROWTH_ABOVE_MAX:           'FV-12',
-  FV_VACANCY_BELOW_MIN:               'FV-13',
-  FV_VACANCY_ABOVE_MAX:               'FV-14',
+/** The `FV-NN` code for each frontmatter threshold check, by metric and direction. */
+const FV_THRESHOLD_CODES: Readonly<Record<string, string>> = Object.freeze({
+  'cap_rate:below':      'FV-01',
+  'cap_rate:above':      'FV-02',
+  'debt_yield:below':    'FV-03',
+  'dscr:below':          'FV-04',
+  'irr_projected:below': 'FV-07',
+  'irr_projected:above': 'FV-08',
+  'ltv:above':           'FV-09',
 });
-
-/** Resolve a legacy `FV_*` string to its `FV-NN` form. Returns the input if no mapping exists. */
-function fvCode(legacy: string): { code: string; legacy_code: string } {
-  const mapped = FV_CODE_MAP[legacy];
-  return mapped ? { code: mapped, legacy_code: legacy } : { code: legacy, legacy_code: legacy };
-}
-
-// ─── Stage completeness requirements (spec §5.1) ──────────────────────────────
-// The tables moved to protocol.ts with the RFC 0009 STAGE_CONTRACT merge —
-// requirements, class overlays, and incomplete-data policies are one contract
-// now, derived into a single registry validators consult. Re-exported here so
-// existing import sites (gaps.ts, tests) keep working.
-
-export {
-  STAGE_REQUIREMENTS,
-  STAGE_SECTION_OVERLAYS,
-  getRequiredSections,
-  requiredSectionsFor,
-} from './protocol.js';
-export type { StageRequirement } from './protocol.js';
 
 /**
  * Resolve a dot-notated path of the form `<section>.<field>...` against
@@ -207,17 +177,13 @@ export function validateUWFile(
   };
 }
 
-// Format §2.2b/c and §5.4: compatibility warnings only, in every format version.
+// Format §2.2b/c and §5.4: descriptive identity, warnings only.
 function checkScenarioIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const scenario: unknown = parsed.frontmatter.scenario;
   if (scenario != null && !isScenarioId(scenario)) {
-    const retired = typeof scenario === 'string'
-      && (RETIRED_SCENARIOS as readonly string[]).includes(scenario);
     issues.push({
       code: 'DQ-07', severity: 'warning', section: 'frontmatter', field: 'scenario',
-      message: retired
-        ? `Retired scenario ${scenario} names a product, program or acquisition circumstance, not a business plan; preserve it when reading and restate the plan separately.`
-        : `Scenario ${JSON.stringify(scenario)} is not a standard business plan or a reverse-DNS extension identifier.`,
+      message: `Scenario ${JSON.stringify(scenario)} is not a standard business plan or a reverse-DNS extension identifier.`,
       value: scenario,
     });
   }
@@ -311,9 +277,8 @@ function checkFinancialValidity(
         : check.value > rule.limit;
 
       if (hit) {
-        const legacy = `FV_${check.metric.toUpperCase()}_${rule.direction.toUpperCase()}_THRESHOLD`;
         issues.push({
-          ...fvCode(legacy),
+          code: FV_THRESHOLD_CODES[`${check.metric}:${rule.direction}`] as string,
           severity: rule.type,
           section: check.section,
           field: check.metric,
@@ -336,20 +301,20 @@ function checkFinancialValidity(
 
     if (vacancyRate != null) {
       if (vacancyRate < t.vacancy_rate.warning_below) {
-        issues.push({ ...fvCode('FV_VACANCY_BELOW_MIN'), severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually low (below ${(t.vacancy_rate.warning_below * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { min: t.vacancy_rate.warning_below } });
+        issues.push({ code: 'FV-13', severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually low (below ${(t.vacancy_rate.warning_below * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { min: t.vacancy_rate.warning_below } });
       }
       if (vacancyRate > t.vacancy_rate.warning_above) {
-        issues.push({ ...fvCode('FV_VACANCY_ABOVE_MAX'), severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually high (above ${(t.vacancy_rate.warning_above * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { max: t.vacancy_rate.warning_above } });
+        issues.push({ code: 'FV-14', severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually high (above ${(t.vacancy_rate.warning_above * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { max: t.vacancy_rate.warning_above } });
       }
     }
 
     if (egi != null && opex != null && egi > 0) {
       const opexRatio = opex / egi;
       if (opexRatio < t.opex_ratio.warning_below) {
-        issues.push({ ...fvCode('FV_OPEX_BELOW_MIN'), severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is suspiciously low (below ${(t.opex_ratio.warning_below * 100).toFixed(0)}%)`, value: opexRatio, threshold: { min: t.opex_ratio.warning_below } });
+        issues.push({ code: 'FV-10', severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is suspiciously low (below ${(t.opex_ratio.warning_below * 100).toFixed(0)}%)`, value: opexRatio, threshold: { min: t.opex_ratio.warning_below } });
       }
       if (opexRatio > t.opex_ratio.warning_above) {
-        issues.push({ ...fvCode('FV_OPEX_ABOVE_MAX'), severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is unusually high (above ${(t.opex_ratio.warning_above * 100).toFixed(0)}%)`, value: opexRatio, threshold: { max: t.opex_ratio.warning_above } });
+        issues.push({ code: 'FV-11', severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is unusually high (above ${(t.opex_ratio.warning_above * 100).toFixed(0)}%)`, value: opexRatio, threshold: { max: t.opex_ratio.warning_above } });
       }
     }
   }
@@ -360,17 +325,17 @@ function checkFinancialValidity(
     const rentGrowth = deepGet(dcfBlock.content, 'assumptions.annual_rent_growth') as number | undefined
       ?? deepGet(dcfBlock.content, 'rent_growth_assumption') as number | undefined;
     if (rentGrowth != null && rentGrowth > t.annual_rent_growth.warning_above) {
-      issues.push({ ...fvCode('FV_RENT_GROWTH_ABOVE_MAX'), severity: 'warning', section: 'dcf', field: 'annual_rent_growth', message: `Annual rent growth assumption ${(rentGrowth * 100).toFixed(1)}% is above the ${(t.annual_rent_growth.warning_above * 100).toFixed(0)}% warning threshold`, value: rentGrowth, threshold: { max: t.annual_rent_growth.warning_above } });
+      issues.push({ code: 'FV-12', severity: 'warning', section: 'dcf', field: 'annual_rent_growth', message: `Annual rent growth assumption ${(rentGrowth * 100).toFixed(1)}% is above the ${(t.annual_rent_growth.warning_above * 100).toFixed(0)}% warning threshold`, value: rentGrowth, threshold: { max: t.annual_rent_growth.warning_above } });
     }
 
     const equityMultiple = deepGet(dcfBlock.content, 'levered_equity_multiple') as number | undefined
       ?? deepGet(dcfBlock.content, 'summary.equity_multiple') as number | undefined;
     if (equityMultiple != null) {
       if (equityMultiple < t.equity_multiple.warning_below) {
-        issues.push({ ...fvCode('FV_EQUITY_MULTIPLE_BELOW_MIN'), severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is below ${t.equity_multiple.warning_below}x warning threshold`, value: equityMultiple, threshold: { min: t.equity_multiple.warning_below } });
+        issues.push({ code: 'FV-05', severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is below ${t.equity_multiple.warning_below}x warning threshold`, value: equityMultiple, threshold: { min: t.equity_multiple.warning_below } });
       }
       if (equityMultiple > t.equity_multiple.warning_above) {
-        issues.push({ ...fvCode('FV_EQUITY_MULTIPLE_ABOVE_MAX'), severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is above ${t.equity_multiple.warning_above}x warning threshold`, value: equityMultiple, threshold: { max: t.equity_multiple.warning_above } });
+        issues.push({ code: 'FV-06', severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is above ${t.equity_multiple.warning_above}x warning threshold`, value: equityMultiple, threshold: { max: t.equity_multiple.warning_above } });
       }
     }
   }
@@ -798,7 +763,7 @@ const sameMoney = (a: number, b: number) =>
  * object is too malformed to check any further.
  */
 function checkReassessment(
-  r: Record<string, unknown>, issues: ValidationMessage[], section: string, base: string, loneFacts = false,
+  r: Record<string, unknown>, issues: ValidationMessage[], section: string, base: string,
 ): number | null {
   const trigger = r['trigger'];
   if (typeof trigger !== 'string' || !(REASSESSMENT_TRIGGERS as readonly string[]).includes(trigger)) {
@@ -806,11 +771,12 @@ function checkReassessment(
       `TAX-01: reassessment.trigger must be one of ${REASSESSMENT_TRIGGERS.join(', ')}`, trigger);
     return null;
   }
-  if (loneFacts && !['assessed_value', 'millage_rate', 'indicated_tax'].some(k => r[k] != null)) {
+  // The assessment group is all-or-none (RFC 0081 §7): a lone trigger is a
+  // complete statement, and the group's attributes need the whole group.
+  if (!['assessed_value', 'millage_rate', 'indicated_tax'].some(k => r[k] != null)) {
     if (['jurisdiction', 'value_basis', 'assessment_ratio', 'round_to_decimals'].some(k => r[k] != null)) taxIssue(issues, 'TAX-01', section, base, 'TAX-01: assessment attributes require the complete assessment group');
     return null;
   }
-  // RFC 0081 Phase 4: delete the old unconditional assessment requirement.
   const assessed = r['assessed_value'];
   const millage = r['millage_rate'];
   const indicated = r['indicated_tax'];
@@ -974,7 +940,7 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
             'TAX-01: reassessment must be an object when stated', r);
         } else {
           const rr = r as Record<string, unknown>;
-          const dp = checkReassessment(rr, issues, 'noi_model', `${TAX_PATH}.reassessment`, parsed.frontmatter.uw_version === '3.0');
+          const dp = checkReassessment(rr, issues, 'noi_model', `${TAX_PATH}.reassessment`);
           // TAX-03: the stated expense is the indicated tax at the declared quantum.
           if (dp !== null && finiteNum(stated) && finiteNum(rr['indicated_tax'])) {
             const rounded = quantizeAtDecimals(rr['indicated_tax'] as number, dp);
@@ -982,13 +948,6 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
               taxIssue(issues, 'TAX-03', 'noi_model', `${TAX_PATH}.value`,
                 `TAX-03: the stated tax ${stated} must equal indicated_tax rounded at ${dp} decimals (${rounded})`, stated);
             }
-          }
-          // TAX-04: the legacy boolean has to agree with the typed trigger.
-          // RFC 0081 Phase 4: delete the retired scalar agreement path.
-          const flag = t['sale_triggers_reassessment'];
-          if (typeof flag === 'boolean' && flag !== (rr['trigger'] === 'sale')) {
-            taxIssue(issues, 'TAX-04', 'noi_model', `${TAX_PATH}.sale_triggers_reassessment`,
-              `TAX-04: sale_triggers_reassessment ${flag} disagrees with reassessment.trigger ${JSON.stringify(rr['trigger'])}`, flag);
           }
         }
       }
@@ -1017,7 +976,7 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
     return;
   }
   const t = tt as Record<string, unknown>;
-  checkReassessment(t, issues, 'dcf', base, parsed.frontmatter.uw_version === '3.0');
+  checkReassessment(t, issues, 'dcf', base);
   if (typeof t['in_exit_noi'] !== 'boolean') {
     taxIssue(issues, 'TAX-08', 'dcf', `${base}.in_exit_noi`,
       'TAX-08: terminal_tax.in_exit_noi must state whether this tax is already inside exit_noi', t['in_exit_noi']);
@@ -1192,9 +1151,8 @@ function checkCoTenancy(
   const flag = t['co_tenancy_clause'];
   const stated = raw !== undefined && raw !== null;
 
-  // LSE-06: the boolean and the body agree, or neither is stated. Same move
-  // TAX-04 made for sale_triggers_reassessment: a flag that asserts nothing
-  // until something has to agree with it.
+  // LSE-06: the boolean and the body agree, or neither is stated: a flag
+  // asserts nothing until something has to agree with it.
   if (stated && flag !== true) {
     leaseIssue(issues, 'LSE-06', `${at}.co_tenancy_clause`,
       'LSE-06: co_tenancy_details requires co_tenancy_clause: true', flag);
@@ -1293,7 +1251,7 @@ function checkLeasingCapital(
 // ─── §4.3 Expense recoveries and the CAM true-up (RFC 0058) ──────────────────
 //
 // Recovery income is the second-largest line in most commercial deals, and the
-// tenant record carried a lease type and one orphan `cam_cap_pct`. These rules
+// tenant record carried only a lease type. These rules
 // type the terms and check the one piece of arithmetic genuinely knowable from
 // a single document: a closed period's reconciliation.
 //
@@ -1352,7 +1310,7 @@ function roundRec(value: number): number {
 }
 
 function checkRecoveryTerms(
-  t: Record<string, unknown>, issues: ValidationMessage[], at: string, loneFacts = false,
+  t: Record<string, unknown>, issues: ValidationMessage[], at: string,
 ): number | null {
   const raw = t['recovery_terms'];
   if (raw == null) return null;
@@ -1377,10 +1335,10 @@ function checkRecoveryTerms(
     }
   }
 
-  // REC-02: a method without the input it needs.
+  // REC-02: a method without the input it needs. A lone `cap` is a complete
+  // statement (RFC 0081 §7); any other member requires the method.
   const method = terms['method'];
-  // RFC 0081 Phase 4: delete the old unconditional method requirement.
-  const methodRequired = !loneFacts || Object.keys(terms).some(k => k !== 'cap');
+  const methodRequired = Object.keys(terms).some(k => k !== 'cap');
   if (methodRequired && (typeof method !== 'string' || !(RECOVERY_METHODS as readonly string[]).includes(method))) {
     recIssue(issues, 'REC-02', `${p}.method`,
       `REC-02: method must be one of ${RECOVERY_METHODS.join(', ')} — the vocabulary is closed`, method);
@@ -1427,8 +1385,7 @@ function checkRecoveryTerms(
         recIssue(issues, 'REC-01', `${cp}.pct`,
           'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
       }
-      // RFC 0081 Phase 4: delete old cap accumulation requiredness.
-      if (pct != null && (!loneFacts || methodRequired || Object.hasOwn(c, 'accumulation'))) {
+      if (pct != null && (methodRequired || Object.hasOwn(c, 'accumulation'))) {
         const acc = c['accumulation'];
         if (typeof acc !== 'string' || !(RECOVERY_CAP_ACCUMULATIONS as readonly string[]).includes(acc)) {
           recIssue(issues, 'REC-02', `${cp}.accumulation`,
@@ -1436,14 +1393,6 @@ function checkRecoveryTerms(
         }
       }
     }
-  }
-
-  // REC-10: the legacy field and the typed cap can contradict each other.
-  // RFC 0081 Phase 4: delete the retired scalar agreement path.
-  if (t['cam_cap_pct'] != null && cap != null) {
-    recIssue(issues, 'REC-10', `${at}.cam_cap_pct`,
-      'REC-10: cam_cap_pct is superseded by recovery_terms.cap; stating both lets the two drift apart',
-      t['cam_cap_pct'], 'warning');
   }
   return shareValue;
 }
@@ -1572,7 +1521,7 @@ function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): v
     checkTerminationOption(t, issues, at);
     checkCoTenancy(t, issues, at);
     checkLeasingCapital(t, issues, at);
-    const share = checkRecoveryTerms(t, issues, at, parsed.frontmatter.uw_version === '3.0');
+    const share = checkRecoveryTerms(t, issues, at);
     checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
   }
 }
@@ -1718,16 +1667,19 @@ function hedgeIssue(
   issues.push({ code, severity: 'error', section, field, message, ...(value !== undefined ? { value } : {}) });
 }
 
-/** The §4.7 hedge object: shape, the rate_type gate, and the legacy agreement. */
+/**
+ * The §4.7 hedge object: shape and the rate_type gate. Only `instrument` and
+ * `strike_rate` are required; the terms group is all-or-none (RFC 0081 §7),
+ * so a strike-only hedge is a complete statement.
+ */
 function checkRateHedge(
-  h: Record<string, unknown>, rateType: unknown, legacyCapPct: unknown,
-  issues: ValidationMessage[], loneFacts = false,
+  h: Record<string, unknown>, rateType: unknown, issues: ValidationMessage[],
 ): void {
   const at = 'rate_hedge';
   const terms = ['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption'];
   const stated = terms.filter(k => h[k] != null).length;
-  const checkTerms = !loneFacts || stated > 0; // RFC 0081 Phase 4: delete the old unconditional terms requirement.
-  if (loneFacts && stated > 0 && stated < terms.length) hedgeIssue(issues, 'HDG-01', 'debt_structure', at, 'HDG-01: hedge terms must be stated all together');
+  const checkTerms = stated > 0;
+  if (stated > 0 && stated < terms.length) hedgeIssue(issues, 'HDG-01', 'debt_structure', at, 'HDG-01: hedge terms must be stated all together');
   const inst = h['instrument'];
   // HDG-02 before HDG-01: a reserved name earns its own message, not "unknown".
   if (typeof inst === 'string' && (RESERVED_HEDGE_INSTRUMENTS as readonly string[]).includes(inst)) {
@@ -1786,13 +1738,6 @@ function checkRateHedge(
       rateType);
   }
 
-  // HDG-04: the legacy scalar has to agree with the typed body.
-  // RFC 0081 Phase 4: delete the retired scalar agreement path.
-  if (finiteNum(legacyCapPct) && finiteNum(strike) && legacyCapPct !== strike) {
-    hedgeIssue(issues, 'HDG-04', 'debt_structure', 'rate_cap_pct',
-      `HDG-04: rate_cap_pct ${legacyCapPct} disagrees with rate_hedge.strike_rate ${strike}`, legacyCapPct);
-  }
-
   // HDG-06: no default. A cap's expiry is the fact the reader came for, and
   // "unstated" is the answer that hides the cliff.
   const after = h['post_expiration_assumption'];
@@ -1804,9 +1749,7 @@ function checkRateHedge(
 }
 
 /** The §4.8 escrow array. Returns the set of names it managed to read. */
-function checkEscrows(
-  escrows: unknown, uses: Record<string, unknown>, issues: ValidationMessage[],
-): Set<string> {
+function checkEscrows(escrows: unknown, issues: ValidationMessage[]): Set<string> {
   const seen = new Set<string>();
   const at = 'uses.escrows';
   if (!Array.isArray(escrows) || escrows.length === 0) {
@@ -1815,7 +1758,6 @@ function checkEscrows(
     return seen;
   }
   const labels = new Set<string>();
-  const upfrontByName = new Map<string, number>();
   for (const [i, raw] of escrows.entries()) {
     const p = `${at}[${i}]`;
     if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
@@ -1865,25 +1807,10 @@ function checkEscrows(
         continue;
       }
       stated++;
-      if (key === 'upfront' && !upfrontByName.has(name)) upfrontByName.set(name, v);
     }
     if (stated === 0) {
       hedgeIssue(issues, 'ESC-01', 'sources_uses', p,
         'ESC-01: an escrow must state at least one of upfront or monthly');
-    }
-  }
-
-  // ESC-03: the legacy scalars have to agree with the typed lines.
-  for (const [legacyKey, name] of [
-    // RFC 0081 Phase 4: delete the retired scalar agreement path.
-    ['interest_reserve', 'interest'],
-    ['operating_reserves', 'operating'],
-  ] as const) {
-    const legacy = uses[legacyKey];
-    const typed = upfrontByName.get(name);
-    if (finiteNum(legacy) && typed !== undefined && !sameMoney(legacy, typed)) {
-      hedgeIssue(issues, 'ESC-03', 'sources_uses', `uses.${legacyKey}`,
-        `ESC-03: uses.${legacyKey} ${legacy} disagrees with the ${name} escrow's upfront ${typed}`, legacy);
     }
   }
   return seen;
@@ -1907,16 +1834,7 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
         hedgeStated = true;
         const rec = h as Record<string, unknown>;
         assumption = rec['post_expiration_assumption'];
-        checkRateHedge(rec, deepGet(debt.content, 'rate_type'), deepGet(debt.content, 'rate_cap_pct'), issues, parsed.frontmatter.uw_version === '3.0');
-        // RFC 0081 Phase 4: delete the retired scalar agreement path.
-        // HDG-05: the premium is the same cash as the use that funds it.
-        const premium = rec['premium'];
-        const cost = su ? deepGet(su.content, 'uses.rate_cap_cost') : undefined;
-        if (finiteNum(premium) && finiteNum(cost) && !sameMoney(premium, cost)) {
-          hedgeIssue(issues, 'HDG-05', 'debt_structure', 'rate_hedge.premium',
-            `HDG-05: rate_hedge.premium ${premium} disagrees with sources_uses.uses.rate_cap_cost ${cost}`,
-            premium);
-        }
+        checkRateHedge(rec, deepGet(debt.content, 'rate_type'), issues);
       }
     }
   }
@@ -1926,7 +1844,7 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
   const escrows = u['escrows'];
   const names = escrows === undefined || escrows === null
     ? new Set<string>()
-    : checkEscrows(escrows, u, issues);
+    : checkEscrows(escrows, issues);
 
   // ESC-04: the rule that turns "this cap expires in year three" from a note
   // into a funded line. Both directions, so neither side can drift alone.
@@ -2054,16 +1972,17 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
     return;
   }
   const ren = r as Record<string, unknown>;
-  const loneFacts = parsed.frontmatter.uw_version === '3.0';
+  // The draw group is all-or-none and needs both budget and contingency; a
+  // lone budget or contingency is a complete statement (RFC 0081 §7).
   const drawMembers = ['contingency_used', 'drawn_to_date', 'as_of_date'];
   const drawCount = drawMembers.filter(k => ren[k] != null).length;
-  const checkDraw = !loneFacts || drawCount > 0; // RFC 0081 Phase 4: delete old unconditional draw requirements.
-  if (loneFacts && !['budget', 'contingency'].some(k => ren[k] != null)) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: renovation needs budget or contingency');
-  if (loneFacts && ((drawCount > 0 && drawCount < 3) || (drawCount > 0 && (ren['budget'] == null || ren['contingency'] == null)) || (ren['contingency_remaining'] != null && drawCount !== 3))) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: the complete draw group requires budget and contingency');
+  const checkDraw = drawCount > 0;
+  if (!['budget', 'contingency'].some(k => ren[k] != null)) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: renovation needs budget or contingency');
+  if ((drawCount > 0 && drawCount < 3) || (drawCount > 0 && (ren['budget'] == null || ren['contingency'] == null)) || (ren['contingency_remaining'] != null && drawCount !== 3)) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: the complete draw group requires budget and contingency');
 
   for (const key of ['budget', 'contingency', 'contingency_used', 'drawn_to_date'] as const) {
     const v = ren[key];
-    if (loneFacts && !checkDraw && ren[key] == null) continue;
+    if (!checkDraw && ren[key] == null) continue;
     if (!finiteNum(v) || v < 0) {
       capxIssue(issues, 'CAPX-01', `${at}.${key}`,
         `CAPX-01: ${key} must be a finite nonnegative amount`, v);
@@ -2114,20 +2033,6 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
       capxIssue(issues, 'CAPX-04', `${at}.contingency_remaining`,
         `CAPX-04: contingency_remaining ${remaining} must equal contingency less contingency_used (${contingency - used})`,
         remaining);
-    }
-  }
-
-  // CAPX-05: the legacy scalars have to agree with the typed body.
-  for (const [legacyKey, typedKey] of [
-    // RFC 0081 Phase 4: delete the retired scalar agreement path.
-    ['renovation_budget', 'budget'],
-    ['renovation_contingency', 'contingency'],
-  ] as const) {
-    const legacy = deepGet(su.content, `uses.${legacyKey}`);
-    const typed = ren[typedKey];
-    if (finiteNum(legacy) && amt(typed) && !sameMoney(legacy, typed)) {
-      capxIssue(issues, 'CAPX-05', `uses.${legacyKey}`,
-        `CAPX-05: uses.${legacyKey} ${legacy} disagrees with renovation.${typedKey} ${typed}`, legacy);
     }
   }
 
@@ -3078,6 +2983,19 @@ function checkCurrencyIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]
  * the obligation a namespaced class carries to name its modules.
  */
 function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  // A `modules` entry that is not an object with an `id` names no module. Say
+  // so, whatever the class: dropping it silently would hide the dependency.
+  for (const entry of moduleListEntries(parsed.frontmatter as Record<string, unknown>)) {
+    if (entry.dependency) continue;
+    issues.push({
+      code: 'MOD-DEPENDENCY-UNDECLARED',
+      severity: 'warning',
+      field: `modules[${entry.index}]`,
+      message: `modules[${entry.index}] is not an object with an 'id', so it declares no module dependency.`,
+      value: entry.value,
+      remediation: "Write each modules entry as an object: '- id: <module id>' with an optional 'version' range (Format §2.2a).",
+    });
+  }
   const raw = parsed.frontmatter?.asset_class;
   if (typeof raw !== 'string' || raw.length === 0) return;
 
@@ -3093,14 +3011,6 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     });
     return;
   }
-  for (const dependency of declaredModuleDependencies(parsed.frontmatter as Record<string, unknown>)) {
-    if (['org.uwmd.datacenters', 'org.uwmd.hospitality'].includes(dependency.id)) issues.push({
-      code: 'CLS-02', severity: 'info', field: 'modules',
-      message: `Module '${dependency.id}' is satisfied by core (RFC 0080).`,
-    });
-  }
-  if (raw === 'org.uwmd.data_center') issues.push({ code: 'CLS-01', severity: 'warning', field: 'asset_class',
-    message: "Deprecated official class id 'org.uwmd.data_center'; use 'data_center'. The source document is unchanged." });
   if (identity.kind === 'builtin') return;
 
   // A namespaced class with no `modules` list is unreadable by anyone who does
@@ -3137,7 +3047,7 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       }
 
       for (const field of REQUIRED_META_FIELDS) {
-        if ((block.meta as unknown as Record<string, unknown>)[field] == null) {
+        if (({ section: block.meta.section, version: block.meta.lifecycle?.revision, source: block.meta.provenance?.source, timestamp: block.meta.provenance?.timestamp, confidence: block.meta.quality?.confidence } as Record<string, unknown>)[field] == null) {
           issues.push({ code: `META_FIELD_MISSING_${field.toUpperCase()}`, severity: 'warning', section: sectionId, field, message: `Section ${sectionId} _meta is missing required field: ${field}` });
         }
       }
@@ -3148,35 +3058,26 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       // smell — drafts often forget to flag — but it is not normatively wrong.
       // This emission is therefore informational only; do not promote it to a
       // warning without changing the spec.
-      if (block.meta.confidence === 'low' && !block.meta.human_review_required) {
+      if (block.meta.quality?.confidence === 'low' && !block.meta.quality?.human_review_required) {
         issues.push({ code: 'META_LOW_CONFIDENCE_NO_REVIEW_FLAG', severity: 'info', section: sectionId, message: `Section ${sectionId} has low confidence but human_review_required is not set to true` });
       }
     }
   }
 }
 
-// ─── SRC-01 / SRC-02: source vocabulary (RFC 0031) ───────────────────────────
+// ─── SRC-01 / SRC-02 / SRC-03: source vocabulary (RFC 0031, Format §2.6) ────
 //
-// `_meta.source` is actor-only: `manual` or `<namespace>/<id>` with a
-// registered namespace. SRC-02 fires when the field holds a canonical
-// SOURCE_TAGS value — a resolution method in the actor field, the pre-split
-// spelling, read-time-interpreted as `resolution` (warning through format
-// 1.x, error at 2.0). SRC-01 fires on everything else outside the grammar
-// (colon forms, bare words). Both are warnings: every such block still
-// parses, and edits against it resolve the conservative catch-all policy.
+// `_meta.provenance.source` is actor-only: `manual` or `<namespace>/<id>`
+// with a registered namespace. SRC-02 fires when it holds a resolution tag (a
+// resolution method in the actor field); SRC-01 on everything else outside
+// the grammar (colon forms, bare words). SRC-03 fires when
+// `provenance.resolution` is outside the closed vocabulary. All three are
+// errors, and no reader reinterprets a tag in the actor field.
 
-// `manual` left SOURCE_TAGS at format 2.0 (actor-only), so the set needs no
-// exemption filter any more; the name survives for its call sites' clarity.
-const NON_MANUAL_SOURCE_TAGS: ReadonlySet<string> = new Set(SOURCE_TAGS);
+const RESOLUTION_TAG_SET: ReadonlySet<string> = new Set(SOURCE_TAGS);
 
 function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
-  // The 2.0 boundary is per-FILE (format spec v2 §1.3): in a uw_version 2.0
-  // file the actor grammar is enforced (SRC-01/SRC-02 are errors, and the new
-  // SRC-03 rejects the retired `resolution: "manual"` spelling); a 1.x file
-  // keeps the 1.x warnings under this same validator — the only reading
-  // consistent with the round-trip guarantee.
-  const fileIsV2 = isV2File(parsed.frontmatter);
-  const severity = fileIsV2 ? ('error' as const) : ('warning' as const);
+  const severity = 'error' as const;
 
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     const blocks = isVariantMap(entry)
@@ -3184,23 +3085,23 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
       : [entry as UWBlock];
 
     for (const block of blocks) {
-      if (fileIsV2 && block.meta?.resolution === 'manual') {
+      if (block.meta?.provenance?.resolution !== undefined && !SOURCE_TAGS.includes(block.meta.provenance.resolution as typeof SOURCE_TAGS[number])) {
         issues.push({
           code: 'SRC-03',
           severity: 'error',
           section: sectionId,
-          message: `Section ${sectionId} resolution is 'manual', which left the resolution vocabulary at 2.0 (actor-only). Use 'user_input' — 'uwmd migrate --to-v2' rewrites it mechanically.`,
+          message: `Section ${sectionId} provenance.resolution is outside the closed resolution vocabulary.`,
         });
       }
-      const src = block.meta?.source;
+      const src = block.meta?.provenance?.source;
       if (typeof src !== 'string' || src.length === 0) continue; // absence is META/DQ territory
 
-      if (NON_MANUAL_SOURCE_TAGS.has(src)) {
+      if (RESOLUTION_TAG_SET.has(src)) {
         issues.push({
           code: 'SRC-02',
           severity,
           section: sectionId,
-          message: `Section ${sectionId} _meta.source is '${src}', a resolution tag in the actor field. Move it to _meta.resolution; readers treat the actor as absent.`,
+          message: `Section ${sectionId} _meta.provenance.source is '${src}', a resolution tag in the actor field. Move it to _meta.provenance.resolution and state the actor.`,
         });
         continue;
       }
@@ -3210,58 +3111,32 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
           code: 'SRC-01',
           severity,
           section: sectionId,
-          message: `Section ${sectionId} _meta.source '${src}' is not 'manual' or '<namespace>/<id>' with a registered actor namespace (${['agent', 'document', 'system', 'institution'].join(', ')}).`,
+          message: `Section ${sectionId} _meta.provenance.source '${src}' is not 'manual' or '<namespace>/<id>' with a registered actor namespace (${['agent', 'document', 'system', 'institution'].join(', ')}).`,
         });
       }
     }
   }
 }
 
-// ─── META-V2-IN-V1 / META-V1-IN-V2: _meta shape by uw_version (RFC 0009) ─────
+// ─── META-01: the one block shape (Format §2.4–§2.5, RFC 0081 §3) ───────────
 //
-// A file's `uw_version` frontmatter is global and decides the `_meta` shape
-// for every block in it (RFC 0009 resolved question 3). "Read both shapes" is
-// a property of parsers, never of a single file: nested `_meta` in a 1.x file
-// and flat `_meta` in a 2.0 file are both errors. Blocks without `_meta` at
-// all carry no `meta_shape` and are exempt — absence stays META/DQ territory.
+// A block is the bare payload with an inline nested `_meta`. A top-level
+// `section_id` member (the retired wrapper) or a `_meta` without the nested
+// `provenance` and `lifecycle` objects (the retired flat shape) is META-01.
+// A block without `_meta` at all is META_MISSING territory, not META-01.
 
 function checkMetaShape(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
-  const fileIsV2 = isV2File(parsed.frontmatter);
-
   const walk = (sectionId: string, block: UWBlock): void => {
-    if (block.meta_shape === undefined) return;
-    if (block.meta_shape === 'v2' && !fileIsV2) {
-      issues.push({
-        code: 'META-V2-IN-V1',
-        severity: 'error',
-        section: sectionId,
-        message: `Section ${sectionId} carries the nested v2 _meta shape in a uw_version '${parsed.frontmatter.uw_version ?? '1.x'}' file. The nested shape requires uw_version "2.0" — run 'uwmd migrate --to-v2' to convert the whole file.`,
-      });
-      return;
-    }
-    if (block.meta_shape === 'v1' && fileIsV2) {
-      issues.push({
-        code: 'META-V1-IN-V2',
-        severity: 'error',
-        section: sectionId,
-        message: `Section ${sectionId} carries the flat v1 _meta shape in a uw_version '${parsed.frontmatter.uw_version}' file. v2 writers MUST emit the nested shape for every block.`,
-      });
+    const meta = block.content['_meta'];
+    const object = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
+    if (Object.hasOwn(block.content, 'section_id') || (meta !== undefined && (!object(meta) || !object(meta.provenance) || !object(meta.lifecycle)))) {
+      issues.push({ code: 'META-01', severity: 'error', section: sectionId, message: 'Block is not in the Format 3.0 shape.' });
     }
   };
-
-  for (const [sectionId, entry] of Object.entries(parsed.sections)) {
-    const blocks = isVariantMap(entry)
-      ? Object.values(entry as Record<string, UWBlock>)
-      : [entry as UWBlock];
-    for (const block of blocks) walk(sectionId, block);
-  }
-  for (const [sectionId, blocks] of Object.entries(parsed.superseded)) {
-    for (const block of blocks) walk(sectionId, block);
-  }
-  for (const block of parsed.pipeline_log) walk('pipeline_log', block);
-  for (const block of parsed.custom_calculations) walk('custom_calculations', block);
-  for (const block of parsed.custom_scenarios) walk('custom_scenarios', block);
-  for (const [extId, block] of Object.entries(parsed.extensions)) walk(extId, block);
+  for (const [id, entry] of Object.entries(parsed.sections)) for (const block of isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock]) walk(id, block);
+  for (const [id, blocks] of Object.entries(parsed.superseded)) for (const block of blocks) walk(id, block);
+  for (const block of [...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios]) walk(block.annotation.section, block);
+  for (const [id, block] of Object.entries(parsed.extensions)) walk(id, block);
 }
 
 // ─── Stage readiness ──────────────────────────────────────────────────────────
@@ -3392,10 +3267,12 @@ export function checkDataQuality(
       : [entry as UWBlock];
 
     for (const block of blocks) {
-      const m = block.meta;
+      const quality = block.meta?.quality;
+      const provenance = block.meta?.provenance;
+      const overrides = blockOverrides(block);
 
       // DQ-01: provisional block not in gaps
-      if (m.provisional) {
+      if (quality?.provisional) {
         const referenced = gapKeys.has(`${sectionId}::`) ||
           // Any field-level gap counts as referencing the section
           [...gapKeys].some((k) => k.startsWith(`${sectionId}::`) && k !== `${sectionId}::`);
@@ -3421,12 +3298,12 @@ export function checkDataQuality(
       }
 
       // DQ-03: partial without enumeration
-      if (m.partial && (!m.field_overrides || m.field_overrides.length === 0)) {
+      if (quality?.partial && overrides.length === 0) {
         issues.push({
           code: 'DQ-03',
           severity: 'warning',
           section: sectionId,
-          message: `Block ${sectionId} is marked partial but has no field_overrides[] enumeration.`,
+          message: `Block ${sectionId} is marked partial but has no _overrides[] enumeration.`,
         });
       }
 
@@ -3437,15 +3314,14 @@ export function checkDataQuality(
       // accepted but never recover which observations, of which vintage. That
       // is precisely the gap the profile exists to close, so a block asserting
       // the tag without the reference is worse than one tagged plainly.
-      const promotedTag = (o: { source?: string; resolution?: string }): boolean =>
-        o.resolution === 'market_data_accepted' || o.source === 'market_data_accepted';
-      const promoted = promotedTag(m) || m.field_overrides?.some(promotedTag);
-      if (promoted && !m.market_data_ref) {
+      const promoted = provenance?.resolution === 'market_data_accepted'
+        || overrides.some(o => o.resolution === 'market_data_accepted');
+      if (promoted && !provenance?.market_data_ref) {
         issues.push({
           code: 'DQ-06',
           severity: 'error',
           section: sectionId,
-          message: `Block ${sectionId} carries a market_data_accepted value but no _meta.market_data_ref naming the observation set, vintage, and digest it was promoted from.`,
+          message: `Block ${sectionId} carries a market_data_accepted value but no _meta.provenance.market_data_ref naming the observation set, vintage, and digest it was promoted from.`,
         });
       }
     }

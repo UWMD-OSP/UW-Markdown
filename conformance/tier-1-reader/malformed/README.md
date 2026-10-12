@@ -33,7 +33,7 @@ validator must surface this problem," not "the validator must surface
 | Fixture | Code(s) | What's wrong |
 | ------- | ------- | ------------ |
 | `01-missing-section-meta.uw.md` | `META_MISSING` | Section block has `content` but no `_meta` object. |
-| `02-low-confidence-no-review.uw.md` | `META_LOW_CONFIDENCE_NO_REVIEW_FLAG` | `_meta.confidence: "low"` without `human_review_required: true`. |
+| `02-low-confidence-no-review.uw.md` | `META_LOW_CONFIDENCE_NO_REVIEW_FLAG` | `_meta.quality.confidence: "low"` without `human_review_required: true`. |
 | `03-sources-uses-mismatch.uw.md` | `CC-04` | `sources_uses.total_sources != total_uses` (cross-section consistency). |
 
 ## Adding a fixture

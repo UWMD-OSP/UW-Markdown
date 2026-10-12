@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/duplicate-edge",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/duplicate-edge",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

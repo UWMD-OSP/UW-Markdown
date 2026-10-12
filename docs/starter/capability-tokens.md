@@ -76,8 +76,8 @@ a typed reason surfaced with the `POL-03` refusal:
    token asserts a scope the file cannot demonstrate — and passes an
    unconstrained one.
 7. The operation kind appears in `ops` (`wrong_op`).
-8. `sub` equals the prospective block's `_meta.source` (`sub_mismatch`).
-   Free-form `_meta.actor` is display metadata and takes no part in
+8. `sub` equals the prospective block's `_meta.provenance.source` (`sub_mismatch`).
+   Free-form `_meta.provenance.actor` is display metadata and takes no part in
    authorization.
 
 A write with no token, or a token failing any rule, is refused with
@@ -88,7 +88,7 @@ refuse rather than skip the check.
 ### XIV.4 Persistence
 
 The token itself is NOT stored in the file — only its `jti`, appended to
-the new block's `_meta.notes` as `capability:<jti>` (`; `-separated when
+the new block's `_meta.provenance.notes` as `capability:<jti>` (`; `-separated when
 notes already exist). Embedding the token would disclose coordinator
 infrastructure, and per §V.11.2's posture, provenance metadata is outside
 any cross-producer hash-agreement guarantee — it would buy disclosure, not

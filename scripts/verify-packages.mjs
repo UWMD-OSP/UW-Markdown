@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { OFFICIAL_MODULE_PACKAGES, RELEASE_PACKAGES, moduleMetadataFromSource } from './release-packages.mjs';
+import { RELEASE_PACKAGES } from './release-packages.mjs';
 
 const ts = createRequire(new URL('../packages/uwmd-core/package.json', import.meta.url))('typescript');
 const npmCli = process.env.npm_execpath;
@@ -112,27 +112,12 @@ const reportFiles = packedFiles('@uwmd/report');
 requireFiles('@uwmd/report', reportFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts']);
 rejectSourceOrTests('@uwmd/report', reportFiles);
 
-for (const pkg of OFFICIAL_MODULE_PACKAGES) {
-  const files = packedFiles(pkg.name);
-  requireFiles(pkg.name, files, ['package.json', 'README.md', 'LICENSE', 'dist/index.js', 'dist/index.d.ts', 'dist/view-models.js', 'dist/view-models.d.ts', 'dist/manifest.json']);
-  rejectSourceOrTests(pkg.name, files);
-  const emitted = JSON.parse(readFileSync(resolve(pkg.dir, 'dist/manifest.json'), 'utf8'));
-  const built = (await import(pathToFileURL(resolve(pkg.dir, 'dist/index.js')).href))[pkg.manifestExport];
-  assert.deepStrictEqual(emitted, JSON.parse(JSON.stringify(built)), `${pkg.name}: emitted JSON differs from typed manifest build`);
-  const sourceMetadata = moduleMetadataFromSource(readFileSync(resolve(pkg.dir, 'src/index.ts'), 'utf8'), pkg.constantPrefix);
-  for (const [field, expected] of Object.entries(sourceMetadata)) {
-    assert.strictEqual(emitted[field], expected, `${pkg.name}: emitted ${field} differs from typed source`);
-  }
-  assert.strictEqual(readFileSync(resolve(pkg.dir, 'LICENSE'), 'utf8'), readFileSync('LICENSE', 'utf8'), `${pkg.name}: packaged license differs from repository notice`);
-  console.log(`[PASS] ${pkg.name} package: ${files.size} files, license and manifest/source parity verified`);
-}
-
 const signingFiles = packedFiles('@uwmd/signing');
 requireFiles('@uwmd/signing', signingFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/keystore-file.js']);
 rejectSourceOrTests('@uwmd/signing', signingFiles);
 
-// Every package the release workflow publishes (nine since Excel, report and
-// lake joined after 2.21.x) must install outside this repository: no
+// Every package the release workflow publishes (seven from 4.0.0) must
+// install outside this repository: no
 // workspace-only dependency specifier, exact @uwmd/* pins, public metadata,
 // and every export and bin target inside the tarball it ships.
 const packedByName = new Map([

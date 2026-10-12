@@ -50,7 +50,7 @@ reference runner to populate `_meta` provenance.
 A compatible starter editor's output for `before.uwx.md + operation.json` MUST
 match `after.uwx.md` after both files are normalized (stripping trailing
 whitespace, CRLF differences, and volatile fields: `last_modified`,
-`_meta.timestamp`, `ts=` fence attributes).
+`_meta.provenance.timestamp`, `ts=` fence attributes).
 
 Run via:
 

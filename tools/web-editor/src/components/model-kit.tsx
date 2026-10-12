@@ -7,7 +7,7 @@
 // The write path is the same as RentRollModel/OperatingStatementModel: clone the
 // block, mutate inputs, re-foot, write back every non-pinned total, dispatch a
 // single section_replace through applyEdit(). Hand overrides are recorded in the
-// format's own _meta.field_overrides (reason "overridden").
+// format's own `_overrides` (reason "overridden").
 
 import type {
   DerivedField,
@@ -41,7 +41,7 @@ export function useFooting(
   derive: (content: Row) => { fields: DerivedField[] },
 ): Footing {
   const content = block.content as Row;
-  const overrides = ((block.meta?.field_overrides ?? []) as UWFieldOverride[]).filter(
+  const overrides = ((Array.isArray(block.content['_overrides']) ? block.content['_overrides'] : []) as UWFieldOverride[]).filter(
     (o) => o.reason === 'overridden',
   );
   const overriddenPaths = new Set(overrides.map((o) => o.path));
@@ -60,8 +60,9 @@ export function useFooting(
       kind: 'section_replace',
       section_id: sectionId,
       ...(variant ? { variant } : {}),
-      content: c,
-      meta: { field_overrides: nextOverrides },
+      // Per-field exceptions are the block's own `_overrides` member.
+      content: { ...c, _overrides: nextOverrides },
+      meta: {},
     });
   };
 

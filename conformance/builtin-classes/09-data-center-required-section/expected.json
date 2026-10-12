@@ -1,5 +1,5 @@
 {
-  "description": "RFC 0080 core builtin control. dc_capacity removed. The module declares it required (it is what makes the document a data center), so MOD-SECTION-MISSING is an error naming the module that asked. Every calc that reads capacity degrades to null rather than throwing, and the six capacity rules fall silent. CC-DC-07 still fires: rent_index reads dc_revenue alone, and one missing section does not suppress findings about the sections that are present.",
+  "description": "RFC 0080 core builtin control. dc_capacity removed. Every calc that reads capacity degrades to null rather than throwing, and the six capacity rules fall silent. CC-DC-07 still fires: rent_index reads dc_revenue alone, and one missing section does not suppress findings about the sections that are present.",
   "expected_calcs": {
     "utilization": null,
     "facility_load_kw": null,

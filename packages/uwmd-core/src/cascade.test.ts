@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { readInFile, resolveValue, type CascadeContext } from './cascade.js';
 import { parseUWFile } from './parser.js';
 import { evaluateCalc } from './calc/index.js';
-import type { ParsedUWFile, UWBlock } from './types.js';
+import type { ParsedUWFile, SourceTag, UWBlock } from './types.js';
 
 /**
  * A deliberately synthetic asset class that is not — and must never become — a
@@ -13,24 +13,16 @@ import type { ParsedUWFile, UWBlock } from './types.js';
  */
 const UNREGISTERED_CLASS = '__unregistered_test_class__';
 
-function makeBlock(sectionId: string, content: unknown, source: UWBlock['meta']['source'] = 'manual'): UWBlock {
+/** A block written by `manual`; any other tag is stated as its resolution. */
+function makeBlock(sectionId: string, content: unknown, tag: SourceTag = 'manual'): UWBlock {
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
     content: content as Record<string, unknown>,
     meta: {
       section: sectionId,
-      version: 1,
-      superseded: false,
-      source,
-      agent_id: null,
-      agent_version: null,
-      actor: 'test',
-      timestamp: '2026-04-27T00:00:00Z',
-      confidence: 'medium',
-      human_review_required: false,
-      flags: [],
-      input_hash: null,
-      notes: null,
+      provenance: { source: 'manual', ...(tag !== 'manual' ? { resolution: tag } : {}), actor: 'test', agent_id: null, agent_version: null, timestamp: '2026-04-27T00:00:00Z', notes: null },
+      quality: { confidence: 'medium', human_review_required: false, flags: [] },
+      lifecycle: { revision: 1, superseded: false },
     },
     prose: '',
     rawJson: '',
@@ -80,7 +72,7 @@ describe('cascade — empty file falls through to asset-class defaults', () => {
   // Owner decision 2026-10-10: data_center publishes no expense-ratio default
   // (the industrial NNN proxy does not fit a power-grossed-up basis). The
   // cascade falls through exactly as land's does, never to another class.
-  it.each(['data_center', 'org.uwmd.data_center', 'land'])(
+  it.each(['data_center', 'land'])(
     '%s expense_ratio falls through past asset_class_default, unresolved',
     (asset_class) => {
       const result = resolveValue('noi_model.expense_ratio', makeFile({ asset_class }));
@@ -141,10 +133,10 @@ describe('cascade — user_override wins over everything', () => {
     expect(result.value).toBe(0.41);
   });
 
-  it('respects field_overrides for a finer-grained source tag', () => {
+  it('respects a block _overrides entry for a finer-grained resolution', () => {
     const block = makeBlock('noi_model', { expense_ratio: 0.43 }, 'asset_class_default');
-    block.meta.field_overrides = [
-      { path: 'expense_ratio', source: 'user_override', reason: 'overridden' },
+    block.content['_overrides'] = [
+      { path: 'expense_ratio', resolution: 'user_override', reason: 'overridden' },
     ];
     const file = makeFile({ sections: { noi_model: block } });
     const result = resolveValue('noi_model.expense_ratio', file);
@@ -164,7 +156,7 @@ describe('cascade — user_input is step 2', () => {
     expect(result.step).toBe('user_input');
   });
 
-  it('manual is treated as user_input synonym', () => {
+  it('a manual actor with no stated resolution reads at the user_input step', () => {
     const file = makeFile({
       sections: {
         noi_model: makeBlock('noi_model', { expense_ratio: 0.37 }, 'manual'),
@@ -317,39 +309,11 @@ describe('cascade — asset class selection', () => {
   });
 });
 
-/** The same document with each standard block's user fields moved into a content envelope. */
-function toContentEnvelope(source: string): string {
-  return source.replace(/(```json uw:section=([a-z_]+)[^\n]*\n)([\s\S]*?)(\n```)/g, (all, open: string, section: string, body: string, close: string) => {
-    if (section.startsWith('x_') || section.startsWith('custom_') || section === 'pipeline_log') return all;
-    const { _meta, _role, _notes, ...fields } = JSON.parse(body) as Record<string, unknown>;
-    if ('content' in fields) return all;
-    const envelope = { _meta, ...(_role !== undefined ? { _role } : {}), ...(_notes !== undefined ? { _notes } : {}), content: fields };
-    return `${open}${JSON.stringify(envelope, null, 2)}${close}`;
-  });
-}
-
-describe('content-envelope blocks (Protocol §VIII.2 payload)', () => {
-  const PARKVIEW = readFileSync(resolve(process.cwd(), '../..', 'examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
-  const PATHS = [
-    'property.total_units',
-    'property.total_nra_sqft',
-    'debt_structure.loan_amount',
-    'debt_structure.annual_debt_service',
-    'valuation.purchase_price',
-    'sources_uses.sources.equity_sponsor',
-    'noi_model.net_operating_income',
-  ];
-
-  it('resolves the same in-file values from flat and content-envelope blocks', () => {
-    const flat = parseUWFile(PARKVIEW);
-    const wrapped = parseUWFile(toContentEnvelope(PARKVIEW));
-    expect((wrapped.sections['debt_structure'] as { content: Record<string, unknown> }).content['content']).toBeDefined();
-    expect(readInFile(flat, 'debt_structure.loan_amount')).toBe(5_040_000);
-    expect(resolveValue('debt_structure.loan_amount', flat)).toMatchObject({ value: 5_040_000, step: 'user_input' });
-    for (const path of PATHS) {
-      expect(readInFile(wrapped, path), path).toEqual(readInFile(flat, path));
-      expect(resolveValue(path, wrapped), path).toEqual(resolveValue(path, flat));
-    }
+describe('a payload member named content (RFC 0081 §3)', () => {
+  it('is ordinary payload, never a wrapper', () => {
+    const file = makeFile({ sections: { property: makeBlock('property', { content: { total_units: 9 }, total_units: 48 }) } });
+    expect(readInFile(file, 'property.total_units')).toBe(48);
+    expect(readInFile(file, 'property.content.total_units')).toBe(9);
   });
 });
 
@@ -384,29 +348,5 @@ describe('in-file steps over a variant map (§VIII.2, RFC 0066)', () => {
     });
     expect(r.value).not.toBe(1_000_000);
     expect(r.step).not.toBe('user_input');
-  });
-});
-
-describe('variant maps in the content envelope (RFC 0066 with the §VIII.2 payload)', () => {
-  const ROLES = readFileSync(
-    resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures/10-declared-roles.uwx.md'),
-    'utf8',
-  );
-
-  it('selects by role and reads the payload identically in both shapes', () => {
-    const ltv = {
-      id: 'ltv', label: 'LTV', formula: 'debt_structure.loan_amount / valuation.underwritten_value',
-      unit: '%', deterministic: true, section_roles: { debt_structure: 'senior' as const },
-    };
-    for (const source of [ROLES, toContentEnvelope(ROLES)]) {
-      const parsed = parseUWFile(source);
-      expect(evaluateCalc(ltv, { parsed, prior_results: {}, locale: 'en-US' })).toMatchObject({ ok: true, value: 0.6 });
-      expect(resolveValue('debt_structure.loan_amount', parsed, { sectionRoles: { debt_structure: 'senior' } }))
-        .toMatchObject({ value: 6_000_000, step: 'user_input' });
-      expect(() => readInFile(parsed, 'debt_structure.loan_amount')).toThrow(/CALC-RESOLVE-002/);
-    }
-    // The envelope keeps `_role` beside `_meta`, where RFC 0040 reads it.
-    const wrapped = parseUWFile(toContentEnvelope(ROLES)).sections['debt_structure'] as Record<string, { content: Record<string, unknown> }>;
-    expect(wrapped['producer-senior']!.content).toMatchObject({ _role: 'senior', content: { loan_amount: 6_000_000 } });
   });
 });

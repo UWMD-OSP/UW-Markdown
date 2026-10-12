@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/irr-05-degenerate",
   "target": "verifier",
-  "legacy_id": "tier-3/irr-05-degenerate",
   "requires_capabilities": [
     "calc-evaluate"
   ],

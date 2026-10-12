@@ -202,10 +202,20 @@ describe('uwmd CLI', () => {
         'modules', 'validate',
         moduleFixture('accept', '01-minimal.module.json'),
         moduleFixture('accept', '02-full-surface.module.json'),
-        '--tier', 'tier-4-agent-host',
+        '--tier', 'verifier',
       ]);
       expect(r.status).toBe(0);
       expect(r.stdout).toContain('2/2 manifest(s) loaded');
+    });
+
+    it('refuses a retired tier name as a usage error (RFC 0081 §6)', async () => {
+      const r = await runCli([
+        'modules', 'validate',
+        moduleFixture('accept', '01-minimal.module.json'),
+        '--tier', 'tier-4-agent-host',
+      ]);
+      expect(r.status).toBe(1);
+      expect(r.stderr).toContain('--tier must be reader or verifier');
     });
 
     it('exits non-zero and points at the failing declaration', async () => {
@@ -223,7 +233,7 @@ describe('uwmd CLI', () => {
       const r = await runCli([
         'modules', 'list',
         moduleFixture('accept', '02-full-surface.module.json'),
-        '--tier', 'tier-4-agent-host',
+        '--tier', 'verifier',
         '--json',
       ]);
       expect(r.status).toBe(0);
@@ -359,10 +369,10 @@ describe('uwmd CLI', () => {
   });
 
   describe('scope on RFC 0080 classes', () => {
-    const legacy = resolve(__dirname, '..', '..', '..', 'conformance', 'modules', 'runtime', '06-data-center-fixture', 'deal.uwx.md');
+    const dataCenter = resolve(__dirname, '..', '..', '..', 'conformance', 'builtin-classes', '06-data-center-fixture', 'deal.uwx.md');
 
-    it('reports one identity for the re-authored builtin record', async () => {
-      const r = await runCli(['scope', legacy, '--json']);
+    it('reports the builtin class identity', async () => {
+      const r = await runCli(['scope', dataCenter, '--json']);
       expect(r.status).toBe(0);
       const out = JSON.parse(r.stdout);
       expect(out).toMatchObject({
@@ -706,17 +716,16 @@ describe('uwmd CLI', () => {
       }
     });
 
-    it('refuses a legacy structured .uw.md input (sniffing sunset at 2.0)', async () => {
-      // RFC 0025 / format v2 §6.1: structured content under the legacy
-      // .uw.md name is SOURCE_LEGACY_STRUCTURED — the fix is a byte-identical
-      // rename to .uwx.md, which the error message states.
+    it('refuses structured content under a .uw.md name (RFC 0081 §4)', async () => {
+      // `.uw.md` is the Lite extension: structured fences under it contradict
+      // the representation and are SOURCE_CONTENT_MISMATCH.
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-legacy-'));
       try {
         const dealPath = resolve(temp, 'legacy.uw.md');
         writeFileSync(dealPath, readFileSync(FIXTURE, 'utf8'), 'utf8');
         const r = await runCli(['export', dealPath]);
         expect(r.status).not.toBe(0);
-        expect(`${r.stdout}${r.stderr}`).toContain('SOURCE_LEGACY_STRUCTURED');
+        expect(`${r.stdout}${r.stderr}`).toContain('SOURCE_CONTENT_MISMATCH');
       } finally {
         rmSync(temp, { recursive: true, force: true });
       }

@@ -24,12 +24,12 @@ describe('representation dispatch', () => {
     expect(analyzeDocument(UWX(), 'deal.uwx.md').representation).toBe('uwx-markdown');
   });
 
-  it('refuses structured content on the legacy .uw.md extension (sunset at 2.0)', () => {
-    // RFC 0025 / format v2 §6.1: the guidance diagnostic became an error, and
-    // the error message carries its own remedy — the byte-identical rename.
-    const result = analyzeDocument(UWX(), 'legacy-deal.uw.md');
+  it('refuses structured content under a .uw.md name (RFC 0081 §4)', () => {
+    // `.uw.md` is the Lite extension; structured fences under it contradict
+    // the representation, and the message names the .uwx.md remedy.
+    const result = analyzeDocument(UWX(), 'deal.uw.md');
     expect(result.representation).toBeNull();
-    expect(result.diagnostics[0]?.code).toBe('SOURCE_LEGACY_STRUCTURED');
+    expect(result.diagnostics[0]?.code).toBe('SOURCE_CONTENT_MISMATCH');
     expect(result.diagnostics[0]?.severity).toBe('error');
     expect(result.diagnostics[0]?.message).toMatch(/\.uwx\.md/);
   });

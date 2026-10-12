@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-nonreplacement-unhedged-outright",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-nonreplacement-unhedged-outright",
   "requires_capabilities": [
     "validate"
   ],

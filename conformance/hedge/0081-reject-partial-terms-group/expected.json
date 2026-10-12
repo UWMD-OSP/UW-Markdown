@@ -1,0 +1,9 @@
+{
+  "codes": [
+    "HDG-01",
+    "HDG-01",
+    "HDG-01",
+    "HDG-06"
+  ],
+  "note": "The terms group (notional, index, effective_date, expiration_date, post_expiration_assumption) is all-or-none (RFC 0081 \u00a77). Each missing member of the stated group is also reported."
+}

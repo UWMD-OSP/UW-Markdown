@@ -16,7 +16,7 @@
 // hosts agree, and leaves what to *do* about an unsigned or invalid module to
 // host policy (§X.1.4).
 
-import { canonicalizeExact } from './integrity-canonical.js';
+import { canonicalize } from './integrity-canonical.js';
 import type { ModuleManifest, ModuleSignature, ProtocolError } from './protocol.js';
 import { UW_SIGNATURE_ALGORITHMS } from './types.js';
 
@@ -33,7 +33,7 @@ export const MODULE_SIGNATURE_SCHEME = 'uwmd-keystore' as const;
  */
 export function moduleSigningPayload(manifest: ModuleManifest): string {
   const { signature: _omitted, ...rest } = manifest;
-  return canonicalizeExact(rest);
+  return canonicalize(rest);
 }
 
 // ─── Verdict ─────────────────────────────────────────────────────────────────

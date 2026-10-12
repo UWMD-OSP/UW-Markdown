@@ -130,7 +130,7 @@ describe('the async gate', () => {
     });
     expect(result.ok).toBe(true);
     const head = getSection(parseUWFile(result.content!), 'noi_model');
-    expect(head?.meta.notes).toBe('capability:JTI-123');
+    expect(head?.meta.provenance?.notes).toBe('capability:JTI-123');
   });
 
   it('appends the jti to existing notes rather than replacing them', async () => {
@@ -139,20 +139,14 @@ describe('the async gate', () => {
       capabilityVerifier: accepting(),
     });
     const head = getSection(parseUWFile(result.content!), 'noi_model');
-    expect(head?.meta.notes).toBe('per call; capability:JTI-123');
+    expect(head?.meta.provenance?.notes).toBe('per call; capability:JTI-123');
   });
 
   it('hands the verifier the deal, section, stage, op, and source', async () => {
     const seen: CapabilityVerifyContext[] = [];
     const parsed = parseUWFile(FILE);
     await applyEditAsync(FILE, parsed, OP, CTX, undefined, { capabilityVerifier: accepting(seen) });
-    expect(seen).toEqual([{
-      deal_id: 'DEAL-CAP-01',
-      section: 'noi_model',
-      stage: 'screening',
-      op: 'section_supersede',
-      source: 'agent/L2.inst-A',
-    }]);
+    expect(seen).toEqual([{ deal_id: 'DEAL-CAP-01', section: 'noi_model', stage: 'screening', op: 'section_supersede', source: 'agent/L2.inst-A' }]);
   });
 
   it('names _frontmatter for frontmatter ops', async () => {
@@ -207,6 +201,6 @@ describe('the async gate', () => {
     const result = await applyEditAsync(FILE, parsed, OP, CTX);
     expect(result.ok).toBe(true);
     const head = getSection(parseUWFile(result.content!), 'noi_model');
-    expect(head?.meta.notes).toBeNull();
+    expect(head?.meta.provenance?.notes).toBeNull();
   });
 });

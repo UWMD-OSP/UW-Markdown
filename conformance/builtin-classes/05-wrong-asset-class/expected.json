@@ -1,5 +1,5 @@
 {
-  "description": "RFC 0080 core builtin control. The same hotel file relabelled as office. The module declares asset_classes: [hospitality], so nothing runs - no calcs, no findings. Scope is part of the contract, not a convenience.",
+  "description": "RFC 0080 core builtin control. The same hotel file relabelled office: the hospitality calcs and rules are scoped to the hospitality class, so nothing from them runs - no calcs, no findings.",
   "expected_calcs": {},
   "expected_codes": [],
   "builtin_class": "hospitality"

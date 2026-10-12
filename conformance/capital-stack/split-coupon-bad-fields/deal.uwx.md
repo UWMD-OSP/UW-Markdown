@@ -12,7 +12,6 @@ asset_class: multifamily
     "section": "capital_stack",
     "provenance": {
       "source": "manual",
-      "resolution": "source_document",
       "actor": null,
       "agent_id": null,
       "agent_version": null,

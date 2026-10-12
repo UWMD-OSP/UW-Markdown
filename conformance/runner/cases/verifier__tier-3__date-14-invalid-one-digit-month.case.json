@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-14-invalid-one-digit-month",
   "target": "verifier",
-  "legacy_id": "tier-3/date-14-invalid-one-digit-month",
   "requires_capabilities": [
     "calc-evaluate"
   ],

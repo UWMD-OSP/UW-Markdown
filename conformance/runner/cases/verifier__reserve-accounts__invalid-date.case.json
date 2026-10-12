@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/invalid-date",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/invalid-date",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-nonreplacement-unhedged-escrow",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-nonreplacement-unhedged-escrow",
   "requires_capabilities": [
     "validate"
   ],

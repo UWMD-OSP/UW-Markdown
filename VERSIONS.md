@@ -17,6 +17,15 @@ together would force every adopter to track every library release.
 The same logic applies to the protocol: an editor and a verifier can be
 released independently as long as both honor the same protocol version.
 
+## Work on `main` since 3.0.0
+
+RFC 0081 Phase 4 deletes every backward-compatibility path: the reference
+library reads Format 3.0 and Protocol 4.0.0 only, refuses every other
+`uw_version` as `UNSUPPORTED_FORMAT_VERSION`, and no longer carries the two
+module compatibility shells. Version labels and package versions move in
+Phase 6, so the current matrix below remains the record of the 3.0.0 release,
+including the older formats that release read.
+
 ## Current matrix
 
 Release 3.0.0 pairs core/CLI 3.0.0 with Protocol 3.0.0 and Format 2.1.
@@ -239,34 +248,14 @@ versions advance independently.
 
 ### Official module compatibility
 
-The owner approves hospitality and data-center together as official first-party
-public npm packages. Distribution support is in the ordinary tag workflow.
-Neither module was published in 2.17.0 or earlier; 0.1.10, pairing core 2.18.0,
-is their first public generation. Since RFC 0080 both are declaration-free
-compatibility shells: 0.2.0, pairing core 3.0.0, is the final version of each.
-That generation published on 2026-10-11, and the owner deprecated both
-package names on npm the same day, every version, with the wiki 11 messages.
-They leave the publish set in a later release. RFC 0081 Phase 3 re-authors
-the source manifests below to the accepted contract ranges; package versions
-and exact core pins remain unchanged until the release phase.
-
-Package semver identifies an immutable npm artifact. Contract `version` identifies
-the manifest contract required by document `modules[].version` and module
-`depends_on`; it is not an npm version or an installation instruction.
-`manifest_version` identifies the manifest schema. These three do not move in
-lockstep. Exact core repins require new package versions, while contract versions
-stay unchanged absent an actual contract change. The ranges below are the existing
-manifest compatibility requirements, not a new loader policy.
-
-| Module package | Module ID | Package version | Contract version | manifest_version | requires_protocol | requires_format | requires_conformance | Core pin |
-|---|---|---|---|---|---|---|---|---|
-| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.2.0** | **0.2.0** | `1` | `^4.0.0` | `^3.0` | `verifier` | `3.0.0` |
-| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.2.0** | **0.2.0** | `1` | `^4.0.0` | `^3.0` | `verifier` | `3.0.0` |
-
-Data-center's declared asset class remains `org.uwmd.data_center`, distinct from
-its module ID. `verify-versions` reads typed source literals and package manifests
-to check every column without requiring a build. `verify-packages` additionally
-checks the built manifest against emitted JSON and the typed metadata.
+`@uwmd/module-hospitality` and `@uwmd/module-data-center` were declaration-free
+compatibility shells after RFC 0080. Their 0.2.0 generation, pairing core
+3.0.0, published on 2026-10-11 and is the final version of each; the owner
+deprecated both package names on npm the same day. RFC 0081 Phase 4 deletes
+both packages from the repository, so no later release publishes them. The
+hospitality and data-center content is builtin in `@uwmd/core`, and the
+`org.uwmd.data_center` identifier is refused like any other namespaced builtin
+suffix (`INVALID-ASSET-CLASS-002`).
 
 ## Historical 1.1+ interchange release plan
 

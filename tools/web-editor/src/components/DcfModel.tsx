@@ -50,7 +50,7 @@ export function DcfModel(props: {
   );
 
   // The current hand-overrides, threaded through structural (add/remove) commits.
-  const overrides = ((block.meta?.field_overrides ?? []) as UWFieldOverride[]).filter(
+  const overrides = ((Array.isArray(block.content['_overrides']) ? block.content['_overrides'] : []) as UWFieldOverride[]).filter(
     (o) => o.reason === 'overridden',
   );
 

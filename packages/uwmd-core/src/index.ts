@@ -2,7 +2,7 @@
 // Public API surface
 
 export { parseUWFile, getSection, getSectionVariant, deepGet, blockPayload } from './parser.js';
-export { SCENARIOS, RETIRED_SCENARIOS, isScenarioId } from './scenario.js';
+export { SCENARIOS, isScenarioId } from './scenario.js';
 export type { Scenario, UWScenarioId } from './scenario.js';
 export { validateUWFile, lookupRemediation, getReturnTaxBasis } from './validator.js';
 // RFC 0053 — the reassessment and abatement vocabularies.
@@ -33,35 +33,11 @@ export {
   UWX_EXTENSION,
   UWSourceRepresentationError,
   detectUWSourceRepresentation,
-  migrateLegacyUWMarkdown,
 } from './source-representation.js';
 export type {
   UWSourceRepresentation,
   UWSourceDetection,
-  UWSourceMigration,
 } from './source-representation.js';
-
-// RFC 0031 source-tag migration (`uwmd migrate --source-tags`)
-export { migrateSourceTags, mapLegacySource } from './migrate-source-tags.js';
-export type { SourceTagMigration } from './migrate-source-tags.js';
-export { migrateToV2 } from './migrate-to-v2.js';
-export type { MigrateToV2Options, MigrateToV2Result, ResignRequest } from './migrate-to-v2.js';
-export {
-  detectMetaShape,
-  isV2File,
-  uwVersionMajor,
-  reshapeMetaV1toV2,
-  reshapeMetaV2toV1,
-  canonicalV2BlockContent,
-} from './meta-shape.js';
-export type {
-  MetaShape,
-  UWMetaV2,
-  UWMetaV2Provenance,
-  UWMetaV2Quality,
-  UWMetaV2Lifecycle,
-  UWMetaV2Integrity,
-} from './meta-shape.js';
 
 export {
   UWLiteError,
@@ -585,7 +561,7 @@ export type {
   VerifyChainOptions,
 } from './integrity.js';
 
-export { canonicalize, canonicalizeV2 } from './integrity-canonical.js';
+export { canonicalize } from './integrity-canonical.js';
 
 export { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
 export { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
@@ -602,7 +578,6 @@ export {
   UW_LITE_CANONICALIZATION_VERSION,
   UWX_CANONICALIZATION,
   UWX_CANONICALIZATION_VERSION,
-  RECEIPT_RESULT_TOLERANCE,
   BUILTIN_POLICY_SET,
   BUILTIN_POLICY_SET_VERSION,
   ReceiptError,
@@ -780,6 +755,11 @@ export type {
   BlockRole,
   CrossCheckResolutionEvidence,
   UWMeta,
+  UWMetaPatch,
+  UWProvenance,
+  UWQuality,
+  UWLifecycle,
+  UWIntegrity,
   UWFieldOverride,
   UWBlockSignature,
   UWSignatureAlgorithm,
@@ -842,12 +822,13 @@ export type {
 // ─── Protocol surface ─────────────────────────────────────────────────────────
 export {
   CONFORMANCE_TARGETS,
-  readConformanceTier,
   BLOCK_ROLES,
   CROSS_CHECK_ROLE_PREFERENCE,
   PERIOD_SERIES,
   PROTOCOL_VERSION,
   FORMAT_VERSION,
+  SUPPORTED_FORMAT_VERSIONS,
+  SUPPORTED_PROTOCOL_VERSIONS,
   DEFAULT_NUMBER_FORMAT,
   DEFAULT_DATE_FORMAT,
   BUILTIN_VIEW_MODELS,
@@ -862,8 +843,6 @@ export {
   BUILTIN_INCOMPLETE_DATA_POLICIES,
   CASCADE_ORDER,
   SOURCE_TAGS,
-  SPEC_FORMAT_VERSION,
-  SPEC_PROTOCOL_VERSION,
   RESOLUTION_METHODS,
   SUPPORTED_LOCALES,
   isSupportedLocale,
@@ -884,7 +863,6 @@ export type {
   ConformanceTarget,
   ConformanceTier,
   ConformanceProfile,
-  ViewerTier,
   ViewerRole,
   ViewerCapability,
   ValidatorCodeFamily,
@@ -910,8 +888,6 @@ export type {
   CalcResult,
   AgentHostCapability,
   ModuleManifest,
-  ProtocolModuleManifest,
-  ProtocolImplementationManifest,
   ModuleConformanceRequirements,
   ModuleSignature,
   ModuleAssetClassDecl,

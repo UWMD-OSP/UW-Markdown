@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/null-plan",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/null-plan",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

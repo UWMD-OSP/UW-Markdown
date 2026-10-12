@@ -14,7 +14,7 @@ export function HistoryView({ parsed, sectionId }: { parsed: ParsedUWFile; secti
         History — {history.length} superseded version{history.length === 1 ? '' : 's'}
       </div>
       {history.map((block) => (
-        <HistoryRow key={`${block.meta?.version}-${block.meta?.timestamp}`} block={block} />
+        <HistoryRow key={`${block.meta?.lifecycle?.revision}-${block.meta?.provenance?.timestamp}`} block={block} />
       ))}
     </section>
   );
@@ -31,11 +31,11 @@ function HistoryRow({ block }: { block: UWBlock }) {
         className="flex w-full items-center gap-3 px-4 py-1.5 text-left text-xs text-muted hover:bg-canvas"
       >
         <span>{open ? '▾' : '▸'}</span>
-        <span className="font-semibold">v{meta?.version ?? '?'}</span>
-        <span>{meta?.source ?? 'unknown'}</span>
-        <span>{meta?.actor ?? ''}</span>
+        <span className="font-semibold">v{meta?.lifecycle?.revision ?? '?'}</span>
+        <span>{meta?.provenance?.source ?? 'unknown'}</span>
+        <span>{meta?.provenance?.actor ?? ''}</span>
         <span className="ml-auto tabular-nums">
-          {meta?.timestamp?.slice(0, 19).replace('T', ' ') ?? ''}
+          {meta?.provenance?.timestamp?.slice(0, 19).replace('T', ' ') ?? ''}
         </span>
       </button>
       {open && (

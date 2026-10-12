@@ -1,7 +1,6 @@
 {
   "id": "starter-products/tier-2/section-supersede-risk-rating",
   "target": "starter-products",
-  "legacy_id": "tier-2/section-supersede-risk-rating",
   "requires_capabilities": [
     "edit-supersede"
   ],

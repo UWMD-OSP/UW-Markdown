@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-reviewed-rebind",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-reviewed-rebind",
   "requires_capabilities": [
     "validate"
   ],

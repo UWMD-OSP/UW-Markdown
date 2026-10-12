@@ -1,11 +1,5 @@
 {
   "schema_version": "1.0",
-  "migration_base": "6eec774",
-  "before": {
-    "reference_default": 1046,
-    "reference_opt_in": 3,
-    "portable": 332
-  },
   "cases": [
     {
       "suite": "1",
@@ -329,6 +323,26 @@
     },
     {
       "suite": "1",
+      "scenario": "18-content-member-is-payload [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "18-content-member-is-payload [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "18-content-member-is-payload [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
+      "scenario": "18-content-member-is-payload [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "1",
       "scenario": "malformed/01-missing-section-meta",
       "target": "verifier"
     },
@@ -355,8 +369,7 @@
     {
       "suite": "1",
       "scenario": "malformed/06-wrong-actor [validate]",
-      "target": "verifier",
-      "added": true
+      "target": "verifier"
     },
     {
       "suite": "1",
@@ -366,8 +379,7 @@
     {
       "suite": "1",
       "scenario": "malformed/07-replace-where-supersede-required [validate]",
-      "target": "verifier",
-      "added": true
+      "target": "verifier"
     },
     {
       "suite": "1",
@@ -440,6 +452,51 @@
       "target": "verifier"
     },
     {
+      "suite": "1",
+      "scenario": "malformed/15-uw-version-1-1",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/16-uw-version-2-0",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/17-uw-version-2-1",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/18-uw-version-4-0",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/19-uw-version-absent",
+      "target": "reader"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/20-flat-meta",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/21-section-id-wrapper",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/22-resolution-outside-vocabulary",
+      "target": "verifier"
+    },
+    {
+      "suite": "1",
+      "scenario": "malformed/23-retired-official-alias",
+      "target": "verifier"
+    },
+    {
       "suite": "2",
       "scenario": "frontmatter-set-recommendation",
       "target": "starter-products"
@@ -467,6 +524,16 @@
     {
       "suite": "2",
       "scenario": "stale-parent-rejected",
+      "target": "starter-products"
+    },
+    {
+      "suite": "2",
+      "scenario": "meta-patch-flat-key-rejected",
+      "target": "starter-products"
+    },
+    {
+      "suite": "2",
+      "scenario": "meta-patch-lifecycle-rejected",
       "target": "starter-products"
     },
     {
@@ -1406,6 +1473,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "malformed/16-structured-under-lite-name",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "compile/01-period-unsupported",
       "target": "representations"
     },
@@ -1517,6 +1589,11 @@
     {
       "suite": "receipts",
       "scenario": "verify/11-rehashed-subquantum-ratio",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/12-receipt-version-1-0",
       "target": "verifier"
     },
     {
@@ -1787,6 +1864,46 @@
     {
       "suite": "modules",
       "scenario": "reject/15-asset-class-duplicate-id [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/16-retired-requires-tier",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/16-retired-requires-tier [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/17-requires-conformance-outside-vocabulary",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/17-requires-conformance-outside-vocabulary [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/18-requires-profiles-unknown",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/18-requires-profiles-unknown [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/19-host-below-requirements",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/19-host-below-requirements [schema-parity]",
       "target": "module"
     },
     {
@@ -2093,61 +2210,6 @@
       "suite": "modules",
       "scenario": "builtin/61-data-center-dependency-rounding",
       "target": "verifier"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/01-hospitality-fixture",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/02-no-comp-set",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/03-occupancy-as-percent",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/04-required-section-missing",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/05-wrong-asset-class",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/06-data-center-fixture",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/07-data-center-pue-below-one",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/08-data-center-no-comp",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/09-data-center-required-section",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/10-data-center-as-industrial",
-      "target": "starter-products"
-    },
-    {
-      "suite": "modules",
-      "scenario": "runtime/11-data-center-fallback",
-      "target": "starter-products"
     },
     {
       "suite": "modules",
@@ -2630,6 +2692,21 @@
       "target": "verifier"
     },
     {
+      "suite": "tax",
+      "scenario": "valid-trigger-only",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-partial-assessment-group",
+      "target": "verifier"
+    },
+    {
+      "suite": "tax",
+      "scenario": "reject-attributes-without-group",
+      "target": "verifier"
+    },
+    {
       "suite": "lease",
       "scenario": "reject-break-after-expiration",
       "target": "verifier"
@@ -2807,6 +2884,11 @@
     {
       "suite": "recoveries",
       "scenario": "reject-true-up-period-open",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-member-without-method",
       "target": "verifier"
     },
     {
@@ -3235,6 +3317,16 @@
       "target": "verifier"
     },
     {
+      "suite": "hedge",
+      "scenario": "0081-accept-strike-only",
+      "target": "verifier"
+    },
+    {
+      "suite": "hedge",
+      "scenario": "0081-reject-partial-terms-group",
+      "target": "verifier"
+    },
+    {
       "suite": "capex",
       "scenario": "accept-draw-with-verified-remaining",
       "target": "verifier"
@@ -3307,6 +3399,21 @@
     {
       "suite": "capex",
       "scenario": "reject-target-names-no-expense",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "accept-budget-only",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-partial-draw-group",
+      "target": "verifier"
+    },
+    {
+      "suite": "capex",
+      "scenario": "reject-remaining-without-draw-group",
       "target": "verifier"
     },
     {
@@ -4337,8 +4444,7 @@
     {
       "suite": "locale",
       "scenario": "unsupported-locale-refuses [validate]",
-      "target": "verifier",
-      "added": true
+      "target": "verifier"
     },
     {
       "suite": "currency",
@@ -4353,8 +4459,7 @@
     {
       "suite": "currency",
       "scenario": "malformed [validate]",
-      "target": "verifier",
-      "added": true
+      "target": "verifier"
     },
     {
       "suite": "size-intensive",
@@ -4419,6 +4524,11 @@
     {
       "suite": "signing",
       "scenario": "blocks/present-count is backend-independent",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/06-meta-edited-after-signing",
       "target": "integrity"
     },
     {
@@ -4534,8 +4644,7 @@
     {
       "suite": "source",
       "scenario": "04-colon-form-rejected [validate]",
-      "target": "verifier",
-      "added": true
+      "target": "verifier"
     },
     {
       "suite": "source",
@@ -5028,51 +5137,6 @@
       "target": "verifier"
     },
     {
-      "suite": "meta-v2",
-      "scenario": "01-nested-meta",
-      "target": "reader"
-    },
-    {
-      "suite": "meta-v2",
-      "scenario": "02-mixed-shape",
-      "target": "verifier"
-    },
-    {
-      "suite": "meta-v2",
-      "scenario": "03-shim-roundtrip",
-      "target": "reader"
-    },
-    {
-      "suite": "meta-v2",
-      "scenario": "04-legacy-tag-through-shim",
-      "target": "reader"
-    },
-    {
-      "suite": "meta-v2",
-      "scenario": "05-flat-in-v2",
-      "target": "verifier"
-    },
-    {
-      "suite": "meta-v2",
-      "scenario": "07-defaulted-algorithm",
-      "target": "integrity"
-    },
-    {
-      "suite": "migrate",
-      "scenario": "01-signed-refused",
-      "target": "starter-products"
-    },
-    {
-      "suite": "migrate",
-      "scenario": "02-strip-signatures",
-      "target": "starter-products"
-    },
-    {
-      "suite": "migrate",
-      "scenario": "03-manual-resolution",
-      "target": "starter-products"
-    },
-    {
       "suite": "metrics",
       "scenario": "Agave-Court-Apts-Scottsdale-AZ.uwx.md",
       "target": "verifier"
@@ -5282,339 +5346,5 @@
       "scenario": "consumer-profile-contract",
       "target": "starter-products"
     }
-  ],
-  "portable_legacy_ids": [
-    "replacement-funding/0070-after-expiration",
-    "replacement-funding/0070-ambiguous-debt",
-    "replacement-funding/0070-ambiguous-sources",
-    "replacement-funding/0070-bad-amount",
-    "replacement-funding/0070-bad-currency",
-    "replacement-funding/0070-bad-date",
-    "replacement-funding/0070-bad-index--1",
-    "replacement-funding/0070-bad-index-0_5",
-    "replacement-funding/0070-bad-index-9007199254740992",
-    "replacement-funding/0070-bad-kind",
-    "replacement-funding/0070-bad-order",
-    "replacement-funding/0070-bad-row-label",
-    "replacement-funding/0070-bad-row-member",
-    "replacement-funding/0070-before-expiration",
-    "replacement-funding/0070-currency-absent",
-    "replacement-funding/0070-currency-null",
-    "replacement-funding/0070-digest-member-missing",
-    "replacement-funding/0070-digest-syntax",
-    "replacement-funding/0070-empty-series",
-    "replacement-funding/0070-escrow-contradiction-0",
-    "replacement-funding/0070-escrow-contradiction-100",
-    "replacement-funding/0070-escrow-missing",
-    "replacement-funding/0070-escrow-reference",
-    "replacement-funding/0070-explicit-escrow",
-    "replacement-funding/0070-explicit-zero",
-    "replacement-funding/0070-invalid-effective",
-    "replacement-funding/0070-legacy-escrow",
-    "replacement-funding/0070-missing-reference",
-    "replacement-funding/0070-missing-row",
-    "replacement-funding/0070-missing-source",
-    "replacement-funding/0070-missing-sources-uses",
-    "replacement-funding/0070-missing-uses",
-    "replacement-funding/0070-nonreplacement-loan_matures_first-escrow",
-    "replacement-funding/0070-nonreplacement-loan_matures_first-outright",
-    "replacement-funding/0070-nonreplacement-unhedged-escrow",
-    "replacement-funding/0070-nonreplacement-unhedged-outright",
-    "replacement-funding/0070-on-expiration",
-    "replacement-funding/0070-outright-payment",
-    "replacement-funding/0070-payment-before-effective",
-    "replacement-funding/0070-payment-on-effective",
-    "replacement-funding/0070-positive-payment",
-    "replacement-funding/0070-reviewed-rebind",
-    "replacement-funding/0070-same-day-distinct",
-    "replacement-funding/0070-stale-amount",
-    "replacement-funding/0070-stale-currency-removed",
-    "replacement-funding/0070-stale-currency",
-    "replacement-funding/0070-stale-deletion",
-    "replacement-funding/0070-stale-index",
-    "replacement-funding/0070-stale-insertion",
-    "replacement-funding/0070-stale-label",
-    "replacement-funding/0070-stale-reorder",
-    "replacement-funding/0070-stale-variant",
-    "replacement-funding/0070-superseded-source",
-    "replacement-funding/0070-unknown-member",
-    "replacement-funding/0070-unknown-mode",
-    "replacement-funding/0070-unrelated-edit",
-    "replacement-funding/0070-variant-fallback-forbidden",
-    "replacement-funding/0075-junior-keyed-base",
-    "replacement-funding/0075-junior-only-hedge",
-    "replacement-funding/0075-malformed-hedge-beside-junior",
-    "replacement-funding/0075-senior-junior-escrow",
-    "replacement-funding/0075-senior-junior-outright",
-    "replacement-funding/0075-two-seniors",
-    "replacement-funding/0076-components-only-hedge",
-    "replacement-funding/0076-sources-refused-escrow-mode",
-    "replacement-funding/0076-sources-refused-malformed-hedge",
-    "replacement-funding/0076-sources-refused-replace",
-    "replacement-funding/0076-two-seniors-hedge-malformed",
-    "replacement-funding/0076-two-seniors-hedge-unfunded",
-    "replacement-funding/0076-two-seniors-no-hedge-escrow",
-    "replacement-funding/0076-two-seniors-replace-escrow",
-    "reserve-accounts/absent",
-    "reserve-accounts/balance-mismatch",
-    "reserve-accounts/bank-interest",
-    "reserve-accounts/broken-continuity",
-    "reserve-accounts/currency-disagrees",
-    "reserve-accounts/duplicate-account",
-    "reserve-accounts/duplicate-movement",
-    "reserve-accounts/duplicate-period",
-    "reserve-accounts/empty-explicit-movements",
-    "reserve-accounts/half-away-mismatch",
-    "reserve-accounts/invalid-date",
-    "reserve-accounts/large-cent-draw-contribution",
-    "reserve-accounts/large-cent-multiple-contributions",
-    "reserve-accounts/large-cent-one-cent-mismatch",
-    "reserve-accounts/legacy-v1",
-    "reserve-accounts/lender-reserve",
-    "reserve-accounts/missing-movements",
-    "reserve-accounts/missing-source",
-    "reserve-accounts/negative-movement",
-    "reserve-accounts/overflow-then-finite-periods",
-    "reserve-accounts/overflow",
-    "reserve-accounts/quantum-equal",
-    "reserve-accounts/unclassified",
-    "reserve-accounts/unknown-field",
-    "reserve-accounts/unordered-movements",
-    "reserve-accounts/unordered-periods",
-    "reserve-accounts/verified-source-classes",
-    "reserve-accounts/wrong-previous-period",
-    "reserve-draw-bindings/absent",
-    "reserve-draw-bindings/ambiguous-net-row",
-    "reserve-draw-bindings/cent-multiple-draws",
-    "reserve-draw-bindings/cent-one-cent-share",
-    "reserve-draw-bindings/cent-one-cent-unallocated",
-    "reserve-draw-bindings/cent-split-draw",
-    "reserve-draw-bindings/closed-plan",
-    "reserve-draw-bindings/duplicate-edge",
-    "reserve-draw-bindings/duplicate-selected-draw",
-    "reserve-draw-bindings/duplicate-source-row",
-    "reserve-draw-bindings/excess-draw-allocation",
-    "reserve-draw-bindings/external-release",
-    "reserve-draw-bindings/funded-share-disagrees",
-    "reserve-draw-bindings/incomplete-draw",
-    "reserve-draw-bindings/invalid-source-date",
-    "reserve-draw-bindings/lease-up-component",
-    "reserve-draw-bindings/legacy-v1",
-    "reserve-draw-bindings/lender-reserve",
-    "reserve-draw-bindings/many-to-many-partial",
-    "reserve-draw-bindings/missing-account",
-    "reserve-draw-bindings/missing-completeness",
-    "reserve-draw-bindings/missing-expenditure-row",
-    "reserve-draw-bindings/missing-movement",
-    "reserve-draw-bindings/missing-period",
-    "reserve-draw-bindings/missing-reserve-variant",
-    "reserve-draw-bindings/missing-source",
-    "reserve-draw-bindings/nonfinite-allocation",
-    "reserve-draw-bindings/null-plan",
-    "reserve-draw-bindings/one-to-one",
-    "reserve-draw-bindings/operating-expense",
-    "reserve-draw-bindings/overbinding-gross",
-    "reserve-draw-bindings/partial-expenditure",
-    "reserve-draw-bindings/reserve-balance-mismatch",
-    "reserve-draw-bindings/same-day-identities",
-    "reserve-draw-bindings/split-draw",
-    "reserve-draw-bindings/stale-digest",
-    "reserve-draw-bindings/stated-final-boundary",
-    "reserve-draw-bindings/subcent-allocation",
-    "reserve-draw-bindings/superseded-source",
-    "reserve-draw-bindings/unbound-selected-draw",
-    "reserve-draw-bindings/unclassified-movement",
-    "reserve-draw-bindings/undeclared-draw-edge",
-    "reserve-draw-bindings/wrong-category",
-    "reserve-draw-bindings/wrong-currency",
-    "reserve-draw-bindings/wrong-expenditure-variant",
-    "reserve-draw-bindings/wrong-gross-sign",
-    "scenario/01-stabilized_acquisition",
-    "scenario/02-ground_up_development",
-    "scenario/03-value_add",
-    "scenario/04-lease_up",
-    "scenario/05-house_flip",
-    "scenario/06-commercial_flip",
-    "scenario/07-property_conversion",
-    "scenario/08-land_banking",
-    "scenario/09-absent",
-    "scenario/10-null",
-    "scenario/11-unlisted",
-    "scenario/12-retired-build_to_rent",
-    "scenario/13-retired-nnn_single_tenant",
-    "scenario/14-retired-lihtc_section8",
-    "scenario/15-retired-distressed_reo",
-    "scenario/16-namespaced",
-    "scenario/17-malformed-namespace",
-    "scenario/18-non-string",
-    "scenario/19-btr-fallback",
-    "scenario/20-btr-carrier-conflict",
-    "scenario/21-btr-class-scope",
-    "scenario/22-free-subtypes",
-    "scenario/23-btr-reverse-conflict",
-    "tier-1/01-minimal-screening/parse",
-    "tier-1/01-minimal-screening/render-chat",
-    "tier-1/01-minimal-screening/render-summary",
-    "tier-1/01-minimal-screening/validate",
-    "tier-1/02-full-multifamily/parse",
-    "tier-1/02-full-multifamily/render-chat",
-    "tier-1/02-full-multifamily/render-summary",
-    "tier-1/02-full-multifamily/validate",
-    "tier-1/04-scope-only/parse",
-    "tier-1/04-scope-only/render-chat",
-    "tier-1/04-scope-only/render-summary",
-    "tier-1/04-scope-only/validate",
-    "tier-1/05-land-stage-overlay/parse",
-    "tier-1/05-land-stage-overlay/render-chat",
-    "tier-1/05-land-stage-overlay/render-summary",
-    "tier-1/05-land-stage-overlay/validate",
-    "tier-1/06-mixed-use-stage-overlay/parse",
-    "tier-1/06-mixed-use-stage-overlay/render-chat",
-    "tier-1/06-mixed-use-stage-overlay/render-summary",
-    "tier-1/06-mixed-use-stage-overlay/validate",
-    "tier-1/07-stage-overlay-control/parse",
-    "tier-1/07-stage-overlay-control/render-chat",
-    "tier-1/07-stage-overlay-control/render-summary",
-    "tier-1/07-stage-overlay-control/validate",
-    "tier-1/08-variant-cross-checks/parse",
-    "tier-1/08-variant-cross-checks/render-chat",
-    "tier-1/08-variant-cross-checks/render-summary",
-    "tier-1/08-variant-cross-checks/validate",
-    "tier-1/09-returns-tax-basis/parse",
-    "tier-1/09-returns-tax-basis/render-chat",
-    "tier-1/09-returns-tax-basis/render-summary",
-    "tier-1/09-returns-tax-basis/validate",
-    "tier-1/10-declared-roles/parse",
-    "tier-1/10-declared-roles/render-chat",
-    "tier-1/10-declared-roles/render-summary",
-    "tier-1/10-declared-roles/validate",
-    "tier-1/11-role-collision/parse",
-    "tier-1/11-role-collision/render-chat",
-    "tier-1/11-role-collision/render-summary",
-    "tier-1/11-role-collision/validate",
-    "tier-1/12-role-eligibility/parse",
-    "tier-1/12-role-eligibility/render-chat",
-    "tier-1/12-role-eligibility/render-summary",
-    "tier-1/12-role-eligibility/validate",
-    "tier-1/13-period-identities/parse",
-    "tier-1/13-period-identities/render-chat",
-    "tier-1/13-period-identities/render-summary",
-    "tier-1/13-period-identities/validate",
-    "tier-1/14-student-bed-counts/parse",
-    "tier-1/14-student-bed-counts/render-chat",
-    "tier-1/14-student-bed-counts/render-summary",
-    "tier-1/14-student-bed-counts/validate",
-    "tier-1/15-student-bed-counts-inconsistent/parse",
-    "tier-1/15-student-bed-counts-inconsistent/render-chat",
-    "tier-1/15-student-bed-counts-inconsistent/render-summary",
-    "tier-1/15-student-bed-counts-inconsistent/validate",
-    "tier-1/16-frontmatter-yaml-scalars/parse",
-    "tier-1/16-frontmatter-yaml-scalars/render-chat",
-    "tier-1/16-frontmatter-yaml-scalars/render-summary",
-    "tier-1/16-frontmatter-yaml-scalars/validate",
-    "tier-1/17-exit-proceeds-junior-capital/parse",
-    "tier-1/17-exit-proceeds-junior-capital/render-chat",
-    "tier-1/17-exit-proceeds-junior-capital/render-summary",
-    "tier-1/17-exit-proceeds-junior-capital/validate",
-    "tier-2/frontmatter-set-recommendation",
-    "tier-2/section-replace-property",
-    "tier-2/section-supersede-risk-rating",
-    "tier-3/data-center-module-dependency-rounding",
-    "tier-3/data_center-price_per_kw",
-    "tier-3/date-01-valid-leap-divisible-by-4",
-    "tier-3/date-02-valid-leap-divisible-by-400",
-    "tier-3/date-03-valid-ordinary-date",
-    "tier-3/date-04-valid-year-0000-leap",
-    "tier-3/date-05-valid-year-9999-last-day",
-    "tier-3/date-06-valid-first-day-of-year",
-    "tier-3/date-07-invalid-not-leap-year",
-    "tier-3/date-08-invalid-century-not-leap",
-    "tier-3/date-09-invalid-february-30",
-    "tier-3/date-10-invalid-april-31",
-    "tier-3/date-11-invalid-month-00",
-    "tier-3/date-12-invalid-month-13",
-    "tier-3/date-13-invalid-day-00",
-    "tier-3/date-14-invalid-one-digit-month",
-    "tier-3/date-15-invalid-one-digit-day",
-    "tier-3/date-16-invalid-two-digit-year",
-    "tier-3/date-17-invalid-five-digit-year",
-    "tier-3/date-18-invalid-signed-year",
-    "tier-3/date-19-invalid-negative-year",
-    "tier-3/date-20-invalid-expanded-year",
-    "tier-3/date-21-invalid-leading-space",
-    "tier-3/date-22-invalid-trailing-space",
-    "tier-3/date-23-invalid-internal-space",
-    "tier-3/date-24-invalid-leading-tab",
-    "tier-3/date-25-invalid-trailing-newline",
-    "tier-3/date-26-invalid-date-time-zulu",
-    "tier-3/date-27-invalid-date-time-local",
-    "tier-3/date-28-invalid-zone-suffix",
-    "tier-3/date-29-invalid-offset-suffix",
-    "tier-3/date-30-invalid-slash-form",
-    "tier-3/date-31-invalid-compact-form",
-    "tier-3/date-32-invalid-week-date",
-    "tier-3/date-33-invalid-ordinal-date",
-    "tier-3/date-34-invalid-full-width-digits",
-    "tier-3/date-35-invalid-non-ascii-hyphen",
-    "tier-3/date-36-invalid-empty-string",
-    "tier-3/date-37-document-quoted-string",
-    "tier-3/date-38-document-unquoted-yaml-date",
-    "tier-3/date-39-document-null",
-    "tier-3/date-40-document-absent-path",
-    "tier-3/date-41-document-number",
-    "tier-3/date-42-document-boolean",
-    "tier-3/date-43-document-array",
-    "tier-3/date-44-document-object",
-    "tier-3/date-45-document-impossible-date",
-    "tier-3/date-46-error-no-arguments",
-    "tier-3/date-47-error-two-arguments",
-    "tier-3/date-48-error-argument-propagates",
-    "tier-3/dscr-from-section",
-    "tier-3/hospitality-revpar",
-    "tier-3/irr-01-out-of-bracket",
-    "tier-3/irr-02-even-root-count",
-    "tier-3/irr-03-conventional",
-    "tier-3/irr-04-endpoint-root",
-    "tier-3/irr-05-degenerate",
-    "tier-3/land-usable-land-ratio",
-    "tier-3/manufactured_housing-physical_occupancy",
-    "tier-3/mixed-use-absent-component-null",
-    "tier-3/mixed-use-data_center_noi_share",
-    "tier-3/mixed-use-data_center_price_per_kw",
-    "tier-3/mixed-use-manufactured_housing_noi_share",
-    "tier-3/mixed-use-manufactured_housing_price_per_site",
-    "tier-3/mixed-use-no-allocation-null",
-    "tier-3/mixed-use-operating-business-gop",
-    "tier-3/mixed-use-two-component-cap-rate",
-    "tier-3/mixed-use-two-component-noi-share",
-    "tier-3/mixed-use-two-component-price-per-unit",
-    "tier-3/period-01-year-order",
-    "tier-3/period-02-keyed-year",
-    "tier-3/period-03-calendar-quarter",
-    "tier-3/period-04-dated-series",
-    "tier-3/period-05-missing",
-    "tier-3/period-06-kind-mismatch",
-    "tier-3/period-07-duplicate",
-    "tier-3/period-08-unregistered",
-    "tier-3/period-09-same-day-unique",
-    "tier-3/period-10-same-day-repeated",
-    "tier-3/period-11-same-day-absent",
-    "tier-3/period-12-other-series-duplicate",
-    "tier-3/revpar-basic",
-    "tier-3/self-storage-economic-occupancy",
-    "tier-3/senior-housing-care-revenue-ratio",
-    "tier-3/student-housing-pre-lease-rate",
-    "tier-3/student-housing-rent-per-bed-monthly",
-    "tier-3/variant-01-primary-resolves",
-    "tier-3/variant-02-default-resolves",
-    "tier-3/variant-03-unresolvable",
-    "tier-3/variant-04-role-preference",
-    "tier-3/variant-05-explicit-variant",
-    "tier-3/variant-06-missing-section",
-    "tier-3/variant-07-explicit-missing",
-    "tier-3/variant-08-primary-collision",
-    "tier-3/variant-09-role-collision",
-    "tier-3/variant-10-role-unclaimed",
-    "tier-3/variant-11-explicit-beats-role"
   ]
 }

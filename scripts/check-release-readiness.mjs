@@ -11,7 +11,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { OFFICIAL_MODULE_PACKAGES, RELEASE_PACKAGES } from './release-packages.mjs';
+import { RELEASE_PACKAGES } from './release-packages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
@@ -137,22 +137,6 @@ try {
     const manifest = readJson(`${pkg.dir}/package.json`);
 
     if (manifest.name !== pkg.name) failures.push(`${pkg.dir}: expected package name ${pkg.name}, got ${manifest.name}`);
-    if (OFFICIAL_MODULE_PACKAGES.some((module) => module.name === pkg.name)) {
-      if (manifest.type !== 'module' || manifest.main !== './dist/index.js' || manifest.types !== './dist/index.d.ts'
-        || manifest.exports?.['.']?.import !== manifest.main || manifest.exports?.['.']?.types !== manifest.types) {
-        failures.push(`${pkg.name}: public ESM and TypeScript entry exports are required`);
-      }
-      if (manifest.exports?.['./manifest.json'] !== './dist/manifest.json') {
-        failures.push(`${pkg.name}: exported ./manifest.json must resolve to ./dist/manifest.json`);
-      }
-      for (const artifact of ['dist/view-models.js', 'dist/view-models.d.ts', 'dist/manifest.json', 'LICENSE']) {
-        if (!existsSync(resolve(root, pkg.dir, artifact))) failures.push(`${pkg.name}: missing ${artifact}`);
-      }
-      if (manifest.publishConfig?.access !== 'public' || manifest.license !== 'MIT') {
-        failures.push(`${pkg.name}: public publication and MIT license metadata are required`);
-      }
-    }
-
     // Check main entrypoint
     if (manifest.main) {
       const mainPath = resolve(root, pkg.dir, manifest.main);

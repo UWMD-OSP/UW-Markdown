@@ -1,0 +1,5 @@
+{
+  "code": "PROTO-EDIT-002",
+  "category": "edit",
+  "description": "An operation's meta is a patch with provenance and quality objects only. A flat confidence key (the retired flat _meta shape) must be refused as PROTO-EDIT-002, never silently dropped (Protocol §V, RFC 0081 Phase 4)."
+}

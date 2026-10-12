@@ -1,0 +1,8 @@
+{
+  "codes": [
+    "CAPX-01",
+    "CAPX-01",
+    "CAPX-01"
+  ],
+  "note": "The draw group (contingency_used, drawn_to_date, as_of_date) is all-or-none (RFC 0081 \u00a77). Each missing member of the stated group is also reported."
+}

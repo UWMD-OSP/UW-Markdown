@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/09-returns-tax-basis/parse",
   "target": "reader",
-  "legacy_id": "tier-1/09-returns-tax-basis/parse",
   "requires_capabilities": [
     "parse"
   ],

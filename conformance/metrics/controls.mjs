@@ -13,7 +13,7 @@ export function controls(root) {
   const d = JSON.parse(readFileSync(join(root, 'spec/metrics/builtin.json'), 'utf8'));
   const metric = (id, cls = 'multifamily') => d.calculations.find(m => m.id === id && m.asset_classes.includes(cls));
   const block = (section, content) => ({ annotation: { section }, meta: {}, content });
-  const deal = (sections) => ({ ...parseUWFile(''), sections });
+  const deal = (sections) => ({ ...parseUWFile('---\nuw_version: "3.0"\n---\n'), sections });
   const simple = () => deal({
     property: block('property', { total_units: 1 }),
     valuation: block('valuation', { purchase_price: 100000.21 }),
@@ -125,7 +125,9 @@ export function controls(root) {
       assert.equal(tokens.get('["escaped_key"]'), '2.00');
       assert.equal(jsonStatedDecimals({ rawJson }, 'dscr', 1.2), 2);
       assert.equal(jsonStatedDecimals({ rawJson }, 'dscr', 1.25), undefined);
-      assert.equal(jsonStatedDecimals({ rawJson: '{"_meta":{},"content":{"dscr":1.20}}', meta_shape: 'v2' }, 'dscr', 1.2), 2);
+      // A member named content is payload like any other (RFC 0081 §3).
+      assert.equal(jsonStatedDecimals({ rawJson: '{"_meta":{},"content":{"dscr":1.20}}' }, 'content.dscr', 1.2), 2);
+      assert.equal(jsonStatedDecimals({ rawJson: '{"_meta":{},"content":{"dscr":1.20}}' }, 'dscr', 1.2), undefined);
       const yaml = '---\nquick_metrics:\n  dscr: 1.20 # comment\n  other: "1.2000"\n---\n';
       assert.equal(quickMetricDecimals(yaml, 'dscr', 1.2), 2);
       assert.equal(quickMetricDecimals(yaml, 'other', 1.2), undefined);

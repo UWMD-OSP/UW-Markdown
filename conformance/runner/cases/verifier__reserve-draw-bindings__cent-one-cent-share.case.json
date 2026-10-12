@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/cent-one-cent-share",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/cent-one-cent-share",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

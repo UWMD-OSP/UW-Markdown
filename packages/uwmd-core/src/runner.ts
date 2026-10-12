@@ -12,16 +12,9 @@
 //
 // Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §6.3 (uwmd run)
 
+import { stampMetaIntoBlockContent, bumpRawMetaVersion } from './metadata.js';
 import type { ParsedUWFile, UWBlock, UWMeta, PipelineStatus, UWFrontmatter } from './types.js';
 import { getSection, getSectionVariant, parseUWFile } from './parser.js';
-import type { UWMetaV2 } from './meta-shape.js';
-import {
-  bumpRawMetaVersion,
-  detectMetaShape,
-  isV2File,
-  reshapeMetaV2toV1,
-  stampMetaIntoBlockContent,
-} from './meta-shape.js';
 
 // Lightweight re-parse used only to get fresh line numbers after block insertion.
 // parseUWFile is the same function — alias for clarity.
@@ -50,7 +43,7 @@ export interface RunOptions {
   /**
    * Freeze the wall-clock stamp on the block and its log entry. Defaults to
    * now. Supplying it is what lets a recorded-replay run reproduce a document
-   * byte-for-byte — without it every run differs in `_meta.timestamp`.
+   * byte-for-byte — without it every run differs in `_meta.provenance.timestamp`.
    */
   timestamp?: string;
   /**
@@ -92,42 +85,37 @@ export function writeAgentBlock(
     existingBlock = getSection(parsed, sectionId);
   }
 
-  const newVersion = (existingBlock?.meta?.version ?? 0) + 1;
+  const newVersion = (existingBlock?.meta?.lifecycle?.revision ?? 0) + 1;
 
   // ── Step 1: Mark existing block as superseded ─────────────────────────────
   let lines = fileContent.split('\n');
   let supersededPriorBlock = false;
 
-  if (existingBlock && !existingBlock.meta?.superseded) {
+  if (existingBlock && !existingBlock.meta?.lifecycle?.superseded) {
     lines = markBlockSuperseded(lines, existingBlock);
     supersededPriorBlock = true;
   }
 
   // ── Step 2: Build the new block's annotation and JSON ─────────────────────
   const variantPart = variant ? ` variant=${variant}` : '';
-  // The fence `source=` mirrors the block's _meta.source (the RFC 0031 actor),
-  // falling back to the raw agentId only when the caller supplied no _meta.
-  // Callers build flat _meta (buildMeta); a nested one is read via the shim.
-  const rawOutMeta = output.content['_meta'] as Record<string, unknown> | undefined;
-  const outMeta: UWMeta | undefined =
-    rawOutMeta === undefined
-      ? undefined
-      : detectMetaShape(rawOutMeta) === 'v2'
-        ? reshapeMetaV2toV1(rawOutMeta as unknown as UWMetaV2)
-        : (rawOutMeta as unknown as UWMeta);
-  const annotation = `\`\`\`json uw:section=${sectionId}${variantPart} source=${outMeta?.source ?? agentId} ts=${now} v=${newVersion} confidence=${outMeta?.confidence ?? 'medium'}`;
-  // Emit the shape the file's uw_version demands (RFC 0009): the host owns
-  // _meta, so the reshape happens here, not in agent output.
+  // The fence `source=` mirrors the block's _meta.provenance.source (the RFC
+  // 0031 actor), falling back to the raw agentId only when the caller supplied
+  // no _meta.
+  const outMeta = output.content['_meta'] as UWMeta | undefined;
+  const annotation = `\`\`\`json uw:section=${sectionId}${variantPart} source=${outMeta?.provenance?.source ?? agentId} ts=${now} v=${newVersion} confidence=${outMeta?.quality?.confidence ?? 'medium'}`;
   const emitted: Record<string, unknown> = { ...output.content };
   // Roles belong to the trusted host. Model output cannot assign or erase them.
   delete emitted['_role'];
+  // Agent output never carries `_overrides`: those entries are per-field
+  // provenance the cascade honors as human overrides, so an agent-written copy
+  // would forge human provenance (invariant 5). There are no agent-authored
+  // gap markers either; gaps go in the `gaps` section.
+  delete emitted['_overrides'];
   if (existingBlock && Object.prototype.hasOwnProperty.call(existingBlock.content, '_role')) {
     emitted['_role'] = existingBlock.content['_role'];
   }
-  if (outMeta !== undefined) {
-    // Values pass through untouched — only the shape is the host's call.
-    stampMetaIntoBlockContent(emitted, outMeta, isV2File(parsed.frontmatter));
-  }
+  // _meta is written as the first member (Format §2.4).
+  if (outMeta !== undefined) stampMetaIntoBlockContent(emitted, outMeta);
   const blockJson = JSON.stringify(emitted, null, 2);
   const newBlockText = `${annotation}\n${blockJson}\n\`\`\``;
 
@@ -210,7 +198,7 @@ function markBlockSuperseded(lines: string[], block: UWBlock): string[] {
     }
   }
 
-  // 2. _meta.superseded inside the JSON body
+  // 2. _meta.lifecycle.superseded inside the JSON body
   for (let i = block.lineStart; i < block.lineEnd - 1; i++) {
     const line = result[i];
     if (line?.includes('"superseded": false')) {
@@ -257,7 +245,7 @@ function appendPipelineLogEntry(
   if (parsed.pipeline_log.length === 0) {
     // No pipeline_log yet — append a new one at the end
     const now = (entry['timestamp'] as string) ?? new Date().toISOString();
-    const newLogBlock = buildNewPipelineLogBlock(entry, now, isV2File(parsed.frontmatter));
+    const newLogBlock = buildNewPipelineLogBlock(entry, now);
     return [...lines, '', newLogBlock, ''];
   }
 
@@ -273,18 +261,17 @@ function appendPipelineLogEntry(
   } catch {
     // Fallback: append a new pipeline_log block
     const now = (entry['timestamp'] as string) ?? new Date().toISOString();
-    return [...lines, '', buildNewPipelineLogBlock(entry, now, isV2File(parsed.frontmatter)), ''];
+    return [...lines, '', buildNewPipelineLogBlock(entry, now), ''];
   }
 
   const entries = (blockContent['entries'] as unknown[]) ?? [];
   entries.push(entry);
   blockContent['entries'] = entries;
 
-  // Update _meta version and timestamp — shape-aware (RFC 0009): a v2
-  // pipeline block carries lifecycle.revision / provenance.timestamp.
-  const meta = blockContent['_meta'] as Record<string, unknown> | undefined;
+  // Advance the log block's revision and write time.
+  const meta = blockContent['_meta'] as UWMeta | undefined;
   const nowTs = (entry['timestamp'] as string) ?? new Date().toISOString();
-  const nextVersion = meta ? bumpRawMetaVersion(meta, nowTs) : 1;
+  const nextVersion = meta?.lifecycle && meta.provenance ? bumpRawMetaVersion(meta, nowTs) : 1;
 
   // Rebuild the block JSON
   const updatedJson = JSON.stringify(blockContent, null, 2);
@@ -310,31 +297,17 @@ function appendPipelineLogEntry(
 function buildNewPipelineLogBlock(
   entry: Record<string, unknown>,
   now: string,
-  v2: boolean,
 ): string {
-  const flatMeta: UWMeta = {
-    section: 'pipeline_log',
-    version: 1,
-    superseded: false,
-    // `system/uwmd`, not the retired colon form `engine:uwmd` — the RFC 0031
-    // actor grammar, and it resolves the system/* policy instead of the
-    // catch-all.
+  const meta = buildMeta('pipeline_log', 1, {
     source: 'system/uwmd',
-    agent_id: null,
-    agent_version: '1.0.0',
+    agentVersion: '1.0.0',
     actor: 'system',
-    timestamp: now,
     confidence: 'high',
-    human_review_required: false,
-    flags: [],
-    input_hash: null,
-    notes: null,
-  };
+    timestamp: now,
+  });
   const content: Record<string, unknown> = { entries: [entry] };
-  stampMetaIntoBlockContent(content, flatMeta, v2);
-  // _meta first in the serialized block, matching every other writer.
-  const ordered = { _meta: content['_meta'], entries: content['entries'] };
-  return `\`\`\`json uw:section=pipeline_log source=system/uwmd ts=${now} v=1 confidence=high\n${JSON.stringify(ordered, null, 2)}\n\`\`\``;
+  stampMetaIntoBlockContent(content, meta);
+  return `\`\`\`json uw:section=pipeline_log source=system/uwmd ts=${now} v=1 confidence=high\n${JSON.stringify(content, null, 2)}\n\`\`\``;
 }
 
 function buildUpdatedAnnotation(existing: string, version: number, ts: string): string {
@@ -445,19 +418,25 @@ export function buildMeta(
     timestamp?: string;
   },
 ): UWMeta {
-  return {
+  const meta: UWMeta = {
     section: sectionId,
-    version,
-    superseded: false,
-    source: opts.source,
-    agent_id: opts.agentId ?? null,
-    agent_version: opts.agentVersion ?? null,
-    actor: opts.actor ?? 'system',
-    timestamp: opts.timestamp ?? new Date().toISOString(),
-    confidence: opts.confidence ?? 'medium',
-    human_review_required: opts.humanReviewRequired ?? false,
-    flags: opts.flags ?? [],
-    input_hash: opts.inputHash ? `sha256:${opts.inputHash}` : null,
-    notes: opts.notes ?? null,
+    provenance: {
+      source: opts.source,
+      actor: opts.actor ?? 'system',
+      agent_id: opts.agentId ?? null,
+      agent_version: opts.agentVersion ?? null,
+      timestamp: opts.timestamp ?? new Date().toISOString(),
+      notes: opts.notes ?? null,
+    },
+    quality: {
+      confidence: opts.confidence ?? 'medium',
+      human_review_required: opts.humanReviewRequired ?? false,
+      flags: opts.flags ?? [],
+      partial: false,
+      provisional: false,
+    },
+    lifecycle: { revision: version, superseded: false },
   };
+  if (opts.inputHash) meta.integrity = { input_hash: `sha256:${opts.inputHash}` };
+  return meta;
 }

@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/period-12-other-series-duplicate",
   "target": "verifier",
-  "legacy_id": "tier-3/period-12-other-series-duplicate",
   "requires_capabilities": [
     "calc-evaluate"
   ],

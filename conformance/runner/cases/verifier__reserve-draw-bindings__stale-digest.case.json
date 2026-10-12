@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/stale-digest",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/stale-digest",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

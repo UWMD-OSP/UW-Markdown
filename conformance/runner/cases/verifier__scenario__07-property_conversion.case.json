@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/07-property_conversion",
   "target": "verifier",
-  "legacy_id": "scenario/07-property_conversion",
   "requires_capabilities": [
     "validate"
   ],

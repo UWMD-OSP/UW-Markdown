@@ -1,0 +1,6 @@
+{
+  "description": "A section_id wrapper member is META-01 (RFC 0081 \u00a73).",
+  "expected_codes": [
+    "META-01"
+  ]
+}

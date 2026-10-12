@@ -17,7 +17,6 @@ file. It is not a rent-roll row and it is not an underwriting conclusion.
     "section": "deal_context",
     "provenance": {
       "source": "system/uwmd",
-      "resolution": "source_document",
       "actor": "example-kit",
       "agent_id": null,
       "agent_version": null,

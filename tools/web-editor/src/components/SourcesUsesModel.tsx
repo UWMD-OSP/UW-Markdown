@@ -113,7 +113,7 @@ export function SourcesUsesModel(props: {
 
       <p className="mt-3 text-xs text-muted">
         Bucket totals and the project-cost mirror foot from the line items above and recompute on
-        every edit. Override pins a value by hand (<code>_meta.field_overrides</code>); revert
+        every edit. Override pins a value by hand (<code>_overrides</code>); revert
         returns it to the formula.
       </p>
     </div>

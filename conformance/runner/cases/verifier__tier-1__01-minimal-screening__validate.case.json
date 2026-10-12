@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-1/01-minimal-screening/validate",
   "target": "verifier",
-  "legacy_id": "tier-1/01-minimal-screening/validate",
   "requires_capabilities": [
     "validate"
   ],

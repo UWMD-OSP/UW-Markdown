@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-ambiguous-debt",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-ambiguous-debt",
   "requires_capabilities": [
     "validate"
   ],

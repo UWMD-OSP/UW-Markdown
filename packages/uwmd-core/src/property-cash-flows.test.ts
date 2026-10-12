@@ -6,7 +6,7 @@ import { assemblePropertyCashFlows, PropertyCashFlowAssemblyError } from './prop
 import { assemblePropertyCashFlows as browserAssemble } from './browser.js';
 import type { PropertyCashFlowPlan, PropertyCashFlowAssemblyIssue } from './protocol.js';
 import { parseUWFile } from './parser.js';
-import { periodPayload, periodSection, resolvePeriodPath } from './period-path.js';
+import { periodSection, resolvePeriodPath } from './period-path.js';
 import { computeEnvelopeDigest, toUWEnvelope } from './envelope.js';
 import { evaluateCashFlowMetric } from './calc/dated-flows.js';
 import { datedFlowsOf, xnpvOf, xirrOf, type CashFlowSeries } from './cash-flow-series.js';
@@ -16,8 +16,10 @@ const read = (path: string) => readFileSync(new URL(`../../../${path}`, import.m
 const source = read('docs/examples/property-cash-flow-synthetic.uwx.md');
 const fresh = () => parseUWFile(source);
 const plan = () => JSON.parse(read('docs/examples/property-cash-flow-plan.json')) as PropertyCashFlowPlan;
+// The block object itself, so a test can rewrite a stated member in place: the
+// payload view is a copy of the block minus its reserved members (§VIII.2).
 const payload = (d: ReturnType<typeof fresh>, section = 'cash_flow_series') =>
-  periodPayload(periodSection(d, section, { sectionVariants: { [section]: 'base' } })!) as Record<string, any>;
+  periodSection(d, section, { sectionVariants: { [section]: 'base' } })!.content as Record<string, any>;
 const ajv = new Ajv2020({ strict: false });
 addFormats.default(ajv);
 ajv.addSchema(JSON.parse(read('spec/schemas/protocol-error.schema.json')));

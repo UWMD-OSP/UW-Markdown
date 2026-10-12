@@ -57,6 +57,7 @@ introduced by RFC 0017 still has no expiry.
 
 ````markdown
 ---
+uw_version: "3.0"
 uwpart_version: "1.0"
 part_id: lease-suite-210
 section: rent_roll
@@ -72,6 +73,7 @@ collection_member: true
 
 | Key | Requirement |
 |---|---|
+| `uw_version` | REQUIRED. `"3.0"`, the one admitted format. A fragment parses standalone (§2.2), so an absent or different value is refused with `UNSUPPORTED_FORMAT_VERSION`, as for a record. |
 | `uwpart_version` | REQUIRED. Non-empty string. `1.0` for this specification. |
 | `part_id` | REQUIRED. Non-empty string, unique within a package. |
 | `section` | REQUIRED. A registered section id, or an `x_`-prefixed extension section. |

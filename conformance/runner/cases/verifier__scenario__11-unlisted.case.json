@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/11-unlisted",
   "target": "verifier",
-  "legacy_id": "scenario/11-unlisted",
   "requires_capabilities": [
     "validate"
   ],

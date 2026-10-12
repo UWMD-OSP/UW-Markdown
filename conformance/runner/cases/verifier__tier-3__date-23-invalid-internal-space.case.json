@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-23-invalid-internal-space",
   "target": "verifier",
-  "legacy_id": "tier-3/date-23-invalid-internal-space",
   "requires_capabilities": [
     "calc-evaluate"
   ],

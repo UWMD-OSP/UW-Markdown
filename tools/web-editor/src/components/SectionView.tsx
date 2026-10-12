@@ -197,11 +197,11 @@ function BlockView(props: {
     <section className="mt-5 rounded border border-rule bg-paper">
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-rule bg-accent-soft px-4 py-2 text-xs text-muted">
         {variant && <Chip>variant: {variant}</Chip>}
-        <Chip>v{meta?.version ?? '?'}</Chip>
-        <Chip>{meta?.source ?? 'unknown'}</Chip>
-        <ConfidenceChip confidence={meta?.confidence} />
-        {meta?.human_review_required && <Chip tone="warn">review required</Chip>}
-        <span className="ml-auto">{meta?.timestamp?.slice(0, 19).replace('T', ' ')}</span>
+        <Chip>v{meta?.lifecycle?.revision ?? '?'}</Chip>
+        <Chip>{meta?.provenance?.source ?? 'unknown'}</Chip>
+        <ConfidenceChip confidence={meta?.quality?.confidence} />
+        {meta?.quality?.human_review_required && <Chip tone="warn">review required</Chip>}
+        <span className="ml-auto">{meta?.provenance?.timestamp?.slice(0, 19).replace('T', ' ')}</span>
       </header>
 
       {sectionId === 'rent_roll' && (

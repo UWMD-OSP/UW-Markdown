@@ -13,7 +13,7 @@ import type { ParsedUWFile, UWBlock } from '../types.js';
 function block(sectionId: string, content: Record<string, unknown>): UWBlock {
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
-    content: { section_id: sectionId, content },
+    content: { ...content },
     meta: {} as UWBlock['meta'],
     prose: '',
     rawJson: '',

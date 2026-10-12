@@ -18,7 +18,7 @@
 // asserts the absence of a static import, because "provider-neutral" is a claim
 // worth testing rather than trusting.
 
-import type { ParsedUWFile } from '../types.js';
+import type { ParsedUWFile, UWBlock } from '../types.js';
 import { parseUWFile } from '../parser.js';
 import { writeAgentBlock, writeErrorEntry, buildMeta } from '../runner.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from '../context.js';
@@ -58,7 +58,7 @@ export interface BancroftRunOptions {
   onProgress?: (event: ProgressEvent) => void;
   /**
    * Injectable clock, defaulting to `Date.now`. Supplying a **constant** clock
-   * makes a run byte-reproducible: `_meta.timestamp` freezes, `duration_ms`
+   * makes a run byte-reproducible: `_meta.provenance.timestamp` freezes, `duration_ms`
    * collapses to 0, and the pipeline-log entry id becomes derivable instead of
    * random. That is what lets a replayed run be compared against a frozen
    * expected document (see `providers/replay.ts`).
@@ -424,7 +424,7 @@ function writeSectionOutputs(
 
     const existingBlock = currentParsed.sections[toolOut.section_id];
     const existingVersion = existingBlock && 'meta' in existingBlock
-      ? ((existingBlock as { meta: { version: number } }).meta?.version ?? 0)
+      ? ((existingBlock as UWBlock).meta?.lifecycle?.revision ?? 0)
       : 0;
     const newVersion = existingVersion + 1;
 
@@ -443,9 +443,11 @@ function writeSectionOutputs(
       ...(timestamp ? { timestamp } : {}),
     });
 
-    // Strip any _meta/_notes Claude included in section_data — we own those fields.
-    const { _meta: _ignoredMeta, _notes: _ignoredNotes, ...cleanSectionData } = toolOut.section_data;
-    void _ignoredMeta; void _ignoredNotes;
+    // Strip any _meta/_notes/_overrides Claude included in section_data — the
+    // host owns those (invariant 5); a model-authored `_overrides` would read
+    // as a human override in the cascade.
+    const { _meta: _ignoredMeta, _notes: _ignoredNotes, _overrides: _ignoredOverrides, ...cleanSectionData } = toolOut.section_data;
+    void _ignoredMeta; void _ignoredNotes; void _ignoredOverrides;
     const sectionContent: Record<string, unknown> = {
       _meta: meta,
       _notes: toolOut.notes ?? null,

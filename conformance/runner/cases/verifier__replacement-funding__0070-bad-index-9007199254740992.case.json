@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-bad-index-9007199254740992",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-bad-index-9007199254740992",
   "requires_capabilities": [
     "validate"
   ],

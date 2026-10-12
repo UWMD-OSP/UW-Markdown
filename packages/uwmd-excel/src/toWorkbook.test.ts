@@ -540,46 +540,9 @@ describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
   });
 });
 
-// ─── Protocol §VIII.2 — content-envelope blocks ───────────────────────────────
-//
-// A block may keep its fields beside `_meta` or one level down at `content`.
-// evaluateCalc reads the payload either way, so the workbook must too, or a
-// wrapped document gets blank inputs that Excel reads as zero.
-
-/** The same document with each standard block's user fields moved into a content envelope. */
-function toContentEnvelope(source: string): string {
-  return source.replace(/(```json uw:section=([a-z_]+)[^\n]*\n)([\s\S]*?)(\n```)/g, (all, open: string, section: string, body: string, close: string) => {
-    if (section.startsWith('x_') || section.startsWith('custom_') || section === 'pipeline_log') return all;
-    const { _meta, _role, _notes, ...fields } = JSON.parse(body) as Record<string, unknown>;
-    if ('content' in fields) return all;
-    const envelope = { _meta, ...(_role !== undefined ? { _role } : {}), ...(_notes !== undefined ? { _notes } : {}), content: fields };
-    return `${open}${JSON.stringify(envelope, null, 2)}${close}`;
-  });
-}
-
-function sheetValues(wb: ExcelJS.Workbook, sheet: string): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  wb.getWorksheet(sheet)!.eachRow((row) => {
-    const label = row.getCell(1).value;
-    if (typeof label === 'string') out[label] = row.getCell(2).value;
-  });
-  return out;
-}
-
-describe('toWorkbook — content-envelope blocks (Protocol §VIII.2 payload)', () => {
-  it.each([...CASES.map((c) => c.file), MIXED_USE_FILE].map((f) => [f] as const))('%s writes the same inputs and statement wrapped as flat', async (file) => {
-    const raw = await readFile(resolve(EXAMPLES, file), 'utf8');
-    const wrappedRaw = toContentEnvelope(raw);
-    expect(wrappedRaw).not.toBe(raw);
-    const flat = await toWorkbook(parseUWFile(raw));
-    const wrapped = await toWorkbook(parseUWFile(wrappedRaw));
-    for (const sheet of ['Underwriting', 'Operating Statement']) {
-      expect(sheetValues(wrapped, sheet), sheet).toEqual(sheetValues(flat, sheet));
-    }
-  });
-
-  it('keeps Excel ↔ evaluateCalc parity on a wrapped document', async () => {
-    const parsed = parseUWFile(toContentEnvelope(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8')));
+describe('toWorkbook — Excel ↔ evaluateCalc parity on a stated document', () => {
+  it('keeps Excel ↔ evaluateCalc parity on Parkview', async () => {
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
     const wb = await toWorkbook(parsed);
     const values: Record<string, number | null> = {};
     for (const input of MULTIFAMILY_LAYOUT.namedInputs) {
@@ -719,38 +682,12 @@ describe('toWorkbook — variant-map sections (RFC 0066)', () => {
   });
 });
 
-describe('toWorkbook — variant maps in the content envelope (RFC 0066 with the §VIII.2 payload)', () => {
-  it('reads and refuses the same metrics as the flat split-debt document', async () => {
-    const flatParsed = await splitDebt('senior', 'junior');
-    const flat = await metricParity(flatParsed);
-    const raw = await readFile(resolve(EXAMPLES, PARKVIEW), 'utf8');
-    const open = '```json uw:section=debt_structure source=manual';
-    const start = raw.indexOf(open);
-    const end = raw.indexOf('\n```', raw.indexOf('\n', start)) + 4;
-    const block = raw.slice(start, end);
-    const tranche = (key: string, role: string, loan: number, ads: number) => block
-      .replace(open, `\`\`\`json uw:section=debt_structure variant=${key} source=manual`)
-      .replace('{\n', `{\n  "_role": "${role}",\n`)
-      .replace('"loan_amount": 5040000', `"loan_amount": ${loan}`)
-      .replace('"annual_debt_service": 357612', `"annual_debt_service": ${ads}`);
-    const split = raw.slice(0, start)
-      + [tranche('senior-loan', 'senior', 5_040_000, 357_612), tranche('mezz-loan', 'junior', 720_000, 86_400)].join('\n\n')
-      + raw.slice(end);
-    const wrappedParsed = parseUWFile(toContentEnvelope(split));
-    delete wrappedParsed.sections['dcf'];
-    const wrapped = await metricParity(wrappedParsed);
-    expect(namedNumber(wrapped.wb, 'loan_amount')).toBe(5_040_000);
-    expect(wrapped.out).toEqual(flat.out);
-  });
-});
-
 describe('toWorkbook — deal-level multifamily cash-on-cash', () => {
   const fixture = resolve(__dirname, '../../../conformance/capital-stack/gd05-total-equity/deal.uwx.md');
   const decl = MULTIFAMILY_LAYOUT.pack.calculations!.find((c) => c.id === 'cash_on_cash')!;
 
-  it.each([false, true])('binds aggregate equity and labeled year-1 flow without sponsor/LP allocation (envelope=%s)', async (wrapped) => {
-    const raw = await readFile(fixture, 'utf8');
-    const parsed = parseUWFile(wrapped ? toContentEnvelope(raw) : raw);
+  it('binds aggregate equity and labeled year-1 flow without sponsor/LP allocation', async () => {
+    const parsed = parseUWFile(await readFile(fixture, 'utf8'));
     const wb = await toWorkbook(parsed);
     expect(namedNumber(wb, 'equity_total')).toBe(3_000_000);
     expect(namedNumber(wb, 'levered_cash_flow_y1')).toBe(600_000);
@@ -776,7 +713,7 @@ describe('toWorkbook — deal-level multifamily cash-on-cash', () => {
 
   it('leaves missing aggregate equity blank, without a sponsor-only substitution', async () => {
     const parsed = parseUWFile(await readFile(fixture, 'utf8'));
-    const su = blockPayload(parsed.sections['sources_uses'] as UWBlock) as Record<string, unknown>;
+    const su = (parsed.sections['sources_uses'] as UWBlock).content;
     su['equity_metrics'] = { equity_total: null };
     su['sources'] = { equity_sponsor: 3_000_000 };
     const { wb, out } = await metricParity(parsed);
@@ -794,7 +731,7 @@ describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT, DATA_C
       const raw = await readFile(resolve(__dirname, '../../../conformance/capital-stack/gd05-total-equity/deal.uwx.md'), 'utf8');
       const parsed = parseUWFile(raw);
       parsed.frontmatter.asset_class = layout.assetClass as typeof parsed.frontmatter.asset_class;
-      const dcf = blockPayload(parsed.sections['dcf'] as UWBlock) as Record<string, unknown>;
+      const dcf = (parsed.sections['dcf'] as UWBlock).content;
       dcf['annual_cash_flows'] = [{ year: 2, net_cash_flow_levered: 999_999 }, { year: 1, net_cash_flow_levered: flow }];
       const wb = await toWorkbook(parsed);
       const mixed = layout.assetClass === 'mixed_use';
@@ -825,8 +762,8 @@ describe.each([...new Map([...CASES.map(c => c.layout), MIXED_USE_LAYOUT, DATA_C
       const raw = await readFile(resolve(__dirname, '../../../conformance/capital-stack/gd05-total-equity/deal.uwx.md'), 'utf8');
       const parsed = parseUWFile(raw);
       parsed.frontmatter.asset_class = layout.assetClass as typeof parsed.frontmatter.asset_class;
-      const valuation = blockPayload(parsed.sections['valuation'] as UWBlock) as Record<string, unknown>;
-      const debt = blockPayload(parsed.sections['debt_structure'] as UWBlock) as Record<string, unknown>;
+      const valuation = (parsed.sections['valuation'] as UWBlock).content;
+      const debt = (parsed.sections['debt_structure'] as UWBlock).content;
       valuation['purchase_price'] = 100_000;
       valuation['underwritten_value'] = underwritten;
       debt['loan_amount'] = 75_000;

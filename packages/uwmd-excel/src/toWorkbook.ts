@@ -171,8 +171,8 @@ class SectionReader {
   }
 
   /**
-   * The selected block's user payload, as evaluateCalc reads it (flat or
-   * content envelope); a missing section reads as empty.
+   * The selected block's user payload, as evaluateCalc reads it (the block
+   * minus its reserved members); a missing section reads as empty.
    */
   content(section: string): { content: Record<string, unknown> } | Refusal {
     const read = this.read(section);
@@ -418,10 +418,10 @@ function writePipelineLogSheet(wb: ExcelJS.Workbook, parsed: ParsedUWFile): void
   for (const block of parsed.pipeline_log) {
     const c = block.content as Record<string, unknown>;
     ws.addRow([
-      block.meta.timestamp ?? '',
-      block.meta.actor     ?? '',
-      block.meta.source    ?? '',
-      block.meta.version   ?? '',
+      block.meta.provenance?.timestamp ?? '',
+      block.meta.provenance?.actor     ?? '',
+      block.meta.provenance?.source    ?? '',
+      block.meta.lifecycle?.revision   ?? '',
       typeof c.stage  === 'string' ? c.stage  : '',
       typeof c.action === 'string' ? c.action : '',
     ]);

@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/variant-03-unresolvable",
   "target": "verifier",
-  "legacy_id": "tier-3/variant-03-unresolvable",
   "requires_capabilities": [
     "calc-evaluate"
   ],

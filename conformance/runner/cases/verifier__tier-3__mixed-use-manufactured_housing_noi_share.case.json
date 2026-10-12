@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/mixed-use-manufactured_housing_noi_share",
   "target": "verifier",
-  "legacy_id": "tier-3/mixed-use-manufactured_housing_noi_share",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -28,13 +28,13 @@ const BASE: ModuleManifest = {
 };
 
 function registryOf(...modules: ModuleManifest[]) {
-  return createModuleRegistry({ modules, hostTier: 'tier-4-agent-host' });
+  return createModuleRegistry({ modules, hostConformance: 'verifier' });
 }
 
 function block(sectionId: string, content: Record<string, unknown>): UWBlock {
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
-    content: { section_id: sectionId, content },
+    content: { ...content },
     meta: {} as UWBlock['meta'],
     prose: '',
     rawJson: '',
@@ -209,11 +209,11 @@ describe('checkModuleSections', () => {
 // predicate returns `false`, so the rule reports its own code through the
 // ordinary path; MOD-RULE-ERROR stays reserved for evaluation failures.
 describe('is_calendar_date in module rules (RFC 0071)', () => {
-  // The §X floor: Protocol 2.22.0 is the first release that contains RFC
-  // 0071. It drives the existing semver refusal path (§VII.2 step 3) in a toy
-  // manifest, and shows why `>=` that release is required where `>2.21.0`
-  // would wrongly admit a hypothetical 2.21.1 that lacks the builtin.
-  const RFC_0071_FLOOR = '2.22.0';
+  // The §X floor, restated against the one protocol (RFC 0081): `>=4.0.0`.
+  // It drives the existing semver refusal path (§VII.2 step 3) in a toy
+  // manifest, and shows why `>=` that release is required where `>3.0.0`
+  // would wrongly admit a hypothetical 3.0.1 that lacks the builtin.
+  const RFC_0071_FLOOR = '4.0.0';
   const RULES: ModuleManifest = {
     ...BASE,
     requires_protocol: `>=${RFC_0071_FLOOR}`,
@@ -224,7 +224,7 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
       { code: 'CC-TOY-OPT', severity: 'error', message: 'closing_date not a valid date', rule: 'site_facts.closing_date == null || is_calendar_date(site_facts.closing_date)' },
     ],
   };
-  const host = () => createModuleRegistry({ modules: [RULES], hostTier: 'tier-4-agent-host', protocolVersion: RFC_0071_FLOOR });
+  const host = () => createModuleRegistry({ modules: [RULES], hostConformance: 'verifier', protocolVersion: RFC_0071_FLOOR });
   const codes = (content: Record<string, unknown>) =>
     validateAgainstModules(file({ site_facts: block('site_facts', content) }), host()).map((i) => i.code);
 
@@ -270,7 +270,7 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
     };
     const issues = validateAgainstModules(
       file({}),
-      createModuleRegistry({ modules: [broken], hostTier: 'tier-4-agent-host', protocolVersion: RFC_0071_FLOOR }),
+      createModuleRegistry({ modules: [broken], hostConformance: 'verifier', protocolVersion: RFC_0071_FLOOR }),
     );
     expect(issues.map((i) => i.code)).toEqual(['MOD-RULE-ERROR', 'MOD-RULE-ERROR']);
     expect(issues[0]?.message).toContain('CC-TOY-ARITY');
@@ -285,7 +285,7 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
       validations: [],
       calculations: [{ id: 'as_of_valid', label: 'As-of valid', formula: 'is_calendar_date(site_facts.as_of_date)', deterministic: true }],
     };
-    const registry = createModuleRegistry({ modules: [withCalc], hostTier: 'tier-4-agent-host', protocolVersion: RFC_0071_FLOOR });
+    const registry = createModuleRegistry({ modules: [withCalc], hostConformance: 'verifier', protocolVersion: RFC_0071_FLOOR });
     const run = (as_of_date: unknown) =>
       evaluateModuleCalculations(file({ site_facts: block('site_facts', { as_of_date }) }), registry)[0]?.result.value;
     expect(run('0000-02-29')).toBe(true);
@@ -295,16 +295,16 @@ describe('is_calendar_date in module rules (RFC 0071)', () => {
   it('is refused at load by a host whose protocol the §X floor excludes, through the existing path', () => {
     // No new loader check: the manifest's own `requires_protocol` range does
     // the work under §VII.2 step 3, reported as the existing PROTO-MOD-030.
-    // 2.21.1 is a hypothetical later patch that lacks the builtin.
-    for (const older of ['2.21.0', '2.21.1']) {
-      expect(() => createModuleRegistry({ modules: [RULES], hostTier: 'tier-4-agent-host', protocolVersion: older }))
+    // 3.0.1 is a hypothetical later patch that lacks the builtin.
+    for (const older of ['3.0.0', '3.0.1']) {
+      expect(() => createModuleRegistry({ modules: [RULES], hostConformance: 'verifier', protocolVersion: older }))
         .toThrow(/PROTO-MOD-030/);
     }
   });
 
-  it('shows why `>2.21.0` is not a §X floor: it admits a hypothetical 2.21.1 that lacks the builtin', () => {
-    const wrongFloor: ModuleManifest = { ...RULES, requires_protocol: '>2.21.0' };
-    expect(() => createModuleRegistry({ modules: [wrongFloor], hostTier: 'tier-4-agent-host', protocolVersion: '2.21.1' }))
+  it('shows why `>3.0.0` is not a §X floor: it admits a hypothetical 3.0.1 that lacks the builtin', () => {
+    const wrongFloor: ModuleManifest = { ...RULES, requires_protocol: '>3.0.0' };
+    expect(() => createModuleRegistry({ modules: [wrongFloor], hostConformance: 'verifier', protocolVersion: '3.0.1' }))
       .not.toThrow();
   });
 });
@@ -328,8 +328,7 @@ describe('dependent overrides at runtime (§VII.3)', () => {
   it("runs an override after the dependent's own earlier calculations it reads", () => {
     // B declares y, then overrides x with a formula reading y. Running B's x
     // anywhere before B's y would read y as absent.
-    // RFC 0081 Phase 4: delete the historical host-floor probe.
-    const a = { ...mod('org.example.a', [calc('x', '1')]), requires_protocol: '>=1.0.0' }; // RFC 0081 Phase 4: delete
+    const a = mod('org.example.a', [calc('x', '1')]);
     const b = mod('org.example.b', [calc('y', '2'), calc('x', 'y * 100')], 'org.example.a');
     expect(trace(a, b)).toEqual(['org.example.b:y=2', 'org.example.b:x=200']);
   });
@@ -395,15 +394,15 @@ describe('dependent overrides at runtime (§VII.3)', () => {
   it('keeps an overriding module off an older host through its own §VII.3 floor, via the existing path', () => {
     // RFC 0074 P6, following RFC 0071: no new loader check. The overriding
     // manifest's `requires_protocol` excludes pre-RFC hosts, which refuse it
-    // under §VII.2 step 3 instead of running both declarations. Protocol
-    // 2.22.0 is the first release that contains RFC 0074.
-    const RFC_0074_FLOOR = '2.22.0';
-    // RFC 0081 Phase 4: delete the historical host-floor probe.
-    const a = { ...mod('org.example.a', [calc('x', '1')]), requires_protocol: '>=1.0.0' }; // RFC 0081 Phase 4: delete
+    // under §VII.2 step 3 instead of running both declarations. The floor is
+    // restated against the one protocol, 4.0.0 (RFC 0081). The dependency
+    // admits any host, so the probe isolates the dependent's floor.
+    const RFC_0074_FLOOR = '4.0.0';
+    const a = { ...mod('org.example.a', [calc('x', '1')]), requires_protocol: '*' };
     const b = { ...mod('org.example.b', [calc('x', '2')], 'org.example.a'), requires_protocol: `>=${RFC_0074_FLOOR}` };
     const host = (protocolVersion: string) =>
-      createModuleRegistry({ modules: [a, b], hostTier: 'tier-4-agent-host', protocolVersion });
-    for (const older of ['2.21.0', '2.21.1']) expect(() => host(older)).toThrow(/PROTO-MOD-030/);
+      createModuleRegistry({ modules: [a, b], hostConformance: 'verifier', protocolVersion });
+    for (const older of ['3.0.0', '3.0.1']) expect(() => host(older)).toThrow(/PROTO-MOD-030/);
     expect(evaluateModuleCalculations(file({}), host(RFC_0074_FLOOR)).map((o) => o.result.value))
       .toEqual([2]);
   });

@@ -1,7 +1,6 @@
 {
   "id": "starter-products/tier-1/01-minimal-screening/render-chat",
   "target": "starter-products",
-  "legacy_id": "tier-1/01-minimal-screening/render-chat",
   "requires_capabilities": [
     "render-chat"
   ],

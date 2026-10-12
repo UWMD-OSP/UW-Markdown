@@ -33,7 +33,7 @@ export function checkPeriodSeries(parsed: ParsedUWFile, issues: ValidationMessag
   }
   for (const section of ['custom_calculations', 'custom_scenarios'] as const) {
     for (const block of parsed[section]) {
-      if (block.meta?.superseded || block.annotation.superseded === true) continue;
+      if (block.meta?.lifecycle?.superseded || block.annotation.superseded === true) continue;
       inspectStaticReferences(block.content, section, parsed, issues, new Set<object>(), 0);
     }
   }

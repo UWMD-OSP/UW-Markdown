@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/nonfinite-allocation",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/nonfinite-allocation",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

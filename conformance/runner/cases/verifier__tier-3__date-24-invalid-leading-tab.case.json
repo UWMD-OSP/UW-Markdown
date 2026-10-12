@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-24-invalid-leading-tab",
   "target": "verifier",
-  "legacy_id": "tier-3/date-24-invalid-leading-tab",
   "requires_capabilities": [
     "calc-evaluate"
   ],

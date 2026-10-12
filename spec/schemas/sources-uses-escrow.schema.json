@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/sources-uses-escrow.schema.json",
   "title": "sources-uses-escrow",
-  "description": "RFC 0056 / format 4.8. One entry of uses.escrows. Shape only: the label rule (ESC-02), the legacy-scalar agreement (ESC-03) and the rate-cap replacement tie (ESC-04) are semantic checks.",
+  "description": "RFC 0056 / format 4.8. One entry of uses.escrows. Shape only: the label rule (ESC-02) and the rate-cap replacement tie (ESC-04) are semantic checks.",
   "type": "object",
   "additionalProperties": false,
   "required": ["name"],

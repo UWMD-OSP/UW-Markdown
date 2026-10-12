@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/partial-expenditure",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/partial-expenditure",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -141,4 +141,4 @@ they do not change the dictionary or the examples.
 
 ## RFC 0081 Phase 2 hospitality addresses
 
-The dictionary describes the final single-home hotel fields: `rent_roll.adr`, `rent_roll.occupancy`, `rent_roll.available_room_nights`, and `property.keys`. Only `total_room_revenue` and `room_revenue_per_key` move input addresses; their arithmetic, null guards, units and rounding are unchanged. Packs remain on their pre-cleanup addresses until Phase 4; the parity test projects precisely these four addresses while the Phase 3 corpus is pending.
+The dictionary describes the final single-home hotel fields: `rent_roll.adr`, `rent_roll.occupancy`, `rent_roll.available_room_nights`, and `property.keys`. Only `total_room_revenue` and `room_revenue_per_key` move input addresses; their arithmetic, null guards, units and rounding are unchanged. The hospitality pack reads the same addresses, and the dictionary/pack parity test compares them directly.

@@ -1,4 +1,5 @@
 ---
+uw_version: "3.0"
 uwpart_version: "1.0"
 part_id: cash-flow-series-dated
 section: cash_flow_series
@@ -12,7 +13,6 @@ section: cash_flow_series
     "section": "cash_flow_series",
     "provenance": {
       "source": "system/uwmd",
-      "resolution": "source_document",
       "actor": "example-kit",
       "agent_id": null,
       "agent_version": null,

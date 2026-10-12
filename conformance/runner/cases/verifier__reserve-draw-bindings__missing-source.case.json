@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/missing-source",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/missing-source",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

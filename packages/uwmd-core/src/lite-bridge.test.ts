@@ -13,8 +13,16 @@ import {
   type UWEnvelopeSectionEntry,
 } from './envelope.js';
 import { validateUWFile } from './validator.js';
-import { detectMetaShape } from './meta-shape.js';
 import { getSection, parseUWFile } from './parser.js';
+import { ASSET_CLASSES } from './types.js';
+
+/** The Format 3.0 block shape: `_meta` first, nested, no wrapper member. */
+function expectBareNested(content: Record<string, unknown>): void {
+  expect(Object.keys(content)[0]).toBe('_meta');
+  const meta = content['_meta'] as Record<string, unknown>;
+  for (const key of ['provenance', 'quality', 'lifecycle']) expect(meta[key]).toBeTypeOf('object');
+  expect(content).not.toHaveProperty('section_id');
+}
 
 /**
  * Narrow a section entry to a single block.
@@ -53,7 +61,7 @@ describe('compileUWLite', () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.envelope.frontmatter).toMatchObject({
-      uw_version: '1.1', // RFC 0081 Phase 4: delete the old Lite emission expectation.
+      uw_version: '3.0',
       deal_id: 'uw_lite_test',
       deal_name: 'Lite Test',
     });
@@ -67,29 +75,37 @@ describe('compileUWLite', () => {
       content: { loan_amount: 8_000_000 },
     });
     expect(result.report.defaults).toContainEqual(
-      expect.objectContaining({ path: 'frontmatter.uw_version', value: '1.1' }),
+      expect.objectContaining({ path: 'frontmatter.uw_version', value: '3.0' }),
     );
   });
 
-  it('authors both new official classes at 2.1 with nested metadata and class-section anchors', () => {
+  it.each(ASSET_CLASSES)('emits Format 3.0 bare nested blocks for %s (RFC 0081 D12)', (cls) => {
+    const result = compileUWLite(parseUWLite(LITE.replace('asset_class: multifamily', `asset_class: ${cls}`)));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error(JSON.stringify(result.report));
+    expect(result.envelope.format_version).toBe('3.0');
+    expect(result.envelope.frontmatter.uw_version).toBe('3.0');
+    for (const entry of Object.values(result.envelope.sections)) expectBareNested(singleBlock(entry).content);
+    expectBareNested(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]!.content);
+    const codes = validateUWFile(parseUWFile(stringifyUWX(result.envelope))).issues.map(issue => issue.code);
+    expect(codes).not.toContain('META-01');
+  });
+
+  it('maps the two official class-section anchors onto the bare payload', () => {
     for (const [cls, section, field] of [['data_center', 'dc_capacity', 'critical_it_load_kw'], ['manufactured_housing', 'mhc_sites', 'total_sites']]) {
       const source = `${LITE.replace('asset_class: multifamily', `asset_class: ${cls}`)}\n- Size: 200 <!-- uw:${section}.${field} -->\n`;
       const result = compileUWLite(parseUWLite(source));
       expect(result.ok).toBe(true);
       if (!result.ok) throw new Error(JSON.stringify(result.report));
-      expect(result.envelope.format_version).toBe('2.1');
-      expect(result.envelope.frontmatter.uw_version).toBe('2.1');
-      for (const entry of Object.values(result.envelope.sections)) {
-        const block = singleBlock(entry);
-        expect(detectMetaShape(block.content._meta as Record<string, unknown>)).toBe('v2');
-      }
-      expect(detectMetaShape(result.envelope.extensions[UW_LITE_SOURCE_EXTENSION]!.content._meta as Record<string, unknown>)).toBe('v2');
-      const parsed = parseUWFile(stringifyUWX(result.envelope));
-      const codes = validateUWFile(parsed).issues.map(issue => issue.code);
-      expect(codes).not.toContain('CLS-05');
-      expect(codes).not.toContain('META-V1-IN-V2');
-      expect((singleBlock(result.envelope.sections[section!]).content.content as Record<string, unknown>)[field!]).toBe(200);
+      expect(singleBlock(result.envelope.sections[section!]).content[field!]).toBe(200);
     }
+  });
+
+  it.each(['1.1', '2.0', '2.1', '4.0'])('refuses a Lite source stating uw_version %s', (version) => {
+    const source = LITE.replace('asset_class: multifamily', `asset_class: multifamily\nuw_version: "${version}"`);
+    const result = compileUWLite(parseUWLite(source));
+    expect(result.ok).toBe(false);
+    expect(result.report.issues).toContainEqual(expect.objectContaining({ code: 'UNSUPPORTED_FORMAT_VERSION' }));
   });
 
   it('preserves the complete Lite source in a namespaced extension', () => {
@@ -175,7 +191,7 @@ describe('UWX bridge rendering and Lite projection', () => {
         '---',
         '',
         '```json uw:section=property source=manual v=1',
-        '{ "_meta": { "section": "property", "version": 1, "superseded": false, "source": "manual", "timestamp": "2026-09-21T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [] }, "total_units": 10 }',
+        '{ "_meta": { "section": "property", "provenance": { "source": "manual", "actor": "user", "agent_id": null, "agent_version": null, "timestamp": "2026-09-21T00:00:00Z", "notes": null }, "quality": { "confidence": "high", "human_review_required": false, "flags": [] }, "lifecycle": { "revision": 1, "superseded": false } }, "total_units": 10 }',
         '```',
       ].join('\n'),
       { strict: true },

@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/empty-explicit-movements",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/empty-explicit-movements",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

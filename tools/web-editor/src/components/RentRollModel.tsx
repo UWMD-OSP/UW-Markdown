@@ -11,7 +11,7 @@
 // chokepoint — so the file can never be left internally inconsistent.
 //
 // Overrides: a derived total can be pinned by hand. The pin is recorded in the
-// format's own _meta.field_overrides (reason:"overridden"); a pinned field is
+// format's own `_overrides` (reason:"overridden"); a pinned field is
 // skipped by the footing and badged "manual" until reverted to formula.
 
 import {
@@ -84,7 +84,7 @@ export function RentRollModel(props: {
   const cfg = tableConfig(content);
   const rows = (Array.isArray(content[cfg.arrayKey]) ? content[cfg.arrayKey] : []) as Row[];
 
-  const overrides = ((block.meta?.field_overrides ?? []) as UWFieldOverride[]).filter(
+  const overrides = ((Array.isArray(block.content['_overrides']) ? block.content['_overrides'] : []) as UWFieldOverride[]).filter(
     (o) => o.reason === 'overridden',
   );
   const overriddenPaths = new Set(overrides.map((o) => o.path));
@@ -106,9 +106,9 @@ export function RentRollModel(props: {
       kind: 'section_replace',
       section_id: sectionId,
       ...(variant ? { variant } : {}),
-      content: c,
       // Always pass the full intended list so reverts (empty) actually clear.
-      meta: { field_overrides: nextOverrides },
+      content: { ...c, _overrides: nextOverrides },
+      meta: {},
     });
   };
 
@@ -306,7 +306,7 @@ function DerivedTotals(props: {
       </div>
       <p className="mt-2 text-xs text-muted">
         Totals foot from the {basisLabel} above and recompute on every edit. Override pins a value by
-        hand (stored as <code>_meta.field_overrides</code>, reason <code>overridden</code>); revert
+        hand (stored as <code>_overrides</code>, reason <code>overridden</code>); revert
         returns it to the formula.
       </p>
     </div>

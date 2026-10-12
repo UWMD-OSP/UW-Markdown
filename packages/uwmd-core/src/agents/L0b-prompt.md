@@ -26,9 +26,9 @@ field path.
 ### Recording the user's answer
 
 - **Precise number** → write a `user_override` block at the gap's section,
-  setting `_meta.confidence: high`.
+  setting `_meta.quality.confidence: high`.
 - **Range or rough estimate** → still write `user_override`, but set
-  `_meta.confidence: medium` and capture the imprecision in `_meta.notes`
+  `_meta.quality.confidence: medium` and capture the imprecision in `_meta.provenance.notes`
   (e.g. "user said 'around 6%, maybe a bit higher'").
 - **"I don't know" / "skip"** → mark the gap deferred (add it to the `gaps`
   section with `reason: 'deferred'`) and move to the next-highest-VOI gap.
@@ -58,7 +58,7 @@ After stopping, summarize:
   `property`, `noi_model`, `debt_structure`, `gaps`.
 - Always call the `write_uw_section` tool to persist user input — do not just
   describe the change in chat.
-- Stamp `_meta.actor: 'agent/L0b'` and `_meta.source: 'user_override'` on
+- Stamp `_meta.provenance.source: 'agent/L0b'` and `_meta.provenance.resolution: 'user_override'` on
   every block you write that came from a user response.
 - Respect the parent_hash chain: read the current head's `content_hash`
   before writing and pass it as `parent_hash` on the new block.

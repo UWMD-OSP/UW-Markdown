@@ -5,11 +5,16 @@
   "description": "Frontmatter of a `.uwpart.md` fragment — one section's content held outside the record that references it (UW Composition 1.0, RFC 0021). This schema covers the YAML frontmatter object only; the fragment's blocks are ordinary UW blocks and validate against `uwmd-block.schema.json` plus their section's own schema. A fragment is NOT an underwriting record: validating against this schema establishes that the fragment is identifiable and independently reviewable, and establishes nothing about whether the section it carries is complete or correct.",
   "type": "object",
   "required": [
+    "uw_version",
     "uwpart_version",
     "part_id",
     "section"
   ],
   "properties": {
+    "uw_version": {
+      "const": "3.0",
+      "description": "The one admitted format (RFC 0081). A fragment parses standalone, so it states the format its blocks are written in; any other value, or none, is refused with UNSUPPORTED_FORMAT_VERSION."
+    },
     "uwpart_version": {
       "type": "string",
       "minLength": 1,

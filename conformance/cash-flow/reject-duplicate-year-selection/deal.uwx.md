@@ -15,7 +15,7 @@ Engineering inputs only.
     "section": "property",
     "provenance": {
       "source": "manual",
-      "resolution": "manual_override",
+      "resolution": "user_override",
       "actor": "synthetic-test-author",
       "timestamp": "2026-09-24T00:00:00Z"
     },
@@ -44,7 +44,7 @@ Engineering inputs only.
     "section": "dcf",
     "provenance": {
       "source": "manual",
-      "resolution": "manual_override",
+      "resolution": "user_override",
       "actor": "synthetic-test-author",
       "timestamp": "2026-09-24T00:00:00Z"
     },

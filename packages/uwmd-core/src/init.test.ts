@@ -5,7 +5,7 @@ import { parse as parseYaml } from 'yaml';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { parseUWFile } from './parser.js';
 import { resolvePolicy } from './editor.js';
-import type { UWFrontmatter } from './types.js';
+import type { UWBlock, UWFrontmatter } from './types.js';
 
 describe('generateBlankUWFile', () => {
   it('honors supplied frontmatter values and produces the standard section scaffold', () => {
@@ -99,7 +99,7 @@ describe('generateBlankUWFile — every stamped source is governed by a policy',
     });
     expect(blocks.length).toBeGreaterThan(0);
     for (const block of blocks) {
-      const source = (block as { meta?: { source?: string } })?.meta?.source;
+      const source = (block as UWBlock).meta?.provenance?.source;
       if (!source) continue;
       const policy = resolvePolicy(source);
       expect(policy?.source_pattern, `'${source}' fell through to the catch-all`).not.toBe('*');
@@ -109,8 +109,8 @@ describe('generateBlankUWFile — every stamped source is governed by a policy',
   it('keeps the section stubs editable by a person', () => {
     // Not `system/init`: that resolves to `system/*`, authority `system_only`,
     // and these stubs exist to be filled in by a human.
-    const property = parsed.sections.property as { meta?: { source?: string } };
-    expect(property?.meta?.source).toBe('manual');
+    const property = parsed.sections.property as UWBlock;
+    expect(property?.meta?.provenance?.source).toBe('manual');
     expect(resolvePolicy('manual')?.authority).toBe('either');
   });
 });
@@ -137,7 +137,7 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     });
     expect(frontmatterOf(content)).toContain(
       [
-        'uw_version: "2.1"', // RFC 0081 Phase 4: delete (init writes 3.0 then)
+        'uw_version: "3.0"',
         'deal_id: "uw_2026_BYTES"',
         'deal_name: "Sunrise Senior Living"',
       ].join('\n'),

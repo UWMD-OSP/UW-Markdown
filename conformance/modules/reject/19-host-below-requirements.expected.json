@@ -1,0 +1,11 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-029"
+  ],
+  "host": {
+    "hostConformance": "reader",
+    "hostProfiles": []
+  },
+  "note": "A Reader host claiming no profiles cannot load a module that requires a Verifier with the module profile (RFC 0081 \u00a76).",
+  "schema_divergence": "The manifest is valid; the refusal is about the loading host's claim, which no manifest schema can see."
+}

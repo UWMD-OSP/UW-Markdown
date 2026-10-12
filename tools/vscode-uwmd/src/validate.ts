@@ -67,10 +67,10 @@ export function analyzeDocument(text: string, filename: string): AnalyzeResult {
     };
   }
 
-  // Detection notes — e.g. structured content still on the legacy .uw.md
-  // extension — are guidance, not defects.
+  // Detection notes — e.g. Lite inferred from the extension alone — are
+  // guidance, not defects.
   const diagnostics: UWDiagnostic[] = detection.warnings.map((message) => ({
-    code: 'SOURCE_LEGACY_EXTENSION',
+    code: 'SOURCE_REPRESENTATION_INFERRED',
     severity: 'info' as const,
     message,
     line: 0,

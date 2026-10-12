@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/variant-11-explicit-beats-role",
   "target": "verifier",
-  "legacy_id": "tier-3/variant-11-explicit-beats-role",
   "requires_capabilities": [
     "calc-evaluate"
   ],

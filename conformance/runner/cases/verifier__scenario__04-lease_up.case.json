@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/04-lease_up",
   "target": "verifier",
-  "legacy_id": "scenario/04-lease_up",
   "requires_capabilities": [
     "validate"
   ],

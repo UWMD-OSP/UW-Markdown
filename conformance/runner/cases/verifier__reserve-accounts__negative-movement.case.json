@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/negative-movement",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/negative-movement",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

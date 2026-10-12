@@ -1,0 +1,6 @@
+{
+  "description": "A flat _meta in a Format 3.0 block is META-01 (RFC 0081 \u00a73).",
+  "expected_codes": [
+    "META-01"
+  ]
+}

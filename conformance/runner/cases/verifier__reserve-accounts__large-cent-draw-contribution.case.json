@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/large-cent-draw-contribution",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/large-cent-draw-contribution",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

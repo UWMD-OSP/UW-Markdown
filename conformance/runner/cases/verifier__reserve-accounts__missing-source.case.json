@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/missing-source",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/missing-source",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

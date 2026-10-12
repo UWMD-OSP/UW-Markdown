@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/irr-02-even-root-count",
   "target": "verifier",
-  "legacy_id": "tier-3/irr-02-even-root-count",
   "requires_capabilities": [
     "calc-evaluate"
   ],

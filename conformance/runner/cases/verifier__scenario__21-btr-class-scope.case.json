@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/21-btr-class-scope",
   "target": "verifier",
-  "legacy_id": "scenario/21-btr-class-scope",
   "requires_capabilities": [
     "validate"
   ],

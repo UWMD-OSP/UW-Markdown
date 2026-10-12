@@ -1,0 +1,17 @@
+{
+  "manifest_version": "1",
+  "id": "org.uwmd.bad-profile",
+  "name": "Minimal Module",
+  "version": "1.0.0",
+  "description": "The smallest manifest a conforming host must accept: required fields only, no contributed constructs.",
+  "authors": [
+    "UW Markdown contributors"
+  ],
+  "license": "MIT",
+  "requires_protocol": "^4.0.0",
+  "requires_format": "^3.0",
+  "requires_conformance": "reader",
+  "requires_profiles": [
+    "editor"
+  ]
+}

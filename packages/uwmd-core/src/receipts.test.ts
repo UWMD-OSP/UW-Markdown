@@ -337,12 +337,15 @@ describe('verifyReceipt', () => {
     expect('inputs_provenance' in receipt).toBe(false);
   });
 
-  it('still reads a 1.0 receipt', async () => {
+  it('refuses any receipt_version but 1.1 (RFC 0081 §7)', async () => {
     const raw = await liteDeal();
     const receipt = await issueReceipt(raw, { filename: LITE_DEAL, issued_at: ISSUED_AT });
-    const legacy = clone(receipt);
-    legacy.receipt_version = '1.0';
-    expect(() => assertUWReceipt(legacy)).not.toThrow();
+    for (const version of ['1.0', '1.2', '2.0']) {
+      const other = clone(receipt);
+      other.receipt_version = version as typeof receipt.receipt_version;
+      expect(() => assertUWReceipt(other)).toThrow(/RCP_MALFORMED/);
+    }
+    expect(() => assertUWReceipt(receipt)).not.toThrow();
   });
 
   it('fails when a stated result does not follow from the record', async () => {

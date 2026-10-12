@@ -103,7 +103,7 @@ describe('quantizeDecimal', () => {
   });
 
   it('refuses non-finite input rather than emitting an unserializable value', () => {
-    // canonicalizeExact throws on non-finite numbers, so catching it here keeps
+    // canonicalize throws on non-finite numbers, so catching it here keeps
     // the failure at the boundary that can name the calculation.
     expect(() => quantizeDecimal(Number.POSITIVE_INFINITY, 2)).toThrow(/non-finite/);
     expect(() => quantizeDecimal(Number.NaN, 2)).toThrow(/non-finite/);

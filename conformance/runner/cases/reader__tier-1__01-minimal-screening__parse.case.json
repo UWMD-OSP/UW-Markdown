@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/01-minimal-screening/parse",
   "target": "reader",
-  "legacy_id": "tier-1/01-minimal-screening/parse",
   "requires_capabilities": [
     "parse"
   ],

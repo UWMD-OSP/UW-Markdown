@@ -1,7 +1,3 @@
-// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
-// Builtin and third-party asset identities (RFC 0080). The sole legacy
-// official alias is resolved without rewriting the document or its digest.
-
 import type { AssetClass, UWAssetClassId } from './types.js';
 import { ASSET_CLASSES, toBuiltinAssetClass } from './types.js';
 import type { ModuleAssetClassDecl, ModuleManifest, ProtocolError } from './protocol.js';
@@ -228,7 +224,10 @@ export function assetClassDeclarationConflicts(registry: ModuleRegistry): Protoc
 }
 
 /**
- * Module ids a document says it depends on.
+ * Module ids a document says it depends on: the object-list spelling of
+ * Format §2.2a (`- id: <module>`) only (RFC 0081 §5). A bare-string entry
+ * names nothing, and no id is special: an `org.uwmd.*` entry is an ordinary
+ * dependency like any other.
  *
  * A file whose `asset_class` is namespaced MUST list them (§X.2), so that a
  * host encountering an identifier it cannot resolve can say *what to load*
@@ -237,27 +236,39 @@ export function assetClassDeclarationConflicts(registry: ModuleRegistry): Protoc
 export function declaredModuleDependencies(
   frontmatter: Record<string, unknown>,
 ): { id: string; version?: string }[] {
+  const out: { id: string; version?: string }[] = [];
+  for (const entry of moduleListEntries(frontmatter)) if (entry.dependency) out.push(entry.dependency);
+  return out;
+}
+
+/**
+ * Every frontmatter `modules` entry with what it declares. An entry is an
+ * object with a string `id` (Format §2.2a). The Appendix D frontmatter subset
+ * reads a sequence item as a scalar, so the object spelling can arrive as its
+ * `id: <module>` line; that reads too. Anything else (a bare module id, a
+ * number, an object without `id`) declares nothing, and the validator reports
+ * it rather than dropping it silently.
+ */
+export function moduleListEntries(
+  frontmatter: Record<string, unknown>,
+): { index: number; value: unknown; dependency: { id: string; version?: string } | null }[] {
   const raw = frontmatter['modules'];
   if (!Array.isArray(raw)) return [];
-  const out: { id: string; version?: string }[] = [];
-  for (const entry of raw) {
+  return raw.map((entry, index) => {
     if (typeof entry === 'string') {
-      // Historical official examples used an object-list spelling which the
-      // restricted YAML reader retains as a literal scalar. Recognize exactly
-      // these core-satisfied dependencies without rewriting parsed frontmatter.
-      const legacyOfficial = /^id:\s*(org\.uwmd\.(?:datacenters|hospitality))$/.exec(entry);
-      out.push({ id: legacyOfficial?.[1] ?? entry });
-      continue;
+      const id = /^id:\s*(\S+)$/.exec(entry)?.[1];
+      return { index, value: entry, dependency: id !== undefined ? { id } : null };
     }
     if (typeof entry === 'object' && entry !== null && typeof (entry as { id?: unknown }).id === 'string') {
       const record = entry as { id: string; version?: unknown };
-      out.push({
-        id: record.id,
-        ...(typeof record.version === 'string' ? { version: record.version } : {}),
-      });
+      return {
+        index,
+        value: entry,
+        dependency: { id: record.id, ...(typeof record.version === 'string' ? { version: record.version } : {}) },
+      };
     }
-  }
-  return out;
+    return { index, value: entry, dependency: null };
+  });
 }
 
 function findDeclaration(

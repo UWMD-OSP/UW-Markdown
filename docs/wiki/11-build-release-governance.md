@@ -213,10 +213,9 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   portable driver with `--no-skip`, and the capability-skip controls. No live
   model is called: agent checks run as deterministic replays.
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
-  `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`,
-  `@uwmd/module-hospitality`, `@uwmd/module-data-center`, `@uwmd/excel`,
-  `@uwmd/report` and `@uwmd/lake`, core first because every other package
-  pins it exactly. Excel, report and lake joined after 2.21.x; each already
+  the seven packages `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`,
+  `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake`, core first
+  because every other package pins it exactly. Excel, report and lake joined after 2.21.x; each already
   existed on npm, which a trusted publisher requires (a deprecated stray
   `0.3.0` of Excel and report, and lake `0.2.9`, published by hand from
   `v2.21.0` on 2026-10-11). Authentication is **npm trusted publishing
@@ -254,21 +253,21 @@ not a new normative feature: Format 2.0, Protocol 2.21.0, accepted module contra
 IDs, compatibility fields and runtime/signature behavior are unchanged. No RFC
 is required solely to distribute these existing implementations.
 
-> **Since RFC 0080 both packages are compatibility shells.** Hospitality's and
-> data center's official content is builtin in `@uwmd/core`; the manifests
-> declare no classes, sections, calculations, rules or views, and core
-> satisfies existing module-list dependencies (CLS-02). They stayed in the
-> publish set for the 3.0.0 transition release, and both names were deprecated
-> on npm on 2026-10-11 (Retirement, below). Official asset classes are never module classes now; modules are
-> for third parties. The rest of this section describes the distribution
-> mechanics, which are unchanged.
+> **RFC 0081 Phase 4 deleted both packages.** Hospitality's and data
+> center's official content is builtin in `@uwmd/core` (RFC 0080). Both shells
+> published their final 0.2.0 in the 3.0.0 release, and both names were
+> deprecated on npm on 2026-10-11 (Retirement, below). From 4.0.0 the release
+> publishes seven packages. This section is the record of how they were
+> distributed; official asset classes are never module classes now, and
+> modules are for third parties.
 
 **Ordinary releases only.** Both joined the existing four packages in `release.yml`
 from 2.18.0; no module-only trigger or new tag family exists. Releases through
 2.17.0 retain their actual four-package publication scope. `release-packages.mjs`
 selects four rows for generations at or below 2.17.0, six through 2.21.x
-(including patch generations) and nine afterward; these boundaries record
-history and do not select the next release version. Historical tags and
+(including patch generations), nine from 2.22.0 through 3.x and seven from
+4.0.0; these boundaries record history and do not select the next release
+version. The module rows are names only: their sources no longer exist. Historical tags and
 publication records stay immutable.
 
 **Retirement (RFC 0080 §6).** The 3.0.0 transition release publishes 0.2.0 of
@@ -284,9 +283,8 @@ npm deprecate @uwmd/module-data-center "Retired: data_center is a builtin asset 
 
 Deprecating a name marks every version, so existing installs keep resolving
 and only show the message. Record the deprecation in the post-publication
-reconciliation. The packages leave `release.yml`, `release-packages.mjs` and
-the matrix in a later release, never in the one that ships their final
-version.
+reconciliation. Both packages left `release.yml` and the workspace in RFC
+0081 Phase 4, after the release that shipped their final version.
 
 **Done 2026-10-11.** 3.0.0 published 0.2.0 of both packages (release run
 38163964522), and the owner then ran both commands. The registry shows the

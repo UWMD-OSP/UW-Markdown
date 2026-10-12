@@ -14,19 +14,9 @@ import {
 import { algorithmParams, isKnownAlgorithm, subtle } from './algorithms.js';
 import { fromBase64Url, utf8 } from './base64.js';
 import type { KeyStore } from './keys.js';
-import { blockDigestShape } from './sign.js';
 
 /** RFC 0010's `SigVerifyError`, plus the hash check core cannot do alone. */
 export type SigVerifyError = BlockSigFailure | 'content_hash_mismatch';
-
-export interface VerifyBlockSignatureOptions {
-  /**
-   * The `uw_version` of the document the block was parsed from
-   * (`parsed.frontmatter.uw_version`). Selects the digest rule the stamped
-   * `content_hash` is recomputed under, exactly as `verifyChain` does.
-   */
-  uwVersion?: string;
-}
 
 export type BlockVerification =
   | { ok: true; kid: string }
@@ -44,17 +34,16 @@ export type BlockVerification =
 export async function verifyBlockSignature(
   block: UWBlock,
   store: KeyStore,
-  options: VerifyBlockSignatureOptions = {},
 ): Promise<BlockVerification> {
-  const signature = block.meta.signature;
+  const signature = block.meta.integrity?.signature;
   if (!signature) return { ok: false, reason: 'malformed' };
   if (!isWellFormed(signature)) return { ok: false, reason: 'malformed', kid: signature.kid };
 
   const payload = blockSigningPayload(block);
   if (payload === null) return { ok: false, reason: 'malformed', kid: signature.kid };
 
-  const recomputed = await computeBlockHash(block, { shape: blockDigestShape(options.uwVersion) });
-  if (recomputed !== block.meta.content_hash) {
+  const recomputed = await computeBlockHash(block);
+  if (recomputed !== block.meta.integrity?.content_hash) {
     return { ok: false, reason: 'content_hash_mismatch', kid: signature.kid };
   }
 

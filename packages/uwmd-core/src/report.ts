@@ -287,7 +287,7 @@ ${address ? `<p class="rpt-cover-address">${esc(address)}</p>` : ''}
 <div class="rpt-cover-foot">
 ${date ? `<p>Prepared ${esc(String(date).slice(0, 10))}</p>` : ''}
 ${preparedBy ? `<p>Prepared by ${esc(preparedBy)}</p>` : ''}
-<p>Deal ID ${esc(fm.deal_id ?? 'n/a')} · .uw.md v${esc(fm.uw_version ?? '1.1')}</p>
+<p>Deal ID ${esc(fm.deal_id ?? 'n/a')} · .uw.md v${esc(fm.uw_version)}</p>
 </div>
 </section>`;
 }
@@ -631,14 +631,6 @@ function sourcesUses(ctx: Ctx): string | null {
   for (const loan of debts) {
     const premium = deepGet(loan.content, 'rate_hedge.premium');
     if (has(premium)) useRows.push(['Rate Cap Cost', money(premium)]);
-  }
-  // RFC 0081 Phase 4: delete legacy uses display paths.
-  if (ctx.parsed.frontmatter.uw_version !== '3.0') for (const [key, label] of [
-    ['renovation_budget', 'Renovation Budget'], ['renovation_contingency', 'Renovation Contingency'],
-    ['operating_reserves', 'Operating Reserves'], ['interest_reserve', 'Interest Reserve'], ['rate_cap_cost', 'Rate Cap Cost'],
-  ]) {
-    const value = deepGet(c, `uses.${key}`);
-    if (has(value)) useRows.push([label, money(value)]);
   }
   const closing = deepGet(c, 'uses.closing_costs.total') ?? deepGet(c, 'uses.closing_costs');
   if (has(closing) && typeof closing !== 'object') {

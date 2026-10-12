@@ -52,17 +52,16 @@ export type DealStage =
   | 'monitoring';
 
 /**
- * Source tags surface where a value came from. Producers stamp `_meta.source`
- * with a value drawn from this union or an institution-defined pattern (e.g.
+ * Source tags surface where a value came from. Producers stamp
+ * `_meta.provenance.source` with a value drawn from this union or an institution-defined pattern (e.g.
  * 'agent/L6-01', 'document/rent_roll'). Free-form strings remain valid for
  * forward compat; this union enumerates the canonical values.
  *
- * **RFC 0031 split the field.** `_meta.source` is now actor-only
+ * **RFC 0031 split the field.** `_meta.provenance.source` is actor-only
  * (`manual | agent/<id> | document/<id> | system/<id> | institution/<id>`);
- * the resolution-method tags below belong in `_meta.resolution`. A canonical
- * tag found in `_meta.source` is interpreted at read time as `resolution`
- * (with the actor treated as absent) and warns under `SRC-02`. See protocol
- * §V.3/§V.7 and format spec §2.6.
+ * the resolution-method tags below belong in `_meta.provenance.resolution`.
+ * A resolution tag in the actor field is `SRC-02`, an error; readers never
+ * reinterpret it. See protocol §V.3 and format spec §2.6.
  */
 export type SourceTag =
   | 'user_input'
@@ -70,7 +69,7 @@ export type SourceTag =
   | 'manual'
   /**
    * A value inherited from an ancestor in the composition DAG (RFC 0021 §5).
-   * Always carries `_meta.inherited_from` naming the asserting document, so it
+   * Always carries `_meta.provenance.inherited_from` naming the asserting document, so it
    * is traceable rather than ambient.
    */
   | 'inherited_assumption'
@@ -96,8 +95,7 @@ export type SourceTag =
 /**
  * The full set of canonical short-form source tags. As of RFC 0031 these are
  * the **resolution-method** vocabulary — producers stamp them into
- * `_meta.resolution` (a tag found in `_meta.source` is legacy and is
- * interpreted as `resolution` at read time). Eight of these match
+ * `_meta.provenance.resolution` (never the actor field). Eight of these match
  * `CascadeStep` 1:1; the rest are non-cascade tags — `ai_extracted`,
  * `agent_computed`, `scenario_default`, and `market_data_accepted`.
  *
@@ -135,6 +133,13 @@ export const SOURCE_TAGS = Object.freeze([
 ] as const);
 
 export type CanonicalSourceTag = (typeof SOURCE_TAGS)[number];
+
+/**
+ * The one format this implementation reads and writes (RFC 0081 D1). A
+ * document declaring any other `uw_version`, or none, is refused with
+ * `UNSUPPORTED_FORMAT_VERSION`. Re-exported from `protocol.ts`.
+ */
+export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['3.0'] as const);
 
 export type AssetClass =
   | 'multifamily'
@@ -213,8 +218,7 @@ export interface UWFieldOverride {
   /** Dot-notated path relative to the block's content root (e.g. "units[7].current_rent"). */
   path: string;
   confidence?: ConfidenceLevel;
-  /** Actor override for this field (RFC 0031 actor grammar; legacy tags are
-   *  read as `resolution` — see §2.6 read-time interpretation). */
+  /** Actor override for this field (RFC 0031 actor grammar, Format §2.6). */
   source?: SourceTag;
   /**
    * How this field's value was resolved (a canonical `SOURCE_TAGS` member,
@@ -227,99 +231,106 @@ export interface UWFieldOverride {
   note?: string;
 }
 
-export interface UWMeta {
-  section: string;
-  version: number;
-  superseded: boolean;
+/**
+ * `_meta.provenance` (Format §2.5): who wrote the block, when, and how its
+ * values were resolved. `source`, `actor` and `timestamp` are REQUIRED.
+ */
+export interface UWProvenance {
   /**
-   * Who wrote the block — `manual` or `<namespace>/<id>` with a registered
-   * actor namespace (RFC 0031; grammar in format spec §2.6, authority in
-   * protocol §V.3). Legacy canonical tags in this field are interpreted as
-   * `resolution` at read time and warn under `SRC-02`.
+   * The writer, in the actor grammar `manual | <namespace>/<id>` (RFC 0031;
+   * Format §2.6, Protocol §V.3). A resolution tag here is `SRC-02` and any
+   * other out-of-grammar value is `SRC-01`; both are errors.
    */
   source: SourceTag;
-  /**
-   * How the block's value was resolved — one canonical `SOURCE_TAGS` member
-   * (`user_input`, `asset_class_default`, …). Optional and orthogonal to
-   * `source`: an agent that filled a field from the asset-class default table
-   * has both an actor and a method. RFC 0031; starter guide §V.7.
-   */
+  /** How the value was resolved: one member of the closed `SOURCE_TAGS`
+   *  vocabulary (`SRC-03` otherwise). Optional and orthogonal to `source`. */
   resolution?: SourceTag;
-  agent_id: string | null;
-  agent_version: string | null;
+  /** The principal that initiated the write. */
   actor: string;
-  timestamp: string;            // ISO8601
-  confidence: ConfidenceLevel;
-  human_review_required: boolean;
-  flags: string[];
-  input_hash: string | null;    // sha256:... — reproducibility anchor
-  notes: string | null;
-
-  // ─── Optional integrity / quality fields (format spec Part III §3) ──────────
-
-  /**
-   * True when at least one field inside this block is missing or unknown.
-   * When true, `field_overrides` SHOULD enumerate which paths and why.
-   */
-  partial?: boolean;
-
-  /**
-   * True when the entire block is a placeholder, derived from defaults rather
-   * than observed data. Stronger signal than confidence:'low'. Downstream
-   * consumers SHOULD label outputs derived from provisional blocks.
-   */
-  provisional?: boolean;
-
-  /**
-   * Per-field overrides where the block-level confidence/source does not apply
-   * uniformly. The path is dot-notated relative to the block content root.
-   */
-  field_overrides?: UWFieldOverride[];
-
-  /**
-   * sha256 of the canonicalized block content. See Protocol §V.9 for the
-   * canonicalization rule. Optional; when present, the chain becomes
-   * verifiable.
-   */
-  content_hash?: string;
-
-  /**
-   * content_hash of the block this one supersedes. null on a chain root.
-   * Optional, but if any block in a supersede chain has it, all later blocks
-   * in that chain MUST.
-   */
-  parent_hash?: string | null;
-
-  /**
-   * Detached signature over this block's signing input (protocol §V.11,
-   * RFC 0010). Optional and opaque to core: the wire shape is normative here,
-   * but the cryptography lives in `@uwmd/signing` so that the library stays
-   * dependency-free for the overwhelming majority of adopters who never sign.
-   *
-   * Excluded from `content_hash` canonicalization along with `content_hash`
-   * itself, so stamping a signature does not invalidate the hash it covers.
-   */
-  signature?: UWBlockSignature;
-
+  /** REQUIRED when `source` matches `agent/*`. */
+  agent_id?: string | null;
+  agent_version?: string | null;
+  /** ISO 8601 UTC write time. */
+  timestamp: string;
+  notes?: string | null;
   /**
    * Which observation set a `market_data_accepted` value was promoted from
-   * (RFC 0022 §4). REQUIRED whenever `resolution` (or, pre-split, `source`)
-   * is `market_data_accepted`, and meaningless otherwise.
-   *
-   * Without it, "accepted from market data" is an unfalsifiable claim: a
-   * reviewer could see the tag but never recover *which* observations, of which
-   * vintage, were accepted — the exact gap RFC 0022 exists to close.
+   * (RFC 0022 §4). REQUIRED whenever `resolution` is `market_data_accepted`.
    */
   market_data_ref?: MarketDataRef;
-
   /**
    * Which ancestor asserted an `inherited_assumption` value (RFC 0021 §5).
-   * REQUIRED whenever `resolution` (or, pre-split, `source`) is
-   * `inherited_assumption`, and meaningless
-   * otherwise — an inherited value with no named ancestor is indistinguishable
-   * from an ambient default, which is exactly what §5 forbids.
+   * REQUIRED whenever `resolution` is `inherited_assumption`.
    */
   inherited_from?: InheritedFrom;
+}
+
+/** `_meta.quality` (Format §2.5). `confidence` and `human_review_required`
+ *  are REQUIRED. Per-field exceptions live in the block's `_overrides`. */
+export interface UWQuality {
+  confidence: ConfidenceLevel;
+  human_review_required: boolean;
+  flags?: string[];
+  /** True when at least one field inside the block is missing or unknown;
+   *  the block's `_overrides` SHOULD then enumerate which paths and why. */
+  partial?: boolean;
+  /** True when the whole block is a placeholder derived from defaults rather
+   *  than observed data. Stronger than `confidence: 'low'`. */
+  provisional?: boolean;
+}
+
+/** `_meta.lifecycle` (Format §2.7): the block's place in its supersede chain. */
+export interface UWLifecycle {
+  /** 1-based supersede-chain position. */
+  revision: number;
+  /** True on every block that is not the chain head. */
+  superseded: boolean;
+}
+
+/**
+ * `_meta.integrity` (Format Part III, Protocol §V.9–§V.11). Optional as a
+ * whole: integrity is opt-in. The whole `_meta` member is outside the block
+ * digest, so stamping any of these never changes `content_hash`.
+ */
+export interface UWIntegrity {
+  /** Absent means `sha256`, the only admitted block hash algorithm. */
+  algorithm?: 'sha256';
+  /** `sha256:<64 hex>` reproducibility anchor, or null. */
+  input_hash?: string | null;
+  /** Lowercase hex SHA-256 of the JCS of the block minus `_meta` (§V.9). */
+  content_hash?: string;
+  /** `content_hash` of the superseded predecessor; null on a chain root. */
+  parent_hash?: string | null;
+  /**
+   * Detached signature over this block's signing input (Protocol §V.11,
+   * RFC 0010). The cryptography lives in `@uwmd/signing`.
+   */
+  signature?: UWBlockSignature;
+}
+
+/**
+ * A block's `_meta` (Format §2.5), exactly as the document states it and as
+ * `uwmd-block.schema.json` defines it. There is one shape: readers never
+ * reshape it, and `block.meta` is the parsed `_meta` object itself.
+ */
+export interface UWMeta {
+  /** MUST equal the fence annotation's section. */
+  section: string;
+  provenance: UWProvenance;
+  quality: UWQuality;
+  lifecycle: UWLifecycle;
+  integrity?: UWIntegrity;
+}
+
+/**
+ * The caller-suppliable part of a written block's `_meta` (an edit
+ * operation's `meta`). The host owns `section`, `lifecycle` and `integrity`
+ * (invariant 5) and fills the required provenance and quality members; a
+ * patch overrides individual provenance or quality members.
+ */
+export interface UWMetaPatch {
+  provenance?: Partial<UWProvenance>;
+  quality?: Partial<UWQuality>;
 }
 
 /**
@@ -341,14 +352,14 @@ export interface UWBlockSignature {
   sig: string;
   /**
    * ISO 8601 instant the signature was produced. MAY differ from
-   * `_meta.timestamp` — a block edited offline is signed when re-uploaded.
+   * `_meta.provenance.timestamp` — a block edited offline is signed when re-uploaded.
    */
   signed_at: string;
   /** Signing-protocol version. Absent means `"1"`. */
   v?: string;
 }
 
-/** The algorithms protocol 1.x admits for `_meta.signature.alg`. */
+/** The algorithms protocol 1.x admits for `_meta.integrity.signature.alg`. */
 export type UWSignatureAlgorithm = 'ed25519' | 'es256' | 'es384';
 
 /** Runtime mirror of {@link UWSignatureAlgorithm}, for validation. */
@@ -404,13 +415,6 @@ export interface UWBlock<T extends Record<string, unknown> = Record<string, unkn
   rawJson: string;
   lineStart: number;   // 1-indexed line of the opening fence
   lineEnd: number;     // 1-indexed line of the closing ```
-  /**
-   * Which on-disk `_meta` shape this block was parsed from (RFC 0009):
-   * `'v1'` flat, `'v2'` nested. Absent on hand-built blocks. `block.meta` is
-   * always the flat in-memory view regardless — a nested block is reshaped at
-   * parse time so every consumer keeps reading the v1 fields.
-   */
-  meta_shape?: 'v1' | 'v2';
 }
 
 // ─── Frontmatter ──────────────────────────────────────────────────────────────
@@ -517,12 +521,6 @@ export interface ValidationMessage {
   remediation?: string;
   /** Spec section anchor for deep-linking, when available. */
   spec_ref?: string;
-  /**
-   * Deprecated string-form code from prior versions, emitted alongside
-   * the canonical numeric `code` for one release as a migration aid.
-   * Consumers should switch to reading `code`. Removal target: v1.2.
-   */
-  legacy_code?: string;
 }
 
 export interface StageReadiness {
@@ -591,6 +589,5 @@ export interface InstitutionConfig {
 
 /** Resolve only published builtin identities; never suffix-match custom ids. */
 export function toBuiltinAssetClass(raw: string): AssetClass | null {
-  if (raw === 'org.uwmd.data_center') return 'data_center';
   return (ASSET_CLASSES as readonly string[]).includes(raw) ? raw as AssetClass : null;
 }

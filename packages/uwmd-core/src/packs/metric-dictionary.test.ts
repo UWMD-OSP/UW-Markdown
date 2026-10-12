@@ -76,7 +76,7 @@ describe('normative metric dictionary parity', () => {
     for (const m of dictionary.calculations) {
       expect(m.minimum_stated_decimals).toBeLessThanOrEqual(m.round_to);
       expect(m.round_to).toBe(resolveRoundTo(getPackForAssetClass(m.asset_classes[0]!)!.calculations!.find(c => c.id === m.id)!));
-      expect(evaluateCalc(m, { parsed: parseUWFile(''), prior_results: {}, locale: 'en-US' }).round_to).toBe(m.round_to);
+      expect(evaluateCalc(m, { parsed: parseUWFile('---\nuw_version: "3.0"\n---\n'), prior_results: {}, locale: 'en-US' }).round_to).toBe(m.round_to);
     }
     unique(dictionary.calculations);
     // Minimum statement precision is dictionary verification metadata, not a

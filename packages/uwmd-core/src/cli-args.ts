@@ -6,7 +6,7 @@
 
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
-import type { ViewerTier } from './protocol.js';
+import { isConformanceTier, type ConformanceTier } from './protocol.js';
 import { UWX_EXTENSION } from './source-representation.js';
 
 /**
@@ -76,10 +76,16 @@ export function replaceUWExtension(file: string, extension: string): string {
   return `${file}${extension}`;
 }
 
-/** The `--tier` flag as a ViewerTier, or undefined for absent/boolean forms. */
-export function hostTierFlag(flags: Record<string, string | boolean>): ViewerTier | undefined {
+/**
+ * The modules commands' `--tier` flag as the host's conformance tier:
+ * undefined when absent, null when it is not `reader` or `verifier`.
+ */
+export function hostConformanceFlag(
+  flags: Record<string, string | boolean>,
+): ConformanceTier | null | undefined {
   const tier = flags['tier'];
-  return typeof tier === 'string' ? (tier as ViewerTier) : undefined;
+  if (tier === undefined) return undefined;
+  return isConformanceTier(tier) ? tier : null;
 }
 
 /** Where fragments live for a record, unless told otherwise. */

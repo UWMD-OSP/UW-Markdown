@@ -3,7 +3,7 @@ import type { ParsedUWFile } from './types.js';
 import type { ReplacementFundingVerificationResult, ProtocolError } from './protocol.js';
 import type { CashFlowRow } from './cash-flow-series.js';
 import { isCurrencyCode } from './protocol.js';
-import { canonicalizeExact } from './integrity-canonical.js';
+import { canonicalize } from './integrity-canonical.js';
 import { sha256TextHex } from './integrity.js';
 import { validateUWFile } from './validator.js';
 import {
@@ -32,7 +32,7 @@ export async function computeReplacementCashFlowBindingDigest(
       message: 'Invalid replacement cash-flow binding digest inputs',
     } satisfies ProtocolError;
   }
-  const bytes = canonicalizeExact({
+  const bytes = canonicalize({
     currency_code: currencyCode,
     row_index: rowIndex,
     section: 'cash_flow_series',

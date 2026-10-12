@@ -12,7 +12,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import {
   defaultPartsDir,
   extractPositionals,
-  hostTierFlag,
+  hostConformanceFlag,
   parseFlags,
   readManifestFile,
   replaceUWExtension,
@@ -109,11 +109,12 @@ describe('replaceUWExtension', () => {
   });
 });
 
-describe('hostTierFlag', () => {
-  it('returns a string tier and rejects the boolean form', () => {
-    expect(hostTierFlag({ tier: 'analyst' })).toBe('analyst');
-    expect(hostTierFlag({ tier: true })).toBeUndefined();
-    expect(hostTierFlag({})).toBeUndefined();
+describe('hostConformanceFlag', () => {
+  it('reads reader or verifier and refuses anything else', () => {
+    expect(hostConformanceFlag({ tier: 'reader' })).toBe('reader');
+    expect(hostConformanceFlag({ tier: 'verifier' })).toBe('verifier');
+    for (const tier of ['tier-3-calc-host', '3', 'analyst', true]) expect(hostConformanceFlag({ tier })).toBeNull();
+    expect(hostConformanceFlag({})).toBeUndefined();
   });
 });
 

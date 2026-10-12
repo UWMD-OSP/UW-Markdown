@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/ambiguous-net-row",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/ambiguous-net-row",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

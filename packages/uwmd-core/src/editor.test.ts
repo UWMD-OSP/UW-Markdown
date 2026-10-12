@@ -322,7 +322,7 @@ describe('applyEdit — section_replace', () => {
       kind: 'section_replace',
       section_id: 'property',
       content: { total_units: 30, year_built: 1995, asset_class: 'multifamily' },
-      meta: { confidence: 'high' },
+      meta: { quality: { confidence: 'high' } },
     };
     const result = applyEdit(FILE, parsed, op, MANUAL_CTX);
     expectOk(result);
@@ -332,10 +332,31 @@ describe('applyEdit — section_replace', () => {
     const reparsed = parseUWFile(result.content);
     const block = getSection(reparsed, 'property');
     expect(block?.content['total_units']).toBe(30);
-    expect(block?.meta.version).toBe(2);
-    expect(block?.meta.source).toBe('manual');
-    expect(block?.meta.actor).toBe('jared');
+    expect(block?.meta.lifecycle?.revision).toBe(2);
+    expect(block?.meta.provenance?.source).toBe('manual');
+    expect(block?.meta.provenance?.actor).toBe('jared');
     expect(reparsed.superseded['property']).toBeUndefined();
+  });
+
+  it.each([
+    [{ confidence: 'high' }, 'meta.confidence'],
+    [{ lifecycle: { revision: 9 } }, 'meta.lifecycle'],
+    [{ provenance: 'manual' }, 'meta.provenance'],
+    [{ provenance: { source: 'agent/L6' } }, 'meta.provenance.source'],
+  ])('refuses a meta patch member outside provenance/quality (%j) as PROTO-EDIT-002', (meta, named) => {
+    const parsed = parseUWFile(FILE);
+    for (const kind of ['section_replace', 'section_supersede'] as const) {
+      const op = {
+        kind,
+        section_id: 'property',
+        content: { total_units: 30 },
+        meta,
+      } as unknown as EditOperation;
+      const result = applyEdit(FILE, parsed, op, MANUAL_CTX);
+      expect(result.ok).toBe(false);
+      expect(result.error?.code).toBe('PROTO-EDIT-002');
+      expect(result.error?.message).toContain(named);
+    }
   });
 
   it('rejects replace when target source requires supersede_on_edit', () => {
@@ -396,7 +417,7 @@ describe('applyEdit — section_replace', () => {
       section_id: 'property',
       content: {
         total_units: 28,
-        _meta: { section: 'property', version: 99, source: 'forged' },
+        _meta: { section: 'property', lifecycle: { revision: 99 }, provenance: { source: 'forged' } },
         _notes: 'should be dropped',
       },
       meta: {},
@@ -406,8 +427,8 @@ describe('applyEdit — section_replace', () => {
 
     const reparsed = parseUWFile(result.content);
     const block = getSection(reparsed, 'property');
-    expect(block?.meta.version).toBe(2);
-    expect(block?.meta.source).toBe('manual');
+    expect(block?.meta.lifecycle?.revision).toBe(2);
+    expect(block?.meta.provenance?.source).toBe('manual');
     expect(block?.content['_notes']).toBeUndefined();
   });
 });
@@ -415,6 +436,59 @@ describe('applyEdit — section_replace', () => {
 // ─── section_supersede ────────────────────────────────────────────────────────
 
 describe('applyEdit — section_supersede', () => {
+  it('drops _overrides from an agent edit, so an agent cannot forge a human override (invariant 5)', () => {
+    const parsed = parseUWFile(FILE);
+    for (const kind of ['section_supersede', 'section_replace'] as const) {
+      const op = {
+        kind,
+        section_id: 'risk_assessment',
+        content: { overall_rating: 'low', risk_score: 3, _overrides: [{ path: 'risk_score', resolution: 'user_override', source: 'manual', reason: 'overridden' }] },
+        meta: {},
+      } as EditOperation;
+      const result = applyEdit(FILE, parsed, op, AGENT_CTX);
+      if (kind === 'section_replace') {
+        // agent/* requires supersede_on_edit; the refusal is unrelated to _overrides.
+        expect(result.ok).toBe(false);
+        continue;
+      }
+      expectOk(result);
+      const block = getSection(parseUWFile(result.content), 'risk_assessment');
+      expect(block?.content['risk_score']).toBe(3);
+      expect(block?.content).not.toHaveProperty('_overrides');
+    }
+  });
+
+  it('refuses an agent meta patch that restates its source as manual (PROTO-EDIT-002)', () => {
+    const parsed = parseUWFile(FILE);
+    const op: EditOperation = {
+      kind: 'section_supersede',
+      section_id: 'risk_assessment',
+      content: { overall_rating: 'low' },
+      meta: { provenance: { source: 'manual' } },
+    };
+    const result = applyEdit(FILE, parsed, op, AGENT_CTX);
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe('PROTO-EDIT-002');
+    // Restating the writer's own source is harmless and allowed.
+    const same = applyEdit(FILE, parsed, { ...op, meta: { provenance: { source: 'agent/L6' } } }, AGENT_CTX);
+    expect(same.ok).toBe(true);
+  });
+
+  it('keeps _overrides from a human edit (the web editor writes them this way)', () => {
+    const parsed = parseUWFile(FILE);
+    const overrides = [{ path: 'year_built', resolution: 'user_override', source: 'manual', reason: 'overridden' }];
+    const op: EditOperation = {
+      kind: 'section_supersede',
+      section_id: 'property',
+      content: { total_units: 30, year_built: 1995, _overrides: overrides },
+      meta: {},
+    };
+    const result = applyEdit(FILE, parsed, op, MANUAL_CTX);
+    expectOk(result);
+    const block = getSection(parseUWFile(result.content), 'property');
+    expect(block?.content['_overrides']).toEqual(overrides);
+  });
+
   it('marks the prior block superseded and appends a new versioned block', () => {
     const parsed = parseUWFile(FILE);
     const op: EditOperation = {
@@ -431,10 +505,10 @@ describe('applyEdit — section_supersede', () => {
     const reparsed = parseUWFile(result.content);
     const block = getSection(reparsed, 'risk_assessment');
     expect(block?.content['risk_score']).toBe(3);
-    expect(block?.meta.version).toBe(3);
-    expect(block?.meta.source).toBe('agent/L6');
+    expect(block?.meta.lifecycle?.revision).toBe(3);
+    expect(block?.meta.provenance?.source).toBe('agent/L6');
     expect(reparsed.superseded['risk_assessment']?.length).toBe(1);
-    expect(reparsed.superseded['risk_assessment']?.[0].meta.version).toBe(2);
+    expect(reparsed.superseded['risk_assessment']?.[0].meta.lifecycle?.revision).toBe(2);
   });
 
   it('chains supersedes — version increments each time, prior is archived', () => {
@@ -453,7 +527,7 @@ describe('applyEdit — section_supersede', () => {
     }
     const final = parseUWFile(content);
     const block = getSection(final, 'risk_assessment');
-    expect(block?.meta.version).toBe(5); // started at 2 → +3 = 5
+    expect(block?.meta.lifecycle?.revision).toBe(5); // started at 2 → +3 = 5
     expect(final.superseded['risk_assessment']?.length).toBe(3);
   });
 
@@ -542,7 +616,7 @@ describe('applyEdit — round-trip preservation', () => {
 
 // ─── The unpoliced-write regression ───────────────────────────────────────────
 
-describe('an unrecognized _meta.source no longer permits a destructive replace', () => {
+describe('an unrecognized _meta.provenance.source no longer permits a destructive replace', () => {
   // Format spec 2.6 tells producers to write `agent:L0-01`. BUILTIN_EDIT_POLICIES
   // matches `agent/*`. The delimiter differs, so the source matched nothing, and
   // an unmatched source used to mean "authorized, and exempt from supersede" —

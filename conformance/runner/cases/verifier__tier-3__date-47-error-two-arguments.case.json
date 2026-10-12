@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-47-error-two-arguments",
   "target": "verifier",
-  "legacy_id": "tier-3/date-47-error-two-arguments",
   "requires_capabilities": [
     "calc-evaluate"
   ],

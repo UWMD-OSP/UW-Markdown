@@ -18,7 +18,6 @@ The rent roll is carried in one record in this form.
     "section": "property",
     "provenance": {
       "source": "system/uwmd",
-      "resolution": "source_document",
       "actor": "example-kit",
       "agent_id": null,
       "agent_version": null,
@@ -50,7 +49,6 @@ The rent roll is carried in one record in this form.
     "section": "rent_roll",
     "provenance": {
       "source": "system/uwmd",
-      "resolution": "source_document",
       "actor": "example-kit",
       "agent_id": null,
       "agent_version": null,

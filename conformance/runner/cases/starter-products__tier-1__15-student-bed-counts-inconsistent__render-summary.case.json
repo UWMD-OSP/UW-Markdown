@@ -1,7 +1,6 @@
 {
   "id": "starter-products/tier-1/15-student-bed-counts-inconsistent/render-summary",
   "target": "starter-products",
-  "legacy_id": "tier-1/15-student-bed-counts-inconsistent/render-summary",
   "requires_capabilities": [
     "render-summary"
   ],

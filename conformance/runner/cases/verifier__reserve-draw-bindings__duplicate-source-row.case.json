@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/duplicate-source-row",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/duplicate-source-row",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

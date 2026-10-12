@@ -1,5 +1,5 @@
 {
-  "description": "RFC 0080 core builtin control. Same bytes as the fixture, module NOT loaded, but the host holds the declaration out of band. The RFC 0003 resolution path on a PRODUCT module rather than the com.example fixture: degraded via the industrial fallback, MOD-FALLBACK-001, and no display name - a cached declaration can only ever degrade, never resolve. Nothing from the module runs, because nothing from the module is loaded.",
+  "description": "RFC 0080 core builtin control. Same bytes as the fixture with the host holding no module at all: data_center is builtin, so it resolves and computes without one. The RFC 0003 fallback path applies only to third-party declared classes.",
   "expected_calcs": {
     "utilization": 1.1,
     "commissioned_share": 0.8,

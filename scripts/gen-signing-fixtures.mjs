@@ -18,7 +18,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { parseUWFile, computeBlockHash, reshapeMetaV1toV2 } from '../packages/uwmd-core/dist/index.js';
+import { parseUWFile, computeBlockHash } from '../packages/uwmd-core/dist/index.js';
 import {
   importPrivateKey,
   signBlock,
@@ -55,25 +55,32 @@ async function stamp(text, sectionId, { sign = true, hash = true } = {}) {
   const block = parsed.sections[sectionId];
   if (!block) throw new Error(`no section '${sectionId}' in the base fixture`);
 
-  // computeBlockHash still defaults to the retired 1.x rule, so the Format 3.0
-  // rule is named here; signBlock below receives the hash, not the document.
-  const contentHash = await computeBlockHash(block, { shape: 'v3' }); // RFC 0081 Phase 4: delete the shape option (one digest rule)
-  // `block.meta` IS the parsed `_meta` object (same reference as
-  // `block.content._meta`), so build a copy rather than mutating in place.
-  const meta = { ...block.meta };
-  if (hash) meta.content_hash = contentHash;
-  if (sign) {
-    meta.signature = await signBlock(
-      { ...block, meta: { ...block.meta, content_hash: contentHash } },
+  // The block digest covers the block minus `_meta` (Protocol §V.9), so
+  // stamping the hash and signature into `_meta.integrity` never moves it.
+  const contentHash = await computeBlockHash(block);
+  const signature = sign
+    ? await signBlock(
+      { ...block, meta: { ...block.meta, integrity: { ...block.meta.integrity, content_hash: contentHash } } },
       key,
       { signedAt: SIGNED_AT },
-    );
-  }
+    )
+    : undefined;
+  // `block.meta` IS the parsed `_meta` object (same reference as
+  // `block.content._meta`), so build a copy rather than mutating in place.
+  const prior = block.meta.integrity ?? {};
+  const meta = {
+    ...block.meta,
+    integrity: {
+      input_hash: prior.input_hash ?? null,
+      ...(hash ? { content_hash: contentHash } : {}),
+      parent_hash: prior.parent_hash ?? null,
+      ...(signature ? { signature } : {}),
+    },
+  };
 
-  // `block.content` is the whole parsed JSON object (section_id, _meta,
-  // content, _notes), so spreading it preserves key order and swaps `_meta`
-  // in place rather than re-wrapping the block one level deeper.
-  const rendered = JSON.stringify({ ...block.content, _meta: reshapeMetaV1toV2(meta) }, null, 2);
+  // `block.content` is the whole parsed block with `_meta` first, so
+  // spreading it preserves key order and swaps `_meta` in place.
+  const rendered = JSON.stringify({ ...block.content, _meta: meta }, null, 2);
   return replaceBlockJson(text, sectionId, rendered);
 }
 
@@ -133,6 +140,22 @@ write('04-signed-no-hash', 'deal.uwx.md', await stamp(BASE, 'property', { hash: 
 // the verdict must change because the *verifier* changed, not the document.
 write('05-signed-no-backend', 'deal.uwx.md', valid);
 
+// ── 06: the valid file with a _meta-only edit after signing ─────────────────
+// The block digest covers the block minus `_meta` (Protocol §V.9, RFC 0081
+// §3), and the signing input names neither `notes` nor `flags`, so an edit
+// confined to them keeps both the hash and the signature valid.
+{
+  const parsed = parseUWFile(valid);
+  const block = parsed.sections.property;
+  const meta = {
+    ...block.meta,
+    provenance: { ...block.meta.provenance, notes: 'Re-reviewed after signing.' },
+    quality: { ...block.meta.quality, flags: ['reviewed'] },
+  };
+  write('06-meta-edited-after-signing', 'deal.uwx.md',
+    replaceBlockJson(valid, 'property', JSON.stringify({ ...block.content, _meta: meta }, null, 2)));
+}
+
 // ── Module manifests (RFC 0002) ─────────────────────────────────────────────
 // Same key, same key store: a host that trusts a signer trusts them for both
 // artifacts, and splitting the corpus across two keys would suggest otherwise.
@@ -162,4 +185,4 @@ writeModule('06-malformed', {
   signature: { scheme: 'uwmd-keystore', alg: 'ed25519', kid: 'uwmd-conformance-ed25519' },
 });
 
-console.log('conformance/signing: regenerated 5 block scenarios and 6 module scenarios.');
+console.log('conformance/signing: regenerated 6 block scenarios and 6 module scenarios.');

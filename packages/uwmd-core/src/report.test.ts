@@ -32,7 +32,7 @@ quick_metrics:
 ---
 
 \`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 confidence=high
-{ "_meta": { "section": "property", "version": 1, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 12, "year_built": 1990 }
+{ "_meta": { "section": "property", "provenance": { "source": "manual", "actor": "user", "agent_id": null, "agent_version": null, "timestamp": "2026-01-01T00:00:00Z", "notes": null }, "quality": { "confidence": "high", "human_review_required": false, "flags": [] }, "lifecycle": { "revision": 1, "superseded": false } }, "total_units": 12, "year_built": 1990 }
 \`\`\`
 `);
 }

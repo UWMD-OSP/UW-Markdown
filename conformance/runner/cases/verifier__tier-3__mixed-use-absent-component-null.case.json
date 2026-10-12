@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/mixed-use-absent-component-null",
   "target": "verifier",
-  "legacy_id": "tier-3/mixed-use-absent-component-null",
   "requires_capabilities": [
     "calc-evaluate"
   ],

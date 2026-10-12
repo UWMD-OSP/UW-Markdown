@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/invalid-source-date",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/invalid-source-date",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

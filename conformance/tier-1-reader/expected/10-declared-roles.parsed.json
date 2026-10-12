@@ -21,7 +21,25 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property"
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-11T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "total_units": 100
@@ -29,7 +47,25 @@
     },
     "sources_uses": {
       "meta": {
-        "section": "sources_uses"
+        "section": "sources_uses",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-11T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "sources": {
@@ -39,7 +75,25 @@
     },
     "valuation": {
       "meta": {
-        "section": "valuation"
+        "section": "valuation",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-11T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "underwritten_value": 10000000
@@ -47,7 +101,25 @@
     },
     "noi_model": {
       "meta": {
-        "section": "noi_model"
+        "section": "noi_model",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-11T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "net_operating_income": 600000
@@ -56,7 +128,25 @@
     "stress_tests": {
       "base": {
         "meta": {
-          "section": "stress_tests"
+          "section": "stress_tests",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-11T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "base_case": {
@@ -68,7 +158,25 @@
     "debt_structure": {
       "producer-senior": {
         "meta": {
-          "section": "debt_structure"
+          "section": "debt_structure",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-11T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "_role": "senior",
@@ -80,7 +188,25 @@
       },
       "producer-mezz": {
         "meta": {
-          "section": "debt_structure"
+          "section": "debt_structure",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-11T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "_role": "junior",
@@ -91,7 +217,25 @@
     "rent_roll": {
       "detail-producer": {
         "meta": {
-          "section": "rent_roll"
+          "section": "rent_roll",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-11T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "_role": "detail",
@@ -100,7 +244,25 @@
       },
       "summary-producer": {
         "meta": {
-          "section": "rent_roll"
+          "section": "rent_roll",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-11T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "_role": "summary",
@@ -111,7 +273,25 @@
     "operating_statement": {
       "actuals": {
         "meta": {
-          "section": "operating_statement"
+          "section": "operating_statement",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-11T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "_role": "primary",
@@ -120,7 +300,25 @@
       },
       "budget": {
         "meta": {
-          "section": "operating_statement"
+          "section": "operating_statement",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-11T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "gross_potential_rent": 9999999

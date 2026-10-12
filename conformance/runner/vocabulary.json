@@ -1,0 +1,25 @@
+{
+  "targets": [
+    "reader",
+    "verifier",
+    "module",
+    "integrity",
+    "representations",
+    "portfolio",
+    "sensitivity",
+    "stochastic",
+    "starter-products"
+  ],
+  "profiles": [
+    "module",
+    "integrity",
+    "representations",
+    "portfolio",
+    "sensitivity",
+    "stochastic"
+  ],
+  "tiers": [
+    "reader",
+    "verifier"
+  ]
+}

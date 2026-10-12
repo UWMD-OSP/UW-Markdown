@@ -3,7 +3,6 @@
 import {
   canonicalBlockSigningInput,
   computeBlockHash,
-  isV2File,
   receiptSigningPayload,
   type UWBlock,
   type UWBlockSignature,
@@ -32,23 +31,6 @@ export interface SignBlockOptions {
    * that never passed `verifyChain`.
    */
   stampContentHash?: boolean;
-  /**
-   * The `uw_version` of the document the block belongs to. Selects the block
-   * digest rule exactly as `verifyChain` does: `"3.0"` is the RFC 0081 §3 rule
-   * (JCS of the block minus `_meta`); 2.x and 1.x/absent are the retired rules.
-   * Only consulted when {@link stampContentHash} computes the hash.
-   */
-  uwVersion?: string;
-}
-
-/**
- * The digest rule for a block in a document of `uwVersion` — the selection
- * `verifyChain` makes from the frontmatter, so a signature checked here and a
- * chain checked there agree on what the block hashes to.
- */
-export function blockDigestShape(uwVersion: string | undefined): 'v1' | 'v2' | 'v3' {
-  if (uwVersion === '3.0') return 'v3';
-  return isV2File({ uw_version: uwVersion } as Parameters<typeof isV2File>[0]) ? 'v2' : 'v1'; // RFC 0081 Phase 4: delete
 }
 
 /**
@@ -63,23 +45,23 @@ export async function signBlock(
   key: SigningKey,
   options: SignBlockOptions = {},
 ): Promise<UWBlockSignature> {
-  let contentHash = block.meta.content_hash;
+  let contentHash = block.meta.integrity?.content_hash;
   if (typeof contentHash !== 'string' || contentHash.length === 0) {
     if (!options.stampContentHash) {
       throw new SigningError(
         'SIG_UNSIGNABLE',
-        `Block '${block.meta.section}' has no _meta.content_hash. Stamp one first (or pass stampContentHash) — a signature over an absent hash commits to nothing and validates as INT-05.`,
+        `Block '${block.meta.section}' has no _meta.integrity.content_hash. Stamp one first (or pass stampContentHash) — a signature over an absent hash commits to nothing and validates as INT-05.`,
       );
     }
-    contentHash = await computeBlockHash(block, { shape: blockDigestShape(options.uwVersion) });
+    contentHash = await computeBlockHash(block);
   }
 
   const signedAt = options.signedAt ?? new Date().toISOString();
   const payload = canonicalBlockSigningInput({
     content_hash: contentHash,
     section: block.meta.section,
-    actor: block.meta.actor,
-    timestamp: block.meta.timestamp,
+    actor: block.meta.provenance?.actor,
+    timestamp: block.meta.provenance?.timestamp,
     kid: key.kid,
     signed_at: signedAt,
   });
@@ -105,8 +87,7 @@ export function stampBlockSignature(
     ...block,
     meta: {
       ...block.meta,
-      ...(contentHash ? { content_hash: contentHash } : {}),
-      signature,
+      integrity: { ...block.meta.integrity, ...(contentHash ? { content_hash: contentHash } : {}), signature },
     },
   };
 }

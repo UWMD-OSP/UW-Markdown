@@ -97,6 +97,33 @@ if (emitted.size === 0) {
   process.exit(1);
 }
 
+// ── 0. Codes the Protocol retires ────────────────────────────────────────────
+//
+// RFC 0081 retires codes that implemented RFCs still list in their (historical)
+// code tables. The Protocol names them in one sentence; that sentence is the
+// single record. A retired code is exempt from check 1 and must NOT be emitted:
+// the deletion is checked, not just excused.
+
+const protocolText = read('spec/UW_PROTOCOL.md');
+const retiredSentence = /Retired agreement\/transition codes are not emitted: ([^.]+)\./.exec(protocolText)?.[1];
+const RETIRED = new Set();
+if (!retiredSentence) {
+  failures.push('spec/UW_PROTOCOL.md: the "Retired agreement/transition codes are not emitted" sentence moved or changed shape');
+} else {
+  // `HDG-04/05` and `CLS-01/02/05` abbreviate one family; expand them.
+  for (const item of retiredSentence.split(/,\s*|\s+and\s+/)) {
+    const m = /^([A-Z][A-Z0-9-]*?)-(\d+(?:\/\d+)*)$/.exec(item.trim());
+    if (!m) continue;
+    for (const n of m[2].split('/')) RETIRED.add(`${m[1]}-${n}`);
+  }
+  const stillEmitted = [...RETIRED].filter((code) => emitted.has(code)).sort();
+  if (stillEmitted.length > 0) {
+    failures.push(`the Protocol retires ${stillEmitted.join(', ')}, but @uwmd/core still emits them`);
+  } else {
+    checks.push(`${RETIRED.size} retired codes are not emitted`);
+  }
+}
+
 // ── 1. Implemented RFCs ──────────────────────────────────────────────────────
 
 const RFC_DIR = 'docs/rfcs';
@@ -117,7 +144,7 @@ for (const file of rfcFiles) {
     [...text.matchAll(new RegExp(`\\|\\s*\`(${CODE.source})\``, 'g'))].map((m) => m[1]),
   );
   rfcCodeCount += promised.size;
-  const missing = [...promised].filter((code) => !emitted.has(code)).sort();
+  const missing = [...promised].filter((code) => !emitted.has(code) && !RETIRED.has(code)).sort();
   if (missing.length > 0) {
     failures.push(
       `${file} is marked implemented but its code table promises ${missing.join(', ')}, which @uwmd/core never emits`,

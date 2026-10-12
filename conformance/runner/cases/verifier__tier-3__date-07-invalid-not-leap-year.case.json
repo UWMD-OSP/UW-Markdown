@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-07-invalid-not-leap-year",
   "target": "verifier",
-  "legacy_id": "tier-3/date-07-invalid-not-leap-year",
   "requires_capabilities": [
     "calc-evaluate"
   ],

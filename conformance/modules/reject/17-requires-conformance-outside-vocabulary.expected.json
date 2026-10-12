@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-006"
+  ],
+  "note": "requires_conformance is reader or verifier; a retired tier name is outside the vocabulary (RFC 0081 \u00a76)."
+}

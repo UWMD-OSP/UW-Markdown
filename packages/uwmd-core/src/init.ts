@@ -1,19 +1,15 @@
 // uwmd init — generates a new blank .uwx.md file from a template
 // Spec: UW_FORMAT_SPEC.md §6 toolchain interface
 
-import type { AssetClass, DealStage, UWMeta } from './types.js';
-import { stampMetaIntoBlockContent } from './meta-shape.js';
+import { stampMetaIntoBlockContent } from './metadata.js';
+import type { AssetClass, DealStage } from './types.js';
 import { parseUWFile } from './parser.js';
+import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+import { buildMeta } from './runner.js';
 import { SCENARIOS } from './scenario.js';
 import { writeDoubleQuotedScalar } from './yaml-scalar.js';
 
 export interface InitOptions {
-  /**
-   * Format line to scaffold. Defaults to '2.1' (nested _meta — v2 writers
-   * emit the nested shape by default, format v2 spec §7); pass '1.1' for a
-   * legacy flat-shape scaffold when downstream consumers are pinned to 1.x.
-   */
-  formatVersion?: '2.1' | '2.0' | '1.1';
   dealId?: string;
   dealName?: string;
   address?: string;
@@ -105,8 +101,7 @@ export function generateBlankUWFile(opts: InitOptions = {}): string {
   const assetClass = opts.assetClass ?? 'multifamily';
   const tier = opts.tier ?? 'screener';
   const dealStage = opts.dealStage ?? 'screening';
-  const formatVersion = opts.formatVersion ?? '2.1';
-  const v2 = formatVersion !== '1.1';
+  const formatVersion = SUPPORTED_FORMAT_VERSIONS[0];
 
   // Every caller-supplied frontmatter value goes through frontmatterScalar;
   // the expected parse of each is checked against the result before return.
@@ -189,25 +184,16 @@ source_documents: []
   // Deliberately not `system/init`: that resolves to `system/*`, whose
   // authority is `system_only`, and these stubs exist precisely to be edited
   // by a person.
-  const stubFlatMeta = (section: string): UWMeta => ({
-    section,
-    version: 1,
-    superseded: false,
-    source: 'manual',
-    agent_id: null,
-    agent_version: null,
-    actor: 'user',
-    timestamp: now,
-    confidence: 'low',
-    human_review_required: true,
-    flags: [],
-    input_hash: null,
-    notes: null,
-  });
   const metaStub = (section: string): string => {
     const content: Record<string, unknown> = { _notes: null };
-    stampMetaIntoBlockContent(content, stubFlatMeta(section), v2);
-    return JSON.stringify({ _meta: content['_meta'], _notes: null }, null, 2);
+    stampMetaIntoBlockContent(content, buildMeta(section, 1, {
+      source: 'manual',
+      actor: 'user',
+      confidence: 'low',
+      humanReviewRequired: true,
+      timestamp: now,
+    }));
+    return JSON.stringify(content, null, 2);
   };
 
   const sections = [
@@ -251,25 +237,15 @@ ${metaStub(s.id)}
 
   // The initializer writing an append-only log entry. `system/init` matches
   // `system/*`; `engine:uwmd` matched nothing.
-  const logFlatMeta: UWMeta = {
-    section: 'pipeline_log',
-    version: 1,
-    superseded: false,
+  const logMeta = buildMeta('pipeline_log', 1, {
     source: 'system/init',
-    agent_id: null,
-    agent_version: '1.0.0',
+    agentVersion: '1.0.0',
     actor: 'system',
-    timestamp: now,
     confidence: 'high',
-    human_review_required: false,
-    flags: [],
-    input_hash: null,
-    notes: null,
-  };
-  const logContent: Record<string, unknown> = {};
-  stampMetaIntoBlockContent(logContent, logFlatMeta, v2);
+    timestamp: now,
+  });
   const pipelineLogEntry = JSON.stringify({
-    _meta: logContent['_meta'],
+    _meta: logMeta,
     entries: [
       {
         entry_id: `log_${Date.now()}`,

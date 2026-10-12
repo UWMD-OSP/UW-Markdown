@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/large-cent-multiple-contributions",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/large-cent-multiple-contributions",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

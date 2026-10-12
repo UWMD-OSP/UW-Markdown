@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/self-storage-economic-occupancy",
   "target": "verifier",
-  "legacy_id": "tier-3/self-storage-economic-occupancy",
   "requires_capabilities": [
     "calc-evaluate"
   ],

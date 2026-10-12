@@ -1,0 +1,6 @@
+{
+  "description": "A resolution outside the closed vocabulary is SRC-03 (RFC 0081 \u00a73).",
+  "expected_codes": [
+    "SRC-03"
+  ]
+}

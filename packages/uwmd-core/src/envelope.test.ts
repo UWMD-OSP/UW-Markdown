@@ -24,21 +24,7 @@ function singleBlock(entry: UWEnvelopeSectionEntry | undefined): UWEnvelopeBlock
 }
 
 function block(value: number): UWBlock {
-  const meta: UWBlock['meta'] = {
-    section: 'property',
-    version: 1,
-    superseded: false,
-    source: 'manual',
-    agent_id: null,
-    agent_version: null,
-    actor: 'owner',
-    timestamp: '2026-07-26T00:00:00Z',
-    confidence: 'high',
-    human_review_required: false,
-    flags: [],
-    input_hash: null,
-    notes: null,
-  };
+  const meta: UWBlock['meta'] = { section: 'property', lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor: 'owner', timestamp: '2026-07-26T00:00:00Z', notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } };
   const content = { _meta: meta, total_units: value };
   return {
     annotation: { section: 'property', v: 1 },

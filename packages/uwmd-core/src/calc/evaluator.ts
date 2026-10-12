@@ -276,8 +276,8 @@ function resolveIdentifier(name: string, ctx: CalcEvaluationContext, state: Eval
       })
     : null;
   if (section) {
-    // Per §VIII.2: identifier maps to the canonical block's content (user data,
-    // which a content-envelope block keeps one level down; see blockPayload).
+    // Per §VIII.2: identifier maps to the canonical block's payload (the block
+    // minus its reserved members; see blockPayload).
     return coerceCalcValue(blockPayload(section));
   }
 

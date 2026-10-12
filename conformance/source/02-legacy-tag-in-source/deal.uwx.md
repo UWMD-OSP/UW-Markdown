@@ -10,9 +10,9 @@ deal_stage: screening
 
 # A canonical tag in the actor field
 
-The pre-RFC-0031 spelling: a resolution method in `_meta.source`. Readers
-interpret it as `resolution`, treat the actor as absent, and warn `SRC-02`.
-The raw block bytes are never rewritten — `content._meta` feeds digests.
+A resolution method in `_meta.provenance.source`, where an actor belongs.
+It is `SRC-02`, an error. Readers read `_meta` as stated: the tag is never
+reinterpreted as a resolution (RFC 0081 §3).
 
 ```json uw:section=property source=system/uwmd ts=2026-08-31T00:00:00Z v=1 confidence=medium
 {
@@ -20,7 +20,6 @@ The raw block bytes are never rewritten — `content._meta` feeds digests.
     "section": "property",
     "provenance": {
       "source": "market_data",
-      "resolution": "market_data",
       "actor": "system",
       "agent_id": null,
       "agent_version": null,

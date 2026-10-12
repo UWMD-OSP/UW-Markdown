@@ -11,7 +11,6 @@ import { MAX_ROUND_TO } from './calc/quantize.js';
 import {
   BLOCK_ROLES,
   CONFORMANCE_PROFILES,
-  readConformanceTier,
   type ConformanceTier,
   type ConformanceProfile,
   SUPPORTED_FORMAT_VERSIONS,
@@ -20,7 +19,6 @@ import {
   type ModuleLoadResult,
   type ModuleManifest,
   type ProtocolError,
-  type ViewerTier,
 } from './protocol.js';
 import { parseAssetClass } from './asset-class.js';
 import {
@@ -30,13 +28,6 @@ import {
 } from './module-signing.js';
 import { ASSET_CLASSES } from './types.js';
 import type { DealStage, ValidationSeverity } from './types.js';
-
-const TIERS: readonly ViewerTier[] = [
-  'tier-1-reader',
-  'tier-2-editor',
-  'tier-3-calc-host',
-  'tier-4-agent-host',
-];
 
 const DEAL_STAGES: readonly DealStage[] = [
   'scope',
@@ -67,7 +58,7 @@ const FIELD_VIEW_KINDS: readonly string[] = [
 // silently contributes nothing — `manifest_version` is the forward-compat lever.
 const MANIFEST_KEYS: readonly string[] = [
   'manifest_version', 'id', 'name', 'version', 'description', 'authors', 'license',
-  'requires_protocol', 'requires_format', 'requires_tier', 'requires_conformance', 'requires_profiles', 'asset_classes',
+  'requires_protocol', 'requires_format', 'requires_conformance', 'requires_profiles', 'asset_classes',
   'deal_stages', 'sections', 'calculations', 'validations', 'thresholds',
   'view_models', 'ui', 'agent_layers', 'depends_on', 'signature',
   'declares_asset_classes',
@@ -139,9 +130,10 @@ export function ownsDeclaration(
 }
 
 export interface LoadModuleOptions {
-  // RFC 0081 Phase 4: delete hostTier and its old vocabulary.
-  hostTier?: ViewerTier;
+  /** The host's claimed conformance tier (Protocol §II). Default `verifier`. */
   hostConformance?: ConformanceTier;
+  /** The profiles the host claims (§II.3). Default: every profile, as the
+   *  reference implementation's manifest claims. */
   hostProfiles?: readonly ConformanceProfile[];
   protocolVersion?: string;
   formatVersion?: string;
@@ -600,8 +592,7 @@ function validateModuleManifest(
   requireString(errors, manifest, 'license');
   requireString(errors, manifest, 'requires_protocol');
   requireString(errors, manifest, 'requires_format');
-  // RFC 0081 Phase 4: delete the requires_tier fallback.
-  requireString(errors, manifest, manifest.requires_conformance !== undefined ? 'requires_conformance' : 'requires_tier');
+  requireString(errors, manifest, 'requires_conformance');
 
   if (manifest.manifest_version !== '1') {
     errors.push(moduleError('PROTO-MOD-002', 'Unsupported module manifest_version.', 'manifest_version'));
@@ -627,9 +618,6 @@ function validateModuleManifest(
     if (!['reader', 'verifier'].includes(manifest.requires_conformance)) errors.push(moduleError('PROTO-MOD-006', 'Module requires_conformance must be reader or verifier.', 'requires_conformance'));
     const profiles = manifest.requires_profiles;
     if (profiles !== undefined && (!Array.isArray(profiles) || profiles.some(p => !CONFORMANCE_PROFILES.includes(p)) || new Set(profiles).size !== profiles.length)) errors.push(moduleError('PROTO-MOD-006', 'Module requires_profiles must be unique known profiles.', 'requires_profiles'));
-  // RFC 0081 Phase 4: delete the old tier validation branch.
-  } else if (!manifest.requires_tier || !TIERS.includes(manifest.requires_tier)) {
-    errors.push(moduleError('PROTO-MOD-006', 'Module requires_tier is not a valid viewer tier.', 'requires_tier'));
   }
 
   rejectUnknownKeys(errors, manifest, MANIFEST_KEYS, '');
@@ -1028,24 +1016,13 @@ function validateCompatibility(
   manifest: ModuleManifest,
   opts: LoadModuleOptions,
 ): void {
-  if (manifest.requires_conformance !== undefined) {
-    // RFC 0081 Phase 4: delete hostTier alias resolution.
-    const host = opts.hostConformance ?? (opts.hostTier ? readConformanceTier(opts.hostTier)?.tier : undefined) ?? 'verifier';
-    const profiles = opts.hostProfiles ?? CONFORMANCE_PROFILES;
-    if ((host === 'reader' && manifest.requires_conformance === 'verifier') || (Array.isArray(manifest.requires_profiles) && manifest.requires_profiles.some(p => !profiles.includes(p)))) {
-      errors.push(moduleError('PROTO-MOD-029', 'Host conformance or profiles do not satisfy the module.', 'requires_conformance'));
-    }
-  } else {
-    // RFC 0081 Phase 4: delete legacy manifest and host tier compatibility.
-    const hostTier = opts.hostTier ?? 'tier-3-calc-host';
-    if (TIERS.indexOf(hostTier) < TIERS.indexOf(manifest.requires_tier!)) {
-      errors.push(moduleError('PROTO-MOD-029', `Host tier ${hostTier} does not satisfy required tier ${manifest.requires_tier}.`, 'requires_tier'));
-    }
+  const host = opts.hostConformance ?? 'verifier';
+  const profiles = opts.hostProfiles ?? CONFORMANCE_PROFILES;
+  if ((host === 'reader' && manifest.requires_conformance === 'verifier') || (Array.isArray(manifest.requires_profiles) && manifest.requires_profiles.some(p => !profiles.includes(p)))) {
+    errors.push(moduleError('PROTO-MOD-029', 'Host conformance or profiles do not satisfy the module.', 'requires_conformance'));
   }
   // An explicitly supplied version is checked alone; the host default is the
-  // SUPPORTED set — a 2.0 implementation still honors the 1.x contracts for
-  // 1.x files (format spec v2 §1.2/§1.3), so modules written against the 1.x
-  // line keep loading. A range is satisfied by ANY supported version.
+  // one supported format and protocol (RFC 0081 D1).
   const protocolCandidates: readonly string[] =
     opts.protocolVersion !== undefined ? [opts.protocolVersion] : SUPPORTED_PROTOCOL_VERSIONS;
   if (!protocolCandidates.some((v) => versionSatisfies(v, manifest.requires_protocol))) {
@@ -1066,16 +1043,6 @@ function validateCompatibility(
       'requires_format',
     ));
   }
-}
-
-/**
- * True when a document's declared format version is `min` or later, compared
- * numerically with the same normalization module `requires_format` ranges use
- * (`"2.1"` → 2.1.0). Absent or unparseable versions are never "at least".
- * Internal: not part of the public barrel.
- */
-export function formatVersionAtLeast(version: unknown, min: string): boolean {
-  return typeof version === 'string' && versionSatisfies(version, `>=${min}`);
 }
 
 function versionSatisfies(version: string, range: string): boolean {

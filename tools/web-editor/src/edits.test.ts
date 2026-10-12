@@ -1,7 +1,7 @@
 // Tests for the edit chokepoint — the one place that mutates a loaded deal.
 //
 // Everything the editor does to a file goes through runEdit(): it threads the
-// active EditSettings onto the op, carries forward _meta.field_overrides, calls
+// active EditSettings onto the op, carries forward `_overrides`, calls
 // core's applyEdit(), and re-parses so in-memory state never drifts from the
 // canonical bytes. That contract is the editor's entire calc-integrity story,
 // so it's the thing most worth testing.
@@ -70,14 +70,14 @@ describe('runEdit — EditSettings are threaded onto section edits', () => {
     const outcome = replaceProperty({ confidence: 'high' });
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
-    expect(getSection(outcome.state.parsed, 'property')?.meta?.confidence).toBe('high');
+    expect(getSection(outcome.state.parsed, 'property')?.meta?.quality?.confidence).toBe('high');
   });
 
   it('drives human_review_required from the humanReview toggle', () => {
     const off = replaceProperty({ humanReview: false });
     const on = replaceProperty({ humanReview: true });
-    expect(off.ok && getSection(off.state.parsed, 'property')?.meta?.human_review_required).toBe(false);
-    expect(on.ok && getSection(on.state.parsed, 'property')?.meta?.human_review_required).toBe(true);
+    expect(off.ok && getSection(off.state.parsed, 'property')?.meta?.quality?.human_review_required).toBe(false);
+    expect(on.ok && getSection(on.state.parsed, 'property')?.meta?.quality?.human_review_required).toBe(true);
   });
 });
 
@@ -105,7 +105,7 @@ describe('runEdit — supersede mode appends instead of replacing in place', () 
 });
 
 describe('runEdit — carryForwardOverrides', () => {
-  it('preserves _meta.field_overrides across a later edit that does not restate them', () => {
+  it('preserves `_overrides` across a later edit that does not restate them', () => {
     const state = blankState();
     const overrides: UWFieldOverride[] = [{ path: 'gross_potential_rent', reason: 'overridden' }];
 
@@ -113,12 +113,12 @@ describe('runEdit — carryForwardOverrides', () => {
     const withOverride = runEdit(state, {
       kind: 'section_replace',
       section_id: 'rent_roll',
-      content: { units: [] },
-      meta: { field_overrides: overrides },
+      content: { units: [], _overrides: overrides },
+      meta: {},
     });
     expect(withOverride.ok).toBe(true);
     if (!withOverride.ok) return;
-    expect(getSection(withOverride.state.parsed, 'rent_roll')?.meta?.field_overrides).toEqual(overrides);
+    expect(getSection(withOverride.state.parsed, 'rent_roll')?.content['_overrides']).toEqual(overrides);
 
     // Edit B: a later rent-roll edit that says nothing about overrides.
     const later = runEdit(withOverride.state, {
@@ -129,9 +129,20 @@ describe('runEdit — carryForwardOverrides', () => {
     });
     expect(later.ok).toBe(true);
     if (!later.ok) return;
-    // The pinned override must survive — buildMeta() doesn't carry _meta forward,
+    // The pinned override must survive — the edit replaces the whole block,
     // so carryForwardOverrides() is the thing keeping it alive.
-    expect(getSection(later.state.parsed, 'rent_roll')?.meta?.field_overrides).toEqual(overrides);
+    expect(getSection(later.state.parsed, 'rent_roll')?.content['_overrides']).toEqual(overrides);
+
+    // Edit C: an explicit empty list clears them, and no empty member is written.
+    const cleared = runEdit(later.state, {
+      kind: 'section_replace',
+      section_id: 'rent_roll',
+      content: { units: [], _overrides: [] },
+      meta: {},
+    });
+    expect(cleared.ok).toBe(true);
+    if (!cleared.ok) return;
+    expect(getSection(cleared.state.parsed, 'rent_roll')?.content).not.toHaveProperty('_overrides');
   });
 });
 

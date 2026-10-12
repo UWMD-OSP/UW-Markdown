@@ -1,16 +1,14 @@
 # 09 — Conformance & testing
 
-RFC 0081 Phase 3 re-authors the corpus as Format 3.0: bare section payloads,
-inline nested `_meta`, and the single-fact and hospitality field homes in the
-[accepted RFC](../rfcs/0081-one-format-one-protocol.md). The interim runtime
-reads those homes and hashes the payload without `_meta`. Legacy readers and
-migrators are marked for Phase 4 deletion. The one-off scripts
-`scripts/rfc-0081-reauthor-corpus.mjs` and `scripts/rfc-0081-value-diff.mjs`
-re-author artifacts and compare financial evidence; they are repository
-maintenance, not a product migration feature. Lite emission changes in Phase 4.
+Format 3.0 is the only format the reference library reads ([RFC
+0081](../rfcs/0081-one-format-one-protocol.md)): bare section payloads with an
+inline nested `_meta`, a block digest over the block minus `_meta`, and one
+home for each fact. A missing or other `uw_version` is refused at parse as
+`UNSUPPORTED_FORMAT_VERSION`. Phase 4 deleted the old readers, the migrators
+and the one-off re-authoring scripts; there is no migration path in the
+product. Version labels move in Phase 6.
 
 
-> RFC 0081 Phase 2 schemas describe the final Format 3.0 / Protocol 4.0.0 contract. Test-only `scripts/rfc-0081-schema-projections.mjs` projects the unchanged corpus to the new manifest and ownership schemas. Invalid and unknown values are preserved so negative controls still refuse. Phase 3 re-authors the fixtures; Phases 4–5 remove the projections and old runtime vocabulary. No production reader uses the projections.
 
 Two test systems guard this repo: **unit tests** (Vitest, per package) and the
 **conformance corpus** (fixture/expected pairs that any implementation — including
@@ -98,21 +96,25 @@ report counts. Mixed cases keep all their assertions and are product checks.
 The corpus reconciled **1,053 default + three opt-in = 1,056 existing reference
 checks, plus five new validate-only Verifier checks = 1,061**. RFC 0081 Phase 3
 retires seven checks whose subject it removes (six conflict-only Verifier
-controls and `meta-v2/06-digest-shape-insensitive`), leaving **1,054**, and
-**332 portable CLI projections**. The lender fixture stays **187/0/0**.
+controls and `meta-v2/06-digest-shape-insensitive`), leaving 1,054. RFC 0081
+Phase 4 deletes the checks that exercised only a backward-compatibility path
+(the `meta-v2` and `migrate` suites, the retired-format projections and the
+module compatibility shells) and adds refusal cases for what those paths used
+to admit, leaving **1,069** and **336 portable CLI projections**. The lender
+fixture stays **187/0/0**.
 
 | Owner | Reference | Portable |
 |---|---:|---:|
-| reader | 23 | 16 |
-| verifier | 673 | 280 |
-| module | 68 | 1 |
+| reader | 26 | 17 |
+| verifier | 686 | 281 |
+| module | 76 | 1 |
 | integrity | 14 | 0 |
-| representations | 134 | 0 |
+| representations | 135 | 0 |
 | portfolio | 14 | 0 |
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
-| starter-products | 116 | 35 |
-| **Total** | **1,054** | **332** |
+| starter-products | 106 | 37 |
+| **Total** | **1,069** | **336** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -121,10 +123,8 @@ Verifier that does not claim it.
 
 `--tier=verifier` includes Reader; `--profile=module` selects only that profile;
 `--starter-products` selects product checks. Combine selectors to claim both.
-Long legacy tier names and the numeric shorts `1`–`4` (exactly one digit;
-`3.0` or `+3` are refused) resolve through `readConformanceTier` and warn on
-stderr, so `--tier=3` now means Verifier and `--tier=2` runs Reader only. They
-infer neither profiles nor starter checks. `--suite`
+`--tier` takes `reader` or `verifier` only; any other value is a usage error.
+`--suite`
 selects an existing fixture family independently of ownership. With no
 selector every indexed check runs, with counts by target.
 
@@ -153,8 +153,6 @@ npm run conformance -- --suite=capital-stack  # the RFC 0026 capital-stack suite
 npm run conformance -- --suite=lease-up     # the RFC 0008 lease-up suite alone
 npm run conformance -- --suite=capability   # the RFC 0011 capability-token suite alone
 npm run conformance -- --suite=locale       # the RFC 0001 display-locale suite alone
-npm run conformance -- --suite=meta-v2      # the RFC 0009 nested-_meta suite alone
-npm run conformance -- --suite=migrate      # the RFC 0009 migrate --to-v2 suite alone
 npm run conformance -- --suite=2 --update   # regenerate that family's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
@@ -223,7 +221,7 @@ projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
   `_meta` ownership, the pipeline-log append, and the frontmatter update at once.
 
   Determinism comes from `BancroftRunOptions.now`: a constant clock freezes
-  `_meta.timestamp`, collapses `duration_ms`, and makes the log-entry id
+  `_meta.provenance.timestamp`, collapses `duration_ms`, and makes the log-entry id
   derivable instead of random.
 
   Replay is **strict** — each exchange records the request it answered, and a

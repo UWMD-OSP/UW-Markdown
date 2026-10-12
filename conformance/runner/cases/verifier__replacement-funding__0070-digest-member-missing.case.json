@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-digest-member-missing",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-digest-member-missing",
   "requires_capabilities": [
     "validate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/15-retired-distressed_reo",
   "target": "verifier",
-  "legacy_id": "scenario/15-retired-distressed_reo",
   "requires_capabilities": [
     "validate"
   ],

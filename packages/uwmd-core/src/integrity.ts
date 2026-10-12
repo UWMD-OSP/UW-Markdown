@@ -10,9 +10,7 @@
 //     Crypto (`crypto.subtle`). The browser entry point binds the latter via
 //     subpath export when adopters import from `@uwmd/core/browser`.
 
-import { canonicalize, canonicalizeExact, canonicalizeV2 } from './integrity-canonical.js';
-import { canonicalV2BlockContent, isV2File } from './meta-shape.js';
-import type { MetaShape } from './meta-shape.js';
+import { canonicalize } from './integrity-canonical.js';
 import type { ParsedUWFile, UWBlock, UWBlockSignature } from './types.js';
 import { UW_SIGNATURE_ALGORITHMS } from './types.js';
 import type { EditPolicy } from './protocol.js';
@@ -70,33 +68,15 @@ function bytesToHex(bytes: Uint8Array): string {
 }
 
 /**
- * Compute the content_hash for a block. Strips the block's own
- * `_meta.content_hash` and `_meta.signature` before hashing (handled by the
- * canonicalizer).
- *
- * Canonicalization is versioned by the file's `uw_version` (RFC 0009):
- * `shape: 'v1'` (the default) is the frozen 1.x rule; `shape: 'v2'` is the
- * normalize-then-hash rule for `uw_version: "2.0"` files — the block content
- * is reshaped to the canonical nested form first, so both accepted parser
- * shapes yield the identical digest.
+ * Compute a block's `content_hash` (Protocol §V.9, RFC 0081 §3): lowercase
+ * hex SHA-256 of the UTF-8 RFC 8785 (JCS) canonical JSON of the block with
+ * its `_meta` member removed. Every other member is included — the payload,
+ * `_role`, `_overrides` and `_notes` — and nothing is stripped or defaulted,
+ * so a `_meta`-only edit never moves the hash.
  */
-export async function computeBlockHash(
-  block: UWBlock,
-  options: { shape?: MetaShape | 'v3' } = {},
-): Promise<string> {
-  // The canonical scope is the block CONTENT including meta, since meta
-  // carries the cascade-relevant provenance. The excluded keys are stripped
-  // by the canonicalizer.
-  if (options.shape === 'v3') {
-    const { _meta: _excluded, ...payload } = block.content;
-    return sha256TextHex(canonicalizeExact(payload));
-  }
-  // RFC 0081 Phase 4: delete both old digest branches.
-  if (options.shape === 'v2') {
-    const normalized = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
-    return sha256TextHex(canonicalizeV2(normalized));
-  }
-  return sha256Hex({ ...block.content, _meta: block.meta });
+export async function computeBlockHash(block: UWBlock): Promise<string> {
+  const { _meta, ...payload } = block.content;
+  return sha256TextHex(canonicalize(payload));
 }
 
 // ─── Public types ────────────────────────────────────────────────────────────
@@ -128,7 +108,7 @@ export interface IntegrityResult {
   chains_verified: number;
   chains_with_hashes: number;
   /**
-   * How many blocks carry `_meta.signature` (RFC 0010). Reported even when no
+   * How many blocks carry `_meta.integrity.signature` (RFC 0010). Reported even when no
    * verifier was supplied, so a caller can tell "no signatures" apart from
    * "signatures present but unchecked" — the distinction that makes a
    * `signatures_verified: 0` result readable.
@@ -170,14 +150,14 @@ export interface BlockSigningInput {
  * `content_hash`, or no signature to take `kid`/`signed_at` from).
  */
 export function blockSigningPayload(block: UWBlock): string | null {
-  const sig = block.meta.signature;
-  const hash = block.meta.content_hash;
+  const sig = block.meta.integrity?.signature;
+  const hash = block.meta.integrity?.content_hash;
   if (!sig || typeof hash !== 'string') return null;
   return canonicalBlockSigningInput({
     content_hash: hash,
     section: block.meta.section,
-    actor: block.meta.actor,
-    timestamp: block.meta.timestamp,
+    actor: block.meta.provenance?.actor,
+    timestamp: block.meta.provenance?.timestamp,
     kid: sig.kid,
     signed_at: sig.signed_at,
   });
@@ -187,12 +167,12 @@ export function blockSigningPayload(block: UWBlock): string | null {
  * Canonicalize an explicit signing input.
  *
  * The signer needs this and {@link blockSigningPayload} cannot serve it: at
- * signing time the block has no `_meta.signature` yet, so there is nowhere to
+ * signing time the block has no `_meta.integrity.signature` yet, so there is nowhere to
  * read `kid` and `signed_at` from. Both paths funnel through this one function
  * so the two sides cannot drift.
  */
 export function canonicalBlockSigningInput(input: BlockSigningInput): string {
-  return canonicalizeExact({
+  return canonicalize({
     content_hash: input.content_hash,
     section: input.section,
     actor: input.actor,
@@ -239,7 +219,7 @@ export interface VerifyChainOptions {
 
 /**
  * For every supersede chain in the parsed file:
- *   - If at least one block in the chain carries `_meta.content_hash`, every
+ *   - If at least one block in the chain carries `_meta.integrity.content_hash`, every
  *     block in the chain MUST carry one (else INT-03 warning).
  *   - Each block's recomputed hash MUST equal the stamped `content_hash`
  *     (else INT-04 warning).
@@ -267,9 +247,6 @@ export async function verifyChain(
   const issues: IntegrityIssue[] = [];
   let chainsWithHashes = 0;
   let chainsVerified = 0;
-  // Canonicalization is versioned by the file's own frontmatter (RFC 0009):
-  // digests in a `uw_version: "2.0"` file recompute under the v2 rule.
-  const shape = parsed.frontmatter.uw_version === '3.0' ? 'v3' : isV2File(parsed.frontmatter) ? 'v2' : 'v1'; // RFC 0081 Phase 4: delete old digest selection.
 
   for (const sectionId of Object.keys(parsed.sections)) {
     // Build the chain: prior (superseded) blocks first, then current head.
@@ -277,7 +254,7 @@ export async function verifyChain(
     const head = currentBlock(parsed, sectionId);
     if (!head) continue;
     const chain: UWBlock[] = [...prior, head];
-    const hasAnyHash = chain.some((b) => typeof b.meta.content_hash === 'string');
+    const hasAnyHash = chain.some((b) => typeof b.meta.integrity?.content_hash === 'string');
     if (!hasAnyHash) continue;
     chainsWithHashes++;
 
@@ -285,7 +262,7 @@ export async function verifyChain(
     let prevHash: string | null = null;
     for (let i = 0; i < chain.length; i++) {
       const block = chain[i]!;
-      const stamped = block.meta.content_hash;
+      const stamped = block.meta.integrity?.content_hash;
 
       // INT-03: partial chain
       if (typeof stamped !== 'string') {
@@ -293,20 +270,20 @@ export async function verifyChain(
           code: 'INT-03',
           severity: 'warning',
           section: sectionId,
-          message: `Block v${block.meta.version} of '${sectionId}' has no content_hash but other blocks in the chain do.`,
+          message: `Block v${block.meta.lifecycle?.revision} of '${sectionId}' has no content_hash but other blocks in the chain do.`,
         });
         chainOK = false;
         continue;
       }
 
       // INT-04: hash mismatch
-      const recomputed = await computeBlockHash(block, { shape });
+      const recomputed = await computeBlockHash(block);
       if (recomputed !== stamped) {
         issues.push({
           code: 'INT-04',
           severity: 'warning',
           section: sectionId,
-          message: `Block v${block.meta.version} of '${sectionId}' content_hash does not recompute.`,
+          message: `Block v${block.meta.lifecycle?.revision} of '${sectionId}' content_hash does not recompute.`,
           expected: recomputed,
           actual: stamped,
         });
@@ -315,13 +292,13 @@ export async function verifyChain(
 
       // INT-01: parent hash mismatch
       if (i > 0) {
-        const parent = block.meta.parent_hash;
+        const parent = block.meta.integrity?.parent_hash;
         if (parent !== prevHash) {
           issues.push({
             code: 'INT-01',
             severity: 'error',
             section: sectionId,
-            message: `Block v${block.meta.version} of '${sectionId}' parent_hash does not match prior block.`,
+            message: `Block v${block.meta.lifecycle?.revision} of '${sectionId}' parent_hash does not match prior block.`,
             expected: prevHash ?? '<null>',
             actual: parent ?? '<missing>',
           });
@@ -348,7 +325,7 @@ export async function verifyChain(
 }
 
 /**
- * Sweep every block in the file for `_meta.signature` and append INT-05..08.
+ * Sweep every block in the file for `_meta.integrity.signature` and append INT-05..08.
  *
  * Walks all blocks — heads, superseded priors, and every variant — rather than
  * the per-section chain heads `verifyChain` walks. A signature on a superseded
@@ -365,11 +342,11 @@ async function verifySignatures(
   let verified = 0;
 
   for (const [sectionId, block] of everyBlock(parsed)) {
-    const signature = block.meta.signature;
+    const signature = block.meta.integrity?.signature;
     if (!signature) continue;
     present++;
 
-    const where = `Block v${block.meta.version} of '${sectionId}'`;
+    const where = `Block v${block.meta.lifecycle?.revision} of '${sectionId}'`;
 
     if (deprecated.includes(signature.alg)) {
       issues.push({
@@ -398,17 +375,15 @@ async function verifySignatures(
     // as INT-04, and the escalation from warning to error is the point: on an
     // unsigned block a drifted hash is a bookkeeping slip, but on a signed one
     // it means the content in front of you is not the content anybody signed.
-    const recomputed = await computeBlockHash(block, {
-      shape: parsed.frontmatter.uw_version === '3.0' ? 'v3' : isV2File(parsed.frontmatter) ? 'v2' : 'v1', // RFC 0081 Phase 4: delete old digest selection.
-    });
-    if (recomputed !== block.meta.content_hash) {
+    const recomputed = await computeBlockHash(block);
+    if (recomputed !== block.meta.integrity?.content_hash) {
       issues.push({
         code: 'INT-07',
         severity: 'error',
         section: sectionId,
-        message: `${where} was signed over content_hash ${block.meta.content_hash}, but its content now hashes to ${recomputed}.`,
+        message: `${where} was signed over content_hash ${block.meta.integrity?.content_hash}, but its content now hashes to ${recomputed}.`,
         expected: recomputed,
-        actual: block.meta.content_hash,
+        actual: block.meta.integrity?.content_hash,
       });
       continue;
     }
@@ -474,7 +449,7 @@ function* everyBlock(parsed: ParsedUWFile): Generator<[string, UWBlock]> {
 // ─── Provenance verification ─────────────────────────────────────────────────
 
 /**
- * Cross-check `_meta.actor` and the operation that produced the block against
+ * Cross-check `_meta.provenance.actor` and the operation that produced the block against
  * BUILTIN_EDIT_POLICIES.
  *
  * - POL-01: actor not authorized for the section per its EditPolicy.
@@ -491,31 +466,35 @@ export function verifyProvenance(
   for (const sectionId of Object.keys(parsed.sections)) {
     const head = currentBlock(parsed, sectionId);
     if (!head) continue;
-    const policy = matchPolicy(head.meta.source, policies);
+    // A head with no Format 3.0 provenance (a flat or missing `_meta`) has no
+    // actor to check; the validator reports its shape as META-01.
+    const source = head.meta?.provenance?.source;
+    if (typeof source !== 'string') continue;
+    const policy = matchPolicy(source, policies);
     if (!policy) continue;
 
     // POL-01: authority check
-    const actorClass = classifyActor(head.meta.actor, head.meta.source);
+    const actorClass = classifyActor(head.meta.provenance?.actor, head.meta.provenance?.source);
     if (!authorityAllows(policy.authority, actorClass)) {
       issues.push({
         code: 'POL-01',
         severity: 'error',
         section: sectionId,
-        message: `Actor '${head.meta.actor}' (class '${actorClass}') not authorized to write '${sectionId}' (policy authority '${policy.authority}').`,
+        message: `Actor '${head.meta.provenance?.actor}' (class '${actorClass}') not authorized to write '${sectionId}' (policy authority '${policy.authority}').`,
       });
     }
 
     // POL-02: replace-where-supersede-required
     if (
       policy.supersede_on_edit &&
-      head.meta.version > 1 &&
+      head.meta.lifecycle?.revision > 1 &&
       (parsed.superseded[sectionId]?.length ?? 0) === 0
     ) {
       issues.push({
         code: 'POL-02',
         severity: 'error',
         section: sectionId,
-        message: `Section '${sectionId}' (source pattern '${policy.source_pattern}') requires supersede_on_edit but version ${head.meta.version} has no superseded prior versions.`,
+        message: `Section '${sectionId}' (source pattern '${policy.source_pattern}') requires supersede_on_edit but version ${head.meta.lifecycle?.revision} has no superseded prior versions.`,
       });
     }
   }

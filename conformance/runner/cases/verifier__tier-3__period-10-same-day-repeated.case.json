@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/period-10-same-day-repeated",
   "target": "verifier",
-  "legacy_id": "tier-3/period-10-same-day-repeated",
   "requires_capabilities": [
     "calc-evaluate"
   ],

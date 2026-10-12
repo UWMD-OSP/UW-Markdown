@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/overflow",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/overflow",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/bank-interest",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/bank-interest",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -1,18 +1,17 @@
 # 02 — The `.uw.md` format
 
-RFC 0081 Phase 3 re-authors the corpus as Format 3.0: bare section payloads,
-inline nested `_meta`, and the single-fact and hospitality field homes in the
-[accepted RFC](../rfcs/0081-one-format-one-protocol.md). The interim runtime
-reads those homes and hashes the payload without `_meta`. Legacy readers and
-migrators are marked for Phase 4 deletion. The one-off scripts
-`scripts/rfc-0081-reauthor-corpus.mjs` and `scripts/rfc-0081-value-diff.mjs`
-re-author artifacts and compare financial evidence; they are repository
-maintenance, not a product migration feature. Lite emission changes in Phase 4.
+Format 3.0 is the only format the reference library reads ([RFC
+0081](../rfcs/0081-one-format-one-protocol.md)): bare section payloads with an
+inline nested `_meta`, a block digest over the block minus `_meta`, and one
+home for each fact. A missing or other `uw_version` is refused at parse as
+`UNSUPPORTED_FORMAT_VERSION`. Phase 4 deleted the old readers, the migrators
+and the one-off re-authoring scripts; there is no migration path in the
+product. Version labels move in Phase 6.
 
 
-> RFC 0081 Phase 2 consolidates the normative contract in [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0). The implementation still carries its current release labels until Phase 6; corpus re-authoring and runtime deletion are Phases 3 and 4. The older shape examples below describe that pending implementation, not an additional normative format. Format 3.0 uses only bare payloads with inline nested `_meta`, `_meta.section`, and a JCS block digest excluding the whole `_meta` member.
+> The normative contract is [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0). The implementation still carries its 3.0.0 release labels until Phase 6.
 
-> **Representations:** `.uw.md` is the human-readable Lite representation; `.uwx.md` is the structured representation. Their normative sources are [UW_LITE_SPEC.md](../../spec/UW_LITE_SPEC.md) and [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0). This page's runtime examples are pending Phases 3–4. Types live in [types.ts](../../packages/uwmd-core/src/types.ts); see [07](07-data-model-reference.md).
+> **Representations:** `.uw.md` is the human-readable Lite representation; `.uwx.md` is the structured representation. Their normative sources are [UW_LITE_SPEC.md](../../spec/UW_LITE_SPEC.md) and [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0). Types live in [types.ts](../../packages/uwmd-core/src/types.ts); see [07](07-data-model-reference.md).
 
 ## Anatomy of a file
 
@@ -43,7 +42,7 @@ Three coordinated representations:
 
 ## Frontmatter
 
-Parsed into `UWFrontmatter`. Key fields: `uw_version` ("1.1"), `deal_id`,
+Parsed into `UWFrontmatter`. Key fields: `uw_version` ("3.0"), `deal_id`,
 `deal_name`, address fields, `asset_class` (`AssetClass` union), `pipeline_state`
 (per-layer `PipelineStatus`), `deal_stage` (`DealStage`), `quick_metrics`
 (`UWQuickMetrics` snapshot), `flags[]`, `blocking_flags[]`.
@@ -158,7 +157,7 @@ two checks for the presence of `'content'`/`'annotation'` on the entry (see
 - **Replace** (in place): the block is overwritten. Used for `manual` edits.
 
 Which one applies is decided by `BUILTIN_EDIT_POLICIES` (`protocol.ts`) matching
-the block's `_meta.source`. The `compactor.ts` `compact()` produces a "live view"
+the block's `_meta.provenance.source`. The `compactor.ts` `compact()` produces a "live view"
 by dropping superseded blocks; `diff()` compares two files section-by-section.
 
 ## Cross-section consistency (CC-NN)

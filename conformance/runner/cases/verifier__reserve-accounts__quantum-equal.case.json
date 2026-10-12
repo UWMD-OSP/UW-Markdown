@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/quantum-equal",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/quantum-equal",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

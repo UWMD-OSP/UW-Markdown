@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/wrong-gross-sign",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/wrong-gross-sign",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

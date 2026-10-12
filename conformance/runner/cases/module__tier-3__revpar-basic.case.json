@@ -1,7 +1,6 @@
 {
   "id": "module/tier-3/revpar-basic",
   "target": "module",
-  "legacy_id": "tier-3/revpar-basic",
   "requires_capabilities": [
     "calc-evaluate"
   ],

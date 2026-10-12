@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/half-away-mismatch",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/half-away-mismatch",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

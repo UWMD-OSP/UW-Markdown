@@ -20,7 +20,7 @@ created_by: "test-fixture"
 
 # Malformed — DQ-03
 
-The `noi_model` block declares `_meta.partial: true` but provides no
+The `noi_model` block declares `_meta.quality.partial: true` but provides no
 `field_overrides` array enumerating which fields are missing. Validator
 MUST emit `DQ-03` (warning).
 

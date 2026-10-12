@@ -1,7 +1,6 @@
 {
   "id": "starter-products/tier-2/frontmatter-set-recommendation",
   "target": "starter-products",
-  "legacy_id": "tier-2/frontmatter-set-recommendation",
   "requires_capabilities": [
     "edit-frontmatter"
   ],

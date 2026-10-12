@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/large-cent-one-cent-mismatch",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/large-cent-one-cent-mismatch",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/missing-movements",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/missing-movements",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

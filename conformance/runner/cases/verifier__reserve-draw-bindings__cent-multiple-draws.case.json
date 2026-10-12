@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/cent-multiple-draws",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/cent-multiple-draws",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

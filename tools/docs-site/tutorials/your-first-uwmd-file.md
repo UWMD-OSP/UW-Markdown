@@ -77,9 +77,9 @@ created_by: "manual"
 
 A few notes on what's required:
 
-- `uw_version` — declares the format version. `"2.0"` is current;
-  readers also accept `"1.0"` and `"1.1"` files forever — a file keeps
-  the behavior of the version it declares.
+- `uw_version` — declares the format version. `"3.0"` is the only
+  format; a reader refuses any other value, or none, as
+  `UNSUPPORTED_FORMAT_VERSION`.
 - `deal_id` — your own unique identifier; any string works.
 - `quick_metrics` — denormalized financial summary used for fast
   pipeline routing. Required for screening-stage files. Note that rates

@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/verified-source-classes",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/verified-source-classes",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -72,7 +72,7 @@ export function ValuationModel(props: {
           </FootedRow>
           <p className="mt-3 text-xs text-muted">
             Indicated value foots from <code>NOI / cap rate</code> and recomputes on every edit.
-            Override pins a value by hand (<code>_meta.field_overrides</code>); revert returns it to
+            Override pins a value by hand (<code>_overrides</code>); revert returns it to
             the formula.
           </p>
         </div>

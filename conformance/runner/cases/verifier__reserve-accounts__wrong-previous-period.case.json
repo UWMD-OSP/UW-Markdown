@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/wrong-previous-period",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/wrong-previous-period",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

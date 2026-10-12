@@ -14,12 +14,8 @@ export const SCENARIOS = Object.freeze([
 
 /** The closed standard business-plan vocabulary. */
 export type Scenario = typeof SCENARIOS[number];
-/** Open at the document boundary for extensions and lossless legacy reads. */
+/** Open at the document boundary for extension identifiers. */
 export type UWScenarioId = Scenario | (string & {});
-
-export const RETIRED_SCENARIOS = Object.freeze([
-  'nnn_single_tenant', 'lihtc_section8', 'build_to_rent', 'distressed_reo',
-] as const);
 
 /** Standard plan or reverse-DNS extension; no module declaration is required. */
 export function isScenarioId(value: unknown): value is UWScenarioId {

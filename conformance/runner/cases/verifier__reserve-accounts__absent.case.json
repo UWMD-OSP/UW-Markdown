@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/absent",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/absent",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

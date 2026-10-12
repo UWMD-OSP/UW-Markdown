@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/variant-05-explicit-variant",
   "target": "verifier",
-  "legacy_id": "tier-3/variant-05-explicit-variant",
   "requires_capabilities": [
     "calc-evaluate"
   ],

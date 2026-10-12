@@ -29,8 +29,8 @@ created_by: "test-fixture"
 
 # Malformed fixture — low confidence, no human-review flag
 
-The `property` section below carries `_meta.confidence: "low"` but does
-NOT set `_meta.human_review_required: true`. The validator MUST emit
+The `property` section below carries `_meta.quality.confidence: "low"` but does
+NOT set `_meta.quality.human_review_required: true`. The validator MUST emit
 `META_LOW_CONFIDENCE_NO_REVIEW_FLAG` (severity: info).
 
 ```json uw:section=property source=agent/unattributed ts=2026-01-15T10:00:00Z v=1

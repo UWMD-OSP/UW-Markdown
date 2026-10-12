@@ -738,6 +738,16 @@ field from model output. Agent writing preserves an existing role and strips
 invented roles on new blocks. Hashing and signature verification cover this
 annotation through the existing content path, without new exclusions.
 
+**Metadata patch.** `section_replace` and `section_supersede` carry `meta`, a
+patch with optional `provenance` and `quality` objects whose members override
+the `_meta` the host builds for the written block. The host owns `section`,
+`lifecycle` and `integrity` (invariant 5), and the actor: a
+`meta.provenance.source` other than the source the edit was authorized for
+MUST be refused as `PROTO-EDIT-002`. Any other `meta` member, including a flat
+`source` or `confidence`, MUST be refused as `PROTO-EDIT-002` rather than
+ignored. An agent writer's `content._overrides` is dropped: per-field override
+provenance is written only by a human writer.
+
 
 ### V.2 Replace vs supersede
 
@@ -823,7 +833,7 @@ On every write, the host MUST set:
 
 ### V.9 Canonical block JSON
 
-`_meta.integrity.content_hash` is lowercase hexadecimal SHA-256 of the UTF-8 RFC 8785 (JCS) canonical JSON of the fenced block object with its `_meta` member removed. Every other member is included: all payload fields, `_role`, `_overrides` and `_notes` when present. A payload member named `content` is ordinary content; no wrapper is interpreted. Nothing else is stripped or defaulted. The existing `canonicalizeExact` is the reference serializer.
+`_meta.integrity.content_hash` is lowercase hexadecimal SHA-256 of the UTF-8 RFC 8785 (JCS) canonical JSON of the fenced block object with its `_meta` member removed. Every other member is included: all payload fields, `_role`, `_overrides` and `_notes` when present. A payload member named `content` is ordinary content; no wrapper is interpreted. Nothing else is stripped or defaulted. The existing `canonicalize` is the reference serializer.
 
 Implementations MUST produce **byte-identical** canonical output across platforms. Specifically:
 
@@ -1255,7 +1265,7 @@ export declare function computeReplacementCashFlowBindingDigest(
 ```
 
 These functions/types MUST be exported from `index.ts` and the browser-safe
-entry. Reuse `canonicalizeExact` and the existing Node/Web Crypto hash seam.
+entry. Reuse `canonicalize` and the existing Node/Web Crypto hash seam.
 No new dependency or synchronous crypto implementation is required. The digest
 helper validates supported inputs, uses the fixed preimage in section 3 and
 returns the prefixed digest. Its explicit null parameter represents absent/null
@@ -3083,7 +3093,7 @@ Required fields: `manifest_version` (always `"1"`), `id`, `name`,
 `requires_format`, `requires_conformance`. `requires_profiles` is optional. Both ranges MUST be satisfied by the single admitted Format 3.0 and Protocol 4.0.0 values.
 
 Optional fields are documented in the schema. The TypeScript mirror
-type `ProtocolModuleManifest` in `protocol.ts` is kept in lockstep.
+type `ModuleManifest` in `protocol.ts` is kept in lockstep.
 
 **Calculation role preferences (RFC 0066).** A `calculations[]` entry MAY
 declare `section_roles`, a map from section id to any `_role` except
