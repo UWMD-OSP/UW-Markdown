@@ -20,9 +20,9 @@ export const MULTIFAMILY_PACK: ModuleManifest = {
     'Eight derived metrics for multifamily underwriting: cap rate, LTV, DSCR, debt yield, $/unit, $/sqft, price/unit, cash-on-cash.',
   authors: ['UW Markdown Working Group'],
   license: 'MIT',
-  requires_protocol: '^1.0.0',
-  requires_format: '^1.1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
   asset_classes: ['multifamily'],
   calculations: [
     {

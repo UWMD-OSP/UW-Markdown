@@ -11,7 +11,7 @@ import { BUILTIN_EDIT_POLICIES } from './protocol.js';
 // A minimal but realistic .uw.md with one canonical block and a pipeline_log.
 
 const FILE = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_EDITOR"
 deal_name: "Editor Test Deal"
 created: "2026-01-01T00:00:00Z"
@@ -58,18 +58,25 @@ source_documents: []
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 24,
   "year_built": 1995,
@@ -83,22 +90,32 @@ source_documents: []
 {
   "_meta": {
     "section": "risk_assessment",
-    "version": 2,
-    "superseded": false,
-    "source": "agent/L6",
-    "agent_id": "L6",
-    "agent_version": "1.0.0",
-    "actor": "system",
-    "timestamp": "2026-01-02T00:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "agent/L6",
+      "actor": "system",
+      "agent_id": "L6",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-01-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    }
   },
   "overall_rating": "moderate",
   "risk_score": 6,
-  "key_risks": ["interest rate", "lease-up"]
+  "key_risks": [
+    "interest rate",
+    "lease-up"
+  ]
 }
 \`\`\`
 
@@ -106,22 +123,29 @@ source_documents: []
 
 ## Pipeline Log {#pipeline_log}
 
-\`\`\`json uw:section=pipeline_log source=engine ts=2026-01-01T00:00:00Z v=1 confidence=high
+\`\`\`json uw:section=pipeline_log source=system/engine ts=2026-01-01T00:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "pipeline_log",
-    "version": 1,
-    "superseded": false,
-    "source": "engine",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/engine",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "entries": [
     {

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T2-PARENTHASH
 deal_name: "Parent Hash Stamp"
 created: "2026-01-15T10:00:00Z"
@@ -29,19 +29,30 @@ computed `content_hash`.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": true,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "<volatile>",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null,
-    "content_hash": "<volatile>"
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "<volatile>",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": true
+    },
+    "integrity": {
+      "input_hash": null,
+      "parent_hash": null,
+      "content_hash": "<volatile>"
+    }
   },
   "address": "700 Parent Hash Way",
   "asset_class": "multifamily",
@@ -57,20 +68,30 @@ computed `content_hash`.
   "units": 36,
   "_meta": {
     "section": "property",
-    "version": 2,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "analyst-jane",
-    "timestamp": "<volatile>",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null,
-    "parent_hash": "3d38dcfda27e58c1bdd9cced400763082f86277efe2dab9cc110e65581935ec0",
-    "content_hash": "<volatile>"
+    "provenance": {
+      "source": "manual",
+      "actor": "analyst-jane",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "<volatile>",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": null,
+      "content_hash": "<volatile>",
+      "parent_hash": "80b42de6702a102a5ffc7f084e2ec9267e6854ca7583ad58a981e986527649ae"
+    }
   }
 }
 ```

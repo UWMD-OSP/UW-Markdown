@@ -8,9 +8,8 @@
     "UW Markdown contributors"
   ],
   "license": "MIT",
-  "requires_protocol": ">=1.0.0",
-  "requires_format": ">=1.0",
-  "requires_tier": "tier-3-calc-host",
+  "requires_protocol": "^4.0.0",
+  "requires_format": "^3.0",
   "asset_classes": [
     "multifamily"
   ],
@@ -22,5 +21,6 @@
       "description": "A view of the shared section.",
       "primary_fields": []
     }
-  ]
+  ],
+  "requires_conformance": "verifier"
 }

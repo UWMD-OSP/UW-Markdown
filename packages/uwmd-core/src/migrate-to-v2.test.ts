@@ -30,7 +30,7 @@ const META_LINES = (extra = '') =>
 function v1File(metaExtra = '', body = '  "unit_count": 10'): string {
   return [
     '---',
-    'uw_version: "1.1"',
+    'uw_version: "1.1"', // RFC 0081 Phase 4: delete
     'deal_id: mig-001',
     'deal_name: Migration Test',
     'asset_class: multifamily',
@@ -170,7 +170,7 @@ describe('migrateToV2 — refusals', () => {
   });
 
   it('refuses a file with no uw_version line', async () => {
-    const noVersion = v1File().replace('uw_version: "1.1"\n', '');
+    const noVersion = v1File().replace(/^uw_version:.*\n/m, '');
     const result = await migrateToV2(noVersion);
     expect(result.ok).toBe(false);
     expect(result.refusals.join(' ')).toContain('uw_version');

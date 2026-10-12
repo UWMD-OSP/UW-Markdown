@@ -29,7 +29,7 @@ function loadExample(): string {
 describe('parseUWFile', () => {
   it('returns a ParsedUWFile with frontmatter, sections, prose, pipeline_log', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_TEST0001"
 deal_name: "Test Deal"
 created: "2026-01-01T00:00:00Z"
@@ -47,22 +47,30 @@ asset_class: multifamily
 
 Some prose about the property.
 
-\`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=1 confidence=high
+\`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 confidence=high
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "wizard",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "total_units": 48,
@@ -74,10 +82,50 @@ Some prose about the property.
 
 ## Pipeline Log {#pipeline_log}
 
-\`\`\`json uw:section=pipeline_log source=engine ts=2026-01-01T00:00:00Z v=1 confidence=high
+\`\`\`json uw:section=pipeline_log source=system/engine ts=2026-01-01T00:00:00Z v=1 confidence=high
 {
-  "_meta": { "section": "pipeline_log", "version": 1, "superseded": false, "source": "engine", "agent_id": null, "agent_version": null, "actor": "system", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null },
-  "entries": [{ "entry_id": "log_001", "timestamp": "2026-01-01T00:00:00Z", "event_type": "file_created", "agent_or_actor": "wizard", "section_affected": null, "status": "success", "input_sections": [], "output_sections": [], "flags_raised": [], "flags_cleared": [], "duration_ms": null, "input_hash": null, "output_hash": null, "error_code": null, "error_message": null, "notes": null }]
+  "_meta": {
+    "section": "pipeline_log",
+    "provenance": {
+      "source": "system/engine",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "entries": [
+    {
+      "entry_id": "log_001",
+      "timestamp": "2026-01-01T00:00:00Z",
+      "event_type": "file_created",
+      "agent_or_actor": "wizard",
+      "section_affected": null,
+      "status": "success",
+      "input_sections": [],
+      "output_sections": [],
+      "flags_raised": [],
+      "flags_cleared": [],
+      "duration_ms": null,
+      "input_hash": null,
+      "output_hash": null,
+      "error_code": null,
+      "error_message": null,
+      "notes": null
+    }
+  ]
 }
 \`\`\`
 `;
@@ -93,7 +141,7 @@ Some prose about the property.
 
   it('routes pipeline_log blocks to pipeline_log array, not sections', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "x"
 deal_name: "x"
 created: "2026-01-01T00:00:00Z"
@@ -105,8 +153,32 @@ zip: ""
 asset_class: multifamily
 ---
 
-\`\`\`json uw:section=pipeline_log source=engine ts=2026-01-01T00:00:00Z v=1 confidence=high
-{ "_meta": { "section": "pipeline_log", "version": 1, "superseded": false, "source": "engine", "agent_id": null, "agent_version": null, "actor": "system", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "entries": [] }
+\`\`\`json uw:section=pipeline_log source=system/engine ts=2026-01-01T00:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "pipeline_log",
+    "provenance": {
+      "source": "system/engine",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "entries": []
+}
 \`\`\`
 `;
     const parsed = parseUWFile(content);
@@ -116,7 +188,7 @@ asset_class: multifamily
 
   it('routes x_ sections to extensions', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "x"
 deal_name: "x"
 created: "2026-01-01T00:00:00Z"
@@ -128,8 +200,32 @@ zip: ""
 asset_class: multifamily
 ---
 
-\`\`\`json uw:section=x_lender_matrix source=user ts=2026-01-01T00:00:00Z v=1 confidence=high
-{ "_meta": { "section": "x_lender_matrix", "version": 1, "superseded": false, "source": "user", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "lenders": [] }
+\`\`\`json uw:section=x_lender_matrix source=manual ts=2026-01-01T00:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "x_lender_matrix",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "lenders": []
+}
 \`\`\`
 `;
     const parsed = parseUWFile(content);
@@ -144,7 +240,7 @@ asset_class: multifamily
 \`\`\``;
 
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "x"
 deal_name: "x"
 created: "2026-01-01T00:00:00Z"
@@ -167,7 +263,7 @@ ${makeBlock(2, false)}
 
   it('parses fence annotation key-value pairs', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "x"
 deal_name: "x"
 created: "2026-01-01T00:00:00Z"
@@ -179,13 +275,37 @@ zip: ""
 asset_class: multifamily
 ---
 
-\`\`\`json uw:section=noi_model source=engine:calculations.ts ts=2026-04-24T10:00:00Z v=3 confidence=high
-{ "_meta": { "section": "noi_model", "version": 3, "superseded": false, "source": "engine:calculations.ts", "agent_id": null, "agent_version": null, "actor": "system", "timestamp": "2026-04-24T10:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "net_operating_income": 396635 }
+\`\`\`json uw:section=noi_model source=system/calculations.ts ts=2026-04-24T10:00:00Z v=3 confidence=high
+{
+  "_meta": {
+    "section": "noi_model",
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-04-24T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 3,
+      "superseded": false
+    }
+  },
+  "net_operating_income": 396635
+}
 \`\`\`
 `;
     const parsed = parseUWFile(content);
     const block = getSection(parsed, 'noi_model');
-    expect(block?.annotation.source).toBe('engine:calculations.ts');
+    expect(block?.annotation.source).toBe('system/calculations.ts');
     expect(block?.annotation.v).toBe(3);
     expect(block?.annotation.confidence).toBe('high');
   });
@@ -194,7 +314,7 @@ asset_class: multifamily
 describe('parseUWFile portability and structural integrity', () => {
   it('parses CRLF documents without dropping structured sections', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_CRLF"
 deal_name: "CRLF Deal"
 created: "2026-01-01T00:00:00Z"
@@ -206,8 +326,33 @@ zip: "85001"
 asset_class: multifamily
 ---
 
-\`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=1 confidence=high
-{ "_meta": { "section": "property", "version": 1, "superseded": false, "source": "wizard", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 48 }
+\`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "total_units": 48
+}
 \`\`\`
 `.replace(/\n/g, '\r\n');
 
@@ -219,7 +364,7 @@ asset_class: multifamily
 
   it('rejects an unterminated UW section fence even outside strict mode', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_UNCLOSED"
 deal_name: "Unclosed Deal"
 created: "2026-01-01T00:00:00Z"
@@ -232,8 +377,23 @@ asset_class: multifamily
 ---
 
 \`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=1 confidence=high
-{ "_meta": { "section": "property" }, "total_units": 48 }
-`;
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {}
+  },
+  "total_units": 48
+}`;
 
     expect(() => parseUWFile(content)).toThrowError(
       expect.objectContaining({ code: 'UNCLOSED_SECTION_FENCE', line: 14 }),
@@ -315,7 +475,7 @@ describe('deepGet', () => {
 
 describe('document-authored keys never reach the prototype', () => {
   const wrap = (frontmatter: string) => `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "d"
 deal_name: "d"
 created: "2026-01-01"
@@ -351,7 +511,7 @@ ${frontmatter}
 describe('compact', () => {
   it('removes superseded blocks and returns shorter content', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "x"
 deal_name: "x"
 created: "2026-01-01T00:00:00Z"
@@ -363,12 +523,62 @@ zip: ""
 asset_class: multifamily
 ---
 
-\`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=1 superseded=true confidence=high
-{ "_meta": { "section": "property", "version": 1, "superseded": true, "source": "wizard", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 10 }
+\`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 superseded=true confidence=high
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": true
+    }
+  },
+  "total_units": 10
+}
 \`\`\`
 
-\`\`\`json uw:section=property source=wizard ts=2026-01-02T00:00:00Z v=2 confidence=high
-{ "_meta": { "section": "property", "version": 2, "superseded": false, "source": "wizard", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-02T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 48 }
+\`\`\`json uw:section=property source=manual ts=2026-01-02T00:00:00Z v=2 confidence=high
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    }
+  },
+  "total_units": 48
+}
 \`\`\`
 `;
     const parsed = parseUWFile(content);
@@ -382,7 +592,7 @@ asset_class: multifamily
 
   it('returns original content unchanged when no superseded blocks exist', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "x"
 deal_name: "x"
 created: "2026-01-01T00:00:00Z"
@@ -393,8 +603,33 @@ state: "AZ"
 zip: ""
 asset_class: multifamily
 ---
-\`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=1 confidence=high
-{ "_meta": { "section": "property", "version": 1, "superseded": false, "source": "wizard", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 48 }
+\`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "total_units": 48
+}
 \`\`\`
 `;
     const parsed = parseUWFile(content);
@@ -464,7 +699,7 @@ describe('Parkview example file', () => {
 
 describe('parseUWFile — YAML subset rejection', () => {
   const HEADER = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_TEST"
 deal_name: "YAML subset test"
 created: "2026-01-01T00:00:00Z"
@@ -511,13 +746,26 @@ asset_class: multifamily`;
   });
 
   it('rejects YAML directives with UNSUPPORTED_YAML_FEATURE', () => {
-    const content = `---\n%YAML 1.2\nuw_version: "1.1"\ndeal_id: "x"\ndeal_name: "x"\ncreated: "2026-01-01T00:00:00Z"\nlast_modified: "2026-01-01T00:00:00Z"\nproperty_address: "1 a"\ncity: "Phoenix"\nstate: "AZ"\nzip: "85001"\nasset_class: multifamily\n---\n`;
+    const content = `---
+%YAML 1.2
+uw_version: "3.0"
+deal_id: "x"
+deal_name: "x"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: "1 a"
+city: "Phoenix"
+state: "AZ"
+zip: "85001"
+asset_class: multifamily
+---
+`;
     expect(() => parseUWFile(content)).toThrow(/UNSUPPORTED_YAML_FEATURE/);
   });
 
   it('accepts the supported subset (scalars, nested mappings, sequences, []) without throwing', () => {
     const content = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_OK"
 deal_name: "All-supported subset"
 created: "2026-01-01T00:00:00Z"
@@ -550,7 +798,7 @@ tags:
 
 describe('read-time interpretation of a legacy tag in _meta.source', () => {
   const fileWithSource = (source: string): string => `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "test-interp"
 asset_class: multifamily
 ---

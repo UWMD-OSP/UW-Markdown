@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: uw_composition
 asset_class: multifamily
 ---
@@ -10,13 +10,22 @@ asset_class: multifamily
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "document/rent_roll",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "conformance",
-    "ts": "2026-06-01T00:00:00Z"
+    "provenance": {
+      "source": "document/rent_roll",
+      "actor": "conformance",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "rent_roll_type": "multifamily",
   "units": [

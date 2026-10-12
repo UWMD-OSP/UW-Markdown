@@ -8,9 +8,8 @@
     "UW Markdown contributors"
   ],
   "license": "MIT",
-  "requires_protocol": "^1",
-  "requires_format": "^1",
-  "requires_tier": "tier-3-calc-host",
+  "requires_protocol": "^4.0.0",
+  "requires_format": "^3.0",
   "agent_layers": [
     {
       "id": "NOT_A_LAYER",
@@ -20,5 +19,6 @@
       ],
       "prompt_template": 42
     }
-  ]
+  ],
+  "requires_conformance": "verifier"
 }

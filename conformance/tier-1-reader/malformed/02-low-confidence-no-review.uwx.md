@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MAL-002
 deal_name: "Malformed: Low confidence without human review flag"
 created: "2026-01-15T10:00:00Z"
@@ -37,12 +37,23 @@ NOT set `_meta.human_review_required: true`. The validator MUST emit
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "source": "agent/unattributed",
-    "resolution": "ai_extracted",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "low",
-    "extraction_method": "vision_ocr"
+    "provenance": {
+      "source": "agent/unattributed",
+      "resolution": "ai_extracted",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "low",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
   "total_units": 50,
   "year_built": 1995,

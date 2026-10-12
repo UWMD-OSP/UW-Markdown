@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { projectModuleContract } from './rfc-0081-schema-projections.mjs';
+import { projectModuleContract, projectCompiledLite, legacyTestDocument } from './rfc-0081-schema-projections.mjs';
 import { verifyReserveDrawBindings } from '../packages/uwmd-core/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
 import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/index.js';
@@ -102,7 +102,6 @@ import {
   getSizeIntensive,
   resolveDealSize,
   renderReportHtml,
-  computeBlockHash,
   canonicalV2BlockContent,
   canonicalizeV2,
   migrateToV2,
@@ -837,12 +836,13 @@ function deepEqual(a, b) {
 // Tier 4 is gated behind --tier=4 because it requires either a live LLM call
 // or a recorded replay. CI runs the other tiers; tier-4 is operator-driven.
 
-function runTier4() {
+async function runTier4() {
   const baseDir = join(CONFORMANCE_DIR, 'tier-4-agent-host', 'fixtures');
   if (!existsSync(baseDir)) {
     record('4', '(none)', 'pass', 'no fixtures');
     return;
   }
+  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
   for (const scenario of scenarios) {
     const dir = join(baseDir, scenario);
@@ -852,14 +852,33 @@ function runTier4() {
       record('4', scenario, 'fail', 'missing before.uwx.md or expected-after-shape.json');
       continue;
     }
-    // Lint-only: parse the shape JSON and the before file. Live runs are
-    // operator-driven; we don't have a replay store yet (deferred to v2).
+    // A live run is operator-driven, so the post-run shape cannot be applied
+    // to an after-document here. What CI can prove: the shape is a strict
+    // JSON Schema (no stray keywords), the before file already satisfies the
+    // frontmatter contract L6 must preserve, and the shape refuses a block in
+    // the retired {section_id, _meta, content} wrapper (RFC 0081 §3).
     try {
-      JSON.parse(readFileSync(shapePath, 'utf8'));
-      parseUWFile(readFileSync(beforePath, 'utf8'));
-      record('4', scenario, 'pass', 'shape file lint only — live run not exercised');
+      const shape = JSON.parse(readFileSync(shapePath, 'utf8'));
+      if (!shape.$schema) {
+        // A declarative contract, not a JSON Schema: lint only.
+        parseUWFile(readFileSync(beforePath, 'utf8'));
+        record('4', scenario, 'pass', 'shape file lint only — live run not exercised');
+        continue;
+      }
+      const ajv = new Ajv2020({ strict: true, strictRequired: false, validateFormats: false });
+      ajv.compile(shape);
+      const problems = [];
+      const frontmatter = ajv.compile(shape.properties.frontmatter);
+      const before = parseUWFile(readFileSync(beforePath, 'utf8'));
+      if (!frontmatter(before.frontmatter)) problems.push(`before frontmatter: ${ajv.errorsText(frontmatter.errors)}`);
+      for (const [id, sectionShape] of Object.entries(shape.properties.sections.properties)) {
+        if (!sectionShape.required?.includes('_meta')) continue;
+        const block = ajv.compile(sectionShape);
+        if (block({ section_id: id, _meta: {}, content: {} })) problems.push(`${id} shape admits the retired section_id wrapper`);
+      }
+      record('4', scenario, problems.length ? 'fail' : 'pass', problems.join('; ') || 'shape compiled; before frontmatter and wrapper refusal checked — live run not exercised');
     } catch (e) {
-      record('4', scenario, 'fail', `lint failed: ${e.message}`);
+      record('4', scenario, 'fail', `shape check failed: ${e.message}`);
     }
   }
 }
@@ -900,12 +919,14 @@ async function runTier4Replay() {
         now: () => REPLAY_CLOCK,
       });
     } catch (e) {
-      record('4-replay', `${scenario}/run`, 'fail', e.message);
+      record('4-replay', `${scenario}/sections`, 'fail', e.message);
+      record('4-replay', `${scenario}/document`, 'fail', e.message);
       continue;
     }
 
     if (!result.success) {
-      record('4-replay', `${scenario}/run`, 'fail', `run failed: ${result.error}`);
+      record('4-replay', `${scenario}/sections`, 'fail', `run failed: ${result.error}`);
+      record('4-replay', `${scenario}/document`, 'fail', `run failed: ${result.error}`);
       continue;
     }
 
@@ -1062,7 +1083,7 @@ function runLiteFixtures() {
       record('lite', `${id} [compile]`, 'fail', `fixtures/ documents must compile; saw: ${errorCodes(compiled.report.issues).join(', ')}`);
       continue;
     }
-    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, `${stringifyUWX(compiled.envelope).trimEnd()}\n`);
+    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, `${projectCompiledLite(stringifyUWX(compiled.envelope)).trimEnd()}\n`);
 
     const projection = projectUWEnvelopeToLite(compiled.envelope);
     liteBaseline(
@@ -2108,7 +2129,7 @@ async function runPackages() {
 
   // Invariants, asserted without baselines so they bind any implementation.
   const encoder = new TextEncoder();
-  const dealText = '---\nuw_version: "1.1"\ndeal_id: rt\n---\n';
+  const dealText = "---\nuw_version: \"3.0\"\ndeal_id: rt\n---\n";
   const pdf = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0xff, 0xfe, 0x00, 0x80]);
   try {
     const manifest = {
@@ -2986,7 +3007,7 @@ async function runPropertyCashFlowAssembly() {
           throw new Error('Source tie ordering mismatch');
         if (expected.metrics) {
           const metricDoc = parseUWFile([
-            '---', 'uw_version: "2.0"', '---', '',
+            '---', "uw_version: \"3.0\"", '---', '',
             '```json uw:section=cash_flow_series variant=base', JSON.stringify(result.series), '```',
           ].join('\n'));
           const decls = ['xirr', 'xnpv', 'moic', 'total_net'].map(metric => ({ id: metric, metric, series_path: 'cash_flow_series', variant: 'base', ...(metric === 'xnpv' ? { rate: 0.08 } : {}) }));
@@ -3342,7 +3363,7 @@ async function runPortfolioRelationships() {
   }
 }
 
-// ─── Display locales (RFC 0001, starter guide §III.1a) ────────────────────────────
+// ─── Display locales (RFC 0001, Protocol §III.1a) ────────────────────────────
 //
 // All scenarios share deal.uwx.md; the runner injects `locale: <tag>` into the
 // frontmatter so canonical content is byte-identical across locales by
@@ -3357,7 +3378,7 @@ async function runLocale() {
   }
   const base = readFileSync(join(LOCALE_DIR, 'deal.uwx.md'), 'utf8');
   const withLocale = (tag) =>
-    tag === 'en-US' ? base : base.replace('uw_version: "1.1"', `uw_version: "1.1"\nlocale: ${tag}`);
+    tag === 'en-US' ? base : base.replace("uw_version: \"3.0\"", `uw_version: "3.0"\nlocale: ${tag}`);
 
   const scenarios = readdirSync(LOCALE_DIR, { withFileTypes: true })
     .filter((e) => e.isDirectory())
@@ -3493,7 +3514,7 @@ async function runCurrency() {
   }
 }
 
-// ─── Capability tokens (RFC 0011, starter guide §XIV) ─────────────────────────────
+// ─── Capability tokens (RFC 0011, Protocol §XIV) ─────────────────────────────
 //
 // Each scenario edits the shared deal.uwx.md under a token (generated by
 // scripts/gen-capability-fixtures.mjs with the published TEST key), through
@@ -4298,6 +4319,7 @@ async function runSource() {
 }
 
 // ─── meta-v2 (RFC 0009) — nested _meta shape, shim, versioned digests ────────
+// RFC 0081 Phase 4: delete this suite with the reshape layer (RFC 0081 §8).
 
 const META_V2_DIR = join(CONFORMANCE_DIR, 'tier-1-reader', 'v2-fixtures');
 
@@ -4306,7 +4328,9 @@ async function runMetaV2() {
 
   const load = (file) => {
     const content = readFileSync(join(META_V2_DIR, file), 'utf8');
-    return parseUWFile(content);
+    const flat = file.startsWith('05-') || file.startsWith('03-') || file.startsWith('04-');
+    const version = file.startsWith('02-') || file.startsWith('04-') ? '1.1' : '2.0'; // RFC 0081 Phase 4: delete (meta-v2 suite)
+    return parseUWFile(legacyTestDocument(content,{flat,version,...(file.startsWith('04-')?{legacySource:'market_data'}:{})}));
   };
   const metaCodes = (parsed) =>
     validateUWFile(parsed).issues.filter((i) => i.code.startsWith('META-V')).map((i) => i.code).sort();
@@ -4373,18 +4397,6 @@ async function runMetaV2() {
     record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `codes [${codes.join(', ')}] != [META-V1-IN-V2]`);
   }
 
-  // 06 — the same block in both accepted shapes yields the identical v2
-  // digest (canonicalization step 1 is normalization).
-  {
-    const id = '06-digest-shape-insensitive';
-    const flat = parseUWFile(readFileSync(join(META_V2_DIR, id, 'flat.uwx.md'), 'utf8'));
-    const nested = parseUWFile(readFileSync(join(META_V2_DIR, id, 'nested.uwx.md'), 'utf8'));
-    const a = await computeBlockHash(flat.sections.property, { shape: 'v2' });
-    const b = await computeBlockHash(nested.sections.property, { shape: 'v2' });
-    const ok = a === b;
-    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `flat ${a} != nested ${b}`);
-  }
-
   // 07 — spelling out the defaulted integrity.algorithm moves no digest.
   {
     const id = '07-defaulted-algorithm';
@@ -4403,13 +4415,15 @@ async function runMetaV2() {
 }
 
 // ─── migrate (RFC 0009) — uwmd migrate --to-v2 scenarios ─────────────────────
+// RFC 0081 Phase 4: delete this suite with the migrators (RFC 0081 §4, §8).
+// Its expected.json files record the migrator's output version, "2.0".
 
 const MIGRATE_DIR = join(CONFORMANCE_DIR, 'migrate');
 
 async function runMigrate() {
   if (!existsSync(MIGRATE_DIR)) return;
 
-  const contentOf = (id) => readFileSync(join(MIGRATE_DIR, id, 'deal.uwx.md'), 'utf8');
+  const contentOf = (id) => legacyTestDocument(readFileSync(join(MIGRATE_DIR, id, 'deal.uwx.md'), 'utf8'), {manualResolution:id.startsWith('03-')});
   const expectedOf = (id) => JSON.parse(readFileSync(join(MIGRATE_DIR, id, 'expected.json'), 'utf8'));
 
   // 01 — a signed block refuses migration by default: the signature commits
@@ -4438,7 +4452,7 @@ async function runMigrate() {
     if (result.ok) {
       const parsed = parseUWFile(result.content);
       const block = parsed.sections.property;
-      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
+      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`); // RFC 0081 Phase 4: delete (migrate suite)
       if ((block?.meta?.signature === undefined) !== expected.signature_absent) problems.push('signature survived --strip-signatures');
       if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
       const chain = await verifyChain(parsed);
@@ -4458,7 +4472,7 @@ async function runMigrate() {
     if (result.ok) {
       const parsed = parseUWFile(result.content);
       const block = parsed.sections.property;
-      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
+      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`); // RFC 0081 Phase 4: delete (migrate suite)
       if (block?.meta?.resolution !== expected.resolution) problems.push(`resolution ${block?.meta?.resolution} != ${expected.resolution}`);
       if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
     }
@@ -4472,7 +4486,7 @@ const dispatch = {
   '1': async () => { runTier1(); await runTier1Malformed(); },
   '2': async () => { await runTier2(); },
   '3': async () => { runTier3(); await runTier3Refinement(); },
-  '4': async () => { runTier4(); await runTier4Profile(); },
+  '4': async () => { await runTier4(); await runTier4Profile(); },
   // Runs by default: deterministic, no network, no API key.
   '4-replay': async () => { await runTier4Replay(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },

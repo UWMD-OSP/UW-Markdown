@@ -11,9 +11,9 @@ export const MANUFACTURED_HOUSING_PACK: ModuleManifest = {
     "UW Markdown Working Group"
   ],
   "license": "MIT",
-  "requires_protocol": ">=2.25.0",
-  "requires_format": ">=2.1.0",
-  "requires_tier": "tier-3-calc-host",
+  "requires_protocol": "^4.0.0",
+  "requires_format": "^3.0",
+  "requires_conformance": "verifier",
   "asset_classes": [
     "manufactured_housing"
   ],

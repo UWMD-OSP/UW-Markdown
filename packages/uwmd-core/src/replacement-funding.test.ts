@@ -200,11 +200,11 @@ describe('RFC 0070 separate verification', () => {
       ).toBe(false);
     }
   );
-  it('keeps all 17 original RFC 0056 fixture bytes unchanged', async () => {
+  it('keeps all 14 retained RFC 0056 fixture bytes unchanged', async () => {
     const root = resolve(process.cwd(), '../../conformance/hedge');
     // Later RFCs' cases carry their number as a prefix (0070-, 0075-).
     const names = readdirSync(root).filter((n) => !/^\d{4}-/.test(n));
-    expect(names.length).toBe(17);
+    expect(names.length).toBe(14);
     for (const name of names) {
       const file = resolve(root, name, 'deal.uwx.md');
       const text = readFileSync(file, 'utf8');
@@ -242,13 +242,13 @@ describe('RFC 0070 canonical snapshot controls', () => {
   it('verifies Format 2.0 nested metadata without committing metadata', async () => {
     const original = source('outright-payment');
     const text = original
-      .replace('uw_version: "1.1"', 'uw_version: "2.0"')
+      .replace("uw_version: \"3.0\"", "uw_version: \"3.0\"")
       .replace(
         /\{\r?\n {2}"(loan_amount|uses|series)"/g,
         '{\n  "_meta": {"section":"test","lifecycle":{"revision":1},"provenance":{"source":"manual"}},\n  "$1"'
       );
     const parsed = parseUWFile(text);
-    expect(parsed.frontmatter.uw_version).toBe('2.0');
+    expect(parsed.frontmatter.uw_version).toBe('3.0');
     expect((await verifyReplacementFundingBindings(parsed)).state).toBe('verified');
   });
   it('rejects an explicitly superseded source even in an externally constructed parse view', async () => {

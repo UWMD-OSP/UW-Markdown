@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-CS-CC03-MISMATCH
 deal_name: "Senior Disagrees With Debt Structure"
 created: "2026-08-22T10:00:00Z"
@@ -30,10 +30,22 @@ The `capital_stack` senior_debt tranche states 24,500,000 where
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "source": "manual",
-    "timestamp": "2026-08-22T10:00:00Z",
-    "confidence": "high"
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-22T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
   "address": "100 Stack Way",
   "total_units": 180
@@ -44,18 +56,25 @@ The `capital_stack` senior_debt tranche states 24,500,000 where
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-22T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-22T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "loan_amount": 26000000,
@@ -69,24 +88,52 @@ The `capital_stack` senior_debt tranche states 24,500,000 where
 {
   "_meta": {
     "section": "capital_stack",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-22T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-22T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "tranches": [
-    { "id": "senior", "class": "senior_debt", "position": 1, "amount": 24500000, "rate": 0.0625, "amortization_months": 360, "accrual": "cash" },
-    { "id": "mezz", "class": "mezzanine_debt", "position": 2, "amount": 6000000, "rate": 0.11, "amortization_months": 0, "accrual": "cash" },
-    { "id": "common", "class": "common_equity", "position": 3, "amount": 8000000 }
+    {
+      "id": "senior",
+      "class": "senior_debt",
+      "position": 1,
+      "amount": 24500000,
+      "rate": 0.0625,
+      "amortization_months": 360,
+      "accrual": "cash"
+    },
+    {
+      "id": "mezz",
+      "class": "mezzanine_debt",
+      "position": 2,
+      "amount": 6000000,
+      "rate": 0.11,
+      "amortization_months": 0,
+      "accrual": "cash"
+    },
+    {
+      "id": "common",
+      "class": "common_equity",
+      "position": 3,
+      "amount": 8000000
+    }
   ]
 }
 ```

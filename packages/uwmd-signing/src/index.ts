@@ -43,7 +43,7 @@ export {
   createBlockSignatureVerifier,
   createReceiptSignatureVerifier,
 } from './verify.js';
-export type { BlockVerification, SigVerifyError } from './verify.js';
+export type { BlockVerification, SigVerifyError, VerifyBlockSignatureOptions } from './verify.js';
 
 export {
   createCapabilityVerifier,

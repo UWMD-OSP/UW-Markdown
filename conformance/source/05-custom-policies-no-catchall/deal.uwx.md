@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "SRC-05-NO-CATCHALL"
 deal_name: "No Catch-All"
 created: "2026-08-31T00:00:00Z"
@@ -18,15 +18,25 @@ the unpoliced-write path opened.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "analyst",
-    "timestamp": "2026-08-31T00:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false
+    "provenance": {
+      "source": "manual",
+      "actor": "analyst",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-31T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 48
 }

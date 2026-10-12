@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 document_profile: deal-underwriting-v1
 deal_id: uw_standalone_parkview_inline
 deal_name: Parkview Standalone Kit — Inline
@@ -16,14 +16,23 @@ The rent roll is carried in one record in this form.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "source_document",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "example-kit",
-    "ts": "2026-09-13T00:00:00Z"
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "source_document",
+      "actor": "example-kit",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "100 Parkview Drive",
   "city": "Glendale",
@@ -39,18 +48,31 @@ The rent roll is carried in one record in this form.
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "source_document",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "example-kit",
-    "ts": "2026-09-13T00:00:00Z"
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "source_document",
+      "actor": "example-kit",
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "rent_roll_type": "multifamily",
   "external": {
-    "parts": ["rent-roll-210", "rent-roll-215", "rent-roll-220"],
+    "parts": [
+      "rent-roll-210",
+      "rent-roll-215",
+      "rent-roll-220"
+    ],
     "collection_key": "unit_id",
     "collection_path": "units",
     "part_count": 3

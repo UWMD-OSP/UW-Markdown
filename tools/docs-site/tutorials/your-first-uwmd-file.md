@@ -26,7 +26,7 @@ once you're done here.
 
 > **The fast path:** the [quickstart](/tutorials/quickstart) runs
 > `npx @uwmd/cli init --output deal.uwx.md`, which scaffolds a complete
-> format-2.0 record with every standard section stubbed out. This tutorial
+> record with every standard section stubbed out. This tutorial
 > builds a file by hand instead, so you understand what each piece is.
 
 ## Step 1 — Create the file
@@ -46,7 +46,7 @@ the file. Paste this at the top:
 
 ```yaml
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: HELLO-001
 deal_name: "Hello Deal"
 created: "2026-01-15T10:00:00Z"
@@ -136,7 +136,10 @@ A minimal `.uwx.md` file showing how property details are stored.
   "parking_type": "surface",
   "zoning": "R-3",
   "condition": "good",
-  "amenities": ["pool", "laundry"],
+  "amenities": [
+    "pool",
+    "laundry"
+  ],
   "_notes": null
 }
 ```

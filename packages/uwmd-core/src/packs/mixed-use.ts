@@ -47,9 +47,9 @@ export const MIXED_USE_PACK: ModuleManifest = {
     'Derived metrics for mixed-use underwriting: property-level cap rate, LTV, DSCR, debt yield, and cash-on-cash; a NOI share per component use; allocation-gated price per unit / psf / bed; and per-component operating-business intermediates (GOP, labor). Deliberately omits property price/unit, loan/unit, and any blended market cap rate.',
   authors: ['UW Markdown Working Group'],
   license: 'MIT',
-  requires_protocol: '^1.0.0',
-  requires_format: '^1.1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
   asset_classes: ['mixed_use'],
   calculations: [
     // ── Property-level (one NOI, one price, one loan) ──────────────────────

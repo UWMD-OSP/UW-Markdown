@@ -25,7 +25,7 @@ function document({ debt: d = debt, uses: u = uses, flow: f, omitSU = false, omi
   const parts = [['debt_structure', d]];
   if (!omitSU) parts.push(['sources_uses', omitUses ? {} : { uses: u }]);
   if (f) parts.push(['cash_flow_series', f]);
-  return ['---', 'uw_version: "2.0"', 'deal_id: OUTRIGHT-REPLACEMENT-RESEARCH',
+  return ['---', "uw_version: \"3.0\"", 'deal_id: OUTRIGHT-REPLACEMENT-RESEARCH',
     'asset_class: office', 'currency_code: USD', '---', '',
     ...parts.map(([section, content]) => ['```json uw:section=', section,
       ' variant=base source=manual ts=2026-10-02T00:00:00Z v=1\n',

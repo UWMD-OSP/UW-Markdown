@@ -20,7 +20,7 @@ function loadFixture() {
 describe('render', () => {
   it('renders json without superseded history by default', () => {
     const parsed = parseUWFile(`---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_RENDER"
 deal_name: "Renderer Fixture"
 created: "2026-01-01T00:00:00Z"
@@ -33,11 +33,59 @@ asset_class: multifamily
 ---
 
 \`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 superseded=true confidence=medium
-{ "_meta": { "section": "property", "version": 1, "superseded": true, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "medium", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 12 }
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": true
+    }
+  },
+  "total_units": 12
+}
 \`\`\`
 
 \`\`\`json uw:section=property source=manual ts=2026-01-02T00:00:00Z v=2 confidence=high
-{ "_meta": { "section": "property", "version": 2, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-02T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 24 }
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    }
+  },
+  "total_units": 24
+}
 \`\`\`
 `);
 
@@ -50,7 +98,7 @@ asset_class: multifamily
 
   it('renders superseded history when requested for json', () => {
     const parsed = parseUWFile(`---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_RENDER"
 deal_name: "Renderer Fixture"
 created: "2026-01-01T00:00:00Z"
@@ -63,11 +111,59 @@ asset_class: multifamily
 ---
 
 \`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 superseded=true confidence=medium
-{ "_meta": { "section": "property", "version": 1, "superseded": true, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "medium", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 12 }
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": true
+    }
+  },
+  "total_units": 12
+}
 \`\`\`
 
 \`\`\`json uw:section=property source=manual ts=2026-01-02T00:00:00Z v=2 confidence=high
-{ "_meta": { "section": "property", "version": 2, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-02T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": 24 }
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    }
+  },
+  "total_units": 24
+}
 \`\`\`
 `);
 
@@ -128,7 +224,7 @@ asset_class: multifamily
 // ─── RFC 0027 — the class's own size in every read model ─────────────────────
 
 const officeDoc = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_OFFICE"
 deal_name: "Office Size Fixture"
 created: "2026-08-25T00:00:00Z"
@@ -141,7 +237,32 @@ asset_class: office
 ---
 
 \`\`\`json uw:section=property source=manual ts=2026-08-25T00:00:00Z v=1 confidence=high
-{ "_meta": { "section": "property", "version": 1, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-08-25T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "rentable_square_feet": 42500, "year_built": 1998 }
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-25T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "rentable_square_feet": 42500,
+  "year_built": 1998
+}
 \`\`\`
 `;
 
@@ -199,7 +320,7 @@ describe('render — size intensives (RFC 0027)', () => {
 function noiDoc(content: Record<string, unknown>): string {
   const meta = '"_meta": { "section": "noi_model", "version": 1, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-10-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }';
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_NOI"
 deal_name: "NOI Read Fixture"
 created: "2026-10-01T00:00:00Z"

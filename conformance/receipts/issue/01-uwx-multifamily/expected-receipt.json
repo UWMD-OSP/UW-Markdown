@@ -5,7 +5,7 @@
     "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
     "canonicalization_version": "1.0",
-    "digest": "sha256:f0d53809101ab8bafd0a135f3e71b4ca073b8dc15c78c431780bb3bd82ae33bd"
+    "digest": "sha256:171d2b104bed3790f1fd481494cf9469e080a0e3c5db964dee5ec9c22b741c35"
   },
   "computation": {
     "pack": "org.uwmd.pack.multifamily",
@@ -70,7 +70,7 @@
     "policy_set_version": "1.0",
     "validation": {
       "errors": 0,
-      "warnings": 5
+      "warnings": 0
     }
   },
   "issued_at": "2026-08-09T00:00:00Z",

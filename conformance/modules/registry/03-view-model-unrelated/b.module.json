@@ -8,9 +8,8 @@
     "UW Markdown contributors"
   ],
   "license": "MIT",
-  "requires_protocol": ">=1.0.0",
-  "requires_format": ">=1.0",
-  "requires_tier": "tier-3-calc-host",
+  "requires_protocol": "^4.0.0",
+  "requires_format": "^3.0",
   "view_models": [
     {
       "section_id": "shared_section",
@@ -19,5 +18,6 @@
       "description": "B view of the shared section.",
       "primary_fields": []
     }
-  ]
+  ],
+  "requires_conformance": "verifier"
 }

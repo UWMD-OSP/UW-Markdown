@@ -4,7 +4,7 @@
 // stack must balance, so the surface shows a live sources-vs-uses balance check
 // and the gap (e.g. a missing equity plug) without ever silently writing it.
 
-import { deriveSourcesUses, type EditOperation, type UWBlock } from '@uwmd/core/browser';
+import { deriveSourcesUses, type EditOperation, type UWBlock, type ParsedUWFile } from '@uwmd/core/browser';
 import { getNumeric, deepGet } from '../catalog.js';
 import { FootedRow, GroupHeading, InputRow, SubHeading, useFooting, type InputDef } from './model-kit.js';
 
@@ -22,25 +22,26 @@ function scalarInputs(content: Row, parentPath: string): InputDef[] {
   const obj = deepGet(content, parentPath);
   if (!isObj(obj)) return [];
   return Object.entries(obj)
-    .filter(([k, v]) => k !== 'total' && !isObj(v))
+    .filter(([k, v]) => k !== 'total' && !isObj(v) && !Array.isArray(v))
     .map(([k]) => ({ path: `${parentPath}.${k}`, label: prettify(k) }));
 }
 
 export function SourcesUsesModel(props: {
+  parsed: ParsedUWFile;
   sectionId: string;
   variant: string | undefined;
   block: UWBlock;
   dispatch: (op: EditOperation) => void;
 }) {
-  const { sectionId, variant, block, dispatch } = props;
+  const { parsed, sectionId, variant, block, dispatch } = props;
   const { content, commitInput, footed } = useFooting(
     sectionId,
     variant,
     block,
     dispatch,
-    deriveSourcesUses,
+    content => deriveSourcesUses(content, parsed),
   );
-  const { gap, balanced } = deriveSourcesUses(content);
+  const { gap, balanced } = deriveSourcesUses(content, parsed);
 
   const hasStack = isObj(deepGet(content, 'sources')) || isObj(deepGet(content, 'uses'));
   if (!hasStack) {
@@ -54,6 +55,11 @@ export function SourcesUsesModel(props: {
   const sourceInputs = scalarInputs(content, 'sources');
   const useInputs = scalarInputs(content, 'uses');
   const closingInputs = scalarInputs(content, 'uses.closing_costs');
+  const renovationInputs = scalarInputs(content, 'uses.renovation');
+  const escrows = deepGet(content, 'uses.escrows');
+  const escrowInputs: InputDef[] = Array.isArray(escrows) ? escrows.flatMap((escrow, index) =>
+    isObj(escrow) && ['interest', 'operating'].includes(String(escrow.name)) && 'upfront' in escrow
+      ? [{ path: `uses.escrows.${index}.upfront`, label: `${prettify(String(escrow.name))} Reserve` }] : []) : [];
 
   return (
     <div className="px-4 py-4">
@@ -75,6 +81,11 @@ export function SourcesUsesModel(props: {
           {useInputs.map((d) => (
             <InputRow key={d.path} def={d} value={getNumeric(content, d.path)} onCommit={commitInput} />
           ))}
+
+          {[...renovationInputs, ...escrowInputs].map((d) => (
+            <InputRow key={d.path} def={d} value={getNumeric(content, d.path)} onCommit={commitInput} />
+          ))}
+          <p className="text-xs text-muted">Stated hedge premiums in Debt Structure also count once in Total Uses.</p>
 
           {closingInputs.length > 0 && (
             <>
@@ -126,6 +137,6 @@ function BalanceBanner({ gap, balanced }: { gap: number; balanced: boolean }) {
 }
 
 /** Footed paths — locked out of the generic scalar editor by SectionView. */
-export function sourcesUsesDerivedPaths(block: UWBlock): Set<string> {
-  return new Set(deriveSourcesUses(block.content as Row).fields.map((f) => f.path));
+export function sourcesUsesDerivedPaths(block: UWBlock, parsed: ParsedUWFile): Set<string> {
+  return new Set(deriveSourcesUses(block.content as Row, parsed).fields.map((f) => f.path));
 }

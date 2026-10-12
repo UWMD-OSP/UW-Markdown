@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T2-002
 deal_name: "Section Replace Fixture"
 created: "2026-01-15T10:00:00Z"
@@ -28,18 +28,25 @@ created_by: "test-fixture"
   "renovated_year": 2022,
   "_meta": {
     "section": "property",
-    "version": 2,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "analyst-jane",
-    "timestamp": "<volatile>",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "analyst-jane",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "<volatile>",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    }
   }
 }
 ```

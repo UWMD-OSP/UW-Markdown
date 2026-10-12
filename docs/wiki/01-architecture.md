@@ -67,9 +67,9 @@ The four Protocol 2.x tiers (Reader, Editor, Calc Host, Agent Host; the
 stay readable, deprecated, during 3.x: tier-1 and tier-2 → reader, tier-3 and
 tier-4 → verifier (2.x Tier 4 included Tier 3), with the editor and agent-host
 claims kept as non-normative starter-product claims
-(`readConformanceTier` in `protocol.ts`). Module manifests keep `requires_tier`
-in the 2.x vocabulary. The corpus directories keep their 2.x names until the
-corpus is re-tiered (RFC 0078 phase 3).
+(`readConformanceTier` in `protocol.ts`). Module manifests now declare `requires_conformance` and optional `requires_profiles`
+in the reader/verifier vocabulary. The re-tiered corpus retains its historical
+directory names until RFC 0081 Phase 5 renames them.
 
 ## Repository map
 

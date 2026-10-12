@@ -1,3 +1,4 @@
+// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
 // RFC 0031 — `uwmd migrate --source-tags`: rewrite legacy `_meta.source`
 // values into the actor / resolution split.
 //

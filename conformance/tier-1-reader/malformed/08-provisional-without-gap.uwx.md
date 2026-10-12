@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MAL-008
 deal_name: "Malformed: provisional block without gaps reference"
 created: "2026-01-15T10:00:00Z"
@@ -29,19 +29,26 @@ section references it. Validator MUST emit `DQ-01` (warning).
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "808 DQ-01 Lane, Phoenix, AZ 85001",
   "asset_class": "multifamily",
@@ -55,20 +62,26 @@ section references it. Validator MUST emit `DQ-01` (warning).
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "asset_class_default",
-    "agent_id": "agent/L0a",
-    "agent_version": "1.0.0",
-    "actor": "agent/L0a",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "low",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null,
-    "provisional": true
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "asset_class_default",
+      "actor": "agent/L0a",
+      "agent_id": "agent/L0a",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "low",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": true
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "expense_ratio": 0.4
 }

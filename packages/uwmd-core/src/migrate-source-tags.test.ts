@@ -1,3 +1,4 @@
+import { legacyDocument, setFixtureMeta } from '../../../test/rfc-0081-corpus.js';
 // RFC 0031 codemod — the mapping is total over the measured corpus values and
 // mechanical; anything it does not know is left in place and reported.
 
@@ -59,8 +60,8 @@ describe('mapLegacySource', () => {
 });
 
 describe('migrateSourceTags', () => {
-  const FILE = `---
-uw_version: "1.1"
+  const AUTHORED = `---
+uw_version: "3.0"
 deal_id: "migrate-test"
 asset_class: multifamily
 ---
@@ -69,19 +70,30 @@ asset_class: multifamily
 
 Some prose that must survive byte-for-byte.
 
-\`\`\`json uw:section=property source=market_data ts=2026-08-31T00:00:00Z v=1
+\`\`\`json uw:section=property source=system/uwmd ts=2026-08-31T00:00:00Z v=1
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "market_data",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test",
-    "timestamp": "2026-08-31T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "market_data",
+      "actor": "test",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-31T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 10
 }
@@ -91,20 +103,32 @@ Some prose that must survive byte-for-byte.
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test",
-    "timestamp": "2026-08-31T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false
+    "provenance": {
+      "source": "manual",
+      "actor": "test",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-31T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "purchase_price": 5000000
 }
 \`\`\`
 `;
+
+  const FILE = setFixtureMeta(legacyDocument(AUTHORED), 'property', { source: 'market_data' }).replace('source=system/uwmd', 'source=market_data');
 
   it('splits the legacy tag, mirrors the fence, and leaves clean blocks untouched', () => {
     const result = migrateSourceTags(FILE);
@@ -156,10 +180,7 @@ Some prose that must survive byte-for-byte.
   });
 
   it('moves canonical tags in field_overrides to resolution', () => {
-    const withOverride = FILE.replace(
-      '"human_review_required": false\n  },\n  "purchase_price": 5000000',
-      '"human_review_required": false,\n    "field_overrides": [{ "path": "purchase_price", "source": "market_data_accepted" }]\n  },\n  "purchase_price": 5000000',
-    );
+    const withOverride = setFixtureMeta(FILE, 'valuation', {field_overrides: [{path: 'purchase_price', source: 'market_data_accepted'}]});
     const result = migrateSourceTags(withOverride);
     expect(result.changed).toBe(2);
     expect(result.content).toContain('"resolution": "market_data_accepted"');

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-SCOPE-004
 deal_name: "Scope-only fixture (back-of-napkin)"
 created: "2026-01-15T10:00:00Z"
@@ -31,19 +31,26 @@ unknowns. Validates clean at `deal_stage: scope`.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "404 Scope Lane, Phoenix, AZ 85001",
   "asset_class": "multifamily",
@@ -58,20 +65,26 @@ unknowns. Validates clean at `deal_stage: scope`.
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "asset_class_default",
-    "agent_id": "agent/L0a",
-    "agent_version": "1.0.0",
-    "actor": "agent/L0a",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "low",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Filled from asset-class defaults; replace with real T-12 to advance past scope.",
-    "provisional": true
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "asset_class_default",
+      "actor": "agent/L0a",
+      "agent_id": "agent/L0a",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": "Filled from asset-class defaults; replace with real T-12 to advance past scope."
+    },
+    "quality": {
+      "confidence": "low",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": true
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "expense_ratio": 0.4,
   "rent_growth_pct_y1": 0.03,
@@ -86,20 +99,26 @@ unknowns. Validates clean at `deal_stage: scope`.
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "asset_class_default",
-    "agent_id": "agent/L0a",
-    "agent_version": "1.0.0",
-    "actor": "agent/L0a",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "low",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Indicative terms from asset-class defaults.",
-    "provisional": true
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "asset_class_default",
+      "actor": "agent/L0a",
+      "agent_id": "agent/L0a",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": "Indicative terms from asset-class defaults."
+    },
+    "quality": {
+      "confidence": "low",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": true
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "rate_pct": 0.067,
   "amortization_months": 360,
@@ -114,19 +133,26 @@ unknowns. Validates clean at `deal_stage: scope`.
 {
   "_meta": {
     "section": "gaps",
-    "version": 1,
-    "superseded": false,
-    "source": "system/uwmd",
-    "resolution": "system_default",
-    "agent_id": "system/gaps-maintainer",
-    "agent_version": "1.0.0",
-    "actor": "system/gaps-maintainer",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/uwmd",
+      "resolution": "system_default",
+      "actor": "system/gaps-maintainer",
+      "agent_id": "system/gaps-maintainer",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "items": [
     {

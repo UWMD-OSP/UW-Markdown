@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T2-GAPS
 deal_name: "Gaps Section Auto-Update (Edited)"
 created: "2026-01-15T10:00:00Z"
@@ -24,19 +24,26 @@ created_by: "test-fixture"
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "<volatile>",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "<volatile>",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "600 Gaps Way",
   "asset_class": "multifamily",
@@ -55,18 +62,25 @@ created_by: "test-fixture"
   },
   "_meta": {
     "section": "gaps",
-    "version": 1,
-    "superseded": false,
-    "source": "system/gaps-maintainer",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system/gaps-maintainer",
-    "timestamp": "<volatile>",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Auto-maintained by editor; see FORMAT_SPEC §4.22."
+    "provenance": {
+      "source": "system/gaps-maintainer",
+      "actor": "system/gaps-maintainer",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "<volatile>",
+      "notes": "Auto-maintained by editor; see FORMAT_SPEC §4.22."
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   }
 }
 ```

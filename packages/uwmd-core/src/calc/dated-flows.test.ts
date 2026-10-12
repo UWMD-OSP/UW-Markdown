@@ -9,7 +9,7 @@ import type { CalcEvaluationContext } from '../protocol.js';
 import { parseUWFile } from '../parser.js';
 
 const DOC = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-CF-DECL
 asset_class: multifamily
 ---
@@ -18,11 +18,31 @@ asset_class: multifamily
 {
   "day_count": "actual/365f",
   "series": [
-    { "date": "2026-03-17", "amount": -14250000, "kind": "acquisition" },
-    { "date": "2026-09-30", "amount": 412000, "kind": "operating" },
-    { "date": "2027-03-31", "amount": 431000, "kind": "operating" },
-    { "date": "2027-06-15", "amount": -350000, "kind": "capex" },
-    { "date": "2031-03-17", "amount": 19800000, "kind": "disposition" }
+    {
+      "date": "2026-03-17",
+      "amount": -14250000,
+      "kind": "acquisition"
+    },
+    {
+      "date": "2026-09-30",
+      "amount": 412000,
+      "kind": "operating"
+    },
+    {
+      "date": "2027-03-31",
+      "amount": 431000,
+      "kind": "operating"
+    },
+    {
+      "date": "2027-06-15",
+      "amount": -350000,
+      "kind": "capex"
+    },
+    {
+      "date": "2031-03-17",
+      "amount": 19800000,
+      "kind": "disposition"
+    }
   ]
 }
 \`\`\`
@@ -30,8 +50,14 @@ asset_class: multifamily
 \`\`\`json uw:section=cash_flow_series variant=downside source=manual ts=2026-09-02T00:00:00Z v=1
 {
   "series": [
-    { "date": "2026-03-17", "amount": -14250000 },
-    { "date": "2031-03-17", "amount": 15000000 }
+    {
+      "date": "2026-03-17",
+      "amount": -14250000
+    },
+    {
+      "date": "2031-03-17",
+      "amount": 15000000
+    }
   ]
 }
 \`\`\`

@@ -32,7 +32,7 @@ const TRUE_UP = `"recovery_true_up": [
 
 function doc(tenantBody: string, asOf = '2026-06-30', series = ''): string {
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-REC
 asset_class: office
 ---
@@ -58,7 +58,10 @@ const SERIES_BLOCK = `
 \`\`\`json uw:section=cash_flow_series variant=recoveries source=manual ts=2026-09-16T00:00:00Z v=1
 {
   "series": [
-    { "date": "2026-03-15", "amount": 7299.2 }
+    {
+      "date": "2026-03-15",
+      "amount": 7299.2
+    }
   ]
 }
 \`\`\`
@@ -76,8 +79,8 @@ describe('RFC 0058 — a clean recovery record', () => {
     expect(codes(doc(''))).toEqual([]);
   });
 
-  it('leaves the legacy cam_cap_pct alone when no typed cap contradicts it', () => {
-    expect(codes(doc('"cam_cap_pct": 0.05'))).toEqual([]);
+  it('accepts a lone stated recovery cap', () => {
+    expect(codes(doc('"recovery_terms": { "cap": { "pct": 0.05 } }'))).toEqual([]);
   });
 });
 
@@ -222,15 +225,7 @@ describe('REC-06 / REC-07 / REC-08 — the arithmetic a single document can chec
   });
 });
 
-describe('REC-10 — the legacy cap field', () => {
-  it('warns, rather than refuses, when cam_cap_pct sits beside a typed cap', () => {
-    const source = doc(`"cam_cap_pct": 0.05,\n      "recovery_terms": { "method": "net", "cap": { "pct": 0.04, "accumulation": "cumulative" } }`);
-    const issues = validateUWFile(parseUWFile(source)).issues;
-    const rec10 = issues.find((i) => i.code === 'REC-10');
-    expect(rec10).toBeDefined();
-    expect(rec10!.severity).toBe('warning');
-  });
-});
+
 
 describe('REC-09 — the §4.26 handoff', () => {
   const withRef = (ref: string, series = '') =>

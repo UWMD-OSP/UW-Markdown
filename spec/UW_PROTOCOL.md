@@ -1450,7 +1450,7 @@ refused as a whole. `conformance/modules/registry/` pins these rules.
 
 ### VII.4 Capability negotiation
 
-A manifest MUST declare `requires_conformance: "reader" | "verifier"` and MAY declare `requires_profiles`, an array of unique members of the closed profile list (§II.3). Reader < Verifier. Absent profiles means none. An invalid tier or unknown profile is `PROTO-MOD-006`; a host below the tier or lacking a required profile is `PROTO-MOD-029`. `requires_tier` is not admitted.
+A manifest MUST declare `requires_conformance: "reader" | "verifier"` and MAY declare `requires_profiles`, an array of unique members of the closed profile list (§II.3). Reader < Verifier. Absent profiles means none. An invalid tier, non-array profiles declaration, duplicate profile, or unknown profile is `PROTO-MOD-006`; a host below the tier or lacking a required profile is `PROTO-MOD-029`. `requires_tier` is not admitted.
 
 A module declaring calculations SHOULD require Verifier plus the module profile; this recommendation adds no new refusal. Builtin packs declare Verifier with no profiles. Reference LoadModuleOptions uses hostConformance (default verifier) and hostProfiles (default the reference ImplementationManifest profiles).
 

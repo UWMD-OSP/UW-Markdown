@@ -1,11 +1,11 @@
 {
-  "description": "RFC 0080 core builtin control. hotel_metrics removed. The module declares it required, so MOD-SECTION-MISSING is an error naming the module that asked. The calcs that read it degrade to null rather than throwing. CC-HOSP-03 still fires: hotel_brand is untouched, and one missing section does not suppress findings about the sections that are present.",
+  "description": "RFC 0080 core builtin control, re-authored for RFC 0081 G3. The rent_roll omits available_room_nights, the field the hospitality class contract requires, so CLS-04 is an error. The calcs that read it degrade to null rather than throwing. CC-HOSP-03 still fires: hotel_brand is untouched, and one missing required field does not suppress findings about the sections that are present.",
   "expected_calcs": {
     "revpar": null
   },
   "expected_codes": [
-    "CC-HOSP-03",
-    "CLS-03"
+    "CLS-04",
+    "CC-HOSP-03"
   ],
   "builtin_class": "hospitality"
 }

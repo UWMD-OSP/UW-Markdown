@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: SYNTHETIC-RESERVE
 asset_class: industrial
 deal_stage: screening

@@ -19,7 +19,7 @@ package through `npx`.
 npx @uwmd/cli init --output deal.uwx.md
 ```
 
-This writes a Format 2.0 UWX record with every standard section stubbed out:
+This writes a UWX record with every standard section stubbed out:
 property, rent roll, operating statement, debt structure, valuation, and the
 rest. Pass the file name with `--output`. Without it the file is named
 `new-deal.uwx.md`.

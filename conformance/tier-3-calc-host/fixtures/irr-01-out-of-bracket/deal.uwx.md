@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-IRR-01
 deal_name: "IRR out of bracket"
 created: "2026-08-15T10:00:00Z"

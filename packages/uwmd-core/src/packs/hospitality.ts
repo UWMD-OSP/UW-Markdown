@@ -18,9 +18,9 @@ export const HOSPITALITY_PACK: ModuleManifest = {
     'Fourteen derived metrics for hospitality underwriting: cap rate, LTV, LTC, DSCR, debt yield, $/key, loan/key, NOI/key, expense ratio, cash-on-cash, occupancy, ADR, RevPAR, and GOP margin.',
   authors: ['UW Markdown Working Group'],
   license: 'MIT',
-  requires_protocol: '^1.0.0',
-  requires_format: '^1.1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
   asset_classes: ['hospitality'],
   calculations: [
     {
@@ -132,7 +132,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
     {
       "id": "total_room_revenue",
       "label": "Total Room Revenue",
-      "formula": "hotel_metrics.adr == null || hotel_metrics.occupancy == null || hotel_metrics.available_room_nights == null ? null : (hotel_metrics.adr * hotel_metrics.occupancy * hotel_metrics.available_room_nights)",
+      "formula": "rent_roll.adr == null || rent_roll.occupancy == null || rent_roll.available_room_nights == null ? null : (rent_roll.adr * rent_roll.occupancy * rent_roll.available_room_nights)",
       "unit": "$",
       "round_to": 2,
       "deterministic": true
@@ -140,7 +140,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
     {
       "id": "room_revenue_per_key",
       "label": "Room Revenue / Key",
-      "formula": "hotel_metrics.adr == null || hotel_metrics.occupancy == null || hotel_metrics.available_room_nights == null || hotel_metrics.key_count == null ? null : (round((hotel_metrics.adr * hotel_metrics.occupancy * hotel_metrics.available_room_nights), 2) / hotel_metrics.key_count)",
+      "formula": "rent_roll.adr == null || rent_roll.occupancy == null || rent_roll.available_room_nights == null || property.keys == null ? null : (round((rent_roll.adr * rent_roll.occupancy * rent_roll.available_room_nights), 2) / property.keys)",
       "unit": "$",
       "round_to": 2,
       "deterministic": true

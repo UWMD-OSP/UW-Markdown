@@ -56,6 +56,20 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
   const strict = atLeast21 || namesLegacyModule;
   const ruleSeverity = (severity: ValidationMessage['severity']): ValidationMessage['severity'] =>
     severity === 'error' && !strict ? 'warning' : severity;
+  // G3 (RFC 0081 §5): the hotel facts' rent_roll contract.
+  // RFC 0081 Phase 4: delete the uw_version gate; the contract then applies to every document.
+  if (assetClass === 'hospitality' && parsed.frontmatter.uw_version === '3.0') {
+    const roll = resolveRoleBlock(parsed.sections.rent_roll, 'rent_roll', ['default', 'base']).block;
+    if (roll) {
+      const facts = blockPayload(roll) as Record<string, unknown>;
+      const nights = facts['available_room_nights'];
+      if (typeof nights !== 'number' || !Number.isInteger(nights) || nights < 0) issues.push({ code: 'CLS-04', severity: 'error', section: 'rent_roll', field: 'available_room_nights', message: 'Hospitality rent_roll.available_room_nights must be a stated nonnegative integer.' });
+      for (const field of ['adr', 'occupancy', 'occupied_room_nights']) {
+        const value = facts[field];
+        if (value != null && (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || (field === 'occupancy' && value > 1) || (field === 'occupied_room_nights' && !Number.isInteger(value)))) issues.push({ code: 'CLS-04', severity: 'error', section: 'rent_roll', field, message: `rent_roll.${field} violates its standard field contract.` });
+      }
+    }
+  }
   for (const section of content.sections) {
     const resolved = resolveRoleBlock(parsed.sections[section.id], section.id, ['default', 'base']);
     if (!resolved.block) {
@@ -101,7 +115,8 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
     // Hospitality's migrated calculations only ever ran for documents naming
     // the legacy module; for every other hotel record they stay uncomputed,
     // as they were before RFC 0080 (no new error, no new warning).
-    if (assetClass === 'hospitality' && !namesLegacyModule) continue;
+    // RFC 0081 Phase 4: delete the old hospitality module-gating branch.
+    if (parsed.frontmatter.uw_version !== '3.0' && assetClass === 'hospitality' && !namesLegacyModule) continue;
     issues.push({ code: 'MOD-CALC-ERROR', severity: ruleSeverity('error'), message: `Builtin ${assetClass} calculation ${decl.id} failed: ${result.error?.message}` });
   }
   // CC-HOSP-01 compares the canonical RevPAR (rooms revenue / available room

@@ -216,7 +216,7 @@ for (const pkg of OFFICIAL_MODULE_PACKAGES) {
   const packageManifest = readJson(`${pkg.dir}/package.json`);
   const metadata = moduleMetadataFromSource(read(`${pkg.dir}/src/index.ts`), pkg.constantPrefix);
   const expected = [pkg.name, metadata.id, packageManifest.version, metadata.version, metadata.manifest_version,
-    metadata.requires_protocol, metadata.requires_format, metadata.requires_tier, packageManifest.dependencies['@uwmd/core']];
+    metadata.requires_protocol, metadata.requires_format, metadata.requires_conformance, packageManifest.dependencies['@uwmd/core']];
   const actual = moduleRows.find((cells) => cells[0] === pkg.name);
   if (!actual || actual.length !== expected.length || expected.some((cell, i) => actual[i] !== cell)) {
     failures.push(`VERSIONS.md: ${pkg.name} module compatibility row must be ${expected.join(' | ')}`);

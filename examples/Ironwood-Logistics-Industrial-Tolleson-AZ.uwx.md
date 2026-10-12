@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_i3k9m2"
 deal_name: "Ironwood Logistics Center — Tolleson, AZ"
 created: "2026-05-19T08:00:00Z"
@@ -72,14 +72,25 @@ Ironwood Logistics Center is a 220,000 SF Class A bulk-distribution warehouse in
 {
   "_meta": {
     "section": "deal_context",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-05-19T08:20:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-05-19T08:20:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "32' clear height, 38 dock-high doors, ESFR sprinklers, 185' truck court. Tenant A (largest) rolls in year 3 — mark-to-market upside as in-place rents are ~10% below current asking.",
   "deal_summary": "220,000 SF Class A bulk warehouse in Tolleson (SW Valley), 96% leased NNN to three logistics tenants. Stabilized acquisition at a 6.25% in-place cap with mark-to-market upside on year-3 rollover.",
@@ -99,14 +110,25 @@ Ironwood Logistics Center is a 220,000 SF Class A bulk-distribution warehouse in
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-05-19T08:40:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-05-19T08:40:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "rentable_square_feet": 220000,
   "year_built": 2016,
@@ -132,15 +154,26 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "actor": "jared",
-    "timestamp": "2026-05-19T09:10:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-05-19T09:10:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "One vacant 8,800 SF suite (former cross-dock user). Tenant A rolls 2029; in-place at $9.50 vs ~$10.50 market.",
   "as_of_date": "2026-05-01",
@@ -213,14 +246,25 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "actor": "system",
-    "timestamp": "2026-05-19T11:30:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-05-19T11:30:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Year-1 underwritten. NNN structure — recoverable expenses (taxes, insurance, CAM) are largely passed through to tenants via expense_reimbursements.",
   "income": {
@@ -253,14 +297,25 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "actor": "jared",
-    "timestamp": "2026-05-19T13:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-05-19T13:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Fixed-rate permanent debt sized to a 1.46x DSCR / 10.8% debt yield at a conservative 58% LTV — typical for stabilized single-asset logistics.",
   "loan_type": "permanent",
@@ -291,17 +346,30 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "actor": "system",
-    "timestamp": "2026-05-19T13:05:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-05-19T13:05:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "equity_metrics.equity_total equals the stated sources.sponsor_equity (12,760,000): it is the only non-debt source, so this is an identity of stated fields, not an inferred allocation or cash flow.",
-  "equity_metrics": { "equity_total": 12760000 },
+  "equity_metrics": {
+    "equity_total": 12760000
+  },
   "sources": {
     "loan_amount": 16240000,
     "sponsor_equity": 12760000,
@@ -326,15 +394,26 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "actor": "jared",
-    "timestamp": "2026-05-19T14:30:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-05-19T14:30:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "purchase_price": 28000000,
   "appraised_value": 28200000,
@@ -355,19 +434,26 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
 {
   "_meta": {
     "section": "operating_statement",
-    "version": 1,
-    "superseded": false,
-    "source": "system/extractor",
-    "resolution": "ai_extracted",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+    "provenance": {
+      "source": "system/extractor",
+      "resolution": "ai_extracted",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "T-12 summary reconciled to the NOI model; line detail retained in the source statement."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "period": "t12",
   "period_end": "2026-06-30",
@@ -391,18 +477,25 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
 {
   "_meta": {
     "section": "preliminary_sizing",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sizing_basis": {
     "noi_underwritten": 1750000,
@@ -442,18 +535,25 @@ Ironwood Logistics Holdings LLC — single-principal sponsorship; figures PFS-st
 {
   "_meta": {
     "section": "borrower_sponsor",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Figures are PFS-stated; CPA verification requested for the DD period."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "principals": [
     {
@@ -498,18 +598,25 @@ Tolleson / Southwest Valley infill logistics fundamentals as of 2026-08.
 {
   "_meta": {
     "section": "market_analysis",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Broker survey and published market reports; refresh before credit committee."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Broker survey and published market reports; refresh before credit committee."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "market": "Phoenix Metro",
   "submarket": "Tolleson / Southwest Valley",
@@ -541,18 +648,25 @@ Financial-validity engine run over the sections above.
 {
   "_meta": {
     "section": "validation",
-    "version": 1,
-    "superseded": false,
-    "source": "system/financialValidityChecker",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "system",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/financialValidityChecker",
+      "actor": "system",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "overall_status": "clean",
   "financial_validity": [

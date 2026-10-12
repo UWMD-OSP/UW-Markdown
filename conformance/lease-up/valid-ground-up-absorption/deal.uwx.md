@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-LU-GROUNDUP
 deal_name: "Ground-Up Absorption Curve"
 created: "2026-09-01T10:00:00Z"
@@ -30,18 +30,25 @@ construction, not an omission: no LU-04.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "500 Absorption Ave",
   "asset_class": "office",
@@ -54,28 +61,35 @@ construction, not an omission: no LU-04.
 {
   "_meta": {
     "section": "lease_up_schedule",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-09-01T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "model_type": "absorption_curve",
   "period_granularity": "monthly",
   "stabilization_target": "2027-12",
   "assumptions": {
     "monthly_turnover_rate": 0.04,
-    "market_rent_psf_at_stabilization": 22.0,
+    "market_rent_psf_at_stabilization": 22,
     "vacancy_during_lease_up": 0.18,
     "concession_months_per_lease": 1,
-    "tenant_improvement_psf": 35.0,
+    "tenant_improvement_psf": 35,
     "leasing_commission_rate": 0.06
   },
   "schedule": [
@@ -83,7 +97,7 @@ construction, not an omission: no LU-04.
       "period": "2026-10",
       "occupied_sf": 0,
       "leased_sf": 4200,
-      "vacancy_rate": 1.0,
+      "vacancy_rate": 1,
       "rent_revenue": 0,
       "concessions": 0,
       "ti_lc_capex": -147000,

@@ -39,7 +39,7 @@ export type Dispatch = (op: EditOperation) => void;
 
 // Per-section "footed paths" — totals a model surface owns, locked out of the
 // generic scalar editor so each has exactly one editing path.
-const DERIVED_PATHS: Record<string, (block: UWBlock) => Set<string>> = {
+const DERIVED_PATHS: Record<string, (block: UWBlock, parsed: ParsedUWFile) => Set<string>> = {
   rent_roll: derivedPaths,
   operating_statement: operatingStatementDerivedPaths,
   debt_structure: debtDerivedPaths,
@@ -92,6 +92,7 @@ export function SectionView(props: {
       {variants.map(([variant, block]) => (
         <BlockView
           key={variant ?? 'default'}
+          parsed={parsed}
           sectionId={activeId}
           assetClass={assetClass}
           variant={variant}
@@ -176,6 +177,7 @@ function ProseView({ prose }: { prose: string | undefined }) {
 }
 
 function BlockView(props: {
+  parsed: ParsedUWFile;
   sectionId: string;
   assetClass: string;
   variant: string | undefined;
@@ -183,13 +185,13 @@ function BlockView(props: {
   dispatch: Dispatch;
   issues: ValidationMessage[];
 }) {
-  const { sectionId, assetClass, variant, block, dispatch, issues } = props;
+  const { parsed, sectionId, assetClass, variant, block, dispatch, issues } = props;
   const [showJson, setShowJson] = useState(false);
   const meta = block.meta;
   const fields = fieldsForSection(sectionId, assetClass);
   // Paths a section model foots automatically — lock them out of the generic
   // scalar editor so each total has exactly one editing path.
-  const lockedPaths = DERIVED_PATHS[sectionId]?.(block);
+  const lockedPaths = DERIVED_PATHS[sectionId]?.(block, parsed);
 
   return (
     <section className="mt-5 rounded border border-rule bg-paper">
@@ -217,7 +219,7 @@ function BlockView(props: {
         <DebtModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
       )}
       {sectionId === 'sources_uses' && (
-        <SourcesUsesModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
+        <SourcesUsesModel parsed={parsed} sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />
       )}
       {sectionId === 'valuation' && (
         <ValuationModel sectionId={sectionId} variant={variant} block={block} dispatch={dispatch} />

@@ -137,7 +137,7 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     });
     expect(frontmatterOf(content)).toContain(
       [
-        'uw_version: "2.1"',
+        'uw_version: "2.1"', // RFC 0081 Phase 4: delete (init writes 3.0 then)
         'deal_id: "uw_2026_BYTES"',
         'deal_name: "Sunrise Senior Living"',
       ].join('\n'),

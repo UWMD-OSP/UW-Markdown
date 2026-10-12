@@ -1,3 +1,4 @@
+// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
 import type {
   UWDocumentEnvelope,
   UWEnvelopeBlock,

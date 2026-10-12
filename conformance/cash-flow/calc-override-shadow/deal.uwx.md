@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: CF-DECL-03
 asset_class: multifamily
 ---

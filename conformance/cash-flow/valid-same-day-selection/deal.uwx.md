@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: SYNTHETIC-SAME-DAY
 asset_class: office
 deal_stage: intake

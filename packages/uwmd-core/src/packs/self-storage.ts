@@ -15,9 +15,9 @@ export const SELF_STORAGE_PACK: ModuleManifest = {
     'Twelve derived metrics for self-storage underwriting: cap rate, LTV, LTC, DSCR, debt yield, $/NRSF, loan/NRSF, NOI/NRSF, expense ratio, cash-on-cash, physical occupancy, and economic occupancy.',
   authors: ['UW Markdown Working Group'],
   license: 'MIT',
-  requires_protocol: '^1.0.0',
-  requires_format: '^1.1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
   asset_classes: ['self_storage'],
   calculations: [
     {

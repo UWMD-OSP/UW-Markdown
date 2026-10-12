@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: v2-001
 deal_name: Nested Meta Minimal
 asset_class: multifamily

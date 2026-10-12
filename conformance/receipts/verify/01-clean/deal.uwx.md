@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-RCP-001
 deal_name: "Cedar Court Apartments"
 created: "2026-08-09T00:00:00Z"
@@ -30,140 +30,162 @@ outputs follow from these inputs, not that the inputs are true.
 
 ```json uw:section=property source=manual ts=2026-08-09T00:00:00Z v=1 confidence=high
 {
-  "section_id": "property",
   "_meta": {
-    "section_id": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "total_units": 160,
-    "total_nra_sqft": 142000,
-    "year_built": 1998
-  },
-  "_notes": null
+  "_notes": null,
+  "total_units": 160,
+  "total_nra_sqft": 142000,
+  "year_built": 1998
 }
 ```
 
 ```json uw:section=valuation source=manual ts=2026-08-09T00:00:00Z v=1 confidence=high
 {
-  "section_id": "valuation",
   "_meta": {
-    "section_id": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "valuation",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "purchase_price": 24000000
-  },
-  "_notes": null
+  "_notes": null,
+  "purchase_price": 24000000
 }
 ```
 
 ```json uw:section=noi_model source=manual ts=2026-08-09T00:00:00Z v=1 confidence=high
 {
-  "section_id": "noi_model",
   "_meta": {
-    "section_id": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "noi_model",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "effective_gross_income": 2400000,
-    "operating_expenses": 1020000,
-    "net_operating_income": 1380000
-  },
-  "_notes": null
+  "_notes": null,
+  "effective_gross_income": 2400000,
+  "operating_expenses": 1020000,
+  "net_operating_income": 1380000
 }
 ```
 
 ```json uw:section=debt_structure source=manual ts=2026-08-09T00:00:00Z v=1 confidence=high
 {
-  "section_id": "debt_structure",
   "_meta": {
-    "section_id": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "debt_structure",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-09T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "loan_amount": 15600000,
-    "interest_rate": 0.0575,
-    "amortization_months": 360,
-    "annual_debt_service": 1092000
-  },
-  "_notes": null
+  "_notes": null,
+  "loan_amount": 15600000,
+  "interest_rate": 0.0575,
+  "amortization_months": 360,
+  "annual_debt_service": 1092000
 }
 ```
 
 ```json uw:section=sources_uses source=manual ts=2026-08-09T00:00:00Z v=1 confidence=high
 {
-  "section_id": "sources_uses",
   "_meta": {
-    "section_id": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-08-09T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
-  },
-  "content": {
-    "sources": {
-      "senior_debt": 15600000,
-      "equity_sponsor": 9200000
+    "section": "sources_uses",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-09T00:00:00Z",
+      "notes": null
     },
-    "equity_metrics": { "equity_total": 9200000 },
-    "uses": {
-      "purchase_price": 24000000,
-      "closing_costs": 800000
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
     }
   },
-  "_notes": null
+  "_notes": null,
+  "sources": {
+    "senior_debt": 15600000,
+    "equity_sponsor": 9200000
+  },
+  "equity_metrics": {
+    "equity_total": 9200000
+  },
+  "uses": {
+    "purchase_price": 24000000,
+    "closing_costs": 800000
+  }
 }
 ```

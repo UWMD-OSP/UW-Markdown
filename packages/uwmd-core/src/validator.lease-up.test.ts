@@ -11,7 +11,7 @@ import { parseUWFile } from './parser.js';
 function doc(leaseUpJson: string, opts: { variant?: string; rentRoll?: boolean; noi?: number | null } = {}): string {
   const { variant = 'base', rentRoll = true, noi = 480000 } = opts;
   return `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-LU
 asset_class: office
 ---
@@ -21,7 +21,10 @@ asset_class: office
 \`\`\`
 ${rentRoll ? `
 \`\`\`json uw:section=rent_roll source=manual ts=2026-09-01T00:00:00Z v=1
-{ "total_units": 12, "occupied_units": 9 }
+{
+  "total_units": 12,
+  "occupied_units": 9
+}
 \`\`\`
 ` : ''}${noi !== null ? `
 \`\`\`json uw:section=noi_model source=manual ts=2026-09-01T00:00:00Z v=1

@@ -35,7 +35,8 @@ describe('RFC 0080 official builtin controls', () => {
     });
   }
   it('resolves only the shipped official alias and preserves source identity', () => {
-    const source = readFileSync(resolve(corpus, '06-data-center-fixture/deal.uwx.md'), 'utf8');
+    // RFC 0081 Phase 4: delete the alias input synthesized from the canonical fixture.
+    const source = readFileSync(resolve(corpus, '06-data-center-fixture/deal.uwx.md'), 'utf8').replace(/asset_class: "?data_center"?/, 'asset_class: org.uwmd.data_center\nmodules:\n  - id: org.uwmd.datacenters\n    version: ^0.2.0');
     const parsed = parseUWFile(source);
     const before = JSON.stringify(parsed);
     expect(parseAssetClass('org.uwmd.data_center')).toEqual({ ok: true, kind: 'builtin', id: 'data_center' });
@@ -61,22 +62,14 @@ describe('RFC 0080 official builtin controls', () => {
   it('mirrors every standard section schema without field-contract drift', () => {
     for (const content of Object.values(BUILTIN_CLASS_CONTENT)) for (const section of content.sections) {
       const { $schema, $id, title, description: _description, ...schema } = JSON.parse(readFileSync(resolve(root, `spec/schemas/section-${section.id.replace(/_/g, '-')}.schema.json`), 'utf8'));
-      // RFC 0081 Phase 2: only the hotel schema moves before runtime Phase 4.
-      const runtime = structuredClone(section.schema);
-      if (section.id === 'hotel_metrics') {
-        expect(runtime.required).toEqual(['adr', 'occupancy', 'available_room_nights', 'key_count']);
-        expect(Object.keys(runtime.properties as Record<string, unknown>)).toEqual(['adr', 'occupancy', 'available_room_nights', 'key_count', 'market_revpar']);
-        delete runtime.required;
-        runtime.properties = { market_revpar: (runtime.properties as Record<string, unknown>).market_revpar };
-        runtime.additionalProperties = false;
-      }
+      const runtime = section.schema;
       expect(schema, section.id).toEqual(runtime);
     }
   });
   it('issues and resolves receipts for every builtin without injected packs', async () => {
     const source = readFileSync(resolve(root, 'examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
     for (const cls of ASSET_CLASSES) {
-      const input = source.replace(/asset_class:.*$/m, `asset_class: ${cls}`).replace(/uw_version:.*$/m, 'uw_version: "2.1"');
+      const input = source.replace(/asset_class:.*$/m, `asset_class: ${cls}`).replace(/uw_version:.*$/m, "uw_version: \"3.0\"");
       const receipt = await issueReceipt(input, { issued_at: '2026-10-10T00:00:00Z' });
       expect(receipt.computation.pack).toBe(getPackForAssetClass(cls)!.id);
       expect((await verifyReceipt(receipt, input)).verdict, cls).toBe('verified');
@@ -144,7 +137,7 @@ describe('Format 2.1 builtin record shapes', () => {
       expect(componentSchema(badPayload)).toBe(false);
       expect(validateUWFile(wrong).issues.map(i => i.code)).toEqual(expect.arrayContaining(['MU-03', 'CC-12']));
       for (const version of ['1.1', '2.0']) {
-        const old = parseUWFile(source.replace('uw_version: "2.1"', `uw_version: "${version}"`));
+        const old = parseUWFile(source.replace("uw_version: \"3.0\"", `uw_version: "${version}"`));
         expect(checkBuiltinClassContent(old).map(i => i.code)).toContain('CLS-05');
         expect(envelopeSchema(toUWEnvelope(old))).toBe(false);
         old.sections.components = { base: old.sections.components as UWBlock };
@@ -182,7 +175,8 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
   });
 
   it('keeps MOD-CALC-ERROR for a migrated calculation only where the legacy module ran it', () => {
-    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8');
+    // RFC 0081 Phase 4: delete the old module-gating test.
+    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8').replace(/uw_version:.*$/m, 'uw_version: "2.0"'); // RFC 0081 Phase 4: delete
     const broken = mutate(fixture, '"fb_revenue": 900000', '"fb_revenue": 0');
     const calcErrors = (source: string) => classIssues(source).filter(i => i.code === 'MOD-CALC-ERROR');
     expect(calcErrors(broken)).toEqual([]);
@@ -213,14 +207,15 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
   });
 
   it('reports field-contract defects as warnings on legacy-alias and pre-2.1 documents', () => {
-    const legacy = readFileSync(resolve(root, 'conformance/modules/runtime/06-data-center-fixture/deal.uwx.md'), 'utf8');
+    // RFC 0081 Phase 4: delete the old alias severity test.
+    const legacy = readFileSync(resolve(root, 'conformance/modules/runtime/06-data-center-fixture/deal.uwx.md'), 'utf8').replace('asset_class: "data_center"', 'asset_class: "org.uwmd.data_center"');
     expect(legacy).toContain('asset_class: "org.uwmd.data_center"');
     const fractional = mutate(legacy, '"raised_floor_sf": 60000', '"raised_floor_sf": 60000.5');
     const cls04 = classIssues(fractional).filter(i => i.code === 'CLS-04');
     expect(cls04.map(i => [i.field, i.severity])).toEqual([['raised_floor_sf', 'warning']]);
     expect(errors(fractional)).toEqual([]);
     // Same alias at Format 2.1 is still the legacy identity: warning.
-    const legacy21 = mutate(fractional, 'uw_version: "1.1"', 'uw_version: "2.1"');
+    const legacy21 = mutate(fractional, "uw_version: \"3.0\"", "uw_version: \"3.0\"");
     expect(classIssues(legacy21).filter(i => i.code === 'CLS-04').map(i => i.severity)).toEqual(['warning']);
   });
 
@@ -232,7 +227,7 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
 
   it('accepts Format 2.1 and any later version for the new ids, refusing earlier ones (CLS-05)', () => {
     const desert = readFileSync(resolve(root, 'examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md'), 'utf8');
-    const cls05 = (version: string) => classIssues(mutate(desert, 'uw_version: "2.1"', `uw_version: "${version}"`))
+    const cls05 = (version: string) => classIssues(mutate(desert, "uw_version: \"3.0\"", `uw_version: "${version}"`))
       .filter(i => i.code === 'CLS-05');
     expect(cls05('2.1')).toEqual([]);
     expect(cls05('2.10')).toEqual([]);

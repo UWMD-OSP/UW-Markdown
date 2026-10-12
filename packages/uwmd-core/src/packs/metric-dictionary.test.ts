@@ -16,23 +16,13 @@ const dictionary: MetricDictionary = readJson('../../../../spec/metrics/builtin.
 const schema = readJson('../../../../spec/schemas/metric-dictionary.schema.json');
 const validate = new Ajv2020({ strict: true, allErrors: true }).compile(schema);
 
-// RFC 0081 Phase 2 re-paths normative definitions; runtime packs move in Phase 4.
-// Apply only the four owner-approved address moves; all arithmetic stays exact.
-function projectHotelPaths(id: string, formula: string): string {
-  if (!['total_room_revenue', 'room_revenue_per_key'].includes(id)) return formula;
-  return formula.replaceAll('hotel_metrics.adr', 'rent_roll.adr')
-    .replaceAll('hotel_metrics.occupancy', 'rent_roll.occupancy')
-    .replaceAll('hotel_metrics.available_room_nights', 'rent_roll.available_room_nights')
-    .replaceAll('hotel_metrics.key_count', 'property.keys');
-}
-
 function extractedCalculations(): Omit<MetricDictionary['calculations'][number], 'minimum_stated_decimals'>[] {
   return ASSET_CLASSES.flatMap(assetClass => {
     const pack = getPackForAssetClass(assetClass);
     expect(pack, assetClass).not.toBeNull();
     return (pack!.calculations ?? []).map(c => ({
-      id: c.id, label: c.label!, asset_classes: [assetClass], formula: projectHotelPaths(c.id, c.formula),
-      input_paths: getExprDependencies(parseExpression(projectHotelPaths(c.id, c.formula))), unit: c.unit!,
+      id: c.id, label: c.label!, asset_classes: [assetClass], formula: c.formula,
+      input_paths: getExprDependencies(parseExpression(c.formula)), unit: c.unit!,
       round_to: resolveRoundTo(c), section_roles: c.section_roles ?? {},
       null_semantics: 'expression' as const, deterministic: c.deterministic as true,
     }));

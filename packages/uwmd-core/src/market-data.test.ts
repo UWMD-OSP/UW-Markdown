@@ -1,3 +1,4 @@
+import { nestedFixtureMeta } from '../../../test/rfc-0081-corpus.js';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -209,7 +210,7 @@ describe('createDocumentMarketData', () => {
     const deal = parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: uw_test',
         'asset_class: multifamily',
         '---',
@@ -349,7 +350,7 @@ describe('promoteMarketObservation', () => {
     const deal = parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: uw_promoted',
         'asset_class: multifamily',
         '---',
@@ -358,7 +359,7 @@ describe('promoteMarketObservation', () => {
         '',
         '```json uw:section=valuation v=1',
         JSON.stringify({
-          _meta: {
+          _meta: nestedFixtureMeta({
             section: 'valuation',
             version: 1,
             superseded: false,
@@ -372,7 +373,7 @@ describe('promoteMarketObservation', () => {
               as_of: AS_OF,
               digest: DIGEST,
             },
-          },
+          }),
           exit_cap_rate_pct: 0.0595,
         }),
         '```',
@@ -407,7 +408,7 @@ describe('promoteMarketObservation', () => {
 describe('parseMarketDataDocument', () => {
   const SOURCE = [
     '---',
-    'uw_version: "1.1"',
+    "uw_version: \"3.0\"",
     'document_profile: market-data-v1',
     'document_id: md:phx-multifamily:2026-Q2',
     'as_of: "2026-06-30"',
@@ -421,7 +422,7 @@ describe('parseMarketDataDocument', () => {
     '```json uw:section=market_observations v=1',
     JSON.stringify(
       {
-        _meta: {
+        _meta: nestedFixtureMeta({
           section: 'market_observations',
           version: 1,
           superseded: false,
@@ -430,7 +431,7 @@ describe('parseMarketDataDocument', () => {
           agent_version: null,
           actor: 'conformance',
           ts: '2026-06-30T00:00:00Z',
-        },
+        }),
         observations: [
           {
             field_path: 'valuation.going_in_cap_rate',

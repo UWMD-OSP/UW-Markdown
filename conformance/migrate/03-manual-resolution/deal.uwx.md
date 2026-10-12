@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: mig-c-003
 deal_name: Manual Resolution Rewrite
 asset_class: multifamily
@@ -10,20 +10,27 @@ asset_class: multifamily
 ```json uw:section=property source=manual ts=2026-09-01T00:00:00Z v=1 confidence=high
 {
   "_meta": {
-    "section_id": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-09-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T00:00:00Z",
+      "notes": "resolution 'manual' rewritten to 'user_input' by uwmd migrate --to-v2"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 24
 }

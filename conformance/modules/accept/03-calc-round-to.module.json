@@ -4,11 +4,12 @@
   "name": "Round-To Fixture",
   "version": "1.0.0",
   "description": "Exercises the §VIII.5 round_to precision contract: stated at both ends of the permitted band, at zero, and omitted so the unit default applies.",
-  "authors": ["UW Markdown contributors"],
+  "authors": [
+    "UW Markdown contributors"
+  ],
   "license": "MIT",
-  "requires_protocol": "^1",
-  "requires_format": "^1",
-  "requires_tier": "tier-3-calc-host",
+  "requires_protocol": "^4.0.0",
+  "requires_format": "^3.0",
   "calculations": [
     {
       "id": "stated_zero",
@@ -39,5 +40,9 @@
       "formula": "3 / 2",
       "deterministic": true
     }
+  ],
+  "requires_conformance": "verifier",
+  "requires_profiles": [
+    "module"
   ]
 }

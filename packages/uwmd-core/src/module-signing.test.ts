@@ -21,9 +21,9 @@ const MANIFEST: ModuleManifest = {
   description: 'A minimal manifest.',
   authors: ['test-fixture'],
   license: 'MIT',
-  requires_protocol: '>=1.0.0',
-  requires_format: '>=1.0',
-  requires_tier: 'tier-1-reader',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'reader',
 };
 
 const SIGNATURE: ModuleSignature = {

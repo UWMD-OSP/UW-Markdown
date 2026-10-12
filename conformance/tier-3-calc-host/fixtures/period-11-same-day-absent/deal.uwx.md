@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-PERIOD-SAME-DAY
 deal_name: "Same-Day Cash Flow Fixture"
 created: "2026-10-02T00:00:00Z"
@@ -27,13 +27,24 @@ whole-series duplicate refusal.
 {
   "_meta": {
     "section": "cash_flow_series",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-10-02T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-10-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "series": [
     {
@@ -62,13 +73,24 @@ whole-series duplicate refusal.
 {
   "_meta": {
     "section": "distribution_waterfall",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-10-02T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-10-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "stated_schedule": [
     {

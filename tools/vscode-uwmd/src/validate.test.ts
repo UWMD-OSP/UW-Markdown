@@ -97,11 +97,19 @@ describe('UWX analysis', () => {
   });
 
   it('anchors each section finding to that section fence line', () => {
-    const source = UWX();
+    // The canonical receipt fixture is now clean; create two explicit,
+    // non-financial source-vocabulary errors to exercise section anchoring.
+    const source = UWX().replace(/^(```json uw:section=(?:property|valuation)[^\n]*\n)([\s\S]*?)(^```)/gm,
+      (_match, open, raw, close) => {
+        const body = JSON.parse(raw);
+        body._meta.provenance.source = 'alien';
+        return `${open}${JSON.stringify(body, null, 2)}\n${close}`;
+      });
     const lines = source.split('\n');
     const result = analyzeDocument(source, 'deal.uwx.md');
 
     const located = result.diagnostics.filter((d) => d.line > 0);
+    expect(result.diagnostics.filter(d => d.code === 'SRC-01')).toHaveLength(2);
     expect(located.length).toBeGreaterThan(0);
 
     // Every anchored diagnostic must land on a real section fence, not on an

@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-MAL-010
 deal_name: "Malformed: No property section"
 created: "2026-08-26T10:00:00Z"
@@ -33,10 +33,22 @@ is additionally pinned by unit tests.
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "source": "manual",
-    "timestamp": "2026-08-26T10:00:00Z",
-    "confidence": "high"
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
   "loan_amount": 7500000,
   "interest_rate": 0.0619

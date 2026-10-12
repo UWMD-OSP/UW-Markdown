@@ -113,7 +113,7 @@ describe('CalcDashboard — the strip follows the asset class', () => {
     const parsed = parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: "x"',
         'deal_name: "X"',
         'asset_class: "__unregistered_test_class__"',
@@ -132,7 +132,7 @@ describe('CalcDashboard — the strip follows the asset class', () => {
     const parsed = parseUWFile(
       [
         '---',
-        'uw_version: "1.1"',
+        "uw_version: \"3.0\"",
         'deal_id: "x"',
         'deal_name: "X"',
         'asset_class: "multifamily"',

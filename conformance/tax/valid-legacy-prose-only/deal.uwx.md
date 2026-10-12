@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TAX-CONF
 asset_class: multifamily
 ---
@@ -10,8 +10,10 @@ asset_class: multifamily
     "real_estate_taxes": {
       "value": 58000,
       "source": "reassessment_estimate",
-      "sale_triggers_reassessment": true,
-      "reassessment_basis": "70% of purchase price per Maricopa County methodology"
+      "reassessment_basis": "70% of purchase price per Maricopa County methodology",
+      "reassessment": {
+        "trigger": "sale"
+      }
     }
   }
 }

@@ -6,7 +6,7 @@ const MANIFEST: ModuleManifest = {
   description: 'Official content is builtin in core; this compatibility shell declares nothing.',
   manifest_version: '1', id: HOSPITALITY_MODULE_ID, name: 'Hospitality Underwriting Module (compatibility)',
   version: HOSPITALITY_MODULE_VERSION, authors: ['UW Markdown Working Group'], license: 'MIT',
-  requires_protocol: '>=2.25.0', requires_format: '>=1.1.0', requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0', requires_format: '^3.0', requires_conformance: 'verifier',
   sections: [], calculations: [], validations: [], view_models: [],
 };
 // Annotate, then freeze — as the pre-RFC 0080 manifests were.

@@ -7,7 +7,7 @@ import {
 
 const UWX = [
   '---',
-  'uw_version: 1.1',
+  "uw_version: \"3.0\"",
   '---',
   '```json uw:section=deal_summary',
   '{"_meta":{},"deal_name":"Example"}',

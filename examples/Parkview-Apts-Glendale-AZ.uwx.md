@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_a3f9b1"
 deal_name: "Parkview Apartments — Glendale, AZ"
 created: "2026-04-24T09:00:00Z"
@@ -70,18 +70,25 @@ The owner is motivated — estate sale situation, wants a clean close. LOI accep
 {
   "_meta": {
     "section": "deal_context",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": "user",
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-04-24T09:15:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": "user",
+      "agent_version": null,
+      "timestamp": "2026-04-24T09:15:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "DSCR tightens once IO burns off — model at amortizing rate before committing. Check if lender will go 24mo IO.",
   "deal_summary": "48-unit garden-style multifamily in Glendale AZ (westside Phoenix). Stabilized acquisition, owner-operated with below-market rents. Buy at in-place yield, professionalize management, push rents through natural turnover. 5-year hold.",
@@ -160,19 +167,26 @@ The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, wi
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": "wizard",
-    "agent_version": "4.0.0",
-    "actor": "jared",
-    "timestamp": "2026-04-24T09:05:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": "wizard",
+      "agent_version": "4.0.0",
+      "timestamp": "2026-04-24T09:05:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "address": {
@@ -230,19 +244,26 @@ Current owner is the Hartwell Family Trust, administered by an out-of-state exec
 {
   "_meta": {
     "section": "ownership",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": "wizard",
-    "agent_version": "4.0.0",
-    "actor": "jared",
-    "timestamp": "2026-04-24T09:08:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": "wizard",
+      "agent_version": "4.0.0",
+      "timestamp": "2026-04-24T09:08:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "transaction_type": "acquisition",
@@ -287,20 +308,31 @@ As of April 1, 2026. 45 of 48 units occupied (93.75% physical occupancy). Three 
 {
   "_meta": {
     "section": "rent_roll",
-    "version": 1,
-    "superseded": false,
-    "source": "agent/L0-01",
-    "agent_id": "L0-01",
-    "agent_version": "1.0.0",
-    "actor": "system",
-    "timestamp": "2026-04-24T10:12:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [
-      "7_units_month_to_month"
-    ],
-    "input_hash": "sha256:e3b0c44298fc",
-    "notes": "Parsed from parkview_rent_roll_apr2026.xlsx. 48 unit records found, 0 parse errors."
+    "provenance": {
+      "source": "agent/L0-01",
+      "actor": "system",
+      "agent_id": "L0-01",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-04-24T10:12:00Z",
+      "notes": "Parsed from parkview_rent_roll_apr2026.xlsx. 48 unit records found, 0 parse errors."
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [
+        "7_units_month_to_month"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:e3b0c44298fc",
+      "parent_hash": null
+    }
   },
   "_notes": null,
   "rent_roll_type": "multifamily",
@@ -429,22 +461,33 @@ T-12 through December 2025. Prepared by property management company, not CPA-cer
 {
   "_meta": {
     "section": "operating_statement",
-    "version": 1,
-    "superseded": false,
-    "source": "agent/L0-02",
-    "agent_id": "L0-02",
-    "agent_version": "1.0.0",
-    "actor": "system",
-    "timestamp": "2026-04-24T10:18:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [
-      "management_fee_above_market",
-      "utilities_potentially_understated",
-      "not_cpa_certified"
-    ],
-    "input_hash": "sha256:a1b2c3d4e5f6",
-    "notes": "Management company-prepared. Management fee at 10% of EGI is 450bps above market benchmark. Recommend requesting trailing 24-month statements and utility bills."
+    "provenance": {
+      "source": "agent/L0-02",
+      "actor": "system",
+      "agent_id": "L0-02",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-04-24T10:18:00Z",
+      "notes": "Management company-prepared. Management fee at 10% of EGI is 450bps above market benchmark. Recommend requesting trailing 24-month statements and utility bills."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [
+        "management_fee_above_market",
+        "utilities_potentially_understated",
+        "not_cpa_certified"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:a1b2c3d4e5f6",
+      "parent_hash": null
+    }
   },
   "_notes": "CPA review or utility bill cross-check needed before credit committee.",
   "period_type": "T12",
@@ -520,18 +563,29 @@ Underwriting applies three key adjustments to the T-12: (1) vacancy normalized t
 {
   "_meta": {
     "section": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "agent_id": "engine",
-    "agent_version": "3.2.1",
-    "actor": "system",
-    "timestamp": "2026-04-24T11:05:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": "sha256:f7e8d9c0b1a2",
-    "notes": null
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": "engine",
+      "agent_version": "3.2.1",
+      "timestamp": "2026-04-24T11:05:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "parent_hash": null
+    }
   },
   "_notes": null,
   "underwriting_basis": "stabilized",
@@ -577,10 +631,12 @@ Underwriting applies three key adjustments to the T-12: (1) vacancy normalized t
       "value": 58000,
       "per_unit": 1208,
       "source": "reassessment_estimate",
-      "sale_triggers_reassessment": true,
       "reassessment_basis": "70% of purchase price per Maricopa County methodology = $5,040,000 AV × 1.15% = $57,960, rounded to $58,000",
       "benchmark_low": 48000,
-      "benchmark_high": 64000
+      "benchmark_high": 64000,
+      "reassessment": {
+        "trigger": "sale"
+      }
     },
     "insurance": {
       "value": 28800,
@@ -669,20 +725,31 @@ Income approach produces a value of $7,198,000 at the underwritten NOI and a 5.5
 {
   "_meta": {
     "section": "valuation",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "agent_id": "engine",
-    "agent_version": "3.2.1",
-    "actor": "system",
-    "timestamp": "2026-04-24T11:06:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [
-      "appraisal_not_yet_received"
-    ],
-    "input_hash": "sha256:f7e8d9c0b1a2",
-    "notes": null
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": "engine",
+      "agent_version": "3.2.1",
+      "timestamp": "2026-04-24T11:06:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [
+        "appraisal_not_yet_received"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "parent_hash": null
+    }
   },
   "_notes": "Appraisal ordered 2026-04-22, expected 2026-05-12. UW value essentially at purchase price — deal is priced at market, not below.",
   "purchase_price": 7200000,
@@ -733,21 +800,28 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 {
   "_meta": {
     "section": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": "wizard",
-    "agent_version": "4.0.0",
-    "actor": "jared",
-    "timestamp": "2026-04-24T09:45:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [
-      "dscr_warning_amortizing"
-    ],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": "wizard",
+      "agent_version": "4.0.0",
+      "timestamp": "2026-04-24T09:45:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [
+        "dscr_warning_amortizing"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Ask First Western Bank about 24mo IO — their current sheet shows 24mo IO available on multifamily <$7.5M. Would push amortizing DSCR risk past year 2 rent growth.",
   "loan_amount": 5040000,
@@ -758,7 +832,6 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
   "rate_index": "fixed",
   "rate_spread_bps": null,
   "rate_floor_pct": null,
-  "rate_cap_pct": null,
   "note_rate_at_close": 0.05875,
   "amortization_years": 30,
   "loan_term_years": 5,
@@ -820,18 +893,29 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 {
   "_meta": {
     "section": "sources_uses",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "agent_id": "engine",
-    "agent_version": "3.2.1",
-    "actor": "system",
-    "timestamp": "2026-04-24T11:07:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": "sha256:f7e8d9c0b1a2",
-    "notes": null
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": "engine",
+      "agent_version": "3.2.1",
+      "timestamp": "2026-04-24T11:07:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "parent_hash": null
+    }
   },
   "_notes": null,
   "total_project_cost": 7440000,
@@ -863,13 +947,14 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
       "other": 0,
       "total": 139000
     },
-    "renovation_budget": null,
-    "renovation_contingency": null,
-    "operating_reserves": 96000,
-    "interest_reserve": null,
-    "rate_cap_cost": null,
     "other_reserves": 5000,
-    "total": 7440000
+    "total": 7440000,
+    "escrows": [
+      {
+        "name": "operating",
+        "upfront": 96000
+      }
+    ]
   },
   "equity_metrics": {
     "equity_total": 2400000,
@@ -903,18 +988,29 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 {
   "_meta": {
     "section": "dcf",
-    "version": 1,
-    "superseded": false,
-    "source": "system/dcfEngine.ts",
-    "agent_id": "engine",
-    "agent_version": "3.2.1",
-    "actor": "system",
-    "timestamp": "2026-04-24T11:10:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": "sha256:f7e8d9c0b1a2",
-    "notes": null
+    "provenance": {
+      "source": "system/dcfEngine.ts",
+      "actor": "system",
+      "agent_id": "engine",
+      "agent_version": "3.2.1",
+      "timestamp": "2026-04-24T11:10:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "parent_hash": null
+    }
   },
   "_notes": null,
   "hold_period_years": 5,
@@ -1082,20 +1178,31 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
 {
   "_meta": {
     "section": "stress_tests",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "agent_id": "engine",
-    "agent_version": "3.2.1",
-    "actor": "system",
-    "timestamp": "2026-04-24T11:12:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [
-      "moderate_stress_fails_dscr"
-    ],
-    "input_hash": "sha256:f7e8d9c0b1a2",
-    "notes": null
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": "engine",
+      "agent_version": "3.2.1",
+      "timestamp": "2026-04-24T11:12:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [
+        "moderate_stress_fails_dscr"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "parent_hash": null
+    }
   },
   "_notes": "Moderate and severe stress scenarios fail minimum DSCR. This is consistent with the tight base case DSCR. Discuss with lender.",
   "base_dscr": 1.109,
@@ -1204,18 +1311,25 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
 {
   "_meta": {
     "section": "market_analysis",
-    "version": 1,
-    "superseded": false,
-    "source": "agent/L2-CRE-07",
-    "agent_id": "L2-CRE-07",
-    "agent_version": "1.0.0",
-    "actor": "system",
-    "timestamp": "2026-04-24T12:30:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": "Market data from web search; CoStar data not connected. Recommend CoStar validation before credit committee."
+    "provenance": {
+      "source": "agent/L2-CRE-07",
+      "actor": "system",
+      "agent_id": "L2-CRE-07",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-04-24T12:30:00Z",
+      "notes": "Market data from web search; CoStar data not connected. Recommend CoStar validation before credit committee."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "market": "Phoenix Metro",
@@ -1369,22 +1483,29 @@ Single-principal LLC, 14 years of CRE experience, 6 assets under management. Fin
 {
   "_meta": {
     "section": "borrower_sponsor",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "user_input",
-    "agent_id": "wizard",
-    "agent_version": "4.0.0",
-    "actor": "jared",
-    "timestamp": "2026-04-24T09:30:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [
-      "pfs_not_verified",
-      "liquidity_to_loan_ratio_below_preferred"
-    ],
-    "input_hash": null,
-    "notes": "Figures are PFS-stated. CPA letter requested, expected before end of DD period."
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "jared",
+      "agent_id": "wizard",
+      "agent_version": "4.0.0",
+      "timestamp": "2026-04-24T09:30:00Z",
+      "notes": "Figures are PFS-stated. CPA letter requested, expected before end of DD period."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [
+        "pfs_not_verified",
+        "liquidity_to_loan_ratio_below_preferred"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "Liquidity ratio is 9.5% vs 10% preferred minimum — marginal. CPA verification will either clear or flag.",
   "principals": [
@@ -1456,22 +1577,29 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
 {
   "_meta": {
     "section": "due_diligence",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": "user",
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-04-24T09:50:00Z",
-    "confidence": "medium",
-    "human_review_required": true,
-    "flags": [
-      "appraisal_pending",
-      "phase1_pending",
-      "inspection_pending"
-    ],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": "user",
+      "agent_version": null,
+      "timestamp": "2026-04-24T09:50:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": true,
+      "flags": [
+        "appraisal_pending",
+        "phase1_pending",
+        "inspection_pending"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "appraisal": {
@@ -1617,20 +1745,27 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 {
   "_meta": {
     "section": "risk_assessment",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": "user",
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-04-24T14:00:00Z",
-    "confidence": "low",
-    "human_review_required": true,
-    "flags": [
-      "preliminary_analyst_only_L6_not_run"
-    ],
-    "input_hash": null,
-    "notes": "Run L6 agents before credit committee submission."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": "user",
+      "agent_version": null,
+      "timestamp": "2026-04-24T14:00:00Z",
+      "notes": "Run L6 agents before credit committee submission."
+    },
+    "quality": {
+      "confidence": "low",
+      "human_review_required": true,
+      "flags": [
+        "preliminary_analyst_only_L6_not_run"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": "PRELIMINARY — not suitable for credit submission. Run full L6 agent chain.",
   "scoring_model_version": null,
@@ -1733,18 +1868,25 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 {
   "_meta": {
     "section": "compliance",
-    "version": 1,
-    "superseded": false,
-    "source": "agent/L5-01",
-    "agent_id": "L5-01",
-    "agent_version": "1.0.0",
-    "actor": "system",
-    "timestamp": "2026-04-24T13:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "agent/L5-01",
+      "actor": "system",
+      "agent_id": "L5-01",
+      "agent_version": "1.0.0",
+      "timestamp": "2026-04-24T13:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "hvcre": {
@@ -1806,18 +1948,29 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 {
   "_meta": {
     "section": "assumptions",
-    "version": 1,
-    "superseded": false,
-    "source": "system/calculations.ts",
-    "agent_id": "engine",
-    "agent_version": "3.2.1",
-    "actor": "system",
-    "timestamp": "2026-04-24T11:15:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": "sha256:f7e8d9c0b1a2",
-    "notes": null
+    "provenance": {
+      "source": "system/calculations.ts",
+      "actor": "system",
+      "agent_id": "engine",
+      "agent_version": "3.2.1",
+      "timestamp": "2026-04-24T11:15:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "parent_hash": null
+    }
   },
   "_notes": null,
   "assumptions": [
@@ -1992,18 +2145,29 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
 {
   "_meta": {
     "section": "validation",
-    "version": 1,
-    "superseded": false,
-    "source": "system/financialValidityChecker",
-    "agent_id": "engine",
-    "agent_version": "3.2.1",
-    "actor": "system",
-    "timestamp": "2026-04-24T11:16:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": "sha256:f7e8d9c0b1a2",
-    "notes": null
+    "provenance": {
+      "source": "system/financialValidityChecker",
+      "actor": "system",
+      "agent_id": "engine",
+      "agent_version": "3.2.1",
+      "timestamp": "2026-04-24T11:16:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "integrity": {
+      "input_hash": "sha256:f7e8d9c0b1a2",
+      "parent_hash": null
+    }
   },
   "_notes": null,
   "overall_status": "warnings_only",
@@ -2125,18 +2289,25 @@ Two supplemental metrics: true all-in yield (accounts for closing costs and rese
 {
   "_meta": {
     "section": "custom_calculations",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": "user",
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-04-24T14:10:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": "user",
+      "agent_version": null,
+      "timestamp": "2026-04-24T14:10:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "calculations": [
@@ -2171,7 +2342,7 @@ Two supplemental metrics: true all-in yield (accounts for closing costs and rese
           "variable": "reserves",
           "label": "Operating Reserves",
           "value": null,
-          "source_ref": "sources_uses.uses.operating_reserves",
+          "source_ref": "sources_uses.uses.escrows[0].upfront",
           "is_live_ref": true
         }
       ],
@@ -2246,18 +2417,25 @@ Scenario: what if the lender grants 24-month IO (instead of 12-month)? Also a se
 {
   "_meta": {
     "section": "custom_scenarios",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": "user",
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-04-24T14:20:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": "user",
+      "agent_version": null,
+      "timestamp": "2026-04-24T14:20:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "scenarios": [
@@ -2346,18 +2524,25 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
 {
   "_meta": {
     "section": "x_lender_matrix",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-04-24T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-04-24T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "_notes": null,
   "render_hint": {
@@ -2433,18 +2618,25 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
 {
   "_meta": {
     "section": "pipeline_log",
-    "version": 1,
-    "superseded": false,
-    "source": "system/unspecified",
-    "agent_id": "system",
-    "agent_version": "1.1.0",
-    "actor": "system",
-    "timestamp": "2026-04-24T15:42:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "system/unspecified",
+      "actor": "system",
+      "agent_id": "system",
+      "agent_version": "1.1.0",
+      "timestamp": "2026-04-24T15:42:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "entries": [
     {
@@ -2716,20 +2908,27 @@ Sizing against the three standard constraints. The proposed $5.04M loan fits the
 {
   "_meta": {
     "section": "preliminary_sizing",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "jared",
-    "timestamp": "2026-08-26T09:00:00Z",
-    "confidence": "medium",
-    "human_review_required": false,
-    "flags": [
-      "proposed_loan_exceeds_conservative_sizing"
-    ],
-    "input_hash": null,
-    "notes": "Proposed loan clears the 75% LTV test but exceeds the 1.25x DSCR and 9% debt-yield sizings — consistent with the FV-04 DSCR warning this file already carries."
+    "provenance": {
+      "source": "manual",
+      "actor": "jared",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-26T09:00:00Z",
+      "notes": "Proposed loan clears the 75% LTV test but exceeds the 1.25x DSCR and 9% debt-yield sizings — consistent with the FV-04 DSCR warning this file already carries."
+    },
+    "quality": {
+      "confidence": "medium",
+      "human_review_required": false,
+      "flags": [
+        "proposed_loan_exceeds_conservative_sizing"
+      ],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "sizing_basis": {
     "noi_underwritten": 396635,

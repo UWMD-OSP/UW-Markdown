@@ -140,6 +140,7 @@ const LEGACY_TIER_READINGS: Readonly<Record<ViewerTier, ConformanceTierReading>>
  * mapping never infers a profile. Anything else is outside the closed
  * vocabulary and returns `null` rather than a guess.
  */
+// RFC 0081 Phase 4: delete legacy tier aliases; retain the final vocabulary.
 export function readConformanceTier(tier: unknown): ConformanceTierReading | null {
   if (tier === 'reader' || tier === 'verifier') return { tier };
   if (typeof tier === 'string' && Object.hasOwn(LEGACY_TIER_READINGS, tier)) {
@@ -1227,7 +1228,10 @@ export interface ModuleManifest {
   requires_protocol: string;        // semver range
   requires_format: string;          // semver range
   /** Protocol 2.x tier vocabulary, unchanged by RFC 0078 (§VII.4). */
-  requires_tier: ViewerTier;
+  // RFC 0081 Phase 4: delete the interim requires_tier spelling.
+  requires_tier?: ViewerTier;
+  requires_conformance?: ConformanceTier;
+  requires_profiles?: ConformanceProfile[];
   asset_classes?: AssetClass[];
   deal_stages?: DealStage[];
   sections?: ModuleSectionDecl[];

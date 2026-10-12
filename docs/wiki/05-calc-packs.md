@@ -90,7 +90,7 @@ resolves to its builtin first.
 
 ## `MULTIFAMILY_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`,
+A `ModuleManifest` (`requires_conformance: 'verifier'`,
 `asset_classes: ['multifamily']`) whose `calculations[]` are the **eight**
 multifamily derived metrics. Each is a `ModuleCalcDecl`
 (`{ id, label, formula, unit, deterministic: true }`):
@@ -171,7 +171,7 @@ can be chosen". A receipt over a refused metric is not issued
 
 ## `OFFICE_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 ['office']`) whose `calculations[]` are the **eleven** office derived metrics:
 
 id | label | formula | unit
@@ -197,7 +197,7 @@ so its standardized cash-on-cash computes with the NOI-minus-debt-service fallba
 
 ## `RETAIL_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 ['retail']`) whose `calculations[]` are the **twelve** retail derived metrics.
 Same cap-rate / LTV / LTC / DSCR / debt-yield core as office, but keyed off
 **gross leasable area** (`property.gross_leasable_area`) for the per-SF metrics
@@ -209,7 +209,7 @@ Verified against the `Cactus-Crossing-Retail-Mesa-AZ.uwx.md` worked example.
 
 ## `INDUSTRIAL_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 ['industrial']`) whose `calculations[]` are the **twelve** industrial derived
 metrics. Same shape as the retail pack — including the NNN `expense_recovery_ratio`
 — but keyed off **rentable building area** (`property.rentable_square_feet`) and
@@ -219,7 +219,7 @@ worked example.
 
 ## `SELF_STORAGE_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 ['self_storage']`) whose `calculations[]` are the **twelve** self-storage derived
 metrics. Same cap-rate / LTV / LTC / DSCR / debt-yield core as the other income
 property packs, but keyed off **net rentable square feet**
@@ -229,7 +229,7 @@ against the `Sonoran-Self-Storage-Peoria-AZ.uwx.md` worked example.
 
 ## `HOSPITALITY_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 ['hospitality']`) whose `calculations[]` are the **fourteen** hospitality derived
 metrics. Same cap-rate / LTV / LTC / DSCR / debt-yield core as the other income
 property packs, but hotels size by **keys** (`property.keys`) rather than area,
@@ -257,7 +257,7 @@ against the `Saguaro-Select-Hotel-Tempe-AZ.uwx.md` worked example.
 
 ## `SENIOR_HOUSING_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 ['senior_housing']`) whose `calculations[]` are the **fourteen** senior-housing
 derived metrics. Sizing is per unit (`property.total_units`), as in multifamily,
 so the per-unit metrics are `price_per_unit` / `loan_per_unit` / `noi_per_unit`.
@@ -290,7 +290,7 @@ staying out of the expense map. Verified against the
 
 ## `STUDENT_HOUSING_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 ['student_housing']`) whose `calculations[]` are the **fourteen** student-housing
 derived metrics. The class looks like multifamily and is not underwritten like
 it: leases are signed **per bed**, not per unit, so every sizing and occupancy
@@ -335,7 +335,7 @@ uses the NOI-minus-debt-service fallback (about 3.00%).
 
 ## `LAND_PACK`
 
-A `ModuleManifest` (`requires_tier: 'tier-3-calc-host'`, `asset_classes:
+A `ModuleManifest` (`requires_conformance: 'verifier'`, `asset_classes:
 ['land']`) whose `calculations[]` are the **twelve** land derived metrics. Land
 is the one class here that is **not an income property**, and the pack is shaped
 entirely by that.

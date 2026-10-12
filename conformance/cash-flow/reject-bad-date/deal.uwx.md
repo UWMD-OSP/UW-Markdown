@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: CF-REJECT-01
 asset_class: multifamily
 ---
@@ -7,7 +7,9 @@ asset_class: multifamily
 # Cash-Flow Fixture
 
 ```json uw:section=property source=manual ts=2026-09-02T00:00:00Z v=1
-{ "total_units": 48 }
+{
+  "total_units": 48
+}
 ```
 
 ```json uw:section=cash_flow_series variant=base source=manual ts=2026-09-02T00:00:00Z v=1

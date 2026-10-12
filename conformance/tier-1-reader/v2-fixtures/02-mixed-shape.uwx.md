@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: v2-002
 deal_name: Nested Meta In A 1.x File
 asset_class: multifamily
@@ -14,11 +14,17 @@ asset_class: multifamily
     "provenance": {
       "source": "manual",
       "actor": "jared",
-      "timestamp": "2026-09-01T00:00:00Z"
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-09-01T00:00:00Z",
+      "notes": null
     },
     "quality": {
       "confidence": "high",
-      "human_review_required": false
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
     },
     "lifecycle": {
       "revision": 1,

@@ -52,6 +52,6 @@ export function moduleMetadataFromSource(source, constantPrefix) {
     manifest_version: literal(/manifest_version: '([^']+)'/, 'manifest_version'),
     requires_protocol: literal(/requires_protocol: '([^']+)'/, 'requires_protocol'),
     requires_format: literal(/requires_format: '([^']+)'/, 'requires_format'),
-    requires_tier: literal(/requires_tier: '([^']+)'/, 'requires_tier'),
+    requires_conformance: literal(/requires_conformance: '([^']+)'/, 'requires_conformance'),
   };
 }

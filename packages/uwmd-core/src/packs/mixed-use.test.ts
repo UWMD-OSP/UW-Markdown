@@ -1,3 +1,4 @@
+import { nestedFixtureMeta } from '../../../../test/rfc-0081-corpus.js';
 // Mixed-use pack tests — pack integrity, the deliberate property-denominator
 // omissions, per-component NOI shares, allocation-gated intensives, and
 // AST→Excel emitter parity. RFC 0019.
@@ -48,7 +49,7 @@ function block(id: string, content: Record<string, unknown>): string {
     `## ${id} {#${id}}`,
     '',
     `\`\`\`json uw:section=${id} source=manual ts=2026-08-18T00:00:00Z v=1 confidence=high`,
-    JSON.stringify({ _meta: meta, ...content }, null, 2),
+    JSON.stringify({ _meta: nestedFixtureMeta(meta), ...content }, null, 2),
     '```',
     '',
   ].join('\n');
@@ -71,7 +72,7 @@ function fixture(opts: { multifamilyAllocation?: number | null } = {}): string {
 
   return [
     '---',
-    'uw_version: "1.1"',
+    "uw_version: \"3.0\"",
     'deal_id: "uw_2026_mixed_001"',
     'deal_name: "Cactus Corners Mixed-Use — Tempe, AZ"',
     'asset_class: "mixed_use"',

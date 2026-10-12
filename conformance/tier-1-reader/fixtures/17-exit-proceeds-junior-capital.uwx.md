@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-EXIT-PROCEEDS
 deal_name: "Exit Proceeds Fixture"
 created: "2026-10-07T00:00:00Z"
@@ -30,13 +30,24 @@ equity's residual is 2,300,000.
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-10-07T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-10-07T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "address": "77 Stack St, Phoenix AZ",
   "total_units": 96
@@ -46,19 +57,62 @@ equity's residual is 2,300,000.
 {
   "_meta": {
     "section": "capital_stack",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-10-07T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-10-07T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "tranches": [
-    { "id": "senior", "class": "senior_debt", "position": 1, "amount": 5000000, "rate": 0.06, "amortization_months": 360, "io_months": 0, "term_months": 120, "accrual": "cash" },
-    { "id": "mezz", "class": "mezzanine_debt", "position": 2, "amount": 1000000, "rate": 0.11, "amortization_months": 0, "io_months": 120, "term_months": 120, "accrual": "cash" },
-    { "id": "pref", "class": "preferred_equity", "position": 3, "amount": 1200000, "rate": 0.1, "accrual": "accrued" },
-    { "id": "common", "class": "common_equity", "position": 4, "amount": 1300000 }
+    {
+      "id": "senior",
+      "class": "senior_debt",
+      "position": 1,
+      "amount": 5000000,
+      "rate": 0.06,
+      "amortization_months": 360,
+      "io_months": 0,
+      "term_months": 120,
+      "accrual": "cash"
+    },
+    {
+      "id": "mezz",
+      "class": "mezzanine_debt",
+      "position": 2,
+      "amount": 1000000,
+      "rate": 0.11,
+      "amortization_months": 0,
+      "io_months": 120,
+      "term_months": 120,
+      "accrual": "cash"
+    },
+    {
+      "id": "pref",
+      "class": "preferred_equity",
+      "position": 3,
+      "amount": 1200000,
+      "rate": 0.1,
+      "accrual": "accrued"
+    },
+    {
+      "id": "common",
+      "class": "common_equity",
+      "position": 4,
+      "amount": 1300000
+    }
   ],
   "sizing": []
 }
@@ -67,13 +121,24 @@ equity's residual is 2,300,000.
 {
   "_meta": {
     "section": "dcf",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "timestamp": "2026-10-07T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": []
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-10-07T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "hold_period_years": 5,
   "assumptions": {

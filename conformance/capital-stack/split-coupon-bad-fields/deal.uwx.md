@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: uw_split_coupon_bad_fields
 asset_class: multifamily
 ---
@@ -10,14 +10,23 @@ asset_class: multifamily
 {
   "_meta": {
     "section": "capital_stack",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "resolution": "source_document",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": null,
-    "ts": "2026-09-13T00:00:00Z"
+    "provenance": {
+      "source": "manual",
+      "resolution": "source_document",
+      "actor": null,
+      "agent_id": null,
+      "agent_version": null,
+      "notes": null
+    },
+    "quality": {
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "tranches": [
     {

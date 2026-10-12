@@ -18,7 +18,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { parseUWFile, computeBlockHash } from '../packages/uwmd-core/dist/index.js';
+import { parseUWFile, computeBlockHash, reshapeMetaV1toV2 } from '../packages/uwmd-core/dist/index.js';
 import {
   importPrivateKey,
   signBlock,
@@ -55,7 +55,9 @@ async function stamp(text, sectionId, { sign = true, hash = true } = {}) {
   const block = parsed.sections[sectionId];
   if (!block) throw new Error(`no section '${sectionId}' in the base fixture`);
 
-  const contentHash = await computeBlockHash(block);
+  // computeBlockHash still defaults to the retired 1.x rule, so the Format 3.0
+  // rule is named here; signBlock below receives the hash, not the document.
+  const contentHash = await computeBlockHash(block, { shape: 'v3' }); // RFC 0081 Phase 4: delete the shape option (one digest rule)
   // `block.meta` IS the parsed `_meta` object (same reference as
   // `block.content._meta`), so build a copy rather than mutating in place.
   const meta = { ...block.meta };
@@ -71,7 +73,7 @@ async function stamp(text, sectionId, { sign = true, hash = true } = {}) {
   // `block.content` is the whole parsed JSON object (section_id, _meta,
   // content, _notes), so spreading it preserves key order and swaps `_meta`
   // in place rather than re-wrapping the block one level deeper.
-  const rendered = JSON.stringify({ ...block.content, _meta: meta }, null, 2);
+  const rendered = JSON.stringify({ ...block.content, _meta: reshapeMetaV1toV2(meta) }, null, 2);
   return replaceBlockJson(text, sectionId, rendered);
 }
 

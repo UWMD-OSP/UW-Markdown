@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-002
 deal_name: "DSCR From Section"
 created: "2026-01-15T10:00:00Z"
@@ -28,55 +28,63 @@ from another. Result = noi_model.net_operating_income / debt_structure.annual_de
 
 ```json uw:section=noi_model source=manual ts=2026-01-15T10:00:00Z v=1 confidence=high
 {
-  "section_id": "noi_model",
   "_meta": {
-    "section_id": "noi_model",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "noi_model",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "effective_gross_income": 3200000,
-    "operating_expenses": 1100000,
-    "net_operating_income": 2100000
-  },
-  "_notes": null
+  "_notes": null,
+  "effective_gross_income": 3200000,
+  "operating_expenses": 1100000,
+  "net_operating_income": 2100000
 }
 ```
 
 ```json uw:section=debt_structure source=manual ts=2026-01-15T10:00:00Z v=1 confidence=high
 {
-  "section_id": "debt_structure",
   "_meta": {
-    "section_id": "debt_structure",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test-fixture",
-    "timestamp": "2026-01-15T10:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "section": "debt_structure",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-15T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
-  "content": {
-    "loan_amount": 21000000,
-    "interest_rate": 0.06,
-    "amortization_months": 360,
-    "annual_debt_service": 1511250
-  },
-  "_notes": null
+  "_notes": null,
+  "loan_amount": 21000000,
+  "interest_rate": 0.06,
+  "amortization_months": 360,
+  "annual_debt_service": 1511250
 }
 ```

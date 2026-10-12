@@ -798,7 +798,7 @@ const sameMoney = (a: number, b: number) =>
  * object is too malformed to check any further.
  */
 function checkReassessment(
-  r: Record<string, unknown>, issues: ValidationMessage[], section: string, base: string,
+  r: Record<string, unknown>, issues: ValidationMessage[], section: string, base: string, loneFacts = false,
 ): number | null {
   const trigger = r['trigger'];
   if (typeof trigger !== 'string' || !(REASSESSMENT_TRIGGERS as readonly string[]).includes(trigger)) {
@@ -806,6 +806,11 @@ function checkReassessment(
       `TAX-01: reassessment.trigger must be one of ${REASSESSMENT_TRIGGERS.join(', ')}`, trigger);
     return null;
   }
+  if (loneFacts && !['assessed_value', 'millage_rate', 'indicated_tax'].some(k => r[k] != null)) {
+    if (['jurisdiction', 'value_basis', 'assessment_ratio', 'round_to_decimals'].some(k => r[k] != null)) taxIssue(issues, 'TAX-01', section, base, 'TAX-01: assessment attributes require the complete assessment group');
+    return null;
+  }
+  // RFC 0081 Phase 4: delete the old unconditional assessment requirement.
   const assessed = r['assessed_value'];
   const millage = r['millage_rate'];
   const indicated = r['indicated_tax'];
@@ -969,7 +974,7 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
             'TAX-01: reassessment must be an object when stated', r);
         } else {
           const rr = r as Record<string, unknown>;
-          const dp = checkReassessment(rr, issues, 'noi_model', `${TAX_PATH}.reassessment`);
+          const dp = checkReassessment(rr, issues, 'noi_model', `${TAX_PATH}.reassessment`, parsed.frontmatter.uw_version === '3.0');
           // TAX-03: the stated expense is the indicated tax at the declared quantum.
           if (dp !== null && finiteNum(stated) && finiteNum(rr['indicated_tax'])) {
             const rounded = quantizeAtDecimals(rr['indicated_tax'] as number, dp);
@@ -979,6 +984,7 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
             }
           }
           // TAX-04: the legacy boolean has to agree with the typed trigger.
+          // RFC 0081 Phase 4: delete the retired scalar agreement path.
           const flag = t['sale_triggers_reassessment'];
           if (typeof flag === 'boolean' && flag !== (rr['trigger'] === 'sale')) {
             taxIssue(issues, 'TAX-04', 'noi_model', `${TAX_PATH}.sale_triggers_reassessment`,
@@ -1011,7 +1017,7 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
     return;
   }
   const t = tt as Record<string, unknown>;
-  checkReassessment(t, issues, 'dcf', base);
+  checkReassessment(t, issues, 'dcf', base, parsed.frontmatter.uw_version === '3.0');
   if (typeof t['in_exit_noi'] !== 'boolean') {
     taxIssue(issues, 'TAX-08', 'dcf', `${base}.in_exit_noi`,
       'TAX-08: terminal_tax.in_exit_noi must state whether this tax is already inside exit_noi', t['in_exit_noi']);
@@ -1346,7 +1352,7 @@ function roundRec(value: number): number {
 }
 
 function checkRecoveryTerms(
-  t: Record<string, unknown>, issues: ValidationMessage[], at: string,
+  t: Record<string, unknown>, issues: ValidationMessage[], at: string, loneFacts = false,
 ): number | null {
   const raw = t['recovery_terms'];
   if (raw == null) return null;
@@ -1373,10 +1379,12 @@ function checkRecoveryTerms(
 
   // REC-02: a method without the input it needs.
   const method = terms['method'];
-  if (typeof method !== 'string' || !(RECOVERY_METHODS as readonly string[]).includes(method)) {
+  // RFC 0081 Phase 4: delete the old unconditional method requirement.
+  const methodRequired = !loneFacts || Object.keys(terms).some(k => k !== 'cap');
+  if (methodRequired && (typeof method !== 'string' || !(RECOVERY_METHODS as readonly string[]).includes(method))) {
     recIssue(issues, 'REC-02', `${p}.method`,
       `REC-02: method must be one of ${RECOVERY_METHODS.join(', ')} — the vocabulary is closed`, method);
-  } else {
+  } else if (typeof method === 'string') {
     const REQUIRED: Record<string, string> = {
       base_year_stop: 'base_year',
       fixed_stop: 'expense_stop_per_sqft',
@@ -1419,7 +1427,8 @@ function checkRecoveryTerms(
         recIssue(issues, 'REC-01', `${cp}.pct`,
           'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
       }
-      if (pct != null) {
+      // RFC 0081 Phase 4: delete old cap accumulation requiredness.
+      if (pct != null && (!loneFacts || methodRequired || Object.hasOwn(c, 'accumulation'))) {
         const acc = c['accumulation'];
         if (typeof acc !== 'string' || !(RECOVERY_CAP_ACCUMULATIONS as readonly string[]).includes(acc)) {
           recIssue(issues, 'REC-02', `${cp}.accumulation`,
@@ -1430,6 +1439,7 @@ function checkRecoveryTerms(
   }
 
   // REC-10: the legacy field and the typed cap can contradict each other.
+  // RFC 0081 Phase 4: delete the retired scalar agreement path.
   if (t['cam_cap_pct'] != null && cap != null) {
     recIssue(issues, 'REC-10', `${at}.cam_cap_pct`,
       'REC-10: cam_cap_pct is superseded by recovery_terms.cap; stating both lets the two drift apart',
@@ -1562,7 +1572,7 @@ function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): v
     checkTerminationOption(t, issues, at);
     checkCoTenancy(t, issues, at);
     checkLeasingCapital(t, issues, at);
-    const share = checkRecoveryTerms(t, issues, at);
+    const share = checkRecoveryTerms(t, issues, at, parsed.frontmatter.uw_version === '3.0');
     checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
   }
 }
@@ -1711,9 +1721,13 @@ function hedgeIssue(
 /** The §4.7 hedge object: shape, the rate_type gate, and the legacy agreement. */
 function checkRateHedge(
   h: Record<string, unknown>, rateType: unknown, legacyCapPct: unknown,
-  issues: ValidationMessage[],
+  issues: ValidationMessage[], loneFacts = false,
 ): void {
   const at = 'rate_hedge';
+  const terms = ['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption'];
+  const stated = terms.filter(k => h[k] != null).length;
+  const checkTerms = !loneFacts || stated > 0; // RFC 0081 Phase 4: delete the old unconditional terms requirement.
+  if (loneFacts && stated > 0 && stated < terms.length) hedgeIssue(issues, 'HDG-01', 'debt_structure', at, 'HDG-01: hedge terms must be stated all together');
   const inst = h['instrument'];
   // HDG-02 before HDG-01: a reserved name earns its own message, not "unknown".
   if (typeof inst === 'string' && (RESERVED_HEDGE_INSTRUMENTS as readonly string[]).includes(inst)) {
@@ -1726,7 +1740,7 @@ function checkRateHedge(
   }
 
   const notional = h['notional'];
-  if (!finiteNum(notional) || notional < 0) {
+  if (checkTerms && (!finiteNum(notional) || notional < 0)) {
     hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.notional`,
       'HDG-01: notional must be a finite nonnegative amount', notional);
   }
@@ -1740,21 +1754,21 @@ function checkRateHedge(
   }
 
   const index = h['index'];
-  if (typeof index !== 'string' || !(HEDGE_INDEXES as readonly string[]).includes(index)) {
+  if (checkTerms && (typeof index !== 'string' || !(HEDGE_INDEXES as readonly string[]).includes(index))) {
     hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.index`,
       `HDG-01: index must be one of ${HEDGE_INDEXES.join(', ')}`, index);
   }
 
   const eff = h['effective_date'];
   const exp = h['expiration_date'];
-  if (!isDate(eff)) {
+  if (checkTerms && !isDate(eff)) {
     hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.effective_date`,
       'HDG-01: effective_date must be a real YYYY-MM-DD date', eff);
   }
-  if (!isDate(exp)) {
+  if (checkTerms && !isDate(exp)) {
     hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.expiration_date`,
       'HDG-01: expiration_date must be a real YYYY-MM-DD date', exp);
-  } else if (isDate(eff) && exp <= eff) {
+  } else if (isDate(eff) && isDate(exp) && exp <= eff) {
     hedgeIssue(issues, 'HDG-01', 'debt_structure', `${at}.expiration_date`,
       `HDG-01: expiration_date ${exp} must be strictly after effective_date ${eff}`, exp);
   }
@@ -1773,6 +1787,7 @@ function checkRateHedge(
   }
 
   // HDG-04: the legacy scalar has to agree with the typed body.
+  // RFC 0081 Phase 4: delete the retired scalar agreement path.
   if (finiteNum(legacyCapPct) && finiteNum(strike) && legacyCapPct !== strike) {
     hedgeIssue(issues, 'HDG-04', 'debt_structure', 'rate_cap_pct',
       `HDG-04: rate_cap_pct ${legacyCapPct} disagrees with rate_hedge.strike_rate ${strike}`, legacyCapPct);
@@ -1781,7 +1796,7 @@ function checkRateHedge(
   // HDG-06: no default. A cap's expiry is the fact the reader came for, and
   // "unstated" is the answer that hides the cliff.
   const after = h['post_expiration_assumption'];
-  if (typeof after !== 'string' || !(HEDGE_EXPIRY_ASSUMPTIONS as readonly string[]).includes(after)) {
+  if (checkTerms && (typeof after !== 'string' || !(HEDGE_EXPIRY_ASSUMPTIONS as readonly string[]).includes(after))) {
     hedgeIssue(issues, 'HDG-06', 'debt_structure', `${at}.post_expiration_assumption`,
       `HDG-06: post_expiration_assumption must be stated as one of ${HEDGE_EXPIRY_ASSUMPTIONS.join(', ')}`,
       after);
@@ -1860,6 +1875,7 @@ function checkEscrows(
 
   // ESC-03: the legacy scalars have to agree with the typed lines.
   for (const [legacyKey, name] of [
+    // RFC 0081 Phase 4: delete the retired scalar agreement path.
     ['interest_reserve', 'interest'],
     ['operating_reserves', 'operating'],
   ] as const) {
@@ -1891,7 +1907,8 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
         hedgeStated = true;
         const rec = h as Record<string, unknown>;
         assumption = rec['post_expiration_assumption'];
-        checkRateHedge(rec, deepGet(debt.content, 'rate_type'), deepGet(debt.content, 'rate_cap_pct'), issues);
+        checkRateHedge(rec, deepGet(debt.content, 'rate_type'), deepGet(debt.content, 'rate_cap_pct'), issues, parsed.frontmatter.uw_version === '3.0');
+        // RFC 0081 Phase 4: delete the retired scalar agreement path.
         // HDG-05: the premium is the same cash as the use that funds it.
         const premium = rec['premium'];
         const cost = su ? deepGet(su.content, 'uses.rate_cap_cost') : undefined;
@@ -2037,15 +2054,22 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
     return;
   }
   const ren = r as Record<string, unknown>;
+  const loneFacts = parsed.frontmatter.uw_version === '3.0';
+  const drawMembers = ['contingency_used', 'drawn_to_date', 'as_of_date'];
+  const drawCount = drawMembers.filter(k => ren[k] != null).length;
+  const checkDraw = !loneFacts || drawCount > 0; // RFC 0081 Phase 4: delete old unconditional draw requirements.
+  if (loneFacts && !['budget', 'contingency'].some(k => ren[k] != null)) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: renovation needs budget or contingency');
+  if (loneFacts && ((drawCount > 0 && drawCount < 3) || (drawCount > 0 && (ren['budget'] == null || ren['contingency'] == null)) || (ren['contingency_remaining'] != null && drawCount !== 3))) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: the complete draw group requires budget and contingency');
 
   for (const key of ['budget', 'contingency', 'contingency_used', 'drawn_to_date'] as const) {
     const v = ren[key];
+    if (loneFacts && !checkDraw && ren[key] == null) continue;
     if (!finiteNum(v) || v < 0) {
       capxIssue(issues, 'CAPX-01', `${at}.${key}`,
         `CAPX-01: ${key} must be a finite nonnegative amount`, v);
     }
   }
-  if (!isDate(ren['as_of_date'])) {
+  if (checkDraw && !isDate(ren['as_of_date'])) {
     capxIssue(issues, 'CAPX-01', `${at}.as_of_date`,
       'CAPX-01: as_of_date must be a real YYYY-MM-DD date', ren['as_of_date']);
   }
@@ -2095,6 +2119,7 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
 
   // CAPX-05: the legacy scalars have to agree with the typed body.
   for (const [legacyKey, typedKey] of [
+    // RFC 0081 Phase 4: delete the retired scalar agreement path.
     ['renovation_budget', 'budget'],
     ['renovation_contingency', 'contingency'],
   ] as const) {

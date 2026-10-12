@@ -1,5 +1,5 @@
 ---
-uw_version: "2.0"
+uw_version: "3.0"
 deal_id: "RFC-0072-21-btr-class-scope"
 deal_name: "Scenario identity fixture"
 asset_class: land

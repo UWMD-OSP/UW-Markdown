@@ -7,8 +7,16 @@ import { parseUWFile, getSection } from './parser.js';
 import { computeBlockHash, verifyChain } from './integrity.js';
 import type { EditOperation } from './protocol.js';
 
+function stampFixtureHash(source: string, hash: string): string {
+  return source.replace(/(^```json uw:section=property[^\n]*\n)([\s\S]*?)(^```)/m, (_match, open, raw, close) => {
+    const body = JSON.parse(raw);
+    body._meta.integrity = { ...body._meta.integrity, content_hash: hash };
+    return `${open+JSON.stringify(body,null,2)}\n${close}`;
+  });
+}
+
 const BASE = `---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: "uw_2026_INT"
 deal_name: "Integrity Test Deal"
 created: "2026-01-01T00:00:00Z"
@@ -37,18 +45,25 @@ source_documents: []
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "manual",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "user",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false,
-    "flags": [],
-    "input_hash": null,
-    "notes": null
+    "provenance": {
+      "source": "manual",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
   },
   "total_units": 24,
   "year_built": 1995,
@@ -86,12 +101,9 @@ describe('editor — INT-02 stale parent_hash (sync)', () => {
     // hashed prior. Use computeBlockHash on the parsed result.
     const parsed2 = parseUWFile(r1.content!);
     const head = getSection(parsed2, 'property')!;
-    head.meta.content_hash = await computeBlockHash(head);
+    head.meta.content_hash = await computeBlockHash(head, {shape: 'v3'});
     // Splice it back into the file content.
-    const content2 = r1.content!.replace(
-      '"notes": null',
-      `"notes": null,\n    "content_hash": "${head.meta.content_hash}"`,
-    );
+    const content2 = stampFixtureHash(r1.content!, head.meta.content_hash);
     const parsed3 = parseUWFile(content2);
 
     // Edit with WRONG parent hash → INT-02.
@@ -148,11 +160,8 @@ describe('applyEditAsync — content_hash stamping', () => {
     // Seed a hashed prior into the file.
     const parsed = parseUWFile(BASE);
     const seedHead = getSection(parsed, 'property')!;
-    const seedHash = await computeBlockHash(seedHead);
-    const seeded = BASE.replace(
-      '"notes": null',
-      `"notes": null,\n    "content_hash": "${seedHash}"`,
-    );
+    const seedHash = await computeBlockHash(seedHead, {shape: 'v3'});
+    const seeded = stampFixtureHash(BASE, seedHash);
     const parsedSeeded = parseUWFile(seeded);
 
     const r = await applyEditAsync(

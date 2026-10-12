@@ -58,9 +58,9 @@ const BASE_MANIFEST: Omit<ModuleManifest, 'asset_classes'> = {
   description: 'Probes which asset classes the module validator accepts.',
   authors: ['UW Markdown Working Group'],
   license: 'MIT',
-  requires_protocol: '^1.0.0',
-  requires_format: '^1.1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
 };
 
 describe('types — DEFAULT_THRESHOLDS', () => {

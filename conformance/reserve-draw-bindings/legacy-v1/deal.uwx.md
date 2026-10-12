@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: SYNTHETIC-DRAW-BINDING
 asset_class: industrial
 deal_stage: screening
@@ -12,11 +12,23 @@ created: "2026-01-01"
 ```json uw:section=reserve_accounts
 {
   "_meta": {
-    "source": "manual",
-    "author": "synthetic-fixture",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "verified",
-    "version": 1
+    "section": "reserve_accounts",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "verified",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
   "accounts": [
     {
@@ -62,11 +74,23 @@ created: "2026-01-01"
 ```json uw:section=cash_flow_series variant=gross
 {
   "_meta": {
-    "source": "manual",
-    "author": "synthetic-fixture",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "verified",
-    "version": 1
+    "section": "cash_flow_series",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "verified",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
   "series": [
     {
@@ -81,11 +105,23 @@ created: "2026-01-01"
 ```json uw:section=lease_up_schedule variant=leasing
 {
   "_meta": {
-    "source": "manual",
-    "author": "synthetic-fixture",
-    "timestamp": "2026-01-01T00:00:00Z",
-    "confidence": "verified",
-    "version": 1
+    "section": "lease_up_schedule",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "verified",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
   },
   "model_type": "absorption_curve",
   "period_granularity": "monthly",

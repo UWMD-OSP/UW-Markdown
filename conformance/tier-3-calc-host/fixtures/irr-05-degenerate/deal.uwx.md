@@ -1,5 +1,5 @@
 ---
-uw_version: "1.1"
+uw_version: "3.0"
 deal_id: TEST-T3-IRR-05
 deal_name: "IRR on degenerate flows"
 created: "2026-08-15T10:00:00Z"

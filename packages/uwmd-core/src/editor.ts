@@ -248,7 +248,7 @@ export async function applyEditAsync(
   const v2 = isV2File(reparsed.frontmatter);
   newHead.meta.parent_hash = priorHash;
   // Compute over the block (canonicalizer strips content_hash itself).
-  newHead.meta.content_hash = await computeBlockHash(newHead, { shape: v2 ? 'v2' : 'v1' });
+  newHead.meta.content_hash = await computeBlockHash(newHead, { shape: reparsed.frontmatter.uw_version === '3.0' ? 'v3' : v2 ? 'v2' : 'v1' } /* RFC 0081 Phase 4: delete old digest selection. */);
 
   const stamped = restampBlockMeta(result.content, newHead, v2);
   return { ...result, content: stamped };
