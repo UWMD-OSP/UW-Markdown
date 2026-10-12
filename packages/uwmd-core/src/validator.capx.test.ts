@@ -60,13 +60,13 @@ describe('RFC 0057 — the quiet path', () => {
   it('accepts a full draw with a verified remaining and a retrofit', () => {
     expect(codes(
       draw({ contingency_remaining: 380_000, expense_targeted: [{ ...RETROFIT, simple_payback_years: 6.3158 }] }),
-      { renovation_budget: 4_000_000, renovation_contingency: 500_000 },
+      {},
       NOI,
     )).toEqual([]);
   });
 
   it('leaves a document stating no renovation untouched', () => {
-    expect(codes(undefined, { renovation_budget: 4_000_000, purchase_price: 20_000_000 })).toEqual([]);
+    expect(codes(undefined, { renovation: { budget: 4_000_000 }, purchase_price: 20_000_000 })).toEqual([]);
   });
 
   it('accepts a draw with nothing spent yet', () => {
@@ -121,16 +121,9 @@ describe('RFC 0057 the draw', () => {
     expect(codes(draw({ contingency_remaining: 380_000.002 }))).toEqual([]);
   });
 
-  it.each([
-    ['renovation_budget', 'budget'],
-    ['renovation_contingency', 'contingency'],
-  ])('CAPX-05 refuses a legacy %s disagreeing with %s', (legacy) => {
-    expect(codes(draw(), { [legacy]: 999 })).toEqual(['CAPX-05']);
-  });
+  
 
-  it('CAPX-05 stays quiet when only the legacy scalar is stated', () => {
-    expect(codes(undefined, { renovation_budget: 999 })).toEqual([]);
-  });
+  
 });
 
 describe('RFC 0057 expense-targeted capex', () => {

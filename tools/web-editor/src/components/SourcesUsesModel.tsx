@@ -22,7 +22,7 @@ function scalarInputs(content: Row, parentPath: string): InputDef[] {
   const obj = deepGet(content, parentPath);
   if (!isObj(obj)) return [];
   return Object.entries(obj)
-    .filter(([k, v]) => k !== 'total' && !isObj(v))
+    .filter(([k, v]) => k !== 'total' && !isObj(v) && !Array.isArray(v))
     .map(([k]) => ({ path: `${parentPath}.${k}`, label: prettify(k) }));
 }
 
@@ -55,6 +55,11 @@ export function SourcesUsesModel(props: {
   const sourceInputs = scalarInputs(content, 'sources');
   const useInputs = scalarInputs(content, 'uses');
   const closingInputs = scalarInputs(content, 'uses.closing_costs');
+  const renovationInputs = scalarInputs(content, 'uses.renovation');
+  const escrows = deepGet(content, 'uses.escrows');
+  const escrowInputs: InputDef[] = Array.isArray(escrows) ? escrows.flatMap((escrow, index) =>
+    isObj(escrow) && ['interest', 'operating'].includes(String(escrow.name)) && 'upfront' in escrow
+      ? [{ path: `uses.escrows.${index}.upfront`, label: `${prettify(String(escrow.name))} Reserve` }] : []) : [];
 
   return (
     <div className="px-4 py-4">
@@ -76,6 +81,11 @@ export function SourcesUsesModel(props: {
           {useInputs.map((d) => (
             <InputRow key={d.path} def={d} value={getNumeric(content, d.path)} onCommit={commitInput} />
           ))}
+
+          {[...renovationInputs, ...escrowInputs].map((d) => (
+            <InputRow key={d.path} def={d} value={getNumeric(content, d.path)} onCommit={commitInput} />
+          ))}
+          <p className="text-xs text-muted">Stated hedge premiums in Debt Structure also count once in Total Uses.</p>
 
           {closingInputs.length > 0 && (
             <>

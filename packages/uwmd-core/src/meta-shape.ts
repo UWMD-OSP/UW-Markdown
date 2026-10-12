@@ -1,3 +1,4 @@
+// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
 // RFC 0009 — the v2 nested `_meta` shape and the structural reshape ("shim").
 //
 // Format 2.0 reorganizes the flat ~18-field `_meta` into four named

@@ -18,9 +18,9 @@ const BASE: ModuleManifest = {
   description: 'Example module',
   authors: ['Example'],
   license: 'MIT',
-  requires_protocol: '^1.0.0',
-  requires_format: '^1.1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
   asset_classes: ['self_storage'],
   calculations: [
     {
@@ -126,7 +126,7 @@ describe('loadModuleManifest', () => {
   it('validates agent layer declarations', () => {
     const result = loadModuleManifest({
       ...BASE,
-      requires_tier: 'tier-4-agent-host',
+      requires_conformance: 'verifier',
       agent_layers: [{ id: 'NOT_A_LAYER', reads: 'noi_model', writes: [''], prompt_template: 42 }],
     }, { hostTier: 'tier-4-agent-host' });
 
@@ -139,7 +139,7 @@ describe('loadModuleManifest', () => {
   it('accepts a well-formed agent layer', () => {
     const result = loadModuleManifest({
       ...BASE,
-      requires_tier: 'tier-4-agent-host',
+      requires_conformance: 'verifier',
       agent_layers: [
         { id: 'L7_storage', reads: ['property'], writes: ['risk_assessment'], prompt_template: 'x' },
       ],
@@ -153,7 +153,7 @@ describe('loadModuleManifest', () => {
     const layer = { id: 'L7_storage', reads: ['property'], writes: ['risk_assessment'], prompt_template: 'x' };
     const result = loadModuleManifest({
       ...BASE,
-      requires_tier: 'tier-4-agent-host',
+      requires_conformance: 'verifier',
       agent_layers: [layer, { ...layer }],
     }, { hostTier: 'tier-4-agent-host' });
 
@@ -286,9 +286,9 @@ describe('createModuleRegistry — §VII.3 declaration conflicts', () => {
     description: 'Synthetic §VII.3 module.',
     authors: ['test'],
     license: 'MIT',
-    requires_protocol: '>=1.0.0',
-    requires_format: '>=1.0',
-    requires_tier: 'tier-3-calc-host',
+    requires_protocol: '^4.0.0',
+    requires_format: '^3.0',
+    requires_conformance: 'verifier',
     ...extra,
   });
   const section = (id: string, required = false) => ({ id, display_name: id, schema: { type: 'object' }, required });
@@ -636,7 +636,7 @@ describe('ModuleRegistry public shape', () => {
 
 
 describe('RFC 0081 conformance/profile module requirements', () => {
-  const { requires_tier: _old, ...base } = BASE;
+  const base = BASE;
   const manifest = { ...base, requires_conformance: 'verifier' as const, requires_profiles: ['module' as const], requires_protocol: '^4.0.0', requires_format: '^3.0' };
   it('loads the final manifest and checks the host tier and every profile', () => {
     expect(loadModuleManifest(manifest).ok).toBe(true);

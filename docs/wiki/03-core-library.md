@@ -1,5 +1,15 @@
 # 03 — Core library (`@uwmd/core`)
 
+RFC 0081 Phase 3 re-authors the corpus as Format 3.0: bare section payloads,
+inline nested `_meta`, and the single-fact and hospitality field homes in the
+[accepted RFC](../rfcs/0081-one-format-one-protocol.md). The interim runtime
+reads those homes and hashes the payload without `_meta`. Legacy readers and
+migrators are marked for Phase 4 deletion. The one-off scripts
+`scripts/rfc-0081-reauthor-corpus.mjs` and `scripts/rfc-0081-value-diff.mjs`
+re-author artifacts and compare financial evidence; they are repository
+maintenance, not a product migration feature. Lite emission changes in Phase 4.
+
+
 `packages/uwmd-core` is the reference implementation and the heart of the repo.
 Everything else depends on it. Its runtime dependencies are `fast-xml-parser` and
 `fflate`. `@anthropic-ai/sdk` is an **optional peer dependency**: only the

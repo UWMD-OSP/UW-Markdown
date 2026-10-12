@@ -225,15 +225,7 @@ describe('REC-06 / REC-07 / REC-08 — the arithmetic a single document can chec
   });
 });
 
-describe('REC-10 — the legacy cap field', () => {
-  it('warns, rather than refuses, when cam_cap_pct sits beside a typed cap', () => {
-    const source = doc(`"cam_cap_pct": 0.05,\n      "recovery_terms": { "method": "net", "cap": { "pct": 0.04, "accumulation": "cumulative" } }`);
-    const issues = validateUWFile(parseUWFile(source)).issues;
-    const rec10 = issues.find((i) => i.code === 'REC-10');
-    expect(rec10).toBeDefined();
-    expect(rec10!.severity).toBe('warning');
-  });
-});
+
 
 describe('REC-09 — the §4.26 handoff', () => {
   const withRef = (ref: string, series = '') =>

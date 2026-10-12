@@ -1,3 +1,4 @@
+// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
 // .uw.md parser — extracts frontmatter, section blocks, prose, and pipeline log
 // Spec: UW_FORMAT_SPEC.md §2.4 (annotation syntax), §2.7 (update semantics), §2.8 (multi-variant)
 

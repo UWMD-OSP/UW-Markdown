@@ -21,9 +21,9 @@ const BASE: ModuleManifest = {
   description: 'A module that exists to exercise the runtime.',
   authors: ['test'],
   license: 'MIT',
-  requires_protocol: '>=1.0.0',
-  requires_format: '>=1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_protocol: '^4.0.0',
+  requires_format: '^3.0',
+  requires_conformance: 'verifier',
   asset_classes: ['hospitality'],
 };
 

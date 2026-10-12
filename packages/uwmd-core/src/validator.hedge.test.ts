@@ -55,10 +55,8 @@ const debt = (over: Record<string, unknown> = {}, hedge: Record<string, unknown>
 describe('RFC 0056 — the quiet path', () => {
   it('accepts a floating loan with a full hedge and matching escrows', () => {
     expect(codes(
-      debt({ rate_cap_pct: 0.035 }, { post_expiration_assumption: 'replace' }),
+      debt({ }, { post_expiration_assumption: 'replace' }),
       {
-        rate_cap_cost: 410_000,
-        interest_reserve: 750_000,
         escrows: [
           { name: 'tax', upfront: 120_000, monthly: 30_000, lender_required: true },
           { name: 'insurance', monthly: 8_000 },
@@ -74,8 +72,8 @@ describe('RFC 0056 — the quiet path', () => {
     expect(codes({ rate_type: 'fixed', interest_rate: 0.0551 }, { purchase_price: 1 })).toEqual([]);
   });
 
-  it('leaves a legacy rate_cap_pct with no typed hedge alone', () => {
-    expect(codes({ rate_type: 'floating', rate_cap_pct: 0.035 })).toEqual([]);
+  it('accepts a lone stated strike', () => {
+    expect(codes({ rate_type: 'floating', rate_hedge: { instrument: 'rate_cap', strike_rate: 0.035 } })).toEqual([]);
   });
 
   it('enforces released ESC-04 even when sources_uses is absent', () => {
@@ -125,23 +123,17 @@ describe('RFC 0056 rate hedge', () => {
     expect(codes(debt({ rate_type: 'hybrid' }))).toEqual([]);
   });
 
-  it('HDG-04 refuses a legacy rate_cap_pct that disagrees with the strike', () => {
-    expect(codes(debt({ rate_cap_pct: 0.04 }))).toEqual(['HDG-04']);
-  });
+  
 
-  it('HDG-05 refuses a premium that disagrees with the use that funds it', () => {
-    expect(codes(debt(), { rate_cap_cost: 500_000 })).toEqual(['HDG-05']);
-  });
+  
 
-  it('HDG-05 compares at the currency quantum, not by identity', () => {
-    expect(codes(debt({}, { premium: 410_000.001 }), { rate_cap_cost: 410_000 })).toEqual([]);
-  });
+  
 
   it.each([
     ['nothing', undefined],
     ['an unknown assumption', 'refinance_out'],
   ])('HDG-06 refuses %s for post_expiration_assumption', (_n, post_expiration_assumption) => {
-    expect(codes(debt({}, { post_expiration_assumption }))).toEqual(['HDG-06']);
+    expect(codes(debt({}, { post_expiration_assumption }))).toEqual(post_expiration_assumption === undefined ? ['HDG-01', 'HDG-06'] : ['HDG-06']);
   });
 });
 
@@ -196,22 +188,11 @@ describe('RFC 0056 escrows', () => {
     ]))).toEqual([]);
   });
 
-  it.each([
-    ['interest_reserve', 'interest'],
-    ['operating_reserves', 'operating'],
-  ])('ESC-03 refuses a %s disagreeing with the %s escrow', (legacy, name) => {
-    expect(codes(null, su([{ name, upfront: 500_000 }], { [legacy]: 750_000 })))
-      .toEqual(['ESC-03']);
-  });
+  
 
-  it('ESC-03 stays quiet when only the legacy scalar is stated', () => {
-    expect(codes(null, su([{ name: 'tax', upfront: 1 }], { interest_reserve: 750_000 }))).toEqual([]);
-  });
+  
 
-  it('ESC-03 stays quiet when the escrow states only a monthly deposit', () => {
-    expect(codes(null, su([{ name: 'interest', monthly: 50_000 }], { interest_reserve: 750_000 })))
-      .toEqual([]);
-  });
+  
 });
 
 describe('RFC 0056 — the replacement tie (ESC-04)', () => {
@@ -309,7 +290,7 @@ ${[...debts.map(([v, c]) => fence('debt_structure', v, c)), ...sources.map(([v, 
     ({ rate_type: 'floating', ...(hedge === undefined ? {} : { rate_hedge: hedge }), _role: role });
   const replace = { ...HEDGE, post_expiration_assumption: 'replace' };
   const escrowed = (role?: string) =>
-    ({ uses: { rate_cap_cost: 1, escrows: [{ name: 'rate_cap_replacement', upfront: 300_000 }] }, ...(role ? { _role: role } : {}) });
+    ({ uses: { escrows: [{ name: 'rate_cap_replacement', upfront: 300_000 }] }, ...(role ? { _role: role } : {}) });
 
   it('D1: refuses a malformed hedge on two seniors with one HDG-08 on rate_hedge', () => {
     const issues = issuesOf([['a', loan('senior', 'a cap')], ['b', loan('senior')]]);

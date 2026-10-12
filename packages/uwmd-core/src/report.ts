@@ -593,11 +593,8 @@ const SOURCE_LABELS: Array<[string, string]> = [
 
 const USE_LABELS: Array<[string, string]> = [
   ['purchase_price', 'Purchase Price'],
-  ['renovation_budget', 'Renovation Budget'],
-  ['renovation_contingency', 'Renovation Contingency'],
-  ['operating_reserves', 'Operating Reserves'],
-  ['interest_reserve', 'Interest Reserve'],
-  ['rate_cap_cost', 'Rate Cap Cost'],
+  ['renovation.budget', 'Renovation Budget'],
+  ['renovation.contingency', 'Renovation Contingency'],
   ['other_reserves', 'Other Reserves'],
 ];
 
@@ -622,6 +619,26 @@ function sourcesUses(ctx: Ctx): string | null {
   for (const [key, label] of USE_LABELS) {
     const v = deepGet(c, `uses.${key}`);
     if (has(v)) useRows.push([label, money(v)]);
+  }
+  const escrows = deepGet(c, 'uses.escrows');
+  if (Array.isArray(escrows)) for (const escrow of escrows) {
+    if (escrow && ['interest', 'operating'].includes(escrow.name) && has(escrow.upfront)) {
+      useRows.push([escrow.name === 'interest' ? 'Interest Reserve' : 'Operating Reserves', money(escrow.upfront)]);
+    }
+  }
+  const debt = ctx.parsed.sections.debt_structure;
+  const debts = !debt ? [] : 'annotation' in debt ? [debt as UWBlock] : Object.values(debt as Record<string, UWBlock>);
+  for (const loan of debts) {
+    const premium = deepGet(loan.content, 'rate_hedge.premium');
+    if (has(premium)) useRows.push(['Rate Cap Cost', money(premium)]);
+  }
+  // RFC 0081 Phase 4: delete legacy uses display paths.
+  if (ctx.parsed.frontmatter.uw_version !== '3.0') for (const [key, label] of [
+    ['renovation_budget', 'Renovation Budget'], ['renovation_contingency', 'Renovation Contingency'],
+    ['operating_reserves', 'Operating Reserves'], ['interest_reserve', 'Interest Reserve'], ['rate_cap_cost', 'Rate Cap Cost'],
+  ]) {
+    const value = deepGet(c, `uses.${key}`);
+    if (has(value)) useRows.push([label, money(value)]);
   }
   const closing = deepGet(c, 'uses.closing_costs.total') ?? deepGet(c, 'uses.closing_costs');
   if (has(closing) && typeof closing !== 'object') {

@@ -77,7 +77,7 @@ describe('UW XML 1.0', () => {
     const tampered = xml.replace('XML &amp; Unicode', 'Tampered');
     await expect(parseUWXml(tampered)).rejects.toThrow(/XML_DIGEST_MISMATCH/);
 
-    const extraAttribute = xml.replace('format-version="1.1"', 'format-version="1.1" surprise="true"');
+    const extraAttribute = xml.replace('format-version="3.0"', 'format-version="3.0" surprise="true"');
     await expect(parseUWXml(extraAttribute)).rejects.toThrow(/XML_UNEXPECTED_MEMBER/);
 
     const structuralText = xml.replace('<uw:frontmatter uw:type="object">', '<uw:frontmatter uw:type="object">not-whitespace');

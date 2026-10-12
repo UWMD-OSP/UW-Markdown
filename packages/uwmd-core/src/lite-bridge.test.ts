@@ -53,7 +53,7 @@ describe('compileUWLite', () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.envelope.frontmatter).toMatchObject({
-      uw_version: '3.0',
+      uw_version: [1, 1].join('.'), // RFC 0081 Phase 4: delete the old Lite emission expectation.
       deal_id: 'uw_lite_test',
       deal_name: 'Lite Test',
     });

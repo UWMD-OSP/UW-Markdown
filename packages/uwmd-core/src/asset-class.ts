@@ -1,3 +1,4 @@
+// RFC 0081 Phase 4: delete legacy format/metadata/alias paths retained for the Phase 3 boundary.
 // Builtin and third-party asset identities (RFC 0080). The sole legacy
 // official alias is resolved without rewriting the document or its digest.
 

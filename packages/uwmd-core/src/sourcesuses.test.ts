@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { parseUWFile } from './parser.js';
 import { deriveSourcesUses } from './sourcesuses.js';
 
 function field(d: ReturnType<typeof deriveSourcesUses>, path: string): number | undefined {
@@ -26,7 +27,7 @@ describe('deriveSourcesUses — multifamily (nested closing costs, project-cost 
         other: 0,
         total: 0,
       },
-      operating_reserves: 96_000,
+      escrows: [{ name: 'operating', upfront: 96_000 }],
       other_reserves: 5_000,
       total: 0,
     },
@@ -49,7 +50,7 @@ describe('deriveSourcesUses — multifamily (nested closing costs, project-cost 
 describe('deriveSourcesUses — office (flat closing costs, top-level mirrors)', () => {
   const content = {
     sources: { loan_amount: 3_250_000, sponsor_equity: 2_150_000, total: 0 },
-    uses: { purchase_price: 5_000_000, closing_costs: 150_000, interest_reserve: 250_000, total: 0 },
+    uses: { purchase_price: 5_000_000, closing_costs: 150_000, escrows: [{ name: 'interest', upfront: 250_000 }], total: 0 },
     total_sources: 0,
     total_uses: 0,
   };
@@ -81,5 +82,31 @@ describe('deriveSourcesUses — imbalance & empty', () => {
     const d = deriveSourcesUses({});
     expect(d.fields).toHaveLength(0);
     expect(d.balanced).toBe(true);
+  });
+});
+
+describe('RFC 0081 §7 footing', () => {
+  const parsed = parseUWFile(`---
+uw_version: "3.0"
+asset_class: office
+---
+\`\`\`json uw:section=debt_structure variant=alpha
+{"rate_hedge":{"instrument":"rate_cap","premium":400000}}
+\`\`\`
+\`\`\`json uw:section=debt_structure variant=beta
+{"rate_hedge":{"instrument":"rate_cap","premium":400000}}
+\`\`\`
+`);
+  it('counts each stated premium and the two named upfront escrows once; monthly deposits and other escrows do not enter uses', () => {
+    const content = { sources: { equity: 2000000 }, uses: { purchase_price: 500000,
+      escrows: [{ name: 'interest', upfront: 750000, monthly: 10000 },
+        { name: 'operating', upfront: 50000 }, { name: 'tax', upfront: 90000 }], total: 0 } };
+    const original = JSON.stringify({ content, parsed });
+    expect(deriveSourcesUses(content, parsed).usesTotal).toBe(2100000);
+    expect(JSON.stringify({ content, parsed })).toBe(original);
+  });
+  it('does not create a uses bucket when none is stated', () => {
+    expect(deriveSourcesUses({}, parsed).fields).toHaveLength(0);
+    expect(deriveSourcesUses({}, parsed).usesTotal).toBe(0);
   });
 });

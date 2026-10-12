@@ -806,8 +806,8 @@ function checkReassessment(
       `TAX-01: reassessment.trigger must be one of ${REASSESSMENT_TRIGGERS.join(', ')}`, trigger);
     return null;
   }
-  if (loneFacts && !['assessed_value', 'millage_rate', 'indicated_tax'].some(k => Object.hasOwn(r, k))) {
-    if (['jurisdiction', 'value_basis', 'assessment_ratio', 'round_to_decimals'].some(k => Object.hasOwn(r, k))) taxIssue(issues, 'TAX-01', section, base, 'TAX-01: assessment attributes require the complete assessment group');
+  if (loneFacts && !['assessed_value', 'millage_rate', 'indicated_tax'].some(k => r[k] != null)) {
+    if (['jurisdiction', 'value_basis', 'assessment_ratio', 'round_to_decimals'].some(k => r[k] != null)) taxIssue(issues, 'TAX-01', section, base, 'TAX-01: assessment attributes require the complete assessment group');
     return null;
   }
   // RFC 0081 Phase 4: delete the old unconditional assessment requirement.
@@ -1723,7 +1723,7 @@ function checkRateHedge(
 ): void {
   const at = 'rate_hedge';
   const terms = ['notional', 'index', 'effective_date', 'expiration_date', 'post_expiration_assumption'];
-  const stated = terms.filter(k => Object.hasOwn(h, k)).length;
+  const stated = terms.filter(k => h[k] != null).length;
   const checkTerms = !loneFacts || stated > 0; // RFC 0081 Phase 4: delete the old unconditional terms requirement.
   if (loneFacts && stated > 0 && stated < terms.length) hedgeIssue(issues, 'HDG-01', 'debt_structure', at, 'HDG-01: hedge terms must be stated all together');
   const inst = h['instrument'];
@@ -2051,14 +2051,14 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
   const ren = r as Record<string, unknown>;
   const loneFacts = parsed.frontmatter.uw_version === '3.0';
   const drawMembers = ['contingency_used', 'drawn_to_date', 'as_of_date'];
-  const drawCount = drawMembers.filter(k => Object.hasOwn(ren, k)).length;
+  const drawCount = drawMembers.filter(k => ren[k] != null).length;
   const checkDraw = !loneFacts || drawCount > 0; // RFC 0081 Phase 4: delete old unconditional draw requirements.
-  if (loneFacts && !['budget', 'contingency'].some(k => Object.hasOwn(ren, k))) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: renovation needs budget or contingency');
-  if (loneFacts && ((drawCount > 0 && drawCount < 3) || (drawCount > 0 && (!Object.hasOwn(ren, 'budget') || !Object.hasOwn(ren, 'contingency'))) || (Object.hasOwn(ren, 'contingency_remaining') && drawCount !== 3))) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: the complete draw group requires budget and contingency');
+  if (loneFacts && !['budget', 'contingency'].some(k => ren[k] != null)) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: renovation needs budget or contingency');
+  if (loneFacts && ((drawCount > 0 && drawCount < 3) || (drawCount > 0 && (ren['budget'] == null || ren['contingency'] == null)) || (ren['contingency_remaining'] != null && drawCount !== 3))) capxIssue(issues, 'CAPX-01', at, 'CAPX-01: the complete draw group requires budget and contingency');
 
   for (const key of ['budget', 'contingency', 'contingency_used', 'drawn_to_date'] as const) {
     const v = ren[key];
-    if (loneFacts && !checkDraw && !Object.hasOwn(ren, key)) continue;
+    if (loneFacts && !checkDraw && ren[key] == null) continue;
     if (!finiteNum(v) || v < 0) {
       capxIssue(issues, 'CAPX-01', `${at}.${key}`,
         `CAPX-01: ${key} must be a finite nonnegative amount`, v);

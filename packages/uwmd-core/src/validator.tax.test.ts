@@ -48,18 +48,18 @@ const taxCodes = (source: string): string[] =>
   validateUWFile(parseUWFile(source)).issues.filter(i => i.code.startsWith('TAX-')).map(i => i.code);
 
 const withBasis = (over: Record<string, unknown> = {}, tax: Record<string, unknown> = {}) =>
-  doc({ value: 58000, sale_triggers_reassessment: true, ...tax, reassessment: { ...BASIS, ...over } });
+  doc({ value: 58000, ...tax, reassessment: { ...BASIS, ...over } });
 
 describe('RFC 0053 reassessment basis', () => {
   it('accepts the corpus basis once it is typed', () => {
     expect(taxCodes(withBasis())).toEqual([]);
   });
 
-  it('leaves a document stating none of the new members untouched', () => {
+  it('accepts a lone reassessment trigger', () => {
     expect(taxCodes(doc({
       value: 58000,
       source: 'reassessment_estimate',
-      sale_triggers_reassessment: true,
+      reassessment: { trigger: 'sale' },
       reassessment_basis: '70% of purchase price per Maricopa County methodology',
     }))).toEqual([]);
   });
@@ -119,17 +119,9 @@ describe('RFC 0053 reassessment basis', () => {
     expect(taxCodes(withBasis({ round_to_decimals: 1.5 }))).toContain('TAX-03');
   });
 
-  it('TAX-04 refuses a boolean that disagrees with the typed trigger', () => {
-    expect(taxCodes(withBasis({}, { sale_triggers_reassessment: false }))).toContain('TAX-04');
-  });
+  
 
-  it('TAX-04 accepts the boolean agreeing with a non-sale trigger', () => {
-    expect(taxCodes(doc({
-      value: 58000,
-      sale_triggers_reassessment: false,
-      reassessment: { ...BASIS, trigger: 'statutory_cycle' },
-    }))).toEqual([]);
-  });
+  
 });
 
 describe('RFC 0053 abatement schedule', () => {

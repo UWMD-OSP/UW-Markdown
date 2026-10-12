@@ -1,5 +1,15 @@
 # 09 — Conformance & testing
 
+RFC 0081 Phase 3 re-authors the corpus as Format 3.0: bare section payloads,
+inline nested `_meta`, and the single-fact and hospitality field homes in the
+[accepted RFC](../rfcs/0081-one-format-one-protocol.md). The interim runtime
+reads those homes and hashes the payload without `_meta`. Legacy readers and
+migrators are marked for Phase 4 deletion. The one-off scripts
+`scripts/rfc-0081-reauthor-corpus.mjs` and `scripts/rfc-0081-value-diff.mjs`
+re-author artifacts and compare financial evidence; they are repository
+maintenance, not a product migration feature. Lite emission changes in Phase 4.
+
+
 > RFC 0081 Phase 2 schemas describe the final Format 3.0 / Protocol 4.0.0 contract. Test-only `scripts/rfc-0081-schema-projections.mjs` projects the unchanged corpus to the new manifest and ownership schemas. Invalid and unknown values are preserved so negative controls still refuse. Phase 3 re-authors the fixtures; Phases 4–5 remove the projections and old runtime vocabulary. No production reader uses the projections.
 
 Two test systems guard this repo: **unit tests** (Vitest, per package) and the
