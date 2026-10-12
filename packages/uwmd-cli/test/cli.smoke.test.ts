@@ -367,9 +367,9 @@ describe('uwmd CLI', () => {
       const out = JSON.parse(r.stdout);
       expect(out).toMatchObject({
         asset_class: 'data_center',
-        declared_asset_class: 'data_center',
         defaults_table: 'data_center@1.0.0',
       });
+      expect(out).not.toHaveProperty('declared_asset_class');
       for (const field of Object.values(out.resolved) as Array<{ step: string; resolved_from?: string }>) {
         if (field.step === 'asset_class_default') expect(field.resolved_from).toBe('data_center@1.0.0');
       }

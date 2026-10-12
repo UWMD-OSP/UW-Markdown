@@ -34,7 +34,7 @@ import type {
 } from './integrity.js';
 import type { EditContext, EditResult } from './editor.js';
 import type { CapabilityVerifier, EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
-import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
+import { REFERENCE_IMPLEMENTATION_MANIFEST, readConformanceTier } from './protocol.js';
 import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
 import {
   cmdLeaseValidate,
@@ -952,7 +952,9 @@ function cmdModulesList(files: string[], flags: Record<string, string | boolean>
     id: m.id,
     name: m.name,
     version: m.version,
-    requires_tier: m.requires_tier,
+    // RFC 0081 Phase 4: delete the legacy manifest display fallback.
+    requires_conformance: m.requires_conformance ?? readConformanceTier(m.requires_tier ?? '')?.tier,
+    requires_profiles: m.requires_profiles ?? [],
     asset_classes: m.asset_classes ?? [],
     calculations: (m.calculations ?? []).length,
     validations: (m.validations ?? []).length,
@@ -968,7 +970,7 @@ function cmdModulesList(files: string[], flags: Record<string, string | boolean>
   console.log(`\n${rows.length} module(s) loaded\n`);
   for (const row of rows) {
     console.log(`  ${row.id}@${row.version} — ${row.name}`);
-    console.log(`    tier: ${row.requires_tier}`);
+    console.log(`    conformance: ${row.requires_conformance}; profiles: ${row.requires_profiles.join(', ') || 'none'}`);
     console.log(`    asset classes: ${row.asset_classes.length ? row.asset_classes.join(', ') : 'class-agnostic'}`);
     console.log(
       `    contributes: ${row.calculations} calc, ${row.validations} validation, ` +

@@ -79,8 +79,8 @@ describe('RFC 0058 — a clean recovery record', () => {
     expect(codes(doc(''))).toEqual([]);
   });
 
-  it('leaves the legacy cam_cap_pct alone when no typed cap contradicts it', () => {
-    expect(codes(doc('"cam_cap_pct": 0.05'))).toEqual([]);
+  it('accepts a lone stated recovery cap', () => {
+    expect(codes(doc('"recovery_terms": { "cap": { "pct": 0.05 } }'))).toEqual([]);
   });
 });
 
