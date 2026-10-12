@@ -1,5 +1,12 @@
 // One-off RFC 0081 Phase 3 corpus re-authoring; delete in Phase 4.
 // This is repository maintenance, not an exported migration feature.
+//
+// Idempotent: a document that already declares uw_version "3.0" is final and
+// never re-processed, so a re-run cannot "repair" a negative control (a
+// tampered hash, a broken parent link, an unknown signing key). Migrator
+// expectations (conformance/migrate) and JSON Schema files are not corpus
+// documents, and a source line carrying an RFC 0081 Phase 4 marker is an
+// intentional interim old-version literal. A dry re-run reports zero files.
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -90,8 +97,11 @@ function preserveNumbers(original,json) {
   }
   return json.replace(/"([^"\n]+)"\s*:\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,(s,k,v)=>s.slice(0,s.lastIndexOf(v))+(tokens.get(`${k}=${Number(v)}`)??v));
 }
+const isFinal = source => { const fm=/^---\r?\n([\s\S]*?)\r?\n---/.exec(source); return !!fm && /^uw_version:\s*["']?3\.0["']?\s*$/m.test(fm[1]); };
+const PHASE4 = 'RFC 0081 Phase 4';
 async function document(source,file) {
   if(!/uw_version\s*:/.test(source) && !source.includes('```json uw:')) return source;
+  if(isFinal(source)) return source;
   const original=source;
   const sourceTags=migrateSourceTags(source); source=sourceTags.content;
   const migrated=await migrateToV2(source,{resign:async req=>signBlock({meta:{section:req.section,actor:req.actor,timestamp:req.timestamp,content_hash:req.content_hash}}, {...key,kid:req.prior.kid},{signedAt:req.prior.signed_at})});
@@ -198,11 +208,13 @@ function jsonValue(value,file) {
 async function processFile(file) {
   const before=readFileSync(file,'utf8'); let after=before;
   if(/\.md$/.test(file)) after=await document(before,file);
-  else if(/\.json$/.test(file) && !/package(-lock)?\.json$|keys\//.test(file)) {
-    try { const parsed=JSON.parse(before); const value=jsonValue(structuredClone(parsed),file); if(JSON.stringify(value)!==JSON.stringify(parsed)) after=`${preserveNumbers(before,JSON.stringify(value,null,2))}\n`; } catch { return; }
+  else if(/\.json$/.test(file) && !/package(-lock)?\.json$|keys\/|^conformance\/migrate\//.test(file)) {
+    try { const parsed=JSON.parse(before); if(Object.hasOwn(parsed,'$schema')) return; const value=jsonValue(structuredClone(parsed),file); if(JSON.stringify(value)!==JSON.stringify(parsed)) after=`${preserveNumbers(before,JSON.stringify(value,null,2))}\n`; } catch { return; }
   } else if(/\.[cm]?[jt]sx?$/.test(file) && !file.startsWith('scripts/rfc-0081-')) {
     const source=ts.createSourceFile(file,before,ts.ScriptTarget.Latest,true); const edits=[];
+    const lineOf = node => { const text=source.text; const start=text.lastIndexOf('\n',node.getStart())+1; const end=text.indexOf('\n',node.end); return text.slice(start,end<0?undefined:end); };
     async function visit(node) {
+      if ((ts.isTemplateExpression(node)||ts.isStringLiteral(node)||ts.isNoSubstitutionTemplateLiteral(node)) && lineOf(node).includes(PHASE4)) return;
       if (ts.isTemplateExpression(node) && /uw_version\s*:/.test(node.getText(source))) {
         const text=node.getText(source).replace(/(uw_version:\s*(?:\\?["'])?)[12]\.[012]/g, (_m,head)=>`${head}3.0`);
         if(text!==node.getText(source)) edits.push({start:node.getStart(),end:node.end,text});

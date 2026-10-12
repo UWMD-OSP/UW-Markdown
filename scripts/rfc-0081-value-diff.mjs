@@ -1,3 +1,4 @@
+// One-off RFC 0081 Phase 3 acceptance harness (before/after value diff); delete in Phase 4.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname, basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
