@@ -211,7 +211,7 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
     pipeline_log: parsed.pipeline_log.map(b => b.content),
     custom_calculations: parsed.custom_calculations,
     custom_scenarios: parsed.custom_scenarios,
-    extensions: parsed.extensions,
+    extensions: Object.fromEntries(Object.entries(parsed.extensions).map(([id, block]) => [id, projectBlock(block)])),
     superseded: Object.fromEntries(
       Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(projectBlock)])
     ),

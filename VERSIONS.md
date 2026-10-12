@@ -246,7 +246,9 @@ is their first public generation. Since RFC 0080 both are declaration-free
 compatibility shells: 0.2.0, pairing core 3.0.0, is the final version of each.
 That generation published on 2026-10-11, and the owner deprecated both
 package names on npm the same day, every version, with the wiki 11 messages.
-They leave the publish set in a later release.
+They leave the publish set in a later release. RFC 0081 Phase 3 re-authors
+the source manifests below to the accepted contract ranges; package versions
+and exact core pins remain unchanged until the release phase.
 
 Package semver identifies an immutable npm artifact. Contract `version` identifies
 the manifest contract required by document `modules[].version` and module
@@ -256,10 +258,10 @@ lockstep. Exact core repins require new package versions, while contract version
 stay unchanged absent an actual contract change. The ranges below are the existing
 manifest compatibility requirements, not a new loader policy.
 
-| Module package | Module ID | Package version | Contract version | manifest_version | requires_protocol | requires_format | requires_tier | Core pin |
+| Module package | Module ID | Package version | Contract version | manifest_version | requires_protocol | requires_format | requires_conformance | Core pin |
 |---|---|---|---|---|---|---|---|---|
-| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.2.0** | **0.2.0** | `1` | `>=2.25.0` | `>=1.1.0` | `tier-3-calc-host` | `3.0.0` |
-| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.2.0** | **0.2.0** | `1` | `>=2.25.0` | `>=1.1.0` | `tier-3-calc-host` | `3.0.0` |
+| `@uwmd/module-hospitality` | `org.uwmd.hospitality` | **0.2.0** | **0.2.0** | `1` | `^4.0.0` | `^3.0` | `verifier` | `3.0.0` |
+| `@uwmd/module-data-center` | `org.uwmd.datacenters` | **0.2.0** | **0.2.0** | `1` | `^4.0.0` | `^3.0` | `verifier` | `3.0.0` |
 
 Data-center's declared asset class remains `org.uwmd.data_center`, distinct from
 its module ID. `verify-versions` reads typed source literals and package manifests
