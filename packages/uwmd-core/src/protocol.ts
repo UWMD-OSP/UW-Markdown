@@ -140,6 +140,7 @@ const LEGACY_TIER_READINGS: Readonly<Record<ViewerTier, ConformanceTierReading>>
  * mapping never infers a profile. Anything else is outside the closed
  * vocabulary and returns `null` rather than a guess.
  */
+// RFC 0081 Phase 4: delete legacy tier aliases; retain the final vocabulary.
 export function readConformanceTier(tier: unknown): ConformanceTierReading | null {
   if (tier === 'reader' || tier === 'verifier') return { tier };
   if (typeof tier === 'string' && Object.hasOwn(LEGACY_TIER_READINGS, tier)) {
