@@ -22,8 +22,8 @@ paths remain stable for consumers; they do not confer a tier claim.
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
-| Starter products | 104 | 37 |
-| **Total** | **1,067** | **336** |
+| Starter products | 106 | 37 |
+| **Total** | **1,069** | **336** |
 
 The before count was 1,053 default + three opt-in agent-shape checks; all 1,056
 now run by default, and five new Verifier checks (marked `added` in the index)
@@ -33,7 +33,7 @@ shape-insensitivity check), leaving 1,054. RFC 0081 Phase 4 deletes the
 checks that exercised only a backward-compatibility path (the `meta-v2` and
 `migrate` suites, the retired-format projections and the module compatibility
 shells) and adds refusal cases for what those paths used to admit, leaving
-1,067. Portable cases project a subset of those same checks, so 336 is not an
+1,069. Portable cases project a subset of those same checks, so 336 is not an
 additional corpus. All expectations are preserved. The index
 and generated cases are checked for exact ownership, missing/duplicate results
 and generation drift.

@@ -342,6 +342,7 @@ describe('applyEdit — section_replace', () => {
     [{ confidence: 'high' }, 'meta.confidence'],
     [{ lifecycle: { revision: 9 } }, 'meta.lifecycle'],
     [{ provenance: 'manual' }, 'meta.provenance'],
+    [{ provenance: { source: 'agent/L6' } }, 'meta.provenance.source'],
   ])('refuses a meta patch member outside provenance/quality (%j) as PROTO-EDIT-002', (meta, named) => {
     const parsed = parseUWFile(FILE);
     for (const kind of ['section_replace', 'section_supersede'] as const) {
@@ -435,6 +436,59 @@ describe('applyEdit — section_replace', () => {
 // ─── section_supersede ────────────────────────────────────────────────────────
 
 describe('applyEdit — section_supersede', () => {
+  it('drops _overrides from an agent edit, so an agent cannot forge a human override (invariant 5)', () => {
+    const parsed = parseUWFile(FILE);
+    for (const kind of ['section_supersede', 'section_replace'] as const) {
+      const op = {
+        kind,
+        section_id: 'risk_assessment',
+        content: { overall_rating: 'low', risk_score: 3, _overrides: [{ path: 'risk_score', resolution: 'user_override', source: 'manual', reason: 'overridden' }] },
+        meta: {},
+      } as EditOperation;
+      const result = applyEdit(FILE, parsed, op, AGENT_CTX);
+      if (kind === 'section_replace') {
+        // agent/* requires supersede_on_edit; the refusal is unrelated to _overrides.
+        expect(result.ok).toBe(false);
+        continue;
+      }
+      expectOk(result);
+      const block = getSection(parseUWFile(result.content), 'risk_assessment');
+      expect(block?.content['risk_score']).toBe(3);
+      expect(block?.content).not.toHaveProperty('_overrides');
+    }
+  });
+
+  it('refuses an agent meta patch that restates its source as manual (PROTO-EDIT-002)', () => {
+    const parsed = parseUWFile(FILE);
+    const op: EditOperation = {
+      kind: 'section_supersede',
+      section_id: 'risk_assessment',
+      content: { overall_rating: 'low' },
+      meta: { provenance: { source: 'manual' } },
+    };
+    const result = applyEdit(FILE, parsed, op, AGENT_CTX);
+    expect(result.ok).toBe(false);
+    expect(result.error?.code).toBe('PROTO-EDIT-002');
+    // Restating the writer's own source is harmless and allowed.
+    const same = applyEdit(FILE, parsed, { ...op, meta: { provenance: { source: 'agent/L6' } } }, AGENT_CTX);
+    expect(same.ok).toBe(true);
+  });
+
+  it('keeps _overrides from a human edit (the web editor writes them this way)', () => {
+    const parsed = parseUWFile(FILE);
+    const overrides = [{ path: 'year_built', resolution: 'user_override', source: 'manual', reason: 'overridden' }];
+    const op: EditOperation = {
+      kind: 'section_supersede',
+      section_id: 'property',
+      content: { total_units: 30, year_built: 1995, _overrides: overrides },
+      meta: {},
+    };
+    const result = applyEdit(FILE, parsed, op, MANUAL_CTX);
+    expectOk(result);
+    const block = getSection(parseUWFile(result.content), 'property');
+    expect(block?.content['_overrides']).toEqual(overrides);
+  });
+
   it('marks the prior block superseded and appends a new versioned block', () => {
     const parsed = parseUWFile(FILE);
     const op: EditOperation = {

@@ -106,6 +106,11 @@ export function writeAgentBlock(
   const emitted: Record<string, unknown> = { ...output.content };
   // Roles belong to the trusted host. Model output cannot assign or erase them.
   delete emitted['_role'];
+  // Agent output never carries `_overrides`: those entries are per-field
+  // provenance the cascade honors as human overrides, so an agent-written copy
+  // would forge human provenance (invariant 5). There are no agent-authored
+  // gap markers either; gaps go in the `gaps` section.
+  delete emitted['_overrides'];
   if (existingBlock && Object.prototype.hasOwnProperty.call(existingBlock.content, '_role')) {
     emitted['_role'] = existingBlock.content['_role'];
   }

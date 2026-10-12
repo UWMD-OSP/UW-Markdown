@@ -1,0 +1,5 @@
+{
+  "code": "PROTO-EDIT-002",
+  "category": "edit",
+  "description": "The host owns _meta.section, lifecycle and integrity (invariant 5). An operation whose meta names lifecycle must be refused as PROTO-EDIT-002 (Protocol §V, RFC 0081 Phase 4)."
+}

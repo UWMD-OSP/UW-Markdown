@@ -741,9 +741,12 @@ annotation through the existing content path, without new exclusions.
 **Metadata patch.** `section_replace` and `section_supersede` carry `meta`, a
 patch with optional `provenance` and `quality` objects whose members override
 the `_meta` the host builds for the written block. The host owns `section`,
-`lifecycle` and `integrity` (invariant 5). Any other `meta` member, including a
-flat `source` or `confidence`, MUST be refused as `PROTO-EDIT-002` rather than
-ignored.
+`lifecycle` and `integrity` (invariant 5), and the actor: a
+`meta.provenance.source` other than the source the edit was authorized for
+MUST be refused as `PROTO-EDIT-002`. Any other `meta` member, including a flat
+`source` or `confidence`, MUST be refused as `PROTO-EDIT-002` rather than
+ignored. An agent writer's `content._overrides` is dropped: per-field override
+provenance is written only by a human writer.
 
 
 ### V.2 Replace vs supersede

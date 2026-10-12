@@ -73,6 +73,16 @@ describe('validateUWFile — asset-class identifiers (RFC 0003)', () => {
     expect(find(markdown, 'MOD-DEPENDENCY-UNDECLARED')).toBeUndefined();
   });
 
+  it('reports each modules entry that names no module, whatever the class', () => {
+    // A bare id beside a valid entry would otherwise vanish silently.
+    const mixed = file('multifamily', { modules: [{ id: 'com.example.x' }, 'com.example.bare', 7] });
+    const issues = validateUWFile(mixed).issues.filter((i) => i.code === 'MOD-DEPENDENCY-UNDECLARED');
+    expect(issues.map((i) => [i.field, i.severity, i.value])).toEqual([
+      ['modules[1]', 'warning', 'com.example.bare'],
+      ['modules[2]', 'warning', 7],
+    ]);
+  });
+
   it('does not warn about modules on a file whose class is malformed', () => {
     // One finding per problem: telling an author to add a `modules` list for a
     // class that cannot exist sends them to fix the wrong thing.

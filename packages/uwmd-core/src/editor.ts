@@ -475,13 +475,13 @@ function applySectionReplace(
 
   // The operation's `meta` patch overrides provenance and quality members
   // (e.g. flags, confidence); the host owns section, lifecycle and integrity.
-  const patchError = metaPatchError(op.meta);
+  const patchError = metaPatchError(op.meta, ctx.source);
   if (patchError) return { ok: false, error: protoError('PROTO-EDIT-002', patchError, op.section_id) };
   const finalMeta = applyMetaPatch(meta, op.meta);
   if (op.role !== undefined && op.role !== null && !isBlockRole(op.role)) {
     return { ok: false, error: protoError('PROTO-EDIT-002', 'role must be a valid block role or null', op.section_id) };
   }
-  const blockContent = stripReservedKeys(op.content);
+  const blockContent = stripReservedKeys(op.content, ctx.source);
   if (op.role !== undefined) {
     if (op.role !== null) blockContent['_role'] = op.role;
   } else if (existing && Object.prototype.hasOwnProperty.call(existing.content, '_role')) {
@@ -537,13 +537,13 @@ function applySectionSupersede(
     notes: ctx.notes,
   });
   meta.provenance.timestamp = now;
-  const patchError = metaPatchError(op.meta);
+  const patchError = metaPatchError(op.meta, ctx.source);
   if (patchError) return { ok: false, error: protoError('PROTO-EDIT-002', patchError, op.section_id) };
   const finalMeta = applyMetaPatch(meta, op.meta);
   if (op.role !== undefined && op.role !== null && !isBlockRole(op.role)) {
     return { ok: false, error: protoError('PROTO-EDIT-002', 'role must be a valid block role or null', op.section_id) };
   }
-  const blockContent = stripReservedKeys(op.content);
+  const blockContent = stripReservedKeys(op.content, ctx.source);
   if (op.role !== undefined) {
     if (op.role !== null) blockContent['_role'] = op.role;
   } else if (existing && Object.prototype.hasOwnProperty.call(existing.content, '_role')) {
@@ -749,7 +749,7 @@ function buildFenceAnnotation(
  * host-owned `section`/`lifecycle`/`integrity`) is refused rather than
  * silently dropped.
  */
-function metaPatchError(patch: unknown): string | null {
+function metaPatchError(patch: unknown, writer: string): string | null {
   if (patch === undefined) return null;
   if (patch === null || typeof patch !== 'object' || Array.isArray(patch)) {
     return 'meta must be an object with optional provenance and quality members';
@@ -762,6 +762,12 @@ function metaPatchError(patch: unknown): string | null {
       return `meta.${key} must be an object`;
     }
   }
+  // The actor is the writer the edit was authorized for; a patch cannot
+  // restate it (an agent could otherwise write as `manual`, invariant 5).
+  const source = (patch as { provenance?: { source?: unknown } }).provenance?.source;
+  if (source !== undefined && source !== writer) {
+    return `meta.provenance.source ${JSON.stringify(source)} differs from the writer's source '${writer}'; the host sets the actor`;
+  }
   return null;
 }
 
@@ -773,7 +779,7 @@ function applyMetaPatch(meta: UWMeta, patch: UWMetaPatch | undefined): UWMeta {
   };
 }
 
-function stripReservedKeys(content: Record<string, unknown>): Record<string, unknown> {
+function stripReservedKeys(content: Record<string, unknown>, source: string): Record<string, unknown> {
   // The dispatcher constructs canonical _meta. Drop any caller-supplied _meta
   // or _notes from `content` to mirror Tier-4's _meta substitution rule
   // (starter guide §IX.4) — same logic, applied at Tier-2.
@@ -781,7 +787,15 @@ function stripReservedKeys(content: Record<string, unknown>): Record<string, unk
   void _drop1;
   void _drop2;
   void _drop3;
+  // `_overrides` records per-field provenance, including human overrides the
+  // cascade honors as `user_override`. Only a human writer may state it; an
+  // agent's copy is dropped so it cannot forge human provenance (invariant 5).
+  if (isAgentSource(source)) delete rest['_overrides'];
   return { ...rest };
+}
+
+function isAgentSource(source: string): boolean {
+  return source.startsWith('agent/');
 }
 
 function markBlockSuperseded(lines: string[], block: UWBlock): string[] {

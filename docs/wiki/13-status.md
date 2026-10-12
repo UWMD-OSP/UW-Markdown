@@ -33,7 +33,7 @@ module manifests by `requires_conformance` / `requires_profiles` only. The
 migrators, the CLI `migrate` commands, `init --format` and both module
 packages are gone. Version labels still read 3.0.0 / 2.1 until Phase 5 renames
 the conformance directories and Phase 6 releases 4.0.0 with seven packages.
-Conformance: 1,067 reference checks, 336 portable cases; the lender fixture
+Conformance: 1,069 reference checks, 336 portable cases; the lender fixture
 stays 187/0/0.
 
 Reconciled **2026-10-10** (America/Phoenix) for published and independently

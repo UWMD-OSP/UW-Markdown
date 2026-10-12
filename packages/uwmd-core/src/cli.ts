@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { verifyReserveDrawBindings } from './reserve-draw-bindings.js';
 import { verifyReserveAccounts } from './reserve-accounts.js';
 import { verifyReplacementFundingBindings } from './replacement-funding.js';
@@ -1979,4 +1980,14 @@ Options:
 `);
     process.exit(0);
 }
-})().catch(err => { console.error(err); process.exit(1); });
+})().catch(err => {
+  // A typed refusal (a parse error such as UNSUPPORTED_FORMAT_VERSION, or any
+  // error carrying a string `code`) is a message for the user, not a crash:
+  // print it without a stack trace. Anything else is a bug; keep the stack.
+  if (err instanceof Error && typeof (err as { code?: unknown }).code === 'string') {
+    console.error(`uwmd: ${err.message}`);
+  } else {
+    console.error(err);
+  }
+  process.exit(1);
+});

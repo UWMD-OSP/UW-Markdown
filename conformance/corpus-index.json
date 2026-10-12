@@ -527,6 +527,16 @@
       "target": "starter-products"
     },
     {
+      "suite": "2",
+      "scenario": "meta-patch-flat-key-rejected",
+      "target": "starter-products"
+    },
+    {
+      "suite": "2",
+      "scenario": "meta-patch-lifecycle-rejected",
+      "target": "starter-products"
+    },
+    {
       "suite": "3",
       "scenario": "data-center-module-dependency-rounding",
       "target": "verifier"

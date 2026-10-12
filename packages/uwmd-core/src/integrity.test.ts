@@ -9,6 +9,7 @@ import {
   type BlockSignatureVerifier,
   type BlockSigVerdict,
 } from './integrity.js';
+import { parseUWFile } from './parser.js';
 import type { ParsedUWFile, UWBlock, UWBlockSignature, UWIntegrity, UWLifecycle, UWProvenance, UWQuality } from './types.js';
 
 /** Nested overrides for a test block's `_meta`, merged member by member. */
@@ -159,6 +160,23 @@ describe('verifyChain', () => {
 });
 
 describe('verifyProvenance', () => {
+  it('skips a head with a flat or missing _meta (META-01 reports the shape) instead of throwing', () => {
+    const md = (meta: string) => `---
+uw_version: "3.0"
+deal_id: X
+---
+
+\`\`\`json uw:section=property v=1
+{${meta} "total_units": 24}
+\`\`\`
+`;
+    for (const meta of ['"_meta": {"section": "property", "version": 1, "source": "manual", "actor": "x"},', '']) {
+      const r = verifyProvenance(parseUWFile(md(meta)));
+      expect(r.ok).toBe(true);
+      expect(r.issues).toEqual([]);
+    }
+  });
+
   it('returns ok for blocks with no matching policy', () => {
     const file = makeFile({
       ad_hoc_section: makeBlock('ad_hoc_section', { x: 1 }, { provenance: { source: 'unknown_source' } }),

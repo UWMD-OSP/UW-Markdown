@@ -303,8 +303,13 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
   // One format (RFC 0081 D1): an absent or different uw_version is refused.
   const declaredVersion: unknown = result.frontmatter.uw_version;
   if (!(SUPPORTED_FORMAT_VERSIONS as readonly unknown[]).includes(declaredVersion)) {
-    throw new UWMDParseError('UNSUPPORTED_FORMAT_VERSION',
-      `Declared uw_version ${JSON.stringify(declaredVersion) ?? 'absent'} is unsupported; supported value is "${SUPPORTED_FORMAT_VERSIONS[0]}".`);
+    // The value is the string "3.0" (Format §2.1; the envelope and part schemas
+    // pin `const: "3.0"`). Unquoted YAML `3.0` is the number 3, so say how to
+    // write it rather than reporting a version nobody typed.
+    const unquoted = typeof declaredVersion === 'number' && declaredVersion === Number(SUPPORTED_FORMAT_VERSIONS[0]);
+    throw new UWMDParseError('UNSUPPORTED_FORMAT_VERSION', unquoted
+      ? `Declared uw_version is the number ${declaredVersion}; the format version is a string. Quote it: uw_version: "${SUPPORTED_FORMAT_VERSIONS[0]}".`
+      : `Declared uw_version ${JSON.stringify(declaredVersion) ?? 'absent'} is unsupported; supported value is "${SUPPORTED_FORMAT_VERSIONS[0]}".`);
   }
   const scanned: UWBlock[] = [];
 

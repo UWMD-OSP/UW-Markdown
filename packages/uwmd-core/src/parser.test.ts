@@ -866,6 +866,10 @@ describe('one format (RFC 0081 D1): UNSUPPORTED_FORMAT_VERSION', () => {
     },
   );
 
+  it('tells the author to quote an unquoted 3.0, which YAML reads as the number 3', () => {
+    expect(() => parseUWFile(doc('uw_version: 3.0\n'))).toThrow(/the number 3; the format version is a string\. Quote it: uw_version: "3\.0"/);
+  });
+
   it('reads uw_version "3.0"', () => {
     expect(parseUWFile(doc('uw_version: "3.0"\n')).frontmatter.uw_version).toBe('3.0');
   });

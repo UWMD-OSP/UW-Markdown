@@ -29,7 +29,7 @@ import { checkLeaseUpContent } from './lease-up-structure.js';
 import { CASH_FLOW_KINDS, CASH_FLOW_VERIFY_DECIMALS, quantizeAtDecimals } from './cash-flow-series.js';
 import { dayOrdinal, isDayCountConvention, parseISODate } from './calc/day-count.js';
 import type { WaterfallTier } from './waterfall.js';
-import { parseAssetClass, declaredModuleDependencies } from './asset-class.js';
+import { parseAssetClass, declaredModuleDependencies, moduleListEntries } from './asset-class.js';
 import { checkPeriodSeries } from './period-validation.js';
 import { hasBlockRole, isBlockRole, resolveRoleBlock } from './block-roles.js';
 import type { RoleResolution } from './block-roles.js';
@@ -2983,6 +2983,19 @@ function checkCurrencyIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]
  * the obligation a namespaced class carries to name its modules.
  */
 function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  // A `modules` entry that is not an object with an `id` names no module. Say
+  // so, whatever the class: dropping it silently would hide the dependency.
+  for (const entry of moduleListEntries(parsed.frontmatter as Record<string, unknown>)) {
+    if (entry.dependency) continue;
+    issues.push({
+      code: 'MOD-DEPENDENCY-UNDECLARED',
+      severity: 'warning',
+      field: `modules[${entry.index}]`,
+      message: `modules[${entry.index}] is not an object with an 'id', so it declares no module dependency.`,
+      value: entry.value,
+      remediation: "Write each modules entry as an object: '- id: <module id>' with an optional 'version' range (Format §2.2a).",
+    });
+  }
   const raw = parsed.frontmatter?.asset_class;
   if (typeof raw !== 'string' || raw.length === 0) return;
 

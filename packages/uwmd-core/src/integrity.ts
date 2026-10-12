@@ -466,7 +466,11 @@ export function verifyProvenance(
   for (const sectionId of Object.keys(parsed.sections)) {
     const head = currentBlock(parsed, sectionId);
     if (!head) continue;
-    const policy = matchPolicy(head.meta.provenance?.source, policies);
+    // A head with no Format 3.0 provenance (a flat or missing `_meta`) has no
+    // actor to check; the validator reports its shape as META-01.
+    const source = head.meta?.provenance?.source;
+    if (typeof source !== 'string') continue;
+    const policy = matchPolicy(source, policies);
     if (!policy) continue;
 
     // POL-01: authority check

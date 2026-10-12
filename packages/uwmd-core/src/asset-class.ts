@@ -236,26 +236,39 @@ export function assetClassDeclarationConflicts(registry: ModuleRegistry): Protoc
 export function declaredModuleDependencies(
   frontmatter: Record<string, unknown>,
 ): { id: string; version?: string }[] {
+  const out: { id: string; version?: string }[] = [];
+  for (const entry of moduleListEntries(frontmatter)) if (entry.dependency) out.push(entry.dependency);
+  return out;
+}
+
+/**
+ * Every frontmatter `modules` entry with what it declares. An entry is an
+ * object with a string `id` (Format §2.2a). The Appendix D frontmatter subset
+ * reads a sequence item as a scalar, so the object spelling can arrive as its
+ * `id: <module>` line; that reads too. Anything else (a bare module id, a
+ * number, an object without `id`) declares nothing, and the validator reports
+ * it rather than dropping it silently.
+ */
+export function moduleListEntries(
+  frontmatter: Record<string, unknown>,
+): { index: number; value: unknown; dependency: { id: string; version?: string } | null }[] {
   const raw = frontmatter['modules'];
   if (!Array.isArray(raw)) return [];
-  const out: { id: string; version?: string }[] = [];
-  for (const entry of raw) {
+  return raw.map((entry, index) => {
     if (typeof entry === 'string') {
-      // The Appendix D frontmatter subset reads a sequence item as a scalar,
-      // so the object-list spelling arrives as its `id: <module>` line.
       const id = /^id:\s*(\S+)$/.exec(entry)?.[1];
-      if (id !== undefined) out.push({ id });
-      continue;
+      return { index, value: entry, dependency: id !== undefined ? { id } : null };
     }
     if (typeof entry === 'object' && entry !== null && typeof (entry as { id?: unknown }).id === 'string') {
       const record = entry as { id: string; version?: unknown };
-      out.push({
-        id: record.id,
-        ...(typeof record.version === 'string' ? { version: record.version } : {}),
-      });
+      return {
+        index,
+        value: entry,
+        dependency: { id: record.id, ...(typeof record.version === 'string' ? { version: record.version } : {}) },
+      };
     }
-  }
-  return out;
+    return { index, value: entry, dependency: null };
+  });
 }
 
 function findDeclaration(

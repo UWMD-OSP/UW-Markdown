@@ -2699,9 +2699,9 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   },
   {
     code: 'MOD-DEPENDENCY-UNDECLARED', severity: 'warning',
-    title: 'Module-declared asset class with no modules list',
-    description: 'A document with a namespaced asset_class does not name the modules that declare it.',
-    remediation: 'Add a frontmatter `modules` list naming the declaring module, so a reader without it can say what to load rather than only that something is missing.',
+    title: 'Module dependency not declared',
+    description: 'A document with a namespaced asset_class does not name the modules that declare it, or a frontmatter `modules` entry is not an object with an `id` and so names no module.',
+    remediation: 'Add a frontmatter `modules` list whose entries are objects (`- id: <module id>`, optional `version`) naming the declaring module, so a reader without it can say what to load rather than only that something is missing.',
     spec_ref: 'UW_FORMAT_SPEC.md §2.2a',
   },
   {

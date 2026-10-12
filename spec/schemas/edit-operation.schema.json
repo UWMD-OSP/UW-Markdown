@@ -80,7 +80,7 @@
       "properties": {
         "provenance": {
           "type": "object",
-          "description": "Members merged over the host-built _meta.provenance (for example source, actor, agent_id, agent_version, notes)."
+          "description": "Members merged over the host-built _meta.provenance (for example actor, agent_id, agent_version, notes). A source other than the writer's own is refused as PROTO-EDIT-002."
         },
         "quality": {
           "type": "object",

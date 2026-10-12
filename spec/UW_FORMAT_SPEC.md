@@ -269,7 +269,9 @@ modules:
     version: ">=0.1.0 <1.0.0"
 ```
 
-Each entry is an object with `id` and an optional semver-range `version`. Omitting the list is
+Each entry is an object with `id` and an optional semver-range `version`; an entry
+of any other shape (for example a bare module id) names no module and is itself
+`MOD-DEPENDENCY-UNDECLARED`. Omitting the list is
 `MOD-DEPENDENCY-UNDECLARED` (**warning**, not error): the document is
 well-formed, and a host that happens to hold the module reads it
 correctly. The cost falls on every other reader, who can then say only
@@ -4089,7 +4091,7 @@ consistency checks would misfile them for anyone filtering by prefix.
 |---|---|---|
 | `INVALID-ASSET-CLASS-001` | error | `asset_class` is neither a builtin nor a well-formed namespaced identifier (§2.2a). |
 | `INVALID-ASSET-CLASS-002` | error | A namespaced identifier whose final segment shadows a builtin name (§2.2a). |
-| `MOD-DEPENDENCY-UNDECLARED` | warning | A namespaced `asset_class` with no frontmatter `modules` list naming what declares it (§2.2a). |
+| `MOD-DEPENDENCY-UNDECLARED` | warning | A namespaced `asset_class` with no frontmatter `modules` list naming what declares it, or a `modules` entry that is not an object with an `id` (§2.2a). |
 
 Resolution-time findings — `MOD-FALLBACK-001`, `MOD-MISSING-001`,
 `MOD-ASSET-CLASS-CONFLICT-001`, `MOD-DISPLAY-CONFLICT-001` — are **not**

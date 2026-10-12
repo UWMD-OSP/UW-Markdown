@@ -100,7 +100,7 @@ controls and `meta-v2/06-digest-shape-insensitive`), leaving 1,054. RFC 0081
 Phase 4 deletes the checks that exercised only a backward-compatibility path
 (the `meta-v2` and `migrate` suites, the retired-format projections and the
 module compatibility shells) and adds refusal cases for what those paths used
-to admit, leaving **1,067** and **336 portable CLI projections**. The lender
+to admit, leaving **1,069** and **336 portable CLI projections**. The lender
 fixture stays **187/0/0**.
 
 | Owner | Reference | Portable |
@@ -113,8 +113,8 @@ fixture stays **187/0/0**.
 | portfolio | 14 | 0 |
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
-| starter-products | 104 | 37 |
-| **Total** | **1,067** | **336** |
+| starter-products | 106 | 37 |
+| **Total** | **1,069** | **336** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
