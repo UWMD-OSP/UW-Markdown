@@ -3,6 +3,7 @@
 import {
   canonicalBlockSigningInput,
   computeBlockHash,
+  isV2File,
   receiptSigningPayload,
   type UWBlock,
   type UWBlockSignature,
@@ -31,6 +32,23 @@ export interface SignBlockOptions {
    * that never passed `verifyChain`.
    */
   stampContentHash?: boolean;
+  /**
+   * The `uw_version` of the document the block belongs to. Selects the block
+   * digest rule exactly as `verifyChain` does: `"3.0"` is the RFC 0081 §3 rule
+   * (JCS of the block minus `_meta`); 2.x and 1.x/absent are the retired rules.
+   * Only consulted when {@link stampContentHash} computes the hash.
+   */
+  uwVersion?: string;
+}
+
+/**
+ * The digest rule for a block in a document of `uwVersion` — the selection
+ * `verifyChain` makes from the frontmatter, so a signature checked here and a
+ * chain checked there agree on what the block hashes to.
+ */
+export function blockDigestShape(uwVersion: string | undefined): 'v1' | 'v2' | 'v3' {
+  if (uwVersion === '3.0') return 'v3';
+  return isV2File({ uw_version: uwVersion } as Parameters<typeof isV2File>[0]) ? 'v2' : 'v1'; // RFC 0081 Phase 4: delete
 }
 
 /**
@@ -53,7 +71,7 @@ export async function signBlock(
         `Block '${block.meta.section}' has no _meta.content_hash. Stamp one first (or pass stampContentHash) — a signature over an absent hash commits to nothing and validates as INT-05.`,
       );
     }
-    contentHash = await computeBlockHash(block);
+    contentHash = await computeBlockHash(block, { shape: blockDigestShape(options.uwVersion) });
   }
 
   const signedAt = options.signedAt ?? new Date().toISOString();

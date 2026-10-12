@@ -55,7 +55,9 @@ async function stamp(text, sectionId, { sign = true, hash = true } = {}) {
   const block = parsed.sections[sectionId];
   if (!block) throw new Error(`no section '${sectionId}' in the base fixture`);
 
-  const contentHash = await computeBlockHash(block, { shape: 'v3' });
+  // computeBlockHash still defaults to the retired 1.x rule, so the Format 3.0
+  // rule is named here; signBlock below receives the hash, not the document.
+  const contentHash = await computeBlockHash(block, { shape: 'v3' }); // RFC 0081 Phase 4: delete the shape option (one digest rule)
   // `block.meta` IS the parsed `_meta` object (same reference as
   // `block.content._meta`), so build a copy rather than mutating in place.
   const meta = { ...block.meta };

@@ -1,5 +1,9 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { computeBlockHash, verifyChain, type UWSignatureAlgorithm } from '@uwmd/core';
+import { computeBlockHash, parseUWFile, verifyChain, type UWBlock, type UWSignatureAlgorithm } from '@uwmd/core';
+import { importPrivateKey } from './keys.js';
+import { loadKeyStoreFile } from './keystore-file.js';
 import { SigningError } from './errors.js';
 import { InMemoryKeyStore, generateSigningKeyPair } from './keys.js';
 import { signBlock, stampBlockSignature } from './sign.js';
@@ -82,6 +86,8 @@ describe('signBlock', () => {
   // content *and* `_meta`, and `parent_hash` lives in `_meta`. So the signature
   // covers it transitively, via the hash, and re-rooting requires re-signing.
   // See the erratum in RFC 0010 and protocol §V.11.
+  // That is the retired 1.x digest; Format 3.0 keeps the signature (below).
+  // RFC 0081 Phase 4: delete
   it('does not survive a parent_hash change, because content_hash covers it', async () => {
     const { signing, verifying } = await generateSigningKeyPair('ed25519', 'k');
     const block = await hashedBlock('property', { total_units: 100 });
@@ -197,4 +203,60 @@ it('detects role tampering in a signed format 2.0 chain', async () => {
   expect((await verifyChain(parsed, options)).issues).toEqual([]);
   signed.content['_role'] = 'component';
   expect((await verifyChain(parsed, options)).issues.map(issue => issue.code)).toContain('INT-04');
+});
+
+describe('Format 3.0 documents select the RFC 0081 §3 digest', () => {
+  const SIGNING = resolve(__dirname, '../../../conformance/signing');
+  const parsed = parseUWFile(readFileSync(resolve(SIGNING, 'blocks/01-signed-valid/deal.uwx.md'), 'utf8'));
+  const uwVersion = parsed.frontmatter.uw_version;
+  const property = parsed.sections['property'] as UWBlock;
+
+  it('verifies the conformance 01-signed-valid block under its document version', async () => {
+    expect(uwVersion).toBe('3.0');
+    const store = await loadKeyStoreFile(resolve(SIGNING, 'keys/keystore.json'));
+    await expect(verifyBlockSignature(property, store, { uwVersion })).resolves.toEqual({
+      ok: true,
+      kid: 'uwmd-conformance-ed25519',
+    });
+    // Without the version the retired 1.x rule is applied, and it disagrees.
+    await expect(verifyBlockSignature(property, store)).resolves.toMatchObject({
+      ok: false,
+      reason: 'content_hash_mismatch',
+    });
+  });
+
+  it('signBlock with stampContentHash yields a block verifyChain accepts', async () => {
+    const jwk = JSON.parse(readFileSync(resolve(SIGNING, 'keys/signer-private.jwk.json'), 'utf8'));
+    const key = {
+      kid: 'uwmd-conformance-ed25519',
+      alg: 'ed25519' as const,
+      privateKey: await importPrivateKey('ed25519', { jwk }),
+    };
+    const { content_hash: _hash, signature: _sig, ...meta } = property.meta;
+    const unsigned: UWBlock = { ...property, meta: meta as UWBlock['meta'] };
+
+    const signature = await signBlock(unsigned, key, {
+      stampContentHash: true,
+      uwVersion,
+      signedAt: '2026-08-27T00:00:00Z',
+    });
+    const contentHash = await computeBlockHash(unsigned, { shape: 'v3' });
+    expect(contentHash).toBe(property.meta.content_hash);
+    const signed = stampBlockSignature(unsigned, signature, contentHash);
+
+    const store = await loadKeyStoreFile(resolve(SIGNING, 'keys/keystore.json'));
+    const result = await verifyChain(
+      { ...parsed, sections: { ...parsed.sections, property: signed } },
+      { signatureVerifier: createBlockSignatureVerifier(store) },
+    );
+    expect(result.issues).toEqual([]);
+    expect(result.signatures_verified).toBe(1);
+    await expect(verifyBlockSignature(signed, store, { uwVersion })).resolves.toMatchObject({ ok: true });
+  });
+
+  it('keeps the signature across a _meta-only (parent_hash) change', async () => {
+    const store = await loadKeyStoreFile(resolve(SIGNING, 'keys/keystore.json'));
+    const reRooted = { ...property, meta: { ...property.meta, parent_hash: 'b'.repeat(64) } };
+    await expect(verifyBlockSignature(reRooted, store, { uwVersion })).resolves.toMatchObject({ ok: true });
+  });
 });
