@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-10-invalid-april-31",
   "target": "verifier",
-  "legacy_id": "tier-3/date-10-invalid-april-31",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "starter-products/tier-1/09-returns-tax-basis/render-chat",
   "target": "starter-products",
-  "legacy_id": "tier-1/09-returns-tax-basis/render-chat",
   "requires_capabilities": [
     "render-chat"
   ],

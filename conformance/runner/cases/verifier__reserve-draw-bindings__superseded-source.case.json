@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/superseded-source",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/superseded-source",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

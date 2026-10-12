@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/broken-continuity",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/broken-continuity",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

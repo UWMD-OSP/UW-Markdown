@@ -224,7 +224,10 @@ export function assetClassDeclarationConflicts(registry: ModuleRegistry): Protoc
 }
 
 /**
- * Module ids a document says it depends on.
+ * Module ids a document says it depends on: the object-list spelling of
+ * Format §2.2a (`- id: <module>`) only (RFC 0081 §5). A bare-string entry
+ * names nothing, and no id is special: an `org.uwmd.*` entry is an ordinary
+ * dependency like any other.
  *
  * A file whose `asset_class` is namespaced MUST list them (§X.2), so that a
  * host encountering an identifier it cannot resolve can say *what to load*
@@ -237,6 +240,13 @@ export function declaredModuleDependencies(
   if (!Array.isArray(raw)) return [];
   const out: { id: string; version?: string }[] = [];
   for (const entry of raw) {
+    if (typeof entry === 'string') {
+      // The Appendix D frontmatter subset reads a sequence item as a scalar,
+      // so the object-list spelling arrives as its `id: <module>` line.
+      const id = /^id:\s*(\S+)$/.exec(entry)?.[1];
+      if (id !== undefined) out.push({ id });
+      continue;
+    }
     if (typeof entry === 'object' && entry !== null && typeof (entry as { id?: unknown }).id === 'string') {
       const record = entry as { id: string; version?: unknown };
       out.push({

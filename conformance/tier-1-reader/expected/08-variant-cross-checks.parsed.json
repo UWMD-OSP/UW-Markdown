@@ -21,7 +21,25 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property"
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-09T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "address": "16 Variant Way, Phoenix AZ",
@@ -30,7 +48,25 @@
     },
     "valuation": {
       "meta": {
-        "section": "valuation"
+        "section": "valuation",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-09T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "purchase_price": 10000000,
@@ -41,7 +77,25 @@
     "due_diligence": {
       "appraisal": {
         "meta": {
-          "section": "due_diligence"
+          "section": "due_diligence",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-09T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "appraised_value": 9000000,
@@ -50,7 +104,25 @@
       },
       "environmental": {
         "meta": {
-          "section": "due_diligence"
+          "section": "due_diligence",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-09T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "phase_one": "no_recognized_environmental_conditions"
@@ -59,7 +131,25 @@
     },
     "rent_roll": {
       "meta": {
-        "section": "rent_roll"
+        "section": "rent_roll",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-09T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "gross_potential_rent": 1800000
@@ -68,7 +158,25 @@
     "operating_statement": {
       "t3": {
         "meta": {
-          "section": "operating_statement"
+          "section": "operating_statement",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-09T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "gross_potential_rent": 1750000
@@ -76,7 +184,25 @@
       },
       "budget": {
         "meta": {
-          "section": "operating_statement"
+          "section": "operating_statement",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-09T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "gross_potential_rent": 1900000
@@ -85,7 +211,25 @@
     },
     "debt_structure": {
       "meta": {
-        "section": "debt_structure"
+        "section": "debt_structure",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-09T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "loan_amount": 6500000,
@@ -95,7 +239,25 @@
     },
     "dcf": {
       "meta": {
-        "section": "dcf"
+        "section": "dcf",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-09T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "assumptions": {
@@ -106,7 +268,25 @@
     "stress_tests": {
       "downside": {
         "meta": {
-          "section": "stress_tests"
+          "section": "stress_tests",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-09T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "base_case": {
@@ -117,7 +297,25 @@
       },
       "upside": {
         "meta": {
-          "section": "stress_tests"
+          "section": "stress_tests",
+          "provenance": {
+            "source": "manual",
+            "agent_id": null,
+            "agent_version": null,
+            "timestamp": "2026-09-09T00:00:00Z",
+            "notes": null
+          },
+          "quality": {
+            "confidence": "high",
+            "human_review_required": false,
+            "flags": [],
+            "partial": false,
+            "provisional": false
+          },
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
         },
         "content": {
           "base_case": {

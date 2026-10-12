@@ -75,7 +75,7 @@ export interface CapabilityVerifierOptions {
  *
  * Rejection order follows §XIV.3: structure and signature first (`malformed`,
  * `unknown_kid`, `bad_signature`), then time, then each scope claim, then the
- * `sub` ↔ `_meta.source` binding. Absent `sections`/`stages`/`ops` claims are
+ * `sub` ↔ `_meta.provenance.source` binding. Absent `sections`/`stages`/`ops` claims are
  * unconstrained; every other claim is required and its absence is `malformed`.
  */
 export function createCapabilityVerifier(
@@ -102,7 +102,7 @@ export function createCapabilityVerifier(
 
       if (!hasRequiredClaims(claims)) return reject('malformed');
       // `sub` outside the RFC 0031 actor grammar can never match a governed
-      // `_meta.source`; report it as a malformed token, not a mismatch.
+      // `_meta.provenance.source`; report it as a malformed token, not a mismatch.
       if (parseActorSource(claims.sub).kind === 'invalid') return reject('malformed');
 
       const at = now();

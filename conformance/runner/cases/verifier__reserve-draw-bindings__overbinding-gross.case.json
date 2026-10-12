@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/overbinding-gross",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/overbinding-gross",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

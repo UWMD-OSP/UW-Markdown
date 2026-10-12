@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/duplicate-selected-draw",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/duplicate-selected-draw",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

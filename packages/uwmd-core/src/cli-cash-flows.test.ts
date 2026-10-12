@@ -6,7 +6,8 @@ import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cas
 const specimen = JSON.parse(readFileSync(new URL('../../../conformance/cash-flow/verify-all-metrics/case.json', import.meta.url), 'utf8')).series;
 const block = (content: unknown, variant = 'base', suffix = '') =>
   `\n\`\`\`json uw:section=cash_flow_series variant=${variant} source=manual v=1${suffix}\n${JSON.stringify(content)}\n\`\`\`\n`;
-const doc = (content: unknown = specimen) => `---\nuw_version: "3.0"\n---\n${block(content)}`;
+const FRONTMATTER = '---\nuw_version: "3.0"\n---\n';
+const doc = (content: unknown = specimen) => `${FRONTMATTER}${block(content)}`;
 
 describe('cash-flow verification CLI boundary', () => {
   it('preserves the existing all-metric verification and source text', () => {
@@ -38,14 +39,14 @@ describe('cash-flow verification CLI boundary', () => {
       .toMatchObject({ exitCode: 3, report: { status: 'unverifiable' } });
   });
   it('selects exact variants and refuses unresolved variants', () => {
-    const source = block(specimen, 'a') + block({ ...specimen, stated_metrics: { total_net: 1 } }, 'b');
+    const source = FRONTMATTER + block(specimen, 'a') + block({ ...specimen, stated_metrics: { total_net: 1 } }, 'b');
     expect(() => verifyCashFlowDocument(source)).toThrow(CalcError);
     expect(verifyCashFlowDocument(source, 'a').exitCode).toBe(0);
     expect(verifyCashFlowDocument(source, 'b').exitCode).toBe(1);
     expect(() => verifyCashFlowDocument(source, 'absent')).toThrow(CalcError);
   });
   it('uses existing primary/component selection rules', () => {
-    const source = block({ ...specimen, _role: 'primary' }, 'main') +
+    const source = FRONTMATTER + block({ ...specimen, _role: 'primary' }, 'main') +
       block({ ...specimen, _role: 'component' }, 'part');
     expect(verifyCashFlowDocument(source).report.variant).toBe('main');
     expect(verifyCashFlowDocument(source, 'part').report.variant).toBe('part');
@@ -67,11 +68,11 @@ describe('cash-flow verification CLI boundary', () => {
       expect(() => verifyCashFlowDocument(doc({ ...specimen, stated_metrics }))).toThrow(CalcError);
     expect(() => verifyCashFlowDocument(doc().replace('6043000', '1e309'))).toThrow(CalcError);
   });
-  it('does not select superseded claims and supports nested content', () => {
-    const source = block({ ...specimen, stated_metrics: { total_net: 1 } }, 'base', ' superseded=true') +
-      block({ content: specimen }, 'base');
+  it('does not select superseded claims', () => {
+    const source = FRONTMATTER + block({ ...specimen, stated_metrics: { total_net: 1 } }, 'base', ' superseded=true') +
+      block(specimen, 'base');
     expect(verifyCashFlowDocument(source, 'base').exitCode).toBe(0);
-    expect(() => verifyCashFlowDocument(block(specimen, 'base', ' superseded=true'), 'base')).toThrow(CalcError);
+    expect(() => verifyCashFlowDocument(FRONTMATTER + block(specimen, 'base', ' superseded=true'), 'base')).toThrow(CalcError);
   });
   it.each(['verify-all-metrics', 'verify-procedure-refuses', 'verify-moic-no-outflows',
     'verify-same-day-flows', 'verify-stated-xirr-disagrees'])('preserves the existing %s conformance outcome', name => {

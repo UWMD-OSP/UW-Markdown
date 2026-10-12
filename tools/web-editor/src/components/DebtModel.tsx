@@ -93,7 +93,7 @@ export function DebtModel(props: {
                 initial IO period.
               </>
             )}{' '}
-            Override pins a value by hand (<code>_meta.field_overrides</code>); revert returns it to
+            Override pins a value by hand (<code>_overrides</code>); revert returns it to
             the formula.
           </p>
         </div>

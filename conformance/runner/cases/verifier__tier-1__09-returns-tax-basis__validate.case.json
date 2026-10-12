@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-1/09-returns-tax-basis/validate",
   "target": "verifier",
-  "legacy_id": "tier-1/09-returns-tax-basis/validate",
   "requires_capabilities": [
     "validate"
   ],

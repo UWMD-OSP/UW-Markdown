@@ -150,6 +150,10 @@ function parseScalar(s) {
 
 function parseUW(raw) {
   const { frontmatter, rest } = parseFrontmatter(raw);
+  // Format 3.0 is the only format (RFC 0081): refuse any other uw_version, or none.
+  if (String(frontmatter.uw_version) !== '3.0') {
+    throw new Error(`UNSUPPORTED_FORMAT_VERSION: uw_version is ${frontmatter.uw_version === undefined ? 'absent' : JSON.stringify(frontmatter.uw_version)}; this viewer reads Format "3.0" only.`);
+  }
   const sections = {};
   const superseded = {};
   const fenceRe = /```(?:json\s+)?(uw(?::|\b)[^\r\n]*)\r?\n([\s\S]*?)\r?\n```/g;
@@ -161,7 +165,7 @@ function parseUW(raw) {
     const sectionId = annot.section || (content && content._meta && content._meta.section);
     if (!sectionId) continue;
     const block = { annotation: annot, meta: content._meta || {}, content };
-    if (annot.superseded || (content._meta && content._meta.superseded)) {
+    if (annot.superseded || content?._meta?.lifecycle?.superseded === true) {
       (superseded[sectionId] ??= []).push(block);
     } else if (annot.variant) {
       (sections[sectionId] ??= {})[annot.variant] = block;
@@ -375,7 +379,7 @@ function renderDeal(parsed) {
   }
 
   root.appendChild(el('div', { class: 'footer' },
-    `Deal ID: ${fm.deal_id || 'n/a'} · format v${fm.uw_version || '1.1'} · This is a reference Tier-1 viewer.`
+    `Deal ID: ${fm.deal_id || 'n/a'} · format v${fm.uw_version} · This is a reference Tier-1 viewer.`
   ));
   return root;
 }

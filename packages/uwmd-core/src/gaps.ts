@@ -7,9 +7,10 @@
 //   - Merges with an existing `gaps` section (deduping by section + path).
 //   - Summarizes the resulting list relative to a current stage.
 
-import { STAGE_REQUIREMENTS } from './validator.js';
+import { STAGE_REQUIREMENTS } from './protocol.js';
 import { deepGet, getSection } from './parser.js';
 import type { DealStage, ParsedUWFile, UWBlock } from './types.js';
+import { blockOverrides } from './metadata.js';
 
 export type GapReason =
   | 'missing'
@@ -120,11 +121,11 @@ function findStageThatRequires(field_path: string, currentStage: DealStage): Dea
  * Walk the parsed file and produce a normalized list of GapItems by inspecting:
  *   - STAGE_REQUIREMENTS: required sections / field paths missing at the
  *     evaluated stage produce reason='missing'.
- *   - `_meta.provisional`: produces reason='deferred' (placeholder block).
- *   - `_meta.partial`: produces reason='missing' for the section as a whole,
+ *   - `_meta.quality.provisional`: produces reason='deferred' (placeholder block).
+ *   - `_meta.quality.partial`: produces reason='missing' for the section as a whole,
  *     unless `field_overrides` enumerate specific paths (then one item per
  *     override with `reason='illegible'` for illegible, else 'missing').
- *   - `_meta.field_overrides[]` with reason='missing'|'illegible': one
+ *   - ``_overrides[]`` with reason='missing'|'illegible': one
  *     GapItem per entry.
  *
  * When `mergeWithExisting` is set, the existing `gaps` section is read and
@@ -212,9 +213,9 @@ export function inferGaps(parsed: ParsedUWFile, opts: InferGapsOptions = {}): Ga
   for (const sectionId of Object.keys(parsed.sections)) {
     const block = blockOf(parsed, sectionId);
     if (!block) continue;
-    const m = block.meta;
+    const quality = block.meta?.quality;
 
-    if (m.provisional) {
+    if (quality?.provisional) {
       push({
         section: sectionId,
         reason: 'deferred',
@@ -226,7 +227,7 @@ export function inferGaps(parsed: ParsedUWFile, opts: InferGapsOptions = {}): Ga
       });
     }
 
-    const overrides = m.field_overrides ?? [];
+    const overrides = blockOverrides(block);
     const missingOverrides = overrides.filter(
       (o) => o.reason === 'missing' || o.reason === 'illegible',
     );
@@ -244,8 +245,8 @@ export function inferGaps(parsed: ParsedUWFile, opts: InferGapsOptions = {}): Ga
           note: o.note,
         });
       }
-    } else if (m.partial) {
-      // partial=true but no field_overrides enumeration; record the section.
+    } else if (quality?.partial) {
+      // partial=true but no _overrides enumeration; record the section.
       push({
         section: sectionId,
         reason: 'missing',

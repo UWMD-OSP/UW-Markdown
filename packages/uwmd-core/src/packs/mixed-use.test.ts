@@ -1,4 +1,3 @@
-import { nestedFixtureMeta } from '../../../../test/rfc-0081-corpus.js';
 // Mixed-use pack tests — pack integrity, the deliberate property-denominator
 // omissions, per-component NOI shares, allocation-gated intensives, and
 // AST→Excel emitter parity. RFC 0019.
@@ -8,6 +7,7 @@ import type { CalcEvaluationContext, ModuleCalcDecl } from '../protocol.js';
 import { evaluateCalc } from '../calc/index.js';
 import { parseExpression } from '../calc/parser.js';
 import { parseUWFile } from '../parser.js';
+import { buildMeta } from '../runner.js';
 import { emitExcelFormula } from './excel-emit.js';
 import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { MIXED_USE_PACK } from './mixed-use.js';
@@ -30,12 +30,12 @@ const byId = (id: string): ModuleCalcDecl => {
 
 // Standard block-provenance envelope so parseUWFile accepts each section.
 function block(id: string, content: Record<string, unknown>): string {
-  const meta = { section: id, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor: 'test-fixture', timestamp: '2026-08-18T00:00:00Z', notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } };
+  const meta = buildMeta(id, 1, { source: 'manual', actor: 'test-fixture', confidence: 'high', timestamp: '2026-08-18T00:00:00Z' });
   return [
     `## ${id} {#${id}}`,
     '',
     `\`\`\`json uw:section=${id} source=manual ts=2026-08-18T00:00:00Z v=1 confidence=high`,
-    JSON.stringify({ _meta: nestedFixtureMeta(meta), ...content }, null, 2),
+    JSON.stringify({ _meta: meta, ...content }, null, 2),
     '```',
     '',
   ].join('\n');

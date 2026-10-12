@@ -1,6 +1,0 @@
-{
-  "description": "RFC 0080 compatibility shell declares and executes no financial content; class controls moved to conformance/builtin-classes.",
-  "module": "@uwmd/module-data-center",
-  "expected_calcs": {},
-  "expected_codes": []
-}

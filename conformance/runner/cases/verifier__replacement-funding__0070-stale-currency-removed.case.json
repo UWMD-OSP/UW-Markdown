@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-stale-currency-removed",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-stale-currency-removed",
   "requires_capabilities": [
     "validate"
   ],

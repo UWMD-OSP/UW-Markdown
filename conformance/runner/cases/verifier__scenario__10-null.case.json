@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/10-null",
   "target": "verifier",
-  "legacy_id": "scenario/10-null",
   "requires_capabilities": [
     "validate"
   ],

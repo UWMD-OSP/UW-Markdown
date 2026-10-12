@@ -1,13 +1,12 @@
 # 03 — Core library (`@uwmd/core`)
 
-RFC 0081 Phase 3 re-authors the corpus as Format 3.0: bare section payloads,
-inline nested `_meta`, and the single-fact and hospitality field homes in the
-[accepted RFC](../rfcs/0081-one-format-one-protocol.md). The interim runtime
-reads those homes and hashes the payload without `_meta`. Legacy readers and
-migrators are marked for Phase 4 deletion. The one-off scripts
-`scripts/rfc-0081-reauthor-corpus.mjs` and `scripts/rfc-0081-value-diff.mjs`
-re-author artifacts and compare financial evidence; they are repository
-maintenance, not a product migration feature. Lite emission changes in Phase 4.
+Format 3.0 is the only format the reference library reads ([RFC
+0081](../rfcs/0081-one-format-one-protocol.md)): bare section payloads with an
+inline nested `_meta`, a block digest over the block minus `_meta`, and one
+home for each fact. A missing or other `uw_version` is refused at parse as
+`UNSUPPORTED_FORMAT_VERSION`. Phase 4 deleted the old readers, the migrators
+and the one-off re-authoring scripts; there is no migration path in the
+product. Version labels move in Phase 6.
 
 
 `packages/uwmd-core` is the reference implementation and the heart of the repo.
@@ -110,12 +109,12 @@ walks a dot-path into a content object.
 over four `EditOperation` kinds (`protocol.ts`): `frontmatter_set`,
 `section_replace`, `section_supersede`, `pipeline_log_append`.
 
-It enforces edit policy: `resolvePolicy` matches `_meta.source` against
+It enforces edit policy: `resolvePolicy` matches `_meta.provenance.source` against
 `BUILTIN_EDIT_POLICIES` to decide authority (`agent_only`/`human_only`/`either`/
 `system_only`) and whether the edit must supersede (append) or may replace.
-`_meta.source` is actor-only under RFC 0031 — `manual` or `<namespace>/<id>`
+`_meta.provenance.source` is actor-only under RFC 0031 — `manual` or `<namespace>/<id>`
 parsed by `parseActorSource` (never prefix tests); resolution methods live in
-the separate optional `_meta.resolution`, and the table ends in a `*`
+the separate optional `_meta.provenance.resolution`, and the table ends in a `*`
 catch-all so every source resolves the conservative policy. **The
 golden rule of the editor:** bytes outside the modified region are preserved exactly
 (round-trip stability). Failures return a typed `ProtocolError` in
@@ -214,11 +213,10 @@ as one. A table may omit a field outright (land's and mixed-use's income
 fields; data center's expense ratio, which producers state); the cascade then
 falls through to the host's global/system default and never borrows another
 class's table. The CLI `uwmd scope` command materializes the full resolved
-triage view, reporting the resolved builtin as `asset_class` (and a legacy
-alias such as `data_center` as `declared_asset_class`).
-In-file steps read a block's payload through `blockPayload`, so a
-content-envelope block resolves the same values as a flat one, as in the calc
-evaluator.
+triage view, reporting the stated builtin as `asset_class`.
+In-file steps read a block's payload through `blockPayload` (the block minus
+its reserved members `_meta`, `_role`, `_overrides` and `_notes`), as the calc
+evaluator does.
 
 For a section stated as a variant map, the in-file steps read only the block
 `resolveSectionBlock` (`section-resolution.ts`, RFC 0066) selects. The
@@ -242,7 +240,7 @@ authority. `integrity-canonical.ts` `canonicalize()` defines the canonical form
 hashed by `computeBlockHash`. Both feed the `uwmd verify` command and the
 `tier-1-reader/malformed/` conformance fixtures (INT-/POL- codes).
 
-**Block signatures (RFC 0010, protocol §V.11).** `_meta.signature` is optional
+**Block signatures (RFC 0010, protocol §V.11).** `_meta.integrity.signature` is optional
 and, like `content_hash`, excluded from canonicalization. Core owns only the
 crypto-free half: the wire type `UWBlockSignature`, and
 `canonicalBlockSigningInput()` / `blockSigningPayload()`, which build the exact
@@ -425,7 +423,7 @@ The executable mirror of `UW_PROTOCOL.md`. It **re-uses** types from `types.ts`
 tables every conforming tool references:
 
 - Versions: `PROTOCOL_VERSION` (1.2.0), `FORMAT_VERSION` (1.1).
-- Tiers/capabilities: `ViewerTier`, `ViewerCapability`, `ImplementationManifest`, `RepresentationCapability`.
+- Tiers/capabilities: `ConformanceTier`, `ViewerCapability`, `ImplementationManifest`, `RepresentationCapability`.
 - Display: `DEFAULT_NUMBER_FORMAT`, `DEFAULT_DATE_FORMAT`, `BUILTIN_VIEW_MODELS`
   (per-section render hints), `SectionViewModel`, `FieldViewHint`.
 - Edits: `EditOperation`, `EditPolicy`, `EditAuthority`, `BUILTIN_EDIT_POLICIES`.
@@ -440,7 +438,7 @@ tables every conforming tool references:
   `validator.ts` and the registry is derived from them at module init, so
   the two views cannot disagree.
 - Calc contract: `CalcEvaluationContext`, `CalcResult`, `ModuleCalcDecl`.
-- Modules: `ProtocolModuleManifest` mirrors the final schema, with `ModuleConformanceRequirements` (`requires_conformance` plus optional `requires_profiles`). `ModuleManifest` is the staged runtime shape until RFC 0081 Phase 4 (+ section/calc/validation/agent-layer decls);
+- Modules: `ModuleManifest` mirrors `module-manifest.schema.json`: `ModuleConformanceRequirements` (`requires_conformance` plus optional `requires_profiles`) and the section/calc/validation/agent-layer declarations;
   `modules.ts` validates and registers declarative v1 manifests.
 - Errors: `ProtocolError`, `ProtocolErrorCategory`.
 - Remediations: `IssueRemediation`, `BUILTIN_REMEDIATIONS` (CC/DQ/INT/POL/FV copy).

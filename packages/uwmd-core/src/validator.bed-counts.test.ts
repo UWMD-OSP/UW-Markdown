@@ -21,13 +21,12 @@ const ROLL: Record<string, unknown> = {
 
 function doc(
   roll: Record<string, unknown>,
-  opts: { assetClass?: string; totalBeds?: unknown; envelope?: boolean; extra?: string } = {},
+  opts: { assetClass?: string; totalBeds?: unknown; extra?: string } = {},
 ): string {
-  const { assetClass = 'student_housing', envelope = false, extra = '' } = opts;
+  const { assetClass = 'student_housing', extra = '' } = opts;
   // An explicit `totalBeds: undefined` means the property states no total.
   const totalBeds = 'totalBeds' in opts ? opts.totalBeds : 600;
   const property = totalBeds === undefined ? {} : { total_beds: totalBeds };
-  const rollBody = envelope ? { content: roll } : roll;
   return `---
 uw_version: "3.0"
 deal_id: TEST-BED
@@ -39,7 +38,7 @@ ${JSON.stringify(property, null, 2)}
 \`\`\`
 
 \`\`\`json uw:section=rent_roll source=manual ts=2026-09-28T00:00:00Z v=1
-${JSON.stringify(rollBody, null, 2)}
+${JSON.stringify(roll, null, 2)}
 \`\`\`
 ${extra}`;
 }
@@ -57,11 +56,6 @@ function roll(overrides: Record<string, unknown>, drop: string[] = []): Record<s
 describe('RFC 0069 — a complete, consistent roll', () => {
   it('draws no BED issue', () => {
     expect(codes(doc(ROLL))).toEqual([]);
-  });
-
-  it('reads a v2 content envelope exactly like a flat roll (§VIII.2)', () => {
-    expect(codes(doc(ROLL, { envelope: true }))).toEqual([]);
-    expect(codes(doc(roll({ preleased_beds: 620 }), { envelope: true }))).toEqual(['BED-02:preleased_beds']);
   });
 
   it('reports every BED code as an error in the rent_roll section', () => {

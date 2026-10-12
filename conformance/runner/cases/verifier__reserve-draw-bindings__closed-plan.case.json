@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/closed-plan",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/closed-plan",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

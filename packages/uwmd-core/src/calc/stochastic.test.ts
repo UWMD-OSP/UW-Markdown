@@ -18,7 +18,7 @@ import type { ParsedUWFile, UWBlock } from '../types.js';
 function block(sectionId: string, content: Record<string, unknown>): UWBlock {
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
-    content: { section_id: sectionId, content },
+    content: { ...content },
     meta: {} as UWBlock['meta'],
     prose: '',
     rawJson: '',
@@ -187,7 +187,7 @@ describe('evaluateStochastic', () => {
     expect(after.ok).toBe(true);
     expect(
       (PARSED.sections['noi_model'] as UWBlock).content as Record<string, unknown>,
-    ).toMatchObject({ content: { net_operating_income: 600_000 } });
+    ).toMatchObject({ net_operating_income: 600_000 });
   });
 
   it('excludes failed draws from the summary rather than counting them as zero', () => {

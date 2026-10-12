@@ -1,0 +1,60 @@
+{
+  "frontmatter": {
+    "uw_version": "3.0",
+    "deal_id": "TEST-CONTENT-MEMBER",
+    "deal_name": "Content Member Fixture",
+    "created": "2026-10-12T00:00:00Z",
+    "last_modified": "2026-10-12T00:00:00Z",
+    "property_address": "18 Bare Block Way",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zip": "85001",
+    "asset_class": "multifamily",
+    "deal_stage": "screening",
+    "status": "under_review",
+    "recommendation": "pending",
+    "flags": [],
+    "blocking_flags": [],
+    "tier": "screener",
+    "created_by": "test-fixture"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "actor": "test-fixture",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-10-12T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "total_units": 48,
+        "year_built": 1999,
+        "content": {
+          "total_units": 99
+        }
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}

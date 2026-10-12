@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0076-components-only-hedge",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0076-components-only-hedge",
   "requires_capabilities": [
     "validate"
   ],

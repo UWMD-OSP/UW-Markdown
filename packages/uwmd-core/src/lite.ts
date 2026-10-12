@@ -1,4 +1,4 @@
-import { canonicalizeExact } from './integrity-canonical.js';
+import { canonicalize } from './integrity-canonical.js';
 import { isBlockedSegment } from './parser.js';
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import { readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from './yaml-scalar.js';
@@ -259,7 +259,7 @@ export function canonicalizeUWLiteFinancial(document: ParsedUWLite): string {
         .localeCompare([right.path, right.period ?? '', right.scenario ?? ''].join('|')),
     );
 
-  return canonicalizeExact({
+  return canonicalize({
     canonicalization: 'uw-lite-financial',
     version: UW_LITE_REPRESENTATION_VERSION,
     fields,

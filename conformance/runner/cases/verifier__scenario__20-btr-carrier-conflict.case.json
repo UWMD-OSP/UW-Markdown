@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/20-btr-carrier-conflict",
   "target": "verifier",
-  "legacy_id": "scenario/20-btr-carrier-conflict",
   "requires_capabilities": [
     "validate"
   ],

@@ -23,6 +23,7 @@ import type {
   PipelineStatus,
   UWBlock,
   UWMeta,
+  UWMetaPatch,
   UWSignatureAlgorithm,
   ValidationMessage,
   ValidationSeverity,
@@ -37,36 +38,33 @@ import { CORE_VERSION } from './version.js';
 export const PROTOCOL_VERSION = '3.0.0' as const;
 
 /**
- * The format version this implementation *authors* — what a fresh scaffold
- * declares. Reading is wider: see {@link SUPPORTED_FORMAT_VERSIONS}.
+ * The format release label of this implementation. RFC 0081 Phase 6 aligns
+ * it with {@link SUPPORTED_FORMAT_VERSIONS}; writers and readers use that set.
  */
 export const FORMAT_VERSION = '2.1' as const;
 
-/** Accepted normative targets (RFC 0081 Phase 2); release labels move in Phase 6. */
-
-/** Final Protocol §X host requirements. Runtime manifest loading moves in Phase 4. */
+/** The closed resolution vocabulary (Format §2.6, `SRC-03`). */
 export const RESOLUTION_METHODS = Object.freeze([
   'user_input', 'user_override', 'inherited_assumption', 'investor_profile',
   'market_data', 'market_data_accepted', 'ai_extracted', 'agent_computed',
   'asset_class_default', 'scenario_default', 'global_default', 'system_default',
 ] as const);
 
+/**
+ * A module's host requirements (Protocol §X, RFC 0081 §6): the minimum
+ * conformance tier and the profiles a host must claim to load it.
+ */
 export interface ModuleConformanceRequirements {
   requires_conformance: ConformanceTier;
   requires_profiles?: ConformanceProfile[];
 }
 
-/** Final schema mirror; the current loader's ModuleManifest is removed in Phase 4. */
-export type ProtocolModuleManifest = ModuleManifest;
+// The one format this implementation reads and writes lives in `types.ts`
+// beside the parser that enforces it; the protocol surface re-exports it.
+export { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 
-/** Final self-declaration schema; runtime alias removal is Phase 4. */
-export type ProtocolImplementationManifest = Omit<ImplementationManifest, 'tier'> & { tier?: ConformanceTier };
-
-
-/** RFC 0081 Phase 2 staging set; Phase 4 narrows it to SPEC_FORMAT_VERSION only. */
-export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['3.0'] as const);
-
-/** RFC 0081 Phase 2 staging set; Phase 4 narrows it to SPEC_PROTOCOL_VERSION only. */
+/** The one protocol contract (RFC 0081 D1). Module ranges are checked against it. */
 export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.0.0'] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
@@ -94,16 +92,9 @@ export const CONFORMANCE_PROFILES = Object.freeze([
 
 export type ConformanceProfile = (typeof CONFORMANCE_PROFILES)[number];
 
-/**
- * The four Protocol 2.x tiers. **Deprecated as an implementation tier**
- * (RFC 0078): an `ImplementationManifest` may still carry one during
- * Protocol 3.x, read through {@link readConformanceTier}. It stays the
- * vocabulary of `ModuleManifest.requires_tier` and of module-host
- * negotiation, which RFC 0078 leaves unchanged (§VII.4).
- */
-export interface ConformanceTierReading { tier: ConformanceTier }
-export function readConformanceTier(tier: unknown): ConformanceTierReading | null {
-  return tier === 'reader' || tier === 'verifier' ? { tier } : null;
+/** True for a member of the closed {@link ConformanceTier} vocabulary. */
+export function isConformanceTier(tier: unknown): tier is ConformanceTier {
+  return tier === 'reader' || tier === 'verifier';
 }
 
 /** Single owner of each corpus case (RFC 0078 Phase 3, §II.6a). */
@@ -144,7 +135,7 @@ export type ViewerCapability =
   | 'portfolio-relationships'
   | 'agent-host'
   | 'module-load'
-  /** Verifies `_meta.signature` on blocks (§V.11.5, RFC 0010). */
+  /** Verifies `_meta.integrity.signature` on blocks (§V.11.5, RFC 0010). */
   | 'signing'
   /** Enforces capability tokens on writes (§XIV, RFC 0011). */
   | 'capability-verify'
@@ -203,9 +194,6 @@ export interface ImplementationManifest {
    * omit this field rather than round down (or up). The schema requiring it
    * was a defect (UPSTREAM-003, reported by underwriter.cc) — the spec's
    * normative text always allowed the omission.
-   *
-   * The four Protocol 2.x values stay accepted during 3.x and are
-   * **deprecated**; read them with {@link readConformanceTier}.
    */
   tier?: ConformanceTier;
   /** Optional verification profiles claimed (§II.3, RFC 0078). Absent = none. */
@@ -354,7 +342,7 @@ export type ConfidenceBadgeStyle = 'pill' | 'icon' | 'text';
 
 /** Compressed display hint for the source field on a UWMeta. */
 export interface SourceBadge {
-  source: string;             // raw _meta.source value
+  source: string;             // raw _meta.provenance.source value
   display_label: string;      // short label (e.g. "AI", "Manual", "Document")
   authority: EditAuthority;   // who is allowed to overwrite this block
 }
@@ -408,12 +396,12 @@ export type ViewModelRegistry = Readonly<Record<string, SectionViewModel>>;
 /**
  * Ordered cascade steps used to resolve a value that has no explicit
  * user input or document extraction. A producer MUST stamp
- * `_meta.source` with the cascade step that produced the value, and
+ * `_meta.provenance.source` with the cascade step that produced the value, and
  * MUST NOT reorder this cascade. See starter guide §IX.
  *
  * Step 0 (`user_override`) and step 1 (`user_input`) are detected by
  * walking the parsed file for an existing block at the field path
- * whose `_meta.source` matches; the remaining steps are looked up in
+ * whose `_meta.provenance.source` matches; the remaining steps are looked up in
  * external tables (inherited assumptions, investor profile, market data)
  * or built-in tables (asset class, global, system).
  *
@@ -457,25 +445,23 @@ export const CASCADE_ORDER: readonly CascadeStep[] = Object.freeze([
   'system_default',
 ]);
 
-// `SOURCE_TAGS` / `CanonicalSourceTag` live in `types.ts` (the parser needs
-// them for §2.6 read-time interpretation, and `protocol.ts` imports the
-// parser, so hosting them here would make the dependency circular). They are
-// re-exported below so existing `./protocol.js` import sites keep working.
+// `SOURCE_TAGS` / `CanonicalSourceTag` live in `types.ts` beside the
+// `SourceTag` union they enumerate; the protocol surface re-exports them.
 export { SOURCE_TAGS } from './types.js';
 export type { CanonicalSourceTag } from './types.js';
 
-// ─── Actor grammar for `_meta.source` (RFC 0031) ─────────────────────────────
+// ─── Actor grammar for `_meta.provenance.source` (RFC 0031) ─────────────────────────────
 
 /**
- * The registered actor namespaces for `_meta.source`. RFC 0031 makes the
+ * The registered actor namespaces for `_meta.provenance.source`. RFC 0031 makes the
  * field actor-only: `manual`, or `<namespace>/<id>` where the namespace is a
  * member of this list and the id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. (The
  * RFC's draft pattern was lowercase-only, which rejected its own worked
  * example `agent/L6-01` and every Bancroft layer id — corrected as errata.)
  * Resolution methods (the {@link SOURCE_TAGS} vocabulary) belong in
- * `_meta.resolution`.
+ * `_meta.provenance.resolution`.
  *
- * Closed at format 1.x. This list is what `BUILTIN_EDIT_POLICIES` patterns
+ * Closed. This list is what `BUILTIN_EDIT_POLICIES` patterns
  * key on, so opening it is a protocol change, not a producer convention.
  */
 export const ACTOR_NAMESPACES = Object.freeze([
@@ -491,7 +477,7 @@ export type ActorNamespace = (typeof ACTOR_NAMESPACES)[number];
  *  `pattern`) in `spec/schemas/uwmd-block.schema.json`. */
 export const ACTOR_SOURCE_RE = /^(manual|(agent|document|system|institution)\/[A-Za-z0-9][A-Za-z0-9._-]*)$/;
 
-/** A parsed `_meta.source` actor. `invalid` covers everything outside the
+/** A parsed `_meta.provenance.source` actor. `invalid` covers everything outside the
  *  grammar — legacy colon forms, bare words, and resolution tags alike. */
 export type ParsedActorSource =
   | { kind: 'manual' }
@@ -499,7 +485,7 @@ export type ParsedActorSource =
   | { kind: 'invalid' };
 
 /**
- * Parse a `_meta.source` value against the RFC 0031 actor grammar.
+ * Parse a `_meta.provenance.source` value against the RFC 0031 actor grammar.
  *
  * This is the one place authority classification is allowed to read the
  * string: `checkAuthority` derives human/agent/system from the parsed
@@ -727,13 +713,6 @@ export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
   closing:          { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
   monitoring:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
 };
-
-/**
- * Legacy helper that returns just the section-list portion of a stage's
- * requirements. Preserved for callers that pre-date the widened
- * `StageRequirement` shape; new code SHOULD consult `STAGE_CONTRACT` (or
- * `requiredSectionsFor` when the asset class is known).
- */
 
 /**
  * Per-class adjustments to the base stage lists (format spec §5.1 class
@@ -969,7 +948,7 @@ export function lookupStageContract(
 
 // ─── Edit semantics (Part V) ──────────────────────────────────────────────────
 
-/** Who is permitted to overwrite a block, derived from `_meta.source`. */
+/** Who is permitted to overwrite a block, derived from `_meta.provenance.source`. */
 export type EditAuthority =
   | 'agent_only'         // only the originating agent may overwrite
   | 'human_only'         // only manual edits may overwrite
@@ -977,7 +956,7 @@ export type EditAuthority =
   | 'system_only';       // only system processes (init, migration) may overwrite
 
 export interface EditPolicy {
-  /** Glob-style pattern matching `_meta.source` (e.g. "agent/*", "manual"). */
+  /** Glob-style pattern matching `_meta.provenance.source` (e.g. "agent/*", "manual"). */
   source_pattern: string;
   authority: EditAuthority;
   /** If true, edits MUST go through supersede (append a new block); else replace. */
@@ -1000,7 +979,7 @@ export type EditOperation =
       section_id: string;
       variant?: string;
       content: Record<string, unknown>;
-      meta: Partial<UWMeta>;
+      meta: UWMetaPatch;
       /** Trusted host assignment: undefined preserves, null removes. Never copy from model content. */
       role?: BlockRole | null;
     }
@@ -1009,7 +988,7 @@ export type EditOperation =
       section_id: string;
       variant?: string;
       content: Record<string, unknown>;
-      meta: Partial<UWMeta>;
+      meta: UWMetaPatch;
       /** Trusted host assignment: undefined preserves, null removes. Never copy from model content. */
       role?: BlockRole | null;
     }
@@ -1167,11 +1146,10 @@ export interface AgentHostCapability {
 // ─── Module manifest (Part X) ─────────────────────────────────────────────────
 
 /**
- * A loaded module declaration. Mirrors the JSON Schema in
- * the runtime loader while RFC 0081 Phases 3–4 are pending.
- * ProtocolModuleManifest mirrors the final spec/schemas/module-manifest.schema.json.
+ * A module declaration. Mirrors `spec/schemas/module-manifest.schema.json`
+ * (invariant 7).
  */
-export interface ModuleManifest {
+export interface ModuleManifest extends ModuleConformanceRequirements {
   manifest_version: '1';
   id: string;                       // reverse-DNS recommended
   name: string;
@@ -1181,10 +1159,6 @@ export interface ModuleManifest {
   license: string;                  // SPDX identifier
   requires_protocol: string;        // semver range
   requires_format: string;          // semver range
-  /** Protocol 2.x tier vocabulary, unchanged by RFC 0078 (§VII.4). */
-  // RFC 0081 Phase 4: delete the interim requires_tier spelling.
-  requires_conformance: ConformanceTier;
-  requires_profiles?: ConformanceProfile[];
   asset_classes?: AssetClass[];
   deal_stages?: DealStage[];
   sections?: ModuleSectionDecl[];
@@ -1643,7 +1617,7 @@ export const BUILTIN_EDGE_TYPES: readonly UWEdgeTypeDef[] = Object.freeze([
     provenance: 'manifest', meaning: 'Modifies the terms of the target.',
   }),
   Object.freeze({
-    // NOT the block-level `_meta.superseded`, which is append-only within a
+    // NOT the block-level `_meta.lifecycle.superseded`, which is append-only within a
     // single document and untouched by this registry. This relates two whole
     // documents in a package.
     type: 'supersedes', layers: Object.freeze(['member'] as const),
@@ -2010,7 +1984,7 @@ export const BUILTIN_VIEW_MODELS: ViewModelRegistry = Object.freeze({
 });
 
 /**
- * Default edit policies derived from canonical `_meta.source` patterns.
+ * Default edit policies derived from canonical `_meta.provenance.source` patterns.
  * Implementers consult this table to decide whether a write is a replace
  * or a supersede, and whether the actor is permitted to write at all.
  */
@@ -2057,7 +2031,7 @@ export type CapabilityRejection =
   | 'wrong_section'
   | 'wrong_stage'
   | 'wrong_op'
-  /** The token's `sub` is not the prospective block's `_meta.source`. */
+  /** The token's `sub` is not the prospective block's `_meta.provenance.source`. */
   | 'sub_mismatch'
   | 'bad_signature'
   | 'unknown_kid'
@@ -2076,7 +2050,7 @@ export interface CapabilityVerifyContext {
   stage: string | null;
   /** The EditOperation kind. */
   op: string;
-  /** The prospective block's `_meta.source` (the RFC 0031 actor). */
+  /** The prospective block's `_meta.provenance.source` (the RFC 0031 actor). */
   source: string;
 }
 
@@ -2216,8 +2190,6 @@ export const CROSS_CHECK_ROLE_PREFERENCE: Readonly<Record<string, Readonly<Recor
   'HDG-01': Object.freeze({ debt_structure: 'senior' as const }),
   'HDG-02': Object.freeze({ debt_structure: 'senior' as const }),
   'HDG-03': Object.freeze({ debt_structure: 'senior' as const }),
-  'HDG-04': Object.freeze({ debt_structure: 'senior' as const }),
-  'HDG-05': Object.freeze({ debt_structure: 'senior' as const }),
   'HDG-06': Object.freeze({ debt_structure: 'senior' as const }),
   'HDG-07': Object.freeze({ debt_structure: 'senior' as const }),
   'HDG-08': Object.freeze({ debt_structure: 'senior' as const }),
@@ -2588,7 +2560,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'DQ-01', severity: 'warning',
     title: 'Provisional block without gap entry',
-    description: 'A block is marked _meta.provisional=true but no entry in the `gaps` section references it.',
+    description: 'A block is marked _meta.quality.provisional=true but no entry in the `gaps` section references it.',
     remediation: 'Add a `gaps` item naming this section/path (or run editor with --maintain-gaps), or remove the provisional flag.',
     spec_ref: 'UW_FORMAT_SPEC.md §3.4 / §4.22',
   },
@@ -2602,7 +2574,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'DQ-03', severity: 'warning',
     title: 'Partial block without field-level enumeration',
-    description: 'A block is marked _meta.partial=true but has no _meta.field_overrides[] enumeration.',
+    description: 'A block is marked _meta.quality.partial=true but has no `_overrides[]` enumeration.',
     remediation: 'List the affected paths in field_overrides with reason ("missing"|"illegible"|"estimated").',
     spec_ref: 'UW_FORMAT_SPEC.md §3.4',
   },
@@ -2655,7 +2627,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'INT-01', severity: 'error',
     title: 'Parent hash mismatch',
-    description: 'A block\'s _meta.parent_hash does not equal the prior block\'s _meta.content_hash in the supersede chain.',
+    description: 'A block\'s _meta.integrity.parent_hash does not equal the prior block\'s _meta.integrity.content_hash in the supersede chain.',
     remediation: 'Recompute the block from the current head: stamp parent_hash with the prior block\'s content_hash and bump the version.',
     spec_ref: 'UW_PROTOCOL.md §V.10',
   },
@@ -2669,14 +2641,14 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'INT-03', severity: 'warning',
     title: 'Partially hashed chain',
-    description: 'Some blocks in a supersede chain carry _meta.content_hash and others do not.',
+    description: 'Some blocks in a supersede chain carry _meta.integrity.content_hash and others do not.',
     remediation: 'Once any block in a chain is hashed, every subsequent block MUST be hashed; rehash the unstamped blocks.',
     spec_ref: 'UW_PROTOCOL.md §V.10',
   },
   {
     code: 'INT-04', severity: 'warning',
     title: 'Content hash does not recompute',
-    description: 'A block\'s stamped _meta.content_hash does not match the SHA-256 of its current canonicalized content.',
+    description: 'A block\'s stamped _meta.integrity.content_hash does not match the SHA-256 of its current canonicalized content.',
     remediation: 'Either restore the original content or re-stamp content_hash from the current canonicalized form.',
     spec_ref: 'UW_PROTOCOL.md §V.9',
   },
@@ -2684,7 +2656,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'INT-05', severity: 'error',
     title: 'Signature without content hash',
-    description: 'A block carries _meta.signature but no _meta.content_hash, so the signature commits to no content.',
+    description: 'A block carries _meta.integrity.signature but no _meta.integrity.content_hash, so the signature commits to no content.',
     remediation: 'Stamp content_hash first, then re-sign the block; a signature over an absent hash is structurally void.',
     spec_ref: 'UW_PROTOCOL.md §V.11',
   },
@@ -2793,7 +2765,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'POL-01', severity: 'error',
     title: 'Unauthorized actor',
-    description: 'The block\'s _meta.actor is not authorized to write this section per its EditPolicy.',
+    description: 'The block\'s _meta.provenance.actor is not authorized to write this section per its EditPolicy.',
     remediation: 'Re-issue the edit from an actor allowed by the section\'s policy (see BUILTIN_EDIT_POLICIES).',
     spec_ref: 'UW_PROTOCOL.md §VIII',
   },
@@ -2822,22 +2794,8 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'POL-03', severity: 'error',
     title: 'Capability token rejected',
     description: 'The editor is configured with a capability verifier and the write presented no token, or a token the verifier rejected (expired, out of scope, bad signature — the reason travels in the issue detail). RFC 0011.',
-    remediation: 'Obtain a fresh token from the coordinator scoped to this deal, section, stage, and operation, issued to the sub that matches the write\'s _meta.source. A token never overrides the static §V.3 policy — an edit the policy table refuses needs a different actor, not a token.',
+    remediation: 'Obtain a fresh token from the coordinator scoped to this deal, section, stage, and operation, issued to the sub that matches the write\'s _meta.provenance.source. A token never overrides the static §V.3 policy — an edit the policy table refuses needs a different actor, not a token.',
     spec_ref: 'docs/starter/capability-tokens.md §XIV',
-  },
-  {
-    code: 'META-V2-IN-V1', severity: 'error',
-    title: 'Nested _meta in a 1.x file',
-    description: 'A block carries the nested v2 _meta shape (provenance/quality/lifecycle/integrity sub-objects) in a file whose uw_version is 1.x. A file\'s uw_version is global and decides the shape for every block; mixing shapes within a file is invalid in both directions (RFC 0009).',
-    remediation: 'Convert the whole file with `uwmd migrate --to-v2` (which also sets uw_version to "2.0" and re-stamps hashes), or rewrite the block in the flat v1 shape.',
-    spec_ref: 'RFC 0009 §"One shape per file"',
-  },
-  {
-    code: 'META-V1-IN-V2', severity: 'error',
-    title: 'Flat _meta in a v2 file',
-    description: 'A block carries the flat v1 _meta shape in a file whose uw_version is "2.0" or later. v2 writers MUST emit the nested shape for every block (RFC 0009).',
-    remediation: 'Re-run `uwmd migrate --to-v2` on the file so every block is reshaped, or fix the writer that emitted the flat block into a v2 file.',
-    spec_ref: 'RFC 0009 §"One shape per file"',
   },
   {
     code: 'SRC-01', severity: 'error',

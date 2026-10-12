@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/wrong-currency",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/wrong-currency",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

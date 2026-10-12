@@ -1,16 +1,15 @@
-// JCS-style canonical JSON serialization for content_hash computation.
-// Protocol §V.9 — "Canonical block JSON"
-//
-// Implements RFC 8785 (JCS) with one extension: the keys `content_hash` and
-// `signature` inside any nested `_meta` object (spelled `section`/`section_id`)
-// are removed before hashing.
-// This keeps hash computation idempotent across multiple round trips through
-// the cascade.
+// RFC 8785 (JCS) canonical JSON serialization — the one serializer behind
+// every digest: block `content_hash` (Protocol §V.9, over the block minus
+// `_meta`), receipts, signing inputs and envelopes. Nothing is stripped.
 //
 // Pure, dependency-free, deterministic across Node and modern browsers.
 
+/**
+ * Serialize `value` per RFC 8785: object keys sorted by UTF-16 code unit,
+ * strings escaped per §3.2.2, numbers per ECMAScript ToString (`-0` as `0`).
+ * `undefined` object members are dropped; non-finite numbers throw.
+ */
 export function canonicalize(value: unknown): string { return serialize(value); }
-export function canonicalizeExact(value: unknown): string { return serialize(value); }
 
 function serialize(value: unknown): string {
   if (value === null) return 'null';

@@ -108,7 +108,7 @@ common cash-on-cash across all eleven income classes; lazy stated-year-1 selecti
 zero); senior debt selection and unresolved equity debt service; stated mixed-use
 allocation; fractional raw sizes with missing, string and nonfinite controls;
 immutability; source-token trailing zeroes, exponents, escaped/nested keys,
-content envelopes and YAML comments; coarse exact/wrong statements, all twelve LTV denominators and lazy fallbacks,
+a payload member named `content`, YAML comments; coarse exact/wrong statements, all twelve LTV denominators and lazy fallbacks,
 minimum precision, output ceilings and
 no double rounding. Dictionary/pack/size completeness is separately enforced by
 `packages/uwmd-core/src/packs/metric-dictionary.test.ts`.

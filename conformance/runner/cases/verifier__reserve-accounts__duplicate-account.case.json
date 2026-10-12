@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/duplicate-account",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/duplicate-account",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

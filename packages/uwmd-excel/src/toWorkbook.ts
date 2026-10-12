@@ -171,8 +171,8 @@ class SectionReader {
   }
 
   /**
-   * The selected block's user payload, as evaluateCalc reads it (flat or
-   * content envelope); a missing section reads as empty.
+   * The selected block's user payload, as evaluateCalc reads it (the block
+   * minus its reserved members); a missing section reads as empty.
    */
   content(section: string): { content: Record<string, unknown> } | Refusal {
     const read = this.read(section);

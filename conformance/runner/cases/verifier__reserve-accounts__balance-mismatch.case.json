@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/balance-mismatch",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/balance-mismatch",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -102,14 +102,14 @@ describe('RFC 0044 explicit projection', () => {
       )
     ).toMatchObject({ ok: true, value: 239528.83 });
   });
-  it('selects an explicit wrapped component independently of unrelated bad variants', async () => {
+  it('selects an explicit component independently of unrelated bad variants', async () => {
     const parsed = document();
     const selected = block(parsed);
     parsed.sections['lease_up_schedule'] = {
       retail: {
         ...selected,
         annotation: { section: 'lease_up_schedule', variant: 'retail' },
-        content: { _role: 'component', content: selected.content },
+        content: { ...selected.content, _role: 'component' },
       },
       bad: { ...selected, content: {} },
     };

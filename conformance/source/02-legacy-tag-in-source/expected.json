@@ -1,6 +1,6 @@
 {
-  "raw_source": "market_data",
-  "interpreted_resolution": "market_data",
-  "content_meta_untouched": true,
+  "source": "market_data",
+  "resolution": null,
+  "severity": "error",
   "src_codes": ["SRC-02"]
 }

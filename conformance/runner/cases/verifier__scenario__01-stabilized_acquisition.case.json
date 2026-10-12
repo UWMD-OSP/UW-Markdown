@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/01-stabilized_acquisition",
   "target": "verifier",
-  "legacy_id": "scenario/01-stabilized_acquisition",
   "requires_capabilities": [
     "validate"
   ],

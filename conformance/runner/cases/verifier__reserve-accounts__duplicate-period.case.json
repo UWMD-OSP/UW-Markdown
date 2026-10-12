@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/duplicate-period",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/duplicate-period",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

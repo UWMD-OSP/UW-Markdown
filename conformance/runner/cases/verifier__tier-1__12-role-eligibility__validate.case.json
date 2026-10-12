@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-1/12-role-eligibility/validate",
   "target": "verifier",
-  "legacy_id": "tier-1/12-role-eligibility/validate",
   "requires_capabilities": [
     "validate"
   ],

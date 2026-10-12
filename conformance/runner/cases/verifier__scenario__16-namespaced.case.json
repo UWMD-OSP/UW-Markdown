@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/16-namespaced",
   "target": "verifier",
-  "legacy_id": "scenario/16-namespaced",
   "requires_capabilities": [
     "validate"
   ],

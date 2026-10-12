@@ -32,9 +32,9 @@ here) prefixed with the deal's identity: `path`, `deal_id`, `asset_class`,
 included with `valid: false`; files that cannot produce an envelope are listed
 in the manifest's `deals_skipped` — the fact table never silently drops a deal.
 
-Asset-class filters and `by_asset_class` summaries key on the resolved builtin
-id (RFC 0080), so `org.uwmd.data_center` and `data_center` records group
-together; index entries and fact rows keep each record's stated id.
+Asset-class filters and `by_asset_class` summaries key on each record's stated
+`asset_class`. The twelve official classes have one spelling each (RFC 0080),
+so there is nothing to fold together.
 
 The JSONL loads directly into DuckDB (`read_json('batch-output/uwmd-facts.jsonl')`),
 Snowflake, ClickHouse, or Pandas. The durable key for a fact is

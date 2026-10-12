@@ -1,0 +1,6 @@
+{
+  "codes": [
+    "CAPX-01"
+  ],
+  "note": "contingency_remaining is allowed only with the complete draw group (RFC 0081 \u00a77)."
+}

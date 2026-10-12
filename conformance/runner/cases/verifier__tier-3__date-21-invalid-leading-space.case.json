@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-21-invalid-leading-space",
   "target": "verifier",
-  "legacy_id": "tier-3/date-21-invalid-leading-space",
   "requires_capabilities": [
     "calc-evaluate"
   ],

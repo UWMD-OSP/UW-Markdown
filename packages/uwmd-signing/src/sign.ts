@@ -31,19 +31,7 @@ export interface SignBlockOptions {
    * that never passed `verifyChain`.
    */
   stampContentHash?: boolean;
-  /**
-   * The `uw_version` of the document the block belongs to. Selects the block
-   * digest rule exactly as `verifyChain` does: `"3.0"` is the RFC 0081 §3 rule
-   * (JCS of the block minus `_meta`); 2.x and 1.x/absent are the retired rules.
-   * Only consulted when {@link stampContentHash} computes the hash.
-   */
 }
-
-/**
- * The digest rule for a block in a document of `uwVersion` — the selection
- * `verifyChain` makes from the frontmatter, so a signature checked here and a
- * chain checked there agree on what the block hashes to.
- */
 
 /**
  * Sign a block, returning the detached {@link UWBlockSignature}.
@@ -62,7 +50,7 @@ export async function signBlock(
     if (!options.stampContentHash) {
       throw new SigningError(
         'SIG_UNSIGNABLE',
-        `Block '${block.meta.section}' has no _meta.content_hash. Stamp one first (or pass stampContentHash) — a signature over an absent hash commits to nothing and validates as INT-05.`,
+        `Block '${block.meta.section}' has no _meta.integrity.content_hash. Stamp one first (or pass stampContentHash) — a signature over an absent hash commits to nothing and validates as INT-05.`,
       );
     }
     contentHash = await computeBlockHash(block);
@@ -72,8 +60,8 @@ export async function signBlock(
   const payload = canonicalBlockSigningInput({
     content_hash: contentHash,
     section: block.meta.section,
-    actor: block.meta.provenance?.actor ?? '',
-    timestamp: block.meta.provenance?.timestamp ?? '',
+    actor: block.meta.provenance?.actor,
+    timestamp: block.meta.provenance?.timestamp,
     kid: key.kid,
     signed_at: signedAt,
   });
@@ -97,7 +85,10 @@ export function stampBlockSignature(
 ): UWBlock {
   return {
     ...block,
-    meta: { ...block.meta, integrity: { ...block.meta.integrity, ...(contentHash ? { content_hash: contentHash } : {}), signature } },
+    meta: {
+      ...block.meta,
+      integrity: { ...block.meta.integrity, ...(contentHash ? { content_hash: contentHash } : {}), signature },
+    },
   };
 }
 

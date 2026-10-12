@@ -28,7 +28,6 @@ Command | Purpose
 `export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
 `formats` | List Lite, UWX, and registered model representations/media types (`--json`)
 `convert <file> --to <format>` | Convert `.uw.md`, `.uwx.md`, verified model formats, or CSV bundles to `lite`, `uwx`, `uw-json`, `uw-xml`, or `uw-csv-bundle`
-`migrate-source <file>` | Copy legacy structured `.uw.md` to byte-identical `.uwx.md` (`--dry-run`, `--force`)
 `report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML (`--tier`, `--prepared-by`, `--output`, `--stdout`)
 `scope <file>` | Resolve every required input via the fallback cascade (triage view)
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
@@ -159,34 +158,13 @@ the transaction, so a partial load is visible rather than hidden. No live
 PostgreSQL instance is exercised by the test suite — a real load is an adopter
 integration step.
 
-## Hospitality module — `packages/uwmd-module-hospitality` (`@uwmd/module-hospitality` 0.2.0)
+## Hospitality and data center
 
-A **compatibility shell** since RFC 0080. The module's three hotel sections
-(`hotel_metrics`, `hotel_brand`, `hotel_food_beverage`), its calculations and
-its rules (now `CC-HOSP-01..04`) belong to the builtin `hospitality` class in
-`@uwmd/core`. RevPAR keeps the builtin definition (rooms revenue / available
-room nights); a record that states a comp-set RevPAR without those inputs gets
-`CC-HOSP-04` instead of a silent skip. The frozen manifest declares nothing; the
-package keeps its identity, exports and core pin so existing installs and
-`org.uwmd.hospitality` module lists keep resolving (`CLS-02`). Originally the
-reference consumer of the protocol §X module system (RFC 0006); module support
-itself remains for third parties.
-
-## Data-center module — `packages/uwmd-module-data-center` (`@uwmd/module-data-center` 0.2.0)
-
-A **compatibility shell** since RFC 0080. Data center is now the builtin
-`data_center` class in `@uwmd/core`: its `dc_capacity` / `dc_power` /
-`dc_revenue` sections, eleven calculations (every power figure in **kW**, every
-rate a fraction) and `CC-DC-01..08` rules live in core, with a pack, Excel
-layout, size row (`property.critical_it_load_kw`) and defaults like every other
-builtin. The package's manifest declares no class, section, calculation or rule;
-it keeps its identity, exports and core pin so existing installs and documents
-whose module list names `org.uwmd.datacenters` keep resolving (`CLS-02`).
-Documents on the legacy `org.uwmd.data_center` id read as `data_center` with a
-`CLS-01` deprecation warning.
-A host without it reads `examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md` as
-`degraded` under `industrial` (`MOD-FALLBACK-001`) — every dollar figure
-correct, every kilowatt absent.
+Both are builtin classes in `@uwmd/core` (RFC 0080): sections, calculations,
+`CC-HOSP-NN` / `CC-DC-NN` rules, packs, Excel layouts and defaults, like every
+other builtin. `@uwmd/module-hospitality` and `@uwmd/module-data-center` were
+compatibility shells whose final 0.2.0 was published and deprecated on npm on
+2026-10-11; RFC 0081 Phase 4 deleted both packages from the repository.
 
 ## Signing — `packages/uwmd-signing` (`@uwmd/signing` 0.1.0)
 

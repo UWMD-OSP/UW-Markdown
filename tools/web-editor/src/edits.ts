@@ -14,6 +14,7 @@ import type {
   EditOperation,
   EditContext,
   EditResult,
+  UWMetaPatch,
 } from '@uwmd/core/browser';
 
 export interface EditState {
@@ -105,26 +106,38 @@ export function runEdit(
   };
 }
 
-/** Persist a section's `_meta.field_overrides` across edits. The protocol's
- *  buildMeta() doesn't carry prior `_meta` forward, so without this any edit
- *  that doesn't re-state the overrides (e.g. a generic scalar edit) would drop
- *  the hand-pinned totals. An op that *explicitly* sets field_overrides (the
- *  rent-roll model, including an empty list to clear) always wins. */
+/** Persist a section's `_overrides` across edits. An edit's content replaces
+ *  the whole block, so without this any edit that doesn't restate the
+ *  overrides (e.g. a generic scalar edit) would drop the hand-pinned totals.
+ *  An op whose content states `_overrides` (the model editors) always wins; an
+ *  empty list clears them, and an empty member is not written. */
 function carryForwardOverrides(op: EditOperation, parsed: ParsedUWFile): EditOperation {
   if (op.kind !== 'section_replace' && op.kind !== 'section_supersede') return op;
-  if (op.meta && 'field_overrides' in op.meta) return op;
+  if (Object.hasOwn(op.content, '_overrides')) {
+    const stated = op.content['_overrides'];
+    if (Array.isArray(stated) && stated.length > 0) return op;
+    const { _overrides: _cleared, ...content } = op.content;
+    return { ...op, content };
+  }
   const block = op.variant
     ? getSectionVariant(parsed, op.section_id, op.variant)
     : getSection(parsed, op.section_id);
-  const existing = block?.meta?.field_overrides;
-  if (!existing || existing.length === 0) return op;
-  return { ...op, meta: { ...op.meta, field_overrides: existing } } as EditOperation;
+  const existing = block?.content['_overrides'];
+  if (!Array.isArray(existing) || existing.length === 0) return op;
+  return { ...op, content: { ...op.content, _overrides: existing } };
 }
 
 function applySettingsToOp(op: EditOperation, settings: EditSettings): EditOperation {
   if (op.kind !== 'section_replace' && op.kind !== 'section_supersede') return op;
 
-  const meta = { ...op.meta, ...(settings.humanReview ? { human_review_required: true } : {}), quality: { ...op.meta.quality, ...(settings.humanReview ? { human_review_required: true } : {}).quality, confidence: settings.confidence } };
+  const meta: UWMetaPatch = {
+    ...op.meta,
+    quality: {
+      ...op.meta.quality,
+      confidence: settings.confidence,
+      ...(settings.humanReview ? { human_review_required: true } : {}),
+    },
+  };
 
   // Promote replace → supersede when in append mode.
   const kind = settings.mode === 'supersede' ? 'section_supersede' : op.kind;

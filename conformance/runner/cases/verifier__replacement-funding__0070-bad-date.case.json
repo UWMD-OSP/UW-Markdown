@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-bad-date",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-bad-date",
   "requires_capabilities": [
     "validate"
   ],

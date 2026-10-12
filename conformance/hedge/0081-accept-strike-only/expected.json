@@ -1,0 +1,4 @@
+{
+  "codes": [],
+  "note": "A strike-only hedge is a complete statement (RFC 0081 \u00a77): only instrument and strike_rate are required, and no selection check runs."
+}

@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { CONFORMANCE_TARGETS, CONFORMANCE_PROFILES, readConformanceTier } from '../packages/uwmd-core/dist/protocol.js';
+import { CONFORMANCE_TARGETS, CONFORMANCE_PROFILES, isConformanceTier } from '../packages/uwmd-core/dist/protocol.js';
 
 export const corpus = JSON.parse(readFileSync(new URL('../conformance/corpus-index.json', import.meta.url), 'utf8'));
 export const suiteFamily = suite => suite === '3-refinement' ? '3' : suite === '4-profile' ? '4' : suite;
@@ -15,16 +15,16 @@ export function indexCases(cases) {
   return index;
 }
 export const index = indexCases(corpus.cases);
-export const legacyNames = ['tier-1-reader', 'tier-2-editor', 'tier-3-calc-host', 'tier-4-agent-host'];
-// A numeric short is exactly one digit 1-4, as the Python driver's generated
-// reading table has it. Number() would also accept '3.0', '0x3', '1e0', '+3'
-// and ' 3', silently widening the selector vocabulary on one side only.
-export const legacyAlias = name => /^[1-4]$/.test(name) ? legacyNames[Number(name) - 1] : name;
-export const tierReadings = Object.fromEntries(['reader', 'verifier', ...legacyNames, '1', '2', '3', '4'].map(value => [value, readConformanceTier(legacyAlias(value))]));
-export const portableReadings = { targets: CONFORMANCE_TARGETS, profiles: CONFORMANCE_PROFILES, tiers: tierReadings };
+// The closed vocabulary the Python driver reads (conformance/runner/vocabulary.json),
+// generated from protocol.ts so the two runners never keep a second mapping.
+export const portableVocabulary = {
+  targets: CONFORMANCE_TARGETS,
+  profiles: CONFORMANCE_PROFILES,
+  tiers: CONFORMANCE_TARGETS.filter(isConformanceTier),
+};
 export const publicOwner = target => ({ target, ...(target === 'reader' || target === 'verifier' ? { tier: target } : target === 'starter-products' ? { starter_product: true } : { profile: target }) });
 
-export function selection(args, warn = message => console.error(message)) {
+export function selection(args) {
   const value = name => {
     const equals = args.find(a => a.startsWith(`--${name}=`));
     if (equals !== undefined) return equals.slice(name.length + 3);
@@ -38,15 +38,10 @@ export function selection(args, warn = message => console.error(message)) {
   const targets = new Set();
   const suites = new Set(split(value('suite')));
   for (const name of split(value('tier'))) {
-    const reading = readConformanceTier(legacyAlias(name));
-    if (reading) {
-      targets.add(reading.tier);
-      if (reading.tier === 'verifier') targets.add('reader');
-      if (reading.legacy) warn(`Deprecated tier '${name}': use '${reading.tier}'; no profiles or starter-product claims are inferred.`);
-    } else if (corpus.cases.some(c => c.suite === name)) {
-      suites.add(name);
-      warn(`Deprecated suite selector '--tier=${name}': use '--suite=${name}'.`);
-    } else throw new Error(`Unknown tier: ${name}`);
+    // Only the two tiers: no alias, numeric short or suite name (RFC 0081 §8).
+    if (!isConformanceTier(name)) throw new Error(`Unknown tier: ${name} (use reader or verifier; select fixture families with --suite)`);
+    targets.add(name);
+    if (name === 'verifier') targets.add('reader');
   }
   for (const name of split(value('profile'))) {
     if (!CONFORMANCE_PROFILES.includes(name)) throw new Error(`Unknown profile: ${name}`);

@@ -9,7 +9,7 @@
 //
 // Run: node scripts/gen-conformance-cases.mjs  (or `npm run gen-conformance-cases`)
 
-import { corpus, portableOwner, portableReadings } from './conformance-targets.mjs';
+import { portableOwner, portableVocabulary } from './conformance-targets.mjs';
 import { readdirSync, statSync, existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { resolve, dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -47,12 +47,11 @@ function capabilitiesFor(command, args) {
   }
 }
 
-function add(legacyId, _tier, command, args, fixtureDir, expect, capabilities) {
-  const target = portableOwner(legacyId);
+function add(caseKey, _tier, command, args, fixtureDir, expect, capabilities) {
+  const target = portableOwner(caseKey);
   cases.push({
-    id: `${target}/${legacyId}`,
+    id: `${target}/${caseKey}`,
     target,
-    legacy_id: legacyId,
     requires_capabilities: capabilities ?? capabilitiesFor(command, args),
     command,
     args,
@@ -254,11 +253,10 @@ for (const scenario of dirs(join(CONFORMANCE, 'reserve-draw-bindings'))) {
 // coverage while every suite still reported green — the exact kind of failure
 // that is invisible by construction, so CI has to go looking for it.
 
-const legacyIds = cases.map(c => c.legacy_id);
-if (new Set(legacyIds).size !== legacyIds.length) throw new Error('Duplicate portable case');
-if (JSON.stringify([...legacyIds].sort()) !== JSON.stringify([...corpus.portable_legacy_ids].sort())) throw new Error('Portable coverage changed: update the exhaustive corpus index explicitly.');
-const READINGS = join(ROOT, 'conformance', 'runner', 'tier-readings.json');
-const readingsBody = `${JSON.stringify(portableReadings, null, 2)}\n`;
+const ids = cases.map(c => c.id);
+if (new Set(ids).size !== ids.length) throw new Error('Duplicate portable case');
+const VOCABULARY = join(ROOT, 'conformance', 'runner', 'vocabulary.json');
+const vocabularyBody = `${JSON.stringify(portableVocabulary, null, 2)}\n`;
 
 const wanted = new Map(
   cases.map((c) => [`${c.id.replaceAll('/', '__')}.case.json`, `${JSON.stringify(c, null, 2)}\n`]),
@@ -267,7 +265,7 @@ const wanted = new Map(
 if (process.argv.includes('--check')) {
   const onDisk = existsSync(CASES) ? readdirSync(CASES).filter((f) => f.endsWith('.case.json')) : [];
   const problems = [];
-  if (!existsSync(READINGS) || readFileText(READINGS) !== readingsBody) problems.push('stale: tier-readings.json');
+  if (!existsSync(VOCABULARY) || readFileText(VOCABULARY) !== vocabularyBody) problems.push('stale: vocabulary.json');
   for (const [name, body] of wanted) {
     if (!onDisk.includes(name)) problems.push(`missing: ${name}`);
     else if (readFileText(join(CASES, name)) !== body) problems.push(`stale: ${name}`);
@@ -285,7 +283,7 @@ if (process.argv.includes('--check')) {
 }
 
 if (resolve(CASES) !== join(ROOT, 'conformance', 'runner', 'cases')) throw new Error('Case directory escaped workspace');
-writeFileSync(READINGS, readingsBody, 'utf8');
+writeFileSync(VOCABULARY, vocabularyBody, 'utf8');
 rmSync(CASES, { recursive: true, force: true });
 mkdirSync(CASES, { recursive: true });
 for (const [name, body] of wanted) {

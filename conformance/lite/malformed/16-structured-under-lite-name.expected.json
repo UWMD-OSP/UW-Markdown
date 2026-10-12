@@ -1,0 +1,8 @@
+{
+  "description": "Structured UWX content under a .uw.md name is SOURCE_CONTENT_MISMATCH (RFC 0081 \u00a74); no explicit override admits it.",
+  "detect": true,
+  "must_parse": false,
+  "expected_codes": [
+    "SOURCE_CONTENT_MISMATCH"
+  ]
+}

@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { projectModuleContract, projectCompiledLite, legacyTestDocument } from './rfc-0081-schema-projections.mjs';
 import { verifyReserveDrawBindings } from '../packages/uwmd-core/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
 import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/index.js';
@@ -11,8 +10,8 @@ import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/ind
 //     [--starter-products] [--suite=metrics,...] [--update] [--json]
 //
 //   Default: all indexed standard and starter-product cases, reported separately.
-//   --tier      Reader, or Verifier including Reader; legacy names warn on stderr.
-//   --profile   Optional verification profiles; never inferred from legacy tiers.
+//   --tier      reader, or verifier (includes Reader); any other value is a usage error.
+//   --profile   Optional verification profiles; never inferred from a tier.
 //   --suite     Existing fixture families, independent of their directory names.
 //   --starter-products  Select non-normative product checks.
 //   --update     Regenerate expected/* files from current library output.
@@ -49,6 +48,7 @@ import {
   buildContext,
   BANCROFT_LAYERS,
   parseUWLite,
+  detectUWSourceRepresentation,
   canonicalizeUWLiteFinancial,
   renderCanonicalUWLite,
   compileUWLite,
@@ -102,9 +102,6 @@ import {
   getSizeIntensive,
   resolveDealSize,
   renderReportHtml,
-  canonicalV2BlockContent,
-  canonicalizeV2,
-  migrateToV2,
   verifyCashFlowSeries,
   evaluateCashFlowMetrics,
   validatePortfolioProfile,
@@ -196,13 +193,9 @@ function projectBlock(b) {
   return { meta: projectMeta(b), content: projectContent(b) };
 }
 
-// `content` is the block content PROPER, never the raw fence object. The
-// parser's in-memory `b.content` is the whole fence (`_meta` nested inside),
-// and projecting it wholesale was this script's copy of the same accident
-// §II.6a.6 was written to end — `uwmd parse` had it too (fixed alongside this,
-// see cmdParse in @uwmd/core). A wrapped fence ({ section_id, _meta, content })
-// is detected by layout, not meta shape: 2.0 wrapping and `_meta` nesting
-// shipped separately, so the corpus carries wrapped-fence/flat-meta blocks.
+// `content` is the block content PROPER, never the raw fence object: the
+// fence minus `_meta`, `_overrides` and `_notes` (§II.6a.6). A member named
+// `content` is ordinary payload (RFC 0081 §3).
 function projectContent(b) {
   if (!b.rawJson) return b.content;
   let fence;
@@ -211,37 +204,15 @@ function projectContent(b) {
   } catch {
     return b.content;
   }
-  if (!fence || typeof fence !== 'object') return b.content;
-  const wrapped =
-    fence.content &&
-    typeof fence.content === 'object' &&
-    ('section_id' in fence || b.meta_shape === 'v2');
-  if (wrapped) return fence.content;
-  const { _meta, section_id, _overrides, _notes, ...rest } = fence;
+  if (!fence || typeof fence !== 'object' || Array.isArray(fence)) return b.content;
+  const { _meta, _overrides, _notes, ...rest } = fence;
   return rest;
 }
 
-// `_meta` carries only the keys the *document* carried. The parser fills every
-// optional field with null, so projecting `b.meta` wholesale would require an
-// implementation to emit `"agent_id": null` for a document that never mentioned
-// agent_id — asserting a distinction the source does not make. Absent and
-// explicit-null ARE distinguishable in the source, so the original key set is
-// read back from the raw block JSON and used to decide presence; values still
-// come from the parsed meta, which is normalized.
+// `_meta` carries only the keys the *document* carried: the parser reads
+// `_meta` verbatim, so the projection is the parsed object itself.
 function projectMeta(b) {
-  if (!b.rawJson) return b.meta;
-  let declared;
-  try {
-    declared = JSON.parse(b.rawJson)?._meta;
-  } catch {
-    return b.meta;
-  }
-  if (!declared || typeof declared !== 'object') return b.meta;
-  const out = {};
-  for (const key of Object.keys(b.meta)) {
-    if (key in declared) out[key] = b.meta[key];
-  }
-  return out;
+  return b.meta;
 }
 
 function isMultiVariant(entry) {
@@ -325,7 +296,8 @@ function runScenario() {
     delete baseline.frontmatter.scenario;
     delete baseline.frontmatter.asset_subtype;
     for (const property of baseline.sections.property ? ('annotation' in baseline.sections.property ? [baseline.sections.property] : Object.values(baseline.sections.property)) : []) {
-      const payload = blockPayload(property);
+      // The block object itself: blockPayload is a copy minus reserved members.
+      const payload = property.content;
       if (payload && typeof payload === 'object') delete payload.asset_subtype;
     }
     const withoutIdentity = validateUWFile(baseline);
@@ -1083,7 +1055,7 @@ function runLiteFixtures() {
       record('lite', `${id} [compile]`, 'fail', `fixtures/ documents must compile; saw: ${errorCodes(compiled.report.issues).join(', ')}`);
       continue;
     }
-    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, `${projectCompiledLite(stringifyUWX(compiled.envelope)).trimEnd()}\n`);
+    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, `${stringifyUWX(compiled.envelope).trimEnd()}\n`);
 
     const projection = projectUWEnvelopeToLite(compiled.envelope);
     liteBaseline(
@@ -1124,6 +1096,19 @@ function runLiteMalformed() {
     }
     const mustParse = expected.must_parse !== false;
     const source = readFileSync(join(dir, fixture), 'utf8');
+
+    // Representation detection by name and content (RFC 0081 §4): a refusal
+    // here is pinned by its code, before any Lite parse is attempted.
+    if (expected.detect === true) {
+      try {
+        detectUWSourceRepresentation(source, fixture);
+        record('lite', `malformed/${id}`, 'fail', 'expected detection to refuse, but it succeeded');
+      } catch (e) {
+        record('lite', `malformed/${id}`, expectedCodes.includes(e.code) ? 'pass' : 'fail',
+          expectedCodes.includes(e.code) ? `detection refused with ${e.code}` : `threw ${e.code ?? '(no code)'}, expected one of ${expectedCodes.join(', ')}`);
+      }
+      continue;
+    }
 
     let parsed;
     try {
@@ -1363,6 +1348,19 @@ async function runReceiptVerify() {
     const inputs = existsSync(inputsPath)
       ? JSON.parse(readFileSync(inputsPath, 'utf8'))
       : undefined;
+
+    // A receipt a verifier must refuse to read at all (RFC 0081 §7): pinned by
+    // its code, never by "threw something".
+    if (expected.refused_code) {
+      try {
+        assertUWReceipt(receipt);
+        record('receipts', `verify/${id}`, 'fail', `expected ${expected.refused_code}, but the receipt was read`);
+      } catch (e) {
+        record('receipts', `verify/${id}`, e.code === expected.refused_code ? 'pass' : 'fail',
+          e.code === expected.refused_code ? `refused with ${e.code}` : `threw ${e.code ?? '(no code)'}, expected ${expected.refused_code}`);
+      }
+      continue;
+    }
 
     let result;
     try {
@@ -1633,7 +1631,7 @@ async function runModules() {
   };
 
   const parity = (id, manifest, loaderOk, divergence) => {
-    const schemaOk = schemaCheck(projectModuleContract(manifest));
+    const schemaOk = schemaCheck(manifest);
     if (schemaOk === loaderOk) {
       record('modules', `${id} [schema-parity]`, 'pass');
     } else if (divergence && loaderOk === false && schemaOk === true) {
@@ -1652,7 +1650,7 @@ async function runModules() {
   // Accept fixtures load against the maximal host, so they assert manifest
   // validity rather than host capability. Tier gating has its own reject
   // fixture and unit tests.
-  const MAX_HOST = { hostTier: 'tier-4-agent-host' };
+  const MAX_HOST = { hostConformance: 'verifier' };
 
   for (const { id, manifest } of readFixtures('accept')) {
     let result;
@@ -1681,9 +1679,11 @@ async function runModules() {
       continue;
     }
     const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
+    // `host` states the loading host's claim when the refusal is about the host
+    // (PROTO-MOD-029), not the manifest.
     let result;
     try {
-      result = loadModuleManifest(manifest);
+      result = loadModuleManifest(manifest, expected.host ?? {});
     } catch (e) {
       record('modules', `reject/${id}`, 'fail', `loader threw instead of reporting: ${e.message}`);
       continue;
@@ -1710,29 +1710,9 @@ async function runModules() {
 
 
 /**
- * Module runtime (RFC 0006, RFC 0039) — the module system with actual consumers.
- *
- * Every other module fixture in this corpus checks that a manifest *loads*.
- * These check that a loaded module *does something*: its calculations compute,
- * its validation rules fire and stay silent in the right places, and its
- * required sections are enforced.
- *
- * Two modules are under test, each imported the way any host would import it:
- * `@uwmd/module-hospitality` (RFC 0006, a builtin class) and
- * `@uwmd/module-data-center` (RFC 0039, a module-declared class). A scenario
- * names its module in `expected.module`; one naming anything else fails rather
- * than silently passing.
- *
- * A scenario may also assert the RFC 0003 resolution verdict (`expected_status`
- * and friends, the same keys as `asset-classes/`), and may run with the module
- * NOT loaded (`load_module: false`, optionally with the declaration held out of
- * band via `known_declarations`) — the fallback path on a product module.
+ * Builtin class controls (RFC 0080): every official class's standard section
+ * contracts, calculations and verification rules, run on the core builtins.
  */
-const RUNTIME_MODULES = {
-  '@uwmd/module-hospitality': async () => (await import('@uwmd/module-hospitality')).HOSPITALITY_MODULE,
-  '@uwmd/module-data-center': async () => (await import('@uwmd/module-data-center')).DATA_CENTER_MODULE,
-};
-
 async function runBuiltinClassControls() {
   const dir = join(ROOT, 'conformance/builtin-classes');
   for (const id of readdirSync(dir).filter(name => statSync(join(dir, name)).isDirectory()).sort()) {
@@ -1748,94 +1728,6 @@ async function runBuiltinClassControls() {
     record('modules', `builtin/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
   }
 }
-
-async function runModuleRuntime() {
-  await runBuiltinClassControls();
-  const dir = join(MODULES_DIR, 'runtime');
-  if (!existsSync(dir)) return;
-
-  const manifests = {};
-  for (const [name, load] of Object.entries(RUNTIME_MODULES)) {
-    try {
-      manifests[name] = await load();
-    } catch {
-      record('modules', 'runtime', 'fail', `${name} is not built — run npm run build first`);
-      return;
-    }
-  }
-
-  const scenarios = readdirSync(dir)
-    .filter((name) => statSync(join(dir, name)).isDirectory())
-    .sort();
-
-  for (const id of scenarios) {
-    const scenarioDir = join(dir, id);
-    const dealPath = join(scenarioDir, 'deal.uwx.md');
-    const expectedPath = join(scenarioDir, 'expected.json');
-    if (!existsSync(dealPath) || !existsSync(expectedPath)) {
-      record('modules', `runtime/${id}`, 'fail', 'scenario needs deal.uwx.md and expected.json');
-      continue;
-    }
-    const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
-    const manifest = manifests[expected.module];
-    if (!manifest) {
-      record('modules', `runtime/${id}`, 'fail', `unknown module under test: ${expected.module}`);
-      continue;
-    }
-    const registry = createModuleRegistry({
-      modules: expected.load_module === false ? [] : [manifest],
-      hostTier: 'tier-4-agent-host',
-    });
-
-    const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
-    const problems = [];
-
-    if (expected.expected_status) {
-      const options = expected.known_declarations
-        ? { knownDeclarations: manifest.declares_asset_classes ?? [] }
-        : {};
-      const resolution = resolveAssetClass(parsed.frontmatter.asset_class, registry, options);
-      if (resolution.status !== expected.expected_status) {
-        problems.push(`status ${resolution.status} != ${expected.expected_status}`);
-      }
-      if (expected.expected_kind && resolution.kind !== expected.expected_kind) {
-        problems.push(`kind ${resolution.kind} != ${expected.expected_kind}`);
-      }
-      if ('expected_display_name' in expected) {
-        const got = resolution.declaration?.display_name ?? null;
-        if (got !== expected.expected_display_name) {
-          problems.push(`display_name ${got} != ${expected.expected_display_name}`);
-        }
-      }
-      if (expected.expected_fallback && resolution.fallback !== expected.expected_fallback) {
-        problems.push(`fallback ${resolution.fallback} != ${expected.expected_fallback}`);
-      }
-      if (expected.expected_issue_code && resolution.issue?.code !== expected.expected_issue_code) {
-        problems.push(`issue ${resolution.issue?.code} != ${expected.expected_issue_code}`);
-      }
-    }
-
-    const computed = Object.fromEntries(
-      evaluateModuleCalculations(parsed, registry).map(({ result }) => [result.calc_id, result.value]),
-    );
-    for (const [calcId, want] of Object.entries(expected.expected_calcs ?? {})) {
-      if (!(calcId in computed)) {
-        problems.push(`${calcId}: not computed`);
-      } else if (computed[calcId] !== want) {
-        problems.push(`${calcId}: ${computed[calcId]} != ${want}`);
-      }
-    }
-
-    const codes = [...new Set(validateAgainstModules(parsed, registry).map((i) => i.code))].sort();
-    const wanted = [...expected.expected_codes].sort();
-    if (codes.join(',') !== wanted.join(',')) {
-      problems.push(`codes [${codes.join(', ')}] != [${wanted.join(', ')}]`);
-    }
-
-    record('modules', `runtime/${id}`, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
-  }
-}
-
 
 /**
  * Registry declaration conflicts (protocol §VII.3).
@@ -1865,7 +1757,7 @@ async function runModuleRegistry() {
   ajv.addSchema(readSchema('module-signature.schema.json'));
   const schemaCheck = ajv.compile(readSchema('module-manifest.schema.json'));
   const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
-  const HOST = { hostTier: 'tier-4-agent-host' };
+  const HOST = { hostConformance: 'verifier' };
   const sameSet = (got, want) => [...new Set(got)].sort().join(',') === [...new Set(want)].sort().join(',');
 
   const scenarios = readdirSync(dir)
@@ -1886,7 +1778,7 @@ async function runModuleRegistry() {
     const problems = [];
 
     for (const [key, manifest] of Object.entries(manifests)) {
-      if (!schemaCheck(projectModuleContract(manifest))) problems.push(`${key}.module.json fails the manifest schema`);
+      if (!schemaCheck(manifest)) problems.push(`${key}.module.json fails the manifest schema`);
       // Alone, a dependent cannot load (its dependency is absent), so the
       // standalone check is structural: no code other than PROTO-MOD-027.
       const alone = loadModuleManifest(manifest, HOST);
@@ -1991,7 +1883,7 @@ async function runAssetClasses() {
     const problems = [];
 
     // The manifest must load on its own before any scenario means anything.
-    const loaded = loadModuleManifest(manifest, { hostTier: 'tier-4-agent-host' });
+    const loaded = loadModuleManifest(manifest, { hostConformance: 'verifier' });
     if (!loaded.ok) {
       record('modules', `asset-classes/${id}`, 'fail', `fixture module does not load: ${loaded.errors.map((e) => e.code).join(', ')}`);
       continue;
@@ -1999,7 +1891,7 @@ async function runAssetClasses() {
 
     const registry = createModuleRegistry({
       modules: expected.load_module ? [manifest] : [],
-      hostTier: 'tier-4-agent-host',
+      hostConformance: 'verifier',
     });
     const options = expected.known_declarations
       ? { knownDeclarations: manifest.declares_asset_classes }
@@ -2102,7 +1994,7 @@ async function runPackages() {
     } else {
       record('packages', `accept/${id}`, 'fail', `expected acceptance, got ${errors.map((e) => e.code).join(', ')}`);
     }
-    if (errors.length === 0 && !schemaCheck(projectModuleContract(manifest))) {
+    if (errors.length === 0 && !schemaCheck(manifest)) {
       record('packages', `accept/${id} [schema]`, 'fail',
         (schemaCheck.errors ?? []).map((e) => `${e.instancePath} ${e.message}`).join('; '));
     } else {
@@ -3588,7 +3480,7 @@ async function runCapability() {
     }
     if (expected.notes_contains) {
       const head = getSection(parseUWFile(result.content), op.section_id);
-      const notes = head?.meta?.notes ?? '';
+      const notes = head?.meta?.provenance?.notes ?? '';
       if (!String(notes).includes(expected.notes_contains)) {
         record('capability', id, 'fail', `notes "${notes}" lacks "${expected.notes_contains}"`);
         continue;
@@ -3890,7 +3782,7 @@ async function runSigningModules(signing) {
       let result;
       try {
         result = await loadModuleManifestAsync(manifest, {
-          hostTier: 'tier-4-agent-host',
+          hostConformance: 'verifier',
           signaturePolicy: policy,
           signatureVerifier: verifier,
         });
@@ -4170,12 +4062,13 @@ async function runStochastic() {
 
 // ─── Source vocabulary (RFC 0031) ────────────────────────────────────────────
 //
-// `_meta.source` is actor-only; resolution methods live in `_meta.resolution`.
-// Five scenarios: the split round-trips, a legacy tag is read-time-interpreted
-// (and never rewritten into the raw bytes), an unmatched source supersedes
-// instead of replacing (the unpoliced-write regression), the retired colon
-// form is neither well-formed nor a human write, and a caller-supplied policy
-// list with no coverage refuses rather than grants.
+// `_meta.provenance.source` is actor-only; resolution methods live in
+// `_meta.provenance.resolution`. Five scenarios: the split round-trips, a
+// resolution tag in the actor field is an SRC-02 error and is never read as a
+// resolution, an unmatched source supersedes instead of replacing (the
+// unpoliced-write regression), the retired colon form is neither well-formed
+// nor a human write, and a caller-supplied policy list with no coverage
+// refuses rather than grants.
 
 const SOURCE_DIR = join(CONFORMANCE_DIR, 'source');
 
@@ -4195,11 +4088,13 @@ async function runSource() {
     const id = '01-actor-and-resolution';
     const expected = expectedOf(id);
     const { parsed } = load(id);
-    const meta = parsed.sections.property?.meta;
+    const block = parsed.sections.property;
+    const meta = block?.meta?.provenance;
     const problems = [];
     if (meta?.source !== expected.source) problems.push(`source ${meta?.source} != ${expected.source}`);
     if (meta?.resolution !== expected.resolution) problems.push(`resolution ${meta?.resolution} != ${expected.resolution}`);
-    const leaf = meta?.field_overrides?.find((o) => o.path === 'year_built');
+    const overrides = Array.isArray(block?.content?._overrides) ? block.content._overrides : [];
+    const leaf = overrides.find((o) => o.path === 'year_built');
     if (leaf?.resolution !== expected.override_resolution) {
       problems.push(`override resolution ${leaf?.resolution} != ${expected.override_resolution}`);
     }
@@ -4210,27 +4105,26 @@ async function runSource() {
     record('source', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
   }
 
-  // 02 — a canonical tag in the actor field: interpreted as resolution,
-  // SRC-02 warned, raw block bytes untouched.
+  // 02 — a resolution tag in the actor field: an SRC-02 error, read as
+  // stated — never reinterpreted as a resolution (RFC 0081 §3).
   {
     const id = '02-legacy-tag-in-source';
     const expected = expectedOf(id);
     const { parsed } = load(id);
     const block = parsed.sections.property;
+    const provenance = block?.meta?.provenance;
     const problems = [];
-    if (block?.meta?.source !== expected.raw_source) problems.push(`raw source ${block?.meta?.source} != ${expected.raw_source}`);
-    if (block?.meta?.resolution !== expected.interpreted_resolution) {
-      problems.push(`interpreted resolution ${block?.meta?.resolution} != ${expected.interpreted_resolution}`);
+    if (provenance?.source !== expected.source) problems.push(`source ${provenance?.source} != ${expected.source}`);
+    if ((provenance?.resolution ?? null) !== expected.resolution) {
+      problems.push(`resolution ${provenance?.resolution} != ${expected.resolution}: a tag in the actor field was read as a resolution`);
     }
-    const rawMeta = block?.content?._meta;
-    const untouched = rawMeta && !('resolution' in rawMeta);
-    if (untouched !== expected.content_meta_untouched) {
-      problems.push('content._meta was rewritten by the reader — it feeds digests and must never be');
-    }
+    if (block?.meta !== block?.content?._meta) problems.push('the reader did not read _meta as stated');
     const codes = srcCodes(parsed);
     if (codes.join(',') !== [...expected.src_codes].sort().join(',')) {
       problems.push(`SRC codes [${codes.join(', ')}] != [${expected.src_codes.join(', ')}]`);
     }
+    const severities = [...new Set(validateUWFile(parsed).issues.filter((i) => i.code === 'SRC-02').map((i) => i.severity))];
+    if (severities.join(',') !== expected.severity) problems.push(`SRC-02 severity [${severities}] != ${expected.severity}`);
     record('source', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
   }
 
@@ -4318,168 +4212,6 @@ async function runSource() {
   }
 }
 
-// ─── meta-v2 (RFC 0009) — nested _meta shape, shim, versioned digests ────────
-// RFC 0081 Phase 4: delete this suite with the reshape layer (RFC 0081 §8).
-
-const META_V2_DIR = join(CONFORMANCE_DIR, 'tier-1-reader', 'v2-fixtures');
-
-async function runMetaV2() {
-  if (!existsSync(META_V2_DIR)) return;
-
-  const load = (file) => {
-    const content = readFileSync(join(META_V2_DIR, file), 'utf8');
-    const flat = file.startsWith('05-') || file.startsWith('03-') || file.startsWith('04-');
-    const version = file.startsWith('02-') || file.startsWith('04-') ? '1.1' : '2.0'; // RFC 0081 Phase 4: delete (meta-v2 suite)
-    return parseUWFile(legacyTestDocument(content,{flat,version,...(file.startsWith('04-')?{legacySource:'market_data'}:{})}));
-  };
-  const metaCodes = (parsed) =>
-    validateUWFile(parsed).issues.filter((i) => i.code.startsWith('META-V')).map((i) => i.code).sort();
-
-  // 01 — minimal v2-shape file: parses to the flat view, no META-V codes.
-  {
-    const id = '01-nested-meta';
-    const parsed = load(`${id}.uwx.md`);
-    const block = parsed.sections.property;
-    const problems = [];
-    if (block?.meta_shape !== 'v2') problems.push(`meta_shape ${block?.meta_shape} != v2`);
-    if (block?.meta?.version !== 1) problems.push(`flat view version ${block?.meta?.version} != 1`);
-    if (block?.meta?.source !== 'manual') problems.push(`flat view source ${block?.meta?.source} != manual`);
-    const codes = metaCodes(parsed);
-    if (codes.length !== 0) problems.push(`unexpected META-V codes: ${codes.join(', ')}`);
-    record('meta-v2', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
-  }
-
-  // 02 — nested _meta in a 1.x file is META-V2-IN-V1.
-  {
-    const id = '02-mixed-shape';
-    const codes = metaCodes(load(`${id}.uwx.md`));
-    const ok = codes.length === 1 && codes[0] === 'META-V2-IN-V1';
-    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `codes [${codes.join(', ')}] != [META-V2-IN-V1]`);
-  }
-
-  // 03 — the v1→v2 reshape is byte-identical to the recorded output.
-  {
-    const id = '03-shim-roundtrip';
-    const parsed = load(`${id}.uwx.md`);
-    const block = parsed.sections.property;
-    const reshaped = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
-    const got = `${JSON.stringify(reshaped, null, 2)}\n`;
-    const expectedPath = join(META_V2_DIR, `${id}.expected-shim-output.json`);
-    if (UPDATE && !existsSync(expectedPath)) {
-      writeFileSync(expectedPath, got, 'utf8');
-      record('meta-v2', id, 'updated', 'baseline written');
-    } else {
-      const expected = normalize(readFileSync(expectedPath, 'utf8'));
-      const ok = normalize(got) === expected;
-      record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : 'reshape differs from recorded baseline');
-    }
-  }
-
-  // 04 — a legacy tag survives the shape change per the RFC 0031 rule:
-  // resolution set, provenance.source ABSENT (never invented).
-  {
-    const id = '04-legacy-tag-through-shim';
-    const parsed = load(`${id}.uwx.md`);
-    const block = parsed.sections.property;
-    const reshaped = canonicalV2BlockContent({ ...block.content, _meta: block.meta });
-    const provenance = reshaped._meta?.provenance ?? {};
-    const problems = [];
-    if (provenance.resolution !== 'market_data') problems.push(`resolution ${provenance.resolution} != market_data`);
-    if ('source' in provenance) problems.push(`provenance.source '${provenance.source}' was invented from a legacy tag`);
-    record('meta-v2', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
-  }
-
-  // 05 — flat _meta in a v2 file is META-V1-IN-V2 (the mirror of 02).
-  {
-    const id = '05-flat-in-v2';
-    const codes = metaCodes(load(`${id}.uwx.md`));
-    const ok = codes.length === 1 && codes[0] === 'META-V1-IN-V2';
-    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `codes [${codes.join(', ')}] != [META-V1-IN-V2]`);
-  }
-
-  // 07 — spelling out the defaulted integrity.algorithm moves no digest.
-  {
-    const id = '07-defaulted-algorithm';
-    const digestOf = (file) => {
-      const parsed = parseUWFile(readFileSync(join(META_V2_DIR, id, file), 'utf8'));
-      const block = parsed.sections.property;
-      // Hash the raw nested content directly: the flat view drops `algorithm`,
-      // and this scenario exists to pin what happens when it is PRESENT.
-      return canonicalizeV2(canonicalV2BlockContent(block.content));
-    };
-    const a = digestOf('implicit.uwx.md');
-    const b = digestOf('explicit.uwx.md');
-    const ok = a === b && a.length > 0;
-    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : 'explicit sha256 algorithm moved the digest');
-  }
-}
-
-// ─── migrate (RFC 0009) — uwmd migrate --to-v2 scenarios ─────────────────────
-// RFC 0081 Phase 4: delete this suite with the migrators (RFC 0081 §4, §8).
-// Its expected.json files record the migrator's output version, "2.0".
-
-const MIGRATE_DIR = join(CONFORMANCE_DIR, 'migrate');
-
-async function runMigrate() {
-  if (!existsSync(MIGRATE_DIR)) return;
-
-  const contentOf = (id) => legacyTestDocument(readFileSync(join(MIGRATE_DIR, id, 'deal.uwx.md'), 'utf8'), {manualResolution:id.startsWith('03-')});
-  const expectedOf = (id) => JSON.parse(readFileSync(join(MIGRATE_DIR, id, 'expected.json'), 'utf8'));
-
-  // 01 — a signed block refuses migration by default: the signature commits
-  // to the v1 digest and only the key holder decides what happens to it.
-  {
-    const id = '01-signed-refused';
-    const expected = expectedOf(id);
-    const result = await migrateToV2(contentOf(id));
-    const problems = [];
-    if (result.ok !== expected.ok) problems.push(`ok ${result.ok} != ${expected.ok}`);
-    if (result.content !== null) problems.push('refused migration still produced content');
-    const refusal = result.refusals.join(' ');
-    if (!refusal.includes(expected.refusal_contains)) problems.push(`refusal missing '${expected.refusal_contains}'`);
-    if (!refusal.includes(expected.refusal_names_section)) problems.push(`refusal does not name '${expected.refusal_names_section}'`);
-    record('migrate', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
-  }
-
-  // 02 — --strip-signatures removes the signature, records the removal in
-  // provenance.notes, and the re-stamped chain verifies under the v2 rule.
-  {
-    const id = '02-strip-signatures';
-    const expected = expectedOf(id);
-    const result = await migrateToV2(contentOf(id), { stripSignatures: true });
-    const problems = [];
-    if (result.ok !== expected.ok) problems.push(`ok ${result.ok} != ${expected.ok}`);
-    if (result.ok) {
-      const parsed = parseUWFile(result.content);
-      const block = parsed.sections.property;
-      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`); // RFC 0081 Phase 4: delete (migrate suite)
-      if ((block?.meta?.signature === undefined) !== expected.signature_absent) problems.push('signature survived --strip-signatures');
-      if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
-      const chain = await verifyChain(parsed);
-      if (chain.ok !== expected.chain_verifies) problems.push(`migrated chain ok ${chain.ok} != ${expected.chain_verifies}`);
-    }
-    record('migrate', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
-  }
-
-  // 03 — resolution 'manual' leaves the vocabulary at 2.0: rewritten to
-  // 'user_input' with the rewrite recorded in provenance.notes.
-  {
-    const id = '03-manual-resolution';
-    const expected = expectedOf(id);
-    const result = await migrateToV2(contentOf(id));
-    const problems = [];
-    if (result.ok !== expected.ok) problems.push(`ok ${result.ok} != ${expected.ok}`);
-    if (result.ok) {
-      const parsed = parseUWFile(result.content);
-      const block = parsed.sections.property;
-      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`); // RFC 0081 Phase 4: delete (migrate suite)
-      if (block?.meta?.resolution !== expected.resolution) problems.push(`resolution ${block?.meta?.resolution} != ${expected.resolution}`);
-      if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
-    }
-    record('migrate', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
-  }
-}
-
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -4492,7 +4224,7 @@ const dispatch = {
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },
-  'modules': async () => { await runModules(); await runModuleRuntime(); await runModuleRegistry(); await runAssetClasses(); },
+  'modules': async () => { await runModules(); await runBuiltinClassControls(); await runModuleRegistry(); await runAssetClasses(); },
   'packages': async () => { await runPackages(); },
   'composition': async () => { await runComposition(); },
   'capital-stack': async () => { await runCapitalStack(); },
@@ -4564,8 +4296,6 @@ const dispatch = {
   'stochastic': async () => { await runStochastic(); },
   'source': async () => { await runSource(); },
   'scenario': async () => { runScenario(); },
-  'meta-v2': async () => { await runMetaV2(); },
-  'migrate': async () => { await runMigrate(); },
 };
 const dispatchKey = suiteFamily;
 const dispatched = new Set(selected.map(c => dispatchKey(c.suite)));

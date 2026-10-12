@@ -46,8 +46,7 @@ Know which side a change is on before you start.
 - `packages/uwmd-lake` — `@uwmd/lake`, the RFC 0049 PostgreSQL/JSONB adapter.
   Plans SQL; takes no database driver.
 - `packages/uwmd-signing`, `uwmd-batch`, `uwmd-report` — signing, batch runs,
-  reports. `uwmd-module-*` are empty compatibility shells: their content is
-  builtin in core (RFC 0080).
+  reports.
 - `tools/` — web-viewer, web-editor, vscode-uwmd, docs-site.
 - `spec/` — the normative specs, JSON Schemas and the metric dictionary
   (`spec/metrics/`).

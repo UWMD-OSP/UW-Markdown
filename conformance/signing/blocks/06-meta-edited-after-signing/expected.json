@@ -1,0 +1,8 @@
+{
+  "description": "The 01 file with provenance.notes and quality.flags edited after signing. content_hash covers the block minus _meta (Protocol \u00a7V.9, RFC 0081 \u00a73) and the signing input names neither field, so the hash recomputes and the signature verifies.",
+  "keystore": "../keys/keystore.json",
+  "ok": true,
+  "signatures_present": 1,
+  "signatures_verified": 1,
+  "expected_codes": []
+}

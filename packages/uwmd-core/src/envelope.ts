@@ -1,7 +1,8 @@
 // UW Document Envelope — format-neutral semantic model shared by machine codecs.
 
-import { canonicalizeExact } from './integrity-canonical.js';
+import { canonicalize } from './integrity-canonical.js';
 import { sha256TextHex } from './integrity.js';
+import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import type {
   ParsedSections,
   ParsedUWFile,
@@ -91,7 +92,7 @@ export function toUWEnvelope(
 
   return {
     envelope_version: UW_ENVELOPE_VERSION,
-    format_version: parsed.frontmatter.uw_version ?? '1.1',
+    format_version: parsed.frontmatter.uw_version,
     generated_at: options.generatedAt ?? new Date().toISOString(),
     generator: options.generator ?? '@uwmd/core',
     frontmatter: parsed.frontmatter,
@@ -170,7 +171,7 @@ export function envelopeSemanticValue(
 }
 
 export function canonicalizeUWEnvelope(envelope: UWDocumentEnvelope): string {
-  return canonicalizeExact(envelopeSemanticValue(envelope));
+  return canonicalize(envelopeSemanticValue(envelope));
 }
 
 export async function computeEnvelopeDigest(envelope: UWDocumentEnvelope): Promise<string> {
@@ -216,6 +217,18 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
   }
   if (!isRecord(value['frontmatter'])) {
     throw new UWEnvelopeError('ENVELOPE_MISSING_FRONTMATTER', 'frontmatter must be an object.');
+  }
+  // One format (RFC 0081 D1): both version statements must name it.
+  for (const [where, declared] of [
+    ['format_version', value['format_version']],
+    ['frontmatter.uw_version', value['frontmatter']['uw_version']],
+  ] as const) {
+    if (!(SUPPORTED_FORMAT_VERSIONS as readonly unknown[]).includes(declared)) {
+      throw new UWEnvelopeError(
+        'UNSUPPORTED_FORMAT_VERSION',
+        `Declared ${where} ${JSON.stringify(declared) ?? 'absent'} is unsupported; supported value is "${SUPPORTED_FORMAT_VERSIONS[0]}".`,
+      );
+    }
   }
   if (!isRecord(value['sections'])) {
     throw new UWEnvelopeError('ENVELOPE_MISSING_SECTIONS', 'sections must be an object.');

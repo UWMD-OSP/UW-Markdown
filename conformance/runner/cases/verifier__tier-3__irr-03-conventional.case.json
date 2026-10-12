@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/irr-03-conventional",
   "target": "verifier",
-  "legacy_id": "tier-3/irr-03-conventional",
   "requires_capabilities": [
     "calc-evaluate"
   ],

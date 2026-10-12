@@ -63,8 +63,9 @@ export function deriveSourcesUses(content: Row, parsed: ParsedUWFile): SourcesUs
 
   const sourcesTotal = sumLines(sources);
   let usesTotal = sumLines(uses);
-  // RFC 0081 Phase 4: delete the old-format footing branch.
-  if (isObj(content['uses']) && parsed.frontmatter.uw_version === '3.0') {
+  // Footing rule (RFC 0081 §7): interest and operating escrows' upfront and
+  // each stated hedge premium count once in the uses total.
+  if (isObj(content['uses'])) {
     if (Array.isArray(uses['escrows'])) for (const escrow of uses['escrows']) {
       if (isObj(escrow) && ['interest', 'operating'].includes(String(escrow['name']))) usesTotal += num(escrow['upfront']) ?? 0;
     }

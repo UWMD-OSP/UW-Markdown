@@ -39,13 +39,16 @@ test('site versions track independent package and standard versions', () => {
     mkdirSync(join(root, 'packages/uwmd-core/src'), { recursive: true });
     writeFileSync(join(root, 'packages/uwmd-core/package.json'), JSON.stringify({ version: '7.4.2' }));
     const path = join(root, 'packages/uwmd-core/src/protocol.ts');
-    writeFileSync(path, "export const FORMAT_VERSION = '3.0' as const;\nexport const PROTOCOL_VERSION = '4.1.0' as const;");
+    writeFileSync(join(root, 'packages/uwmd-core/src/types.ts'), "export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['3.0'] as const);");
+    writeFileSync(path, "export const FORMAT_VERSION = '3.0' as const;\nexport const PROTOCOL_VERSION = '4.1.0' as const;\nexport const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.1.0'] as const);");
     assert.deepEqual(docsVersions(root), { core: '7.4.2', format: '3.0', protocol: '4.1.0', specFormat: '3.0', specProtocol: '4.1.0' });
-    // An accepted spec ahead of the implementation labels the normative pages.
-    writeFileSync(path, "export const FORMAT_VERSION = '2.1' as const;\nexport const PROTOCOL_VERSION = '3.0.0' as const;\nexport const SPEC_FORMAT_VERSION = '3.0' as const;\nexport const SPEC_PROTOCOL_VERSION = '4.0.0' as const;");
+    // The supported versions ahead of the release labels label the normative pages.
+    writeFileSync(path, "export const FORMAT_VERSION = '2.1' as const;\nexport const PROTOCOL_VERSION = '3.0.0' as const;\nexport const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.0.0'] as const);");
     assert.deepEqual(docsVersions(root), { core: '7.4.2', format: '2.1', protocol: '3.0.0', specFormat: '3.0', specProtocol: '4.0.0' });
     writeFileSync(path, "export const FORMAT_VERSION = '3.0' as const;");
     assert.throws(() => docsVersions(root), /Cannot read PROTOCOL_VERSION/);
+    writeFileSync(path, "export const FORMAT_VERSION = '3.0' as const;\nexport const PROTOCOL_VERSION = '4.1.0' as const;");
+    assert.throws(() => docsVersions(root), /Cannot read SUPPORTED_PROTOCOL_VERSIONS/);
   } finally {
     // root is the exact directory returned by mkdtempSync, under the OS temp directory.
     rmSync(root, { recursive: true, force: true });
@@ -91,7 +94,9 @@ test('a prepared-but-unpublished core version is kept apart from publication sta
   try {
     mkdirSync(join(root, 'packages/uwmd-core/src'), { recursive: true });
     writeFileSync(join(root, 'packages/uwmd-core/src/protocol.ts'),
-      "export const FORMAT_VERSION = '2.0' as const;\nexport const PROTOCOL_VERSION = '2.22.0' as const;");
+      "export const FORMAT_VERSION = '2.0' as const;\nexport const PROTOCOL_VERSION = '2.22.0' as const;\nexport const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['2.22.0'] as const);");
+    writeFileSync(join(root, 'packages/uwmd-core/src/types.ts'),
+      "export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['2.0'] as const);");
     writeFileSync(join(root, 'CHANGELOG.md'), [
       '## [2.18.0] - 2026-11-01', '', '### Added', '',
       '## [2.17.0] - 2026-10-03', '', '### Released', '',

@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-39-document-null",
   "target": "verifier",
-  "legacy_id": "tier-3/date-39-document-null",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -22,17 +22,17 @@ that needs a package index is a driver an air-gapped implementer cannot run.
 
 ## What it does not cover
 
-**`npm run conformance` remains the full CI gate:** 1,054 reference checks.
-This driver retains all 332 CLI projections, including Reader, Verifier,
+**`npm run conformance` remains the full CI gate:** 1,067 reference checks.
+This driver retains all 336 CLI projections, including Reader, Verifier,
 Module and separately reported starter-product cases. A portable result
 claims coverage of those cases, not the omitted cross-fixture contracts.
 
 Select `--tier reader` or `--tier verifier` (includes Reader), `--profile
 module,integrity,...`, or `--starter-products`. With no selector all cases
-run and `by_target` separates standard and product outcomes. Old long tier
-names and numeric shorts remain aliases with deprecation notices on stderr;
-`tier-readings.json` is generated from `readConformanceTier` in `protocol.ts`.
-Aliases never infer a profile or include starter checks.
+run and `by_target` separates standard and product outcomes. Any other
+`--tier` value is a usage error (exit `2`). The closed target, tier and profile
+vocabulary is read from `vocabulary.json`, which `gen-conformance-cases`
+generates from `scripts/conformance-targets.mjs`.
 
 A profile must be explicitly claimed in the implementation manifest. An
 unclaimed profile yields `unverifiable`, never pass/fail. Capability skips
@@ -89,14 +89,12 @@ already on disk (which fixture, which command, which baseline), and
 the [case schema](../../spec/schemas/conformance-case.schema.json) checks its
 closed owner vocabulary. The [corpus index](../corpus-index.json) records
 one owner for each case; the generator refuses missing or duplicate identities.
-`legacy_id` permits exact reconciliation while new reports use canonical owners.
-Neither the old directory nor id prefix is a conformance claim.
+Neither the fixture directory nor the id's path segment is a conformance claim.
 
 ```json
 {
   "id": "module/tier-3/revpar-basic",
   "target": "module",
-  "legacy_id": "tier-3/revpar-basic",
   "command": "calc",
   "args": ["deal.uwx.md", "calc.json", "--json"],
   "fixture_dir": "conformance/tier-3-calc-host/fixtures/revpar-basic",
@@ -147,7 +145,8 @@ knowledge RFC 0004 exists to eliminate.
 
 ### Volatile values
 
-`last_modified`, `_meta.timestamp`, fence `ts=`, and `content_hash` are masked
+`last_modified`, `_meta.provenance.timestamp`, fence `ts=`, and
+`_meta.integrity.content_hash` are masked
 before text comparison: an edit stamps them with the moment it ran, and a
 baseline that pinned one would be asserting the clock. `parent_hash` is
 deliberately *not* masked — it is stamped from the prior head's `content_hash`,

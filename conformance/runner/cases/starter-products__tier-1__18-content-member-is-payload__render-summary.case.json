@@ -1,0 +1,19 @@
+{
+  "id": "starter-products/tier-1/18-content-member-is-payload/render-summary",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "18-content-member-is-payload.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/tier-1-reader/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/tier-1-reader/expected/18-content-member-is-payload.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

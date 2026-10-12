@@ -13,7 +13,6 @@ section: operating_statement
     "section": "operating_statement",
     "provenance": {
       "source": "system/uwmd",
-      "resolution": "source_document",
       "actor": "example-kit",
       "agent_id": null,
       "agent_version": null,

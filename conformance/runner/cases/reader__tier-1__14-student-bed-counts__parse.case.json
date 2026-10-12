@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/14-student-bed-counts/parse",
   "target": "reader",
-  "legacy_id": "tier-1/14-student-bed-counts/parse",
   "requires_capabilities": [
     "parse"
   ],

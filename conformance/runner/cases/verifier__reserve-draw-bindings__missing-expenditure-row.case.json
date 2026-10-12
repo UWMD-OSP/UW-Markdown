@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/missing-expenditure-row",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/missing-expenditure-row",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

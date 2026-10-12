@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/cent-one-cent-unallocated",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/cent-one-cent-unallocated",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

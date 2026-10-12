@@ -21,7 +21,25 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property"
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "address": "42 Control St, Phoenix AZ",
@@ -30,7 +48,25 @@
     },
     "noi_model": {
       "meta": {
-        "section": "noi_model"
+        "section": "noi_model",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "net_operating_income": 300000
@@ -38,43 +74,169 @@
     },
     "debt_structure": {
       "meta": {
-        "section": "debt_structure"
+        "section": "debt_structure",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {}
     },
     "validation": {
       "meta": {
-        "section": "validation"
+        "section": "validation",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {}
     },
     "borrower_sponsor": {
       "meta": {
-        "section": "borrower_sponsor"
+        "section": "borrower_sponsor",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {}
     },
     "preliminary_sizing": {
       "meta": {
-        "section": "preliminary_sizing"
+        "section": "preliminary_sizing",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {}
     },
     "valuation": {
       "meta": {
-        "section": "valuation"
+        "section": "valuation",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {}
     },
     "sources_uses": {
       "meta": {
-        "section": "sources_uses"
+        "section": "sources_uses",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {}
     },
     "market_analysis": {
       "meta": {
-        "section": "market_analysis"
+        "section": "market_analysis",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-08-26T12:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {}
     }

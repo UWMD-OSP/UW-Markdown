@@ -1,0 +1,4 @@
+{
+  "description": "The 01-clean receipt restated as receipt_version 1.0. 1.1 is the only receipt version (RFC 0081 \u00a77), so a verifier refuses to read it rather than verifying it.",
+  "refused_code": "RCP_MALFORMED"
+}

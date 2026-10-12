@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/senior-housing-care-revenue-ratio",
   "target": "verifier",
-  "legacy_id": "tier-3/senior-housing-care-revenue-ratio",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/07-stage-overlay-control/parse",
   "target": "reader",
-  "legacy_id": "tier-1/07-stage-overlay-control/parse",
   "requires_capabilities": [
     "parse"
   ],

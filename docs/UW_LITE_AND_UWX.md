@@ -35,7 +35,7 @@ uwmd convert broker-summary.uw.md --to uwx
 uwmd convert underwriting.uwx.md --to lite --projection-report lite-loss.json
 ```
 
-A legacy structured `.uw.md` (one whose sections are `uw:section` JSON fences) is UWX content under the old extension. Current readers detect it and report it as legacy. Rename it to `.uwx.md` without changing its bytes. `migrateLegacyUWMarkdown` in `@uwmd/core` plans exactly that rename and refuses files that are not UWX content. Lite files remain `.uw.md`.
+A `.uw.md` file is Lite. Structured content (`uw:section` JSON fences) under that extension is refused as `SOURCE_CONTENT_MISMATCH`, whatever representation the caller names; structured records use `.uwx.md`.
 
 ## A minimal Lite field
 

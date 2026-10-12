@@ -13,7 +13,7 @@
 // type used on the wrong layer refuses while an *unknown* type is preserved
 // and merely reportable (`uninterpretedPortfolioTypes`). Provenance `source`
 // here is a document/source identifier (the lease-abstract SourceRef
-// posture), NOT the `_meta.source` actor grammar RFC 0031 defined.
+// posture), NOT the `_meta.provenance.source` actor grammar RFC 0031 defined.
 // Browser-safe; performs no I/O.
 
 import type { ProtocolError } from './protocol.js';
@@ -39,7 +39,7 @@ export type PortfolioEntityType = (typeof PORTFOLIO_ENTITY_TYPES)[number];
 /**
  * One provenance entry: which artifact says so, and where. `source` is a
  * stable document/source identifier — deliberately NOT the RFC 0031
- * `_meta.source` actor grammar; the two vocabularies stay apart.
+ * `_meta.provenance.source` actor grammar; the two vocabularies stay apart.
  */
 export interface PortfolioProvenance {
   source: string;

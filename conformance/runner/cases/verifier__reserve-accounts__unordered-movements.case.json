@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/unordered-movements",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/unordered-movements",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

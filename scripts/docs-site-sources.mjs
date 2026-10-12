@@ -22,20 +22,28 @@ export function rfcCopies(repoRoot) {
 }
 
 export function docsVersions(repoRoot) {
-  const protocolSource = readFileSync(join(repoRoot, 'packages/uwmd-core/src/protocol.ts'), 'utf8');
-  const constant = (name) => {
-    const value = new RegExp(`export const ${name} = '([^']+)'`).exec(protocolSource)?.[1];
+  const source = (path) => readFileSync(join(repoRoot, 'packages/uwmd-core/src', path), 'utf8');
+  const protocolSource = source('protocol.ts');
+  const read = (text, name, pattern) => {
+    const value = new RegExp(`export const ${name} = ${pattern}`).exec(text)?.[1];
     if (!value) throw new TypeError(`Cannot read ${name} for the docs site`);
     return value;
   };
+  const constant = (name) => read(protocolSource, name, "'([^']+)'");
+  // The one supported version (RFC 0081 D1): a single-member frozen list.
+  const supported = (text, name) => read(text, name, "Object\\.freeze\\(\\['([^']+)'\\]");
   const core = JSON.parse(readFileSync(join(repoRoot, 'packages/uwmd-core/package.json'), 'utf8')).version;
   const format = constant('FORMAT_VERSION');
   const protocol = constant('PROTOCOL_VERSION');
-  // The normative pages describe SPEC_*_VERSION. While an accepted spec runs ahead
-  // of the implementation (RFC 0081 Phases 2-6) the two differ; once they agree
-  // the SPEC_* constants may go, and the spec labels follow the implementation.
-  const optional = (name) => new RegExp(`export const ${name} = '([^']+)'`).exec(protocolSource)?.[1];
-  return { format, protocol, core, specFormat: optional('SPEC_FORMAT_VERSION') ?? format, specProtocol: optional('SPEC_PROTOCOL_VERSION') ?? protocol };
+  // The normative pages describe the one supported format and protocol. The
+  // release labels above follow them at the RFC 0081 Phase 6 release.
+  return {
+    format,
+    protocol,
+    core,
+    specFormat: supported(source('types.ts'), 'SUPPORTED_FORMAT_VERSIONS'),
+    specProtocol: supported(protocolSource, 'SUPPORTED_PROTOCOL_VERSIONS'),
+  };
 }
 
 // Packages actually on npm, for the home release card and Downloads page.

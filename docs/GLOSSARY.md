@@ -21,7 +21,7 @@ Validation surfaces issues in the `META_*` family (protocol §III.6a).
 ### Append-only / supersede
 The `.uwx.md` update model. A block is never edited in place; a
 *superseding* block is appended to the section, and the original is
-marked `_meta.superseded: true` with a back-reference. The
+marked `_meta.lifecycle.superseded: true` with a back-reference. The
 [compactor](../packages/uwmd-core/src/compactor.ts) materializes the
 "live view" by walking supersede chains. See protocol §V.
 

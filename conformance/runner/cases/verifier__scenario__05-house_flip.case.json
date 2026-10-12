@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/05-house_flip",
   "target": "verifier",
-  "legacy_id": "scenario/05-house_flip",
   "requires_capabilities": [
     "validate"
   ],

@@ -1,7 +1,7 @@
 // RFC 0080 standard field contracts and class verification rules.
 // This checks the fixed official fields, not arbitrary third-party JSON Schema.
 import { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
-import { toBuiltinAssetClass, type ParsedUWFile, type UWBlock, type ValidationMessage } from './types.js';
+import { toBuiltinAssetClass, type ParsedUWFile, type ValidationMessage } from './types.js';
 import { blockPayload } from './parser.js';
 import { resolveRoleBlock } from './block-roles.js';
 import { evaluateCalc } from './calc/index.js';
@@ -17,7 +17,6 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
   const content = BUILTIN_CLASS_CONTENT[assetClass];
   if (!content) return issues;
   // G3 (RFC 0081 §5): the hotel facts' rent_roll contract.
-  // RFC 0081 Phase 4: delete the uw_version gate; the contract then applies to every document.
   if (assetClass === 'hospitality') {
     const roll = resolveRoleBlock(parsed.sections.rent_roll, 'rent_roll', ['default', 'base']).block;
     if (roll) {
@@ -34,7 +33,6 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
     const resolved = resolveRoleBlock(parsed.sections[section.id], section.id, ['default', 'base']);
     if (!resolved.block) {
       if (resolved.state === 'unresolvable') issues.push({ code: 'CC-16', severity: 'info', section: section.id, message: `Class field/rule checks could not resolve ${section.id}; choose an eligible primary/default/base block.` });
-      // Existing hospitality records use the standard rent-roll/NOI inputs.
       if (section.required && !parsed.sections[section.id]) {
         issues.push({ code: 'CLS-03', severity: 'error', section: section.id,
           message: `${assetClass} requires ${section.id}.` });

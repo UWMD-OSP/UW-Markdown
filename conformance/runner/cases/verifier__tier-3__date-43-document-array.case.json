@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-43-document-array",
   "target": "verifier",
-  "legacy_id": "tier-3/date-43-document-array",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-1/14-student-bed-counts/validate",
   "target": "verifier",
-  "legacy_id": "tier-1/14-student-bed-counts/validate",
   "requires_capabilities": [
     "validate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/02-ground_up_development",
   "target": "verifier",
-  "legacy_id": "scenario/02-ground_up_development",
   "requires_capabilities": [
     "validate"
   ],

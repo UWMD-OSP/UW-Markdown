@@ -41,7 +41,11 @@ function readExample(source, bindings) {
   if (!/^uw_lite_version:/m.test(source)) return { parsed: parseUWFile(source), litePrecision: new Map() };
   const lite = parseUWLite(source);
   if (lite.issues.some(i => i.severity === 'error')) throw new Error('Invalid Lite fixture');
-  const parsed = parseUWFile(source);
+  // An empty structured view over the Lite frontmatter; the anchors below fill it.
+  const parsed = {
+    frontmatter: { ...lite.frontmatter }, sections: {}, prose: {}, pipeline_log: [],
+    custom_calculations: [], custom_scenarios: [], extensions: {}, superseded: {}, raw: source,
+  };
   const litePrecision = new Map();
   for (const field of lite.fields) {
     const [head, ...tail] = field.path.split('.');

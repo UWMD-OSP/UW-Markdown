@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/period-11-same-day-absent",
   "target": "verifier",
-  "legacy_id": "tier-3/period-11-same-day-absent",
   "requires_capabilities": [
     "calc-evaluate"
   ],

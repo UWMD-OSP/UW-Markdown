@@ -18,11 +18,11 @@ A producer that needs to assign a value to a field for which no
 explicit user input or document extraction is available MUST resolve
 the value by walking the following ordered cascade. The first step
 that yields a value wins. The producer MUST stamp the resulting
-`_meta.resolution` (or, when only a subset of fields was resolved this
-way, a `_meta.field_overrides[].resolution`) with the cascade step
+`_meta.provenance.resolution` (or, when only a subset of fields was resolved this
+way, a ``_overrides[]`.resolution`) with the cascade step
 that produced the value; a leaf-level `resolution` wins over the
 block-level one for its path. (Before RFC 0031 split the field, the
-tag was stamped into `_meta.source`; readers MUST interpret a
+tag was stamped into `_meta.provenance.source`; readers MUST interpret a
 canonical tag found there as `resolution` — format spec §2.6.)
 
 | Step | Source tag | Description |
@@ -59,7 +59,7 @@ equidistant ancestors.
 
 A producer that resolves a value via a step at or below
 `asset_class_default` (i.e. not from observed user or document data)
-SHOULD also stamp the resulting block with `_meta.provisional: true`
+SHOULD also stamp the resulting block with `_meta.quality.provisional: true`
 unless the value originated from `inherited_assumption`,
 `investor_profile`, or fresher `market_data`. This signals the
 refinement engine that the field is a candidate for
@@ -67,7 +67,7 @@ value-of-information ranking.
 
 This obligation is deliberately a SHOULD, and it is safe to leave as
 one (*stated by [RFC 0032](../rfcs/0032-provisional-signing-scope.md)*):
-`_meta.provisional` sits inside canonical block JSON (§V.9), so
+`_meta.quality.provisional` sits inside canonical block JSON (§V.9), so
 stamping it moves the block's `content_hash` and therefore any §V.11
 signature — and the protocol accepts that two conforming producers
 may diverge here. Agreement of hashes or signatures across
@@ -98,7 +98,7 @@ of `inherited_assumption` is subject to four normative rules:
    silent pick. Diamond inheritance resolves explicitly or not at all: choosing
    by traversal order would make the answer depend on how the graph was walked.
 4. **The value is traceable.** An inherited value MUST record the asserting
-   ancestor's `document_id` and digest in `_meta.inherited_from`. An inherited
+   ancestor's `document_id` and digest in `_meta.provenance.inherited_from`. An inherited
    value with no named ancestor is indistinguishable from an ambient default,
    which rule 1 forbids.
 
@@ -110,7 +110,7 @@ than an institution-wide preference set.
 
 When the resolved value carries an associated range (e.g.
 asset-class defaults publish `{low, central, high}`), the producer
-MAY also stamp `_meta.field_overrides` for that path with the range
+MAY also stamp ``_overrides`` for that path with the range
 recorded under the entry's `note`, so downstream tooling can compute
 value-of-information without re-resolving the cascade.
 

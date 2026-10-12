@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/overflow-then-finite-periods",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/overflow-then-finite-periods",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -1,0 +1,7 @@
+{
+  "description": "uw_version declared as 4.0: refused at parse stage (RFC 0081 D1).",
+  "must_parse": false,
+  "expected_codes": [
+    "UNSUPPORTED_FORMAT_VERSION"
+  ]
+}

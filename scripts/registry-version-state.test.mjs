@@ -4,11 +4,11 @@ import { registryVersionState } from './registry-version-state.mjs';
 import { RELEASE_PACKAGES } from './release-packages.mjs';
 
 const reply = (status, body) => async () => new Response(JSON.stringify(body), { status });
-const pkg = '@uwmd/module-data-center';
-const version = '0.1.9';
+const pkg = '@uwmd/lake';
+const version = '0.2.9';
 
-test('all nine intended packages skip a confirmed existing version', async () => {
-  assert.equal(RELEASE_PACKAGES.length, 9);
+test('all seven intended packages skip a confirmed existing version', async () => {
+  assert.equal(RELEASE_PACKAGES.length, 7);
   for (const { name } of RELEASE_PACKAGES) {
     assert.equal(await registryVersionState(name, version, reply(200, { name, versions: { [version]: { name, version } } })), 'published');
   }
@@ -41,7 +41,7 @@ test('DNS, timeout, and unexpected redirect failures never become absence', asyn
 
 test('probe targets the public canonical package endpoint without credentials or stale-cache preference', async () => {
   await registryVersionState(pkg, version, async (url, options) => {
-    assert.equal(url, 'https://registry.npmjs.org/%40uwmd%2Fmodule-data-center');
+    assert.equal(url, 'https://registry.npmjs.org/%40uwmd%2Flake');
     assert.equal(options.cache, 'no-store');
     assert.equal(options.redirect, 'error');
     assert.equal(options.headers.Authorization, undefined);

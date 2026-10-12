@@ -4,7 +4,7 @@
 // live-recomputing cells. Same pattern and write-path as RentRollModel: edit a
 // line → clone → re-foot → write back non-overridden totals → one
 // section_replace through applyEdit. Overrides are recorded in
-// _meta.field_overrides (reason "overridden").
+// `_overrides` (reason "overridden").
 
 import {
   deriveOperatingStatement,
@@ -72,7 +72,7 @@ export function OperatingStatementModel(props: {
   const { sectionId, variant, block, dispatch } = props;
   const content = block.content as Row;
 
-  const overrides = ((block.meta?.field_overrides ?? []) as UWFieldOverride[]).filter(
+  const overrides = ((Array.isArray(block.content['_overrides']) ? block.content['_overrides'] : []) as UWFieldOverride[]).filter(
     (o) => o.reason === 'overridden',
   );
   const overriddenPaths = new Set(overrides.map((o) => o.path));
@@ -93,8 +93,9 @@ export function OperatingStatementModel(props: {
       kind: 'section_replace',
       section_id: sectionId,
       ...(variant ? { variant } : {}),
-      content: c,
-      meta: { field_overrides: nextOverrides },
+      // Per-field exceptions are the block's own `_overrides` member.
+      content: { ...c, _overrides: nextOverrides },
+      meta: {},
     });
   };
 
@@ -236,7 +237,7 @@ export function OperatingStatementModel(props: {
         <p className="mt-2 text-xs text-muted">
           EGI, total OpEx, NOI and the ratios foot from the line items above and recompute on every
           edit. OpEx excludes capital expenditures and replacement reserves (below the line).
-          Override pins a value by hand (<code>_meta.field_overrides</code>); revert returns it to the
+          Override pins a value by hand (<code>_overrides</code>); revert returns it to the
           formula.
         </p>
       </div>

@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/many-to-many-partial",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/many-to-many-partial",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

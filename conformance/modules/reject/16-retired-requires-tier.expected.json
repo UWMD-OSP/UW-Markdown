@@ -1,0 +1,7 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-032",
+    "PROTO-MOD-064"
+  ],
+  "note": "The retired requires_tier vocabulary (RFC 0081 \u00a76): requires_conformance is missing and requires_tier is an unknown key."
+}

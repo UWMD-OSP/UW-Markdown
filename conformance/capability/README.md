@@ -24,7 +24,7 @@ which deliberately signs with a throwaway key under the coordinator's kid).
 | `02-expired-token-rejects` | `POL-03 (expired)` — expiry is the revocation story, so it must refuse. |
 | `03-wrong-section` | `POL-03 (wrong_section)` — token scopes `noi_model`, edit targets `risk_assessment`. |
 | `04-wrong-deal` | `POL-03 (wrong_deal)` — a token for one deal authorizes nothing on another. |
-| `05-sub-mismatch` | `POL-03 (sub_mismatch)` — `sub` binds `_meta.source`, not free-text `actor`. |
+| `05-sub-mismatch` | `POL-03 (sub_mismatch)` — `sub` binds `_meta.provenance.source`, not free-text `actor`. |
 | `06-bad-signature` | `POL-03 (bad_signature)` — right kid, wrong key bytes. |
 | `07-no-escalation` | `PROTO-EDIT-001` — the token verifies, the static `system_only` policy still refuses. |
 | `08-missing-token` | `POL-03` — verifier configured, no token: the default is refusal. |

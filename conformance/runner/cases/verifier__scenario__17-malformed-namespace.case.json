@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/17-malformed-namespace",
   "target": "verifier",
-  "legacy_id": "scenario/17-malformed-namespace",
   "requires_capabilities": [
     "validate"
   ],

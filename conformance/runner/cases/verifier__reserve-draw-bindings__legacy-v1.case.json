@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/legacy-v1",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/legacy-v1",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

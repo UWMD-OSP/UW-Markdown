@@ -1,16 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { inferGaps, readGapsContent, summarizeGaps } from './gaps.js';
-import type { ParsedUWFile, UWBlock, UWFieldOverride } from './types.js';
+import type { ParsedUWFile, UWBlock, UWFieldOverride, UWQuality } from './types.js';
 
+/** A test block; `quality` members override the defaults, `_overrides` sits beside the payload. */
 function makeBlock(
   sectionId: string,
   content: unknown,
-  meta: Partial<UWBlock['meta']> = {},
+  quality: Partial<UWQuality> = {},
+  overrides?: UWFieldOverride[],
 ): UWBlock {
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
-    content: content as Record<string, unknown>,
-    meta: { section: sectionId, ...meta, lifecycle: { ...meta.lifecycle, revision: 1, superseded: false }, provenance: { ...meta.provenance, source: 'manual', agent_id: null, agent_version: null, actor: 'test', timestamp: '2026-04-27T00:00:00Z', notes: null }, quality: { ...meta.quality, confidence: 'medium', human_review_required: false, flags: [] }, integrity: { ...meta.integrity, input_hash: null } },
+    content: { ...(content as Record<string, unknown>), ...(overrides ? { _overrides: overrides } : {}) },
+    meta: {
+      section: sectionId,
+      provenance: { source: 'manual', actor: 'test', agent_id: null, agent_version: null, timestamp: '2026-04-27T00:00:00Z', notes: null },
+      quality: { confidence: 'medium', human_review_required: false, flags: [], ...quality },
+      lifecycle: { revision: 1, superseded: false },
+    },
     prose: '',
     rawJson: '',
     lineStart: 1,
@@ -112,7 +119,7 @@ describe('inferGaps — provisional and partial flags', () => {
     expect(items.find((i) => i.section === 'rent_roll' && !i.field_path)).toBeDefined();
   });
 
-  it('field_overrides with reason=missing/illegible produce one item per override', () => {
+  it('_overrides with reason=missing/illegible produce one item per override', () => {
     const overrides: UWFieldOverride[] = [
       { path: 'units[7].current_rent', reason: 'illegible', note: 'smudged' },
       { path: 'units[8].current_rent', reason: 'missing' },
@@ -121,7 +128,7 @@ describe('inferGaps — provisional and partial flags', () => {
       deal_stage: 'scope',
       sections: {
         property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', units: 100 }),
-        rent_roll: makeBlock('rent_roll', { units: [] }, { partial: true, field_overrides: overrides }),
+        rent_roll: makeBlock('rent_roll', { units: [] }, { partial: true }, overrides),
       },
     });
     const items = inferGaps(file, { now: NOW });

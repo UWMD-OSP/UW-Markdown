@@ -48,10 +48,7 @@
           "enum": ["primary", "senior", "junior", "summary", "detail", "component", null],
           "description": "Trusted host assignment: omit to preserve, null to remove. Never derived from model content."
         },
-        "meta": {
-          "type": "object",
-          "description": "Partial UWMeta. Host fills in version, timestamp, actor, source as required."
-        }
+        "meta": { "$ref": "#/$defs/MetaPatch" }
       }
     },
     "SectionSupersede": {
@@ -67,14 +64,27 @@
         "variant": { "type": "string" },
         "content": {
           "type": "object",
-          "description": "New block payload. The previous block is flagged superseded:true; this one is appended at version = max(prev)+1."
+          "description": "New block payload. The previous block is marked _meta.lifecycle.superseded: true; this one is appended at _meta.lifecycle.revision = previous + 1."
         },
         "role": {
           "enum": ["primary", "senior", "junior", "summary", "detail", "component", null],
           "description": "Trusted host assignment: omit to preserve, null to remove. Never derived from model content."
         },
-        "meta": {
-          "type": "object"
+        "meta": { "$ref": "#/$defs/MetaPatch" }
+      }
+    },
+    "MetaPatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Overrides for the written block's _meta (UWMetaPatch). Only provenance and quality members are caller-suppliable; the host fills the rest and owns section, lifecycle and integrity (invariant 5). Any other member is refused as PROTO-EDIT-002.",
+      "properties": {
+        "provenance": {
+          "type": "object",
+          "description": "Members merged over the host-built _meta.provenance (for example source, actor, agent_id, agent_version, notes)."
+        },
+        "quality": {
+          "type": "object",
+          "description": "Members merged over the host-built _meta.quality (for example confidence, human_review_required, flags)."
         }
       }
     },
@@ -118,13 +128,13 @@
       "kind": "section_replace",
       "section_id": "property",
       "content": { "total_units": 100, "year_built": 2005, "building_class": "B+" },
-      "meta": { "actor": "jared@example.com", "confidence": "high" }
+      "meta": { "provenance": { "actor": "jared@example.com" }, "quality": { "confidence": "high" } }
     },
     {
       "kind": "section_supersede",
       "section_id": "risk_assessment",
       "content": { "overall_rating": "elevated", "risk_score": 7, "key_risks": [] },
-      "meta": { "source": "agent/L6-01", "agent_id": "L6-01", "agent_version": "1.2.0", "actor": "system" }
+      "meta": { "provenance": { "source": "agent/L6-01", "agent_id": "L6-01", "agent_version": "1.2.0", "actor": "system" } }
     },
     {
       "kind": "pipeline_log_append",

@@ -10,7 +10,6 @@ import { resolve, basename, dirname } from 'node:path';
 import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { compact, diff } from './compactor.js';
-import { migrateSourceTags } from './migrate-source-tags.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { isScenarioId } from './scenario.js';
 import { render } from './renderer.js';
@@ -25,15 +24,14 @@ import { CORE_CODEC_REGISTRY } from './codecs.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit, applyEditAsync } from './editor.js';
 import { verifyChain, verifyProvenance, canonicalBlockSigningInput } from './integrity.js';
-import { migrateToV2 } from './migrate-to-v2.js';
 import type {
   BlockSignatureVerifier,
   IntegrityResult,
   VerifyChainOptions,
 } from './integrity.js';
 import type { EditContext, EditResult } from './editor.js';
-import type { CapabilityVerifier, EditOperation, ModuleCalcDecl, CalcEvaluationContext, ViewerTier } from './protocol.js';
-import { REFERENCE_IMPLEMENTATION_MANIFEST, readConformanceTier } from './protocol.js';
+import type { CapabilityVerifier, ConformanceTier, EditOperation, ModuleCalcDecl, CalcEvaluationContext } from './protocol.js';
+import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
 import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
 import {
   cmdLeaseValidate,
@@ -80,7 +78,6 @@ import type { UWReceipt } from './receipts.js';
 import { CORE_VERSION } from './version.js';
 import {
   detectUWSourceRepresentation,
-  migrateLegacyUWMarkdown,
   UWX_REPRESENTATION_ID,
   UW_LITE_SOURCE_DESCRIPTOR,
   UWX_SOURCE_DESCRIPTOR,
@@ -98,7 +95,7 @@ import {
   parseFlags,
   extractPositionals,
   replaceUWExtension,
-  hostTierFlag,
+  hostConformanceFlag,
   defaultPartsDir,
   readManifestFile,
 } from './cli-args.js';
@@ -150,48 +147,18 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
   const parsed = parseUWFile(content, { strict: flags['strict'] === true });
   // `sections` and `superseded` are emitted in the §II.6a.6 conformance
   // projection — `{ meta, content }` per block, one such object per variant
-  // for a multi-variant section — NOT as in-memory UWBlocks. Two rules from
-  // that spec section decide the shape:
+  // for a multi-variant section — NOT as in-memory UWBlocks:
   //
-  //   * `meta` is the on-disk `_meta` VERBATIM (only the keys the document
-  //     carried; a v2 nested meta stays nested). The in-memory flat view is
-  //     an artifact of this reader — RFC 0031's read-time source
-  //     interpretation must not leak into the projection.
-  //   * `content` is the block content proper: for a v2 wrapped fence, its
-  //     `content` member; for a v1 flat fence, the fence minus `_meta` /
-  //     `section_id` / `_overrides`. The raw fence object (which nests
-  //     `_meta` inside `content`) was the accident §II.6a.6 was written to
-  //     end — it made ParsedUWFile a protocol surface.
+  //   * `meta` is the document's `_meta` verbatim (only the keys it carried).
+  //   * `content` is the block minus `_meta` and `_overrides`: the bare
+  //     payload (Format §2.4), with `_role` and `_notes` when stated.
   //
   // Reader artifacts (fence annotation, prose, line numbers, rawJson) are
   // deliberately not emitted per section: §II.6a.6 lists them as MUST NOT be
   // required, and emitting them here is how they end up required.
-  //
-  // The other top-level fields keep their prior shapes. `superseded_blocks`
-  // is kept for compatibility; new callers should read `superseded`.
   const projectBlock = (block: UWBlock): { meta: Record<string, unknown>; content: unknown } => {
-    let fence: Record<string, unknown>;
-    try {
-      fence = JSON.parse(block.rawJson) as Record<string, unknown>;
-    } catch {
-      // Non-strict parse of a malformed fence: project what the parser kept.
-      return { meta: {}, content: block.content };
-    }
-    const meta = (fence['_meta'] as Record<string, unknown> | undefined) ?? {};
-    // A wrapped fence ({ section_id, _meta, content, ... }) is detected by
-    // layout, not by meta shape: 2.0 wrapping and _meta nesting shipped
-    // separately, so a wrapped fence can still carry a v1-flat _meta (the
-    // tier-1 corpus does exactly this). A flat fence never carries a
-    // `section_id` member — the id lives in the fence annotation.
-    const wrapped =
-      typeof fence['content'] === 'object' &&
-      fence['content'] !== null &&
-      ('section_id' in fence || block.meta_shape === 'v2');
-    if (wrapped) {
-      return { meta, content: fence['content'] };
-    }
-    const { _meta: _m, section_id: _sid, _overrides: _ov, ...rest } = fence;
-    return { meta, content: rest };
+    const { _meta, _overrides: _ov, ...rest } = block.content;
+    return { meta: (_meta as Record<string, unknown> | undefined) ?? {}, content: rest };
   };
   const isBlock = (v: unknown): v is UWBlock =>
     typeof v === 'object' && v !== null && 'rawJson' in v && 'meta' in v;
@@ -213,9 +180,6 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
     extensions: Object.fromEntries(Object.entries(parsed.extensions).map(([id, block]) => [id, projectBlock(block)])),
     superseded: Object.fromEntries(
       Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(projectBlock)])
-    ),
-    superseded_blocks: Object.fromEntries(
-      Object.entries(parsed.superseded).map(([id, blocks]) => [id, blocks.map(b => b.content)])
     ),
   };
   console.log(JSON.stringify(output, null, flags['compact'] ? 0 : 2));
@@ -474,109 +438,6 @@ function cmdCompact(file: string, flags: Record<string, string | boolean>): void
   console.log(`Compacted ${totalSuperseded} superseded block(s). Wrote to: ${outPath}`);
 }
 
-function cmdMigrateSourceTags(file: string, flags: Record<string, string | boolean>): void {
-  const content = readFile(file);
-  const result = migrateSourceTags(content);
-
-  for (const source of result.unmapped) {
-    console.error(`[unmapped] _meta.source '${source}' was left in place — rewrite it by hand.`);
-  }
-
-  if (result.changed === 0) {
-    console.log(`No legacy _meta.source values found in ${basename(file)} — nothing to migrate.`);
-    return;
-  }
-
-  if (flags['dry-run']) {
-    console.log(`Would migrate ${result.changed} block(s) in ${basename(file)} (RFC 0031 actor/resolution split).`);
-    return;
-  }
-
-  const outPath = flags['output'] ? resolve(flags['output'] as string) : resolve(file);
-  writeFileSync(outPath, result.content, 'utf-8');
-  console.log(`Migrated ${result.changed} block(s). Wrote to: ${outPath}`);
-}
-
-async function cmdMigrateToV2(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const content = readFile(file);
-
-  // --resign needs the optional @uwmd/signing package plus the key holder's
-  // private key. The engine stays crypto-free; the callback closes over the
-  // loaded key (the same dynamic-import arrangement as `verify --signing`).
-  let resign: import('./migrate-to-v2.js').MigrateToV2Options['resign'];
-  if (flags['resign']) {
-    const keyPath = flags['key'];
-    if (typeof keyPath !== 'string' || keyPath.length === 0) {
-      console.error('--resign requires --key=<private.jwk.json> (a JWK private key file).');
-      process.exit(1);
-    }
-    const kid = flags['kid'];
-    const alg = (flags['alg'] as string | undefined) ?? 'ed25519';
-    if (typeof kid !== 'string' || kid.length === 0) {
-      console.error('--resign requires --kid=<key id> (stamped into the new signatures).');
-      process.exit(1);
-    }
-    // Structurally typed rather than `typeof import('@uwmd/signing')` — same
-    // layering reasoning as the `--signing` seam above: signing depends on
-    // core's declarations, so a type import here would close the cycle.
-    interface ResignSigningModule {
-      importPrivateKey(alg: string, material: { jwk: JsonWebKey }): Promise<unknown>;
-      signPayload(payload: string, key: unknown): Promise<string>;
-    }
-    let signing: ResignSigningModule;
-    try {
-      signing = (await import('@uwmd/signing' as string)) as ResignSigningModule;
-    } catch {
-      console.error('--resign needs the optional @uwmd/signing package. Install it with `npm i @uwmd/signing`.');
-      process.exit(1);
-    }
-    const jwk = JSON.parse(readFile(keyPath)) as JsonWebKey;
-    const privateKey = await signing.importPrivateKey(alg, { jwk });
-    const key = { kid, alg: alg as 'ed25519' | 'es256' | 'es384', privateKey };
-    resign = async (req) => {
-      const signedAt = new Date().toISOString();
-      const payload = canonicalBlockSigningInput({
-        content_hash: req.content_hash,
-        section: req.section,
-        actor: req.actor,
-        timestamp: req.timestamp,
-        kid: key.kid,
-        signed_at: signedAt,
-      });
-      return { alg: key.alg, kid: key.kid, sig: await signing.signPayload(payload, key), signed_at: signedAt };
-    };
-  }
-
-  const result = await migrateToV2(content, {
-    stripSignatures: flags['strip-signatures'] === true,
-    resign,
-  });
-
-  for (const note of result.notes) console.error(`[migrate] ${note}`);
-  if (!result.ok) {
-    for (const why of result.refusals) console.error(`[refused] ${why}`);
-    process.exit(1);
-  }
-
-  if (result.changed === 0 && result.restamped === 0) {
-    console.log(`Nothing to migrate in ${basename(file)}.`);
-    return;
-  }
-
-  if (flags['dry-run']) {
-    console.log(
-      `Would migrate ${basename(file)} to uw_version "2.0": ${result.changed} block(s) reshaped, ${result.restamped} hash(es) re-stamped (RFC 0009).`,
-    );
-    return;
-  }
-
-  const outPath = flags['output'] ? resolve(flags['output'] as string) : resolve(file);
-  writeFileSync(outPath, result.content as string, 'utf-8');
-  console.log(
-    `Migrated to uw_version "2.0": ${result.changed} block(s) reshaped, ${result.restamped} hash(es) re-stamped. Wrote to: ${outPath}`,
-  );
-}
-
 function cmdDiff(fileA: string, fileB: string): void {
   const contentA = readFile(fileA);
   const contentB = readFile(fileB);
@@ -604,12 +465,7 @@ function cmdDiff(fileA: string, fileB: string): void {
 }
 
 function cmdInit(flags: Record<string, string | boolean>): void {
-  const requestedFormat = flags['format'] as string | undefined;
-  if (requestedFormat !== undefined && requestedFormat !== '2.1' && requestedFormat !== '2.0' && requestedFormat !== '1.1') {
-    console.error(`--format must be '2.1' (default, nested _meta), '2.0' or '1.1' (legacy flat shape); got '${requestedFormat}'.`);
-    process.exit(1);
-  }
-  // Writers use standard plans or owned extensions; legacy documents still read.
+  // Writers use standard plans or owned extensions.
   const scenario = flags['scenario'];
   if (scenario !== undefined && !isScenarioId(scenario)) {
     console.error(
@@ -620,7 +476,6 @@ function cmdInit(flags: Record<string, string | boolean>): void {
   let content: string;
   try {
     content = generateBlankUWFile({
-      formatVersion: requestedFormat as '2.1' | '2.0' | '1.1' | undefined,
       dealName: flags['name'] as string | undefined,
       address: flags['address'] as string | undefined,
       city: flags['city'] as string | undefined,
@@ -639,8 +494,7 @@ function cmdInit(flags: Record<string, string | boolean>): void {
   }
 
   // generateBlankUWFile() emits structured UWX content, so the default filename
-  // must be .uwx.md. Writing it as .uw.md produced a file the format spec
-  // forbids and detectUWSourceRepresentation() flags as legacy on the next load.
+  // must be .uwx.md: structured content under .uw.md is SOURCE_CONTENT_MISMATCH.
   const filename = (flags['output'] as string | undefined)
     ?? (flags['name']
       ? `${(flags['name'] as string).replace(/\s+/g, '-').toLowerCase()}${UWX_EXTENSION}`
@@ -884,14 +738,24 @@ async function cmdReceiptIssue(
 
 // ─── Modules ──────────────────────────────────────────────────────────────────
 
+/** The modules commands' host tier; any value but reader or verifier is a usage error. */
+function moduleHostConformance(flags: Record<string, string | boolean>): ConformanceTier | undefined {
+  const tier = hostConformanceFlag(flags);
+  if (tier === null) {
+    console.error(`--tier must be reader or verifier; got ${JSON.stringify(flags['tier'])}.`);
+    process.exit(1);
+  }
+  return tier;
+}
+
 function cmdModulesValidate(files: string[], flags: Record<string, string | boolean>): void {
-  const hostTier = hostTierFlag(flags);
+  const hostConformance = moduleHostConformance(flags);
   const reports = files.map((file) => {
     const read = readManifestFile(file);
     if (!read.ok) {
       return { file, ok: false, errors: [{ category: 'module', code: 'CLI-MOD-READ', message: read.message }] };
     }
-    const result = loadModuleManifest(read.manifest, hostTier ? { hostTier } : {});
+    const result = loadModuleManifest(read.manifest, hostConformance ? { hostConformance } : {});
     return { file, ok: result.ok, errors: result.errors };
   });
 
@@ -915,13 +779,13 @@ function cmdModulesValidate(files: string[], flags: Record<string, string | bool
   }
   const failed = reports.filter((r) => !r.ok).length;
   console.log(
-    `\n${reports.length - failed}/${reports.length} manifest(s) loaded${hostTier ? ` against ${hostTier}` : ''}.\n`,
+    `\n${reports.length - failed}/${reports.length} manifest(s) loaded${hostConformance ? ` against a ${hostConformance} host` : ''}.\n`,
   );
   process.exit(failed > 0 ? 1 : 0);
 }
 
 function cmdModulesList(files: string[], flags: Record<string, string | boolean>): void {
-  const hostTier = hostTierFlag(flags);
+  const hostConformance = moduleHostConformance(flags);
   const manifests: unknown[] = [];
   for (const file of files) {
     const read = readManifestFile(file);
@@ -934,7 +798,7 @@ function cmdModulesList(files: string[], flags: Record<string, string | boolean>
 
   let registry: ReturnType<typeof createModuleRegistry>;
   try {
-    registry = createModuleRegistry({ modules: manifests as never, ...(hostTier ? { hostTier } : {}) });
+    registry = createModuleRegistry({ modules: manifests as never, ...(hostConformance ? { hostConformance } : {}) });
   } catch (e) {
     // Registry construction is all-or-nothing: a bad manifest means there is no
     // registry to list, so report why rather than printing a partial one.
@@ -951,8 +815,7 @@ function cmdModulesList(files: string[], flags: Record<string, string | boolean>
     id: m.id,
     name: m.name,
     version: m.version,
-    // RFC 0081 Phase 4: delete the legacy manifest display fallback.
-    requires_conformance: m.requires_conformance ?? readConformanceTier(m.requires_tier ?? '')?.tier,
+    requires_conformance: m.requires_conformance,
     requires_profiles: m.requires_profiles ?? [],
     asset_classes: m.asset_classes ?? [],
     calculations: (m.calculations ?? []).length,
@@ -1183,11 +1046,8 @@ function cmdScope(file: string, flags: Record<string, string | boolean>): void {
   const payload = {
     deal_id: parsed.frontmatter.deal_id ?? null,
     deal_stage_target: 'scope',
-    // One identity throughout: the resolved builtin the table belongs to. A
-    // legacy alias (`org.uwmd.data_center`) is reported as stated alongside,
-    // never rewritten (RFC 0080 §5).
+    // The builtin class the defaults table belongs to.
     asset_class: table.asset_class,
-    ...(table.asset_class !== assetClass ? { declared_asset_class: assetClass } : {}),
     defaults_table: `${table.asset_class}@${table.version}`,
     ...(market ? { market_data: market.identity } : {}),
     resolved: out,
@@ -1458,26 +1318,6 @@ switch (command) {
     if (!positional[0] || !positional[1]) { console.error('Usage: uwmd diff <file-a> <file-b>'); process.exit(1); }
     cmdDiff(positional[0], positional[1]);
     break;
-
-  case 'migrate': {
-    // `--emit-v2-shape` is the RFC 0009 writer-flag spelling; on the CLI it is
-    // a synonym for `--to-v2` (both run the whole-file conversion).
-    const toV2 = flags['to-v2'] === true || flags['emit-v2-shape'] === true;
-    if (!positional[0] || (!flags['source-tags'] && !toV2)) {
-      console.error(
-        'Usage: uwmd migrate <file> --source-tags [--output <file>] [--dry-run]\n' +
-          '       uwmd migrate <file> --to-v2 [--strip-signatures | --resign --key <private.jwk.json> --kid <id> [--alg ed25519|es256|es384]] [--output <file>] [--dry-run]',
-      );
-      process.exit(1);
-    }
-    if (flags['source-tags'] && toV2) {
-      console.error('Run --source-tags and --to-v2 as separate passes (--source-tags first).');
-      process.exit(1);
-    }
-    if (toV2) await cmdMigrateToV2(positional[0], flags);
-    else cmdMigrateSourceTags(positional[0], flags);
-    break;
-  }
 
   case 'render': {
     if (!positional[0]) { console.error('Usage: uwmd render <file> [--format <json|csv|chat|summary>] [--profile <summary|live|compact|full|relevant>] [--sections a,b,c] [--max-tokens 12000] [--no-meta] [--output <file>] [--tier screener|analyst]'); process.exit(1); }
@@ -1995,10 +1835,10 @@ switch (command) {
     const sub = positional[0];
     const files = positional.slice(1);
     if (sub === 'validate') {
-      if (files.length === 0) { console.error('Usage: uwmd modules validate <manifest.json...> [--tier <module-host-tier>] [--json]'); process.exit(1); }
+      if (files.length === 0) { console.error('Usage: uwmd modules validate <manifest.json...> [--tier reader|verifier] [--json]'); process.exit(1); }
       cmdModulesValidate(files, flags);
     } else if (sub === 'list') {
-      if (files.length === 0) { console.error('Usage: uwmd modules list <manifest.json...> [--tier <module-host-tier>] [--json]'); process.exit(1); }
+      if (files.length === 0) { console.error('Usage: uwmd modules list <manifest.json...> [--tier reader|verifier] [--json]'); process.exit(1); }
       cmdModulesList(files, flags);
     } else {
       console.error('Usage: uwmd modules <validate|list> <manifest.json...>');
@@ -2069,9 +1909,6 @@ Commands:
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
   compact  <file>              Strip superseded blocks
   diff     <file-a> <file-b>  Compare two files section by section
-  migrate  <file> --source-tags  Rewrite legacy _meta.source values into the actor/resolution split (RFC 0031)
-  migrate  <file> --to-v2        Convert the whole file to the v2 nested _meta shape, uw_version "2.0" (RFC 0009;
-                                 re-stamps hashes; signed blocks need --resign or --strip-signatures)
   verify-reserve-draws <file> [plan.json] [--json]  Verify stated gross-expenditure draw bindings (read-only)
   verify-reserve-accounts <file> [--json]  Verify stated property reserve balances (read-only)
   verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
@@ -2107,7 +1944,7 @@ Options:
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
   --no-superseded    Drop append-only history from the .uw.json export (export)
   --resolved         Resolve externalized sections first (verify, export)
-  --signing          Check _meta.signature on every block (verify; requires --keystore)
+  --signing          Check _meta.integrity.signature on every block (verify; requires --keystore)
   --keystore <path>  JSON key store mapping kid to public key (verify --signing)
   --parts <dir>      Fragment directory (compose, resolve, --resolved; default: ./parts)
   --externalize <s>  Section to split into fragments (compose)
@@ -2118,7 +1955,7 @@ Options:
   --to <format>       Target: lite|uwx|uw-json|uw-xml|uw-csv-bundle (convert)
   --projection-report Write the UWX-to-Lite omission report as JSON (convert)
   --issued-at <iso>  Fix the receipt issuance timestamp (receipt issue)
-  --tier <tier>      Module host tier, tier-1-reader..tier-4-agent-host (modules)
+  --tier <tier>      Module host conformance tier: reader | verifier (modules; default verifier)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
   --institution <f>  Path to .uw.institution.json config (validate)
   --name <n>         Deal name (init)
@@ -2135,7 +1972,7 @@ Options:
   --model <m>        Claude model (run --live, default: claude-sonnet-4-6)
   --instructions <i> Extra instructions for the agent (run --live)
   --actor <n>        Actor name for the edit (edit, default: system)
-  --source <s>       _meta.source pattern (edit, default: manual)
+  --source <s>       _meta.provenance.source pattern (edit, default: manual)
   --agent-id <id>    Agent identifier when source is agent/* (edit)
   --agent-version <v>Agent semver (edit)
   --confidence <c>   Confidence level for new block: high|medium|low (edit)

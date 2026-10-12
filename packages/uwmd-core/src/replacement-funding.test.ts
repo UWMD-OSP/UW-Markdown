@@ -12,6 +12,7 @@ import {
 } from './replacement-funding.js';
 import { createUWMCPValidationResult } from './bindings.js';
 import { toUWEnvelope } from './envelope.js';
+import { buildMeta } from './runner.js';
 import * as integrity from './integrity.js';
 import type { CashFlowRow } from './cash-flow-series.js';
 
@@ -184,8 +185,12 @@ describe('RFC 0070 separate verification', () => {
     'MCP exposes separate state for %s',
     async (name) => {
       const parsed = parseUWFile(source(name));
-      for (const entry of Object.values(parsed.sections))
-        for (const block of sectionBlocks(entry)) block.content._meta = block.meta;
+      // The envelope carries a `_meta` on every block; these fixtures state none.
+      for (const [id, entry] of Object.entries(parsed.sections))
+        for (const block of sectionBlocks(entry)) {
+          block.meta = buildMeta(id, 1, { source: 'manual', actor: 'test', confidence: 'high', timestamp: '2026-10-03T00:00:00Z' });
+          block.content._meta = block.meta;
+        }
       const result = await createUWMCPValidationResult(toUWEnvelope(parsed), 'HDG-CONF');
       expect(result.structuredContent).toMatchObject({
         replacement_funding_verification: {
@@ -239,21 +244,18 @@ describe('RFC 0070 canonical snapshot controls', () => {
     rows[0]!.amount = -9;
     expect(await pending).toBe(expected);
   });
-  it('verifies Format 2.0 nested metadata without committing metadata', async () => {
-    const original = source('outright-payment');
-    const text = original
-      .replace("uw_version: \"3.0\"", "uw_version: \"3.0\"")
-      .replace(
-        /\{\r?\n {2}"(loan_amount|uses|series)"/g,
-        '{\n  "_meta": {"section":"test","lifecycle":{"revision":1},"provenance":{"source":"manual"}},\n  "$1"'
-      );
-    const parsed = parseUWFile(text);
-    expect(parsed.frontmatter.uw_version).toBe('3.0');
+  it('verifies without committing metadata', async () => {
+    const parsed = parseUWFile(source('outright-payment'));
+    for (const block of [...sectionBlocks(parsed.sections.debt_structure), ...sectionBlocks(parsed.sections.cash_flow_series)]) {
+      block.meta.provenance = { ...block.meta.provenance, actor: 'someone-else', timestamp: '2030-01-01T00:00:00Z' };
+      block.meta.lifecycle = { ...block.meta.lifecycle, revision: 9 };
+    }
     expect((await verifyReplacementFundingBindings(parsed)).state).toBe('verified');
   });
   it('rejects an explicitly superseded source even in an externally constructed parse view', async () => {
     const parsed = parseUWFile(source('outright-payment'));
-    sectionBlocks(parsed.sections.cash_flow_series)[0]!.meta.lifecycle?.superseded = true;
+    const block = sectionBlocks(parsed.sections.cash_flow_series)[0]!;
+    block.meta = { ...block.meta, lifecycle: { revision: 1, superseded: true } };
     expect(await verifyReplacementFundingBindings(parsed)).toMatchObject({
       state: 'unverifiable',
       reason: 'unresolvable_source',

@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-06-valid-first-day-of-year",
   "target": "verifier",
-  "legacy_id": "tier-3/date-06-valid-first-day-of-year",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/variant-01-primary-resolves",
   "target": "verifier",
-  "legacy_id": "tier-3/variant-01-primary-resolves",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/reserve-balance-mismatch",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/reserve-balance-mismatch",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

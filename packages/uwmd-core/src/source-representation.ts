@@ -37,14 +37,6 @@ export interface UWSourceDetection {
   warnings: string[];
 }
 
-export interface UWSourceMigration {
-  source_representation: typeof UWX_REPRESENTATION_ID;
-  destination_file: string;
-  content: string;
-  bytes_changed: false;
-  warnings: string[];
-}
-
 export class UWSourceRepresentationError extends Error {
   readonly code: string;
 
@@ -55,6 +47,13 @@ export class UWSourceRepresentationError extends Error {
   }
 }
 
+function structuredUnderLiteName(): UWSourceRepresentationError {
+  return new UWSourceRepresentationError(
+    'SOURCE_CONTENT_MISMATCH',
+    'A .uw.md file is UW Lite and must not contain UWX structured section fences; structured records use .uwx.md.',
+  );
+}
+
 const UWX_FENCE = /^\`\`\`json[ \t]+uw:section=\S+/m;
 const LITE_VERSION = /^uw_lite_version\s*:/m;
 const LITE_FIELD_ANCHOR = /<!--[ \t]*uw:[A-Za-z0-9_.-]+(?:[ \t]+.*?)?[ \t]*-->/;
@@ -63,11 +62,9 @@ const LITE_FIELD_ANCHOR = /<!--[ \t]*uw:[A-Za-z0-9_.-]+(?:[ \t]+.*?)?[ \t]*-->/;
  * Detect the two Markdown source representations without interpreting financial
  * values.
  *
- * Legacy structured `.uw.md` sniffing sunset at Protocol 2.0 (RFC 0025,
- * format v2 spec §6.1): structured UWX content under a `.uw.md` name is now
- * `SOURCE_LEGACY_STRUCTURED` — an error whose fix is the byte-identical
- * rename `migrateLegacyUWMarkdown` still plans. An `explicit` UWX override
- * remains the operator's escape hatch and carries the migrate warning.
+ * Structured UWX content under a `.uw.md` name contradicts its representation
+ * and is `SOURCE_CONTENT_MISMATCH`, explicit selection or not (RFC 0081 §4):
+ * `.uw.md` is the Lite extension, and structured records are `.uwx.md`.
  */
 export function detectUWSourceRepresentation(
   content: string,
@@ -98,24 +95,14 @@ export function detectUWSourceRepresentation(
         'Explicit UW Lite input contains UWX structured section fences.',
       );
     }
-    const explicitLegacyName =
-      explicit === UWX_REPRESENTATION_ID && normalizedName?.endsWith(UW_LITE_EXTENSION) === true;
-    return {
-      representation: explicit,
-      confidence: 'explicit',
-      warnings: explicitLegacyName
-        ? ['Structured UWX content uses the legacy .uw.md extension; rename it to .uwx.md (byte-identical).']
-        : [],
-    };
+    if (explicit === UWX_REPRESENTATION_ID && normalizedName?.endsWith(UW_LITE_EXTENSION) === true) {
+      throw structuredUnderLiteName();
+    }
+    return { representation: explicit, confidence: 'explicit', warnings: [] };
   }
 
   if (hasUWXContent) {
-    if (normalizedName?.endsWith(UW_LITE_EXTENSION) === true) {
-      throw new UWSourceRepresentationError(
-        'SOURCE_LEGACY_STRUCTURED',
-        'Structured UWX content under the legacy .uw.md extension is no longer accepted (format v2 §6.1). Rename the file to .uwx.md — the content is unchanged; migrateLegacyUWMarkdown plans the byte-identical rename.',
-      );
-    }
+    if (normalizedName?.endsWith(UW_LITE_EXTENSION) === true) throw structuredUnderLiteName();
     return {
       representation: UWX_REPRESENTATION_ID,
       confidence: 'content',
@@ -150,37 +137,4 @@ export function detectUWSourceRepresentation(
     'SOURCE_REPRESENTATION_UNKNOWN',
     'Cannot detect UW Markdown representation; use a supported extension or explicit representation.',
   );
-}
-
-/**
- * Plan a non-destructive, byte-identical legacy extension migration.
- * The caller owns filesystem writes and overwrite policy.
- */
-export function migrateLegacyUWMarkdown(
-  fileName: string,
-  content: string,
-): UWSourceMigration {
-  // Deliberately NOT routed through detectUWSourceRepresentation: at 2.0 the
-  // detector throws SOURCE_LEGACY_STRUCTURED on exactly the input this
-  // function exists to repair, so it probes the fences directly.
-  if (!UWX_FENCE.test(content)) {
-    throw new UWSourceRepresentationError(
-      'SOURCE_MIGRATION_NOT_UWX',
-      'Only legacy structured UWX content can be migrated to .uwx.md.',
-    );
-  }
-  const lower = fileName.toLowerCase();
-  if (!lower.endsWith(UW_LITE_EXTENSION)) {
-    throw new UWSourceRepresentationError(
-      'SOURCE_MIGRATION_EXTENSION',
-      'Migration source must use the legacy .uw.md extension.',
-    );
-  }
-  return {
-    source_representation: UWX_REPRESENTATION_ID,
-    destination_file: `${fileName.slice(0, -UW_LITE_EXTENSION.length)}${UWX_EXTENSION}`,
-    content,
-    bytes_changed: false,
-    warnings: [],
-  };
 }

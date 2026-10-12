@@ -20,7 +20,7 @@ created_by: "test-fixture"
 
 # Malformed — POL-02
 
-The `noi_model` block is at `_meta.version: 2` and was written by an
+The `noi_model` block is at `_meta.lifecycle.revision: 2` and was written by an
 agent (source `agent/L2`). The `agent/*` policy mandates
 `supersede_on_edit: true`, but no superseded prior version exists in
 this file — the v1 block was overwritten via `section_replace` instead

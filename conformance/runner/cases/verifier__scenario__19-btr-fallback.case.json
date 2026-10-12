@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/19-btr-fallback",
   "target": "verifier",
-  "legacy_id": "scenario/19-btr-fallback",
   "requires_capabilities": [
     "validate"
   ],

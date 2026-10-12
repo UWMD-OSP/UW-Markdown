@@ -18,7 +18,7 @@
 // asserts the absence of a static import, because "provider-neutral" is a claim
 // worth testing rather than trusting.
 
-import type { ParsedUWFile } from '../types.js';
+import type { ParsedUWFile, UWBlock } from '../types.js';
 import { parseUWFile } from '../parser.js';
 import { writeAgentBlock, writeErrorEntry, buildMeta } from '../runner.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from '../context.js';
@@ -58,7 +58,7 @@ export interface BancroftRunOptions {
   onProgress?: (event: ProgressEvent) => void;
   /**
    * Injectable clock, defaulting to `Date.now`. Supplying a **constant** clock
-   * makes a run byte-reproducible: `_meta.timestamp` freezes, `duration_ms`
+   * makes a run byte-reproducible: `_meta.provenance.timestamp` freezes, `duration_ms`
    * collapses to 0, and the pipeline-log entry id becomes derivable instead of
    * random. That is what lets a replayed run be compared against a frozen
    * expected document (see `providers/replay.ts`).
@@ -424,7 +424,7 @@ function writeSectionOutputs(
 
     const existingBlock = currentParsed.sections[toolOut.section_id];
     const existingVersion = existingBlock && 'meta' in existingBlock
-      ? ((existingBlock as { meta: { version: number } }).meta?.lifecycle?.revision ?? 0)
+      ? ((existingBlock as UWBlock).meta?.lifecycle?.revision ?? 0)
       : 0;
     const newVersion = existingVersion + 1;
 

@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-bad-row-label",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-bad-row-label",
   "requires_capabilities": [
     "validate"
   ],

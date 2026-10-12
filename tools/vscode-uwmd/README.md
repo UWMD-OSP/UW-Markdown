@@ -59,10 +59,9 @@ are still editing is stale the moment you type again — issue one with
 
 ## Which files, and which checks
 
-Both `.uw.md` and `.uwx.md` are recognised. The representation is
-decided by content, so a structured record still carrying the legacy
-`.uw.md` extension is handled correctly and gets an informational nudge
-to migrate.
+Both `.uw.md` and `.uwx.md` are recognised. `.uw.md` is Lite: a
+structured record under that extension is reported as a
+`SOURCE_CONTENT_MISMATCH` error, and structured records use `.uwx.md`.
 
 | Representation | Checks |
 |---|---|
@@ -90,7 +89,7 @@ code --install-extension vscode-uwmd-0.1.0.vsix
 
 ## Roadmap
 
-- Hover tooltips for `_meta.source` badges.
+- Hover tooltips for `_meta.provenance.source` badges.
 - Quick-fix actions tied to `BUILTIN_REMEDIATIONS` codes.
 - "Apply edit operation" command using `applyEdit()` from `@uwmd/core`.
 - Inline calc expression evaluation via `evaluateCalc()`.

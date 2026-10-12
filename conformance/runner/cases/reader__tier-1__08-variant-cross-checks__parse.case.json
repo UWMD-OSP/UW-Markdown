@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/08-variant-cross-checks/parse",
   "target": "reader",
-  "legacy_id": "tier-1/08-variant-cross-checks/parse",
   "requires_capabilities": [
     "parse"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0075-senior-junior-escrow",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0075-senior-junior-escrow",
   "requires_capabilities": [
     "validate"
   ],

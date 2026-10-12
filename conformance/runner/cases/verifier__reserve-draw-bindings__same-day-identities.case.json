@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/same-day-identities",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/same-day-identities",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

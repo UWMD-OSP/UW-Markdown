@@ -103,10 +103,10 @@ file MUST NOT render an empty card.
 
 ### III.4 Badge system
 
-Each block carries provenance via `_meta.source`. Implementations
+Each block carries provenance via `_meta.provenance.source`. Implementations
 SHOULD display a compact badge per block:
 
-| `_meta.source` pattern | Suggested label | Color hint |
+| `_meta.provenance.source` pattern | Suggested label | Color hint |
 |---|---|---|
 | `agent/*` | "AI" or layer ID | accent |
 | `manual` | "Manual" | neutral |
@@ -114,7 +114,7 @@ SHOULD display a compact badge per block:
 | `system/*` | "System" | muted |
 | `institution/*` | "Institution" | muted |
 
-Confidence is rendered from `_meta.confidence` ∈ `{high, medium, low}`.
+Confidence is rendered from `_meta.quality.confidence` ∈ `{high, medium, low}`.
 Style options (pill/icon/text) are at implementer discretion.
 
 ### III.5 Supersede UX

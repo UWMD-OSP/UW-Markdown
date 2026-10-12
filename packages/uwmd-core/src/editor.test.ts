@@ -338,6 +338,26 @@ describe('applyEdit — section_replace', () => {
     expect(reparsed.superseded['property']).toBeUndefined();
   });
 
+  it.each([
+    [{ confidence: 'high' }, 'meta.confidence'],
+    [{ lifecycle: { revision: 9 } }, 'meta.lifecycle'],
+    [{ provenance: 'manual' }, 'meta.provenance'],
+  ])('refuses a meta patch member outside provenance/quality (%j) as PROTO-EDIT-002', (meta, named) => {
+    const parsed = parseUWFile(FILE);
+    for (const kind of ['section_replace', 'section_supersede'] as const) {
+      const op = {
+        kind,
+        section_id: 'property',
+        content: { total_units: 30 },
+        meta,
+      } as unknown as EditOperation;
+      const result = applyEdit(FILE, parsed, op, MANUAL_CTX);
+      expect(result.ok).toBe(false);
+      expect(result.error?.code).toBe('PROTO-EDIT-002');
+      expect(result.error?.message).toContain(named);
+    }
+  });
+
   it('rejects replace when target source requires supersede_on_edit', () => {
     // risk_assessment has source=agent/L6 which has supersede_on_edit: true
     const parsed = parseUWFile(FILE);
@@ -542,7 +562,7 @@ describe('applyEdit — round-trip preservation', () => {
 
 // ─── The unpoliced-write regression ───────────────────────────────────────────
 
-describe('an unrecognized _meta.source no longer permits a destructive replace', () => {
+describe('an unrecognized _meta.provenance.source no longer permits a destructive replace', () => {
   // Format spec 2.6 tells producers to write `agent:L0-01`. BUILTIN_EDIT_POLICIES
   // matches `agent/*`. The delimiter differs, so the source matched nothing, and
   // an unmatched source used to mean "authorized, and exempt from supersede" —

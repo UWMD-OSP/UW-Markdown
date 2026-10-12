@@ -1,0 +1,6 @@
+{
+  "codes": [
+    "TAX-01"
+  ],
+  "note": "jurisdiction, value_basis, assessment_ratio and round_to_decimals are allowed only with the assessment group (RFC 0081 \u00a77)."
+}

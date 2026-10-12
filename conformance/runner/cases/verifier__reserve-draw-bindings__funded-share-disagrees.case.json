@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/funded-share-disagrees",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/funded-share-disagrees",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

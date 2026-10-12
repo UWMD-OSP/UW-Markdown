@@ -1,5 +1,12 @@
-import { nestedFixtureMeta } from '../../../test/rfc-0081-corpus.js';
 import { describe, expect, it } from 'vitest';
+import { buildMeta } from './runner.js';
+import type { UWMeta, UWProvenance } from './types.js';
+
+/** A Format 3.0 `_meta`; `provenance` members override the defaults. */
+const fixtureMeta = (section: string, timestamp: string, provenance: Partial<UWProvenance>): UWMeta => {
+  const meta = buildMeta(section, 1, { source: 'manual', actor: 'test', confidence: 'high', timestamp });
+  return { ...meta, provenance: { ...meta.provenance, ...provenance } };
+};
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
@@ -218,9 +225,7 @@ describe('createDocumentMarketData', () => {
         '## Valuation {#valuation}',
         '',
         '```json uw:section=valuation v=1',
-        '{ "_meta": { "section": "valuation", "version": 1, "superseded": false,',
-        '  "source": "user_input", "agent_id": null, "agent_version": null,',
-        '  "actor": "test", "ts": "2026-06-01T00:00:00Z" } }',
+        '{ "_meta": { "section": "valuation", "provenance": { "source": "manual", "resolution": "user_input", "actor": "test", "agent_id": null, "agent_version": null, "timestamp": "2026-06-01T00:00:00Z", "notes": null }, "quality": { "confidence": "high", "human_review_required": false, "flags": [] }, "lifecycle": { "revision": 1, "superseded": false } } }',
         '```',
       ].join('\n'),
     );
@@ -359,11 +364,15 @@ describe('promoteMarketObservation', () => {
         '',
         '```json uw:section=valuation v=1',
         JSON.stringify({
-          _meta: nestedFixtureMeta({ section: 'valuation', ts: '2026-07-01T00:00:00Z', lifecycle: { revision: 1, superseded: false }, provenance: { source: 'market_data_accepted', agent_id: null, agent_version: null, actor: 'analyst@example.com', market_data_ref: {
+          _meta: fixtureMeta('valuation', '2026-07-01T00:00:00Z', {
+            resolution: 'market_data_accepted',
+            actor: 'analyst@example.com',
+            market_data_ref: {
               document_id: 'md:phx-multifamily:2026-Q2',
               as_of: AS_OF,
               digest: DIGEST,
-            } } }),
+            },
+          }),
           exit_cap_rate_pct: 0.0595,
         }),
         '```',
@@ -412,7 +421,7 @@ describe('parseMarketDataDocument', () => {
     '```json uw:section=market_observations v=1',
     JSON.stringify(
       {
-        _meta: nestedFixtureMeta({ section: 'market_observations', ts: '2026-06-30T00:00:00Z', lifecycle: { revision: 1, superseded: false }, provenance: { source: 'market_data', agent_id: null, agent_version: null, actor: 'conformance' } }),
+        _meta: fixtureMeta('market_observations', '2026-06-30T00:00:00Z', { resolution: 'market_data', actor: 'conformance' }),
         observations: [
           {
             field_path: 'valuation.going_in_cap_rate',

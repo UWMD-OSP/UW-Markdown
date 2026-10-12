@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0076-two-seniors-no-hedge-escrow",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0076-two-seniors-no-hedge-escrow",
   "requires_capabilities": [
     "validate"
   ],

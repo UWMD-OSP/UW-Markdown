@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/wrong-expenditure-variant",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/wrong-expenditure-variant",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

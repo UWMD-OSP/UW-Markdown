@@ -101,9 +101,9 @@ describe('editor — INT-02 stale parent_hash (sync)', () => {
     // hashed prior. Use computeBlockHash on the parsed result.
     const parsed2 = parseUWFile(r1.content!);
     const head = getSection(parsed2, 'property')!;
-    head.meta.integrity?.content_hash = await computeBlockHash(head, {shape: 'v3'});
+    const headHash = await computeBlockHash(head);
     // Splice it back into the file content.
-    const content2 = stampFixtureHash(r1.content!, head.meta.integrity?.content_hash);
+    const content2 = stampFixtureHash(r1.content!, headHash);
     const parsed3 = parseUWFile(content2);
 
     // Edit with WRONG parent hash → INT-02.
@@ -121,7 +121,7 @@ describe('editor — INT-02 stale parent_hash (sync)', () => {
       content2,
       parsed3,
       makeReplaceOp({ total_units: 99, year_built: 1995, asset_class: 'multifamily' }),
-      { ...CTX, parentHash: head.meta.integrity?.content_hash },
+      { ...CTX, parentHash: headHash },
     );
     expect(good.ok).toBe(true);
   });
@@ -160,7 +160,7 @@ describe('applyEditAsync — content_hash stamping', () => {
     // Seed a hashed prior into the file.
     const parsed = parseUWFile(BASE);
     const seedHead = getSection(parsed, 'property')!;
-    const seedHash = await computeBlockHash(seedHead, {shape: 'v3'});
+    const seedHash = await computeBlockHash(seedHead);
     const seeded = stampFixtureHash(BASE, seedHash);
     const parsedSeeded = parseUWFile(seeded);
 

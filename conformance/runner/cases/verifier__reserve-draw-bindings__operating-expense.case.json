@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/operating-expense",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/operating-expense",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

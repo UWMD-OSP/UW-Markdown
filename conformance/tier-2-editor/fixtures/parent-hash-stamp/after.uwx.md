@@ -63,9 +63,6 @@ computed `content_hash`.
 
 ```json uw:section=property source=manual ts=<volatile> v=2 confidence=high
 {
-  "address": "700 Parent Hash Way",
-  "asset_class": "multifamily",
-  "units": 36,
   "_meta": {
     "section": "property",
     "provenance": {
@@ -88,10 +85,12 @@ computed `content_hash`.
       "superseded": false
     },
     "integrity": {
-      "input_hash": null,
       "content_hash": "<volatile>",
       "parent_hash": "80b42de6702a102a5ffc7f084e2ec9267e6854ca7583ad58a981e986527649ae"
     }
-  }
+  },
+  "address": "700 Parent Hash Way",
+  "asset_class": "multifamily",
+  "units": 36
 }
 ```

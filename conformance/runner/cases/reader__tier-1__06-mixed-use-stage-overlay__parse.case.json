@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/06-mixed-use-stage-overlay/parse",
   "target": "reader",
-  "legacy_id": "tier-1/06-mixed-use-stage-overlay/parse",
   "requires_capabilities": [
     "parse"
   ],

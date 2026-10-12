@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-08-invalid-century-not-leap",
   "target": "verifier",
-  "legacy_id": "tier-3/date-08-invalid-century-not-leap",
   "requires_capabilities": [
     "calc-evaluate"
   ],

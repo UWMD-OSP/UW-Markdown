@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-27-invalid-date-time-local",
   "target": "verifier",
-  "legacy_id": "tier-3/date-27-invalid-date-time-local",
   "requires_capabilities": [
     "calc-evaluate"
   ],

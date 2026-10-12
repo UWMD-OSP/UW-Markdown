@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/17-exit-proceeds-junior-capital/parse",
   "target": "reader",
-  "legacy_id": "tier-1/17-exit-proceeds-junior-capital/parse",
   "requires_capabilities": [
     "parse"
   ],

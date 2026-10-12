@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-empty-series",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-empty-series",
   "requires_capabilities": [
     "validate"
   ],

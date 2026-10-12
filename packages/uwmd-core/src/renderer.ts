@@ -370,7 +370,7 @@ ${Object.entries(validation.stage_readiness).map(([stage, ready]) => `- ${ready 
 
 ---
 
-*Deal ID: ${fm.deal_id ?? 'n/a'} · Last modified: ${fm.last_modified ?? 'n/a'} · Format: .uw.md v${fm.uw_version ?? '1.1'}*
+*Deal ID: ${fm.deal_id ?? 'n/a'} · Last modified: ${fm.last_modified ?? 'n/a'} · Format: .uw.md v${fm.uw_version}*
 `;
 
   return {
@@ -395,23 +395,6 @@ function noiSpecValue(content: unknown, path: string): unknown {
   return v;
 }
 
-/**
- * Compatibility only. These top-level keys are what this renderer read before
- * it followed §4.5; no §4.5 document states them. They are consulted only when
- * the §4.5 path states nothing, so they never override a §4.5 value.
- */
-function noiLegacyValue(content: unknown, keys: readonly string[]): unknown {
-  for (const key of keys) {
-    const v = deepGet(content, key);
-    if (v != null) return v;
-  }
-  return undefined;
-}
-
-function noiField(content: unknown, specPath: string, legacyKeys: readonly string[]): unknown {
-  return noiSpecValue(content, specPath) ?? noiLegacyValue(content, legacyKeys);
-}
-
 // ─── Chat — compressed AI context bundle (<16K tokens) ───────────────────────
 // Designed to be dropped as a user message or system context into an AI chat.
 // Includes everything needed for instant deal literacy. Sections are compressed
@@ -432,7 +415,7 @@ function renderChat(parsed: ParsedUWFile, opts: RenderOptions): RenderResult {
 
   // ── Header ─────────────────────────────────────────────────────────────────
   sections.push(`# CRE DEAL CONTEXT — ${fm.deal_name ?? 'Untitled'}
-FILE FORMAT: .uw.md v${fm.uw_version ?? '1.1'} | DEAL ID: ${fm.deal_id ?? 'n/a'}
+FILE FORMAT: .uw.md v${fm.uw_version} | DEAL ID: ${fm.deal_id ?? 'n/a'}
 ADDRESS: ${fm.property_address ?? ''}, ${fm.city ?? ''} ${fm.state ?? ''} ${fm.zip ?? ''}
 ASSET CLASS: ${fm.asset_class ?? 'n/a'} | STAGE: ${fm.deal_stage ?? 'n/a'} | STATUS: ${fm.status ?? 'n/a'}
 RECOMMENDATION: ${fm.recommendation ?? 'pending'}
@@ -510,18 +493,15 @@ Amenities: ${(deepGet(c, 'amenities') as string[] | undefined)?.join(', ') || 'n
   const noiBlock = getSection(parsed, 'noi_model');
   if (noiBlock) {
     const c = noiBlock.content;
-    // The stated §4.5 ratio comes first. The legacy ratio, including its
-    // division, still reads only the legacy top-level totals, so no ratio is
-    // derived from §4.5 figures that the document does not state.
-    const legacyOpexRatio = deepGet(c, 'opex_ratio') ?? (deepGet(c, 'total_operating_expenses') != null && deepGet(c, 'effective_gross_income') != null ? ((deepGet(c, 'total_operating_expenses') as number) / (deepGet(c, 'effective_gross_income') as number)).toFixed(4) : null);
+    // §4.5 paths only; no ratio is derived from figures the document does not state.
     sections.push(`## NOI MODEL (${noiBlock.meta?.quality?.confidence ?? 'n/a'} confidence)
-GPR: ${money(noiField(c, 'income.gross_potential_rent', ['gross_potential_rent', 'scheduled_gross_revenue']))}
-Vacancy Loss: ${money(noiField(c, 'income.vacancy_credit_loss', ['vacancy_loss']))} (${pct(noiField(c, 'income.vacancy_credit_loss.rate_applied', ['vacancy_rate']))})
-Other Income: ${money(noiField(c, 'income.other_income', ['other_income']))}
-EGI: ${money(noiField(c, 'income.effective_gross_income', ['effective_gross_income']))}
-Total OpEx: ${money(noiField(c, 'expenses.total_operating_expenses', ['total_operating_expenses']))}
+GPR: ${money(noiSpecValue(c, 'income.gross_potential_rent'))}
+Vacancy Loss: ${money(noiSpecValue(c, 'income.vacancy_credit_loss'))} (${pct(noiSpecValue(c, 'income.vacancy_credit_loss.rate_applied'))})
+Other Income: ${money(noiSpecValue(c, 'income.other_income'))}
+EGI: ${money(noiSpecValue(c, 'income.effective_gross_income'))}
+Total OpEx: ${money(noiSpecValue(c, 'expenses.total_operating_expenses'))}
 NOI: ${money(deepGet(c, 'net_operating_income'))}
-OpEx Ratio: ${val(noiSpecValue(c, 'expenses.expense_ratio') ?? legacyOpexRatio)}`);
+OpEx Ratio: ${val(noiSpecValue(c, 'expenses.expense_ratio'))}`);
   }
 
   // ── Debt Structure ────────────────────────────────────────────────────────
@@ -728,7 +708,7 @@ Key Risks: ${((deepGet(c, 'key_risks') as string[] | undefined) ?? []).slice(0, 
   }
 
   // ── Footer ────────────────────────────────────────────────────────────────
-  sections.push(`---\nDeal ID: ${fm.deal_id ?? 'n/a'} | .uw.md format v${fm.uw_version ?? '1.1'} | This file is the canonical underwriting record for this deal.`);
+  sections.push(`---\nDeal ID: ${fm.deal_id ?? 'n/a'} | .uw.md format v${fm.uw_version} | This file is the canonical underwriting record for this deal.`);
 
   // Assemble and check token budget
   let content = sections.join('\n\n');

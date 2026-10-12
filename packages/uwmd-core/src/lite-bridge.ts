@@ -6,14 +6,15 @@ import type {
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import type { ParsedUWLite, UWLiteFieldNode, UWLiteScalar } from './lite.js';
 import { isBlockedSegment } from './parser.js';
-
-
-// Existing classes retain the RFC 0017 flat Format 1.1 bridge. RFC 0080
-// adds Format 2.1 authoring for the two new official classes; explicit source
-// versions are preserved, and no financial values are inferred.
-const UW_LITE_BRIDGE_FORMAT_VERSION = '3.0' as const;
+import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+import { buildMeta } from './runner.js';
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
-import type { UWFrontmatter, UWMeta } from './types.js';
+import type { UWFrontmatter } from './types.js';
+
+// The bridge emits Format 3.0 bare blocks for every class (RFC 0081 D12). A
+// Lite source stating any other uw_version is refused; no financial value is
+// inferred.
+const UW_LITE_BRIDGE_FORMAT_VERSION = SUPPORTED_FORMAT_VERSIONS[0];
 
 export const UW_LITE_BRIDGE_PROFILE = 'deal-summary-v1' as const;
 export const UW_LITE_SOURCE_EXTENSION = 'x_uw_lite_source' as const;
@@ -314,9 +315,7 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
   for (const [section, values] of [...sectionValues.entries()].sort(([left], [right]) =>
     left.localeCompare(right),
   )) {
-    const block = createEnvelopeBlock(section, values, timestamp, actor);
-
-    sections[section] = block;
+    sections[section] = createEnvelopeBlock(section, values, timestamp, actor);
   }
 
   const sourceExtension = createEnvelopeBlock(
@@ -330,7 +329,6 @@ export function compileUWLite(document: ParsedUWLite): UWLiteCompilationResult {
     timestamp,
     actor,
   );
-
 
   return {
     ok: true,
@@ -505,10 +503,16 @@ function compileFrontmatter(
   if (!dealId || !dealName || !created) return null;
   const semanticVersion = UW_LITE_BRIDGE_FORMAT_VERSION;
   if (document.frontmatter['uw_version'] !== undefined && document.frontmatter['uw_version'] !== semanticVersion) {
-    report.issues.push({ code: 'UNSUPPORTED_FORMAT_VERSION', severity: 'error', message: 'The Lite bridge supports uw_version "3.0" only.' });
+    report.issues.push({
+      code: 'UNSUPPORTED_FORMAT_VERSION',
+      severity: 'error',
+      message: `Declared uw_version ${JSON.stringify(document.frontmatter['uw_version'])} is unsupported; the Lite bridge emits "${semanticVersion}" only.`,
+    });
     return null;
   }
-  if (document.frontmatter['uw_version'] === undefined) report.defaults.push({ path: 'frontmatter.uw_version', value: semanticVersion, reason: 'The Lite bridge emits Format 3.0.' });
+  if (document.frontmatter['uw_version'] === undefined) {
+    report.defaults.push({ path: 'frontmatter.uw_version', value: semanticVersion, reason: 'The Lite bridge emits Format 3.0 (RFC 0081 D12).' });
+  }
 
   const output: Record<string, unknown> = {
     ...document.frontmatter,
@@ -570,9 +574,15 @@ function createEnvelopeBlock(
   timestamp: string,
   actor: string,
 ): UWEnvelopeBlock {
-  const meta: UWMeta = { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor, timestamp, notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } };
+  const meta = buildMeta(section, 1, { source: 'manual', actor, confidence: 'high', timestamp });
   return {
-    annotation: { section, ts: timestamp, v: 1, source: 'manual', confidence: 'high' },
+    annotation: {
+      section,
+      source: 'manual',
+      ts: timestamp,
+      v: 1,
+      confidence: 'high',
+    },
     content: { _meta: meta, ...values },
   };
 }

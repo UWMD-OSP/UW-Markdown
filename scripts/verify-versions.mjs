@@ -30,7 +30,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { OFFICIAL_MODULE_PACKAGES, moduleMetadataFromSource } from './release-packages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
@@ -96,8 +95,6 @@ const MANIFEST_ROWS = [
   { label: '@uwmd/batch', manifest: 'packages/uwmd-batch/package.json' },
   { label: '@uwmd/lake', manifest: 'packages/uwmd-lake/package.json' },
   { label: '@uwmd/signing', manifest: 'packages/uwmd-signing/package.json' },
-  { label: '@uwmd/module-hospitality', manifest: 'packages/uwmd-module-hospitality/package.json' },
-  { label: '@uwmd/module-data-center', manifest: 'packages/uwmd-module-data-center/package.json' },
   { label: 'tools/web-editor', manifest: 'tools/web-editor/package.json' },
   { label: 'tools/vscode-uwmd', manifest: 'tools/vscode-uwmd/package.json' },
 ];
@@ -180,7 +177,8 @@ if (pairChecks > 0) {
 // mirrors instead of allowing prose to silently drift from the matrix.
 
 const protocolDoc = read('spec/UW_PROTOCOL.md');
-const authoritativeProtocol = read('packages/uwmd-core/src/protocol.ts').match(/SPEC_PROTOCOL_VERSION = '([^']+)'/)?.[1] ?? statedVersion('UW Protocol');
+// The one supported protocol (RFC 0081 D1) is what the document describes.
+const authoritativeProtocol = read('packages/uwmd-core/src/protocol.ts').match(/SUPPORTED_PROTOCOL_VERSIONS = Object\.freeze\(\['([^']+)'\]/)?.[1] ?? statedVersion('UW Protocol');
 const PROTOCOL_DOC_LABELS = [
   {
     label: 'protocol status line',
@@ -205,26 +203,6 @@ for (const { label, pattern } of PROTOCOL_DOC_LABELS) {
     continue;
   }
   checks.push(`${label} ${actual}`);
-}
-
-// ── 6. Official module package, contract and compatibility are distinct ─────
-// Source literals keep this guard usable in CI before npm ci/build.
-const moduleTable = matrix.match(/### Official module compatibility\n([\s\S]*?)(?=\n### |$)/)?.[1] ?? '';
-const moduleRows = moduleTable.split('\n').filter((line) => line.trimStart().startsWith('|'))
-  .map((line) => line.split('|').slice(1, -1).map(plain));
-for (const pkg of OFFICIAL_MODULE_PACKAGES) {
-  const packageManifest = readJson(`${pkg.dir}/package.json`);
-  const metadata = moduleMetadataFromSource(read(`${pkg.dir}/src/index.ts`), pkg.constantPrefix);
-  const expected = [pkg.name, metadata.id, packageManifest.version, metadata.version, metadata.manifest_version,
-    metadata.requires_protocol, metadata.requires_format, metadata.requires_conformance, packageManifest.dependencies['@uwmd/core']];
-  const actual = moduleRows.find((cells) => cells[0] === pkg.name);
-  if (!actual || actual.length !== expected.length || expected.some((cell, i) => actual[i] !== cell)) {
-    failures.push(`VERSIONS.md: ${pkg.name} module compatibility row must be ${expected.join(' | ')}`);
-  }
-  if (packageManifest.dependencies['@uwmd/core'] !== coreVersion) {
-    failures.push(`${pkg.name}: core pairing must be exactly ${coreVersion}`);
-  }
-  checks.push(`${pkg.name}: package ${packageManifest.version}, contract ${metadata.version}, manifest schema ${metadata.manifest_version}, ID and compatibility ranges checked`);
 }
 
 // ── Report ───────────────────────────────────────────────────────────────────

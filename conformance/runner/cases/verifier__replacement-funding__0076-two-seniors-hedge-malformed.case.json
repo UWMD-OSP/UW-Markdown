@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0076-two-seniors-hedge-malformed",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0076-two-seniors-hedge-malformed",
   "requires_capabilities": [
     "validate"
   ],

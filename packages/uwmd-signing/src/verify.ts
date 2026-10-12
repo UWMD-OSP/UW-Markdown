@@ -18,14 +18,6 @@ import type { KeyStore } from './keys.js';
 /** RFC 0010's `SigVerifyError`, plus the hash check core cannot do alone. */
 export type SigVerifyError = BlockSigFailure | 'content_hash_mismatch';
 
-export interface VerifyBlockSignatureOptions {
-  /**
-   * The `uw_version` of the document the block was parsed from
-   * (`parsed.frontmatter.uw_version`). Selects the digest rule the stamped
-   * `content_hash` is recomputed under, exactly as `verifyChain` does.
-   */
-}
-
 export type BlockVerification =
   | { ok: true; kid: string }
   | { ok: false; reason: SigVerifyError; kid?: string };
@@ -42,7 +34,6 @@ export type BlockVerification =
 export async function verifyBlockSignature(
   block: UWBlock,
   store: KeyStore,
-  options: VerifyBlockSignatureOptions = {},
 ): Promise<BlockVerification> {
   const signature = block.meta.integrity?.signature;
   if (!signature) return { ok: false, reason: 'malformed' };

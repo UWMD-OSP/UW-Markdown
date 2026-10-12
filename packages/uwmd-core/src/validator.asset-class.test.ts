@@ -64,9 +64,13 @@ describe('validateUWFile — asset-class identifiers (RFC 0003)', () => {
     expect(issue?.field).toBe('modules');
   });
 
-  it('accepts the bare-string form of the modules list', () => {
-    const parsed = file('com.example.specialty_facility', { modules: ['com.example.datacenters'] });
-    expect(find(parsed, 'MOD-DEPENDENCY-UNDECLARED')).toBeUndefined();
+  it('reads only the object-list spelling of the modules list (RFC 0081 §5)', () => {
+    const bare = file('com.example.specialty_facility', { modules: ['com.example.datacenters'] });
+    expect(find(bare, 'MOD-DEPENDENCY-UNDECLARED')).toBeDefined();
+    const listed = file('com.example.specialty_facility', { modules: [{ id: 'com.example.datacenters' }] });
+    expect(find(listed, 'MOD-DEPENDENCY-UNDECLARED')).toBeUndefined();
+    const markdown = file('com.example.specialty_facility', { modules: ['id: com.example.datacenters'] });
+    expect(find(markdown, 'MOD-DEPENDENCY-UNDECLARED')).toBeUndefined();
   });
 
   it('does not warn about modules on a file whose class is malformed', () => {

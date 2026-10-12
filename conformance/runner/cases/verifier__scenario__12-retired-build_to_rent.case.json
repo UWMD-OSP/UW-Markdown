@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/12-retired-build_to_rent",
   "target": "verifier",
-  "legacy_id": "scenario/12-retired-build_to_rent",
   "requires_capabilities": [
     "validate"
   ],

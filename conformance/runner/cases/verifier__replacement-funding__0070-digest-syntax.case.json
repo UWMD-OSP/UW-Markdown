@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-digest-syntax",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-digest-syntax",
   "requires_capabilities": [
     "validate"
   ],

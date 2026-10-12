@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-25-invalid-trailing-newline",
   "target": "verifier",
-  "legacy_id": "tier-3/date-25-invalid-trailing-newline",
   "requires_capabilities": [
     "calc-evaluate"
   ],

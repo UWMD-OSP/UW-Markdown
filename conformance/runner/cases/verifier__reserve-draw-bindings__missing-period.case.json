@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/missing-period",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/missing-period",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -21,7 +21,25 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property"
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-12T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "total_units": 100
@@ -29,7 +47,25 @@
     },
     "dcf": {
       "meta": {
-        "section": "dcf"
+        "section": "dcf",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-12T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "annual_cash_flows": [
@@ -53,7 +89,25 @@
   "custom_calculations": [
     {
       "meta": {
-        "section": "custom_calculations"
+        "section": "custom_calculations",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-09-12T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "id": "mismatch",

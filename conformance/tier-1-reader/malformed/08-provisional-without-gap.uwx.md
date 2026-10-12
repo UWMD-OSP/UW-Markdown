@@ -20,7 +20,7 @@ created_by: "test-fixture"
 
 # Malformed — DQ-01
 
-The `noi_model` block is `_meta.provisional: true` but no `gaps`
+The `noi_model` block is `_meta.quality.provisional: true` but no `gaps`
 section references it. Validator MUST emit `DQ-01` (warning).
 
 ## Property {#property}

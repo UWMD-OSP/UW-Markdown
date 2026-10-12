@@ -245,12 +245,10 @@ describe('period column and trusted emitter contracts', () => {
   it('projects every row through safe literal traversal without quantization', () => {
     const parsed = file();
     (parsed.sections['dcf'] as UWBlock).content = {
-      content: {
-        annual_cash_flows: [
-          { year: 3, 'tax.rate': 0.123456789 },
-          { year: 1, 'tax.rate': null },
-        ],
-      },
+      annual_cash_flows: [
+        { year: 3, 'tax.rate': 0.123456789 },
+        { year: 1, 'tax.rate': null },
+      ],
     };
     expect(resolvePeriodColumn(parsed, "dcf.annual_cash_flows@Y3['tax.rate']")).toMatchObject({
       reference: "dcf.annual_cash_flows@Y3['tax.rate']",

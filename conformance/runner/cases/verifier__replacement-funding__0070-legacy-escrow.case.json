@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-legacy-escrow",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-legacy-escrow",
   "requires_capabilities": [
     "validate"
   ],

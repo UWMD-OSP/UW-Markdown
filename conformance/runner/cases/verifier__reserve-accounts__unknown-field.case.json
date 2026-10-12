@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/unknown-field",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/unknown-field",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

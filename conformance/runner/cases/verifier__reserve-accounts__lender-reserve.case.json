@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/lender-reserve",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/lender-reserve",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -85,8 +85,9 @@ File | Role
 off the deal's `frontmatter.asset_class` rather than hard-coding `MULTIFAMILY_PACK`.
 Registered today: `multifamily`, `office`, `retail`, `industrial`, `self_storage`,
 `hospitality`, `senior_housing`, `student_housing`, `land`, `data_center`,
-`manufactured_housing`, `mixed_use`. A legacy alias such as `org.uwmd.data_center`
-resolves to its builtin first.
+`manufactured_housing`, `mixed_use`. Each has exactly one spelling; a
+namespaced suffix such as `org.uwmd.data_center` is refused
+(`INVALID-ASSET-CLASS-002`).
 
 ## `MULTIFAMILY_PACK`
 
@@ -493,4 +494,4 @@ extensions use modules.
 
 All twelve official classes are full builtins, including `data_center` and `manufactured_housing`. Their normative metric definitions and size selectors live in `spec/metrics/`, with bidirectional pack/registry parity tests. Both new packs use all six RFC 0079 standard income definitions, including equity_total-based cash-on-cash. Source size is `property.critical_it_load_kw` or `property.total_sites`, mirrored against the detailed capacity/site count. They have Excel layouts and starter defaults, and take the base stage lists verbatim like multifamily (no stage overlay; a missing `rent_roll` is DQ-06). Default tables are owner-approved starter proxies (2026-10-10), never verification inputs; data center publishes no expense-ratio default, so producers state it.
 
-Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its sole RevPAR definition stays rooms revenue divided by available room nights. Official module packages are compatibility shells only, retained in the publish set until the transition release. Legacy `org.uwmd.data_center` reads without source/digest mutation (CLS-01); official module dependencies are satisfied by core (CLS-02). Third-party classes remain module extensions.
+Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its sole RevPAR definition stays rooms revenue divided by available room nights. Official classes have no module packages and no module-gated behavior: the class rules and calcs apply identically to every document of the class. Third-party classes remain module extensions.

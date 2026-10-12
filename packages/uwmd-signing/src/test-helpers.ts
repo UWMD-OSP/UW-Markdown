@@ -4,17 +4,23 @@
 // block factory in the public API would invite production code to build blocks
 // that never went through the parser.
 
-import { computeBlockHash, type ParsedUWFile, type UWBlock } from '@uwmd/core';
+import { computeBlockHash, type ParsedUWFile, type UWBlock, type UWIntegrity } from '@uwmd/core';
 
 export function makeBlock(
   sectionId: string,
   content: Record<string, unknown>,
-  meta: Partial<UWBlock['meta']> = {},
+  integrity?: UWIntegrity,
 ): UWBlock {
   return {
     annotation: { section: sectionId } as UWBlock['annotation'],
     content,
-    meta: { section: sectionId, ...meta, lifecycle: { ...meta.lifecycle, revision: 1, superseded: false }, provenance: { ...meta.provenance, source: 'manual', agent_id: null, agent_version: null, actor: 'human/jared', timestamp: '2026-08-27T00:00:00Z', notes: null }, quality: { ...meta.quality, confidence: 'medium', human_review_required: false, flags: [] }, integrity: { ...meta.integrity, input_hash: null } },
+    meta: {
+      section: sectionId,
+      provenance: { source: 'manual', actor: 'human/jared', agent_id: null, agent_version: null, timestamp: '2026-08-27T00:00:00Z', notes: null },
+      quality: { confidence: 'medium', human_review_required: false, flags: [] },
+      lifecycle: { revision: 1, superseded: false },
+      ...(integrity ? { integrity } : {}),
+    },
     prose: '',
     rawJson: '',
     lineStart: 1,
@@ -25,9 +31,9 @@ export function makeBlock(
 export async function hashedBlock(
   sectionId: string,
   content: Record<string, unknown>,
-  meta: Partial<UWBlock['meta']> = {},
+  integrity?: UWIntegrity,
 ): Promise<UWBlock> {
-  const block = makeBlock(sectionId, content, meta);
+  const block = makeBlock(sectionId, content, integrity);
   return { ...block, meta: { ...block.meta, integrity: { ...block.meta.integrity, content_hash: await computeBlockHash(block) } } };
 }
 
@@ -36,7 +42,7 @@ export function makeFile(
   superseded: Record<string, UWBlock[]> = {},
 ): ParsedUWFile {
   return {
-    frontmatter: { asset_class: 'multifamily' } as ParsedUWFile['frontmatter'],
+    frontmatter: { uw_version: '3.0', asset_class: 'multifamily' } as ParsedUWFile['frontmatter'],
     sections,
     prose: {},
     pipeline_log: [],

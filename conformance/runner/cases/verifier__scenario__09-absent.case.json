@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/09-absent",
   "target": "verifier",
-  "legacy_id": "scenario/09-absent",
   "requires_capabilities": [
     "validate"
   ],

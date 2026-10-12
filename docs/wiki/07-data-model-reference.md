@@ -47,8 +47,10 @@ interface ParsedUWFile {
 ```ts
 interface UWBlock<T = Record<string, unknown>> {
   annotation: UWFenceAnnotation;   // parsed from the ```json uw:… fence
-  meta: UWMeta;                    // provenance (see below)
-  content: T;                      // the section's JSON fields
+  meta: UWMeta;                    // the block's `_meta` object (see below)
+  content: T;                      // the whole parsed block, `_meta` included;
+                                   // blockPayload(block) is it minus the reserved
+                                   // members `_meta`, `_role`, `_overrides`, `_notes`
   prose: string;                   // markdown immediately before the block
   rawJson: string;
   lineStart: number; lineEnd: number;   // 1-indexed
@@ -57,19 +59,36 @@ interface UWBlock<T = Record<string, unknown>> {
 
 ## `UWMeta` (provenance — every block has one)
 
+One nested shape, exactly as `spec/schemas/uwmd-block.schema.json` defines it.
+`_meta` is the block's first member; a flat `_meta` or a `section_id` wrapper
+is `META-01`.
+
 ```ts
 interface UWMeta {
-  section: string; version: number; superseded: boolean;
-  source: SourceTag; agent_id: string | null; agent_version: string | null;
-  actor: string; timestamp: string;            // ISO-8601
-  confidence: ConfidenceLevel; human_review_required: boolean;
-  flags: string[]; input_hash: string | null; notes: string | null;
-  // optional integrity/quality:
-  partial?: boolean; provisional?: boolean;
-  field_overrides?: UWFieldOverride[];         // {path, confidence?, source?, reason?, note?}
-  content_hash?: string; parent_hash?: string | null;
+  section: string;                              // equals the fence's section
+  provenance: {
+    source: SourceTag; resolution?: SourceTag; actor: string;
+    agent_id?: string | null; agent_version?: string | null;
+    timestamp: string;                          // ISO-8601
+    notes?: string | null; market_data_ref?: MarketDataRef; inherited_from?: InheritedFrom;
+  };
+  quality: {
+    confidence: ConfidenceLevel; human_review_required: boolean;
+    flags?: string[]; partial?: boolean; provisional?: boolean;
+  };
+  lifecycle: { revision: number; superseded: boolean };
+  integrity?: {
+    algorithm?: 'sha256'; input_hash?: string | null;
+    content_hash?: string; parent_hash?: string | null; signature?: UWBlockSignature;
+  };
 }
 ```
+
+Field-level overrides live in the block's reserved `_overrides` member
+(`UWFieldOverride[]`: `{path, confidence?, source?, reason?, note?}`), not in
+`_meta`. An edit operation's `meta` is a `UWMetaPatch`
+(`{ provenance?: Partial<…>; quality?: Partial<…> }`); the host owns `section`,
+`lifecycle` and `integrity`.
 
 ## `UWFrontmatter`
 
@@ -176,7 +195,7 @@ interface ValidationResult {
 ```
 
 `ValidationMessage`: `{ code, severity, section?, field?, message, value?,
-threshold?, title?, remediation?, spec_ref?, legacy_code? }` — `title`/
+threshold?, title?, remediation?, spec_ref? }` — `title`/
 `remediation`/`spec_ref` are filled from `BUILTIN_REMEDIATIONS` when a matching
 code exists.
 

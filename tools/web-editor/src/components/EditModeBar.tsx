@@ -74,7 +74,7 @@ export function EditModeBar(props: {
               onChange={(e) => onChange({ source: e.target.value })}
             />
           </Labeled>
-          <Labeled label="Note (→ _meta.notes)" wide>
+          <Labeled label="Note (→ _meta.provenance.notes)" wide>
             <input
               className="input"
               value={settings.notes}

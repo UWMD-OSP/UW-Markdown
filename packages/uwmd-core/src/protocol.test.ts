@@ -11,15 +11,13 @@ import {
   lookupIncompleteDataPolicy,
   PROTOCOL_VERSION,
   FORMAT_VERSION,
-  SPEC_FORMAT_VERSION,
-  SPEC_PROTOCOL_VERSION,
   RESOLUTION_METHODS,
   SUPPORTED_FORMAT_VERSIONS,
   SUPPORTED_PROTOCOL_VERSIONS,
   REFERENCE_IMPLEMENTATION_MANIFEST,
   CONFORMANCE_TARGETS,
   CONFORMANCE_PROFILES,
-  readConformanceTier,
+  isConformanceTier,
   BUILTIN_REMEDIATIONS,
   VALIDATOR_CODE_FAMILIES,
   validatorCodeFamily,
@@ -105,17 +103,15 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 });
 
 describe('protocol — version', () => {
-  it('stages the accepted RFC 0081 versions without changing release labels', () => {
-    expect(SUPPORTED_FORMAT_VERSIONS).toContain(SPEC_FORMAT_VERSION);
-    expect(SUPPORTED_PROTOCOL_VERSIONS).toContain(SPEC_PROTOCOL_VERSION);
-    expect(SPEC_FORMAT_VERSION).toBe('3.0');
-    expect(SPEC_PROTOCOL_VERSION).toBe('4.0.0');
+  it('supports exactly one format and one protocol (RFC 0081 D1)', () => {
+    expect(SUPPORTED_FORMAT_VERSIONS).toEqual(['3.0']);
+    expect(SUPPORTED_PROTOCOL_VERSIONS).toEqual(['4.0.0']);
     const blockSchema = JSON.parse(readFileSync(resolve(__dirname, '../../../spec/schemas/uwmd-block.schema.json'), 'utf8'));
     expect(blockSchema.$defs.ResolutionTag.enum).toEqual([...RESOLUTION_METHODS]);
     expect(validatorCodeFamily('UNSUPPORTED_FORMAT_VERSION')?.capabilities).toEqual(['parse']);
     expect(BUILTIN_REMEDIATIONS.find(r => r.code === 'META-01')).toBeDefined();
     const spec = readFileSync(resolve(__dirname, '../../../spec/UW_PROTOCOL.md'), 'utf8');
-    expect(spec).toContain(`— protocol **${SPEC_PROTOCOL_VERSION}**`);
+    expect(spec).toContain(`— protocol **${SUPPORTED_PROTOCOL_VERSIONS[0]}**`);
   });
   it('publishes the current protocol version', () => {
     expect(PROTOCOL_VERSION).toBe('3.0.0');
@@ -214,41 +210,18 @@ describe('ImplementationManifest tiers and profiles (RFC 0078)', () => {
     expect(validate({ ...base, profiles: ['module', 'module'] })).toBe(false);
   });
 
-  it('reads the 3.0 tiers as themselves', () => {
-    expect(readConformanceTier('reader')).toEqual({ tier: 'reader' });
-    expect(readConformanceTier('verifier')).toEqual({ tier: 'verifier' });
-  });
-
-  it('maps every legacy tier exactly as RFC 0078 fixes it, inferring no profile', () => {
-    expect(readConformanceTier('tier-1-reader')).toEqual({ tier: 'reader', legacy: 'tier-1-reader' });
-    expect(readConformanceTier('tier-2-editor')).toEqual({
-      tier: 'reader', legacy: 'tier-2-editor', starter_product_claim: 'editor',
-    });
-    expect(readConformanceTier('tier-3-calc-host')).toEqual({ tier: 'verifier', legacy: 'tier-3-calc-host' });
-    expect(readConformanceTier('tier-4-agent-host')).toEqual({
-      tier: 'verifier', legacy: 'tier-4-agent-host', starter_product_claim: 'agent-host',
-    });
-    for (const tier of LEGACY) expect(readConformanceTier(tier)).not.toHaveProperty('profiles');
-  });
-
-  it('refuses rather than guesses an unknown tier', () => {
-    for (const tier of ['tier-5', 'Reader', '', null, undefined, 3, 'constructor', '__proto__']) {
-      expect(readConformanceTier(tier)).toBeNull();
+  it('recognizes exactly the two tiers, refusing every retired or unknown value', () => {
+    expect(isConformanceTier('reader')).toBe(true);
+    expect(isConformanceTier('verifier')).toBe(true);
+    for (const tier of [...LEGACY, 'tier-5', 'Reader', '', null, undefined, 3, 'constructor', '__proto__']) {
+      expect(isConformanceTier(tier)).toBe(false);
     }
-  });
-
-  it('returns a fresh reading, so a caller cannot corrupt the mapping', () => {
-    const reading = readConformanceTier('tier-2-editor')!;
-    reading.tier = 'verifier';
-    expect(readConformanceTier('tier-2-editor')?.tier).toBe('reader');
   });
 
   it('final Protocol §II.5 admits no runtime tier aliases (RFC 0081)', () => {
     const section = repoFile('spec/UW_PROTOCOL.md').split('### II.5 Tier composition')[1]?.split('\n### ')[0] ?? '';
     expect(section).toContain('No legacy value or numeric alias is admitted');
     for (const tier of LEGACY) expect(section).not.toContain(tier);
-    // The old alias helper is deliberately retained until Phase 4, and remains
-    // pinned by the exact independent mappings above.
   });
 
   it('names exactly the six profiles in the §II.3 table', () => {
@@ -307,7 +280,7 @@ describe('validator code families (§III.6a, RFC 0030)', () => {
   });
 });
 
-// ─── RFC 0031: actor grammar for _meta.source ────────────────────────────────
+// ─── RFC 0031: actor grammar for _meta.provenance.source ────────────────────────────────
 
 describe('parseActorSource (RFC 0031)', () => {
   it('accepts manual and every registered namespace', () => {

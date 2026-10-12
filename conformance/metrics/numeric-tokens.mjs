@@ -30,12 +30,9 @@ export function jsonNumericTokens(source) {
 
 export function jsonStatedDecimals(block, path, stated) {
   if (!block.rawJson) return undefined;
-  const parsed = JSON.parse(block.rawJson);
   const numbers = jsonNumericTokens(block.rawJson);
-  const segments = path.split('.');
-  // Match blockPayload: an own content member is the user payload, with either metadata shape.
-  const envelope = Object.hasOwn(parsed, 'content');
-  const token = numbers.get(JSON.stringify(envelope ? ['content', ...segments] : segments));
+  // The bare block: the payload sits beside `_meta` (Format §2.4).
+  const token = numbers.get(JSON.stringify(path.split('.')));
   return token !== undefined && Number(token) === stated ? getStatedDecimals(token) : undefined;
 }
 

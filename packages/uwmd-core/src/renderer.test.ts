@@ -318,7 +318,7 @@ describe('render — size intensives (RFC 0027)', () => {
 // document carries, so a fully stated model rendered GPR, EGI and OpEx as n/a.
 
 function noiDoc(content: Record<string, unknown>): string {
-  const meta = '"_meta": { "section": "noi_model", "version": 1, "superseded": false, "source": "manual", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-10-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }';
+  const meta = '"_meta": { "section": "noi_model", "provenance": { "source": "manual", "actor": "user", "agent_id": null, "agent_version": null, "timestamp": "2026-10-01T00:00:00Z", "notes": null }, "quality": { "confidence": "high", "human_review_required": false, "flags": [] }, "lifecycle": { "revision": 1, "superseded": false } }';
   return `---
 uw_version: "3.0"
 deal_id: "uw_2026_NOI"
@@ -430,28 +430,14 @@ const LEGACY_NOI = {
   net_operating_income: 470000,
 };
 
-describe('render — chat NOI legacy top-level fallback (compatibility only)', () => {
-  it('a document with only legacy top-level keys renders exactly as before', () => {
-    // These are the bytes the pre-§4.5 renderer produced for this block,
-    // including its own legacy ratio division.
-    expect(chatNoiLines(parseUWFile(noiDoc(LEGACY_NOI)))).toEqual([
-      'GPR: $800,000',
-      'Vacancy Loss: $40,000 (5.00%)',
-      'Other Income: $10,000',
-      'EGI: $770,000',
-      'Total OpEx: $300,000',
-      'NOI: $470,000',
-      'OpEx Ratio: 0.3896',
-    ]);
+describe('render — chat NOI reads only the §4.5 paths (RFC 0081 §7)', () => {
+  it('never reads the pre-§4.5 top-level keys or derives a ratio from them', () => {
+    const lines = chatNoiLines(parseUWFile(noiDoc(LEGACY_NOI)));
+    expect(lines.filter((line) => !line.startsWith('NOI:')).every((line) => line.includes('n/a'))).toBe(true);
+    expect(lines).toContain('NOI: $470,000');
   });
 
-  it('keeps scheduled_gross_revenue as the last legacy GPR key', () => {
-    const { gross_potential_rent: _omitted, ...rest } = LEGACY_NOI;
-    const lines = chatNoiLines(parseUWFile(noiDoc({ ...rest, scheduled_gross_revenue: 790000 })));
-    expect(lines).toContain('GPR: $790,000');
-  });
-
-  it('never overrides a stated §4.5 value', () => {
+  it('renders the stated §4.5 values when both shapes are present', () => {
     // Both shapes present with different figures: §4.5 wins on every line.
     const lines = chatNoiLines(parseUWFile(noiDoc({ ...LEGACY_NOI, ...SPEC_NOI, opex_ratio: 0.9 })));
     expect(lines).toEqual([

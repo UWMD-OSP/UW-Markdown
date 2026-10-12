@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/08-land_banking",
   "target": "verifier",
-  "legacy_id": "scenario/08-land_banking",
   "requires_capabilities": [
     "validate"
   ],

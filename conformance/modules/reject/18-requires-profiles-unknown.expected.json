@@ -1,0 +1,6 @@
+{
+  "expected_codes": [
+    "PROTO-MOD-006"
+  ],
+  "note": "requires_profiles lists members of the closed profile list only (RFC 0081 \u00a76)."
+}

@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/mixed-use-data_center_price_per_kw",
   "target": "verifier",
-  "legacy_id": "tier-3/mixed-use-data_center_price_per_kw",
   "requires_capabilities": [
     "calc-evaluate"
   ],

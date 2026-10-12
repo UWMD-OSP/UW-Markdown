@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-1/17-exit-proceeds-junior-capital/validate",
   "target": "verifier",
-  "legacy_id": "tier-1/17-exit-proceeds-junior-capital/validate",
   "requires_capabilities": [
     "validate"
   ],

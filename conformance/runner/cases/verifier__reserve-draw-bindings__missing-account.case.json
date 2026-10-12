@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/missing-account",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/missing-account",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

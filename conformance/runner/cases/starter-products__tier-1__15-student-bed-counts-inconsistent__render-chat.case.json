@@ -1,7 +1,6 @@
 {
   "id": "starter-products/tier-1/15-student-bed-counts-inconsistent/render-chat",
   "target": "starter-products",
-  "legacy_id": "tier-1/15-student-bed-counts-inconsistent/render-chat",
   "requires_capabilities": [
     "render-chat"
   ],

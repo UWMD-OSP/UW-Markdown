@@ -8,7 +8,6 @@ import { validateUWFile } from './validator.js';
 import { applyEdit } from './editor.js';
 import { writeAgentBlock } from './runner.js';
 import { computeBlockHash } from './integrity.js';
-import { reshapeMetaV1toV2 } from './meta-shape.js';
 import { stringifyUWX } from './lite-bridge.js';
 import { toUWEnvelope, fromUWEnvelope } from './envelope.js';
 import { stringifyUWJson, parseUWJson } from './uwjson.js';
@@ -29,7 +28,7 @@ const frontmatter = "---\nuw_version: \"3.0\"\ndeal_id: roles\nasset_class: mult
 const document = (role: unknown = 'primary') => `${frontmatter}Untouched prose.
 
 \`\`\`json uw:section=property source=manual v=1
-${JSON.stringify({ _role: role, _meta: reshapeMetaV1toV2(meta('property')), total_units: 100 }, null, 2)}
+${JSON.stringify({ _meta: meta('property'), _role: role, total_units: 100 }, null, 2)}
 \`\`\`
 
 Untouched tail.
@@ -43,7 +42,7 @@ describe('RFC 0040 role selection', () => {
   });
   it('registers exactly the format §5.3 preferences', () => {
     // A surface test: a rule gaining or losing a preference is a §5.3 change.
-    const hedgeRules = ['HDG-01', 'HDG-02', 'HDG-03', 'HDG-04', 'HDG-05', 'HDG-06', 'HDG-07', 'HDG-08',
+    const hedgeRules = ['HDG-01', 'HDG-02', 'HDG-03', 'HDG-06', 'HDG-07', 'HDG-08',
       'HDG-09', 'HDG-10', 'ESC-04'];
     expect(CROSS_CHECK_ROLE_PREFERENCE).toEqual({
       'CC-01': { rent_roll: 'detail' },
@@ -141,25 +140,23 @@ describe('RFC 0040 trusted writers and integrity', () => {
       expect(getSection(parseUWFile(result.content), 'property')?.content['_role']).toBe(source === frontmatter ? undefined : 'primary');
     }
   });
-  it.each(['1.1', '2.0'])('preserves the %s annotation through Markdown, JSON, XML and CSV envelopes', async (version) => {
-    let source = document();
-    if (version === '2.0') source = source.replace("uw_version: \"3.0\"", "uw_version: \"3.0\"").replace(JSON.stringify(meta('property'), null, 2).split('\n').join('\n  '), JSON.stringify(reshapeMetaV1toV2(meta('property')), null, 2).split('\n').join('\n  '));
-    const parsed = parseUWFile(source); const envelope = toUWEnvelope(parsed);
+  it('preserves the annotation through Markdown, JSON, XML and CSV envelopes', async () => {
+    const parsed = parseUWFile(document()); const envelope = toUWEnvelope(parsed);
     expect(getSection(parseUWFile(stringifyUWX(envelope)), 'property')?.content['_role']).toBe('primary');
     const representations = [parseUWJson(stringifyUWJson(parsed)), await parseUWXml(await stringifyUWXml(envelope)), await decodeUWCSVBundle(await encodeUWCSVBundle(envelope))];
     for (const decoded of representations) {
       expect(getSection(fromUWEnvelope(decoded), 'property')?.content['_role']).toBe('primary');
     }
   });
-  it.each(['v1', 'v2'] as const)('covers _role under the existing %s hash contract', async (shape) => {
+  it('covers _role under the block hash (Protocol §V.9)', async () => {
     const original = block({ _role: 'senior', loan_amount: 100 });
     const changed = { ...original, content: { ...original.content, _role: 'junior' } };
-    expect(await computeBlockHash(changed, { shape })).not.toBe(await computeBlockHash(original, { shape }));
+    expect(await computeBlockHash(changed)).not.toBe(await computeBlockHash(original));
   });
 });
 
 describe('RFC 0040 Markdown variant routing', () => {
-  const fence = (variant: string, content: Record<string, unknown>) => `\n\`\`\`json uw:section=debt_structure variant=${variant} source=manual v=1\n${JSON.stringify({ _meta: reshapeMetaV1toV2(meta('debt_structure')), ...content })}\n\`\`\`\n`;
+  const fence = (variant: string, content: Record<string, unknown>) => `\n\`\`\`json uw:section=debt_structure variant=${variant} source=manual v=1\n${JSON.stringify({ _meta: meta('debt_structure'), ...content })}\n\`\`\`\n`;
   it.each([false, true])('keeps unannotated peers when the role appears first=%s', (first) => {
     const parts = [fence('a', { _role: 'senior', loan_amount: 600 }), fence('b', { loan_amount: 100 }), fence('c', { _role: 'junior', loan_amount: 200 })];
     const parsed = parseUWFile(frontmatter + (first ? parts : [...parts].reverse()).join(''));

@@ -24,7 +24,7 @@ after disposition. These are authored test assertions, not a reserve rollforward
     "section": "lease_up_schedule",
     "provenance": {
       "source": "manual",
-      "resolution": "manual_override",
+      "resolution": "user_override",
       "actor": "synthetic-test-author",
       "timestamp": "2026-09-12T00:00:00Z",
       "notes": "Synthetic engineering inputs, not an actual property or investment."
@@ -70,7 +70,7 @@ after disposition. These are authored test assertions, not a reserve rollforward
     "section": "cash_flow_series",
     "provenance": {
       "source": "manual",
-      "resolution": "manual_override",
+      "resolution": "user_override",
       "actor": "synthetic-test-author",
       "timestamp": "2026-09-12T00:00:00Z",
       "notes": "Synthetic engineering inputs, not an actual property or investment."

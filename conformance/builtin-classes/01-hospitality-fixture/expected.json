@@ -1,5 +1,5 @@
 {
-  "description": "RFC 0080 core builtin control. The hospitality module against its own fixture. Five calcs compute; both warning rules fire and neither is an error. This is the end-to-end proof RFC 0006 asked for: an external manifest, a real registry, a real file.",
+  "description": "RFC 0080 core builtin control. The builtin hospitality pack and validator against the hotel fixture: five calcs compute, both warning rules fire and neither is an error.",
   "expected_calcs": {
     "revpar": 129.6,
     "total_room_revenue": 3784320,

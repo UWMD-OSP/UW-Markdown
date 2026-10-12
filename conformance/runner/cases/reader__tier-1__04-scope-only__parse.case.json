@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/04-scope-only/parse",
   "target": "reader",
-  "legacy_id": "tier-1/04-scope-only/parse",
   "requires_capabilities": [
     "parse"
   ],

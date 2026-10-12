@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/lender-reserve",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/lender-reserve",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

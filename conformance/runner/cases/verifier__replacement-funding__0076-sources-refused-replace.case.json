@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0076-sources-refused-replace",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0076-sources-refused-replace",
   "requires_capabilities": [
     "validate"
   ],

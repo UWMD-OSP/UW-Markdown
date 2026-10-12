@@ -15,7 +15,7 @@
 
 import { stampMetaIntoBlockContent, bumpRawMetaVersion } from './metadata.js';
 import { isBlockRole } from './block-roles.js';
-import type { ParsedUWFile, UWBlock, UWMeta } from './types.js';
+import type { ParsedUWFile, UWBlock, UWMeta, UWMetaPatch } from './types.js';
 import type {
   CapabilityVerifier,
   EditAuthority,
@@ -33,10 +33,10 @@ import { computeBlockHash } from './integrity.js';
 
 /**
  * Identity of the actor performing the edit. The dispatcher uses `source` to
- * resolve an EditPolicy and to stamp `_meta.source` on the new block.
+ * resolve an EditPolicy and to stamp `_meta.provenance.source` on the new block.
  */
 export interface EditContext {
-  /** Human name, system identifier, or agent ID. Stamped on `_meta.actor`. */
+  /** Human name, system identifier, or agent ID. Stamped on `_meta.provenance.actor`. */
   actor: string;
   /** Provenance pattern. Examples: "manual", "agent/L6", "document/rent_roll", "system/init", "institution/abc-bank". */
   source: string;
@@ -46,11 +46,11 @@ export interface EditContext {
   agentVersion?: string | null;
   /** Confidence to stamp on new blocks. Defaults to 'medium'. */
   confidence?: 'high' | 'medium' | 'low';
-  /** Free-form `_meta.notes` for the new block. */
+  /** Free-form `_meta.provenance.notes` for the new block. */
   notes?: string;
   /**
    * SHA-256 content_hash of the section's current head, captured at read time.
-   * Required when the head carries `_meta.content_hash` AND the caller is
+   * Required when the head carries `_meta.integrity.content_hash` AND the caller is
    * editing through `applyEditAsync` with `integrity: true`. A mismatch with
    * the live head triggers INT-02 (concurrent write detected).
    */
@@ -98,7 +98,7 @@ export interface EditOptions {
   maintainGaps?: boolean;
   /**
    * Enable content_hash chain enforcement (UW_PROTOCOL.md §V.10):
-   *   - If the section's current head has `_meta.content_hash`, the caller's
+   *   - If the section's current head has `_meta.integrity.content_hash`, the caller's
    *     `EditContext.parentHash` MUST equal it (else INT-02).
    *   - The new block is stamped with `parent_hash = prior.content_hash`.
    *   - The new block's `content_hash` is computed and stamped.
@@ -237,12 +237,10 @@ export async function applyEditAsync(
   const newHead = lookupSection(reparsed, op.section_id, op.variant);
   if (!newHead) return result;
 
-  // Stamp parent_hash + content_hash on the new head. Canonicalization is
-  // versioned by the file's uw_version (RFC 0009 — the v2 rule for 2.0 files).
-  newHead.meta.integrity ??= {};
-  newHead.meta.integrity!.parent_hash = priorHash;
-  // Compute over the block (canonicalizer strips content_hash itself).
-  newHead.meta.integrity!.content_hash = await computeBlockHash(newHead);
+  // Stamp parent_hash + content_hash on the new head. The digest covers the
+  // block minus _meta (Protocol §V.9), so stamping either never moves it.
+  const contentHash = await computeBlockHash(newHead);
+  newHead.meta.integrity = { ...newHead.meta.integrity, content_hash: contentHash, parent_hash: priorHash };
 
   const stamped = restampBlockMeta(result.content, newHead);
   return { ...result, content: stamped };
@@ -251,14 +249,13 @@ export async function applyEditAsync(
 /**
  * Re-emit a single block in `content` with a fresh _meta payload. Locates the
  * block by lineStart/lineEnd from the parsed AST and rewrites only that range.
- * `block.meta` is always the flat in-memory view; for a v2 file it is
- * reshaped back to the nested on-disk form (with the `_overrides` lift).
  */
 function restampBlockMeta(content: string, block: UWBlock): string {
   const lines = content.split('\n');
   const fence = lines[block.lineStart - 1] ?? '';
   const closing = lines[block.lineEnd - 1] ?? '```';
-  const updatedContent: Record<string, unknown> = { _meta: block.meta, ...Object.fromEntries(Object.entries(block.content).filter(([key]) => key !== '_meta')) };
+  const updatedContent: Record<string, unknown> = { ...block.content };
+  stampMetaIntoBlockContent(updatedContent, block.meta);
   const json = JSON.stringify(updatedContent, null, 2);
   const before = lines.slice(0, block.lineStart - 1);
   const after = lines.slice(block.lineEnd);
@@ -476,13 +473,11 @@ function applySectionReplace(
   // buildMeta uses Date.now() — pin to the timestamp that frontmatter is also bumped to.
   meta.provenance.timestamp = now;
 
-  // Allow the operation's `meta` partial to override scalar fields (e.g. flags, confidence).
-  const finalMeta: UWMeta = {
-    ...meta, ...op.meta,
-    provenance: { ...meta.provenance, ...op.meta?.provenance },
-    quality: { ...meta.quality, ...op.meta?.quality },
-    lifecycle: { revision: newVersion, superseded: false },
-  };
+  // The operation's `meta` patch overrides provenance and quality members
+  // (e.g. flags, confidence); the host owns section, lifecycle and integrity.
+  const patchError = metaPatchError(op.meta);
+  if (patchError) return { ok: false, error: protoError('PROTO-EDIT-002', patchError, op.section_id) };
+  const finalMeta = applyMetaPatch(meta, op.meta);
   if (op.role !== undefined && op.role !== null && !isBlockRole(op.role)) {
     return { ok: false, error: protoError('PROTO-EDIT-002', 'role must be a valid block role or null', op.section_id) };
   }
@@ -492,10 +487,9 @@ function applySectionReplace(
   } else if (existing && Object.prototype.hasOwnProperty.call(existing.content, '_role')) {
     blockContent['_role'] = existing.content['_role'];
   }
-  // Emit the shape the file's uw_version demands (RFC 0009: nested for 2.0).
   stampMetaIntoBlockContent(blockContent, finalMeta);
 
-  const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.quality.confidence ?? 'medium');
+  const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.quality.confidence);
   const blockJson = JSON.stringify(blockContent, null, 2);
   const newBlockText = `${annotation}\n${blockJson}\n\`\`\``;
 
@@ -543,12 +537,9 @@ function applySectionSupersede(
     notes: ctx.notes,
   });
   meta.provenance.timestamp = now;
-  const finalMeta: UWMeta = {
-    ...meta, ...op.meta,
-    provenance: { ...meta.provenance, ...op.meta?.provenance },
-    quality: { ...meta.quality, ...op.meta?.quality },
-    lifecycle: { revision: newVersion, superseded: false },
-  };
+  const patchError = metaPatchError(op.meta);
+  if (patchError) return { ok: false, error: protoError('PROTO-EDIT-002', patchError, op.section_id) };
+  const finalMeta = applyMetaPatch(meta, op.meta);
   if (op.role !== undefined && op.role !== null && !isBlockRole(op.role)) {
     return { ok: false, error: protoError('PROTO-EDIT-002', 'role must be a valid block role or null', op.section_id) };
   }
@@ -567,7 +558,7 @@ function applySectionSupersede(
     supersededPriorBlock = true;
   }
 
-  const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.quality.confidence ?? 'medium');
+  const annotation = buildFenceAnnotation(op.section_id, op.variant, ctx.source, now, newVersion, finalMeta.quality.confidence);
   const blockJson = JSON.stringify(blockContent, null, 2);
   const newBlockText = `${annotation}\n${blockJson}\n\`\`\``;
 
@@ -618,11 +609,18 @@ function applyPipelineLogAppend(
   blockContent['entries'] = entries;
 
   const now = new Date().toISOString();
-  const meta = blockContent['_meta'] as UWMeta;
-  // Shape-aware bump: v2 pipeline blocks carry lifecycle.revision /
-  // provenance.timestamp (RFC 0009); the fence v= mirror gets either.
+  const meta = blockContent['_meta'] as UWMeta | undefined;
+  if (!meta?.lifecycle || !meta.provenance) {
+    return {
+      ok: false,
+      error: protoError(
+        'PROTO-EDIT-006',
+        'pipeline_log block _meta is not in the Format 3.0 shape; cannot append entry.',
+        'pipeline_log',
+      ),
+    };
+  }
   const nextVersion = bumpRawMetaVersion(meta, now);
-  blockContent['_meta'] = meta;
 
   const updatedJson = JSON.stringify(blockContent, null, 2);
   const lines = fileContent.split('\n');
@@ -742,6 +740,37 @@ function buildFenceAnnotation(
 ): string {
   const variantPart = variant ? ` variant=${variant}` : '';
   return `\`\`\`json uw:section=${sectionId}${variantPart} source=${source} ts=${ts} v=${version} confidence=${confidence}`;
+}
+
+/** Apply an edit operation's `meta` patch to host-built metadata. */
+/**
+ * An operation's `meta` is a `UWMetaPatch`: `provenance` and `quality`
+ * objects only. Any other member (a flat `source`, `confidence`, … or a
+ * host-owned `section`/`lifecycle`/`integrity`) is refused rather than
+ * silently dropped.
+ */
+function metaPatchError(patch: unknown): string | null {
+  if (patch === undefined) return null;
+  if (patch === null || typeof patch !== 'object' || Array.isArray(patch)) {
+    return 'meta must be an object with optional provenance and quality members';
+  }
+  for (const [key, value] of Object.entries(patch)) {
+    if (key !== 'provenance' && key !== 'quality') {
+      return `meta.${key} is not editable: meta carries only provenance and quality members`;
+    }
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+      return `meta.${key} must be an object`;
+    }
+  }
+  return null;
+}
+
+function applyMetaPatch(meta: UWMeta, patch: UWMetaPatch | undefined): UWMeta {
+  return {
+    ...meta,
+    provenance: { ...meta.provenance, ...patch?.provenance },
+    quality: { ...meta.quality, ...patch?.quality },
+  };
 }
 
 function stripReservedKeys(content: Record<string, unknown>): Record<string, unknown> {

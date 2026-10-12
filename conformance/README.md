@@ -14,23 +14,27 @@ paths remain stable for consumers; they do not confer a tier claim.
 
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
-| Reader | 23 | 16 |
-| Verifier | 673 | 280 |
-| Module | 68 | 1 |
+| Reader | 26 | 17 |
+| Verifier | 686 | 281 |
+| Module | 76 | 1 |
 | Integrity | 14 | 0 |
-| Representations | 134 | 0 |
+| Representations | 135 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
-| Starter products | 116 | 35 |
-| **Total** | **1,054** | **332** |
+| Starter products | 104 | 37 |
+| **Total** | **1,067** | **336** |
 
 The before count was 1,053 default + three opt-in agent-shape checks; all 1,056
 now run by default, and five new Verifier checks (marked `added` in the index)
 brought the total to 1,061. RFC 0081 Phase 3 retires seven checks whose subject
 it removes (six conflict-only Verifier controls and the `meta-v2` digest
-shape-insensitivity check), leaving 1,054. Portable cases project a subset of those same checks,
-so 332 is not an additional corpus. All expectations are preserved. The index
+shape-insensitivity check), leaving 1,054. RFC 0081 Phase 4 deletes the
+checks that exercised only a backward-compatibility path (the `meta-v2` and
+`migrate` suites, the retired-format projections and the module compatibility
+shells) and adds refusal cases for what those paths used to admit, leaving
+1,067. Portable cases project a subset of those same checks, so 336 is not an
+additional corpus. All expectations are preserved. The index
 and generated cases are checked for exact ownership, missing/duplicate results
 and generation drift.
 
@@ -90,7 +94,10 @@ conformance/
 │   │                     expected/ (see below)
 │   ├── malformed/      Parse-time errors (LITE_*) with <id>.expected.json
 │   │                     declaring expected_codes; optional "must_parse": false
-│   │                     asserts parseUWLite throws instead
+│   │                     asserts parseUWLite throws instead; "detect" mode
+│   │                     asserts the representation check refuses the source
+│   │                     (structured content under a Lite name is
+│   │                     SOURCE_CONTENT_MISMATCH)
 │   ├── compile/        Documents that parse cleanly but must FAIL the bridge
 │   │                     (LITE_COMPILE_*), same <id>.expected.json shape
 │   ├── equivalence.json  Groups of fixtures that differ only along axes
@@ -107,7 +114,9 @@ conformance/
 │   │                     the runner stubs
 │   ├── verify/         <scenario>/{deal.*, receipt.json, expected-verdict.json}
 │   │                     expected-verdict.json declares one of verified /
-│   │                     failed / unverifiable plus expected_codes (RCP-NN)
+│   │                     failed / unverifiable plus expected_codes (RCP-NN),
+│   │                     or refused_code for a receipt a verifier must not
+│   │                     read at all (receipt_version 1.0 is RCP_MALFORMED)
 │   └── refuse/         <scenario>/{deal.*, expected.json} — issuance must throw
 │                         a typed ReceiptError with expected_code, never emit a
 │                         caveated receipt
@@ -129,38 +138,16 @@ conformance/
 │   │                     declared surface (calcs, agent layers, round_to, …)
 │   ├── reject/         <id>.module.json + <id>.expected.json — malformed
 │   │                     manifests refuse with the expected typed code
-│   ├── asset-classes/  RFC 0003 — module-declared asset classes. Four
-│   │                     <scenario>/{deal.uwx.md, module.json, expected.json}.
-│   │                     The first THREE share a byte-identical document and
-│   │                     differ only in what the host has loaded: module
-│   │                     present (resolved), absent but the declaration known
-│   │                     (degraded via fallback), neither (unresolved). A
-│   │                     cross-scenario invariant asserts the three files stay
-│   │                     identical — editing one to fix a failure would void
-│   │                     the whole demonstration, which is that the verdict
-│   │                     depends on the reader and never on the document
-│   └── runtime/        RFC 0006 + RFC 0039 — the module system with actual
-│                         consumers. Everything above checks that a manifest
-│                         LOADS; these check that a loaded module DOES
-│                         something. Eleven <scenario>/{deal.uwx.md,
-│                         expected.json}; `expected.module` names the package
-│                         under test. 01–05 derive from one hotel fixture, run
-│                         against @uwmd/module-hospitality: the fixture itself
-│                         (both warning branches in one file), no comp set (the
-│                         rule must stay silent — absence is not violation),
-│                         occupancy as a percentage (an error, because RevPAR
-│                         still computes, to a number 100x too large), the
-│                         required section removed, and the same file
-│                         relabelled office, where nothing must run at all.
-│                         06–11 derive from the Mesa Gateway example, run
-│                         against @uwmd/module-data-center — the first product
-│                         module on a module-DECLARED class: the fixture (all
-│                         eleven calcs, including two read from the STANDARD
-│                         sections), PUE below one (an error), no comp set, the
-│                         required section removed, relabelled industrial
-│                         (nothing runs), and the module absent (degraded via
-│                         the industrial fallback, MOD-FALLBACK-001 — the RFC
-│                         0003 path on a product module)
+│   └── asset-classes/  RFC 0003 — module-declared asset classes. Four
+│                         <scenario>/{deal.uwx.md, module.json, expected.json}.
+│                         The first THREE share a byte-identical document and
+│                         differ only in what the host has loaded: module
+│                         present (resolved), absent but the declaration known
+│                         (degraded via fallback), neither (unresolved). A
+│                         cross-scenario invariant asserts the three files stay
+│                         identical — editing one to fix a failure would void
+│                         the whole demonstration, which is that the verdict
+│                         depends on the reader and never on the document
 ├── packages/           UW Deal Packages, RFC 0018 (see packages/README.md)
 │   ├── accept/         <id>.manifest.json + <id>.expected.json — manifest
 │   │                     validation accepts, including extension link types
@@ -237,31 +224,14 @@ conformance/
                           positive and refusal cases.
 ├── source/             Source vocabulary (RFC 0031). Five
 │                         <scenario>/{deal.uwx.md, expected.json}. The split
-│                         (`_meta.source` actor-only, `_meta.resolution` for
-│                         the method) round-trips; a legacy tag in `source` is
-│                         read-time-interpreted without rewriting the raw
-│                         bytes; the retired colon form is neither well-formed
+│                         (`provenance.source` actor-only,
+│                         `provenance.resolution` for the method) round-trips;
+│                         a resolution tag written in `source` is SRC-02, an
+│                         error; the retired colon form is neither well-formed
 │                         nor a human write; and 03-unmatched-supersedes is the
 │                         data-loss regression — an unrecognized source
 │                         supersedes instead of replacing, and a caller policy
 │                         list with no coverage refuses rather than grants
-├── tier-1-reader/v2-fixtures/  The v2 nested _meta shape (RFC 0009). Six
-│                         scenarios run by the `meta-v2` suite: a minimal
-│                         nested file reads through the flat parse view;
-│                         META-V2-IN-V1 and META-V1-IN-V2 fire in both mixing
-│                         directions; the v1→v2 reshape is byte-identical to a
-│                         recorded baseline; a legacy tag survives the shape
-│                         change with `provenance.source` absent, never
-│                         invented; and spelling out the
-│                         defaulted `integrity.algorithm` moves nothing
-├── migrate/            `uwmd migrate --to-v2` (RFC 0009). Three
-│                         <scenario>/{deal.uwx.md, expected.json}: a signed
-│                         block refuses migration by default (the signature
-│                         commits to the v1 digest — the key holder decides);
-│                         --strip-signatures records the removal in
-│                         provenance.notes and the re-stamped chain verifies
-│                         under the v2 rule; resolution 'manual' is rewritten
-│                         to 'user_input' with a note
 └── size-intensive/     The Protocol §XIII size-intensive registry (RFC 0027).
                           Seven named scenarios: the registry pins (§XIII.1–3
                           against the shipped table; primary-in-pack and
@@ -307,7 +277,7 @@ conformance/
     │                     scripts/gen-signing-fixtures.mjs: a signature over a
     │                     hash of the file it lives in cannot be hand-edited
     │                     into a meaningful state
-    ├── blocks/         Block signatures (RFC 0010, Protocol §V.11). Five
+    ├── blocks/         Block signatures (RFC 0010, Protocol §V.11). Six
     │                     <scenario>/{deal.uwx.md, expected.json} pairs.
     │                     expected.json names the keystore to verify against
     │                     (null = no signature backend at all), the expected
@@ -325,7 +295,7 @@ conformance/
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
 `capital-stack`, `lease-up`, `cash-flow`, `waterfall`, `portfolio-relationships`,
 `standalone`, `capability`, `locale`, `size-intensive`, `signing`, `sensitivity`,
-`stochastic`, `source`, `meta-v2`, and `migrate`
+`stochastic` and `source`
 suites are named rather
 than numbered:
 UW Lite is a *source representation*, a receipt is a *detached artifact*,
@@ -408,7 +378,7 @@ node scripts/run-conformance.mjs --json
 ```
 
 Volatile fields stripped before byte comparison: `last_modified`,
-`_meta.timestamp`, `ts=` fence attributes, and `_meta.content_hash`
+`_meta.provenance.timestamp`, `ts=` fence attributes, and `_meta.integrity.content_hash`
 values (hashes canonicalize over the timestamp, so they vary per run
 even when content is stable). These change every run and are not
 normative.
@@ -418,7 +388,7 @@ normative.
 Add one `(suite, scenario, target)` row to `corpus-index.json` for every check
 reported by the reference runner. Add generated portable identities when the
 fixture has a CLI projection, then run `npm run gen-conformance-cases`.
-Ownership is explicit and closed; neither a directory name nor a legacy id
+Ownership is explicit and closed; a directory name never
 assigns it. Coverage guards reject a fixture that has no indexed owner.
 
 

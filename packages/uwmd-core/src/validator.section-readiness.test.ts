@@ -6,13 +6,13 @@
 // own property entry.
 
 import { describe, expect, it } from 'vitest';
-import { BUILTIN_REMEDIATIONS } from './protocol.js';
 import {
+  BUILTIN_REMEDIATIONS,
   STAGE_REQUIREMENTS,
   STAGE_SECTION_OVERLAYS,
   requiredSectionsFor,
-  validateUWFile,
-} from './validator.js';
+} from './protocol.js';
+import { validateUWFile } from './validator.js';
 import type { ParsedUWFile, UWBlock, ValidationMessage } from './types.js';
 
 function block(section: string, content: Record<string, unknown>, annotation: Record<string, unknown> = {}): UWBlock {
@@ -186,7 +186,6 @@ describe('requiredSectionsFor — class overlays (RFC 0029)', () => {
       // RFC 0080: the new builtins take the base lists verbatim, like
       // multifamily — §5.1's overlay set stays exactly land and mixed_use.
       expect(requiredSectionsFor(stage, 'data_center')).toEqual(base);
-      expect(requiredSectionsFor(stage, 'org.uwmd.data_center')).toEqual(base);
       expect(requiredSectionsFor(stage, 'manufactured_housing')).toEqual(base);
       expect(requiredSectionsFor(stage)).toEqual(base);
     }

@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/14-retired-lihtc_section8",
   "target": "verifier",
-  "legacy_id": "scenario/14-retired-lihtc_section8",
   "requires_capabilities": [
     "validate"
   ],

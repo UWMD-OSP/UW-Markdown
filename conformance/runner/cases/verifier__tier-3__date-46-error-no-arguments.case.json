@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/date-46-error-no-arguments",
   "target": "verifier",
-  "legacy_id": "tier-3/date-46-error-no-arguments",
   "requires_capabilities": [
     "calc-evaluate"
   ],

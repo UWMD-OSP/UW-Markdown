@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/stated-final-boundary",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/stated-final-boundary",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

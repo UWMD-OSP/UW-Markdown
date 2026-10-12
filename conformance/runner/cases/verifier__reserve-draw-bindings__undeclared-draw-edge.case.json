@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/undeclared-draw-edge",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/undeclared-draw-edge",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

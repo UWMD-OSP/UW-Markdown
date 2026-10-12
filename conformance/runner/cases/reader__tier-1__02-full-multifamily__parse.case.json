@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/02-full-multifamily/parse",
   "target": "reader",
-  "legacy_id": "tier-1/02-full-multifamily/parse",
   "requires_capabilities": [
     "parse"
   ],

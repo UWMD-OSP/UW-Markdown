@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0075-malformed-hedge-beside-junior",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0075-malformed-hedge-beside-junior",
   "requires_capabilities": [
     "validate"
   ],

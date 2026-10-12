@@ -1,14 +1,14 @@
-import { nestedFixtureMeta } from '../../../test/rfc-0081-corpus.js';
 import { describe, expect, it } from 'vitest';
 import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
+import { buildMeta } from './runner.js';
 
 const doc = (blocks: Array<[string, Record<string, unknown>, string?]>) => parseUWFile(`---
 uw_version: "3.0"
 asset_class: multifamily
 ---
 ${blocks.map(([section, content, variant]) => `\`\`\`json uw:section=${section}${variant ? ` variant=${variant}` : ''}
-${JSON.stringify({ _meta: nestedFixtureMeta({ section, lifecycle: { revision: 1 }, provenance: { source: 'manual' } }), ...content })}
+${JSON.stringify({ _meta: buildMeta(section, 1, { source: 'manual', actor: 'test', confidence: 'high', timestamp: '2026-10-11T00:00:00Z' }), ...content })}
 \`\`\``).join('\n')}`);
 describe('RFC 0041 period validation', () => {
   it('checks malformed periods in unselected variants and reports duplicate identities', () => {

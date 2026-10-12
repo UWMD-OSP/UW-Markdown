@@ -11,6 +11,7 @@ import type {
   ParseOptions,
   ConfidenceLevel,
 } from './types.js';
+import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import { maskQuotedScalar, readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from './yaml-scalar.js';
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
@@ -299,9 +300,11 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
   // Collect prose lines between blocks; route each block to the right collection.
 
   let proseLines: string[] = [];
-  if (result.frontmatter.uw_version !== '3.0') {
+  // One format (RFC 0081 D1): an absent or different uw_version is refused.
+  const declaredVersion: unknown = result.frontmatter.uw_version;
+  if (!(SUPPORTED_FORMAT_VERSIONS as readonly unknown[]).includes(declaredVersion)) {
     throw new UWMDParseError('UNSUPPORTED_FORMAT_VERSION',
-      `Declared uw_version ${JSON.stringify(result.frontmatter.uw_version) ?? 'absent'} is unsupported; supported value is "3.0".`);
+      `Declared uw_version ${JSON.stringify(declaredVersion) ?? 'absent'} is unsupported; supported value is "${SUPPORTED_FORMAT_VERSIONS[0]}".`);
   }
   const scanned: UWBlock[] = [];
 
@@ -315,7 +318,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       continue;
     }
 
-    // â”€â”€ We hit a section block â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── We hit a section block ─────────────────────────────────────────────────
     const sectionId = fenceMatch[1];
     const restAnnotation = fenceMatch[2] ?? '';
     const annotation = parseFenceAnnotation(sectionId, restAnnotation);
@@ -383,7 +386,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
   return result;
 }
 
-// â”€â”€â”€ Block routing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Block routing ────────────────────────────────────────────────────────────
 
 function routeBlock(
   result: ParsedUWFile,
@@ -393,13 +396,13 @@ function routeBlock(
   prose: string,
   roleVariantSections: ReadonlySet<string>,
 ): void {
-  // Pipeline log â€” always append
+  // Pipeline log — always append
   if (sectionId === 'pipeline_log') {
     result.pipeline_log.push(block);
     return;
   }
 
-  // Custom sections â€” always append (order matters; last is newest)
+  // Custom sections — always append (order matters; last is newest)
   if (sectionId === 'custom_calculations') {
     result.custom_calculations.push(block);
     return;
@@ -415,14 +418,14 @@ function routeBlock(
     return;
   }
 
-  // Explicitly superseded block â€” goes to superseded archive, not current sections
+  // Explicitly superseded block — goes to superseded archive, not current sections
   if (annotation.superseded === true || block.meta?.lifecycle?.superseded === true) {
     if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
     result.superseded[sectionId].push(block);
     return;
   }
 
-  // Multi-variant sections â€” keyed by variant, multiple concurrent instances allowed
+  // Multi-variant sections — keyed by variant, multiple concurrent instances allowed
   if (MULTI_VARIANT_SECTIONS.has(sectionId) || roleVariantSections.has(sectionId)) {
     const variant = annotation.variant ?? 'default';
     const existing = result.sections[sectionId];
@@ -480,21 +483,25 @@ function routeBlock(
 
 function isMultiVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
-  // A UWBlock has annotation, meta, content â€” a variant map has string keys pointing to blocks
+  // A UWBlock has annotation, meta, content — a variant map has string keys pointing to blocks
   return !('annotation' in (val as object));
 }
 
-// â”€â”€â”€ Convenience: get current block for a section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Convenience: get current block for a section ─────────────────────────────
 
 /**
- * A block's user payload: Protocol Â§VIII.2's "canonical block's `content`".
- * A flat block keeps its fields beside `_meta`; a block written in the content
- * envelope keeps them one level down at `content`. Every reader of calc inputs
- * reads through here, so both shapes yield the same values: the evaluator,
- * period paths, the cascade, refinement and the Excel converter.
+ * A block's user payload: Protocol §VIII.2's "canonical block's `content`" —
+ * the block object minus its reserved members `_meta`, `_role`, `_overrides`
+ * and `_notes` (Format §2.4, RFC 0081 §3). Every other member is payload,
+ * including one named `content`. Every reader of calc inputs reads through
+ * here: the evaluator, period paths, the cascade, refinement and the Excel
+ * converter. A non-object body (a malformed fence kept by a non-strict parse)
+ * is returned as is.
  */
 export function blockPayload(block: UWBlock): unknown {
-  const { _meta, _role, _overrides, _notes, ...payload } = block.content;
+  const body: unknown = block.content;
+  if (body === null || typeof body !== 'object' || Array.isArray(body)) return body;
+  const { _meta, _role, _overrides, _notes, ...payload } = body as Record<string, unknown>;
   return payload;
 }
 
@@ -515,7 +522,7 @@ export function getSectionVariant(
   return (entry as { [v: string]: UWBlock })[variant] ?? null;
 }
 
-// â”€â”€â”€ Path segment safety â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Path segment safety ─────────────────────────────────────────────────────
 // Paths and keys in a `.uw.md` file are document-authored: a path can name any
 // segment the author types. These three are the doors from a plain property
 // lookup back onto JS internals, so navigation never follows them and key
@@ -530,8 +537,8 @@ export function isBlockedSegment(segment: string): boolean {
 
 /**
  * One step of path navigation, own-properties only. A blocked segment or an
- * inherited member resolves to `undefined` â€” the same answer a missing path
- * gives, which callers already handle (protocol Â§VIII.2: a missing path
+ * inherited member resolves to `undefined` — the same answer a missing path
+ * gives, which callers already handle (protocol §VIII.2: a missing path
  * resolves to null, not an error).
  */
 export function getPathSegment(current: unknown, segment: string): unknown {
@@ -541,7 +548,7 @@ export function getPathSegment(current: unknown, segment: string): unknown {
   return (current as Record<string, unknown>)[segment];
 }
 
-// â”€â”€â”€ Deep get utility (for cross-section checks) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Deep get utility (for cross-section checks) ─────────────────────────────
 // Resolves dot-path notation: "noi_model.net_operating_income"
 // Array indices: "dcf.annual_cash_flows[0].net_cash_flow_levered"
 

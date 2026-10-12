@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/18-non-string",
   "target": "verifier",
-  "legacy_id": "scenario/18-non-string",
   "requires_capabilities": [
     "validate"
   ],

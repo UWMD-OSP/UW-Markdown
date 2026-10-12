@@ -1,12 +1,11 @@
 name: Release
 
-# Publishes nine packages to npm on an ordinary v<core-version> release:
+# Publishes seven packages to npm on an ordinary v<core-version> release:
 # @uwmd/core (library), @uwmd/cli (CLI installer), @uwmd/signing (RFC 0010
 # signing companion), @uwmd/batch (collection indexer + corpus fact table),
-# @uwmd/module-hospitality and @uwmd/module-data-center (RFC 0080
-# compatibility shells), @uwmd/excel (workbook converter), @uwmd/report (PDF
-# report pipeline) and @uwmd/lake (RFC 0049 warehouse adapter). Excel, report
-# and lake joined after 2.21.x (scripts/release-packages.mjs).
+# @uwmd/excel (workbook converter), @uwmd/report (PDF report pipeline) and
+# @uwmd/lake (RFC 0049 warehouse adapter). The two module packages published
+# through 3.x were deleted by RFC 0081 (scripts/release-packages.mjs).
 # Core and cli share the tag — they version in lockstep because the CLI
 # re-exposes the library's CLI module. Every other package versions
 # independently (package.json versions, not the tag or module contract) and
@@ -20,7 +19,7 @@ name: Release
 # write` below is load-bearing rather than decoration.
 #
 # Prerequisites (one-time, on npmjs.com — nothing to configure in this repo):
-#   For EACH of the nine packages named above:
+#   For EACH of the seven packages named above:
 #   package page -> Settings -> Trusted publisher -> GitHub Actions, with
 #     Organization or user: UWMD-OSP
 #     Repository:           UW-Markdown
@@ -28,7 +27,7 @@ name: Release
 #     Allowed actions:      publish
 #     Environment:          (leave blank)
 #
-# All nine need confirmed package ownership/public access and a trusted publisher.
+# All seven need confirmed package ownership/public access and a trusted publisher.
 # First-time package provisioning is a human prerequisite (wiki 11); it is not
 # performed here. npm allows multiple trusted publishers per package; recovery
 # can use a separately authorized workflow without replacing the release entry.
@@ -53,7 +52,7 @@ on:
 
 jobs:
   publish:
-    name: Publish nine official UWMD packages
+    name: Publish seven official UWMD packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -112,7 +111,7 @@ jobs:
         run: npm run verify-packages
 
 
-      - name: Verify nine-package release readiness and registry-probe tests
+      - name: Verify seven-package release readiness and registry-probe tests
         run: npm run release:check
 
       - name: Run unit tests
@@ -151,7 +150,7 @@ jobs:
       # attached automatically under OIDC; `--provenance` stays explicit so the
       # intent survives a future edit.
       #
-      # This requires a trusted publisher configured on npmjs.com for all nine
+      # This requires a trusted publisher configured on npmjs.com for all seven
       # packages, naming org `UWMD-OSP`, repo `UW-Markdown`, workflow
       # `release.yml`. Without it the publish fails with ENEEDAUTH, the same way
       # a missing token did.
@@ -216,34 +215,6 @@ jobs:
           STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/batch" "$VER")
           if [ "$STATE" = "published" ]; then
             echo "@uwmd/batch@$VER is already on npm — skipping"
-          elif [ "$STATE" = "absent" ]; then
-            npm publish --provenance --access public
-          else
-            echo "Unexpected registry state: $STATE" >&2
-            exit 1
-          fi
-
-      - name: Publish @uwmd/module-hospitality to npm with provenance
-        working-directory: packages/uwmd-module-hospitality
-        run: |
-          VER=$(node -p "require('./package.json').version")
-          STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/module-hospitality" "$VER")
-          if [ "$STATE" = "published" ]; then
-            echo "@uwmd/module-hospitality@$VER is already on npm — skipping"
-          elif [ "$STATE" = "absent" ]; then
-            npm publish --provenance --access public
-          else
-            echo "Unexpected registry state: $STATE" >&2
-            exit 1
-          fi
-
-      - name: Publish @uwmd/module-data-center to npm with provenance
-        working-directory: packages/uwmd-module-data-center
-        run: |
-          VER=$(node -p "require('./package.json').version")
-          STATE=$(node "$GITHUB_WORKSPACE/scripts/registry-version-state.mjs" "@uwmd/module-data-center" "$VER")
-          if [ "$STATE" = "published" ]; then
-            echo "@uwmd/module-data-center@$VER is already on npm — skipping"
           elif [ "$STATE" = "absent" ]; then
             npm publish --provenance --access public
           else

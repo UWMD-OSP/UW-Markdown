@@ -21,7 +21,25 @@
   "sections": {
     "property": {
       "meta": {
-        "section": "property"
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-10-07T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "address": "77 Stack St, Phoenix AZ",
@@ -30,7 +48,25 @@
     },
     "capital_stack": {
       "meta": {
-        "section": "capital_stack"
+        "section": "capital_stack",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-10-07T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "tranches": [
@@ -76,7 +112,25 @@
     },
     "dcf": {
       "meta": {
-        "section": "dcf"
+        "section": "dcf",
+        "provenance": {
+          "source": "manual",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-10-07T00:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
       },
       "content": {
         "hold_period_years": 5,

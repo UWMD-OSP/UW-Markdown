@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-missing-source",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-missing-source",
   "requires_capabilities": [
     "validate"
   ],

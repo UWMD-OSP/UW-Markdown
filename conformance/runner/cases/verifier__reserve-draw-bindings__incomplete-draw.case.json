@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/incomplete-draw",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/incomplete-draw",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

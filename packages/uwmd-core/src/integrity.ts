@@ -10,7 +10,7 @@
 //     Crypto (`crypto.subtle`). The browser entry point binds the latter via
 //     subpath export when adopters import from `@uwmd/core/browser`.
 
-import { canonicalize, canonicalizeExact } from './integrity-canonical.js';
+import { canonicalize } from './integrity-canonical.js';
 import type { ParsedUWFile, UWBlock, UWBlockSignature } from './types.js';
 import { UW_SIGNATURE_ALGORITHMS } from './types.js';
 import type { EditPolicy } from './protocol.js';
@@ -68,19 +68,15 @@ function bytesToHex(bytes: Uint8Array): string {
 }
 
 /**
- * Compute the content_hash for a block. Strips the block's own
- * `_meta.content_hash` and `_meta.signature` before hashing (handled by the
- * canonicalizer).
- *
- * Canonicalization is versioned by the file's `uw_version` (RFC 0009):
- * `shape: 'v1'` (the default) is the frozen 1.x rule; `shape: 'v2'` is the
- * normalize-then-hash rule for `uw_version: "2.0"` files — the block content
- * is reshaped to the canonical nested form first, so both accepted parser
- * shapes yield the identical digest.
+ * Compute a block's `content_hash` (Protocol §V.9, RFC 0081 §3): lowercase
+ * hex SHA-256 of the UTF-8 RFC 8785 (JCS) canonical JSON of the block with
+ * its `_meta` member removed. Every other member is included — the payload,
+ * `_role`, `_overrides` and `_notes` — and nothing is stripped or defaulted,
+ * so a `_meta`-only edit never moves the hash.
  */
 export async function computeBlockHash(block: UWBlock): Promise<string> {
   const { _meta, ...payload } = block.content;
-  return sha256TextHex(canonicalizeExact(payload));
+  return sha256TextHex(canonicalize(payload));
 }
 
 // ─── Public types ────────────────────────────────────────────────────────────
@@ -112,7 +108,7 @@ export interface IntegrityResult {
   chains_verified: number;
   chains_with_hashes: number;
   /**
-   * How many blocks carry `_meta.signature` (RFC 0010). Reported even when no
+   * How many blocks carry `_meta.integrity.signature` (RFC 0010). Reported even when no
    * verifier was supplied, so a caller can tell "no signatures" apart from
    * "signatures present but unchecked" — the distinction that makes a
    * `signatures_verified: 0` result readable.
@@ -171,12 +167,12 @@ export function blockSigningPayload(block: UWBlock): string | null {
  * Canonicalize an explicit signing input.
  *
  * The signer needs this and {@link blockSigningPayload} cannot serve it: at
- * signing time the block has no `_meta.signature` yet, so there is nowhere to
+ * signing time the block has no `_meta.integrity.signature` yet, so there is nowhere to
  * read `kid` and `signed_at` from. Both paths funnel through this one function
  * so the two sides cannot drift.
  */
 export function canonicalBlockSigningInput(input: BlockSigningInput): string {
-  return canonicalizeExact({
+  return canonicalize({
     content_hash: input.content_hash,
     section: input.section,
     actor: input.actor,
@@ -223,7 +219,7 @@ export interface VerifyChainOptions {
 
 /**
  * For every supersede chain in the parsed file:
- *   - If at least one block in the chain carries `_meta.content_hash`, every
+ *   - If at least one block in the chain carries `_meta.integrity.content_hash`, every
  *     block in the chain MUST carry one (else INT-03 warning).
  *   - Each block's recomputed hash MUST equal the stamped `content_hash`
  *     (else INT-04 warning).
@@ -251,8 +247,6 @@ export async function verifyChain(
   const issues: IntegrityIssue[] = [];
   let chainsWithHashes = 0;
   let chainsVerified = 0;
-  // Canonicalization is versioned by the file's own frontmatter (RFC 0009):
-  // digests in a `uw_version: "2.0"` file recompute under the v2 rule.
 
   for (const sectionId of Object.keys(parsed.sections)) {
     // Build the chain: prior (superseded) blocks first, then current head.
@@ -331,7 +325,7 @@ export async function verifyChain(
 }
 
 /**
- * Sweep every block in the file for `_meta.signature` and append INT-05..08.
+ * Sweep every block in the file for `_meta.integrity.signature` and append INT-05..08.
  *
  * Walks all blocks — heads, superseded priors, and every variant — rather than
  * the per-section chain heads `verifyChain` walks. A signature on a superseded
@@ -455,7 +449,7 @@ function* everyBlock(parsed: ParsedUWFile): Generator<[string, UWBlock]> {
 // ─── Provenance verification ─────────────────────────────────────────────────
 
 /**
- * Cross-check `_meta.actor` and the operation that produced the block against
+ * Cross-check `_meta.provenance.actor` and the operation that produced the block against
  * BUILTIN_EDIT_POLICIES.
  *
  * - POL-01: actor not authorized for the section per its EditPolicy.

@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/13-period-identities/parse",
   "target": "reader",
-  "legacy_id": "tier-1/13-period-identities/parse",
   "requires_capabilities": [
     "parse"
   ],

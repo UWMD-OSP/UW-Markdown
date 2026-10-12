@@ -1,7 +1,6 @@
 {
   "id": "reader/tier-1/10-declared-roles/parse",
   "target": "reader",
-  "legacy_id": "tier-1/10-declared-roles/parse",
   "requires_capabilities": [
     "parse"
   ],

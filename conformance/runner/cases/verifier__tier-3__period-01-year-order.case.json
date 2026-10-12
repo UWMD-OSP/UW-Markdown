@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/period-01-year-order",
   "target": "verifier",
-  "legacy_id": "tier-3/period-01-year-order",
   "requires_capabilities": [
     "calc-evaluate"
   ],

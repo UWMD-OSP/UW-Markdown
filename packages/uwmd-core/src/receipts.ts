@@ -24,7 +24,7 @@ import {
   toUWEnvelope,
   type UWDocumentEnvelope,
 } from './envelope.js';
-import { canonicalizeExact } from './integrity-canonical.js';
+import { canonicalize } from './integrity-canonical.js';
 import { sha256TextHex } from './integrity.js';
 import { canonicalizeUWLiteFinancial, parseUWLite } from './lite.js';
 import { compileUWLite } from './lite-bridge.js';
@@ -60,12 +60,8 @@ import { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
  */
 export const UW_RECEIPT_VERSION = '1.1' as const;
 
-/**
- * Receipt versions this verifier can read. A 1.0 receipt is still valid: every
- * 1.1 addition is optional, so absence means "the issuer stated nothing", not
- * "non-conforming".
- */
-export const SUPPORTED_RECEIPT_VERSIONS: readonly string[] = Object.freeze(['1.0', '1.1']);
+/** The one receipt version this verifier reads (RFC 0081 §7). */
+export const SUPPORTED_RECEIPT_VERSIONS: readonly string[] = Object.freeze([UW_RECEIPT_VERSION]);
 
 /** Canonicalization used for the Lite representation (UW_LITE_SPEC §6). */
 export const UW_LITE_CANONICALIZATION = 'uw-lite-financial' as const;
@@ -84,12 +80,6 @@ export const UW_LITE_CANONICALIZATION_VERSION = '1.1' as const;
 export const UWX_CANONICALIZATION_VERSION = '1.0' as const;
 /** Canonicalization used for structured records (Document Envelope 1.0). */
 export const UWX_CANONICALIZATION = 'uw-envelope-semantic' as const;
-
-/** @deprecated Historical pre-quantization comparison bound. RFC 0079 receipt
- * verification uses exact reported-value equality; this export is retained for
- * source compatibility and is no longer used by the verifier.
- */
-export const RECEIPT_RESULT_TOLERANCE = 1e-6;
 
 /** The policy set a receipt names when the host applies core's built-in rules. */
 export const BUILTIN_POLICY_SET = 'builtin' as const;
@@ -458,7 +448,7 @@ export function computeReceiptResults(
 
 /** SHA-256 over the RFC 8785 canonicalization of the result set. */
 export async function computeResultsDigest(results: readonly UWReceiptResult[]): Promise<string> {
-  return digestOf(canonicalizeExact(results));
+  return digestOf(canonicalize(results));
 }
 
 // ─── Issuance ────────────────────────────────────────────────────────────────
@@ -561,7 +551,7 @@ function resolvePack(parsed: ParsedUWFile, override?: ModuleManifest): ModuleMan
  * `signature` set to null.
  */
 export function receiptSigningPayload(receipt: UWReceipt): string {
-  return canonicalizeExact({ ...receipt, signature: null });
+  return canonicalize({ ...receipt, signature: null });
 }
 
 // ─── Verification ────────────────────────────────────────────────────────────
@@ -1203,9 +1193,6 @@ export function assertUWReceipt(value: unknown): asserts value is UWReceipt {
   if (typeof value !== 'object' || value === null) fail('A receipt must be an object.');
   const receipt = value as Record<string, unknown>;
 
-  // Accepts every supported version, not just the current one: each 1.1
-  // addition is optional, so a 1.0 receipt is still a valid receipt and
-  // refusing to read it would strand every receipt issued before this release.
   if (
     typeof receipt['receipt_version'] !== 'string' ||
     !SUPPORTED_RECEIPT_VERSIONS.includes(receipt['receipt_version'])

@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0070-unrelated-edit",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0070-unrelated-edit",
   "requires_capabilities": [
     "validate"
   ],

@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-accounts/unclassified",
   "target": "verifier",
-  "legacy_id": "reserve-accounts/unclassified",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

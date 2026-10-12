@@ -1,7 +1,6 @@
 {
   "id": "verifier/replacement-funding/0075-junior-only-hedge",
   "target": "verifier",
-  "legacy_id": "replacement-funding/0075-junior-only-hedge",
   "requires_capabilities": [
     "validate"
   ],

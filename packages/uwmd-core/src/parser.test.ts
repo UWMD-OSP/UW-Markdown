@@ -236,7 +236,7 @@ asset_class: multifamily
   it('handles superseded blocks correctly — keeps newer, archives older', () => {
     const makeBlock = (version: number, superseded: boolean) => `
 \`\`\`json uw:section=property source=wizard ts=2026-01-01T00:00:00Z v=${version}${superseded ? ' superseded=true' : ''} confidence=high
-{ "_meta": { "section": "property", "version": ${version}, "superseded": ${superseded}, "source": "wizard", "agent_id": null, "agent_version": null, "actor": "user", "timestamp": "2026-01-01T00:00:00Z", "confidence": "high", "human_review_required": false, "flags": [], "input_hash": null, "notes": null }, "total_units": ${version * 10} }
+{ "_meta": { "section": "property", "provenance": { "source": "manual", "actor": "user", "agent_id": null, "agent_version": null, "timestamp": "2026-01-01T00:00:00Z", "notes": null }, "quality": { "confidence": "high", "human_review_required": false, "flags": [] }, "lifecycle": { "revision": ${version}, "superseded": ${superseded} } }, "total_units": ${version * 10} }
 \`\`\``;
 
     const content = `---
@@ -686,11 +686,7 @@ describe('Parkview example file', () => {
     const parsed = parseUWFile(exampleContent);
     const result = validateUWFile(parsed);
     // The Parkview example has a known DSCR warning (1.109x < 1.20x warning threshold).
-    // FV codes were renamed to FV-NN in v1.1; legacy_code carries the old name during the
-    // deprecation window (drops in v1.2).
-    const dscrIssues = result.issues.filter(i =>
-      i.code === 'FV-04' || (i.legacy_code ?? '').includes('DSCR')
-    );
+    const dscrIssues = result.issues.filter(i => i.code === 'FV-04');
     expect(dscrIssues.length).toBeGreaterThan(0);
   });
 });
@@ -796,7 +792,7 @@ tags:
 
 // ─── §2.6 read-time source interpretation (RFC 0031) ─────────────────────────
 
-describe('read-time interpretation of a legacy tag in _meta.source', () => {
+describe('no read-time interpretation of _meta.provenance.source (RFC 0081 §3)', () => {
   const fileWithSource = (source: string): string => `---
 uw_version: "3.0"
 deal_id: "test-interp"
@@ -809,70 +805,68 @@ asset_class: multifamily
 {
   "_meta": {
     "section": "property",
-    "version": 1,
-    "superseded": false,
-    "source": "${source}",
-    "agent_id": null,
-    "agent_version": null,
-    "actor": "test",
-    "timestamp": "2026-08-31T00:00:00Z",
-    "confidence": "high",
-    "human_review_required": false
+    "provenance": { "source": "${source}", "actor": "test", "timestamp": "2026-08-31T00:00:00Z" },
+    "quality": { "confidence": "high", "human_review_required": false },
+    "lifecycle": { "revision": 1, "superseded": false }
   },
   "total_units": 10
 }
 \`\`\`
 `;
 
-  it('surfaces a canonical tag as meta.provenance?.resolution while keeping the raw spelling', () => {
+  it('keeps a resolution tag in the actor field where it was written, and it is SRC-02', () => {
     const parsed = parseUWFile(fileWithSource('market_data'));
     const block = parsed.sections['property'] as import('./types.js').UWBlock;
-    expect(block.meta.provenance?.resolution).toBe('market_data');
-    // The raw spelling is preserved for diagnostics (SRC-02 warns on it);
-    // authority classification treats it as no actor at all.
-    expect(block.meta.provenance?.source).toBe('market_data');
+    expect(block.meta.provenance.resolution).toBeUndefined();
+    expect(block.meta.provenance.source).toBe('market_data');
+    expect(validateUWFile(parsed).issues.some((i) => i.code === 'SRC-02' && i.severity === 'error')).toBe(true);
   });
 
-  it('never mutates content._meta — the bytes-derived object feeds digests', () => {
-    const parsed = parseUWFile(fileWithSource('asset_class_default'));
-    const block = parsed.sections['property'] as import('./types.js').UWBlock;
-    const rawMeta = block.content['_meta'] as Record<string, unknown>;
-    expect(rawMeta['resolution']).toBeUndefined();
-    expect(rawMeta['source']).toBe('asset_class_default');
-  });
-
-  it('leaves manual and proper actors untouched — meta stays the same object', () => {
-    for (const source of ['manual', 'agent/L6-01', 'system/init']) {
+  it('reads _meta as stated: block.meta is the document object itself', () => {
+    for (const source of ['manual', 'agent/L6-01', 'system/init', 'asset_class_default']) {
       const parsed = parseUWFile(fileWithSource(source));
       const block = parsed.sections['property'] as import('./types.js').UWBlock;
-      expect(block.meta.provenance?.resolution, source).toBeUndefined();
       expect(block.meta, source).toBe(block.content['_meta']);
     }
-  });
-
-  it('defers to a resolution the producer already stamped', () => {
-    const file = fileWithSource('market_data').replace(
-      '"source": "market_data",',
-      '"source": "market_data",\n    "resolution": "user_input",',
-    );
-    const parsed = parseUWFile(file);
-    const block = parsed.sections['property'] as import('./types.js').UWBlock;
-    expect(block.meta.provenance?.resolution).toBe('user_input');
   });
 });
 
 describe('blockPayload (Protocol §VIII.2 payload)', () => {
   const block = (content: unknown) => ({ content }) as unknown as Parameters<typeof blockPayload>[0];
 
-  it('reads a flat block as stated and a content-envelope block one level down', () => {
-    expect(blockPayload(block({ _meta: {}, total_units: 48 }))).toEqual({ _meta: {}, total_units: 48 });
-    expect(blockPayload(block({ _meta: {}, content: { total_units: 48 } }))).toEqual({ total_units: 48 });
+  it('is the block minus its reserved members; a member named content is payload', () => {
+    const reserved = { _meta: {}, _role: 'primary', _overrides: [], _notes: 'n' };
+    expect(blockPayload(block({ ...reserved, total_units: 48 }))).toEqual({ total_units: 48 });
+    expect(blockPayload(block({ ...reserved, content: { total_units: 48 } }))).toEqual({ content: { total_units: 48 } });
   });
 
-  it('leaves a non-object body alone and ignores an inherited content key', () => {
+  it('leaves a non-object body alone and reads own members only', () => {
     expect(blockPayload(block(null))).toBeNull();
     expect(blockPayload(block([1, 2]))).toEqual([1, 2]);
     const inherited = Object.create({ content: { x: 1 } }) as Record<string, unknown>;
-    expect(blockPayload(block(inherited))).toBe(inherited);
+    expect(blockPayload(block(inherited))).toEqual({});
+  });
+});
+
+describe('one format (RFC 0081 D1): UNSUPPORTED_FORMAT_VERSION', () => {
+  const body = '\n```json uw:section=property v=1\n{ "total_units": 10 }\n```\n';
+  const doc = (versionLine: string) => `---\n${versionLine}deal_id: "x"\n---\n${body}`;
+
+  it.each(['uw_version: "1.1"\n', 'uw_version: "2.0"\n', 'uw_version: "2.1"\n', 'uw_version: "4.0"\n', 'uw_version: 3\n', ''])(
+    'refuses %j at parse stage, naming the declared and supported values',
+    (versionLine) => {
+      try {
+        parseUWFile(doc(versionLine));
+        expect.unreachable('should have thrown');
+      } catch (e) {
+        expect(e).toBeInstanceOf(UWMDParseError);
+        expect((e as UWMDParseError).code).toBe('UNSUPPORTED_FORMAT_VERSION');
+        expect((e as Error).message).toContain('"3.0"');
+      }
+    },
+  );
+
+  it('reads uw_version "3.0"', () => {
+    expect(parseUWFile(doc('uw_version: "3.0"\n')).frontmatter.uw_version).toBe('3.0');
   });
 });

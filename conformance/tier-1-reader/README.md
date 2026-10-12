@@ -29,6 +29,7 @@ How a Reader displays values, including the Part III display conventions and
 | `fixtures/15-student-bed-counts-inconsistent.uwx.md` | The same roll with `preleased_beds` above `total_beds` and `preleased_as_of` after `preleased_term_start`; `BED-02` and `BED-06` errors, nothing for the valid `occupied_beds` |
 | `fixtures/16-frontmatter-yaml-scalars.uwx.md` | Format Appendix D scalar semantics: double-quoted `\"`, `\\` and `\u` escapes, single-quoted `''`, quoted `&` `*` `!` `#` `{}` `[]` as content, and trailing comments on plain, nested and sequence values. The baseline's frontmatter is a YAML 1.2 library's reading of the fixture, not this reader's |
 | `fixtures/17-exit-proceeds-junior-capital.uwx.md` | Exit proceeds beside a senior, mezzanine, preferred and common stack (RFC 0077): `loan_balance_at_exit` repays both debts, `net_proceeds_to_equity` is the whole equity stack, and the stated `preferred_equity_redemption_at_exit` leaves `net_proceeds_to_common_equity`. Validates clean |
+| `fixtures/18-content-member-is-payload.uwx.md` | A bare Format 3.0 block whose payload has a member named `content` (RFC 0081 §3): it is ordinary payload, never a wrapper, so the property states 48 units and the nested `content.total_units` (99) is not read as the property's |
 
 ### Malformed fixtures
 
@@ -54,6 +55,15 @@ coverage requires fixture-bound policies).
 | `malformed/12-yaml-flow-sequence` | `UNSUPPORTED_YAML_FEATURE` | Parser refusal (Appendix D.2 non-empty flow sequence) |
 | `malformed/13-yaml-invalid-escape` | `UNSUPPORTED_YAML_FEATURE` | Parser refusal (`\d` is not a YAML 1.2 escape) |
 | `malformed/14-yaml-unquoted-anchor` | `UNSUPPORTED_YAML_FEATURE` | Parser refusal (an anchor outside quotes is still a YAML feature) |
+| `malformed/15-uw-version-1-1` | `UNSUPPORTED_FORMAT_VERSION` | Parser refusal (Format 3.0 is the only format, RFC 0081 D1) |
+| `malformed/16-uw-version-2-0` | `UNSUPPORTED_FORMAT_VERSION` | Parser refusal |
+| `malformed/17-uw-version-2-1` | `UNSUPPORTED_FORMAT_VERSION` | Parser refusal |
+| `malformed/18-uw-version-4-0` | `UNSUPPORTED_FORMAT_VERSION` | Parser refusal (a newer major is refused too) |
+| `malformed/19-uw-version-absent` | `UNSUPPORTED_FORMAT_VERSION` | Parser refusal (no `uw_version` at all) |
+| `malformed/20-flat-meta` | `META-01` | Validator (the retired flat `_meta` shape in a 3.0 file) |
+| `malformed/21-section-id-wrapper` | `META-01` | Validator (the retired `{section_id, _meta, content}` wrapper) |
+| `malformed/22-resolution-outside-vocabulary` | `SRC-03` | Validator (`provenance.resolution` outside the closed vocabulary) |
+| `malformed/23-retired-official-alias` | `INVALID-ASSET-CLASS-002` | Validator (`org.uwmd.data_center` is refused like any namespaced builtin suffix) |
 
 A fixture whose `expected.json` sets `"must_parse": false` must be refused by
 the parser itself, with one of its `expected_codes`.
@@ -99,4 +109,4 @@ node scripts/run-conformance.mjs --suite=1
 
 The reference runner compares a canonical projection of the parse output
 (`{ frontmatter, sections, pipelineLog, customCalculations, customScenarios, extensions }`)
-after stripping volatile fields (`last_modified`, `_meta.timestamp`).
+after stripping volatile fields (`last_modified`, `_meta.provenance.timestamp`).

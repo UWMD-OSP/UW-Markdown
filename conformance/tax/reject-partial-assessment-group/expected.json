@@ -1,0 +1,7 @@
+{
+  "codes": [
+    "TAX-01",
+    "TAX-01"
+  ],
+  "note": "The assessment group (assessed_value, millage_rate, indicated_tax) is all-or-none (RFC 0081 \u00a77). Each missing member of the stated group is also reported."
+}

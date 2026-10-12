@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/one-to-one",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/one-to-one",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

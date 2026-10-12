@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { canonicalize, canonicalizeExact } from './integrity-canonical.js';
+import { canonicalize } from './integrity-canonical.js';
 
-describe('canonicalize — RFC 8785 (JCS) with uwmd exclusions', () => {
+describe('canonicalize — RFC 8785 (JCS)', () => {
   it('sorts object keys by code-unit comparison', () => {
     expect(canonicalize({ b: 1, a: 2, c: 3 })).toBe('{"a":2,"b":1,"c":3}');
   });
@@ -35,24 +35,11 @@ describe('canonicalize — RFC 8785 (JCS) with uwmd exclusions', () => {
     expect(canonicalize([3, 1, { b: 2, a: 1 }])).toBe('[3,1,{"a":1,"b":2}]');
   });
 
-  it('strips _meta.content_hash and _meta.signature from meta-shaped sub-objects', () => {
+  it('strips nothing: integrity members serialize like any other (RFC 0081 §3)', () => {
     const meta = { section: 'property', lifecycle: { revision: 1 }, provenance: { source: 'manual', actor: 'tester' }, integrity: { content_hash: 'deadbeef', signature: 'sig...' } };
-    const out = canonicalize({ _meta: meta, content: { x: 1 } });
-    expect(out).not.toContain('content_hash');
-    expect(out).not.toContain('signature');
-    expect(out).toContain('"actor":"tester"');
-  });
-
-  it('does NOT strip content_hash from non-meta objects', () => {
-    const out = canonicalize({ payload: { content_hash: 'abc' } });
-    expect(out).toBe('{"payload":{"content_hash":"abc"}}');
-  });
-});
-
-describe('canonicalizeExact', () => {
-  it('preserves integrity fields for document-level semantic digests', () => {
-    const value = { _meta: { section: 'x', lifecycle: { revision: 1 }, provenance: { source: 'manual' }, integrity: { content_hash: 'abc' } } };
-    expect(canonicalizeExact(value)).toContain('content_hash');
-    expect(canonicalize(value)).not.toContain('content_hash');
+    const out = canonicalize({ _meta: meta, payload: { content_hash: 'abc' } });
+    expect(out).toContain('"content_hash":"deadbeef"');
+    expect(out).toContain('"signature":"sig..."');
+    expect(out).toContain('"payload":{"content_hash":"abc"}');
   });
 });

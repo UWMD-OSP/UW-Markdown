@@ -1,7 +1,6 @@
 {
   "id": "verifier/reserve-draw-bindings/excess-draw-allocation",
   "target": "verifier",
-  "legacy_id": "reserve-draw-bindings/excess-draw-allocation",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

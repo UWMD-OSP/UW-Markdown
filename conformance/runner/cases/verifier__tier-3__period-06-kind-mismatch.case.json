@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-3/period-06-kind-mismatch",
   "target": "verifier",
-  "legacy_id": "tier-3/period-06-kind-mismatch",
   "requires_capabilities": [
     "calc-evaluate"
   ],

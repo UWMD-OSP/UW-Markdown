@@ -1,7 +1,6 @@
 {
   "id": "verifier/scenario/13-retired-nnn_single_tenant",
   "target": "verifier",
-  "legacy_id": "scenario/13-retired-nnn_single_tenant",
   "requires_capabilities": [
     "validate"
   ],

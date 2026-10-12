@@ -46,7 +46,7 @@ any of those surfaces as a line-level diff.
 ## Determinism
 
 A run is reproducible only because the clock is injected. `runBancroftAgent`
-accepts `now`, and a constant clock freezes `_meta.timestamp`, collapses
+accepts `now`, and a constant clock freezes `_meta.provenance.timestamp`, collapses
 `duration_ms` to 0, and makes the pipeline-log entry id derivable rather than
 random. The runner uses `2026-08-13T00:00:00.000Z`.
 

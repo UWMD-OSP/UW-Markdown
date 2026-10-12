@@ -1,7 +1,6 @@
 {
   "id": "verifier/tier-1/11-role-collision/validate",
   "target": "verifier",
-  "legacy_id": "tier-1/11-role-collision/validate",
   "requires_capabilities": [
     "validate"
   ],
