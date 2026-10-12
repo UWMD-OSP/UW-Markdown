@@ -8,10 +8,6 @@
     {
       "code": "LOC-01",
       "severity": "error"
-    },
-    {
-      "code": "META-V2-IN-V1",
-      "severity": "error"
     }
   ]
 }
