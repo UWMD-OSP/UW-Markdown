@@ -91,7 +91,7 @@ uw_version: "3.0"
 asset_class: office
 ---
 \`\`\`json uw:section=debt_structure variant=alpha
-{"loan_name":"alpha","rate_hedge":{"instrument":"rate_cap","premium":400000}}
+{"_role":"primary","loan_name":"alpha","rate_hedge":{"instrument":"rate_cap","premium":400000}}
 \`\`\`
 \`\`\`json uw:section=debt_structure variant=beta
 {"loan_name":"beta","rate_hedge":{"instrument":"rate_cap","premium":400000}}
