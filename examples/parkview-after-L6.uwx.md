@@ -2342,7 +2342,7 @@ Two supplemental metrics: true all-in yield (accounts for closing costs and rese
           "variable": "reserves",
           "label": "Operating Reserves",
           "value": null,
-          "source_ref": "sources_uses.uses.operating_reserves",
+          "source_ref": "sources_uses.uses.escrows[0].upfront",
           "is_live_ref": true
         }
       ],
