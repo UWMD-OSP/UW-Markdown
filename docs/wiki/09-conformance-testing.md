@@ -96,7 +96,7 @@ belong to [docs/starter](../starter/README.md), remain in CI and have separate
 report counts. Mixed cases keep all their assertions and are product checks.
 
 The corpus reconciles **1,053 default + three opt-in = 1,056 existing reference
-checks, plus five new validate-only Verifier checks = 1,061**, and **332 portable
+checks, plus five new validate-only Verifier checks = 1,055**, and **332 portable
 CLI projections**. The lender fixture stays **187/0/0**.
 
 | Owner | Reference | Portable |
@@ -110,7 +110,7 @@ CLI projections**. The lender fixture stays **187/0/0**.
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
 | starter-products | 116 | 35 |
-| **Total** | **1,061** | **332** |
+| **Total** | **1,055** | **332** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -292,7 +292,7 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,061 indexed checks across its suites, and most of what has been added
+runs all 1,055 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable
