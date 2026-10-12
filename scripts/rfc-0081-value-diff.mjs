@@ -10,7 +10,7 @@ const root = resolve(args[args.indexOf('--root') + 1] || '.');
 if (args.includes('--compare')) {
   const before = JSON.parse(readFileSync(args[args.indexOf('--compare')+1], 'utf8'));
   const after = JSON.parse(readFileSync(args[args.indexOf('--compare')+2], 'utf8'));
-  const changes = { calculations: [], baselines: [], uses: [], receipts: [], codes: [], removed_cases: [], changed_cases: [] };
+  const changes = { expected_codes: [], calculations: [], baselines: [], uses: [], receipts: [], codes: [], removed_cases: [], changed_cases: [] };
   const same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
   for (const [file, values] of Object.entries(before.calculations)) if (after.calculations[file]) for (const [id, value] of Object.entries(values)) {
     if (!same(value, after.calculations[file][id])) changes.calculations.push({file,id,before:value,after:after.calculations[file][id]});
@@ -19,6 +19,7 @@ if (args.includes('--compare')) {
   for (const [file,value] of Object.entries(before.uses)) if (file in after.uses && !same(value,after.uses[file])) changes.uses.push({file,before:value,after:after.uses[file]});
   for (const [file,value] of Object.entries(before.receipts)) if (!same(value,after.receipts[file])) changes.receipts.push({file,before:value,after:after.receipts[file]});
   for (const [file,value] of Object.entries(before.codes)) if (file in after.codes && !same(value,after.codes[file])) changes.codes.push({file,before:value,after:after.codes[file]});
+  for (const [file,value] of Object.entries(before.expectedCodes ?? {})) if (file in (after.expectedCodes ?? {}) && !same(value,after.expectedCodes[file])) changes.expected_codes.push({file,before:value,after:after.expectedCodes[file]});
   const next = new Map(after.conformance.map(c=>[`${c.suite}/${c.scenario}`,c]));
   for (const value of before.conformance) {const key=`${value.suite}/${value.scenario}`; const current=next.get(key); if(!current)changes.removed_cases.push(value);else if(!same(value,current))changes.changed_cases.push({before:value,after:current});}
   const lender_identical = same(before.lender,after.lender);
@@ -29,14 +30,14 @@ if (args.includes('--compare')) {
   const unexpectedUses = changes.uses.filter(c=>!same([c.before,c.after], expectedUses[c.file]));
   const expectedRemoved = new Set(["tax/reject-flag-disagrees-with-trigger", "recoveries/warn-legacy-cam-cap-beside-typed-cap", "hedge/reject-legacy-reserve-disagrees", "hedge/reject-premium-disagrees-with-use", "hedge/reject-strike-disagrees-with-legacy", "capex/reject-legacy-budget-disagrees"]);
   const unexpectedRemoved = changes.removed_cases.filter(c=>!expectedRemoved.has(`${c.suite}/${c.scenario}`));
-  const report={summary:{calc_baselines:Object.keys(after.baselineValues).length,baseline_changes:changes.baselines.length,lender:totals,lender_evidence_identical:lender_identical,receipt_changes:changes.receipts.length,uses_changes:changes.uses.length,calculation_changes:changes.calculations.length,code_documents_changed:changes.codes.length,conformance_before:before.conformance.length,conformance_after:after.conformance.length,conformance_changed:changes.changed_cases.length,conformance_removed:changes.removed_cases.length},changes};
+  const report={summary:{calc_baselines:Object.keys(after.baselineValues).length,baseline_changes:changes.baselines.length,lender:totals,lender_evidence_identical:lender_identical,receipt_changes:changes.receipts.length,uses_changes:changes.uses.length,calculation_changes:changes.calculations.length,code_documents_changed:changes.codes.length,expected_code_files_changed:changes.expected_codes.length,conformance_before:before.conformance.length,conformance_after:after.conformance.length,conformance_changed:changes.changed_cases.length,conformance_removed:changes.removed_cases.length},changes};
   console.log(JSON.stringify(report,null,2));
   process.exit(!lender_identical || changes.baselines.length || changes.receipts.length || changes.changed_cases.length || unexpectedExamples.length || unexpectedUses.length || unexpectedRemoved.length ? 1 : 0);
 }
 const core = await import(pathToFileURL(resolve(root, 'packages/uwmd-core/dist/index.js')));
 const { verifyExamples } = await import(pathToFileURL(resolve(root, 'conformance/metrics/verifier.mjs')));
 const files = execFileSync('git', ['ls-files', '-z'], { cwd: root }).toString().split('\0').filter(Boolean);
-const snapshot = { calculations: {}, uses: {}, codes: {}, receipts: {}, baselineValues: {}, lender: verifyExamples(root), conformance: [] };
+const snapshot = { calculations: {}, uses: {}, codes: {}, receipts: {}, baselineValues: {}, expectedCodes: {}, lender: verifyExamples(root), conformance: [] };
 for (const file of files.filter(f => /\.uwx?\.md$/.test(f) && !/^(docs\/(rfcs|releases|reviews)|spec)\//.test(f))) {
   const source = readFileSync(resolve(root, file), 'utf8');
   if (!source.includes('```json uw:')) continue;
@@ -52,6 +53,18 @@ for (const file of files.filter(f => /\.uwx?\.md$/.test(f) && !/^(docs\/(rfcs|re
   for (const [variant, block] of !entries ? [] : entries.annotation ? [['', entries]] : Object.entries(entries)) {
     snapshot.uses[`${file}#${variant}`] = core.deriveSourcesUses(core.blockPayload(block), parsed).usesTotal;
   }
+}
+function codeRows(value, path = '') {
+  if (!value || typeof value !== 'object') return [];
+  return Object.entries(value).flatMap(([key, member]) => {
+    const at = path ? `${path}.${key}` : key;
+    if (/^(?:code|expected_codes|codes|structural_codes|error_code)$/.test(key)) return [[at,member]];
+    return codeRows(member, at);
+  });
+}
+for (const file of files.filter(f => /(?:expected|validation)[^/]*\.json$/.test(f))) {
+  const rows = codeRows(JSON.parse(readFileSync(resolve(root,file),'utf8')));
+  if (rows.length) snapshot.expectedCodes[file] = rows;
 }
 for (const file of files.filter(f => /expected-result\.json$/.test(f))) {
   snapshot.baselineValues[file] = JSON.parse(readFileSync(resolve(root, file), 'utf8'));
