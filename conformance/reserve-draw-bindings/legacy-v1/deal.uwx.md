@@ -12,6 +12,7 @@ created: "2026-01-01"
 ```json uw:section=reserve_accounts
 {
   "_meta": {
+    "section": "reserve_accounts",
     "provenance": {
       "source": "manual",
       "agent_id": null,
@@ -73,6 +74,7 @@ created: "2026-01-01"
 ```json uw:section=cash_flow_series variant=gross
 {
   "_meta": {
+    "section": "cash_flow_series",
     "provenance": {
       "source": "manual",
       "agent_id": null,
@@ -103,6 +105,7 @@ created: "2026-01-01"
 ```json uw:section=lease_up_schedule variant=leasing
 {
   "_meta": {
+    "section": "lease_up_schedule",
     "provenance": {
       "source": "manual",
       "agent_id": null,

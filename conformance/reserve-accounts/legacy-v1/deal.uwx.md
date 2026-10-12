@@ -12,6 +12,7 @@ created: "2026-01-01"
 ```json uw:section=reserve_accounts
 {
   "_meta": {
+    "section": "reserve_accounts",
     "provenance": {
       "source": "manual",
       "agent_id": null,

@@ -14,58 +14,61 @@ created: "2026-01-01"
   "_meta": {
     "section": "reserve_accounts",
     "provenance": {
+      "source": "manual",
       "agent_id": null,
       "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
       "notes": null
     },
     "quality": {
+      "confidence": "verified",
       "flags": [],
       "partial": false,
       "provisional": false
     },
-    "lifecycle": {}
+    "lifecycle": {
+      "revision": 1
+    }
   },
-  "content": {
-    "accounts": [
-      {
-        "account_id": "property-capital",
-        "class": "property_reserve",
-        "purpose": "Property capital invoice custody",
-        "owner": "Synthetic Property LLC",
-        "currency_code": "USD",
-        "source": {
-          "document": "synthetic-reserve-and-invoices.pdf",
-          "locator": "Account header identifies property owner and restricted capital account"
-        },
-        "periods": [
-          {
-            "period_id": "jan",
-            "start_date": "2026-01-01",
-            "end_date": "2026-01-31",
-            "opening_balance": 454431.6,
-            "ending_balance": 0,
-            "source": {
-              "document": "synthetic-reserve-and-invoices.pdf",
-              "locator": "January statement: opening 454431.6; ending 0"
-            },
-            "movements": [
-              {
-                "movement_id": "draw-1",
-                "date": "2026-01-20",
-                "kind": "internal_draw",
-                "amount": 454431.6,
-                "counterparty": "Synthetic Contractor",
-                "source": {
-                  "document": "synthetic-reserve-and-invoices.pdf",
-                  "locator": "Reserve payment 1: 454431.6"
-                }
+  "accounts": [
+    {
+      "account_id": "property-capital",
+      "class": "property_reserve",
+      "purpose": "Property capital invoice custody",
+      "owner": "Synthetic Property LLC",
+      "currency_code": "USD",
+      "source": {
+        "document": "synthetic-reserve-and-invoices.pdf",
+        "locator": "Account header identifies property owner and restricted capital account"
+      },
+      "periods": [
+        {
+          "period_id": "jan",
+          "start_date": "2026-01-01",
+          "end_date": "2026-01-31",
+          "opening_balance": 454431.6,
+          "ending_balance": 0,
+          "source": {
+            "document": "synthetic-reserve-and-invoices.pdf",
+            "locator": "January statement: opening 454431.6; ending 0"
+          },
+          "movements": [
+            {
+              "movement_id": "draw-1",
+              "date": "2026-01-20",
+              "kind": "internal_draw",
+              "amount": 454431.6,
+              "counterparty": "Synthetic Contractor",
+              "source": {
+                "document": "synthetic-reserve-and-invoices.pdf",
+                "locator": "Reserve payment 1: 454431.6"
               }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
 ```
 ```json uw:section=cash_flow_series variant=gross
@@ -73,33 +76,36 @@ created: "2026-01-01"
   "_meta": {
     "section": "cash_flow_series",
     "provenance": {
+      "source": "manual",
       "agent_id": null,
       "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
       "notes": null
     },
     "quality": {
+      "confidence": "verified",
       "flags": [],
       "partial": false,
       "provisional": false
     },
-    "lifecycle": {}
+    "lifecycle": {
+      "revision": 1
+    }
   },
-  "content": {
-    "series": [
-      {
-        "date": "2026-01-20",
-        "amount": -228203.88,
-        "kind": "capex",
-        "label": "Separate gross invoice 1"
-      },
-      {
-        "date": "2026-01-20",
-        "amount": -226227.71,
-        "kind": "capex",
-        "label": "Separate gross invoice 2"
-      }
-    ]
-  }
+  "series": [
+    {
+      "date": "2026-01-20",
+      "amount": -228203.88,
+      "kind": "capex",
+      "label": "Separate gross invoice 1"
+    },
+    {
+      "date": "2026-01-20",
+      "amount": -226227.71,
+      "kind": "capex",
+      "label": "Separate gross invoice 2"
+    }
+  ]
 }
 ```
 ```json uw:section=lease_up_schedule variant=leasing
@@ -107,29 +113,32 @@ created: "2026-01-01"
   "_meta": {
     "section": "lease_up_schedule",
     "provenance": {
+      "source": "manual",
       "agent_id": null,
       "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
       "notes": null
     },
     "quality": {
+      "confidence": "verified",
       "flags": [],
       "partial": false,
       "provisional": false
     },
-    "lifecycle": {}
+    "lifecycle": {
+      "revision": 1
+    }
   },
-  "content": {
-    "model_type": "absorption_curve",
-    "period_granularity": "monthly",
-    "schedule": [
-      {
-        "period": "2026-01",
-        "rent_revenue": 100,
-        "concessions": 0,
-        "ti_lc_capex": -100,
-        "net_cash_flow": 0
-      }
-    ]
-  }
+  "model_type": "absorption_curve",
+  "period_granularity": "monthly",
+  "schedule": [
+    {
+      "period": "2026-01",
+      "rent_revenue": 100,
+      "concessions": 0,
+      "ti_lc_capex": -100,
+      "net_cash_flow": 0
+    }
+  ]
 }
 ```

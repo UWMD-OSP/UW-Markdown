@@ -14,45 +14,48 @@ created: "2026-01-01"
   "_meta": {
     "section": "reserve_accounts",
     "provenance": {
+      "source": "manual",
       "agent_id": null,
       "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
       "notes": null
     },
     "quality": {
+      "confidence": "verified",
       "flags": [],
       "partial": false,
       "provisional": false
     },
-    "lifecycle": {}
+    "lifecycle": {
+      "revision": 1
+    }
   },
-  "content": {
-    "accounts": [
-      {
-        "account_id": "property-capital",
-        "class": "property_reserve",
-        "purpose": "Gross property capital expenditure custody",
-        "owner": "Synthetic Property LLC",
-        "currency_code": "USD",
-        "source": {
-          "document": "synthetic-property-custody-statement.pdf",
-          "locator": "Account header: property owner and restricted capital account"
-        },
-        "periods": [
-          {
-            "period_id": "jan",
-            "start_date": "2026-01-01",
-            "end_date": "2026-01-31",
-            "opening_balance": 100,
-            "ending_balance": 100,
-            "source": {
-              "document": "synthetic-property-custody-statement.pdf",
-              "locator": "January opening 100; ending 150"
-            },
-            "movements": []
-          }
-        ]
-      }
-    ]
-  }
+  "accounts": [
+    {
+      "account_id": "property-capital",
+      "class": "property_reserve",
+      "purpose": "Gross property capital expenditure custody",
+      "owner": "Synthetic Property LLC",
+      "currency_code": "USD",
+      "source": {
+        "document": "synthetic-property-custody-statement.pdf",
+        "locator": "Account header: property owner and restricted capital account"
+      },
+      "periods": [
+        {
+          "period_id": "jan",
+          "start_date": "2026-01-01",
+          "end_date": "2026-01-31",
+          "opening_balance": 100,
+          "ending_balance": 100,
+          "source": {
+            "document": "synthetic-property-custody-statement.pdf",
+            "locator": "January opening 100; ending 150"
+          },
+          "movements": []
+        }
+      ]
+    }
+  ]
 }
 ```
