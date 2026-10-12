@@ -153,7 +153,7 @@ Static deploy, no backend needed. A public preview is hosted at
 **[`packages/uwmd-cli`](../packages/uwmd-cli/) — programmatic entry point.**
 
 ```bash
-npx @uwmd/cli init --output my-deal.uwx.md   # scaffold a format-2.0 record
+npx @uwmd/cli init --output my-deal.uwx.md   # scaffold a full record
 npx @uwmd/cli validate my-deal.uwx.md        # check structure, rules, stage readiness
 npx @uwmd/cli summary my-deal.uwx.md         # print quick metrics
 npx @uwmd/cli parse my-deal.uwx.md           # to JSON

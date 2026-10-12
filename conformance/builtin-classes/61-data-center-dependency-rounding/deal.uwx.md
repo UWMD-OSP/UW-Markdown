@@ -56,12 +56,10 @@ source_documents:
 > **Deal ID:** uw_2026_dc7q4m1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress
 > **10.0 MW Commissioned / 12.5 MW Planned** | **11.0 MW Contracted** | **PUE 1.25** | **$160,000,000 Purchase** | **$16,000/kW** | **7.00% Cap Rate (in-place)**
 
-This file is the corpus's **first custom-class example**: its `asset_class` is
-`data_center`, declared by the `org.uwmd.datacenters` module ([RFC
-0039](../docs/rfcs/0039-data-center-module.md)) rather than by the builtin enum.
-The standard sections read as ordinary industrial real estate — a building, a
-lease, an NOI, a loan — which is why the module states `industrial` as its
-fallback. The three `dc_*` sections carry what the standard sections cannot:
+This file is the corpus's data-center fixture: its `asset_class` is the
+builtin `data_center` class (RFC 0080), which began as the
+`org.uwmd.datacenters` module of RFC 0039. The standard sections read as
+ordinary industrial real estate — a building, a lease, an NOI, a loan. The three `dc_*` sections carry what the standard sections cannot:
 capacity in **kilowatts**, PUE, redundancy topology, power billing, and rent
 per kW-month.
 

@@ -985,7 +985,7 @@ function checkTaxBasis(parsed: ParsedUWFile, issues: ValidationMessage[]): void 
           }
           // TAX-04: the legacy boolean has to agree with the typed trigger.
           // RFC 0081 Phase 4: delete the retired scalar agreement path.
-  const flag = t['sale_triggers_reassessment'];
+          const flag = t['sale_triggers_reassessment'];
           if (typeof flag === 'boolean' && flag !== (rr['trigger'] === 'sale')) {
             taxIssue(issues, 'TAX-04', 'noi_model', `${TAX_PATH}.sale_triggers_reassessment`,
               `TAX-04: sale_triggers_reassessment ${flag} disagrees with reassessment.trigger ${JSON.stringify(rr['trigger'])}`, flag);
@@ -1876,7 +1876,7 @@ function checkEscrows(
   // ESC-03: the legacy scalars have to agree with the typed lines.
   for (const [legacyKey, name] of [
     // RFC 0081 Phase 4: delete the retired scalar agreement path.
-  ['interest_reserve', 'interest'],
+    ['interest_reserve', 'interest'],
     ['operating_reserves', 'operating'],
   ] as const) {
     const legacy = uses[legacyKey];
@@ -1909,7 +1909,7 @@ function checkHedgesAndEscrows(parsed: ParsedUWFile, issues: ValidationMessage[]
         assumption = rec['post_expiration_assumption'];
         checkRateHedge(rec, deepGet(debt.content, 'rate_type'), deepGet(debt.content, 'rate_cap_pct'), issues, parsed.frontmatter.uw_version === '3.0');
         // RFC 0081 Phase 4: delete the retired scalar agreement path.
-  // HDG-05: the premium is the same cash as the use that funds it.
+        // HDG-05: the premium is the same cash as the use that funds it.
         const premium = rec['premium'];
         const cost = su ? deepGet(su.content, 'uses.rate_cap_cost') : undefined;
         if (finiteNum(premium) && finiteNum(cost) && !sameMoney(premium, cost)) {
@@ -2120,7 +2120,7 @@ function checkRenovationDraw(parsed: ParsedUWFile, issues: ValidationMessage[]):
   // CAPX-05: the legacy scalars have to agree with the typed body.
   for (const [legacyKey, typedKey] of [
     // RFC 0081 Phase 4: delete the retired scalar agreement path.
-  ['renovation_budget', 'budget'],
+    ['renovation_budget', 'budget'],
     ['renovation_contingency', 'contingency'],
   ] as const) {
     const legacy = deepGet(su.content, `uses.${legacyKey}`);

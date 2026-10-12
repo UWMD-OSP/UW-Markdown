@@ -26,7 +26,7 @@ once you're done here.
 
 > **The fast path:** the [quickstart](/tutorials/quickstart) runs
 > `npx @uwmd/cli init --output deal.uwx.md`, which scaffolds a complete
-> format-2.0 record with every standard section stubbed out. This tutorial
+> record with every standard section stubbed out. This tutorial
 > builds a file by hand instead, so you understand what each piece is.
 
 ## Step 1 — Create the file

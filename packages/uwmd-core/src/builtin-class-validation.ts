@@ -56,6 +56,8 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
   const strict = atLeast21 || namesLegacyModule;
   const ruleSeverity = (severity: ValidationMessage['severity']): ValidationMessage['severity'] =>
     severity === 'error' && !strict ? 'warning' : severity;
+  // G3 (RFC 0081 §5): the hotel facts' rent_roll contract.
+  // RFC 0081 Phase 4: delete the uw_version gate; the contract then applies to every document.
   if (assetClass === 'hospitality' && parsed.frontmatter.uw_version === '3.0') {
     const roll = resolveRoleBlock(parsed.sections.rent_roll, 'rent_roll', ['default', 'base']).block;
     if (roll) {

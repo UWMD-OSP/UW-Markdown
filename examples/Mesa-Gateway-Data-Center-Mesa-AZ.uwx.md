@@ -56,7 +56,7 @@ source_documents:
 > **Deal ID:** uw_2026_dc7q4m1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress  
 > **10.0 MW Commissioned / 12.5 MW Planned** | **11.0 MW Contracted** | **PUE 1.25** | **$160,000,000 Purchase** | **$16,000/kW** | **7.00% Cap Rate (in-place)**
 
-This is the standard's builtin data-center example (Format 2.1, RFC 0080).
+This is the standard's builtin data-center example (RFC 0080).
 Its three `dc_*` sections state capacity in **kilowatts**, PUE, redundancy,
 power billing, and rent per kW-month alongside the standard real-estate inputs.
 
