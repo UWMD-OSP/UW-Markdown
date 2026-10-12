@@ -15,19 +15,21 @@ paths remain stable for consumers; they do not confer a tier claim.
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 23 | 16 |
-| Verifier | 679 | 280 |
+| Verifier | 673 | 280 |
 | Module | 68 | 1 |
-| Integrity | 15 | 0 |
+| Integrity | 14 | 0 |
 | Representations | 134 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products | 116 | 35 |
-| **Total** | **1,061** | **332** |
+| **Total** | **1,054** | **332** |
 
 The before count was 1,053 default + three opt-in agent-shape checks; all 1,056
 now run by default, and five new Verifier checks (marked `added` in the index)
-bring the total to 1,061. Portable cases project a subset of those same checks,
+brought the total to 1,061. RFC 0081 Phase 3 retires seven checks whose subject
+it removes (six conflict-only Verifier controls and the `meta-v2` digest
+shape-insensitivity check), leaving 1,054. Portable cases project a subset of those same checks,
 so 332 is not an additional corpus. All expectations are preserved. The index
 and generated cases are checked for exact ownership, missing/duplicate results
 and generation drift.
@@ -243,15 +245,14 @@ conformance/
 │                         data-loss regression — an unrecognized source
 │                         supersedes instead of replacing, and a caller policy
 │                         list with no coverage refuses rather than grants
-├── tier-1-reader/v2-fixtures/  The v2 nested _meta shape (RFC 0009). Seven
+├── tier-1-reader/v2-fixtures/  The v2 nested _meta shape (RFC 0009). Six
 │                         scenarios run by the `meta-v2` suite: a minimal
 │                         nested file reads through the flat parse view;
 │                         META-V2-IN-V1 and META-V1-IN-V2 fire in both mixing
 │                         directions; the v1→v2 reshape is byte-identical to a
 │                         recorded baseline; a legacy tag survives the shape
 │                         change with `provenance.source` absent, never
-│                         invented; the same block in both accepted shapes
-│                         yields the identical v2 digest; and spelling out the
+│                         invented; and spelling out the
 │                         defaulted `integrity.algorithm` moves nothing
 ├── migrate/            `uwmd migrate --to-v2` (RFC 0009). Three
 │                         <scenario>/{deal.uwx.md, expected.json}: a signed

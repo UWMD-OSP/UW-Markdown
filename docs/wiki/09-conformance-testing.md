@@ -95,22 +95,24 @@ Editor/agent, rendering, defaults/cascade, projections and refinement checks
 belong to [docs/starter](../starter/README.md), remain in CI and have separate
 report counts. Mixed cases keep all their assertions and are product checks.
 
-The corpus reconciles **1,053 default + three opt-in = 1,056 existing reference
-checks, plus five new validate-only Verifier checks = 1,055**, and **332 portable
-CLI projections**. The lender fixture stays **187/0/0**.
+The corpus reconciled **1,053 default + three opt-in = 1,056 existing reference
+checks, plus five new validate-only Verifier checks = 1,061**. RFC 0081 Phase 3
+retires seven checks whose subject it removes (six conflict-only Verifier
+controls and `meta-v2/06-digest-shape-insensitive`), leaving **1,054**, and
+**332 portable CLI projections**. The lender fixture stays **187/0/0**.
 
 | Owner | Reference | Portable |
 |---|---:|---:|
 | reader | 23 | 16 |
-| verifier | 679 | 280 |
+| verifier | 673 | 280 |
 | module | 68 | 1 |
-| integrity | 15 | 0 |
+| integrity | 14 | 0 |
 | representations | 134 | 0 |
 | portfolio | 14 | 0 |
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
 | starter-products | 116 | 35 |
-| **Total** | **1,055** | **332** |
+| **Total** | **1,054** | **332** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -292,7 +294,7 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,055 indexed checks across its suites, and most of what has been added
+runs all 1,054 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable

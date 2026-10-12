@@ -22,7 +22,7 @@ that needs a package index is a driver an air-gapped implementer cannot run.
 
 ## What it does not cover
 
-**`npm run conformance` remains the full CI gate:** 1,055 reference checks.
+**`npm run conformance` remains the full CI gate:** 1,054 reference checks.
 This driver retains all 332 CLI projections, including Reader, Verifier,
 Module and separately reported starter-product cases. A portable result
 claims coverage of those cases, not the omitted cross-fixture contracts.

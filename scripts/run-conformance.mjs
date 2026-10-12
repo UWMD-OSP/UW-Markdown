@@ -102,7 +102,6 @@ import {
   getSizeIntensive,
   resolveDealSize,
   renderReportHtml,
-  computeBlockHash,
   canonicalV2BlockContent,
   canonicalizeV2,
   migrateToV2,
@@ -4375,18 +4374,6 @@ async function runMetaV2() {
     const codes = metaCodes(load(`${id}.uwx.md`));
     const ok = codes.length === 1 && codes[0] === 'META-V1-IN-V2';
     record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `codes [${codes.join(', ')}] != [META-V1-IN-V2]`);
-  }
-
-  // 06 — the same block in both accepted shapes yields the identical v2
-  // digest (canonicalization step 1 is normalization).
-  {
-    const id = '06-digest-shape-insensitive';
-    const flat = parseUWFile(readFileSync(join(META_V2_DIR, id, 'flat.uwx.md'), 'utf8'));
-    const nested = parseUWFile(readFileSync(join(META_V2_DIR, id, 'nested.uwx.md'), 'utf8'));
-    const a = await computeBlockHash(flat.sections.property, { shape: 'v2' });
-    const b = await computeBlockHash(nested.sections.property, { shape: 'v2' });
-    const ok = a === b;
-    record('meta-v2', id, ok ? 'pass' : 'fail', ok ? undefined : `flat ${a} != nested ${b}`);
   }
 
   // 07 — spelling out the defaulted integrity.algorithm moves no digest.

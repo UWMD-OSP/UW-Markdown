@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "migration_base": "6eec774",
   "before": {
-    "reference_default": 1043,
-    "reference_opt_in": 7,
+    "reference_default": 1046,
+    "reference_opt_in": 3,
     "portable": 332
   },
   "cases": [
@@ -5051,11 +5051,6 @@
       "suite": "meta-v2",
       "scenario": "05-flat-in-v2",
       "target": "verifier"
-    },
-    {
-      "suite": "meta-v2",
-      "scenario": "06-digest-shape-insensitive",
-      "target": "integrity"
     },
     {
       "suite": "meta-v2",
