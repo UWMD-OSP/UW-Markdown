@@ -176,7 +176,7 @@ describe('RFC 0080 §5: pre-existing documents behave the same', () => {
 
   it('keeps MOD-CALC-ERROR for a migrated calculation only where the legacy module ran it', () => {
     // RFC 0081 Phase 4: delete the old module-gating test.
-    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8').replace(/uw_version:.*$/m, `uw_version: "${[2, 0].join('.')}"`);
+    const fixture = readFileSync(resolve(corpus, '01-hospitality-fixture/deal.uwx.md'), 'utf8').replace(/uw_version:.*$/m, 'uw_version: "2.0"'); // RFC 0081 Phase 4: delete
     const broken = mutate(fixture, '"fb_revenue": 900000', '"fb_revenue": 0');
     const calcErrors = (source: string) => classIssues(source).filter(i => i.code === 'MOD-CALC-ERROR');
     expect(calcErrors(broken)).toEqual([]);

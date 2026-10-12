@@ -329,7 +329,7 @@ describe('dependent overrides at runtime (§VII.3)', () => {
     // B declares y, then overrides x with a formula reading y. Running B's x
     // anywhere before B's y would read y as absent.
     // RFC 0081 Phase 4: delete the historical host-floor probe.
-    const a = { ...mod('org.example.a', [calc('x', '1')]), requires_protocol: `>=${[1, 0, 0].join('.')}` };
+    const a = { ...mod('org.example.a', [calc('x', '1')]), requires_protocol: '>=1.0.0' }; // RFC 0081 Phase 4: delete
     const b = mod('org.example.b', [calc('y', '2'), calc('x', 'y * 100')], 'org.example.a');
     expect(trace(a, b)).toEqual(['org.example.b:y=2', 'org.example.b:x=200']);
   });
@@ -399,7 +399,7 @@ describe('dependent overrides at runtime (§VII.3)', () => {
     // 2.22.0 is the first release that contains RFC 0074.
     const RFC_0074_FLOOR = '2.22.0';
     // RFC 0081 Phase 4: delete the historical host-floor probe.
-    const a = { ...mod('org.example.a', [calc('x', '1')]), requires_protocol: `>=${[1, 0, 0].join('.')}` };
+    const a = { ...mod('org.example.a', [calc('x', '1')]), requires_protocol: '>=1.0.0' }; // RFC 0081 Phase 4: delete
     const b = { ...mod('org.example.b', [calc('x', '2')], 'org.example.a'), requires_protocol: `>=${RFC_0074_FLOOR}` };
     const host = (protocolVersion: string) =>
       createModuleRegistry({ modules: [a, b], hostTier: 'tier-4-agent-host', protocolVersion });

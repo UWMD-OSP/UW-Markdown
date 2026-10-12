@@ -37,7 +37,7 @@ export function projectCompiledLite(content) {
     return `\`\`\`json uw:section=${section}${annotations}\n${JSON.stringify(rest,null,2)}\n\`\`\``;
   });
 }
-export function legacyTestDocument(content, {version=[1,1].join('.'), flat=true, legacySource, manualResolution=false}={}) {
+export function legacyTestDocument(content, {version='1.1', flat=true, legacySource, manualResolution=false}={}) { // RFC 0081 Phase 4: delete
   return content.replace(/^uw_version:.*$/m, `uw_version: "${version}"`).replace(/^```json uw:section=(\S+)([^\n]*)\n([\s\S]*?)^```\s*$/gm, (_match, section, annotations, raw) => {
     const block = JSON.parse(raw); let meta = block._meta;
     if (flat && meta?.provenance) meta = reshapeMetaV2toV1(meta);

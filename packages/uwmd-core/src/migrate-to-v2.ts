@@ -143,7 +143,7 @@ export async function migrateToV2(
     const line = lines[i] as string;
     const fence = FENCE_OPEN_RE.exec(line);
     if (!fence) {
-      out.push(i === uwVersionLine ? line.replace(/uw_version:.*$/, `uw_version: "${[2, 0].join('.')}"`) /* RFC 0081 Phase 4: delete the old migrator. */ : line);
+      out.push(i === uwVersionLine ? line.replace(/uw_version:.*$/, 'uw_version: "2.0"') /* RFC 0081 Phase 4: delete the old migrator. */ : line);
       i++;
       continue;
     }

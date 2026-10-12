@@ -4299,6 +4299,7 @@ async function runSource() {
 }
 
 // ─── meta-v2 (RFC 0009) — nested _meta shape, shim, versioned digests ────────
+// RFC 0081 Phase 4: delete this suite with the reshape layer (RFC 0081 §8).
 
 const META_V2_DIR = join(CONFORMANCE_DIR, 'tier-1-reader', 'v2-fixtures');
 
@@ -4308,7 +4309,7 @@ async function runMetaV2() {
   const load = (file) => {
     const content = readFileSync(join(META_V2_DIR, file), 'utf8');
     const flat = file.startsWith('05-') || file.startsWith('03-') || file.startsWith('04-');
-    const version = file.startsWith('02-') || file.startsWith('04-') ? [1,1].join('.') : [2,0].join('.');
+    const version = file.startsWith('02-') || file.startsWith('04-') ? '1.1' : '2.0'; // RFC 0081 Phase 4: delete (meta-v2 suite)
     return parseUWFile(legacyTestDocument(content,{flat,version,...(file.startsWith('04-')?{legacySource:'market_data'}:{})}));
   };
   const metaCodes = (parsed) =>
@@ -4394,6 +4395,8 @@ async function runMetaV2() {
 }
 
 // ─── migrate (RFC 0009) — uwmd migrate --to-v2 scenarios ─────────────────────
+// RFC 0081 Phase 4: delete this suite with the migrators (RFC 0081 §4, §8).
+// Its expected.json files record the migrator's output version, "2.0".
 
 const MIGRATE_DIR = join(CONFORMANCE_DIR, 'migrate');
 
@@ -4429,7 +4432,7 @@ async function runMigrate() {
     if (result.ok) {
       const parsed = parseUWFile(result.content);
       const block = parsed.sections.property;
-      if (parsed.frontmatter.uw_version !== [2,0].join('.')) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
+      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`); // RFC 0081 Phase 4: delete (migrate suite)
       if ((block?.meta?.signature === undefined) !== expected.signature_absent) problems.push('signature survived --strip-signatures');
       if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
       const chain = await verifyChain(parsed);
@@ -4449,7 +4452,7 @@ async function runMigrate() {
     if (result.ok) {
       const parsed = parseUWFile(result.content);
       const block = parsed.sections.property;
-      if (parsed.frontmatter.uw_version !== [2,0].join('.')) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`);
+      if (parsed.frontmatter.uw_version !== expected.uw_version) problems.push(`uw_version ${parsed.frontmatter.uw_version} != ${expected.uw_version}`); // RFC 0081 Phase 4: delete (migrate suite)
       if (block?.meta?.resolution !== expected.resolution) problems.push(`resolution ${block?.meta?.resolution} != ${expected.resolution}`);
       if (!(block?.meta?.notes ?? '').includes(expected.note_contains)) problems.push(`notes missing '${expected.note_contains}'`);
     }
