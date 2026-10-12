@@ -836,12 +836,13 @@ function deepEqual(a, b) {
 // Tier 4 is gated behind --tier=4 because it requires either a live LLM call
 // or a recorded replay. CI runs the other tiers; tier-4 is operator-driven.
 
-function runTier4() {
+async function runTier4() {
   const baseDir = join(CONFORMANCE_DIR, 'tier-4-agent-host', 'fixtures');
   if (!existsSync(baseDir)) {
     record('4', '(none)', 'pass', 'no fixtures');
     return;
   }
+  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
   for (const scenario of scenarios) {
     const dir = join(baseDir, scenario);
@@ -851,14 +852,33 @@ function runTier4() {
       record('4', scenario, 'fail', 'missing before.uwx.md or expected-after-shape.json');
       continue;
     }
-    // Lint-only: parse the shape JSON and the before file. Live runs are
-    // operator-driven; we don't have a replay store yet (deferred to v2).
+    // A live run is operator-driven, so the post-run shape cannot be applied
+    // to an after-document here. What CI can prove: the shape is a strict
+    // JSON Schema (no stray keywords), the before file already satisfies the
+    // frontmatter contract L6 must preserve, and the shape refuses a block in
+    // the retired {section_id, _meta, content} wrapper (RFC 0081 §3).
     try {
-      JSON.parse(readFileSync(shapePath, 'utf8'));
-      parseUWFile(readFileSync(beforePath, 'utf8'));
-      record('4', scenario, 'pass', 'shape file lint only — live run not exercised');
+      const shape = JSON.parse(readFileSync(shapePath, 'utf8'));
+      if (!shape.$schema) {
+        // A declarative contract, not a JSON Schema: lint only.
+        parseUWFile(readFileSync(beforePath, 'utf8'));
+        record('4', scenario, 'pass', 'shape file lint only — live run not exercised');
+        continue;
+      }
+      const ajv = new Ajv2020({ strict: true, strictRequired: false, validateFormats: false });
+      ajv.compile(shape);
+      const problems = [];
+      const frontmatter = ajv.compile(shape.properties.frontmatter);
+      const before = parseUWFile(readFileSync(beforePath, 'utf8'));
+      if (!frontmatter(before.frontmatter)) problems.push(`before frontmatter: ${ajv.errorsText(frontmatter.errors)}`);
+      for (const [id, sectionShape] of Object.entries(shape.properties.sections.properties)) {
+        if (!sectionShape.required?.includes('_meta')) continue;
+        const block = ajv.compile(sectionShape);
+        if (block({ section_id: id, _meta: {}, content: {} })) problems.push(`${id} shape admits the retired section_id wrapper`);
+      }
+      record('4', scenario, problems.length ? 'fail' : 'pass', problems.join('; ') || 'shape compiled; before frontmatter and wrapper refusal checked — live run not exercised');
     } catch (e) {
-      record('4', scenario, 'fail', `lint failed: ${e.message}`);
+      record('4', scenario, 'fail', `shape check failed: ${e.message}`);
     }
   }
 }
@@ -4466,7 +4486,7 @@ const dispatch = {
   '1': async () => { runTier1(); await runTier1Malformed(); },
   '2': async () => { await runTier2(); },
   '3': async () => { runTier3(); await runTier3Refinement(); },
-  '4': async () => { runTier4(); await runTier4Profile(); },
+  '4': async () => { await runTier4(); await runTier4Profile(); },
   // Runs by default: deterministic, no network, no API key.
   '4-replay': async () => { await runTier4Replay(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmarkdown.org/conformance/tier-4/l6-risk-rating/expected-after-shape",
   "title": "L6 Risk Rating — post-run shape assertion",
-  "description": "Shape contract for the `.uw.md` file after L6 runs against before.uw.md. Validates the parsed file (frontmatter + sections) — not the raw markdown bytes. Use the conformance runner with --tier=4 to apply this against a live agent run.",
+  "description": "Shape contract for the `.uw.md` file after L6 runs against before.uwx.md. Validates the parsed file (frontmatter + sections, each section the raw Format 3.0 block object: the payload beside `_meta`) — not the raw markdown bytes. The conformance runner compiles it, checks the before file's frontmatter against it and checks that it refuses the retired wrapper; a live run is operator-driven.",
   "type": "object",
   "required": [
     "frontmatter",
@@ -18,7 +18,7 @@
       ],
       "properties": {
         "uw_version": {
-          "const": "1.1"
+          "const": "3.0"
         },
         "deal_id": {
           "const": "TEST-T4-001"
@@ -46,83 +46,148 @@
         "risk_assessment": {
           "type": "object",
           "required": [
-            "section_id",
             "_meta",
-            "content"
+            "overall_rating",
+            "risk_score",
+            "key_risks"
           ],
+          "not": {
+            "required": [
+              "section_id"
+            ]
+          },
           "properties": {
             "_meta": {
-              "provenance": {
-                "agent_id": null,
-                "agent_version": null,
-                "notes": null
-              },
-              "quality": {
-                "flags": [],
-                "partial": false,
-                "provisional": false
-              },
-              "lifecycle": {}
-            },
-            "type": "object",
-            "required": [
-              "overall_rating",
-              "risk_score",
-              "key_risks"
-            ],
-            "properties": {
-              "overall_rating": {
-                "enum": [
-                  "low",
-                  "moderate",
-                  "elevated",
-                  "high",
-                  "severe"
-                ]
-              },
-              "risk_score": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 10
-              },
-              "key_risks": {
-                "type": "array",
-                "minItems": 1,
-                "items": {
+              "type": "object",
+              "required": [
+                "section",
+                "provenance",
+                "quality",
+                "lifecycle"
+              ],
+              "properties": {
+                "section": {
+                  "const": "risk_assessment"
+                },
+                "provenance": {
                   "type": "object",
                   "required": [
-                    "category",
-                    "severity",
-                    "description"
+                    "source",
+                    "agent_id",
+                    "agent_version",
+                    "actor",
+                    "timestamp"
                   ],
                   "properties": {
-                    "category": {
+                    "source": {
+                      "type": "string",
+                      "pattern": "^agent/L6"
+                    },
+                    "agent_id": {
+                      "type": "string",
+                      "pattern": "^L6"
+                    },
+                    "agent_version": {
                       "type": "string"
                     },
-                    "severity": {
+                    "actor": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                },
+                "quality": {
+                  "type": "object",
+                  "required": [
+                    "confidence"
+                  ],
+                  "properties": {
+                    "confidence": {
                       "enum": [
                         "low",
-                        "moderate",
-                        "high",
-                        "critical"
+                        "medium",
+                        "high"
                       ]
                     },
-                    "description": {
-                      "type": "string",
-                      "minLength": 1
+                    "human_review_required": {
+                      "type": "boolean"
+                    },
+                    "flags": {
+                      "type": "array"
+                    }
+                  }
+                },
+                "lifecycle": {
+                  "type": "object",
+                  "required": [
+                    "revision"
+                  ],
+                  "properties": {
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "superseded": {
+                      "type": "boolean"
                     }
                   }
                 }
-              },
-              "mitigants": {
-                "type": "array",
-                "items": {
-                  "type": "string"
+              }
+            },
+            "overall_rating": {
+              "enum": [
+                "low",
+                "moderate",
+                "elevated",
+                "high",
+                "severe"
+              ]
+            },
+            "risk_score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "key_risks": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "category",
+                  "severity",
+                  "description"
+                ],
+                "properties": {
+                  "category": {
+                    "type": "string"
+                  },
+                  "severity": {
+                    "enum": [
+                      "low",
+                      "moderate",
+                      "high",
+                      "critical"
+                    ]
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
-              },
-              "rationale": {
+              }
+            },
+            "mitigants": {
+              "type": "array",
+              "items": {
                 "type": "string"
               }
+            },
+            "rationale": {
+              "type": "string"
             }
           }
         }
