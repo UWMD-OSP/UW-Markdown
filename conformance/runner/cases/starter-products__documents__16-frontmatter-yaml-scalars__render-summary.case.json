@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__16-frontmatter-yaml-scalars__render-summary",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "16-frontmatter-yaml-scalars.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/16-frontmatter-yaml-scalars.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

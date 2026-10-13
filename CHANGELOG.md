@@ -8,6 +8,12 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Changed — RFC 0081 Phase 5
+
+- Conformance directories and suite ids describe content: `documents`, `calc`, and `starter/{editor,refinement,agent}` (`starter-editor`, `starter-refinement`, `starter-agent`, `starter-agent-profile`, `starter-agent-replay` suite ids). Both reserve `legacy-v1` cases are renamed `bare-block`; every existing assertion remains.
+- Regenerated all 336 portable cases with `<owner>__<suite>__<scenario>__<operation>` ids and filenames. Updated runners, tests, schema examples, docs and the site sidebar; the 1,069 reference checks retain their outcomes and ownership.
+- Old corpus paths, numbered suite selectors and portable ids have no aliases. Historical RFC/release links are rewritten at docs-site build time, with no old pages or redirects emitted. Version bumps and release remain Phase 6.
+
 ### Removed — RFC 0081 Phase 4
 
 Every backward-compatibility path is deleted, with no alias, shim or deprecation period. This ends the Phase 2 → Phase 4 interim state: the reference implementation now enforces Format 3.0 / Protocol 4.0.0.

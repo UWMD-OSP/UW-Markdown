@@ -99,8 +99,9 @@ status values.
 
 ## Adding a conformance fixture
 
-Fixtures live under `conformance/tier-N-*/fixtures/` with expected outputs in
-`conformance/tier-N-*/expected/`. To add a fixture:
+Fixtures live under a content directory such as `conformance/documents/fixtures/`,
+`conformance/calc/fixtures/` or `conformance/starter/<editor|agent|refinement>/fixtures/`,
+with expected outputs in the matching `expected/` directory. To add a fixture:
 
 1. Place the input `.uw.md` (or before/after pair, or calc input, depending on
    the tier) in the relevant `fixtures/` directory with a numeric prefix.
@@ -112,7 +113,7 @@ Fixtures live under `conformance/tier-N-*/fixtures/` with expected outputs in
 3. Add its owner row (Reader, Verifier, a profile, or starter products) to
    `conformance/corpus-index.json`, and an entry to the suite README explaining
    what the fixture exercises.
-4. For agent-host starter fixtures (`tier-4-agent-host/`), expected outputs are *shape assertions*,
+4. For agent-host starter fixtures (`starter/agent/`), expected outputs are *shape assertions*,
    not byte equality — LLMs are nondeterministic, so the fixture's
    `expected-after-shape.json` lists fields that MUST be present, with allowed
    value types but not specific values.

@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__02-full-multifamily__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "02-full-multifamily.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/02-full-multifamily.parsed.json"
+  }
+}

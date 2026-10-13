@@ -1,3 +1,4 @@
+// Historical tier names below are intentionally refused negative inputs.
 // Module loader tests.
 
 import { describe, expect, it } from 'vitest';

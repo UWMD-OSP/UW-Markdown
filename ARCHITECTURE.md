@@ -138,9 +138,9 @@ case exactly one owner (Protocol §II.6, RFC 0078):
 - **Starter products** — editor, agent, rendering, defaults and refinement
   checks. Not conformance; still blocking in CI and reported separately.
 
-Fixture directories keep their historical names (`tier-1-reader/`,
-`tier-2-editor/`, `tier-3-calc-host/`, `tier-4-agent-host/`) so paths stay
-stable; a directory name is not an ownership claim. A `malformed/`
+Fixture directories are named by content (`documents/`, `calc/`,
+`starter/editor/`, `starter/agent/`); ownership comes from the
+corpus index, not the directory name. A `malformed/`
 subdirectory (where applicable) holds deliberately-invalid fixtures whose
 `expected.json` declares which validator codes the parser must surface.
 
@@ -188,5 +188,5 @@ a PR.
 | Add a validator check | `packages/uwmd-core/src/validator.ts` (register code in `BUILTIN_REMEDIATIONS`) |
 | Add a calc builtin | `packages/uwmd-core/src/calc/builtins.ts` + `calc.test.ts`, then update `excel-emit.ts` so the Excel translation matches |
 | Propose a spec change | Open an RFC under `docs/rfcs/` using the template |
-| Add a conformance fixture | `conformance/tier-N-*/fixtures/` plus matching `expected/` |
+| Add a conformance fixture | `conformance/documents/`, `calc/` or `starter/*/` `fixtures/` plus matching `expected/` |
 | Improve docs | Either `tools/docs-site/` or the spec/governance markdown at repo root (the docs site rebuilds from these) |

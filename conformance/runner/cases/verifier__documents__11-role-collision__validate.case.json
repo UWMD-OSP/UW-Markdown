@@ -1,0 +1,19 @@
+{
+  "id": "verifier__documents__11-role-collision__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "11-role-collision.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/11-role-collision.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

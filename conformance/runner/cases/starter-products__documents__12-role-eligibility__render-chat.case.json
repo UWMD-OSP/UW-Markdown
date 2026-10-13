@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__12-role-eligibility__render-chat",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "12-role-eligibility.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/12-role-eligibility.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

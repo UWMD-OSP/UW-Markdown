@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__04-scope-only__render-summary",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "04-scope-only.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/04-scope-only.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

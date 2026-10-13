@@ -1,0 +1,19 @@
+{
+  "id": "verifier__reserve-accounts__empty-explicit-movements__verify-reserve-accounts",
+  "target": "verifier",
+  "requires_capabilities": [
+    "parse",
+    "calc-evaluate"
+  ],
+  "command": "verify-reserve-accounts",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/reserve-accounts/empty-explicit-movements",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 0
+  }
+}

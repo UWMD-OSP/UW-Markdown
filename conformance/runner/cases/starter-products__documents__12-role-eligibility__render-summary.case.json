@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__12-role-eligibility__render-summary",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "12-role-eligibility.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/12-role-eligibility.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

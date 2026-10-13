@@ -62,7 +62,7 @@ The Bancroft pipeline stages. L0 ingestion, L1 screening, L2
 underwriting, L3 reserved, L4 structuring, L5 compliance, L6 risk,
 L7 assembly. Definitions live in `BANCROFT_LAYERS`
 ([`packages/uwmd-core/src/context.ts`](../packages/uwmd-core/src/context.ts)).
-See [starter guide §IX](starter/ai-host.md#ix-ai-host-contract-tier-4).
+See [starter guide §IX](starter/ai-host.md#ix-ai-host-contract).
 
 ### Pipeline state
 The frontmatter object recording each layer's status (`complete`,
@@ -203,7 +203,7 @@ covenants. Maps to the `debt_structure` section.
 | Edit operations | [protocol §V](../spec/UW_PROTOCOL.md) |
 | Calc grammar (EBNF) | [protocol §VIII.1](../spec/UW_PROTOCOL.md) |
 | Calc builtins | [protocol §VIII.3](../spec/UW_PROTOCOL.md) |
-| Bancroft layers | [starter guide §IX](starter/ai-host.md#ix-ai-host-contract-tier-4) |
+| Bancroft layers | [starter guide §IX](starter/ai-host.md#ix-ai-host-contract) |
 | Module manifest | [protocol §X](../spec/UW_PROTOCOL.md) |
 | Frontmatter shape | [format §2.2](../spec/UW_FORMAT_SPEC.md#22-frontmatter-schema) |
 | `_meta` / provenance | [format §V](../spec/UW_FORMAT_SPEC.md) |

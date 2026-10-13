@@ -124,7 +124,7 @@ golden rule of the editor:** bytes outside the modified region are preserved exa
 
 `render(parsed, options) → RenderResult`. Formats: `json`, `csv`, `chat`
 (token-budgeted context string for an LLM), `summary` (markdown).
-`chat`/`summary` are the formats exercised by the `tier-1-reader` corpus (starter-product renders, RFC 0078). The `pdf` and
+`chat`/`summary` are the formats exercised by the `documents` corpus (starter-product renders, RFC 0078). The `pdf` and
 `docx` enum values are reserved for dedicated pipelines; requesting either from
 the core renderer throws typed `UnsupportedRenderFormatError` instead of
 returning empty content. Use `report.ts` (HTML) plus `@uwmd/report` for PDF.
@@ -238,7 +238,7 @@ and perturbation over the default ranges. Exposed via `uwmd refine`.
 supersede chain; `verifyProvenance(parsed, policies?)` checks actor/policy
 authority. `integrity-canonical.ts` `canonicalize()` defines the canonical form
 hashed by `computeBlockHash`. Both feed the `uwmd verify` command and the
-`tier-1-reader/malformed/` conformance fixtures (INT-/POL- codes).
+`documents/malformed/` conformance fixtures (INT-/POL- codes).
 
 **Block signatures (RFC 0010, protocol §V.11).** `_meta.integrity.signature` is optional
 and, like `content_hash`, excluded from canonicalization. Core owns only the

@@ -469,7 +469,7 @@ describe('stated inputs read from the bare payload (Protocol §VIII.2)', () => {
 describe('section selection for scalar inputs (§VIII.2b, RFC 0066)', () => {
   // `producer-senior` (`_role: senior`) then `producer-mezz` (`_role: junior`).
   const ROLES = readFileSync(
-    resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures/10-declared-roles.uwx.md'),
+    resolve(process.cwd(), '../..', 'conformance/documents/fixtures/10-declared-roles.uwx.md'),
     'utf8',
   );
   const decl = (id: string, formula: string, section_roles?: ModuleCalcDecl['section_roles']): ModuleCalcDecl => ({

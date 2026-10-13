@@ -66,10 +66,11 @@ const COPIES = [
 
   // Conformance
   { from: 'conformance/README.md',                  to: 'conformance/index.md',  title: 'Conformance Corpus' },
-  { from: 'conformance/tier-1-reader/README.md',    to: 'conformance/tier-1.md', title: 'Reader and validation fixtures (tier-1 directory)' },
-  { from: 'conformance/tier-2-editor/README.md',    to: 'conformance/tier-2.md', title: 'Editor starter checks (tier-2 directory)' },
-  { from: 'conformance/tier-3-calc-host/README.md', to: 'conformance/tier-3.md', title: 'Calculation fixtures (tier-3 directory)' },
-  { from: 'conformance/tier-4-agent-host/README.md', to: 'conformance/tier-4.md', title: 'Agent starter checks (tier-4 directory)' },
+  { from: 'conformance/documents/README.md',    to: 'conformance/documents.md', title: 'Reader and validation fixtures' },
+  { from: 'conformance/starter/editor/README.md',    to: 'conformance/starter-editor.md', title: 'Editor starter checks' },
+  { from: 'conformance/calc/README.md', to: 'conformance/calc.md', title: 'Calculation fixtures' },
+  { from: 'conformance/starter/agent/README.md', to: 'conformance/starter-agent.md', title: 'Agent starter checks' },
+  { from: 'conformance/starter/refinement/README.md', to: 'conformance/starter-refinement.md', title: 'Refinement starter checks' },
   { from: 'conformance/runner/README.md',           to: 'conformance/runner.md', title: 'Language-agnostic runner' },
 
   // Starter products (non-normative, RFC 0078) — docs/starter/ is the source.
@@ -203,6 +204,12 @@ const NORMALIZED_LINK_MAP = new Map([
     [`starter/${file}`, `/starter/${file.replace(/\.md$/, '')}`],
   ]),
 
+  // Historical RFC/release conformance links (RFC 0081 §8), not routes or redirects.
+  ['conformance/tier-1-reader/README.md', '/conformance/documents'],
+  ['conformance/tier-2-editor/README.md', '/conformance/starter-editor'],
+  ['conformance/tier-3-calc-host/README.md', '/conformance/calc'],
+  ['conformance/tier-4-agent-host/README.md', '/conformance/starter-agent'],
+
   // Historical RFC/release filenames (RFC 0081 §2), not redirects.
   ['UW_FORMAT_SPEC_v1.md', '/spec/format'],
   ['spec/UW_FORMAT_SPEC_v1.md', '/spec/format'],
@@ -276,10 +283,12 @@ const NORMALIZED_LINK_MAP = new Map([
   // Conformance
   ['conformance/', '/conformance/'],
   ['conformance/README.md', '/conformance/'],
-  ['conformance/tier-1-reader/README.md', '/conformance/tier-1'],
-  ['conformance/tier-2-editor/README.md', '/conformance/tier-2'],
-  ['conformance/tier-3-calc-host/README.md', '/conformance/tier-3'],
-  ['conformance/tier-4-agent-host/README.md', '/conformance/tier-4'],
+  ['conformance/documents/README.md', '/conformance/documents'],
+  ['conformance/starter/editor/README.md', '/conformance/starter-editor'],
+  ['conformance/calc/README.md', '/conformance/calc'],
+  ['conformance/starter/agent/README.md', '/conformance/starter-agent'],
+  ['starter/refinement/README.md', '/conformance/starter-refinement'],
+  ['conformance/starter/refinement/README.md', '/conformance/starter-refinement'],
   ['conformance/runner/README.md', '/conformance/runner'],
   ['conformance/runner/', '/conformance/runner'],
 ]);
@@ -298,7 +307,17 @@ function rewriteLinks(md) {
       return full;
     }
 
-    const [path, frag] = splitFrag(target);
+    const [path, originalFrag] = splitFrag(target);
+    // Historical RFC/release anchor spellings resolve to current headings.
+    const historicalAnchors = {
+      '#ii1-tier-1--reader': '#ii-1-reader',
+      '#ii3-tier-3--calc-host': '#ii-2-verifier',
+      '#ii2-tier-2--editor': '#ii-4-starter-product-claims',
+      '#ii4-tier-4--agent-host': '#ii-4-starter-product-claims',
+      '#appendix-d--worked-example-tier-1-reader-in-500-loc': '#appendix-d-worked-example-a-reader-in-500-loc',
+      '#ix-ai-host-contract-tier-4': '#ix-ai-host-contract',
+    };
+    const frag = historicalAnchors[originalFrag] ?? originalFrag;
     const norm = normalize(path);
 
     if (NORMALIZED_LINK_MAP.has(norm)) {
@@ -387,6 +406,11 @@ function withRfcStatusBanner(md, toPath) {
 
 // Do not let a retired generated page mask dead links in an incremental build.
 await rm(join(SITE_ROOT, 'spec', 'format-v2.md'), { force: true });
+// This directory contains only generated corpus pages. Clear it before copies
+// so removed pages cannot survive an incremental build as unintended routes.
+const generatedCorpus = resolve(SITE_ROOT, 'conformance');
+if (relative(SITE_ROOT, generatedCorpus) !== 'conformance') throw new TypeError('Generated corpus path escaped site root');
+await rm(generatedCorpus, { recursive: true, force: true });
 
 let count = 0;
 for (const c of COPIES) {

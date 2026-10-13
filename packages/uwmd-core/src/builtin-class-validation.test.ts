@@ -93,9 +93,9 @@ describe('Builtin record shapes', () => {
       expect(await computeEnvelopeDigest(toUWEnvelope(restored))).toBe(await computeEnvelopeDigest(envelope));
     });
   }
-  for (const name of readdirSync(resolve(root, 'conformance/tier-3-calc-host/fixtures')).filter(n => /^mixed-use-(data_center|manufactured_housing)_/.test(n))) {
+  for (const name of readdirSync(resolve(root, 'conformance/calc/fixtures')).filter(n => /^mixed-use-(data_center|manufactured_housing)_/.test(n))) {
     it(`${name}: standard component_class`, () => {
-      const source = readFileSync(resolve(root, 'conformance/tier-3-calc-host/fixtures', name, 'deal.uwx.md'), 'utf8');
+      const source = readFileSync(resolve(root, 'conformance/calc/fixtures', name, 'deal.uwx.md'), 'utf8');
       const parsed = parseUWFile(source);
       const components = parsed.sections.components as UWBlock;
       expect(componentSchema(blockPayload(components)), JSON.stringify(componentSchema.errors)).toBe(true);

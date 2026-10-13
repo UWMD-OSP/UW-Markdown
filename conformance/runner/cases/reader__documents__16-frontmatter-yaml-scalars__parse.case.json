@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__16-frontmatter-yaml-scalars__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "16-frontmatter-yaml-scalars.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/16-frontmatter-yaml-scalars.parsed.json"
+  }
+}

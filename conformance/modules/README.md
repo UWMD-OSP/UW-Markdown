@@ -137,3 +137,6 @@ Most scenarios from 05 on contain one.
 Against the registry before #267, scenarios 01–04 fail. Against the registry
 before RFC 0074, scenarios 05–24 fail, except 22, a sibling refusal #267
 already made.
+
+The historical tier names in `reject/16` and `reject/17` are refusal inputs,
+not supported vocabulary or corpus paths. Their bytes remain unchanged.

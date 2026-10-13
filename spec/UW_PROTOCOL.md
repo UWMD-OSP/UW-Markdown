@@ -209,7 +209,6 @@ Protocol 4.0.0 has two conformance tiers, Reader and Verifier, and a
 Verifier satisfies every Reader requirement. Optional verification
 profiles (§II.3) add to either tier. Only `reader` and `verifier` tier values are admitted (§II.5).
 
-<a id="ii1-tier-1--reader"></a>
 
 ### II.1 Reader
 
@@ -240,7 +239,6 @@ The validator requirement once read as owing every family to any
 reader, including `INT-NN`, which needs a hash chain, and `POL-NN`,
 which needs an edit engine. A read-only reader could not satisfy it.
 
-<a id="ii3-tier-3--calc-host"></a>
 
 ### II.2 Verifier
 
@@ -300,8 +298,6 @@ section names, and never reported as passed or failed.
 A Verifier without the Module profile reports module and
 document-declared calculations `unverifiable`, never wrong.
 
-<a id="ii2-tier-2--editor"></a>
-<a id="ii4-tier-4--agent-host"></a>
 
 ### II.4 Starter-product claims
 
@@ -496,7 +492,7 @@ Example:
 
 ```jsonc
 {
-  "id": "starter-products/tier-2/section-supersede-risk-rating",
+  "id": "starter-products__starter-editor__section-supersede-risk-rating__edit",
   "target": "starter-products",
   "requires_capabilities": ["edit-supersede"],
   "command": "edit",
@@ -3601,7 +3597,6 @@ For the tier and each profile you claim:
 See [`conformance/README.md`](../conformance/README.md). Content directories contain fixtures and expected outputs with explicit target ownership (RFC 0081 Phase 5);
 directory membership is not a normative signal (§II.6).
 
-<a id="appendix-d--worked-example-tier-1-reader-in-500-loc"></a>
 
 ## Appendix D — Worked example: a Reader in <500 LOC
 

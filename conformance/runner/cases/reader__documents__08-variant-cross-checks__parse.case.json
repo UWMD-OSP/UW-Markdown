@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__08-variant-cross-checks__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "08-variant-cross-checks.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/08-variant-cross-checks.parsed.json"
+  }
+}

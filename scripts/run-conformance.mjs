@@ -232,7 +232,7 @@ function normalize(text) {
 // starter behavior (a render refusal, an edit refusal). The mixed check stays a
 // starter check with every assertion intact; the corpus index adds a separate
 // `<scenario> [validate]` Verifier case for the code alone. Its baseline is the
-// deduplicated (code, severity) set tier-1 `[validate]` baselines use, and the
+// deduplicated (code, severity) set document `[validate]` baselines use, and the
 // source case's required codes must appear in it as well. Where a provenance
 // policy is the rule under test, its findings are baselined beside it.
 function hasValidateCase(suite, scenario) {
@@ -310,13 +310,13 @@ function runScenario() {
   }
 }
 
-// ─── Tier 1: Reader ──────────────────────────────────────────────────────────
+// ─── Documents: parse, validate, render ──────────────────────────────────────────────────────────
 
-function runTier1() {
-  const fixturesDir = join(CONFORMANCE_DIR, 'tier-1-reader', 'fixtures');
-  const expectedDir = join(CONFORMANCE_DIR, 'tier-1-reader', 'expected');
+function runDocuments() {
+  const fixturesDir = join(CONFORMANCE_DIR, 'documents', 'fixtures');
+  const expectedDir = join(CONFORMANCE_DIR, 'documents', 'expected');
   if (!existsSync(fixturesDir)) {
-    record('1', '(none)', 'pass', 'no fixtures');
+    record('documents', '(none)', 'pass', 'no fixtures');
     return;
   }
   const fixtures = readdirSync(fixturesDir)
@@ -332,7 +332,7 @@ function runTier1() {
     try {
       parsed = parseUWFile(fixtureContent);
     } catch (e) {
-      record('1', id, 'fail', `parse threw: ${e.message}`);
+      record('documents', id, 'fail', `parse threw: ${e.message}`);
       continue;
     }
 
@@ -343,15 +343,15 @@ function runTier1() {
 
     if (UPDATE) {
       writeFileSync(expectedParsedPath, actualParsedStr);
-      record('1', `${id} [parse]`, 'updated');
+      record('documents', `${id} [parse]`, 'updated');
     } else if (!existsSync(expectedParsedPath)) {
-      record('1', `${id} [parse]`, 'fail', `missing baseline: ${basename(expectedParsedPath)}`);
+      record('documents', `${id} [parse]`, 'fail', `missing baseline: ${basename(expectedParsedPath)}`);
     } else {
       const expected = readFileSync(expectedParsedPath, 'utf8');
       if (normalize(expected) === normalize(actualParsedStr)) {
-        record('1', `${id} [parse]`, 'pass');
+        record('documents', `${id} [parse]`, 'pass');
       } else {
-        record('1', `${id} [parse]`, 'fail', 'parsed JSON differs from baseline');
+        record('documents', `${id} [parse]`, 'fail', 'parsed JSON differs from baseline');
       }
     }
 
@@ -365,7 +365,7 @@ function runTier1() {
     try {
       validation = validateUWFile(parsed);
     } catch (e) {
-      record('1', `${id} [validate]`, 'fail', `validateUWFile threw: ${e.message}`);
+      record('documents', `${id} [validate]`, 'fail', `validateUWFile threw: ${e.message}`);
       continue;
     }
     const issuePairs = [...new Map(
@@ -376,15 +376,15 @@ function runTier1() {
 
     if (UPDATE) {
       writeFileSync(expectedValidationPath, actualValidationStr);
-      record('1', `${id} [validate]`, 'updated');
+      record('documents', `${id} [validate]`, 'updated');
     } else if (!existsSync(expectedValidationPath)) {
-      record('1', `${id} [validate]`, 'fail', `missing baseline: ${basename(expectedValidationPath)}`);
+      record('documents', `${id} [validate]`, 'fail', `missing baseline: ${basename(expectedValidationPath)}`);
     } else {
       const expected = readFileSync(expectedValidationPath, 'utf8');
       if (normalize(expected) === normalize(actualValidationStr)) {
-        record('1', `${id} [validate]`, 'pass');
+        record('documents', `${id} [validate]`, 'pass');
       } else {
-        record('1', `${id} [validate]`, 'fail', firstDifference(normalize(expected), normalize(actualValidationStr)));
+        record('documents', `${id} [validate]`, 'fail', firstDifference(normalize(expected), normalize(actualValidationStr)));
       }
     }
 
@@ -394,7 +394,7 @@ function runTier1() {
       try {
         rendered = render(parsed, { format: fmt });
       } catch (e) {
-        record('1', `${id} [render-${fmt}]`, 'fail', `render threw: ${e.message}`);
+        record('documents', `${id} [render-${fmt}]`, 'fail', `render threw: ${e.message}`);
         continue;
       }
       const ext = fmt === 'chat' ? 'txt' : 'md';
@@ -405,28 +405,28 @@ function runTier1() {
 
       if (UPDATE) {
         writeFileSync(expectedPath, `${renderedText.trimEnd()}\n`);
-        record('1', `${id} [render-${fmt}]`, 'updated');
+        record('documents', `${id} [render-${fmt}]`, 'updated');
       } else if (!existsSync(expectedPath)) {
-        record('1', `${id} [render-${fmt}]`, 'fail', `missing baseline: ${basename(expectedPath)}`);
+        record('documents', `${id} [render-${fmt}]`, 'fail', `missing baseline: ${basename(expectedPath)}`);
       } else {
         const expected = readFileSync(expectedPath, 'utf8');
         if (normalize(expected) === normalize(renderedText)) {
-          record('1', `${id} [render-${fmt}]`, 'pass');
+          record('documents', `${id} [render-${fmt}]`, 'pass');
         } else {
-          record('1', `${id} [render-${fmt}]`, 'fail', `render-${fmt} differs from baseline`);
+          record('documents', `${id} [render-${fmt}]`, 'fail', `render-${fmt} differs from baseline`);
         }
       }
     }
   }
 }
 
-// ─── Tier 1: Malformed (negative tests) ──────────────────────────────────────
+// ─── Documents: malformed (negative tests) ──────────────────────────────────────
 // Fixtures here are intentionally broken in a way the validator must catch.
 // Each <id>.uwx.md has a sibling <id>.expected.json declaring the validator
 // codes that MUST appear in the validation result. Extra codes are allowed.
 
-async function runTier1Malformed() {
-  const malformedDir = join(CONFORMANCE_DIR, 'tier-1-reader', 'malformed');
+async function runMalformedDocuments() {
+  const malformedDir = join(CONFORMANCE_DIR, 'documents', 'malformed');
   if (!existsSync(malformedDir)) return;
 
   const fixtures = readdirSync(malformedDir)
@@ -439,7 +439,7 @@ async function runTier1Malformed() {
     const expectedPath = join(malformedDir, `${id}.expected.json`);
 
     if (!existsSync(expectedPath)) {
-      record('1', `malformed/${id}`, 'fail', `missing ${id}.expected.json`);
+      record('documents', `malformed/${id}`, 'fail', `missing ${id}.expected.json`);
       continue;
     }
 
@@ -448,14 +448,14 @@ async function runTier1Malformed() {
     try {
       expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
     } catch (e) {
-      record('1', `malformed/${id}`, 'fail', `expected.json is not valid JSON: ${e.message}`);
+      record('documents', `malformed/${id}`, 'fail', `expected.json is not valid JSON: ${e.message}`);
       continue;
     }
 
     const mustParse = expected.must_parse !== false;
     const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
     if (expectedCodes.length === 0) {
-      record('1', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
+      record('documents', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
       continue;
     }
 
@@ -465,12 +465,12 @@ async function runTier1Malformed() {
       // reason pass.
       try {
         parseUWFile(fixtureContent);
-        record('1', `malformed/${id}`, 'fail', 'expected parse to throw, but it succeeded');
+        record('documents', `malformed/${id}`, 'fail', 'expected parse to throw, but it succeeded');
       } catch (e) {
         if (expectedCodes.includes(e.code)) {
-          record('1', `malformed/${id}`, 'pass', `parse refused with ${e.code}`);
+          record('documents', `malformed/${id}`, 'pass', `parse refused with ${e.code}`);
         } else {
-          record('1', `malformed/${id}`, 'fail', `threw ${e.code ?? '(no code)'}, expected one of ${expectedCodes.join(', ')}: ${e.message}`);
+          record('documents', `malformed/${id}`, 'fail', `threw ${e.code ?? '(no code)'}, expected one of ${expectedCodes.join(', ')}: ${e.message}`);
         }
       }
       continue;
@@ -480,12 +480,12 @@ async function runTier1Malformed() {
     try {
       parsed = parseUWFile(fixtureContent);
     } catch (e) {
-      record('1', `malformed/${id}`, 'fail', `expected parse to succeed but threw: ${e.message}`);
-      if (hasValidateCase('1', `malformed/${id}`)) record('1', `malformed/${id} [validate]`, 'fail', 'parse threw');
+      record('documents', `malformed/${id}`, 'fail', `expected parse to succeed but threw: ${e.message}`);
+      if (hasValidateCase('documents', `malformed/${id}`)) record('documents', `malformed/${id} [validate]`, 'fail', 'parse threw');
       continue;
     }
 
-    if (hasValidateCase('1', `malformed/${id}`)) {
+    if (hasValidateCase('documents', `malformed/${id}`)) {
       // The policy is the rule under test, so provenance findings are part of
       // what a Verifier reports for this document (§V.3).
       const policiesPath = join(malformedDir, `${id}.policies.json`);
@@ -494,16 +494,16 @@ async function runTier1Malformed() {
       try {
         provenance = expectedCodes.some((c) => c.startsWith('POL-')) ? verifyProvenance(parsed, policies).issues ?? [] : null;
       } catch (e) {
-        record('1', `malformed/${id} [validate]`, 'fail', `verifyProvenance threw: ${e.message}`);
+        record('documents', `malformed/${id} [validate]`, 'fail', `verifyProvenance threw: ${e.message}`);
       }
-      if (provenance !== undefined) recordValidationOnly('1', `malformed/${id}`, join(malformedDir, `${id}.validation.json`), parsed, expectedCodes, provenance);
+      if (provenance !== undefined) recordValidationOnly('documents', `malformed/${id}`, join(malformedDir, `${id}.validation.json`), parsed, expectedCodes, provenance);
     }
 
     let validation;
     try {
       validation = validateUWFile(parsed);
     } catch (e) {
-      record('1', `malformed/${id}`, 'fail', `validateUWFile threw: ${e.message}`);
+      record('documents', `malformed/${id}`, 'fail', `validateUWFile threw: ${e.message}`);
       continue;
     }
 
@@ -520,7 +520,7 @@ async function runTier1Malformed() {
         const ir = await verifyChain(parsed);
         for (const i of ir.issues ?? []) actualCodes.add(i.code);
       } catch (e) {
-        record('1', `malformed/${id}`, 'fail', `verifyChain threw: ${e.message}`);
+        record('documents', `malformed/${id}`, 'fail', `verifyChain threw: ${e.message}`);
         continue;
       }
     }
@@ -536,7 +536,7 @@ async function runTier1Malformed() {
         const pr = verifyProvenance(parsed, policies);
         for (const i of pr.issues ?? []) actualCodes.add(i.code);
       } catch (e) {
-        record('1', `malformed/${id}`, 'fail', `verifyProvenance threw: ${e.message}`);
+        record('documents', `malformed/${id}`, 'fail', `verifyProvenance threw: ${e.message}`);
         continue;
       }
     }
@@ -545,23 +545,23 @@ async function runTier1Malformed() {
     if (missing.length > 0) {
       const seen = Array.from(actualCodes).sort().join(', ') || '(none)';
       record(
-        '1',
+        'documents',
         `malformed/${id}`,
         'fail',
         `validator did not surface ${missing.join(', ')} — saw: [${seen}]`,
       );
     } else {
-      record('1', `malformed/${id}`, 'pass');
+      record('documents', `malformed/${id}`, 'pass');
     }
   }
 }
 
-// ─── Tier 2: Editor ──────────────────────────────────────────────────────────
+// ─── Starter editor ──────────────────────────────────────────────────────────
 
-async function runTier2() {
-  const baseDir = join(CONFORMANCE_DIR, 'tier-2-editor', 'fixtures');
+async function runEditor() {
+  const baseDir = join(CONFORMANCE_DIR, 'starter/editor', 'fixtures');
   if (!existsSync(baseDir)) {
-    record('2', '(none)', 'pass', 'no fixtures');
+    record('starter-editor', '(none)', 'pass', 'no fixtures');
     return;
   }
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
@@ -576,7 +576,7 @@ async function runTier2() {
     const expectedErrorPath = join(dir, 'expected-error.json');
 
     if (!existsSync(beforePath) || !existsSync(opPath)) {
-      record('2', scenario, 'fail', 'missing before.uwx.md or operation.json');
+      record('starter-editor', scenario, 'fail', 'missing before.uwx.md or operation.json');
       continue;
     }
 
@@ -600,17 +600,17 @@ async function runTier2() {
     if (existsSync(expectedErrorPath)) {
       const expectedErr = JSON.parse(readFileSync(expectedErrorPath, 'utf8'));
       if (result.ok) {
-        record('2', scenario, 'fail', `expected error '${expectedErr.code}' but applyEdit succeeded`);
+        record('starter-editor', scenario, 'fail', `expected error '${expectedErr.code}' but applyEdit succeeded`);
       } else if (result.error?.code !== expectedErr.code) {
-        record('2', scenario, 'fail', `expected error '${expectedErr.code}', got '${result.error?.code}'`);
+        record('starter-editor', scenario, 'fail', `expected error '${expectedErr.code}', got '${result.error?.code}'`);
       } else {
-        record('2', scenario, 'pass');
+        record('starter-editor', scenario, 'pass');
       }
       continue;
     }
 
     if (!result.ok) {
-      record('2', scenario, 'fail', `applyEdit returned error: [${result.error?.code}] ${result.error?.message}`);
+      record('starter-editor', scenario, 'fail', `applyEdit returned error: [${result.error?.code}] ${result.error?.message}`);
       continue;
     }
 
@@ -619,15 +619,15 @@ async function runTier2() {
 
     if (UPDATE) {
       writeFileSync(afterPath, after);
-      record('2', scenario, 'updated');
+      record('starter-editor', scenario, 'updated');
     } else if (!existsSync(afterPath)) {
-      record('2', scenario, 'fail', 'missing after.uwx.md baseline');
+      record('starter-editor', scenario, 'fail', 'missing after.uwx.md baseline');
     } else {
       const expected = stripVolatileFields(readFileSync(afterPath, 'utf8'));
       if (normalize(expected) === normalize(after)) {
-        record('2', scenario, 'pass');
+        record('starter-editor', scenario, 'pass');
       } else {
-        record('2', scenario, 'fail', 'output differs from after.uwx.md (with volatile fields stripped)');
+        record('starter-editor', scenario, 'fail', 'output differs from after.uwx.md (with volatile fields stripped)');
       }
     }
   }
@@ -647,12 +647,12 @@ function stripVolatileFields(text) {
     .replace(/"content_hash":\s*"[0-9a-f]{64}"/g, '"content_hash": "<volatile>"');
 }
 
-// ─── Tier 3: Calc Host ───────────────────────────────────────────────────────
+// ─── Calculations ───────────────────────────────────────────────────────
 
-function runTier3() {
-  const baseDir = join(CONFORMANCE_DIR, 'tier-3-calc-host', 'fixtures');
+function runCalculations() {
+  const baseDir = join(CONFORMANCE_DIR, 'calc', 'fixtures');
   if (!existsSync(baseDir)) {
-    record('3', '(none)', 'pass', 'no fixtures');
+    record('calc', '(none)', 'pass', 'no fixtures');
     return;
   }
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
@@ -664,7 +664,7 @@ function runTier3() {
     const expectedPath = join(dir, 'expected-result.json');
 
     if (!existsSync(dealPath) || !existsSync(calcPath)) {
-      record('3', scenario, 'fail', 'missing deal.uwx.md or calc.json');
+      record('calc', scenario, 'fail', 'missing deal.uwx.md or calc.json');
       continue;
     }
 
@@ -690,35 +690,35 @@ function runTier3() {
 
     if (UPDATE) {
       writeFileSync(expectedPath, projectedStr);
-      record('3', scenario, 'updated');
+      record('calc', scenario, 'updated');
     } else if (!existsSync(expectedPath)) {
-      record('3', scenario, 'fail', 'missing expected-result.json');
+      record('calc', scenario, 'fail', 'missing expected-result.json');
     } else {
       const expected = JSON.parse(readFileSync(expectedPath, 'utf8'));
       if (deepEqual(expected, projected)) {
-        record('3', scenario, 'pass');
+        record('calc', scenario, 'pass');
       } else {
-        record('3', scenario, 'fail', `result differs: ${JSON.stringify(projected)} vs ${JSON.stringify(expected)}`);
+        record('calc', scenario, 'fail', `result differs: ${JSON.stringify(projected)} vs ${JSON.stringify(expected)}`);
       }
     }
   }
 }
 
-// ─── Tier 3 (refinement mode): dependency graph extraction ───────────────────
+// ─── Starter refinement: dependency graph extraction ───────────────────
 // Each fixture lives in a directory with `deal.uwx.md` and a sibling
 // `expected-graph.json` declaring the canonical projection of
 // `extractDependencyGraph(parsed)`. Only Map-typed fields are projected (sets
 // become sorted arrays).
 //
 // CAPABILITY: `refinement`. **No tier requires this** — protocol II.3 lists
-// four requirements for a Tier-3 Calc Host and a dependency graph is not among
-// them. These fixtures live under tier-3-calc-host/ for discoverability, and
+// Verifier calculation requirements and a dependency graph is not among
+// them. These fixtures live under starter/refinement/, and
 // II.6 is explicit that directory membership is not a normative signal: a calc
 // host that does not project a dependency graph is still a conforming calc
 // host. The RFC 0004 driver agrees, generating zero cases here.
 
-async function runTier3Refinement() {
-  const baseDir = join(CONFORMANCE_DIR, 'tier-3-calc-host', 'refinement');
+async function runRefinement() {
+  const baseDir = join(CONFORMANCE_DIR, 'starter', 'refinement');
   if (!existsSync(baseDir)) return;
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
   for (const scenario of scenarios) {
@@ -726,7 +726,7 @@ async function runTier3Refinement() {
     const dealPath = join(dir, 'deal.uwx.md');
     const expectedPath = join(dir, 'expected-graph.json');
     if (!existsSync(dealPath)) {
-      record('3-refinement', scenario, 'fail', 'missing deal.uwx.md');
+      record('starter-refinement', scenario, 'fail', 'missing deal.uwx.md');
       continue;
     }
     const parsed = parseUWFile(readFileSync(dealPath, 'utf8'));
@@ -735,15 +735,15 @@ async function runTier3Refinement() {
     const projectedStr = `${JSON.stringify(projected, null, 2)}\n`;
     if (UPDATE) {
       writeFileSync(expectedPath, projectedStr);
-      record('3-refinement', scenario, 'updated');
+      record('starter-refinement', scenario, 'updated');
     } else if (!existsSync(expectedPath)) {
-      record('3-refinement', scenario, 'fail', 'missing expected-graph.json');
+      record('starter-refinement', scenario, 'fail', 'missing expected-graph.json');
     } else {
       const expected = readFileSync(expectedPath, 'utf8');
       if (normalize(expected) === normalize(projectedStr)) {
-        record('3-refinement', scenario, 'pass');
+        record('starter-refinement', scenario, 'pass');
       } else {
-        record('3-refinement', scenario, 'fail', 'extracted graph differs from baseline');
+        record('starter-refinement', scenario, 'fail', 'extracted graph differs from baseline');
       }
     }
   }
@@ -761,12 +761,12 @@ function projectGraph(graph) {
   return { outputs, inputs, formulas };
 }
 
-// ─── Tier 4 (profile mode): consumer-profile contract ────────────────────────
+// ─── Starter agent profiles: consumer-profile contract ────────────────────────
 // Each Bancroft layer must declare a `consumed_profile`. The fixture's
 // `expected-layer-profiles.json` is a {layerId: profile} map; mismatch fails.
 
-async function runTier4Profile() {
-  const baseDir = join(CONFORMANCE_DIR, 'tier-4-agent-host', 'profile');
+async function runAgentProfile() {
+  const baseDir = join(CONFORMANCE_DIR, 'starter/agent', 'profile');
   if (!existsSync(baseDir)) return;
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
   for (const scenario of scenarios) {
@@ -780,15 +780,15 @@ async function runTier4Profile() {
     const actualStr = `${JSON.stringify(actual, null, 2)}\n`;
     if (UPDATE) {
       writeFileSync(expectedPath, actualStr);
-      record('4-profile', scenario, 'updated');
+      record('starter-agent-profile', scenario, 'updated');
     } else if (!existsSync(expectedPath)) {
-      record('4-profile', scenario, 'fail', 'missing expected-layer-profiles.json');
+      record('starter-agent-profile', scenario, 'fail', 'missing expected-layer-profiles.json');
     } else {
       const expected = readFileSync(expectedPath, 'utf8');
       if (normalize(expected) === normalize(actualStr)) {
-        record('4-profile', scenario, 'pass');
+        record('starter-agent-profile', scenario, 'pass');
       } else {
-        record('4-profile', scenario, 'fail', 'layer→profile mapping differs from baseline');
+        record('starter-agent-profile', scenario, 'fail', 'layer→profile mapping differs from baseline');
       }
     }
   }
@@ -804,14 +804,14 @@ function deepEqual(a, b) {
   return ak.every((k) => deepEqual(a[k], b[k]));
 }
 
-// ─── Tier 4: Agent Host (shape-only) ─────────────────────────────────────────
-// Tier 4 is gated behind --tier=4 because it requires either a live LLM call
-// or a recorded replay. CI runs the other tiers; tier-4 is operator-driven.
+// ─── Starter agent shape checks (shape-only) ─────────────────────────────────────────
+// Agent shape checks run by default without a live model; recorded replays
+// exercise the write path separately.
 
-async function runTier4() {
-  const baseDir = join(CONFORMANCE_DIR, 'tier-4-agent-host', 'fixtures');
+async function runAgent() {
+  const baseDir = join(CONFORMANCE_DIR, 'starter/agent', 'fixtures');
   if (!existsSync(baseDir)) {
-    record('4', '(none)', 'pass', 'no fixtures');
+    record('starter-agent', '(none)', 'pass', 'no fixtures');
     return;
   }
   const { default: Ajv2020 } = await import('ajv/dist/2020.js');
@@ -821,7 +821,7 @@ async function runTier4() {
     const beforePath = join(dir, 'before.uwx.md');
     const shapePath = join(dir, 'expected-after-shape.json');
     if (!existsSync(beforePath) || !existsSync(shapePath)) {
-      record('4', scenario, 'fail', 'missing before.uwx.md or expected-after-shape.json');
+      record('starter-agent', scenario, 'fail', 'missing before.uwx.md or expected-after-shape.json');
       continue;
     }
     // A live run is operator-driven, so the post-run shape cannot be applied
@@ -834,7 +834,7 @@ async function runTier4() {
       if (!shape.$schema) {
         // A declarative contract, not a JSON Schema: lint only.
         parseUWFile(readFileSync(beforePath, 'utf8'));
-        record('4', scenario, 'pass', 'shape file lint only — live run not exercised');
+        record('starter-agent', scenario, 'pass', 'shape file lint only — live run not exercised');
         continue;
       }
       const ajv = new Ajv2020({ strict: true, strictRequired: false, validateFormats: false });
@@ -848,15 +848,15 @@ async function runTier4() {
         const block = ajv.compile(sectionShape);
         if (block({ section_id: id, _meta: {}, content: {} })) problems.push(`${id} shape admits the retired section_id wrapper`);
       }
-      record('4', scenario, problems.length ? 'fail' : 'pass', problems.join('; ') || 'shape compiled; before frontmatter and wrapper refusal checked — live run not exercised');
+      record('starter-agent', scenario, problems.length ? 'fail' : 'pass', problems.join('; ') || 'shape compiled; before frontmatter and wrapper refusal checked — live run not exercised');
     } catch (e) {
-      record('4', scenario, 'fail', `shape check failed: ${e.message}`);
+      record('starter-agent', scenario, 'fail', `shape check failed: ${e.message}`);
     }
   }
 }
 
-// ─── Tier 4 replay: deterministic agent runs from a recorded cassette ────────
-// Unlike the shape-only fixtures above, these actually run the Tier-4 write
+// ─── Starter agent replay: deterministic agent runs from a recorded cassette ────────
+// Unlike the shape-only fixtures above, these actually run the agent write
 // path. A cassette supplies the model's side of the conversation, so the run
 // needs no network and no API key and can gate CI.
 //
@@ -869,10 +869,10 @@ async function runTier4() {
 
 const REPLAY_CLOCK = Date.parse('2026-08-13T00:00:00.000Z');
 
-async function runTier4Replay() {
-  const baseDir = join(CONFORMANCE_DIR, 'tier-4-agent-host', 'replay');
+async function runAgentReplay() {
+  const baseDir = join(CONFORMANCE_DIR, 'starter/agent', 'replay');
   if (!existsSync(baseDir)) {
-    record('4-replay', '(none)', 'pass', 'no replay scenarios');
+    record('starter-agent-replay', '(none)', 'pass', 'no replay scenarios');
     return;
   }
   const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
@@ -891,14 +891,14 @@ async function runTier4Replay() {
         now: () => REPLAY_CLOCK,
       });
     } catch (e) {
-      record('4-replay', `${scenario}/sections`, 'fail', e.message);
-      record('4-replay', `${scenario}/document`, 'fail', e.message);
+      record('starter-agent-replay', `${scenario}/sections`, 'fail', e.message);
+      record('starter-agent-replay', `${scenario}/document`, 'fail', e.message);
       continue;
     }
 
     if (!result.success) {
-      record('4-replay', `${scenario}/sections`, 'fail', `run failed: ${result.error}`);
-      record('4-replay', `${scenario}/document`, 'fail', `run failed: ${result.error}`);
+      record('starter-agent-replay', `${scenario}/sections`, 'fail', `run failed: ${result.error}`);
+      record('starter-agent-replay', `${scenario}/document`, 'fail', `run failed: ${result.error}`);
       continue;
     }
 
@@ -906,16 +906,16 @@ async function runTier4Replay() {
     const expectedSections = meta.sections_written ?? [];
     if (JSON.stringify(result.sectionsWritten) !== JSON.stringify(expectedSections)) {
       record(
-        '4-replay',
+        'starter-agent-replay',
         `${scenario}/sections`,
         'fail',
         `wrote [${result.sectionsWritten}] expected [${expectedSections}]`,
       );
     } else {
-      record('4-replay', `${scenario}/sections`, 'pass', `wrote ${expectedSections.join(', ')}`);
+      record('starter-agent-replay', `${scenario}/sections`, 'pass', `wrote ${expectedSections.join(', ')}`);
     }
 
-    baselineCompare('4-replay', `${scenario}/document`, expectedPath, result.updatedContent);
+    baselineCompare('starter-agent-replay', `${scenario}/document`, expectedPath, result.updatedContent);
   }
 }
 
@@ -3824,9 +3824,9 @@ async function runSigningModules(signing) {
 
 // ─── Sensitivity suite (RFC 0007) ────────────────────────────────────────────
 //
-// A named suite rather than a tier-3 fixture family: a sensitivity declaration
+// A named suite rather than a calculation fixture family: a sensitivity declaration
 // is not a `ModuleCalcDecl`, its result is not a `CalcResult`, and filing it
-// under tier-3 would mean the tier-3 runner (and the RFC 0004 case generator
+// under calc/ would mean the calculation runner (and the RFC 0004 case generator
 // that reads the same directory) had to branch on fixture shape.
 //
 //   <scenario>/{deal.uwx.md, sensitivity.json, expected.json}
@@ -4215,12 +4215,12 @@ async function runSource() {
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
-  '1': async () => { runTier1(); await runTier1Malformed(); },
-  '2': async () => { await runTier2(); },
-  '3': async () => { runTier3(); await runTier3Refinement(); },
-  '4': async () => { await runTier4(); await runTier4Profile(); },
+  'documents': async () => { runDocuments(); await runMalformedDocuments(); },
+  'starter-editor': async () => { await runEditor(); },
+  'calc': async () => { runCalculations(); await runRefinement(); },
+  'starter-agent': async () => { await runAgent(); await runAgentProfile(); },
   // Runs by default: deterministic, no network, no API key.
-  '4-replay': async () => { await runTier4Replay(); },
+  'starter-agent-replay': async () => { await runAgentReplay(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },

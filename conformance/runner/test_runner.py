@@ -1,3 +1,4 @@
+# Historical tier names below are intentionally refused negative inputs.
 import contextlib
 import io
 import unittest

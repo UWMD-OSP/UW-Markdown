@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__04-scope-only__render-chat",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "04-scope-only.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/04-scope-only.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

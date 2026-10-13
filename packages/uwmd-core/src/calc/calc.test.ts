@@ -940,7 +940,7 @@ describe('§VIII.2 ordinary identifiers over a variant map (RFC 0066)', () => {
   // `variant=producer-senior` (`_role: senior`, 6,000,000) then
   // `variant=producer-mezz` (`_role: junior`, 1,000,000); valuation 10,000,000.
   const ROLES = readFileSync(
-    resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures/10-declared-roles.uwx.md'),
+    resolve(process.cwd(), '../..', 'conformance/documents/fixtures/10-declared-roles.uwx.md'),
     'utf8',
   );
   const ctx = (

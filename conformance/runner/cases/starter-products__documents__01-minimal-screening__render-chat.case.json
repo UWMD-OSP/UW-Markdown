@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__01-minimal-screening__render-chat",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "01-minimal-screening.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/01-minimal-screening.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

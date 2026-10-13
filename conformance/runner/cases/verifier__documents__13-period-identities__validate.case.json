@@ -1,0 +1,19 @@
+{
+  "id": "verifier__documents__13-period-identities__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "13-period-identities.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/13-period-identities.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 1
+  }
+}

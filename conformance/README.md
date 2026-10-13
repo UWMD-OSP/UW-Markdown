@@ -9,8 +9,8 @@ test corpus — analogous to the
 The corpus is **tagged by case**, rather than by directory. Its authoritative
 runtime [ownership index](corpus-index.json) gives each reference check exactly
 one target: `reader`, `verifier`, one of `module`, `integrity`, `representations`,
-`portfolio`, `sensitivity`, `stochastic`, or `starter-products`. Legacy fixture
-paths remain stable for consumers; they do not confer a tier claim.
+`portfolio`, `sensitivity`, `stochastic`, or `starter-products`. Fixture directories
+describe content; they do not confer a tier claim.
 
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
@@ -55,13 +55,12 @@ manifests, the registry and custom declarations (the ADR × occupancy
 (Lite spec §8) and the deal-package encodings (RFC 0018) belong to
 Representations.
 
-The following tree describes **fixture storage**. The `tier-N-*` directory
-names are Protocol 2.x history kept for stable paths; owners come from the
-index, not the directory:
+The following tree describes **fixture storage**. Owners come from the
+index; directory and suite names describe content:
 
 ```
 conformance/
-├── tier-1-reader/      Reader parse, Verifier validation, starter renders
+├── documents/      Reader parse, Verifier validation, starter renders
 │   ├── fixtures/       Well-formed .uwx.md records an implementer parses
 │   ├── malformed/      Files exercising validator / integrity / policy codes
 │   │                     (CC-NN, FV-NN, DQ-NN, INT-NN, POL-NN, META_*)
@@ -73,18 +72,18 @@ conformance/
 │                         (<id>.validation.json: overall_status + every
 │                         (code, severity) pair) + display strings +
 │                         chat-format renders
-├── tier-2-editor/      Starter products: round-trip writes, supersede
+├── starter/editor/      Starter products: round-trip writes, supersede
 │   └── fixtures/       <scenario>/{before.uwx.md, operation.json, after.uwx.md}
 │                         Optional siblings: context.json (EditContext),
 │                         options.json (ApplyEditOptions, e.g. {integrity: true,
 │                         maintainGaps: true}), expected-error.json (negative
 │                         path — assert applyEdit rejects with a specific code)
-├── tier-3-calc-host/   Verifier calcs (dictionary, IRR, §VIII notation);
+├── calc/   Verifier calcs (dictionary, IRR, §VIII notation);
 │                         one Module custom declaration (revpar-basic)
 │   ├── fixtures/       <scenario>/{deal.uwx.md, calc.json, expected-result.json}
-│   └── refinement/     <scenario>/{deal.uwx.md, expected-graph.json}
-│                         Exercises extractDependencyGraph() against a fixture
-├── tier-4-agent-host/  Starter products: AI agent layers (shape, profile, replay)
+├── starter/refinement/  <scenario>/{deal.uwx.md, expected-graph.json}
+│                         Starter dependency-graph checks
+├── starter/agent/  Starter products: AI agent layers (shape, profile, replay)
 │   ├── fixtures/       <scenario>/{before.uwx.md, expected-after-shape.json}
 │   └── profile/        <scenario>/{expected-layer-profiles.json}
 │                         Asserts BANCROFT_LAYERS layer→consumed_profile contract
@@ -368,7 +367,7 @@ node scripts/run-conformance.mjs
 node scripts/run-conformance.mjs --tier=verifier --profile=module
 
 # Agent starter checks (lint-only — does not invoke an LLM)
-node scripts/run-conformance.mjs --starter-products --suite=4
+node scripts/run-conformance.mjs --starter-products --suite=starter-agent
 
 # Bootstrap / refresh expected outputs from the current library
 node scripts/run-conformance.mjs --update

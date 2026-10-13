@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__15-student-bed-counts-inconsistent__render-chat",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "15-student-bed-counts-inconsistent.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/15-student-bed-counts-inconsistent.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

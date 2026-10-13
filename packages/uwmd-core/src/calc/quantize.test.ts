@@ -30,7 +30,7 @@ describe('quantizeDecimal', () => {
   });
 
   it('removes the unquantized tail that made digests unreproducible', () => {
-    // The tier-3 revpar fixture, ADR 145.50 at 72% occupancy. Its baseline used
+    // The calculation revpar fixture, ADR 145.50 at 72% occupancy. Its baseline used
     // to pin the tail; RevPAR is a dollar figure and 104.76 is the answer.
     expect(145.5 * 0.72).toBe(104.75999999999999);
     expect(quantizeDecimal(145.5 * 0.72, 2)).toBe(104.76);

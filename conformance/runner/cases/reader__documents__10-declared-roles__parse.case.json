@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__10-declared-roles__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "10-declared-roles.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/10-declared-roles.parsed.json"
+  }
+}

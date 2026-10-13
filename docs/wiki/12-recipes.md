@@ -40,7 +40,7 @@ new inputs).
 2. Register the code's `title`/`description`/`remediation`/`spec_ref` in
    `BUILTIN_REMEDIATIONS` (so every tool surfaces uniform copy).
 3. Add a unit test and, if it should be conformance-enforced, a
-   `tier-1-reader/malformed/` fixture with the code in `expected_codes`.
+   `documents/malformed/` fixture with the code in `expected_codes`.
 4. RFC: yes if it changes the conformance contract (most new error codes do).
 
 ## Add / change a standard section
@@ -74,29 +74,29 @@ A new case needs an owner row in
 [09](09-conformance-testing.md)). The runner refuses an unindexed result, and
 `npm run gen-conformance-cases` refuses an unindexed portable case.
 
-## Add a reader-corpus fixture (`tier-1-reader/` directory)
+## Add a reader-corpus fixture (`documents/` directory)
 
-1. Drop `conformance/tier-1-reader/fixtures/<id>.uwx.md`, and add its
+1. Drop `conformance/documents/fixtures/<id>.uwx.md`, and add its
    `[parse]`, `[validate]`, `[render-chat]` and `[render-summary]` owner rows.
-2. `npm run build && npm run conformance -- --suite=1 --update` to mint
+2. `npm run build && npm run conformance -- --suite=documents --update` to mint
    `expected/<id>.parsed.json`, the validation verdict and the rendered baselines.
 3. **Review the generated diff** before committing. RFC: no.
 
-## Add an editor fixture (`tier-2-editor/` directory, starter products)
+## Add an editor fixture (`starter/editor/` directory, starter products)
 
-1. `conformance/tier-2-editor/fixtures/<scenario>/` with `before.uwx.md` +
+1. `conformance/starter/editor/fixtures/<scenario>/` with `before.uwx.md` +
    `operation.json` (+ optional `context.json`, `options.json`). For a
    negative test, add `expected-error.json` with the expected `code`.
-2. `npm run conformance -- --suite=2 --update` to mint `after.uwx.md` (volatile
+2. `npm run conformance -- --suite=starter-editor --update` to mint `after.uwx.md` (volatile
    fields are auto-stripped).
 
-## Add a calc fixture (`tier-3-calc-host/` directory)
+## Add a calc fixture (`calc/` directory)
 
-1. `conformance/tier-3-calc-host/fixtures/<scenario>/` with `deal.uwx.md` +
+1. `conformance/calc/fixtures/<scenario>/` with `deal.uwx.md` +
    `calc.json` (a `ModuleCalcDecl`). Own it `verifier` when it tests a
    dictionary definition, the IRR procedure, or the §VIII.1–VIII.3 notation;
    `module` when it tests a custom declaration.
-2. `npm run conformance -- --suite=3 --update` to mint `expected-result.json`.
+2. `npm run conformance -- --suite=calc --update` to mint `expected-result.json`.
 
 ## Regenerate expected outputs (carefully)
 

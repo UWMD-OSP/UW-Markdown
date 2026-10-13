@@ -33,7 +33,7 @@ here.
   here does not move the Protocol version (RFC 0078 D13).
 - **Still tested.** Starter checks remain blocking CI checks, owned by this
   guide and tagged `starter-products` in the [runtime corpus index](../../conformance/corpus-index.json).
-  Legacy fixture paths are retained; `tier-2-editor/`, `tier-4-agent-host/`,
+  `starter/editor/`, `starter/agent/`,
   refinement, rendering, defaults/cascade and other product assertions carry
   no Protocol conformance claim. Run `npm run conformance -- --starter-products`
   after building. Reports keep these outcomes separate from Reader, Verifier

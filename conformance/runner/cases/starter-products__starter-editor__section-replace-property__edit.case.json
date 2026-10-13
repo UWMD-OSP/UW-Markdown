@@ -1,0 +1,25 @@
+{
+  "id": "starter-products__starter-editor__section-replace-property__edit",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "edit-replace"
+  ],
+  "command": "edit",
+  "args": [
+    "before.uwx.md",
+    "operation.json",
+    "--json",
+    "--actor",
+    "analyst-jane",
+    "--source",
+    "manual",
+    "--confidence",
+    "high"
+  ],
+  "fixture_dir": "conformance/starter/editor/fixtures/section-replace-property",
+  "expect": {
+    "kind": "json-field-text",
+    "field": "content",
+    "file": "after.uwx.md"
+  }
+}

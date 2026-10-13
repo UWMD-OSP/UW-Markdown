@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__11-role-collision__render-summary",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "11-role-collision.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/11-role-collision.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

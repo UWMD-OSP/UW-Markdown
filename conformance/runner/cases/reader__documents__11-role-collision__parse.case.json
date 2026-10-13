@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__11-role-collision__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "11-role-collision.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/11-role-collision.parsed.json"
+  }
+}

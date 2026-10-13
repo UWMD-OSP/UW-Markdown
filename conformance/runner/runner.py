@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Language-agnostic UW Markdown conformance driver (RFC 0004).
 
+Case ids name content: owner__suite__scenario__operation. The target field
+controls ownership; no directory name or id is a tier alias.
+
 Runs the corpus against ANY implementation that exposes the CLI protocol in
 protocol §II.6a, by shelling out to it. Nothing here knows about TypeScript,
 `@uwmd/core`, or Node — the reference implementation is tested exactly the way

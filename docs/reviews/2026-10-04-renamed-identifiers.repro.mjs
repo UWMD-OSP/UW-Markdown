@@ -38,7 +38,7 @@ const manifest = (id, classes, extra = {}) => ({
   license: 'MIT',
   requires_protocol: '>=2.0.0',
   requires_format: '>=1.0',
-  requires_tier: 'tier-3-calc-host',
+  requires_tier: 'calc',
   declares_asset_classes: classes.map((c) => ({ id: c, display_name: 'Data Center', fallback: 'industrial' })),
   calculations: [{ id: 'dc_probe', label: 'Probe', formula: '1 + 1', deterministic: true }],
   ...extra,

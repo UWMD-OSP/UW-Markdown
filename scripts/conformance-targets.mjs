@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { CONFORMANCE_TARGETS, CONFORMANCE_PROFILES, isConformanceTier } from '../packages/uwmd-core/dist/protocol.js';
 
 export const corpus = JSON.parse(readFileSync(new URL('../conformance/corpus-index.json', import.meta.url), 'utf8'));
-export const suiteFamily = suite => suite === '3-refinement' ? '3' : suite === '4-profile' ? '4' : suite;
+export const suiteFamily = suite => suite === 'starter-refinement' ? 'calc' : suite === 'starter-agent-profile' ? 'starter-agent' : suite;
 export const key = (suite, scenario) => JSON.stringify([String(suite), scenario]);
 export function indexCases(cases) {
   const index = new Map();
@@ -88,21 +88,12 @@ export function assertCoverage(expected, observed) {
   const missing = [...wanted.keys()].filter(id => !seen.has(id));
   if (missing.length) throw new Error(`Missing corpus results: ${missing.join(', ')}`);
 }
-export function portableOwner(id) {
-  let suite;
-  let scenario;
-  if (id.startsWith('tier-1-malformed/')) [suite, scenario] = ['1', `malformed/${id.slice('tier-1-malformed/'.length)}`];
-  else if (id.startsWith('tier-1/')) {
-    const [, stem, action] = id.split('/');
-    [suite, scenario] = ['1', `${stem} [${action}]`];
-  } else if (id.startsWith('tier-2/')) [suite, scenario] = ['2', id.slice(7)];
-  else if (id.startsWith('tier-3/')) [suite, scenario] = ['3', id.slice(7)];
-  else {
-    const slash = id.indexOf('/');
-    suite = id.slice(0, slash); scenario = id.slice(slash + 1);
-    if (suite === 'replacement-funding') suite = 'hedge';
-  }
-  const found = index.get(key(suite, scenario));
-  if (!found) throw new Error(`Portable case has no corpus owner: ${id} (${suite}/${scenario})`);
+/** Resolve a content-based portable identity to its reference check owner. */
+export function portableOwner(suite, scenario, operation) {
+  const referenceScenario = suite === 'documents'
+    ? scenario.startsWith('malformed-') ? `malformed/${scenario.slice('malformed-'.length)}` : `${scenario} [${operation}]`
+    : scenario;
+  const found = index.get(key(suite, referenceScenario));
+  if (!found) throw new Error(`Portable case has no corpus owner: ${suite}/${referenceScenario}`);
   return found.target;
 }

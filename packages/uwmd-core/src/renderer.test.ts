@@ -10,7 +10,7 @@ import { render, UnsupportedRenderFormatError } from './renderer.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = resolve(
   __dirname,
-  '../../../conformance/tier-1-reader/fixtures/01-minimal-screening.uwx.md',
+  '../../../conformance/documents/fixtures/01-minimal-screening.uwx.md',
 );
 
 function loadFixture() {
@@ -387,9 +387,9 @@ describe('render — chat NOI block reads Format §4.5 paths', () => {
     }
   });
 
-  it('renders the tier-1 §4.5 conformance fixture with its stated figures', () => {
+  it('renders the document §4.5 conformance fixture with its stated figures', () => {
     const parsed = parseUWFile(readFileSync(
-      resolve(__dirname, '../../../conformance/tier-1-reader/fixtures/02-full-multifamily.uwx.md'),
+      resolve(__dirname, '../../../conformance/documents/fixtures/02-full-multifamily.uwx.md'),
       'utf-8',
     ));
     expect(chatNoiLines(parsed)).toEqual([
