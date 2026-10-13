@@ -361,18 +361,22 @@ detached artifact, not a protocol tier. It runs by default.
 - `refuse/<scenario>/` — `deal.*` + `expected.json` naming the `ReceiptError`
   code. Issuance must throw, never emit a caveated receipt.
 
-> **Three receipt fixtures move on every `@uwmd/core` release.** The two
-> `issue/` baselines record the issuing engine, so `expected-receipt.json`
-> carries the new `engine_version` (and `protocol_version`, on a protocol bump)
-> — regenerate with `npm run conformance -- --suite=receipts --update` and check
-> the diff is only those fields.
+> **Five receipt fixtures move on every `@uwmd/verify` release.** The engine a
+> receipt names is the code that computes its results, `@uwmd/verify` (RFC
+> 0083), also when the receipt is issued through core. The two `issue/`
+> baselines record it, so `expected-receipt.json` carries the new
+> `engine_version` (`VERIFY_VERSION`; and `protocol_version`, on a protocol
+> bump) — regenerate with `npm run conformance -- --suite=receipts --update` and
+> check the diff is only those fields. A core release that leaves verify's
+> version alone moves none of them.
 >
-> `verify/03-result-disagrees` is the subtle one: its receipt must be stamped
-> with the **current** `CORE_VERSION`, because the scenario tests that a
+> `verify/03-result-disagrees` (with `10-rehashed-one-cent` and
+> `11-rehashed-subquantum-ratio`) is the subtle one: its receipt must be stamped
+> `@uwmd/verify` at the **current** `VERIFY_VERSION`, because the scenario tests that a
 > disagreement is `failed` *when the engine matches*. Leave it on the previous
 > version and `RCP-07` correctly reclassifies it as `unverifiable`, the suite
 > fails, and the fixture has quietly stopped testing what it was written to
-> test. The other four `verify/` fixtures are deliberately left on older engine
+> test. The other `verify/` fixtures are deliberately left on older engine
 > versions — their verdicts do not depend on the engine matching, which is
 > itself worth asserting.
 

@@ -451,9 +451,10 @@ on-save validation diagnostics tied to `BUILTIN_REMEDIATIONS`. Entry:
 (`esbuild.mjs`); package with `vsce package`. Not yet on the marketplace.
 It depends on `@uwmd/verify` only (a `file:` dependency on its built dist,
 RFC 0083): it parses, validates and verifies receipts, and never edits or
-renders. Its receipt verifier therefore identifies as `@uwmd/verify`, so a
-disagreement on a receipt that `@uwmd/core` issued is `unverifiable`
-(`RCP-07`, the engine differs) rather than `failed`.
+renders. Its receipt verifier identifies as `@uwmd/verify`, the same engine
+every current receipt names (core's included), so a tampered receipt is
+`failed`. A receipt from an earlier release names that release's engine and is
+`unverifiable` (`RCP-07`) on a disagreement, as it always was across versions.
 
 **Receipt verification** — the `uwmd.verifyReceipt` command ("UW Markdown:
 Verify Receipt for This Deal") checks the `<deal>.receipt.json` sidecar against

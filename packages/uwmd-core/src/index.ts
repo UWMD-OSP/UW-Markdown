@@ -7,15 +7,16 @@
 // products below: editor, runner, renderer, report, defaults and cascade,
 // refinement, display formatting, the Excel emitter and the agents.
 //
-// Four names override verify's under the same name: `evaluateCalc` and
+// Three names override verify's under the same name: `evaluateCalc` and
 // `evaluateModuleCalculations` add the starter `display` string, and
-// `issueReceipt` and `verifyReceipt` default the engine identity to
-// `@uwmd/core`. An explicit export here shadows the `export *`.
+// `issueReceipt` defaults the receipt's `issuer` to `@uwmd/core` (its engine
+// stays `@uwmd/verify`, the code that computes). An explicit export here
+// shadows the `export *`.
 
 export * from '@uwmd/verify';
 
-// Receipts issued or verified through core name `@uwmd/core` (RFC 0083).
-export { issueReceipt, verifyReceipt } from './receipt-engine.js';
+// Receipts issued through core name `@uwmd/core` as their issuer (RFC 0083).
+export { issueReceipt } from './receipt-engine.js';
 
 export { compact, diff } from './compactor.js';
 export { render, UnsupportedRenderFormatError, UnsupportedLocaleError, InvalidCurrencyCodeError } from './renderer.js';

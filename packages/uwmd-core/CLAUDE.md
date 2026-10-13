@@ -14,11 +14,11 @@ the root [`CLAUDE.md`](../../CLAUDE.md).
   browser-safe); new standard symbols go in verify's `index.ts`.
   `surface.test.ts` holds both entries to a superset of the 4.0.x surface
   (`fixtures/public-surface-4.0.json`) and to every verify export.
-- Four names shadow verify's on purpose: `evaluateCalc` and
+- Three names shadow verify's on purpose: `evaluateCalc` and
   `evaluateModuleCalculations` (`calc-display.ts`, which adds `display`), and
-  `issueReceipt` and `verifyReceipt` (`receipt-engine.ts`, which defaults the
-  engine identity to `@uwmd/core`/`CORE_VERSION`). Core code that issues or
-  verifies receipts imports the wrappers, never verify's directly.
+  `issueReceipt` (`receipt-engine.ts`, which defaults the `issuer` to
+  `@uwmd/core@<CORE_VERSION>`; the engine stays `@uwmd/verify`, the code that
+  computes). Core code that issues receipts imports the wrapper.
 - `editor.ts` / `renderer.ts` / `report.ts` / `compactor.ts` / `init.ts` —
   Tier 2 editing and rendering.
 - `runner.ts` — supersede-aware block writer (`writeAgentBlock`; re-exports

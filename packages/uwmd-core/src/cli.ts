@@ -61,10 +61,11 @@ import {
   projectUWEnvelopeToLite,
   stringifyUWX,
   UW_LITE_REPRESENTATION_ID,
+  verifyReceipt,
 } from '@uwmd/verify';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
-// Receipts issued or verified by the CLI name `@uwmd/core` (RFC 0083).
-import { issueReceipt, verifyReceipt } from './receipt-engine.js';
+// Receipts the CLI issues name `@uwmd/core` as their issuer (RFC 0083).
+import { issueReceipt } from './receipt-engine.js';
 // uwmd CLI — command-line interface for .uw.md files
 // Commands: parse, validate, compact, diff, init, summary, render
 // Usage: uwmd <command> <file> [options]

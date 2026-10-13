@@ -34,10 +34,10 @@ else in the repo depends on one or both:
 - **Public API:** [`uwmd-verify/src/index.ts`](../../packages/uwmd-verify/src/index.ts)
   for the standard, and [`uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts),
   which is `export * from '@uwmd/verify'` plus the starter exports. If it isn't
-  there, tools can't import it. Four core names shadow verify's on purpose:
+  there, tools can't import it. Three core names shadow verify's on purpose:
   `evaluateCalc` and `evaluateModuleCalculations` (core adds the starter
-  `display` string) and `issueReceipt` and `verifyReceipt` (core defaults the
-  receipt engine identity to `@uwmd/core`). Core's `surface.test.ts` holds its
+  `display` string) and `issueReceipt` (core defaults the receipt's `issuer` to
+  `@uwmd/core`; the engine stays `@uwmd/verify`). Core's `surface.test.ts` holds its
   two entries to a superset of the 4.0.x surface and to every verify export.
 - **Entry points (`package.json` `exports`):**
   - `@uwmd/verify` `.` and `./browser` → the same surface (verify has no
@@ -90,7 +90,7 @@ Module | Package | Responsibility | Key exports
 `integrity-canonical.ts` | verify | Canonicalization for hashing | `canonicalize`
 `receipts.ts` | verify | Detached verification receipts (RFC 0016) | `issueReceipt`, `verifyReceipt`, `resolveReceiptSubject`, `assertUWReceipt`, `ReceiptError`
 `version.ts` | both | Engine identity recorded in receipts: verify's own, and core's | verify: `VERIFY_PACKAGE_NAME`, `VERIFY_VERSION`; core: `CORE_PACKAGE_NAME`, `CORE_VERSION`
-`receipt-engine.ts` | core | The exported `issueReceipt`/`verifyReceipt`: verify's, with core's engine identity as the default | `issueReceipt`, `verifyReceipt`
+`receipt-engine.ts` | core | The exported `issueReceipt`: verify's, with `@uwmd/core` as the default `issuer` | `issueReceipt`
 `reference-implementation.ts` | core | What `uwmd manifest` prints (Protocol §I.4) | `REFERENCE_IMPLEMENTATION_MANIFEST`
 `modules.ts` | verify | Declarative module manifest loader/registry | `loadModuleManifest`, `createModuleRegistry`, `getModuleCalculationsForAssetClass`
 `calc/` | verify | Safe-expression engine (the Verifier's evaluator; Protocol 2.x Tier-3) | see [04 — Calc engine](04-calc-engine.md)
@@ -438,13 +438,17 @@ can confirm offline that the numbers follow from the inputs.
   engine reports "inputs absent" as a successful evaluation to `null`; a receipt
   must not let that read as a computed number.
 
-**Engine identity.** A receipt records the engine that issued it, and a
-verifier compares the receipt's engine with its own (`RCP-07` when they
-differ). `@uwmd/verify` issues and verifies as `@uwmd/verify` at
-`VERIFY_VERSION`; the `issueReceipt` and `verifyReceipt` that `@uwmd/core`
-exports (`receipt-engine.ts`) default to `@uwmd/core` at `CORE_VERSION`, so
-receipts issued through core, the CLI and the conformance baselines are
-unchanged. An explicit `engine`, `engine_version` or `issuer` wins either way.
+**Engine identity.** A receipt records the engine that computed its results,
+and a verifier compares the receipt's engine with its own (`RCP-07` when they
+differ, UW Receipt §5.3). That engine is `@uwmd/verify` at `VERIFY_VERSION`
+for every receipt, including one issued through `@uwmd/core` or the CLI, so a
+verifier holding only `@uwmd/verify` (a lender, the VS Code extension) reports
+a tampered core-issued receipt as `failed`, not `unverifiable` — the RFC 0078
+boundary test. The `issuer` is the tool: `@uwmd/core@<CORE_VERSION>` through
+core's `issueReceipt` (`receipt-engine.ts`), `uwmd-cli@<CORE_VERSION>` from the
+CLI, `@uwmd/verify@<VERIFY_VERSION>` directly. Core re-exports verify's
+`verifyReceipt` unchanged. An explicit `engine`, `engine_version` or `issuer`
+wins either way.
 
 Both issuance and verification are browser-safe (SHA-256 via Web Crypto), so the
 web editor can verify client-side. Signature creation and validation stay

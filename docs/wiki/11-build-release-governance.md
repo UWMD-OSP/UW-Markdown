@@ -75,9 +75,9 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   `@uwmd/verify` (RFC 0083) versions independently from 0.1.0 and pins no
   `@uwmd/*` package; core, signing, batch and lake pin it exactly, so a verify
   bump is a repin (and version bump) of those four. Its `VERIFY_VERSION`
-  (`packages/uwmd-verify/src/version.ts`) is the engine identity a receipt
-  issued directly through verify records, held to its manifest by its
-  `version.test.ts`. Because the
+  (`packages/uwmd-verify/src/version.ts`) is the engine identity every receipt
+  records, including receipts issued through core (verify computes them), held
+  to its manifest by its `version.test.ts`. Because the
   pin is exact, every dependent must also take its own version bump: a
   republished `0.2.0` carrying a different pin is not something npm allows, so
   leaving one behind means its repin never ships.
@@ -88,14 +88,18 @@ each with a guard that fails loudly if you miss it:
 1. `CORE_VERSION` in `src/version.ts` — a literal, so the browser bundle has it.
    `version.test.ts` asserts it matches the manifest.
 2. The dependents' pins and their own versions (above). `verify-lockfile`.
-3. The two `conformance/receipts/issue/` baselines, which record the issuing
-   engine — regenerate with `npm run conformance -- --suite=receipts --update`.
-4. Every `conformance/receipts/verify/` receipt whose expected verdict is
-   `failed` and that the current engine issued: `03-result-disagrees`,
-   `10-rehashed-one-cent` and `11-rehashed-subquantum-ratio`. Each
-   `engine_version` must be the **new** one or `RCP-07` reclassifies the
-   scenario from `failed` to `unverifiable`. Their `results_digest` does not
-   cover it, so the edit is by hand. See
+3. When the release moves `VERIFY_VERSION` (any `@uwmd/verify` bump), the two
+   `conformance/receipts/issue/` baselines, which record the computing engine
+   (`@uwmd/verify` and `VERIFY_VERSION`, RFC 0083; not core's version) —
+   regenerate with `npm run conformance -- --suite=receipts --update`. A core
+   bump alone does not move them.
+4. On the same condition, every `conformance/receipts/verify/` receipt whose
+   expected verdict is `failed` and that the current engine issued:
+   `03-result-disagrees`, `10-rehashed-one-cent` and
+   `11-rehashed-subquantum-ratio`. Each names `engine: "@uwmd/verify"`, and its
+   `engine_version` must be the **new** `VERIFY_VERSION` or `RCP-07`
+   reclassifies the scenario from `failed` to `unverifiable`. Their
+   `results_digest` does not cover it, so the edit is by hand. See
    [09](09-conformance-testing.md#conformance-corpus-conformance).
 5. The `Current matrix` rows in [`VERSIONS.md`](../../VERSIONS.md) — both the
    version cell and the "pairs with `@uwmd/core` 1.x" notes. `verify-versions`.

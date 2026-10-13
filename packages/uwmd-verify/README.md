@@ -56,9 +56,11 @@ Two behaviors differ when you call this package directly:
 
 - `evaluateCalc` and `evaluateModuleCalculations` return no `display` string.
   The field is optional (`calc-result.schema.json`); `@uwmd/core` adds it.
-- A receipt issued or verified here names this package as the engine
-  (`@uwmd/verify` and `VERIFY_VERSION`) unless you pass `engine`,
-  `engine_version` or `issuer`. Through `@uwmd/core` it names `@uwmd/core`.
+- A receipt issued here names `@uwmd/verify@<VERIFY_VERSION>` as its
+  issuer; through `@uwmd/core` the issuer is `@uwmd/core`. Either way the
+  engine is this package (`@uwmd/verify`, `VERIFY_VERSION`), the code that
+  computes the results, so a verifier holding only this package checks a
+  core-issued receipt as the same engine.
 
 Specification, examples and conformance fixtures:
 [github.com/UWMD-OSP/UW-Markdown](https://github.com/UWMD-OSP/UW-Markdown).

@@ -144,9 +144,12 @@ added `verifyStatedMetrics`. Phase 2 creates `packages/uwmd-verify`
 their tests, core depends on it exactly and re-exports its whole surface, and
 signing, batch, lake and the VS Code extension build on it. No public name of
 `@uwmd/core` or `@uwmd/core/browser` was removed; the browser entry gained the
-integrity verifiers and the other names verify exports. Receipts, `uwmd
-manifest`, every conformance expectation (1,069 checks; the lender fixture at
-187/0/0) and the portable driver are unchanged. No package version moved:
+integrity verifiers and the other names verify exports. Receipts now name
+`@uwmd/verify` (`VERIFY_VERSION`) as their engine, including those issued
+through core; the issuer stays core's, the two receipt issue baselines and
+three verify fixtures were updated, and every verdict is unchanged. `uwmd
+manifest`, every other conformance expectation (1,069 checks; the lender
+fixture at 187/0/0) and the portable driver are unchanged. No package version moved:
 core/CLI stay 4.0.1, and signing 0.3.1, batch 0.8.23 and lake 0.2.12 now pin
 `@uwmd/verify` 0.1.0 in source without a version bump of their own. Phase 3
 is the release: core/CLI 4.1.0 with `@uwmd/verify` 0.1.0, which must bump

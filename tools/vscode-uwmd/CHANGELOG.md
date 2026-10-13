@@ -5,10 +5,11 @@
 ### Changed
 - **Built on `@uwmd/verify`** (RFC 0083), the reference implementation of the
   standard, in place of `@uwmd/core`: the extension only parses, validates and
-  verifies receipts. Validation is unchanged. The receipt check now identifies
-  its engine as `@uwmd/verify`, so a disagreement on a receipt that
-  `@uwmd/core` issued reports `unverifiable` (`RCP-07`, the engines differ)
-  rather than `failed`; a matching receipt still verifies.
+  verifies receipts. Validation is unchanged. The receipt check identifies its
+  engine as `@uwmd/verify`, which is also the engine every receipt names from
+  this generation on (core's included), so a tampered receipt is still
+  `failed`. A receipt from an earlier release names that release's engine and
+  is `unverifiable` (`RCP-07`) on a disagreement, as across any versions.
 
 ## [0.2.0]
 

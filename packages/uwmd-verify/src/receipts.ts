@@ -458,8 +458,8 @@ export interface ReceiptIssuanceOptions extends ReceiptSubjectOptions {
   pack?: ModuleManifest;
   /**
    * Identity of the issuing tool, e.g. `uwmd-cli@1.1.3`. Defaults to
-   * `@uwmd/verify@<VERIFY_VERSION>`; `@uwmd/core`'s re-export defaults it to
-   * `@uwmd/core@<CORE_VERSION>`.
+   * `@uwmd/verify@<VERIFY_VERSION>`; `@uwmd/core`'s `issueReceipt` defaults it
+   * to `@uwmd/core@<CORE_VERSION>`.
    */
   issuer?: string;
   /** ISO 8601 instant. Supply explicitly for reproducible fixtures. */
@@ -467,8 +467,9 @@ export interface ReceiptIssuanceOptions extends ReceiptSubjectOptions {
   policy_set?: string;
   policy_set_version?: string;
   /**
-   * Engine identity to record. Defaults to this package (`@uwmd/verify`,
-   * `VERIFY_VERSION`); `@uwmd/core`'s re-export defaults it to `@uwmd/core`.
+   * Engine identity to record: the code that computes the results. Defaults
+   * to this package (`@uwmd/verify`, `VERIFY_VERSION`), also when issued
+   * through `@uwmd/core`.
    */
   engine?: string;
   engine_version?: string;
@@ -570,8 +571,8 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
   /** Supplied by a signing package. Absent → a signed receipt is `unverifiable`. */
   signatureVerifier?: ReceiptSignatureVerifier;
   /**
-   * Engine identity of this verifier. Defaults to this package (`@uwmd/verify`);
-   * `@uwmd/core`'s re-export defaults it to `@uwmd/core`.
+   * Engine identity of this verifier. Defaults to this package (`@uwmd/verify`,
+   * `VERIFY_VERSION`), which `@uwmd/core` re-exports unchanged.
    */
   engine?: string;
   engine_version?: string;

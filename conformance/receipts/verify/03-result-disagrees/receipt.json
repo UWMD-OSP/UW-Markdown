@@ -10,8 +10,8 @@
   "computation": {
     "pack": "org.uwmd.pack.multifamily",
     "pack_version": "1.0.2",
-    "engine": "@uwmd/core",
-    "engine_version": "4.0.1",
+    "engine": "@uwmd/verify",
+    "engine_version": "0.1.0",
     "results": [
       {
         "calc_id": "cap_rate",

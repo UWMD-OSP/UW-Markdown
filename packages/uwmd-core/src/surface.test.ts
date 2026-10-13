@@ -8,7 +8,7 @@
 //      plus Phase 1 — is still there, with the same kind
 //      (`fixtures/public-surface-4.0.json`, captured from that build).
 //   2. Verify is fully re-exported. Every `@uwmd/verify` export is a core
-//      export, from both entries, and is the same binding — except the four
+//      export, from both entries, and is the same binding — except the three
 //      names core deliberately overrides with its own wrappers.
 
 import { readFileSync } from 'node:fs';
@@ -29,7 +29,7 @@ const BASELINE = JSON.parse(
 ) as { index: Surface; browser: Surface };
 
 /** Core's own wrappers, which shadow verify's export of the same name. */
-const OVERRIDES = ['evaluateCalc', 'evaluateModuleCalculations', 'issueReceipt', 'verifyReceipt'];
+const OVERRIDES = ['evaluateCalc', 'evaluateModuleCalculations', 'issueReceipt'];
 
 const COMPILER_OPTIONS: ts.CompilerOptions = {
   module: ts.ModuleKind.NodeNext,
@@ -90,7 +90,7 @@ describe.each(ENTRIES)('@uwmd/core $name entry', ({ name, core, verify, file }) 
     expect(missing(declarations(verifyFile as string), declarations(file))).toEqual([]);
   }, 60_000);
 
-  it("re-exports verify's bindings, overriding exactly the four wrapped names", () => {
+  it("re-exports verify's bindings, overriding exactly the three wrapped names", () => {
     const overridden = Object.keys(verify).filter((key) => coreExports[key] !== verifyExports[key]);
     expect(overridden.sort()).toEqual([...OVERRIDES].sort());
     for (const key of OVERRIDES) expect(typeof coreExports[key], key).toBe('function');

@@ -142,12 +142,16 @@ becomes a package-level closure test.
   the binding operations; the read operations move to verify.
 - `buildMeta` moves from `runner.ts` to `metadata.ts`; `MarketDataLookup`
   moves to `market-data.ts`.
-- Receipts record the issuing engine, and a verifier compares it with its own
-  (`RCP-07`). Verify's `issueReceipt` and `verifyReceipt` default to verify's
-  own identity (`@uwmd/verify`, `VERIFY_VERSION`); core's exported
-  `issueReceipt` and `verifyReceipt` default to `@uwmd/core` and
-  `CORE_VERSION`, as today, so a receipt issued through core does not change.
-  An explicit `engine`, `engine_version` or `issuer` wins either way.
+- Receipts record the engine that computed them, and a verifier compares it
+  with its own (UW Receipt §5.3, `RCP-07`). That engine is `@uwmd/verify`
+  (`VERIFY_VERSION`) for every receipt, including those issued through core:
+  naming `@uwmd/core` would make a verifier holding only `@uwmd/verify` report
+  a tampered core-issued receipt as `unverifiable` instead of `failed`, which
+  defeats the RFC 0078 boundary test. The `issuer` stays the tool; core's
+  exported `issueReceipt` defaults it to `@uwmd/core@<CORE_VERSION>`, and core
+  re-exports verify's `verifyReceipt` unchanged. The receipt baselines record
+  verify's version from then on. An explicit `engine`, `engine_version` or
+  `issuer` wins either way.
 - The starter parts of `protocol.ts` move to a core module
   (`starter-protocol.ts`); core re-exports them under the same names.
 - `@uwmd/signing` depends on `@uwmd/verify` for its payload builders. Its

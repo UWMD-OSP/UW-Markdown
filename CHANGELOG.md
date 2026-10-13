@@ -35,7 +35,7 @@ protocol, and each package each carry an independent semver).
   `@uwmd/*` package; its runtime dependencies are `fast-xml-parser` and
   `fflate`. Called directly, its `evaluateCalc` and
   `evaluateModuleCalculations` return no `display`, and its receipts name
-  `@uwmd/verify` and `VERIFY_VERSION` as the engine. Its
+  `@uwmd/verify@<VERIFY_VERSION>` as the issuer. Its
   `standard-closure.test.ts` fails on any import outside the package other
   than the two dependencies and integrity's guarded `node:crypto` fallback,
   and on any `@uwmd/*` dependency.
@@ -84,25 +84,40 @@ protocol, and each package each carry an independent semver).
   through its public entry, and re-exports its whole surface from both
   entries; no 4.0.x export is removed or changes kind
   (`surface.test.ts`). Core's `evaluateCalc` and
-  `evaluateModuleCalculations` still add `display`, and its `issueReceipt`
-  and `verifyReceipt` (`receipt-engine.ts`) still default the engine identity
-  to `@uwmd/core` and `CORE_VERSION`, so receipts, `uwmd manifest` and every
-  conformance expectation are unchanged.
+  `evaluateModuleCalculations` still add `display`.
   `REFERENCE_IMPLEMENTATION_MANIFEST` names `@uwmd/core`, so it moves to
-  core's `reference-implementation.ts`. A differential run of the 96b86155
-  build against this one gives no difference over every `examples/` and
-  `conformance/` document (785) for `evaluateCalc` (every builtin pack
-  declaration, document currency and MXN, both entries),
-  `evaluateModuleCalculations`, `validateUWFile`, receipt issue and verify,
-  Lite parse and compile, `applyEdit` bytes, envelopes, integrity chains,
-  `render` and `verifyStatedMetrics`, nor over 256 `uwmd` CLI invocations
-  (`manifest`, `calc`, `validate`, `receipt issue`, `summary`).
+  core's `reference-implementation.ts`; `uwmd manifest` is unchanged.
+- **Receipts now name `@uwmd/verify` as their engine**, including receipts
+  issued through `@uwmd/core` and the CLI: `computation.engine` is
+  `@uwmd/verify` and `computation.engine_version` is `VERIFY_VERSION` (0.1.0),
+  the code that computes the results (UW Receipt §5.3). The `issuer` is
+  unchanged: `@uwmd/core@<CORE_VERSION>` through core's `issueReceipt`,
+  `uwmd-cli@<CORE_VERSION>` from the CLI. Core re-exports verify's
+  `verifyReceipt` unchanged. A verifier holding only `@uwmd/verify` therefore
+  reports a tampered core-issued receipt as `failed`, not `RCP-07`
+  `unverifiable` (the RFC 0078 boundary test). The two
+  `conformance/receipts/issue/` baselines are regenerated, and the
+  `verify/03-result-disagrees`, `10-rehashed-one-cent` and
+  `11-rehashed-subquantum-ratio` receipts name `@uwmd/verify` 0.1.0 so they
+  still test a same-engine `failed`; every receipt verdict is unchanged. From
+  here the receipt baselines move with `VERIFY_VERSION`, not core's version.
+  A receipt issued by an earlier release names `@uwmd/core` and that release's
+  version, and a disagreement on it is `RCP-07`, as across any two versions.
+- A differential run of the 96b86155 build against this one, over every
+  `examples/` and `conformance/` document (785), compares `evaluateCalc`
+  (every builtin pack declaration, document currency and MXN, both entries),
+  `evaluateModuleCalculations`, `validateUWFile`, receipt issue and verify
+  (and a tampered copy), Lite parse and compile, `applyEdit` bytes,
+  envelopes, integrity chains, `render` and `verifyStatedMetrics`, and 256
+  `uwmd` CLI invocations (`manifest`, `calc`, `validate`, `receipt issue`,
+  `summary`). The only differences are the receipt `engine` and
+  `engine_version` fields.
 - `@uwmd/signing`, `@uwmd/batch` and `@uwmd/lake` build on `@uwmd/verify`
   (exact 0.1.0); signing also keeps `@uwmd/core` for the capability-token
   types. Their own versions do not move here; the release that publishes
-  `@uwmd/verify` bumps them. `tools/vscode-uwmd` depends on `@uwmd/verify`, so
-  its receipt check identifies as `@uwmd/verify` (a disagreement on a
-  core-issued receipt is `unverifiable`, `RCP-07`, not `failed`).
+  `@uwmd/verify` bumps them. `tools/vscode-uwmd` depends on `@uwmd/verify`;
+  its receipt check identifies as `@uwmd/verify`, the engine current receipts
+  name, so a tampered receipt is still `failed`.
 - Release tooling publishes eight packages from 4.1.0, `@uwmd/verify` first:
   `release.yml`, `release-packages.mjs` and `release:check`, which now requires
   every package to publish after each `@uwmd/*` package it pins. The guards

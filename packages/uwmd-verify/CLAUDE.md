@@ -36,9 +36,11 @@ the root [`CLAUDE.md`](../../CLAUDE.md) and core's
 - `calc/` — the sandboxed evaluator (§VIII). `evaluateCalc` and
   `evaluateModuleCalculations` here return **no `display`**; core's exports
   add it (`calc-display.ts`).
-- `receipts.ts` — default engine identity is this package (`version.ts`:
-  `VERIFY_PACKAGE_NAME`, `VERIFY_VERSION`, in lockstep with package.json).
-  Core's `receipt-engine.ts` defaults it to `@uwmd/core`.
+- `receipts.ts` — the engine identity of every receipt is this package
+  (`version.ts`: `VERIFY_PACKAGE_NAME`, `VERIFY_VERSION`, in lockstep with
+  package.json), also through core. Core's `receipt-engine.ts` defaults only
+  the `issuer`. A `VERIFY_VERSION` bump moves the receipt conformance
+  baselines (wiki 11, release items 3–4).
 - `builtin-packs/` — the twelve builtin pack manifests (standard data, each equal
   to its `spec/metrics/` entries). Their Excel parity tests live in core.
 - `metric-dictionary.ts` — generated from `spec/metrics/builtin.json` by

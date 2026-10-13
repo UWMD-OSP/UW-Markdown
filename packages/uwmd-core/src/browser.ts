@@ -12,8 +12,8 @@
 // the provider seam), `applyEditAsync`, `buildContext`, `CASCADE_ORDER` and
 // `REFERENCE_IMPLEMENTATION_MANIFEST`.
 //
-// As in the main entry, `evaluateCalc`, `evaluateModuleCalculations`,
-// `issueReceipt` and `verifyReceipt` are core's wrappers, which shadow verify's.
+// As in the main entry, `evaluateCalc`, `evaluateModuleCalculations` and
+// `issueReceipt` are core's wrappers, which shadow verify's.
 
 export * from '@uwmd/verify/browser';
 
@@ -155,8 +155,9 @@ export type { InitOptions } from './init.js';
 
 // Receipts (RFC 0016) — issuance and verification are browser-safe: SHA-256
 // comes from Web Crypto via `integrity.sha256TextHex`, and no signing backend
-// is bundled here. Receipts issued or verified through core name `@uwmd/core`.
-export { issueReceipt, verifyReceipt } from './receipt-engine.js';
+// is bundled here. Receipts issued through core name `@uwmd/core` as their
+// issuer; `verifyReceipt` is verify's.
+export { issueReceipt } from './receipt-engine.js';
 export { CORE_PACKAGE_NAME, CORE_VERSION } from './version.js';
 
 export { parseCalculationContext } from './calculation-context.js';
