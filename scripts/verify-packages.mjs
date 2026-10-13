@@ -32,28 +32,100 @@ function rejectSourceOrTests(workspace, files) {
   if (leakedFiles.length > 0) throw new Error(`${workspace} package leaks source or tests: ${leakedFiles.join(', ')}`);
 }
 
+// @uwmd/verify (RFC 0083) is the bottom of the graph: core depends on it, and
+// it depends on no @uwmd/* package.
+const verifyFiles = packedFiles('@uwmd/verify');
+requireFiles('@uwmd/verify', verifyFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/browser.js', 'dist/browser.d.ts']);
+rejectSourceOrTests('@uwmd/verify', verifyFiles);
+
 const coreFiles = packedFiles('@uwmd/core');
 requireFiles('@uwmd/core', coreFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/browser.js', 'dist/browser.d.ts', 'dist/cli.js']);
 rejectSourceOrTests('@uwmd/core', coreFiles);
 
+/** Copy a package's packed files into a consumer's node_modules. */
+function install(consumer, name, dir, files) {
+  const destinationRoot = join(consumer, 'node_modules', name);
+  for (const file of files) {
+    const destination = join(destinationRoot, file);
+    mkdirSync(dirname(destination), { recursive: true });
+    cpSync(resolve(dir, file), destination);
+  }
+}
+
+/** Copy the third-party packages a consumer needs from this checkout's node_modules. */
+function installThirdParty(consumer) {
+  for (const dependency of ['fflate', 'fast-xml-parser', '@types/node', 'undici-types']) {
+    cpSync(resolve('node_modules', dependency), join(consumer, 'node_modules', dependency), { recursive: true });
+  }
+}
+
+/** Strict-compile `source` in `consumer`, against only what it has installed. */
+function compileConsumer(consumer, source) {
+  writeFileSync(join(consumer, 'package.json'), JSON.stringify({ type: 'module', private: true }));
+  const consumerSource = join(consumer, 'consumer.ts');
+  writeFileSync(consumerSource, source);
+  const program = ts.createProgram([consumerSource], {
+    target: ts.ScriptTarget.ES2022,
+    module: ts.ModuleKind.NodeNext,
+    moduleResolution: ts.ModuleResolutionKind.NodeNext,
+    strict: true,
+    skipLibCheck: false,
+    noEmit: true,
+    types: ['node'],
+    typeRoots: [join(consumer, 'node_modules/@types')],
+  });
+  const diagnostics = ts.getPreEmitDiagnostics(program);
+  assert.equal(diagnostics.length, 0, ts.formatDiagnosticsWithColorAndContext(diagnostics, {
+    getCanonicalFileName: (file) => file,
+    getCurrentDirectory: () => consumer,
+    getNewLine: () => '\n',
+  }));
+}
+
 // Compile the package's actual delivered files outside the workspace, where
 // optional peers cannot be found accidentally through ancestor node_modules.
+//
+// First a consumer of @uwmd/verify alone: the lender's boundary test (RFC 0078,
+// RFC 0083) as a package, with no @uwmd/core anywhere to fall back on.
+const verifyConsumer = mkdtempSync(join(tmpdir(), 'uwmd-verify-types-'));
+try {
+  install(verifyConsumer, '@uwmd/verify', 'packages/uwmd-verify', verifyFiles);
+  installThirdParty(verifyConsumer);
+  assert.equal(existsSync(join(verifyConsumer, 'node_modules/@uwmd/core')), false);
+  assert.equal(existsSync(join(verifyConsumer, 'node_modules/@anthropic-ai/sdk')), false);
+  compileConsumer(verifyConsumer, [
+    "import { parseUWFile, validateUWFile, verifyStatedMetrics, verifyReceipt, type UWReceipt } from '@uwmd/verify';",
+    "import { verifyChain, parseUWFile as parseBrowser } from '@uwmd/verify/browser';",
+    'export const verifiers = [parseUWFile, validateUWFile, verifyStatedMetrics, verifyReceipt, verifyChain, parseBrowser];',
+    'export type Receipt = UWReceipt;',
+    '',
+  ].join('\n'));
+  // And it runs: both entries load from the delivered files and the two
+  // runtime dependencies alone.
+  writeFileSync(join(verifyConsumer, 'smoke.mjs'), [
+    "import * as verify from '@uwmd/verify';",
+    "import * as browser from '@uwmd/verify/browser';",
+    `const doc = ${JSON.stringify('---\nuw_version: "3.0"\ndeal_id: smoke\nasset_class: multifamily\n---\n')};`,
+    "if (verify.parseUWFile(doc).frontmatter.deal_id !== 'smoke') throw new Error('parseUWFile');",
+    "if (typeof verify.verifyStatedMetrics !== 'function' || browser.verifyChain !== verify.verifyChain) throw new Error('surface');",
+    '',
+  ].join('\n'));
+  execFileSync(process.execPath, [join(verifyConsumer, 'smoke.mjs')], { cwd: verifyConsumer, stdio: ['ignore', 'pipe', 'inherit'] });
+  console.log('[PASS] @uwmd/verify strict root/browser declarations compile, and both entries run, with no other @uwmd/* package installed');
+} finally {
+  assert.equal(dirname(resolve(verifyConsumer)), resolve(tmpdir()));
+  rmSync(verifyConsumer, { recursive: true, force: true });
+}
+
+// Then core, with its exact @uwmd/verify dependency beside it.
 const typeConsumer = mkdtempSync(join(tmpdir(), 'uwmd-package-types-'));
 try {
-  const coreDestination = join(typeConsumer, 'node_modules/@uwmd/core');
-  for (const file of coreFiles) {
-    const destination = join(coreDestination, file);
-    mkdirSync(dirname(destination), { recursive: true });
-    cpSync(resolve('packages/uwmd-core', file), destination);
-  }
-  for (const dependency of ['fflate', 'fast-xml-parser', '@types/node', 'undici-types']) {
-    cpSync(resolve('node_modules', dependency), join(typeConsumer, 'node_modules', dependency), { recursive: true });
-  }
+  install(typeConsumer, '@uwmd/core', 'packages/uwmd-core', coreFiles);
+  install(typeConsumer, '@uwmd/verify', 'packages/uwmd-verify', verifyFiles);
+  installThirdParty(typeConsumer);
   assert.equal(existsSync(join(typeConsumer, 'node_modules/@anthropic-ai/sdk')), false);
   assert.equal(existsSync(join(typeConsumer, 'node_modules/@uwmd/signing')), false);
-  writeFileSync(join(typeConsumer, 'package.json'), JSON.stringify({ type: 'module', private: true }));
-  const consumerSource = join(typeConsumer, 'consumer.ts');
-  writeFileSync(consumerSource, `import { parseUWFile, createAnthropicProvider } from '@uwmd/core';
+  compileConsumer(typeConsumer, `import { parseUWFile, createAnthropicProvider } from '@uwmd/core';
 import { parseUWFile as parseBrowser } from '@uwmd/core/browser';
 export const parsers = [parseUWFile, parseBrowser];
 createAnthropicProvider({
@@ -64,22 +136,6 @@ createAnthropicProvider({
   } },
 });
 `);
-  const program = ts.createProgram([consumerSource], {
-    target: ts.ScriptTarget.ES2022,
-    module: ts.ModuleKind.NodeNext,
-    moduleResolution: ts.ModuleResolutionKind.NodeNext,
-    strict: true,
-    skipLibCheck: false,
-    noEmit: true,
-    types: ['node'],
-    typeRoots: [join(typeConsumer, 'node_modules/@types')],
-  });
-  const diagnostics = ts.getPreEmitDiagnostics(program);
-  assert.equal(diagnostics.length, 0, ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-    getCanonicalFileName: (file) => file,
-    getCurrentDirectory: () => typeConsumer,
-    getNewLine: () => '\n',
-  }));
   console.log('[PASS] @uwmd/core strict root/browser declarations compile without optional peers');
 } finally {
   assert.equal(dirname(resolve(typeConsumer)), resolve(tmpdir()));
@@ -116,12 +172,12 @@ const signingFiles = packedFiles('@uwmd/signing');
 requireFiles('@uwmd/signing', signingFiles, ['package.json', 'README.md', 'dist/index.js', 'dist/index.d.ts', 'dist/keystore-file.js']);
 rejectSourceOrTests('@uwmd/signing', signingFiles);
 
-// Every package the release workflow publishes (seven from 4.0.0) must
+// Every package the release workflow publishes (eight from 4.1.0) must
 // install outside this repository: no
 // workspace-only dependency specifier, exact @uwmd/* pins, public metadata,
 // and every export and bin target inside the tarball it ships.
 const packedByName = new Map([
-  ['@uwmd/core', coreFiles], ['@uwmd/cli', cliFiles], ['@uwmd/batch', batchFiles], ['@uwmd/lake', lakeFiles],
+  ['@uwmd/verify', verifyFiles], ['@uwmd/core', coreFiles], ['@uwmd/cli', cliFiles], ['@uwmd/batch', batchFiles], ['@uwmd/lake', lakeFiles],
   ['@uwmd/excel', excelFiles], ['@uwmd/report', reportFiles], ['@uwmd/signing', signingFiles],
 ]);
 for (const pkg of RELEASE_PACKAGES) {
@@ -152,6 +208,7 @@ for (const pkg of RELEASE_PACKAGES) {
 }
 console.log(`[PASS] ${RELEASE_PACKAGES.length} published packages: no workspace-only dependencies, exact @uwmd/* pins, export and bin targets packed`);
 
+console.log(`[PASS] @uwmd/verify package: ${verifyFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/core package: ${coreFiles.size} files, production artifacts present`);
 console.log(`[PASS] @uwmd/cli package: ${cliFiles.size} files, CLI wrapper present`);
 console.log(`[PASS] @uwmd/batch package: ${batchFiles.size} files, production artifacts present`);

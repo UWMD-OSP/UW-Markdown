@@ -54,7 +54,7 @@ jobs:
   verify-codes:
     name: Verify validation-code contracts
     runs-on: ubuntu-latest
-    # Reads core's sources, the two specs and the RFC frontmatter as text — no
+    # Reads verify's and core's sources, the two specs and the RFC frontmatter as text — no
     # install, no build, same rationale as the guards above. Exists because
     # RFC 0058 shipped nine of the ten codes it specified and nothing went red.
     steps:
@@ -139,7 +139,7 @@ jobs:
         if: matrix.node == 20
         run: npm run verify-packages
 
-      - name: Verify seven-package release readiness
+      - name: Verify eight-package release readiness
         if: matrix.node == 20
         run: npm run release:check
 
@@ -213,7 +213,8 @@ jobs:
     # tools/* are intentionally NOT npm-workspace members, so the root `npm test`
     # above doesn't cover them. The web editor is the Tier-2/3 calc-integrity
     # chokepoint and carries its own vitest suite — run it here. It consumes
-    # @uwmd/core's built dist via a file: dependency, so core must be built first.
+    # @uwmd/core's built dist via a file: dependency (and, through core,
+    # @uwmd/verify's), so both must be built first.
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -222,7 +223,7 @@ jobs:
           cache: npm
       - name: Install workspaces
         run: npm ci
-      - name: Build @uwmd/core (web editor imports its dist)
+      - name: Build @uwmd/verify and @uwmd/core (web editor imports their dist)
         run: npm run build
       - name: Install web-editor deps
         run: npm ci
@@ -240,8 +241,8 @@ jobs:
     # Same reason as the web editor: tools/* are not workspace members, so the
     # root `npm test` doesn't reach them. The extension's receipt verification
     # is pure logic behind a `vscode`-free module, so it runs under plain vitest
-    # with no editor harness. It consumes @uwmd/core's built dist, so core must
-    # be built first.
+    # with no editor harness. It consumes @uwmd/verify's built dist (RFC 0083),
+    # so verify must be built first.
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -250,7 +251,7 @@ jobs:
           cache: npm
       - name: Install workspaces
         run: npm ci
-      - name: Build @uwmd/core (the extension imports its dist)
+      - name: Build @uwmd/verify (the extension imports its dist)
         run: npm run build
       - name: Install extension deps
         run: npm ci
@@ -276,31 +277,47 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # RFC 0083 split the reference library: the standard modules and their
+      # tests live in @uwmd/verify, the starter toolkit in @uwmd/core. Each has
+      # its own floor in its vitest.config.ts.
+      - name: Run @uwmd/verify test suite with coverage
+        run: npm --prefix packages/uwmd-verify run test:coverage
       - name: Run @uwmd/core test suite with coverage
+        if: always()
         run: npm --prefix packages/uwmd-core run test:coverage
       - name: Publish coverage summary
         if: always()
         run: |
           set -e
-          summary=packages/uwmd-core/coverage/coverage-summary.json
-          if [ ! -f "$summary" ]; then
-            echo "::warning ::coverage-summary.json not found at $summary"
-            exit 0
-          fi
-          {
-            echo "## @uwmd/core coverage"
-            echo ""
-            node -e '
-              const s = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).total;
-              const fmt = (m) => m.pct.toFixed(2) + "% (" + m.covered + "/" + m.total + ")";
-              console.log("| Metric | Coverage |");
-              console.log("|---|---|");
-              for (const k of ["lines", "statements", "functions", "branches"]) {
-                console.log("| " + k + " | " + fmt(s[k]) + " |");
-              }
-            ' "$summary"
-          } >> "$GITHUB_STEP_SUMMARY"
-      - name: Upload coverage artifacts
+          for pkg in verify core; do
+            summary=packages/uwmd-$pkg/coverage/coverage-summary.json
+            if [ ! -f "$summary" ]; then
+              echo "::warning ::coverage-summary.json not found at $summary"
+              continue
+            fi
+            {
+              echo "## @uwmd/$pkg coverage"
+              echo ""
+              node -e '
+                const s = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).total;
+                const fmt = (m) => m.pct.toFixed(2) + "% (" + m.covered + "/" + m.total + ")";
+                console.log("| Metric | Coverage |");
+                console.log("|---|---|");
+                for (const k of ["lines", "statements", "functions", "branches"]) {
+                  console.log("| " + k + " | " + fmt(s[k]) + " |");
+                }
+              ' "$summary"
+              echo ""
+            } >> "$GITHUB_STEP_SUMMARY"
+          done
+      - name: Upload @uwmd/verify coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: uwmd-verify-coverage
+          path: packages/uwmd-verify/coverage/
+          retention-days: 14
+      - name: Upload @uwmd/core coverage artifacts
         if: always()
         uses: actions/upload-artifact@v6
         with:

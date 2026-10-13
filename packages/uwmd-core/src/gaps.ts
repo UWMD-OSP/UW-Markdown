@@ -7,14 +7,22 @@
 //   - Merges with an existing `gaps` section (deduping by section + path).
 //   - Summarizes the resulting list relative to a current stage.
 
-import { STAGE_REQUIREMENTS } from './protocol.js';
-import { deepGet } from './parser.js';
-import type { DealStage, ParsedUWFile, UWBlock } from './types.js';
-import { blockOverrides } from './metadata.js';
-import { readGapsContent, type GapItem, type GapReason, type GapSummary, type GapsContent } from './gaps-content.js';
+import {
+  STAGE_REQUIREMENTS,
+  deepGet,
+  type DealStage,
+  type ParsedUWFile,
+  type UWBlock,
+  blockOverrides,
+  readGapsContent,
+  type GapItem,
+  type GapReason,
+  type GapSummary,
+  type GapsContent,
+} from '@uwmd/verify';
 
-// The gaps section's content types and its reader live in gaps-content.ts
-// (standard side, RFC 0083: the validator reads them); inference and
+// The gaps section's content types and its reader live in `@uwmd/verify`
+// (gaps-content.ts, RFC 0083: the validator reads them); inference and
 // summarization stay here.
 export type { GapItem, GapReason, GapSummary, GapsContent };
 export { readGapsContent };

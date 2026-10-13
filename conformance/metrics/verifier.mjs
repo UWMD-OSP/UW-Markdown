@@ -1,14 +1,15 @@
-// A lender with only the standard: no packs, defaults, cascade, or core barrel.
-// Verification is `verifyStatedMetrics` (RFC 0083 §2), which uses only the
-// reader, the safe-expression evaluator and the metric dictionary. This file
-// keeps the fixture plumbing: discovering examples, the Lite anchor view and
-// the statement bindings.
+// A lender with only the standard: `@uwmd/verify`, and nothing of `@uwmd/core`
+// (no defaults, cascade, display formatting or core barrel). Verification is
+// `verifyStatedMetrics` (RFC 0083 §2), which uses only the reader, the
+// safe-expression evaluator and the metric dictionary. This file keeps the
+// fixture plumbing: discovering examples, the Lite anchor view and the
+// statement bindings. The package entry supplies the public API; the
+// single-metric comparison `verifyStatedMetric` is module-level, so it comes
+// from the same build's `metric-verification.js`.
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { parseUWFile } from '../../packages/uwmd-core/dist/parser.js';
-import { parseUWLite } from '../../packages/uwmd-core/dist/lite.js';
-import { getStatedDecimals } from '../../packages/uwmd-core/dist/calc/stated-precision.js';
-import { verifyStatedMetric, verifyStatedMetrics } from '../../packages/uwmd-core/dist/metric-verification.js';
+import { getStatedDecimals, parseUWFile, parseUWLite, verifyStatedMetrics } from '../../packages/uwmd-verify/dist/index.js';
+import { verifyStatedMetric } from '../../packages/uwmd-verify/dist/metric-verification.js';
 
 export { verifyStatedMetric };
 

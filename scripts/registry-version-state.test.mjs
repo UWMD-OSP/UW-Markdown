@@ -7,8 +7,8 @@ const reply = (status, body) => async () => new Response(JSON.stringify(body), {
 const pkg = '@uwmd/lake';
 const version = '0.2.9';
 
-test('all seven intended packages skip a confirmed existing version', async () => {
-  assert.equal(RELEASE_PACKAGES.length, 7);
+test('all eight intended packages skip a confirmed existing version', async () => {
+  assert.equal(RELEASE_PACKAGES.length, 8);
   for (const { name } of RELEASE_PACKAGES) {
     assert.equal(await registryVersionState(name, version, reply(200, { name, versions: { [version]: { name, version } } })), 'published');
   }

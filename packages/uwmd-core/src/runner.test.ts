@@ -1,7 +1,7 @@
 // Runner tests — verify the write path produces valid, round-trippable .uw.md
 
 import { describe, it, expect } from 'vitest';
-import { parseUWFile, getSection } from './parser.js';
+import { parseUWFile, getSection, buildMeta as standardBuildMeta } from '@uwmd/verify';
 import { writeAgentBlock, writeErrorEntry, buildMeta } from './runner.js';
 import { resolveValue } from './cascade.js';
 import { buildAgentContext, isContextReady, BANCROFT_LAYERS } from './context.js';
@@ -347,5 +347,11 @@ describe('BANCROFT_LAYERS', () => {
     for (const layer of BANCROFT_LAYERS) {
       expect(layer.writes.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('buildMeta', () => {
+  it('is the same function @uwmd/verify exports (public path unchanged, RFC 0083)', () => {
+    expect(buildMeta).toBe(standardBuildMeta);
   });
 });

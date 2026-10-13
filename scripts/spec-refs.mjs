@@ -72,12 +72,15 @@ export function headingIndex(text) {
   return { labels, anchors };
 }
 
+/** The executable protocol, whose spec_ref values this checks (in `@uwmd/verify`, RFC 0083). */
+export const PROTOCOL_TS = 'packages/uwmd-verify/src/protocol.ts';
+
 /** "V.7-§V.8" and "2.4–§2.5" name both endpoints. */
 const endpoints = (target) => target.split(/\s*[-–]\s*§?\s*/).filter(Boolean);
 
 /**
  * Collect problems. `files` maps a repo-relative path to its text: every
- * spec/**.md, every docs/starter/*.md, and packages/uwmd-core/src/protocol.ts.
+ * spec/**.md, every docs/starter/*.md, and packages/uwmd-verify/src/protocol.ts.
  */
 export function collectSpecRefProblems(files) {
   const problems = [];
@@ -95,7 +98,7 @@ export function collectSpecRefProblems(files) {
   };
 
   // 1. spec_ref values in protocol.ts (remediations and registries).
-  const protocolTs = files['packages/uwmd-core/src/protocol.ts'];
+  const protocolTs = files[PROTOCOL_TS];
   if (protocolTs) {
     for (const m of protocolTs.matchAll(/spec_ref:\s*'([^']*)'/g)) {
       const ref = m[1];
@@ -171,7 +174,7 @@ export function loadSpecRefFiles(root) {
       if (name.endsWith('.md') || (dir === 'spec' && name.endsWith('.schema.json'))) add(`${dir}/${name}`);
     }
   }
-  if (existsSync(join(root, 'packages/uwmd-core/src/protocol.ts'))) add('packages/uwmd-core/src/protocol.ts');
+  if (existsSync(join(root, PROTOCOL_TS))) add(PROTOCOL_TS);
   return files;
 }
 

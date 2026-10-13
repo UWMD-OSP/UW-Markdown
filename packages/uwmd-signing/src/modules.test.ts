@@ -6,7 +6,7 @@ import {
   moduleSigningPayload,
   verifyModuleSignature,
   type ModuleManifest,
-} from '@uwmd/core';
+} from '@uwmd/verify';
 import { generateSigningKeyPair, InMemoryKeyStore } from './keys.js';
 import { createModuleSignatureVerifier, signModule, stampModuleSignature } from './modules.js';
 

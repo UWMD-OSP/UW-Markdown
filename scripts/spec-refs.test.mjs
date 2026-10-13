@@ -34,7 +34,7 @@ test('dangling targets are reported, qualified and bare, in specs and spec_ref v
     [FORMAT]: '# F\n### 2.6 Source Identifiers\nSee Protocol §V.9 and Protocol §V.7, and §2.6 and §9.9.\nStarter guide §V.7 is another document. [x](UW_PROTOCOL.md#nope)\n',
     [PROTOCOL]: '# P\n### V.9 Canonical block JSON\nSee §V.9, §XIV and format §2.6–§2.7. [ok](UW_FORMAT_SPEC.md#26-source-identifiers)\n',
     'docs/starter/display.md': '# D\n### III.1a Display locales (RFC 0001)\n',
-    'packages/uwmd-core/src/protocol.ts': [
+    'packages/uwmd-verify/src/protocol.ts': [
       "spec_ref: 'UW_PROTOCOL.md §V.9'",
       "spec_ref: 'UW_PROTOCOL.md §XIV'",
       "spec_ref: 'docs/starter/display.md §III.1a'",

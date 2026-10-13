@@ -275,6 +275,7 @@ versions advance independently.
 |---|---|---|
 | `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
 | UW Protocol | **4.0.0** | format 3.0 only; RFC 0081 removes every compatibility clause from 3.0.0 and replaces module `requires_tier` with `requires_conformance`; carried by core/CLI 4.0.0 and 4.0.1 |
+| `@uwmd/verify` | **0.1.0** (unpublished; first publication is part of the next core/CLI release) | format 3.0, protocol 4.0.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` in this tree depends on it exactly and re-exports it |
 | `@uwmd/core` | **4.0.1** | format 3.0, protocol 4.0.0 |
 | `@uwmd/cli` (CLI) | **4.0.1** | `@uwmd/core` 4.0.1 |
 | `@uwmd/excel` | **0.9.16** | `@uwmd/core` 4.0.1, format 3.0, explicit contextual calculations |

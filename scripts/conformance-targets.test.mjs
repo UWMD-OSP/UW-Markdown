@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import Ajv from 'ajv/dist/2020.js';
 import { corpus, index, key, suiteFamily, indexCases, selection, assertCoverage, assertDispatch, portableOwner, portableVocabulary } from './conformance-targets.mjs';
-import { CONFORMANCE_TARGETS } from '../packages/uwmd-core/dist/protocol.js';
+import { CONFORMANCE_TARGETS } from '../packages/uwmd-verify/dist/protocol.js';
 
 const json = path => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
 const cases = readdirSync(new URL('../conformance/runner/cases/', import.meta.url)).filter(f => f.endsWith('.case.json')).map(f => json(`../conformance/runner/cases/${f}`));

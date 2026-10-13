@@ -4,7 +4,7 @@ Syntax highlighting, section folding, document outline, on-save
 validation, and receipt verification for `.uw.md` (UW Lite) and
 `.uwx.md` (UWX) underwriting files.
 
-Backed by the same parser and validator as `@uwmd/core`, so what the
+Backed by `@uwmd/verify`, the same parser and validator `@uwmd/core` re-exports, so what the
 extension flags is exactly what `uwmd validate` flags on the command line
 and what CI gates with.
 

@@ -4,9 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { formatCurrency, formatPercent } from './format.js';
 import * as indexSurface from './index.js';
 import * as browserSurface from './browser.js';
-import { deepGet, getSection, parseUWFile } from './parser.js';
-import * as protocol from './protocol.js';
-import { SOURCE_TAGS } from './protocol.js';
+import { deepGet, getSection, parseUWFile, SOURCE_TAGS } from '@uwmd/verify';
+import * as protocol from '@uwmd/verify';
 import { BUILTIN_VIEW_MODELS, CASCADE_ORDER, DEFAULT_DATE_FORMAT, DEFAULT_NUMBER_FORMAT } from './starter-protocol.js';
 
 describe('starter-protocol — the split from protocol.ts (RFC 0083)', () => {

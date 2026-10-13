@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { parseUWFile } from './parser.js';
+import { parseUWFile } from '@uwmd/verify';
 import { render, UnsupportedRenderFormatError } from './renderer.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

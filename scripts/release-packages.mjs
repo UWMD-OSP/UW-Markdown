@@ -3,6 +3,8 @@
 // 2.17.1 through 2.21.x, nine (adding Excel, report and lake) from 2.22.0
 // through 3.x, and seven from 4.0.0, when RFC 0081 deleted both module
 // packages. These boundaries record history; they do not select a next version.
+// The one exception is the eight-package scope, which RFC 0083 fixes ahead of
+// time: `@uwmd/verify` first publishes with core/CLI 4.1.0 (RFC 0083 Decisions).
 export const ORIGINAL_RELEASE_PACKAGES = Object.freeze([
   { name: '@uwmd/core', dir: 'packages/uwmd-core', row: '@uwmd/core' },
   { name: '@uwmd/cli', dir: 'packages/uwmd-cli', row: '@uwmd/cli (CLI)' },
@@ -28,8 +30,19 @@ export const ADDED_RELEASE_PACKAGES = Object.freeze([
   { name: '@uwmd/lake', dir: 'packages/uwmd-lake', row: '@uwmd/lake' },
 ]);
 
-/** The seven packages this tree publishes (RFC 0081: from 4.0.0). */
-export const RELEASE_PACKAGES = Object.freeze([...ORIGINAL_RELEASE_PACKAGES, ...ADDED_RELEASE_PACKAGES]);
+// The reference implementation of the standard (RFC 0083), split out of core.
+// It pins no @uwmd/* package and core pins it exactly, so it publishes first.
+// A new package name needs a trusted publisher on npmjs.com before the first
+// tag that publishes it; that is an owner step (wiki 11).
+export const VERIFY_RELEASE_PACKAGE = Object.freeze(
+  { name: '@uwmd/verify', dir: 'packages/uwmd-verify', row: '@uwmd/verify' },
+);
+
+/** The seven packages 4.0.x publishes (RFC 0081: from 4.0.0). */
+const SEVEN_PACKAGE_SCOPE = Object.freeze([...ORIGINAL_RELEASE_PACKAGES, ...ADDED_RELEASE_PACKAGES]);
+
+/** The eight packages this tree publishes, in publication order (RFC 0083: from 4.1.0). */
+export const RELEASE_PACKAGES = Object.freeze([VERIFY_RELEASE_PACKAGE, ...SEVEN_PACKAGE_SCOPE]);
 
 const SIX_PACKAGE_SCOPE = Object.freeze([...ORIGINAL_RELEASE_PACKAGES, ...RETIRED_MODULE_PACKAGES]);
 const NINE_PACKAGE_SCOPE = Object.freeze([...SIX_PACKAGE_SCOPE, ...ADDED_RELEASE_PACKAGES]);
@@ -39,7 +52,8 @@ export function releasePackagesForGeneration(version) {
   if (!match) throw new Error(`Invalid release generation: ${version}`);
   const [major, minor, patch] = match.slice(1).map(Number);
   const after = (m, n, p) => major > m || (major === m && (minor > n || (minor === n && patch > p)));
-  if (major >= 4) return RELEASE_PACKAGES;
+  if (major > 4 || (major === 4 && minor >= 1)) return RELEASE_PACKAGES;
+  if (major === 4) return SEVEN_PACKAGE_SCOPE;
   // A 2.21.x patch keeps the six-package scope; 2.22.0 through 3.x is nine.
   if (major === 3 || (major === 2 && minor > 21)) return NINE_PACKAGE_SCOPE;
   return after(2, 17, 0) ? SIX_PACKAGE_SCOPE : ORIGINAL_RELEASE_PACKAGES;

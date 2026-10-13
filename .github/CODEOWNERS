@@ -18,7 +18,8 @@
 /spec/schemas/                          @jaredmaxey
 
 # ── Reference library ───────────────────────────────────────────────────────
-/packages/uwmd-core/src/protocol.ts     @jaredmaxey
+/packages/uwmd-verify/src/protocol.ts   @jaredmaxey
+/packages/uwmd-verify/                  @jaredmaxey
 /packages/uwmd-core/                    @jaredmaxey
 
 # ── Conformance corpus + runner ────────────────────────────────────────────

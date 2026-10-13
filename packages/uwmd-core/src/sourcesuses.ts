@@ -13,8 +13,7 @@
 // (multifamily worked example), plus per-bucket `sources.total` / `uses.total`.
 // Whichever total keys already exist in the block are written back.
 
-import { blockPayload } from './parser.js';
-import type { ParsedUWFile, UWBlock } from './types.js';
+import { blockPayload, type ParsedUWFile, type UWBlock } from '@uwmd/verify';
 import { collector, numOrNull, type DerivedField } from './derived.js';
 
 type Row = Record<string, unknown>;

@@ -2,11 +2,15 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { applyUWMDSourceEdit, createUWMCPApplyEditResult } from './bindings-edit.js';
-import { UWBindingError, uwmdETag } from './bindings.js';
+import {
+  UWBindingError,
+  uwmdETag,
+  stampEnvelopeDigest,
+  toUWEnvelope,
+  parseUWFile,
+} from '@uwmd/verify';
 import * as browserSurface from './browser.js';
-import { stampEnvelopeDigest, toUWEnvelope } from './envelope.js';
 import * as indexSurface from './index.js';
-import { parseUWFile } from './parser.js';
 
 const source = readFileSync(
   resolve(process.cwd(), '..', '..', 'examples', 'Parkview-Apts-Glendale-AZ.uwx.md'),

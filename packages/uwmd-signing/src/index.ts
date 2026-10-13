@@ -1,7 +1,7 @@
 // @uwmd/signing — block and receipt signatures for UW Markdown (RFC 0010).
 //
-// Why this is a separate package: `@uwmd/core` is deliberately
-// zero-cryptography. Signed blocks are for regulated lender data rooms and
+// Why this is a separate package: `@uwmd/verify` and `@uwmd/core` are
+// deliberately zero-cryptography. Signed blocks are for regulated lender data rooms and
 // multi-party deal flow, not the everyday case, and the overwhelming majority
 // of adopters should never take a crypto dependency to read an underwriting
 // file. Core defines the wire shape and the canonical signing input (both

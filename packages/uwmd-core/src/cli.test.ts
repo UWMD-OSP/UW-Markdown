@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
+import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
 
 // These tests exercise built executables, stdout/stderr and exit codes.
 vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });

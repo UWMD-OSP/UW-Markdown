@@ -6,17 +6,25 @@
 // produced the value. See FORMAT_SPEC §3.4 (provisional flag) and §2.6
 // (source tags).
 
-import type { CascadeStep } from './protocol.js';
+import {
+  type CascadeStep,
+  blockPayload,
+  deepGet,
+  resolveSectionBlock,
+  type SectionSelectionOptions,
+  type BlockRole,
+  type ParsedUWFile,
+  type SourceTag,
+  type UWBlock,
+  type UWFieldOverride,
+  blockOverrides,
+  type MarketDataLookup,
+} from '@uwmd/verify';
 import { getAssetClassDefaults, type DefaultRange } from './defaults.js';
-import { blockPayload, deepGet } from './parser.js';
-import { resolveSectionBlock, type SectionSelectionOptions } from './section-resolution.js';
-import type { BlockRole, ParsedUWFile, SourceTag, UWBlock, UWFieldOverride } from './types.js';
-import { blockOverrides } from './metadata.js';
-import type { MarketDataLookup } from './market-data.js';
 
 // ─── Inputs ──────────────────────────────────────────────────────────────────
 
-// `MarketDataLookup` lives in market-data.ts (standard side, RFC 0083); the
+// `MarketDataLookup` lives in `@uwmd/verify` (market-data.ts, RFC 0083); the
 // cascade keeps exporting it under the same name.
 export type { MarketDataLookup };
 

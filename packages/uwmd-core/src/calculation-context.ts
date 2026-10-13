@@ -1,8 +1,6 @@
 // Validated transport for the existing CalcEvaluationContext input options.
 // This helper performs no lookup, defaulting, canonicalization or financial math.
-import type { CalcEvaluationContext } from './protocol.js';
-import { isBlockedSegment } from './parser.js';
-import { CalcError } from './calc/errors.js';
+import { type CalcEvaluationContext, isBlockedSegment, CalcError } from '@uwmd/verify';
 
 type ContextInputs = Pick<CalcEvaluationContext, 'sectionVariants' | 'overrides'>;
 

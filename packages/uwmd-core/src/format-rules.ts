@@ -13,7 +13,7 @@
 // format.ts byte-identical; its row here exists for completeness and for
 // surfaces that want the rules as data.
 
-import type { SupportedLocale } from './protocol.js';
+import type { SupportedLocale } from '@uwmd/verify';
 
 /** One locale's display conventions. */
 export interface LocaleFormatRules {

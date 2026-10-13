@@ -1,4 +1,4 @@
-import { toBuiltinAssetClass } from './types.js';
+import { toBuiltinAssetClass, type AssetClass } from '@uwmd/verify';
 // Asset-class default tables — starter guide §V.7-§V.8
 //
 // Published starter defaults for the cascade resolver. Each entry is a
@@ -7,7 +7,6 @@ import { toBuiltinAssetClass } from './types.js';
 //
 // Bumping a default's range materially → bump table `version`.
 
-import type { AssetClass } from './types.js';
 
 export type DefaultUnit = 'percent' | 'currency' | 'ratio' | 'months' | 'count';
 

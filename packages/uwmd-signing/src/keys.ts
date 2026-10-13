@@ -5,7 +5,7 @@
 // document it authenticates proves nothing. What this file defines is the
 // narrow thing the spec does need: how a `kid` resolves to usable key material.
 
-import type { UWSignatureAlgorithm } from '@uwmd/core';
+import type { UWSignatureAlgorithm } from '@uwmd/verify';
 import { algorithmParams, isKnownAlgorithm, subtle } from './algorithms.js';
 import { fromBase64Any } from './base64.js';
 import { SigningError } from './errors.js';

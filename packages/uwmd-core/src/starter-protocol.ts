@@ -4,12 +4,17 @@
 // cascade order, the agent host and capability tokens serve the non-normative
 // starter products in docs/starter/, not verification. They were part of
 // `protocol.ts`; they live here so the standard side of the library
-// (`protocol.ts` and everything it reaches) never depends on them.
+// (`@uwmd/verify`: `protocol.ts` and everything it reaches) never depends on them.
 // `@uwmd/core` exports every name below unchanged from `index.ts` and
 // `browser.ts`.
 
-import { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
-import type { CascadeStep, EditAuthority, SectionViewModel, SupportedLocale } from './protocol.js';
+import {
+  BUILTIN_CLASS_CONTENT,
+  type CascadeStep,
+  type EditAuthority,
+  type SectionViewModel,
+  type SupportedLocale,
+} from '@uwmd/verify';
 
 // ─── Display conventions (Part III of the spec) ───────────────────────────────
 

@@ -1,8 +1,14 @@
 // CLI-only boundary over the existing dated-return verifier; no new math.
-import { parseUWFile } from './parser.js';
-import { periodSection, periodPayload } from './period-path.js';
-import { CalcError } from './calc/errors.js';
-import { CASH_FLOW_KINDS, datedFlowsOf, verifyCashFlowSeries, type CashFlowSeries } from './cash-flow-series.js';
+import {
+  parseUWFile,
+  periodSection,
+  periodPayload,
+  CalcError,
+  CASH_FLOW_KINDS,
+  datedFlowsOf,
+  verifyCashFlowSeries,
+  type CashFlowSeries,
+} from '@uwmd/verify';
 
 const section = 'cash_flow_series';
 const metrics = ['total_net', 'moic', 'xnpv', 'xirr'] as const;

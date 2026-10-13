@@ -6,7 +6,7 @@ Reference PostgreSQL/JSONB lake adapter for UW Markdown — the implementation o
 This package is **not part of the UW Markdown protocol**. It is a host-side
 integration: it reads canonical outputs the standard already produces and plans
 idempotent SQL an adopter runs with their own database client. Nothing here
-adds a PostgreSQL dependency to `@uwmd/core`, and database availability is never
+adds a PostgreSQL dependency to `@uwmd/verify` or `@uwmd/core`, and database availability is never
 part of validation.
 
 > In the release workflow from 0.2.10, which pairs with `@uwmd/core` 3.0.0:

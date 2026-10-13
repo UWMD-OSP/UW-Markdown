@@ -36,10 +36,11 @@ test('new RFCs are discovered without script edits; special routes survive', () 
 test('site versions track independent package and standard versions', () => {
   const root = mkdtempSync(join(tmpdir(), 'uwmd-versions-'));
   try {
-    mkdirSync(join(root, 'packages/uwmd-core/src'), { recursive: true });
+    mkdirSync(join(root, 'packages/uwmd-core'), { recursive: true });
+    mkdirSync(join(root, 'packages/uwmd-verify/src'), { recursive: true });
     writeFileSync(join(root, 'packages/uwmd-core/package.json'), JSON.stringify({ version: '7.4.2' }));
-    const path = join(root, 'packages/uwmd-core/src/protocol.ts');
-    writeFileSync(join(root, 'packages/uwmd-core/src/types.ts'), "export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['3.0'] as const);");
+    const path = join(root, 'packages/uwmd-verify/src/protocol.ts');
+    writeFileSync(join(root, 'packages/uwmd-verify/src/types.ts'), "export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['3.0'] as const);");
     writeFileSync(path, "export const FORMAT_VERSION = '3.0' as const;\nexport const PROTOCOL_VERSION = '4.1.0' as const;\nexport const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.1.0'] as const);");
     assert.deepEqual(docsVersions(root), { core: '7.4.2', format: '3.0', protocol: '4.1.0', specFormat: '3.0', specProtocol: '4.1.0' });
     // The supported versions ahead of the release labels label the normative pages.
@@ -92,10 +93,11 @@ test('a prepared-but-unpublished core version is kept apart from publication sta
   const manifest = (version) =>
     writeFileSync(join(root, 'packages/uwmd-core/package.json'), JSON.stringify({ version }));
   try {
-    mkdirSync(join(root, 'packages/uwmd-core/src'), { recursive: true });
-    writeFileSync(join(root, 'packages/uwmd-core/src/protocol.ts'),
+    mkdirSync(join(root, 'packages/uwmd-core'), { recursive: true });
+    mkdirSync(join(root, 'packages/uwmd-verify/src'), { recursive: true });
+    writeFileSync(join(root, 'packages/uwmd-verify/src/protocol.ts'),
       "export const FORMAT_VERSION = '2.0' as const;\nexport const PROTOCOL_VERSION = '2.22.0' as const;\nexport const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['2.22.0'] as const);");
-    writeFileSync(join(root, 'packages/uwmd-core/src/types.ts'),
+    writeFileSync(join(root, 'packages/uwmd-verify/src/types.ts'),
       "export const SUPPORTED_FORMAT_VERSIONS = Object.freeze(['2.0'] as const);");
     writeFileSync(join(root, 'CHANGELOG.md'), [
       '## [2.18.0] - 2026-11-01', '', '### Added', '',

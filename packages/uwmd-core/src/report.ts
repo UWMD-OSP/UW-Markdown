@@ -8,10 +8,16 @@
 // Every number is read from the file (engine/pack output); nothing is computed
 // here beyond simple per-unit display divisions.
 
-import type { ParsedUWFile, UWBlock } from './types.js';
-import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { isCurrencyCode, resolveDealSize } from './protocol.js';
-import { validateUWFile } from './validator.js';
+import {
+  type ParsedUWFile,
+  type UWBlock,
+  getSection,
+  getSectionVariant,
+  deepGet,
+  isCurrencyCode,
+  resolveDealSize,
+  validateUWFile,
+} from '@uwmd/verify';
 import { InvalidCurrencyCodeError } from './renderer.js';
 import type { RenderTier } from './renderer.js';
 import {

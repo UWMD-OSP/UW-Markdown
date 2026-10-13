@@ -2,9 +2,13 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { readInFile, resolveValue, type CascadeContext } from './cascade.js';
-import { parseUWFile } from './parser.js';
-import { evaluateCalc } from './calc/index.js';
-import type { ParsedUWFile, SourceTag, UWBlock } from './types.js';
+import {
+  parseUWFile,
+  evaluateCalc,
+  type ParsedUWFile,
+  type SourceTag,
+  type UWBlock,
+} from '@uwmd/verify';
 
 /**
  * A deliberately synthetic asset class that is not — and must never become — a

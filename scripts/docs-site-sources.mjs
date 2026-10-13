@@ -22,7 +22,9 @@ export function rfcCopies(repoRoot) {
 }
 
 export function docsVersions(repoRoot) {
-  const source = (path) => readFileSync(join(repoRoot, 'packages/uwmd-core/src', path), 'utf8');
+  // The protocol and format constants are @uwmd/verify's (RFC 0083); the core
+  // version is the starter toolkit's own manifest.
+  const source = (path) => readFileSync(join(repoRoot, 'packages/uwmd-verify/src', path), 'utf8');
   const protocolSource = source('protocol.ts');
   const read = (text, name, pattern) => {
     const value = new RegExp(`export const ${name} = ${pattern}`).exec(text)?.[1];

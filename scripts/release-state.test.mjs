@@ -290,6 +290,17 @@ test('Excel, report and lake join the publication scope after the six-package 2.
   assert.equal(names[0], '@uwmd/core');
 });
 
+test('@uwmd/verify joins the publication scope after the seven-package 4.0.x generations, publishing first', () => {
+  const seven = ['@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch', '@uwmd/excel', '@uwmd/report', '@uwmd/lake'];
+  for (const version of ['4.0.0', '4.0.1', '4.0.2', '4.0.1-rc.1']) {
+    assert.deepEqual(releasePackagesForGeneration(version).map((pkg) => pkg.name), seven);
+  }
+  // RFC 0083: core pins @uwmd/verify exactly, so verify publishes before it.
+  for (const version of ['4.1.0', '4.1.0-rc.1', '4.2.3', '5.0.0']) {
+    assert.deepEqual(releasePackagesForGeneration(version).map((pkg) => pkg.name), ['@uwmd/verify', ...seven]);
+  }
+});
+
 test('future prepared/tagged generations require both official module rows and exact core pairings', () => {
   for (const tag of [undefined, 'v2.17.1']) {
     assert.deepEqual(checkReleaseState({ ...NEXT_PREPARED, tag }).failures, []);

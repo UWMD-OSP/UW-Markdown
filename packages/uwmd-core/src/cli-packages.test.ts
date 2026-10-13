@@ -20,9 +20,7 @@ import {
   cmdPackageToContext,
   cmdPackageVerify,
 } from './cli-packages.js';
-import type { UWDealPackageManifest } from './deal-package.js';
-import { encodeUWDealPackageZip } from './deal-package-zip.js';
-import { sha256BytesHex } from './integrity.js';
+import { type UWDealPackageManifest, encodeUWDealPackageZip, sha256BytesHex } from '@uwmd/verify';
 
 const encoder = new TextEncoder();
 const DEAL_TEXT = "---\nuw_version: \"3.0\"\ndeal_id: d1\n---\n";

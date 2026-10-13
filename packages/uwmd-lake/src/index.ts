@@ -2,7 +2,7 @@
  * `@uwmd/lake` — the RFC 0049 reference PostgreSQL/JSONB lake adapter.
  *
  * This package is **not** part of the UW Markdown protocol and adds no database
- * dependency to `@uwmd/core`. It is a projection target: it reads canonical
+ * dependency to `@uwmd/verify` or `@uwmd/core`. It is a projection target: it reads canonical
  * outputs the standard already defines (envelopes, `block_values` facts,
  * receipts, package manifests) and plans idempotent, parameterized SQL that an
  * adopter executes with their own client.

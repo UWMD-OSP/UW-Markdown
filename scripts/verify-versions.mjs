@@ -22,8 +22,10 @@
 //   5. The protocol document's status-line and §0.3 version labels equal the
 //      matrix and executable protocol constant.
 //
-// `CORE_VERSION` vs the core manifest is already covered by version.test.ts and
-// is deliberately not repeated here.
+// `CORE_VERSION` vs the core manifest and `VERIFY_VERSION` vs the verify
+// manifest are already covered by each package's version.test.ts and are
+// deliberately not repeated here. The protocol constants live in
+// `@uwmd/verify`'s protocol.ts (RFC 0083).
 //
 // Run: npm run verify-versions
 
@@ -88,6 +90,7 @@ function statedVersion(label) {
 // ── 1. Package and tool rows match their manifests ───────────────────────────
 
 const MANIFEST_ROWS = [
+  { label: '@uwmd/verify', manifest: 'packages/uwmd-verify/package.json' },
   { label: '@uwmd/core', manifest: 'packages/uwmd-core/package.json' },
   { label: '@uwmd/cli (CLI)', manifest: 'packages/uwmd-cli/package.json' },
   { label: '@uwmd/excel', manifest: 'packages/uwmd-excel/package.json' },
@@ -117,7 +120,8 @@ for (const { label, manifest } of MANIFEST_ROWS) {
 
 // ── 2 & 3. Spec rows match the constants the library actually emits ──────────
 
-const protocolSrc = read('packages/uwmd-core/src/protocol.ts');
+const PROTOCOL_SOURCE = 'packages/uwmd-verify/src/protocol.ts';
+const protocolSrc = read(PROTOCOL_SOURCE);
 
 /** Read `export const NAME = '...'` out of protocol.ts. */
 function constant(name) {
@@ -178,7 +182,7 @@ if (pairChecks > 0) {
 
 const protocolDoc = read('spec/UW_PROTOCOL.md');
 // The one supported protocol (RFC 0081 D1) is what the document describes.
-const authoritativeProtocol = read('packages/uwmd-core/src/protocol.ts').match(/SUPPORTED_PROTOCOL_VERSIONS = Object\.freeze\(\['([^']+)'\]/)?.[1] ?? statedVersion('UW Protocol');
+const authoritativeProtocol = read(PROTOCOL_SOURCE).match(/SUPPORTED_PROTOCOL_VERSIONS = Object\.freeze\(\['([^']+)'\]/)?.[1] ?? statedVersion('UW Protocol');
 const PROTOCOL_DOC_LABELS = [
   {
     label: 'protocol status line',

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseUWFile, toUWEnvelope } from '@uwmd/core';
+import { parseUWFile, toUWEnvelope } from '@uwmd/verify';
 import { describe, expect, it } from 'vitest';
 import { lakeInputFromEnvelope, readBatchFactJSONL, readBlockValuesCSV } from './ingest.js';
 

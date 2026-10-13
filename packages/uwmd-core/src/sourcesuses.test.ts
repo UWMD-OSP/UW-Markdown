@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { blockPayload, parseUWFile } from './parser.js';
-import type { UWBlock } from './types.js';
+import { blockPayload, parseUWFile, type UWBlock } from '@uwmd/verify';
 import { deriveSourcesUses } from './sourcesuses.js';
 
 // A Format 3.0 document with no debt_structure: no hedge premium enters uses.

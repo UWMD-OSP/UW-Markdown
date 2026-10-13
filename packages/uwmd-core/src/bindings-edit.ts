@@ -1,6 +1,6 @@
 // Source-edit bindings wired to the starter editor (RFC 0083).
 //
-// `bindings.ts` is standard side: it owns the semantic If-Match check and the
+// `@uwmd/verify`'s `bindings.ts` is the standard side: it owns the semantic If-Match check and the
 // envelope, and takes the edit engine as an injected adapter. These are the
 // `applyUWMDSourceEdit` and `createUWMCPApplyEditResult` that `@uwmd/core`
 // exports, with the starter editor (`applyEditAsync`) as that engine, so their
@@ -12,9 +12,9 @@ import {
   type UWMCPToolResult,
   type UWSourceEditAdapter,
   type UWSourceEditResult,
-} from './bindings.js';
+  type EditOperation,
+} from '@uwmd/verify';
 import { applyEditAsync, type EditContext, type EditOptions } from './editor.js';
-import type { EditOperation } from './protocol.js';
 
 /** The starter editor as a source-edit adapter. */
 function starterEditor(context: EditContext, options: EditOptions): UWSourceEditAdapter {

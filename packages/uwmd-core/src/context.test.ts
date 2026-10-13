@@ -7,7 +7,7 @@ import {
   isContextReady,
 } from './context.js';
 import { generateBlankUWFile } from './init.js';
-import { parseUWFile } from './parser.js';
+import { parseUWFile } from '@uwmd/verify';
 
 describe('agent context helpers', () => {
   const parsed = parseUWFile(generateBlankUWFile({ dealId: 'uw_2026_CONTEXT' }));

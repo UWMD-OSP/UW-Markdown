@@ -13,7 +13,7 @@
 // Token estimates use the chars/4 approximation. See FEEDING-UWMD-TO-AN-LLM
 // docs page for cache-strategy guidance.
 
-import type { ParsedUWFile, UWBlock } from './types.js';
+import type { ParsedUWFile, UWBlock } from '@uwmd/verify';
 import { compact } from './compactor.js';
 
 export type ContextProfile = 'summary' | 'live' | 'compact' | 'full' | 'relevant';

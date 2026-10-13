@@ -1,4 +1,4 @@
-// Regenerate packages/uwmd-core/src/metric-dictionary.ts from the normative
+// Regenerate packages/uwmd-verify/src/metric-dictionary.ts from the normative
 // metric dictionary, spec/metrics/builtin.json (RFC 0083 §1: the dictionary
 // ships in the package as data). `metric-dictionary.test.ts` fails when the two
 // differ, so run this after any change to builtin.json:
@@ -31,5 +31,5 @@ function deepFreeze<T>(value: T): T {
 export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDictionary>(${JSON.stringify(dictionary, null, 2)});
 `;
 
-writeFileSync(join(root, 'packages/uwmd-core/src/metric-dictionary.ts'), source);
-console.log('wrote packages/uwmd-core/src/metric-dictionary.ts');
+writeFileSync(join(root, 'packages/uwmd-verify/src/metric-dictionary.ts'), source);
+console.log('wrote packages/uwmd-verify/src/metric-dictionary.ts');

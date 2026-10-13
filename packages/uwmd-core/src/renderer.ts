@@ -3,11 +3,20 @@
 // PDF and DOCX require dedicated external rendering pipelines.
 // Spec: UW_FORMAT_SPEC.md §6.4
 
-import type { ParsedUWFile, UWBlock, ValidationResult } from './types.js';
-import { getSection, getSectionVariant, deepGet } from './parser.js';
-import { validateUWFile } from './validator.js';
-import { resolveDealSize, isSupportedLocale, isCurrencyCode, REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
-import type { SupportedLocale } from './protocol.js';
+import {
+  type ParsedUWFile,
+  type UWBlock,
+  type ValidationResult,
+  getSection,
+  getSectionVariant,
+  deepGet,
+  validateUWFile,
+  resolveDealSize,
+  isSupportedLocale,
+  isCurrencyCode,
+  type SupportedLocale,
+} from '@uwmd/verify';
+import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
 import { BUILTIN_FORMAT_RULES, formatNumberWithRules } from './format-rules.js';
 import {
   formatCurrency,

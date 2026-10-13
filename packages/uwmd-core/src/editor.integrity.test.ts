@@ -3,9 +3,13 @@
 import { describe, expect, it } from 'vitest';
 import { applyEdit, applyEditAsync } from './editor.js';
 import type { EditContext } from './editor.js';
-import { parseUWFile, getSection } from './parser.js';
-import { computeBlockHash, verifyChain } from './integrity.js';
-import type { EditOperation } from './protocol.js';
+import {
+  parseUWFile,
+  getSection,
+  computeBlockHash,
+  verifyChain,
+  type EditOperation,
+} from '@uwmd/verify';
 
 function stampFixtureHash(source: string, hash: string): string {
   return source.replace(/(^```json uw:section=property[^\n]*\n)([\s\S]*?)(^```)/m, (_match, open, raw, close) => {

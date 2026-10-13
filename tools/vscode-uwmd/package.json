@@ -66,7 +66,7 @@
         "uwmd.validate.onSave": {
           "type": "boolean",
           "default": true,
-          "description": "Run @uwmd/core validation when a .uw.md file is saved and surface issues as diagnostics."
+          "description": "Run @uwmd/verify validation when a .uw.md file is saved and surface issues as diagnostics."
         },
         "uwmd.validate.onChange": {
           "type": "boolean",
@@ -99,7 +99,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@uwmd/core": "file:../../packages/uwmd-core"
+    "@uwmd/verify": "file:../../packages/uwmd-verify"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

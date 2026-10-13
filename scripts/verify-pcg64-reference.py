@@ -15,7 +15,7 @@ except ModuleNotFoundError:
     raise SystemExit('This optional maintainer check requires NumPy 1.26.4; normal npm tests do not.') from None
 
 ROOT = Path(__file__).resolve().parents[1]
-FIXTURE = ROOT / 'packages/uwmd-core/src/calc/fixtures/pcg64-reference.json'
+FIXTURE = ROOT / 'packages/uwmd-verify/src/calc/fixtures/pcg64-reference.json'
 MODULUS = 1 << 128
 # pcg-c's two uint64 halves, not constants imported from the TypeScript under test.
 INCREMENT = (6364136223846793005 << 64) | 1442695040888963407

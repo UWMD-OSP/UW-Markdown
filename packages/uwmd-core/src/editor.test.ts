@@ -1,11 +1,15 @@
 // Editor tests — Tier-2 dispatcher behavior per UW_PROTOCOL.md §V.
 
 import { describe, it, expect } from 'vitest';
-import { parseUWFile, getSection } from './parser.js';
+import {
+  parseUWFile,
+  getSection,
+  type EditOperation,
+  type EditPolicy,
+  BUILTIN_EDIT_POLICIES,
+} from '@uwmd/verify';
 import { applyEdit, resolvePolicy } from './editor.js';
 import type { EditContext, EditResult } from './editor.js';
-import type { EditOperation, EditPolicy } from './protocol.js';
-import { BUILTIN_EDIT_POLICIES } from './protocol.js';
 
 // ─── Shared fixture ───────────────────────────────────────────────────────────
 // A minimal but realistic .uw.md with one canonical block and a pipeline_log.

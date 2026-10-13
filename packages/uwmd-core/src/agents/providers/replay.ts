@@ -21,7 +21,7 @@
 //
 // No vendor SDK, no node built-ins: this file is safe wherever core runs.
 
-import { canonicalize } from '../../integrity-canonical.js';
+import { canonicalize } from '@uwmd/verify';
 import {
   AgentProviderError,
   type AgentCompletion,

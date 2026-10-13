@@ -10,7 +10,7 @@ import {
   type UWBlock,
   type UWBlockSignature,
   type UWReceipt,
-} from '@uwmd/core';
+} from '@uwmd/verify';
 import { algorithmParams, isKnownAlgorithm, subtle } from './algorithms.js';
 import { fromBase64Url, utf8 } from './base64.js';
 import type { KeyStore } from './keys.js';
