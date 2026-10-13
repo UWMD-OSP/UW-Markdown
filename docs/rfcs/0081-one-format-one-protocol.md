@@ -34,13 +34,13 @@ affects:
 # RFC 0081: One format, one protocol: remove backward compatibility (pre-release cleanup)
 
 **Accepted 2026-10-11.** A coding agent wrote this RFC from the owner's
-direction of 2026-10-11 (Product principle 5, D1â€“D14). It was drafted in PR
+direction of 2026-10-11 (Product principle 5, D1–D14). It was drafted in PR
 #307, and the owner (Jared) decided its three open gates and the other open
 questions the same day; the answers are recorded in
 [Owner decisions at acceptance](#owner-decisions-at-acceptance-2026-10-11).
 Merging PR #307 records acceptance. The change is breaking for the Format
 (3.0), the Protocol (4.0.0) and `@uwmd/core` (4.0.0). Implementation follows in
-Phases 2â€“6 under [Reference implementation](#reference-implementation), each in
+Phases 2–6 under [Reference implementation](#reference-implementation), each in
 its own PR.
 
 ## Summary
@@ -94,8 +94,8 @@ This RFC removes all of it:
   document is.
 - **The compatibility windows were designed for adopters who do not exist.**
   RFC 0009's own timeline planned this step: "v3.0: flat shape removed from
-  the spec â€¦ v3 readers MAY drop the shim". Every other window (RFC 0078's
-  "during 3.x", RFC 0080 Â§5) protects documents that only the owner has, and
+  the spec … v3 readers MAY drop the shim". Every other window (RFC 0078's
+  "during 3.x", RFC 0080 §5) protects documents that only the owner has, and
   the owner's consumers update.
 - **One removal is overdue.** FV `legacy_code` was promised to travel "for one
   release; v1.2 drops `legacy_code` entirely" (`validator.ts:68-70`). Core
@@ -106,8 +106,8 @@ This RFC removes all of it:
 | # | Direction (owner, 2026-10-11) | Inventory facts (verified on `main` at `5b94c9f`) |
 |---|---|---|
 | P5 | Clean breaks beat compatibility layers. No grandfathering, deprecation periods, aliases, shims, migration tools or old-version readers. A breaking normative change gets an RFC and a version bump but no transition plan. | Product principle 5. |
-| D1 | Ship as **Format 3.0, Protocol 4.0.0, `@uwmd/core` 4.0.0**. Format 3.0 is the 2.1 shape minus every alternate spelling, and it is the only supported format. Readers refuse every other `uw_version` with one clear error. `SUPPORTED_FORMAT_VERSIONS = ['3.0']` and `SUPPORTED_PROTOCOL_VERSIONS = ['4.0.0']`. The major supersedes Protocol 3.0's "during 3.x" promises. | `protocol.ts:54` reads `['1.0','1.1','2.0','2.1']`, and no corpus file declares 1.0. `protocol.ts:65` honors `1.14.0, 2.0.0, 2.1.0, 2.2.0, 2.25.0, 3.0.0`. No reader refuses an unknown `uw_version` today; Protocol Â§XII.3 only says to refuse *editing* a newer major. |
-| D2 | **One format spec.** Merge `UW_FORMAT_SPEC_v1.md` (base) and `UW_FORMAT_SPEC_v2.md` (delta) into `spec/UW_FORMAT_SPEC.md`, describing only Format 3.0, and delete both old files. Rename the protocol to `spec/UW_PROTOCOL.md`. Remove the 34 "Moved to â€¦ starter products guide" stubs; the starter guide is their home. | All 34 stubs are in `UW_PROTOCOL_v1.md` (Â§III.1â€“III.6, Â§IV, Â§V.1/V.5â€“V.8, Â§VIII.2b/2c, Â§IX, Â§XIV). |
+| D1 | Ship as **Format 3.0, Protocol 4.0.0, `@uwmd/core` 4.0.0**. Format 3.0 is the 2.1 shape minus every alternate spelling, and it is the only supported format. Readers refuse every other `uw_version` with one clear error. `SUPPORTED_FORMAT_VERSIONS = ['3.0']` and `SUPPORTED_PROTOCOL_VERSIONS = ['4.0.0']`. The major supersedes Protocol 3.0's "during 3.x" promises. | `protocol.ts:54` reads `['1.0','1.1','2.0','2.1']`, and no corpus file declares 1.0. `protocol.ts:65` honors `1.14.0, 2.0.0, 2.1.0, 2.2.0, 2.25.0, 3.0.0`. No reader refuses an unknown `uw_version` today; Protocol §XII.3 only says to refuse *editing* a newer major. |
+| D2 | **One format spec.** Merge `UW_FORMAT_SPEC_v1.md` (base) and `UW_FORMAT_SPEC_v2.md` (delta) into `spec/UW_FORMAT_SPEC.md`, describing only Format 3.0, and delete both old files. Rename the protocol to `spec/UW_PROTOCOL.md`. Remove the 34 "Moved to … starter products guide" stubs; the starter guide is their home. | All 34 stubs are in `UW_PROTOCOL_v1.md` (§III.1–III.6, §IV, §V.1/V.5–V.8, §VIII.2b/2c, §IX, §XIV). |
 | D3 | **Delete on-disk v1 flat `_meta`:** parser shape detection, `META-V2-IN-V1`/`META-V1-IN-V2`, the version-conditional `SRC-01`/`SRC-02` severity, the v1 block-hash branch, the `?? '1.1'` defaults, the v1 `uwmd-block.schema.json` shape and the `section_id` alias. The target is an in-memory `UWMeta` that matches the on-disk nested shape, so no reshape layer survives (Phase 4 decides the mechanics). | `meta-shape.ts` (both reshapes); `parser.ts:361-388`; `validator.ts:3146-3230`; `integrity.ts:83-95, 267, 397`; `envelope.ts:95, 317`; `renderer.ts:373, 435, 731` and `report.ts:290`; shape selection in `editor.ts`/`runner.ts`. About 67 flat-field reads of `block.meta.*` in 17 non-test source files. |
 | D4 | **Delete the migration tooling** after one last use to re-author the corpus: `migrate-to-v2.ts`, `migrate-source-tags.ts`, the CLI `migrate` commands, their exports, the conformance `migrate` suite and RFC 0031's legacy `_meta.source` tags. `uwmd init` writes only Format 3.0 (drop `--format`). | `cli.ts:478-580, 1461-1478, 2071-2072`; `init.ts:13-16, 108-114`; `index.ts:45` and `browser.ts:55` export `migrateSourceTags`/`mapLegacySource`. `migrate-to-v2.ts` writes 2.0, not 3.0. It refuses signed blocks unless given a key (`--resign`) and refuses legacy-tag blocks until `--source-tags` has run. |
 | D5 | **Re-author every fixture and example** to Format 3.0. Signed fixtures are re-signed, receipt fixtures re-issued and content hashes recomputed. **Financial values never change; only envelope and metadata shape do.** That is a hard acceptance criterion: the lender fixture and every calc baseline value must stay identical. | Conformance `.md` files: 435 at 1.1, 227 at 2.0, 54 at 2.1. Examples: 20 at 1.1, 2 at 2.1 (Mesa Gateway, Desert Palms). Also about 26 package, tool and docs fixtures and about 85 inline test strings. Seven corpus files carry signatures; the test key is `conformance/signing/keys/signer-private.jwk.json`. The lender fixture reads 187 verified / 0 failed / 0 unverifiable. |
@@ -116,7 +116,7 @@ This RFC removes all of it:
 | D8 | **Conformance tier names.** Delete `LEGACY_TIER_READINGS`, the `readConformanceTier` aliasing, `ViewerTier`, the numeric `--tier` shorts, legacy `--tier=<suite>`, the deprecation notices, the `legacy_id`/`portable_legacy_ids`/`migration_base`/`before` bookkeeping and the deprecated manifest enum values. Rename the `tier-*` directories, suite ids and portable case ids to content names. Docs-site pages follow, with no redirects. | `protocol.ts:91-142`; `scripts/conformance-targets.mjs:18-45, 99-104`; `conformance/runner/runner.py:64, 402` and `tier-readings.json`; `corpus-index.json`; the deprecated `tier` branch of `implementation-manifest.schema.json`. 319 tracked files outside RFC and release history name a tier. |
 | D9 | **Module tier vocabulary.** Replace `ModuleManifest.requires_tier` (tier-1..4) and the host tier with the Protocol 3.0 vocabulary: `requires_conformance: 'reader' \| 'verifier'` plus an optional `requires_profiles`. | `module-manifest.schema.json` requires `requires_tier`; `modules.ts:30, 138, 596-619, 1018-1024` (`PROTO-MOD-006`, `PROTO-MOD-029`). |
 | D10 | **Remove the legacy scalars that have structured replacements:** `rate_cap_pct` (HDG-04), `uses.interest_reserve`/`uses.operating_reserves` (ESC-03), `uses.renovation_*` (CAPX-05), `cam_cap_pct` (REC-10) and `sale_triggers_reassessment` (TAX-04), so each fact has one way to be stated. Retire the agreement codes. | Four of the replacements could not state the lone fact; G1 below makes them able to. |
-| D11 | **Other deprecated items:** FV `legacy_code`; structured content under `.uw.md` (refuse; no migration); `superseded_blocks` (remove if it only serves compatibility); `getRequiredSections`; the renderer's pre-Â§4.5 NOI keys; the retired-scenario special wording (remove if it is compatibility); receipt_version 1.0 and Lite canonicalization 1.0; `RECEIPT_RESULT_TOLERANCE`. | `validator.ts:66-93`; `source-representation.ts:66-186`; `cli.ts:171-221`; `protocol.ts:772`; `renderer.ts:398-413`; `scenario.ts:20`, `validator.ts:211-222`; `receipts.ts:68, 92`; `UW_RECEIPT_v1.md` Â§10.4 ("MUST accept both `1.0` and `1.1`"); `UW_LITE_SPEC_v1.md` Â§6. |
+| D11 | **Other deprecated items:** FV `legacy_code`; structured content under `.uw.md` (refuse; no migration); `superseded_blocks` (remove if it only serves compatibility); `getRequiredSections`; the renderer's pre-§4.5 NOI keys; the retired-scenario special wording (remove if it is compatibility); receipt_version 1.0 and Lite canonicalization 1.0; `RECEIPT_RESULT_TOLERANCE`. | `validator.ts:66-93`; `source-representation.ts:66-186`; `cli.ts:171-221`; `protocol.ts:772`; `renderer.ts:398-413`; `scenario.ts:20`, `validator.ts:211-222`; `receipts.ts:68, 92`; `UW_RECEIPT_v1.md` §10.4 ("MUST accept both `1.0` and `1.1`"); `UW_LITE_SPEC_v1.md` §6. |
 | D12 | **The Lite bridge emits Format 3.0 for all twelve classes,** and the Lite spec is updated. | `lite-bridge.ts:11, 16, 320-342, 509-520`: ten classes compile to flat 1.1 and two to wrapped nested 2.1. Explicit Lite `uw_version` values pass through. |
 | D13 | **Keep, because these are not compatibility:** `RCP-06/07/10` (a version or engine mismatch is unverifiable), the `INT-08` deprecated algorithms, the generic `canonicalize`/`sha256Hex` digest, the historical release evidence in `docs/releases`, the `releasePackagesForGeneration` history (edited to drop the module packages going forward), Excel's no-MCP-sheet path, and the web viewer (fixed to read the nested shape). | `tools/web-viewer/index.html:161-165` reads only the flat `_meta.section`/`_meta.superseded`. |
 | D14 | **Supersession.** List each compatibility clause this RFC supersedes, and note the partial supersession in each affected RFC's status line. | See [Superseded clauses](#superseded-clauses). |
@@ -145,9 +145,9 @@ all of them:
   message names the declared value and the one supported value. There is no
   partial read, no display-only mode and no tolerance for a newer minor.
 - **Protocol 4.0.0.** The 4.0.0 contract is Protocol 3.0.0 with every
-  compatibility clause below removed, `requires_tier` replaced (Â§6) and the
-  tier-alias machinery gone (Â§8). Â§XII.3 is rewritten: the format-version
-  refusal above replaces "refuse to edit a newer major". Â§XII.4 keeps the
+  compatibility clause below removed, `requires_tier` replaced (§6) and the
+  tier-alias machinery gone (§8). §XII.3 is rewritten: the format-version
+  refusal above replaces "refuse to edit a newer major". §XII.4 keeps the
   protocol-range rule.
 - **`@uwmd/core` 4.0.0** ships with CLI 4.0.0. Other package versions move by
   semver-per-surface at release preparation.
@@ -163,19 +163,19 @@ the RFCs and the CHANGELOG, not in the normative text. Disposition:
 
 | Source | Disposition in `UW_FORMAT_SPEC.md` |
 |---|---|
-| v1 front matter, Part I, Part II (except Â§2.4 body and Â§2.5) | Kept, with the version banner set to 3.0. |
-| v1 Â§2.4 data block | Kept, and states the bare block body (Â§3 below) normatively. |
-| v1 Â§2.5 flat `_meta` table and the "only valid form for 1.x" paragraph | **Replaced** by v2 Â§2 (nested `_meta`) and v2 Â§3 (`_overrides`). |
-| v1 Â§2.6 source identifiers | Kept, without the read-time interpretation, migration notes or legacy-tag tables. The actor grammar is always enforced, and the resolution vocabulary is the v2 Â§4.1 closed set. |
-| v1 Part III provenance model | Kept, with the single block digest rule of Â§3 below. The v1 and v2 digest rules, the migration text and the signature-loss text are deleted. |
-| v1 Part IV section registry | Kept, with the Â§7 field changes, the Â§5 hospitality fields, and the RFC 0080 "Official class sections" appendix moved into Part IV beside the other sections. |
+| v1 front matter, Part I, Part II (except §2.4 body and §2.5) | Kept, with the version banner set to 3.0. |
+| v1 §2.4 data block | Kept, and states the bare block body (§3 below) normatively. |
+| v1 §2.5 flat `_meta` table and the "only valid form for 1.x" paragraph | **Replaced** by v2 §2 (nested `_meta`) and v2 §3 (`_overrides`). |
+| v1 §2.6 source identifiers | Kept, without the read-time interpretation, migration notes or legacy-tag tables. The actor grammar is always enforced, and the resolution vocabulary is the v2 §4.1 closed set. |
+| v1 Part III provenance model | Kept, with the single block digest rule of §3 below. The v1 and v2 digest rules, the migration text and the signature-loss text are deleted. |
+| v1 Part IV section registry | Kept, with the §7 field changes, the §5 hospitality fields, and the RFC 0080 "Official class sections" appendix moved into Part IV beside the other sections. |
 | v1 Part V validation | Kept, with every per-generation clause removed (no "in both format generations", no "warning in 1.x"). |
-| v1 Part VI toolchain | Kept, with the v2 Â§7 amendments applied: no `migrate`, `init` writes 3.0, and the Lite bridge emits 3.0. Â§6.1 parse output drops `superseded_blocks`. |
-| v1 Part VII and Appendices Aâ€“D | Kept. |
-| v2 Â§1 versioning and the one-shape rule | **Replaced** by Â§1 above. With one shape there is nothing to mix. |
-| v2 Â§4 vocabulary changes | Folded into Â§2.6 as plain rules, without the "at 2.0" framing. |
-| v2 Â§5 canonicalization and migration, Â§6 deprecations, Â§8 conformance, Appendix A shape mapping | **Deleted.** Â§3 below gives the digest rule; conformance is described against the renamed corpus. |
-| v2 "Signed block roles" and v2 Â§8 official builtin classes | Moved to their topical homes: Â§2.8 for roles, Â§2.2 and Part IV for classes. |
+| v1 Part VI toolchain | Kept, with the v2 §7 amendments applied: no `migrate`, `init` writes 3.0, and the Lite bridge emits 3.0. §6.1 parse output drops `superseded_blocks`. |
+| v1 Part VII and Appendices A–D | Kept. |
+| v2 §1 versioning and the one-shape rule | **Replaced** by §1 above. With one shape there is nothing to mix. |
+| v2 §4 vocabulary changes | Folded into §2.6 as plain rules, without the "at 2.0" framing. |
+| v2 §5 canonicalization and migration, §6 deprecations, §8 conformance, Appendix A shape mapping | **Deleted.** §3 below gives the digest rule; conformance is described against the renamed corpus. |
+| v2 "Signed block roles" and v2 §8 official builtin classes | Moved to their topical homes: §2.8 for roles, §2.2 and Part IV for classes. |
 
 **Renamed spec files.**
 
@@ -187,7 +187,7 @@ the RFCs and the CHANGELOG, not in the normative text. Disposition:
   - `UW_XML_MAPPING.md`
   - `UW_CSV_BUNDLE.md`
   - `UW_COMPOSITION.md`
-- The protocol's 34 starter stubs are deleted, and the Â§0/Â§I section map points
+- The protocol's 34 starter stubs are deleted, and the §0/§I section map points
   to `docs/starter/` once.
 - Appendix E's worked example re-authors the `org.uwmd.hospitality` manifest
   as a neutral third-party example (`com.example.*`), because there is no
@@ -200,13 +200,13 @@ RFC 0025 / PR #57 failure mode). This is a build-time link map, not a redirect.
 
 ### 3. One block shape, one `_meta` shape, one digest (G2)
 
-**Block body.** A Format 3.0 data block is the fenced JSON object of Â§2.4.
+**Block body.** A Format 3.0 data block is the fenced JSON object of §2.4.
 
 - Its members are the **section payload** plus up to four reserved members:
-  - `_meta` â€” REQUIRED, the first key;
-  - `_role` â€” optional (RFC 0040);
-  - `_overrides` â€” optional (v2 Â§3);
-  - `_notes` â€” optional.
+  - `_meta` — REQUIRED, the first key;
+  - `_role` — optional (RFC 0040);
+  - `_overrides` — optional (v2 §3);
+  - `_notes` — optional.
 - Every other member is payload. A payload member may be named `content` like
   any other field.
 - The section id is carried by the fence annotation (`uw:section`) and by
@@ -216,7 +216,7 @@ RFC 0025 / PR #57 failure mode). This is a build-time link map, not a redirect.
 - `blockPayload()` stops guessing at layout: the payload is the object minus
   the reserved members. The parse projection's wrapped-fence branch
   (`cli.ts:181-191`) is deleted, and the bare-fence projection rule of
-  Protocol Â§II.6a.6 applies unchanged.
+  Protocol §II.6a.6 applies unchanged.
 
 **Envelope.** The Document Envelope (`uw-document-envelope`) keeps its own
 structure. An envelope block is `{ annotation, content, prose? }`, where
@@ -261,7 +261,7 @@ This rule has three consequences:
   (`content_hash`, `section`, `actor`, `timestamp`, `kid`, `signed_at`; RFC
   0010 "What is signed"). A signature therefore still binds the author and
   time to the content. It no longer binds `parent_hash` transitively, which is
-  exactly what RFC 0010 Â§4 intended ("re-rooting a chain after a merge must not
+  exactly what RFC 0010 §4 intended ("re-rooting a chain after a merge must not
   invalidate every prior signature"); its note that the repository did not
   deliver this is resolved.
 - **Chain verification.** `parent_hash` is still compared with the prior
@@ -279,7 +279,7 @@ merge into a single `uwmd-block.schema.json`:
 - `"not": {"required": ["section_id"]}`;
 - other members allowed (the payload, governed by the per-section schemas).
 
-The merged file is written as clean UTF-8, which fixes the `Ã‚Â§` mojibake (owner
+The merged file is written as clean UTF-8, which fixes the `Â§` mojibake (owner
 Q2), and its description no longer mentions `META-*` mixing.
 
 ### 4. No migration tooling
@@ -322,11 +322,11 @@ with their exports, CLI commands, tests and the `migrate` conformance suite.
 
 | Home | Field | Status | Notes |
 |---|---|---|---|
-| `property` | `keys` (integer â‰¥ 0) | as today (primary size, Protocol Â§XIII) | The key count's single home. `hotel_metrics.key_count` and `rent_roll.keys` are removed. |
-| `rent_roll` | `available_room_nights` (integer â‰¥ 0) | **required** by the hospitality class contract (`CLS-04` when `rent_roll` is stated without it) | Keys Ã— days in the period. `rent_roll` itself stays required by the Â§5.1 stage lists (`DQ-06`). |
-| `rent_roll` | `occupied_room_nights` (integer â‰¥ 0) | optional | Input to the dictionary `occupancy`/`adr`. |
-| `rent_roll` | `adr` (number â‰¥ 0) | optional | The stated ADR. Moved from `hotel_metrics.adr`. |
-| `rent_roll` | `occupancy` (fraction, 0â€“1) | optional | The stated occupancy. Moved from `hotel_metrics.occupancy`. |
+| `property` | `keys` (integer ≥ 0) | as today (primary size, Protocol §XIII) | The key count's single home. `hotel_metrics.key_count` and `rent_roll.keys` are removed. |
+| `rent_roll` | `available_room_nights` (integer ≥ 0) | **required** by the hospitality class contract (`CLS-04` when `rent_roll` is stated without it) | Keys × days in the period. `rent_roll` itself stays required by the §5.1 stage lists (`DQ-06`). |
+| `rent_roll` | `occupied_room_nights` (integer ≥ 0) | optional | Input to the dictionary `occupancy`/`adr`. |
+| `rent_roll` | `adr` (number ≥ 0) | optional | The stated ADR. Moved from `hotel_metrics.adr`. |
+| `rent_roll` | `occupancy` (fraction, 0–1) | optional | The stated occupancy. Moved from `hotel_metrics.occupancy`. |
 | `hotel_metrics` | `market_revpar` (number or null) | optional; the section is **optional** | The comp-set RevPAR for the same period, the only fact not stated elsewhere. `adr`, `occupancy`, `available_room_nights` and `key_count` are removed from this section. |
 | `hotel_brand` | `flag`, `franchise_fee_pct_of_rooms`, `marketing_fund_pct`, `loyalty_program_pct`, `term_years` | optional; section optional | Unchanged. |
 | `hotel_food_beverage` | `fb_revenue`, `fb_cogs`, `fb_labor`, `complimentary_breakfast_cost_per_occupied_room` | optional; section optional | Unchanged. |
@@ -374,10 +374,10 @@ the module packages for generations before 4.0.0.
 ### 6. Module manifests: `requires_conformance` and `requires_profiles`
 
 `requires_tier` is removed from `ModuleManifest`, the module-manifest schema,
-`protocol.ts` and Protocol Â§X. Two fields replace it:
+`protocol.ts` and Protocol §X. Two fields replace it:
 
 - **`requires_conformance`** (REQUIRED): `"reader"` or `"verifier"`, the minimum
-  Protocol tier (Â§II.1/Â§II.2) a host must claim to load the module.
+  Protocol tier (§II.1/§II.2) a host must claim to load the module.
   `reader` < `verifier`.
 - **`requires_profiles`** (OPTIONAL): an array of unique members of the closed
   `CONFORMANCE_PROFILES` list. The host must claim every profile listed.
@@ -511,7 +511,7 @@ baseline:
 - **`superseded_blocks`** in `uwmd parse` JSON. The source labels it
   compatibility-only (`cli.ts:171-172`).
 - **`getRequiredSections`.**
-- **The renderer's pre-Â§4.5 NOI keys** (`noiLegacyValue`).
+- **The renderer's pre-§4.5 NOI keys** (`noiLegacyValue`).
 - **The retired-scenario wording.** `RETIRED_SCENARIOS` and its special
   message are removed. A retired value gets the ordinary `DQ-07` warning; the
   open-scenario `DQ-07` rule itself stays.
@@ -532,12 +532,12 @@ baseline:
 | Today | 4.0.0 | Suite id(s) | Why |
 |---|---|---|---|
 | `tier-1-reader/` (`fixtures`, `expected`, `malformed`) | `documents/` | `documents` | The base documents are parsed (Reader), validated (Verifier) and rendered (starter products): 20, 31 and 34 cases, plus 1 integrity case. A `reader/` directory would mislabel 66 of its 86 cases. |
-| `tier-1-reader/v2-fixtures/` (suite `meta-v2`) | removed | â€” | Its shim, one-shape and digest shape-insensitivity cases test deleted behavior. The `META-01` refusals move to `documents/malformed`, and the defaulted-`algorithm` case is retired with the new digest scope. |
+| `tier-1-reader/v2-fixtures/` (suite `meta-v2`) | removed | — | Its shim, one-shape and digest shape-insensitivity cases test deleted behavior. The `META-01` refusals move to `documents/malformed`, and the defaulted-`algorithm` case is retired with the new digest scope. |
 | `tier-2-editor/` | `starter/editor/` | `starter-editor` | 6 starter-products cases. |
 | `tier-3-calc-host/` | `calc/` | `calc` | 96 Verifier cases plus `revpar-basic` (Module). |
 | `tier-3-calc-host/refinement/` | `starter/refinement/` | `starter-refinement` | Starter. |
 | `tier-4-agent-host/` (`fixtures`, `profile`, `replay`) | `starter/agent/` | `starter-agent`, `starter-agent-profile`, `starter-agent-replay` | Starter. |
-| `migrate/`, `modules/runtime/` | removed | â€” | D4, D6. |
+| `migrate/`, `modules/runtime/` | removed | — | D4, D6. |
 
 - Portable case ids keep the `<owner>__<suite>__<scenario>__<op>` pattern
   with the new suite ids, for example
@@ -548,22 +548,22 @@ baseline:
 
 ## Decisions
 
-The calls this RFC makes where D1â€“D14 and the owner's acceptance answers leave
+The calls this RFC makes where D1–D14 and the owner's acceptance answers leave
 a detail open:
 
 | Question | Decision | Why (precedent) |
 |---|---|---|
 | Error for an unsupported or absent `uw_version` | `UNSUPPORTED_FORMAT_VERSION`, parse stage, error. | `UNSUPPORTED_YAML_FEATURE` and `ENVELOPE_UNSUPPORTED_VERSION`; D1's "one clear error". |
-| Wrapper member or flat `_meta` in a 3.0 file | One code, `META-01`. Retire both `META-V*` codes. | Codes are not renamed in place (the `FV_*` â†’ `FV-NN` precedent). The hyphenated `META-*` family already owns block shape. |
+| Wrapper member or flat `_meta` in a 3.0 file | One code, `META-01`. Retire both `META-V*` codes. | Codes are not renamed in place (the `FV_*` → `FV-NN` precedent). The hyphenated `META-*` family already owns block shape. |
 | `SRC-03` | Generalize it to any resolution outside the closed vocabulary. | House pattern of closed vocabularies; the block schema already enumerates `ResolutionTagV2`. |
 | Digest serializer | JCS via the existing `canonicalizeExact`. No `_meta`-aware stripping is needed once `_meta` is excluded whole. | G2 (owner); RFC 0010 "Canonicalization uses RFC 8785 (JCS)". |
 | Receipt version | Keep `1.1` and drop `1.0`. No renumbering. | The receipt shape does not change. `receipts.ts` refuses to stamp a version for a change that did not happen. UWX canonicalization stays `1.0`: envelope canonicalization reads the raw fenced object, and its rule is unchanged. |
 | `superseded_blocks` | Remove. | The source labels it compatibility-only, and it duplicates `superseded`. |
 | Retired scenarios | Remove the special wording and keep the generic `DQ-07`. | RFC 0072 R3's reason for the special wording is compatibility. |
 | `.uw.md` with structured fences | `SOURCE_CONTENT_MISMATCH`. | The existing code for content that contradicts its representation. |
-| Module host vocabulary | As Â§6 states. Reuse `PROTO-MOD-006`/`029` and add no new refusal. | RFC 0078 Â§II tiers; fix-scope discipline. |
+| Module host vocabulary | As §6 states. Reuse `PROTO-MOD-006`/`029` and add no new refusal. | RFC 0078 §II tiers; fix-scope discipline. |
 | Corpus directory names | `documents/`, `calc/`, `starter/{editor,refinement,agent}/`. | RFC 0078 Phase 3 tags owners per case, so directories are named by content. |
-| Key count's home (G3) | `property.keys`, not `rent_roll`. | It is the builtin primary size: Protocol Â§XIII and the dictionary's `price_per_key`/`loan_per_key`/`noi_per_key` read it, and RFC 0080 put every primary size on `property`. G3's "builtin precedent" points here. The other three hotel facts live in `rent_roll`. |
+| Key count's home (G3) | `property.keys`, not `rent_roll`. | It is the builtin primary size: Protocol §XIII and the dictionary's `price_per_key`/`loan_per_key`/`noi_per_key` read it, and RFC 0080 put every primary size on `property`. G3's "builtin precedent" points here. The other three hotel facts live in `rent_roll`. |
 | Hospitality required section (G3) | None. The required facts are in `rent_roll`. | G3 consolidation leaves `hotel_metrics` holding one nullable comp-set figure, and requiring that section would require nothing. |
 | Home of the rate cap's cost (G1) | `rate_hedge.premium`. | RFC 0056 lists `rate_cap_cost` among the "four flat scalars" its typed fields describe. Nine corpus documents state `premium` with no cost, two of them testing a missing `sources_uses`/`uses`. The opposite choice would force `sources_uses` blocks into them. |
 | Lone-fact groups (G1) | All-or-none groups under the existing shape codes. Dependent rules evaluate only when their group is stated. | RFC 0056 group-statement precedent (`ESC-01`: "at least one of the two stated"); no new code family. |
@@ -579,13 +579,13 @@ Each RFC below carries a status-line note pointing here:
   - "One shape per file" (both directions);
   - "Deprecation timeline" (carried out here);
   - the v1 and v2 block digest rules under "Canonicalization, integrity, and
-    signatures across the shape change" (replaced by Â§3 above);
-  - the per-file boundary later written into v2 Â§1.3.
+    signatures across the shape change" (replaced by §3 above);
+  - the per-file boundary later written into v2 §1.3.
 - **RFC 0017:** "Legacy detection", and the bridge pinned to Format 1.1.
 - **RFC 0022:** acceptance of receipt_version 1.0 beside 1.1, as written into
-  `UW_RECEIPT_v1.md` Â§10.4.
+  `UW_RECEIPT_v1.md` §10.4.
 - **RFC 0025:** the explicit-override acceptance of a structured `.uw.md`.
-- **RFC 0031:** Â§4 read-time interpretation, the 1.x warning severities and the
+- **RFC 0031:** §4 read-time interpretation, the 1.x warning severities and the
   legacy-tag migration tool.
 - **RFC 0053:** `sale_triggers_reassessment`, `TAX-04`, and the required
   assessment members (now an all-or-none group).
@@ -604,16 +604,16 @@ Each RFC below carries a status-line note pointing here:
   values stay readable"; the Phase 3 decisions on legacy aliases, `legacy_id`
   and `portable_legacy_ids`.
 - **RFC 0080:**
-  - Â§5 in full;
-  - Â§6's final 0.2.0 shells;
-  - Â§7's "2.1 readers read 2.0 and 1.x unchanged";
+  - §5 in full;
+  - §6's final 0.2.0 shells;
+  - §7's "2.1 readers read 2.0 and 1.x unchanged";
   - the decision rows Lite bridge, Required hotel section, Compatibility
     identity, Native block/envelope shape, Versions, Pre-existing hospitality
     calculations, Compatibility severities, Scope identity
     (`declared_asset_class`), Grouping keys and Official module packages;
-  - Â§4's placement of the hotel facts in `hotel_metrics`.
+  - §4's placement of the hotel facts in `hotel_metrics`.
 
-RFC 0010 is not superseded. Â§3 restores its Â§4 intent, so its implementation
+RFC 0010 is not superseded. §3 restores its §4 intent, so its implementation
 note about hash scope no longer applies; that RFC carries a short note saying
 so.
 
@@ -635,7 +635,7 @@ packages stay deprecated and are never published again.
 
 - **Re-authored.** Every fixture listed in D5, with baselines regenerated
   where shape appears in them: parse projections (nested `meta`, bare
-  payloads, no `superseded_blocks`), hashes (Â§3 rule), signatures, receipt
+  payloads, no `superseded_blocks`), hashes (§3 rule), signatures, receipt
   digests and pack versions.
 - **Removed.**
   - the `meta-v2` suite and the `migrate` suite;
@@ -650,7 +650,7 @@ packages stay deprecated and are never published again.
     absent;
   - `META-01` for a flat `_meta` and for a `section_id` wrapper member;
   - a bare payload with a field named `content`, read as payload;
-  - the Â§3 digest: a `_meta`-only edit keeps `content_hash`, and a payload
+  - the §3 digest: a `_meta`-only edit keeps `content_hash`, and a payload
     edit changes it;
   - the generalized `SRC-03`;
   - `org.uwmd.data_center` refused by `INVALID-ASSET-CLASS-002`;
@@ -658,14 +658,14 @@ packages stay deprecated and are never published again.
   - a hospitality `rent_roll` without `available_room_nights` refused by
     `CLS-04`;
   - `CC-HOSP-02` read from `rent_roll`;
-  - the lone-fact acceptances and all-or-none refusals of Â§7;
+  - the lone-fact acceptances and all-or-none refusals of §7;
   - accept and refuse cases for `requires_conformance`/`requires_profiles`;
   - `receipt_version` 1.0 refused.
 - **Invariant (hard acceptance criterion).** These are unchanged:
   - every calc baseline value;
   - the lender fixture (187 / 0 / 0, with identical per-statement evidence);
   - every receipt's result values;
-  - every derived uses total except the two Â§7 documents.
+  - every derived uses total except the two §7 documents.
 
   The newly computable hotel calculations and per-key intensives are listed
   as additions.
@@ -682,9 +682,9 @@ entries, and nothing ships until Phase 6.
    status-line notes listed under [Superseded clauses](#superseded-clauses).
 2. **Spec, schemas and `protocol.ts`.**
    - Write `UW_FORMAT_SPEC.md`.
-   - Rename every `_v1` spec file (Â§2) and delete the protocol stubs.
-   - Rewrite `UW_RECEIPT.md` for 1.1, the Lite spec Â§6 for 3.0 and Protocol
-     Â§V.9/Â§V.10 for the Â§3 digest.
+   - Rename every `_v1` spec file (§2) and delete the protocol stubs.
+   - Rewrite `UW_RECEIPT.md` for 1.1, the Lite spec §6 for 3.0 and Protocol
+     §V.9/§V.10 for the §3 digest.
    - Merge the block schemas and fix the mojibake. Update the module-manifest,
      implementation-manifest, corpus-index, hedge, renovation,
      recovery-terms, tax-reassessment and hotel-section schemas, and the
@@ -699,33 +699,33 @@ entries, and nothing ships until Phase 6.
        conformance test key;
      - stamps `uw_version: "3.0"` and unwraps every wrapped block into the
        bare shape;
-     - moves the Â§7 scalars and the Â§5 hotel facts;
-     - replaces alias and module ids, and rewrites module manifests (Â§6) and
+     - moves the §7 scalars and the §5 hotel facts;
+     - replaces alias and module ids, and rewrites module manifests (§6) and
        pack ranges;
-     - re-stamps hashes under the Â§3 rule and re-signs. Receipts are
+     - re-stamps hashes under the §3 rule and re-signs. Receipts are
        re-issued.
    - The PR carries a **before/after value diff** over every calc baseline,
      the lender fixture, every receipt result and every derived uses total.
-     The diff must be empty except for the listed additions and the two Â§7
+     The diff must be empty except for the listed additions and the two §7
      documents.
 4. **Code deletion.**
    - Narrow the supported sets to `['3.0']`/`['4.0.0']`.
    - Delete the reshape layer and the wrapper handling, make `UWMeta` nested,
-     and implement the Â§3 digest.
+     and implement the §3 digest.
    - Delete both migrators, the CLI `migrate` commands and `init --format`.
    - Delete the alias, the transition rules, the module packages and their
      tooling references.
-   - Delete the legacy scalars and the remaining items in Â§7; implement the
+   - Delete the legacy scalars and the remaining items in §7; implement the
      lone-fact groups and the footing rule; move the hospitality fields.
    - Make Lite emit bare 3.0 and fix the web viewer.
-5. **Conformance renames** (Â§8), the runner and generator, and the docs-site
+5. **Conformance renames** (§8), the runner and generator, and the docs-site
    pages.
 6. **Release 4.0.0** by the wiki 11 procedure: Format 3.0, Protocol 4.0.0,
    seven packages.
 
 **Combining.** Phase 2 and the set-narrowing half of Phase 4 could share a PR
 only if Phase 3 landed inside it, which would make one unreviewable diff of
-roughly 800 files. Keep 2 â†’ 3 â†’ 4 separate. Phase 5 is mechanical and could
+roughly 800 files. Keep 2 → 3 → 4 separate. Phase 5 is mechanical and could
 fold into Phase 4. Keeping it separate is recommended, because renames
 dominate any diff they share.
 
@@ -734,20 +734,20 @@ dominate any diff they share.
 | Question | Phase 2 decision | Precedent / boundary |
 |---|---|---|
 | Final spec labels versus released implementation labels | Specs describe Format 3.0 / Protocol 4.0.0. Export SPEC_FORMAT_VERSION / SPEC_PROTOCOL_VERSION, and add them to supported sets; keep FORMAT_VERSION, PROTOCOL_VERSION and package versions unchanged. Version guards compare the spec banner to its accepted constant and retain the release matrix checks. | RFC 0081 Reference implementation phases 2, 4 and 6; invariant 6. |
-| Schema/type lockstep while the old loader remains | Export ProtocolModuleManifest with required requires_conformance and optional requires_profiles, plus ProtocolImplementationManifest with only reader/verifier. The final schemas admit no retired vocabulary. Keep runtime ModuleManifest and alias readers until Phase 4. | RFC Â§6 and Phase 2 requires_conformance types; Phase 4 code deletion; invariant 7. |
+| Schema/type lockstep while the old loader remains | Export ProtocolModuleManifest with required requires_conformance and optional requires_profiles, plus ProtocolImplementationManifest with only reader/verifier. The final schemas admit no retired vocabulary. Keep runtime ModuleManifest and alias readers until Phase 4. | RFC §6 and Phase 2 requires_conformance types; Phase 4 code deletion; invariant 7. |
 | Schema checks on fixtures before Phase 3 | Test-only projections change only the named module tier and case/index bookkeeping; invalid and unknown values stay invalid. Bare-block schema checks project the existing wrapper without changing its model round-trip checks. Original corpus inputs and all existing assertions remain. Remove projections in later phases. | RFC phased ordering; no runtime compatibility, corpus re-authoring deferred to Phase 3. |
-| Hospitality dictionary/pack parity across phases | Re-path only total_room_revenue and room_revenue_per_key to rent_roll ADR/occupancy/available nights and property.keys. Parity projects only these four addresses; arithmetic, null guards, units, precision and all other definitions compare exactly. Packs and financial baselines remain unchanged in Phase 2. | Owner G3 and RFC Â§5 explicitly re-path dictionary in Phase 2; runtime move in Phase 4. |
-| Lone-fact group schema representation | Use dependentRequired for all-or-none terms/draw/assessment groups, and method-dependent recovery members; require at least budget or contingency. Replacement funding requires the terms group. Preserve existing field ranges and closed unions. | Owner G1; RFC Â§7; existing JSON Schema 2020-12 and HDG/CAPX/REC/TAX shape conventions. |
-| Historical spec links and documentation | Current links use versionless filenames; historical RFC/release sources remain byte-identical. The docs-site build rewrites old spec filenames to the new pages. One format page replaces the delta page; no retained spec files, routes or redirects. | RFC Â§2 / owner Q1; RFC 0025 dead-link precedent. |
+| Hospitality dictionary/pack parity across phases | Re-path only total_room_revenue and room_revenue_per_key to rent_roll ADR/occupancy/available nights and property.keys. Parity projects only these four addresses; arithmetic, null guards, units, precision and all other definitions compare exactly. Packs and financial baselines remain unchanged in Phase 2. | Owner G3 and RFC §5 explicitly re-path dictionary in Phase 2; runtime move in Phase 4. |
+| Lone-fact group schema representation | Use dependentRequired for all-or-none terms/draw/assessment groups, and method-dependent recovery members; require at least budget or contingency. Replacement funding requires the terms group. Preserve existing field ranges and closed unions. | Owner G1; RFC §7; existing JSON Schema 2020-12 and HDG/CAPX/REC/TAX shape conventions. |
+| Historical spec links and documentation | Current links use versionless filenames; historical RFC/release sources remain byte-identical. The docs-site build rewrites old spec filenames to the new pages. One format page replaces the delta page; no retained spec files, routes or redirects. | RFC §2 / owner Q1; RFC 0025 dead-link precedent. |
 | Refusal registry staging | Register UNSUPPORTED_FORMAT_VERSION and META-01, and expose the final closed resolution vocabulary with generalized SRC-03 copy. Existing runtime emissions and their retirement remain Phase 4. | RFC Decisions and D3/D10/D11; Phase 2 new code registry, Phase 4 execution changes. |
-| Block digest wording (review B1) | Â§3 governs every spec: `content_hash` is JCS of the block minus `_meta`; a `_meta`-only change keeps the hash and the signature; a signature does not bind `parent_hash` transitively. Protocol Â§V.11.2 drops the "covered like any other `_meta` field" text, the re-signing paragraph and the erratum link. | Owner (review of PR #308); Â§3 above; RFC 0010 Â§4 intent. |
+| Block digest wording (review B1) | §3 governs every spec: `content_hash` is JCS of the block minus `_meta`; a `_meta`-only change keeps the hash and the signature; a signature does not bind `parent_hash` transitively. Protocol §V.11.2 drops the "covered like any other `_meta` field" text, the re-signing paragraph and the erratum link. | Owner (review of PR #308); §3 above; RFC 0010 §4 intent. |
 | `null` in a G1 group (review S6) | A member stated as `null` is not stated in every G1 group: it neither triggers nor satisfies a group requirement, so `replacement_funding: null`, `contingency_remaining: null` and `jurisdiction: null` need no group. The schemas use null-exempt `dependentSchemas` for nullable members; a non-nullable member stated as `null` stays a type error. | Owner; `ESC-04` absent/null equivalence. |
 | Lone recovery cap and REC-02 (review S6) | A lone `cap` is valid without `method`, `over` or `accumulation`. Once `method` is stated, a stated `cap.pct` requires `cap.accumulation` (REC-02, also in the schema). | Owner; G1 lone-fact intent; RFC 0058's no-default rule. |
-| Dropped normative text (review B3) | Restore every MUST/SHOULD/table the merge dropped that this RFC does not remove: `partial`/`provisional` and the provisional-label SHOULD, the closed `_overrides[].reason` vocabulary, the cascade-tag MUST, Â§V.9's non-finite and `undefined` rules, the `META_FIELD_MISSING_<FIELD>` list (code names unchanged, so `VERSION` names `lifecycle.revision`), the `DQ-07` preserve MUST, and the RFC 0071/0074 module floors restated as `>=4.0.0`. | Owner; Â§2 disposition ("Kept"); Â§3 keeps the provenance-completeness family unchanged. |
-| Hospitality `rent_roll` schema (review S7) | No `rent_roll` schema exists for any class, so add only the open class-contract fragment `rent-roll-hospitality.schema.json`: `available_room_nights` required, `occupied_room_nights`/`adr`/`occupancy` optional and non-nullable as Â§5 types them, `keys` refused, other members unconstrained. | Â§5 G3 table; the field-fragment pattern of `lease-recovery-terms` and `renovation-draw`. |
-| Envelope frontmatter version (review B2) | The envelope schema drops the retired `CLS-05` "Format 2.1" conditionals and pins `frontmatter.uw_version` to `"3.0"`, agreeing with `format_version`. | D1; Â§5 retires `CLS-05`. |
-| Dangling references (review S3) | Re-point every reference to a removed section (starter stubs, format v2 sections) to its current home, and add `scripts/spec-refs.mjs` to `verify-indexes` so a spec `Â§` target, `spec_ref` or spec link that resolves to nothing fails CI. | RFC 0025 / PR #57 dead-link precedent. |
-| Docs-site version labels | Spec links and the home version card show `SPEC_FORMAT_VERSION`/`SPEC_PROTOCOL_VERSION`; the card notes the implementation's versions while they differ. | Â§2 one spec per page; Phase 6 aligns the release labels. |
+| Dropped normative text (review B3) | Restore every MUST/SHOULD/table the merge dropped that this RFC does not remove: `partial`/`provisional` and the provisional-label SHOULD, the closed `_overrides[].reason` vocabulary, the cascade-tag MUST, §V.9's non-finite and `undefined` rules, the `META_FIELD_MISSING_<FIELD>` list (code names unchanged, so `VERSION` names `lifecycle.revision`), the `DQ-07` preserve MUST, and the RFC 0071/0074 module floors restated as `>=4.0.0`. | Owner; §2 disposition ("Kept"); §3 keeps the provenance-completeness family unchanged. |
+| Hospitality `rent_roll` schema (review S7) | No `rent_roll` schema exists for any class, so add only the open class-contract fragment `rent-roll-hospitality.schema.json`: `available_room_nights` required, `occupied_room_nights`/`adr`/`occupancy` optional and non-nullable as §5 types them, `keys` refused, other members unconstrained. | §5 G3 table; the field-fragment pattern of `lease-recovery-terms` and `renovation-draw`. |
+| Envelope frontmatter version (review B2) | The envelope schema drops the retired `CLS-05` "Format 2.1" conditionals and pins `frontmatter.uw_version` to `"3.0"`, agreeing with `format_version`. | D1; §5 retires `CLS-05`. |
+| Dangling references (review S3) | Re-point every reference to a removed section (starter stubs, format v2 sections) to its current home, and add `scripts/spec-refs.mjs` to `verify-indexes` so a spec `§` target, `spec_ref` or spec link that resolves to nothing fails CI. | RFC 0025 / PR #57 dead-link precedent. |
+| Docs-site version labels | Spec links and the home version card show `SPEC_FORMAT_VERSION`/`SPEC_PROTOCOL_VERSION`; the card notes the implementation's versions while they differ. | §2 one spec per page; Phase 6 aligns the release labels. |
 | Web editor reads class contracts | `@uwmd/core` and `@uwmd/core/browser` export the pure-data `BUILTIN_CLASS_CONTENT`, replacing the editor test's deep import of core's `dist/`. | Invariant 2 (tools consume core's public entry); AGENTS export rule. |
 
 ## RFC 0081 Phase 3 implementation decisions
@@ -755,44 +755,44 @@ dominate any diff they share.
 | Question | Phase 3 decision | Precedent / cause |
 |---|---|---|
 | Corpus versus released versions | Re-author stated document versions and module/pack ranges now; keep package/release labels and all old runtime paths until Phases 4 and 6. Mark interim old paths for deletion. | Reference implementation Phase 3; owner task boundary. |
-| Saguaro planned additions | total_room_revenue: null â†’ $6,080,000; room_revenue_per_key: null â†’ $42,816.90. All stated figures and lender evidence remain identical. Jared confirmed on 2026-10-11 that these are the planned additions, and authorized continuing. | RFC Â§5; owner follow-up. |
+| Saguaro planned additions | total_room_revenue: null → $6,080,000; room_revenue_per_key: null → $42,816.90. All stated figures and lender evidence remain identical. Jared confirmed on 2026-10-11 that these are the planned additions, and authorized continuing. | RFC §5; owner follow-up. |
 | Financial comparison | Snapshot the built Phase 2 base before editing; compare all calc baselines, lender evidence, receipt verdicts, validation codes, conformance outcomes and derived uses. No other example or lender value change is authorized. | D5; owner Phase 3 acceptance criterion and follow-up. |
-| capex/accept-draw-with-verified-remaining | $11,350,000 â†’ $6,850,000: drop the duplicate legacy budget and contingency, retaining the typed group. | Original Â§7 exception; renovation draw accounting itself is unchanged (Q3 remains out of scope). |
-| hedge/0076-two-seniors-no-hedge-escrow | $1,150,000 â†’ $750,000: drop the $400,000 cost with no attributable stated hedge home. | Original Â§7 exception; no invented allocation across loans. |
-| Additional fixture exceptions | Jared approved all five below on 2026-10-11: they follow mechanically from Â§7. Retire a fixture whose only assertion is a retired conflict code; preserve any live refusal. Report every further fixture-only value change with its cause; stop for any example/lender value change. | Owner follow-up to the measured corpus inventory. |
-| capex/reject-legacy-budget-disagrees | $9,470,000 â†’ $6,470,000 before retirement: removing the disagreeing $3,000,000 legacy budget leaves the typed budget. | Retired CAPX-05-only conflict control; owner approved exception. |
-| hedge/reject-legacy-reserve-disagrees | $750,000 â†’ $500,000 before retirement: removing the legacy reserve leaves the stated escrow upfront. | Retired ESC-03-only conflict control; owner approved exception. |
-| hedge/reject-premium-disagrees-with-use | $500,000 â†’ $410,000 before retirement: the typed premium is the single cost home. | Retired HDG-05-only conflict control; owner approved exception. |
-| hedge/0070-ambiguous-debt | $1,150,000 â†’ $1,550,000: each of two stated $400,000 premiums counts once, alongside the $750,000 interest escrow. Keep its live refusal. | Â§7 footing; owner approved exception. |
-| hedge/0076-sources-refused-malformed-hedge | Each sources variant: $1,150,000 â†’ $750,000. Drop the $400,000 cost because the malformed hedge supplies no usable attributable home; keep its live refusal. | No invented attribution; owner approved exception. |
+| capex/accept-draw-with-verified-remaining | $11,350,000 → $6,850,000: drop the duplicate legacy budget and contingency, retaining the typed group. | Original §7 exception; renovation draw accounting itself is unchanged (Q3 remains out of scope). |
+| hedge/0076-two-seniors-no-hedge-escrow | $1,150,000 → $750,000: drop the $400,000 cost with no attributable stated hedge home. | Original §7 exception; no invented allocation across loans. |
+| Additional fixture exceptions | Jared approved all five below on 2026-10-11: they follow mechanically from §7. Retire a fixture whose only assertion is a retired conflict code; preserve any live refusal. Report every further fixture-only value change with its cause; stop for any example/lender value change. | Owner follow-up to the measured corpus inventory. |
+| capex/reject-legacy-budget-disagrees | $9,470,000 → $6,470,000 before retirement: removing the disagreeing $3,000,000 legacy budget leaves the typed budget. | Retired CAPX-05-only conflict control; owner approved exception. |
+| hedge/reject-legacy-reserve-disagrees | $750,000 → $500,000 before retirement: removing the legacy reserve leaves the stated escrow upfront. | Retired ESC-03-only conflict control; owner approved exception. |
+| hedge/reject-premium-disagrees-with-use | $500,000 → $410,000 before retirement: the typed premium is the single cost home. | Retired HDG-05-only conflict control; owner approved exception. |
+| hedge/0070-ambiguous-debt | $1,150,000 → $1,550,000: each of two stated $400,000 premiums counts once, alongside the $750,000 interest escrow. Keep its live refusal. | §7 footing; owner approved exception. |
+| hedge/0076-sources-refused-malformed-hedge | Each sources variant: $1,150,000 → $750,000. Drop the $400,000 cost because the malformed hedge supplies no usable attributable home; keep its live refusal. | No invented attribution; owner approved exception. |
 | Deferred product writers and retiring tests | Lite/init emission remains unchanged until Phase 4; test-only projections synthesize old migration/reader inputs from the authored 3.0 corpus. No product compatibility shim is added. | Phase 3 boundary explicitly retains the old readers and migrators. |
 | Retired conflict controls | Delete the six conflict-only conformance cases for CAPX-05, ESC-03, HDG-04/05, REC-10 and TAX-04, plus their conflict-only unit test groups. Keep every live refusal assertion. | Owner follow-up; a removed spelling has no meaningful conflict assertion. |
 | Negative artifact controls | Re-stamp valid hashes/signatures/receipts, then preserve intentional tampering, invalid source vocabulary, malformed parent links and stale digests. | Existing conformance refusals must remain evidence, not become passing documents. |
 | Historical forensic record | Preserve docs/reviews/2026-10-02-outright-cap-replacement.evidence.json's captured attempted document verbatim; it is immutable evidence cited by an RFC, not an authored fixture. Release history and staged version labels also remain. | PROCESS historical design reviews; D13 and Phase 6 boundary. |
 | Null group members | Treat null as unstated when deciding whether G1's full terms/draw/assessment group is present. | Phase 2 review clarification; no invented facts. |
-| Canonical parse projection | Apply the same block projection to extension blocks as standard sections; portable parse evidence stays a declaration of content, not private reader objects. | Protocol Â§II.6a.6 and the existing reference-runner projection. |
+| Canonical parse projection | Apply the same block projection to extension blocks as standard sections; portable parse evidence stays a declaration of content, not private reader objects. | Protocol §II.6a.6 and the existing reference-runner projection. |
 | G3 validation deltas | Moving existing keys to property.keys removes nine CC-13 warnings; 3.0 applies the class-contract severity consistently. Re-author the missing-hotel-input control to a rent_roll missing available_room_nights, preserving its required-field refusal as CLS-04. | G3, D6 and the Phase 2 hospitality schema; no stated financial value changes. |
 | Package guard metadata | Check source manifests' requires_conformance instead of requires_tier, and update VERSIONS.md's compatibility columns without changing package versions or pins. | D9, existing source/build/JSON parity guards; release remains Phase 6. |
-| Single-block signing API (review S1) | `verifyBlockSignature(block, store, { uwVersion })` and `signBlock(block, key, { uwVersion, stampContentHash })` select the digest rule from the document's `uw_version` exactly as `verifyChain` does. Without it the retired 1.x rule applied, so a valid 3.0 signature reported `content_hash_mismatch`. The old selection is marked for Phase 4. | Â§3; `verifyChain`'s per-document selection (RFC 0009 versioned canonicalization). |
-| Rendered goldens that now show stated values (review S2) | `tier-1-reader/expected/01-minimal-screening` and `16-frontmatter-yaml-scalars` (`.rendered-chat`, `.rendered-summary`) now print property facts the 1.1 wrapped block stated but the renderer could not read: Units 50, Built 1995, NRA 45,000, Land 2.1 acres, Zoning R-3, Loan/Unit $150,000, Price/Unit $200,000. The retired missing-section warning goes. These are stated values now rendered, not changed values. No other rendered golden changes beyond its version label. | Â§3 unwrap; D5 (no stated value changes). |
-| Receipt validation summary | `receipts/issue/01-uwx-multifamily/expected-receipt.json`: validation warnings 5 â†’ 0 (metadata-shape warnings the migration removes). Result values and verdict are unchanged. | Â§3; D5. |
-| Preserved invalid-source control | `source/04-colon-form-rejected/expected-validation.json` reports its finding as an error (overall `errors`), because `SRC-01`/`SRC-02` are always errors in 3.0. This is the fifth changed expected-code file (a severity, not a code, so the value-diff harness counts four). | Â§3 ("`SRC-01` and `SRC-02` are always errors"). |
-| meta-v2/06-digest-shape-insensitive (review S3) | Retired. After re-authoring its flat and nested files were byte-identical, and its subject (v1/v2 digest shape-insensitivity) is retired with the suite. The corpus is 1,054 checks (1,046 default + 3 opt-in + 5 added). | Â§8 (the `meta-v2` row); the rule applied to the six conflict-only controls. |
-| `reserve-*/legacy-v1` | Kept, with `_meta.section` stated on all four blocks. Their distinguishing subject (both format generations admit the section, RFC 0064) is retired. They are portable cases whose ids Phase 5 rewrites, so Phase 5 removes or renames them with the other renames rather than shrinking the portable projection here. | Â§8 and Phase 5; keep the 332 portable projections stable in Phase 3. |
-| Reserve fixtures' `{_meta, content}` bodies | 71 `reserve-accounts`/`reserve-draw-bindings` documents (162 blocks) were 2.0-era bodies without `section_id`. The re-author left them wrapped and dropped their non-canonical `provenance`/`status`/`lineage` metadata. They are now bare, and the stated source, timestamp, confidence and revision sit in their nested homes (the mapping the migrator gave the identical 1.1 legacy-v1 fixtures; the non-schema `author` is dropped there too). Plan source digests are re-stamped and `stale-digest` stays stale. Reserve verifier outcomes are unchanged. Validation: the metadata-missing warnings go, 45 documents lose `CF-02`/`LU-01`/`LU-03` errors that only the wrapper caused, and `invalid-source-date` gains `CF-01` for its stated 2026-02-30 row. | Â§3: a member named `content` is payload, and Phase 3 unwraps every wrapped block. |
-| Migrate suite expectations (review S3) | `migrate/02` and `03` `expected.json` record the migrator's output version, `"2.0"`, and the runner compares against it. Both legacy suites are marked for Phase 4 deletion. | Â§4; the suite tests the migrator's output, not the corpus version. |
+| Single-block signing API (review S1) | `verifyBlockSignature(block, store, { uwVersion })` and `signBlock(block, key, { uwVersion, stampContentHash })` select the digest rule from the document's `uw_version` exactly as `verifyChain` does. Without it the retired 1.x rule applied, so a valid 3.0 signature reported `content_hash_mismatch`. The old selection is marked for Phase 4. | §3; `verifyChain`'s per-document selection (RFC 0009 versioned canonicalization). |
+| Rendered goldens that now show stated values (review S2) | `tier-1-reader/expected/01-minimal-screening` and `16-frontmatter-yaml-scalars` (`.rendered-chat`, `.rendered-summary`) now print property facts the 1.1 wrapped block stated but the renderer could not read: Units 50, Built 1995, NRA 45,000, Land 2.1 acres, Zoning R-3, Loan/Unit $150,000, Price/Unit $200,000. The retired missing-section warning goes. These are stated values now rendered, not changed values. No other rendered golden changes beyond its version label. | §3 unwrap; D5 (no stated value changes). |
+| Receipt validation summary | `receipts/issue/01-uwx-multifamily/expected-receipt.json`: validation warnings 5 → 0 (metadata-shape warnings the migration removes). Result values and verdict are unchanged. | §3; D5. |
+| Preserved invalid-source control | `source/04-colon-form-rejected/expected-validation.json` reports its finding as an error (overall `errors`), because `SRC-01`/`SRC-02` are always errors in 3.0. This is the fifth changed expected-code file (a severity, not a code, so the value-diff harness counts four). | §3 ("`SRC-01` and `SRC-02` are always errors"). |
+| meta-v2/06-digest-shape-insensitive (review S3) | Retired. After re-authoring its flat and nested files were byte-identical, and its subject (v1/v2 digest shape-insensitivity) is retired with the suite. The corpus is 1,054 checks (1,046 default + 3 opt-in + 5 added). | §8 (the `meta-v2` row); the rule applied to the six conflict-only controls. |
+| `reserve-*/legacy-v1` | Kept, with `_meta.section` stated on all four blocks. Their distinguishing subject (both format generations admit the section, RFC 0064) is retired. They are portable cases whose ids Phase 5 rewrites, so Phase 5 removes or renames them with the other renames rather than shrinking the portable projection here. | §8 and Phase 5; keep the 332 portable projections stable in Phase 3. |
+| Reserve fixtures' `{_meta, content}` bodies | 71 `reserve-accounts`/`reserve-draw-bindings` documents (162 blocks) were 2.0-era bodies without `section_id`. The re-author left them wrapped and dropped their non-canonical `provenance`/`status`/`lineage` metadata. They are now bare, and the stated source, timestamp, confidence and revision sit in their nested homes (the mapping the migrator gave the identical 1.1 legacy-v1 fixtures; the non-schema `author` is dropped there too). Plan source digests are re-stamped and `stale-digest` stays stale. Reserve verifier outcomes are unchanged. Validation: the metadata-missing warnings go, 45 documents lose `CF-02`/`LU-01`/`LU-03` errors that only the wrapper caused, and `invalid-source-date` gains `CF-01` for its stated 2026-02-30 row. | §3: a member named `content` is payload, and Phase 3 unwraps every wrapped block. |
+| Migrate suite expectations (review S3) | `migrate/02` and `03` `expected.json` record the migrator's output version, `"2.0"`, and the runner compares against it. Both legacy suites are marked for Phase 4 deletion. | §4; the suite tests the migrator's output, not the corpus version. |
 | Migrate fixture signatures | The re-signed `migrate/01` and `02` blocks keep `kid` `sponsor-key-1`, which the conformance keystore does not hold, so `verifyChain` reports `INT-06` where the base reported `INT-04`/`INT-07` (a stale 1.x signature). Both cases assert migration behavior, not chain verification, and pass. | Negative-control rule; the suite is deleted in Phase 4. |
-| hedge/0075-malformed-hedge-beside-junior premium | The $400,000 `rate_cap_cost` becomes `premium` on the junior's hedge, which is synthesized from its own `rate_cap_pct`. That is the only well-formed hedge: the senior's `rate_hedge` is the malformed string `"rate_cap"`, kept for its `HDG-01` refusal, and the senior's `rate_cap_pct` has no typed home. The uses total is unchanged. `0076-two-seniors-no-hedge-escrow` (two synthesized hedges) and `0076-sources-refused-malformed-hedge` (only a malformed hedge) have no unique attributable home, so their cost is dropped instead. | Â§7 home of the rate cap's cost; no invented allocation across loans. |
-| Live references to removed scalars (review S4) | The all-in yield's reserves input in Parkview, parkview-after-L6 and tier-1 `02-full-multifamily` reads `sources_uses.uses.escrows[0].upfront`, in the format spec's bracketed-index notation. No hash, signature or receipt covers it, and the lender check stays 187/0/0. | Â§7; format spec path notation (`units[7].current_rent`). |
-| L6 post-run shape (review S5) | The JSON Schema requires the bare 3.0 block (nested `_meta`, payload beside it, no `section_id`). The runner compiles a JSON Schema shape strictly, checks the before file's frontmatter against it, and checks that it refuses the wrapper. The declarative l0a contract stays lint-only. | Â§3; a fixture that CI only parses proves nothing. |
-| `deriveSourcesUses` document (review S6) | `parsed` is required. Without it every stated `rate_hedge.premium` was silently left out of the uses total. | Â§7 footing. |
+| hedge/0075-malformed-hedge-beside-junior premium | The $400,000 `rate_cap_cost` becomes `premium` on the junior's hedge, which is synthesized from its own `rate_cap_pct`. That is the only well-formed hedge: the senior's `rate_hedge` is the malformed string `"rate_cap"`, kept for its `HDG-01` refusal, and the senior's `rate_cap_pct` has no typed home. The uses total is unchanged. `0076-two-seniors-no-hedge-escrow` (two synthesized hedges) and `0076-sources-refused-malformed-hedge` (only a malformed hedge) have no unique attributable home, so their cost is dropped instead. | §7 home of the rate cap's cost; no invented allocation across loans. |
+| Live references to removed scalars (review S4) | The all-in yield's reserves input in Parkview, parkview-after-L6 and tier-1 `02-full-multifamily` reads `sources_uses.uses.escrows[0].upfront`, in the format spec's bracketed-index notation. No hash, signature or receipt covers it, and the lender check stays 187/0/0. | §7; format spec path notation (`units[7].current_rent`). |
+| L6 post-run shape (review S5) | The JSON Schema requires the bare 3.0 block (nested `_meta`, payload beside it, no `section_id`). The runner compiles a JSON Schema shape strictly, checks the before file's frontmatter against it, and checks that it refuses the wrapper. The declarative l0a contract stays lint-only. | §3; a fixture that CI only parses proves nothing. |
+| `deriveSourcesUses` document (review S6) | `parsed` is required. Without it every stated `rate_hedge.premium` was silently left out of the uses total. | §7 footing. |
 | Interim old literals (review S7) | Plain strings with the Phase 4 marker on the same line, with no array-join spellings. | Reviewability: grep finds every interim literal. |
 | Re-author script re-runs | Idempotent: final 3.0 documents, migrator expectations, JSON Schema files and marked literals are skipped, so a re-run cannot repair a negative control or replace the editor golden's `<volatile>` hashes. A dry run and a full `--write` re-run change nothing. Both one-off scripts carry Phase 4 deletion markers. | Negative artifact controls (above). |
 
 ### Phase 4 carry-overs recorded in Phase 3
 
 - **Part files.** The 28 tracked `.uwpart.md` files declare no `uw_version` (the migrator refuses them for having no version line); their blocks are already bare 3.0. Before `UNSUPPORTED_FORMAT_VERSION` applies to an absent version, Phase 4 decides whether a part states `uw_version: "3.0"` or inherits its record's version.
-- **Editor goldens.** Four `tier-2-editor` after-documents carry `_meta` as a block's last member, because the interim editor writes it there; Â§3 requires it first. Regenerate them when Phase 4 makes the editor write 3.0.
+- **Editor goldens.** Four `tier-2-editor` after-documents carry `_meta` as a block's last member, because the interim editor writes it there; §3 requires it first. Regenerate them when Phase 4 makes the editor write 3.0.
 - **`reserve-*/legacy-v1`.** Removed or renamed in Phase 5 (above).
 
 ## RFC 0081 Phase 4 implementation decisions
@@ -804,52 +804,52 @@ work. The rows below record each open call, the decision and its precedent.
 
 | Question | Phase 4 decision | Precedent / cause |
 |---|---|---|
-| The `UWMeta` type | One nested type whose required and optional members are exactly `uwmd-block.schema.json`'s (`UWProvenance`, `UWQuality`, `UWLifecycle`, `UWIntegrity`). `block.meta` is the parsed `_meta` object; the type was fixed, not the call sites. `UWBlock.meta_shape` is gone. | Â§3; owner task ("match the schema, fix the type"). |
-| What an edit may say about `_meta` | An `EditOperation`'s `meta` is a `UWMetaPatch`: optional `provenance` and `quality` objects merged over the host-built `_meta`. The host owns `section`, `lifecycle` and `integrity`. Any other member, including a flat `source` or `confidence`, is refused as `PROTO-EDIT-002` rather than silently dropped; `edit-operation.schema.json` gains a closed `MetaPatch` and Protocol Â§V states the rule. | Invariant 5 (the host owns `_meta`); invariant 7 (schema, spec and `protocol.ts` together); closed vocabularies refuse unknown values. |
-| Field overrides | Read from the block's reserved `_overrides` member (`blockOverrides`), never from `_meta`. The web editor reads and writes the same member; an empty list clears it rather than writing `[]`. | Â§3 reserved members. |
-| `blockPayload` | Returns a copy of the block minus the reserved members `_meta`, `_role`, `_overrides` and `_notes`. Callers that mutate a payload mutate `block.content`. | Â§3 ("every other member is payload"). |
+| The `UWMeta` type | One nested type whose required and optional members are exactly `uwmd-block.schema.json`'s (`UWProvenance`, `UWQuality`, `UWLifecycle`, `UWIntegrity`). `block.meta` is the parsed `_meta` object; the type was fixed, not the call sites. `UWBlock.meta_shape` is gone. | §3; owner task ("match the schema, fix the type"). |
+| What an edit may say about `_meta` | An `EditOperation`'s `meta` is a `UWMetaPatch`: optional `provenance` and `quality` objects merged over the host-built `_meta`. The host owns `section`, `lifecycle` and `integrity`. Any other member, including a flat `source` or `confidence`, is refused as `PROTO-EDIT-002` rather than silently dropped; `edit-operation.schema.json` gains a closed `MetaPatch` and Protocol §V states the rule. | Invariant 5 (the host owns `_meta`); invariant 7 (schema, spec and `protocol.ts` together); closed vocabularies refuse unknown values. |
+| Field overrides | Read from the block's reserved `_overrides` member (`blockOverrides`), never from `_meta`. The web editor reads and writes the same member; an empty list clears it rather than writing `[]`. | §3 reserved members. |
+| `blockPayload` | Returns a copy of the block minus the reserved members `_meta`, `_role`, `_overrides` and `_notes`. Callers that mutate a payload mutate `block.content`. | §3 ("every other member is payload"). |
 | `SPEC_FORMAT_VERSION` / `SPEC_PROTOCOL_VERSION` (supersedes the Phase 2 row "Final spec labels versus released implementation labels") | Deleted. With single-valued supported sets, `SUPPORTED_FORMAT_VERSIONS[0]` and `SUPPORTED_PROTOCOL_VERSIONS[0]` are the spec labels; both are now exported, and the docs site, `verify-versions` and `verify-release` read them. `SUPPORTED_FORMAT_VERSIONS` lives in `types.ts` so the parser need not import `protocol.ts` (no cycle); `protocol.ts` re-exports it. `FORMAT_VERSION`/`PROTOCOL_VERSION` stay for Phase 6. | D1; one source of truth per value. |
 | Envelope and Lite inputs | `assertUWEnvelope` and the Lite bridge refuse any `uw_version` but 3.0 with `UNSUPPORTED_FORMAT_VERSION`, like the parser. | D1 ("readers refuse every other `uw_version`"). |
-| Structured content under `.uw.md` with an explicit UWX representation | Still `SOURCE_CONTENT_MISMATCH`; naming the representation does not license the Lite file name. | Â§4; Lite spec Â§6. |
-| Part files (Phase 3 carry-over) | A `.uwpart.md` states `uw_version: "3.0"`; a missing version is `UNSUPPORTED_FORMAT_VERSION` like any other document. Composition Â§2.1 and `uwpart.schema.json` require it, `stringifyUWPart` writes it, and all 28 tracked parts carry it (their bare blocks were already 3.0). | D1 applies to every parsed document; no inheritance rule exists to cite. |
-| Editor goldens (Phase 3 carry-over) | The four `tier-2-editor` after-documents are regenerated with `_meta` first; the editor writes 3.0. | Â§3. |
-| Canonicalization | `canonicalize` and `canonicalizeExact` collapse into one `canonicalize`, and Protocol Â§V.9 names one function. | Â§3 (one digest). |
-| Receipts | `SUPPORTED_RECEIPT_VERSIONS` is `['1.1']`; a 1.0 receipt is refused at read (`RCP_MALFORMED`), and `RECEIPT_RESULT_TOLERANCE` is deleted. | Â§7. |
-| The effective cascade tag | `_overrides[].resolution`, then `provenance.resolution`, then `manual` when the actor is `manual`. No tag is ever read out of `provenance.source`. | RFC 0031 (actor-only `source`); starter guide Â§V.7. |
-| Corpus resolution values outside the closed vocabulary | `SRC-03` now always applies, which exposed 176 `resolution: manual_override` values (rewritten to `user_override`) and 21 `resolution: source_document` values (removed: a source document is an actor, not a cascade step). `_meta` is outside the digest, so no hash, signature or receipt changes. | Format Â§2.6 closed resolution vocabulary. |
-| Module dependencies in frontmatter | `declaredModuleDependencies` reads object entries, and the restricted YAML reader's `- id: x` list items, which it returns as the string `"id: x"`. A bare string is not an entry. That reader gap for lists of mappings predates this phase and is left for a separate fix. | Â§5 (module lists use object entries); Format Appendix D. |
+| Structured content under `.uw.md` with an explicit UWX representation | Still `SOURCE_CONTENT_MISMATCH`; naming the representation does not license the Lite file name. | §4; Lite spec §6. |
+| Part files (Phase 3 carry-over) | A `.uwpart.md` states `uw_version: "3.0"`; a missing version is `UNSUPPORTED_FORMAT_VERSION` like any other document. Composition §2.1 and `uwpart.schema.json` require it, `stringifyUWPart` writes it, and all 28 tracked parts carry it (their bare blocks were already 3.0). | D1 applies to every parsed document; no inheritance rule exists to cite. |
+| Editor goldens (Phase 3 carry-over) | The four `tier-2-editor` after-documents are regenerated with `_meta` first; the editor writes 3.0. | §3. |
+| Canonicalization | `canonicalize` and `canonicalizeExact` collapse into one `canonicalize`, and Protocol §V.9 names one function. | §3 (one digest). |
+| Receipts | `SUPPORTED_RECEIPT_VERSIONS` is `['1.1']`; a 1.0 receipt is refused at read (`RCP_MALFORMED`), and `RECEIPT_RESULT_TOLERANCE` is deleted. | §7. |
+| The effective cascade tag | `_overrides[].resolution`, then `provenance.resolution`, then `manual` when the actor is `manual`. No tag is ever read out of `provenance.source`. | RFC 0031 (actor-only `source`); starter guide §V.7. |
+| Corpus resolution values outside the closed vocabulary | `SRC-03` now always applies, which exposed 176 `resolution: manual_override` values (rewritten to `user_override`) and 21 `resolution: source_document` values (removed: a source document is an actor, not a cascade step). `_meta` is outside the digest, so no hash, signature or receipt changes. | Format §2.6 closed resolution vocabulary. |
+| Module dependencies in frontmatter | `declaredModuleDependencies` reads object entries, and the restricted YAML reader's `- id: x` list items, which it returns as the string `"id: x"`. A bare string is not an entry. That reader gap for lists of mappings predates this phase and is left for a separate fix. | §5 (module lists use object entries); Format Appendix D. |
 | Class contract severity | With `LEGACY_MODULE`/`PRE_RFC_BUILTIN_CALCS` gone, a class calculation error is an error for every document of the class (for example hospitality with zero available room nights). | D6 ("class rules and calcs behave identically for every document"). |
-| Extension block projections | A member named `content` in an extension block is payload, so tier-1 `02-full-multifamily.parsed.json` projects `x_lender_matrix`'s full payload. | Â§3; Phase 3 "Canonical parse projection". |
-| The renderer's pre-Â§4.5 NOI keys | Deleted. The L6 replay prompt's EGI line now reads `n/a` for the fixture that only stated the old key, so the cassette is re-recorded; `after.uwx.md` is unchanged. | Â§7; D5 (no stated value changes). |
-| Module host claims | `LoadModuleOptions` takes `hostConformance` (default `verifier`) and `hostProfiles` (default every profile); a host below a manifest's requirements is `PROTO-MOD-029`. A conformance reject case states the host in `expected.host`. | Â§6. |
-| Conformance tier vocabulary | `--tier` is `reader` or `verifier` in both drivers; anything else is a usage error. `conformance/runner/vocabulary.json`, generated from `scripts/conformance-targets.mjs`, replaces `tier-readings.json`. The portable report's `tier_reading` becomes `manifest_tier`. | Â§6; principle 5 (no aliases). |
-| Financial-validity codes | Emitted directly by threshold; `ValidationMessage.legacy_code` is gone. | Â§7. |
-| `@uwmd/signing` options | `VerifyBlockSignatureOptions` and `signBlock`'s `uwVersion` (Phase 3 review S1, never released) are deleted: there is one digest rule. | Â§3. |
-| VS Code detection note | The informational code for an extension-inferred representation is `SOURCE_REPRESENTATION_INFERRED` (was `SOURCE_LEGACY_EXTENSION`); a structured `.uw.md` is an error. | Â§4. |
-| Web viewer | Refuses any `uw_version` but 3.0 and reads `_meta.lifecycle.superseded`. | D1; Â§3. |
+| Extension block projections | A member named `content` in an extension block is payload, so tier-1 `02-full-multifamily.parsed.json` projects `x_lender_matrix`'s full payload. | §3; Phase 3 "Canonical parse projection". |
+| The renderer's pre-§4.5 NOI keys | Deleted. The L6 replay prompt's EGI line now reads `n/a` for the fixture that only stated the old key, so the cassette is re-recorded; `after.uwx.md` is unchanged. | §7; D5 (no stated value changes). |
+| Module host claims | `LoadModuleOptions` takes `hostConformance` (default `verifier`) and `hostProfiles` (default every profile); a host below a manifest's requirements is `PROTO-MOD-029`. A conformance reject case states the host in `expected.host`. | §6. |
+| Conformance tier vocabulary | `--tier` is `reader` or `verifier` in both drivers; anything else is a usage error. `conformance/runner/vocabulary.json`, generated from `scripts/conformance-targets.mjs`, replaces `tier-readings.json`. The portable report's `tier_reading` becomes `manifest_tier`. | §6; principle 5 (no aliases). |
+| Financial-validity codes | Emitted directly by threshold; `ValidationMessage.legacy_code` is gone. | §7. |
+| `@uwmd/signing` options | `VerifyBlockSignatureOptions` and `signBlock`'s `uwVersion` (Phase 3 review S1, never released) are deleted: there is one digest rule. | §3. |
+| VS Code detection note | The informational code for an extension-inferred representation is `SOURCE_REPRESENTATION_INFERRED` (was `SOURCE_LEGACY_EXTENSION`); a structured `.uw.md` is an error. | §4. |
+| Web viewer | Refuses any `uw_version` but 3.0 and reads `_meta.lifecycle.superseded`. | D1; §3. |
 | Release scope and the matrix | `release-packages.mjs` keeps the two module package names only so the generations that shipped them keep their recorded scope; from 4.0.0 it selects seven. `VERSIONS.md` keeps the 3.0.0 matrix as the release record that `release-state` checks, adds an unreleased note, and drops the module compatibility table (no sources remain). | D6; wiki 11 (historical scope is immutable); Phase 6 owns version labels. |
 | Retired and added checks | 20 checks are retired with their subject (`meta-v2` 6, `migrate` 3, `modules/runtime` 11). 35 are added: 5 `UNSUPPORTED_FORMAT_VERSION` controls, flat `_meta` and wrapper (`META-01`), an out-of-vocabulary resolution (`SRC-03`), the retired alias (`INVALID-ASSET-CLASS-002`), a `content` payload member (4 checks), a structured Lite name, a `_meta`-only edit after signing, receipt 1.0, four module refusals (8 checks with schema parity), nine lone-fact controls and two editor refusals of `meta` members outside the patch (`PROTO-EDIT-002`). The corpus is 1,069 reference checks and 336 portable cases. | Negative-control rule: a deleted path becomes a pinned refusal, never silence. |
 | Before/after comparison against `0ff4096` | Identical: every pack calculation over the 737 shared documents, every derived sources/uses total, all 15 receipt verdicts and results, the lender fixture (187/0/0), all 97 calc baselines, all 89 manifest load results and every block digest and signature outcome on them. The only differences are the deleted documents, `META-V2-IN-V1` no longer reported on parts that now state 3.0, reserved members no longer in the payload projection, and four documentation pages that are not UW documents now refused for having no `uw_version`. | D5; Phase 3 comparison method. |
 | Implemented RFCs whose code tables list retired codes | RFCs 0053, 0056, 0057 and 0058 keep their historical tables (their status lines already point here). `verify-codes` reads the Protocol's one "Retired agreement/transition codes are not emitted" sentence, exempts those codes from the implemented-RFC check, and fails if core still emits any of them. | Phase 1 superseded-clause notes; a guard checks the deletion rather than excusing it. |
 | Naming new hedge cases | `0081-accept-strike-only` and `0081-reject-partial-terms-group` carry the RFC number, so the RFC 0056 byte-retention test still sees exactly its 14 cases. | House pattern: later RFCs' hedge cases carry their number (`0070-`, `0075-`). |
 | Agent-authored `_overrides` (review of #310) | Stripped from every agent write: the Bancroft host drops it from model `section_data`, `writeAgentBlock` drops it from any agent block, and `applyEdit` drops it when the writer's source is `agent/*`. No agent-authored gap markers are kept; an agent records gaps in the `gaps` section. Human edits, including the web editor's, still write `_overrides`. The same review closed the neighbouring path: a `meta.provenance.source` other than the writer's own source is refused as `PROTO-EDIT-002`, so an agent cannot restate itself as `manual`. | Invariant 5 (the host owns provenance): an `_overrides` entry is per-field provenance the cascade honors as `user_override`, so a model-written one forges a human override. The prior shape-specific stamping dropped it implicitly. |
-| The cascade's effective tag | `_overrides[].resolution`, then `provenance.resolution`, then `manual` for a `manual` actor. An `_overrides` entry that states only an actor `source` no longer shadows the block's resolution, because an actor is not a resolution. | RFC 0031 (actor-only `source`); Format Â§2.6. |
-| The public `canonicalize` | Plain RFC 8785 JCS. It no longer strips `content_hash`/`signature` from `_meta`-shaped objects; the Â§3 digest excludes the whole `_meta` member. | Â§3. |
-| A `modules` entry that is not an object with an `id` | `MOD-DEPENDENCY-UNDECLARED` (warning) per entry, for every class, instead of silence; Format Â§2.2a and the code registry say so. The Appendix D `id: <module>` scalar still reads. | Format Â§2.2a (entries are objects); closed shapes are reported, not dropped. |
-| Unquoted `uw_version: 3.0` | Refused, with a message saying to quote it. The format version is the string `"3.0"` (Format Â§2.1 example; the envelope and part schemas pin `const: "3.0"`), and YAML reads `3.0` as the number 3. | D1; the schemas. |
+| The cascade's effective tag | `_overrides[].resolution`, then `provenance.resolution`, then `manual` for a `manual` actor. An `_overrides` entry that states only an actor `source` no longer shadows the block's resolution, because an actor is not a resolution. | RFC 0031 (actor-only `source`); Format §2.6. |
+| The public `canonicalize` | Plain RFC 8785 JCS. It no longer strips `content_hash`/`signature` from `_meta`-shaped objects; the §3 digest excludes the whole `_meta` member. | §3. |
+| A `modules` entry that is not an object with an `id` | `MOD-DEPENDENCY-UNDECLARED` (warning) per entry, for every class, instead of silence; Format §2.2a and the code registry say so. The Appendix D `id: <module>` scalar still reads. | Format §2.2a (entries are objects); closed shapes are reported, not dropped. |
+| Unquoted `uw_version: 3.0` | Refused, with a message saying to quote it. The format version is the string `"3.0"` (Format §2.1 example; the envelope and part schemas pin `const: "3.0"`), and YAML reads `3.0` as the number 3. | D1; the schemas. |
 | CLI refusals and `verifyProvenance` | The CLI prints a typed refusal (any error with a string `code`) as one line without a stack. `verifyProvenance` skips a head with no Format 3.0 provenance rather than throwing; `META-01` reports the shape. | Existing CLI handling of typed errors; one finding per problem. |
-| `reserve-*/legacy-v1` | Kept for Phase 5's renames. They are Format 3.0 documents and exercise no v1 path. | Phase 3 row; Â§8. |
+| `reserve-*/legacy-v1` | Kept for Phase 5's renames. They are Format 3.0 documents and exercise no v1 path. | Phase 3 row; §8. |
 | Out of scope | `deriveSourcesUses`' renovation double count (Q3) and the YAML-subset list-of-mappings gap above. | Owner task boundary. |
 
 ## RFC 0081 Phase 5 implementation decisions
 
 | Question | Phase 5 decision | Precedent / boundary |
 |---|---|---|
-| Corpus storage and suite names | Apply Â§8: `documents`, `calc`, `starter/editor`, `starter/refinement`, `starter/agent`; suite ids are `documents`, `calc`, `starter-editor`, `starter-refinement`, `starter-agent`, `starter-agent-profile`, `starter-agent-replay`. No old path or id is accepted. | Â§8; Product principle 5; Phase 5 is a pure rename. |
+| Corpus storage and suite names | Apply §8: `documents`, `calc`, `starter/editor`, `starter/refinement`, `starter/agent`; suite ids are `documents`, `calc`, `starter-editor`, `starter-refinement`, `starter-agent`, `starter-agent-profile`, `starter-agent-replay`. No old path or id is accepted. | §8; Product principle 5; Phase 5 is a pure rename. |
 | Reserve `legacy-v1` cases | Rename both directories and scenario ids to `bare-block`, retaining their exact documents, plans, expectations and assertions. | Phase 4 carry-over; the documents are already 3.0; acceptance retains 1,069 checks and 336 portable cases. |
-| Portable identity | Id and filename stem are `<owner>__<suite>__<scenario>__<operation>`. Malformed document scenarios use `malformed-<stem>`; replacement-funding projections use the reference suite `hedge`. Ownership is still the index's `target`. | Â§8; Protocol Â§II.6a; no legacy id or private reader object becomes a conformance claim. |
+| Portable identity | Id and filename stem are `<owner>__<suite>__<scenario>__<operation>`. Malformed document scenarios use `malformed-<stem>`; replacement-funding projections use the reference suite `hedge`. Ownership is still the index's `target`. | §8; Protocol §II.6a; no legacy id or private reader object becomes a conformance claim. |
 | Family selection and baseline updates | Preserve membership: the `calc` family includes `starter-refinement`, and `starter-agent` includes `starter-agent-profile`; replay remains separately selected. Child-only baseline updates stay refused. | Existing `suiteFamily` behavior; no behavior change in Phase 5. |
-| Documentation history | RFCs, release records, prior CHANGELOG sections and immutable review/status history keep their text. The site maps their old links to current sources/pages at build time, without redirects or old pages. Current prose uses content names. | Â§8; Phase 2 historical spec-link precedent; PROCESS historical evidence. |
+| Documentation history | RFCs, release records, prior CHANGELOG sections and immutable review/status history keep their text. The site maps their old links to current sources/pages at build time, without redirects or old pages. Current prose uses content names. | §8; Phase 2 historical spec-link precedent; PROCESS historical evidence. |
 | Historical refusal inputs | Keep the former tier spellings in refusal tests and module controls; their surrounding comments/README explicitly explain the history. They are inputs proved refused, never aliases or current corpus labels. | Phase 4 negative controls; acceptance's history exception. |
 | Contributor path reference | Update only the stale corpus path in `CONTRIBUTING.md`; its guidance is unchanged. | Owner's explicit instruction to update every path reference; no guidance rewrite. |
 | Verification evidence | Compare every mapped reference and portable id, its owner and outcome, plus the portable case definition (paths/ids aside) and the lender's per-statement evidence. Publish the full mapping as historical RFC evidence. | Owner Phase 5 acceptance; Phase 4 comparison precedent. |
@@ -2327,6 +2327,6 @@ transition plan, until the owner declares the standard released.
 - **RFC 0009's own timeline** planned the shim's removal at the next major;
   this RFC carries it out.
 - **RFC 0010's signing design** intended a content hash that does not bind
-  `parent_hash`; Â§3 delivers it.
-- **Pre-1.0 semver practice** (the spirit of semver Â§4): before a public
+  `parent_hash`; §3 delivers it.
+- **Pre-1.0 semver practice** (the spirit of semver §4): before a public
   release, anything may change and no compatibility is owed.

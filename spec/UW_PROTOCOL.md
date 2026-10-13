@@ -3597,7 +3597,6 @@ For the tier and each profile you claim:
 See [`conformance/README.md`](../conformance/README.md). Content directories contain fixtures and expected outputs with explicit target ownership (RFC 0081 Phase 5);
 directory membership is not a normative signal (§II.6).
 
-<a id="appendix-d--worked-example-documents-in-500-loc"></a>
 
 ## Appendix D — Worked example: a Reader in <500 LOC
 

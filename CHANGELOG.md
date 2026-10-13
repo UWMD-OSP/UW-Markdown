@@ -2603,7 +2603,7 @@ two **0.1.0** reference modules remain outside the publication workflow.
 
 ### Added — RFC 0001 implemented: display-locale negotiation (corpus 323 → 331)
 
-[RFC 0001](./docs/rfcs/0001-locale-negotiation.md) (accepted and implemented
+[RFC 0001](docs/rfcs/0001-locale-negotiation.md) (accepted and implemented
 2026-09-01). Protocol goes to **1.13.0**, adding **§III.1a — Display locales**.
 A file declares the locale it was authored in (`locale` frontmatter, default
 `en-US`); an implementation declares what it renders
@@ -2636,7 +2636,7 @@ different locale.
 
 ### Added — RFC 0011 implemented: capability tokens for write authorization (corpus 315 → 323)
 
-[RFC 0011](./docs/rfcs/0011-capability-tokens.md) (accepted and implemented
+[RFC 0011](docs/rfcs/0011-capability-tokens.md) (accepted and implemented
 2026-09-01). Protocol goes to **1.12.0**, adding **§XIV — Capability tokens
 (optional)** (future work renumbers to §XV). An opt-in second gate on writes
 for orchestrator-bound deployments: a short-lived, scope-limited JWT a
@@ -2666,7 +2666,7 @@ this deal, until this time" — verified by the editor before the write.
 
 ### Added — RFC 0008 implemented: the lease-up schedule section (corpus 306 → 315)
 
-[RFC 0008](./docs/rfcs/0008-lease-up-modeling.md) (accepted and implemented
+[RFC 0008](docs/rfcs/0008-lease-up-modeling.md) (accepted and implemented
 2026-09-01). Protocol goes to **1.11.0**. The format jumped straight from
 `rent_roll` (a snapshot) to `noi_model` (a stabilized projection) with no
 structured representation of the path between them — the entire thesis of a
@@ -2820,7 +2820,7 @@ unpoliced-write half shipped earlier as a bug fix; this lands the vocabulary.
   The protocol document's own H1 had also read "v1.3" since protocol 1.3.0 —
   seven minors of rot — and now carries the major alone, with §0.3 stating the
   precise version.
-- Unblocks [RFC 0009](./docs/rfcs/0009-meta-v2-reorg.md) (`_meta` v2 reorg),
+- Unblocks [RFC 0009](docs/rfcs/0009-meta-v2-reorg.md) (`_meta` v2 reorg),
   which can now type the nested provenance field without orphaning the actor
   vocabulary the edit engine runs on.
 
@@ -2918,7 +2918,7 @@ fix it was the wrong trade.
 
 ### Added — RFC 0010 implemented: signed blocks, and the receipt signing it unblocked (corpus 245 → 263)
 
-[RFC 0010](./docs/rfcs/0010-signed-blocks.md) (drafted 2026-04-27, accepted and
+[RFC 0010](docs/rfcs/0010-signed-blocks.md) (drafted 2026-04-27, accepted and
 implemented 2026-08-27) is the first item off the v2 train the owner unfroze
 on 2026-08-26. Protocol goes to **1.7.0** for the new §V.11.
 
@@ -2959,7 +2959,7 @@ on 2026-08-26. Protocol goes to **1.7.0** for the new §V.11.
 
 ### Added — RFC 0005 implemented: stochastic calculations (corpus 294 → 301)
 
-[RFC 0005](./docs/rfcs/0005-stochastic-calculations.md) (drafted 2026-04-26,
+[RFC 0005](docs/rfcs/0005-stochastic-calculations.md) (drafted 2026-04-26,
 accepted and implemented 2026-08-27), on the override mechanism RFC 0007 added
 the same day. Protocol §VIII.8.
 
@@ -3022,7 +3022,7 @@ Until then, port the TypeScript rather than re-deriving pcg64 from the paper.
 
 ### Added — RFC 0007 implemented: sensitivity tables, without touching the grammar (corpus 289 → 294)
 
-[RFC 0007](./docs/rfcs/0007-sensitivity-tables.md) (drafted 2026-04-27, accepted
+[RFC 0007](docs/rfcs/0007-sensitivity-tables.md) (drafted 2026-04-27, accepted
 and implemented 2026-08-27). Protocol §VIII.7. No version bump beyond 1.8.0,
 which the same day's §X.2 already carried.
 
@@ -3067,7 +3067,7 @@ accordingly — there is no ad-hoc implementation to replace, and
 
 ### Added — RFC 0003 implemented: modules can declare asset classes (corpus 274 → 289)
 
-[RFC 0003](./docs/rfcs/0003-module-asset-classes.md) (drafted 2026-04-26,
+[RFC 0003](docs/rfcs/0003-module-asset-classes.md) (drafted 2026-04-26,
 accepted and implemented 2026-08-27), on top of the module runtime RFC 0006
 landed the same day. Protocol goes to **1.8.0** for the new §X.2; the format
 spec gains §2.2a. `uw_version` stays 1.1 — the grammar addition is additive and
@@ -3116,7 +3116,7 @@ no 1.1 document changes meaning.
 
 ### Added — RFC 0006 implemented: the module system gets a runtime, and a consumer (corpus 269 → 274)
 
-[RFC 0006](./docs/rfcs/0006-hospitality-module.md) (drafted 2026-04-26, accepted
+[RFC 0006](docs/rfcs/0006-hospitality-module.md) (drafted 2026-04-26, accepted
 and implemented 2026-08-27), the last item on the priority order the owner set
 when the v2 train unfroze.
 
@@ -3168,7 +3168,7 @@ when the v2 train unfroze.
 
 ### Added — RFC 0004 implemented: a language-agnostic conformance driver
 
-[RFC 0004](./docs/rfcs/0004-conformance-runner-v2.md) (drafted 2026-04-26,
+[RFC 0004](docs/rfcs/0004-conformance-runner-v2.md) (drafted 2026-04-26,
 accepted and implemented 2026-08-27). The corpus is the project's main lever
 for staying coherent as adopters arrive, and it was runnable only from
 TypeScript — a Python or Rust implementation could "pass the conformance
@@ -3219,7 +3219,7 @@ before, while the type they would declare them in had no such members.
 
 ### Added — RFC 0002 implemented: module manifest signatures (corpus 263 → 269)
 
-[RFC 0002](./docs/rfcs/0002-module-signing.md) (drafted 2026-04-26, accepted and
+[RFC 0002](docs/rfcs/0002-module-signing.md) (drafted 2026-04-26, accepted and
 implemented 2026-08-27), the second half of the signing chain, on RFC 0010's
 machinery. Protocol §X.1; no version bump beyond 1.7.0, which the same day's
 §V.11 already carried.
