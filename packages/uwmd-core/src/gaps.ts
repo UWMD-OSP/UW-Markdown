@@ -8,39 +8,16 @@
 //   - Summarizes the resulting list relative to a current stage.
 
 import { STAGE_REQUIREMENTS } from './protocol.js';
-import { deepGet, getSection } from './parser.js';
+import { deepGet } from './parser.js';
 import type { DealStage, ParsedUWFile, UWBlock } from './types.js';
 import { blockOverrides } from './metadata.js';
+import { readGapsContent, type GapItem, type GapReason, type GapSummary, type GapsContent } from './gaps-content.js';
 
-export type GapReason =
-  | 'missing'
-  | 'illegible'
-  | 'out_of_scope'
-  | 'deferred'
-  | 'blocked_by_dependency'
-  | 'awaiting_external';
-
-export interface GapItem {
-  section: string;
-  field_path?: string;
-  reason: GapReason;
-  blocks_stage?: DealStage;
-  first_seen?: string;
-  last_checked?: string;
-  owner?: string;
-  note?: string;
-}
-
-export interface GapSummary {
-  total_open: number;
-  blocking_current_stage: number;
-  blocking_next_stage: number;
-}
-
-export interface GapsContent {
-  items: GapItem[];
-  summary?: GapSummary;
-}
+// The gaps section's content types and its reader live in gaps-content.ts
+// (standard side, RFC 0083: the validator reads them); inference and
+// summarization stay here.
+export type { GapItem, GapReason, GapSummary, GapsContent };
+export { readGapsContent };
 
 // ─── Stage helpers ───────────────────────────────────────────────────────────
 
@@ -309,18 +286,4 @@ export function summarizeGaps(items: readonly GapItem[], currentStage: DealStage
     blocking_current_stage: blocking_current,
     blocking_next_stage: blocking_next,
   };
-}
-
-// ─── Reading the existing gaps section ───────────────────────────────────────
-
-/**
- * Pull the typed content out of the file's `gaps` section. Returns null when
- * the section is absent or malformed.
- */
-export function readGapsContent(parsed: ParsedUWFile): GapsContent | null {
-  const block = getSection(parsed, 'gaps');
-  if (!block) return null;
-  const c = block.content as Partial<GapsContent> | null;
-  if (!c || !Array.isArray(c.items)) return null;
-  return { items: c.items as GapItem[], summary: c.summary };
 }

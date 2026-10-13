@@ -1,18 +1,18 @@
-// Industrial pack tests — pack integrity + AST→Excel emitter parity.
+// Office pack tests — pack integrity + AST→Excel emitter parity.
 //
-// Mirrors office.test.ts / retail.test.ts for the industrial asset class. The
-// same calc-integrity contract holds: a single ModuleCalcDecl in
-// INDUSTRIAL_PACK can be evaluated by `evaluateCalc()` AND emitted as an Excel
-// formula that, evaluated against the same named-range values, produces the same
-// number. Tested against the Ironwood Logistics worked example.
+// Mirrors packs.test.ts for the office asset class. The same calc-integrity
+// contract holds: a single ModuleCalcDecl in OFFICE_PACK can be evaluated by
+// `evaluateCalc()` AND emitted as an Excel formula that, evaluated against the
+// same named-range values, produces the same number. Tested against the
+// Riverside office worked example.
 
 import { describe, it, expect } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { parseUWFile } from '../parser.js';
 import { evaluateCalc } from '../calc/index.js';
-import { INDUSTRIAL_PACK } from './industrial.js';
-import { emitExcelFormula } from './excel-emit.js';
+import { OFFICE_PACK } from './office.js';
+import { emitExcelFormula } from '../packs/excel-emit.js';
 import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { parseExpression } from '../calc/parser.js';
 import type { CalcEvaluationContext } from '../protocol.js';
@@ -26,17 +26,13 @@ function excelValue(formula: string): number | null {
   ) as number | null;
 }
 
-const IRONWOOD = resolve(
-  __dirname,
-  '../../../../examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md',
-);
+const RIVERSIDE = resolve(__dirname, '../../../../examples/Riverside-Office-Phoenix-AZ.uwx.md');
 
-// Full dotted path → workbook-scope named range. Keys mirror the industrial
+// Full dotted path → workbook-scope named range. Keys mirror the office
 // field paths the pack references; values stand in for Excel named ranges.
 const NAMED_RANGES = new Map<string, string>([
   ['noi_model.net_operating_income', 'noi'],
   ['noi_model.income.effective_gross_income', 'effective_gross_income'],
-  ['noi_model.income.expense_reimbursements', 'expense_reimbursements'],
   ['noi_model.expenses.total_operating_expenses', 'total_operating_expenses'],
   ['valuation.purchase_price', 'purchase_price'],
       ['valuation.underwritten_value', 'underwritten_value'],
@@ -50,16 +46,15 @@ const NAMED_RANGES = new Map<string, string>([
   ['rent_roll.total_rentable_sf', 'total_rentable_sf'],
 ]);
 
-describe('INDUSTRIAL_PACK', () => {
-  it('declares the canonical industrial metrics', () => {
-    const ids = (INDUSTRIAL_PACK.calculations ?? []).map((c) => c.id).sort();
+describe('OFFICE_PACK', () => {
+  it('declares the canonical office metrics', () => {
+    const ids = (OFFICE_PACK.calculations ?? []).map((c) => c.id).sort();
     expect(ids).toEqual([
       'cap_rate',
       'cash_on_cash',
       'debt_yield',
       'dscr',
       'expense_ratio',
-      'expense_recovery_ratio',
       'loan_per_sqft',
       'ltc',
       'ltv',
@@ -69,22 +64,22 @@ describe('INDUSTRIAL_PACK', () => {
     ]);
   });
 
-  it('targets the industrial asset class', () => {
-    expect(INDUSTRIAL_PACK.asset_classes).toEqual(['industrial']);
+  it('targets the office asset class', () => {
+    expect(OFFICE_PACK.asset_classes).toEqual(['office']);
   });
 
   it('every calc has a parseable formula', () => {
-    for (const c of INDUSTRIAL_PACK.calculations ?? []) {
+    for (const c of OFFICE_PACK.calculations ?? []) {
       expect(() => parseExpression(c.formula), `${c.id} should parse`).not.toThrow();
     }
   });
 
-  it('every calc evaluates against the Ironwood fixture without error', async () => {
-    const raw = await readFile(IRONWOOD, 'utf8');
+  it('every calc evaluates against the Riverside fixture without error', async () => {
+    const raw = await readFile(RIVERSIDE, 'utf8');
     const parsed = parseUWFile(raw);
     const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
 
-    for (const c of INDUSTRIAL_PACK.calculations ?? []) {
+    for (const c of OFFICE_PACK.calculations ?? []) {
       const r = evaluateCalc(c, ctx);
       expect(r.ok, `${c.id}: ${r.error?.message ?? ''}`).toBe(true);
       expect(typeof r.value).toBe('number');
@@ -92,18 +87,30 @@ describe('INDUSTRIAL_PACK', () => {
   });
 
   it('every formula path has a named range (Excel-emittable)', () => {
-    for (const c of INDUSTRIAL_PACK.calculations ?? []) {
+    for (const c of OFFICE_PACK.calculations ?? []) {
       expect(
         () => emitExcelFormula(c.formula, { namedRanges: NAMED_RANGES }),
         `${c.id} should emit`,
       ).not.toThrow();
     }
   });
+
+  it('Riverside states gross_potential_rent as the §4.5 object, and it foots to EGI', async () => {
+    const raw = await readFile(RIVERSIDE, 'utf8');
+    const parsed = parseUWFile(raw);
+    const noi = parsed.sections['noi_model'] as { content: Record<string, unknown> };
+    const income = noi.content['income'] as Record<string, unknown>;
+
+    // The worked example states the template shape; a scalar was never it.
+    expect(income['gross_potential_rent']).toMatchObject({ value: 935000, source: 'market' });
+    const gpr = (income['gross_potential_rent'] as { value: number }).value;
+    expect(gpr - (income['vacancy_loss'] as number)).toBe(income['effective_gross_income']);
+  });
 });
 
-describe('Industrial Excel emit ↔ evaluateCalc parity', () => {
-  it('every industrial metric: Excel formula evaluated against named-range values matches evaluateCalc', async () => {
-    const raw = await readFile(IRONWOOD, 'utf8');
+describe('Office Excel emit ↔ evaluateCalc parity', () => {
+  it('every office metric: Excel formula evaluated against named-range values matches evaluateCalc', async () => {
+    const raw = await readFile(RIVERSIDE, 'utf8');
     const parsed = parseUWFile(raw);
     const ctx: CalcEvaluationContext = { parsed, prior_results: {}, locale: 'en-US' };
 
@@ -121,7 +128,6 @@ describe('Industrial Excel emit ↔ evaluateCalc parity', () => {
     const values: Record<string, number | null> = {
       noi: noi.content['net_operating_income'] as number,
       effective_gross_income: income['effective_gross_income']!,
-      expense_reimbursements: income['expense_reimbursements']!,
       total_operating_expenses: expenses['total_operating_expenses']!,
       purchase_price: valuation.content['purchase_price'] as number,
       underwritten_value: (valuation.content['underwritten_value'] as number | undefined) ?? null,
@@ -135,7 +141,7 @@ describe('Industrial Excel emit ↔ evaluateCalc parity', () => {
       total_rentable_sf: rentRoll.content['total_rentable_sf'] as number,
     };
 
-    for (const c of INDUSTRIAL_PACK.calculations ?? []) {
+    for (const c of OFFICE_PACK.calculations ?? []) {
       const direct = evaluateCalc(c, ctx);
       expect(direct.ok, `${c.id} evaluateCalc`).toBe(true);
 

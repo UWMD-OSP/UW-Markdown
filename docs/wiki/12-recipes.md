@@ -22,7 +22,7 @@ touch, the tests to run, and whether an RFC is likely needed
 
 ## Add a derived metric to an existing pack
 
-**Files:** `packages/uwmd-core/src/packs/multifamily.ts` (+ Excel named ranges if
+**Files:** `packages/uwmd-core/src/builtin-packs/multifamily.ts` (+ Excel named ranges if
 new inputs).
 1. Append a `ModuleCalcDecl` (`id`, `label`, `unit`, `formula`, `deterministic:
    true`). Reference real field paths ([07 — Data model](07-data-model-reference.md)).
@@ -57,7 +57,7 @@ new inputs).
 ## Add an asset-class calc pack
 
 See the scaffold in [05 — Calc packs › new asset-class pack](05-calc-packs.md).
-Touches `packs/`, `defaults.ts`, `src/index.ts`, Excel layout, conformance.
+Touches `builtin-packs/` (and the `packs/` re-export), `defaults.ts`, `src/index.ts`, Excel layout, conformance.
 RFC: **yes** (`docs/rfcs/0003-module-asset-classes.md`).
 
 ## Add a Bancroft agent layer

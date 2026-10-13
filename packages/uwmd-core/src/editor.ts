@@ -17,12 +17,12 @@ import { stampMetaIntoBlockContent, bumpRawMetaVersion } from './metadata.js';
 import { isBlockRole } from './block-roles.js';
 import type { ParsedUWFile, UWBlock, UWMeta, UWMetaPatch } from './types.js';
 import type {
-  CapabilityVerifier,
   EditAuthority,
   EditOperation,
   EditPolicy,
   ProtocolError,
 } from './protocol.js';
+import type { CapabilityVerifier } from './starter-protocol.js';
 import { BUILTIN_EDIT_POLICIES, parseActorSource } from './protocol.js';
 import { getSection, getSectionVariant, parseUWFile } from './parser.js';
 import { buildMeta } from './runner.js';

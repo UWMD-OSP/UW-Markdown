@@ -19,6 +19,7 @@
     "conformance:profiles": "python3 -B -m unittest discover -s conformance/runner -p \"test_*.py\" && node scripts/check-conformance-profiles.mjs",
     "gen-signing-fixtures": "node scripts/gen-signing-fixtures.mjs",
     "gen-capability-fixtures": "node scripts/gen-capability-fixtures.mjs",
+    "gen-metric-dictionary": "node scripts/gen-metric-dictionary.mjs",
     "validate-schemas": "node scripts/validate-schemas.mjs",
     "verify-packages": "node scripts/verify-packages.mjs",
     "verify-lockfile": "node scripts/verify-lockfile.mjs",

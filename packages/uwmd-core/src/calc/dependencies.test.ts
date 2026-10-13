@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseExpression } from './parser.js';
 import { extractDependencyGraph, getExprDependencies } from './dependencies.js';
-import { MULTIFAMILY_PACK } from '../packs/multifamily.js';
+import { MULTIFAMILY_PACK } from '../builtin-packs/multifamily.js';
 import { parseUWFile } from '../parser.js';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';

@@ -29,7 +29,7 @@ import type {
 } from './protocol.js';
 import { CalcError } from './calc/errors.js';
 import { periodReferenceContract, resolvePeriodReference } from './period-path.js';
-import { MULTIFAMILY_PACK } from './packs/multifamily.js';
+import { MULTIFAMILY_PACK } from './builtin-packs/multifamily.js';
 import { extractDependencyGraph } from './calc/dependencies.js';
 import type { Expr } from './calc/parser.js';
 import { parseExpression, periodReferencePath } from './calc/parser.js';

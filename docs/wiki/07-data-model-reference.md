@@ -24,7 +24,7 @@ AssetClass = 'multifamily' | 'office' | 'retail' | 'industrial' | 'self_storage'
 patterns like `agent/L6-01`, `document/rent_roll`, `import:file.pdf` are valid.
 The cascade-resolved short tags are: `user_override`, `user_input`,
 `investor_profile`, `market_data`, `asset_class_default`, `global_default`,
-`system_default` (see `CASCADE_ORDER` in `protocol.ts`).
+`system_default` (see `CASCADE_ORDER` in `starter-protocol.ts`).
 
 ## `ParsedUWFile` (parser output)
 
@@ -122,7 +122,7 @@ checks): `purchase_price`, `loan_amount`, `noi_underwritten`, `dscr`, `ltv`,
 ## Section field paths used by the multifamily pack
 
 The calc formulas reference these paths — they are the *de facto* required shape
-for a multifamily deal that wants live metrics (from `packs/multifamily.ts`):
+for a multifamily deal that wants live metrics (from `builtin-packs/multifamily.ts`):
 
 Path | Used by
 ---|---
@@ -139,7 +139,7 @@ Path | Used by
 > the section's *inner* user data; `.net_operating_income` then drills in. See
 > [04 — Calc engine › Variable resolution](04-calc-engine.md).
 
-## Display view models (`BUILTIN_VIEW_MODELS` in `protocol.ts`)
+## Display view models (`BUILTIN_VIEW_MODELS` in `starter-protocol.ts`)
 
 For rendering, each section has a `SectionViewModel` with `primary_fields` and
 `detail_fields` (`FieldViewHint`: `path`, `label`, `kind`

@@ -1,8 +1,12 @@
-// Tier-3 Calc Host — public entry point.
+// Tier-3 Calc Host — entry point.
 // `evaluateCalc()` parses a calc declaration's formula, resolves variables
 // against the CalcEvaluationContext, and returns a CalcResult per §VIII.
+//
+// Standard side (RFC 0083): the result carries no `display` string, which is
+// optional in `calc-result.schema.json` and a starter display convention
+// (RFC 0078 D11). The `evaluateCalc` that `@uwmd/core` exports is the starter
+// wrapper in `../calc-display.ts`, which adds `display` to this result.
 
-import { formatCurrency, formatPercent, formatRatio, formatValue } from '../format.js';
 import type { CalcEvaluationContext, CalcResult, ModuleCalcDecl } from '../protocol.js';
 import { CalcError } from './errors.js';
 import { evaluateDeclared } from './evaluator.js';
@@ -38,8 +42,9 @@ export {
  * This is the **quantization boundary** (§VIII.5). Evaluation itself runs in
  * unrounded binary64; the value leaving here is quantized to the declaration's
  * effective `round_to`. Every consumer — receipts, the web editor, the CLI, the
- * Excel converter — reaches results through this function, which is what makes
- * one boundary sufficient.
+ * Excel converter — reaches results through this function (directly, or through
+ * the starter wrapper that adds `display`), which is what makes one boundary
+ * sufficient.
  */
 export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): CalcResult {
   const roundTo = resolveRoundTo(decl);
@@ -73,7 +78,6 @@ export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): 
       value,
       ...(decl.unit ? { unit: decl.unit } : {}),
       round_to: roundTo,
-      display: formatForDisplay(value, decl.unit, ctx.parsed?.frontmatter?.currency_code),
     };
   } catch (e) {
     const proto = e instanceof CalcError
@@ -87,18 +91,5 @@ export function evaluateCalc(decl: ModuleCalcDecl, ctx: CalcEvaluationContext): 
       round_to: roundTo,
       error: proto,
     };
-  }
-}
-
-function formatForDisplay(value: unknown, unit?: string, currencyCode?: string): string {
-  if (value === null || value === undefined) return formatValue(null);
-  if (typeof value !== 'number') return String(value);
-  switch (unit) {
-    case '%': return formatPercent(value);
-    case '$': return formatCurrency(value, { currencyCode });
-    case 'x': return formatRatio(value);
-    default:
-      // Fall back to a fixed-decimal display.
-      return Number.isInteger(value) ? value.toString() : value.toFixed(4);
   }
 }

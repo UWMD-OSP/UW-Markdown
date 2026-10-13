@@ -23,7 +23,7 @@ import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncomplet
 import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
-import { readGapsContent } from './gaps.js';
+import { readGapsContent } from './gaps-content.js';
 import { LEASE_UP_STABILIZED_TOLERANCE } from './lease-up.js';
 import { checkLeaseUpContent } from './lease-up-structure.js';
 import { CASH_FLOW_KINDS, CASH_FLOW_VERIFY_DECIMALS, quantizeAtDecimals } from './cash-flow-series.js';

@@ -21,7 +21,10 @@ continues to use the same pack objects and Excel bindings.
 > ([RFC 0080](../rfcs/0080-official-classes-are-builtins.md)); modules are for
 > third-party classes and metrics.
 
-- **Location:** [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/)
+- **Location:** the twelve manifests and the registry are in
+  [`packages/uwmd-core/src/builtin-packs/`](../../packages/uwmd-core/src/builtin-packs/)
+  (standard side, RFC 0083: receipts and builtin-class validation read them);
+  [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/) re-exports them beside the Excel emitter.
 - **Public API (via `index.ts`):** `MULTIFAMILY_PACK`, `OFFICE_PACK`,
   `RETAIL_PACK`, `INDUSTRIAL_PACK`, `SELF_STORAGE_PACK`, `HOSPITALITY_PACK`,
   `SENIOR_HOUSING_PACK`, `STUDENT_HOUSING_PACK`, `LAND_PACK`,
@@ -52,30 +55,31 @@ including failures and absent-input findings without hiding coarse statements.
 
 File | Role
 ---|---
-`packs/multifamily.ts` | `MULTIFAMILY_PACK` — the canonical multifamily metrics
-`packs/office.ts` | `OFFICE_PACK` — the canonical office metrics
-`packs/retail.ts` | `RETAIL_PACK` — the canonical retail metrics
-`packs/industrial.ts` | `INDUSTRIAL_PACK` — the canonical industrial metrics
-`packs/self-storage.ts` | `SELF_STORAGE_PACK` — the canonical self-storage metrics
-`packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
-`packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
-`packs/student-housing.ts` | `STUDENT_HOUSING_PACK` — the canonical student-housing metrics
-`packs/data-center.ts` | `DATA_CENTER_PACK` — twenty data-center metrics
-`packs/manufactured-housing.ts` | `MANUFACTURED_HOUSING_PACK` — thirteen manufactured-housing metrics
-`packs/land.ts` | `LAND_PACK` — the canonical land metrics (no cap rate by design)
-`packs/mixed-use.ts` | `MIXED_USE_PACK` — property metrics and component calculations
-`packs/metric-dictionary.test.ts` | Every pack declaration and size row equals its normative dictionary entry, in both directions
+`builtin-packs/multifamily.ts` | `MULTIFAMILY_PACK` — the canonical multifamily metrics
+`builtin-packs/office.ts` | `OFFICE_PACK` — the canonical office metrics
+`builtin-packs/retail.ts` | `RETAIL_PACK` — the canonical retail metrics
+`builtin-packs/industrial.ts` | `INDUSTRIAL_PACK` — the canonical industrial metrics
+`builtin-packs/self-storage.ts` | `SELF_STORAGE_PACK` — the canonical self-storage metrics
+`builtin-packs/hospitality.ts` | `HOSPITALITY_PACK` — the canonical hospitality metrics
+`builtin-packs/senior-housing.ts` | `SENIOR_HOUSING_PACK` — the canonical senior-housing metrics
+`builtin-packs/student-housing.ts` | `STUDENT_HOUSING_PACK` — the canonical student-housing metrics
+`builtin-packs/data-center.ts` | `DATA_CENTER_PACK` — twenty data-center metrics
+`builtin-packs/manufactured-housing.ts` | `MANUFACTURED_HOUSING_PACK` — thirteen manufactured-housing metrics
+`builtin-packs/land.ts` | `LAND_PACK` — the canonical land metrics (no cap rate by design)
+`builtin-packs/mixed-use.ts` | `MIXED_USE_PACK` — property metrics and component calculations
+`builtin-packs/metric-dictionary.test.ts` | Every pack declaration and size row equals its normative dictionary entry, in both directions
 `packs/excel-emit.ts` | Translate the same calc AST → Excel formula string
-`packs/index.ts` | Re-exports the packs + the `getPackForAssetClass` registry
+`builtin-packs/index.ts` | The `getPackForAssetClass` registry
+`packs/index.ts` | Re-exports the builtin packs and the registry beside the Excel emitter
 `packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (exact)
-`packs/office.test.ts` | Office pack integrity + Excel↔evaluator parity (exact)
-`packs/retail.test.ts` | Retail pack integrity + Excel↔evaluator parity (exact)
-`packs/industrial.test.ts` | Industrial pack integrity + Excel↔evaluator parity (exact)
-`packs/self-storage.test.ts` | Self-storage pack integrity + Excel↔evaluator parity (exact)
-`packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (exact) + operating-statement footing
-`packs/senior-housing.test.ts` | Senior-housing pack integrity + Excel↔evaluator parity (exact) + footing/labor-subtotal reconciliation
-`packs/student-housing.test.ts` | Student-housing pack integrity + Excel↔evaluator parity (exact) + footing + bed-sizing guard
-`packs/land.test.ts` | Land pack integrity + Excel↔evaluator parity (exact) + carry-model footing + income-metric omission guard
+`builtin-packs/office.test.ts` | Office pack integrity + Excel↔evaluator parity (exact)
+`builtin-packs/retail.test.ts` | Retail pack integrity + Excel↔evaluator parity (exact)
+`builtin-packs/industrial.test.ts` | Industrial pack integrity + Excel↔evaluator parity (exact)
+`builtin-packs/self-storage.test.ts` | Self-storage pack integrity + Excel↔evaluator parity (exact)
+`builtin-packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (exact) + operating-statement footing
+`builtin-packs/senior-housing.test.ts` | Senior-housing pack integrity + Excel↔evaluator parity (exact) + footing/labor-subtotal reconciliation
+`builtin-packs/student-housing.test.ts` | Student-housing pack integrity + Excel↔evaluator parity (exact) + footing + bed-sizing guard
+`builtin-packs/land.test.ts` | Land pack integrity + Excel↔evaluator parity (exact) + carry-model footing + income-metric omission guard
 
 ## Selecting a pack by asset class
 
@@ -439,9 +443,9 @@ junior, two-senior and default-junior cases.
 
 1. Record the accepted normative definition in `spec/metrics/builtin.json`
    (a new or changed definition is a normative change and needs an RFC),
-   including effective precision, potential inputs and declared section roles.
-   Mirror it as a `ModuleCalcDecl` in `MULTIFAMILY_PACK.calculations` in
-   `packs/multifamily.ts` — pick an `id`, `label`, `unit` (`%`/`$`/`x`), and a
+   including effective precision, potential inputs and declared section roles,
+   then run `npm run gen-metric-dictionary`. Mirror it as a `ModuleCalcDecl` in `MULTIFAMILY_PACK.calculations` in
+   `builtin-packs/multifamily.ts` — pick an `id`, `label`, `unit` (`%`/`$`/`x`), and a
    `formula` referencing real section field paths (see [07 — Data model](07-data-model-reference.md)).
 2. Make sure every field path the formula reads has an Excel named range. If the
    metric uses a new input, add it to `NAMED_INPUTS` / `NAMED_RANGE_MAP` in
@@ -458,26 +462,28 @@ junior, two-senior and default-junior cases.
 ## Recipe: add a new built-in asset-class pack
 
 `office` was the first pack to follow this recipe — model new packs on
-`packs/office.ts` + `packs/office.test.ts`. Adding a built-in pack for an asset
+`builtin-packs/office.ts` + `builtin-packs/office.test.ts`. Adding a built-in pack for an asset
 class changes the normative metric dictionary and therefore needs an RFC.
 Official new classes follow the builtin class contract; private third-party
 extensions use modules.
 
-1. Create `packs/<assetclass>.ts` exporting `const <X>_PACK: ModuleManifest` with
+1. Create `builtin-packs/<assetclass>.ts` exporting `const <X>_PACK: ModuleManifest` with
    `asset_classes: ['<assetclass>']` and a `calculations[]` array. Reference real
    field paths from a worked example deal for that class (see [07 — Data
    model](07-data-model-reference.md)).
-2. Export it from `packs/index.ts` (and add it to the `PACK_REGISTRY` there so
-   `getPackForAssetClass` resolves it), then from `src/index.ts` and
-   `src/browser.ts`.
+2. Export it from `builtin-packs/index.ts` (and add it to the `PACK_REGISTRY` there so
+   `getPackForAssetClass` resolves it), re-export it from `packs/index.ts`, then
+   from `src/index.ts` and `src/browser.ts`. Add it to the standard list in
+   `src/standard-closure.test.ts`.
 3. Add an `<assetclass>` defaults table in `defaults.ts` and register it in that
    file's `REGISTRY` so the cascade and refinement engine can resolve its inputs.
 4. Add the Excel layout (named inputs/ranges) in a corresponding Excel layout
    module. Every official class gets one, together with its defaults table and
    a worked example (full starter support, RFC 0078 D5 and RFC 0080).
-5. Add its normative calculation and size entries to `spec/metrics/builtin.json`;
-   dictionary parity must prove completeness. Add a parity test analogous to
-   `packs/office.test.ts` (and Verifier calc conformance
+5. Add its normative calculation and size entries to `spec/metrics/builtin.json`
+   and run `npm run gen-metric-dictionary` (core ships the dictionary as
+   `src/metric-dictionary.ts`); dictionary parity must prove completeness. Add a parity test analogous to
+   `builtin-packs/office.test.ts` (and Verifier calc conformance
    fixtures under `calc/` if needed).
 
 > **You should not have to touch the "unregistered class" negative tests.** They

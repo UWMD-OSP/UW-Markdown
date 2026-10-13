@@ -36,7 +36,7 @@ A declarative bundle of named formulas + asset-class-specific defaults
 that the starter calc engine evaluates against a deal; each pack mirrors the
 normative metric dictionary (`spec/metrics/`). The canonical
 `MULTIFAMILY_PACK` lives at
-[`packages/uwmd-core/src/packs/multifamily.ts`](../packages/uwmd-core/src/packs/multifamily.ts).
+[`packages/uwmd-core/src/builtin-packs/multifamily.ts`](../packages/uwmd-core/src/builtin-packs/multifamily.ts).
 
 ### Conformance tier
 One of two self-certification levels, Reader and Verifier (a Verifier
@@ -121,7 +121,7 @@ either of the others. See
 ### View model
 A declarative spec for how a section renders. Registered in
 `BUILTIN_VIEW_MODELS` in
-[`packages/uwmd-core/src/protocol.ts`](../packages/uwmd-core/src/protocol.ts).
+[`packages/uwmd-core/src/starter-protocol.ts`](../packages/uwmd-core/src/starter-protocol.ts).
 See [starter guide §IV](starter/view-models.md#iv-view-models).
 
 ---

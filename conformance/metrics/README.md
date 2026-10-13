@@ -1,10 +1,14 @@
 # Metric dictionary conformance — a lender with only the standard
 
-`verifier.mjs` imports the UWX/Lite readers, section resolver, safe-expression
-evaluator and shared §VIII.5 quantizer directly. It reads only the normative
-[metric dictionary](../../spec/metrics/README.md) for calculation definitions.
-It imports no packs, defaults, cascade or public core barrel; there are no prior
-results, overrides, inferred financial inputs or underwriting workflow.
+`verifier.mjs` verifies through core's `verifyStatedMetrics`
+(`metric-verification.ts`, RFC 0083 §2), which uses only the UWX reader,
+section resolver, safe-expression evaluator and shared §VIII.5 quantizer. The
+fixture keeps the plumbing: example discovery, the Lite anchor view and the
+statement bindings, and it passes the normative
+[metric dictionary](../../spec/metrics/README.md) read from `spec/`. It imports
+no packs, defaults, cascade or public core barrel; there are no prior results,
+overrides, inferred financial inputs or underwriting workflow. The source-token
+precision readers in `numeric-tokens.mjs` re-export the library's.
 
 It discovers every `.uw.md` / `.uwx.md` below `examples/` whose stated class has
 dictionary calculations (19 documents, including Lite, market-data and the
@@ -31,8 +35,11 @@ value, source decimals, comparison decimals and state. RFC 0079 compares the
 unrounded result at `min(max(source decimals, minimum), round_to)`. Coarse
 statements are checked at the minimum: exact `0.07` verifies and DSCR `1.5`
 versus `1.7` fails. Missing/null inputs, invalid operands, nonfinite results and
-resolution refusals are **unverifiable**. Missing source precision is a typed
-caller error, not an unverifiable precision state. Definitions or inputs not stated are not invented or counted
+resolution refusals are **unverifiable**. Missing precision passed to the
+comparison API (`verifyStatedMetric`) is a typed caller error; at document level
+`verifyStatedMetrics` reports a statement whose source token it cannot read
+(an envelope-decoded document, for example) as unverifiable
+`missing_stated_precision`. Every fixture statement has its source token. Definitions or inputs not stated are not invented or counted
 as numeric claims. The market-data example therefore has zero claims; standalone
 deal examples each state one primary size.
 
@@ -111,4 +118,4 @@ immutability; source-token trailing zeroes, exponents, escaped/nested keys,
 a payload member named `content`, YAML comments; coarse exact/wrong statements, all twelve LTV denominators and lazy fallbacks,
 minimum precision, output ceilings and
 no double rounding. Dictionary/pack/size completeness is separately enforced by
-`packages/uwmd-core/src/packs/metric-dictionary.test.ts`.
+`packages/uwmd-core/src/builtin-packs/metric-dictionary.test.ts`.

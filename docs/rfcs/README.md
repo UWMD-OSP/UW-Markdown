@@ -109,6 +109,7 @@ and how it gets accepted.
 | [0079](./0079-metric-precision.md) | Verify stated metrics at their stated precision; one cash-on-cash definition | implemented | protocol, core, conformance, tooling |
 | [0080](./0080-official-classes-are-builtins.md) | Every official asset class is a builtin | implemented | format, protocol, core, conformance, tooling |
 | [0081](./0081-one-format-one-protocol.md) | One format, one protocol: remove backward compatibility (pre-release cleanup) | implemented | format, protocol, core, conformance, tooling |
+| [0083](./0083-verify-package-split.md) | Split `@uwmd/verify`, the reference implementation of the standard, out of `@uwmd/core` | accepted | core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

@@ -581,20 +581,13 @@ describe('builtins', () => {
 // ─── evaluateCalc top-level ───────────────────────────────────────────────────
 
 describe('evaluateCalc', () => {
-  it('returns CalcResult with display formatting for $', () => {
+  it('returns CalcResult for $ with no display string (standard side, RFC 0083)', () => {
     const r = evaluateCalc(decl('purchase_price', 'quick_metrics.purchase_price', '$'), makeCtx());
     expect(r.ok).toBe(true);
     expect(r.value).toBe(5000000);
     expect(r.unit).toBe('$');
-    expect(r.display).toContain('5,000,000');
-  });
-
-  it('threads document currency identity into monetary display only', () => {
-    const ctx = makeCtx();
-    ctx.parsed.frontmatter.currency_code = 'MXN';
-    const r = evaluateCalc(decl('purchase_price', 'quick_metrics.purchase_price', '$'), ctx);
-    expect(r.value).toBe(5000000);
-    expect(r.display).toBe('MXN 5,000,000');
+    // `display` is the starter wrapper's (calc-display.ts, calc-display.test.ts).
+    expect(r).not.toHaveProperty('display');
   });
 
   it('captures parse errors into result.error', () => {
@@ -620,7 +613,6 @@ describe('evaluateCalc', () => {
     expect(r.ok).toBe(true);
     expect(r.value as number).toBeGreaterThan(1.6);
     expect(r.value as number).toBeLessThan(1.8);
-    expect(r.display).toMatch(/x$/);
   });
 });
 
@@ -1184,7 +1176,10 @@ probe_bool: true
       'is_calendar_date(1 / 0)',
     ];
     for (const formula of formulas) {
-      expect(browserEvaluateCalc(decl('d', formula), browserCtx), formula).toEqual(run(formula));
+      // The browser entry exports the starter wrapper, which adds `display`
+      // (RFC 0083); the value, error and quantization are the standard ones.
+      const { display: _display, ...standard } = browserEvaluateCalc(decl('d', formula), browserCtx);
+      expect(standard, formula).toEqual(run(formula));
     }
   });
 });

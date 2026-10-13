@@ -8,14 +8,14 @@ import {
   toUWEnvelope,
   type UWDocumentEnvelope,
 } from './envelope.js';
-import { applyEditAsync, type EditContext, type EditOptions } from './editor.js';
 import {
   negotiateRepresentation,
   RepresentationNegotiationError,
   resolveInputRepresentation,
 } from './negotiation.js';
 import { parseUWFile } from './parser.js';
-import type { EditOperation, RepresentationCapability } from './protocol.js';
+import type { EditOperation, ProtocolError, RepresentationCapability } from './protocol.js';
+import type { ParsedUWFile } from './types.js';
 import { encodeUWCSVBundle } from './uwcsv.js';
 import { UW_JSON_MEDIA_TYPE } from './uwjson.js';
 import { validateUWFile } from './validator.js';
@@ -318,17 +318,43 @@ export interface UWSourceEditResult {
   supersededPriorBlock?: boolean;
 }
 
-export async function applyUWMDSourceEdit(
+/**
+ * What a source edit produced, as a binding needs it. The starter editor's
+ * `EditResult` has this shape.
+ */
+export interface UWSourceEditOutcome {
+  ok: boolean;
+  /** New file content if the edit applied. */
+  content?: string;
+  /** Why the edit was rejected. */
+  error?: Pick<ProtocolError, 'code' | 'message'>;
+  newVersion?: number;
+  supersededPriorBlock?: boolean;
+}
+
+/**
+ * The edit engine a source-edit binding drives. The binding owns the semantic
+ * If-Match check and the envelope; the engine owns the edit. Injected so this
+ * module, on the standard side, never reaches an editor (RFC 0083): `@uwmd/core`
+ * wires its starter editor in `bindings-edit.ts` (`applyUWMDSourceEdit`).
+ */
+export type UWSourceEditAdapter = (
+  source: string,
+  parsed: ParsedUWFile,
+  operation: EditOperation,
+) => Promise<UWSourceEditOutcome>;
+
+/** Apply `operation` through `edit` under semantic If-Match protection. */
+export async function applyUWMDSourceEditWith(
+  edit: UWSourceEditAdapter,
   source: string,
   operation: EditOperation,
-  context: EditContext,
   ifMatch: string | undefined,
-  options: EditOptions = { integrity: true, maintainGaps: true },
 ): Promise<UWSourceEditResult> {
   const parsed = parseUWFile(source);
   const current = await stampEnvelopeDigest(toUWEnvelope(parsed));
   await assertUWIfMatch(ifMatch, current);
-  const edited = await applyEditAsync(source, parsed, operation, context, undefined, options);
+  const edited = await edit(source, parsed, operation);
   if (!edited.ok || !edited.content) {
     throw new UWBindingError(
       edited.error?.code ?? 'BINDING_EDIT_REJECTED',
@@ -346,25 +372,26 @@ export async function applyUWMDSourceEdit(
   };
 }
 
-export async function createUWMCPApplyEditResult(
+/** The MCP tool result for a source edit applied through `edit`. */
+export async function createUWMCPApplyEditResultWith(
+  edit: UWSourceEditAdapter,
   source: string,
   operation: EditOperation,
-  context: EditContext,
   ifMatch: string | undefined,
 ): Promise<{ edit: UWSourceEditResult; result: UWMCPToolResult }> {
-  const edit = await applyUWMDSourceEdit(source, operation, context, ifMatch);
-  const dealId = String(edit.envelope.frontmatter.deal_id ?? 'document');
+  const applied = await applyUWMDSourceEditWith(edit, source, operation, ifMatch);
+  const dealId = String(applied.envelope.frontmatter.deal_id ?? 'document');
   const summary = {
     ok: true,
     deal_id: dealId,
     resource_uri: uwmdDealResourceURI(dealId),
-    semantic_digest: edit.envelope.semantic_digest,
-    etag: edit.etag,
-    new_version: edit.newVersion,
-    superseded_prior_block: edit.supersededPriorBlock ?? false,
+    semantic_digest: applied.envelope.semantic_digest,
+    etag: applied.etag,
+    new_version: applied.newVersion,
+    superseded_prior_block: applied.supersededPriorBlock ?? false,
   };
   return {
-    edit,
+    edit: applied,
     result: dualMCPResult(summary, {
       type: 'resource_link',
       uri: summary.resource_uri,
