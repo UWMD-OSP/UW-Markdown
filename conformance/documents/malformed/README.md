@@ -1,4 +1,4 @@
-# Malformed fixtures (tier-1 directory)
+# Malformed fixtures (documents)
 
 Negative-test counterpart to `../fixtures/`. Each `.uw.md` here is
 intentionally malformed in a way that the **validator** must catch.

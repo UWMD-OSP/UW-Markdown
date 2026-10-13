@@ -287,6 +287,7 @@ const NORMALIZED_LINK_MAP = new Map([
   ['conformance/starter/editor/README.md', '/conformance/starter-editor'],
   ['conformance/calc/README.md', '/conformance/calc'],
   ['conformance/starter/agent/README.md', '/conformance/starter-agent'],
+  ['starter/refinement/README.md', '/conformance/starter-refinement'],
   ['conformance/starter/refinement/README.md', '/conformance/starter-refinement'],
   ['conformance/runner/README.md', '/conformance/runner'],
   ['conformance/runner/', '/conformance/runner'],
@@ -306,7 +307,17 @@ function rewriteLinks(md) {
       return full;
     }
 
-    const [path, frag] = splitFrag(target);
+    const [path, originalFrag] = splitFrag(target);
+    // Historical RFC/release anchor spellings resolve to current headings.
+    const historicalAnchors = {
+      '#ii1-tier-1--reader': '#ii-1-reader',
+      '#ii3-tier-3--calc-host': '#ii-2-verifier',
+      '#ii2-tier-2--editor': '#ii-4-starter-product-claims',
+      '#ii4-tier-4--agent-host': '#ii-4-starter-product-claims',
+      '#appendix-d--worked-example-tier-1-reader-in-500-loc': '#appendix-d-worked-example-a-reader-in-500-loc',
+      '#ix-ai-host-contract-tier-4': '#ix-ai-host-contract',
+    };
+    const frag = historicalAnchors[originalFrag] ?? originalFrag;
     const norm = normalize(path);
 
     if (NORMALIZED_LINK_MAP.has(norm)) {
@@ -395,6 +406,11 @@ function withRfcStatusBanner(md, toPath) {
 
 // Do not let a retired generated page mask dead links in an incremental build.
 await rm(join(SITE_ROOT, 'spec', 'format-v2.md'), { force: true });
+// This directory contains only generated corpus pages. Clear it before copies
+// so removed pages cannot survive an incremental build as unintended routes.
+const generatedCorpus = resolve(SITE_ROOT, 'conformance');
+if (relative(SITE_ROOT, generatedCorpus) !== 'conformance') throw new TypeError('Generated corpus path escaped site root');
+await rm(generatedCorpus, { recursive: true, force: true });
 
 let count = 0;
 for (const c of COPIES) {

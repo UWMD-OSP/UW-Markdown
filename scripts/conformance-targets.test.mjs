@@ -13,7 +13,7 @@ const cases = readdirSync(new URL('../conformance/runner/cases/', import.meta.ur
 test('every reference and portable case has exactly one owner', () => {
   assert.equal(index.size, corpus.cases.length);
   assert.equal(new Set(cases.map(c => c.id)).size, cases.length);
-  // A portable case id is `<owner>/<case>`; its owner is the corpus case's.
+  // A portable case id is `<owner>__<suite>__<scenario>__<operation>`; its owner is the corpus case's.
   for (const c of cases) assert.equal(c.target, portableOwner(...c.id.split('__').slice(1)), c.id);
   assert.deepEqual(new Set(corpus.cases.map(c => c.target)), new Set(CONFORMANCE_TARGETS));
 });

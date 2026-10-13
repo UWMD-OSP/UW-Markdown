@@ -1,7 +1,7 @@
 # Maintainers
 
 This file lists the people with commit access to UW Markdown and what
-they own. See [`GOVERNANCE.md`](GOVERNANCE.md) for how maintainers
+they own. See [`GOVERNANCE.md`](./GOVERNANCE.md) for how maintainers
 are added and how decisions get made.
 
 ## Current maintainers
@@ -11,12 +11,12 @@ are added and how decisions get made.
 | [@jaredmaxey](https://github.com/jaredmaxey) | BDFL | Everything (spec, `@uwmd/core`, conformance corpus, tools, governance) |
 
 UW Markdown is currently a solo project. Maintainer additions follow
-the promotion path documented in [`GOVERNANCE.md`](GOVERNANCE.md#promotion-path).
+the promotion path documented in [`GOVERNANCE.md`](./GOVERNANCE.md#promotion-path).
 
 ## Areas of ownership
 
 When the maintainer count grows, the following areas get assigned
-owners (reflected in [`.github/CODEOWNERS`](.github/CODEOWNERS)):
+owners (reflected in [`.github/CODEOWNERS`](./.github/CODEOWNERS)):
 
 - **Format spec** — `spec/UW_FORMAT_SPEC.md`
 - **Protocol spec** — `spec/UW_PROTOCOL.md`
@@ -47,7 +47,7 @@ decided by the owner on 2026-09-09:
 - npm publishes are tag-triggered via OIDC trusted publishing; no
   long-lived tokens exist to leak or inherit. Control of publishing IS
   control of the GitHub org.
-- The [`security@uwmd.org`](SECURITY.md) promise ends with the
+- The [`security@uwmd.org`](./SECURITY.md) promise ends with the
   maintainer under this plan: after the six-month threshold, report
   vulnerabilities against the fork you use.
 - Account recovery for the three accounts above is the maintainer's
@@ -62,5 +62,5 @@ None yet.
 
 ## Contact
 
-For security reports: see [`SECURITY.md`](SECURITY.md).
+For security reports: see [`SECURITY.md`](./SECURITY.md).
 For everything else: open an issue or PR.

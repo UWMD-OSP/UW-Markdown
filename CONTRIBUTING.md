@@ -20,13 +20,13 @@ spec proposals, conformance fixtures, and tools are all welcome.
 - **Implement against the spec**: third-party implementers self-certify against
   the conformance corpus and are listed in the README.
 
-Security vulnerabilities go to security@uwmd.org ([SECURITY.md](SECURITY.md)),
+Security vulnerabilities go to security@uwmd.org ([SECURITY.md](./SECURITY.md)),
 never to a public issue.
 
 ### If you build on UW Markdown
 
 If you produce or consume UWMD documents in your own product, read
-[Reporting problems and feedback](docs/FEEDBACK.md) before filing. It covers
+[Reporting problems and feedback](./docs/FEEDBACK.md) before filing. It covers
 what evidence makes a report reproducible, how to reduce a confidential deal to
 a public reproduction, what each issue label means, and how a report becomes a
 fix, a release or an RFC.
@@ -73,7 +73,7 @@ npm test -w @uwmd/core -- --watch        # tests in watch mode
 Spec changes — to `UW_FORMAT_SPEC.md`, `UW_PROTOCOL.md`, or
 `spec/schemas/*` — are higher-stakes than code changes because third parties
 build on top of these documents. The process depends on whether the change is
-**editorial** or **normative** (see [GOVERNANCE.md](GOVERNANCE.md) for the
+**editorial** or **normative** (see [GOVERNANCE.md](./GOVERNANCE.md) for the
 full distinction):
 
 - **Editorial** (typo, clarification, broken cross-reference, no behavior
@@ -83,7 +83,7 @@ full distinction):
 
 To file a normative change:
 
-1. Copy [`docs/rfcs/0000-template.md`](docs/rfcs/0000-template.md) to a new
+1. Copy [`docs/rfcs/0000-template.md`](./docs/rfcs/0000-template.md) to a new
    file `docs/rfcs/NNNN-<short-slug>.md` (next free number).
 2. Fill in every section — Summary, Motivation, Proposed change, Compatibility
    analysis, Conformance impact, Reference implementation, Alternatives,
@@ -92,9 +92,9 @@ To file a normative change:
 4. The project owner accepts, requests changes, or rejects the proposal. In
    owner-led mode there is no mandatory waiting period; after collaborative mode
    activates, normative RFCs remain open at least **14 days**.
-5. See [`GOVERNANCE.md`](GOVERNANCE.md) for the current governance mode.
+5. See [`GOVERNANCE.md`](./GOVERNANCE.md) for the current governance mode.
 
-See [`docs/rfcs/README.md`](docs/rfcs/README.md) for the full process and
+See [`docs/rfcs/README.md`](./docs/rfcs/README.md) for the full process and
 status values.
 
 ## Adding a conformance fixture
@@ -137,10 +137,10 @@ Before opening a PR:
 
 ## Code of conduct
 
-This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+This project follows the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md).
 By participating you agree to abide by its terms.
 
 ## License
 
 By contributing, you agree your contributions are licensed under the MIT
-License (see [LICENSE](LICENSE)).
+License (see [LICENSE](./LICENSE)).

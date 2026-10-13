@@ -31,8 +31,10 @@ block shape (bare payload, nested `_meta` first; flat `_meta` and the
 the G1 lone-fact groups, refuses the RFC 0080 transition surface, and loads
 module manifests by `requires_conformance` / `requires_profiles` only. The
 migrators, the CLI `migrate` commands, `init --format` and both module
-packages are gone. Version labels still read 3.0.0 / 2.1 until Phase 5 renames
-the conformance directories and Phase 6 releases 4.0.0 with seven packages.
+packages are gone. Phase 5 renames the corpus to `documents/`, `calc/` and
+`starter/{editor,refinement,agent}/`, with content-based suite and portable
+case ids. Version labels still read 3.0.0 / 2.1 until Phase 6 releases 4.0.0
+with seven packages.
 Conformance: 1,069 reference checks, 336 portable cases; the lender fixture
 stays 187/0/0.
 
