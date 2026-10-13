@@ -28,7 +28,7 @@ import { canonicalize } from './integrity-canonical.js';
 import { sha256TextHex } from './integrity.js';
 import { canonicalizeUWLiteFinancial, parseUWLite } from './lite.js';
 import { compileUWLite } from './lite-bridge.js';
-import { getPackForAssetClass } from './packs/index.js';
+import { getPackForAssetClass } from './builtin-packs/index.js';
 import { parseUWFile } from './parser.js';
 import { PROTOCOL_VERSION } from './protocol.js';
 import type { CalcEvaluationContext, ModuleManifest, ProtocolError } from './protocol.js';

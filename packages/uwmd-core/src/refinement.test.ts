@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { rankGaps } from './refinement.js';
 import { parseUWFile } from './parser.js';
-import { MULTIFAMILY_PACK } from './packs/multifamily.js';
+import { MULTIFAMILY_PACK } from './builtin-packs/multifamily.js';
 import type { ModuleCalcDecl, ModuleManifest } from './protocol.js';
 
 const MINIMAL_MULTIFAMILY = `---

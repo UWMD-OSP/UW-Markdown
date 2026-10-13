@@ -31,7 +31,8 @@ import type {
   VerifyChainOptions,
 } from './integrity.js';
 import type { EditContext, EditResult } from './editor.js';
-import type { CapabilityVerifier, ConformanceTier, EditOperation, ModuleCalcDecl, CalcEvaluationContext } from './protocol.js';
+import type { ConformanceTier, EditOperation, ModuleCalcDecl, CalcEvaluationContext } from './protocol.js';
+import type { CapabilityVerifier } from './starter-protocol.js';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
 import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
 import {
@@ -45,7 +46,7 @@ import {
   cmdPackageEdges,
 } from './cli-packages.js';
 import { cmdPortfolioValidate, cmdPortfolioEdges } from './cli-portfolio.js';
-import { evaluateCalc } from './calc/index.js';
+import { evaluateCalc } from './calc-display.js';
 import { parseCalculationContext } from './calculation-context.js';
 import { parseExpression, periodReferencePath } from './calc/parser.js';
 import { CalcError } from './calc/errors.js';

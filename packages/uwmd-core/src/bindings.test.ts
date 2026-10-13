@@ -2,8 +2,9 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  applyUWMDSourceEdit,
-  createUWMCPApplyEditResult,
+  applyUWMDSourceEditWith,
+  createUWMCPApplyEditResultWith,
+  type UWSourceEditAdapter,
   assertUWIfMatch,
   createUWHTTPResponse,
   createUWMCPGetDocumentResult,
@@ -131,27 +132,42 @@ describe('MCP binding profile', () => {
       'uw-csv-bundle',
     ]);
   });
+});
 
-  it('reuses Tier-2 source editing with semantic If-Match protection', async () => {
+describe('source-edit bindings with an injected edit engine (RFC 0083)', () => {
+  const renamed: UWSourceEditAdapter = async (text, parsed, operation) => {
+    expect(parsed.frontmatter.deal_id).toBe(dealId);
+    expect(operation.kind).toBe('frontmatter_set');
+    return { ok: true, content: text.replace(/^deal_name: .*$/m, 'deal_name: "Adapter Updated"'), newVersion: 7 };
+  };
+
+  it('checks If-Match, runs the adapter and stamps the edited envelope', async () => {
     const current = await stampEnvelopeDigest(toUWEnvelope(parseUWFile(source)));
-    const edited = await applyUWMDSourceEdit(
-      source,
-      { kind: 'frontmatter_set', path: 'deal_name', value: 'Parkview Updated' },
-      { actor: 'API test', source: 'manual', confidence: 'high' },
-      uwmdETag(current),
-      { integrity: false, maintainGaps: false },
-    );
-    expect(edited.envelope.frontmatter.deal_name).toBe('Parkview Updated');
-    expect(edited.etag).not.toBe(uwmdETag(current));
+    const edited = await applyUWMDSourceEditWith(renamed, source,
+      { kind: 'frontmatter_set', path: 'deal_name', value: 'ignored' }, uwmdETag(current));
+    expect(edited.envelope.frontmatter.deal_name).toBe('Adapter Updated');
+    expect(edited.newVersion).toBe(7);
+    expect(edited.etag).toBe(uwmdETag(edited.envelope));
+    const mcp = await createUWMCPApplyEditResultWith(renamed, source,
+      { kind: 'frontmatter_set', path: 'deal_name', value: 'ignored' }, uwmdETag(current));
+    expect(mcp.result.structuredContent).toMatchObject({ ok: true, deal_id: dealId, new_version: 7, superseded_prior_block: false });
+  });
 
-    const applied = await createUWMCPApplyEditResult(
-      source,
-      { kind: 'frontmatter_set', path: 'deal_name', value: 'Parkview MCP Updated' },
-      { actor: 'MCP test', source: 'manual', confidence: 'high' },
-      uwmdETag(current),
-    );
-    expect(applied.edit.envelope.frontmatter.deal_name).toBe('Parkview MCP Updated');
-    expect(applied.result.structuredContent).toMatchObject({ ok: true, deal_id: dealId });
-    expect(applied.result.content.at(-1)?.type).toBe('resource_link');
+  it('refuses a stale If-Match before the adapter runs', async () => {
+    let ran = false;
+    const adapter: UWSourceEditAdapter = async () => { ran = true; return { ok: false }; };
+    await expect(applyUWMDSourceEditWith(adapter, source,
+      { kind: 'frontmatter_set', path: 'deal_name', value: 'x' }, `"sha256:${'0'.repeat(64)}"`)).rejects.toBeInstanceOf(UWBindingError);
+    expect(ran).toBe(false);
+  });
+
+  it('turns a rejected edit into a 409 carrying the adapter code', async () => {
+    const ifMatch = uwmdETag(await stampEnvelopeDigest(toUWEnvelope(parseUWFile(source))));
+    const adapter: UWSourceEditAdapter = async () => ({ ok: false, error: { code: 'PROTO-EDIT-001', message: 'no' } });
+    await expect(applyUWMDSourceEditWith(adapter, source,
+      { kind: 'frontmatter_set', path: 'deal_name', value: 'x' }, ifMatch)).rejects.toMatchObject({ code: 'PROTO-EDIT-001', status: 409 });
+    const silent: UWSourceEditAdapter = async () => ({ ok: true });
+    await expect(applyUWMDSourceEditWith(silent, source,
+      { kind: 'frontmatter_set', path: 'deal_name', value: 'x' }, ifMatch)).rejects.toMatchObject({ code: 'BINDING_EDIT_REJECTED', status: 409 });
   });
 });

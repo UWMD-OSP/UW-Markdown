@@ -10,7 +10,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { blockPayload, parseUWFile } from '../parser.js';
 import { evaluateCalc } from '../calc/index.js';
-import { MULTIFAMILY_PACK } from './multifamily.js';
+import { MULTIFAMILY_PACK } from '../builtin-packs/multifamily.js';
 import {
   DATA_CENTER_PACK, MANUFACTURED_HOUSING_PACK,
   HOSPITALITY_PACK,

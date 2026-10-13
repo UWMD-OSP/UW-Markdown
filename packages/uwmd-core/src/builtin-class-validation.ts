@@ -5,7 +5,7 @@ import { toBuiltinAssetClass, type ParsedUWFile, type ValidationMessage } from '
 import { blockPayload } from './parser.js';
 import { resolveRoleBlock } from './block-roles.js';
 import { evaluateCalc } from './calc/index.js';
-import { getPackForAssetClass } from './packs/index.js';
+import { getPackForAssetClass } from './builtin-packs/index.js';
 
 interface FieldContract { type?: string | string[]; minimum?: number; maximum?: number; enum?: unknown[] }
 interface SectionContract { required?: string[]; properties?: Record<string, FieldContract> }

@@ -291,21 +291,6 @@ describe('writeAgentBlock', () => {
   });
 });
 
-// ─── buildMeta tests ──────────────────────────────────────────────────────────
-
-describe('buildMeta', () => {
-  it('produces valid UWMeta with required fields', () => {
-    const meta = buildMeta('debt_structure', 1, { source: 'wizard', confidence: 'high' });
-    expect(meta.section).toBe('debt_structure');
-    expect(meta.lifecycle?.revision).toBe(1);
-    expect(meta.lifecycle?.superseded).toBe(false);
-    expect(meta.provenance?.source).toBe('wizard');
-    expect(meta.quality?.confidence).toBe('high');
-    expect(meta.provenance?.timestamp).toBeTruthy();
-    expect(Array.isArray(meta.quality?.flags)).toBe(true);
-  });
-});
-
 // ─── buildAgentContext tests ──────────────────────────────────────────────────
 
 describe('buildAgentContext', () => {

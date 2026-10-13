@@ -7,7 +7,7 @@ import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
 import type { ParsedUWLite, UWLiteFieldNode, UWLiteScalar } from './lite.js';
 import { isBlockedSegment } from './parser.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
-import { buildMeta } from './runner.js';
+import { buildMeta } from './metadata.js';
 import { UW_LITE_REPRESENTATION_VERSION } from './source-representation.js';
 import type { UWFrontmatter } from './types.js';
 

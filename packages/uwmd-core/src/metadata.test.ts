@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { blockOverrides, bumpRawMetaVersion, stampMetaIntoBlockContent } from './metadata.js';
-import { buildMeta } from './runner.js';
+import { blockOverrides, buildMeta, bumpRawMetaVersion, stampMetaIntoBlockContent } from './metadata.js';
+import { buildMeta as runnerBuildMeta } from './runner.js';
 import type { UWBlock } from './types.js';
 
 const META = () => buildMeta('property', 1, { source: 'manual', actor: 'test', timestamp: '2026-10-12T00:00:00Z' });
@@ -39,5 +39,24 @@ describe('buildMeta', () => {
     expect(Object.keys(meta)).toEqual(['section', 'provenance', 'quality', 'lifecycle']);
     expect(buildMeta('property', 1, { source: 'manual', inputHash: 'a'.repeat(64) }).integrity)
       .toEqual({ input_hash: `sha256:${'a'.repeat(64)}` });
+  });
+});
+
+// ─── buildMeta tests ──────────────────────────────────────────────────────────
+
+describe('buildMeta', () => {
+  it('is the same function the runner exports (public path unchanged)', () => {
+    expect(runnerBuildMeta).toBe(buildMeta);
+  });
+
+  it('produces valid UWMeta with required fields', () => {
+    const meta = buildMeta('debt_structure', 1, { source: 'wizard', confidence: 'high' });
+    expect(meta.section).toBe('debt_structure');
+    expect(meta.lifecycle?.revision).toBe(1);
+    expect(meta.lifecycle?.superseded).toBe(false);
+    expect(meta.provenance?.source).toBe('wizard');
+    expect(meta.quality?.confidence).toBe('high');
+    expect(meta.provenance?.timestamp).toBeTruthy();
+    expect(Array.isArray(meta.quality?.flags)).toBe(true);
   });
 });

@@ -32,7 +32,7 @@ data *in*, the calc engine derives metrics *out*, with no AI involved.
 
 File | Role
 ---|---
-`calc/index.ts` | Entry point: `evaluateCalc(decl, ctx)` — parse → evaluate → format → `CalcResult`
+`calc/index.ts` | Entry point: `evaluateCalc(decl, ctx)` — parse → evaluate → quantize → `CalcResult` with no `display`; the `evaluateCalc` core exports (`../calc-display.ts`) adds the starter `display` string (RFC 0083)
 `calc/parser.ts` | Tokenizer + recursive-descent parser → `Expr` AST
 `calc/evaluator.ts` | AST walker; variable resolution + null propagation
 `calc/builtins.ts` | The `BUILTINS` function table (math + financial)

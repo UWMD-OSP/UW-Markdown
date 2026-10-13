@@ -41,13 +41,15 @@ Module | Responsibility | Key exports
 `report.ts` | §7.1 Lender Package / §7.2 Credit Memo HTML | `renderReportHtml`, `REPORT_CSS` (+ `ReportOptions`, `ReportResult`)
 `envelope.ts` | Format-neutral model + semantic digest/equivalence | `UWDocumentEnvelope`, `toUWEnvelope`, `verifyEnvelopeDigest`
 `codec.ts` | Extensible representation registry | `CodecRegistry`, `UWCodec`, representation descriptors
-`bindings.ts` | Optional HTTP/MCP companion adapters | semantic ETags, negotiation, resources, compact tool results, source edits
+`bindings.ts` | Optional HTTP/MCP companion adapters | semantic ETags, negotiation, resources, compact tool results; source edits through an injected edit adapter
+`bindings-edit.ts` | Source edits wired to the starter editor | `applyUWMDSourceEdit`, `createUWMCPApplyEditResult`
 `uwjson.ts` | UW JSON 1.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
-`runner.ts` | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta`
+`runner.ts` | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta` (defined in `metadata.ts`)
 `compactor.ts` | Live view + section diff | `compact`, `diff`
 `init.ts` | Scaffold a blank `.uw.md` | `generateBlankUWFile`
 `cli.ts` | The `uwmd` command program | (default program; routes subcommands)
 `protocol.ts` | Executable protocol contract + BUILTIN_* tables | see [§ protocol](#protocol-the-contract-surface)
+`starter-protocol.ts` | Starter-product protocol tables (RFC 0083) | `DEFAULT_NUMBER_FORMAT`, `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`, `AgentHostCapability`, `CapabilityVerifier`, …
 `types.ts` | Format type definitions | `UWBlock`, `UWMeta`, `UWFrontmatter`, `ParsedUWFile`, `DEFAULT_THRESHOLDS`, …
 `format.ts` | Field-level display formatters | `formatCurrency`, `formatPercent`, `formatRatio`, `formatCount`, `formatDate`, `formatValue`, …
 `context.ts` | Optional Bancroft reference-layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
@@ -55,7 +57,8 @@ Module | Responsibility | Key exports
 `cascade.ts` | Fallback-cascade value resolver | `resolveValue`, `readInFile` (browser-exported)
 `section-resolution.ts` | One block per section-rooted read (§VIII.2, RFC 0066) | `resolveSectionBlock` (browser-exported)
 `defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
-`gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`, `readGapsContent`
+`gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`
+`gaps-content.ts` | The `gaps` section's types and reader | `readGapsContent`, `GapsContent`
 `refinement.ts` | Value-of-information gap ranking | `rankGaps`
 `asset-class.ts` | Identifier grammar + resolution for module-declared classes (RFC 0003) | `parseAssetClass`, `resolveAssetClass`, `declaredAssetClasses`
 `module-runtime.ts` | Running what a module declares (RFC 0006) | `evaluateModuleCalculations`, `validateAgainstModules`, `checkModuleSections`
@@ -66,7 +69,11 @@ Module | Responsibility | Key exports
 `version.ts` | Engine identity recorded in receipts | `CORE_PACKAGE_NAME`, `CORE_VERSION`
 `modules.ts` | Declarative module manifest loader/registry | `loadModuleManifest`, `createModuleRegistry`, `getModuleCalculationsForAssetClass`
 `calc/` | Safe-expression engine (the Verifier's evaluator; Protocol 2.x Tier-3) | see [04 — Calc engine](04-calc-engine.md)
-`packs/` | Calc packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
+`calc-display.ts` | The exported `evaluateCalc`/`evaluateModuleCalculations`: standard results plus the starter `display` string | `evaluateCalc`, `evaluateModuleCalculations`
+`metric-verification.ts` | Stated metrics checked against the metric dictionary (RFC 0083 §2) | `verifyStatedMetrics`
+`metric-dictionary.ts` | `spec/metrics/builtin.json` as package data (generated) | `BUILTIN_METRIC_DICTIONARY` (internal)
+`builtin-packs/` | The twelve builtin pack manifests and their registry | see [05 — Calc packs](05-calc-packs.md)
+`packs/` | Re-exports the builtin packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
 `agents/` | Optional Bancroft reference agent host (starter product; Protocol 2.x Tier-4) | see [06 — Bancroft agents](06-bancroft-agents.md)
 
 ## parser.ts
@@ -205,7 +212,7 @@ the prior version, bumping `version`, updating pipeline state, appending a
 ## cascade.ts + defaults.ts
 
 `resolveValue(fieldPath, parsed, …)` walks the **fallback cascade** (`CASCADE_ORDER`
-in `protocol.ts`): `user_override → user_input → investor_profile → market_data →
+in `starter-protocol.ts`): `user_override → user_input → investor_profile → market_data →
 asset_class_default → global_default → system_default`. Asset-class defaults are
 published `{low, central, high}` ranges with citations in `defaults.ts`, one
 table per builtin class. A resolved default carries its table
@@ -425,10 +432,11 @@ tables every conforming tool references:
 
 - Versions: `PROTOCOL_VERSION` (1.2.0), `FORMAT_VERSION` (1.1).
 - Tiers/capabilities: `ConformanceTier`, `ViewerCapability`, `ImplementationManifest`, `RepresentationCapability`.
-- Display: `DEFAULT_NUMBER_FORMAT`, `DEFAULT_DATE_FORMAT`, `BUILTIN_VIEW_MODELS`
-  (per-section render hints), `SectionViewModel`, `FieldViewHint`.
+- View models in manifests: `SectionViewModel`, `FieldViewHint` (module
+  `view_models`). The display defaults and the builtin registry live in
+  `starter-protocol.ts` (below).
 - Edits: `EditOperation`, `EditPolicy`, `EditAuthority`, `BUILTIN_EDIT_POLICIES`.
-- Cascade: `CascadeStep`, `CASCADE_ORDER`, `SOURCE_TAGS`.
+- Cascade: `CascadeStep`, `SOURCE_TAGS` (`CASCADE_ORDER` is in `starter-protocol.ts`).
 - Incomplete data: `IncompleteDataPolicy`, `GapAction`,
   `BUILTIN_INCOMPLETE_DATA_POLICIES`, `lookupIncompleteDataPolicy`.
 - Stage contract (RFC 0009 merge): `STAGE_CONTRACT` (the single registry
@@ -443,6 +451,14 @@ tables every conforming tool references:
   `modules.ts` validates and registers declarative v1 manifests.
 - Errors: `ProtocolError`, `ProtocolErrorCategory`.
 - Remediations: `IssueRemediation`, `BUILTIN_REMEDIATIONS` (CC/DQ/INT/POL/FV copy).
+
+`starter-protocol.ts` holds the tables that serve the starter products, not
+verification (RFC 0078 D10/D11, RFC 0083): `DEFAULT_NUMBER_FORMAT`,
+`DEFAULT_DATE_FORMAT`, `NumberFormatRules`, `DateFormatRules`, the badge types,
+`ViewModelRegistry` and `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`,
+`AgentHostCapability` and the capability-token types (`CapabilityVerifier`, …).
+`index.ts` and `browser.ts` export them under the same names. `protocol.ts`
+never imports it.
 
 > **Keep `protocol.ts` and `spec/schemas/*.schema.json` in lockstep.** The
 > `ModuleManifest` interface explicitly mirrors `module-manifest.schema.json`.
@@ -459,6 +475,26 @@ tables every conforming tool references:
 > `conformance/modules/README.md` for the two permitted, individually justified
 > exceptions.
 
+## The standard set and the closure test (RFC 0083)
+
+RFC 0083 splits the reference implementation of the standard, `@uwmd/verify`,
+out of core. Phase 1 drew the line inside core: the standard set is the
+reader, validation, the stated-figure verifiers, `calc/`, the metric dictionary
+and `metric-verification.ts`, receipts, integrity, modules, the builtin pack
+manifests (`builtin-packs/`), the representation, portfolio, sensitivity,
+stochastic and market-data profiles, the read side of `bindings.ts`, and
+`protocol.ts`. Everything else (editor, runner, cascade, defaults, refinement,
+`gaps.ts`, display formatting and `calc-display.ts`, `starter-protocol.ts`,
+`bindings-edit.ts`, the Excel emitter, renderer, report, agents, CLI) is the
+starter toolkit.
+
+`src/standard-closure.test.ts` lists the standard set as file paths and walks
+its static import graph (`import`/`export … from`, dynamic `import()` and
+`import('…')` types). It fails when a standard module reaches a module outside
+the list, or names `@anthropic-ai/sdk`. A standard module needs a starter
+service only through injection, as `bindings.ts` takes its edit adapter; a new
+standard module goes on the list.
+
 ## Where to start, by task
 
 Goal | Start here
@@ -466,7 +502,7 @@ Goal | Start here
 Parser bug | `parser.ts` + `parser.test.ts`
 New validator check | `validator.ts` (register copy in `BUILTIN_REMEDIATIONS`)
 New calc builtin | `calc/builtins.ts` + `calc.test.ts`, then `packs/excel-emit.ts`
-New derived metric | the relevant file in `packs/` (one place, all tools pick it up)
+New derived metric | the relevant file in `builtin-packs/` (one place, all tools pick it up), after its `spec/metrics/` entry
 New agent layer | `context.ts` (`BANCROFT_LAYERS`) + `agents/`
 New edit semantics | `editor.ts` + `protocol.ts` (`EditOperation`/policy)
 New display formatter | `format.ts` + the relevant `BUILTIN_VIEW_MODELS` entry

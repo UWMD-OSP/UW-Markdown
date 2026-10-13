@@ -29,8 +29,8 @@ import {
 } from './receipts.js';
 import { quantizeDecimal, resolveRoundTo } from './calc/quantize.js';
 import { PROTOCOL_VERSION } from './protocol.js';
-import { MULTIFAMILY_PACK } from './packs/multifamily.js';
-import { OFFICE_PACK } from './packs/office.js';
+import { MULTIFAMILY_PACK } from './builtin-packs/multifamily.js';
+import { OFFICE_PACK } from './builtin-packs/office.js';
 import { CORE_VERSION } from './version.js';
 import { parseUWFile } from './parser.js';
 

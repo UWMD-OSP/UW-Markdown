@@ -31,3 +31,44 @@ export function blockOverrides(block: Pick<UWBlock, 'content'>): UWFieldOverride
   const overrides = block.content['_overrides'];
   return Array.isArray(overrides) ? (overrides as UWFieldOverride[]) : [];
 }
+
+/** Build the `_meta` object for a new block (Format §2.4). */
+export function buildMeta(
+  sectionId: string,
+  version: number,
+  opts: {
+    source: string;
+    agentId?: string;
+    agentVersion?: string;
+    actor?: string;
+    confidence?: 'high' | 'medium' | 'low';
+    humanReviewRequired?: boolean;
+    flags?: string[];
+    inputHash?: string;
+    notes?: string;
+    /** Freeze the stamp; defaults to now. See RunOptions.timestamp. */
+    timestamp?: string;
+  },
+): UWMeta {
+  const meta: UWMeta = {
+    section: sectionId,
+    provenance: {
+      source: opts.source,
+      actor: opts.actor ?? 'system',
+      agent_id: opts.agentId ?? null,
+      agent_version: opts.agentVersion ?? null,
+      timestamp: opts.timestamp ?? new Date().toISOString(),
+      notes: opts.notes ?? null,
+    },
+    quality: {
+      confidence: opts.confidence ?? 'medium',
+      human_review_required: opts.humanReviewRequired ?? false,
+      flags: opts.flags ?? [],
+      partial: false,
+      provisional: false,
+    },
+    lifecycle: { revision: version, superseded: false },
+  };
+  if (opts.inputHash) meta.integrity = { input_hash: `sha256:${opts.inputHash}` };
+  return meta;
+}

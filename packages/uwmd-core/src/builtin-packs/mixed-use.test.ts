@@ -8,7 +8,7 @@ import { evaluateCalc } from '../calc/index.js';
 import { parseExpression } from '../calc/parser.js';
 import { parseUWFile } from '../parser.js';
 import { buildMeta } from '../runner.js';
-import { emitExcelFormula } from './excel-emit.js';
+import { emitExcelFormula } from '../packs/excel-emit.js';
 import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
 import { MIXED_USE_PACK } from './mixed-use.js';
 

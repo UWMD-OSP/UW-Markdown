@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { evaluateCalc } from './calc/index.js';
-import { STUDENT_HOUSING_PACK } from './packs/student-housing.js';
+import { STUDENT_HOUSING_PACK } from './builtin-packs/student-housing.js';
 
 const ROLL: Record<string, unknown> = {
   as_of_date: '2026-03-15',

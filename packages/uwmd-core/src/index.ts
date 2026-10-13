@@ -125,9 +125,9 @@ export {
   createUWMCPGetDocumentResult,
   createUWMCPValidationResult,
   createUWMCPListRepresentationsResult,
-  applyUWMDSourceEdit,
-  createUWMCPApplyEditResult,
 } from './bindings.js';
+// Source edits wire the starter editor into the bindings (RFC 0083).
+export { applyUWMDSourceEdit, createUWMCPApplyEditResult } from './bindings-edit.js';
 export type {
   UWHTTPBody,
   UWHTTPResponse,
@@ -181,7 +181,9 @@ export type { AgentOutput, RunOptions, RunResult } from './runner.js';
 export { applyEdit, applyEditAsync, resolvePolicy } from './editor.js';
 export type { EditContext, EditResult, EditOptions } from './editor.js';
 
-export { evaluateCalc, parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
+export { parseExpression, evaluate, BUILTINS, CalcError, calcError } from './calc/index.js';
+// The exported evaluator adds the starter `display` string (RFC 0083).
+export { evaluateCalc } from './calc-display.js';
 
 // RFC 0007 — sensitivity tables. A declaration, not a grammar extension: the
 // §VIII.1 sandbox is unchanged, and the grid never travels through
@@ -291,11 +293,9 @@ export type {
   ResolveAssetClassOptions,
 } from './asset-class.js';
 
-export {
-  evaluateModuleCalculations,
-  validateAgainstModules,
-  checkModuleSections,
-} from './module-runtime.js';
+export { validateAgainstModules, checkModuleSections } from './module-runtime.js';
+// Module calculation results carry the starter `display` string (RFC 0083).
+export { evaluateModuleCalculations } from './calc-display.js';
 export type { ModuleRuntimeOptions, ModuleCalcOutcome } from './module-runtime.js';
 
 // RFC 0002 — module signatures. Crypto-free half only; `@uwmd/signing` supplies
@@ -829,9 +829,6 @@ export {
   FORMAT_VERSION,
   SUPPORTED_FORMAT_VERSIONS,
   SUPPORTED_PROTOCOL_VERSIONS,
-  DEFAULT_NUMBER_FORMAT,
-  DEFAULT_DATE_FORMAT,
-  BUILTIN_VIEW_MODELS,
   BUILTIN_EDIT_POLICIES,
   BUILTIN_REMEDIATIONS,
   VALIDATOR_CODE_FAMILIES,
@@ -841,7 +838,6 @@ export {
   RETURN_TAX_BASES,
   DEFAULT_RETURN_TAX_BASIS,
   BUILTIN_INCOMPLETE_DATA_POLICIES,
-  CASCADE_ORDER,
   SOURCE_TAGS,
   RESOLUTION_METHODS,
   SUPPORTED_LOCALES,
@@ -866,27 +862,16 @@ export type {
   ViewerRole,
   ViewerCapability,
   ValidatorCodeFamily,
-  CapabilityRejection,
-  CapabilityVerifyContext,
-  CapabilityVerdict,
-  CapabilityVerifier,
   ImplementationManifest,
   SupportedLocale,
-  NumberFormatRules,
-  DateFormatRules,
-  ConfidenceBadgeStyle,
-  SourceBadge,
-  FlagSeverity,
   FieldViewHint,
   SectionViewModel,
-  ViewModelRegistry,
   EditAuthority,
   EditPolicy,
   EditOperation,
   IssueRemediation,
   CalcEvaluationContext,
   CalcResult,
-  AgentHostCapability,
   ModuleManifest,
   ModuleConformanceRequirements,
   ModuleSignature,
@@ -905,6 +890,26 @@ export type {
   GapAction,
   IncompleteDataPolicy,
 } from './protocol.js';
+// Starter-product protocol tables (RFC 0083): same names, from starter-protocol.ts.
+export {
+  DEFAULT_NUMBER_FORMAT,
+  DEFAULT_DATE_FORMAT,
+  BUILTIN_VIEW_MODELS,
+  CASCADE_ORDER,
+} from './starter-protocol.js';
+export type {
+  CapabilityRejection,
+  CapabilityVerifyContext,
+  CapabilityVerdict,
+  CapabilityVerifier,
+  NumberFormatRules,
+  DateFormatRules,
+  ConfidenceBadgeStyle,
+  SourceBadge,
+  FlagSeverity,
+  ViewModelRegistry,
+  AgentHostCapability,
+} from './starter-protocol.js';
 
 // Convenience re-export: diff result type
 export type { SectionDiff } from './compactor.js';
@@ -983,3 +988,15 @@ export { checkBuiltinClassContent } from './builtin-class-validation.js';
 export { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
 
 export { DATA_CENTER_PACK, MANUFACTURED_HOUSING_PACK } from './packs/index.js';
+
+// Stated-metric verification against the metric dictionary (RFC 0083 §2).
+export { verifyStatedMetrics } from './metric-verification.js';
+export type {
+  StatedMetricBindings,
+  StatedMetricDefinition,
+  StatedMetricEvidence,
+  StatedMetricOutcome,
+  StatedMetricsReport,
+  StatedMetricUnverifiableReason,
+  VerifyStatedMetricsOptions,
+} from './metric-verification.js';
