@@ -1,5 +1,5 @@
 // Tier-2 Editor — applyEdit() dispatcher for the four EditOperation kinds
-// defined in protocol.ts (UW_PROTOCOL.md §V.2):
+// defined in `@uwmd/verify`'s protocol.ts (UW_PROTOCOL.md §V.2):
 //
 //   - frontmatter_set
 //   - section_replace
@@ -13,21 +13,28 @@
 // Pure: no I/O. The runner consumes the returned content string and the
 // caller writes it back to disk.
 
-import { stampMetaIntoBlockContent, bumpRawMetaVersion } from './metadata.js';
-import { isBlockRole } from './block-roles.js';
-import type { ParsedUWFile, UWBlock, UWMeta, UWMetaPatch } from './types.js';
-import type {
-  EditAuthority,
-  EditOperation,
-  EditPolicy,
-  ProtocolError,
-} from './protocol.js';
+import {
+  stampMetaIntoBlockContent,
+  bumpRawMetaVersion,
+  isBlockRole,
+  type ParsedUWFile,
+  type UWBlock,
+  type UWMeta,
+  type UWMetaPatch,
+  type EditAuthority,
+  type EditOperation,
+  type EditPolicy,
+  type ProtocolError,
+  BUILTIN_EDIT_POLICIES,
+  parseActorSource,
+  getSection,
+  getSectionVariant,
+  parseUWFile,
+  computeBlockHash,
+} from '@uwmd/verify';
 import type { CapabilityVerifier } from './starter-protocol.js';
-import { BUILTIN_EDIT_POLICIES, parseActorSource } from './protocol.js';
-import { getSection, getSectionVariant, parseUWFile } from './parser.js';
 import { buildMeta } from './runner.js';
 import { inferGaps, summarizeGaps } from './gaps.js';
-import { computeBlockHash } from './integrity.js';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 

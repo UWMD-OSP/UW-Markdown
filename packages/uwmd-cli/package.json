@@ -19,7 +19,7 @@
   "scripts": {
     "test": "vitest run",
     "typecheck:tests": "tsc -p tsconfig.test.json",
-    "prepublishOnly": "npm --prefix ../uwmd-core run build && npm --prefix ../.. test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
+    "prepublishOnly": "npm --prefix ../uwmd-verify run build && npm --prefix ../uwmd-core run build && npm --prefix ../.. test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
   },
   "dependencies": {
     "@uwmd/core": "4.0.1"

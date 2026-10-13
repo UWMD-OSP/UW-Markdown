@@ -1,7 +1,7 @@
 # 07 — Data model reference
 
-Authoritative type source: [`packages/uwmd-core/src/types.ts`](../../packages/uwmd-core/src/types.ts)
-and [`packages/uwmd-core/src/protocol.ts`](../../packages/uwmd-core/src/protocol.ts).
+Authoritative type source: [`packages/uwmd-verify/src/types.ts`](../../packages/uwmd-verify/src/types.ts)
+and [`packages/uwmd-verify/src/protocol.ts`](../../packages/uwmd-verify/src/protocol.ts).
 Section field schemas: `UW_FORMAT_SPEC.md` §4. Real populated example:
 [`examples/Parkview-Apts-Glendale-AZ.uwx.md`](../../examples/Parkview-Apts-Glendale-AZ.uwx.md).
 

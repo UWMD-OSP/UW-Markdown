@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { BUILTIN_FORMAT_RULES, dateWithRules, formatNumberWithRules } from './format-rules.js';
 import { formatCurrency, formatDate, formatPercent, formatRatio } from './format.js';
-import { SUPPORTED_LOCALES } from './protocol.js';
+import { SUPPORTED_LOCALES } from '@uwmd/verify';
 
 const NBSP = String.fromCharCode(0x00a0);
 

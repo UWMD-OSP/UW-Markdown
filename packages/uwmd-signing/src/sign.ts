@@ -8,7 +8,7 @@ import {
   type UWBlockSignature,
   type UWReceipt,
   type UWReceiptSignature,
-} from '@uwmd/core';
+} from '@uwmd/verify';
 import { algorithmParams, subtle } from './algorithms.js';
 import { toBase64Url, utf8 } from './base64.js';
 import { SigningError } from './errors.js';

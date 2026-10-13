@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { evaluateCalc as browserEvaluateCalc, evaluateModuleCalculations as browserEvaluateModuleCalculations } from './browser.js';
-import { evaluateCalc as standardEvaluateCalc } from './calc/index.js';
+import {
+  evaluateCalc as standardEvaluateCalc,
+  evaluateModuleCalculations as standardEvaluateModuleCalculations,
+  createModuleRegistry,
+  parseUWFile,
+  type CalcEvaluationContext,
+  type ModuleCalcDecl,
+  type ModuleManifest,
+} from '@uwmd/verify';
 import { evaluateCalc, evaluateModuleCalculations } from './calc-display.js';
 import { evaluateCalc as indexEvaluateCalc, evaluateModuleCalculations as indexEvaluateModuleCalculations } from './index.js';
-import { evaluateModuleCalculations as standardEvaluateModuleCalculations } from './module-runtime.js';
-import { createModuleRegistry } from './modules.js';
-import { parseUWFile } from './parser.js';
-import type { CalcEvaluationContext, ModuleCalcDecl, ModuleManifest } from './protocol.js';
 
 const DOC = [
   '---',

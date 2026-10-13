@@ -13,9 +13,14 @@ the single most important diagram in the repo (also in [`ARCHITECTURE.md`](../..
 └──────────────────────────────────────────────────────────────┘
                          ▲ implements
 ┌──────────────────────────────────────────────────────────────┐
-│  Reference library      packages/uwmd-core  (@uwmd/core)       │  the heart
-│   parser · validator · editor · renderer · runner · compactor  │
-│   calc/ · packs/ · agents/ · protocol · context · cascade …    │
+│  Reference library      packages/uwmd-verify (@uwmd/verify)    │  the standard
+│   parser · validator · calc/ · builtin-packs/ · receipts      │
+│   integrity · modules · representations · protocol …          │
+├──────────────────────────────────────────────────────────────┤
+│  Starter toolkit        packages/uwmd-core  (@uwmd/core)       │  the heart
+│   editor · renderer · runner · compactor · cascade · defaults  │
+│   packs/ (Excel emit) · agents/ · context · CLI …              │
+│   depends on @uwmd/verify exactly and re-exports all of it     │
 └──────────────────────────────────────────────────────────────┘
                          ▲ used by
 ┌──────────────────────────────────────────────────────────────┐
@@ -84,7 +89,8 @@ spec/                      Normative specs + JSON Schemas + XML XSD
   schemas/                 JSON Schema 2020-12 plus structural UW XML XSD
 
 packages/
-  uwmd-core/   (@uwmd/core 1.1.0)  The reference library — see 03-core-library.md
+  uwmd-verify/ (@uwmd/verify)      The reference implementation of the standard (RFC 0083)
+  uwmd-core/   (@uwmd/core)        The starter toolkit on verify — see 03-core-library.md
   uwmd-cli/    (uwmd 1.1.0)        Thin npx wrapper over @uwmd/core's cli.ts
   uwmd-excel/  (@uwmd/excel 0.2.0) .uw.md → .xlsx workbook (formulas, not values)
 
@@ -106,12 +112,15 @@ docs/           GLOSSARY.md, TOOLS.md, rfcs/, starter/ (non-normative starter gu
 From `ARCHITECTURE.md`, restated because agents break these most often:
 
 1. **Spec depends on nothing.** Any spec change requires an RFC (`docs/rfcs/`).
-2. **`@uwmd/core` keeps transport logic dependency-light.** Runtime dependencies
-   are `fast-xml-parser` and `fflate`. `@anthropic-ai/sdk` is an **optional peer
-   dependency** — needed only by the reference Anthropic provider, loaded
-   dynamically on the first request, and excluded from `@uwmd/core/browser`.
-   HTTP/MCP adapters add no server SDK.
-3. **Tools depend on `@uwmd/core`** (browser entry where applicable) plus their
+2. **The library keeps transport logic dependency-light.** `@uwmd/verify`'s
+   runtime dependencies are `fast-xml-parser` and `fflate`, and it depends on no
+   `@uwmd/*` package. `@uwmd/core` depends on `@uwmd/verify` exactly and imports
+   it only through its public entry. `@anthropic-ai/sdk` is an **optional peer
+   dependency** of core — needed only by the reference Anthropic provider,
+   loaded dynamically on the first request, and excluded from
+   `@uwmd/core/browser`. HTTP/MCP adapters add no server SDK.
+3. **Tools depend on the library** — `@uwmd/core`, or `@uwmd/verify` alone
+   when they only read and verify (browser entry where applicable) — plus their
    own UI/runtime stack. **Tools MUST NOT reach into other tools' code.**
 4. **Conformance fixtures depend on nothing.** They are pure data, versioned
    alongside the spec they exercise.
@@ -140,7 +149,7 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
 (Full detail in [10 — Conventions & invariants](10-conventions-invariants.md).)
 
 - **Deterministic calc boundary** — AI never does financial math.
-- **Layering** — spec→∅, core→SDK only (excluded from browser), tools→core only.
+- **Layering** — spec→∅, verify→no `@uwmd/*`, core→verify + optional SDK (excluded from browser), tools→core or verify only.
 - **Byte preservation** — editor edits don't reflow unrelated regions (starter product).
 - **Excel ↔ evaluator parity** — both paths agree exactly (one pack; both
   quantize at the same `round_to`, §VIII.5); a starter-product quality bar.

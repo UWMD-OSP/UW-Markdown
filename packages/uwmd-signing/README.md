@@ -7,7 +7,7 @@ Block, receipt, and module-manifest signatures for
 
 ## Why this is a separate package
 
-`@uwmd/core` is deliberately zero-cryptography. Reading, validating, editing,
+`@uwmd/verify` and `@uwmd/core` are deliberately zero-cryptography. Reading, validating, editing,
 and computing over a `.uw.md` file requires no crypto, and the overwhelming
 majority of adopters should never take a crypto dependency to do any of it.
 
@@ -36,7 +36,10 @@ npm install @uwmd/signing
 ```
 
 Needs Node ≥ 18.4 (Ed25519 in Web Crypto) or a modern browser. `ed25519`,
-`es256`, and `es384` are the admitted algorithms.
+`es256`, and `es384` are the admitted algorithms. It depends on `@uwmd/verify`
+for the signing payloads and verifier seams, and on `@uwmd/core` for the
+capability-token types, a starter product (RFC 0083); the examples below import
+from `@uwmd/core`, which re-exports everything `@uwmd/verify` exports.
 
 ## Signing a block
 

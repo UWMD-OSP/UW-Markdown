@@ -5,7 +5,7 @@
  * The adapter never opens a connection and never imports a driver. It returns
  * `{ sql, params }` pairs; the adopter hands them to whatever client they
  * already have (`pg`, `postgres.js`, a pool, a migration runner). That is what
- * keeps PostgreSQL out of `@uwmd/core`'s dependency graph and out of the
+ * keeps PostgreSQL out of the `@uwmd/verify` and `@uwmd/core` dependency graphs and out of the
  * protocol — the lake is a projection target, not a participant in validation.
  *
  * Idempotency is by digest, not by load order: every statement is an
@@ -15,7 +15,7 @@
  * lake accumulates versions rather than overwriting history.
  */
 
-import { sha256Hex } from '@uwmd/core';
+import { sha256Hex } from '@uwmd/verify';
 import { LakeError, UWMD_LAKE_SCHEMA_VERSION } from './schema.js';
 
 /** One parameterized statement. `params` positions match `$1..$n` in `sql`. */

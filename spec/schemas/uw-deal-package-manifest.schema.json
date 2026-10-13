@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/uw-deal-package-manifest.schema.json",
   "title": "UW Deal Package Manifest 1.0",
-  "description": "Authoritative inventory of a UW Deal Package (RFC 0018 §3). Members are content-addressed by digest; ZIP entry order and timestamps are not semantic. Mirrors UWDealPackageManifest in @uwmd/core/deal-package.ts.",
+  "description": "Authoritative inventory of a UW Deal Package (RFC 0018 §3). Members are content-addressed by digest; ZIP entry order and timestamps are not semantic. Mirrors UWDealPackageManifest in @uwmd/verify's deal-package.ts.",
   "type": "object",
   "required": ["package_version", "package_id", "members"],
   "additionalProperties": true,

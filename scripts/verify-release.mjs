@@ -125,8 +125,8 @@ const state = checkReleaseState({
   protocolDoc: read('spec/UW_PROTOCOL.md'),
   coreVersion,
   protocolVersion:
-    read('packages/uwmd-core/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)?.[1] ?? null,
-  specProtocolVersion: read('packages/uwmd-core/src/protocol.ts').match(/SUPPORTED_PROTOCOL_VERSIONS = Object\.freeze\(\['([^']+)'\]/)?.[1],
+    read('packages/uwmd-verify/src/protocol.ts').match(/export const PROTOCOL_VERSION = '([^']+)'/)?.[1] ?? null,
+  specProtocolVersion: read('packages/uwmd-verify/src/protocol.ts').match(/SUPPORTED_PROTOCOL_VERSIONS = Object\.freeze\(\['([^']+)'\]/)?.[1],
   cliVersion: cli.version,
   cliCoreDependency: cli.dependencies?.['@uwmd/core'],
   tag,

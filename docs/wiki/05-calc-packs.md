@@ -22,7 +22,7 @@ continues to use the same pack objects and Excel bindings.
 > third-party classes and metrics.
 
 - **Location:** the twelve manifests and the registry are in
-  [`packages/uwmd-core/src/builtin-packs/`](../../packages/uwmd-core/src/builtin-packs/)
+  [`packages/uwmd-verify/src/builtin-packs/`](../../packages/uwmd-verify/src/builtin-packs/)
   (standard side, RFC 0083: receipts and builtin-class validation read them);
   [`packages/uwmd-core/src/packs/`](../../packages/uwmd-core/src/packs/) re-exports them beside the Excel emitter.
 - **Public API (via `index.ts`):** `MULTIFAMILY_PACK`, `OFFICE_PACK`,
@@ -72,14 +72,14 @@ File | Role
 `builtin-packs/index.ts` | The `getPackForAssetClass` registry
 `packs/index.ts` | Re-exports the builtin packs and the registry beside the Excel emitter
 `packs/packs.test.ts` | Multifamily pack integrity + Excel↔evaluator parity (exact)
-`builtin-packs/office.test.ts` | Office pack integrity + Excel↔evaluator parity (exact)
-`builtin-packs/retail.test.ts` | Retail pack integrity + Excel↔evaluator parity (exact)
-`builtin-packs/industrial.test.ts` | Industrial pack integrity + Excel↔evaluator parity (exact)
-`builtin-packs/self-storage.test.ts` | Self-storage pack integrity + Excel↔evaluator parity (exact)
-`builtin-packs/hospitality.test.ts` | Hospitality pack integrity + Excel↔evaluator parity (exact) + operating-statement footing
-`builtin-packs/senior-housing.test.ts` | Senior-housing pack integrity + Excel↔evaluator parity (exact) + footing/labor-subtotal reconciliation
-`builtin-packs/student-housing.test.ts` | Student-housing pack integrity + Excel↔evaluator parity (exact) + footing + bed-sizing guard
-`builtin-packs/land.test.ts` | Land pack integrity + Excel↔evaluator parity (exact) + carry-model footing + income-metric omission guard
+`packs/office.test.ts` (core) | Office pack integrity + Excel↔evaluator parity (exact)
+`packs/retail.test.ts` (core) | Retail pack integrity + Excel↔evaluator parity (exact)
+`packs/industrial.test.ts` (core) | Industrial pack integrity + Excel↔evaluator parity (exact)
+`packs/self-storage.test.ts` (core) | Self-storage pack integrity + Excel↔evaluator parity (exact)
+`packs/hospitality.test.ts` (core) | Hospitality pack integrity + Excel↔evaluator parity (exact) + operating-statement footing
+`packs/senior-housing.test.ts` (core) | Senior-housing pack integrity + Excel↔evaluator parity (exact) + footing/labor-subtotal reconciliation
+`packs/student-housing.test.ts` (core) | Student-housing pack integrity + Excel↔evaluator parity (exact) + footing + bed-sizing guard
+`packs/land.test.ts` (core) | Land pack integrity + Excel↔evaluator parity (exact) + carry-model footing + income-metric omission guard
 
 ## Selecting a pack by asset class
 
@@ -462,7 +462,7 @@ junior, two-senior and default-junior cases.
 ## Recipe: add a new built-in asset-class pack
 
 `office` was the first pack to follow this recipe — model new packs on
-`builtin-packs/office.ts` + `builtin-packs/office.test.ts`. Adding a built-in pack for an asset
+`builtin-packs/office.ts` (verify) + `packs/office.test.ts` (core). Adding a built-in pack for an asset
 class changes the normative metric dictionary and therefore needs an RFC.
 Official new classes follow the builtin class contract; private third-party
 extensions use modules.
@@ -472,18 +472,19 @@ extensions use modules.
    field paths from a worked example deal for that class (see [07 — Data
    model](07-data-model-reference.md)).
 2. Export it from `builtin-packs/index.ts` (and add it to the `PACK_REGISTRY` there so
-   `getPackForAssetClass` resolves it), re-export it from `packs/index.ts`, then
-   from `src/index.ts` and `src/browser.ts`. Add it to the standard list in
+   `getPackForAssetClass` resolves it) and from `@uwmd/verify`'s `src/index.ts`
+   (its browser entry and core's entries pick it up), then re-export it from
+   core's `packs/index.ts`. Add it to the standard list in verify's
    `src/standard-closure.test.ts`.
-3. Add an `<assetclass>` defaults table in `defaults.ts` and register it in that
+3. Add an `<assetclass>` defaults table in core's `defaults.ts` and register it in that
    file's `REGISTRY` so the cascade and refinement engine can resolve its inputs.
 4. Add the Excel layout (named inputs/ranges) in a corresponding Excel layout
    module. Every official class gets one, together with its defaults table and
    a worked example (full starter support, RFC 0078 D5 and RFC 0080).
 5. Add its normative calculation and size entries to `spec/metrics/builtin.json`
-   and run `npm run gen-metric-dictionary` (core ships the dictionary as
+   and run `npm run gen-metric-dictionary` (`@uwmd/verify` ships the dictionary as
    `src/metric-dictionary.ts`); dictionary parity must prove completeness. Add a parity test analogous to
-   `builtin-packs/office.test.ts` (and Verifier calc conformance
+   core's `packs/office.test.ts` (and Verifier calc conformance
    fixtures under `calc/` if needed).
 
 > **You should not have to touch the "unregistered class" negative tests.** They

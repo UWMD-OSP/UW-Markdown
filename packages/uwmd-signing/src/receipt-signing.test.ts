@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { receiptSigningPayload, type UWReceipt } from '@uwmd/core';
+import { receiptSigningPayload, type UWReceipt } from '@uwmd/verify';
 import { generateSigningKeyPair, InMemoryKeyStore } from './keys.js';
 import { signReceipt, stampReceiptSignature } from './sign.js';
 import { createReceiptSignatureVerifier } from './verify.js';

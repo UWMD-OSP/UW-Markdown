@@ -1,4 +1,7 @@
-// The engine identity a verification receipt records.
+// The identity of this package: the `issuer` a receipt issued through
+// `@uwmd/core` records (`receipt-engine.ts`; the receipt's engine is
+// `@uwmd/verify`, the code that computes), and the version
+// `REFERENCE_IMPLEMENTATION_MANIFEST` reports.
 //
 // Kept as a literal rather than read from package.json so the value is
 // available in the browser bundle and in every module system. `version.test.ts`

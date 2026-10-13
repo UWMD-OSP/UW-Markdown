@@ -1,7 +1,7 @@
 // .uw.md compactor — strips superseded blocks, writes clean file
 // Spec: UW_FORMAT_SPEC.md §2.7 "uwmd compact strips superseded blocks"
 
-import type { ParsedUWFile, UWBlock } from './types.js';
+import type { ParsedUWFile, UWBlock } from '@uwmd/verify';
 
 // ─── Compact: remove all superseded blocks from raw file text ─────────────────
 // Returns the compacted file content as a string.

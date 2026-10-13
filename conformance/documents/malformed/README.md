@@ -39,7 +39,7 @@ validator must surface this problem," not "the validator must surface
 ## Adding a fixture
 
 1. Pick a validator code from `BUILTIN_REMEDIATIONS` in
-   [`packages/uwmd-core/src/validator.ts`](../../../packages/uwmd-core/src/validator.ts)
+   [`packages/uwmd-verify/src/validator.ts`](../../../packages/uwmd-verify/src/validator.ts)
    that is not already exercised here.
 2. Hand-craft the smallest `.uw.md` that triggers it — frontmatter
    plus one offending section block is usually enough.

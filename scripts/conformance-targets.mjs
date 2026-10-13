@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { CONFORMANCE_TARGETS, CONFORMANCE_PROFILES, isConformanceTier } from '../packages/uwmd-core/dist/protocol.js';
+import { CONFORMANCE_TARGETS, CONFORMANCE_PROFILES, isConformanceTier } from '../packages/uwmd-verify/dist/protocol.js';
 
 export const corpus = JSON.parse(readFileSync(new URL('../conformance/corpus-index.json', import.meta.url), 'utf8'));
 export const suiteFamily = suite => suite === 'starter-refinement' ? 'calc' : suite === 'starter-agent-profile' ? 'starter-agent' : suite;

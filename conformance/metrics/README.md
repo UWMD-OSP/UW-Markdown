@@ -1,12 +1,14 @@
 # Metric dictionary conformance — a lender with only the standard
 
-`verifier.mjs` verifies through core's `verifyStatedMetrics`
+`verifier.mjs` verifies through `@uwmd/verify`'s `verifyStatedMetrics`
 (`metric-verification.ts`, RFC 0083 §2), which uses only the UWX reader,
 section resolver, safe-expression evaluator and shared §VIII.5 quantizer. The
 fixture keeps the plumbing: example discovery, the Lite anchor view and the
 statement bindings, and it passes the normative
 [metric dictionary](../../spec/metrics/README.md) read from `spec/`. It imports
-no packs, defaults, cascade or public core barrel; there are no prior results,
+`@uwmd/verify`'s built package entry (and, for the single-metric comparison,
+the same build's `metric-verification.js`) and nothing of `@uwmd/core`: no
+defaults, cascade, display formatting or core barrel; there are no prior results,
 overrides, inferred financial inputs or underwriting workflow. The source-token
 precision readers in `numeric-tokens.mjs` re-export the library's.
 
@@ -107,8 +109,9 @@ lists each source identity and computed value.
 
 ## Controls
 
-The independent controls verify the import graph excludes packs, defaults,
-cascade and the core barrel. They cover statement tampering; missing/null/type-invalid
+The independent controls verify the import graph reaches no `@uwmd/core`
+module at all (and no starter packs, defaults or cascade), and that it does
+reach `@uwmd/verify`'s entry and evaluator. They cover statement tampering; missing/null/type-invalid
 inputs; zero division; dictionary formula selection; cent-level quantization of
 a noisy binary64 amount over $100k and a one-cent negative; negative half cents;
 common cash-on-cash across all eleven income classes; lazy stated-year-1 selection (including
@@ -118,4 +121,4 @@ immutability; source-token trailing zeroes, exponents, escaped/nested keys,
 a payload member named `content`, YAML comments; coarse exact/wrong statements, all twelve LTV denominators and lazy fallbacks,
 minimum precision, output ceilings and
 no double rounding. Dictionary/pack/size completeness is separately enforced by
-`packages/uwmd-core/src/builtin-packs/metric-dictionary.test.ts`.
+`packages/uwmd-verify/src/builtin-packs/metric-dictionary.test.ts`.

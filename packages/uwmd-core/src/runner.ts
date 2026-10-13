@@ -12,11 +12,21 @@
 //
 // Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §6.3 (uwmd run)
 
-import { stampMetaIntoBlockContent, bumpRawMetaVersion, buildMeta } from './metadata.js';
-import type { ParsedUWFile, UWBlock, UWMeta, PipelineStatus, UWFrontmatter } from './types.js';
-import { getSection, getSectionVariant, parseUWFile } from './parser.js';
+import {
+  stampMetaIntoBlockContent,
+  bumpRawMetaVersion,
+  buildMeta,
+  type ParsedUWFile,
+  type UWBlock,
+  type UWMeta,
+  type PipelineStatus,
+  type UWFrontmatter,
+  getSection,
+  getSectionVariant,
+  parseUWFile,
+} from '@uwmd/verify';
 
-// `buildMeta` lives in metadata.ts (standard side, RFC 0083); the runner keeps
+// `buildMeta` lives in `@uwmd/verify` (metadata.ts, RFC 0083); the runner keeps
 // exporting it so `import { buildMeta } from './runner.js'` is unchanged.
 export { buildMeta };
 

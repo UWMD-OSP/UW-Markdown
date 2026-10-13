@@ -12,7 +12,7 @@
  * definition of what a deal says.
  */
 
-import { computeEnvelopeDigest, flattenEnvelopeBlockValues, type UWDocumentEnvelope } from '@uwmd/core';
+import { computeEnvelopeDigest, flattenEnvelopeBlockValues, type UWDocumentEnvelope } from '@uwmd/verify';
 import type { LakeDocumentInput, LakeFactInput } from './plan.js';
 import { LakeError } from './schema.js';
 

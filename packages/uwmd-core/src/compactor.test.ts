@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile } from './init.js';
-import { parseUWFile } from './parser.js';
+import { parseUWFile } from '@uwmd/verify';
 
 function blankDeal(): string {
   return generateBlankUWFile({
@@ -43,5 +43,137 @@ describe('diff', () => {
       changedFields: ['_notes'],
     });
     expect(sections.every(section => section.status === 'changed' || section.status === 'unchanged')).toBe(true);
+  });
+});
+
+// ─── compact (moved from parser.test.ts, RFC 0083) ─────────────────────────────────────────────────────────────────
+
+describe('compact', () => {
+  it('removes superseded blocks and returns shorter content', () => {
+    const content = `---
+uw_version: "3.0"
+deal_id: "x"
+deal_name: "x"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: ""
+city: ""
+state: "AZ"
+zip: ""
+asset_class: multifamily
+---
+
+\`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 superseded=true confidence=high
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": true
+    }
+  },
+  "total_units": 10
+}
+\`\`\`
+
+\`\`\`json uw:section=property source=manual ts=2026-01-02T00:00:00Z v=2 confidence=high
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-02T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": false
+    }
+  },
+  "total_units": 48
+}
+\`\`\`
+`;
+    const parsed = parseUWFile(content);
+    const compacted = compact(parsed);
+    expect(compacted.length).toBeLessThan(content.length);
+    // v=1 block should be gone
+    expect(compacted).not.toContain('"total_units": 10');
+    // v=2 block should remain
+    expect(compacted).toContain('"total_units": 48');
+  });
+
+  it('returns original content unchanged when no superseded blocks exist', () => {
+    const content = `---
+uw_version: "3.0"
+deal_id: "x"
+deal_name: "x"
+created: "2026-01-01T00:00:00Z"
+last_modified: "2026-01-01T00:00:00Z"
+property_address: ""
+city: ""
+state: "AZ"
+zip: ""
+asset_class: multifamily
+---
+\`\`\`json uw:section=property source=manual ts=2026-01-01T00:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "resolution": "user_input",
+      "actor": "user",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "total_units": 48
+}
+\`\`\`
+`;
+    const parsed = parseUWFile(content);
+    const compacted = compact(parsed);
+    expect(compacted).toBe(content);
   });
 });

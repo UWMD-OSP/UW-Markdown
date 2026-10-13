@@ -31,7 +31,8 @@
     "typecheck:tests": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@uwmd/core": "4.0.1"
+    "@uwmd/core": "4.0.1",
+    "@uwmd/verify": "0.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

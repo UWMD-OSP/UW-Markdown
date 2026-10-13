@@ -1,22 +1,24 @@
 // Calc results with a display string — a starter product (RFC 0078 D11).
 //
-// The standard-side evaluator (`./calc/index.ts`) returns a `CalcResult` with
+// The standard evaluator (`@uwmd/verify`'s `evaluateCalc`) returns a `CalcResult` with
 // no `display`: the field is optional in `calc-result.schema.json`, and how a
 // number is shown is a display convention, not part of verification. The
 // `evaluateCalc` and `evaluateModuleCalculations` that `@uwmd/core` exports are
 // the wrappers below, which add `display` exactly as core always has, so their
 // callers see no change (RFC 0083 §3).
 
-import { evaluateCalc as evaluateCalcStandard } from './calc/index.js';
-import { formatCurrency, formatPercent, formatRatio, formatValue } from './format.js';
 import {
+  evaluateCalc as evaluateCalcStandard,
   evaluateModuleCalculations as evaluateModuleCalculationsStandard,
   type ModuleCalcOutcome,
   type ModuleRuntimeOptions,
-} from './module-runtime.js';
-import type { ModuleRegistry } from './modules.js';
-import type { CalcEvaluationContext, CalcResult, ModuleCalcDecl } from './protocol.js';
-import type { ParsedUWFile } from './types.js';
+  type ModuleRegistry,
+  type CalcEvaluationContext,
+  type CalcResult,
+  type ModuleCalcDecl,
+  type ParsedUWFile,
+} from '@uwmd/verify';
+import { formatCurrency, formatPercent, formatRatio, formatValue } from './format.js';
 
 /**
  * Evaluate a single calculation declaration against a context, with the

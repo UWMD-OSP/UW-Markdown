@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { inferGaps, readGapsContent, summarizeGaps } from './gaps.js';
-import { readGapsContent as readGapsContentStandard } from './gaps-content.js';
-import type { ParsedUWFile, UWBlock, UWFieldOverride, UWQuality } from './types.js';
+import {
+  readGapsContent as readGapsContentStandard,
+  type ParsedUWFile,
+  type UWBlock,
+  type UWFieldOverride,
+  type UWQuality,
+} from '@uwmd/verify';
 
 /** A test block; `quality` members override the defaults, `_overrides` sits beside the payload. */
 function makeBlock(
@@ -187,7 +192,7 @@ describe('summarizeGaps', () => {
 });
 
 describe('readGapsContent re-export', () => {
-  it('is the standard-side reader from gaps-content.ts', () => {
+  it('is the standard reader from @uwmd/verify (gaps-content.ts)', () => {
     expect(readGapsContent).toBe(readGapsContentStandard);
   });
 });

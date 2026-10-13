@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { runBancroftAgent, runBancroftAgentStreaming } from './bancroft.js';
 import { AgentProviderError, type AgentCompletion, type AgentProvider, type AgentRequest } from './provider.js';
-import { getSection, parseUWFile } from '../parser.js';
+import { getSection, parseUWFile } from '@uwmd/verify';
 
 const PARKVIEW = resolve(__dirname, '../../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 const deal = () => readFileSync(PARKVIEW, 'utf8');

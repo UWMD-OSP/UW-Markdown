@@ -5,9 +5,9 @@
 // the modular unit that lets every tool in the ecosystem (web editor, Excel
 // converter, agents, future viewers) consume the same calc definitions.
 //
-// The twelve builtin manifests and their registry live in `../builtin-packs/`
-// (standard side, RFC 0083); this module re-exports them beside the Excel
-// emitter, a starter product, under the same names.
+// The twelve builtin manifests and their registry live in `@uwmd/verify`
+// (`builtin-packs/`, the standard side, RFC 0083); this module re-exports them
+// beside the Excel emitter, a starter product, under the same names.
 
 export {
   DATA_CENTER_PACK,
@@ -23,7 +23,7 @@ export {
   SENIOR_HOUSING_PACK,
   STUDENT_HOUSING_PACK,
   getPackForAssetClass,
-} from '../builtin-packs/index.js';
+} from '@uwmd/verify';
 export {
   emitFromAst,
   emitExcelFormula,

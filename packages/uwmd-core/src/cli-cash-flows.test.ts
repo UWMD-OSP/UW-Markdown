@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { CalcError } from './calc/errors.js';
+import { CalcError } from '@uwmd/verify';
 import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cash-flows.js';
 
 const specimen = JSON.parse(readFileSync(new URL('../../../conformance/cash-flow/verify-all-metrics/case.json', import.meta.url), 'utf8')).series;

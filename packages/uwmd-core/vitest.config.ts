@@ -38,11 +38,21 @@ export default defineConfig({
       // wrong way over a measurement artifact. With the barrels out, three
       // consecutive runs measured 83.31 / 83.30 / 83.30 lines and statements,
       // 76.80 / 76.82 / 76.87 branches, 97.50 functions.
+      //
+      // Re-measured 2026-10-13 for RFC 0083 Phase 2, which moved the standard
+      // modules and their tests to @uwmd/verify (its own floor is in its
+      // vitest.config.ts). What remains here is the starter toolkit, where the
+      // CLI (cli.ts, by far the largest file) is exercised through spawned
+      // processes that in-process coverage cannot see. Two consecutive runs
+      // measured 78.07% lines and statements, 82.28 / 82.29% branches and
+      // 98.96% functions. Lines and statements drop to 77 — a measurement of a
+      // smaller, differently shaped package, not lost tests (every moved test
+      // still runs, in verify) — and branches rise to 81 with the measurement.
       thresholds: {
-        lines: 82,
-        statements: 82,
+        lines: 77,
+        statements: 77,
         functions: 97,
-        branches: 76,
+        branches: 81,
       },
       exclude: [
         'src/**/*.test.ts',

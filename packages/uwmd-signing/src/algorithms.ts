@@ -9,7 +9,7 @@
 // Web Crypto produces and consumes. DER-wrapped ECDSA signatures are NOT
 // interchangeable and will fail verification rather than silently pass.
 
-import type { UWSignatureAlgorithm } from '@uwmd/core';
+import type { UWSignatureAlgorithm } from '@uwmd/verify';
 import { SigningError } from './errors.js';
 
 export interface AlgorithmParams {

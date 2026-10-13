@@ -8,8 +8,7 @@
 import { describe, expect, it } from 'vitest';
 import { applyEdit, applyEditAsync } from './editor.js';
 import type { EditContext } from './editor.js';
-import { parseUWFile, getSection } from './parser.js';
-import type { EditOperation } from './protocol.js';
+import { parseUWFile, getSection, type EditOperation } from '@uwmd/verify';
 import type { CapabilityVerdict, CapabilityVerifier, CapabilityVerifyContext } from './starter-protocol.js';
 
 const FILE = `---

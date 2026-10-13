@@ -322,9 +322,9 @@ other. A fully signed record can still carry arithmetic no pack would produce.
 
 ## 9. Reference implementation
 
-`packages/uwmd-core/src/receipts.ts` implements unsigned issuance and
-verification. Signature creation and validation live outside core so it stays
-free of cryptographic dependencies; a verifier without a backend returns
+`packages/uwmd-verify/src/receipts.ts` implements unsigned issuance and
+verification (re-exported by `@uwmd/core`). Signature creation and validation
+live outside both libraries so they stay free of cryptographic dependencies; a verifier without a backend returns
 `unverifiable` for a signed receipt.
 
 CLI: `uwmd receipt issue <file>` and `uwmd receipt verify <file> <receipt.json>`.

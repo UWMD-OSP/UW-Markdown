@@ -108,7 +108,11 @@ It contains the modules the 2026-10-13 map classified as standard:
   stochastic (with the PCG64 sampler), market data documents, and the binding
   operations that only read.
 - **The normative part of `protocol.ts`**: types, error codes, edit policies,
-  version constants, module manifest types and the conformance manifest.
+  version constants, module manifest types and the conformance manifest
+  types (`ImplementationManifest`, the tier and profile vocabularies). The
+  manifest *value* `REFERENCE_IMPLEMENTATION_MANIFEST` describes `@uwmd/core`
+  (`org.uwmd.core`, core's version, starter capabilities such as editing and
+  agent hosting), so it stays in core with `uwmd manifest`.
 
 Everything else stays in `@uwmd/core`.
 
@@ -138,6 +142,16 @@ becomes a package-level closure test.
   the binding operations; the read operations move to verify.
 - `buildMeta` moves from `runner.ts` to `metadata.ts`; `MarketDataLookup`
   moves to `market-data.ts`.
+- Receipts record the engine that computed them, and a verifier compares it
+  with its own (UW Receipt §5.3, `RCP-07`). That engine is `@uwmd/verify`
+  (`VERIFY_VERSION`) for every receipt, including those issued through core:
+  naming `@uwmd/core` would make a verifier holding only `@uwmd/verify` report
+  a tampered core-issued receipt as `unverifiable` instead of `failed`, which
+  defeats the RFC 0078 boundary test. The `issuer` stays the tool; core's
+  exported `issueReceipt` defaults it to `@uwmd/core@<CORE_VERSION>`, and core
+  re-exports verify's `verifyReceipt` unchanged. The receipt baselines record
+  verify's version from then on. An explicit `engine`, `engine_version` or
+  `issuer` wins either way.
 - The starter parts of `protocol.ts` move to a core module
   (`starter-protocol.ts`); core re-exports them under the same names.
 - `@uwmd/signing` depends on `@uwmd/verify` for its payload builders. Its
@@ -207,7 +221,13 @@ In three phases, each its own PR:
    `VERSIONS.md` row; update wiki 03, 08 and 11, `docs/starter/` and the
    package `CLAUDE.md` files. Every module outside the Phase 1 closure list
    stays in core as a starter module; for example, `calculation-context.ts`
-   (its only user is the CLI) stays in core.
+   (its only user is the CLI) stays in core. Implementation notes: verify's
+   `./browser` entry exports the same surface as `.` (no module is Node-only);
+   a test that needs a starter module stays in core, named for that module;
+   `publish-cli-recovery.yml` needed no change (it probes the CLI's core pin,
+   and a published core implies its verify version published first); and the
+   envelope's default `generator` label stays `@uwmd/core`, so representation
+   bytes do not change.
 3. **Release.** Core/CLI 4.1.0 with `@uwmd/verify` 0.1.0. The first publication
    of a new package name needs a trusted publisher on npmjs.com, an owner
    step done before the tag.

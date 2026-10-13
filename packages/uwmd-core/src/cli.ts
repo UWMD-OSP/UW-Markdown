@@ -1,40 +1,85 @@
 #!/usr/bin/env node
-import { verifyReserveDrawBindings } from './reserve-draw-bindings.js';
-import { verifyReserveAccounts } from './reserve-accounts.js';
-import { verifyReplacementFundingBindings } from './replacement-funding.js';
+import {
+  verifyReserveDrawBindings,
+  verifyReserveAccounts,
+  verifyReplacementFundingBindings,
+  parseUWFile,
+  validateUWFile,
+  isScenarioId,
+  stringifyUWEnvelope,
+  stampEnvelopeDigest,
+  toUWEnvelope,
+  type UWDocumentEnvelope,
+  CORE_CODEC_REGISTRY,
+  verifyChain,
+  verifyProvenance,
+  canonicalBlockSigningInput,
+  type BlockSignatureVerifier,
+  type IntegrityResult,
+  type VerifyChainOptions,
+  type ConformanceTier,
+  type EditOperation,
+  type ModuleCalcDecl,
+  type CalcEvaluationContext,
+  loadModuleManifest,
+  createModuleRegistry,
+  ModuleRegistryError,
+  parseExpression,
+  periodReferencePath,
+  CalcError,
+  projectLeaseUpCashFlows,
+  LeaseUpCashFlowProjectionError,
+  type LeaseUpCashFlowPlan,
+  type PropertyCashFlowPlan,
+  assemblePropertyCashFlows,
+  PropertyCashFlowAssemblyError,
+  inspectPropertyCashFlowInputs,
+  type AssetClass,
+  type DealStage,
+  type InstitutionConfig,
+  parseUWPart,
+  resolveComposition,
+  externalizeSection,
+  stringifyUWPart,
+  UWPART_EXTENSION,
+  type UWPart,
+  type ExternalizationResult,
+  type ParsedUWFile,
+  type UWBlock,
+  createDocumentMarketData,
+  parseMarketDataDocument,
+  assertUWReceipt,
+  ReceiptError,
+  type UWReceipt,
+  detectUWSourceRepresentation,
+  UWX_REPRESENTATION_ID,
+  UW_LITE_SOURCE_DESCRIPTOR,
+  UWX_SOURCE_DESCRIPTOR,
+  UWX_EXTENSION,
+  parseUWLite,
+  compileUWLite,
+  projectUWEnvelopeToLite,
+  stringifyUWX,
+  UW_LITE_REPRESENTATION_ID,
+  verifyReceipt,
+} from '@uwmd/verify';
+import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
+// Receipts the CLI issues name `@uwmd/core` as their issuer (RFC 0083).
+import { issueReceipt } from './receipt-engine.js';
 // uwmd CLI — command-line interface for .uw.md files
 // Commands: parse, validate, compact, diff, init, summary, render
 // Usage: uwmd <command> <file> [options]
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
-import { parseUWFile } from './parser.js';
-import { validateUWFile } from './validator.js';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
-import { isScenarioId } from './scenario.js';
 import { render } from './renderer.js';
 import { renderReportHtml } from './report.js';
-import { stringifyUWEnvelope } from './uwjson.js';
-import {
-  stampEnvelopeDigest,
-  toUWEnvelope,
-  type UWDocumentEnvelope,
-} from './envelope.js';
-import { CORE_CODEC_REGISTRY } from './codecs.js';
 import { writeAgentBlock, buildMeta } from './runner.js';
 import { applyEdit, applyEditAsync } from './editor.js';
-import { verifyChain, verifyProvenance, canonicalBlockSigningInput } from './integrity.js';
-import type {
-  BlockSignatureVerifier,
-  IntegrityResult,
-  VerifyChainOptions,
-} from './integrity.js';
 import type { EditContext, EditResult } from './editor.js';
-import type { ConformanceTier, EditOperation, ModuleCalcDecl, CalcEvaluationContext } from './protocol.js';
 import type { CapabilityVerifier } from './starter-protocol.js';
-import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
-import { loadModuleManifest, createModuleRegistry, ModuleRegistryError } from './modules.js';
 import {
   cmdLeaseValidate,
   cmdLeaseProject,
@@ -48,50 +93,17 @@ import {
 import { cmdPortfolioValidate, cmdPortfolioEdges } from './cli-portfolio.js';
 import { evaluateCalc } from './calc-display.js';
 import { parseCalculationContext } from './calculation-context.js';
-import { parseExpression, periodReferencePath } from './calc/parser.js';
-import { CalcError } from './calc/errors.js';
 import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cash-flows.js';
-import { projectLeaseUpCashFlows, LeaseUpCashFlowProjectionError } from './lease-up-cash-flows.js';
-import type { LeaseUpCashFlowPlan, PropertyCashFlowPlan } from './protocol.js';
-import { assemblePropertyCashFlows, PropertyCashFlowAssemblyError } from './property-cash-flows.js';
-import { inspectPropertyCashFlowInputs } from './property-cash-flow-inputs.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from './context.js';
 import { runBancroftAgent } from './agents/bancroft.js';
-import type { AssetClass, DealStage, InstitutionConfig } from './types.js';
 import type { RenderFormat, RenderTier } from './renderer.js';
 import { buildContext } from './context-profiles.js';
 import type { ContextProfile } from './context-profiles.js';
 import { rankGaps } from './refinement.js';
 import { resolveValue } from './cascade.js';
-import {
-  parseUWPart,
-  resolveComposition,
-  externalizeSection,
-  stringifyUWPart,
-  UWPART_EXTENSION,
-} from './composition.js';
-import type { UWPart, ExternalizationResult } from './composition.js';
-import type { ParsedUWFile, UWBlock } from './types.js';
-import { createDocumentMarketData, parseMarketDataDocument } from './market-data.js';
 import { getAssetClassDefaults } from './defaults.js';
 import { MULTIFAMILY_PACK, getPackForAssetClass } from './packs/index.js';
-import { issueReceipt, verifyReceipt, assertUWReceipt, ReceiptError } from './receipts.js';
-import type { UWReceipt } from './receipts.js';
 import { CORE_VERSION } from './version.js';
-import {
-  detectUWSourceRepresentation,
-  UWX_REPRESENTATION_ID,
-  UW_LITE_SOURCE_DESCRIPTOR,
-  UWX_SOURCE_DESCRIPTOR,
-  UWX_EXTENSION,
-} from './source-representation.js';
-import { parseUWLite } from './lite.js';
-import {
-  compileUWLite,
-  projectUWEnvelopeToLite,
-  stringifyUWX,
-} from './lite-bridge.js';
-import { UW_LITE_REPRESENTATION_ID } from './source-representation.js';
 
 import {
   parseFlags,

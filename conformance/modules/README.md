@@ -57,7 +57,7 @@ always a bug, and the suite fails on it with no opt-out.
 ## What this suite does not cover
 
 Dependency load order, version-range satisfaction and duplicate module ids are
-asserted in `packages/uwmd-core/src/modules.test.ts` rather than here, because
+asserted in `packages/uwmd-verify/src/modules.test.ts` rather than here, because
 a fixture file holds one manifest and those properties are about how several
 interact. Protocol §VII.3 declaration conflicts are the exception: see
 `registry/` below.

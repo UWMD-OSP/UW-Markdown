@@ -1,4 +1,4 @@
-# 03 — Core library (`@uwmd/core`)
+# 03 — Core library (`@uwmd/verify` and `@uwmd/core`)
 
 Format 3.0 is the only format the reference library reads ([RFC
 0081](../rfcs/0081-one-format-one-protocol.md)): bare section payloads with an
@@ -10,71 +10,96 @@ product. Release 4.0.0 carries it, labelled Format 3.0 and Protocol 4.0.0;
 3.0.0 is the last release that reads older formats.
 
 
-`packages/uwmd-core` is the reference implementation and the heart of the repo.
-Everything else depends on it. Its runtime dependencies are `fast-xml-parser` and
-`fflate`. `@anthropic-ai/sdk` is an **optional peer dependency**: only the
-reference Anthropic provider needs it, it is loaded dynamically on the first
-request, and it is excluded from the browser entry. A host that brings its own
-`AgentProvider` — or never runs a Bancroft agent — does not install it, and
-importing `@uwmd/core` works without it.
+The reference library is two packages since RFC 0083 Phase 2, and everything
+else in the repo depends on one or both:
 
-- **Package:** `@uwmd/core` 1.1.0 release candidate, ESM (`"type": "module"`), TypeScript ES2022 / NodeNext.
-- **Public API:** [`src/index.ts`](../../packages/uwmd-core/src/index.ts) — the
-  single source of truth for what's exported. If it isn't there, tools can't import it.
+- **`packages/uwmd-verify` — `@uwmd/verify`**, the reference implementation of
+  the standard: everything a party needs to read and verify a `.uw.md`
+  (reader, validation, the calc evaluator, the metric dictionary, receipts,
+  integrity, modules and the verification profiles). It depends on no `@uwmd/*`
+  package; its runtime dependencies are `fast-xml-parser` and `fflate`, and it
+  has no peers. Versions independently from 0.1.0.
+- **`packages/uwmd-core` — `@uwmd/core`**, the starter toolkit on top: editor,
+  runner, renderer, report, defaults and cascade, refinement, display
+  formatting, the Excel emitter, the agents and the CLI. It depends on
+  `@uwmd/verify` at an exact version and **re-exports its whole surface**, so
+  every `@uwmd/core` import that worked in 4.0.x still works.
+  `@anthropic-ai/sdk` is an **optional peer dependency**: only the reference
+  Anthropic provider needs it, it is loaded dynamically on the first request,
+  and it is excluded from the browser entry. A host that brings its own
+  `AgentProvider` — or never runs a Bancroft agent — does not install it, and
+  importing `@uwmd/core` works without it.
+
+- **Packages:** ESM (`"type": "module"`), TypeScript ES2022 / NodeNext.
+- **Public API:** [`uwmd-verify/src/index.ts`](../../packages/uwmd-verify/src/index.ts)
+  for the standard, and [`uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts),
+  which is `export * from '@uwmd/verify'` plus the starter exports. If it isn't
+  there, tools can't import it. Three core names shadow verify's on purpose:
+  `evaluateCalc` and `evaluateModuleCalculations` (core adds the starter
+  `display` string) and `issueReceipt` (core defaults the receipt's `issuer` to
+  `@uwmd/core`; the engine stays `@uwmd/verify`). Core's `surface.test.ts` holds its
+  two entries to a superset of the 4.0.x surface and to every verify export.
 - **Entry points (`package.json` `exports`):**
-  - `.` → `dist/index.js` (full library, including the starter agent host)
-  - `./browser` → `dist/browser.js` (everything **except** `@anthropic-ai/sdk` — for web bundling)
-  - `./cli` → `dist/cli.js` (the CLI program; `uwmd-cli` just imports this)
-- **Build:** `tsc` (per-package). **Test:** `vitest run`. Coverage:
-  `vitest run --coverage`. Each `*.ts` has a sibling `*.test.ts`.
+  - `@uwmd/verify` `.` and `./browser` → the same surface (verify has no
+    Node-only export; `browser.test.ts` holds them equal)
+  - `@uwmd/core` `.` → `dist/index.js` (full library, including the starter agent host)
+  - `@uwmd/core/browser` → `dist/browser.js` (everything **except** the agent
+    host and `@anthropic-ai/sdk` — for web bundling)
+  - `@uwmd/core/cli` → `dist/cli.js` (the CLI program; `uwmd-cli` just imports this)
+- **Build:** `tsc` per package, verify before core (the root `workspaces`
+  order). **Test:** `vitest run`. Coverage: `vitest run --coverage`, each
+  package with its own floor. Each `*.ts` has a sibling `*.test.ts`; a test
+  that needs a starter module lives in core, named for it.
 
 ## Module map
 
-Module | Responsibility | Key exports
----|---|---
-`parser.ts` | `.uw.md` text → `ParsedUWFile` | `parseUWFile`, `getSection`, `getSectionVariant`, `deepGet`
-`lite.ts` | Constrained Lite parser, AST, renderer, financial canonical form | `parseUWLite`, `canonicalizeUWLiteFinancial`
-`lite-bridge.ts` | Lite compilation, UWX serialization, lossy projections | `compileUWLite`, `stringifyUWX`, `projectUWEnvelopeToLite`
-`validator.ts` | Cross-section / financial / DQ checks | `validateUWFile`, `lookupRemediation`
-`editor.ts` | Edit dispatcher (starter product; Protocol 2.x Tier-2) | `applyEdit`, `applyEditAsync`, `resolvePolicy`
-`renderer.ts` | Render to json/csv/chat/summary | `render` (+ `RenderFormat`, `RenderTier`, `RenderOptions`)
-`report.ts` | §7.1 Lender Package / §7.2 Credit Memo HTML | `renderReportHtml`, `REPORT_CSS` (+ `ReportOptions`, `ReportResult`)
-`envelope.ts` | Format-neutral model + semantic digest/equivalence | `UWDocumentEnvelope`, `toUWEnvelope`, `verifyEnvelopeDigest`
-`codec.ts` | Extensible representation registry | `CodecRegistry`, `UWCodec`, representation descriptors
-`bindings.ts` | Optional HTTP/MCP companion adapters | semantic ETags, negotiation, resources, compact tool results; source edits through an injected edit adapter
-`bindings-edit.ts` | Source edits wired to the starter editor | `applyUWMDSourceEdit`, `createUWMCPApplyEditResult`
-`uwjson.ts` | UW JSON 1.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
-`runner.ts` | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta` (defined in `metadata.ts`)
-`compactor.ts` | Live view + section diff | `compact`, `diff`
-`init.ts` | Scaffold a blank `.uw.md` | `generateBlankUWFile`
-`cli.ts` | The `uwmd` command program | (default program; routes subcommands)
-`protocol.ts` | Executable protocol contract + BUILTIN_* tables | see [§ protocol](#protocol-the-contract-surface)
-`starter-protocol.ts` | Starter-product protocol tables (RFC 0083) | `DEFAULT_NUMBER_FORMAT`, `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`, `AgentHostCapability`, `CapabilityVerifier`, …
-`types.ts` | Format type definitions | `UWBlock`, `UWMeta`, `UWFrontmatter`, `ParsedUWFile`, `DEFAULT_THRESHOLDS`, …
-`format.ts` | Field-level display formatters | `formatCurrency`, `formatPercent`, `formatRatio`, `formatCount`, `formatDate`, `formatValue`, …
-`context.ts` | Optional Bancroft reference-layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
-`context-profiles.ts` | Normative context payloads (Protocol §XI) | `buildContext` (+ `ContextProfile`)
-`cascade.ts` | Fallback-cascade value resolver | `resolveValue`, `readInFile` (browser-exported)
-`section-resolution.ts` | One block per section-rooted read (§VIII.2, RFC 0066) | `resolveSectionBlock` (browser-exported)
-`defaults.ts` | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
-`gaps.ts` | Gap detection | `inferGaps`, `summarizeGaps`
-`gaps-content.ts` | The `gaps` section's types and reader | `readGapsContent`, `GapsContent`
-`refinement.ts` | Value-of-information gap ranking | `rankGaps`
-`asset-class.ts` | Identifier grammar + resolution for module-declared classes (RFC 0003) | `parseAssetClass`, `resolveAssetClass`, `declaredAssetClasses`
-`module-runtime.ts` | Running what a module declares (RFC 0006) | `evaluateModuleCalculations`, `validateAgainstModules`, `checkModuleSections`
-`module-signing.ts` | Module manifest signature contract (RFC 0002) | `moduleSigningPayload`, `verifyModuleSignature`, `checkSignatureShape`
-`integrity.ts` | content/parent-hash chain + provenance + signature contract | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`, `canonicalBlockSigningInput`
-`integrity-canonical.ts` | Canonicalization for hashing | `canonicalize`
-`receipts.ts` | Detached verification receipts (RFC 0016) | `issueReceipt`, `verifyReceipt`, `resolveReceiptSubject`, `assertUWReceipt`, `ReceiptError`
-`version.ts` | Engine identity recorded in receipts | `CORE_PACKAGE_NAME`, `CORE_VERSION`
-`modules.ts` | Declarative module manifest loader/registry | `loadModuleManifest`, `createModuleRegistry`, `getModuleCalculationsForAssetClass`
-`calc/` | Safe-expression engine (the Verifier's evaluator; Protocol 2.x Tier-3) | see [04 — Calc engine](04-calc-engine.md)
-`calc-display.ts` | The exported `evaluateCalc`/`evaluateModuleCalculations`: standard results plus the starter `display` string | `evaluateCalc`, `evaluateModuleCalculations`
-`metric-verification.ts` | Stated metrics checked against the metric dictionary (RFC 0083 §2) | `verifyStatedMetrics`
-`metric-dictionary.ts` | `spec/metrics/builtin.json` as package data (generated) | `BUILTIN_METRIC_DICTIONARY` (internal)
-`builtin-packs/` | The twelve builtin pack manifests and their registry | see [05 — Calc packs](05-calc-packs.md)
-`packs/` | Re-exports the builtin packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
-`agents/` | Optional Bancroft reference agent host (starter product; Protocol 2.x Tier-4) | see [06 — Bancroft agents](06-bancroft-agents.md)
+Module | Package | Responsibility | Key exports
+---|---|---|---
+`parser.ts` | verify | `.uw.md` text → `ParsedUWFile` | `parseUWFile`, `getSection`, `getSectionVariant`, `deepGet`
+`lite.ts` | verify | Constrained Lite parser, AST, renderer, financial canonical form | `parseUWLite`, `canonicalizeUWLiteFinancial`
+`lite-bridge.ts` | verify | Lite compilation, UWX serialization, lossy projections | `compileUWLite`, `stringifyUWX`, `projectUWEnvelopeToLite`
+`validator.ts` | verify | Cross-section / financial / DQ checks | `validateUWFile`, `lookupRemediation`
+`editor.ts` | core | Edit dispatcher (starter product; Protocol 2.x Tier-2) | `applyEdit`, `applyEditAsync`, `resolvePolicy`
+`renderer.ts` | core | Render to json/csv/chat/summary | `render` (+ `RenderFormat`, `RenderTier`, `RenderOptions`)
+`report.ts` | core | §7.1 Lender Package / §7.2 Credit Memo HTML | `renderReportHtml`, `REPORT_CSS` (+ `ReportOptions`, `ReportResult`)
+`envelope.ts` | verify | Format-neutral model + semantic digest/equivalence | `UWDocumentEnvelope`, `toUWEnvelope`, `verifyEnvelopeDigest`
+`codec.ts` | verify | Extensible representation registry | `CodecRegistry`, `UWCodec`, representation descriptors
+`bindings.ts` | verify | Optional HTTP/MCP companion adapters | semantic ETags, negotiation, resources, compact tool results; source edits through an injected edit adapter
+`bindings-edit.ts` | core | Source edits wired to the starter editor | `applyUWMDSourceEdit`, `createUWMCPApplyEditResult`
+`uwjson.ts` | verify | UW JSON 1.0 codec + parsed-model bridge | `UW_JSON_CODEC`, `toUWJson`, `parseUWJsonVerified`, `fromUWJson`
+`runner.ts` | core | Write blocks back to file (supersede-aware) | `writeAgentBlock`, `writeErrorEntry`, `buildMeta` (defined in `metadata.ts`)
+`compactor.ts` | core | Live view + section diff | `compact`, `diff`
+`init.ts` | core | Scaffold a blank `.uw.md` | `generateBlankUWFile`
+`cli.ts` | core | The `uwmd` command program | (default program; routes subcommands)
+`protocol.ts` | verify | Executable protocol contract + BUILTIN_* tables | see [§ protocol](#protocol-the-contract-surface)
+`starter-protocol.ts` | core | Starter-product protocol tables (RFC 0083) | `DEFAULT_NUMBER_FORMAT`, `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`, `AgentHostCapability`, `CapabilityVerifier`, …
+`types.ts` | verify | Format type definitions | `UWBlock`, `UWMeta`, `UWFrontmatter`, `ParsedUWFile`, `DEFAULT_THRESHOLDS`, …
+`format.ts` | core | Field-level display formatters | `formatCurrency`, `formatPercent`, `formatRatio`, `formatCount`, `formatDate`, `formatValue`, …
+`context.ts` | core | Optional Bancroft reference-layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
+`context-profiles.ts` | core | Normative context payloads (Protocol §XI) | `buildContext` (+ `ContextProfile`)
+`cascade.ts` | core | Fallback-cascade value resolver | `resolveValue`, `readInFile` (browser-exported)
+`section-resolution.ts` | verify | One block per section-rooted read (§VIII.2, RFC 0066) | `resolveSectionBlock` (browser-exported)
+`defaults.ts` | core | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
+`gaps.ts` | core | Gap detection | `inferGaps`, `summarizeGaps`
+`gaps-content.ts` | verify | The `gaps` section's types and reader | `readGapsContent`, `GapsContent`
+`refinement.ts` | core | Value-of-information gap ranking | `rankGaps`
+`asset-class.ts` | verify | Identifier grammar + resolution for module-declared classes (RFC 0003) | `parseAssetClass`, `resolveAssetClass`, `declaredAssetClasses`
+`module-runtime.ts` | verify | Running what a module declares (RFC 0006) | `evaluateModuleCalculations`, `validateAgainstModules`, `checkModuleSections`
+`module-signing.ts` | verify | Module manifest signature contract (RFC 0002) | `moduleSigningPayload`, `verifyModuleSignature`, `checkSignatureShape`
+`integrity.ts` | verify | content/parent-hash chain + provenance + signature contract | `verifyChain`, `verifyProvenance`, `computeBlockHash`, `sha256Hex`, `canonicalBlockSigningInput`
+`integrity-canonical.ts` | verify | Canonicalization for hashing | `canonicalize`
+`receipts.ts` | verify | Detached verification receipts (RFC 0016) | `issueReceipt`, `verifyReceipt`, `resolveReceiptSubject`, `assertUWReceipt`, `ReceiptError`
+`version.ts` | both | Engine identity recorded in receipts: verify's own, and core's | verify: `VERIFY_PACKAGE_NAME`, `VERIFY_VERSION`; core: `CORE_PACKAGE_NAME`, `CORE_VERSION`
+`receipt-engine.ts` | core | The exported `issueReceipt`: verify's, with `@uwmd/core` as the default `issuer` | `issueReceipt`
+`reference-implementation.ts` | core | What `uwmd manifest` prints (Protocol §I.4) | `REFERENCE_IMPLEMENTATION_MANIFEST`
+`modules.ts` | verify | Declarative module manifest loader/registry | `loadModuleManifest`, `createModuleRegistry`, `getModuleCalculationsForAssetClass`
+`calc/` | verify | Safe-expression engine (the Verifier's evaluator; Protocol 2.x Tier-3) | see [04 — Calc engine](04-calc-engine.md)
+`calc-display.ts` | core | The exported `evaluateCalc`/`evaluateModuleCalculations`: standard results plus the starter `display` string | `evaluateCalc`, `evaluateModuleCalculations`
+`metric-verification.ts` | verify | Stated metrics checked against the metric dictionary (RFC 0083 §2) | `verifyStatedMetrics`
+`metric-dictionary.ts` | verify | `spec/metrics/builtin.json` as package data (generated) | `BUILTIN_METRIC_DICTIONARY` (internal)
+`builtin-packs/` | verify | The twelve builtin pack manifests and their registry | see [05 — Calc packs](05-calc-packs.md)
+`packs/` | core | Re-exports the builtin packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
+`agents/` | core | Optional Bancroft reference agent host (starter product; Protocol 2.x Tier-4) | see [06 — Bancroft agents](06-bancroft-agents.md)
 
 ## parser.ts
 
@@ -413,6 +438,18 @@ can confirm offline that the numbers follow from the inputs.
   engine reports "inputs absent" as a successful evaluation to `null`; a receipt
   must not let that read as a computed number.
 
+**Engine identity.** A receipt records the engine that computed its results,
+and a verifier compares the receipt's engine with its own (`RCP-07` when they
+differ, UW Receipt §5.3). That engine is `@uwmd/verify` at `VERIFY_VERSION`
+for every receipt, including one issued through `@uwmd/core` or the CLI, so a
+verifier holding only `@uwmd/verify` (a lender, the VS Code extension) reports
+a tampered core-issued receipt as `failed`, not `unverifiable` — the RFC 0078
+boundary test. The `issuer` is the tool: `@uwmd/core@<CORE_VERSION>` through
+core's `issueReceipt` (`receipt-engine.ts`), `uwmd-cli@<CORE_VERSION>` from the
+CLI, `@uwmd/verify@<VERIFY_VERSION>` directly. Core re-exports verify's
+`verifyReceipt` unchanged. An explicit `engine`, `engine_version` or `issuer`
+wins either way.
+
 Both issuance and verification are browser-safe (SHA-256 via Web Crypto), so the
 web editor can verify client-side. Signature creation and validation stay
 outside core, keeping it free of cryptographic dependencies.
@@ -458,7 +495,10 @@ verification (RFC 0078 D10/D11, RFC 0083): `DEFAULT_NUMBER_FORMAT`,
 `ViewModelRegistry` and `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`,
 `AgentHostCapability` and the capability-token types (`CapabilityVerifier`, …).
 `index.ts` and `browser.ts` export them under the same names. `protocol.ts`
-never imports it.
+(in `@uwmd/verify`) never imports it. `REFERENCE_IMPLEMENTATION_MANIFEST`,
+which names `org.uwmd.core` and claims the starter capabilities, is core's
+`reference-implementation.ts`; the `ImplementationManifest` type and the tier
+and profile vocabularies stay in `protocol.ts`.
 
 > **Keep `protocol.ts` and `spec/schemas/*.schema.json` in lockstep.** The
 > `ModuleManifest` interface explicitly mirrors `module-manifest.schema.json`.
@@ -477,25 +517,36 @@ never imports it.
 
 ## The standard set and the closure test (RFC 0083)
 
-RFC 0083 splits the reference implementation of the standard, `@uwmd/verify`,
-out of core. Phase 1 drew the line inside core: the standard set is the
-reader, validation, the stated-figure verifiers, `calc/`, the metric dictionary
-and `metric-verification.ts`, receipts, integrity, modules, the builtin pack
-manifests (`builtin-packs/`), the representation, portfolio, sensitivity,
-stochastic and market-data profiles, the read side of `bindings.ts`, and
-`protocol.ts`. Everything else (editor, runner, cascade, defaults, refinement,
-`gaps.ts`, display formatting and `calc-display.ts`, `starter-protocol.ts`,
-`bindings-edit.ts`, the Excel emitter, renderer, report, agents, CLI) is the
-starter toolkit.
+RFC 0083 split the reference implementation of the standard, `@uwmd/verify`,
+out of core. Phase 1 drew the line inside core; Phase 2 moved the standard set
+into `packages/uwmd-verify`: the reader, validation, the stated-figure
+verifiers, `calc/`, the metric dictionary and `metric-verification.ts`,
+receipts, integrity, modules, the builtin pack manifests (`builtin-packs/`),
+the representation, portfolio, sensitivity, stochastic and market-data
+profiles, the read side of `bindings.ts`, and `protocol.ts`. Everything else
+(editor, runner, cascade, defaults, refinement, `gaps.ts`, display formatting
+and `calc-display.ts`, `starter-protocol.ts`, `bindings-edit.ts`,
+`receipt-engine.ts`, `reference-implementation.ts`, the Excel emitter,
+renderer, report, agents, CLI) is the starter toolkit in `@uwmd/core`.
 
-`src/standard-closure.test.ts` lists the standard set as file paths and walks
-its static import graph (`import`/`export … from`, dynamic `import()` and
-`import('…')` types). It fails when a standard module reaches a module outside
-the list, or names `@anthropic-ai/sdk`. A standard module needs a starter
+Verify's `src/standard-closure.test.ts` keeps the package closed. It lists the
+standard set as file paths (every source file must be on the list or be one of
+the two entries) and parses each one (`import`/`export … from`, dynamic
+`import()` and `import('…')` types). It fails when a source file imports
+anything but another source file of the package, `fast-xml-parser`, `fflate`,
+or the one runtime-guarded `await import('node:crypto')` in `integrity.ts`
+(Web Crypto elsewhere); when it names `@anthropic-ai/sdk`; and when
+package.json names any `@uwmd/*` package. A standard module needs a starter
 service only through injection, as `bindings.ts` takes its edit adapter; a new
-standard module goes on the list. Standard modules may import packages only
-from an allow-list: `fast-xml-parser`, `fflate`, and the one runtime-guarded
-`await import('node:crypto')` in `integrity.ts` (Web Crypto elsewhere).
+standard module goes on the list. Core imports standard code only through
+`@uwmd/verify`'s public entry (invariant 2), so a symbol core needs is
+exported from verify (and therefore re-exported by core).
+
+The lender's boundary test (RFC 0078) is now executable as a package:
+`verify-packages` installs only `@uwmd/verify`'s tarball and its two runtime
+dependencies, type-checks a consumer of both entries and runs it, and
+`conformance/metrics/controls.mjs` asserts the metrics verifier's import graph
+reaches no core module.
 
 `verifyStatedMetrics(parsed, options?)` (`metric-verification.ts`) checks every
 numeric statement of the document's dictionary metrics and returns one
@@ -507,6 +558,10 @@ text. A document decoded from an envelope or another representation
 `unverifiable` with reason `missing_stated_precision`.
 
 ## Where to start, by task
+
+Paths below are relative to the package that owns the module (see the
+module map): `parser.ts` is `packages/uwmd-verify/src/parser.ts`, `editor.ts`
+is `packages/uwmd-core/src/editor.ts`.
 
 Goal | Start here
 ---|---

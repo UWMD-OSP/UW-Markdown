@@ -1,0 +1,2810 @@
+import { toBuiltinAssetClass } from './types.js';
+// UW Protocol — TypeScript contract surface for conforming implementers.
+//
+// This module is the executable counterpart to spec/UW_PROTOCOL.md.
+// Where the prose document defines normative behavior, this module names the
+// types implementers must satisfy and exports the BUILTIN_* tables that a
+// Reader or Verifier (Protocol 3.0, RFC 0078) references. The starter-product
+// tables (number formats, badges, builtin view models, the cascade order, the
+// agent host and capability tokens) live in `@uwmd/core`'s `starter-protocol.ts`
+// (RFC 0083), which core exports under the same names.
+//
+// Types defined in `./types.ts` are re-used here, never duplicated. The
+// protocol surface is a layer over the format types — same way OpenAPI
+// operations are a layer over JSON Schema.
+
+import type {
+  AssetClass,
+  BlockRole,
+  ConfidenceLevel,
+  DealStage,
+  FinancialThresholds,
+  ParsedUWFile,
+  PipelineStatus,
+  UWBlock,
+  UWMeta,
+  UWMetaPatch,
+  UWSignatureAlgorithm,
+  ValidationMessage,
+  ValidationSeverity,
+} from './types.js';
+
+import { blockPayload, deepGet, getSection, getSectionVariant } from './parser.js';
+
+// ─── Versioning ───────────────────────────────────────────────────────────────
+
+/** Semver of this protocol. Bumped independently of the @uwmd/verify and @uwmd/core npm versions. */
+export const PROTOCOL_VERSION = '4.0.0' as const;
+
+/**
+ * The format release label of this implementation: the one member of
+ * {@link SUPPORTED_FORMAT_VERSIONS} (RFC 0081 D1). Writers and readers use that
+ * set; this label is what `uwmd --version` and the manifest report.
+ */
+export const FORMAT_VERSION = '3.0' as const;
+
+/** The closed resolution vocabulary (Format §2.6, `SRC-03`). */
+export const RESOLUTION_METHODS = Object.freeze([
+  'user_input', 'user_override', 'inherited_assumption', 'investor_profile',
+  'market_data', 'market_data_accepted', 'ai_extracted', 'agent_computed',
+  'asset_class_default', 'scenario_default', 'global_default', 'system_default',
+] as const);
+
+/**
+ * A module's host requirements (Protocol §X, RFC 0081 §6): the minimum
+ * conformance tier and the profiles a host must claim to load it.
+ */
+export interface ModuleConformanceRequirements {
+  requires_conformance: ConformanceTier;
+  requires_profiles?: ConformanceProfile[];
+}
+
+// The one format this implementation reads and writes lives in `types.ts`
+// beside the parser that enforces it; the protocol surface re-exports it.
+export { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+
+/** The one protocol contract (RFC 0081 D1). Module ranges are checked against it. */
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.0.0'] as const);
+
+// ─── Capability tiers ─────────────────────────────────────────────────────────
+
+/**
+ * The two conformance tiers of Protocol 3.0 (UW_PROTOCOL.md Part II,
+ * RFC 0078). A Verifier satisfies every Reader requirement.
+ */
+export type ConformanceTier =
+  | 'reader'               // parse and check well-formedness, read-only (§II.1)
+  | 'verifier';            // + Format validation, metric reproduction, stated-figure verifiers, receipts (§II.2)
+
+/**
+ * The optional verification profiles (§II.3, RFC 0078). Closed: a profile
+ * outside this list is refused by the schema, never read as a claim.
+ */
+export const CONFORMANCE_PROFILES = Object.freeze([
+  'module',
+  'integrity',
+  'representations',
+  'portfolio',
+  'sensitivity',
+  'stochastic',
+] as const);
+
+export type ConformanceProfile = (typeof CONFORMANCE_PROFILES)[number];
+
+/** True for a member of the closed {@link ConformanceTier} vocabulary. */
+export function isConformanceTier(tier: unknown): tier is ConformanceTier {
+  return tier === 'reader' || tier === 'verifier';
+}
+
+/** Single owner of each corpus case (RFC 0078 Phase 3, §II.6a). */
+export const CONFORMANCE_TARGETS = Object.freeze([
+  'reader', 'verifier', ...CONFORMANCE_PROFILES, 'starter-products',
+] as const);
+export type ConformanceTarget = (typeof CONFORMANCE_TARGETS)[number];
+
+/** What kind of actor the implementation serves. Informational. */
+export type ViewerRole = 'web' | 'cli' | 'desktop' | 'ide-extension' | 'library' | 'service';
+
+/**
+ * Granular capability flags. Tiers are coarse; capabilities let an
+ * implementer signal partial conformance (e.g. read-only viewer that
+ * also supports editing one specific section).
+ */
+export type ViewerCapability =
+  | 'parse'
+  | 'validate'
+  | 'render-json'
+  | 'render-csv'
+  | 'render-summary'
+  | 'render-chat'
+  | 'render-pdf'
+  | 'render-docx'
+  | 'edit-replace'
+  | 'edit-supersede'
+  | 'edit-frontmatter'
+  | 'calc-evaluate'
+  | 'calc-deterministic'
+  /** Evaluates stochastic declarations (§VIII.8, RFC 0005). */
+  | 'calc-stochastic'
+  /** Evaluates sensitivity declarations (§VIII.7, RFC 0007). */
+  | 'calc-sensitivity'
+  /** Evaluates cash-flow metric declarations over dated series (§VIII.9, RFC 0034). */
+  | 'calc-cash-flow'
+  /** Reads and validates `.uwportfolio.json` sidecars (§XV, RFC 0015). */
+  | 'portfolio-relationships'
+  | 'agent-host'
+  | 'module-load'
+  /** Verifies `_meta.integrity.signature` on blocks (§V.11.5, RFC 0010). */
+  | 'signing'
+  /** Enforces capability tokens on writes (§XIV, RFC 0011). */
+  | 'capability-verify'
+  /** Verifies `ModuleManifest.signature` and honors a host policy (§X.1.4, RFC 0002). */
+  | 'module-signature-verification'
+  /**
+   * Recomputes `content_hash` / `parent_hash` chains (§IX.2). Owns the `INT-NN`
+   * family. Separate from `signing`: a host can verify a hash chain without
+   * verifying signatures over it, though the reverse proves little.
+   */
+  | 'integrity'
+  /**
+   * Projects a calc-expression dependency graph (`extractDependencyGraph`).
+   * **No tier or profile requires this** — refinement is starter-product
+   * behavior (RFC 0078; starter guide §VIII.2b). It is a capability so its fixtures can be tagged rather
+   * than inferred from a directory name.
+   */
+  | 'refinement';
+
+export type RepresentationFidelity = 'source' | 'model' | 'view';
+export type RepresentationDirection = 'read' | 'write';
+
+/** Discoverable support for one source, model, or view representation. */
+export interface RepresentationCapability {
+  id: string;
+  media_types: string[];
+  file_extensions: string[];
+  directions: RepresentationDirection[];
+  fidelity: RepresentationFidelity;
+  representation_version: string;
+  /** Required for view-fidelity representations. */
+  view?: string;
+  streaming?: boolean;
+  max_bytes?: number;
+}
+/**
+ * What a conforming implementation declares about itself. A reader of a
+ * `.uw.md` file should be able to discover whether a given tool will be
+ * able to handle the file by inspecting this manifest.
+ */
+export interface ImplementationManifest {
+  /** Stable identifier (e.g. "io.uwmd.web-viewer"). */
+  id: string;
+  /** Human-readable name. */
+  name: string;
+  /** Semver of the implementation. */
+  version: string;
+  /** Protocol semver this implementation targets. */
+  protocol_version: string;
+  /** Format semver this implementation can read. */
+  format_version: string;
+  /**
+   * Tier the implementation self-certifies to: `reader` or `verifier`
+   * (Protocol 3.0, RFC 0078). OPTIONAL per §II.5: an implementation whose
+   * capabilities do not stack into a tier SHOULD publish `capabilities` and
+   * omit this field rather than round down (or up). The schema requiring it
+   * was a defect (UPSTREAM-003, reported by underwriter.cc) — the spec's
+   * normative text always allowed the omission.
+   */
+  tier?: ConformanceTier;
+  /** Optional verification profiles claimed (§II.3, RFC 0078). Absent = none. */
+  profiles?: ConformanceProfile[];
+  /** Optional finer-grained capability list. */
+  capabilities?: ViewerCapability[];
+  /** Machine-readable representation discovery (Protocol 1.2+). */
+  representations?: RepresentationCapability[];
+  /** Asset classes the implementation specifically supports (omit = all). */
+  asset_classes?: AssetClass[];
+  /**
+   * Display locales the implementation renders (RFC 0001). Absent means
+   * `['en-US']` — every pre-0001 manifest keeps meaning what it meant. A
+   * display render of a file whose declared `locale` is outside this list
+   * is refused with LOC-01, never silently rendered in a different locale.
+   */
+  supported_locales?: SupportedLocale[];
+  /** Role / form factor of the implementation. */
+  role?: ViewerRole;
+  /** Public homepage / docs URL. */
+  homepage?: string;
+}
+
+/**
+ * The registered display locales (RFC 0001). Closed — new locales land via
+ * small additive RFC amendments to the Part III table, never as free-form
+ * tags. Locale governs human display renders (chat/summary/report) ONLY:
+ * canonical JSON content, CSV renders, UW Lite canonical form, digests, and
+ * calc evaluation are locale-free by construction.
+ */
+export const SUPPORTED_LOCALES = Object.freeze([
+  'en-US',
+  'en-GB',
+  'de-DE',
+  'fr-FR',
+  'ja-JP',
+  'zh-CN',
+] as const);
+
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+
+/** True when `tag` names a registered display locale (RFC 0001). */
+export function isSupportedLocale(tag: unknown): tag is SupportedLocale {
+  return typeof tag === 'string' && (SUPPORTED_LOCALES as readonly string[]).includes(tag);
+}
+
+/** True for the RFC 0046 document-level currency identity syntax. */
+export function isCurrencyCode(value: unknown): value is string {
+  return typeof value === 'string' && /^[A-Z]{3}$/.test(value);
+}
+
+
+// ─── View models (Part IV) ────────────────────────────────────────────────────
+
+/** A single field-level rendering hint inside a SectionViewModel. */
+export interface FieldViewHint {
+  /** Dot-path within the section's content, resolved via parser.deepGet. */
+  path: string;
+  /** Display label. */
+  label: string;
+  /** Formatting kind. Drives which formatter in `./format.ts` applies. */
+  kind: 'currency' | 'percent' | 'ratio' | 'count' | 'date' | 'string' | 'enum' | 'list';
+  /** True if this field should be highlighted as a primary metric. */
+  primary?: boolean;
+  /** Human-readable units for ratios/counts/strings (e.g. "yrs", "units"). */
+  unit?: string;
+  /** Decimals override (otherwise DEFAULT_NUMBER_FORMAT applies). */
+  decimals?: number;
+  /** For 'enum' kind: allowed values for badge coloring. */
+  enum?: readonly string[];
+}
+
+/**
+ * Layout description for a single section. Renderers walk this to produce
+ * any presentation (web cards, terminal output, PDF, etc.) without
+ * hard-coding section-specific knowledge.
+ */
+export interface SectionViewModel {
+  section_id: string;
+  display_name: string;
+  /** Order in the standard section list (0..20 for the 21 standard sections). */
+  display_order: number;
+  /** Brief one-line description of what this section captures. */
+  description: string;
+  /** Fields to surface on the section's primary card / one-line summary. */
+  primary_fields: FieldViewHint[];
+  /** Fields shown on expand. */
+  detail_fields?: FieldViewHint[];
+  /** True if the section may have multiple variants (stress tests, scenarios). */
+  multi_variant?: boolean;
+}
+
+// ─── Source tags & fallback cascade (starter guide §IX) ────────────────────────────
+
+/**
+ * Ordered cascade steps used to resolve a value that has no explicit
+ * user input or document extraction. A producer MUST stamp
+ * `_meta.provenance.source` with the cascade step that produced the value, and
+ * MUST NOT reorder this cascade. See starter guide §IX.
+ *
+ * Step 0 (`user_override`) and step 1 (`user_input`) are detected by
+ * walking the parsed file for an existing block at the field path
+ * whose `_meta.provenance.source` matches; the remaining steps are looked up in
+ * external tables (inherited assumptions, investor profile, market data)
+ * or built-in tables (asset class, global, system).
+ *
+ * **`inherited_assumption` was added by RFC 0021 §5 (protocol 1.5.0),**
+ * taking the cascade from seven steps to eight. It sits directly below
+ * `user_input`, so a value someone entered on the deal always beats one
+ * inherited from an ancestor — inheritance supplies defaults, it never
+ * overrides.
+ *
+ * It sits *above* `investor_profile`, which the RFC's own diagram is silent
+ * on because that diagram omits `investor_profile` entirely. Resolved on the
+ * merits: an inherited assumption comes from a named ancestor in this deal's
+ * composition DAG, so it is more specific to this deal than an
+ * institution-wide preference set, and the more specific source should win.
+ *
+ * Inheritance resolves along the composition DAG **only**. A document not
+ * reachable as an ancestor contributes nothing, and there is no ambient or
+ * global assumption scope — so a standalone record, which is every record
+ * that existed before RFC 0021, can never resolve at this step and no
+ * existing digest moves.
+ */
+export type CascadeStep =
+  | 'user_override'
+  | 'user_input'
+  | 'inherited_assumption'
+  | 'investor_profile'
+  | 'market_data'
+  | 'asset_class_default'
+  | 'global_default'
+  | 'system_default';
+
+// The runtime order `CASCADE_ORDER` is a starter product (`@uwmd/core`'s starter-protocol.ts).
+// `CascadeStep` stays here: `GapAction` below names a step.
+
+// `SOURCE_TAGS` / `CanonicalSourceTag` live in `types.ts` beside the
+// `SourceTag` union they enumerate; the protocol surface re-exports them.
+export { SOURCE_TAGS } from './types.js';
+export type { CanonicalSourceTag } from './types.js';
+
+// ─── Actor grammar for `_meta.provenance.source` (RFC 0031) ─────────────────────────────
+
+/**
+ * The registered actor namespaces for `_meta.provenance.source`. RFC 0031 makes the
+ * field actor-only: `manual`, or `<namespace>/<id>` where the namespace is a
+ * member of this list and the id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. (The
+ * RFC's draft pattern was lowercase-only, which rejected its own worked
+ * example `agent/L6-01` and every Bancroft layer id — corrected as errata.)
+ * Resolution methods (the {@link SOURCE_TAGS} vocabulary) belong in
+ * `_meta.provenance.resolution`.
+ *
+ * Closed. This list is what `BUILTIN_EDIT_POLICIES` patterns
+ * key on, so opening it is a protocol change, not a producer convention.
+ */
+export const ACTOR_NAMESPACES = Object.freeze([
+  'agent',
+  'document',
+  'system',
+  'institution',
+] as const);
+
+export type ActorNamespace = (typeof ACTOR_NAMESPACES)[number];
+
+/** The RFC 0031 actor grammar, as one regex. Mirrored (as a JSON Schema
+ *  `pattern`) in `spec/schemas/uwmd-block.schema.json`. */
+export const ACTOR_SOURCE_RE = /^(manual|(agent|document|system|institution)\/[A-Za-z0-9][A-Za-z0-9._-]*)$/;
+
+/** A parsed `_meta.provenance.source` actor. `invalid` covers everything outside the
+ *  grammar — legacy colon forms, bare words, and resolution tags alike. */
+export type ParsedActorSource =
+  | { kind: 'manual' }
+  | { kind: 'namespaced'; namespace: ActorNamespace; id: string }
+  | { kind: 'invalid' };
+
+/**
+ * Parse a `_meta.provenance.source` value against the RFC 0031 actor grammar.
+ *
+ * This is the one place authority classification is allowed to read the
+ * string: `checkAuthority` derives human/agent/system from the parsed
+ * namespace, never from `startsWith` prefix tests — which is how the colon
+ * form `agent:L0-01` used to be classified as a *human* write.
+ */
+export function parseActorSource(source: string): ParsedActorSource {
+  if (source === 'manual') return { kind: 'manual' };
+  const m = /^(agent|document|system|institution)\/([A-Za-z0-9][A-Za-z0-9._-]*)$/.exec(source);
+  if (m) return { kind: 'namespaced', namespace: m[1] as ActorNamespace, id: m[2]! };
+  return { kind: 'invalid' };
+}
+
+// ─── Incomplete-data policies (Format Spec §4.22) ─────────────────────────────
+
+/**
+ * What a producer should do when an incomplete-data condition (missing or
+ * provisional value) is encountered for a `(section, field, stage)` tuple.
+ *
+ * - `halt`        — refuse to advance; surface as DQ-02 error.
+ * - `degrade`     — continue, but mark the affected output as conditional.
+ * - `substitute`  — fill from the cascade step named by `fallback_source`.
+ * - `defer`       — continue and surface the gap; treat the deficiency as
+ *                   acceptable at this stage.
+ */
+export type GapAction =
+  | { kind: 'halt' }
+  | { kind: 'degrade' }
+  | { kind: 'substitute'; fallback_source: CascadeStep }
+  | { kind: 'defer' };
+
+export interface IncompleteDataPolicy {
+  /** Section the policy applies to. Required. */
+  section: string;
+  /** Optional dot-path within the section. When omitted, the policy applies
+   *  to the whole section. */
+  field_path?: string;
+  /** Optional pipeline stage. When omitted, the policy applies at every stage. */
+  stage?: import('./types.js').DealStage;
+  action: GapAction;
+  /** Human-readable explanation of why this policy exists. */
+  rationale?: string;
+}
+
+/**
+ * Curated default policies covering high-impact (section, stage) pairs in the
+ * multifamily workflow. Adopters MAY extend this set; lookups consult adopter
+ * policies first, then these defaults.
+ *
+ * Policies stack: more-specific (with field_path) wins over less-specific;
+ * within the same specificity, more-specific stage wins over wildcard.
+ */
+export const BUILTIN_INCOMPLETE_DATA_POLICIES: readonly IncompleteDataPolicy[] = Object.freeze([
+  // ─── rent_roll ─────────────────────────────────────────────────────────────
+  {
+    section: 'rent_roll',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+    rationale: 'Scope-stage triage: assume default vacancy/occupancy.',
+  },
+  {
+    section: 'rent_roll',
+    stage: 'screening',
+    action: { kind: 'degrade' },
+    rationale: 'Screening tolerates estimates; surface as conditional.',
+  },
+  {
+    section: 'rent_roll',
+    stage: 'full_underwrite',
+    action: { kind: 'halt' },
+    rationale: 'Full underwrite requires the actual rent roll.',
+  },
+
+  // ─── noi_model ─────────────────────────────────────────────────────────────
+  {
+    section: 'noi_model',
+    field_path: 'expense_ratio',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+  },
+  {
+    section: 'noi_model',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+  },
+  {
+    section: 'noi_model',
+    stage: 'screening',
+    action: { kind: 'degrade' },
+  },
+  {
+    section: 'noi_model',
+    stage: 'full_underwrite',
+    action: { kind: 'halt' },
+    rationale: 'Full underwrite requires a T-12 / proforma derived NOI.',
+  },
+
+  // ─── debt_structure ────────────────────────────────────────────────────────
+  {
+    section: 'debt_structure',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+  },
+  {
+    section: 'debt_structure',
+    stage: 'screening',
+    action: { kind: 'substitute', fallback_source: 'investor_profile' },
+  },
+  {
+    section: 'debt_structure',
+    stage: 'term_sheet',
+    action: { kind: 'halt' },
+    rationale: 'Term sheet stage requires concrete debt terms.',
+  },
+
+  // ─── valuation ─────────────────────────────────────────────────────────────
+  {
+    section: 'valuation',
+    stage: 'scope',
+    action: { kind: 'substitute', fallback_source: 'asset_class_default' },
+  },
+  {
+    section: 'valuation',
+    stage: 'full_underwrite',
+    action: { kind: 'halt' },
+  },
+
+  // ─── borrower_sponsor ──────────────────────────────────────────────────────
+  {
+    section: 'borrower_sponsor',
+    stage: 'screening',
+    action: { kind: 'defer' },
+    rationale: 'Sponsor diligence often arrives later; record but allow advance.',
+  },
+  {
+    section: 'borrower_sponsor',
+    stage: 'credit_approval',
+    action: { kind: 'halt' },
+  },
+
+  // ─── compliance ────────────────────────────────────────────────────────────
+  {
+    section: 'compliance',
+    stage: 'closing',
+    action: { kind: 'halt' },
+    rationale: 'Compliance gaps cannot be carried into closing.',
+  },
+]);
+
+/**
+ * Look up the most-specific applicable policy for `(section, field_path, stage)`.
+ *
+ * Specificity order (highest to lowest):
+ *   1. matching section + matching field_path + matching stage
+ *   2. matching section + matching field_path (any stage)
+ *   3. matching section + matching stage (any field)
+ *   4. matching section (any field, any stage)
+ *
+ * Returns null when no policy matches.
+ */
+export function lookupIncompleteDataPolicy(
+  section: string,
+  field_path: string | undefined,
+  stage: import('./types.js').DealStage,
+  policies: readonly IncompleteDataPolicy[] = BUILTIN_INCOMPLETE_DATA_POLICIES,
+): IncompleteDataPolicy | null {
+  let best: IncompleteDataPolicy | null = null;
+  let bestScore = -1;
+  for (const p of policies) {
+    if (p.section !== section) continue;
+    const fieldMatch = p.field_path === undefined || p.field_path === field_path;
+    if (!fieldMatch) continue;
+    const stageMatch = p.stage === undefined || p.stage === stage;
+    if (!stageMatch) continue;
+    let score = 0;
+    if (p.field_path !== undefined) score += 4;
+    if (p.stage !== undefined) score += 2;
+    // Tie-break: prefer policies for the exact stage over wildcard, even if
+    // both have field_path defined.
+    if (p.stage === stage) score += 1;
+    if (score > bestScore) {
+      bestScore = score;
+      best = p;
+    }
+  }
+  return best;
+}
+
+// ─── Stage requirements (Format Spec §5.1) ────────────────────────────────────
+// Moved here from validator.ts by the RFC 0009 STAGE_CONTRACT merge: the
+// requirements table and the incomplete-data policies above are two halves of
+// one contract, and deriving the merged registry needs both in one module
+// (validator.ts imports protocol.ts, never the reverse). validator.ts
+// re-exports these so existing import sites keep working.
+
+/**
+ * What a pipeline stage requires of the document. `required_sections` is the
+ * presence list; `required_field_paths` enforces field-level presence (used by
+ * the `scope` stage); `required_one_of` enforces "at least one of these paths
+ * must resolve" (also `scope`-only today).
+ *
+ * Paths are dot-notated relative to a section's content root, prefixed with
+ * the section ID (e.g. `property.asking_price`, `property.units`).
+ */
+export interface StageRequirement {
+  required_sections: string[];
+  required_field_paths?: string[];
+  required_one_of?: string[][];
+}
+
+export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
+  scope: {
+    required_sections: ['property'],
+    required_field_paths: ['property.address', 'property.asset_class'],
+    required_one_of: [['property.asking_price', 'property.units']],
+  },
+  screening:        { required_sections: ['property', 'debt_structure', 'validation'] },
+  term_sheet:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing'] },
+  // `operating_statement` re-joined full_underwrite and above with RFC 0028
+  // (spec §5.1 always listed it; the variant-aware `hasSection` case in
+  // validator.ts was built for it but no stage list reached it — decision (a)
+  // in the RFC).
+  full_underwrite:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis'] },
+  credit_approval:  { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions'] },
+  closing:          { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
+  monitoring:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
+};
+
+/**
+ * Per-class adjustments to the base stage lists (format spec §5.1 class
+ * overlays, RFC 0029). Exhaustive by design: only `land` and `mixed_use`
+ * diverge structurally — every other class reuses the base sections with
+ * class-appropriate payloads (hospitality's `rent_roll` carries
+ * keys/ADR/segmentation), so reuse needs no entry here.
+ *
+ * `exempt` removes a requirement outright; `substitute` replaces it with
+ * another section that is then *required* in its place.
+ */
+export const STAGE_SECTION_OVERLAYS: Partial<Record<AssetClass, {
+  exempt?: readonly string[];
+  substitute?: Readonly<Record<string, string>>;
+}>> = {
+  land:      { exempt: ['rent_roll', 'operating_statement'] },
+  mixed_use: { substitute: { rent_roll: 'components', operating_statement: 'components' } },
+};
+
+// ─── STAGE_CONTRACT — the merged stage registry (RFC 0009) ────────────────────
+
+/**
+ * One row of the merged stage contract: for a `(stage, section)` pair —
+ * optionally narrowed to a `field_path` or an `asset_class` — what presence
+ * is required and what to do when the data is provisional.
+ *
+ * This registry merges the three surfaces that previously answered "what
+ * does this stage demand": `STAGE_REQUIREMENTS` (presence),
+ * `STAGE_SECTION_OVERLAYS` (RFC 0029 class adjustments — now the
+ * `asset_class` qualifier on a row, per the RFC's own warning that a second
+ * table beside the merge recreates the two-surface problem), and
+ * `BUILTIN_INCOMPLETE_DATA_POLICIES` (`on_provisional`). It is derived
+ * mechanically from those compact authoring tables at module init, so the
+ * two views cannot disagree; validators consult THIS registry (via
+ * `requiredSectionsFor` / `lookupStageContract`).
+ *
+ * Two refinements against the RFC sketch, recorded here: `required` and
+ * `on_provisional` are optional — a row may state a policy for a section a
+ * stage doesn't require (rent_roll at scope), or a requirement with no
+ * policy — and `one_of` carries the scope stage's either-or field groups,
+ * which the sketch's single `field_path` could not express.
+ */
+export interface StageContractEntry {
+  stage: DealStage;
+  section: string;
+  field_path?: string;
+  /** Group of paths where at least one must resolve (scope-only today). */
+  one_of?: readonly string[];
+  /** Class-qualified row (RFC 0029 overlay absorbed): applies only to files
+   *  of this asset class, overriding the unqualified row. */
+  asset_class?: AssetClass;
+  required?: boolean;
+  on_provisional?: GapAction;
+  /** Reserved: distinct handling for `partial` blocks (full-block
+   *  `provisional` governs today; nothing populates this yet). */
+  on_partial?: GapAction;
+  rationale?: string;
+}
+
+function buildStageContract(): readonly StageContractEntry[] {
+  const rows: StageContractEntry[] = [];
+  const stages = Object.keys(STAGE_REQUIREMENTS) as DealStage[];
+
+  for (const stage of stages) {
+    const req = STAGE_REQUIREMENTS[stage];
+
+    // Presence rows, with the matching provisional policy folded in.
+    for (const section of req.required_sections) {
+      const policy = lookupIncompleteDataPolicy(section, undefined, stage);
+      rows.push({
+        stage,
+        section,
+        required: true,
+        ...(policy ? { on_provisional: policy.action } : {}),
+        ...(policy?.rationale ? { rationale: policy.rationale } : {}),
+      });
+    }
+
+    // Field-level presence rows.
+    for (const path of req.required_field_paths ?? []) {
+      const dot = path.indexOf('.');
+      const section = dot === -1 ? path : path.slice(0, dot);
+      rows.push({ stage, section, field_path: path, required: true });
+    }
+    for (const group of req.required_one_of ?? []) {
+      const first = group[0] ?? '';
+      const dot = first.indexOf('.');
+      const section = dot === -1 ? first : first.slice(0, dot);
+      rows.push({ stage, section, one_of: [...group], required: true });
+    }
+
+    // Class-qualified rows (the absorbed RFC 0029 overlays).
+    for (const [assetClass, overlay] of Object.entries(STAGE_SECTION_OVERLAYS)) {
+      if (!overlay) continue;
+      const substituted = new Set<string>();
+      for (const section of req.required_sections) {
+        if (overlay.exempt?.includes(section)) {
+          rows.push({ stage, section, asset_class: assetClass as AssetClass, required: false });
+          continue;
+        }
+        const replacement = overlay.substitute?.[section];
+        if (replacement !== undefined) {
+          rows.push({ stage, section, asset_class: assetClass as AssetClass, required: false });
+          if (!substituted.has(replacement)) {
+            substituted.add(replacement);
+            const policy = lookupIncompleteDataPolicy(replacement, undefined, stage);
+            rows.push({
+              stage,
+              section: replacement,
+              asset_class: assetClass as AssetClass,
+              required: true,
+              ...(policy ? { on_provisional: policy.action } : {}),
+            });
+          }
+        }
+      }
+    }
+
+    // Policy-only rows: sections with a provisional policy at this stage that
+    // the stage's presence list does not name (rent_roll at scope).
+    for (const policy of BUILTIN_INCOMPLETE_DATA_POLICIES) {
+      if (policy.stage !== stage) continue;
+      const alreadyRequired =
+        policy.field_path === undefined && req.required_sections.includes(policy.section);
+      if (alreadyRequired) continue;
+      rows.push({
+        stage,
+        section: policy.section,
+        ...(policy.field_path ? { field_path: policy.field_path } : {}),
+        required: false,
+        on_provisional: policy.action,
+        ...(policy.rationale ? { rationale: policy.rationale } : {}),
+      });
+    }
+  }
+
+  return Object.freeze(rows.map((r) => Object.freeze(r)));
+}
+
+/** The merged stage registry. Derived once at module init — see
+ *  {@link StageContractEntry}. */
+export const STAGE_CONTRACT: readonly StageContractEntry[] = buildStageContract();
+
+/**
+ * The sections a declared stage requires of a document of the given asset
+ * class, answered from `STAGE_CONTRACT`: unqualified `required: true` rows,
+ * overridden by any class-qualified row for the same `(stage, section)`.
+ * An unrecognized class — or none — takes the unqualified rows verbatim.
+ * Both consumers of stage completeness (`stage_readiness` and `DQ-06`)
+ * resolve through this one function, so the booleans and the issues stream
+ * can never disagree about what a stage requires.
+ */
+export function requiredSectionsFor(stage: DealStage, assetClass?: string): readonly string[] {
+  if (assetClass) assetClass = toBuiltinAssetClass(assetClass) ?? assetClass;
+  const out: string[] = [];
+  const qualified = new Map<string, boolean>();
+  if (assetClass) {
+    for (const row of STAGE_CONTRACT) {
+      if (row.stage !== stage || row.asset_class !== assetClass) continue;
+      if (row.field_path !== undefined || row.one_of !== undefined) continue;
+      qualified.set(row.section, row.required === true);
+    }
+  }
+  for (const row of STAGE_CONTRACT) {
+    if (row.stage !== stage || row.asset_class !== undefined) continue;
+    if (row.field_path !== undefined || row.one_of !== undefined) continue;
+    if (row.required !== true) continue;
+    const override = qualified.get(row.section);
+    if (override === false) continue;
+    if (!out.includes(row.section)) out.push(row.section);
+  }
+  // Class-qualified additions (a substitute section the base list never
+  // names), spliced where their displaced section sat when possible — the
+  // build order above already interleaves them, so document order is the
+  // original section order.
+  for (const [section, isRequired] of qualified) {
+    if (isRequired && !out.includes(section)) {
+      // Splice at the position of the first base section this class row
+      // displaced, to preserve the legacy ordering contract.
+      const displacedIndex = indexOfDisplaced(stage, assetClass as AssetClass, section);
+      if (displacedIndex >= 0 && displacedIndex <= out.length) out.splice(displacedIndex, 0, section);
+      else out.push(section);
+    }
+  }
+  return out;
+}
+
+/** Where a class-substituted section should sit in the resolved list: the
+ *  index its first displaced base section would have occupied. */
+function indexOfDisplaced(stage: DealStage, assetClass: AssetClass, replacement: string): number {
+  const overlay = STAGE_SECTION_OVERLAYS[assetClass];
+  if (!overlay?.substitute) return -1;
+  const base = STAGE_REQUIREMENTS[stage].required_sections;
+  const resolved: string[] = [];
+  for (const section of base) {
+    if (overlay.exempt?.includes(section)) continue;
+    const r = overlay.substitute[section] ?? section;
+    if (!resolved.includes(r)) resolved.push(r);
+  }
+  return resolved.indexOf(replacement);
+}
+
+/**
+ * The most-specific `STAGE_CONTRACT` row for `(stage, section, field_path,
+ * asset_class)`. Specificity mirrors `lookupIncompleteDataPolicy`:
+ * class-qualified beats unqualified, field-scoped beats section-scoped.
+ * Returns null when the contract says nothing about the pair.
+ */
+export function lookupStageContract(
+  stage: DealStage,
+  section: string,
+  field_path?: string,
+  assetClass?: string,
+): StageContractEntry | null {
+  if (assetClass) assetClass = toBuiltinAssetClass(assetClass) ?? assetClass;
+  let best: StageContractEntry | null = null;
+  let bestScore = -1;
+  for (const row of STAGE_CONTRACT) {
+    if (row.stage !== stage || row.section !== section) continue;
+    if (row.one_of !== undefined) continue;
+    if (row.asset_class !== undefined && row.asset_class !== assetClass) continue;
+    if (row.field_path !== undefined && row.field_path !== field_path) continue;
+    let score = 0;
+    if (row.field_path !== undefined) score += 4;
+    if (row.asset_class !== undefined) score += 2;
+    if (score > bestScore) {
+      bestScore = score;
+      best = row;
+    }
+  }
+  return best;
+}
+
+// ─── Edit semantics (Part V) ──────────────────────────────────────────────────
+
+/** Who is permitted to overwrite a block, derived from `_meta.provenance.source`. */
+export type EditAuthority =
+  | 'agent_only'         // only the originating agent may overwrite
+  | 'human_only'         // only manual edits may overwrite
+  | 'either'             // agents or humans may overwrite
+  | 'system_only';       // only system processes (init, migration) may overwrite
+
+export interface EditPolicy {
+  /** Glob-style pattern matching `_meta.provenance.source` (e.g. "agent/*", "manual"). */
+  source_pattern: string;
+  authority: EditAuthority;
+  /** If true, edits MUST go through supersede (append a new block); else replace. */
+  supersede_on_edit: boolean;
+}
+
+/**
+ * A discrete edit operation against a parsed file. Tier-2 implementers
+ * accept these and produce a new `.uw.md` with byte-stable formatting
+ * for unrelated regions (round-trip preservation).
+ */
+export type EditOperation =
+  | {
+      kind: 'frontmatter_set';
+      path: string;        // dot-path into frontmatter
+      value: unknown;
+    }
+  | {
+      kind: 'section_replace';
+      section_id: string;
+      variant?: string;
+      content: Record<string, unknown>;
+      meta: UWMetaPatch;
+      /** Trusted host assignment: undefined preserves, null removes. Never copy from model content. */
+      role?: BlockRole | null;
+    }
+  | {
+      kind: 'section_supersede';
+      section_id: string;
+      variant?: string;
+      content: Record<string, unknown>;
+      meta: UWMetaPatch;
+      /** Trusted host assignment: undefined preserves, null removes. Never copy from model content. */
+      role?: BlockRole | null;
+    }
+  | {
+      kind: 'pipeline_log_append';
+      entry: Record<string, unknown>;
+    };
+
+// ─── Validation remediation (Part III §3.6) ───────────────────────────────────
+
+export interface IssueRemediation {
+  /** Validation code (e.g. "CC-01"). */
+  code: string;
+  /** Default severity emitted by validator.ts. */
+  severity: ValidationSeverity;
+  /** Short title shown in the issue list. */
+  title: string;
+  /** Plain-language description of what is wrong. */
+  description: string;
+  /** Imperative remediation copy ("Recompute LTV from current loan_amount / purchase_price."). */
+  remediation: string;
+  /** Spec section anchor for deep-linking. */
+  spec_ref?: string;
+}
+
+// ─── Calc engine contract (Part VIII; Verifier and profiles, RFC 0078) ────────
+
+/**
+ * Variables made available to a custom_calculation expression. The host
+ * resolves `parsed` paths via parser.deepGet semantics.
+ */
+/** Exact period identity; holding years and calendar identities never convert implicitly. */
+export type PeriodKey =
+  | { kind: 'year'; index: number }
+  | { kind: 'quarter'; year: number; quarter: number }
+  | { kind: 'month'; year: number; month: number }
+  | { kind: 'date'; date: string };
+
+export interface PeriodSeriesEntry {
+  readonly path: string;
+  readonly shape: 'rows' | 'keyed';
+  readonly period_field?: string;
+  readonly key_pattern?: string;
+  readonly grammar: 'year_index' | 'calendar_period' | 'iso_date';
+  readonly cadence_field?: string;
+  readonly spec_ref: string;
+}
+
+/** Standard registry only; module-defined series are deferred (RFC 0041). */
+export const PERIOD_SERIES: readonly PeriodSeriesEntry[] = Object.freeze([
+  Object.freeze({ path: 'dcf.annual_cash_flows', shape: 'rows', period_field: 'year', grammar: 'year_index', spec_ref: 'UW_FORMAT_SPEC.md §4.9' } as const),
+  Object.freeze({ path: 'noi_model.projections', shape: 'keyed', key_pattern: '^year_(\\d+)$', grammar: 'year_index', spec_ref: 'UW_FORMAT_SPEC.md §4.5' } as const),
+  Object.freeze({ path: 'lease_up_schedule.schedule', shape: 'rows', period_field: 'period', grammar: 'calendar_period', cadence_field: 'period_granularity', spec_ref: 'UW_FORMAT_SPEC.md §4.25' } as const),
+  Object.freeze({ path: 'cash_flow_series.series', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC.md §4.26' } as const),
+  Object.freeze({ path: 'distribution_waterfall.stated_schedule', shape: 'rows', period_field: 'date', grammar: 'iso_date', spec_ref: 'UW_FORMAT_SPEC.md §4.27' } as const),
+]);
+
+/** Trusted workbook names bound to one canonical selector path (RFC 0043). */
+export type PeriodExcelBinding =
+  | { kind: 'series'; keys_range: string; values_range: string; valid_range: string }
+  | { kind: 'override'; value_range: string };
+
+/** Complete selected series projected onto one literal leaf path, before rounding. */
+export interface PeriodColumnSnapshot {
+  reference: string;
+  series_path: string;
+  variant: string | null;
+  selector_identity: string;
+  rows: Array<{ identity: string; value: unknown }>;
+}
+
+/** An output excluded from refinement because a stated period input is unavailable. */
+export interface PeriodRefinementIssue {
+  output_id: string;
+  field_path: string;
+  code: 'REFINE-PERIOD-MISSING' | 'REFINE-PERIOD-NONNUMERIC'
+    | 'CALC-PERIOD-001' | 'CALC-PERIOD-002' | 'CALC-PERIOD-003';
+  message: string;
+}
+
+/**
+ * A refinement target excluded because the block one of its sections must be
+ * read from cannot be selected for it (§VIII.2b, RFC 0066). Same reporting
+ * contract as `PeriodRefinementIssue`; `message` is not stable machine data.
+ */
+export interface SectionRefinementIssue {
+  output_id: string;
+  /** The section id whose block could not be selected for this output. */
+  section: string;
+  code: 'CALC-RESOLVE-002';
+  message: string;
+}
+
+export interface CalcEvaluationContext {
+  /**
+   * Exact section variant per section id, with no fallback, for every
+   * section-rooted read: period references (§VIII.2a) and ordinary identifiers
+   * (§VIII.2, RFC 0066). A requested variant that is absent refuses.
+   */
+  sectionVariants?: Readonly<Record<string, string>>;
+  parsed: ParsedUWFile;
+  /** Result map of previously-evaluated calculations in the same batch. */
+  prior_results: Readonly<Record<string, number | string | boolean | null>>;
+  /**
+   * Values that shadow document lookup, keyed by **full dotted path** exactly
+   * as an expression writes it (`dcf.exit_cap_rate`, not `exit_cap_rate`).
+   *
+   * Consulted before frontmatter, sections, and prior results, so an override
+   * wins over whatever the document says. That is the point: it lets a caller
+   * ask "what would this be if the exit cap were 6.5%" without mutating the
+   * document, which is what sensitivity analysis (§VIII.7), scenario sweeps,
+   * and stress tests all need.
+   *
+   * Keyed by literal path rather than resolved location because the expression
+   * is the contract: a caller that had to know how `dcf.exit_cap_rate` maps to
+   * a block's inner content would be reimplementing §VIII.2.
+   */
+  overrides?: Readonly<Record<string, number | string | boolean | null>>;
+  /** Locale for number parsing. v1: must be 'en-US'. */
+  locale: SupportedLocale;
+}
+
+export interface CalcResult {
+  calc_id: string;
+  ok: boolean;
+  /**
+   * The result. A numeric value is **quantized** per §VIII.5 — the reported
+   * value is the one a digest covers, so it carries no unquantized tail.
+   */
+  value: number | string | boolean | null;
+  /** Unit string from the calc declaration (e.g. "%", "$", "x"). */
+  unit?: string;
+  /**
+   * Decimal places `value` was quantized to. Echoed rather than left implicit so
+   * a consumer can see the precision contract it actually got, including when
+   * the declaration relied on the unit default.
+   */
+  round_to?: number;
+  /** Formatted display string per DEFAULT_NUMBER_FORMAT. */
+  display?: string;
+  error?: ProtocolError;
+}
+
+// ─── Module manifest (Part X) ─────────────────────────────────────────────────
+
+/**
+ * A module declaration. Mirrors `spec/schemas/module-manifest.schema.json`
+ * (invariant 7).
+ */
+export interface ModuleManifest extends ModuleConformanceRequirements {
+  manifest_version: '1';
+  id: string;                       // reverse-DNS recommended
+  name: string;
+  version: string;                  // semver
+  description: string;
+  authors: string[];
+  license: string;                  // SPDX identifier
+  requires_protocol: string;        // semver range
+  requires_format: string;          // semver range
+  asset_classes?: AssetClass[];
+  deal_stages?: DealStage[];
+  sections?: ModuleSectionDecl[];
+  calculations?: ModuleCalcDecl[];
+  validations?: ModuleValidationDecl[];
+  thresholds?: Partial<FinancialThresholds>;
+  view_models?: SectionViewModel[];
+  ui?: Record<string, unknown>;     // free-form, host-specific
+  agent_layers?: ModuleAgentLayerDecl[];
+  depends_on?: { id: string; version: string }[];
+  /**
+   * Custom asset classes this module introduces (§X.2, RFC 0003).
+   *
+   * Distinct from `asset_classes`, which names builtin classes the module
+   * *enhances*. A module may do both: declare `com.example.specialty_facility` and
+   * also contribute calcs to `industrial`.
+   */
+  declares_asset_classes?: ModuleAssetClassDecl[];
+  /**
+   * Detached signature over the canonical manifest (§X.1, RFC 0002).
+   *
+   * Advisory at the protocol level: what to do with an unsigned module, or one
+   * whose signature fails, is a host-policy decision. What the protocol fixes is
+   * the *surface*, so that two hosts agree on what "signature valid" means.
+   */
+  signature?: ModuleSignature;
+}
+
+/**
+ * A detached signature over a module manifest.
+ *
+ * Deliberately the same shape as `UWMeta.signature` (§V.11) plus a `scheme`
+ * discriminator and an optional identity claim. A module manifest and a block
+ * are different artifacts, but "who signed this, with which key, when" is the
+ * same question, and answering it two different ways would mean two verifiers,
+ * two key-store formats, and two chances to get the canonicalization wrong.
+ */
+export interface ModuleSignature {
+  /**
+   * Signing scheme. `uwmd-keystore` is a detached signature over the canonical
+   * manifest, verified against a key store the host holds — the same machinery
+   * as block signatures.
+   *
+   * `sigstore` is reserved, not implemented: keyless signing needs a Fulcio
+   * trust root and a Rekor inclusion proof, which means a vendored root
+   * snapshot and network verification. Both sit badly with a protocol whose
+   * conformance corpus is offline and deterministic. The discriminator exists
+   * so adding it later is additive rather than a breaking change.
+   */
+  scheme: 'uwmd-keystore';
+  /** Algorithm, from the same closed set as block signatures (§V.11). */
+  alg: UWSignatureAlgorithm;
+  /** Opaque key identifier the host resolves in its own key store. */
+  kid: string;
+  /** Base64url-encoded (unpadded) signature bytes. */
+  sig: string;
+  /** ISO 8601 instant the signature was produced. */
+  signed_at: string;
+  /**
+   * Identity the signer claims (an email, a domain, an org). **Advisory and
+   * unverified by this layer** — it is a hint for humans and for a host's
+   * allow-list policy, and a host that trusts it without checking that the
+   * `kid` actually belongs to that identity has learned nothing.
+   */
+  identity?: string;
+}
+
+/**
+ * A custom asset class a module introduces (§X.2, RFC 0003).
+ *
+ * `fallback` is the field that makes an unknown class survivable. Without one,
+ * a reader lacking the module can only refuse the document; with one, it can
+ * render — degraded, and saying so. That is a strictly better outcome than
+ * either refusing or silently pretending, and it is why the field is worth the
+ * obligation to pick an honest nearest neighbor.
+ */
+export interface ModuleAssetClassDecl {
+  /** Reverse-DNS, at least three lower-snake-case segments. */
+  id: string;
+  display_name: string;
+  /**
+   * The closest builtin, for readers that do not hold this module. Omitting it
+   * is a deliberate choice that no approximation is honest — a life-sciences
+   * building is not really an office — and costs those readers the document.
+   */
+  fallback?: AssetClass;
+  /** Sections this class requires beyond the stage baseline. */
+  required_sections?: string[];
+  /** Sections this class recognizes but does not require. */
+  optional_sections?: string[];
+}
+
+export interface ModuleSectionDecl {
+  id: string;
+  display_name: string;
+  schema: Record<string, unknown>;  // JSON Schema fragment
+  required?: boolean;
+}
+
+export interface ModuleCalcDecl {
+  id: string;
+  label: string;
+  formula: string;                  // safe-expression string
+  unit?: string;
+  /**
+   * Decimal places the reported value is quantized to, half away from zero
+   * (§VIII.5). Integer in [0, 12]. Omitted means "use the normative default for
+   * `unit`" — see `resolveRoundTo` in `calc/quantize.ts`. This is a precision
+   * *contract*, not a display hint; `display` remains separate.
+   */
+  round_to?: number;
+  /** True if the formula has no side effects and same inputs → same output. */
+  deterministic: boolean;
+  /**
+   * Role preference per section id for this calculation's section-rooted reads
+   * (§VIII.2, RFC 0066). When the section is a role-bearing variant map, the
+   * unique eligible block with this role is read; with none, RFC 0040's generic
+   * order applies; with two, the read refuses. An explicit `sectionVariants`
+   * entry still wins. `component` is not selectable this way.
+   */
+  section_roles?: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
+}
+
+export interface ModuleValidationDecl {
+  code: string;                     // e.g. "CC-MOD-01"
+  severity: ValidationSeverity;
+  message: string;
+  rule: string;                     // safe-expression returning boolean
+}
+
+export interface ModuleAgentLayerDecl {
+  id: string;
+  reads: string[];
+  writes: string[];
+  prompt_template: string;
+}
+
+export interface ModuleLoadResult {
+  ok: boolean;
+  manifest?: ModuleManifest;
+  errors: ProtocolError[];
+}
+
+// ─── Standard section registry (FORMAT_SPEC Part IV) ─────────────────────────
+
+/**
+ * The section ids the format registers in `UW_FORMAT_SPEC.md` Part IV: the
+ * 21 standard data sections (§ 4.0 – § 4.20) plus `gaps` (§ 4.22). Each entry is
+ * the `**ID:**` that subsection declares. § 4.21 is the `x_` extension
+ * meta-spec, which registers a namespace rather than a section, so it has no id
+ * here.
+ *
+ * This exists because "is this a section the format knows about?" had no single
+ * answer in the library. `BUILTIN_VIEW_MODELS` claims to be that list and is
+ * not — it omits eight of these (including `operating_statement`) and adds
+ * eight ids Part IV never registers — and `lite-bridge.ts` keeps a third,
+ * different list. Rather than pick one of two wrong answers, RFC 0022 reads the
+ * spec, which is the authority. Reconciling the other two is tracked separately;
+ * `protocol.test.ts` pins this list so it cannot drift from Part IV silently.
+ *
+ * Extension sections (`x_`-prefixed, § 4.21) are valid but deliberately absent:
+ * they are institution-defined, so membership here would be a category error.
+ * Use `isStandardSectionId` for registry membership and check the `x_` prefix
+ * separately when extensions are permitted.
+ */
+export const STANDARD_SECTION_IDS: readonly string[] = Object.freeze([
+  'deal_context',
+  'property',
+  'ownership',
+  'rent_roll',
+  'operating_statement',
+  'noi_model',
+  'valuation',
+  'debt_structure',
+  'sources_uses',
+  'dcf',
+  'stress_tests',
+  'market_analysis',
+  'borrower_sponsor',
+  'due_diligence',
+  'risk_assessment',
+  'compliance',
+  'assumptions',
+  'validation',
+  'pipeline_log',
+  'custom_calculations',
+  'custom_scenarios',
+  'gaps',
+  'components',
+  'capital_stack',
+  'lease_up_schedule',
+  'cash_flow_series',
+  'distribution_waterfall',
+  'reserve_accounts',
+  'dc_capacity', 'dc_power', 'dc_revenue', 'mhc_sites',
+  'hotel_metrics', 'hotel_brand', 'hotel_food_beverage',
+]);
+
+const STANDARD_SECTION_ID_SET = new Set(STANDARD_SECTION_IDS);
+
+/** True when `id` is a section registered by FORMAT_SPEC Part IV. */
+export function isStandardSectionId(id: string): boolean {
+  return STANDARD_SECTION_ID_SET.has(id);
+}
+
+/** The `x_` namespace FORMAT_SPEC § 4.21 reserves for non-standard content. */
+export const EXTENSION_SECTION_PREFIX = 'x_' as const;
+
+// ─── Metric dictionary (RFC 0078 Phase 2, spec/metrics/) ────────────────────
+
+/** A class-scoped normative calculation; packs mirror these definitions. */
+export interface MetricDictionaryCalculation {
+  readonly id: string;
+  readonly label: string;
+  readonly asset_classes: readonly AssetClass[];
+  readonly formula: string;
+  /** All potential reads, including conditional branches; not a required-input list. */
+  readonly input_paths: readonly string[];
+  readonly unit: string;
+  /** Effective Protocol §VIII.5 decimal places, including unit defaults. */
+  readonly round_to: number;
+  /** RFC 0079 comparison floor in stored units; coarse statements are checked at this precision. */
+  readonly minimum_stated_decimals: number;
+  readonly section_roles: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
+  readonly null_semantics: 'expression';
+  readonly deterministic: true;
+}
+
+/** A stated primary-size selector. It preserves raw quantities without rounding. */
+export interface MetricDictionarySize extends Omit<MetricDictionaryCalculation,
+  'round_to' | 'null_semantics' | 'deterministic'> {
+  readonly round_to: null;
+  readonly minimum_stated_decimals: 0;
+  readonly null_semantics: 'finite_stated_number';
+  /** Primary and secondary paths relative to property, as in SIZE_INTENSIVES. */
+  readonly path: string;
+  readonly secondary: readonly string[];
+}
+
+/** Mirrors metric-dictionary.schema.json; uniqueness is by (asset class, id) per array. */
+export interface MetricDictionary {
+  readonly $schema: 'https://uwmd.org/schemas/metric-dictionary.schema.json';
+  readonly calculations: readonly MetricDictionaryCalculation[];
+  readonly size_intensives: readonly MetricDictionarySize[];
+}
+
+// ─── Size-intensive registry (PROTOCOL §XIII, RFC 0027) ──────────────────────
+
+/**
+ * One asset class's entry in spec/metrics/ (Protocol §XIII): which
+ * `property` field is the class's size, what to call it, and what unit it
+ * carries. The primary size field is the denominator that class's calc pack
+ * uses for its per-unit value metrics.
+ */
+export interface SizeIntensive {
+  /** Field path relative to the `property` section, e.g. `'keys'`. */
+  readonly path: string;
+  /** Display label, e.g. `'Keys'`, `'RSF'`. */
+  readonly label: string;
+  /** Unit token, e.g. `'keys'`, `'sqft'`. */
+  readonly unit: string;
+  /** Secondary size fields the class legitimately also states. */
+  readonly secondary: readonly string[];
+}
+
+/**
+ * The spec/metrics/ size registry mirror, keyed by asset class. `mixed_use` is
+ * deliberately absent (§XIII.2): its size lives per-component in the
+ * `components` section and MUST NOT be synthesized by summing across uses.
+ * An unrecognized class has
+ * no primary size field, never a guessed one.
+ */
+export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.freeze({
+  multifamily:     Object.freeze({ path: 'total_units',              label: 'Units',       unit: 'units', secondary: Object.freeze(['total_nra_sqft']) }),
+  office:          Object.freeze({ path: 'rentable_square_feet',     label: 'RSF',         unit: 'sqft',  secondary: Object.freeze([]) }),
+  industrial:      Object.freeze({ path: 'rentable_square_feet',     label: 'RSF',         unit: 'sqft',  secondary: Object.freeze([]) }),
+  retail:          Object.freeze({ path: 'gross_leasable_area',      label: 'GLA',         unit: 'sqft',  secondary: Object.freeze([]) }),
+  self_storage:    Object.freeze({ path: 'net_rentable_square_feet', label: 'NRSF',        unit: 'sqft',  secondary: Object.freeze(['rentable_units']) }),
+  hospitality:     Object.freeze({ path: 'keys',                     label: 'Keys',        unit: 'keys',  secondary: Object.freeze([]) }),
+  student_housing: Object.freeze({ path: 'total_beds',               label: 'Beds',        unit: 'beds',  secondary: Object.freeze(['total_units']) }),
+  senior_housing:  Object.freeze({ path: 'total_units',              label: 'Units',       unit: 'units', secondary: Object.freeze(['total_beds']) }),
+  data_center: Object.freeze({ path: 'critical_it_load_kw', label: 'Critical IT kW', unit: 'kW', secondary: Object.freeze([]) }),
+  manufactured_housing: Object.freeze({ path: 'total_sites', label: 'Sites', unit: 'sites', secondary: Object.freeze([]) }),
+  land:            Object.freeze({ path: 'gross_acres',              label: 'Gross acres', unit: 'acres', secondary: Object.freeze(['usable_acres', 'entitled_units']) }),
+});
+
+/**
+ * The §XIII selection: `null` for `mixed_use` (§XIII.2) and for any
+ * unrecognized class (§XIII.3) — never a guess.
+ */
+export function getSizeIntensive(assetClass: string): SizeIntensive | null {
+  return SIZE_INTENSIVES[toBuiltinAssetClass(assetClass) ?? assetClass] ?? null;
+}
+
+/**
+ * The deal's size as `{basis, label, unit, quantity}`, selected through the
+ * §XIII registry and read from the raw `property` section — never through the
+ * cascade, because a deal's size is a fact about the asset, not a default
+ * (RFC 0027, unresolved question 4). `null` when the class has no primary
+ * size field, when there is no property section, or when the document omits
+ * or non-numerically states the field.
+ */
+export function resolveDealSize(
+  parsed: ParsedUWFile,
+): { basis: string; label: string; unit: string; quantity: number } | null {
+  const assetClass = parsed.frontmatter.asset_class;
+  if (typeof assetClass !== 'string') return null;
+  const intensive = getSizeIntensive(assetClass);
+  if (!intensive) return null;
+  const property =
+    getSection(parsed, 'property') ?? getSectionVariant(parsed, 'property', 'default');
+  if (!property) return null;
+  // §VIII.2's payload, exactly as the calc evaluator reads it: the registry
+  // must read the same payload the pack divides by, or the two disagree
+  // about the same document.
+  const payload = blockPayload(property);
+  const raw = deepGet(payload, intensive.path);
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) return null;
+  return { basis: intensive.path, label: intensive.label, unit: intensive.unit, quantity: raw };
+}
+
+// ─── Document profiles (RFC 0018 §1) ──────────────────────────────────────────
+
+/**
+ * A profile is a versioned contract for the *purpose and permitted sections* of
+ * one document. It is not a filename extension, an asset class, a pipeline
+ * stage, or a calculation pack. A document without a profile remains the
+ * existing full underwriting record.
+ */
+export interface DocumentProfile {
+  id: string;
+  purpose: string;
+  /** Frontmatter keys the profile requires beyond the format's own. */
+  required_identity: readonly string[];
+  /** Whether deterministic packs apply to this document's contents. */
+  financial_role: 'underwriting' | 'descriptive' | 'evidence';
+}
+
+export const DEAL_UNDERWRITING_PROFILE = 'deal-underwriting-v1' as const;
+export const LEASE_ABSTRACT_PROFILE = 'lease-abstract-v1' as const;
+export const SOURCE_NOTE_PROFILE = 'source-note-v1' as const;
+export const MARKET_DATA_PROFILE = 'market-data-v1' as const;
+
+export const BUILTIN_DOCUMENT_PROFILES: readonly DocumentProfile[] = Object.freeze([
+  Object.freeze({
+    id: DEAL_UNDERWRITING_PROFILE,
+    purpose: 'Complete or partial underwriting record.',
+    required_identity: Object.freeze(['deal_id']),
+    financial_role: 'underwriting',
+  }),
+  Object.freeze({
+    id: LEASE_ABSTRACT_PROFILE,
+    purpose: 'One executed lease and its amendments.',
+    required_identity: Object.freeze(['document_id', 'lease_id']),
+    financial_role: 'descriptive',
+  }),
+  Object.freeze({
+    id: SOURCE_NOTE_PROFILE,
+    purpose: 'Attributable transcription, summary, or diligence note.',
+    required_identity: Object.freeze(['document_id']),
+    financial_role: 'evidence',
+  }),
+  Object.freeze({
+    // RFC 0022. `evidence`, not `underwriting`: a market-data document carries
+    // observations, contains no calculations, and no pack applies to it. It has
+    // no `deal_id` and must never be read as an underwriting record.
+    id: MARKET_DATA_PROFILE,
+    purpose: 'Dated, attributable market observations for one geography and asset class.',
+    required_identity: Object.freeze(['document_id', 'as_of', 'provider', 'geo']),
+    financial_role: 'evidence',
+  }),
+]) as readonly DocumentProfile[];
+
+const PROFILE_BY_ID = new Map(BUILTIN_DOCUMENT_PROFILES.map((p) => [p.id, p]));
+
+/**
+ * Profile identifiers are opaque lowercase ASCII tokens. An unknown profile is
+ * *preserved*, never reinterpreted — returning undefined means "not one we
+ * implement", which is different from "invalid".
+ */
+export function lookupDocumentProfile(id: string): DocumentProfile | undefined {
+  return PROFILE_BY_ID.get(id);
+}
+
+export const DOCUMENT_PROFILE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+// ─── Canonical edge registry (RFC 0018 §5) ────────────────────────────────────
+//
+// ONE registry, TWO layers. RFC 0015 relates business *entities*; RFC 0018
+// relates *documents inside a package*. Left as two tables they would both
+// contain `guarantees` and `supports` and drift until the same token meant two
+// different things depending on which document a reader happened to hold.
+//
+// RFC 0018 was accepted first, so this table is the canonical home. A future
+// implementation of RFC 0015 amends it rather than starting a second one.
+
+export type UWEdgeLayer = 'entity' | 'member';
+
+/** Endpoint kinds an edge may connect. `any` accepts every kind on that layer. */
+export type UWEdgeEndpointKind =
+  | 'any'
+  | 'borrower'
+  | 'property'
+  | 'loan'
+  | 'deal'
+  | 'document'
+  | 'uw_document'
+  | 'source_evidence'
+  | 'underwriting_document';
+
+export interface UWEdgeTypeDef {
+  type: string;
+  /** Layers this type is valid on. Two types are valid on both. */
+  layers: readonly UWEdgeLayer[];
+  from: readonly UWEdgeEndpointKind[];
+  to: readonly UWEdgeEndpointKind[];
+  /**
+   * `required` — the edge must carry a non-empty provenance array (entity
+   * layer). `manifest` — the package manifest *is* the provenance, because
+   * every member is content-addressed by digest (member layer).
+   */
+  provenance: 'required' | 'manifest';
+  meaning: string;
+}
+
+export const BUILTIN_EDGE_TYPES: readonly UWEdgeTypeDef[] = Object.freeze([
+  Object.freeze({
+    type: 'owns', layers: Object.freeze(['entity'] as const),
+    from: Object.freeze(['borrower'] as const), to: Object.freeze(['property'] as const),
+    provenance: 'required', meaning: 'Ownership of the asset.',
+  }),
+  Object.freeze({
+    type: 'borrows_against', layers: Object.freeze(['entity'] as const),
+    from: Object.freeze(['borrower'] as const), to: Object.freeze(['property'] as const),
+    provenance: 'required', meaning: 'Borrowing secured by the asset.',
+  }),
+  Object.freeze({
+    type: 'secures', layers: Object.freeze(['entity'] as const),
+    from: Object.freeze(['property'] as const), to: Object.freeze(['loan'] as const),
+    provenance: 'required', meaning: 'The asset secures the loan.',
+  }),
+  Object.freeze({
+    type: 'related_to', layers: Object.freeze(['entity'] as const),
+    from: Object.freeze(['any'] as const), to: Object.freeze(['any'] as const),
+    provenance: 'required', meaning: 'Untyped association; the fallback.',
+  }),
+  Object.freeze({
+    type: 'abstracts', layers: Object.freeze(['member'] as const),
+    from: Object.freeze(['uw_document'] as const), to: Object.freeze(['source_evidence'] as const),
+    provenance: 'manifest', meaning: 'This document is an extraction of that source.',
+  }),
+  Object.freeze({
+    type: 'amends', layers: Object.freeze(['member'] as const),
+    from: Object.freeze(['document', 'uw_document'] as const),
+    to: Object.freeze(['document', 'uw_document'] as const),
+    provenance: 'manifest', meaning: 'Modifies the terms of the target.',
+  }),
+  Object.freeze({
+    // NOT the block-level `_meta.lifecycle.superseded`, which is append-only within a
+    // single document and untouched by this registry. This relates two whole
+    // documents in a package.
+    type: 'supersedes', layers: Object.freeze(['member'] as const),
+    from: Object.freeze(['document', 'uw_document'] as const),
+    to: Object.freeze(['document', 'uw_document'] as const),
+    provenance: 'manifest', meaning: 'Replaces the target wholesale.',
+  }),
+  Object.freeze({
+    type: 'contributes_to', layers: Object.freeze(['member'] as const),
+    from: Object.freeze(['document', 'uw_document'] as const),
+    to: Object.freeze(['underwriting_document'] as const),
+    provenance: 'manifest', meaning: 'Feeds the target underwriting record.',
+  }),
+  Object.freeze({
+    // Shared. A guaranty *document* is the member-layer evidence for the
+    // entity-layer fact that a borrower guarantees a loan — one relation
+    // observed at two layers, not a collision to be renamed apart.
+    type: 'guarantees', layers: Object.freeze(['entity', 'member'] as const),
+    from: Object.freeze(['borrower', 'document', 'uw_document'] as const),
+    to: Object.freeze(['loan', 'document', 'uw_document'] as const),
+    provenance: 'required', meaning: 'Credit support for the target.',
+  }),
+  Object.freeze({
+    type: 'supports', layers: Object.freeze(['entity', 'member'] as const),
+    from: Object.freeze(['any'] as const), to: Object.freeze(['any'] as const),
+    provenance: 'required', meaning: 'Evidentiary support, weaker than `abstracts`.',
+  }),
+]) as readonly UWEdgeTypeDef[];
+
+const EDGE_TYPE_BY_NAME = new Map(BUILTIN_EDGE_TYPES.map((e) => [e.type, e]));
+
+/**
+ * Extension types are permitted at both layers and MUST be preserved by
+ * consumers that cannot interpret them, so `undefined` means "not built in",
+ * not "invalid".
+ */
+export function lookupEdgeType(type: string): UWEdgeTypeDef | undefined {
+  return EDGE_TYPE_BY_NAME.get(type);
+}
+
+export function isEdgeTypeValidOnLayer(type: string, layer: UWEdgeLayer): boolean {
+  const def = EDGE_TYPE_BY_NAME.get(type);
+  return def ? def.layers.includes(layer) : true; // unknown → preserved, not rejected
+}
+
+// ─── Error taxonomy (Part XI) ─────────────────────────────────────────────────
+
+export type ProtocolErrorCategory =
+  | 'parse'
+  | 'validate'
+  | 'render'
+  | 'edit'
+  | 'calc'
+  | 'agent'
+  | 'module'
+  | 'version'
+  | 'package'
+  | 'portfolio';
+
+export interface ProtocolError {
+  category: ProtocolErrorCategory;
+  code: string;                     // e.g. "PROTO-EDIT-001"
+  message: string;
+  /** Path into the file (section.field or frontmatter.path). */
+  pointer?: string;
+  /** Suggested remediation text. */
+  remediation?: string;
+  /** Underlying error message if wrapping a thrown exception. */
+  cause?: string;
+}
+
+// ─── Built-in tables ──────────────────────────────────────────────────────────
+
+/**
+ * Default edit policies derived from canonical `_meta.provenance.source` patterns.
+ * Implementers consult this table to decide whether a write is a replace
+ * or a supersede, and whether the actor is permitted to write at all.
+ */
+export const BUILTIN_EDIT_POLICIES: readonly EditPolicy[] = Object.freeze([
+  { source_pattern: 'agent/*',     authority: 'either',      supersede_on_edit: true  },
+  { source_pattern: 'manual',      authority: 'either',      supersede_on_edit: false },
+  { source_pattern: 'document/*',  authority: 'either',      supersede_on_edit: true  },
+  { source_pattern: 'system/*',    authority: 'system_only', supersede_on_edit: false },
+  { source_pattern: 'institution/*', authority: 'system_only', supersede_on_edit: false },
+  // Terminal catch-all. `matchSource` scores by pattern length, so a one-character
+  // glob loses to every specific pattern above and applies only where nothing
+  // else matched.
+  //
+  // Before this existed, `resolvePolicy` returned null for an unrecognized
+  // source and the editor read that null two ways: `checkAuthority` treated it
+  // as *permitted*, and `dispatchEdit` treated it as *exempt from
+  // supersede_on_edit*. So a block whose source was outside this list could be
+  // replaced in place, destroying the prior version, with POL-01 and POL-02 both
+  // unable to fire. 43% of the blocks in the corpus were in that state.
+  //
+  // `supersede_on_edit: true` is the conservative half of the fix: an
+  // unrecognized source now preserves history rather than overwriting it.
+  // `authority: 'either'` is the deliberate other half — no write that succeeded
+  // before starts failing, so this is a bug fix and not a migration.
+  { source_pattern: '*', authority: 'either', supersede_on_edit: true },
+]);
+
+/**
+ * One registered validator code family (protocol §III.6a, RFC 0030).
+ *
+ * `capabilities` is the set a host must claim **at least one** of before it can
+ * emit codes in this family. An empty list means the family is unconditional —
+ * every implementation owes it regardless of what it claims.
+ */
+export interface ValidatorCodeFamily {
+  /** Matched against a code as an exact hit or as `<prefix>-…`. Longest wins. */
+  prefix: string;
+  description: string;
+  capabilities: readonly ViewerCapability[];
+}
+
+/**
+ * The registered validator code families and the capability that owns each.
+ *
+ * §III.6a used to name three families in prose while the registry below emitted
+ * eighteen, which is the failure mode this constant exists to prevent: the spec
+ * states the *rule*, this states the families, and `protocol.test.ts` asserts
+ * every code in `BUILTIN_REMEDIATIONS` lands in one of them. A duplicated prose
+ * list is what went stale; an assertion cannot.
+ *
+ * Ownership is what makes partial conformance checkable. `INT-01` needs a hash
+ * chain and `POL-01` needs an edit engine, so a read-only reader that claims
+ * neither owes neither — a claim §II.5 always allowed and nothing enforced.
+ */
+export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.freeze([
+  { prefix: 'CLS', description: 'Official builtin field contracts (RFC 0080, RFC 0081)', capabilities: ['validate'] },
+  { prefix: 'CC', description: 'Cross-section consistency', capabilities: ['validate'] },
+  { prefix: 'FV', description: 'Single-section financial validity', capabilities: ['validate'] },
+  { prefix: 'DQ', description: 'Data quality / incomplete data', capabilities: ['validate'] },
+  { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
+  { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
+  { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
+  { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['calc-evaluate'] },
+  { prefix: 'RSV', description: 'Property custody structure and separate balance identity verification (RFC 0064)', capabilities: ['validate'] },
+  { prefix: 'HDG', description: 'Hedge structure and separate replacement binding verification (RFC 0070)', capabilities: ['validate'] },
+  { prefix: 'ESC', description: 'Escrow funding', capabilities: ['validate'] },
+  { prefix: 'CF', description: 'Cash-flow series (RFC 0034)', capabilities: ['validate'] },
+  { prefix: 'WF', description: 'Distribution waterfall (RFC 0035)', capabilities: ['validate'] },
+  { prefix: 'RT', description: 'Return-metric declarations — dcf.returns basis fields (RFC 0038)', capabilities: ['validate'] },
+  { prefix: 'LOC', description: 'Display locale (RFC 0001)', capabilities: ['validate'] },
+  { prefix: 'CUR', description: 'Document currency identity (RFC 0046)', capabilities: ['validate'] },
+  { prefix: 'PS', description: 'Period series identity (RFC 0041)', capabilities: ['validate'] },
+  { prefix: 'ROLE', description: 'Signed block role (RFC 0040)', capabilities: ['validate'] },
+  { prefix: 'META', description: '_meta shape by uw_version (RFC 0009)', capabilities: ['validate'] },
+  {
+    prefix: 'INVALID-ASSET-CLASS',
+    description: 'Asset-class identifier syntax',
+    capabilities: ['validate'],
+  },
+  { prefix: 'INT', description: 'Integrity / hash chain', capabilities: ['integrity'] },
+  {
+    prefix: 'POL',
+    description: 'Edit policy',
+    // Either edit capability implies a policy engine; neither means no POL codes.
+    capabilities: ['edit-replace', 'edit-supersede'],
+  },
+  { prefix: 'SRC', description: 'Source vocabulary (RFC 0031)', capabilities: ['validate'] },
+  { prefix: 'MOD-CALC', description: 'Class/module calculation evaluation errors', capabilities: ['validate', 'module-load'] },
+  { prefix: 'MOD-RULE', description: 'Safe-expression rule evaluation errors, builtin or module', capabilities: ['validate', 'module-load'] },
+  { prefix: 'MOD', description: 'Module runtime', capabilities: ['module-load'] },
+  { prefix: 'CALC', description: 'Calc engine', capabilities: ['calc-evaluate'] },
+  {
+    prefix: 'UNSUPPORTED_YAML_FEATURE',
+    description: 'Frontmatter YAML subset violation',
+    capabilities: ['parse'],
+  },
+  // Protocol-level refusals are owed by every implementation: they report that a
+  // request was malformed, which is not a capability one can decline to have.
+  { prefix: 'UNSUPPORTED_FORMAT_VERSION', description: 'Unsupported or absent document version (RFC 0081)', capabilities: ['parse'] },
+  { prefix: 'PROTO', description: 'Protocol-level refusal', capabilities: [] },
+  { prefix: 'RCP', description: 'Verification receipt', capabilities: [] },
+] as const);
+
+/** Resolve a code to its registered family. Longest matching prefix wins. */
+export function validatorCodeFamily(code: string): ValidatorCodeFamily | null {
+  let best: ValidatorCodeFamily | null = null;
+  for (const family of VALIDATOR_CODE_FAMILIES) {
+    if (code !== family.prefix && !code.startsWith(`${family.prefix}-`)) continue;
+    if (!best || family.prefix.length > best.prefix.length) best = family;
+  }
+  return best;
+}
+
+/**
+ * The §5.3 cross-section checks a conforming validator reports coverage for
+ * (RFC 0037). `CC-16` is not listed: it is the diagnostic emitted when one of
+ * these is skipped over an unresolvable variant map, not a check of its own.
+ */
+export const CROSS_CHECK_RULE_IDS: readonly string[] = Object.freeze([
+  'CC-01', 'CC-02', 'CC-03', 'CC-04', 'CC-05', 'CC-06', 'CC-07', 'CC-08',
+  'CC-09', 'CC-10', 'CC-11', 'CC-12', 'CC-13', 'CC-14', 'CC-15',
+]);
+
+/**
+ * The variant keys a cross-check tries, in order, when the section it reads
+ * is a variant map and the check has no preference of its own (§5.3, RFC 0037).
+ * A check's own preference (`t12` for CC-01, `appraisal` for CC-08) is tried
+ * first; a lone variant is taken last; anything else is unresolvable.
+ */
+export const CROSS_CHECK_VARIANT_PREFERENCE: readonly string[] = Object.freeze(['default', 'base']);
+
+/** Closed, scalar vocabulary for the signed `_role` block annotation. */
+export const BLOCK_ROLES: readonly BlockRole[] = Object.freeze(['primary', 'senior', 'junior', 'summary', 'detail', 'component']);
+
+/**
+ * Per-check role preference, consulted before generic primary/default/base.
+ *
+ * The rate-hedge and escrow rules (RFC 0075) share one `debt_structure`
+ * selection, so their entries are identical: the hedge is the senior loan's.
+ */
+export const CROSS_CHECK_ROLE_PREFERENCE: Readonly<Record<string, Readonly<Record<string, BlockRole>>>> = Object.freeze({
+  'CC-01': Object.freeze({ rent_roll: 'detail' as const }),
+  'CC-02': Object.freeze({ debt_structure: 'senior' as const }),
+  'CC-03': Object.freeze({ debt_structure: 'senior' as const }),
+  'CC-05': Object.freeze({ debt_structure: 'senior' as const }),
+  'CC-09': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-01': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-02': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-03': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-06': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-07': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-08': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-09': Object.freeze({ debt_structure: 'senior' as const }),
+  'HDG-10': Object.freeze({ debt_structure: 'senior' as const }),
+  'ESC-04': Object.freeze({ debt_structure: 'senior' as const }),
+});
+
+/** The closed set for `dcf.returns.tax_basis` (format §4.9, RFC 0038). */
+export const RETURN_TAX_BASES = ['pre_tax', 'after_tax'] as const;
+
+/** The basis a `returns` object carries when it states none (RFC 0038). */
+export const DEFAULT_RETURN_TAX_BASIS = 'pre_tax' as const;
+
+/**
+ * Remediation copy for the cross-cutting consistency checks CC-01..CC-10
+ * (see UW_FORMAT_SPEC.md §5.3). Renderers SHOULD surface these strings
+ * verbatim in any validation issue list — the goal is uniform UX across
+ * every conforming implementation.
+ */
+export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
+  { code: 'UNSUPPORTED_FORMAT_VERSION', severity: 'error', title: 'Unsupported format version', description: 'uw_version is absent or differs from 3.0.', remediation: 'State a Format 3.0 document; no other format version is admitted.', spec_ref: 'UW_FORMAT_SPEC.md §2.2 / UW_PROTOCOL.md §XII.3' },
+  { code: 'META-01', severity: 'error', title: 'Block is not in the Format 3.0 shape', description: 'A block uses a section_id wrapper member or lacks nested provenance and lifecycle.', remediation: 'State the bare payload with inline nested _meta and _meta.section matching the fence.', spec_ref: 'UW_FORMAT_SPEC.md §2.4–§2.5' },
+  { code: 'RDB-01', severity: 'error', title: 'Invalid reserve draw binding plan shape or declaration', description: 'Invalid reserve draw binding plan shape or declaration.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-02', severity: 'error', title: 'Reserve draw binding source digest is stale', description: 'Reserve draw binding source digest is stale.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-03', severity: 'error', title: 'Exact reserve draw or gross expenditure reference is unresolved', description: 'Exact reserve draw or gross expenditure reference is unresolved.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-04', severity: 'error', title: 'Selected reserve or expenditure source is invalid or unverified', description: 'Selected reserve or expenditure source is invalid or unverified.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-05', severity: 'error', title: 'Duplicate reserve draw, expenditure identity or allocation edge', description: 'Duplicate reserve draw, expenditure identity or allocation edge.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-06', severity: 'error', title: 'Draw class, gross sign, category or currency disagrees', description: 'Draw class, gross sign, category or currency disagrees.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-07', severity: 'error', title: 'Selected reserve draw is not fully allocated', description: 'Selected reserve draw is not fully allocated.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-08', severity: 'error', title: 'Stated expenditure funding disagrees or exceeds gross expenditure', description: 'Stated expenditure funding disagrees or exceeds gross expenditure.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RDB-09', severity: 'error', title: 'Reserve draw allocation arithmetic is nonfinite', description: 'Reserve draw allocation arithmetic is nonfinite.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'RSV-01', severity: 'error', title: 'Invalid reserve-account shape, amount, currency or source provenance', description: 'Invalid reserve-account shape, amount, currency or source provenance.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-02', severity: 'error', title: 'Duplicate reserve account, period or movement identity', description: 'Duplicate reserve account, period or movement identity.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-03', severity: 'error', title: 'Invalid reserve statement or movement calendar dates', description: 'Invalid reserve statement or movement calendar dates.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-04', severity: 'error', title: 'Unsupported reserve class or unclassified movement', description: 'Unsupported reserve class or unclassified movement.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-05', severity: 'error', title: 'Unordered reserve periods/movements or invalid continuity claim', description: 'Unordered reserve periods/movements or invalid continuity claim.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-06', severity: 'error', title: 'Reserve ending balance disagrees at the currency quantum', description: 'Reserve ending balance disagrees at the currency quantum.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-07', severity: 'error', title: 'Claimed consecutive reserve opening balance disagrees', description: 'Claimed consecutive reserve opening balance disagrees.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  { code: 'RSV-08', severity: 'error', title: 'Reserve arithmetic cannot be represented finitely', description: 'Reserve arithmetic cannot be represented finitely.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
+  {
+    code: 'HDG-07',
+    severity: 'error',
+    title: 'Invalid replacement funding',
+    description: 'Invalid replacement funding',
+    remediation: 'State only the closed escrow or outright funding union under replace.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
+  {
+    code: 'HDG-08',
+    severity: 'error',
+    title: 'Invalid replacement payment reference',
+    description: 'Invalid replacement payment reference, or a stated hedge whose loan or cash lines cannot be selected',
+    remediation: 'Select the exact current cash-flow variant and in-range row with legal series and digest syntax. For a stated rate_hedge, give its loan a unique senior role and resolve any role collision in debt_structure or sources_uses.',
+    spec_ref: '§4.7 / §4.8 RFC 0070 / RFC 0076',
+  },
+  {
+    code: 'HDG-09',
+    severity: 'error',
+    title: 'Stale replacement payment commitment',
+    description: 'Stale replacement payment commitment',
+    remediation: 'Review the source change and explicitly rebind; never silently refresh a digest.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
+  {
+    code: 'HDG-10',
+    severity: 'error',
+    title: 'Invalid replacement payment sign or date',
+    description: 'Invalid replacement payment sign or date',
+    remediation: 'State a negative or explicit zero payment strictly after initial effective_date.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
+  {
+    code: 'ESC-04',
+    severity: 'error',
+    title: 'Replacement funding missing or contradictory',
+    description: 'Replacement funding missing or contradictory',
+    remediation: 'Provide the existing replacement escrow or the exact outright payment binding, without conflicting funding.',
+    spec_ref: '§4.7 / §4.8 RFC 0070',
+  },
+  // CC-01..CC-10 mirror the §5.3 table and the rules in validator.ts: the same
+  // sections, the same tolerance, the same default severity. Until 2.6.2 these
+  // ten entries described an earlier quick_metrics-reconciliation draft that
+  // never shipped, and the validator attached that copy to real issues.
+  {
+    code: 'CC-01', severity: 'warning',
+    title: 'Rent roll GPR does not match the operating statement',
+    description: 'rent_roll.gross_potential_rent differs from operating_statement.gross_potential_rent by more than 3%.',
+    remediation: 'Re-tie the rent roll to the operating statement — recompute gross potential rent from the current rent roll and restate it in the operating statement (the t12 variant when present).',
+    spec_ref: '§5.3 CC-01',
+  },
+  {
+    code: 'CC-02', severity: 'warning',
+    title: 'Stated LTV does not match the underwritten value',
+    description: 'debt_structure.ltv differs from debt_structure.loan_amount / valuation.underwritten_value (falling back to purchase_price) by more than 0.5 points.',
+    remediation: 'Recompute LTV = loan_amount / underwritten value and restate debt_structure.ltv, or correct the value in valuation that the LTV was struck against.',
+    spec_ref: '§5.3 CC-02',
+  },
+  {
+    code: 'CC-03', severity: 'error',
+    title: 'Senior loan does not reconcile',
+    description: 'sources_uses.sources.loan_amount, debt_structure.loan_amount and (when present) the capital_stack senior_debt tranche do not agree within $100.',
+    remediation: 'State the senior loan once and make every surface agree — sources_uses, debt_structure and the capital_stack senior_debt tranche MUST carry the same amount (RFC 0026 §4.24).',
+    spec_ref: '§5.3 CC-03',
+  },
+  {
+    code: 'CC-04', severity: 'error',
+    title: 'Sources & Uses imbalance',
+    description: 'sources_uses.total_sources does not equal sources_uses.total_uses (within $1).',
+    remediation: 'Reconcile the capital stack — equity + debt proceeds + other sources MUST equal price + closing + reserves.',
+    spec_ref: '§5.3 CC-04',
+  },
+  {
+    code: 'CC-05', severity: 'warning',
+    title: 'DSCR NOI does not match the NOI model',
+    description: 'debt_structure.underwritten_noi (the NOI used for DSCR) differs from noi_model.net_operating_income by more than 1%.',
+    remediation: 'Recompute DSCR from noi_model.net_operating_income and restate debt_structure.underwritten_noi, or correct the NOI model.',
+    spec_ref: '§5.3 CC-05',
+  },
+  {
+    code: 'CC-06', severity: 'warning',
+    title: 'DCF Year 1 NOI does not match the NOI model',
+    description: 'dcf.annual_cash_flows[0].noi differs from noi_model.net_operating_income by more than 2%.',
+    remediation: 'Re-run the DCF from the current noi_model projection so Year 1 NOI agrees, or correct the NOI model.',
+    spec_ref: '§5.3 CC-06',
+  },
+  {
+    code: 'CC-07', severity: 'warning',
+    title: 'Exit cap rate differs between DCF and stress tests',
+    description: 'dcf.assumptions.exit_cap_rate differs from stress_tests.base_case.exit_cap_rate by more than 0.5 points.',
+    remediation: 'Align the stress-test base case with the DCF exit cap rate — the base case MUST be the DCF assumption set before any expansion scenario is applied.',
+    spec_ref: '§5.3 CC-07',
+  },
+  {
+    code: 'CC-08', severity: 'warning',
+    title: 'Appraised value differs between due diligence and valuation',
+    description: 'due_diligence.appraisal.appraised_value differs from valuation.appraised_value by more than $1,000.',
+    remediation: 'Restate valuation.appraised_value from the appraisal recorded in due_diligence (the appraisal variant when present), or update the appraisal record.',
+    spec_ref: '§5.3 CC-08',
+  },
+  {
+    code: 'CC-09', severity: 'warning',
+    title: 'Annual debt service differs between stress tests and debt structure',
+    description: 'stress_tests.base_case.annual_debt_service differs from debt_structure.annual_debt_service by more than $500.',
+    remediation: 'Restate the stress-test base case from debt_structure.annual_debt_service — the base case MUST carry the underwritten debt service.',
+    spec_ref: '§5.3 CC-09',
+  },
+  {
+    code: 'CC-10', severity: 'error',
+    title: 'Purchase price differs between Sources & Uses and valuation',
+    description: 'sources_uses.uses.purchase_price does not match valuation.purchase_price (within $100).',
+    remediation: 'State the purchase price once — sources_uses.uses.purchase_price and valuation.purchase_price MUST agree.',
+    spec_ref: '§5.3 CC-10',
+  },
+  {
+    code: 'CC-11', severity: 'error',
+    title: 'Components section on a non-mixed-use document',
+    description: 'A `components` section is present but frontmatter.asset_class is not `mixed_use`.',
+    remediation: 'Set asset_class to `mixed_use`, or remove the components section and model the deal under its own asset class.',
+    spec_ref: '§5.3 CC-11',
+  },
+  {
+    code: 'CC-12', severity: 'error',
+    title: 'Components do not foot to property NOI',
+    description: 'noi_model.net_operating_income does not equal the sum of the component net_operating_income values.',
+    remediation: 'Reconcile the component NOIs with the property NOI — the property figure MUST equal their sum (RFC 0019 §3a).',
+    spec_ref: '§5.3 CC-12',
+  },
+  {
+    code: 'CC-13', severity: 'warning',
+    title: 'Primary size field not stated',
+    description: 'The property section does not state the primary size field for frontmatter.asset_class (Protocol §XIII.1) — the denominator of every per-unit metric.',
+    remediation: 'State the class\'s primary size field in the property section (e.g. keys for hospitality, rentable_square_feet for office); use null, never zero, when it is genuinely unknown.',
+    spec_ref: '§5.3 CC-13',
+  },
+  {
+    code: 'CC-14', severity: 'warning',
+    title: 'Property section missing',
+    description: 'A deal-record document has no property section; format spec §4.1 requires it at every pipeline stage (RFC 0028).',
+    remediation: 'Add a property section stating at least the address and asset class. If the record intentionally has no property (a non-deal profile), declare that profile in document_profile.',
+    spec_ref: '§5.3 CC-14',
+  },
+  {
+    code: 'CC-15', severity: 'warning',
+    title: 'Lease-up endpoint disagrees with stabilized NOI',
+    description: 'The lease_up_schedule base variant\'s stabilized_summary.annualized_noi is more than LEASE_UP_STABILIZED_TOLERANCE (2%) away from noi_model.net_operating_income.',
+    remediation: 'Reconcile the trajectory endpoint with the stabilized-year model, or document why they diverge. The 2% tolerance is deliberate — the two are independent models of stabilization and exact agreement is not the goal (RFC 0008).',
+    spec_ref: '§5.3 CC-15',
+  },
+  {
+    code: 'PS-01', severity: 'warning', title: 'Malformed period series',
+    description: 'A registered series has an invalid shape or period identity.',
+    remediation: 'State valid periods in the registered grammar; do not infer dates or years.',
+    spec_ref: 'UW_PROTOCOL.md §VIII.2a',
+  },
+  {
+    code: 'PS-02', severity: 'error', title: 'Duplicate period identity',
+    description: 'A registered series other than cash_flow_series.series states the same canonical period more than once.',
+    remediation: 'Resolve the duplicate statements with the responsible producer; do not choose by row order.',
+    spec_ref: 'UW_PROTOCOL.md §VIII.2a',
+  },
+  {
+    code: 'PS-03', severity: 'warning', title: 'Period kind mismatch',
+    description: 'A static selector uses a different period kind from its registered series.',
+    remediation: 'Use the series period kind; calendar dates and holding years do not convert implicitly.',
+    spec_ref: 'UW_PROTOCOL.md §VIII.2a',
+  },
+  {
+    code: 'ROLE-01', severity: 'error', title: 'Invalid block role',
+    description: 'A block declares a role outside the closed scalar vocabulary.',
+    remediation: 'Have the responsible host correct or remove _role; do not infer a role from financial values.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.8',
+  },
+  {
+    code: 'CC-16', severity: 'info',
+    title: 'Section unresolvable for cross-checking',
+    description: 'A section a cross-check reads is present as multiple variants and none is named default or base (or the check\'s own preferred variant), so every check that reads it was skipped.',
+    remediation: 'Name one variant default (or base) so cross-checks know which block reconciles, or state the section once. The skipped checks are listed in the message and in the validation result\'s coverage record (RFC 0037).',
+    spec_ref: '§5.3 CC-16',
+  },
+  {
+    code: 'RT-01', severity: 'error',
+    title: 'Unregistered return tax basis',
+    description: 'dcf.returns.tax_basis is stated but is not one of the registered values (pre_tax, after_tax).',
+    remediation: 'State tax_basis as "pre_tax" or "after_tax", or omit it — an absent field means pre_tax (format §4.9, RFC 0038).',
+    spec_ref: '§4.9 RT-01',
+  },
+  {
+    code: 'LU-01', severity: 'error',
+    title: 'Lease-up period outside the grammar',
+    description: 'A schedule period is outside the declared granularity\'s grammar (YYYY-Qn quarterly, YYYY-MM monthly), or period_granularity itself is invalid.',
+    remediation: 'State every period in the declared granularity\'s grammar; one schedule uses one cadence. Split mixed cadences into separate variants.',
+    spec_ref: '§4.25 LU-01',
+  },
+  {
+    code: 'LU-02', severity: 'error',
+    title: 'Lease-up periods not contiguous',
+    description: 'Schedule periods are not strictly increasing and gap-free.',
+    remediation: 'Order the periods and fill every gap — a schedule that skips a period is asserting something it does not say. A period with no activity states its figures, even when they are zero.',
+    spec_ref: '§4.25 LU-02',
+  },
+  {
+    code: 'LU-03', severity: 'error',
+    title: 'Empty or inverted lease-up schedule',
+    description: 'The schedule array is empty, or stabilization_target is earlier than the first period.',
+    remediation: 'State at least one period, and a stabilization_target at or after the schedule start — a trajectory cannot stabilize before it begins.',
+    spec_ref: '§4.25 LU-03',
+  },
+  {
+    code: 'LU-04', severity: 'warning',
+    title: 'Turnover model with no rent roll',
+    description: 'model_type is natural_turnover but the document has no rent_roll — the turnover trajectory has no stated starting point.',
+    remediation: 'Add the current rent_roll the turnover model departs from, or switch model_type to absorption_curve if there is genuinely no in-place tenancy.',
+    spec_ref: '§4.25 LU-04',
+  },
+  {
+    code: 'CF-01', severity: 'error',
+    title: 'Cash-flow row outside the grammar',
+    description: 'A cash_flow_series row has an invalid ISO-8601 calendar date or non-finite amount, or the section declares an unknown day_count or kind (closed enums, RFC 0034).',
+    remediation: 'State every date as a real YYYY-MM-DD calendar day and every amount as a finite signed number; use a registered day_count (actual/365f, actual/360, 30/360us) and kind.',
+    spec_ref: '§4.26 CF-01',
+  },
+  {
+    code: 'CF-02', severity: 'error',
+    title: 'Cash-flow series empty or out of order',
+    description: 'The series array is empty, or its dates are not non-decreasing. The first row\'s date anchors every year fraction, so order is part of the contract.',
+    remediation: 'State at least one flow and sort rows by date. Same-day flows are legal and keep their own rows — do not merge them.',
+    spec_ref: '§4.26 CF-02',
+  },
+  {
+    code: 'WF-01', severity: 'error',
+    title: 'Waterfall ladder outside the grammar',
+    description: 'The tier ladder violates the closed §4.27 grammar: unknown or duplicated singleton tiers, out-of-order ladder, no uncapped terminal split, shares/rates/hurdles outside their stated ranges or sums, gp_share not exceeding target_promote, a capped split that pays the LP nothing, or a hurdle ladder that does not strictly increase (RFC 0035, RFC 0036).',
+    remediation: 'State the ladder as return_of_capital? → preferred_return? → catch_up? → split+ with an uncapped final split; shares in [0,1] with equity_split and each split summing to 1.0; rate in (0,1); until_lp_em > 0 and until_lp_irr in (0,1) only on tiers whose lp_share > 0, each kind strictly increasing down the ladder (12% → 15% → 18%); gp_share > target_promote. A tier may state both hurdles; it ends when both are met unless hurdle_mode: \"any\" is specified (RFC 0051). Stating hurdle_mode without both hurdles is an error.',
+    spec_ref: '§4.27 WF-01',
+  },
+  {
+    code: 'WF-02', severity: 'error',
+    title: 'Waterfall cash reference does not resolve',
+    description: 'cash_flow_ref.variant names a cash_flow_series variant the document does not carry (or the document has no cash_flow_series at all).',
+    remediation: 'Add the referenced cash_flow_series variant (§4.26), or point cash_flow_ref at one that exists. A waterfall without its cash vector is not reviewable.',
+    spec_ref: '§4.27 WF-02',
+  },
+  {
+    code: 'WF-03', severity: 'error',
+    title: 'Waterfall over a series with no capital',
+    description: 'The referenced series contains no negative amount — no equity contribution — so there is no capital to return and every tier is vacuous.',
+    remediation: 'Include the contribution rows (capital calls, closing equity) in the referenced series; outflows are negative amounts.',
+    spec_ref: '§4.27 WF-03',
+  },
+  {
+    code: 'CF-03', severity: 'error',
+    title: 'Stated XIRR with no sign change',
+    description: 'stated_metrics.xirr is stated but the series has no sign change (at least one negative and one positive amount), so the stated number cannot be the root of anything.',
+    remediation: 'Remove the stated xirr, or state the complete series — an XIRR needs both the investment outflow and the return inflows.',
+    spec_ref: '§4.26 CF-03',
+  },
+  {
+    code: 'MU-01', severity: 'error',
+    title: 'Too few components',
+    description: 'A mixed-use property declares fewer than two admissible components.',
+    remediation: 'Declare at least two components; a single-component deal is not mixed use and should use that component\'s own asset class.',
+    spec_ref: '§4.23 MU-01',
+  },
+  {
+    code: 'MU-02', severity: 'error',
+    title: 'Inadmissible component class',
+    description: 'A component key is not one of the eight income classes; `land` and unknown classes are excluded.',
+    remediation: 'Remove the inadmissible component. Only multifamily, retail, office, industrial, self_storage, hospitality, senior_housing, student_housing, data_center, and manufactured_housing may appear.',
+    spec_ref: '§4.23 MU-02',
+  },
+  {
+    code: 'MU-03', severity: 'error',
+    title: 'Component class/key mismatch',
+    description: 'A component\'s component_class does not equal the key it is filed under.',
+    remediation: 'Make component_class equal the key, or move the entry under the key that matches its component_class.',
+    spec_ref: '§4.23 MU-03',
+  },
+  {
+    code: 'MU-04', severity: 'error',
+    title: 'Component missing NOI',
+    description: 'A present component omits net_operating_income, which the property rollup consumes.',
+    remediation: 'State the component\'s net_operating_income. A present use with no NOI is an incomplete document, not zero income.',
+    spec_ref: '§4.23 MU-04',
+  },
+  {
+    code: 'MU-05', severity: 'error',
+    title: 'Component allocation does not sum to 1.0',
+    description: 'allocation_pct across present components does not sum to 1.0 within 0.0001.',
+    remediation: 'Reconcile the allocation split so present components sum to 1.0, or omit allocation_pct entirely (use-level intensive metrics then evaluate to null).',
+    spec_ref: '§4.23 MU-05',
+  },
+  {
+    code: 'MU-06', severity: 'error',
+    title: 'Component-level debt not allowed',
+    description: 'A component carries its own debt_structure; this section models one property-level loan.',
+    remediation: 'Remove the component debt_structure. Component-level financing is expressed as a component-level capital_stack (§4.24, RFC 0026), which this section accepts and validates with the CS-* rules.',
+    spec_ref: '§4.23 MU-06',
+  },
+  {
+    code: 'CS-01', severity: 'error',
+    title: 'Malformed capital-stack tranche',
+    description: 'A tranche omits a required field (id, class, position, amount) or repeats an id/position.',
+    remediation: 'Give every tranche a unique id, a valid class, a unique integer position, and a numeric amount.',
+    spec_ref: '§4.24 CS-01',
+  },
+  {
+    code: 'CS-02', severity: 'error',
+    title: 'Tranche rate does not match its class',
+    description: 'A debt or preferred tranche omits its rate, or a common-equity tranche states one.',
+    remediation: 'State a rate on every debt and preferred_equity tranche; remove it from common_equity.',
+    spec_ref: '§4.24 CS-02',
+  },
+  {
+    code: 'CS-02b', severity: 'error',
+    title: 'Split coupon is malformed',
+    description: 'A split preferred-equity coupon is missing a rate component, uses the fields on another accrual mode, or does not reconcile to the tranche rate.',
+    remediation: 'Use accrual: "split" only on preferred_equity, provide numeric cash_rate and accrued_rate, and make rate equal their sum.',
+    spec_ref: '§4.24 CS-02b',
+  },
+  {
+    code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error',
+    title: 'Distribution waterfall is out of scope',
+    description: 'The capital_stack encodes a distribution waterfall (promote, hurdles, tiers, or catch-up), which this version does not model.',
+    remediation: 'Model the waterfall in x_partnership_structure for now; a later phase adds it once a hold-period cash-flow primitive exists (RFC 0026 §E).',
+    spec_ref: '§4.24 CS-WATERFALL-UNSUPPORTED',
+  },
+  {
+    code: 'DQ-01', severity: 'warning',
+    title: 'Provisional block without gap entry',
+    description: 'A block is marked _meta.quality.provisional=true but no entry in the `gaps` section references it.',
+    remediation: 'Add a `gaps` item naming this section/path (or run editor with --maintain-gaps), or remove the provisional flag.',
+    spec_ref: 'UW_FORMAT_SPEC.md §3.4 / §4.22',
+  },
+  {
+    code: 'DQ-02', severity: 'error',
+    title: 'Provisional value consumed at incompatible stage',
+    description: 'A provisional / placeholder value is being consumed at a stage whose policy requires real data.',
+    remediation: 'Replace the provisional value with observed data, downgrade deal_stage, or update INCOMPLETE_DATA_POLICIES if appropriate.',
+    spec_ref: 'UW_FORMAT_SPEC.md §3.4 / docs/starter/defaults-and-cascade.md §V.7-§V.8',
+  },
+  {
+    code: 'DQ-03', severity: 'warning',
+    title: 'Partial block without field-level enumeration',
+    description: 'A block is marked _meta.quality.partial=true but has no `_overrides[]` enumeration.',
+    remediation: 'List the affected paths in field_overrides with reason ("missing"|"illegible"|"estimated").',
+    spec_ref: 'UW_FORMAT_SPEC.md §3.4',
+  },
+  {
+    code: 'DQ-04', severity: 'error',
+    title: 'Scope-stage readiness gap',
+    description: 'A field required for scope-stage readiness is missing.',
+    remediation: 'Provide the missing scope-stage field (property.address, property.asset_class, and at least one of property.units or property.asking_price) or downgrade deal_stage.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2',
+  },
+  {
+    code: 'DQ-05', severity: 'info',
+    title: 'Stale gap',
+    description: 'A `gaps` item has not been re-checked recently and may be obsolete.',
+    remediation: 'Re-check the gap and refresh `last_checked`, or close the gap if it has been resolved.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.22',
+  },
+  {
+    code: 'DQ-06', severity: 'info',
+    title: 'Declared-stage section gap',
+    description: 'A section required by the declared deal_stage (format spec §5.1) is missing — the issues-stream mirror of stage_readiness (RFC 0028).',
+    remediation: 'Add the named section, or restate deal_stage to the stage the file actually satisfies; stage_readiness lists what each stage needs.',
+    spec_ref: 'UW_FORMAT_SPEC.md §5.1',
+  },
+
+  // RFC 0072 — descriptive identity; always warnings.
+  {
+    code: 'DQ-07', severity: 'warning',
+    title: 'Unrecognized business plan',
+    description: 'Scenario is unlisted, retired or structurally invalid.',
+    remediation: 'Use a standard business plan or reverse-DNS scenario identifier; do not rewrite historical documents automatically.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2b',
+  },
+  {
+    code: 'DQ-08', severity: 'warning',
+    title: 'BTR subtype carriers disagree',
+    description: 'The two subtype carriers disagree when either states build_to_rent.',
+    remediation: 'State the same subtype in both carriers or omit the property duplicate; frontmatter governs identity.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2c',
+  },
+  {
+    code: 'DQ-09', severity: 'warning',
+    title: 'BTR subtype outside multifamily',
+    description: 'The defined build_to_rent subtype is stated outside multifamily.',
+    remediation: 'Use multifamily for the defined single-site BTR identity; other free subtype values remain open.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2c',
+  },
+
+  // ─── Integrity (INT-NN) — content_hash / parent_hash chain checks ──────────
+  {
+    code: 'INT-01', severity: 'error',
+    title: 'Parent hash mismatch',
+    description: 'A block\'s _meta.integrity.parent_hash does not equal the prior block\'s _meta.integrity.content_hash in the supersede chain.',
+    remediation: 'Recompute the block from the current head: stamp parent_hash with the prior block\'s content_hash and bump the version.',
+    spec_ref: 'UW_PROTOCOL.md §V.10',
+  },
+  {
+    code: 'INT-02', severity: 'error',
+    title: 'Stale parent hash on edit',
+    description: 'applyEdit was invoked with a parent_hash that does not match the current head of the section.',
+    remediation: 'Re-read the file, take the latest head\'s content_hash, and retry the edit with the fresh parent_hash.',
+    spec_ref: 'UW_PROTOCOL.md §V.10',
+  },
+  {
+    code: 'INT-03', severity: 'warning',
+    title: 'Partially hashed chain',
+    description: 'Some blocks in a supersede chain carry _meta.integrity.content_hash and others do not.',
+    remediation: 'Once any block in a chain is hashed, every subsequent block MUST be hashed; rehash the unstamped blocks.',
+    spec_ref: 'UW_PROTOCOL.md §V.10',
+  },
+  {
+    code: 'INT-04', severity: 'warning',
+    title: 'Content hash does not recompute',
+    description: 'A block\'s stamped _meta.integrity.content_hash does not match the SHA-256 of its current canonicalized content.',
+    remediation: 'Either restore the original content or re-stamp content_hash from the current canonicalized form.',
+    spec_ref: 'UW_PROTOCOL.md §V.9',
+  },
+
+  {
+    code: 'INT-05', severity: 'error',
+    title: 'Signature without content hash',
+    description: 'A block carries _meta.integrity.signature but no _meta.integrity.content_hash, so the signature commits to no content.',
+    remediation: 'Stamp content_hash first, then re-sign the block; a signature over an absent hash is structurally void.',
+    spec_ref: 'UW_PROTOCOL.md §V.11',
+  },
+  {
+    code: 'INT-06', severity: 'error',
+    title: 'Unknown signing key',
+    description: 'A block signature names a key id that the supplied key store does not hold.',
+    remediation: 'Add the public key to the key store under that kid, or re-sign with a key the verifier trusts.',
+    spec_ref: 'UW_PROTOCOL.md §V.11',
+  },
+  {
+    code: 'INT-07', severity: 'error',
+    title: 'Block signature does not verify',
+    description: 'A block signature failed to validate against the canonicalized signing input, or declares an algorithm outside the admitted set.',
+    remediation: 'Restore the signed content and provenance fields, or re-sign the block as it now stands.',
+    spec_ref: 'UW_PROTOCOL.md §V.11',
+  },
+  {
+    code: 'INT-08', severity: 'warning',
+    title: 'Deprecated signature algorithm',
+    description: 'A block signature uses an algorithm the verifying deployment has deprecated.',
+    remediation: 'Re-sign the block with a current algorithm before the deprecated one is withdrawn.',
+    spec_ref: 'UW_PROTOCOL.md §V.11',
+  },
+
+  // ─── Asset-class identifiers (RFC 0003) ────────────────────────────────────
+  {
+    code: 'INVALID-ASSET-CLASS-001', severity: 'error',
+    title: 'Malformed asset-class identifier',
+    description: 'frontmatter.asset_class is neither a builtin nor a well-formed namespaced identifier.',
+    remediation: 'Use a builtin, or a reverse-DNS identifier of at least three lower-snake-case segments (e.g. com.example.specialty_facility).',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2a',
+  },
+  {
+    code: 'INVALID-ASSET-CLASS-002', severity: 'error',
+    title: 'Asset-class identifier shadows a builtin',
+    description: 'A namespaced identifier whose final segment is one of the twelve builtin names.',
+    remediation: 'Rename the final segment so it does not shadow a builtin; a suffix such as _specialty both disambiguates and says more.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2a',
+  },
+  {
+    code: 'MOD-DEPENDENCY-UNDECLARED', severity: 'warning',
+    title: 'Module dependency not declared',
+    description: 'A document with a namespaced asset_class does not name the modules that declare it, or a frontmatter `modules` entry is not an object with an `id` and so names no module.',
+    remediation: 'Add a frontmatter `modules` list whose entries are objects (`- id: <module id>`, optional `version`) naming the declaring module, so a reader without it can say what to load rather than only that something is missing.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2a',
+  },
+  {
+    code: 'MOD-FALLBACK-001', severity: 'warning',
+    title: 'Asset class rendered via fallback',
+    description: 'The module declaring this asset class is not loaded; the document was rendered with the declared builtin fallback.',
+    remediation: 'Load the declaring module to read the document fully. Values shown come from the fallback view models and may omit what the custom class adds.',
+    spec_ref: 'UW_PROTOCOL.md §X.2.2',
+  },
+  {
+    code: 'MOD-MISSING-001', severity: 'error',
+    title: 'Asset class unresolvable',
+    description: 'The module declaring this asset class is not loaded and no fallback is available.',
+    remediation: 'Load the module named in the frontmatter `modules` list of the document.',
+    spec_ref: 'UW_PROTOCOL.md §X.2.2',
+  },
+  {
+    code: 'MOD-ASSET-CLASS-CONFLICT-001', severity: 'error',
+    title: 'Two modules declare the same asset class',
+    description: 'A reverse-DNS identifier names one owner, so two declarations mean one module is squatting.',
+    remediation: 'Load only one of the two modules, or ask the second to declare an identifier inside its own namespace.',
+    spec_ref: 'UW_PROTOCOL.md §X.2.3',
+  },
+  {
+    code: 'MOD-DISPLAY-CONFLICT-001', severity: 'info',
+    title: 'Two asset classes share a display name',
+    description: 'Confusing for a reader, irrelevant to a machine.',
+    remediation: 'Disambiguate one display name, or show the identifier alongside it.',
+    spec_ref: 'UW_PROTOCOL.md §X.2.3',
+  },
+
+  // ─── Module runtime (MOD-*) — findings a loaded module produced (RFC 0006) ──
+  //
+  // Registered for discoverability. Unlike the families above, these are
+  // emitted by `validateAgainstModules`, which does NOT enrich from this
+  // registry — a module's own finding names the module that made it, and
+  // overwriting that with generic copy would lose the attribution.
+  {
+    code: 'MOD-SECTION-MISSING', severity: 'error',
+    title: 'Required module section missing',
+    description: 'A loaded module declares a section as required and the document does not carry it.',
+    remediation: 'Add the section, or stop loading that module for this document.',
+    spec_ref: 'UW_PROTOCOL.md §X',
+  },
+  {
+    code: 'MOD-CALC-ERROR', severity: 'error',
+    title: 'Module calculation failed to evaluate',
+    description: 'A calculation declared by a loaded module could not be evaluated.',
+    remediation: 'Fix the formula in the module. Any rule reading that calc is silently inconclusive until it is corrected.',
+    spec_ref: 'UW_PROTOCOL.md §X',
+  },
+  {
+    code: 'MOD-RULE-ERROR', severity: 'error',
+    title: 'Module validation rule failed to evaluate',
+    description: 'A validation rule declared by a loaded module could not be evaluated, so it neither passed nor failed.',
+    remediation: 'Fix the rule expression in the module, or stop loading it until it is corrected.',
+    spec_ref: 'UW_PROTOCOL.md §X',
+  },
+
+  // ─── Provenance / policy (POL-NN) — actor and operation authority ──────────
+  {
+    code: 'POL-01', severity: 'error',
+    title: 'Unauthorized actor',
+    description: 'The block\'s _meta.provenance.actor is not authorized to write this section per its EditPolicy.',
+    remediation: 'Re-issue the edit from an actor allowed by the section\'s policy (see BUILTIN_EDIT_POLICIES).',
+    spec_ref: 'UW_PROTOCOL.md §VIII',
+  },
+  {
+    code: 'POL-02', severity: 'error',
+    title: 'Replace where supersede is required',
+    description: 'The section\'s policy requires supersede_on_edit but the head version > 1 has no superseded prior versions.',
+    remediation: 'Re-issue the edit as section_supersede so the prior version is preserved as a superseded block.',
+    spec_ref: 'UW_PROTOCOL.md §VIII',
+  },
+  {
+    code: 'LOC-01', severity: 'error',
+    title: 'Unsupported display locale',
+    description: 'The file declares a `locale` this implementation does not list in `supported_locales` (or an unregistered tag). Display renders are refused — never silently produced in a different locale; parsing, validation, editing, and calc are unaffected (RFC 0001).',
+    remediation: 'Render with an implementation that supports the declared locale, or change the file\'s `locale` to one this implementation supports. Content is canonical and locale-free, so no data conversion is involved.',
+    spec_ref: 'docs/starter/display.md §III.1a',
+  },
+  {
+    code: 'CUR-01', severity: 'error',
+    title: 'Malformed currency identity',
+    description: 'The document declares currency_code, but it is not three uppercase ASCII letters. Currency identity is never inferred from a symbol or display locale (RFC 0046).',
+    remediation: 'Set frontmatter.currency_code to the authored three-letter currency identity, or omit it when the source does not establish one. Do not infer it from locale or a display symbol.',
+    spec_ref: 'UW_PROTOCOL.md §III.1b',
+  },
+  {
+    code: 'POL-03', severity: 'error',
+    title: 'Capability token rejected',
+    description: 'The editor is configured with a capability verifier and the write presented no token, or a token the verifier rejected (expired, out of scope, bad signature — the reason travels in the issue detail). RFC 0011.',
+    remediation: 'Obtain a fresh token from the coordinator scoped to this deal, section, stage, and operation, issued to the sub that matches the write\'s _meta.provenance.source. A token never overrides the static §V.3 policy — an edit the policy table refuses needs a different actor, not a token.',
+    spec_ref: 'docs/starter/capability-tokens.md §XIV',
+  },
+  {
+    code: 'SRC-01', severity: 'error',
+    title: 'Unrecognized actor source',
+    description: '_meta.provenance.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (Format §2.6, RFC 0031). Always an error.',
+    remediation: 'Rewrite _meta.provenance.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.6',
+  },
+  {
+    code: 'SRC-02', severity: 'error',
+    title: 'Resolution tag in the actor field',
+    description: '_meta.provenance.source holds a resolution tag where an actor belongs (Format §2.6). Always an error; readers never reinterpret it as a resolution.',
+    remediation: 'Move the tag to _meta.provenance.resolution and state the actual actor (for example `manual`) in _meta.provenance.source.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.6',
+  },
+  {
+    code: 'SRC-03', severity: 'error',
+    title: 'Unknown resolution method',
+    description: 'provenance.resolution is outside the closed Format §2.6 vocabulary.',
+    remediation: 'State the source-established resolution method; manual is actor-only, human input uses user_input.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.6',
+  },
+
+  // ─── Financial validity (FV-NN) — renamed from FV_* in v1.1 ────────────────
+  // Severity is the *highest* severity any emission of this code can carry
+  // (e.g. FV-04 may be warning OR error depending on threshold).
+  {
+    code: 'FV-01', severity: 'warning',
+    title: 'Cap rate below threshold',
+    description: 'Going-in cap rate is below the configured warning threshold.',
+    remediation: 'Verify NOI and purchase price; an unusually low cap rate often indicates an aggressive valuation.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-02', severity: 'warning',
+    title: 'Cap rate above threshold',
+    description: 'Going-in cap rate is above the configured warning threshold.',
+    remediation: 'A high cap rate may indicate distressed pricing or market dislocation; confirm the underwriting story.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-03', severity: 'warning',
+    title: 'Debt yield below threshold',
+    description: 'Debt yield is below the configured warning threshold.',
+    remediation: 'Re-check NOI and loan amount; consider a smaller loan or higher equity.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-04', severity: 'error',
+    title: 'DSCR below threshold',
+    description: 'DSCR is below the configured threshold (warning or error).',
+    remediation: 'Re-size the loan, lower the rate assumption, or increase NOI to meet the lender constraint.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-05', severity: 'warning',
+    title: 'Equity multiple below minimum',
+    description: 'Levered equity multiple is below the configured minimum.',
+    remediation: 'Re-examine hold period, exit assumptions, and capital structure.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-06', severity: 'warning',
+    title: 'Equity multiple above maximum',
+    description: 'Levered equity multiple is above the configured maximum (likely unrealistic).',
+    remediation: 'Sanity-check exit cap, rent growth, and hold-period assumptions.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-07', severity: 'warning',
+    title: 'IRR below threshold',
+    description: 'Levered IRR is below the configured warning threshold.',
+    remediation: 'Verify the projected exit value and cash-flow trajectory.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-08', severity: 'warning',
+    title: 'IRR above threshold',
+    description: 'Levered IRR is above the configured warning threshold (likely unrealistic).',
+    remediation: 'An IRR over the upper threshold usually signals an aggressive exit cap or rent-growth assumption.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-09', severity: 'error',
+    title: 'LTV above threshold',
+    description: 'LTV is above the configured threshold (warning or error).',
+    remediation: 'Reduce loan size or increase appraised value support.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-10', severity: 'warning',
+    title: 'OpEx ratio below minimum',
+    description: 'OpEx as a share of EGI is suspiciously low.',
+    remediation: 'Verify that all operating line items are captured (taxes, insurance, management, R&M, payroll, utilities).',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-11', severity: 'warning',
+    title: 'OpEx ratio above maximum',
+    description: 'OpEx as a share of EGI is unusually high.',
+    remediation: 'Investigate one-time items, deferred maintenance, or below-market rents.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-12', severity: 'warning',
+    title: 'Annual rent growth above threshold',
+    description: 'Annual rent growth assumption exceeds the configured threshold.',
+    remediation: 'Tie rent growth to a published submarket forecast or document the rationale.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-13', severity: 'warning',
+    title: 'Vacancy below minimum',
+    description: 'Vacancy assumption is below the configured floor.',
+    remediation: 'Use the higher of submarket stabilized vacancy or institutional minimum.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'FV-14', severity: 'warning',
+    title: 'Vacancy above maximum',
+    description: 'Vacancy assumption is above the configured warning threshold.',
+    remediation: 'A vacancy over the upper threshold usually indicates lease-up or distress; re-examine the value-creation story.',
+    spec_ref: '§5.2',
+  },
+  {
+    code: 'UNSUPPORTED_YAML_FEATURE', severity: 'error',
+    title: 'Unsupported YAML feature in frontmatter',
+    description: 'Frontmatter uses a YAML feature outside the .uw.md subset (anchors, tags, block scalars, complex keys, or directives).',
+    remediation: 'Rewrite the frontmatter using only the YAML subset documented in UW_FORMAT_SPEC.md Appendix D — scalars, simple mappings, and dash-prefixed sequences.',
+    spec_ref: 'UW_FORMAT_SPEC.md Appendix D',
+  },
+]);
+
+// ─── Re-exports for convenience ───────────────────────────────────────────────
+
+export type {
+  AssetClass,
+  ConfidenceLevel,
+  DealStage,
+  FinancialThresholds,
+  ParsedUWFile,
+  PipelineStatus,
+  UWBlock,
+  UWMeta,
+  ValidationMessage,
+  ValidationSeverity,
+};
+
+// RFC 0044 — explicit lease-up cash-flow projection (Protocol §VIII.9.5).
+export interface LeaseUpCashFlowPlan {
+  source_variant: string;
+  day_count: import('./calc/day-count.js').DayCountConvention;
+  cash_dates: Array<{ period: string; date: string }>;
+}
+
+export interface LeaseUpCashFlowProjection {
+  source_envelope_digest: string;
+  source_variant: string;
+  series: import('./cash-flow-series.js').CashFlowSeries;
+  bindings: Array<{ source_path: string; date: string; amount: number }>;
+}
+
+/** Serializable refusal; nested evidence retains its original vocabulary. */
+export interface LeaseUpCashFlowProjectionIssue extends ProtocolError {
+  category: 'calc';
+  code: 'CALC-LU-PROJECTION';
+  pointer: string;
+  evidence?: {
+    selection?: ProtocolError;
+    structure?: ValidationMessage[];
+    verification?: import('./lease-up.js').LeaseUpVerification;
+  };
+}
+
+// RFC 0045 — Protocol VIII.9.6.
+export type PropertyCashFlowCategory =
+  | 'rent' | 'concessions' | 'ti_lc'
+  | 'other_income' | 'operating_expenses' | 'other_capex' | 'reserve_net'
+  | 'purchase_price' | 'transaction_costs' | 'gross_sale';
+
+export interface PropertyCashFlowCell {
+  slot: string; // acquisition, disposition, or exact source period
+  category: PropertyCashFlowCategory;
+}
+
+export type PropertyCashFlowCoverage = PropertyCashFlowCell & (
+  | { rows: number[]; zero?: never }
+  | { zero: string; rows?: never }
+);
+
+export interface PropertyCashFlowAssertions {
+  cash_amounts_only: true;
+  no_financing_or_investor_tax: true;
+  no_overlapping_economic_amounts: true;
+  reserve_spending_excluded: true;
+  gross_sale_excludes_reserve_release: true;
+  no_terminal_restricted_reserve: true;
+  hold_only_and_exit_settled: true;
+}
+
+// RFC 0052 — named exit sale deductions. The first six names are ordinary
+// unlevered costs of sale; `other` is an escape hatch that requires a label.
+// The last three are reserved below-NOI names this unlevered assembler refuses,
+// so a later levered contract cannot collide with an adopter's private use.
+export const UNLEVERED_SALE_DEDUCTIONS = Object.freeze([
+  'broker_commission', 'transfer_tax', 'title_and_escrow',
+  'legal_and_closing', 'seller_credits', 'survey_and_diligence', 'other',
+] as const);
+
+export const RESERVED_LEVERED_SALE_DEDUCTIONS = Object.freeze([
+  'prepayment_penalty', 'defeasance', 'loan_payoff',
+] as const);
+
+export type SaleDeductionName =
+  | (typeof UNLEVERED_SALE_DEDUCTIONS)[number]
+  | (typeof RESERVED_LEVERED_SALE_DEDUCTIONS)[number];
+
+export interface SaleDeduction {
+  /** A supplemental row index covering the (disposition, transaction_costs) cell. */
+  row: number;
+  name: SaleDeductionName;
+  /** Required when `name` is `other`; omitted otherwise. */
+  label?: string;
+}
+
+export interface PropertyCashFlowPlan {
+  basis: 'unlevered';
+  tax_basis: 'pre_tax';
+  currency_code: string; // ^[A-Z]{3}$; author-stated identity
+  day_count: import('./calc/day-count.js').DayCountConvention;
+  acquisition_date: string;
+  disposition_date: string;
+  /** RFC 0063. Omission preserves the inside-final-period rule. */
+  disposition_period_rule?: 'within_final_period' | 'allow_exclusive_end';
+  lease_up: {
+    source_variant: string;
+    currency_code: string;
+    cash_dates: Array<{ period: string; date: string }>;
+  };
+  supplemental: {
+    source_variant: string;
+    currency_code: string;
+  };
+  assertions: PropertyCashFlowAssertions;
+  coverage: PropertyCashFlowCoverage[];
+  /** RFC 0052. When present, names every (disposition, transaction_costs) row. */
+  sale_deductions?: SaleDeduction[];
+  /** RFC 0052. A stated net figure the assembler verifies, never derives. */
+  net_sale_proceeds?: number;
+}
+
+export interface PropertyCashFlowBinding {
+  output_row_index: number;
+  source_section: 'lease_up_schedule' | 'cash_flow_series';
+  source_variant: string;
+  source_path: string;
+  date: string;
+  amount: number;
+  cells: PropertyCashFlowCell[];
+}
+
+export type PropertyCashFlowCellEvidence = PropertyCashFlowCell & (
+  | { output_rows: number[]; zero?: never }
+  | { zero: string; output_rows?: never }
+);
+
+export interface PropertyCashFlowAssembly {
+  source_envelope_digest: string;
+  plan: PropertyCashFlowPlan;
+  coverage: 'declared_complete';
+  series: import('./cash-flow-series.js').CashFlowSeries;
+  bindings: PropertyCashFlowBinding[];
+  cells: PropertyCashFlowCellEvidence[];
+  source_verification: {
+    lease_up: 'verified';
+    supplemental_metrics: 'verified' | 'not_stated';
+  };
+  /** RFC 0052. Present only when the plan named its deductions. */
+  sale_deductions?: Array<{
+    output_row_index: number;
+    name: SaleDeductionName;
+    label?: string;
+    amount: number;
+  }>;
+  /** RFC 0052. Evidence about a stated figure, not proof the exit is complete. */
+  net_sale_proceeds:
+    | { status: 'verified'; stated: number; computed: number }
+    | { status: 'not_stated' };
+}
+
+export interface PropertyCashFlowAssemblyIssue {
+  category: 'calc';
+  code: 'CALC-CF-ASSEMBLY';
+  reason: 'plan' | 'selection' | 'structure' | 'verification'
+    | 'coverage' | 'basis_currency' | 'amount_sign' | 'date_horizon'
+    | 'sale_deduction';
+  message: string;
+  pointer: string;
+  evidence?: {
+    selection?: ProtocolError;
+    lease_up?: LeaseUpCashFlowProjectionIssue;
+    structure?: ValidationMessage[];
+    verification?: import('./cash-flow-series.js').CashFlowVerification;
+  };
+}
+
+// RFC 0070 accepted release contract, carried by Protocol 2.21.0 / core 2.17.0.
+export interface ReplacementCashFlowRef {
+  variant: string;        // exact same-document cash_flow_series variant
+  row_index: number;      // nonnegative safe integer, zero-based, in range
+  binding_digest: string; // sha256:<64 lowercase hex>; scope defined below
+}
+
+export type ReplacementFunding =
+  | { mode: 'escrow' }
+  | { mode: 'outright'; cash_flow_ref: ReplacementCashFlowRef };
+
+export interface ReplacementFundingBindingContext {
+  debt_variant: string | null; // selected property-level debt; null if unvariant
+  cash_flow_variant: string;
+  row_index: number;
+  currency_code: string | null; // exact authored value, or canonical null
+}
+
+export interface ReplacementFundingVerificationIssue {
+  code: 'HDG-09';
+  severity: 'error';
+  section: 'debt_structure';
+  field: 'rate_hedge.replacement_funding.cash_flow_ref.binding_digest';
+  message: string;
+  context: ReplacementFundingBindingContext;
+  stated_digest: string;
+  computed_digest: string;
+}
+
+export type ReplacementFundingVerificationResult =
+  | {
+      state: 'not_checked';
+      reason: 'not_invoked' | 'not_applicable';
+      issues: readonly [];
+    }
+  | {
+      state: 'unverifiable';
+      reason: 'invalid_structure' | 'unresolvable_source' | 'crypto_unavailable';
+      context: ReplacementFundingBindingContext | null;
+      structural_issues: readonly ValidationMessage[];
+      issues: readonly [];
+    }
+  | {
+      state: 'failed';
+      reason: 'stale_binding';
+      context: ReplacementFundingBindingContext;
+      stated_digest: string;
+      computed_digest: string;
+      issues: readonly [ReplacementFundingVerificationIssue];
+    }
+  | {
+      state: 'verified';
+      context: ReplacementFundingBindingContext;
+      stated_digest: string;
+      computed_digest: string;
+      issues: readonly [];
+    };
+
+// RFC 0064 / Format §4.28 and Protocol §VIII.11.
+export interface ReserveSource { document: string; locator: string; }
+export type ReserveMovementKind = 'contribution' | 'internal_draw' | 'external_release';
+export interface ReserveMovement {
+  movement_id: string;
+  date: string;
+  kind: ReserveMovementKind;
+  amount: number;
+  counterparty: string;
+  source: ReserveSource;
+}
+export interface ReservePeriod {
+  period_id: string;
+  start_date: string;
+  end_date: string;
+  opening_balance: number;
+  ending_balance: number;
+  /** Explicit source claim of continuity; omission makes no continuity claim. */
+  previous_period_id?: string;
+  source: ReserveSource;
+  movements: ReserveMovement[];
+}
+export interface PropertyReserveAccount {
+  account_id: string;
+  class: 'property_reserve';
+  purpose: string;
+  owner: string;
+  currency_code: string;
+  source: ReserveSource;
+  periods: ReservePeriod[];
+}
+export interface ReserveAccounts { accounts: PropertyReserveAccount[]; }
+export interface ReservePeriodEvidence {
+  variant: string | null;
+  account_id: string;
+  period_id: string;
+  field: string;
+  currency_code: string;
+  source: ReserveSource;
+  opening_balance: number;
+  stated_ending_balance: number;
+  computed_ending_balance: number;
+  movements: ReserveMovement[];
+}
+export interface ReserveAccountsVerificationIssue extends ValidationMessage {
+  context?: { variant: string | null; account_id: string; period_id: string; source: ReserveSource };
+}
+export interface ReserveAccountsVerification {
+  state: 'not_checked' | 'unverifiable' | 'verified' | 'failed';
+  reason?: 'not_applicable' | 'invalid_structure' | 'digest_unavailable' | 'nonfinite_arithmetic';
+  source_digest: string | null;
+  evidence: ReservePeriodEvidence[];
+  issues: ReserveAccountsVerificationIssue[];
+}
+
+// RFC 0065 / Protocol §VIII.12: optional external binding plan, no cash assembly.
+export interface ReserveDrawReference {
+  variant: string | null;
+  account_id: string;
+  period_id: string;
+  movement_id: string;
+}
+export type ReserveGrossExpenditureReference =
+  | { section: 'lease_up_schedule'; variant: string | null; period: string; field: 'ti_lc_capex' }
+  | { section: 'cash_flow_series'; variant: string | null; row_index: number };
+export interface ReserveGrossExpenditure {
+  expenditure_id: string;
+  ref: ReserveGrossExpenditureReference;
+  category: 'ti_lc' | 'other_capex' | 'operating_expenses';
+  gross: true;
+  currency_code: string;
+  funded_amount: number;
+  source: ReserveSource;
+}
+export interface ReserveDrawBinding {
+  draw: ReserveDrawReference;
+  expenditure_id: string;
+  funded_amount: number;
+}
+export interface ReserveDrawBindingPlan {
+  source_digest: string;
+  currency_code: string;
+  coverage: 'declared_complete';
+  selected_draws: ReserveDrawReference[];
+  expenditures: ReserveGrossExpenditure[];
+  bindings: ReserveDrawBinding[];
+}
+export interface ReserveDrawBindingEvidence {
+  binding_index: number;
+  currency_code: string;
+  funded_amount: number;
+  draw: {
+    ref: ReserveDrawReference;
+    source_path: string;
+    amount: number;
+    date: string;
+    source: ReserveSource;
+    meta: import('./types.js').UWMeta;
+  };
+  expenditure: {
+    expenditure_id: string;
+    ref: ReserveGrossExpenditureReference;
+    category: ReserveGrossExpenditure['category'];
+    source_path: string;
+    gross_amount: number;
+    stated_funded_amount: number;
+    /** Lease-up states a period, not a cash date; never synthesize one. */
+    date: string | null;
+    period: string | null;
+    source: ReserveSource;
+    meta: import('./types.js').UWMeta;
+  };
+}
+export interface ReserveDrawBindingVerification {
+  state: 'not_checked' | 'unverifiable' | 'verified' | 'failed';
+  reason?: 'not_applicable' | 'invalid_structure' | 'digest_unavailable' | 'stale_binding' | 'invalid_source' | 'nonfinite_arithmetic';
+  source_digest: string | null;
+  stated_digest?: string;
+  evidence: ReserveDrawBindingEvidence[];
+  issues: ValidationMessage[];
+}

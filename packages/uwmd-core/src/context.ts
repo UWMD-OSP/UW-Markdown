@@ -7,8 +7,15 @@
 //
 // Spec: UW_FORMAT_SPEC.md §1.3 (Bancroft layer ↔ section mapping)
 
-import type { ParsedUWFile, UWBlock, UWFrontmatter, PipelineStatus } from './types.js';
-import { getSection, getSectionVariant, deepGet } from './parser.js';
+import {
+  type ParsedUWFile,
+  type UWBlock,
+  type UWFrontmatter,
+  type PipelineStatus,
+  getSection,
+  getSectionVariant,
+  deepGet,
+} from '@uwmd/verify';
 import { render } from './renderer.js';
 import { buildContext, type ContextProfile, type ContextResult } from './context-profiles.js';
 

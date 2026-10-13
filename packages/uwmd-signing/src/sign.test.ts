@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { computeBlockHash, parseUWFile, verifyChain, type UWBlock, type UWSignatureAlgorithm } from '@uwmd/core';
+import { computeBlockHash, parseUWFile, verifyChain, type UWBlock, type UWSignatureAlgorithm } from '@uwmd/verify';
 import { importPrivateKey } from './keys.js';
 import { loadKeyStoreFile } from './keystore-file.js';
 import { SigningError } from './errors.js';

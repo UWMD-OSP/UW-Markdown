@@ -25,6 +25,39 @@ protocol, and each package each carry an independent semver).
   reason `missing_stated_precision`. Core ships `spec/metrics/builtin.json`
   as generated package data (`npm run gen-metric-dictionary`); a test fails if
   the copy drifts from the spec.
+- **`@uwmd/verify` 0.1.0** (`packages/uwmd-verify`, RFC 0083 Phase 2; not yet
+  published): the reference implementation of the standard as its own package —
+  reader, validation, the calc evaluator and quantization, stated-precision
+  comparison, the metric dictionary and `verifyStatedMetrics`, receipts,
+  integrity, the module system, the builtin pack manifests and the
+  representation, portfolio, sensitivity, stochastic and market-data profiles.
+  Two entries, `.` and `./browser`, with the same surface. It depends on no
+  `@uwmd/*` package; its runtime dependencies are `fast-xml-parser` and
+  `fflate`. Called directly, its `evaluateCalc` and
+  `evaluateModuleCalculations` return no `display`, and its receipts name
+  `@uwmd/verify@<VERIFY_VERSION>` as the issuer. Its
+  `standard-closure.test.ts` fails on any import outside the package other
+  than the two dependencies and integrity's guarded `node:crypto` fallback,
+  and on any `@uwmd/*` dependency.
+- Additive `@uwmd/core` exports, all re-exported from `@uwmd/verify`:
+  `VERIFY_PACKAGE_NAME`, `VERIFY_VERSION`, `UWMDParseError`,
+  `CONFORMANCE_PROFILES`, `isConformanceTier`, the type `SourceTag`, the type
+  `Expr`, and the building blocks core's starter modules use
+  (`isBlockedSegment`, `writeDoubleQuotedScalar`, `isBlockRole`,
+  `blockOverrides`, `bumpRawMetaVersion`, `stampMetaIntoBlockContent`,
+  `periodReferencePath`, `getPeriodReferences`, `periodPayload`,
+  `periodReferenceContract`, `periodSection`, `resolvePeriodReference`, and
+  the source-edit seam `applyUWMDSourceEditWith`,
+  `createUWMCPApplyEditResultWith` and `UWSourceEditAdapter`). The main entry
+  also gains the type `ExtractDependencyGraphOptions`, which only the browser
+  entry exported.
+- `@uwmd/core/browser` gains every `@uwmd/verify` export it lacked, including
+  the integrity verifiers `verifyChain`, `verifyProvenance`,
+  `computeBlockHash`, `sha256Hex` and `canonicalize`, the incomplete-data
+  policy and return-tax-basis tables, `CROSS_CHECK_RULE_IDS` and
+  `CROSS_CHECK_VARIANT_PREFERENCE`, and the types that go with them
+  (`IntegrityResult`, `VerifyChainOptions`, `CascadeStep`, `GapAction`,
+  `MarketDataLookup`, …). None is Node-only.
 
 ### Changed
 
@@ -45,6 +78,58 @@ protocol, and each package each carry an independent semver).
   imports any other module, the vendor SDK, or any package or `node:` builtin
   outside an allow-list (`fast-xml-parser`, `fflate`, and integrity's guarded
   `node:crypto` fallback).
+- RFC 0083 Phase 2: the standard module set moves from `@uwmd/core` to
+  `@uwmd/verify`, with its tests. `@uwmd/core` depends on `@uwmd/verify` at
+  exactly 0.1.0 (in place of `fast-xml-parser` and `fflate`), imports it only
+  through its public entry, and re-exports its whole surface from both
+  entries; no 4.0.x export is removed or changes kind
+  (`surface.test.ts`). Core's `evaluateCalc` and
+  `evaluateModuleCalculations` still add `display`.
+  `REFERENCE_IMPLEMENTATION_MANIFEST` names `@uwmd/core`, so it moves to
+  core's `reference-implementation.ts`; `uwmd manifest` is unchanged.
+- **Receipts now name `@uwmd/verify` as their engine**, including receipts
+  issued through `@uwmd/core` and the CLI: `computation.engine` is
+  `@uwmd/verify` and `computation.engine_version` is `VERIFY_VERSION` (0.1.0),
+  the code that computes the results (UW Receipt §5.3). The `issuer` is
+  unchanged: `@uwmd/core@<CORE_VERSION>` through core's `issueReceipt`,
+  `uwmd-cli@<CORE_VERSION>` from the CLI. Core re-exports verify's
+  `verifyReceipt` unchanged. A verifier holding only `@uwmd/verify` therefore
+  reports a tampered core-issued receipt as `failed`, not `RCP-07`
+  `unverifiable` (the RFC 0078 boundary test). The two
+  `conformance/receipts/issue/` baselines are regenerated, and the
+  `verify/03-result-disagrees`, `10-rehashed-one-cent` and
+  `11-rehashed-subquantum-ratio` receipts name `@uwmd/verify` 0.1.0 so they
+  still test a same-engine `failed`; every receipt verdict is unchanged. From
+  here the receipt baselines move with `VERIFY_VERSION`, not core's version.
+  A receipt issued by an earlier release names `@uwmd/core` and that release's
+  version, and a disagreement on it is `RCP-07`, as across any two versions.
+- A differential run of the 96b86155 build against this one, over every
+  `examples/` and `conformance/` document (785), compares `evaluateCalc`
+  (every builtin pack declaration, document currency and MXN, both entries),
+  `evaluateModuleCalculations`, `validateUWFile`, receipt issue and verify
+  (and a tampered copy), Lite parse and compile, `applyEdit` bytes,
+  envelopes, integrity chains, `render` and `verifyStatedMetrics`, and 256
+  `uwmd` CLI invocations (`manifest`, `calc`, `validate`, `receipt issue`,
+  `summary`). The only differences are the receipt `engine` and
+  `engine_version` fields.
+- `@uwmd/signing`, `@uwmd/batch` and `@uwmd/lake` build on `@uwmd/verify`
+  (exact 0.1.0); signing also keeps `@uwmd/core` for the capability-token
+  types. Their own versions do not move here; the release that publishes
+  `@uwmd/verify` bumps them. `tools/vscode-uwmd` depends on `@uwmd/verify`;
+  its receipt check identifies as `@uwmd/verify`, the engine current receipts
+  name, so a tampered receipt is still `failed`.
+- Release tooling publishes eight packages from 4.1.0, `@uwmd/verify` first:
+  `release.yml`, `release-packages.mjs` and `release:check`, which now requires
+  every package to publish after each `@uwmd/*` package it pins. The guards
+  check the new package: `verify-lockfile` (and fails when a root workspace is
+  missing from its list), `verify-versions` (a `VERSIONS.md` row),
+  `verify-packages` (packs it, then compiles and runs a consumer with only
+  `@uwmd/verify` installed), `verify-codes` (scans both libraries) and the
+  conformance metrics control (the verifier's import graph reaches no core
+  module). CI measures coverage for both packages, each against its own
+  floor; core's lines and statements floor drops to 77 because the
+  well-covered standard modules left with their tests. The first publication
+  of `@uwmd/verify` needs a trusted publisher on npmjs.com, an owner step.
 
 ## [4.0.1] - 2026-10-13
 
