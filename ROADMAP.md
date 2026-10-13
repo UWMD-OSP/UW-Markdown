@@ -1,11 +1,22 @@
 # Roadmap
 
-Reconciled **2026-10-12** (America/Phoenix) for published and independently
-verified **4.0.0**, pairing core/CLI 4.0.0 with Stable Protocol **4.0.0** and
-Format **3.0**. No accepted RFC is waiting for a release.
+Reconciled **2026-10-13** (America/Phoenix) for release-prepared **4.0.1**
+(Protocol **4.0.0**, Format **3.0**). The current published release remains
+**4.0.0**, pairing core/CLI 4.0.0 with Stable Protocol **4.0.0** and Format
+**3.0**. No accepted RFC is waiting for a release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
+
+## Prepared generation: 4.0.1
+
+Core/CLI **4.0.1** pair with Protocol **4.0.0** and Format **3.0**, the same
+contract as 4.0.0. The patch carries no RFC and moves nothing normative: the
+starter sources & uses footing counts a typed `uses.renovation` as budget
+plus contingency (RFC 0081 §7), `@uwmd/signing` reports its own manifest
+version, and the private web editor reads its own name and version. Signing
+0.3.1, batch 0.8.23, Excel 0.9.16, report 0.8.28 and lake 0.2.12 pin core
+4.0.1. The workflow publishes the same seven packages.
 
 ## Current published release: 4.0.0
 
@@ -425,7 +436,7 @@ draw-to-expenditure binding shipped separately in 2.21.0 with Stable Protocol
 |---|---|---|
 | Standalone document and package example kit | RFC 0048 implemented (2.10.0) | Adopter authoring against the kit. |
 | Element/package validation and deterministic stitching | Future RFC/design candidate; no new implementation | Extend existing RFCs 0018/0021/0048 for standalone rent rolls, T-12s, debt schedules and property files; pin ZIP/folder manifests, assembly conflicts, package canonicalization/hashing, provenance and document-versus-package receipt scope. See [candidate brief](docs/roadmap/element-package-validation.md). |
-| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16**; `@uwmd/lake` published since 3.0.0 (0.2.11 today) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency. |
+| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16**; `@uwmd/lake` published since 3.0.0 (0.2.12 in this tree) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency. |
 | Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 
 ### Mixed-use and speculative leasing

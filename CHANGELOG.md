@@ -8,6 +8,28 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [4.0.1] - 2026-10-13
+
+### Prepared package pairing
+
+Core/CLI **4.0.1** pair with Protocol **4.0.0** and Format **3.0**, the same
+contract as 4.0.0. Signing **0.3.1**, batch **0.8.23**, Excel **0.9.16**,
+report **0.8.28** and lake **0.2.12** pin core **4.0.1**. Core's optional
+signing peer is **0.3.1**. The workflow scope is the same seven packages:
+core, CLI, signing, batch, Excel, report and lake.
+
+This is a patch: nothing normative moves, so neither the Protocol nor the
+Format version does (wiki 11: from 3.0 the Protocol moves only when what a
+document means or how it is verified changes; starter-product changes version
+their packages only). The sources & uses footing below is a starter product;
+the Format §4.8 footing paragraph states the rule RFC 0081 §7 already implied.
+No conformance expectation, issue code, metric definition, stated value or
+receipt `results_digest` changes; only `engine_version` moves, to 4.0.1, in
+the two issued receipt baselines and the three failed-verdict verify receipts. Signing takes a patch for its own fix and
+the core repin. Batch, Excel, report and lake take a patch only because they
+pin core exactly and npm cannot republish a version with a new pin. The
+private web editor keeps 0.8.0.
+
 ### Fixed
 
 - The web editor (a private starter product) reads its own name and version

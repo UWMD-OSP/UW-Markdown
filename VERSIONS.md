@@ -19,6 +19,18 @@ released independently as long as both honor the same protocol version.
 
 ## Current matrix
 
+Release 4.0.1 pairs core/CLI 4.0.1 with Protocol 4.0.0 and Format 3.0, the
+same contract as 4.0.0. It is a patch: nothing normative moves, so neither
+the Protocol nor the Format version does. It carries three fixes. The starter
+sources & uses footing counts a typed `uses.renovation` as budget plus
+contingency (RFC 0081 §7; Format §4.8 now states the rule), `@uwmd/signing`
+reports its own manifest version as `SIGNING_VERSION`, and the private web
+editor reads its own name and version. No conformance expectation, issue
+code, metric definition or stated value changes. Signing 0.3.1, batch 0.8.23,
+Excel 0.9.16, report 0.8.28 and lake 0.2.12 pin core 4.0.1 exactly. Core's
+optional signing peer is 0.3.1. The workflow scope is the same seven
+packages: core, CLI, signing, batch, Excel, report and lake.
+
 Release 4.0.0 pairs core/CLI 4.0.0 with Protocol 4.0.0 and Format 3.0.
 Protocol 4.0.0 carries one RFC: RFC 0081 removes every
 backward-compatibility path. Format 3.0 is the 2.1 shape with each alternate
@@ -252,15 +264,15 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
-| UW Protocol | **4.0.0** | format 3.0 only; RFC 0081 removes every compatibility clause from 3.0.0 and replaces module `requires_tier` with `requires_conformance`; carried by core/CLI 4.0.0 |
-| `@uwmd/core` | **4.0.0** | format 3.0, protocol 4.0.0 |
-| `@uwmd/cli` (CLI) | **4.0.0** | `@uwmd/core` 4.0.0 |
-| `@uwmd/excel` | **0.9.15** | `@uwmd/core` 4.0.0, format 3.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.27** | `@uwmd/core` 4.0.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.22** | `@uwmd/core` 4.0.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.11** | `@uwmd/core` 4.0.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.3.0** | `@uwmd/core` 4.0.0, protocol §V.11 + §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.0.0 browser entry |
+| UW Protocol | **4.0.0** | format 3.0 only; RFC 0081 removes every compatibility clause from 3.0.0 and replaces module `requires_tier` with `requires_conformance`; carried by core/CLI 4.0.0 and 4.0.1 |
+| `@uwmd/core` | **4.0.1** | format 3.0, protocol 4.0.0 |
+| `@uwmd/cli` (CLI) | **4.0.1** | `@uwmd/core` 4.0.1 |
+| `@uwmd/excel` | **0.9.16** | `@uwmd/core` 4.0.1, format 3.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.28** | `@uwmd/core` 4.0.1, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.23** | `@uwmd/core` 4.0.1, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.12** | `@uwmd/core` 4.0.1, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.3.1** | `@uwmd/core` 4.0.1, protocol §V.11 + §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.0.1 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format 3.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 3.0 |
 
