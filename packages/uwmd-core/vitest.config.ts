@@ -48,9 +48,18 @@ export default defineConfig({
       // 98.96% functions. Lines and statements drop to 77 — a measurement of a
       // smaller, differently shaped package, not lost tests (every moved test
       // still runs, in verify) — and branches rise to 81 with the measurement.
+      //
+      // Re-measured 2026-10-13 for the 4.1.0 release after excluding the CLI
+      // entry files below, which no in-process test loads. The 78.04% CI and
+      // 73.99% Windows figures above both counted them; the gap between the
+      // two was the platform's count of those never-loaded lines, not a
+      // difference in what the tests cover. Without them: 95.83% lines and
+      // statements, 82.23% branches, 98.95% functions, the same 6,760 covered
+      // lines. Lines and statements rise to 94 with the measurement; the
+      // margin follows the policy above.
       thresholds: {
-        lines: 77,
-        statements: 77,
+        lines: 94,
+        statements: 94,
         functions: 97,
         branches: 81,
       },
@@ -67,6 +76,18 @@ export default defineConfig({
         // build and `verify-packages` enforce that, not coverage.
         'src/index.ts',
         'src/browser.ts',
+        // The CLI entry files. `cli.ts` runs its command switch at import time
+        // and `cli-portfolio.ts` is reached only through it, so the suite never
+        // loads either in-process: `cli.test.ts` and the conformance driver
+        // exercise them as spawned `uwmd` processes, which in-process v8
+        // coverage cannot see. Counted, they were pure denominator, and the
+        // size of that denominator depended on the platform: with the same
+        // 6,760 covered lines, Windows measured 73.99% (2,082 never-loaded
+        // lines) and Linux CI 78.04%. Excluded, every platform measures the
+        // same files. The CLI's helpers (`cli-args.ts`, `cli-cash-flows.ts`,
+        // `cli-packages.ts`) are imported by their tests and stay counted.
+        'src/cli.ts',
+        'src/cli-portfolio.ts',
       ],
     },
   },

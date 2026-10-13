@@ -37,10 +37,10 @@ uwmd <command> [args]
 | `uwmd formats` | List registered machine representations |
 | `uwmd convert <file> --to uw-json\|uw-xml\|uw-csv-bundle` | Convert Markdown, verified JSON/XML, or normalized CSV ZIP bundles |
 | `uwmd layers <file>` | Show the agent-context layer breakdown |
-| `uwmd manifest` | Print the implementation manifest JSON: core, Protocol and Format versions, and capabilities |
+| `uwmd manifest` | Print the implementation manifest JSON: core, Protocol and Format versions, and capabilities (the `@uwmd/verify` version goes to stderr) |
 
-`uwmd --version` (or `-V`) prints the @uwmd/core, Protocol and Format
-versions. Through 2.17.0, `--version` printed the help text; with those
+`uwmd --version` (or `-V`) prints the @uwmd/core, @uwmd/verify, Protocol and
+Format versions (`@uwmd/verify` from 4.1.0). Through 2.17.0, `--version` printed the help text; with those
 versions, use `uwmd manifest`.
 
 The read-only command `uwmd verify-cash-flows <file> [--variant <name>] [--json]`

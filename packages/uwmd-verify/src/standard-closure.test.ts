@@ -136,11 +136,27 @@ function specifiersIn(file: string, text: string): string[] {
     } else if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference)
       && ts.isStringLiteralLike(node.moduleReference.expression)) {
       specifiers.push(node.moduleReference.expression.text);
+    } else if (ts.isCallExpression(node) && isRequireCallee(node.expression)) {
+      // CommonJS loading inside ESM: `require('x')` and `require.resolve('x')`.
+      // The specifier is checked like any import; a computed one fails closed.
+      const [argument] = node.arguments;
+      specifiers.push(argument && ts.isStringLiteralLike(argument) ? argument.text : '<non-literal require>');
+    } else if (ts.isIdentifier(node) && node.text === 'createRequire') {
+      // `createRequire` builds a loader for any path or package, so no specifier
+      // it is later called with can be checked: the identifier itself is the edge.
+      specifiers.push('<createRequire>');
     }
     ts.forEachChild(node, visit);
   };
   visit(source);
   return specifiers;
+}
+
+/** `require` or `require.resolve` as a call's callee. */
+function isRequireCallee(callee: ts.Expression): boolean {
+  if (ts.isIdentifier(callee)) return callee.text === 'require';
+  return ts.isPropertyAccessExpression(callee) && ts.isIdentifier(callee.expression)
+    && callee.expression.text === 'require' && callee.name.text === 'resolve';
 }
 
 const toSrcPath = (file: string): string => relative(SRC, file).split(sep).join('/');
@@ -211,6 +227,33 @@ describe('standard module closure (RFC 0083)', () => {
     // Any other package, including the starter toolkit itself.
     expect(externalViolations('receipts.ts', ['@uwmd/core', '@uwmd/core/browser']))
       .toEqual(['receipts.ts -> @uwmd/core', 'receipts.ts -> @uwmd/core/browser']);
+  });
+
+  it('refuses require() and createRequire reaching outside the package (negative control)', () => {
+    // CommonJS loading is invisible to an import-only walk, so each form is an edge.
+    const required = specifiersIn('receipts.ts', [
+      `const fs = require('node:fs');`,
+      `const lodash = require('lodash');`,
+      `const where = require.resolve('@uwmd/core');`,
+      `const core = require('../../uwmd-core/src/editor.js');`,
+      `const own = require('./parser.js');`,
+      'const dynamic = require(name);',
+    ].join('\n'));
+    expect(required).toEqual([
+      'node:fs', 'lodash', '@uwmd/core', '../../uwmd-core/src/editor.js', './parser.js', '<non-literal require>',
+    ]);
+    expect(externalViolations('receipts.ts', required)).toEqual([
+      'receipts.ts -> node:fs', 'receipts.ts -> lodash', 'receipts.ts -> @uwmd/core', 'receipts.ts -> <non-literal require>',
+    ]);
+    expect(relativeViolations('receipts.ts', required)).toEqual(['receipts.ts -> ../../uwmd-core/src/editor.js']);
+    // createRequire is an edge however it is reached, even without a node:module import.
+    const viaBuiltin = `const { createRequire } = process.getBuiltinModule('module');\nconst load = createRequire(import.meta.url);\nload('lodash');`;
+    expect(externalViolations('receipts.ts', specifiersIn('receipts.ts', viaBuiltin)))
+      .toEqual(['receipts.ts -> <createRequire>', 'receipts.ts -> <createRequire>']);
+    expect(externalViolations('receipts.ts', specifiersIn('receipts.ts', `import { createRequire } from 'node:module';`)))
+      .toEqual(['receipts.ts -> node:module', 'receipts.ts -> <createRequire>']);
+    // A property or method that is merely named `require` is not a loader.
+    expect(specifiersIn('x.ts', `const rule = { require: true }; policy.require('x');`)).toEqual([]);
   });
 
   it('refuses a relative path out of the package or to a missing module (negative control)', () => {

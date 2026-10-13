@@ -320,3 +320,32 @@ export function checkReleaseState({
   }
   return { applies: true, checks, failures };
 }
+
+const DEPENDENCY_FIELDS = ['dependencies', 'peerDependencies', 'optionalDependencies'];
+const dependencyKey = (map) => JSON.stringify(Object.keys(map ?? {}).sort().map((name) => [name, map[name]]));
+
+/**
+ * Publishing packages whose dependency set changed since a release while their
+ * version did not.
+ *
+ * npm never republishes a version, so a package whose `dependencies`,
+ * `peerDependencies` or `optionalDependencies` differ from what its version
+ * shipped with needs its own bump before the next release, or the change never
+ * ships. RFC 0083 Phase 2 moved signing, batch and lake to `@uwmd/verify` and
+ * left their bumps to the release; only a note in its PR carried that
+ * obligation to 4.1.0. A package absent at the release (`previous` undefined)
+ * is new and has nothing to compare.
+ *
+ * @param {Array<{ current: object, previous?: object }>} packages  manifests now and at the release
+ * @returns {Array<{ name: string, version: string, fields: string[] }>}
+ */
+export function dependencyDrift(packages) {
+  return packages
+    .filter(({ current, previous }) => previous !== undefined && current.version === previous.version)
+    .map(({ current, previous }) => ({
+      name: current.name,
+      version: current.version,
+      fields: DEPENDENCY_FIELDS.filter((field) => dependencyKey(current[field]) !== dependencyKey(previous[field])),
+    }))
+    .filter((drift) => drift.fields.length > 0);
+}

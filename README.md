@@ -2,7 +2,7 @@
 
 > An open interoperability standard for AI- and code-driven underwriting systems.
 
-> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance. From 4.0.0 the reference implementation reads Format 3.0 and Protocol 4.0.0 only (RFC 0081); 3.0.0 is the last release that reads older formats.
+> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance, and from 4.1.0 `@uwmd/verify` first. From 4.0.0 the reference implementation reads Format 3.0 and Protocol 4.0.0 only (RFC 0081); 3.0.0 is the last release that reads older formats.
 
 **Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/UWMD-OSP/UW-Markdown](https://github.com/UWMD-OSP/UW-Markdown)
 
