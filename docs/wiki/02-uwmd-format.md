@@ -10,7 +10,7 @@ product. Release 4.0.0 carries it, labelled Format 3.0 and Protocol 4.0.0;
 3.0.0 is the last release that reads older formats.
 
 
-> The normative contract is [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0), carried by core/CLI 4.0.0.
+> The normative contract is [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0), carried by core/CLI 4.0.0 and 4.0.1.
 
 > **Representations:** `.uw.md` is the human-readable Lite representation; `.uwx.md` is the structured representation. Their normative sources are [UW_LITE_SPEC.md](../../spec/UW_LITE_SPEC.md) and [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0). Types live in [types.ts](../../packages/uwmd-core/src/types.ts); see [07](07-data-model-reference.md).
 
