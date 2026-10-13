@@ -10,6 +10,31 @@ protocol, and each package each carry an independent semver).
 
 ## [4.0.1] - 2026-10-13
 
+### Released
+
+Published core/CLI **4.0.1**, signing **0.3.1**, batch **0.8.23**, Excel
+**0.9.16**, report **0.8.28** and lake **0.2.12** from `v4.0.1` on
+`442dfc6aecfb591ce744f00776a9e2c7a601854c`.
+[Release run 38429239833](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38429239833)
+succeeded through trusted publishing with provenance, and no module package
+published. Every registry version and `latest` matches, and all seven
+`gitHead` values name the authorized commit. Integrity, registry and DSSE
+signatures, authenticated TUF/Fulcio/SCT trust, Rekor timestamps and
+inclusion proofs, and all 616 published file contents verify. The
+registry-installed CLI reports core 4.0.1 / Protocol 4.0.0 / Format 3.0 and
+passes **336/336** portable cases with no skips (Reader 17, Verifier 281,
+module profile 1, starter products 37). An isolated consumer confirms both
+fixes as delivered: the published signing 0.3.1 exports `SIGNING_VERSION`
+`'0.3.1'`, equal to its manifest, and the published `deriveSourcesUses`
+derives 4,500,000 for `conformance/capex/accept-draw-with-verified-remaining`.
+Every dependent pins core 4.0.1 exactly, signing 0.3.1 stamps and verifies
+`_meta.integrity`, and strict TypeScript compiles against all seven packages
+with `skipLibCheck: false` and no Anthropic SDK. Protocol **4.0.0** stays
+Stable, paired with Format **3.0**. The immutable tagged tree keeps its
+neutral preparation records. Exact evidence is in
+`docs/releases/4.0.1-publication-evidence.json` and the verification method
+in `docs/releases/4.0.1-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **4.0.1** pair with Protocol **4.0.0** and Format **3.0**, the same

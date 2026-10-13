@@ -29,7 +29,17 @@ editor reads its own name and version. No conformance expectation, issue
 code, metric definition or stated value changes. Signing 0.3.1, batch 0.8.23,
 Excel 0.9.16, report 0.8.28 and lake 0.2.12 pin core 4.0.1 exactly. Core's
 optional signing peer is 0.3.1. The workflow scope is the same seven
-packages: core, CLI, signing, batch, Excel, report and lake.
+packages: core, CLI, signing, batch, Excel, report and lake. Protocol 4.0.0
+stays Stable. All seven packages are published from lightweight tag `v4.0.1`
+on `442dfc6aecfb591ce744f00776a9e2c7a601854c` through trusted publishing with
+provenance. Release run 38429239833 succeeded. All registry versions,
+`latest`, `gitHead`, signatures, attestations, Rekor checks, 616 published
+files, 336 delivered-CLI portable cases and an isolated consumer of all seven
+packages were independently verified; the published signing 0.3.1 exports
+`SIGNING_VERSION` `'0.3.1'`. Neither module package published again. No other
+package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.1-publication.md)
+remain separate records.
 
 Release 4.0.0 pairs core/CLI 4.0.0 with Protocol 4.0.0 and Format 3.0.
 Protocol 4.0.0 carries one RFC: RFC 0081 removes every

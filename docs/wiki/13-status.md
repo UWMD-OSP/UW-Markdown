@@ -1,7 +1,10 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-13** (America/Phoenix) for release-prepared **4.0.1**.
-Core/CLI **4.0.1** pair with Protocol **4.0.0** and Format **3.0**, the same
+Reconciled **2026-10-13** (America/Phoenix) for published and independently
+verified **4.0.1**. Core/CLI **4.0.1**, signing **0.3.1**, batch **0.8.23**,
+Excel **0.9.16**, report **0.8.28** and lake **0.2.12** are published from
+`v4.0.1` on `442dfc6aecfb591ce744f00776a9e2c7a601854c`. They pair with Stable
+Protocol **4.0.0** and Format **3.0**, the same
 contract as 4.0.0; the patch moves nothing normative, so neither version
 does. It carries three fixes: the starter `deriveSourcesUses` footing counts
 a typed `uses.renovation` as `budget + contingency` (RFC 0081 §7; Format
@@ -9,10 +12,11 @@ a typed `uses.renovation` as `budget + contingency` (RFC 0081 §7; Format
 `conformance/capex/` documents), `@uwmd/signing` reads `SIGNING_VERSION`
 from its own manifest, and the private web editor reads its own name and
 version. No conformance expectation changes; 1,069 reference checks and 336
-portable cases, and the lender fixture stays 187/0/0. Signing **0.3.1**,
-batch **0.8.23**, Excel **0.9.16**, report **0.8.28** and lake **0.2.12** pin
-core 4.0.1, and core's optional signing peer is 0.3.1. The release workflow
-publishes the same seven packages.
+portable cases, and the lender fixture stays 187/0/0. Every dependent
+pins core 4.0.1 exactly, and core's optional signing peer is 0.3.1. The release
+workflow published the same seven packages, and the published signing 0.3.1
+exports `SIGNING_VERSION` `'0.3.1'`. See the
+[publication evidence](../releases/4.0.1-publication.md).
 
 Reconciled **2026-10-12** (America/Phoenix) for published and independently
 verified **4.0.0**. Core/CLI **4.0.0**, signing **0.3.0**, batch **0.8.22**,
@@ -173,7 +177,7 @@ new receipt output.
 
 Web editor/viewer, docs site and VS Code extension are implemented. Excel
 **0.9.16**, report **0.8.28** and lake **0.2.12** pair with core 4.0.1 and are
-in the release workflow, as they have been since 3.0.0 (Excel
+published through the release workflow, as they have been since 3.0.0 (Excel
 0.9.14, report 0.8.26, lake 0.2.10); through 2.21.0 they were source-only. Lake 0.2.9 was published by hand from `v2.21.0` on
 2026-10-11 so its trusted publisher could be configured; it carries no
 provenance. The hospitality/data-center module packages **0.2.0** pair with
