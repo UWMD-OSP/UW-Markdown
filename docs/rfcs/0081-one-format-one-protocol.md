@@ -1,8 +1,9 @@
 ---
 rfc: 0081
 title: 'One format, one protocol: remove backward compatibility (pre-release cleanup)'
-status: accepted
+status: implemented
 accepted: 2026-10-11
+implemented: 2026-10-12
 author: claude-code (agent proposal, from owner direction 2026-10-11)
 created: 2026-10-11
 depends_on:
@@ -41,7 +42,10 @@ questions the same day; the answers are recorded in
 Merging PR #307 records acceptance. The change is breaking for the Format
 (3.0), the Protocol (4.0.0) and `@uwmd/core` (4.0.0). Implementation follows in
 Phases 2–6 under [Reference implementation](#reference-implementation), each in
-its own PR.
+its own PR. **Implemented; released and independently verified.** The
+`v4.0.0` release published Protocol 4.0.0 as Stable with Format 3.0 and
+core/CLI 4.0.0 (see
+[Publication and verification](#publication-and-verification-2026-10-12)).
 
 ## Summary
 
@@ -723,8 +727,9 @@ entries, and nothing ships until Phase 6.
 6. **Release 4.0.0** by the wiki 11 procedure: Format 3.0, Protocol 4.0.0,
    seven packages. Release preparation pairs core/CLI 4.0.0 with Protocol
    4.0.0 and Format 3.0; signing moves to 0.3.0 and batch, Excel, report and
-   lake take patch steps (CHANGELOG 4.0.0 records why). The RFC stays
-   `accepted` until a release ships it and publication is verified.
+   lake take patch steps (CHANGELOG 4.0.0 records why). Released in 4.0.0;
+   publication was independently verified before this RFC moved to
+   `implemented`.
 
 **Combining.** Phase 2 and the set-narrowing half of Phase 4 could share a PR
 only if Phase 3 landed inside it, which would make one unreviewable diff of
@@ -2345,3 +2350,22 @@ transition plan, until the owner declares the standard released.
   `parent_hash`; §3 delivers it.
 - **Pre-1.0 semver practice** (the spirit of semver §4): before a public
   release, anything may change and no compatibility is owed.
+
+## Publication and verification (2026-10-12)
+
+Annotated `v4.0.0` targets the release-prepared merge
+`d52a42394be238b00c55942afc1a31cc5c00061b` (PR #312).
+[Release run 38339991109](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109)
+succeeded and published core/CLI 4.0.0, signing 0.3.0, batch 0.8.22, Excel
+0.9.15, report 0.8.27 and lake 0.2.11, pairing Stable Protocol 4.0.0 with
+Format 3.0. Independent registry, provenance, published-file, delivered-CLI
+(336/336 portable cases, no skips) and consumer checks passed, including the
+published core's single supported format and protocol, its refusal of a
+Format 2.1 document as `UNSUPPORTED_FORMAT_VERSION`, the absence of the
+removed migration and compatibility exports, and signing 0.3.0's nested
+`_meta.integrity` round trip; see
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.0-publication.md).
+D6 holds on the registry: neither module package published again, and both
+stay at their final, deprecated 0.2.0. Publication verification precedes this
+separate `accepted` → `implemented` reconciliation. The immutable release
+tag and every normative section above remain unchanged.

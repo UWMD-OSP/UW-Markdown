@@ -1,6 +1,6 @@
 # UW Protocol — verification
 
-**Status:** Accepted release contract (RFC 0081) — protocol **4.0.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
+**Status:** Stable — protocol **4.0.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
 
 > **Protocol 4.0.0.** Accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md) and paired with core/CLI 4.0.0. This normative text describes the single final contract, with no alternate versions or spellings.
 

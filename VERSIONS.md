@@ -20,7 +20,7 @@ released independently as long as both honor the same protocol version.
 ## Current matrix
 
 Release 4.0.0 pairs core/CLI 4.0.0 with Protocol 4.0.0 and Format 3.0.
-Protocol 4.0.0 carries one accepted RFC: RFC 0081 removes every
+Protocol 4.0.0 carries one RFC: RFC 0081 removes every
 backward-compatibility path. Format 3.0 is the 2.1 shape with each alternate
 spelling removed (bare blocks with one nested `_meta`, the block digest over
 the payload minus `_meta`, one home for each fact, builtin class identifiers
@@ -37,7 +37,17 @@ batch 0.8.22, Excel 0.9.15, report 0.8.27 and lake 0.2.11 pin core 4.0.0
 exactly. Core's optional signing peer is 0.3.0. The workflow scope is seven
 packages: core, CLI, signing, batch, Excel, report and lake. The two module
 packages, final at 0.2.0 and deprecated on npm, are not part of this or any
-later release. RFC 0081 stays `accepted` in the release-prepared state.
+later release. RFC 0081 is implemented; Protocol 4.0.0 is Stable. All seven
+packages are published from immutable annotated `v4.0.0` on
+`d52a42394be238b00c55942afc1a31cc5c00061b` through trusted publishing with
+provenance. Release run 38339991109 succeeded and was the first to publish
+seven packages. All registry versions, `latest`, `gitHead`, signatures,
+attestations, Rekor checks, 614 published files, 336 delivered-CLI portable
+cases and an isolated consumer of all seven packages were independently
+verified. Neither module package published again; both stay at their final,
+deprecated 0.2.0. No other package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.0-publication.md)
+remain separate records.
 
 Release 3.0.0 pairs core/CLI 3.0.0 with Protocol 3.0.0 and Format 2.1.
 Protocol 3.0.0 carries three accepted RFCs. RFC 0078 makes the Protocol the

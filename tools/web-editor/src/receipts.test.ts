@@ -11,6 +11,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { assess, issueForSource, loadReceiptJson, receiptFilename, serializeReceipt } from './receipts.js';
 import type { HeldReceipt } from './receipts.js';
+import { EDITOR_PACKAGE, EDITOR_VERSION } from './version.js';
 
 const DEAL = resolve(
   __dirname,
@@ -35,7 +36,7 @@ describe('issueForSource', () => {
     expect(outcome.ok).toBe(true);
     if (!outcome.ok) return;
     expect(outcome.held.receipt.computation.pack).toBe('org.uwmd.pack.multifamily');
-    expect(outcome.held.receipt.issuer).toContain('web-editor');
+    expect(outcome.held.receipt.issuer).toBe(`${EDITOR_PACKAGE}@${EDITOR_VERSION}`);
     expect(outcome.held.issuedFromSource).toBe(source());
   });
 

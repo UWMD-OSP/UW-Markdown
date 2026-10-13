@@ -1,8 +1,11 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-12** (America/Phoenix) for release-prepared **4.0.0**.
-Core/CLI **4.0.0** pair with the accepted release contract Protocol **4.0.0**
-and Format **3.0**, the one protocol and the one format the reference
+Reconciled **2026-10-12** (America/Phoenix) for published and independently
+verified **4.0.0**. Core/CLI **4.0.0**, signing **0.3.0**, batch **0.8.22**,
+Excel **0.9.15**, report **0.8.27** and lake **0.2.11** are published from
+immutable annotated `v4.0.0` on
+`d52a42394be238b00c55942afc1a31cc5c00061b`. Stable Protocol **4.0.0** pairs
+with Format **3.0**, the one protocol and the one format the reference
 implementation reads (RFC 0081: `SUPPORTED_FORMAT_VERSIONS = ['3.0']`,
 `SUPPORTED_PROTOCOL_VERSIONS = ['4.0.0']`, and `FORMAT_VERSION` /
 `PROTOCOL_VERSION` equal them). A missing or other `uw_version` is
@@ -18,10 +21,11 @@ The corpus uses content names (`documents/`, `calc/`,
 336 portable cases; the lender fixture stays 187/0/0. Signing **0.3.0**
 (a minor step: it stamps and verifies `_meta.integrity` under the new
 digest), batch **0.8.22**, Excel **0.9.15**, report **0.8.27** and lake
-**0.2.11** pin core 4.0.0. The release workflow publishes seven packages.
-Core takes a major because the cut breaks public surfaces (CHANGELOG 4.0.0,
-which also carries the migration notes). RFC 0081 remains `accepted` until
-shipment and independently verified publication.
+**0.2.11** pin core 4.0.0. The release workflow published seven packages for
+the first time; neither module package published again. Core takes a major
+because the cut breaks public surfaces (CHANGELOG 4.0.0, which also carries
+the migration notes). RFC 0081 is `implemented`. See the
+[publication evidence](../releases/4.0.0-publication.md).
 
 Reconciled **2026-10-11** (America/Phoenix) for published and independently
 verified **3.0.0**. Core/CLI **3.0.0**, signing **0.2.26**, batch **0.8.21**,
@@ -154,14 +158,14 @@ new receipt output.
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Excel
-**0.9.15**, report **0.8.27** and lake **0.2.11** pair with core 4.0.0; all
-three are in the release workflow from 3.0.0 (Excel 0.9.14, report 0.8.26,
-lake 0.2.10), and through 2.21.0 they were source-only. Lake 0.2.9 was published by hand from `v2.21.0` on
+**0.9.15**, report **0.8.27** and lake **0.2.11** pair with core 4.0.0 and are
+published through the release workflow, as they have been since 3.0.0 (Excel
+0.9.14, report 0.8.26, lake 0.2.10); through 2.21.0 they were source-only. Lake 0.2.9 was published by hand from `v2.21.0` on
 2026-10-11 so its trusted publisher could be configured; it carries no
 provenance. The hospitality/data-center module packages **0.2.0** pair with
 core 3.0.0 as compatibility shells (RFC 0080), their final version, and both
 names are deprecated on npm (2026-10-11); 0.1.10 was their first public
-generation. RFC 0081 deleted both from the repository, and 4.0.0 does not
+generation. RFC 0081 deleted both from the repository, and 4.0.0 did not
 publish them. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
@@ -751,9 +755,9 @@ The guards:
   **implemented** ([publication record](../releases/3.0.0-publication.md)).
   RFC 0078's `@uwmd/verify` package split (D8) and the levered and
   after-tax definitions (D7) remain follow-up RFCs.
-- [RFC 0081](../rfcs/0081-one-format-one-protocol.md) (PRs #307–#311) is
-  accepted and implemented, and prepared for 4.0.0 with Protocol 4.0.0 under
-  Format 3.0.
+- [RFC 0081](../rfcs/0081-one-format-one-protocol.md) (PRs #307–#312)
+  shipped in 4.0.0 with Stable Protocol 4.0.0 under Format 3.0 and is
+  **implemented** ([publication record](../releases/4.0.0-publication.md)).
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.

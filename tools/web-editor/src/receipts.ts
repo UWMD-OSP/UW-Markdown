@@ -16,6 +16,7 @@
 
 import { assertUWReceipt, issueReceipt, verifyReceipt } from '@uwmd/core/browser';
 import type { UWReceipt, UWReceiptVerification } from '@uwmd/core/browser';
+import { EDITOR_PACKAGE, EDITOR_VERSION } from './version.js';
 
 /** A receipt plus the exact source bytes it was issued over in this session. */
 export interface HeldReceipt {
@@ -51,7 +52,7 @@ export async function issueForSource(
   try {
     const receipt = await issueReceipt(source, {
       filename,
-      issuer: '@uwmd/web-editor@0.5.0',
+      issuer: `${EDITOR_PACKAGE}@${EDITOR_VERSION}`,
     });
     return { ok: true, held: { receipt, issuedFromSource: source } };
   } catch (error) {
