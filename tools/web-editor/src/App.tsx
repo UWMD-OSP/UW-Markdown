@@ -16,6 +16,7 @@ import { Intelligence } from './components/Intelligence.js';
 import { DiffView } from './components/DiffView.js';
 import { EditModeBar } from './components/EditModeBar.js';
 import { ReceiptPanel } from './components/ReceiptPanel.js';
+import { EDITOR_PACKAGE, EDITOR_VERSION } from './version.js';
 
 export type EditorTab = 'edit' | 'intelligence' | 'report' | 'receipt' | 'diff' | 'source';
 
@@ -115,7 +116,7 @@ export function App() {
       </div>
       {deal.loaded && <ValidationPanel validation={deal.loaded.validation} />}
       <footer className="flex items-center justify-between border-t border-rule bg-paper px-4 py-1.5 text-xs text-muted">
-        <span>{deal.status}</span><span>protocol v{PROTOCOL_VERSION} · format v{FORMAT_VERSION} · @uwmd/web-editor 0.5.0</span>
+        <span>{deal.status}</span><span>protocol v{PROTOCOL_VERSION} · format v{FORMAT_VERSION} · {EDITOR_PACKAGE} {EDITOR_VERSION}</span>
       </footer>
       {showNewDialog && <NewDealDialog onCreate={(opts) => { actions.newDeal(opts); setActiveSection('__frontmatter__'); setTab('edit'); }} onClose={() => setShowNewDialog(false)} />}
     </div>

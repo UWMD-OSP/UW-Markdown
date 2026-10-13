@@ -8,7 +8,40 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- The web editor (a private starter product) reads its own name and version
+  from `tools/web-editor/package.json` for the footer and the receipt
+  `issuer`, which hard-coded `@uwmd/web-editor 0.5.0` while the package was
+  0.8.0.
+
 ## [4.0.0] - 2026-10-12
+
+### Released
+
+Published core/CLI **4.0.0**, signing **0.3.0**, batch **0.8.22**, Excel
+**0.9.15**, report **0.8.27** and lake **0.2.11** from annotated `v4.0.0` on
+`d52a42394be238b00c55942afc1a31cc5c00061b`.
+[Release run 38339991109](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109)
+succeeded through trusted publishing with provenance; it is the first run to
+publish seven packages, and no module package. Every registry version and
+`latest` matches, and all seven `gitHead` values name the authorized commit.
+Integrity, registry and DSSE signatures, authenticated TUF/Fulcio/SCT trust,
+Rekor timestamps and inclusion proofs, and all 614 published file contents
+verify. The registry-installed CLI reports Protocol 4.0.0 / Format 3.0 and
+passes **336/336** portable cases with no skips (Reader 17, Verifier 281,
+module profile 1, starter products 37). An isolated consumer confirms the
+published core reads Format 3.0 and Protocol 4.0.0 only, refuses a Format 2.1
+document as `UNSUPPORTED_FORMAT_VERSION`, claims the `verifier` tier with
+all six profiles and no longer exports the removed migration and
+compatibility symbols; every dependent pins core 4.0.0 exactly, signing 0.3.0
+stamps and verifies `_meta.integrity`, and strict TypeScript compiles against
+all seven packages with `skipLibCheck: false` and no Anthropic SDK. RFC 0081
+is `implemented`; Protocol **4.0.0** is Stable, paired with Format **3.0**.
+Both module package names stay at their final, deprecated 0.2.0, and nothing
+else was published. The immutable tagged tree keeps its neutral preparation
+records. Exact evidence is in `docs/releases/4.0.0-publication-evidence.json`
+and the verification method in `docs/releases/4.0.0-publication.md`.
 
 ### Prepared package pairing
 
@@ -23,9 +56,10 @@ peer is **0.3.0**. Signing takes a minor step because its own surface breaks
 workflow scope is seven packages: core, CLI, signing, batch, Excel, report and
 lake. `@uwmd/module-hospitality` and `@uwmd/module-data-center` (final 0.2.0,
 deprecated on npm since 2026-10-11) are no longer in the repository or the
-release. RFC 0081 stays `accepted` in the tagged preparation state.
+release. RFC 0081 stayed `accepted` in the tagged preparation state; the
+Released evidence above records the verified lifecycle transition.
 
-### Contract — Protocol 4.0.0 (RFC 0081), Format 3.0
+### Released contract — Protocol 4.0.0 (RFC 0081), Format 3.0
 
 - **Format 3.0** is the 2.1 shape with every alternate spelling removed: bare
   blocks with one inline nested `_meta`, the block digest over the payload

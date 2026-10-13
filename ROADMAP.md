@@ -1,17 +1,16 @@
 # Roadmap
 
-Reconciled **2026-10-12** (America/Phoenix) for release-prepared **4.0.0**
-(Protocol **4.0.0**, Format **3.0**). The current published release remains
-**3.0.0**, pairing core/CLI 3.0.0 with Stable Protocol **3.0.0** and Format
-**2.1**.
+Reconciled **2026-10-12** (America/Phoenix) for published and independently
+verified **4.0.0**, pairing core/CLI 4.0.0 with Stable Protocol **4.0.0** and
+Format **3.0**. No accepted RFC is waiting for a release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Prepared generation: 4.0.0
+## Current published release: 4.0.0
 
 Core/CLI **4.0.0** pair with Protocol **4.0.0** and Format **3.0**. The
-generation carries one accepted RFC:
+generation carries one RFC:
 - **RFC 0081:** one format and one protocol. Format 3.0 (bare blocks with a
   nested `_meta`, one home for each fact, builtin class identifiers only) and
   Protocol 4.0.0 are the only versions the reference implementation reads;
@@ -19,11 +18,14 @@ generation carries one accepted RFC:
   are deleted. 3.0.0 is the last release that reads older formats.
 
 Signing 0.3.0, batch 0.8.22, Excel 0.9.15, report 0.8.27 and lake 0.2.11 pin
-core 4.0.0. The workflow publishes seven packages. No financial value
-changes. RFC 0081 remains `accepted` until shipment and independently
-verified publication.
+core 4.0.0. The workflow published seven packages, all of them from the
+release workflow with provenance; neither module package published again. No
+financial value changes. RFC 0081 is `implemented` after shipment and
+independently verified publication. Release run 38339991109 and independent
+registry/provenance/published-file/CLI/consumer checks pass. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.0-publication.md).
 
-## Current published release: 3.0.0
+## Historical publication: 3.0.0
 
 Core/CLI **3.0.0** pair with Protocol **3.0.0** and Format **2.1**. The
 generation carries three RFCs:
