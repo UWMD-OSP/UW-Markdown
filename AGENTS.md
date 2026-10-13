@@ -37,10 +37,15 @@ Know which side a change is on before you start.
 
 ## Where things live
 
+- `packages/uwmd-verify` — `@uwmd/verify`, the reference implementation of the
+  standard (RFC 0083): reader, validation, calc evaluator, metric dictionary,
+  receipts, integrity, modules and the profiles. Depends on no `@uwmd/*`
+  package; runtime dependencies are `fast-xml-parser` and `fflate`.
 - `packages/uwmd-core` — `@uwmd/core`, the library and the heart of the repo.
-  Everything depends on it. Runtime dependencies are `fast-xml-parser` and
-  `fflate`; `@anthropic-ai/sdk` is an **optional peer**, loaded by dynamic import
-  and excluded from the `@uwmd/core/browser` entry.
+  Everything depends on it or on `@uwmd/verify`. It depends on `@uwmd/verify`
+  at an exact version and re-exports its whole surface; `@anthropic-ai/sdk`
+  is an **optional peer**, loaded by dynamic import and excluded from the
+  `@uwmd/core/browser` entry.
 - `packages/uwmd-cli` — the `uwmd` CLI (thin wrapper over core's `cli.ts`).
 - `packages/uwmd-excel` — `.uw.md → .xlsx` converter.
 - `packages/uwmd-lake` — `@uwmd/lake`, the RFC 0049 PostgreSQL/JSONB adapter.

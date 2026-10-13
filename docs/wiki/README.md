@@ -52,11 +52,16 @@ See what's built vs. what needs work | [13 — Build status (living)](13-status.
 
 ## The fastest possible orientation
 
-- **One package matters most:** `packages/uwmd-core` (`@uwmd/core`). Everything
-  else depends on it; its runtime dependencies are `fast-xml-parser` and `fflate`,
-  with `@anthropic-ai/sdk` an optional peer dependency for the Anthropic provider.
-- **The public API is a single file:** [`packages/uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts).
-  If a symbol isn't exported there, tools can't use it.
+- **Two packages matter most** (RFC 0083): `packages/uwmd-verify`
+  (`@uwmd/verify`, the reference implementation of the standard, runtime
+  dependencies `fast-xml-parser` and `fflate`, no `@uwmd/*` dependency) and
+  `packages/uwmd-core` (`@uwmd/core`, the starter toolkit on top, which
+  re-exports all of verify; `@anthropic-ai/sdk` is its optional peer for the
+  Anthropic provider). Everything else depends on one or both.
+- **The public API is one file per package:** [`packages/uwmd-verify/src/index.ts`](../../packages/uwmd-verify/src/index.ts)
+  for the standard, and [`packages/uwmd-core/src/index.ts`](../../packages/uwmd-core/src/index.ts)
+  (`export * from '@uwmd/verify'` plus the starter exports). If a symbol isn't
+  exported there, tools can't use it.
 - **The contract is versioned normative text:** [`spec/UW_FORMAT_SPEC.md`](../../spec/UW_FORMAT_SPEC.md)
   defines the single Format 3.0 contract, [`spec/UW_PROTOCOL.md`](../../spec/UW_PROTOCOL.md)
   ("UW Protocol — verification") defines how any party verifies a document,

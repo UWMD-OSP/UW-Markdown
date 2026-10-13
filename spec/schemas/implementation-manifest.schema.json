@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/implementation-manifest.schema.json",
   "title": "UW Implementation Manifest",
-  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, verification profiles, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/core/protocol.ts. See UW_PROTOCOL.md §I.4 and Part II (Protocol 4.0 conformance model, RFC 0078).",
+  "description": "Self-declaration that any conforming UW Markdown implementation SHOULD expose so consumers can discover what tier, verification profiles, capabilities, and asset classes it supports. Mirrors the ImplementationManifest interface in @uwmd/verify's protocol.ts. See UW_PROTOCOL.md §I.4 and Part II (Protocol 4.0 conformance model, RFC 0078).",
   "type": "object",
   "required": [
     "id",

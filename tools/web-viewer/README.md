@@ -32,7 +32,7 @@ Drop any `.uw.md` file onto the drop zone (try
 - Quick-metrics panel with canonical display formatting:
   currency `$1,234,567`, percent `5.51%`, ratio `1.234x`, null `n/a`.
 - Section cards driven by `BUILTIN_VIEW_MODELS` from
-  [`packages/uwmd-core/src/protocol.ts`](../../packages/uwmd-core/src/protocol.ts).
+  [`packages/uwmd-verify/src/protocol.ts`](../../packages/uwmd-verify/src/protocol.ts).
 - Click-to-expand detail rows.
 - Pipeline state timeline.
 - Active and blocking flag panels with severity styling.

@@ -7,7 +7,9 @@
 - **Lint:** Biome 1.9.4 (`biome.json`), lint-only.
 - **Tests:** Vitest 3.x per package.
 - **Build:** TypeScript `tsc` per package (root `build` fans out via
-  `--workspaces --if-present`).
+  `--workspaces --if-present`, in the root `workspaces` order: `uwmd-verify`
+  first, then `uwmd-core`, because every other package compiles against one or
+  both of their `dist/`).
 - **Schema validation:** Ajv 8 + `ajv-formats` (root devDeps).
 
 Root `package.json` scripts:
@@ -16,26 +18,34 @@ Script | Does
 ---|---
 `npm run build` | `tsc` across all workspaces
 `npm test` | Vitest across all workspaces
-`npm run test:coverage` | `@uwmd/core` coverage
+`npm run test:coverage` | `@uwmd/verify` then `@uwmd/core` coverage, each against its own floor
 `npm run cli -- <cmd>` | Run the CLI from source (`packages/uwmd-cli/bin/uwmd.mjs`)
 `npm run conformance` | `scripts/run-conformance.mjs` (every indexed Reader, Verifier, profile and starter-product check by default)
 `npm run validate-schemas` | `scripts/validate-schemas.mjs`
 `npm run verify-packages` | `scripts/verify-packages.mjs` — what `npm pack` would actually ship
 `npm run verify-lockfile` | `scripts/verify-lockfile.mjs` — every `@uwmd/*` reference links to this tree, and cross-package pins match declared versions
-`npm run verify-versions` | `scripts/verify-versions.mjs` — the `VERSIONS.md` matrix matches every package manifest and the `protocol.ts` constants
+`npm run verify-versions` | `scripts/verify-versions.mjs` — the `VERSIONS.md` matrix matches every package manifest (`@uwmd/verify` included) and the `protocol.ts` constants (`packages/uwmd-verify/src/protocol.ts`)
 `npm run verify-indexes` | `scripts/verify-indexes.mjs` — the schema/RFC indexes match files on disk, and `CLAUDE.md` stays a pointer to `AGENTS.md`; tests cover automatic RFC discovery and site version metadata, and `scripts/spec-refs.mjs` checks that every `§` target in the Format and Protocol specs, every `spec_ref` in `protocol.ts`, and every spec link into `spec/` or `docs/starter/` resolves
-`npm run verify-codes` | `scripts/verify-codes.mjs` — every code an implemented RFC or the format spec promises is one `@uwmd/core` actually emits, and every emitted validation family is registered in protocol §XI
+`npm run verify-codes` | `scripts/verify-codes.mjs` — every code an implemented RFC or the format spec promises is one the library (`@uwmd/verify` or `@uwmd/core`) actually emits, and every emitted validation family is registered in protocol §XI
 `npm run verify-release` | `scripts/verify-release.mjs` — every CHANGELOG section marked `### Released` has its tag, with no exception, and a dated generation's records are final and publication-neutral (`release-state.mjs`); `-- --tag vX.Y.Z` checks the tree as that release
 `npm run lint` / `npm run format` | Biome lint / format
 
 > Typical loop after a core change: `npm run build && npm test && npm run
-> conformance`. `@uwmd/core`'s `prepublishOnly` chains build + test + conformance
-> + schema validation, so a publish can't skip them.
+> conformance`. `@uwmd/verify`'s and `@uwmd/core`'s `prepublishOnly` chain
+> build + test + conformance + schema validation (core's builds verify first),
+> so a publish can't skip them.
+>
+> The verify-* guards hardcode their workspace lists. A new package passes
+> them unchecked unless it is added to each: `verify-lockfile` (which also
+> fails when a root workspace is missing from its list), `verify-versions`
+> (a matrix row), `verify-packages` (pack and type-check), and
+> `release-packages.mjs` with `check-release-readiness.mjs`. `@uwmd/verify`
+> was added to all of them in RFC 0083 Phase 2.
 
 ## Versioning (semver-per-surface)
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
-- **Format** — `FORMAT_VERSION` in `protocol.ts` (3.0, RFC 0081) and
+- **Format** — `FORMAT_VERSION` in `protocol.ts` (`@uwmd/verify`; 3.0, RFC 0081) and
   `uw_version` in files. It equals the one member of
   `SUPPORTED_FORMAT_VERSIONS`; a reader refuses every other version.
 - **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (Stable 4.0.0 after
@@ -61,7 +71,13 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Packages** — each `package.json`; consult the current matrix rather than
   assuming every package has core's version. Dependents pin `@uwmd/*` to an exact
   version, so a core bump is a repin of all of them in the
-  same change — `npm run verify-lockfile` fails if one is forgotten. Because the
+  same change — `npm run verify-lockfile` fails if one is forgotten.
+  `@uwmd/verify` (RFC 0083) versions independently from 0.1.0 and pins no
+  `@uwmd/*` package; core, signing, batch and lake pin it exactly, so a verify
+  bump is a repin (and version bump) of those four. Its `VERIFY_VERSION`
+  (`packages/uwmd-verify/src/version.ts`) is the engine identity a receipt
+  issued directly through verify records, held to its manifest by its
+  `version.test.ts`. Because the
   pin is exact, every dependent must also take its own version bump: a
   republished `0.2.0` carrying a different pin is not something npm allows, so
   leaving one behind means its repin never ships.
@@ -103,8 +119,13 @@ exception. `### Released` is added only after the tag exists, so `main` can
 never claim a release that has no tag.
 
 Before pushing the tag, confirm a **trusted publisher exists on npmjs.com for
-all seven publishing packages (core, CLI, signing, batch, Excel, report and
-lake)** (below). The tag is the trigger, so a
+every publishing package of the generation**: seven for 4.0.x (core, CLI,
+signing, batch, Excel, report and lake) and eight from 4.1.0, which adds
+`@uwmd/verify` (below). `@uwmd/verify` is a new package name: npm requires it
+to exist before its trusted publisher can be configured, so the owner
+provisions it with the bootstrap under "Account prerequisite / bootstrap"
+before the first tag that publishes it. That is an owner prerequisite, not a
+workflow step. The tag is the trigger, so a
 missing publisher fails the job after every gate has already passed.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
@@ -137,7 +158,7 @@ when the release workflow runs.
        contents;
      - bare matrix version cells for the generation's publishing packages, with exact
        pairings (four through 2.17.0; six through 2.21.x; nine from 2.22.0 through
-       3.x; seven from 4.0.0);
+       3.x; seven for 4.0.x; eight from 4.1.0);
      - a core row that pairs with `PROTOCOL_VERSION`, and a CLI that pins core
        exactly;
      - a Protocol row with no annotation;
@@ -217,9 +238,13 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   portable driver with `--no-skip`, and the capability-skip controls. No live
   model is called: agent checks run as deterministic replays.
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
-  the seven packages `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`,
-  `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake`, core first
-  because every other package pins it exactly. Excel, report and lake joined after 2.21.x; each already
+  the eight packages `@uwmd/verify`, `@uwmd/core`, `@uwmd/cli`,
+  `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and
+  `@uwmd/lake`. `@uwmd/verify` publishes first because core, signing, batch
+  and lake pin it exactly, and core second because the rest pin it exactly;
+  `release:check` enforces that every package publishes after each `@uwmd/*`
+  package it pins. `@uwmd/verify` joins from 4.1.0 (RFC 0083); 4.0.x published
+  the other seven. Excel, report and lake joined after 2.21.x; each already
   existed on npm, which a trusted publisher requires (a deprecated stray
   `0.3.0` of Excel and report, and lake `0.2.9`, published by hand from
   `v2.21.0` on 2026-10-11). Authentication is **npm trusted publishing
@@ -269,9 +294,11 @@ is required solely to distribute these existing implementations.
 from 2.18.0; no module-only trigger or new tag family exists. Releases through
 2.17.0 retain their actual four-package publication scope. `release-packages.mjs`
 selects four rows for generations at or below 2.17.0, six through 2.21.x
-(including patch generations), nine from 2.22.0 through 3.x and seven from
-4.0.0; these boundaries record history and do not select the next release
-version. The module rows are names only: their sources no longer exist. Historical tags and
+(including patch generations), nine from 2.22.0 through 3.x, seven for 4.0.x
+and eight from 4.1.0. These boundaries record history and do not select the
+next release version, with one exception: RFC 0083 fixed the eight-package
+boundary at 4.1.0 ahead of time, because core/CLI 4.1.0 is the release that
+first publishes `@uwmd/verify` (RFC 0083 Decisions). The module rows are names only: their sources no longer exist. Historical tags and
 publication records stay immutable.
 
 **Retirement (RFC 0080 §6).** The 3.0.0 transition release publishes 0.2.0 of
@@ -322,9 +349,13 @@ selected exact versions, using publication-neutral wording in the tagged tree.
 view models, exported JSON, README, package metadata and the complete root MIT
 notice. `verify-packages` checks artifacts, license equality and manifest parity;
 `verify-versions` checks the package/contract/schema/ID/ranges/tier/core columns
-in `VERSIONS.md` without a build. `release:check` covers all seven publishing
-packages, including exact core dependencies, public exports, OIDC metadata and
-core publishing before its dependents. `verify-packages` refuses a publishing
+in `VERSIONS.md` without a build. `release:check` covers all eight publishing
+packages, including exact `@uwmd/*` dependencies (`@uwmd/verify` pins none,
+core pins verify, every other package pins core or verify), public exports,
+OIDC metadata and the publication order (`@uwmd/verify` first, then every
+package after each one it pins). `verify-packages` also installs only
+`@uwmd/verify`'s tarball and its runtime dependencies in an empty directory,
+type-checks a consumer of both entries and runs it. `verify-packages` refuses a publishing
 package with a workspace-only dependency (`file:`, `link:`, `workspace:`), an
 inexact `@uwmd/*` pin, or an export or bin target missing from its tarball.
 Repository workspace-link rules remain unchanged; external consumers correctly

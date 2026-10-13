@@ -52,10 +52,21 @@ function install(consumer, name, dir, files) {
   }
 }
 
-/** Copy the third-party packages a consumer needs from this checkout's node_modules. */
+/**
+ * Copy the third-party packages a consumer needs from this checkout's hoisted
+ * node_modules: verify's runtime dependencies with everything they depend on
+ * (the smoke run below loads them), and the Node types for the compile.
+ */
 function installThirdParty(consumer) {
-  for (const dependency of ['fflate', 'fast-xml-parser', '@types/node', 'undici-types']) {
+  const pending = ['fflate', 'fast-xml-parser', '@types/node', 'undici-types'];
+  const copied = new Set();
+  while (pending.length > 0) {
+    const dependency = pending.pop();
+    if (copied.has(dependency)) continue;
+    copied.add(dependency);
     cpSync(resolve('node_modules', dependency), join(consumer, 'node_modules', dependency), { recursive: true });
+    const manifest = JSON.parse(readFileSync(resolve('node_modules', dependency, 'package.json'), 'utf8'));
+    pending.push(...Object.keys(manifest.dependencies ?? {}));
   }
 }
 

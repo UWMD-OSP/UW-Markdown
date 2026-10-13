@@ -22,7 +22,7 @@ data *in*, the calc engine derives metrics *out*, with no AI involved.
 > quantized value; it does not have to run this engine. Conformance tiers are
 > Reader and Verifier; the old "Tier-3 Calc Host" is retired.
 
-- **Location:** [`packages/uwmd-core/src/calc/`](../../packages/uwmd-core/src/calc/)
+- **Location:** [`packages/uwmd-verify/src/calc/`](../../packages/uwmd-verify/src/calc/)
 - **Normative grammar/semantics:** `UW_PROTOCOL.md` §VIII (the parts listed
   above); metric definitions: [`spec/metrics/builtin.json`](../../spec/metrics/README.md).
 - **Public API (via `index.ts`):** `evaluateCalc`, `parseExpression`, `evaluate`,
@@ -32,7 +32,7 @@ data *in*, the calc engine derives metrics *out*, with no AI involved.
 
 File | Role
 ---|---
-`calc/index.ts` | Entry point: `evaluateCalc(decl, ctx)` — parse → evaluate → quantize → `CalcResult` with no `display`; the `evaluateCalc` core exports (`../calc-display.ts`) adds the starter `display` string (RFC 0083)
+`calc/index.ts` | Entry point: `evaluateCalc(decl, ctx)` — parse → evaluate → quantize → `CalcResult` with no `display`; the `evaluateCalc` `@uwmd/core` exports (core's `calc-display.ts`) adds the starter `display` string (RFC 0083)
 `calc/parser.ts` | Tokenizer + recursive-descent parser → `Expr` AST
 `calc/evaluator.ts` | AST walker; variable resolution + null propagation
 `calc/builtins.ts` | The `BUILTINS` function table (math + financial)
@@ -188,7 +188,7 @@ hard caps:
 - `MAX_NODES = 1024` AST nodes evaluated → `CALC-LIMIT-001`.
 
 These bounds, plus the lack of loops/recursion in the grammar, guarantee
-termination. Property tests (`calc.property.test.ts`) assert *totality*: any
+termination. Property tests (`calc.property.test.ts`, in `@uwmd/verify`) assert *totality*: any
 input either parses to a valid AST or throws a typed `CalcError` — never a generic
 `Error`, never a hang.
 

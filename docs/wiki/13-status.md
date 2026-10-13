@@ -135,6 +135,24 @@ remain outside the current released contract. RFC 0070 shipped subsequently in 2
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
+## Unreleased on main: the `@uwmd/verify` split (RFC 0083, 2026-10-13)
+
+[RFC 0083](../rfcs/0083-verify-package-split.md) is accepted and lands in
+three phases. Phase 1 (PR #317) drew the standard/starter line inside core and
+added `verifyStatedMetrics`. Phase 2 creates `packages/uwmd-verify`
+(`@uwmd/verify` 0.1.0, **unpublished**): the standard modules moved there with
+their tests, core depends on it exactly and re-exports its whole surface, and
+signing, batch, lake and the VS Code extension build on it. No public name of
+`@uwmd/core` or `@uwmd/core/browser` was removed; the browser entry gained the
+integrity verifiers and the other names verify exports. Receipts, `uwmd
+manifest`, every conformance expectation (1,069 checks; the lender fixture at
+187/0/0) and the portable driver are unchanged. No package version moved:
+core/CLI stay 4.0.1, and signing 0.3.1, batch 0.8.23 and lake 0.2.12 now pin
+`@uwmd/verify` 0.1.0 in source without a version bump of their own. Phase 3
+is the release: core/CLI 4.1.0 with `@uwmd/verify` 0.1.0, which must bump
+signing, batch and lake (their pins changed) and needs a trusted publisher for
+the new `@uwmd/verify` name on npmjs.com first (an owner step, wiki 11).
+
 ## CLI reporting clarity (2026-10-03; core/CLI 2.18.0)
 
 Human-readable CLI validation distinguishes validity, Stage Readiness (workflow
@@ -735,6 +753,9 @@ The guards:
 
 ## Remaining work
 
+- RFC 0083 Phase 3: release core/CLI 4.1.0 with `@uwmd/verify` 0.1.0 (see
+  [the split](#unreleased-on-main-the-uwmdverify-split-rfc-0083-2026-10-13)).
+  Owner prerequisite: a trusted publisher for `@uwmd/verify` before the tag.
 - [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md) (#266, merged as
   PR #276) and [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md)
   (merged as PR #277; D1–D7 accepted 2026-10-06) shipped in 2.19.0 with

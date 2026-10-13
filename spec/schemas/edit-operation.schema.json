@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/edit-operation.schema.json",
   "title": "UW Markdown Edit Operation",
-  "description": "A discrete edit a Tier-2 Editor applies to a parsed .uw.md file. Discriminated union over the four operation kinds. Mirrors the EditOperation type union in @uwmd/core/protocol.ts. See UW_PROTOCOL.md §V for semantics, BUILTIN_EDIT_POLICIES for authority, and §V.6 for the immutable frontmatter fields.",
+  "description": "A discrete edit a Tier-2 Editor applies to a parsed .uw.md file. Discriminated union over the four operation kinds. Mirrors the EditOperation type union in @uwmd/verify's protocol.ts. See UW_PROTOCOL.md §V for semantics, BUILTIN_EDIT_POLICIES for authority, and §V.6 for the immutable frontmatter fields.",
   "oneOf": [
     { "$ref": "#/$defs/FrontmatterSet" },
     { "$ref": "#/$defs/SectionReplace" },

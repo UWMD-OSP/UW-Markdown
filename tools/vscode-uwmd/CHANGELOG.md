@@ -1,5 +1,15 @@
 # vscode-uwmd changelog
 
+## [Unreleased]
+
+### Changed
+- **Built on `@uwmd/verify`** (RFC 0083), the reference implementation of the
+  standard, in place of `@uwmd/core`: the extension only parses, validates and
+  verifies receipts. Validation is unchanged. The receipt check now identifies
+  its engine as `@uwmd/verify`, so a disagreement on a receipt that
+  `@uwmd/core` issued reports `unverifiable` (`RCP-07`, the engines differ)
+  rather than `failed`; a matching receipt still verifies.
+
 ## [0.2.0]
 
 ### Fixed

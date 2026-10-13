@@ -31,6 +31,11 @@ here.
 - **Versioned with the packages.** Starter products change with their
   package versions only. There is no starter-guide version, and a change
   here does not move the Protocol version (RFC 0078 D13).
+- **Packaged apart from the standard.** The reference implementation of the
+  standard is `@uwmd/verify` (RFC 0083): what a verifier needs, and nothing
+  this guide describes. The starter products are `@uwmd/core` and the tools
+  built on it; core depends on `@uwmd/verify` and re-exports it, so a starter
+  tool needs only `@uwmd/core`, and a verifier needs only `@uwmd/verify`.
 - **Still tested.** Starter checks remain blocking CI checks, owned by this
   guide and tagged `starter-products` in the [runtime corpus index](../../conformance/corpus-index.json).
   `starter/editor/`, `starter/agent/`,

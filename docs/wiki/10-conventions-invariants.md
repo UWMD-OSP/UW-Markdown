@@ -43,6 +43,11 @@ figures."* Agents may write an *input* a formula reads (e.g.
 ### 2. Dependency layering
 *Repository structure, both layers.*
 - Spec depends on nothing (changes need an RFC).
+- `@uwmd/verify` (RFC 0083) depends on no `@uwmd/*` package and no vendor SDK:
+  its runtime dependencies are `fast-xml-parser` and `fflate`, and its
+  `standard-closure.test.ts` refuses any other import. `@uwmd/core` depends on
+  it at an exact version and imports it only through its public entry, never a
+  deep path into the package.
 - `@uwmd/core` takes no vendor SDK as a hard dependency. `@anthropic-ai/sdk` is an
   **optional peer dependency**, reached only through a dynamic import in
   `agents/providers/anthropic.ts` — so importing `@uwmd/core` never loads it, and
@@ -52,7 +57,8 @@ figures."* Agents may write an *input* a formula reads (e.g.
   imported by code that must run in a browser (parser, validator, calc, packs)
   must not transitively pull in the SDK. Web tools import from
   `@uwmd/core/browser`.
-- Tools depend on `@uwmd/core` + their own stack. **Tools never import other tools.**
+- Tools depend on `@uwmd/core` (or only `@uwmd/verify`, when they only read
+  and verify) + their own stack. **Tools never import other tools.**
 - Conformance fixtures depend on nothing (pure data).
 
 ### 3. Editor byte preservation
