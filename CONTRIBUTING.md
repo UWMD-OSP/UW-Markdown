@@ -99,8 +99,9 @@ status values.
 
 ## Adding a conformance fixture
 
-Fixtures live under `conformance/tier-N-*/fixtures/` with expected outputs in
-`conformance/tier-N-*/expected/`. To add a fixture:
+Fixtures live under a content directory such as `conformance/documents/fixtures/`,
+`conformance/calc/fixtures/` or `conformance/starter/<editor|agent|refinement>/fixtures/`,
+with expected outputs in the matching `expected/` directory. To add a fixture:
 
 1. Place the input `.uw.md` (or before/after pair, or calc input, depending on
    the tier) in the relevant `fixtures/` directory with a numeric prefix.

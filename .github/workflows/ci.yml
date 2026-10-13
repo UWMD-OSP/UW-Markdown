@@ -159,7 +159,7 @@ jobs:
 
       - name: Run conformance suite (every default suite)
         # Deliberately not a pinned --tier list. The pinned list silently
-        # excluded the Tier-4 replay suite after it landed, so a suite could be
+        # excluded the agent replay suite after it landed, so a suite could be
         # added to the runner's default and never actually gate a pull request.
         run: npm run conformance
 
@@ -342,6 +342,6 @@ jobs:
         run: npm test
       - name: Run conformance suite (every default suite)
         # Deliberately not a pinned --tier list. The pinned list silently
-        # excluded the Tier-4 replay suite after it landed, so a suite could be
+        # excluded the agent replay suite after it landed, so a suite could be
         # added to the runner's default and never actually gate a pull request.
         run: npm run conformance

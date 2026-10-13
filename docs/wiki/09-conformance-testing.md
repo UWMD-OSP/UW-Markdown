@@ -140,8 +140,8 @@ Unknown owners, duplicate/missing results and unindexed portable identities
 fail the gate, as does a runner suite with no index rows or an indexed suite
 with no runner. Baseline updates require full runs or `--suite`; a target
 filter is refused because mixed-suite updates could alter unselected baselines.
-A family includes its child suites (`starter-refinement` under `3`, `starter-agent-profile`
-under `4`); baseline updates selecting only a child suite are refused.
+A family includes its child suites (`starter-refinement` under `calc`, `starter-agent-profile`
+under `starter-agent`); baseline updates selecting only a child suite are refused.
 The descriptions below use the content paths introduced by RFC 0081 Phase 5.
 
 
