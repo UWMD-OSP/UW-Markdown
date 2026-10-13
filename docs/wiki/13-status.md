@@ -169,8 +169,8 @@ generation. RFC 0081 deleted both from the repository, and 4.0.0 did not
 publish them. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
-RFC 0043 binding API is published; the full Excel exporter remains available
-from source. Native Excel 16.0 build 20326 passed
+RFC 0043 binding API and the full Excel exporter (`@uwmd/excel`) are both
+published. Native Excel 16.0 build 20326 passed
 14 scenarios / 48 cell checks. Reverse import of additional inputs refuses.
 
 ## Verification
@@ -519,14 +519,14 @@ No Format/Protocol, loader, signature-policy or financial behavior changes.
 Data-center conformance is structurally complete as a reference module: six
 dedicated runtime scenarios, 26 module tests, 11 calculations, seven
 validations, and explicit fallback/degraded behavior. The Mesa Gateway fixture
-is synthetic and the module package remains unpublished, so adopter validation
-is still open. The built-in library covers nine calculation packs; mixed-use is
+is synthetic, so adopter validation is still open. Data center is now a builtin
+class (RFC 0080) and its module package was deleted by RFC 0081. The built-in library covers nine calculation packs; mixed-use is
 composition rather than a standalone pack.
 
 RFC 0048 is released in 2.10.0: standalone
 document/package examples with their own `standalone` conformance suite.
-RFC 0049 is implemented in development as `@uwmd/lake` **0.2.0**
-(`packages/uwmd-lake`, unpublished): a PostgreSQL/JSONB lake adapter that plans
+RFC 0049 is implemented as `@uwmd/lake` (`packages/uwmd-lake`; **0.2.11**,
+published since 3.0.0): a PostgreSQL/JSONB lake adapter that plans
 idempotent digest-keyed upserts over six tables from canonical envelopes,
 `block_values` facts, receipts, package manifests and source-evidence
 references. Raw canonical JSON sits in `jsonb` beside typed shadow columns, so

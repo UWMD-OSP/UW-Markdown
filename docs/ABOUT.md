@@ -134,9 +134,9 @@ detail it leaves out.
 - **Companion packages on npm.** `@uwmd/signing` for block and receipt
   signatures, and `@uwmd/batch`, which indexes a folder of deals into a corpus
   fact table.
-- **Open-source packages not yet published to npm.** The Excel exporter, the
-  report renderer and the PostgreSQL lake adapter build from source in the
-  repository. Hospitality and data center are builtin asset classes; their
+- **More packages on npm.** `@uwmd/excel` (the Excel exporter),
+  `@uwmd/report` (the report renderer) and `@uwmd/lake` (the PostgreSQL lake
+  adapter) have published with every release since 3.0.0. Hospitality and data center are builtin asset classes; their
   former module packages remain only as compatibility shells.
 - **Representations and bindings.** The same record round-trips through UW
   JSON, UW XML, and a CSV bundle, each with a semantic digest. Optional HTTP and

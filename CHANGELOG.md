@@ -14,6 +14,24 @@ protocol, and each package each carry an independent semver).
   from `tools/web-editor/package.json` for the footer and the receipt
   `issuer`, which hard-coded `@uwmd/web-editor 0.5.0` while the package was
   0.8.0.
+- `deriveSourcesUses` (starter sources & uses footing) counts a typed
+  `uses.renovation` as `budget + contingency`, the amount the retired
+  renovation scalars contributed (RFC 0081 §7). It summed every renovation
+  leaf, so the draw group (`contingency_used`, `drawn_to_date`) and
+  `contingency_remaining` were counted again as uses; this was the owner-Q3
+  double count RFC 0081 left out of scope. Format §4.8's footing paragraph now
+  states the rule. Derived totals change only for the 16 `conformance/capex/`
+  documents whose renovation states more than budget and contingency (e.g.
+  `accept-draw-with-verified-remaining` 6,850,000 → 4,500,000); no
+  `examples/` total, stated value, calc baseline or receipt changes, and the
+  lender fixture stays 187/0/0.
+- `@uwmd/signing` exports `SIGNING_VERSION` read from its own `package.json`;
+  the hand-kept literal said `0.2.0` in the published 0.3.0. A test pins it to
+  the manifest.
+- Status, roadmap and about pages no longer call the Excel exporter, report
+  renderer or lake adapter unpublished or "available from source"; all three
+  have published with every release since 3.0.0. The wiki's web-editor heading
+  names its current 0.8.0.
 
 ## [4.0.0] - 2026-10-12
 

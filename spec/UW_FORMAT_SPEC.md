@@ -2067,7 +2067,7 @@ occupancy carrying its own `ti_lc_capex`, which is what downtime is.
 
 ---
 
-**Derived uses footing (RFC 0081 G1).** When uses is stated, its derived total is the sum of its numeric leaves, plus each interest/operating escrow upfront once and each rate_hedge premium in active debt_structure once. Other escrow names remain uncounted. Typed renovation leaves retain their existing sum; this does not change the separate renovation draw-field double-count defect deferred by owner Q3. A producer states each fact in one home only.
+**Derived uses footing (RFC 0081 G1).** When uses is stated, its derived total is the sum of its numeric leaves, plus each interest/operating escrow upfront once and each rate_hedge premium in active debt_structure once. Other escrow names remain uncounted. A typed `renovation` contributes its `budget` plus its `contingency`, the amount the retired renovation scalars contributed (RFC 0081 §7). Its draw group and `contingency_remaining` record how much of that amount was disbursed as of `as_of_date` (`CAPX-02`–`CAPX-04`) and are not further uses. Neither they nor `expense_targeted` adds to the total. A producer states each fact in one home only.
 
 ### § 4.9 — DCF & Hold Period Analysis
 

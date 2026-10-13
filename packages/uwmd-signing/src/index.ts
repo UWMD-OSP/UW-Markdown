@@ -55,5 +55,4 @@ export type { CapabilityTokenClaims, CapabilityVerifierOptions } from './capabil
 export { signModule, stampModuleSignature, createModuleSignatureVerifier } from './modules.js';
 export type { SignModuleOptions } from './modules.js';
 
-export const SIGNING_PACKAGE_NAME = '@uwmd/signing' as const;
-export const SIGNING_VERSION = '0.2.0';
+export { SIGNING_PACKAGE_NAME, SIGNING_VERSION } from './version.js';
