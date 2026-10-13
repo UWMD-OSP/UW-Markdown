@@ -94,8 +94,9 @@ this library; tools depend on it.
 | `renderer.ts` | HTML / Markdown rendering paths. PDF/DOCX are stubs deferred to a third-party pipeline. |
 | `runner.ts` + `agents/` | Starter agent host. `runBancroftAgent` is the Claude-backed reference implementation; the contract (`protocol.ts` types, [starter guide](docs/starter/ai-host.md)) is provider-neutral. |
 | `calc/` | `parser.ts` (recursive-descent), `evaluator.ts` (AST walker), `builtins.ts` (financial + math primitives). The evaluator is sandboxed: capped input, no globals, no I/O. |
-| `packs/` | One pack per builtin asset class, each equal to its normative `spec/metrics/` entries (`metric-dictionary.test.ts`). `excel-emit.ts` translates the same AST to Excel formulas, and the pack tests assert the two paths agree exactly after §VIII.5 quantization (a starter-product quality bar). |
-| `protocol.ts` | `BUILTIN_VIEW_MODELS`, `BUILTIN_EDIT_POLICIES`, the AI-host contract types. |
+| `builtin-packs/` + `packs/` | One pack manifest per builtin asset class in `builtin-packs/` (standard data), each equal to its normative `spec/metrics/` entries (`metric-dictionary.test.ts`); `packs/` re-exports them. `packs/excel-emit.ts` translates the same AST to Excel formulas, and the pack tests assert the two paths agree exactly after §VIII.5 quantization (a starter-product quality bar). |
+| `protocol.ts` | The normative contract types, `BUILTIN_EDIT_POLICIES`, `BUILTIN_REMEDIATIONS`, version constants. |
+| `starter-protocol.ts` | Starter tables: `BUILTIN_VIEW_MODELS`, number formats, `CASCADE_ORDER`, the AI-host and capability-token types (RFC 0083). |
 | `format.ts` | Field-level formatters (currency, percent, multiple, etc.) used by view models. |
 | `context.ts` | `BANCROFT_LAYERS` definitions and `buildAgentContext`. |
 | `compactor.ts` | Materializes "live view" by collapsing superseded blocks. |

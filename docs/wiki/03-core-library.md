@@ -493,7 +493,18 @@ its static import graph (`import`/`export … from`, dynamic `import()` and
 `import('…')` types). It fails when a standard module reaches a module outside
 the list, or names `@anthropic-ai/sdk`. A standard module needs a starter
 service only through injection, as `bindings.ts` takes its edit adapter; a new
-standard module goes on the list.
+standard module goes on the list. Standard modules may import packages only
+from an allow-list: `fast-xml-parser`, `fflate`, and the one runtime-guarded
+`await import('node:crypto')` in `integrity.ts` (Web Crypto elsewhere).
+
+`verifyStatedMetrics(parsed, options?)` (`metric-verification.ts`) checks every
+numeric statement of the document's dictionary metrics and returns one
+`verified`, `failed` or `unverifiable` result per statement. Stated precision
+(RFC 0079) comes from the source: each block's `rawJson` and the frontmatter
+text. A document decoded from an envelope or another representation
+(`fromUWEnvelope`) has neither, so pass `options.statedDecimals` (keyed by
+`section.path` or `quick_metrics.<id>`); without it a rounded statement is
+`unverifiable` with reason `missing_stated_precision`.
 
 ## Where to start, by task
 

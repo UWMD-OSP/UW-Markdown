@@ -139,7 +139,7 @@ Path | Used by
 > the section's *inner* user data; `.net_operating_income` then drills in. See
 > [04 — Calc engine › Variable resolution](04-calc-engine.md).
 
-## Display view models (`BUILTIN_VIEW_MODELS` in `protocol.ts`)
+## Display view models (`BUILTIN_VIEW_MODELS` in `starter-protocol.ts`)
 
 For rendering, each section has a `SectionViewModel` with `primary_fields` and
 `detail_fields` (`FieldViewHint`: `path`, `label`, `kind`

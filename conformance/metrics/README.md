@@ -35,8 +35,11 @@ value, source decimals, comparison decimals and state. RFC 0079 compares the
 unrounded result at `min(max(source decimals, minimum), round_to)`. Coarse
 statements are checked at the minimum: exact `0.07` verifies and DSCR `1.5`
 versus `1.7` fails. Missing/null inputs, invalid operands, nonfinite results and
-resolution refusals are **unverifiable**. Missing source precision is a typed
-caller error, not an unverifiable precision state. Definitions or inputs not stated are not invented or counted
+resolution refusals are **unverifiable**. Missing precision passed to the
+comparison API (`verifyStatedMetric`) is a typed caller error; at document level
+`verifyStatedMetrics` reports a statement whose source token it cannot read
+(an envelope-decoded document, for example) as unverifiable
+`missing_stated_precision`. Every fixture statement has its source token. Definitions or inputs not stated are not invented or counted
 as numeric claims. The market-data example therefore has zero claims; standalone
 deal examples each state one primary size.
 
@@ -115,4 +118,4 @@ immutability; source-token trailing zeroes, exponents, escaped/nested keys,
 a payload member named `content`, YAML comments; coarse exact/wrong statements, all twelve LTV denominators and lazy fallbacks,
 minimum precision, output ceilings and
 no double rounding. Dictionary/pack/size completeness is separately enforced by
-`packages/uwmd-core/src/packs/metric-dictionary.test.ts`.
+`packages/uwmd-core/src/builtin-packs/metric-dictionary.test.ts`.

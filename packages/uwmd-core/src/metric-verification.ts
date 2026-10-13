@@ -26,12 +26,18 @@ import { readYamlScalar } from './yaml-scalar.js';
 /** A dictionary entry a statement is checked against. */
 export type StatedMetricDefinition = MetricDictionaryCalculation | MetricDictionarySize;
 
-/** Why a statement could not be checked. Calc refusals carry their `CALC-*` code. */
+/**
+ * Why a statement could not be checked. Calc refusals carry their `CALC-*` code.
+ * `missing_stated_precision`: the document view carries no source token for the
+ * statement (RFC 0079 compares at the stated precision) and the caller supplied
+ * none.
+ */
 export type StatedMetricUnverifiableReason =
   | 'missing_or_invalid_size'
   | 'missing_or_null_input'
   | 'nonfinite_or_nonnumeric_result'
   | 'no_numeric_statement'
+  | 'missing_stated_precision'
   | 'evaluation_error'
   | (string & {});
 
@@ -79,9 +85,13 @@ export interface VerifyStatedMetricsOptions {
   /** Where statements live. Defaults to the canonical id at the builtin output section roots. */
   bindings?: StatedMetricBindings;
   /**
-   * Source decimals by unvaried address (`section.path`), for statements whose
-   * numeric spelling the parsed document does not carry in `rawJson` (a view
-   * built from UW Lite anchors, for example). Takes precedence over the source.
+   * Source decimals by unvaried address (`section.path`, or
+   * `quick_metrics.<id>`), for statements whose numeric spelling the parsed
+   * document does not carry: a view built from UW Lite anchors, or a document
+   * decoded from an envelope or another representation (`fromUWEnvelope`),
+   * which has no `rawJson` or frontmatter source text. Takes precedence over
+   * the source. A rounded statement with no precision from either is
+   * `unverifiable` with reason `missing_stated_precision`.
    */
   statedDecimals?: ReadonlyMap<string, number>;
 }
@@ -89,10 +99,11 @@ export interface VerifyStatedMetricsOptions {
 /**
  * The output section roots searched by default: the sections where the
  * builtin examples state dictionary metrics under their canonical ids
- * (`conformance/metrics/statement-bindings.json`). No aliases by default;
- * the conformance aliases bind existing example fields only.
+ * (`conformance/metrics/statement-bindings.json`; a test pins the two equal).
+ * No aliases by default; the conformance aliases bind existing example fields
+ * only. Module-level, not part of the public surface.
  */
-const DEFAULT_BINDINGS: StatedMetricBindings = Object.freeze({
+export const DEFAULT_STATED_METRIC_BINDINGS: StatedMetricBindings = Object.freeze({
   output_sections: Object.freeze([
     'valuation', 'debt_structure', 'noi_model', 'rent_roll', 'property', 'components',
     'dc_capacity', 'dc_power', 'dc_revenue', 'mhc_sites', 'hotel_metrics', 'hotel_food_beverage',
@@ -115,6 +126,22 @@ export function verifyStatedMetric(
   sectionVariants?: Readonly<Record<string, string>>,
   statedDecimals?: number,
 ): StatedMetricOutcome {
+  return checkStatement(metric, parsed, stated, sectionVariants, statedDecimals, 'caller_error');
+}
+
+/**
+ * `missingPrecision` says what an absent `statedDecimals` means for a rounded
+ * metric: a caller error at the comparison API (RFC 0079, `CALC-TYPE-001`), or
+ * a document whose source tokens are unavailable (`missing_stated_precision`).
+ */
+function checkStatement(
+  metric: StatedMetricDefinition,
+  parsed: ParsedUWFile,
+  stated: unknown,
+  sectionVariants: Readonly<Record<string, string>> | undefined,
+  statedDecimals: number | undefined,
+  missingPrecision: 'caller_error' | 'unverifiable',
+): StatedMetricOutcome {
   try {
     if (metric.null_semantics === 'finite_stated_number') {
       const block = resolveSectionBlock(parsed, 'property', { sectionVariants });
@@ -133,6 +160,9 @@ export function verifyStatedMetric(
     if (typeof stated !== 'number' || !Number.isFinite(stated)) {
       return { state: 'unverifiable', reason: 'no_numeric_statement', computed: null };
     }
+    if (statedDecimals === undefined && metric.round_to !== null && missingPrecision === 'unverifiable') {
+      return { state: 'unverifiable', reason: 'missing_stated_precision', computed: null };
+    }
     return compareStatedMetric(value, stated, statedDecimals, metric);
   } catch (error) {
     const e = error as { proto?: { code?: string }; code?: string } | null;
@@ -147,15 +177,28 @@ export function verifyStatedMetric(
  * `property`. Every current block variant is checked separately, and a
  * statement is counted at each address, so agreeing and disagreeing copies
  * stay visible. Superseded blocks, prose and scenarios are not statements.
+ *
+ * Stated precision (RFC 0079) is read from the source: each block's `rawJson`
+ * and the frontmatter text in `parsed.raw`. A document decoded from an
+ * envelope or another representation has neither, so its rounded statements
+ * are `unverifiable` (`missing_stated_precision`) unless the caller supplies
+ * `options.statedDecimals` for them. Primary sizes compare raw and need none.
  */
 export function verifyStatedMetrics(
   parsed: ParsedUWFile,
   options: VerifyStatedMetricsOptions = {},
 ): StatedMetricsReport {
   const dictionary = options.dictionary ?? BUILTIN_METRIC_DICTIONARY;
-  const bindings = options.bindings ?? DEFAULT_BINDINGS;
+  const bindings = options.bindings ?? DEFAULT_STATED_METRIC_BINDINGS;
   const precision = options.statedDecimals;
   const source = parsed.raw;
+  // Each block's source JSON is tokenized once, however many statements it holds.
+  const tokens = new Map<UWBlock, Map<string, string> | null>();
+  const blockDecimals = (block: UWBlock, path: string, stated: number): number | undefined => {
+    if (!tokens.has(block)) tokens.set(block, readBlockTokens(block));
+    const numbers = tokens.get(block);
+    return numbers ? decimalsAt(numbers, path, stated) : undefined;
+  };
   const asset_class = parsed.frontmatter.asset_class;
   const statements: Array<{
     metric: StatedMetricDefinition;
@@ -168,7 +211,8 @@ export function verifyStatedMetrics(
   for (const metric of dictionary.calculations.filter((m) => (m.asset_classes as readonly string[]).includes(asset_class))) {
     const quick = (parsed.frontmatter.quick_metrics as Record<string, unknown> | undefined)?.[metric.id];
     if (typeof quick === 'number') {
-      statements.push({ metric, path: `quick_metrics.${metric.id}`, stated: quick, statedDecimals: quickMetricDecimals(source, metric.id, quick) });
+      const path = `quick_metrics.${metric.id}`;
+      statements.push({ metric, path, stated: quick, statedDecimals: precision?.get(path) ?? quickMetricDecimals(source, metric.id, quick) });
     }
     const paths = [...bindings.output_sections.map((s) => `${s}.${metric.id}`), ...(bindings.aliases?.[metric.id] ?? [])];
     for (const path of new Set(paths)) {
@@ -180,7 +224,7 @@ export function verifyStatedMetrics(
           metric,
           path: `${section}${variant ? `[${variant}]` : ''}.${tail.join('.')}`,
           stated,
-          statedDecimals: precision?.get(path) ?? jsonStatedDecimals(block, tail.join('.'), stated),
+          statedDecimals: precision?.get(path) ?? blockDecimals(block, tail.join('.'), stated),
           ...(variant ? { sectionVariants: { [section]: variant } } : {}),
         });
       }
@@ -194,7 +238,7 @@ export function verifyStatedMetrics(
         metric,
         path: `property${variant ? `[${variant}]` : ''}.${metric.path}`,
         stated,
-        statedDecimals: precision?.get(`property.${metric.path}`) ?? jsonStatedDecimals(block, metric.path, stated),
+        statedDecimals: precision?.get(`property.${metric.path}`) ?? blockDecimals(block, metric.path, stated),
         ...(variant ? { sectionVariants: { property: variant } } : {}),
       });
     }
@@ -205,7 +249,7 @@ export function verifyStatedMetrics(
     path,
     stated,
     ...(statedDecimals !== undefined ? { stated_decimals: statedDecimals } : {}),
-    ...verifyStatedMetric(metric, parsed, stated, sectionVariants, statedDecimals),
+    ...checkStatement(metric, parsed, stated, sectionVariants, statedDecimals, 'unverifiable'),
   }));
   const counts = { verified: 0, failed: 0, unverifiable: 0 };
   for (const item of evidence) counts[item.state]++;
@@ -218,7 +262,8 @@ export function verifyStatedMetrics(
 
 /**
  * Every numeric token of a JSON text, keyed by its JSON-encoded path. The text
- * is validated by `JSON.parse` first; this walk records token spelling only.
+ * is validated by `JSON.parse` first, so invalid JSON throws its `SyntaxError`;
+ * this walk records token spelling only. `jsonStatedDecimals` never throws.
  */
 export function jsonNumericTokens(source: string): Map<string, string> {
   JSON.parse(source);
@@ -245,13 +290,29 @@ export function jsonNumericTokens(source: string): Map<string, string> {
   return numbers;
 }
 
-/** Source decimals of the statement at `path` in a block, when its token spells `stated`. */
-export function jsonStatedDecimals(block: Pick<UWBlock, 'rawJson'>, path: string, stated: number): number | undefined {
-  if (!block.rawJson) return undefined;
-  const numbers = jsonNumericTokens(block.rawJson);
+/** A block's numeric source tokens; null when it has no source JSON or the JSON does not parse. */
+function readBlockTokens(block: Pick<UWBlock, 'rawJson'>): Map<string, string> | null {
+  if (!block.rawJson) return null;
+  try {
+    return jsonNumericTokens(block.rawJson);
+  } catch {
+    return null; // no readable source tokens: the statement has no stated precision
+  }
+}
+
+function decimalsAt(numbers: Map<string, string>, path: string, stated: number): number | undefined {
   // The bare block: the payload sits beside `_meta` (Format §2.4).
   const token = numbers.get(JSON.stringify(path.split('.')));
   return token !== undefined && Number(token) === stated ? getStatedDecimals(token) : undefined;
+}
+
+/**
+ * Source decimals of the statement at `path` in a block, when its token spells
+ * `stated`. Undefined when the block has no source JSON or it does not parse.
+ */
+export function jsonStatedDecimals(block: Pick<UWBlock, 'rawJson'>, path: string, stated: number): number | undefined {
+  const numbers = readBlockTokens(block);
+  return numbers ? decimalsAt(numbers, path, stated) : undefined;
 }
 
 /** Source decimals of frontmatter `quick_metrics.<id>`, when its plain token spells `stated`. */

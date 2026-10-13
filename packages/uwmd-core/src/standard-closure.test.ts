@@ -6,7 +6,9 @@
 // module (editor, runner, cascade, defaults, display formatting, agents, the
 // Excel emitter, ...). This test walks the static import graph of the set —
 // `import`/`export ... from`, side-effect imports, dynamic `import()` and
-// `import('...')` types — and fails if any edge leaves it.
+// `import('...')` types — and fails if any edge leaves it. A standard module
+// may name a package only from EXTERNAL_ALLOWED (the runtime dependencies Phase
+// 2 moves to `@uwmd/verify`) or a single reviewed site in EXTERNAL_SITES.
 //
 // Adding a module to the standard side means adding it here; a module that
 // cannot join without dragging a starter module along is a boundary decision
@@ -60,9 +62,35 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
 
 const VENDOR_SDK = '@anthropic-ai/sdk';
 
+/** Packages any standard module may import: the representation codecs' runtime dependencies. */
+const EXTERNAL_ALLOWED: ReadonlySet<string> = new Set(['fast-xml-parser', 'fflate']);
+
+/**
+ * Single reviewed sites, by file. `integrity.ts` `sha256BytesHex` loads
+ * `node:crypto` by a dynamic import guarded by a runtime check for Node
+ * (`process.versions.node`) and uses Web Crypto everywhere else, so the
+ * browser entry never evaluates it. Any other `node:` import, static or
+ * dynamic, fails.
+ */
+const EXTERNAL_SITES: Readonly<Record<string, readonly string[]>> = Object.freeze({
+  'integrity.ts': Object.freeze(['node:crypto']),
+});
+
+/** The non-relative specifiers of a standard module that neither list allows. */
+function externalViolations(path: string, specifiers: readonly string[]): string[] {
+  return specifiers
+    .filter((s) => !s.startsWith('.'))
+    .filter((s) => !EXTERNAL_ALLOWED.has(s) && !(EXTERNAL_SITES[path] ?? []).includes(s))
+    .map((s) => `${path} -> ${s}`);
+}
+
 /** Every module specifier a source file names, static, dynamic or in a type position. */
 function moduleSpecifiers(file: string): string[] {
-  const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true);
+  return specifiersIn(file, readFileSync(file, 'utf8'));
+}
+
+function specifiersIn(file: string, text: string): string[] {
+  const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
   const specifiers: string[] = [];
   const visit = (node: ts.Node): void => {
     if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node))
@@ -117,6 +145,26 @@ describe('standard module closure (RFC 0083)', () => {
       .filter(([path]) => !standard.has(path))
       .map(([path, via]) => `${via} -> ${path}`);
     expect(escapes).toEqual([]);
+  });
+
+  it('imports no package or node: builtin outside the allow-lists', () => {
+    const violations = STANDARD_MODULES.flatMap((path) => externalViolations(path, moduleSpecifiers(resolve(SRC, path))));
+    expect(violations).toEqual([]);
+    // Each reviewed site is still present; a stale entry would widen the list silently.
+    for (const [path, allowed] of Object.entries(EXTERNAL_SITES)) {
+      for (const specifier of allowed) expect(moduleSpecifiers(resolve(SRC, path)), path).toContain(specifier);
+    }
+  });
+
+  it('refuses a new node: or package import (negative control)', () => {
+    const evaluator = readFileSync(resolve(SRC, 'calc/evaluator.ts'), 'utf8');
+    const planted = `import { readFileSync } from 'node:fs';\n${evaluator}`;
+    expect(externalViolations('calc/evaluator.ts', specifiersIn('calc/evaluator.ts', planted)))
+      .toEqual(['calc/evaluator.ts -> node:fs']);
+    expect(externalViolations('calc/evaluator.ts', specifiersIn('calc/evaluator.ts', `const m = await import('node:crypto');`)))
+      .toEqual(['calc/evaluator.ts -> node:crypto']);
+    expect(externalViolations('receipts.ts', ['lodash', 'fflate'])).toEqual(['receipts.ts -> lodash']);
+    expect(externalViolations('integrity.ts', ['node:crypto', 'node:fs'])).toEqual(['integrity.ts -> node:fs']);
   });
 
   it('never imports the vendor SDK, statically or dynamically', () => {

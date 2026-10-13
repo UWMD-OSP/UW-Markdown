@@ -60,7 +60,7 @@ specs. The packages do not yet follow that line:
   | `lite-bridge.ts` → `runner.ts` | `buildMeta` | reaches the validator and receipts |
   | `bindings.ts` → `editor.ts` | `applyEditAsync` | drags in editor, runner, gaps |
   | `market-data.ts` → `cascade.ts` | `type MarketDataLookup` | type only |
-| `validator.ts` → `gaps.ts` | `readGapsContent` | the DQ rules of every `validateUWFile` |
+  | `validator.ts` → `gaps.ts` | `readGapsContent` | the DQ rules of every `validateUWFile` |
 
 - **`protocol.ts` mixes both sides.** About 420 of its 3,284 lines are starter
   material: display and badges, view models (`BUILTIN_VIEW_MODELS`), the
@@ -77,9 +77,13 @@ specs. The packages do not yet follow that line:
 ### 1. The package
 
 `packages/uwmd-verify`, published as `@uwmd/verify`, ESM only, with two
-entries: `.` (Node) and `./browser` (no `node:` imports). Its runtime
-dependencies are `fast-xml-parser` and `fflate`, which move from core
-(both are used only by the representations codecs). It has no optional peers.
+entries: `.` (Node) and `./browser` (no static `node:` imports; integrity's
+SHA-256 loads `node:crypto` through a dynamic import guarded by a runtime check
+for Node and uses Web Crypto everywhere else, so a browser never evaluates it).
+Its runtime dependencies are `fast-xml-parser` and `fflate`, which move from
+core (both are used only by the representations codecs). It has no optional
+peers. The Phase 1 closure test allows exactly these packages and that one
+guarded site.
 
 It contains the modules the 2026-10-13 map classified as standard:
 
@@ -201,7 +205,9 @@ In three phases, each its own PR:
    `docs-site-sources`, `spec-refs`, `verify-codes`, `release-state.test`,
    `verify-pcg64-reference.py`, `vercel-ignore-build.sh`); add the
    `VERSIONS.md` row; update wiki 03, 08 and 11, `docs/starter/` and the
-   package `CLAUDE.md` files.
+   package `CLAUDE.md` files. Every module outside the Phase 1 closure list
+   stays in core as a starter module; for example, `calculation-context.ts`
+   (its only user is the CLI) stays in core.
 3. **Release.** Core/CLI 4.1.0 with `@uwmd/verify` 0.1.0. The first publication
    of a new package name needs a trusted publisher on npmjs.com, an owner
    step done before the tag.

@@ -22,7 +22,7 @@ remediation table MUST validate against it.
 
 
 All numeric display strings MUST be produced by rules equivalent to
-those encoded in `DEFAULT_NUMBER_FORMAT` (`protocol.ts`) and
+those encoded in `DEFAULT_NUMBER_FORMAT` (`starter-protocol.ts`) and
 implemented in `format.ts`.
 
 | Kind | Default | Example input | Example output |

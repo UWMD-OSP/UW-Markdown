@@ -43,7 +43,7 @@ must stay distinguishable from a value someone entered from diligence.
 
 A producer MAY skip steps that are not available (e.g. no investor
 profile attached). A producer MUST NOT reorder the cascade. The
-runtime constant `CASCADE_ORDER` in `protocol.ts` is the canonical
+runtime constant `CASCADE_ORDER` in `starter-protocol.ts` is the canonical
 machine-readable representation; conformant resolvers walk this
 array.
 

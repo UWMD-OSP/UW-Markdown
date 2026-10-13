@@ -128,7 +128,7 @@ add their explicit entries through the normal RFC process.
 The twelve builtin starter packs derive their definitions from this dictionary's
 contract through exact, bidirectional parity tests. Packs are kept as TypeScript
 mirrors, so existing Excel layouts and their expression-to-Excel bindings remain
-unchanged. `packs/metric-dictionary.test.ts` compares every declaration, potential
+unchanged. `builtin-packs/metric-dictionary.test.ts` compares every declaration, potential
 input, effective precision, role, label, unit and null contract, and proves there
 are no orphan dictionary entries. It also compares every `SIZE_INTENSIVES` row,
 including secondary paths, against `size_intensives`. Both directions run in

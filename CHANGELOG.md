@@ -19,17 +19,21 @@ protocol, and each package each carry an independent semver).
   dictionary at its stated precision (RFC 0079) and returns one `verified`,
   `failed` or `unverifiable` result per statement. It promotes the logic of
   `conformance/metrics/verifier.mjs`, which now calls it; the lender fixture
-  stays 187/0/0 with identical evidence. Core ships `spec/metrics/builtin.json`
+  stays 187/0/0 with identical evidence. When a document view carries no
+  source token for a statement (an envelope-decoded document, for example) and
+  the caller supplies no `statedDecimals`, the statement is `unverifiable` with
+  reason `missing_stated_precision`. Core ships `spec/metrics/builtin.json`
   as generated package data (`npm run gen-metric-dictionary`); a test fails if
   the copy drifts from the spec.
 
 ### Changed
 
 - RFC 0083 Phase 1: core's standard and starter sides are cut apart in place,
-  with no public API or behavior change (every 4.0.x export keeps its name,
-  kind and entry point; 7,582 old/new `evaluateCalc`,
-  `evaluateModuleCalculations` and `validateUWFile` results over the examples
-  are byte-identical). `buildMeta` moves to `metadata.ts`,
+  with no public API or behavior change: every 4.0.x export keeps its name,
+  kind and entry point, and the old and new builds give byte-identical
+  `evaluateCalc` (every builtin pack declaration over every example),
+  `evaluateModuleCalculations` and `validateUWFile` results over the
+  examples. `buildMeta` moves to `metadata.ts`,
   `MarketDataLookup` to `market-data.ts` and `readGapsContent` to
   `gaps-content.ts`; the standard `evaluateCalc` returns no `display`, which
   `calc-display.ts` adds for the exported `evaluateCalc` and
@@ -38,7 +42,9 @@ protocol, and each package each carry an independent semver).
   of `protocol.ts` move to `starter-protocol.ts`; and the twelve builtin pack
   manifests move to `builtin-packs/`, which `packs/` re-exports.
   `src/standard-closure.test.ts` lists the standard module set and fails if it
-  imports any other module or the vendor SDK.
+  imports any other module, the vendor SDK, or any package or `node:` builtin
+  outside an allow-list (`fast-xml-parser`, `fflate`, and integrity's guarded
+  `node:crypto` fallback).
 
 ## [4.0.1] - 2026-10-13
 
