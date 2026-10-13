@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__18-content-member-is-payload__render-chat",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "18-content-member-is-payload.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/18-content-member-is-payload.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

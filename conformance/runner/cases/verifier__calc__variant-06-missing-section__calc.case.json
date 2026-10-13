@@ -1,0 +1,19 @@
+{
+  "id": "verifier__calc__variant-06-missing-section__calc",
+  "target": "verifier",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/calc/fixtures/variant-06-missing-section",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

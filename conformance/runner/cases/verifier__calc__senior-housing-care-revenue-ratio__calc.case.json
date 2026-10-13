@@ -1,0 +1,19 @@
+{
+  "id": "verifier__calc__senior-housing-care-revenue-ratio__calc",
+  "target": "verifier",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/calc/fixtures/senior-housing-care-revenue-ratio",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}

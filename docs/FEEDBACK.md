@@ -10,7 +10,7 @@ an RFC.
 Reports from adopters are requirements evidence. They inform, and can help
 determine, where the format and protocol go next. They do not define UWMD
 semantics, and no adopter, however large, sets what the standard requires.
-That is decided through the [RFC process](../docs/rfcs/README.md).
+That is decided through the [RFC process](rfcs/README.md).
 
 ## Where to report
 
@@ -21,7 +21,7 @@ That is decided through the [RFC process](../docs/rfcs/README.md).
 | Two implementations that read, accept or compute the same document differently | [Bug or interoperability report](https://github.com/UWMD-OSP/UW-Markdown/issues/new?template=bug.yml) |
 | Spec text that is unclear, contradicts a schema or itself, or is silent on a case | [Spec question or ambiguity](https://github.com/UWMD-OSP/UW-Markdown/issues/new?template=spec-question.yml) |
 | Something you need to express, verify or do that has no home | [Capability request](https://github.com/UWMD-OSP/UW-Markdown/issues/new?template=feature.yml) |
-| A ready-made normative proposal | An RFC pull request ([process](../docs/rfcs/README.md)). Opening an issue first is fine. |
+| A ready-made normative proposal | An RFC pull request ([process](rfcs/README.md)). Opening an issue first is fine. |
 
 If you're unsure which form fits, pick the closest one. Triage moves a
 misfiled report to the right category.

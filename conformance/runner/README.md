@@ -41,7 +41,7 @@ remain separate. `--no-skip` rejects a run containing either outcome;
 
 Known gaps inside the tiers it does cover, listed rather than hidden:
 
-- **`tier-2-editor/parent-hash-stamp` and `stale-parent-rejected`** need
+- **`starter/editor/parent-hash-stamp` and `stale-parent-rejected`** need
   `applyEditAsync` and a volatile content hash, which the CLI's synchronous
   `edit` cannot express. Covered by the TypeScript runner only.
 - **Agent starter checks** are shape-only and replay-driven; they have no CLI surface.
@@ -49,7 +49,7 @@ Known gaps inside the tiers it does cover, listed rather than hidden:
   `packages`, `composition`, `capital-stack`, `size-intensive`, `signing`) are
   TypeScript-only today.
   So is `cash-flow`. Its RFC 0062 same-day selection rule is mirrored as
-  tier-3 fixtures `period-09` to `period-12`, so this driver checks the rule
+  calculation fixtures `period-09` to `period-12`, so this driver checks the rule
   itself.
 
 ## Output
@@ -60,8 +60,8 @@ TAP version 14 on stdout, plus an optional JSON manifest:
 TAP version 14
 1..44
 # implementation: org.uwmd.core@1.7.0
-ok 1 - reader/tier-1/01-minimal-screening/parse # 141ms
-not ok 42 - module/tier-3/revpar-basic # 157ms
+ok 1 - reader__documents__01-minimal-screening__parse # 141ms
+not ok 42 - module__calc__revpar-basic__calc # 157ms
   ---
   - value: 999.0 != 104.76
   ...
@@ -89,15 +89,15 @@ already on disk (which fixture, which command, which baseline), and
 the [case schema](../../spec/schemas/conformance-case.schema.json) checks its
 closed owner vocabulary. The [corpus index](../corpus-index.json) records
 one owner for each case; the generator refuses missing or duplicate identities.
-Neither the fixture directory nor the id's path segment is a conformance claim.
+Ids and filenames use `<owner>__<suite>__<scenario>__<operation>`. The `target` is the conformance claim; storage names describe content.
 
 ```json
 {
-  "id": "module/tier-3/revpar-basic",
+  "id": "module__calc__revpar-basic__calc",
   "target": "module",
   "command": "calc",
   "args": ["deal.uwx.md", "calc.json", "--json"],
-  "fixture_dir": "conformance/tier-3-calc-host/fixtures/revpar-basic",
+  "fixture_dir": "conformance/calc/fixtures/revpar-basic",
   "expect": { "kind": "json-subset", "file": "expected-result.json", "exit_code": 0 }
 }
 ```
@@ -136,7 +136,7 @@ before comparing. Examples include:
 
 - `issue-code-severity-set` — reduce a `ValidationResult` to
   `{overall_status, issues: [{code, severity}]}`, deduplicated and sorted.
-  The tier-1 validation baselines are stored this way so that a reworded
+  The document validation baselines are stored this way so that a reworded
   message is not a corpus edit.
 
 A projection must be *named in the case file*, never inferred. The moment the

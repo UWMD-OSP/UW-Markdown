@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__01-minimal-screening__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "01-minimal-screening.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/01-minimal-screening.parsed.json"
+  }
+}

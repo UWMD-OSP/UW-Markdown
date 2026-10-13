@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__10-declared-roles__render-chat",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "10-declared-roles.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/10-declared-roles.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

@@ -841,6 +841,19 @@ work. The rows below record each open call, the decision and its precedent.
 | `reserve-*/legacy-v1` | Kept for Phase 5's renames. They are Format 3.0 documents and exercise no v1 path. | Phase 3 row; §8. |
 | Out of scope | `deriveSourcesUses`' renovation double count (Q3) and the YAML-subset list-of-mappings gap above. | Owner task boundary. |
 
+## RFC 0081 Phase 5 implementation decisions
+
+| Question | Phase 5 decision | Precedent / boundary |
+|---|---|---|
+| Corpus storage and suite names | Apply §8: `documents`, `calc`, `starter/editor`, `starter/refinement`, `starter/agent`; suite ids are `documents`, `calc`, `starter-editor`, `starter-refinement`, `starter-agent`, `starter-agent-profile`, `starter-agent-replay`. No old path or id is accepted. | §8; Product principle 5; Phase 5 is a pure rename. |
+| Reserve `legacy-v1` cases | Rename both directories and scenario ids to `bare-block`, retaining their exact documents, plans, expectations and assertions. | Phase 4 carry-over; the documents are already 3.0; acceptance retains 1,069 checks and 336 portable cases. |
+| Portable identity | Id and filename stem are `<owner>__<suite>__<scenario>__<operation>`. Malformed document scenarios use `malformed-<stem>`; replacement-funding projections use the reference suite `hedge`. Ownership is still the index's `target`. | §8; Protocol §II.6a; no legacy id or private reader object becomes a conformance claim. |
+| Family selection and baseline updates | Preserve membership: the `calc` family includes `starter-refinement`, and `starter-agent` includes `starter-agent-profile`; replay remains separately selected. Child-only baseline updates stay refused. | Existing `suiteFamily` behavior; no behavior change in Phase 5. |
+| Documentation history | RFCs, release records, prior CHANGELOG sections and immutable review/status history keep their text. The site maps their old links to current sources/pages at build time, without redirects or old pages. Current prose uses content names. | §8; Phase 2 historical spec-link precedent; PROCESS historical evidence. |
+| Historical refusal inputs | Keep the former tier spellings in refusal tests and module controls; their surrounding comments/README explicitly explain the history. They are inputs proved refused, never aliases or current corpus labels. | Phase 4 negative controls; acceptance's history exception. |
+| Contributor path reference | Update only the stale corpus path in `CONTRIBUTING.md`; its guidance is unchanged. | Owner's explicit instruction to update every path reference; no guidance rewrite. |
+| Verification evidence | Compare every mapped reference and portable id, its owner and outcome, plus the portable case definition (paths/ids aside) and the lender's per-statement evidence. Publish the full mapping as historical RFC evidence. | Owner Phase 5 acceptance; Phase 4 comparison precedent. |
+
 ## Alternatives considered
 
 1. **Keep the read path and drop only the write path** (readers accept

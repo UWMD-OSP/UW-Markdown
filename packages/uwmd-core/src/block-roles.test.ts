@@ -166,7 +166,7 @@ describe('RFC 0040 Markdown variant routing', () => {
 });
 
 describe('RFC 0040 conformance fixture coverage', () => {
-  const fixture = (name: string) => validateUWFile(parseUWFile(readFileSync(resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures', `${name}.uwx.md`), 'utf8')));
+  const fixture = (name: string) => validateUWFile(parseUWFile(readFileSync(resolve(process.cwd(), '../..', 'conformance/documents/fixtures', `${name}.uwx.md`), 'utf8')));
   it('evaluates the producer-keyed statements in the real Markdown fixture', () => {
     const result = fixture('10-declared-roles');
     for (const code of ['CC-01', 'CC-02', 'CC-03', 'CC-05', 'CC-09']) expect(result.coverage[code]?.status, code).toBe('evaluated');

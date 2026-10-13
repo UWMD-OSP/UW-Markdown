@@ -73,5 +73,5 @@ README.
 
 For bugs that are not security-sensitive, spec questions and capability
 requests, use the public issue forms described in
-[Reporting problems and feedback](./docs/FEEDBACK.md). Issues are public,
+[Reporting problems and feedback](docs/FEEDBACK.md). Issues are public,
 so keep confidential deal data out of them, as that guide explains.

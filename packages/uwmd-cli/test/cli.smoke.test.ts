@@ -1,3 +1,4 @@
+// Historical tier names below are intentionally refused negative inputs.
 import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
@@ -406,7 +407,7 @@ describe('uwmd CLI', () => {
   });
 
   describe('a role-bearing debt map (RFC 0066)', () => {
-    const roles = resolve(__dirname, '..', '..', '..', 'conformance', 'tier-1-reader', 'fixtures', '10-declared-roles.uwx.md');
+    const roles = resolve(__dirname, '..', '..', '..', 'conformance', 'documents', 'fixtures', '10-declared-roles.uwx.md');
 
     it('scope reports a debt field it cannot select as refused, not defaulted', async () => {
       const r = await runCli(['scope', roles, '--json']);
@@ -884,7 +885,7 @@ describe('calculation context files', () => {
     const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-context-'));
     const file = resolve(dir, 'period.uwx.md');
     const context = resolve(dir, 'context.json');
-    const periodSource = readFileSync(resolve(__dirname, '../../../conformance/tier-3-calc-host/fixtures/period-01-year-order/deal.uwx.md'), 'utf8');
+    const periodSource = readFileSync(resolve(__dirname, '../../../conformance/calc/fixtures/period-01-year-order/deal.uwx.md'), 'utf8');
     const source = [periodSource.replace('uw:section=dcf source=', 'uw:section=dcf variant=base source='),
       '```json uw:section=dcf variant=stress source=manual v=1',
       JSON.stringify({ _role: 'component', annual_cash_flows: [{ year: 3, noi: 900 }] }), '```',

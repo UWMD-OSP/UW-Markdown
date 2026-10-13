@@ -9,7 +9,7 @@ if (!process.argv[2]) throw new TypeError('Supply an output directory for dispos
 const directory = resolve(process.argv[2]);
 await mkdir(directory, { recursive: true });
 const root = fileURLToPath(new URL('../', import.meta.url));
-const source = await readFile(join(root, 'conformance/tier-3-calc-host/fixtures/period-01-year-order/deal.uwx.md'), 'utf8');
+const source = await readFile(join(root, 'conformance/calc/fixtures/period-01-year-order/deal.uwx.md'), 'utf8');
 const formulas = [
   'dcf.annual_cash_flows@Y3.noi * 0.0551',
   'dcf.annual_cash_flows@Y1.noi',

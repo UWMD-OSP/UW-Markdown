@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__18-content-member-is-payload__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "18-content-member-is-payload.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/18-content-member-is-payload.parsed.json"
+  }
+}

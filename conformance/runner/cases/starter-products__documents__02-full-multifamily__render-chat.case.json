@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__02-full-multifamily__render-chat",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "02-full-multifamily.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/02-full-multifamily.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

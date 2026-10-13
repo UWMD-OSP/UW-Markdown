@@ -12,7 +12,7 @@
 > compatible with them. They are not conformance requirements of the
 > standard, and a conforming Reader or Verifier owes none of them.
 
-### II.4 Tier 4 — Agent Host
+### II.4 Agent Host
 
 A Tier-4 Agent Host MUST satisfy all Tier-3 requirements, and additionally:
 
@@ -26,7 +26,7 @@ A Tier-4 Agent Host MUST satisfy all Tier-3 requirements, and additionally:
    the host (§IX.4).
 4. Append a `pipeline_log` entry for every successful agent invocation.
 
-## IX. AI Host Contract (Tier 4)
+## IX. AI Host Contract
 
 ### IX.1 Layer DAG
 

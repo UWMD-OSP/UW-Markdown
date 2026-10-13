@@ -1,0 +1,19 @@
+{
+  "id": "verifier__calc__date-48-error-argument-propagates__calc",
+  "target": "verifier",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/calc/fixtures/date-48-error-argument-propagates",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 1
+  }
+}

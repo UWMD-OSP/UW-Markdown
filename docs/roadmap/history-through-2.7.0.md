@@ -62,7 +62,7 @@ reflects effort vs. devex value.
 
 ## v1.1+ machine interchange
 
-Accepted RFC [0014](../../docs/rfcs/0014-multi-format-interchange.md) defines the
+Accepted RFC [0014](../rfcs/0014-multi-format-interchange.md) defines the
 post-v1.0 machine-interchange train. It keeps the `.uw.md` format at 1.1,
 targets additive representation discovery for protocol 1.2, and stages
 `@uwmd/core` / `uwmd` 1.1 releases for the document envelope and codecs.
@@ -77,7 +77,7 @@ targets additive representation discovery for protocol 1.2, and stages
 | ✅ | HTTP + MCP bindings | Stable `uwmd.org` deal identities, OpenAPI 3.1, semantic ETags, content negotiation, text/blob resources, resource links, five MCP tool result profiles, and reference adapters implemented. |
 
 Detailed sequencing and release gates:
-[`docs/releases/1.1-plus-interchange-plan.md`](../../docs/releases/1.1-plus-interchange-plan.md).
+[`docs/releases/1.1-plus-interchange-plan.md`](../releases/1.1-plus-interchange-plan.md).
 
 ## v2 spec exploration
 
@@ -143,27 +143,27 @@ context. This list is the maintainable copy.
 
 | RFC | Item | Why it matters |
 |---|---|---|
-| [0010](../../docs/rfcs/0010-signed-blocks.md)         | ✅ Signed blocks                               | **Shipped 2026-08-27.** Protocol §V.11, `@uwmd/signing`, `uwmd verify --signing`, `conformance/signing/`. Also unblocked receipt signing. |
-| [0001](../../docs/rfcs/0001-locale-negotiation.md)    | ✅ Locale negotiation                          | **Shipped 2026-09-01** (protocol 1.13.0, §III.1a). Declare-and-refuse; display-only; curated `BUILTIN_FORMAT_RULES` for five first-wave locales. Currency-code disambiguation deferred to its own RFC. |
-| [0002](../../docs/rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
-| [0003](../../docs/rfcs/0003-module-asset-classes.md)  | ✅ Custom asset-class declarations from modules | **Shipped 2026-08-27.** Format §2.2a grammar, protocol §X.2 resolution, `declares_asset_classes`, `conformance/modules/asset-classes/`. The builtin enum stays closed. |
-| [0004](../../docs/rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
-| [0005](../../docs/rfcs/0005-stochastic-calculations.md) | ✅ Stochastic calculations                    | **Shipped 2026-08-27.** Protocol §VIII.8, normative PCG64, inverse-CDF sampling, `conformance/stochastic/`. Known gap: the PCG test vector is self-generated. |
-| [0006](../../docs/rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
-| [0015](../../docs/rfcs/0015-portfolio-relationships.md) | ✅ Portfolio and relationship profiles        | **Shipped 2026-09-02** (protocol 2.2.0, §XV). The `.uwportfolio.json` sidecar carrying entity-layer edges of the RFC 0018 registry, registry-resolved validation, `uwmd portfolio validate\|edges`, and the package→profile projection bridge. No storage or aggregate-math contract, by design. |
-| [0034](../../docs/rfcs/0034-calendar-anchored-cash-flows.md) | ✅ Calendar-anchored cash flows | **Shipped 2026-09-02** (protocol 2.1.0, §VIII.9). Dated series (§4.26, the third state-and-verify structure), the closed day-count registry, and deterministic `xirr`/`xnpv` via declarations. Removes RFC 0026 Phase 2's stated precondition. |
-| [0035](../../docs/rfcs/0035-distribution-waterfall.md) | ✅ Distribution waterfall | **Shipped 2026-09-02** (protocol 2.3.0, §VIII.10). The RFC 0026 §E leg-3: state-and-verify ROC → pref → catch-up → promote splits over a §4.26 dated series; verifyWaterfall recomputes the full allocation so two engines agree on the promote. IRR hurdles subsequently shipped in RFC 0036; clawback remains deferred. |
-| [0036](../../docs/rfcs/0036-waterfall-irr-hurdles.md) | ✅ IRR-hurdled waterfall tiers | **Shipped 2026-09-09** (protocol 2.6.0, §VIII.10 step 3; released in 2.6.0). Takes up the `until_lp_irr` reservation from RFC 0035. The boundary is closed-form (the LP hurdle balance, `−xnpv(F,h)·(1+h)^t`), not the nested bisection 0035 §C sketched; laddered and combined hurdles follow; strictly-increasing hurdle ladders are `WF-01`. Corpus 385 → 396. |
-| [0037](../../docs/rfcs/0037-cross-check-variant-resolution-and-coverage.md) | ✅ Cross-check resolution over variant maps + coverage channel | **Shipped 2026-09-09** (released in 2.5.0). §5.3 resolution order (preference → `default` → `base` → lone variant), `CC-16` for an unresolvable map, `ValidationResult.coverage`. Closes underwriter.cc UPSTREAM-005: variant maps had been silently disabling ten of fifteen cross-checks. |
-| [0038](../../docs/rfcs/0038-return-metric-tax-basis.md) | ✅ Tax basis on stated return metrics | **Shipped 2026-09-09** (released in 2.5.0). `dcf.returns.tax_basis` (`pre_tax` default / `after_tax`), `RT-01`, `getReturnTaxBasis()`. Closes UPSTREAM-006. |
-| [0039](../../docs/rfcs/0039-data-center-module.md) | ✅ Data-center module | **Shipped 2026-09-09** (released in 2.6.1). `@uwmd/module-data-center` 0.1.0: the first product module on a module-declared class (`org.uwmd.data_center`, fallback `industrial`), three kW-denominated sections, eleven calcs, seven validations, `examples/Mesa-Gateway-…`, `conformance/modules/runtime/06–11`. RFC 0003 generalizes: module formulas read the standard sections unchanged (the per-kW price and NOI calcs ship), and the one gap found — a declaring module was not scoped to its declared class — is fixed in `module-runtime.ts`. No spec change. |
-| [0040](../../docs/rfcs/0040-variant-role-resolution.md) | ✅ Variant roles | **Accepted 2026-09-11.** Signed block-level `_role`, role-aware cross-checks, component exclusion, trusted-host edits and per-section coverage. Protocol 2.7.0 implementation; package release remains separate. |
-| [0041](../../docs/rfcs/0041-period-indexed-addressing.md) | ✅ Explicit period addressing | **Accepted 2026-09-12.** Named holding years and absolute calendar/date selectors on five standard series. Duplicate refusal, variant context and PS diagnostics; Protocol 2.8.0 implementation. Relative periods, module registration and contextual Excel emission remain deferred. |
+| [0010](../rfcs/0010-signed-blocks.md)         | ✅ Signed blocks                               | **Shipped 2026-08-27.** Protocol §V.11, `@uwmd/signing`, `uwmd verify --signing`, `conformance/signing/`. Also unblocked receipt signing. |
+| [0001](../rfcs/0001-locale-negotiation.md)    | ✅ Locale negotiation                          | **Shipped 2026-09-01** (protocol 1.13.0, §III.1a). Declare-and-refuse; display-only; curated `BUILTIN_FORMAT_RULES` for five first-wave locales. Currency-code disambiguation deferred to its own RFC. |
+| [0002](../rfcs/0002-module-signing.md)        | ✅ Module signing                              | **Shipped 2026-08-27.** Protocol §X.1, `ModuleManifest.signature`, three host policies, `conformance/signing/modules/`. Sigstore is reserved, not implemented — see the RFC. |
+| [0003](../rfcs/0003-module-asset-classes.md)  | ✅ Custom asset-class declarations from modules | **Shipped 2026-08-27.** Format §2.2a grammar, protocol §X.2 resolution, `declares_asset_classes`, `conformance/modules/asset-classes/`. The builtin enum stays closed. |
+| [0004](../rfcs/0004-conformance-runner-v2.md) | ✅ Conformance test runner v2 (language-agnostic) | **Shipped 2026-08-27.** Protocol §II.6a CLI protocol, `conformance/runner/runner.py` (TAP14 + JSON manifest, stdlib only), 44 generated cases, `npm run conformance:v2`. The TS runner still gates the corpus. |
+| [0005](../rfcs/0005-stochastic-calculations.md) | ✅ Stochastic calculations                    | **Shipped 2026-08-27.** Protocol §VIII.8, normative PCG64, inverse-CDF sampling, `conformance/stochastic/`. Known gap: the PCG test vector is self-generated. |
+| [0006](../rfcs/0006-hospitality-module.md)    | ✅ Hospitality reference module                 | **Shipped 2026-08-27.** `@uwmd/module-hospitality`, the `module-runtime.ts` the module system was missing, protocol §X host obligations, `conformance/modules/runtime/`. |
+| [0015](../rfcs/0015-portfolio-relationships.md) | ✅ Portfolio and relationship profiles        | **Shipped 2026-09-02** (protocol 2.2.0, §XV). The `.uwportfolio.json` sidecar carrying entity-layer edges of the RFC 0018 registry, registry-resolved validation, `uwmd portfolio validate\|edges`, and the package→profile projection bridge. No storage or aggregate-math contract, by design. |
+| [0034](../rfcs/0034-calendar-anchored-cash-flows.md) | ✅ Calendar-anchored cash flows | **Shipped 2026-09-02** (protocol 2.1.0, §VIII.9). Dated series (§4.26, the third state-and-verify structure), the closed day-count registry, and deterministic `xirr`/`xnpv` via declarations. Removes RFC 0026 Phase 2's stated precondition. |
+| [0035](../rfcs/0035-distribution-waterfall.md) | ✅ Distribution waterfall | **Shipped 2026-09-02** (protocol 2.3.0, §VIII.10). The RFC 0026 §E leg-3: state-and-verify ROC → pref → catch-up → promote splits over a §4.26 dated series; verifyWaterfall recomputes the full allocation so two engines agree on the promote. IRR hurdles subsequently shipped in RFC 0036; clawback remains deferred. |
+| [0036](../rfcs/0036-waterfall-irr-hurdles.md) | ✅ IRR-hurdled waterfall tiers | **Shipped 2026-09-09** (protocol 2.6.0, §VIII.10 step 3; released in 2.6.0). Takes up the `until_lp_irr` reservation from RFC 0035. The boundary is closed-form (the LP hurdle balance, `−xnpv(F,h)·(1+h)^t`), not the nested bisection 0035 §C sketched; laddered and combined hurdles follow; strictly-increasing hurdle ladders are `WF-01`. Corpus 385 → 396. |
+| [0037](../rfcs/0037-cross-check-variant-resolution-and-coverage.md) | ✅ Cross-check resolution over variant maps + coverage channel | **Shipped 2026-09-09** (released in 2.5.0). §5.3 resolution order (preference → `default` → `base` → lone variant), `CC-16` for an unresolvable map, `ValidationResult.coverage`. Closes underwriter.cc UPSTREAM-005: variant maps had been silently disabling ten of fifteen cross-checks. |
+| [0038](../rfcs/0038-return-metric-tax-basis.md) | ✅ Tax basis on stated return metrics | **Shipped 2026-09-09** (released in 2.5.0). `dcf.returns.tax_basis` (`pre_tax` default / `after_tax`), `RT-01`, `getReturnTaxBasis()`. Closes UPSTREAM-006. |
+| [0039](../rfcs/0039-data-center-module.md) | ✅ Data-center module | **Shipped 2026-09-09** (released in 2.6.1). `@uwmd/module-data-center` 0.1.0: the first product module on a module-declared class (`org.uwmd.data_center`, fallback `industrial`), three kW-denominated sections, eleven calcs, seven validations, `examples/Mesa-Gateway-…`, `conformance/modules/runtime/06–11`. RFC 0003 generalizes: module formulas read the standard sections unchanged (the per-kW price and NOI calcs ship), and the one gap found — a declaring module was not scoped to its declared class — is fixed in `module-runtime.ts`. No spec change. |
+| [0040](../rfcs/0040-variant-role-resolution.md) | ✅ Variant roles | **Accepted 2026-09-11.** Signed block-level `_role`, role-aware cross-checks, component exclusion, trusted-host edits and per-section coverage. Protocol 2.7.0 implementation; package release remains separate. |
+| [0041](../rfcs/0041-period-indexed-addressing.md) | ✅ Explicit period addressing | **Accepted 2026-09-12.** Named holding years and absolute calendar/date selectors on five standard series. Duplicate refusal, variant context and PS diagnostics; Protocol 2.8.0 implementation. Relative periods, module registration and contextual Excel emission remain deferred. |
 
 
 ## Mixed-use aggregation and speculative leasing
 
-[RFC 0019](../../docs/rfcs/0019-mixed-use-composition.md) shipped multi-component
+[RFC 0019](../rfcs/0019-mixed-use-composition.md) shipped multi-component
 container aggregation: named components feed a property-level mixed-use pack.
 Its historical array-iteration constraint explains the chosen container shape;
 removing that constraint would not itself deliver Argus parity.
@@ -172,9 +172,9 @@ Speculative leasing remains a separate modeling proposal, not a committed releas
 renewal probabilities, months vacant, market-rent resets, and tenant-improvement /
 leasing-commission cash timing and amortization need explicit deterministic rules
 and fixtures. A future module could produce period-indexed schedules.
-[RFC 0041](../../docs/rfcs/0041-period-indexed-addressing.md) addresses
+[RFC 0041](../rfcs/0041-period-indexed-addressing.md) addresses
 period lookup over existing series; it is not a lease-rollover engine. The shipped
-[lease-up schedule](../../docs/rfcs/0008-lease-up-modeling.md) likewise does not establish
+[lease-up schedule](../rfcs/0008-lease-up-modeling.md) likewise does not establish
 that broader modeling contract.
 
 ## Pre-public-flip checklist

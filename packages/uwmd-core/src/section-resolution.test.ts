@@ -12,7 +12,7 @@ import type { ParsedUWFile, UWBlock } from './types.js';
 // Two `debt_structure` blocks: `variant=producer-senior` (`_role: senior`,
 // 6,000,000) then `variant=producer-mezz` (`_role: junior`, 1,000,000).
 const FIXTURE = readFileSync(
-  resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures/10-declared-roles.uwx.md'),
+  resolve(process.cwd(), '../..', 'conformance/documents/fixtures/10-declared-roles.uwx.md'),
   'utf8',
 );
 const SENIOR = '"_role": "senior"';
@@ -124,8 +124,8 @@ describe('resolveSectionBlock (Protocol §VIII.2, RFC 0066)', () => {
 // generic-order fixture also resolved to its first fence. Both context and
 // successful no-context fixtures now put the selected block between two others;
 // this suite preserves their distinct selection reasons and rejects both orders.
-describe('RFC 0066 tier-3 fixtures are not satisfiable by fence order', () => {
-  const TIER3 = resolve(process.cwd(), '../..', 'conformance/tier-3-calc-host/fixtures');
+describe('RFC 0066 calculation fixtures are not satisfiable by fence order', () => {
+  const TIER3 = resolve(process.cwd(), '../..', 'conformance/calc/fixtures');
   const CONTEXT_FIXTURES = readdirSync(TIER3)
     .filter((name) => name.startsWith('variant-') && existsSync(join(TIER3, name, 'calc-context.json')))
     .sort();

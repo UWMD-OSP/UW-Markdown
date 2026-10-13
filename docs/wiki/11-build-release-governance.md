@@ -455,7 +455,7 @@ the [adopter feedback review](../reviews/2026-10-04-adopter-feedback-loop.md).
 Change | RFC?
 ---|---
 Fix a parser/validator/calc bug | No (editorial)
-Add a Vitest test or a well-formed `tier-1-reader/fixtures/` fixture | No
+Add a Vitest test or a well-formed `documents/fixtures/` fixture | No
 Add or change a metric definition (dictionary entry + its pack mirror) | Yes (metric dictionary, RFC 0078)
 Change a validation code's meaning/severity | Yes (changes conformance)
 Add/rename a standard section or `_meta` field | Yes (format spec)

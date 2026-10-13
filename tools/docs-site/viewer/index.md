@@ -50,7 +50,7 @@ embedded viewer without leaving this page.
 <div class="viewer-frame-shell">
   <div class="viewer-frame-bar">
     <span><i></i><i></i><i></i></span>
-    <code>reference-viewer / tier-1</code>
+    <code>reference-viewer / reader</code>
     <a href="/viewer/app/" target="_blank" rel="noopener">Open ↗</a>
   </div>
   <iframe

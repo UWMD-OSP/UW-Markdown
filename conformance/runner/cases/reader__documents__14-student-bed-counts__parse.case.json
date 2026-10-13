@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__14-student-bed-counts__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "14-student-bed-counts.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/14-student-bed-counts.parsed.json"
+  }
+}

@@ -321,7 +321,7 @@ describe('in-file steps over a variant map (§VIII.2, RFC 0066)', () => {
   // `producer-senior` (`_role: senior`, 6,000,000) then `producer-mezz`
   // (`_role: junior`, 1,000,000); both tagged `manual`.
   const ROLES = readFileSync(
-    resolve(process.cwd(), '../..', 'conformance/tier-1-reader/fixtures/10-declared-roles.uwx.md'),
+    resolve(process.cwd(), '../..', 'conformance/documents/fixtures/10-declared-roles.uwx.md'),
     'utf8',
   );
   const senior = ROLES.indexOf('variant=producer-senior');

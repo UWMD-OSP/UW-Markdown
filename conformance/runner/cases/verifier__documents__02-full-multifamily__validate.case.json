@@ -1,0 +1,19 @@
+{
+  "id": "verifier__documents__02-full-multifamily__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "02-full-multifamily.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/02-full-multifamily.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

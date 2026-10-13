@@ -1,0 +1,20 @@
+{
+  "id": "verifier__reserve-draw-bindings__missing-reserve-variant__verify-reserve-draws",
+  "target": "verifier",
+  "requires_capabilities": [
+    "parse",
+    "calc-evaluate"
+  ],
+  "command": "verify-reserve-draws",
+  "args": [
+    "deal.uwx.md",
+    "plan.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/reserve-draw-bindings/missing-reserve-variant",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 1
+  }
+}

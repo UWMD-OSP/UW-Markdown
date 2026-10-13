@@ -1,0 +1,16 @@
+{
+  "id": "reader__documents__17-exit-proceeds-junior-capital__parse",
+  "target": "reader",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "17-exit-proceeds-junior-capital.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/17-exit-proceeds-junior-capital.parsed.json"
+  }
+}

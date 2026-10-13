@@ -107,9 +107,9 @@ describe('deriveDCF — proceeds to common equity (RFC 0077)', () => {
     expect(field(d, 'exit_analysis.net_proceeds_to_common_equity')).toBe(2_300_000);
   });
 
-  it('foots exactly what the tier-1 fixture 17 states', () => {
+  it('foots exactly what the document fixture 17 states', () => {
     const parsed = parseUWFile(readFileSync(resolve(process.cwd(),
-      '../../conformance/tier-1-reader/fixtures/17-exit-proceeds-junior-capital.uwx.md'), 'utf8'));
+      '../../conformance/documents/fixtures/17-exit-proceeds-junior-capital.uwx.md'), 'utf8'));
     const content = (parsed.sections['dcf'] as { content: Record<string, unknown> }).content;
     const stated = content['exit_analysis'] as Record<string, unknown>;
     const d = deriveDCF(content);

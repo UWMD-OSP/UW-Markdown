@@ -35,7 +35,7 @@ describe('CLI validation and receipt reporting', () => {
   }
 
   it('keeps clean validation separate from incomplete optional later stages and skipped checks', async () => {
-    const minimal = readFileSync(resolve(root, 'conformance/tier-1-reader/fixtures/01-minimal-screening.uwx.md'), 'utf8');
+    const minimal = readFileSync(resolve(root, 'conformance/documents/fixtures/01-minimal-screening.uwx.md'), 'utf8');
     const clean = minimal; // Re-authored nested metadata is already complete.
     const file = resolve(temp, 'clean.uwx.md');
     writeFileSync(file, clean);
@@ -125,7 +125,7 @@ A receipt attests that these outputs follow from this record. It does not attest
     // Two debt_structure variants and no selectable one. Pack 1.0.1's
     // cash_on_cash returns null without stated equity, so add the fixture's
     // sources_uses to reach its debt_structure read.
-    const variants = readFileSync(resolve(root, 'conformance/tier-3-calc-host/fixtures/variant-03-unresolvable/deal.uwx.md'), 'utf8');
+    const variants = readFileSync(resolve(root, 'conformance/calc/fixtures/variant-03-unresolvable/deal.uwx.md'), 'utf8');
     const sourcesUses = fixture.match(/```json uw:section=sources_uses[^\n]*\r?\n[\s\S]*?```/)?.[0];
     expect(sourcesUses).toBeDefined();
     const file = resolve(temp, 'unresolvable.uwx.md');

@@ -1,3 +1,4 @@
+// Historical tier names below are intentionally refused negative inputs.
 // cli-args.ts — the uwmd CLI's argument/path plumbing. Extracted from cli.ts
 // (a top-level script that runs at import time, so it cannot carry a sibling
 // unit test itself; its command surface is covered by the @uwmd/cli smoke

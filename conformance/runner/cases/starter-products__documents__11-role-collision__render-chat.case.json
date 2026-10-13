@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__11-role-collision__render-chat",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "11-role-collision.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/11-role-collision.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

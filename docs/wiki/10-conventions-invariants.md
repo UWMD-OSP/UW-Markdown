@@ -58,7 +58,7 @@ figures."* Agents may write an *input* a formula reads (e.g.
 ### 3. Editor byte preservation
 *Starter-product guarantee (the editor).* `applyEdit` must leave bytes outside
 the modified region exactly as they were (round-trip stability). The editor
-fixtures (`conformance/tier-2-editor/`, a starter-product suite under RFC 0078)
+fixtures (`conformance/starter/editor/`, a starter-product suite under RFC 0078)
 enforce this. Never reflow or re-serialize the whole file on an edit.
 - **Why it is not a standard rule:** integrity chains hash canonical block JSON
   (Protocol §V.9), not raw bytes, so a verifier never depends on byte

@@ -632,7 +632,7 @@ with Protocol **2.19.0** and is `implemented`.
   - **Guard and mutants.** `section-resolution.test.ts` discovers every
     successful non-null no-context variant case and pins the selection reason.
     A built resolver that validates the selection and then returns the first
-    fence passed 43/43 default tier-3 checks and 42/42 portable cases before
+    fence passed 43/43 default calculation checks and 42/42 portable cases before
     this change. First- and last-fence mutants now fail all four in both runners.
   - **Unchanged.** Expected 0.6, Protocol/RFC/package state, 675 default checks
     and 101 portable cases. This conformance evidence is included in the 2.16.0 generation.
@@ -1120,8 +1120,8 @@ existing contract, so no RFC was needed. The
 
   So a Tier-2 `frontmatter_set` or a UW JSON → UWX conversion now reads back
   exactly.
-- **Conformance.** New tier-1 positive fixture `16` (its parsed baseline is a
-  YAML library's reading), tier-1 refusals `11`–`14`, Lite positive `08` and
+- **Conformance.** New document positive fixture `16` (its parsed baseline is a
+  YAML library's reading), document refusals `11`–`14`, Lite positive `08` and
   Lite refusals `13`–`15`. Before the reader change, exactly the 8 new cases
   failed. After it, no existing baseline changed.
 - **Compatibility.** A quoted value that is not valid YAML is now refused

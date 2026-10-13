@@ -138,8 +138,8 @@ case exactly one owner (Protocol §II.6, RFC 0078):
 - **Starter products** — editor, agent, rendering, defaults and refinement
   checks. Not conformance; still blocking in CI and reported separately.
 
-Fixture directories keep their historical names (`tier-1-reader/`,
-`tier-2-editor/`, `tier-3-calc-host/`, `tier-4-agent-host/`) so paths stay
+Fixture directories keep their historical names (`documents/`,
+`starter/editor/`, `calc/`, `starter/agent/`) so paths stay
 stable; a directory name is not an ownership claim. A `malformed/`
 subdirectory (where applicable) holds deliberately-invalid fixtures whose
 `expected.json` declares which validator codes the parser must surface.

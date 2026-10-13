@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__02-full-multifamily__render-summary",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "02-full-multifamily.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/02-full-multifamily.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

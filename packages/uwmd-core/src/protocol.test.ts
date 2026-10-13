@@ -1,3 +1,4 @@
+// Historical tier names below are intentionally refused negative inputs.
 import { describe, expect, it } from 'vitest';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import { readFileSync } from 'node:fs';
@@ -435,9 +436,9 @@ describe('BUILTIN_VIEW_MODELS.noi_model reads Format §4.5 paths', () => {
     ]);
   });
 
-  it('every hint resolves and formats on the tier-1 §4.5 conformance fixture', () => {
+  it('every hint resolves and formats on the document §4.5 conformance fixture', () => {
     const fixture = fileURLToPath(new URL(
-      '../../../conformance/tier-1-reader/fixtures/02-full-multifamily.uwx.md', import.meta.url,
+      '../../../conformance/documents/fixtures/02-full-multifamily.uwx.md', import.meta.url,
     ));
     const content = getSection(parseUWFile(readFileSync(fixture, 'utf-8')), 'noi_model')!.content;
     for (const h of hints) {
@@ -450,7 +451,7 @@ describe('BUILTIN_VIEW_MODELS.noi_model reads Format §4.5 paths', () => {
 
   it('a hint on the money object itself would format as n/a, which is why it reads .value', () => {
     const fixture = fileURLToPath(new URL(
-      '../../../conformance/tier-1-reader/fixtures/02-full-multifamily.uwx.md', import.meta.url,
+      '../../../conformance/documents/fixtures/02-full-multifamily.uwx.md', import.meta.url,
     ));
     const content = getSection(parseUWFile(readFileSync(fixture, 'utf-8')), 'noi_model')!.content;
     expect(formatCurrency(deepGet(content, 'income.gross_potential_rent'))).toBe('n/a');

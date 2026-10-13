@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Re-record every tier-4 replay cassette from its scripted completion.
+// Re-record every agent replay cassette from its scripted completion.
 //
-// Each scenario under conformance/tier-4-agent-host/replay/ carries a
+// Each scenario under conformance/starter/agent/replay/ carries a
 // scripted-completion.json — the model's side of the exchange. This script
 // replays the real runner against a scripted backend through the real
 // createRecordingProvider (the recipe the replay README documents inline)
@@ -13,7 +13,7 @@
 // the prompt-drift detector doing its job; this script is the acknowledged
 // re-record, and the cassette diff in review is the record of what drifted.
 // After re-recording, refresh the document baseline:
-//   npm run conformance -- --suite=4-replay --update
+//   npm run conformance -- --suite=starter-agent-replay --update
 //
 // recorded_at is pinned to the replay clock so a re-record is a stable file,
 // not a spurious one-line diff.
@@ -29,7 +29,7 @@ import {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
-const REPLAY_DIR = join(ROOT, 'conformance', 'tier-4-agent-host', 'replay');
+const REPLAY_DIR = join(ROOT, 'conformance', 'starter/agent', 'replay');
 // Must match REPLAY_CLOCK in run-conformance.mjs.
 const REPLAY_CLOCK_ISO = '2026-08-13T00:00:00.000Z';
 const REPLAY_CLOCK = Date.parse(REPLAY_CLOCK_ISO);

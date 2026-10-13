@@ -1,0 +1,19 @@
+{
+  "id": "verifier__calc__irr-05-degenerate__calc",
+  "target": "verifier",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/calc/fixtures/irr-05-degenerate",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 1
+  }
+}

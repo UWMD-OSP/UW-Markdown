@@ -47,10 +47,14 @@ function capabilitiesFor(command, args) {
   }
 }
 
-function add(caseKey, _tier, command, args, fixtureDir, expect, capabilities) {
-  const target = portableOwner(caseKey);
+function add(caseKey, command, args, fixtureDir, expect, capabilities) {
+  const parts = caseKey.split('/');
+  const suite = parts[0] === 'documents-malformed' ? 'documents' : parts[0] === 'replacement-funding' ? 'hedge' : parts[0];
+  const scenario = parts[0] === 'documents-malformed' ? `malformed-${parts[1]}` : parts[1];
+  const operation = parts[2] ?? command;
+  const target = portableOwner(suite, scenario, operation);
   cases.push({
-    id: `${target}/${caseKey}`,
+    id: `${target}__${suite}__${scenario}__${operation}`,
     target,
     requires_capabilities: capabilities ?? capabilitiesFor(command, args),
     command,
@@ -67,28 +71,28 @@ const dirs = (base) =>
         .sort()
     : [];
 
-// ── Tier 1: parse, validate, render ─────────────────────────────────────────
+// ── Documents: parse, validate, render ─────────────────────────────────────────
 //
 // One fixture yields four cases. The parsed and validation baselines are
 // compared as JSON subsets; the two rendered baselines are text, because they
 // ARE text — wrapping a rendered chat transcript in a JSON envelope to satisfy
 // a protocol would mean re-baselining every one of them to gain nothing.
 
-const T1_FIXTURES = join(CONFORMANCE, 'tier-1-reader', 'fixtures');
-const T1_EXPECTED = join(CONFORMANCE, 'tier-1-reader', 'expected');
-for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uwx.md')).sort()) {
+const DOCUMENT_FIXTURES = join(CONFORMANCE, 'documents', 'fixtures');
+const DOCUMENT_EXPECTED = join(CONFORMANCE, 'documents', 'expected');
+for (const file of readdirSync(DOCUMENT_FIXTURES).filter((f) => f.endsWith('.uwx.md')).sort()) {
   const stem = basename(file, '.uwx.md');
-  const baseline = (suffix) => rel(join(T1_EXPECTED, `${stem}.${suffix}`));
+  const baseline = (suffix) => rel(join(DOCUMENT_EXPECTED, `${stem}.${suffix}`));
 
-  if (existsSync(join(T1_EXPECTED, `${stem}.parsed.json`))) {
-    add(`tier-1/${stem}/parse`, '1', 'parse', [file], T1_FIXTURES, {
+  if (existsSync(join(DOCUMENT_EXPECTED, `${stem}.parsed.json`))) {
+    add(`documents/${stem}/parse`, 'parse', [file], DOCUMENT_FIXTURES, {
       kind: 'json-subset',
       file: baseline('parsed.json'),
     });
   }
-  if (existsSync(join(T1_EXPECTED, `${stem}.validation.json`))) {
-    const wanted = JSON.parse(readFileText(join(T1_EXPECTED, `${stem}.validation.json`)));
-    add(`tier-1/${stem}/validate`, '1', 'validate', [file, '--json'], T1_FIXTURES, {
+  if (existsSync(join(DOCUMENT_EXPECTED, `${stem}.validation.json`))) {
+    const wanted = JSON.parse(readFileText(join(DOCUMENT_EXPECTED, `${stem}.validation.json`)));
+    add(`documents/${stem}/validate`, 'validate', [file, '--json'], DOCUMENT_FIXTURES, {
       kind: 'json-subset',
       file: baseline('validation.json'),
       // The baseline is the deduplicated (code, severity) set, not the raw
@@ -97,7 +101,7 @@ for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uwx.md'))
       project: 'issue-code-severity-set',
       // §II.6a.2: `validate` exits 1 when the document has a validation error
       // (the reference CLI does exactly that, `cli.ts`). Derived from the
-      // baseline, never assumed: fixture 09 (RFC 0038) is the first tier-1
+      // baseline, never assumed: fixture 09 (RFC 0038) is the first document
       // document whose expected verdict is `errors`, and the hardcoded 0 that
       // stood here ("the fixtures are valid") pinned the corpus against the
       // prose the moment it landed.
@@ -105,8 +109,8 @@ for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uwx.md'))
     });
   }
   for (const [view, suffix] of [['chat', 'rendered-chat.txt'], ['summary', 'rendered-summary.md']]) {
-    if (existsSync(join(T1_EXPECTED, `${stem}.${suffix}`))) {
-      add(`tier-1/${stem}/render-${view}`, '1', 'render', [file, '--format', view], T1_FIXTURES, {
+    if (existsSync(join(DOCUMENT_EXPECTED, `${stem}.${suffix}`))) {
+      add(`documents/${stem}/render-${view}`, 'render', [file, '--format', view], DOCUMENT_FIXTURES, {
         kind: 'text',
         file: baseline(suffix),
         // The baselines are the full RenderResult envelope despite the .txt /
@@ -118,23 +122,23 @@ for (const file of readdirSync(T1_FIXTURES).filter((f) => f.endsWith('.uwx.md'))
   }
 }
 
-// ── Tier 1 malformed: the validator must REPORT, never throw ────────────────
+// ── Malformed documents: the validator must REPORT, never throw ────────────────
 //
 // Compared as a subset of the validation response rather than by exit code: a
 // malformed fixture that produced no output at all would pass an exit-code
 // check, and "refused to parse" is exactly the failure these fixtures exist to
 // rule out.
 
-const T1_MALFORMED = join(CONFORMANCE, 'tier-1-reader', 'malformed');
-for (const file of readdirSync(T1_MALFORMED).filter((f) => f.endsWith('.uwx.md')).sort()) {
+const MALFORMED_DOCUMENTS = join(CONFORMANCE, 'documents', 'malformed');
+for (const file of readdirSync(MALFORMED_DOCUMENTS).filter((f) => f.endsWith('.uwx.md')).sort()) {
   const stem = basename(file, '.uwx.md');
-  const expected = join(T1_MALFORMED, `${stem}.expected.json`);
+  const expected = join(MALFORMED_DOCUMENTS, `${stem}.expected.json`);
   if (!existsSync(expected)) continue;
   const wanted = JSON.parse(readFileText(expected));
   // Some malformed baselines describe integrity findings rather than validator
   // output; only the ones shaped like a ValidationResult are CLI-checkable.
   if (!Array.isArray(wanted.issues)) continue;
-  add(`tier-1-malformed/${stem}`, '1', 'validate', [file, '--json'], T1_MALFORMED, {
+  add(`documents-malformed/${stem}`, 'validate', [file, '--json'], MALFORMED_DOCUMENTS, {
     kind: 'json-subset',
     file: rel(expected),
     project: 'issue-code-severity-set',
@@ -146,7 +150,7 @@ function hasError(result) {
   return (result.issues ?? []).some((i) => i.severity === 'error');
 }
 
-// ── Tier 2: edit ────────────────────────────────────────────────────────────
+// ── Starter editor ────────────────────────────────────────────────────────────
 //
 // Only the fixtures whose whole story is "apply this operation, get these
 // bytes". `parent-hash-stamp` and `stale-parent-rejected` need `applyEditAsync`
@@ -154,11 +158,11 @@ function hasError(result) {
 // stay covered by the TypeScript runner and are listed in the runner README as
 // a known gap rather than quietly dropped.
 
-const T2 = join(CONFORMANCE, 'tier-2-editor', 'fixtures');
-const T2_SKIP = new Set(['parent-hash-stamp', 'stale-parent-rejected']);
-for (const scenario of dirs(T2)) {
-  if (T2_SKIP.has(scenario) || existsSync(join(T2, scenario, 'options.json'))) continue;
-  const dir = join(T2, scenario);
+const EDITOR = join(CONFORMANCE, 'starter/editor', 'fixtures');
+const EDITOR_SKIP = new Set(['parent-hash-stamp', 'stale-parent-rejected']);
+for (const scenario of dirs(EDITOR)) {
+  if (EDITOR_SKIP.has(scenario) || existsSync(join(EDITOR, scenario, 'options.json'))) continue;
+  const dir = join(EDITOR, scenario);
   if (!existsSync(join(dir, 'after.uwx.md'))) continue;
   const context = JSON.parse(readFileText(join(dir, 'context.json')));
   const flags = ['--json'];
@@ -182,8 +186,7 @@ for (const scenario of dirs(T2)) {
   const editCapability = EDIT_CAPABILITY[operationKind];
   if (!editCapability) throw new Error(`unmapped edit operation kind '${operationKind}'`);
   add(
-    `tier-2/${scenario}`,
-    '2',
+    `starter-editor/${scenario}`,
     'edit',
     ['before.uwx.md', 'operation.json', ...flags],
     dir,
@@ -192,16 +195,16 @@ for (const scenario of dirs(T2)) {
   );
 }
 
-// ── Tier 3: calc ────────────────────────────────────────────────────────────
+// ── Calculations ────────────────────────────────────────────────────────────
 
-const T3 = join(CONFORMANCE, 'tier-3-calc-host', 'fixtures');
-for (const scenario of dirs(T3)) {
-  const dir = join(T3, scenario);
+const CALCULATIONS = join(CONFORMANCE, 'calc', 'fixtures');
+for (const scenario of dirs(CALCULATIONS)) {
+  const dir = join(CALCULATIONS, scenario);
   if (!existsSync(join(dir, 'calc.json')) || !existsSync(join(dir, 'expected-result.json'))) continue;
   const expected = JSON.parse(readFileText(join(dir, 'expected-result.json')));
   // An optional caller context (RFC 0066) reaches the CLI as --calc-context.
   const context = existsSync(join(dir, 'calc-context.json')) ? ['--calc-context', 'calc-context.json'] : [];
-  add(`tier-3/${scenario}`, '3', 'calc', ['deal.uwx.md', 'calc.json', ...context, '--json'], dir, {
+  add(`calc/${scenario}`, 'calc', ['deal.uwx.md', 'calc.json', ...context, '--json'], dir, {
     kind: 'json-subset',
     file: 'expected-result.json',
     // The CLI exits 1 when any declaration fails to evaluate; the refusal
@@ -215,7 +218,7 @@ for (const scenario of dirs(T3)) {
 for (const scenario of dirs(join(CONFORMANCE, 'hedge')).filter(n => /^00(70|75|76)-/.test(n))) {
   const dir = join(CONFORMANCE, 'hedge', scenario);
   const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
-  add(`replacement-funding/${scenario}`, '1', 'validate', ['deal.uwx.md', '--json'], dir, {
+  add(`replacement-funding/${scenario}`, 'validate', ['deal.uwx.md', '--json'], dir, {
     kind: 'json-subset', file: 'expected.json', project: 'replacement-funding',
     exit_code: expected.codes.length > 0 || expected.verification.state === 'failed' || expected.verification.state === 'unverifiable' ? 1 : 0,
   });
@@ -223,7 +226,7 @@ for (const scenario of dirs(join(CONFORMANCE, 'hedge')).filter(n => /^00(70|75|7
 // RFC 0072: an interoperable validator must retain warning severity and exit 0.
 for (const scenario of dirs(join(CONFORMANCE, 'scenario'))) {
   const dir = join(CONFORMANCE, 'scenario', scenario);
-  add(`scenario/${scenario}`, '1', 'validate', ['deal.uwx.md', '--json'], dir, {
+  add(`scenario/${scenario}`, 'validate', ['deal.uwx.md', '--json'], dir, {
     kind: 'json-subset', file: 'expected.json', project: 'issue-code-severity-set', exit_code: 0,
   });
 }
@@ -231,7 +234,7 @@ for (const scenario of dirs(join(CONFORMANCE, 'scenario'))) {
 for (const scenario of dirs(join(CONFORMANCE, 'reserve-accounts'))) {
   const dir = join(CONFORMANCE, 'reserve-accounts', scenario);
   const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
-  add(`reserve-accounts/${scenario}`, '3', 'verify-reserve-accounts', ['deal.uwx.md', '--json'], dir, {
+  add(`reserve-accounts/${scenario}`, 'verify-reserve-accounts', ['deal.uwx.md', '--json'], dir, {
     kind: 'json-subset', file: 'expected.json',
     exit_code: ['failed', 'unverifiable'].includes(expected.state) ? 1 : 0,
   }, ['parse', 'calc-evaluate']);
@@ -241,7 +244,7 @@ for (const scenario of dirs(join(CONFORMANCE, 'reserve-draw-bindings'))) {
   const dir = join(CONFORMANCE, 'reserve-draw-bindings', scenario);
   const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
   const args = ['deal.uwx.md', ...(existsSync(join(dir, 'plan.json')) ? ['plan.json'] : []), '--json'];
-  add(`reserve-draw-bindings/${scenario}`, '3', 'verify-reserve-draws', args, dir, {
+  add(`reserve-draw-bindings/${scenario}`, 'verify-reserve-draws', args, dir, {
     kind: 'json-subset', file: 'expected.json',
     exit_code: ['failed', 'unverifiable'].includes(expected.state) ? 1 : 0,
   }, ['parse', 'calc-evaluate']);

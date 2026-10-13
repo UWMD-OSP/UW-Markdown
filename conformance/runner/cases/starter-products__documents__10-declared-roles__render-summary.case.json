@@ -1,0 +1,19 @@
+{
+  "id": "starter-products__documents__10-declared-roles__render-summary",
+  "target": "starter-products",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "10-declared-roles.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/10-declared-roles.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

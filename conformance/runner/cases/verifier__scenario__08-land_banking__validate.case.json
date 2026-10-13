@@ -1,0 +1,19 @@
+{
+  "id": "verifier__scenario__08-land_banking__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/scenario/08-land_banking",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

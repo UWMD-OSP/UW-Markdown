@@ -88,10 +88,18 @@ RFC 0078 Phase 3 uses case-level ownership in
 [`conformance/corpus-index.json`](../../conformance/corpus-index.json).
 Every check belongs exactly once to Reader, Verifier, one optional profile
 (Module, Integrity, Representations, Portfolio, Sensitivity or Stochastic),
-or starter products. Legacy directories are storage paths, never tier claims.
+or starter products. Directories describe content; owners come from the index.
 Editor/agent, rendering, defaults/cascade, projections and refinement checks
 belong to [docs/starter](../starter/README.md), remain in CI and have separate
 report counts. Mixed cases keep all their assertions and are product checks.
+
+RFC 0081 Phase 5 renames the corpus to `documents/`, `calc/` and
+`starter/{editor,refinement,agent}/`. Suites use the same content names
+(`starter-editor`, `starter-refinement`, `starter-agent`,
+`starter-agent-profile`, `starter-agent-replay` for starter checks).
+Portable ids and filenames use `<owner>__<suite>__<scenario>__<operation>`;
+malformed document scenarios start with `malformed-`. The reserve
+`bare-block` cases keep their existing checks. No old path or id is accepted.
 
 The corpus reconciled **1,053 default + three opt-in = 1,056 existing reference
 checks, plus five new validate-only Verifier checks = 1,061**. RFC 0081 Phase 3
@@ -132,9 +140,9 @@ Unknown owners, duplicate/missing results and unindexed portable identities
 fail the gate, as does a runner suite with no index rows or an indexed suite
 with no runner. Baseline updates require full runs or `--suite`; a target
 filter is refused because mixed-suite updates could alter unselected baselines.
-A family includes its child suites (`3-refinement` under `3`, `4-profile`
+A family includes its child suites (`starter-refinement` under `3`, `starter-agent-profile`
 under `4`); baseline updates selecting only a child suite are refused.
-The descriptions below retain historical fixture paths, not old tier claims.
+The descriptions below use the content paths introduced by RFC 0081 Phase 5.
 
 
 Runner: [`scripts/run-conformance.mjs`](../../scripts/run-conformance.mjs). It
@@ -153,7 +161,7 @@ npm run conformance -- --suite=capital-stack  # the RFC 0026 capital-stack suite
 npm run conformance -- --suite=lease-up     # the RFC 0008 lease-up suite alone
 npm run conformance -- --suite=capability   # the RFC 0011 capability-token suite alone
 npm run conformance -- --suite=locale       # the RFC 0001 display-locale suite alone
-npm run conformance -- --suite=2 --update   # regenerate that family's baselines
+npm run conformance -- --suite=starter-editor --update   # regenerate that family's baselines
 npm run conformance -- --json              # machine-readable summary
 ```
 
@@ -161,11 +169,11 @@ Exit code 0 = all pass, 1 = a failed assertion, 2 = an invalid selector or
 coverage error. Shape, layer-profile and deterministic replay checks all run
 by default as starter products; no live model is called. JSON reports contain
 canonical `target` plus `tier`, `profile` or `starter_product`, and `by_target`
-counts. Historical suite numbers are exposed only as fixture-family addresses.
+counts. Only content names are accepted as fixture-family addresses.
 
 ### Reader, Verifier and starter fixture storage
 
-`conformance/tier-1-reader/`:
+`conformance/documents/`:
 - `fixtures/*.uw.md` parsed and compared (canonical JSON projection) against
   `expected/<id>.parsed.json`; `chat` and `summary` renders compared against
   `expected/<id>.rendered-{chat,summary}.{txt,md}` (whitespace-normalized).
@@ -190,7 +198,7 @@ counts. Historical suite numbers are exposed only as fixture-family addresses.
 
 ### Editor starter checks
 
-`conformance/tier-2-editor/fixtures/<scenario>/`: `before.uw.md` +
+`conformance/starter/editor/fixtures/<scenario>/`: `before.uw.md` +
 `operation.json` → run `applyEdit` (or `applyEditAsync` when `options.json` has
 `integrity: true`) with `context.json` → compare against `after.uw.md`. Volatile
 fields (`last_modified`, `timestamp`, `ts=`, `content_hash`) are stripped before
@@ -204,15 +212,15 @@ All but one of these are Verifier checks (§II.2: dictionary reproduction, the
 IRR procedure, the §VIII.1–VIII.3 notation). `revpar-basic`, a custom
 ADR × occupancy declaration, is the Module check.
 
-`conformance/tier-3-calc-host/fixtures/<scenario>/`: `deal.uw.md` + `calc.json`
+`conformance/calc/fixtures/<scenario>/`: `deal.uw.md` + `calc.json`
 (a `ModuleCalcDecl`) → `evaluateCalc` → compare projected `{calc_id, ok, value,
 unit?, error?}` against `expected-result.json`. Plus a **refinement** mode
-(`refinement/<scenario>/`): `deal.uw.md` → `extractDependencyGraph` → compare the
+(`conformance/starter/refinement/<scenario>/`): `deal.uw.md` → `extractDependencyGraph` → compare the
 projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 
 ### Agent starter checks
 
-`conformance/tier-4-agent-host/`:
+`conformance/starter/agent/`:
 - `replay/<scenario>/` — **the real gate, and it runs by default.**
   `before.uwx.md` + `cassette.json` + a frozen `after.uwx.md`. The cassette
   supplies the model's side of the conversation, so the run needs no network and
@@ -228,7 +236,7 @@ projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
   mismatch is a typed error naming the changed field, so a cassette doubles as a
   prompt-drift detector. Matching is sequential rather than keyed, because a
   keyed cassette would happily serve a reordered run and hide a change in call
-  order. See `conformance/tier-4-agent-host/replay/README.md`, including its
+  order. See `conformance/starter/agent/replay/README.md`, including its
   note on what recorded replay does *not* prove.
 - `fixtures/<scenario>/`: `before.uw.md` + `expected-after-shape.json` —
   **shape checks** (parse + JSON-validate), run by default without a live model.
@@ -292,11 +300,11 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,054 indexed checks across its suites, and most of what has been added
+runs all 1,069 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable
-driver checks its 332-case subset using shared comparison logic, while the
+driver checks its 336-case subset using shared comparison logic, while the
 reference runner checks the full indexed corpus. A result claims only the
 checks actually run. Replacing one with the other would
 trade breadth for portability.
@@ -498,7 +506,7 @@ are not duplicated here: both this codec and the CSV bundle route through
 `.github/workflows/ci.yml`: lint (Biome) on Node 20, then build + test +
 `npm run conformance` on a Node 20/22 matrix — the runner's **default** suite
 list, deliberately not a pinned `--tier=`. CI used to pin `1,2,3,lite,receipts`,
-which silently excluded the `4-replay` suite once it landed: a suite could be
+which silently excluded the `starter-agent-replay` suite once it landed: a suite could be
 added to the default and never gate a pull request. Adding a suite to the
 default list is now enough to make CI enforce it. The Node 20 leg additionally
 runs `gen-conformance-cases --check` (a fixture added without regenerating the
@@ -519,17 +527,17 @@ ensure identity remains descriptive. See its README for the case list.
 
 First register every emitted `(suite, scenario)` once in the corpus index,
 choosing its owner from the closed target vocabulary. Retain all existing
-assertions; register portable legacy ids before regenerating case files.
+assertions; regenerate portable content ids before regenerating case files.
 The following family names describe storage and baseline update selectors.
 
 
-- **Legacy family 1:** drop a `.uw.md` in `fixtures/`, then `--suite=1 --update` to mint the
+- **Documents:** drop a `.uw.md` in `fixtures/`, then `--suite=documents --update` to mint the
   expected baselines (review the diff before committing).
-- **Legacy family 1 malformed:** add `<id>.uw.md` + a hand-written `<id>.expected.json`
+- **Malformed documents:** add `<id>.uw.md` + a hand-written `<id>.expected.json`
   with `expected_codes`.
-- **Editor family 2:** make `<scenario>/` with `before.uw.md` + `operation.json` (+
-  `context.json`/`options.json`), then `--suite=2 --update` to mint `after.uw.md`.
-- **Calculation family 3:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--suite=3
+- **Starter editor:** make `<scenario>/` with `before.uw.md` + `operation.json` (+
+  `context.json`/`options.json`), then `--suite=starter-editor --update` to mint `after.uw.md`.
+- **Calculations:** make `<scenario>/` with `deal.uw.md` + `calc.json`, then `--suite=calc
   --update`.
 - **Lite:** drop a `.uw.md` in `lite/fixtures/`, then `--suite=lite --update`. Run
   `--suite=lite` *without* `--update` first — the negative and invariant checks

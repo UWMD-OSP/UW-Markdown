@@ -33,14 +33,14 @@ and variant selection. Neither infers a default for a missing period.
 - Additional workbook edits are export-only. Import refuses them explicitly,
   rather than silently discarding new period or scalar input edits.
 
-See the [native verification record](../../docs/reviews/2026-09-12-excel-period-bindings.md)
+See the [native verification record](../reviews/2026-09-12-excel-period-bindings.md)
 and the RFCs for the complete acceptance contracts. Before expanding any scope,
 pin input/period identity, missing-value behavior and actual recalculation checks.
 
 ## Next development decisions
 
 [RFC 0044](../rfcs/0044-explicit-lease-up-cash-flow-projection.md) now proposes
-an explicit-date projection, supported by an [executable example](../../docs/LEASE_UP_CASH_FLOW_WORKFLOW.md).
+an explicit-date projection, supported by an [executable example](../LEASE_UP_CASH_FLOW_WORKFLOW.md).
 The adapter is not implemented; full DCF coupling still needs complete economic
 coverage and valuation-anchor rules. Lease-up net_cash_flow covers receipts,
 concessions and TI/LC, not complete property/equity cash flow.

@@ -11,7 +11,7 @@ import ExcelJS from 'exceljs';
 const bin = fileURLToPath(new URL('../bin/uwmd-excel.mjs', import.meta.url));
 const source = readFileSync(
   new URL(
-    '../../../conformance/tier-3-calc-host/fixtures/period-01-year-order/deal.uwx.md',
+    '../../../conformance/calc/fixtures/period-01-year-order/deal.uwx.md',
     import.meta.url
   ),
   'utf8'

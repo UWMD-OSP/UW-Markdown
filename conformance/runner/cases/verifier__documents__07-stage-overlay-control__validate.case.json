@@ -1,0 +1,19 @@
+{
+  "id": "verifier__documents__07-stage-overlay-control__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "07-stage-overlay-control.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/07-stage-overlay-control.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

@@ -2,1037 +2,1037 @@
   "schema_version": "1.0",
   "cases": [
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "01-minimal-screening [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "01-minimal-screening [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "01-minimal-screening [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "01-minimal-screening [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "02-full-multifamily [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "02-full-multifamily [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "02-full-multifamily [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "02-full-multifamily [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "04-scope-only [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "04-scope-only [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "04-scope-only [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "04-scope-only [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "05-land-stage-overlay [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "05-land-stage-overlay [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "05-land-stage-overlay [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "05-land-stage-overlay [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "06-mixed-use-stage-overlay [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "06-mixed-use-stage-overlay [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "06-mixed-use-stage-overlay [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "06-mixed-use-stage-overlay [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "07-stage-overlay-control [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "07-stage-overlay-control [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "07-stage-overlay-control [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "07-stage-overlay-control [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "08-variant-cross-checks [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "08-variant-cross-checks [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "08-variant-cross-checks [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "08-variant-cross-checks [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "09-returns-tax-basis [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "09-returns-tax-basis [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "09-returns-tax-basis [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "09-returns-tax-basis [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "10-declared-roles [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "10-declared-roles [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "10-declared-roles [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "10-declared-roles [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "11-role-collision [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "11-role-collision [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "11-role-collision [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "11-role-collision [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "12-role-eligibility [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "12-role-eligibility [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "12-role-eligibility [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "12-role-eligibility [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "13-period-identities [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "13-period-identities [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "13-period-identities [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "13-period-identities [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "14-student-bed-counts [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "14-student-bed-counts [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "14-student-bed-counts [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "14-student-bed-counts [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "15-student-bed-counts-inconsistent [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "15-student-bed-counts-inconsistent [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "15-student-bed-counts-inconsistent [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "15-student-bed-counts-inconsistent [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "16-frontmatter-yaml-scalars [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "16-frontmatter-yaml-scalars [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "16-frontmatter-yaml-scalars [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "16-frontmatter-yaml-scalars [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "17-exit-proceeds-junior-capital [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "17-exit-proceeds-junior-capital [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "17-exit-proceeds-junior-capital [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "17-exit-proceeds-junior-capital [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "18-content-member-is-payload [parse]",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "18-content-member-is-payload [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "18-content-member-is-payload [render-chat]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "18-content-member-is-payload [render-summary]",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/01-missing-section-meta",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/02-low-confidence-no-review",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/03-sources-uses-mismatch",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/04-broken-chain",
       "target": "integrity"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/06-wrong-actor",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/06-wrong-actor [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/07-replace-where-supersede-required",
       "target": "starter-products"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/07-replace-where-supersede-required [validate]",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/08-provisional-without-gap",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/09-partial-without-overrides",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/10-property-section-missing",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/11-yaml-flow-mapping",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/12-yaml-flow-sequence",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/13-yaml-invalid-escape",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/14-yaml-unquoted-anchor",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/mixed-use-allocation-not-unity",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/mixed-use-component-debt-refused",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/mixed-use-components-on-other-class",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/mixed-use-land-component",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/mixed-use-noi-does-not-foot",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/mixed-use-present-but-unmeasured",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/mixed-use-single-component",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/15-uw-version-1-1",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/16-uw-version-2-0",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/17-uw-version-2-1",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/18-uw-version-4-0",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/19-uw-version-absent",
       "target": "reader"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/20-flat-meta",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/21-section-id-wrapper",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/22-resolution-outside-vocabulary",
       "target": "verifier"
     },
     {
-      "suite": "1",
+      "suite": "documents",
       "scenario": "malformed/23-retired-official-alias",
       "target": "verifier"
     },
     {
-      "suite": "2",
+      "suite": "starter-editor",
       "scenario": "frontmatter-set-recommendation",
       "target": "starter-products"
     },
     {
-      "suite": "2",
+      "suite": "starter-editor",
       "scenario": "gaps-section-update",
       "target": "starter-products"
     },
     {
-      "suite": "2",
+      "suite": "starter-editor",
       "scenario": "parent-hash-stamp",
       "target": "starter-products"
     },
     {
-      "suite": "2",
+      "suite": "starter-editor",
       "scenario": "section-replace-property",
       "target": "starter-products"
     },
     {
-      "suite": "2",
+      "suite": "starter-editor",
       "scenario": "section-supersede-risk-rating",
       "target": "starter-products"
     },
     {
-      "suite": "2",
+      "suite": "starter-editor",
       "scenario": "stale-parent-rejected",
       "target": "starter-products"
     },
     {
-      "suite": "2",
+      "suite": "starter-editor",
       "scenario": "meta-patch-flat-key-rejected",
       "target": "starter-products"
     },
     {
-      "suite": "2",
+      "suite": "starter-editor",
       "scenario": "meta-patch-lifecycle-rejected",
       "target": "starter-products"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "data-center-module-dependency-rounding",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "data_center-price_per_kw",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-01-valid-leap-divisible-by-4",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-02-valid-leap-divisible-by-400",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-03-valid-ordinary-date",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-04-valid-year-0000-leap",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-05-valid-year-9999-last-day",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-06-valid-first-day-of-year",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-07-invalid-not-leap-year",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-08-invalid-century-not-leap",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-09-invalid-february-30",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-10-invalid-april-31",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-11-invalid-month-00",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-12-invalid-month-13",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-13-invalid-day-00",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-14-invalid-one-digit-month",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-15-invalid-one-digit-day",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-16-invalid-two-digit-year",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-17-invalid-five-digit-year",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-18-invalid-signed-year",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-19-invalid-negative-year",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-20-invalid-expanded-year",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-21-invalid-leading-space",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-22-invalid-trailing-space",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-23-invalid-internal-space",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-24-invalid-leading-tab",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-25-invalid-trailing-newline",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-26-invalid-date-time-zulu",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-27-invalid-date-time-local",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-28-invalid-zone-suffix",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-29-invalid-offset-suffix",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-30-invalid-slash-form",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-31-invalid-compact-form",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-32-invalid-week-date",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-33-invalid-ordinal-date",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-34-invalid-full-width-digits",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-35-invalid-non-ascii-hyphen",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-36-invalid-empty-string",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-37-document-quoted-string",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-38-document-unquoted-yaml-date",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-39-document-null",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-40-document-absent-path",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-41-document-number",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-42-document-boolean",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-43-document-array",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-44-document-object",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-45-document-impossible-date",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-46-error-no-arguments",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-47-error-two-arguments",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "date-48-error-argument-propagates",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "dscr-from-section",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "hospitality-revpar",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "irr-01-out-of-bracket",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "irr-02-even-root-count",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "irr-03-conventional",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "irr-04-endpoint-root",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "irr-05-degenerate",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "land-usable-land-ratio",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "manufactured_housing-physical_occupancy",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-absent-component-null",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-data_center_noi_share",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-data_center_price_per_kw",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-manufactured_housing_noi_share",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-manufactured_housing_price_per_site",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-no-allocation-null",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-operating-business-gop",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-two-component-cap-rate",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-two-component-noi-share",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "mixed-use-two-component-price-per-unit",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-01-year-order",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-02-keyed-year",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-03-calendar-quarter",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-04-dated-series",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-05-missing",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-06-kind-mismatch",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-07-duplicate",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-08-unregistered",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-09-same-day-unique",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-10-same-day-repeated",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-11-same-day-absent",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "period-12-other-series-duplicate",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "revpar-basic",
       "target": "module"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "self-storage-economic-occupancy",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "senior-housing-care-revenue-ratio",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "student-housing-pre-lease-rate",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "student-housing-rent-per-bed-monthly",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-01-primary-resolves",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-02-default-resolves",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-03-unresolvable",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-04-role-preference",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-05-explicit-variant",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-06-missing-section",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-07-explicit-missing",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-08-primary-collision",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-09-role-collision",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-10-role-unclaimed",
       "target": "verifier"
     },
     {
-      "suite": "3",
+      "suite": "calc",
       "scenario": "variant-11-explicit-beats-role",
       "target": "verifier"
     },
     {
-      "suite": "3-refinement",
+      "suite": "starter-refinement",
       "scenario": "dependency-graph-multifamily",
       "target": "starter-products"
     },
     {
-      "suite": "4-replay",
+      "suite": "starter-agent-replay",
       "scenario": "l6-risk-rating/sections",
       "target": "starter-products"
     },
     {
-      "suite": "4-replay",
+      "suite": "starter-agent-replay",
       "scenario": "l6-risk-rating/document",
       "target": "starter-products"
     },
@@ -4838,7 +4838,7 @@
     },
     {
       "suite": "reserve-accounts",
-      "scenario": "legacy-v1",
+      "scenario": "bare-block",
       "target": "verifier"
     },
     {
@@ -4988,7 +4988,7 @@
     },
     {
       "suite": "reserve-draw-bindings",
-      "scenario": "legacy-v1",
+      "scenario": "bare-block",
       "target": "verifier"
     },
     {
@@ -5332,17 +5332,17 @@
       "target": "verifier"
     },
     {
-      "suite": "4",
+      "suite": "starter-agent",
       "scenario": "l0a-scope-deterministic",
       "target": "starter-products"
     },
     {
-      "suite": "4",
+      "suite": "starter-agent",
       "scenario": "l6-risk-rating",
       "target": "starter-products"
     },
     {
-      "suite": "4-profile",
+      "suite": "starter-agent-profile",
       "scenario": "consumer-profile-contract",
       "target": "starter-products"
     }

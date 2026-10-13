@@ -1,0 +1,19 @@
+{
+  "id": "verifier__calc__variant-10-role-unclaimed__calc",
+  "target": "verifier",
+  "requires_capabilities": [
+    "calc-evaluate"
+  ],
+  "command": "calc",
+  "args": [
+    "deal.uwx.md",
+    "calc.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/calc/fixtures/variant-10-role-unclaimed",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-result.json",
+    "exit_code": 0
+  }
+}
