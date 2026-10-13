@@ -6,10 +6,11 @@ inline nested `_meta`, a block digest over the block minus `_meta`, and one
 home for each fact. A missing or other `uw_version` is refused at parse as
 `UNSUPPORTED_FORMAT_VERSION`. Phase 4 deleted the old readers, the migrators
 and the one-off re-authoring scripts; there is no migration path in the
-product. Version labels move in Phase 6.
+product. Release 4.0.0 carries it, labelled Format 3.0 and Protocol 4.0.0;
+3.0.0 is the last release that reads older formats.
 
 
-> The normative contract is [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0). The implementation still carries its 3.0.0 release labels until Phase 6.
+> The normative contract is [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0), carried by core/CLI 4.0.0.
 
 > **Representations:** `.uw.md` is the human-readable Lite representation; `.uwx.md` is the structured representation. Their normative sources are [UW_LITE_SPEC.md](../../spec/UW_LITE_SPEC.md) and [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0). Types live in [types.ts](../../packages/uwmd-core/src/types.ts); see [07](07-data-model-reference.md).
 

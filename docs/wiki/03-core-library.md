@@ -6,7 +6,8 @@ inline nested `_meta`, a block digest over the block minus `_meta`, and one
 home for each fact. A missing or other `uw_version` is refused at parse as
 `UNSUPPORTED_FORMAT_VERSION`. Phase 4 deleted the old readers, the migrators
 and the one-off re-authoring scripts; there is no migration path in the
-product. Version labels move in Phase 6.
+product. Release 4.0.0 carries it, labelled Format 3.0 and Protocol 4.0.0;
+3.0.0 is the last release that reads older formats.
 
 
 `packages/uwmd-core` is the reference implementation and the heart of the repo.

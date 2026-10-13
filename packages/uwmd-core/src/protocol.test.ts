@@ -115,7 +115,12 @@ describe('protocol — version', () => {
     expect(spec).toContain(`— protocol **${SUPPORTED_PROTOCOL_VERSIONS[0]}**`);
   });
   it('publishes the current protocol version', () => {
-    expect(PROTOCOL_VERSION).toBe('3.0.0');
+    expect(PROTOCOL_VERSION).toBe('4.0.0');
+  });
+
+  it('labels the release with the one supported format and protocol (RFC 0081 D1)', () => {
+    expect(FORMAT_VERSION).toBe(SUPPORTED_FORMAT_VERSIONS[0]);
+    expect(PROTOCOL_VERSION).toBe(SUPPORTED_PROTOCOL_VERSIONS[0]);
   });
 
   it('agrees with the compatibility matrix in VERSIONS.md', () => {

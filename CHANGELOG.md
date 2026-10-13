@@ -8,11 +8,116 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-10-12
+
+### Prepared package pairing
+
+Core/CLI **4.0.0** pair with Protocol **4.0.0** and Format **3.0**, the one
+format and the one protocol the reference implementation reads (RFC 0081 D1):
+`FORMAT_VERSION` and `PROTOCOL_VERSION` now equal the single members of
+`SUPPORTED_FORMAT_VERSIONS` (`3.0`) and `SUPPORTED_PROTOCOL_VERSIONS`
+(`4.0.0`). Signing **0.3.0**, batch **0.8.22**, Excel **0.9.15**, report
+**0.8.27** and lake **0.2.11** pin core **4.0.0**. Core's optional signing
+peer is **0.3.0**. Signing takes a minor step because its own surface breaks
+(below); batch, Excel, report and lake take their usual patch step. The
+workflow scope is seven packages: core, CLI, signing, batch, Excel, report and
+lake. `@uwmd/module-hospitality` and `@uwmd/module-data-center` (final 0.2.0,
+deprecated on npm since 2026-10-11) are no longer in the repository or the
+release. RFC 0081 stays `accepted` in the tagged preparation state.
+
+### Contract — Protocol 4.0.0 (RFC 0081), Format 3.0
+
+- **Format 3.0** is the 2.1 shape with every alternate spelling removed: bare
+  blocks with one inline nested `_meta`, the block digest over the payload
+  minus `_meta`, one home for each fact (the RFC 0081 §7 lone-fact groups and
+  the consolidated hospitality fields) and builtin class identifiers only. A
+  reader refuses any other or absent `uw_version` as
+  `UNSUPPORTED_FORMAT_VERSION`. One specification describes it,
+  `spec/UW_FORMAT_SPEC.md`.
+- **Protocol 4.0.0** is Protocol 3.0.0 with every compatibility clause
+  removed: module manifests state `requires_conformance` (`reader` |
+  `verifier`) and optional `requires_profiles` in place of `requires_tier`,
+  the Protocol 2.x tier names are gone, and receipt version 1.0 is refused.
+  The Reader and Verifier tiers, the six profiles and the metric dictionary
+  are unchanged. No financial value changes: calc baselines and receipt
+  results are unchanged apart from the hotel calculations the consolidated
+  hospitality fields newly make computable, and the lender fixture still
+  reads 187 / 0 / 0.
+- **3.0.0 is the last release that reads older formats.** It reads Format
+  1.0, 1.1, 2.0 and 2.1 and honors module contracts back to Protocol 1.14.0;
+  4.0.0 reads Format 3.0 and Protocol 4.0.0 only.
+- **Why core is 4.0.0.** The 2.0.0 and 3.0.0 precedent: a Protocol major
+  ships with a core major when its cut breaks public surfaces. This one
+  removes public exports (listed under Removed), reshapes `UWMeta` and
+  `UWBlock`, refuses every document that is not Format 3.0, and deletes the
+  `migrate` and `init --format` commands. VERSIONS.md rule 3 reserves
+  calling-shape breaks for a library major.
+- **Why signing is 0.3.0.** Its exported function signatures are unchanged
+  from 0.2.26, but its behavior on a block is not: `stampBlockSignature`
+  writes `_meta.integrity.content_hash` and `_meta.integrity.signature`
+  instead of flat `_meta` members, `verifyBlockSignature` reads only the
+  nested ones, and the block digest no longer covers `_meta`, so a signature
+  0.2.26 stamped does not verify under 0.3.0. A breaking change to a 0.x
+  package moves its minor, as lake 0.1.2 → 0.2.0 (lake schema 0.2) and the
+  module packages 0.1.13 → 0.2.0 (RFC 0080) did. The `uwVersion` option and
+  `VerifyBlockSignatureOptions` existed only between 3.0.0 and Phase 4 and
+  never shipped. Batch, Excel, report and lake keep their exported APIs;
+  what they dropped (the `org.uwmd.data_center` alias key in batch and lake,
+  Excel's hotel inputs read from `hotel_metrics`) applies only to documents
+  core now refuses, and report changes only its core pin. They take a patch
+  step, as every dependent did for the core majors 2.0.0 and 3.0.0.
+
+### Migrating your documents and integrations
+
+For the owner's own consumers (StackUW, which vendors a core tarball, and
+underwriter.cc). There are no migrators in 4.0.0 and no compatibility mode.
+
+- **Emit Format 3.0.** A document states `uw_version: "3.0"` (quoted; an
+  unquoted `3.0` is refused) and writes each section as its bare payload with
+  `_meta` first: `{"_meta": {"section", "provenance", "quality",
+  "lifecycle", "integrity"?}, ...payload}`. No `{section_id, _meta, content}`
+  wrapper, no flat `_meta`. `uwmd init` and every example in `examples/` show
+  the shape. Update exporters to write it; regenerating from the source
+  system is the simplest path.
+- **Stored documents written for 3.0.0 or earlier.** 3.0.0 is the last
+  release that reads them, and its migrator stops at Format 2.0. With the
+  published 3.0.0 CLI, once:
+  ```
+  npx @uwmd/cli@3.0.0 migrate deal.uwx.md --source-tags --output deal.uwx.md
+  npx @uwmd/cli@3.0.0 migrate deal.uwx.md --to-v2 --strip-signatures --output deal.uwx.md
+  ```
+  The first is needed only for legacy `_meta.source` tags (RFC 0031). The
+  second writes `uw_version: "2.0"` with nested `_meta`. Strip signatures
+  rather than `--resign`: hashes and signatures made by 3.0.0 or earlier
+  cover `_meta` and do not verify under the Format 3.0 digest. Then, by
+  hand: set `uw_version: "3.0"`; unwrap any wrapped block to its bare
+  payload; move each legacy scalar to its structured home and the hotel
+  facts to `rent_roll` and `property.keys` (RFC 0081 §5 and §7 give the
+  mapping); replace `org.uwmd.data_center` with `data_center`; restate any
+  `_meta.provenance.resolution` outside the closed vocabulary
+  (`manual_override` is `user_override`); recompute every
+  `_meta.integrity.content_hash` with core 4.0.0's `computeBlockHash`; and
+  re-sign signed blocks with `@uwmd/signing` 0.3.0 (`signBlock`,
+  `stampBlockSignature`). Check the result with
+  `npx @uwmd/cli@4.0.0 validate deal.uwx.md`. A document with none of those
+  features (no wrapper, legacy scalar, alias id, out-of-vocabulary
+  resolution, hash or signature) needs only the version line after
+  `--to-v2`; a 1.1 example from the 3.0.0 tree validated that way.
+- **Code against `@uwmd/core`.** Re-vendor core **4.0.0** together with the
+  exact pins above. Read metadata through the nested `block.meta`
+  (`provenance`, `quality`, `lifecycle`, `integrity`), payloads through
+  `blockPayload`, and drop the removed exports. Module manifests replace
+  `requires_tier` with `requires_conformance` and use ranges that admit
+  Protocol 4.0.0 and Format 3.0. Re-issue receipts against the Format 3.0
+  document; receipt version 1.0 is refused.
+
+The sections below give each change in full.
+
 ### Changed — RFC 0081 Phase 5
 
 - Conformance directories and suite ids describe content: `documents`, `calc`, and `starter/{editor,refinement,agent}` (`starter-editor`, `starter-refinement`, `starter-agent`, `starter-agent-profile`, `starter-agent-replay` suite ids). Both reserve `legacy-v1` cases are renamed `bare-block`; every existing assertion remains.
 - Regenerated all 336 portable cases with `<owner>__<suite>__<scenario>__<operation>` ids and filenames. Updated runners, tests, schema examples, docs and the site sidebar; the 1,069 reference checks retain their outcomes and ownership.
-- Old corpus paths, numbered suite selectors and portable ids have no aliases. Historical RFC/release links are rewritten at docs-site build time, with no old pages or redirects emitted. Version bumps and release remain Phase 6.
+- Old corpus paths, numbered suite selectors and portable ids have no aliases. Historical RFC/release links are rewritten at docs-site build time, with no old pages or redirects emitted.
 
 ### Removed — RFC 0081 Phase 4
 
@@ -44,7 +149,7 @@ Every backward-compatibility path is deleted, with no alias, shim or deprecation
 ### Added — RFC 0081 Phase 3
 
 - Re-authored the repository corpus as Format 3.0: bare blocks, nested metadata, single-fact groups, builtin class identifiers, consolidated hotel inputs and new module requirements. Re-stamped block hashes, re-signed controls, re-issued receipts and refreshed portable cases and representation baselines.
-- Added interim runtime reads for the accepted field homes, lone-fact validation, module tiers/profiles, metadata-excluding block digests and escrow/hedge footing. Old readers and migration tooling remain marked for Phase 4 deletion; package and release versions remain for Phase 6.
+- Added interim runtime reads for the accepted field homes, lone-fact validation, module tiers/profiles, metadata-excluding block digests and escrow/hedge footing. Old readers and migration tooling remained, marked for Phase 4 deletion.
 - Preserved every calc baseline, receipt verdict and lender metric (187 verified, 0 failed, 0 unverifiable). Saguaro's existing inputs now compute the two additions anticipated by RFC §5. Removed conflict-only fixtures for retired codes; the RFC records approved fixture-only uses-total exceptions and their causes.
 - Review fixes: `@uwmd/signing`'s `verifyBlockSignature` and `signBlock` take the document's `uwVersion` and select the block digest rule as `verifyChain` does, so a valid Format 3.0 signature verifies. `deriveSourcesUses` now requires the document (`parsed`), without which stated hedge premiums were left out of uses. The 71 reserve fixtures that kept a `{_meta, content}` wrapper are bare with their stated metadata restored; `meta-v2/06-digest-shape-insensitive` is retired (1,054 reference checks). The L6 post-run shape is a strict, CI-checked 3.0 JSON Schema, a dead `operating_reserves` live reference now reads the operating escrow, and the one-off re-author script is idempotent.
 
@@ -52,7 +157,7 @@ Every backward-compatibility path is deleted, with no alias, shim or deprecation
 
 - Consolidated the two Format specifications into `spec/UW_FORMAT_SPEC.md`, describing only Format 3.0: bare payloads with inline nested `_meta`, the block digest excluding the whole `_meta` member, lone-fact structured replacements and single-home hospitality fields. Renamed the Protocol and Lite/Receipt/XML/CSV/Composition specifications without version suffixes and removed all 34 starter-product stubs.
 - Merged the block schemas, fixed UTF-8 descriptions, and aligned manifest, ownership, G1 field-group and hotel schemas with the accepted contract. Re-pathed the two hotel dictionary metrics without changing arithmetic or rounding.
-- Added accepted spec constants 3.0/4.0.0 and staged supported-version entries, final module requirements/types and new refusal registrations. Release labels, runtime readers and corpus authoring stay in later RFC phases. Test projections preserve all existing checks across that boundary; historical RFC/release filenames resolve through the docs-site build map.
+- Added accepted spec constants 3.0/4.0.0 and staged supported-version entries, final module requirements/types and new refusal registrations. Runtime readers and corpus authoring followed in Phases 3 and 4. Test projections preserve all existing checks across that boundary; historical RFC/release filenames resolve through the docs-site build map.
 - Review fixes: Protocol §V.11.2 now states the RFC 0081 §3 digest everywhere (a `_meta`-only change keeps `content_hash` and the signature; `parent_hash` is not bound transitively). Restored normative text the merge dropped: the `partial`/`provisional` definitions and the SHOULD to label outputs derived from provisional blocks, the closed `_overrides[].reason` vocabulary, the cascade-tag MUST, §V.9's non-finite-number and `undefined` rules, the `META_FIELD_MISSING_<FIELD>` list, the `DQ-07` preserve MUST and the RFC 0071/0074 module floors restated for 4.0.0. In every G1 group a member stated as `null` is not stated; a lone recovery `cap` needs no `accumulation`, which REC-02 requires once `method` is stated. Added the hospitality `rent_roll` class-contract schema (`rent-roll-hospitality.schema.json`), removed the retired Format 2.1 conditionals from the envelope schema, and fixed the Format examples' `_meta.section`. `npm run verify-indexes` now checks that every spec `§` reference, `spec_ref` and spec link resolves (`scripts/spec-refs.mjs`). `@uwmd/core` and `@uwmd/core/browser` export `BUILTIN_CLASS_CONTENT`.
 - **Interim state (Phase 2 → Phase 4).** The specifications and schemas describe Format 3.0 / Protocol 4.0.0, but Phase 3 adds the new runtime reads and digest rule; until RFC 0081 Phase 4 lands the reference implementation also retains compatibility paths. At the Phase 2 boundary it still computes the pre-3.0 block digest (over `_meta` as well as content), still reads and writes the wrapped and flat block shapes, still accepts the legacy scalars the G1 groups replace and refuses their lone-fact forms (`HDG-01`, `CAPX-01`, `TAX-01`, `REC-02`), and still reads the hotel facts from `hotel_metrics` rather than the G3 `rent_roll` home. Validate a Format 3.0 document against the schemas, not the runtime, until then.
 

@@ -1,7 +1,7 @@
 # .uwx.md — UW Markdown Extended Format Specification
 ## Format 3.0 | October 2026
 
-Normative contract accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md). Implementation and release preparation follow separately. Only `uw_version: "3.0"` is admitted. A reader MUST refuse an absent or different value at parse stage with `UNSUPPORTED_FORMAT_VERSION`, naming the declared value and the supported value; no partial read is permitted.
+Normative contract accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md), paired with Protocol 4.0.0 and core/CLI 4.0.0. Only `uw_version: "3.0"` is admitted. A reader MUST refuse an absent or different value at parse stage with `UNSUPPORTED_FORMAT_VERSION`, naming the declared value and the supported value; no partial read is permitted.
 
 ---
 

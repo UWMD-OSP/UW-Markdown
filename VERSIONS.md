@@ -17,16 +17,27 @@ together would force every adopter to track every library release.
 The same logic applies to the protocol: an editor and a verifier can be
 released independently as long as both honor the same protocol version.
 
-## Work on `main` since 3.0.0
-
-RFC 0081 Phase 4 deletes every backward-compatibility path: the reference
-library reads Format 3.0 and Protocol 4.0.0 only, refuses every other
-`uw_version` as `UNSUPPORTED_FORMAT_VERSION`, and no longer carries the two
-module compatibility shells. Version labels and package versions move in
-Phase 6, so the current matrix below remains the record of the 3.0.0 release,
-including the older formats that release read.
-
 ## Current matrix
+
+Release 4.0.0 pairs core/CLI 4.0.0 with Protocol 4.0.0 and Format 3.0.
+Protocol 4.0.0 carries one accepted RFC: RFC 0081 removes every
+backward-compatibility path. Format 3.0 is the 2.1 shape with each alternate
+spelling removed (bare blocks with one nested `_meta`, the block digest over
+the payload minus `_meta`, one home for each fact, builtin class identifiers
+only) and is the only format the reference implementation reads: any other or
+absent `uw_version` is refused as `UNSUPPORTED_FORMAT_VERSION`. Protocol 4.0.0
+is the only protocol contract; module manifests state `requires_conformance`
+and optional `requires_profiles` in place of `requires_tier`, and their
+ranges must admit Protocol 4.0.0 and Format 3.0. The Reader and Verifier
+tiers, the six profiles and the metric dictionary are unchanged, and no
+financial value changes. **3.0.0 is the last release that reads older
+formats** (1.0, 1.1, 2.0 and 2.1) and honors older module contracts; 4.0.0
+ships no migrator (CHANGELOG 4.0.0 gives the migration path). Signing 0.3.0,
+batch 0.8.22, Excel 0.9.15, report 0.8.27 and lake 0.2.11 pin core 4.0.0
+exactly. Core's optional signing peer is 0.3.0. The workflow scope is seven
+packages: core, CLI, signing, batch, Excel, report and lake. The two module
+packages, final at 0.2.0 and deprecated on npm, are not part of this or any
+later release. RFC 0081 stays `accepted` in the release-prepared state.
 
 Release 3.0.0 pairs core/CLI 3.0.0 with Protocol 3.0.0 and Format 2.1.
 Protocol 3.0.0 carries three accepted RFCs. RFC 0078 makes the Protocol the
@@ -230,20 +241,18 @@ versions advance independently.
 
 | Surface | Version | Pairs with |
 |---|---|---|
-| `.uw.md` format spec | **2.1** | authors `uw_version: "2.1"`; reads `"1.0"` / `"1.1"` / `"2.0"` / `"2.1"` (format v2 §1.2) |
-| UW Protocol | **3.0.0** | format ≥ 1.0; RFC 0078 Reader/Verifier tiers + six profiles and the normative metric dictionary, RFC 0079 stated-metric precision, RFC 0080 builtin class codes, on 2.25.0; carried by core/CLI 3.0.0 |
-| `@uwmd/core` | **3.0.0** | format 2.1 (reads 2.0 and 1.x), protocol 3.0.0 |
-| `@uwmd/cli` (CLI) | **3.0.0** | `@uwmd/core` 3.0.0 |
-| `@uwmd/excel` | **0.9.14** | `@uwmd/core` 3.0.0, format 2.1, explicit contextual calculations |
-| `@uwmd/report` | **0.8.26** | `@uwmd/core` 3.0.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.21** | `@uwmd/core` 3.0.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.10** | `@uwmd/core` 3.0.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.2.26** | `@uwmd/core` 3.0.0, protocol §V.11 + §XIV capability tokens (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `@uwmd/module-hospitality` | **0.2.0** | `@uwmd/core` 3.0.0, protocol §X module system; compatibility shell (RFC 0080), content builtin in core |
-| `@uwmd/module-data-center` | **0.2.0** | `@uwmd/core` 3.0.0, protocol §X module system; compatibility shell (RFC 0080), `data_center` builtin in core |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 3.0.0 browser entry |
-| `tools/web-viewer` | n/a (single-file HTML, no package) | format ≥ 1.0 |
-| `tools/vscode-uwmd` | **0.2.0** | format 1.1 |
+| `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
+| UW Protocol | **4.0.0** | format 3.0 only; RFC 0081 removes every compatibility clause from 3.0.0 and replaces module `requires_tier` with `requires_conformance`; carried by core/CLI 4.0.0 |
+| `@uwmd/core` | **4.0.0** | format 3.0, protocol 4.0.0 |
+| `@uwmd/cli` (CLI) | **4.0.0** | `@uwmd/core` 4.0.0 |
+| `@uwmd/excel` | **0.9.15** | `@uwmd/core` 4.0.0, format 3.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.27** | `@uwmd/core` 4.0.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.8.22** | `@uwmd/core` 4.0.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.2.11** | `@uwmd/core` 4.0.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.3.0** | `@uwmd/core` 4.0.0, protocol §V.11 + §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.0.0 browser entry |
+| `tools/web-viewer` | n/a (single-file HTML, no package) | format 3.0 |
+| `tools/vscode-uwmd` | **0.2.0** | format 3.0 |
 
 
 ### Official module compatibility
@@ -251,8 +260,9 @@ versions advance independently.
 `@uwmd/module-hospitality` and `@uwmd/module-data-center` were declaration-free
 compatibility shells after RFC 0080. Their 0.2.0 generation, pairing core
 3.0.0, published on 2026-10-11 and is the final version of each; the owner
-deprecated both package names on npm the same day. RFC 0081 Phase 4 deletes
-both packages from the repository, so no later release publishes them. The
+deprecated both package names on npm the same day. RFC 0081 deleted both
+packages from the repository, and from 4.0.0 the release publishes seven
+packages, so no later release publishes them. The
 hospitality and data-center content is builtin in `@uwmd/core`, and the
 `org.uwmd.data_center` identifier is refused like any other namespaced builtin
 suffix (`INVALID-ASSET-CLASS-002`).
@@ -281,22 +291,27 @@ These were candidate versions when the plan was written. See the
 
 ## Compatibility rules
 
-1. **Format minor versions are additive.** A 1.2 file may use new
-   sections or fields that a 1.1 reader doesn't understand; the reader
-   MUST still parse known sections per protocol §III.1 ("unknown
-   sections render as default cards"). 1.x files must never break a
-   1.0 reader's ability to read them.
+1. **A reader supports exactly the format it names.** From Format 3.0
+   a reader refuses every other `uw_version`, newer minors included, as
+   `UNSUPPORTED_FORMAT_VERSION` (Protocol §XII.3, RFC 0081). Within a
+   supported version, unknown sections, frontmatter keys and `x_*`
+   extension blocks are surfaced, never errors (Protocol §II.1 item 3,
+   §XII.1–XII.2). Through 3.0.0 format minors were additive and readers
+   kept every earlier 1.x and 2.x version readable; 3.0.0 is the last
+   release that reads them.
 2. **Protocol minor versions strengthen requirements monotonically.**
    A 1.1-conformant tool is automatically 1.0-conformant. New required
    behavior in a 1.x protocol is opt-in for 1.0 tools and becomes
    normative at the next major.
-3. **Library majors require explicit re-pinning.** `@uwmd/core` 2.x
-   may break the calling shape; 1.x will not. Patches and minors are
-   safe to update through normal `npm install`.
+3. **Library majors require explicit re-pinning.** A `@uwmd/core`
+   major (2.0.0, 3.0.0, 4.0.0) may break the calling shape; its patches
+   and minors will not, and are safe to update through normal
+   `npm install`.
 4. **A format major requires a protocol major.** A `.uw.md` v2 file
    requires UW Protocol v2 or later to be fully read. The reverse does not
    hold: Protocol 3.0 changed the conformance model, not what any document
-   means, so it pairs with Format 2.x (RFC 0078 §4).
+   means, so it pairs with Format 2.x (RFC 0078 §4). Format 3.0 pairs with
+   Protocol 4.0.0 (RFC 0081).
 
 ### RFC 0062 errata treatment (released in 2.14.0)
 
@@ -313,10 +328,11 @@ protocol features.
 
 ## Pinning recommendations
 
-For new integrations, target Format 2.1 and the current Protocol 3.x contract
-listed above. Pin `@uwmd/core@^3` for readers, verifiers and the starter
-products (editor, calc host, agent host), or `@uwmd/cli@^3` for CLI scripts. Readers retain the documented 1.x format
-compatibility. An agent host installs a provider SDK only if it uses that provider;
+For new integrations, target Format 3.0 and the Protocol 4.0.0 contract
+listed above. Pin `@uwmd/core@^4` for readers, verifiers and the starter
+products (editor, calc host, agent host), or `@uwmd/cli@^4` for CLI scripts.
+Readers read Format 3.0 only; convert older documents before upgrading (see
+the CHANGELOG 4.0.0 migration notes). An agent host installs a provider SDK only if it uses that provider;
 `@anthropic-ai/sdk` remains an optional peer.
 
 ## Release coordination
@@ -350,3 +366,5 @@ specific design was made the way it was, see
 [`docs/rfcs/`](docs/rfcs/) or the relevant spec section.
 
 RFC 0080 (3.0.0): Format 2.1 authors two new official builtins; all twelve have full standard and starter support. Release 3.0.0 pairs it with Protocol 3.0.0. Both official module packages shipped 0.2.0 as declaration-free compatibility shells, their final version, and are deprecated on npm; their manifest contracts are 0.2.0.
+
+RFC 0081 (4.0.0): one format and one protocol. Format 3.0 and Protocol 4.0.0 are the only versions the reference implementation reads; 3.0.0 is the last release that reads Format 1.x and 2.x. Both official module packages are deleted from the repository, and releases publish seven packages.

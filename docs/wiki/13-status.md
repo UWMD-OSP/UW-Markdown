@@ -1,5 +1,28 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-12** (America/Phoenix) for release-prepared **4.0.0**.
+Core/CLI **4.0.0** pair with the accepted release contract Protocol **4.0.0**
+and Format **3.0**, the one protocol and the one format the reference
+implementation reads (RFC 0081: `SUPPORTED_FORMAT_VERSIONS = ['3.0']`,
+`SUPPORTED_PROTOCOL_VERSIONS = ['4.0.0']`, and `FORMAT_VERSION` /
+`PROTOCOL_VERSION` equal them). A missing or other `uw_version` is
+`UNSUPPORTED_FORMAT_VERSION`. One block shape (bare payload, nested `_meta`
+first; flat `_meta` and the `section_id` wrapper are `META-01`), a block
+digest over the payload minus `_meta`, the G1 lone-fact groups, the
+consolidated hospitality fields and module manifests by
+`requires_conformance` / `requires_profiles` only. The migrators, the CLI
+`migrate` commands, `init --format`, the RFC 0080 transition surface and both
+module packages are gone; 3.0.0 is the last release that reads older formats.
+The corpus uses content names (`documents/`, `calc/`,
+`starter/{editor,refinement,agent}/`). Conformance: 1,069 reference checks,
+336 portable cases; the lender fixture stays 187/0/0. Signing **0.3.0**
+(a minor step: it stamps and verifies `_meta.integrity` under the new
+digest), batch **0.8.22**, Excel **0.9.15**, report **0.8.27** and lake
+**0.2.11** pin core 4.0.0. The release workflow publishes seven packages.
+Core takes a major because the cut breaks public surfaces (CHANGELOG 4.0.0,
+which also carries the migration notes). RFC 0081 remains `accepted` until
+shipment and independently verified publication.
+
 Reconciled **2026-10-11** (America/Phoenix) for published and independently
 verified **3.0.0**. Core/CLI **3.0.0**, signing **0.2.26**, batch **0.8.21**,
 Excel **0.9.14**, report **0.8.26**, lake **0.2.10** and both module packages
@@ -17,26 +40,6 @@ signing, batch and the two module packages, which shipped 0.2.0 as
 declaration-free compatibility shells and their final version. The owner
 deprecated both module package names on npm on 2026-10-11. RFCs 0078–0080 are
 `implemented`. See the [publication evidence](../releases/3.0.0-publication.md).
-
-**In progress on `main` (unreleased): RFC 0081.** Phase 2 accepted the
-Format 3.0 / Protocol 4.0.0 specifications and schemas
-([UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md),
-[UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md)), Phase 3 re-authored the corpus,
-and Phase 4 deleted every backward-compatibility path. The reference
-implementation now reads Format 3.0 only (`SUPPORTED_FORMAT_VERSIONS =
-['3.0']`, `SUPPORTED_PROTOCOL_VERSIONS = ['4.0.0']`) and refuses a missing or
-other `uw_version` as `UNSUPPORTED_FORMAT_VERSION`. It reads and writes one
-block shape (bare payload, nested `_meta` first; flat `_meta` and the
-`section_id` wrapper are `META-01`), hashes the block minus `_meta`, enforces
-the G1 lone-fact groups, refuses the RFC 0080 transition surface, and loads
-module manifests by `requires_conformance` / `requires_profiles` only. The
-migrators, the CLI `migrate` commands, `init --format` and both module
-packages are gone. Phase 5 renames the corpus to `documents/`, `calc/` and
-`starter/{editor,refinement,agent}/`, with content-based suite and portable
-case ids. Version labels still read 3.0.0 / 2.1 until Phase 6 releases 4.0.0
-with seven packages.
-Conformance: 1,069 reference checks, 336 portable cases; the lender fixture
-stays 187/0/0.
 
 Reconciled **2026-10-10** (America/Phoenix) for published and independently
 verified **2.21.0**. Core/CLI **2.21.0**, signing **0.2.25**, batch **0.8.20**
@@ -151,14 +154,15 @@ new receipt output.
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Excel
-**0.9.14**, report **0.8.26** and lake **0.2.10** pair with core 3.0.0 and are
-published through the release workflow from that generation; through 2.21.0
-they were source-only. Lake 0.2.9 was published by hand from `v2.21.0` on
+**0.9.15**, report **0.8.27** and lake **0.2.11** pair with core 4.0.0; all
+three are in the release workflow from 3.0.0 (Excel 0.9.14, report 0.8.26,
+lake 0.2.10), and through 2.21.0 they were source-only. Lake 0.2.9 was published by hand from `v2.21.0` on
 2026-10-11 so its trusted publisher could be configured; it carries no
 provenance. The hospitality/data-center module packages **0.2.0** pair with
 core 3.0.0 as compatibility shells (RFC 0080), their final version, and both
 names are deprecated on npm (2026-10-11); 0.1.10 was their first public
-generation. The
+generation. RFC 0081 deleted both from the repository, and 4.0.0 does not
+publish them. The
 registry does serve a stale `0.3.0` of excel and report from a hand publish on
 2026-08-16, deprecated by the owner on 2026-10-02; see [VERSIONS.md](../../VERSIONS.md). Core's
 RFC 0043 binding API is published; the full Excel exporter remains available
@@ -747,6 +751,9 @@ The guards:
   **implemented** ([publication record](../releases/3.0.0-publication.md)).
   RFC 0078's `@uwmd/verify` package split (D8) and the levered and
   after-tax definitions (D7) remain follow-up RFCs.
+- [RFC 0081](../rfcs/0081-one-format-one-protocol.md) (PRs #307–#311) is
+  accepted and implemented, and prepared for 4.0.0 with Protocol 4.0.0 under
+  Format 3.0.
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.
@@ -1154,7 +1161,7 @@ RFC 0078 (accepted 2026-10-10) separates the standard from the starter products.
 
 All twelve official classes are full builtins, including `data_center` and `manufactured_housing`. Their normative metric definitions and size selectors live in `spec/metrics/`, with bidirectional pack/registry parity tests. Both new packs use all six RFC 0079 standard income definitions, including equity_total-based cash-on-cash. Source size is `property.critical_it_load_kw` or `property.total_sites`, mirrored against the detailed capacity/site count. They have Excel layouts and starter defaults, and take the base stage lists verbatim like multifamily (no stage overlay; a missing `rent_roll` is DQ-06). Default tables are owner-approved starter proxies (2026-10-10), never verification inputs; data center publishes no expense-ratio default, so producers state it.
 
-Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its sole RevPAR definition stays rooms revenue divided by available room nights. Official module packages are compatibility shells only. They shipped 0.2.0, their final version, in the 3.0.0 transition release, and the owner deprecated both names on npm on 2026-10-11; removing them from the release workflow is left to a later release. Release: published in core/CLI 3.0.0 with Format 2.1 and Stable Protocol 3.0.0; `implemented` after independent verification. Legacy `org.uwmd.data_center` reads without source/digest mutation (CLS-01); official module dependencies are satisfied by core (CLS-02). Third-party classes remain module extensions.
+Hospitality owns `hotel_metrics`, `hotel_brand` and `hotel_food_beverage`; its sole RevPAR definition stays rooms revenue divided by available room nights. Official module packages are compatibility shells only. They shipped 0.2.0, their final version, in the 3.0.0 transition release, and the owner deprecated both names on npm on 2026-10-11; RFC 0081 removed them from the repository and the release workflow, and 4.0.0 publishes seven packages. Release: published in core/CLI 3.0.0 with Format 2.1 and Stable Protocol 3.0.0; `implemented` after independent verification. Through 3.0.0, legacy `org.uwmd.data_center` read without source/digest mutation (CLS-01) and official module dependencies were satisfied by core (CLS-02); from 4.0.0 (RFC 0081) the alias is `INVALID-ASSET-CLASS-002` and `CLS-01`/`CLS-02` are retired. Third-party classes remain module extensions.
 
 ## 2026-10-10 — RFC 0078 phase 4: project docs
 

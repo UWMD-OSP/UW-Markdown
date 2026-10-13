@@ -2,7 +2,7 @@
 
 > An open interoperability standard for AI- and code-driven underwriting systems.
 
-> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance; 3.0.0 also carries the final compatibility shells of the two retired module packages (RFC 0080).
+> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance. From 4.0.0 the reference implementation reads Format 3.0 and Protocol 4.0.0 only (RFC 0081); 3.0.0 is the last release that reads older formats.
 
 **Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/UWMD-OSP/UW-Markdown](https://github.com/UWMD-OSP/UW-Markdown)
 
@@ -69,7 +69,7 @@ To open the reference web viewer, point any browser at
 ## What ships in v1
 
 - The format spec (`UW_FORMAT_SPEC.md`) — 21 standard sections, validation rules, supersede semantics.
-- The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 3.0 contract, RFC 0078). Display, editing, defaults and the AI agent host are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
+- The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 4.0.0, RFCs 0078 and 0081). Display, editing, defaults and the AI agent host are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
 - `@uwmd/core` - parser, validator, renderer, runner, and an optional Claude-backed Bancroft reference agent suite.
 - A conformance corpus per tier so third parties can self-certify.
 - A single-file web viewer demonstrating a Reader in <500 LOC.

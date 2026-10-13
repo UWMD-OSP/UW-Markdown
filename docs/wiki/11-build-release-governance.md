@@ -35,19 +35,21 @@ Script | Does
 ## Versioning (semver-per-surface)
 
 Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
-- **Format** — `FORMAT_VERSION` in `protocol.ts` (2.1, RFC 0080) and
-  `uw_version` in files.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (Stable 3.0.0 after
-  RFCs 0078, 0079 and 0080 shipped and publication was independently
-  verified; published core/CLI 3.0.0 pair with it and Format 2.1. Historical
-  core/CLI 2.21.0 retain Stable Protocol 2.25.0, and 2.20.0 retain Stable
-  Protocol 2.24.0).
+- **Format** — `FORMAT_VERSION` in `protocol.ts` (3.0, RFC 0081) and
+  `uw_version` in files. It equals the one member of
+  `SUPPORTED_FORMAT_VERSIONS`; a reader refuses every other version.
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (4.0.0, the accepted
+  release contract for RFC 0081, paired with core/CLI 4.0.0 and Format 3.0.
+  Published core/CLI 3.0.0 retain Stable Protocol 3.0.0 with Format 2.1, and
+  2.21.0 retain Stable Protocol 2.25.0). It equals the one member of
+  `SUPPORTED_PROTOCOL_VERSIONS`, and `protocol.test.ts` asserts both labels
+  equal their supported sets.
   A test in `protocol.test.ts` asserts it matches the matrix row in `VERSIONS.md`, so the
-  two cannot drift apart silently. **Protocol 3.0.0** (RFC 0078): conformance
-  is the **Reader** and **Verifier** tiers plus optional profiles. The
-  reference host keeps 2.25.0 in `SUPPORTED_PROTOCOL_VERSIONS`, as it kept
-  1.14.0 at 2.0.0, so modules written for `^2` keep loading; 3.0 changed the
-  conformance claim, not the module system. From 3.0 the Protocol version moves only when what a
+  two cannot drift apart silently. **Protocol 3.0.0** (RFC 0078) made
+  conformance the **Reader** and **Verifier** tiers plus optional profiles.
+  **Protocol 4.0.0** (RFC 0081) removes every compatibility clause: the host
+  honors only 4.0.0 module ranges, and 3.0.0 is the last release that read
+  older formats or honored older module contracts. From 3.0 the Protocol version moves only when what a
   document *means* or how it is *verified* changes (format, verification rules,
   receipts, module system, metric dictionary). Starter-product changes (calc
   engine code, defaults, editor, viewer/report, Excel, agents, the
@@ -100,8 +102,8 @@ exception. `### Released` is added only after the tag exists, so `main` can
 never claim a release that has no tag.
 
 Before pushing the tag, confirm a **trusted publisher exists on npmjs.com for
-all nine publishing packages (core, CLI, signing, batch, hospitality,
-data-center, Excel, report and lake)** (below). The tag is the trigger, so a
+all seven publishing packages (core, CLI, signing, batch, Excel, report and
+lake)** (below). The tag is the trigger, so a
 missing publisher fails the job after every gate has already passed.
 - **Packs / defaults** — `MULTIFAMILY_PACK.version`, `MULTIFAMILY_DEFAULTS.version`.
 
@@ -133,7 +135,8 @@ when the release workflow runs.
      - the dated heading `## [X.Y.Z] - YYYY-MM-DD`, with the complete release
        contents;
      - bare matrix version cells for the generation's publishing packages, with exact
-       pairings (four through 2.17.0; six through 2.21.x; nine afterward);
+       pairings (four through 2.17.0; six through 2.21.x; nine from 2.22.0 through
+       3.x; seven from 4.0.0);
      - a core row that pairs with `PROTOCOL_VERSION`, and a CLI that pins core
        exactly;
      - a Protocol row with no annotation;
@@ -290,8 +293,9 @@ reconciliation. Both packages left `release.yml` and the workspace in RFC
 38163964522), and the owner then ran both commands. The registry shows the
 message on every version of each name, `0.0.0-stage` through `0.2.0`; see the
 [3.0.0 publication record](../releases/3.0.0-publication.md#module-package-retirement).
-Both packages are still in `release.yml` and `release-packages.mjs`; removing
-them is the remaining step, for a later release.
+RFC 0081 Phase 4 then removed both from `release.yml`, the workspace and
+the guards; `release-packages.mjs` keeps their names only for the
+generations that shipped them. 4.0.0 is the first release without them.
 
 **Independent versions and explicit loading.** npm package semver identifies the
 artifact; manifest `version` identifies its contract; `manifest_version` identifies
@@ -317,7 +321,7 @@ selected exact versions, using publication-neutral wording in the tagged tree.
 view models, exported JSON, README, package metadata and the complete root MIT
 notice. `verify-packages` checks artifacts, license equality and manifest parity;
 `verify-versions` checks the package/contract/schema/ID/ranges/tier/core columns
-in `VERSIONS.md` without a build. `release:check` covers all nine publishing
+in `VERSIONS.md` without a build. `release:check` covers all seven publishing
 packages, including exact core dependencies, public exports, OIDC metadata and
 core publishing before its dependents. `verify-packages` refuses a publishing
 package with a workspace-only dependency (`file:`, `link:`, `workspace:`), an
