@@ -79,7 +79,7 @@ test('validate-only Verifier projections of mixed starter checks keep both owner
     assert.equal(index.get(key(c.suite, c.scenario.replace(/ \[validate\]$/, ''))).target, 'starter-products');
   }
 });
-test('--tier reads only reader or verifier: no retired name, numeric short or suite (RFC 0081 §8)', () => {
+test('--tier reads only reader or verifier: no retired name, numeric short or suite (RFC 0081 Â§8)', () => {
   for (const value of ['tier-1-reader', 'tier-2-editor', 'tier-3-calc-host', 'tier-4-agent-host', '1', '3', 'documents', 'calc', 'metrics', 'Reader']) {
     assert.throws(() => selection([`--tier=${value}`]), /Unknown tier/, value);
   }
@@ -93,7 +93,7 @@ test('runner suites without index rows, and indexed suites without a runner, fai
 });
 test('standard reproduction, custom formula checks and starter behavior stay distinct', () => {
   assert.equal(index.get(key('calc', 'revpar-basic')).target, 'module');
-  // Protocol §II.2: IRR procedure (3), expression grammar and builtins (6),
+  // Protocol Â§II.2: IRR procedure (3), expression grammar and builtins (6),
   // dictionary reproduction (2) and the resolution its section_roles use.
   for (const c of corpus.cases.filter(c => c.suite === 'calc' && c.scenario !== 'revpar-basic')) assert.equal(c.target, 'verifier', c.scenario);
   for (const id of ['no-stack-single-loan', 'gd05-total-equity']) assert.equal(index.get(key('capital-stack', id)).target, 'verifier');
@@ -116,4 +116,16 @@ test('the actual CLI selects Reader-only JSON for --tier=reader and refuses a re
   const retired = run('tier-2-editor');
   assert.equal(retired.status, 2);
   assert.match(retired.stderr, /Unknown tier: tier-2-editor/);
+});
+
+// Suite names changed once; old numeric selectors are never aliases.
+test('content suite names select existing checks and numeric suite names are refused', () => {
+  for (const suite of ['documents', 'starter-editor', 'calc', 'starter-refinement', 'starter-agent', 'starter-agent-profile', 'starter-agent-replay']) {
+    assert.ok(selection([`--suite=${suite}`]).some(c => c.suite === suite), suite);
+  }
+  for (const suite of ['1', '2', '3', '4']) assert.throws(() => selection([`--suite=${suite}`]), /Unknown suite/);
+  for (const c of cases) {
+    assert.equal(c.id.split('__').length, 4, c.id);
+    assert.equal(c.id.split('__')[0], c.target, c.id);
+  }
 });

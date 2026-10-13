@@ -1,7 +1,7 @@
 ---
 uw_version: "3.0"
 deal_id: TEST-T2-001
-deal_name: "Tier-2 Editor Fixture"
+deal_name: "Editor Fixture"
 created: "2026-01-15T10:00:00Z"
 last_modified: "2026-01-15T10:00:00Z"
 property_address: "200 Test Avenue"
@@ -27,7 +27,7 @@ tier: screener
 created_by: "test-fixture"
 ---
 
-# Tier-2 Editor Fixture
+# Editor Fixture
 
 A minimal file used to exercise EditOperation dispatch.
 

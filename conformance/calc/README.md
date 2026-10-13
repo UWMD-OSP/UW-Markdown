@@ -11,8 +11,7 @@ period addressing (`period-*`) and variable resolution, including the
 `requires_capabilities: ["calc-evaluate"]`, so a Verifier that evaluates no
 expressions skips them rather than failing. `revpar-basic`, a custom
 ADR × occupancy declaration rather than the dictionary RevPAR, is the Module
-check. Refinement is a starter-product check. The directory name is history
-kept for stable paths; [corpus-index.json](../corpus-index.json) determines
+check. Refinement is a starter-product check. Directories describe content; [corpus-index.json](../corpus-index.json) determines
 each case’s single owner.
 
 An implementation that evaluates expressions (a Verifier using the notation,

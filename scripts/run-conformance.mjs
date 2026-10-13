@@ -711,7 +711,7 @@ function runCalculations() {
 // become sorted arrays).
 //
 // CAPABILITY: `refinement`. **No tier requires this** — protocol II.3 lists
-// four requirements for a Tier-3 Calc Host and a dependency graph is not among
+// Verifier calculation requirements and a dependency graph is not among
 // them. These fixtures live under starter/refinement/, and
 // II.6 is explicit that directory membership is not a normative signal: a calc
 // host that does not project a dependency graph is still a conforming calc
@@ -856,7 +856,7 @@ async function runAgent() {
 }
 
 // ─── Starter agent replay: deterministic agent runs from a recorded cassette ────────
-// Unlike the shape-only fixtures above, these actually run the Tier-4 write
+// Unlike the shape-only fixtures above, these actually run the agent write
 // path. A cassette supplies the model's side of the conversation, so the run
 // needs no network and no API key and can gate CI.
 //

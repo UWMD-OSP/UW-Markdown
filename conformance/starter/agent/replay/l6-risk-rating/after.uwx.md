@@ -23,7 +23,7 @@ created_by: "test-fixture"
 
 # L6 Risk Rating Replay Fixture
 
-Input document for the Tier-4 recorded-replay scenario. It carries the sections
+Input document for the agent recorded-replay scenario. It carries the sections
 the L6 Risk Rating layer reads (`property`, `valuation`, `noi_model`,
 `debt_structure`) so the layer's context check passes and the run actually
 proceeds. Replaying `cassette.json` against this file MUST reproduce
