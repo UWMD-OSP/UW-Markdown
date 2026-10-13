@@ -36,7 +36,7 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
           <div><dt>Generation</dt><dd><code>v{{ versions.published }}</code></dd></div>
         </dl>
         <p>On npm: <span v-for="(name, i) in versions.npm" :key="name"><code>{{ name }}</code><template v-if="i < versions.npm.length - 1"> · </template></span>. Other packages build from source.</p>
-        <p v-if="versions.specFormat !== versions.format || versions.specProtocol !== versions.protocol" class="uw-card-note">The specifications are accepted ahead of the reference implementation, which still reads Format v{{ versions.format }} and Protocol v{{ versions.protocol }} until the RFC 0081 rollout completes.</p>
+        <p v-if="versions.specFormat !== versions.format || versions.specProtocol !== versions.protocol" class="uw-card-note">The specifications are accepted ahead of the reference implementation, which still reads Format v{{ versions.format }} and Protocol v{{ versions.protocol }}.</p>
         <p v-if="versions.unpublishedSource" class="uw-card-note">Core v{{ versions.core }} is prepared in source and not yet published.</p>
         <a href="/about/versions">Version matrix</a>
       </aside>
@@ -71,7 +71,7 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
           <section class="uw-source" aria-labelledby="source-title">
             <div class="uw-subhead"><h3 id="source-title">The record</h3><span>plain text · excerpt</span></div>
             <pre tabindex="0"><code><span class="tok-rule">---</span>
-<span class="tok-key">uw_version:</span> <span class="tok-string">"1.1"</span>
+<span class="tok-key">uw_version:</span> <span class="tok-string">"3.0"</span>
 <span class="tok-key">deal_name:</span> <span class="tok-string">"Parkview Apartments — Glendale, AZ"</span>
 <span class="tok-key">asset_class:</span> <span class="tok-string">"multifamily"</span>
 <span class="tok-key">quick_metrics:</span>
@@ -94,7 +94,7 @@ the post-sale value.
 
 <span class="tok-code">```json uw:section=noi_model</span>
 {
-  <span class="tok-json">"_meta"</span>: { <span class="tok-json">"actor"</span>: <span class="tok-string">"system"</span>, <span class="tok-tail">…</span> },
+  <span class="tok-json">"_meta"</span>: { <span class="tok-json">"section"</span>: <span class="tok-string">"noi_model"</span>, <span class="tok-tail">…</span> },
   <span class="tok-json">"income"</span>: {
     <span class="tok-json">"vacancy_credit_loss"</span>: {
       <span class="tok-json">"value"</span>: <span class="tok-number">45864</span>, <span class="tok-json">"rate_applied"</span>: <span class="tok-number">0.07</span>

@@ -35,8 +35,8 @@ export function docsVersions(repoRoot) {
   const core = JSON.parse(readFileSync(join(repoRoot, 'packages/uwmd-core/package.json'), 'utf8')).version;
   const format = constant('FORMAT_VERSION');
   const protocol = constant('PROTOCOL_VERSION');
-  // The normative pages describe the one supported format and protocol. The
-  // release labels above follow them at the RFC 0081 Phase 6 release.
+  // The normative pages describe the one supported format and protocol. From
+  // 4.0.0 the release labels above equal them (RFC 0081 D1).
   return {
     format,
     protocol,

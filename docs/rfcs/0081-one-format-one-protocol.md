@@ -721,7 +721,10 @@ entries, and nothing ships until Phase 6.
 5. **Conformance renames** (§8), the runner and generator, and the docs-site
    pages.
 6. **Release 4.0.0** by the wiki 11 procedure: Format 3.0, Protocol 4.0.0,
-   seven packages.
+   seven packages. Release preparation pairs core/CLI 4.0.0 with Protocol
+   4.0.0 and Format 3.0; signing moves to 0.3.0 and batch, Excel, report and
+   lake take patch steps (CHANGELOG 4.0.0 records why). The RFC stays
+   `accepted` until a release ships it and publication is verified.
 
 **Combining.** Phase 2 and the set-narrowing half of Phase 4 could share a PR
 only if Phase 3 landed inside it, which would make one unreviewable diff of
@@ -2282,6 +2285,18 @@ The lender's full per-statement evidence is identical: **187 / 0 / 0**.
 | `verifier/tier-3/variant-11-explicit-beats-role` | `verifier__calc__variant-11-explicit-beats-role__calc` | `verifier` | pass | pass |
 
 </details>
+
+## RFC 0081 Phase 6 implementation decisions
+
+| Question | Phase 6 decision | Precedent / boundary |
+|---|---|---|
+| Release labels | `FORMAT_VERSION = '3.0'` and `PROTOCOL_VERSION = '4.0.0'`, each equal to the single member of its supported set; a test pins both equalities. The literals stay, because `verify-versions`, `verify-release` and the docs site read them from source. | D1; the Phase 4 row on `SPEC_*` constants ("`FORMAT_VERSION`/`PROTOCOL_VERSION` stay for Phase 6"). |
+| Core/CLI version | 4.0.0. | D1 and §1; the 2.0.0/3.0.0 precedent of a core major with a Protocol major that breaks public surfaces. |
+| Dependent package versions | Signing 0.2.26 → **0.3.0**: its exported signatures are unchanged, but `stampBlockSignature` writes `_meta.integrity`, `verifyBlockSignature` reads only it, and the digest excludes `_meta`, so a 0.2.26 signature does not verify. Batch, Excel, report and lake take a patch step: their exported APIs are unchanged and what they dropped applies only to documents core refuses. | Semver 0.x: a break moves the minor (lake 0.1.2 → 0.2.0, the module packages 0.1.13 → 0.2.0). Every dependent took a patch step for the 2.0.0 and 3.0.0 core majors. The Phase 3 `uwVersion` option and `VerifyBlockSignatureOptions` never shipped, so they do not count. |
+| Release scope | Seven packages; `release.yml` and `releasePackagesForGeneration` already select them for ≥ 4.0.0 (Phase 4). | D6. |
+| VERSIONS.md compatibility rule 1 | Rewritten: a reader supports exactly the format it names, unknown sections stay informative (Protocol §II.1 item 3, §XII.1–XII.2). It cited the starter-product §III.1 stub that Phase 2 deleted. | D2; §XII.3. |
+| Migration guidance | A CHANGELOG 4.0.0 note for the owner's consumers: the 3.0.0 CLI's `migrate --source-tags` and `migrate --to-v2` (which writes Format 2.0), then the remaining Format 3.0 steps by hand. No migrator returns. | §4 and P5; Compatibility analysis (the only consumers are the owner's). |
+| RFC status | Stays `accepted` in the tagged tree; the post-publication reconciliation moves it to `implemented`. | Wiki 11 release states; the 3.0.0 precedent (#305, #306). |
 
 ## Alternatives considered
 

@@ -1,8 +1,8 @@
 # UW Protocol — verification
 
-**Status:** Accepted — protocol **4.0.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
+**Status:** Accepted release contract (RFC 0081) — protocol **4.0.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
 
-> **Protocol 4.0.0.** Accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md). The implementation is staged through Phases 2–6; release labels move in Phase 6. This normative text describes the single final contract, with no alternate versions or spellings.
+> **Protocol 4.0.0.** Accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md) and paired with core/CLI 4.0.0. This normative text describes the single final contract, with no alternate versions or spellings.
 
 This document specifies how any party **verifies** a UW Markdown
 document: that it is well formed, that its stated figures agree with

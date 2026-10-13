@@ -1,11 +1,27 @@
 # Roadmap
 
-Reconciled **2026-10-11** (America/Phoenix) for published and independently
-verified **3.0.0**, pairing core/CLI 3.0.0 with Stable Protocol **3.0.0** and
-Format **2.1**. No accepted RFC is waiting for a release.
+Reconciled **2026-10-12** (America/Phoenix) for release-prepared **4.0.0**
+(Protocol **4.0.0**, Format **3.0**). The current published release remains
+**3.0.0**, pairing core/CLI 3.0.0 with Stable Protocol **3.0.0** and Format
+**2.1**.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
+
+## Prepared generation: 4.0.0
+
+Core/CLI **4.0.0** pair with Protocol **4.0.0** and Format **3.0**. The
+generation carries one accepted RFC:
+- **RFC 0081:** one format and one protocol. Format 3.0 (bare blocks with a
+  nested `_meta`, one home for each fact, builtin class identifiers only) and
+  Protocol 4.0.0 are the only versions the reference implementation reads;
+  every backward-compatibility path, both migrators and both module packages
+  are deleted. 3.0.0 is the last release that reads older formats.
+
+Signing 0.3.0, batch 0.8.22, Excel 0.9.15, report 0.8.27 and lake 0.2.11 pin
+core 4.0.0. The workflow publishes seven packages. No financial value
+changes. RFC 0081 remains `accepted` until shipment and independently
+verified publication.
 
 ## Current published release: 3.0.0
 
@@ -438,7 +454,8 @@ product specification; lease economics and cash timing are.
   pins and explicit host loading remain. RFC 0080 retires both: 0.2.0, a
   declaration-free compatibility shell pinning core 3.0.0, published with
   3.0.0 as their final version, and the owner deprecated both names on npm on
-  2026-10-11. They leave the release workflow in a later release.
+  2026-10-11. RFC 0081 deleted both from the repository; 4.0.0 is the first
+  release without them.
 - **Excel, report and lake publication:** all three joined the release
   workflow and first published from it with 3.0.0 (Excel 0.9.14, report
   0.8.26, lake 0.2.10), so every package is on npm each release.

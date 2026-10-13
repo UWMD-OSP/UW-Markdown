@@ -1,6 +1,6 @@
 // Pre-flight check for npm Trusted Publishers (OIDC) automated publishing.
 // Verifies:
-// 1. Package versions and exact core pins across all nine official publishing packages.
+// 1. Package versions and exact core pins across all official publishing packages (seven from 4.0.0).
 // 2. Export targets, binaries, and production build artifacts exist and resolve.
 // 3. OIDC provenance eligibility (repository metadata, public access, zero hardcoded tokens).
 // 4. .github/workflows/release.yml triggers on tag pushes and includes id-token: write,

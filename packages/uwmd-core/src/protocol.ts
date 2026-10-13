@@ -35,13 +35,14 @@ import { CORE_VERSION } from './version.js';
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of @uwmd/core's npm version. */
-export const PROTOCOL_VERSION = '3.0.0' as const;
+export const PROTOCOL_VERSION = '4.0.0' as const;
 
 /**
- * The format release label of this implementation. RFC 0081 Phase 6 aligns
- * it with {@link SUPPORTED_FORMAT_VERSIONS}; writers and readers use that set.
+ * The format release label of this implementation: the one member of
+ * {@link SUPPORTED_FORMAT_VERSIONS} (RFC 0081 D1). Writers and readers use that
+ * set; this label is what `uwmd --version` and the manifest report.
  */
-export const FORMAT_VERSION = '2.1' as const;
+export const FORMAT_VERSION = '3.0' as const;
 
 /** The closed resolution vocabulary (Format §2.6, `SRC-03`). */
 export const RESOLUTION_METHODS = Object.freeze([

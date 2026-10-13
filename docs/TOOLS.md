@@ -33,15 +33,15 @@ publication state. At the time of writing:
 | `@uwmd/excel` (`.xlsx` workbooks) | `npm install @uwmd/excel` (release 3.0.0 on); before that, build from a clone |
 | `@uwmd/report` (PDF lender package) | `npm install @uwmd/report` (release 3.0.0 on); before that, build from a clone |
 | `@uwmd/lake` (PostgreSQL adapter) | `npm install @uwmd/lake` (release 3.0.0 on); before that, build from a clone |
-| Official modules (hospitality, data center) | Not needed: both classes are builtin in `@uwmd/core` 3.0.0 (RFC 0080). Their 0.2.0 packages are compatibility shells only |
+| Official modules (hospitality, data center) | Not needed: both classes are builtin in `@uwmd/core` from 3.0.0 (RFC 0080). Their final 0.2.0 packages are deprecated on npm and were deleted from the repository in 4.0.0 (RFC 0081) |
 | Web viewer | Hosted at [uwmd.org/viewer](/viewer/), or download the single HTML file |
 | Web editor | Hosted public preview at [uwmd.org/editor](https://www.uwmd.org/editor/) |
 | VS Code extension | Source only: package with `vsce package` |
 
 The registry also serves a stray `0.3.0` of `@uwmd/excel` and `@uwmd/report`.
 Both are deprecated and pinned to core 1.3.0; do not install them. Install an
-exact version that pins your core, for example `@uwmd/excel@0.9.14` with
-`@uwmd/core@3.0.0`.
+exact version that pins your core, for example `@uwmd/excel@0.9.15` with
+`@uwmd/core@4.0.0`.
 
 For source-checkout calculation scenarios, see
 [Calculation context files](CALCULATION_CONTEXT.md): select period variants
