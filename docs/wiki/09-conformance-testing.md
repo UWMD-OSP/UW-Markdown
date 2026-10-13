@@ -44,14 +44,19 @@ this one — runs to prove behavior). CI runs both.
 - Coverage: `npm run test:coverage` (root) → `@uwmd/verify`, then
   `@uwmd/core`, with `@vitest/coverage-v8`. **Thresholds are enforced**, not
   reported: each package's floor lives in its `vitest.config.ts` (verify: 93
-  lines / 93 statements / 98 functions / 86 branches; core: 77 / 77 / 97 / 81,
-  re-measured when the standard modules and their tests moved to verify in RFC
-  0083 Phase 2) and the CI `coverage` job has no `continue-on-error`,
-  so dropping below either fails the build. Raise the floor when coverage rises;
-  lowering one should be argued for in the PR description. The re-export
-  barrels `index.ts` and `browser.ts` are excluded — ~1,050 lines of `export
-  {}` that no test imports, which measured 0% and moved the total by four
-  points without saying anything about what is tested.
+  lines / 93 statements / 98 functions / 86 branches; core: 94 / 94 / 97 / 81,
+  re-measured for 4.1.0 after the standard modules and their tests moved to
+  verify in RFC 0083 Phase 2) and the CI `coverage` job has no
+  `continue-on-error`, so dropping below either fails the build. Raise the
+  floor when coverage rises; lowering one should be argued for in the PR
+  description. The re-export barrels `index.ts` and `browser.ts` are excluded
+  — ~1,050 lines of `export {}` that no test imports, which measured 0% and
+  moved the total by four points without saying anything about what is
+  tested. Core also excludes the CLI entry files `cli.ts` and
+  `cli-portfolio.ts`, which run only as spawned `uwmd` processes (`cli.test.ts`,
+  the conformance driver). Counted, they were never-loaded denominator whose
+  size depended on the platform (73.99% on Windows, 78.04% on Linux CI, with
+  the same covered lines).
 - Property tests use `fast-check`: verify's `calc/calc.property.test.ts`
   asserts calc *totality* (any input parses or throws a typed `CalcError`), and
   core's `packs/excel-emit.property.test.ts` asserts the Excel emitter accepts

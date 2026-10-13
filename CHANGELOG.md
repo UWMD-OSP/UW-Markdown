@@ -8,6 +8,45 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [4.1.0] - 2026-10-13
+
+### Prepared package pairing
+
+Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
+contract as 4.0.0 and 4.0.1. **`@uwmd/verify` 0.1.0** joins the release: the
+reference implementation of the standard (RFC 0083), with no `@uwmd/*`
+dependency. Core depends on verify **0.1.0** exactly and re-exports its whole
+surface. Signing **0.4.0** pins verify **0.1.0** and core **4.1.0**; batch
+**0.9.0** and lake **0.3.0** pin verify **0.1.0** in place of core; Excel
+**0.9.17** and report **0.8.29** pin core **4.1.0**. Core's optional signing
+peer is **0.4.0**. The workflow scope is eight packages, verify first:
+verify, core, CLI, signing, batch, Excel, report and lake.
+
+No normative text changes, so neither the Protocol nor the Format version
+moves (RFC 0083; wiki 11: from 3.0 the Protocol moves only when what a
+document means or how it is verified changes). Core takes a minor, not a
+patch: it gains a runtime dependency and additive exports, and removes or
+changes none (RFC 0083 Decisions). Verify starts at 0.1.0 like every new
+package. Signing, batch and lake take a minor because their dependency sets
+changed: batch and lake now depend on `@uwmd/verify` and no longer on core,
+and signing depends on both. Excel and report take their usual patch for the
+core repin. No conformance expectation, issue code, metric definition,
+stated value or receipt verdict changes. The receipt baselines already name
+`@uwmd/verify` 0.1.0 as their engine and do not move.
+
+### Receipts issued before 4.1.0
+
+Receipts now record `@uwmd/verify` as their engine (below), so a receipt
+issued by core 4.0.1 or earlier, which names `@uwmd/core` and that core's
+version, comes from a different engine. Verified by core 4.1.0, the CLI or
+`@uwmd/verify`, such a receipt still verifies when its results agree. When
+they disagree it reports **`unverifiable` (`RCP-07`), not `failed`**: a
+disagreement across two engine identities cannot be attributed to the
+document (UW Receipt §5.3). This is the specified behavior, not a defect. A
+pipeline that rejects only on `failed` would let a tampered pre-4.1.0 receipt
+through as merely unverifiable; reissue legacy receipts with 4.1.0, or treat
+`RCP-07` as a rejection.
+
 ### Added
 
 - `verifyStatedMetrics(parsed, options?)` in `@uwmd/core` and
@@ -25,8 +64,8 @@ protocol, and each package each carry an independent semver).
   reason `missing_stated_precision`. Core ships `spec/metrics/builtin.json`
   as generated package data (`npm run gen-metric-dictionary`); a test fails if
   the copy drifts from the spec.
-- **`@uwmd/verify` 0.1.0** (`packages/uwmd-verify`, RFC 0083 Phase 2; not yet
-  published): the reference implementation of the standard as its own package —
+- **`@uwmd/verify` 0.1.0** (`packages/uwmd-verify`, RFC 0083 Phase 2): the
+  reference implementation of the standard as its own package —
   reader, validation, the calc evaluator and quantization, stated-precision
   comparison, the metric dictionary and `verifyStatedMetrics`, receipts,
   integrity, the module system, the builtin pack manifests and the
@@ -58,6 +97,19 @@ protocol, and each package each carry an independent semver).
   `CROSS_CHECK_VARIANT_PREFERENCE`, and the types that go with them
   (`IntegrityResult`, `VerifyChainOptions`, `CascadeStep`, `GapAction`,
   `MarketDataLookup`, …). None is Node-only.
+- `uwmd --version` prints the `@uwmd/verify` version on its own line, between
+  the `@uwmd/core` and Protocol lines. `uwmd manifest` writes it to stderr:
+  its stdout stays exactly the `ImplementationManifest` (Protocol §II.6a.2),
+  whose schema admits no other field. The bug-report form and
+  `docs/FEEDBACK.md` say where to find it, and the form's component list
+  names `@uwmd/verify`.
+- `verify-release` fails when a publishing package's `dependencies`,
+  `peerDependencies` or `optionalDependencies` differ from the release this
+  one follows while its version does not (`dependencyDrift` in
+  `release-state.mjs`); between releases it only warns, because the bump
+  belongs to the release preparation. npm never republishes a version, so the
+  change would never ship. It would have flagged the signing, batch and lake
+  repins RFC 0083 Phase 2 left to this release.
 
 ### Changed
 
@@ -86,7 +138,7 @@ protocol, and each package each carry an independent semver).
   (`surface.test.ts`). Core's `evaluateCalc` and
   `evaluateModuleCalculations` still add `display`.
   `REFERENCE_IMPLEMENTATION_MANIFEST` names `@uwmd/core`, so it moves to
-  core's `reference-implementation.ts`; `uwmd manifest` is unchanged.
+  core's `reference-implementation.ts`; `uwmd manifest`'s stdout is unchanged.
 - **Receipts now name `@uwmd/verify` as their engine**, including receipts
   issued through `@uwmd/core` and the CLI: `computation.engine` is
   `@uwmd/verify` and `computation.engine_version` is `VERIFY_VERSION` (0.1.0),
@@ -114,10 +166,10 @@ protocol, and each package each carry an independent semver).
   `engine_version` fields.
 - `@uwmd/signing`, `@uwmd/batch` and `@uwmd/lake` build on `@uwmd/verify`
   (exact 0.1.0); signing also keeps `@uwmd/core` for the capability-token
-  types. Their own versions do not move here; the release that publishes
-  `@uwmd/verify` bumps them. `tools/vscode-uwmd` depends on `@uwmd/verify`;
-  its receipt check identifies as `@uwmd/verify`, the engine current receipts
-  name, so a tampered receipt is still `failed`.
+  types. Each takes its own version bump in this release (above).
+  `tools/vscode-uwmd` depends on `@uwmd/verify`; its receipt check identifies
+  as `@uwmd/verify`, the engine current receipts name, so a tampered receipt
+  is still `failed`.
 - Release tooling publishes eight packages from 4.1.0, `@uwmd/verify` first:
   `release.yml`, `release-packages.mjs` and `release:check`, which now requires
   every package to publish after each `@uwmd/*` package it pins. The guards
@@ -128,8 +180,31 @@ protocol, and each package each carry an independent semver).
   conformance metrics control (the verifier's import graph reaches no core
   module). CI measures coverage for both packages, each against its own
   floor; core's lines and statements floor drops to 77 because the
-  well-covered standard modules left with their tests. The first publication
-  of `@uwmd/verify` needs a trusted publisher on npmjs.com, an owner step.
+  well-covered standard modules left with their tests (since re-measured;
+  below). The first publication of `@uwmd/verify` needs a trusted publisher
+  on npmjs.com, an owner step done before the tag (wiki 11, "Account
+  prerequisite / bootstrap").
+- `@uwmd/verify`'s `standard-closure.test.ts` also treats `require(...)`,
+  `require.resolve(...)` and any `createRequire` reference as edges, so a
+  CommonJS load cannot reach outside the package unseen; a negative control
+  plants each form.
+- Core's coverage excludes the CLI entry files `cli.ts` and
+  `cli-portfolio.ts`, which run only as spawned `uwmd` processes and which no
+  in-process test loads. Counted, their never-loaded lines set a
+  platform-dependent denominator: 73.99% on Windows and 78.04% on Linux CI
+  with the same 6,760 covered lines. Excluded, the measurement no longer
+  depends on the platform: 95.83% lines and statements, so core's lines and
+  statements floor rises from 77 to 94; functions (97) and branches (81) are
+  unchanged.
+
+### Fixed
+
+- `docs/reviews/2026-09-12-pcg64-reference.md` and
+  `docs/reviews/2026-09-24-terminal-boundary-design.md` link the PCG64 oracle,
+  its tests and the property cash-flow verifier at their `@uwmd/verify`
+  paths.
+- The docs-site home page no longer calls the Excel exporter and the lake
+  adapter unpublished; both have published with every release since 3.0.0.
 
 ## [4.0.1] - 2026-10-13
 

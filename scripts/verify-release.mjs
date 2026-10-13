@@ -33,6 +33,11 @@
 //      and publication-neutral (`release-state.mjs`). v2.14.0 and v2.15.0 were
 //      tagged on commits whose VERSIONS.md still called their own packages
 //      candidates and their protocol unreleased; that is why this exists.
+//   4. A publishing package whose dependency set differs from the release this
+//      one follows has a new version (`dependencyDrift`). RFC 0083 Phase 2
+//      repointed signing, batch and lake at `@uwmd/verify` and left their
+//      bumps to the release, carried only by a PR note. Between releases it
+//      warns; preparing or tagging a release, it fails.
 //
 // `--tag vX.Y.Z` checks the tree as that release. The tag must name core/CLI,
 // the CLI must pin core exactly, the heading must be dated, the core row must
@@ -55,7 +60,8 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { changelogReleaseSections, checkReleasedTags, checkReleaseState } from './release-state.mjs';
+import { changelogReleaseSections, checkReleasedTags, checkReleaseState, dependencyDrift } from './release-state.mjs';
+import { releasePackagesForGeneration } from './release-packages.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
@@ -136,6 +142,36 @@ if (!state.applies) {
 }
 checks.push(...state.checks.map((check) => `[PASS] ${check}`));
 failures.push(...state.failures);
+
+// ── 4. A changed dependency set comes with a version bump ────────────────────
+// Against the release this one follows: the newest tag below core's version
+// while preparing or tagging it. Between releases (core's own tag exists, no
+// --tag) a drift only warns, because bumps belong to the release preparation.
+const semver = (t) => t.slice(1).split('.').map(Number);
+const below = (a, b) => { const [x, y] = [semver(a), semver(b)]; const i = x.findIndex((n, k) => n !== y[k]); return i !== -1 && x[i] < y[i]; };
+const between = tag === undefined && tags.includes(`v${coreVersion}`);
+const baseline = between ? `v${coreVersion}` : tags
+  .filter((t) => /^v\d+\.\d+\.\d+$/.test(t) && below(t, `v${coreVersion}`))
+  .sort((a, b) => (below(a, b) ? -1 : 1))
+  .at(-1);
+if (baseline) {
+  const manifests = releasePackagesForGeneration(coreVersion).map(({ dir }) => {
+    const current = JSON.parse(read(`${dir}/package.json`));
+    try {
+      const shown = execFileSync('git', ['show', `${baseline}:${dir}/package.json`], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+      return { current, previous: JSON.parse(shown) };
+    } catch {
+      return { current }; // new since the baseline
+    }
+  });
+  const drift = dependencyDrift(manifests);
+  for (const { name, version, fields } of drift) {
+    const message = `${name} ${version} changed its ${fields.join(', ')} since ${baseline} but kept the version it shipped there; npm cannot republish a version, so bump it in the release preparation.`;
+    if (between) checks.push(`[WARN] ${message}`);
+    else failures.push(message);
+  }
+  if (drift.length === 0) checks.push(`[PASS] every publishing package whose dependencies changed since ${baseline} has a new version`);
+}
 
 // ── Report ───────────────────────────────────────────────────────────────────
 for (const line of checks) console.log(line);

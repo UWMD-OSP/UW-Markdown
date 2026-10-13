@@ -172,7 +172,7 @@ other builtin. `@uwmd/module-hospitality` and `@uwmd/module-data-center` were
 compatibility shells whose final 0.2.0 was published and deprecated on npm on
 2026-10-11; RFC 0081 Phase 4 deleted both packages from the repository.
 
-## Signing — `packages/uwmd-signing` (`@uwmd/signing` 0.1.0)
+## Signing — `packages/uwmd-signing` (`@uwmd/signing`; see VERSIONS.md)
 
 Block and receipt signatures (RFC 0010, protocol §V.11). Separate from
 `@uwmd/verify` and `@uwmd/core` so the library keeps its zero-crypto guarantee: reading,
@@ -335,7 +335,7 @@ contract that disagrees with `B3` is refused as internally inconsistent.
 
 Build: `tsc`. Test: `vitest run`.
 
-## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report` 0.2.0)
+## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report`; see VERSIONS.md)
 
 `.uw.md → .pdf` for the lender package / credit memo. The HTML is produced by
 `@uwmd/core`'s `renderReportHtml` (deterministic, §7.1/§7.2); this package only
@@ -442,7 +442,7 @@ functions (`resolveValue`, `rankGaps`, `inferGaps`, `getAssetClassDefaults`,
 `getExprDependencies`, `extractDependencyGraph`, …) are browser-safe and are
 now exported from `@uwmd/core/browser`.
 
-## VS Code extension — `tools/vscode-uwmd` (`vscode-uwmd` 0.1.0)
+## VS Code extension — `tools/vscode-uwmd` (`vscode-uwmd`; see VERSIONS.md)
 
 Authoring extension: syntax highlighting (`syntaxes/uwmd.tmLanguage.json` —
 YAML frontmatter + Markdown + embedded JSON), section folding, document outline,

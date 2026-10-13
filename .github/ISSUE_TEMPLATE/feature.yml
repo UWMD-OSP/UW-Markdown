@@ -41,7 +41,7 @@ body:
         - "Protocol: calc, validation, edit or conformance behavior (needs an RFC)"
         - "A module: asset class, pack or manifest"
         - "@uwmd/core library API or the uwmd CLI"
-        - "Another package (excel, report, lake, signing, batch)"
+        - "Another package (verify, excel, report, lake, signing, batch)"
         - "A tool (viewer, editor, VS Code extension, docs site)"
         - "Not sure"
     validations:

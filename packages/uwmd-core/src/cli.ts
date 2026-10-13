@@ -62,6 +62,8 @@ import {
   stringifyUWX,
   UW_LITE_REPRESENTATION_ID,
   verifyReceipt,
+  VERIFY_PACKAGE_NAME,
+  VERIFY_VERSION,
 } from '@uwmd/verify';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
 // Receipts the CLI issues name `@uwmd/core` as their issuer (RFC 0083).
@@ -1865,6 +1867,10 @@ switch (command) {
     // The conformance CLI protocol's identity call (§II.6a). Emitted with no
     // surrounding prose so a driver can read it without a parser.
     console.log(JSON.stringify(REFERENCE_IMPLEMENTATION_MANIFEST, null, 2));
+    // The engine version goes to stderr. stdout is exactly the
+    // ImplementationManifest (§II.6a.2), whose schema admits no other field,
+    // and stderr is free for diagnostics; the driver ignores it.
+    console.error(`${VERIFY_PACKAGE_NAME} ${VERIFY_VERSION}`);
     break;
 
   case '--version':
@@ -1872,7 +1878,10 @@ switch (command) {
   case 'version':
     // Read from the manifest so `--version` and `manifest` cannot disagree.
     // These used to fall through to `default` and print the help text.
+    // `@uwmd/verify` is the engine core is built on and every receipt names
+    // (RFC 0083).
     console.log(`@uwmd/core ${REFERENCE_IMPLEMENTATION_MANIFEST.version}`);
+    console.log(`${VERIFY_PACKAGE_NAME} ${VERIFY_VERSION}`);
     console.log(`Protocol ${REFERENCE_IMPLEMENTATION_MANIFEST.protocol_version}`);
     console.log(`Format ${REFERENCE_IMPLEMENTATION_MANIFEST.format_version}`);
     break;
@@ -1945,8 +1954,8 @@ Commands:
   lease    validate|project     Validate a lease abstract, or project it to a rent-roll row (RFC 0018)
   package  create|verify|...    Build, verify, list, or project a UW Deal Package (RFC 0018)
   portfolio validate|edges      Validate a .uwportfolio.json sidecar, or list its entity edges (RFC 0015)
-  manifest                     Print this implementation's ImplementationManifest (conformance protocol)
-  --version, -V                Print the @uwmd/core, Protocol and Format versions
+  manifest                     Print this implementation's ImplementationManifest (conformance protocol; @uwmd/verify version on stderr)
+  --version, -V                Print the @uwmd/core, @uwmd/verify, Protocol and Format versions
   layers                       List Bancroft agent layers
 
 Options:

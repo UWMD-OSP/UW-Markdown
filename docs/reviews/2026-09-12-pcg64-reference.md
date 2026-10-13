@@ -12,10 +12,10 @@ numeric tolerance, stochastic result or conformance baseline changed.
 - Independent executable oracle: installed **NumPy 1.26.4**, `numpy.random.PCG64`,
   using its compiled implementation. Its [versioned C source](https://github.com/numpy/numpy/blob/v1.26.4/numpy/random/src/pcg64/pcg64.h)
   exposes the same XSL-RR-128/64 output family.
-- [Oracle JSON](../../packages/uwmd-core/src/calc/fixtures/pcg64-reference.json)
+- [Oracle JSON](../../packages/uwmd-verify/src/calc/fixtures/pcg64-reference.json)
   records 16 raw outputs and doubles per seed, plus a SHA-256 digest of 1,024 raw
   outputs per seed. Decimal uint64 strings are joined with LF, including final LF.
-- [Regression tests](../../packages/uwmd-core/src/calc/prng.test.ts) compare the
+- [Regression tests](../../packages/uwmd-verify/src/calc/prng.test.ts) compare the
   TypeScript implementation with those independently generated values and digests.
 
 Seeds: 0, 1, 42, 43, 2^53−1, 2^64−1, 2^127, 2^128−1, 2^128, 2^128+42 and −1.

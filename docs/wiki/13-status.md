@@ -1,5 +1,23 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-13** (America/Phoenix) for release-prepared **4.1.0**.
+Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
+contract as 4.0.x; the release moves nothing normative, so neither version
+does. It carries RFC 0083: **`@uwmd/verify` 0.1.0**, the reference
+implementation of the standard, is its own package with no `@uwmd/*`
+dependency, and core is the starter toolkit on top of it, depending on it
+exactly and re-exporting its whole surface. Receipts name `@uwmd/verify` as
+their engine; a receipt issued by core 4.0.1 or earlier whose results
+disagree reports `RCP-07` `unverifiable`, not `failed` (UW Receipt §5.3).
+`uwmd --version` prints the verify version too. No conformance expectation
+changes: 1,069 reference checks and 336 portable cases, and the lender
+fixture stays 187/0/0. Signing **0.4.0** pins verify 0.1.0 and core 4.1.0,
+batch **0.9.0** and lake **0.3.0** pin verify 0.1.0, Excel **0.9.17** and
+report **0.8.29** pin core 4.1.0, and core's optional signing peer is 0.4.0.
+The release workflow publishes eight packages, `@uwmd/verify` first; the new
+name needs the owner's bootstrap and trusted publisher before the tag (wiki
+11).
+
 Reconciled **2026-10-13** (America/Phoenix) for published and independently
 verified **4.0.1**. Core/CLI **4.0.1**, signing **0.3.1**, batch **0.8.23**,
 Excel **0.9.16**, report **0.8.28** and lake **0.2.12** are published from
@@ -139,8 +157,8 @@ See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
 [RFC 0083](../rfcs/0083-verify-package-split.md) is accepted and lands in
 three phases. Phase 1 (PR #317) drew the standard/starter line inside core and
-added `verifyStatedMetrics`. Phase 2 creates `packages/uwmd-verify`
-(`@uwmd/verify` 0.1.0, **unpublished**): the standard modules moved there with
+added `verifyStatedMetrics`. Phase 2 (PR #319) created `packages/uwmd-verify`
+(`@uwmd/verify` 0.1.0): the standard modules moved there with
 their tests, core depends on it exactly and re-exports its whole surface, and
 signing, batch, lake and the VS Code extension build on it. No public name of
 `@uwmd/core` or `@uwmd/core/browser` was removed; the browser entry gained the
@@ -149,12 +167,12 @@ integrity verifiers and the other names verify exports. Receipts now name
 through core; the issuer stays core's, the two receipt issue baselines and
 three verify fixtures were updated, and every verdict is unchanged. `uwmd
 manifest`, every other conformance expectation (1,069 checks; the lender
-fixture at 187/0/0) and the portable driver are unchanged. No package version moved:
-core/CLI stay 4.0.1, and signing 0.3.1, batch 0.8.23 and lake 0.2.12 now pin
-`@uwmd/verify` 0.1.0 in source without a version bump of their own. Phase 3
-is the release: core/CLI 4.1.0 with `@uwmd/verify` 0.1.0, which must bump
-signing, batch and lake (their pins changed) and needs a trusted publisher for
-the new `@uwmd/verify` name on npmjs.com first (an owner step, wiki 11).
+fixture at 187/0/0) and the portable driver are unchanged. Phase 2 moved no
+package version. Phase 3 prepares the release: core/CLI 4.1.0 with
+`@uwmd/verify` 0.1.0, signing 0.4.0, batch 0.9.0 and lake 0.3.0 (minors,
+because their dependency sets changed), Excel 0.9.17 and report 0.8.29. The
+new `@uwmd/verify` name needs a trusted publisher on npmjs.com before the tag
+(an owner step, wiki 11).
 
 ## CLI reporting clarity (2026-10-03; core/CLI 2.18.0)
 
@@ -197,8 +215,9 @@ new receipt output.
 ## Implemented supporting tools
 
 Web editor/viewer, docs site and VS Code extension are implemented. Excel
-**0.9.16**, report **0.8.28** and lake **0.2.12** pair with core 4.0.1 and are
-published through the release workflow, as they have been since 3.0.0 (Excel
+**0.9.17** and report **0.8.29** pair with core 4.1.0, and lake **0.3.0** with
+`@uwmd/verify` 0.1.0; all three are in the release workflow, as they have
+been since 3.0.0 (Excel
 0.9.14, report 0.8.26, lake 0.2.10); through 2.21.0 they were source-only. Lake 0.2.9 was published by hand from `v2.21.0` on
 2026-10-11 so its trusted publisher could be configured; it carries no
 provenance. The hospitality/data-center module packages **0.2.0** pair with
