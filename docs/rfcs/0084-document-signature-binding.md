@@ -142,9 +142,19 @@ For a Format 3.0 structured Markdown source:
    structural ambiguity preventing a faithful envelope MUST refuse signing
    and MUST prevent successful verification. Inconsistent section identity
    or lifecycle declarations cannot be silently repaired for authentication.
+   Before collection reduction, scan all UW section fences. More than one
+   non-superseded block for the same effective section/variant selection key
+   MUST refuse; revision numbers cannot select a winner for authentication.
+   Append-only collections such as `pipeline_log`, `custom_calculations` and
+   `custom_scenarios` are not singleton selection keys. Repeated extension
+   ids MUST refuse because the current envelope has only one slot per id.
 2. Project the parsed document to the normative Document Envelope with
    superseded history included. Do not select a scenario, pack or variant,
    omit archival blocks, or filter unsupported extensions.
+   Every scanned UW section block MUST appear exactly once in the projection.
+   A missing, duplicated or overwritten block MUST refuse authentication.
+   This accounting includes unknown sections and historical extension blocks;
+   a source that the current projection cannot preserve must be refused.
 3. Remove only the envelope's top-level `generated_at`, `generator` and
    `semantic_digest`. Canonicalize the remaining value using RFC 8785.
 4. Compute SHA-256 over the canonical string's UTF-8 bytes and render
@@ -277,6 +287,11 @@ Required positive and refusal cases:
   when authentication is required.
 - Malformed/padded/non-canonical/wrong-width signature bytes: fail.
 - Ambiguous or inconsistent source declarations: refuse before signing.
+- Duplicate active section/variant keys, regardless of revision ordering,
+  repeated extension ids and any projection that loses a UW section block:
+  refuse signing and verification. Reordering independent unambiguous
+  sections may preserve the digest; changing a retained ordered collection
+  must change it.
 - Multiple block authors, signer not a block author, incomplete records and
   custom module sections: authenticate without requiring a calculation pack.
 - Re-sign an edited snapshot: new artifact verifies; prior artifact fails
@@ -352,12 +367,13 @@ to authenticate a complete snapshot and leaves issue #321's workflow gap.
 
 ## Unresolved questions
 
-Review is needed on the proposed signing scope and artifact/API names.
-Before acceptance, independent vectors must confirm that the full projection
-is sufficient for every Format selection rule, including duplicate/current
-block ordering and all superseded-history routes. If it is not, this RFC
-must pin a revised canonicalization and its version explicitly rather than
-silently change `uw-envelope-semantic` 1.0.
+Review is needed on the proposed signing scope and artifact/API names, and
+on refusal of inputs that the current envelope cannot faithfully preserve.
+Before acceptance, independent vectors must prove the pre-projection
+selection/accounting guards and every superseded-history route. If the
+guarded projection remains insufficient, this RFC must pin a revised
+canonicalization and its version explicitly rather than silently change
+`uw-envelope-semantic` 1.0.
 
 Key rotation, external timestamp authorities, byte-exact signatures, and
 authentication of Lite or other representations remain separate work.
