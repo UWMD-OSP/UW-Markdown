@@ -49,8 +49,8 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   `uw_version` in files. It equals the one member of
   `SUPPORTED_FORMAT_VERSIONS`; a reader refuses every other version.
 - **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (Stable 4.0.0 after
-  RFC 0081 shipped and publication was independently verified; core/CLI
-  4.0.0, 4.0.1 and 4.1.0 pair with it and Format 3.0.
+  RFC 0081 shipped and publication was independently verified; published
+  core/CLI 4.0.0, 4.0.1 and 4.1.0 pair with it and Format 3.0.
   Historical core/CLI 3.0.0 retain Stable Protocol 3.0.0 with Format 2.1,
   and 2.21.0 retain Stable Protocol 2.25.0). It equals the one member of
   `SUPPORTED_PROTOCOL_VERSIONS`, and `protocol.test.ts` asserts both labels
@@ -380,8 +380,10 @@ only the documented prerequisite, and rerun the ordinary workflow. Do not move a
 tag or manually publish to bypass a failed gate.
 
 **Account prerequisite / bootstrap.** This applies to every new first-party
-package name; the next is `@uwmd/verify`, which first publishes with core/CLI
-4.1.0. npm configures a trusted publisher only for a package that already
+package name. The last one was `@uwmd/verify`, first published with core/CLI
+4.1.0; its bootstrap evidence is in the
+[4.1.0 publication record](../releases/4.1.0-publication.md#name-bootstrap).
+npm configures a trusted publisher only for a package that already
 exists, and `release.yml` publishes only through one, so a new name has to be
 created by hand before the first tag that publishes it. Confirm publish rights
 in the npm `@uwmd` scope first; an anonymous 404 does not prove that the name is

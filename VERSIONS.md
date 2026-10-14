@@ -37,7 +37,18 @@ Receipt §5.3). Signing 0.4.0 pins verify 0.1.0 and core 4.1.0. Batch 0.9.0
 and lake 0.3.0 pin verify 0.1.0 in place of core. Excel 0.9.17 and report
 0.8.29 pin core 4.1.0 exactly. Core's optional signing peer is 0.4.0. The
 workflow scope is eight packages, verify first: verify, core, CLI, signing,
-batch, Excel, report and lake.
+batch, Excel, report and lake. Protocol 4.0.0 stays Stable. All eight
+packages are published from annotated tag `v4.1.0` on
+`9d18a13c236b6ee46857382a25ec75c0ff6ccf86` through trusted publishing with
+provenance; `@uwmd/verify` 0.1.0 is that name's first release and its
+`latest`. Release run 38509776606 succeeded. All registry versions,
+`latest`, `gitHead`, signatures, attestations, Rekor checks, 666 published
+files, 336 delivered-CLI portable cases and isolated consumers of all eight
+packages, of `@uwmd/verify` alone and of batch and lake without core were
+independently verified; RFC 0083 is `implemented`. Neither module package
+published again. No other package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.1.0-publication.md)
+remain separate records.
 
 Release 4.0.1 pairs core/CLI 4.0.1 with Protocol 4.0.0 and Format 3.0, the
 same contract as 4.0.0. It is a patch: nothing normative moves, so neither

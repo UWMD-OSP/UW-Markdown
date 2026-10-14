@@ -1,8 +1,9 @@
 ---
 rfc: 0083
 title: 'Split @uwmd/verify, the reference implementation of the standard, out of @uwmd/core'
-status: accepted
+status: implemented
 accepted: 2026-10-13
+implemented: 2026-10-13
 author: claude-code (agent proposal, from owner decision RFC 0078 D8)
 created: 2026-10-13
 depends_on:
@@ -22,7 +23,10 @@ a small `@uwmd/verify` reference implementation of the standard, with
 `@uwmd/core` as the starter toolkit on top that still re-exports it. Separate
 follow-up."). This RFC fixes the boundary and the open implementation
 questions. It changes no normative text, so neither the Format (3.0) nor the
-Protocol (4.0.0) version moves.
+Protocol (4.0.0) version moves. **Implemented; released and independently
+verified.** The `v4.1.0` release published `@uwmd/verify` 0.1.0 and core/CLI
+4.1.0 with Stable Protocol 4.0.0 and Format 3.0 (see
+[Publication and verification](#publication-and-verification-2026-10-13)).
 
 ## Summary
 
@@ -230,7 +234,8 @@ In three phases, each its own PR:
    bytes do not change.
 3. **Release.** Core/CLI 4.1.0 with `@uwmd/verify` 0.1.0. The first publication
    of a new package name needs a trusted publisher on npmjs.com, an owner
-   step done before the tag.
+   step done before the tag. Released in 4.1.0 (PR #320); publication was
+   independently verified before this RFC moved to `implemented`.
 
 **Test plan:** the closure test (phase 1) and the re-export superset test
 (phase 2); the full suite, `typecheck:tests` and conformance unchanged at
@@ -252,3 +257,22 @@ imports only it.
 ## Unresolved questions
 
 None.
+
+## Publication and verification (2026-10-13)
+
+Annotated `v4.1.0` targets the release-prepared merge
+`9d18a13c236b6ee46857382a25ec75c0ff6ccf86` (PR #320).
+[Release run 38509776606](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38509776606)
+succeeded and published `@uwmd/verify` 0.1.0 first, then core/CLI 4.1.0,
+signing 0.4.0, batch 0.9.0, Excel 0.9.17, report 0.8.29 and lake 0.3.0,
+pairing Stable Protocol 4.0.0 with Format 3.0. Independent registry,
+provenance, published-file, delivered-CLI (336/336 portable cases, no skips)
+and consumer checks passed. The boundary test holds on the registry: the
+published `@uwmd/verify`, installed with no `@uwmd/core`, parses and
+validates an example, verifies its stated metrics, verifies a receipt issued
+by the published core 4.1.0 and reports a tampered copy `failed`; batch and
+lake install without core; and core re-exports every verify export. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.1.0-publication.md).
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every section above remain
+unchanged.
