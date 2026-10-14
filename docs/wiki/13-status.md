@@ -1,9 +1,13 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-13** (America/Phoenix) for release-prepared **4.1.0**.
-Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
-contract as 4.0.x; the release moves nothing normative, so neither version
-does. It carries RFC 0083: **`@uwmd/verify` 0.1.0**, the reference
+Reconciled **2026-10-13** (America/Phoenix) for published and independently
+verified **4.1.0**. `@uwmd/verify` **0.1.0**, core/CLI **4.1.0**, signing
+**0.4.0**, batch **0.9.0**, Excel **0.9.17**, report **0.8.29** and lake
+**0.3.0** are published from annotated `v4.1.0` on
+`9d18a13c236b6ee46857382a25ec75c0ff6ccf86`. They pair with Stable Protocol
+**4.0.0** and Format **3.0**, the same contract as 4.0.x; the release moves
+nothing normative, so neither version does. It carries RFC 0083, now
+`implemented`: **`@uwmd/verify` 0.1.0**, the reference
 implementation of the standard, is its own package with no `@uwmd/*`
 dependency, and core is the starter toolkit on top of it, depending on it
 exactly and re-exporting its whole surface. Receipts name `@uwmd/verify` as
@@ -14,9 +18,12 @@ changes: 1,069 reference checks and 336 portable cases, and the lender
 fixture stays 187/0/0. Signing **0.4.0** pins verify 0.1.0 and core 4.1.0,
 batch **0.9.0** and lake **0.3.0** pin verify 0.1.0, Excel **0.9.17** and
 report **0.8.29** pin core 4.1.0, and core's optional signing peer is 0.4.0.
-The release workflow publishes eight packages, `@uwmd/verify` first; the new
-name needs the owner's bootstrap and trusted publisher before the tag (wiki
-11).
+The release workflow published eight packages, `@uwmd/verify` first, through
+the trusted publisher the owner bound after bootstrapping the new name (wiki
+11). The published `@uwmd/verify`, installed alone, reads, validates and
+verifies stated metrics and a receipt issued by the published core 4.1.0, and
+batch and lake install without core. See the
+[publication evidence](../releases/4.1.0-publication.md).
 
 Reconciled **2026-10-13** (America/Phoenix) for published and independently
 verified **4.0.1**. Core/CLI **4.0.1**, signing **0.3.1**, batch **0.8.23**,
@@ -153,10 +160,10 @@ remain outside the current released contract. RFC 0070 shipped subsequently in 2
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
-## Unreleased on main: the `@uwmd/verify` split (RFC 0083, 2026-10-13)
+## Released in 4.1.0: the `@uwmd/verify` split (RFC 0083, 2026-10-13)
 
-[RFC 0083](../rfcs/0083-verify-package-split.md) is accepted and lands in
-three phases. Phase 1 (PR #317) drew the standard/starter line inside core and
+[RFC 0083](../rfcs/0083-verify-package-split.md) landed in three phases and
+is `implemented`. Phase 1 (PR #317) drew the standard/starter line inside core and
 added `verifyStatedMetrics`. Phase 2 (PR #319) created `packages/uwmd-verify`
 (`@uwmd/verify` 0.1.0): the standard modules moved there with
 their tests, core depends on it exactly and re-exports its whole surface, and
@@ -168,11 +175,12 @@ through core; the issuer stays core's, the two receipt issue baselines and
 three verify fixtures were updated, and every verdict is unchanged. `uwmd
 manifest`, every other conformance expectation (1,069 checks; the lender
 fixture at 187/0/0) and the portable driver are unchanged. Phase 2 moved no
-package version. Phase 3 prepares the release: core/CLI 4.1.0 with
+package version. Phase 3 (PR #320) prepared the release: core/CLI 4.1.0 with
 `@uwmd/verify` 0.1.0, signing 0.4.0, batch 0.9.0 and lake 0.3.0 (minors,
 because their dependency sets changed), Excel 0.9.17 and report 0.8.29. The
-new `@uwmd/verify` name needs a trusted publisher on npmjs.com before the tag
-(an owner step, wiki 11).
+owner bootstrapped the new `@uwmd/verify` name and bound its trusted
+publisher (wiki 11), and `v4.1.0` published all eight
+packages ([publication record](../releases/4.1.0-publication.md)).
 
 ## CLI reporting clarity (2026-10-03; core/CLI 2.18.0)
 
@@ -216,8 +224,8 @@ new receipt output.
 
 Web editor/viewer, docs site and VS Code extension are implemented. Excel
 **0.9.17** and report **0.8.29** pair with core 4.1.0, and lake **0.3.0** with
-`@uwmd/verify` 0.1.0; all three are in the release workflow, as they have
-been since 3.0.0 (Excel
+`@uwmd/verify` 0.1.0; all three are published through the release workflow,
+as they have been since 3.0.0 (Excel
 0.9.14, report 0.8.26, lake 0.2.10); through 2.21.0 they were source-only. Lake 0.2.9 was published by hand from `v2.21.0` on
 2026-10-11 so its trusted publisher could be configured; it carries no
 provenance. The hospitality/data-center module packages **0.2.0** pair with
@@ -775,9 +783,6 @@ The guards:
 
 ## Remaining work
 
-- RFC 0083 Phase 3: release core/CLI 4.1.0 with `@uwmd/verify` 0.1.0 (see
-  [the split](#unreleased-on-main-the-uwmdverify-split-rfc-0083-2026-10-13)).
-  Owner prerequisite: a trusted publisher for `@uwmd/verify` before the tag.
 - [RFC 0075](../rfcs/0075-hedge-senior-role-preference.md) (#266, merged as
   PR #276) and [RFC 0076](../rfcs/0076-hedge-checks-under-refused-selection.md)
   (merged as PR #277; D1–D7 accepted 2026-10-06) shipped in 2.19.0 with
@@ -814,11 +819,16 @@ The guards:
   [RFC 0080](../rfcs/0080-official-classes-are-builtins.md) (PR #302)
   shipped in 3.0.0 with Stable Protocol 3.0.0 under Format 2.1 and are
   **implemented** ([publication record](../releases/3.0.0-publication.md)).
-  RFC 0078's `@uwmd/verify` package split (D8) and the levered and
-  after-tax definitions (D7) remain follow-up RFCs.
+  RFC 0078's `@uwmd/verify` package split (D8) shipped as RFC 0083 (below);
+  the levered and after-tax definitions (D7) remain a follow-up RFC.
 - [RFC 0081](../rfcs/0081-one-format-one-protocol.md) (PRs #307–#312)
   shipped in 4.0.0 with Stable Protocol 4.0.0 under Format 3.0 and is
   **implemented** ([publication record](../releases/4.0.0-publication.md)).
+- [RFC 0083](../rfcs/0083-verify-package-split.md) (PRs #317, #319, #320)
+  shipped in 4.1.0 with `@uwmd/verify` 0.1.0 and Stable Protocol 4.0.0 under
+  Format 3.0 and is **implemented**
+  ([publication record](../releases/4.1.0-publication.md); see
+  [the split](#released-in-410-the-uwmdverify-split-rfc-0083-2026-10-13)).
 - Contract a total-debt-service input over `capital_stack` (RFC 0026) so a
   multi-tranche `cash_on_cash` can compute. RFC 0066 leaves it refused rather
   than senior-only.

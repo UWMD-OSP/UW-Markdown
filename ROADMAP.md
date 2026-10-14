@@ -1,14 +1,14 @@
 # Roadmap
 
-Reconciled **2026-10-13** (America/Phoenix) for release-prepared **4.1.0**
-(Protocol **4.0.0**, Format **3.0**). The current published release remains
-**4.0.1**, pairing core/CLI 4.0.1 with Stable Protocol **4.0.0** and Format
-**3.0**. The one accepted RFC waiting for a release, RFC 0083, ships in 4.1.0.
+Reconciled **2026-10-13** (America/Phoenix) for published and independently
+verified **4.1.0**, pairing core/CLI 4.1.0 and `@uwmd/verify` 0.1.0 with
+Stable Protocol **4.0.0** and Format **3.0**. No accepted RFC is waiting for a
+release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Prepared generation: 4.1.0
+## Current published release: 4.1.0
 
 Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
 contract as 4.0.x. The generation carries one RFC, which moves nothing
@@ -22,11 +22,15 @@ normative:
 
 Signing 0.4.0 pins verify 0.1.0 and core 4.1.0, batch 0.9.0 and lake 0.3.0
 pin verify 0.1.0, and Excel 0.9.17 and report 0.8.29 pin core 4.1.0. The
-workflow publishes eight packages, `@uwmd/verify` first. Its first
-publication needs the owner's name bootstrap and trusted publisher before
-the tag (wiki 11).
+workflow published eight packages, `@uwmd/verify` first, all of them from the
+release workflow with provenance; neither module package published again.
+RFC 0083 is `implemented` after shipment and independently verified
+publication. Release run 38509776606 and independent
+registry/provenance/published-file/CLI/consumer checks pass, including
+`@uwmd/verify` installed on its own. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.1.0-publication.md).
 
-## Current published release: 4.0.1
+## Historical publication: 4.0.1
 
 Core/CLI **4.0.1** pair with Protocol **4.0.0** and Format **3.0**, the same
 contract as 4.0.0. The patch carries no RFC and moves nothing normative: the
@@ -458,7 +462,7 @@ draw-to-expenditure binding shipped separately in 2.21.0 with Stable Protocol
 |---|---|---|
 | Standalone document and package example kit | RFC 0048 implemented (2.10.0) | Adopter authoring against the kit. |
 | Element/package validation and deterministic stitching | Future RFC/design candidate; no new implementation | Extend existing RFCs 0018/0021/0048 for standalone rent rolls, T-12s, debt schedules and property files; pin ZIP/folder manifests, assembly conflicts, package canonicalization/hashing, provenance and document-versus-package receipt scope. See [candidate brief](docs/roadmap/element-package-validation.md). |
-| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16**; `@uwmd/lake` published since 3.0.0 (0.3.0 in this tree) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency. |
+| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16**; `@uwmd/lake` published since 3.0.0 (0.3.0 today) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency. |
 | Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 
 ### Mixed-use and speculative leasing

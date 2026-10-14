@@ -10,6 +10,34 @@ protocol, and each package each carry an independent semver).
 
 ## [4.1.0] - 2026-10-13
 
+### Released
+
+Published `@uwmd/verify` **0.1.0** (its first publication), core/CLI
+**4.1.0**, signing **0.4.0**, batch **0.9.0**, Excel **0.9.17**, report
+**0.8.29** and lake **0.3.0** from annotated `v4.1.0` on
+`9d18a13c236b6ee46857382a25ec75c0ff6ccf86`.
+[Release run 38509776606](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38509776606)
+succeeded through trusted publishing with provenance; it is the first run to
+publish eight packages, verify first, and no module package. Every registry
+version and `latest` matches, and all eight `gitHead` values name the
+authorized commit. Integrity, registry and DSSE signatures, authenticated
+TUF/Fulcio/SCT trust, Rekor timestamps and inclusion proofs, and all 666
+published file contents verify. The registry-installed CLI reports core 4.1.0
+/ verify 0.1.0 / Protocol 4.0.0 / Format 3.0 and passes **336/336** portable
+cases with no skips (Reader 17, Verifier 281, module profile 1, starter
+products 37). Isolated consumers confirm the split as delivered: the
+published `@uwmd/verify`, installed alone with no `@uwmd/core`, parses,
+validates and checks stated metrics on an example, verifies a receipt issued
+by the published core 4.1.0, and reports that receipt `failed` (`RCP-03`, not
+`RCP-07`) once a result is tampered; batch and lake install without core;
+core re-exports every verify export; and strict TypeScript compiles against
+all eight packages with `skipLibCheck: false` and no Anthropic SDK. RFC 0083
+is `implemented`; Protocol **4.0.0** stays Stable, paired with Format
+**3.0**. The `@uwmd/verify` name bootstrap is recorded in the publication
+record. The immutable tagged tree keeps its neutral preparation records.
+Exact evidence is in `docs/releases/4.1.0-publication-evidence.json` and the
+verification method in `docs/releases/4.1.0-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
