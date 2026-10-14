@@ -1,7 +1,8 @@
 ---
 rfc: 0084
 title: Bind a document snapshot without discarding signed block attribution
-status: draft
+status: accepted
+accepted: 2026-10-14
 author: UWMD maintainers
 created: 2026-10-14
 depends_on:
@@ -20,9 +21,10 @@ affects:
 
 # RFC 0084: Bind a document snapshot without discarding signed block attribution
 
-**Draft proposal.** This PR proposes the contract; it changes no current
-verification behavior and does not close [issue #321](https://github.com/UWMD-OSP/UW-Markdown/issues/321).
-Implementation follows review of this RFC.
+**Accepted direction (2026-10-14).** The owner authorized implementation
+after reviewing the draft in PR #325. This PR carries the implementation
+and addresses [issue #321](https://github.com/UWMD-OSP/UW-Markdown/issues/321);
+publication remains a separate release step.
 
 ## Summary
 
@@ -72,13 +74,13 @@ third-party sections that have no applicable calculation pack.
 
 ### 1. Separate the two claims
 
-Add Protocol §V.12, **Document snapshot signatures**, and clarify §V.11.2:
+Add Protocol §V.13, **Document snapshot signatures**, and clarify §V.11.2:
 
 > A verified block signature authenticates the block signing input defined
 > in §V.11.2. It MUST NOT be presented as authentication of the document's
 > frontmatter, variant selection, lifecycle state or collection membership.
 > A verifier claiming an authenticated document snapshot MUST verify a
-> document signature under §V.12 against that document's canonical subject.
+> document signature under §V.13 against that document's canonical subject.
 
 Document signing remains an optional Integrity-profile capability. Reader
 and Verifier tier conformance alone implies no signer trust or signature
@@ -99,7 +101,7 @@ Illustrative shape (the digest and signature below are placeholders):
   "signature_version": "1",
   "subject": {
     "representation": "uwx-markdown",
-    "representation_version": "1.1",
+    "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
     "canonicalization_version": "1.0",
     "digest": "sha256:<64 lowercase hexadecimal digits>"
@@ -258,7 +260,8 @@ proposed. Module manifests and module signature inputs are unchanged;
 documents with module sections can be authenticated without evaluating them.
 The implementation requires an additive Protocol version change; the
 release selects its exact version after other pending RFCs are reconciled.
-This draft does not alter any version constant or package manifest.
+The implementation moves the accepted, unreleased Protocol to 4.1.0.
+Published package versions remain unchanged until release preparation.
 
 ## Conformance impact
 
@@ -326,7 +329,7 @@ Proposed public API:
 Reuse the envelope canonicalizer without importing starter code. A new
 verify module must enter the standard-closure inventory. Add the detached
 artifact schema, register the capability and failure-code contracts, update
-Protocol §V.11/§V.12 and the receipt canonicalization description together.
+Protocol §V.11/§V.13 and the receipt canonicalization description together.
 The latter currently says envelope receipts fail "only on financial change";
 its projection also covers annotations, metadata and retained prose, so the
 scope must be made accurate without silently changing canonical bytes.
@@ -367,13 +370,13 @@ to authenticate a complete snapshot and leaves issue #321's workflow gap.
 
 ## Unresolved questions
 
-Review is needed on the proposed signing scope and artifact/API names, and
-on refusal of inputs that the current envelope cannot faithfully preserve.
-Before acceptance, independent vectors must prove the pre-projection
-selection/accounting guards and every superseded-history route. If the
-guarded projection remains insufficient, this RFC must pin a revised
-canonicalization and its version explicitly rather than silently change
-`uw-envelope-semantic` 1.0.
+The source accounting guard and collection vectors pin the accepted
+projection without changing `uw-envelope-semantic` 1.0. In addition to
+duplicate active selection keys and repeated extension ids, historical
+extension blocks refuse because the current envelope has no faithful
+archive slot for them. Duplicate decoded JSON/YAML keys and ambiguous fence
+attributes refuse before projection. Integrity verification also refuses
+a parsed object whose semantic digest differs from its supplied raw source.
 
 Key rotation, external timestamp authorities, byte-exact signatures, and
 authentication of Lite or other representations remain separate work.

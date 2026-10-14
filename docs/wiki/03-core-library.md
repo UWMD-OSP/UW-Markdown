@@ -605,3 +605,30 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 ## RFC 0065 reserve draw bindings
 
 `reserve-draw-bindings.ts` exports browser-safe `verifyReserveDrawBindings(parsed, plan?)`. Its optional external `ReserveDrawBindingPlan` uses exact variants, reserve account/period/movement identities, lease-up TI/LC components or gross cash-row addresses, declared selected-draw completeness and explicit funded shares. `RDB-01`–09 findings and the two companion schemas mirror Protocol §VIII.12. CLI: `uwmd verify-reserve-draws <file> [plan.json] --json`. Synthetic default/portable fixtures, shared-quantizer cent controls and regressions preserve gross rows and the unchanged RFC 0045 reserve refusal. No document field, transfer, owner cash or financing assembly is added.
+
+## Document snapshot signatures (RFC 0084)
+
+`packages/uwmd-verify/src/document-signatures.ts` provides
+`resolveDocumentSigningSubject`, `documentSigningPayload` and
+`verifyDocumentSignature` with crypto injected through
+`DocumentSignatureVerifier`. Source scanning observes blocks before parser
+routing via `ParseOptions.onBlock`; guards reject duplicate active selection,
+lost source blocks, repeated/historical extensions, conflicting identity or
+lifecycle declarations, duplicate JSON/YAML members and ambiguous fence values.
+The subject reuses the existing envelope semantic digest with history included.
+
+`verifyChain` exposes optional `document_signature` when requested. Set
+`requireDocumentSignature` to make any state other than `verified` fail overall
+integrity. The parsed input must also match its authenticated raw source; a
+filtered or mutated parsed object cannot borrow authentication from untouched
+`raw`. Block signature counts and default block-only results retain their scope.
+`INT-09`–`INT-15` identify document shape, crypto, subject, absence, unavailable
+backend/key, unsupported version and source-accounting failures respectively.
+
+Signing's `documents.ts` supplies `signDocument`,
+`createDocumentSignatureVerifier` and reference CLI key import. CLI
+`sign-document` atomically creates a detached artifact; `verify
+--document-signature=<artifact> --keystore=<store>` requests required snapshot
+authentication, with nonzero exit for missing/unreadable/unchecked artifacts.
+`conformance/document-signatures/` and its generated portable cases test this
+optional Integrity-profile capability independently of financial computation.

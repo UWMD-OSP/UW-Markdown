@@ -1,0 +1,5 @@
+{
+  "state": "unsigned",
+  "reason": "missing_signature",
+  "backend": "trusted"
+}

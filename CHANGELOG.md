@@ -8,6 +8,18 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+
+- RFC 0084: optional detached document snapshot signatures. `@uwmd/verify`
+  freshly accounts for every source block and verifies the semantic envelope
+  commitment; `@uwmd/signing` signs without a calculation pack. The CLI adds
+  `sign-document` and required `--document-signature` verification. Explicit
+  unsigned/unverifiable/failed/verified states stay separate from block
+  attribution. Relabel, lifecycle flip and splice controls address #321.
+- Accepted, unreleased Protocol **4.1.0** under unchanged Format **3.0**;
+  package publication/version preparation remains separate. Two receipt
+  issuance baselines change only their emitted Protocol label.
+
 ### Fixed
 
 - `@uwmd/signing` rejects padded base64url, non-zero unused bits, impossible

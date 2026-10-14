@@ -62,6 +62,7 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     // defines the contract, signing supplies the algorithms, and an adopter
     // asking "does this implementation verify signatures" means the pair.
     'signing',
+    'document-signature-verification',
     'module-signature-verification',
     // Same pairing as 'signing': @uwmd/signing supplies the token verifier
     // (RFC 0011 §XIV) behind core's injected interface.

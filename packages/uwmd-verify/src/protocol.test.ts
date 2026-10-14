@@ -73,7 +73,7 @@ describe('protocol — lookupIncompleteDataPolicy', () => {
 describe('protocol — version', () => {
   it('supports exactly one format and one protocol (RFC 0081 D1)', () => {
     expect(SUPPORTED_FORMAT_VERSIONS).toEqual(['3.0']);
-    expect(SUPPORTED_PROTOCOL_VERSIONS).toEqual(['4.0.0']);
+    expect(SUPPORTED_PROTOCOL_VERSIONS).toEqual(['4.1.0']);
     const blockSchema = JSON.parse(readFileSync(resolve(__dirname, '../../../spec/schemas/uwmd-block.schema.json'), 'utf8'));
     expect(blockSchema.$defs.ResolutionTag.enum).toEqual([...RESOLUTION_METHODS]);
     expect(validatorCodeFamily('UNSUPPORTED_FORMAT_VERSION')?.capabilities).toEqual(['parse']);
@@ -82,7 +82,7 @@ describe('protocol — version', () => {
     expect(spec).toContain(`— protocol **${SUPPORTED_PROTOCOL_VERSIONS[0]}**`);
   });
   it('publishes the current protocol version', () => {
-    expect(PROTOCOL_VERSION).toBe('4.0.0');
+    expect(PROTOCOL_VERSION).toBe('4.1.0');
   });
 
   it('labels the release with the one supported format and protocol (RFC 0081 D1)', () => {

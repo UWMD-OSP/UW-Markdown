@@ -112,7 +112,7 @@ and how it gets accepted.
 | [0082](./0082-borrower-underwriting-profile.md) | A borrower-underwriting document profile for a loan to an operating company | draft | format, protocol, core, conformance, tooling |
 | [0081](./0081-one-format-one-protocol.md) | One format, one protocol: remove backward compatibility (pre-release cleanup) | implemented | format, protocol, core, conformance, tooling |
 | [0083](./0083-verify-package-split.md) | Split `@uwmd/verify`, the reference implementation of the standard, out of `@uwmd/core` | implemented | core, conformance, tooling |
-| [0084](./0084-document-signature-binding.md) | Bind a document snapshot without discarding signed block attribution | draft | protocol, core, conformance, tooling |
+| [0084](./0084-document-signature-binding.md) | Bind a document snapshot without discarding signed block attribution | accepted | protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

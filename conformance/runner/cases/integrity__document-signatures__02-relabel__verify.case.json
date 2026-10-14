@@ -1,0 +1,22 @@
+{
+  "id": "integrity__document-signatures__02-relabel__verify",
+  "target": "integrity",
+  "requires_capabilities": [
+    "integrity",
+    "document-signature-verification"
+  ],
+  "command": "verify",
+  "args": [
+    "deal.uwx.md",
+    "--integrity",
+    "--document-signature=signature.json",
+    "--keystore=../keys/keystore.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/document-signatures/02-relabel",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/document-signatures/02-relabel/cli.expected.json",
+    "exit_code": 1
+  }
+}

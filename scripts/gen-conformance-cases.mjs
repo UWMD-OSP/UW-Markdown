@@ -32,6 +32,8 @@ const rel = (abs) => abs.slice(ROOT.length + 1).replaceAll('\\', '/');
  */
 function capabilitiesFor(command, args) {
   switch (command) {
+    case 'verify':
+      return ['integrity', 'document-signature-verification'];
     case 'parse':
       return ['parse'];
     case 'validate':
@@ -255,6 +257,19 @@ for (const scenario of dirs(join(CONFORMANCE, 'reserve-draw-bindings'))) {
 // added without regenerating them would silently drop out of the v2 driver's
 // coverage while every suite still reported green — the exact kind of failure
 // that is invisible by construction, so CI has to go looking for it.
+
+// RFC 0084: document authentication is an optional Integrity capability.
+const DOCUMENT_SIGNATURES = join(CONFORMANCE, 'document-signatures');
+for (const id of dirs(DOCUMENT_SIGNATURES).filter(name => /^\d/.test(name))) {
+  const fixture = join(DOCUMENT_SIGNATURES, id);
+  const expected = JSON.parse(readFileText(join(fixture, 'expected.json')));
+  if (expected.backend === 'none') continue; // Unchecked API seam has no required-authentication CLI equivalent.
+  add(`document-signatures/${id}/verify`, 'verify', [
+    'deal.uwx.md', '--integrity', '--document-signature=signature.json',
+    `--keystore=../keys/${expected.backend === 'empty' ? 'empty.json' : 'keystore.json'}`, '--json',
+  ], fixture, { kind: 'json-subset', file: rel(join(fixture, 'cli.expected.json')),
+    exit_code: expected.state === 'verified' ? 0 : 1 });
+}
 
 const ids = cases.map(c => c.id);
 if (new Set(ids).size !== ids.length) throw new Error('Duplicate portable case');

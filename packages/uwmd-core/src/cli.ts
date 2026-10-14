@@ -15,6 +15,8 @@ import {
   verifyProvenance,
   canonicalBlockSigningInput,
   type BlockSignatureVerifier,
+  type DocumentSignatureVerifier,
+  type UWDocumentSignature,
   type IntegrityResult,
   type VerifyChainOptions,
   type ConformanceTier,
@@ -315,10 +317,14 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
 async function signingOptions(
   flags: Record<string, string | boolean>,
 ): Promise<VerifyChainOptions> {
-  if (!flags['signing']) return {};
+  if (!flags['signing'] && !flags['document-signature']) return {};
+  if (flags['document-signature'] && (typeof flags['document-signature'] !== 'string' || flags['resolved'])) {
+    console.error('--document-signature requires an artifact path and authenticates the supplied source; --resolved cannot be combined with it.');
+    process.exit(1);
+  }
   const keystore = flags['keystore'];
   if (typeof keystore !== 'string' || keystore.length === 0) {
-    console.error('--signing requires --keystore=<path> to a JSON key store.');
+    console.error('Signature verification requires --keystore=<path> to a JSON key store.');
     process.exit(1);
   }
 
@@ -330,6 +336,7 @@ async function signingOptions(
   interface SigningModule {
     loadKeyStoreFile(path: string): Promise<unknown>;
     createBlockSignatureVerifier(store: never): BlockSignatureVerifier;
+    createDocumentSignatureVerifier(store: never): DocumentSignatureVerifier;
   }
   let signing: SigningModule;
   try {
@@ -343,7 +350,14 @@ async function signingOptions(
 
   try {
     const store = await signing.loadKeyStoreFile(resolve(keystore));
-    return { signatureVerifier: signing.createBlockSignatureVerifier(store as never) };
+    return {
+      ...(flags['signing'] ? { signatureVerifier: signing.createBlockSignatureVerifier(store as never) } : {}),
+      ...(typeof flags['document-signature'] === 'string' ? {
+        documentSignature: JSON.parse(readFile(flags['document-signature'])),
+        documentSignatureVerifier: signing.createDocumentSignatureVerifier(store as never),
+        requireDocumentSignature: true,
+      } : {}),
+    };
   } catch (error) {
     console.error((error as Error).message);
     process.exit(1);
@@ -377,7 +391,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   }
   let chain: IntegrityResult | undefined;
   let prov: IntegrityResult | undefined;
-  if (runAll || onlyIntegrity || flags['signing']) {
+  if (runAll || onlyIntegrity || flags['signing'] || flags['document-signature']) {
     chain = await verifyChain(parsed, await signingOptions(flags));
     sections['integrity'] = chain;
     if (!chain.ok) hadError = true;
@@ -406,6 +420,9 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     for (const issue of funding.issues) console.log(issue.message);
     if (funding.state === 'not_checked' && funding.reason === 'not_invoked') console.log('Validation not requested; no complete binding verification claim.');
     if (chain) {
+      const document = chain.document_signature;
+      console.log(`Document snapshot authentication: ${document ? document.state : 'not checked'}`);
+      if (document) for (const issue of document.issues) console.log(`  ${issue.code}: ${issue.message}`);
       console.log(`\nIntegrity: ${chain.ok ? 'ok' : 'FAIL'} — chains_with_hashes=${chain.chains_with_hashes}, chains_verified=${chain.chains_verified}`);
       if (chain.signatures_present > 0) {
         const checked = flags['signing']
@@ -1324,6 +1341,29 @@ switch (command) {
     if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--signing --keystore=<path>] [--resolved] [--json]'); process.exit(1); }
     await cmdVerify(positional[0], flags);
     break;
+  case 'sign-document': {
+    if (!positional[0] || typeof flags['key'] !== 'string' || typeof flags['out'] !== 'string') {
+      console.error('Usage: uwmd sign-document <source> --key=<signer.json> --out=<artifact.json>'); process.exit(1);
+    }
+    if (resolve(positional[0]) === resolve(flags['out']) || resolve(flags['key']) === resolve(flags['out']) || existsSync(resolve(flags['out']))) {
+      console.error('Document signature output must be a new file distinct from the source and signing key.'); process.exit(1);
+    }
+    interface DocumentSigningModule {
+      loadDocumentSigningKey(document: unknown): Promise<unknown>;
+      signDocument(source: string, key: never, options?: { signedAt?: string }): Promise<UWDocumentSignature>;
+    }
+    try {
+      const signing = (await import('@uwmd/signing' as string)) as DocumentSigningModule;
+      const key = await signing.loadDocumentSigningKey(JSON.parse(readFile(flags['key'])));
+      const signature = await signing.signDocument(readFile(positional[0]), key as never,
+        typeof flags['signed-at'] === 'string' ? { signedAt: flags['signed-at'] } : {});
+      writeFileSync(resolve(flags['out']), `${JSON.stringify(signature, null, 2)}\n`, { encoding: 'utf8', flag: 'wx' });
+      console.log(`Document snapshot signature written to ${flags['out']}.`);
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error)); process.exit(1);
+    }
+    break;
+  }
 
   case 'compact':
     if (!positional[0]) { console.error('Usage: uwmd compact <file> [--output <file>] [--dry-run]'); process.exit(1); }
@@ -1925,8 +1965,12 @@ Commands:
   parse    <file>              Parse file and output JSON
   validate <file>              Run all validation checks
   verify   <file>              Validate + verify integrity (hashes) + provenance (actor/policy)
+  sign-document <file> --key=<signer.json> --out=<signature.json>
+                               Authenticate a semantic snapshot without computing financials
                                --signing --keystore=<path> also checks block signatures (RFC 0010,
                                via the optional @uwmd/signing package)
+                               --document-signature=<artifact> --keystore=<path> requires
+                               authenticated semantic snapshot (RFC 0084)
   render   <file>              Render to output format (see --format)
   run      <file>              Invoke a Bancroft agent (see --agent)
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)

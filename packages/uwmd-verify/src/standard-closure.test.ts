@@ -46,7 +46,7 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   'metric-dictionary.ts', 'metric-verification.ts',
   // Receipts, integrity, modules
   'receipts.ts', 'integrity.ts', 'integrity-canonical.ts', 'module-signing.ts', 'modules.ts',
-  'module-runtime.ts',
+  'module-runtime.ts', 'document-signatures.ts',
   // Builtin pack manifests (data; RFC 0083 decisions)
   'builtin-packs/index.ts', 'builtin-packs/data-center.ts', 'builtin-packs/hospitality.ts',
   'builtin-packs/industrial.ts', 'builtin-packs/land.ts', 'builtin-packs/manufactured-housing.ts',

@@ -1,0 +1,11 @@
+{
+  "kid": "uwmd-conformance-ed25519",
+  "alg": "ed25519",
+  "private_key_jwk": {
+    "alg": "Ed25519",
+    "crv": "Ed25519",
+    "d": "IsOL5VSj8kk8LZifvknLZ80i-0vYt8Xex6DWGq9EWjw",
+    "x": "SdnXSSuxwLkYQckzwY3JliQHXIIf1Wl46LHqFfWRNzI",
+    "kty": "OKP"
+  }
+}

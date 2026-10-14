@@ -853,3 +853,10 @@ export { periodPayload, periodReferenceContract, periodSection, resolvePeriodRef
 // `createUWMCPApplyEditResult`.
 export { applyUWMDSourceEditWith, createUWMCPApplyEditResultWith } from './bindings.js';
 export type { UWSourceEditAdapter } from './bindings.js';
+export {
+  documentSigningPayload, resolveDocumentSigningSubject, verifyDocumentSignature, DocumentSigningError,
+} from './document-signatures.js';
+export type {
+  DocumentSigningSubject, UWDocumentSignature, DocumentSignatureVerifier,
+  DocumentSignatureResult, DocumentSignatureCode, DocumentSignatureIssue,
+} from './document-signatures.js';

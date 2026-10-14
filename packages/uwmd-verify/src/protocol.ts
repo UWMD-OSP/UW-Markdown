@@ -34,7 +34,7 @@ import { blockPayload, deepGet, getSection, getSectionVariant } from './parser.j
 // ─── Versioning ───────────────────────────────────────────────────────────────
 
 /** Semver of this protocol. Bumped independently of the @uwmd/verify and @uwmd/core npm versions. */
-export const PROTOCOL_VERSION = '4.0.0' as const;
+export const PROTOCOL_VERSION = '4.1.0' as const;
 
 /**
  * The format release label of this implementation: the one member of
@@ -65,7 +65,7 @@ export { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 
 /** The one protocol contract (RFC 0081 D1). Module ranges are checked against it. */
-export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.0.0'] as const);
+export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.1.0'] as const);
 
 // ─── Capability tiers ─────────────────────────────────────────────────────────
 
@@ -137,6 +137,8 @@ export type ViewerCapability =
   | 'module-load'
   /** Verifies `_meta.integrity.signature` on blocks (§V.11.5, RFC 0010). */
   | 'signing'
+  /** Authenticates detached document snapshots (§V.13, RFC 0084). */
+  | 'document-signature-verification'
   /** Enforces capability tokens on writes (§XIV, RFC 0011). */
   | 'capability-verify'
   /** Verifies `ModuleManifest.signature` and honors a host policy (§X.1.4, RFC 0002). */
@@ -2207,6 +2209,56 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A block signature uses an algorithm the verifying deployment has deprecated.',
     remediation: 'Re-sign the block with a current algorithm before the deprecated one is withdrawn.',
     spec_ref: 'UW_PROTOCOL.md §V.11',
+  },
+
+  {
+    code: 'INT-09', severity: 'error',
+    title: "Malformed document signature",
+    description: "The detached signature artifact is malformed.",
+    remediation: "Supply a well-formed canonical document signature.",
+    spec_ref: 'UW_PROTOCOL.md §V.13',
+  },
+  {
+    code: 'INT-10', severity: 'error',
+    title: "Document signature does not verify",
+    description: "The document signature or its algorithm does not match the trusted key.",
+    remediation: "Restore the artifact or sign the intended snapshot with a trusted key.",
+    spec_ref: 'UW_PROTOCOL.md §V.13',
+  },
+  {
+    code: 'INT-11', severity: 'error',
+    title: "Document snapshot changed",
+    description: "The document signature subject differs from the supplied source.",
+    remediation: "Restore the original snapshot or issue a new document signature.",
+    spec_ref: 'UW_PROTOCOL.md §V.13',
+  },
+  {
+    code: 'INT-12', severity: 'error',
+    title: "Unsigned document snapshot",
+    description: "Required document authentication has no signature artifact.",
+    remediation: "Supply the detached signature for this snapshot.",
+    spec_ref: 'UW_PROTOCOL.md §V.13',
+  },
+  {
+    code: 'INT-13', severity: 'error',
+    title: "Document signature unchecked",
+    description: "The key or verification backend is unavailable.",
+    remediation: "Load the trusted public key and verification backend.",
+    spec_ref: 'UW_PROTOCOL.md §V.13',
+  },
+  {
+    code: 'INT-14', severity: 'error',
+    title: "Unsupported document signature version",
+    description: "The artifact or subject version is unsupported.",
+    remediation: "Use an implementation supporting the named artifact and canonicalization.",
+    spec_ref: 'UW_PROTOCOL.md §V.13',
+  },
+  {
+    code: 'INT-15', severity: 'error',
+    title: "Unauthenticatable source",
+    description: "The source is malformed or cannot be faithfully projected.",
+    remediation: "Resolve ambiguous source blocks and inconsistent metadata, then sign again.",
+    spec_ref: 'UW_PROTOCOL.md §V.13',
   },
 
   // ─── Asset-class identifiers (RFC 0003) ────────────────────────────────────

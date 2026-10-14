@@ -56,3 +56,4 @@ export { signModule, stampModuleSignature, createModuleSignatureVerifier } from 
 export type { SignModuleOptions } from './modules.js';
 
 export { SIGNING_PACKAGE_NAME, SIGNING_VERSION } from './version.js';
+export { signDocument, createDocumentSignatureVerifier, loadDocumentSigningKey } from './documents.js';

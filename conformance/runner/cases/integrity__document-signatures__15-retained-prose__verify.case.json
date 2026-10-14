@@ -1,0 +1,22 @@
+{
+  "id": "integrity__document-signatures__15-retained-prose__verify",
+  "target": "integrity",
+  "requires_capabilities": [
+    "integrity",
+    "document-signature-verification"
+  ],
+  "command": "verify",
+  "args": [
+    "deal.uwx.md",
+    "--integrity",
+    "--document-signature=signature.json",
+    "--keystore=../keys/keystore.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/document-signatures/15-retained-prose",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/document-signatures/15-retained-prose/cli.expected.json",
+    "exit_code": 1
+  }
+}

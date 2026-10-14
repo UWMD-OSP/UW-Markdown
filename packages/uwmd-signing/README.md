@@ -197,3 +197,47 @@ Without a verifier, a signed receipt verifies as `unverifiable` with `RCP-08`.
   adding it later stays additive.
 
 MIT. Part of the [UW Markdown](https://github.com/UWMD-OSP/UW-Markdown) monorepo.
+
+## Authenticating a document snapshot
+
+Block signatures identify the authors of individual payloads. Authenticate the
+assembled structured document with RFC 0084's detached document signature:
+
+```ts
+import { signDocument, createDocumentSignatureVerifier } from '@uwmd/signing';
+import { verifyDocumentSignature } from '@uwmd/verify';
+
+const signature = await signDocument(source, signingKey);
+const result = await verifyDocumentSignature(source, signature, {
+  signatureVerifier: createDocumentSignatureVerifier(trustedKeyStore),
+});
+if (result.state !== 'verified') throw new Error('Required snapshot authentication refused');
+```
+
+The verifier freshly parses source, accounts for every block (including history)
+and compares the semantic envelope digest before verifying cryptography. It
+refuses ambiguous active keys, repeated or historical extension blocks,
+inconsistent metadata, duplicate JSON/YAML members and lossy projections.
+It needs no calculation pack or financial inputs. Its four states are
+`verified`, `failed`, `unverifiable` and `unsigned`; required authentication
+accepts only `verified`. Block attribution counts remain separate.
+
+```bash
+uwmd sign-document deal.uwx.md --key=signer.json --out=deal.signature.json
+uwmd verify deal.uwx.md --integrity --document-signature=deal.signature.json --keystore=trusted-keys.json
+```
+
+The CLI signer file is a local reference format with `kid`, `alg` and exactly
+one of `private_key_jwk` or `private_key_pkcs8`. `loadDocumentSigningKey` imports
+that document; production hosts may supply their own `SigningKey` directly.
+The output must be a new file, distinct from source and key. The signature
+artifact contains no private key. Supply `--signed-at=<ISO instant>` to pin
+signing time for reproducible vectors.
+
+This signs semantic collections, frontmatter, inline metadata, existing block
+signatures and retained section prose. Cosmetic serialization preserving that
+projection may retain the signature. Trailing Markdown outside the envelope is
+excluded; this is not a signature over every original byte. Editing lifecycle,
+variant labels, membership or history requires a new document signature, while
+prior block authorship remains independently verifiable. The CLI refuses
+`--resolved` together with document authentication: it checks supplied source.

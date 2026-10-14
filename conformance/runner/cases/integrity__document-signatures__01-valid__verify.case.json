@@ -1,0 +1,22 @@
+{
+  "id": "integrity__document-signatures__01-valid__verify",
+  "target": "integrity",
+  "requires_capabilities": [
+    "integrity",
+    "document-signature-verification"
+  ],
+  "command": "verify",
+  "args": [
+    "deal.uwx.md",
+    "--integrity",
+    "--document-signature=signature.json",
+    "--keystore=../keys/keystore.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/document-signatures/01-valid",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/document-signatures/01-valid/cli.expected.json",
+    "exit_code": 0
+  }
+}

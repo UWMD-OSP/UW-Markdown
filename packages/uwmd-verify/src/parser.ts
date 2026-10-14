@@ -378,6 +378,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       lineEnd,
     };
 
+    options.onBlock?.(block);
     scanned.push(block);
   }
 
