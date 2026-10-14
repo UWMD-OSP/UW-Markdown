@@ -66,6 +66,7 @@ const COPIES = [
 
   // Conformance
   { from: 'conformance/README.md',                  to: 'conformance/index.md',  title: 'Conformance Corpus' },
+  { from: 'conformance/document-signatures/README.md', to: 'conformance/document-signatures.md', title: 'Document snapshot signatures' },
   { from: 'conformance/documents/README.md',    to: 'conformance/documents.md', title: 'Reader and validation fixtures' },
   { from: 'conformance/starter/editor/README.md',    to: 'conformance/starter-editor.md', title: 'Editor starter checks' },
   { from: 'conformance/calc/README.md', to: 'conformance/calc.md', title: 'Calculation fixtures' },
@@ -283,6 +284,8 @@ const NORMALIZED_LINK_MAP = new Map([
   // Conformance
   ['conformance/', '/conformance/'],
   ['conformance/README.md', '/conformance/'],
+  ['conformance/document-signatures/README.md', '/conformance/document-signatures'],
+  ['document-signatures/README.md', '/conformance/document-signatures'],
   ['conformance/documents/README.md', '/conformance/documents'],
   ['conformance/starter/editor/README.md', '/conformance/starter-editor'],
   ['conformance/calc/README.md', '/conformance/calc'],

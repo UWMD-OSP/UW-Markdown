@@ -265,8 +265,8 @@ for (const id of dirs(DOCUMENT_SIGNATURES).filter(name => /^\d/.test(name))) {
   const expected = JSON.parse(readFileText(join(fixture, 'expected.json')));
   if (expected.backend === 'none') continue; // Unchecked API seam has no required-authentication CLI equivalent.
   add(`document-signatures/${id}/verify`, 'verify', [
-    'deal.uwx.md', '--integrity', '--document-signature=signature.json',
-    `--keystore=../keys/${expected.backend === 'empty' ? 'empty.json' : 'keystore.json'}`, '--json',
+    'deal.uwx.md', '--integrity', '--document-signature', 'signature.json',
+    '--keystore', `../keys/${expected.backend === 'empty' ? 'empty.json' : 'keystore.json'}`, '--json',
   ], fixture, { kind: 'json-subset', file: rel(join(fixture, 'cli.expected.json')),
     exit_code: expected.state === 'verified' ? 0 : 1 });
 }

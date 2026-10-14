@@ -9,8 +9,10 @@
   "args": [
     "deal.uwx.md",
     "--integrity",
-    "--document-signature=signature.json",
-    "--keystore=../keys/keystore.json",
+    "--document-signature",
+    "signature.json",
+    "--keystore",
+    "../keys/keystore.json",
     "--json"
   ],
   "fixture_dir": "conformance/document-signatures/13-duplicate-active",
