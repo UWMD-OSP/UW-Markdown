@@ -416,6 +416,15 @@ and a web login, `npm login --auth-type=web`):
    npm deprecate @uwmd/verify@0.0.0-bootstrap.0 "Placeholder that created the package name for trusted publishing; it contains no implementation. Install 0.1.0 or later."
    ```
 
+   npm may route a brand-new name's first publish through staged publishing
+   ("Your package is being processed"). It then creates its own
+   `0.0.0-stage` version at once and lands the placeholder minutes later, and
+   until it lands the name reads as 404 and `npm deprecate` fails with E404.
+   The trust binding works during that window. `@uwmd/verify` went this way on
+   2026-10-14: the placeholder appears after 0.1.0 in the registry's `time`
+   field. Deprecate `0.0.0-stage` too, with the same kind of message, as
+   lake's was.
+
 4. **Record the evidence before authorizing the tag:** the placeholder's
    version and dist-tags (`npm view @uwmd/verify --json`), its deprecation
    message, and the `npm trust list` output, on the release PR. The
