@@ -5,6 +5,7 @@ import { verifyDocumentSignature, documentSigningPayload, type UWSignatureAlgori
 import { generateSigningKeyPair, InMemoryKeyStore } from './keys.js';
 import { signDocument, createDocumentSignatureVerifier, loadDocumentSigningKey } from './documents.js';
 import { subtle } from './algorithms.js';
+import { toBase64Url } from './base64.js';
 
 const SOURCE = readFileSync(resolve(__dirname, '../../../conformance/signing/blocks/01-signed-valid/deal.uwx.md'), 'utf8');
 describe.each(['ed25519', 'es256', 'es384'] as UWSignatureAlgorithm[])('document signatures: %s', alg => {
@@ -37,6 +38,7 @@ describe('document signing production inputs', () => {
     expect(documentSigningPayload(first)).toContain('"kind":"uwmd-document-signature"');
     expect(documentSigningPayload(first)).not.toContain(first.sig);
     expect((await signDocument(SOURCE, signing)).signed_at).toMatch(/^\d{4}-/);
+    await expect(signDocument(SOURCE, signing, { signedAt: '2026-02-30T00:00:00Z' })).rejects.toMatchObject({ code: 'SIG_UNSIGNABLE' });
     await expect(signDocument(SOURCE, signing, { signedAt: 'not an instant' })).rejects.toMatchObject({ code: 'SIG_UNSIGNABLE' });
     await expect(signDocument(SOURCE, { ...signing, kid: '' })).rejects.toMatchObject({ code: 'SIG_UNSIGNABLE' });
   });
@@ -47,6 +49,11 @@ describe('document signing production inputs', () => {
     const signature = await signDocument(SOURCE, imported);
     expect(await verifyDocumentSignature(SOURCE, signature, { signatureVerifier: createDocumentSignatureVerifier(new InMemoryKeyStore([verifying])) })).toMatchObject({ state: 'verified' });
     expect(JSON.stringify(signature)).not.toContain(jwk.d);
+    const pkcs8 = toBase64Url(new Uint8Array(await subtle().exportKey('pkcs8', signing.privateKey)));
+    const fromPkcs8 = await loadDocumentSigningKey({ kid: signing.kid, alg: signing.alg, private_key_pkcs8: pkcs8 });
+    expect(await verifyDocumentSignature(SOURCE, await signDocument(SOURCE, fromPkcs8), {
+      signatureVerifier: createDocumentSignatureVerifier(new InMemoryKeyStore([verifying])),
+    })).toMatchObject({ state: 'verified' });
   });
   it.each([null, [], {}, { kid: 'k', alg: 'unknown', private_key_pkcs8: 'bad' },
     { kid: 'k', alg: 'ed25519', extra: true, private_key_pkcs8: 'bad' },

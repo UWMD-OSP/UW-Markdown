@@ -1348,7 +1348,11 @@ sidecar name is `<document>.signature.json`; transport and filenames are not
 signed. It MUST NOT be embedded in the source or envelope. Required members are
 `kind: "uwmd-document-signature"`, `signature_version: "1"`, `subject`, `alg`,
 `kid`, `signed_at` and `sig`. Both top-level and subject objects are closed.
-`alg`, `kid`, `signed_at` and `sig` follow §V.11.1; signing time is self-asserted.
+`alg`, `kid` and `sig` follow §V.11.1; signing time is self-asserted.
+`signed_at` MUST contain a real calendar date, uppercase `T`, hours 00–23,
+minutes/seconds 00–59, an optional decimal fraction and uppercase `Z` or
+an explicit numeric offset. The schema pins this spelling; leap-second
+spellings and dates normalized by a permissive date parser MUST refuse.
 
 The subject has exactly these members: `representation: "uwx-markdown"`,
 `representation_version: "1.0"`, `canonicalization: "uw-envelope-semantic"`,
