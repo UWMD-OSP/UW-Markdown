@@ -49,6 +49,15 @@ describe('moduleSigningPayload', () => {
 });
 
 describe('verifyModuleSignature', () => {
+  it('refuses a padded signature through the module verifier', async () => {
+    const { manifest, store } = await signedFixture();
+    const signature = manifest.signature!;
+    const verdict = await createModuleSignatureVerifier(store).verify(moduleSigningPayload(manifest), {
+      ...signature, sig: `${signature.sig}=`,
+    });
+    expect(verdict).toEqual({ ok: false, reason: 'malformed' });
+  });
+
   it('verifies a signed manifest against the host key store', async () => {
     const { manifest, store } = await signedFixture();
     await expect(

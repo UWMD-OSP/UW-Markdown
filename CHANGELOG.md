@@ -8,6 +8,13 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- `@uwmd/signing` rejects padded base64url, non-zero unused bits, impossible
+  encoded lengths and wrong-width signatures as malformed (#322). Block,
+  receipt and module verifiers share this check; key imports still accept
+  padded base64. Three signing conformance cases pin the refusal as `INT-07`.
+
 ## [4.1.0] - 2026-10-13
 
 ### Released

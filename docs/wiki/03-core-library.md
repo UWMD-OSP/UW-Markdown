@@ -293,6 +293,12 @@ configuration problem and "this is forged" is a document problem, and they call
 for opposite responses. Note that a drifted hash escalates from `INT-04
 warning` to `INT-07 error` once a block is signed.
 
+`@uwmd/signing` accepts signature bytes only as canonical unpadded base64url:
+padding, non-zero unused bits, impossible encoded lengths and wrong decoded
+widths are `malformed` (`INT-07` for blocks). Ed25519 and ES256 use 64 bytes;
+ES384 uses 96. This shared check also covers receipts and module manifests.
+Key imports use a separate decoder that accepts padded base64.
+
 ## asset-class.ts
 
 Module-declared asset classes (RFC 0003). The twelve builtins (RFC 0080 added

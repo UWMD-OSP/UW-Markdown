@@ -6,6 +6,8 @@
 // an unreadable key store — call for four different fixes.
 
 export type SigningErrorCode =
+  /** A signature byte encoding is not canonical unpadded base64url. */
+  | 'SIG_MALFORMED_ENCODING'
   /** No Web Crypto provider (`crypto.subtle`) in this runtime. */
   | 'SIG_NO_CRYPTO'
   /** The runtime rejected the algorithm — e.g. Ed25519 on a pre-18.4 Node. */

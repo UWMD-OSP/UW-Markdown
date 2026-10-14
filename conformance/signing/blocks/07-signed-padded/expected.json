@@ -1,0 +1,10 @@
+{
+  "description": "Non-canonical or wrong-length signature encoding must refuse, despite unchanged signed content.",
+  "keystore": "../keys/keystore.json",
+  "ok": false,
+  "signatures_present": 1,
+  "signatures_verified": 0,
+  "expected_codes": [
+    "INT-07"
+  ]
+}
