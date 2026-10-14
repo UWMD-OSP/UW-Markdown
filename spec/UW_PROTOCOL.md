@@ -1,8 +1,8 @@
 # UW Protocol — verification
 
-**Status:** Stable — protocol **4.0.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
+**Status:** Accepted, unreleased — protocol **4.1.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
 
-> **Protocol 4.0.0.** Accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md) and paired with core/CLI 4.0.0. This normative text describes the single final contract, with no alternate versions or spellings.
+> **Protocol 4.1.0.** Adds [RFC 0084](../docs/rfcs/0084-document-signature-binding.md) document snapshot authentication to the single Format 3.0 contract. Published core/CLI 4.1.0 carry Protocol 4.0.0; package release preparation is separate.
 
 This document specifies how any party **verifies** a UW Markdown
 document: that it is well formed, that its stated figures agree with
@@ -66,7 +66,7 @@ Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `3.0`, the only admitted version)
   — the bytes-on-disk schema. Bumped on any breaking format change.
-- **Protocol version** (this document, currently `4.0.0`) — the
+- **Protocol version** (this document, currently `4.1.0`) — the
   verification contract. Bumped on any normative change to required
   behavior. From 3.0.0 it moves only when what a document *means* or
   how it is *verified* changes. Starter-product changes version their
@@ -207,7 +207,7 @@ The reference functions are `negotiateRepresentation` and
 
 ## II. Capability Tiers
 
-Protocol 4.0.0 has two conformance tiers, Reader and Verifier, and a
+Protocol 4.1.0 has two conformance tiers, Reader and Verifier, and a
 Verifier satisfies every Reader requirement. Optional verification
 profiles (§II.3) add to either tier. Only `reader` and `verifier` tier values are admitted (§II.5).
 
@@ -980,6 +980,10 @@ signatures, as RFC 0010 §4 intended (RFC 0081 §3). Chain order is still
 verified by comparing each `parent_hash` with the predecessor's
 `content_hash` (§V.10).
 
+A verified block signature MUST NOT be presented as authentication of the
+document frontmatter, variant selection, lifecycle state or collection
+membership. Document snapshot authentication requires §V.13.
+
 A signature is over one block. A document with several signed blocks
 carries several independent signatures, which is the property
 multi-party deal flow needs: "the sponsor signed the rent roll" and
@@ -1329,6 +1333,143 @@ status; it must qualify its result and cannot advertise complete verification.
 
 
 
+### V.13 Document snapshot authentication (RFC 0084)
+
+This optional Integrity-profile capability is `document-signature-verification`.
+It authenticates an assembled semantic snapshot, independently of block
+attribution (§V.11) and financial verification (Part VIII). A deployment
+chooses its trusted key store out of band. It MUST NOT report a document as
+authenticated merely because some or all block signatures verified.
+
+#### V.13.1 Detached artifact and signing input
+
+The artifact is defined by `uw-document-signature.schema.json`. Its conventional
+sidecar name is `<document>.signature.json`; transport and filenames are not
+signed. It MUST NOT be embedded in the source or envelope. Required members are
+`kind: "uwmd-document-signature"`, `signature_version: "1"`, `subject`, `alg`,
+`kid`, `signed_at` and `sig`. Both top-level and subject objects are closed.
+`alg`, `kid` and `sig` follow §V.11.1; signing time is self-asserted.
+`signed_at` MUST contain a real calendar date, uppercase `T`, hours 00–23,
+minutes/seconds 00–59, an optional decimal fraction and uppercase `Z` or
+an explicit numeric offset. The schema pins this spelling; leap-second
+spellings and dates normalized by a permissive date parser MUST refuse.
+
+The subject has exactly these members: `representation: "uwx-markdown"`,
+`representation_version: "1.0"`, `canonicalization: "uw-envelope-semantic"`,
+`canonicalization_version: "1.0"`, and `digest: "sha256:<64 lowercase hex>"`.
+Only structured Format 3.0 Markdown is supported by this first capability.
+
+The exact signing input is RFC 8785 canonical JSON of the artifact with only
+`sig` removed. The kind, version, whole subject, algorithm, key id and time
+MUST remain in the input. This separates the signature domain from blocks,
+receipts and modules and prevents relabeling a key id even when two ids name
+the same public key. Signature bytes MUST be canonical unpadded base64url:
+Ed25519/ES256 are 64 bytes (86 characters, with zero unused low four bits);
+ES384 is 96 bytes (128 characters). ECDSA is raw IEEE P1363 `r || s`.
+
+#### V.13.2 Guarded Format-to-envelope projection
+
+A signer or verifier MUST freshly parse the supplied source. It MUST NOT accept
+a caller-provided digest, stamped `semantic_digest`, filtered parsed object or
+resolved composition in place of that source. Duplicate decoded JSON member
+names, duplicate mapping keys in restricted YAML frontmatter, unclosed fences,
+malformed JSON and conflicting/repeated fence attribute keys MUST refuse.
+Section identity in the fence and `_meta.section` MUST agree. Every block MUST
+have an object `_meta.lifecycle` with boolean `superseded`; a stated fence
+`superseded` MUST be `true` or `false` and match it. A fence revision, if stated,
+MUST be a positive integer. Unsafe section/variant/annotation keys
+`__proto__`, `constructor` and `prototype` MUST refuse.
+These names also refuse as frontmatter mapping keys.
+
+Before routing source blocks, more than one active block for a singleton
+selection key MUST refuse, regardless of revision number. A key is the section
+id for single-instance sections; for a parallel section it is the section id
+and explicit variant (or `default` if absent). Parallel sections are
+`operating_statement`, `stress_tests`, `due_diligence`, `lease_up_schedule`,
+`cash_flow_series`, `distribution_waterfall` and `reserve_accounts`;
+append-only
+`pipeline_log`, `custom_calculations` and `custom_scenarios` retain every block
+in source order and do not use singleton selection. Role-based sections are
+parallel when active blocks state a `_role` and active blocks in that section
+also declare explicit variants (Format §2.8). Repeated `x_*` ids and superseded
+extension blocks MUST refuse: the current extension map cannot represent their
+history faithfully. Unknown ordinary sections are retained, not filtered.
+
+The envelope semantic object has `envelope_version: "1.0"`,
+`format_version: "3.0"`, the parsed `frontmatter`, `sections`, `pipeline_log`,
+`custom_calculations`, `custom_scenarios`, `extensions` and `superseded`.
+Each projected block contains its parsed `annotation`, complete JSON `content`
+(including `_meta`), and `prose` only when that block's immediately preceding,
+trimmed Markdown is nonempty. JSON key order and CRLF versus LF do not change
+this value. Markdown preceding the first section belongs to that section;
+trailing Markdown after the final section is outside the projection.
+
+Current singleton sections map ids to blocks; parallel sections map ids to
+variant-keyed block maps. Explicitly superseded ordinary blocks go into arrays
+under `superseded[section]` in source order. Append-only collections and the
+extension map retain their exact block objects. All collections are present,
+including empty maps and arrays. Every scanned source section block MUST appear
+exactly once in the projection; a lost, overwritten or duplicated block MUST
+refuse. A parsed object used for broader integrity checks MUST have the same
+envelope semantic digest as its authenticated source.
+
+Remove only top-level `generated_at`, `generator` and `semantic_digest` from
+the envelope. Canonicalize the remainder by RFC 8785, encode as UTF-8 and compute
+SHA-256, rendered as `sha256:` plus lowercase hex. These are the existing
+`uw-envelope-semantic` 1.0 bytes (UW Receipt §3.1), with guards that refuse
+inputs whose projection is ambiguous or lossy; the canonicalization is not
+silently revised. No calculation pack, default filling or financial validation
+is part of this projection. A structurally authenticatable record with wrong
+financial figures can still be authenticated.
+
+The commitment is semantic, not byte-exact: independent section reordering
+that preserves these collections and cosmetic serialization may retain it.
+Changing variant labels, current/history state, frontmatter, retained metadata
+or prose, block signatures, or ordered collections changes it. Compaction,
+addition, deletion or insertion from another document requires a new artifact.
+
+#### V.13.3 Verification and required authentication
+
+Verification returns exactly one state with a structured reason:
+
+| State | Trigger | Code |
+|---|---|---|
+| `verified` | Supported artifact, subject recomputed and equal, signature verified using the trusted key. | none |
+| `unsigned` | No artifact supplied (null or absent). | `INT-12` |
+| `failed / malformed` | Artifact shape or signature encoding is malformed. | `INT-09` |
+| `failed / bad_signature` or `algorithm_mismatch` | Crypto check refuses. | `INT-10` |
+| `failed / subject_mismatch` | Recomputed source digest differs. | `INT-11` |
+| `failed / malformed_source` | Source/accounting guard refuses, or parsed integrity input differs from source. | `INT-15` |
+| `unverifiable / no_backend`, `unknown_kid`, or `backend_error` | Signature present but cannot be checked. | `INT-13` |
+| `unverifiable / unsupported_version` | Unsupported artifact, representation or canonicalization version. | `INT-14` |
+
+Shape and encoding are checked first, followed by version support, source
+projection and digest equality, then cryptographic verification. Unsupported
+versions are not proof of tampering. A verifier without a key store MUST NOT
+upgrade unchecked metadata to `verified`. A valid artifact signature over a
+different snapshot MUST fail against the supplied source.
+
+Required document authentication accepts only `verified`. Deleting or
+withholding the sidecar, removing the backend, or supplying an unknown key MUST
+refuse acceptance. `IntegrityResult.document_signature` exposes this state
+separately; `signatures_present` and `signatures_verified` remain block counts.
+Unrequested document authentication does not change existing block results.
+An explicitly requested document check that reports `failed` makes overall
+integrity fail even when the caller does not require a signature for every
+record. Optional `unsigned`/`unverifiable` states retain their distinct scope.
+The reference CLI requests required authentication with
+`--document-signature=<artifact> --keystore=<trusted-public-keys>`; unreadable
+or malformed artifact files exit nonzero. `--resolved` cannot be combined with
+source snapshot authentication.
+
+The document issuer can assemble blocks attributed to other parties and sign
+that assembly. This authenticates the issuer's snapshot; it MUST NOT be
+presented as endorsement of the whole assembly by every block author. Editing
+a snapshot requires a new document signature; block signatures remain
+independently verifiable when the host supersedes earlier blocks.
+
+---
+
 ## VI. Extensibility
 
 ### VI.1 `x_*` extension blocks
@@ -1369,7 +1510,7 @@ is expressed via the safe-expression language (§VIII).
 2. Host validates against
    `spec/schemas/module-manifest.schema.json`.
 3. Host checks `requires_protocol` and `requires_format` against its
-   single Format 3.0 and Protocol 4.0.0 values. If incompatible, refuse with `ProtocolError`
+   single Format 3.0 and Protocol 4.1.0 values. If incompatible, refuse with `ProtocolError`
    category `module`.
 4. Host registers the module's sections, calculations, validations,
    thresholds, view models, and agent layers.
@@ -3088,7 +3229,7 @@ Implementations MAY validate manifests with any compliant JSON Schema
 
 Required fields: `manifest_version` (always `"1"`), `id`, `name`,
 `version`, `description`, `authors`, `license`, `requires_protocol`,
-`requires_format`, `requires_conformance`. `requires_profiles` is optional. Both ranges MUST be satisfied by the single admitted Format 3.0 and Protocol 4.0.0 values.
+`requires_format`, `requires_conformance`. `requires_profiles` is optional. Both ranges MUST be satisfied by the single admitted Format 3.0 and Protocol 4.1.0 values.
 
 Optional fields are documented in the schema. The TypeScript mirror
 type `ModuleManifest` in `protocol.ts` is kept in lockstep.
@@ -3125,7 +3266,7 @@ nothing. A host that loads modules:
   is protecting them.
 
 **Module ranges.** A module's `requires_protocol` MUST be satisfied by
-4.0.0 and its `requires_format` by 3.0. No earlier contract satisfies a
+4.1.0 and its `requires_format` by 3.0. No earlier contract satisfies a
 module range, and an unavailable feature never triggers a fallback load.
 §VII.2 step 3 is the enforcement: a host refuses a manifest whose ranges
 its own versions do not satisfy, with a `ProtocolError` of category
@@ -3135,7 +3276,7 @@ its own versions do not satisfy, with a `ProtocolError` of category
 whose `calculations[].formula` or `validations[].rule` calls
 `is_calendar_date` anywhere in its expression **MUST** declare a
 `requires_protocol` range that excludes every Protocol version in which
-`is_calendar_date` is unavailable. Protocol 4.0.0 is the only contract that
+`is_calendar_date` is unavailable. Protocol 4.1.0 is the only contract that
 defines it, so the floor is `>=4.0.0` (for example `^4.0.0`). A comparator
 that only excludes an earlier label, such as `>3.0.0`, does not meet the
 requirement, because a later 3.x label would satisfy it without the builtin.
@@ -3150,7 +3291,7 @@ document.
 that redeclares a section ID, calculation ID or view-model `section_id`
 declared by a module it names in `depends_on` uses the §VII.3 override
 rules. It **MUST** declare a `requires_protocol` range that excludes every
-Protocol version without those rules. Protocol 4.0.0 is the only contract
+Protocol version without those rules. Protocol 4.1.0 is the only contract
 that carries them, so the floor is `>=4.0.0`. As with `is_calendar_date`, a
 comparator that only excludes an earlier label does not meet the
 requirement. A host without the §VII.3 override rules runs both
@@ -3430,7 +3571,7 @@ A Reader MUST refuse absent or non-`"3.0"` uw_version at parse stage with `UNSUP
 
 ### XII.4 Protocol version skew
 
-A module MUST NOT load unless its requires_protocol range is satisfied by 4.0.0 and its requires_format range by 3.0. No earlier contract satisfies either range.
+A module MUST NOT load unless its requires_protocol range is satisfied by 4.1.0 and its requires_format range by 3.0. No earlier contract satisfies either range.
 
 ---
 

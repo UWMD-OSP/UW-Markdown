@@ -321,6 +321,11 @@ even though the signed content and decoded signature prefix are unchanged.
 verify is not a licence to admit a malformed signature into a frozen
 manifest.
 
+`document-signatures` exercises RFC 0084 detached snapshot authentication under
+the optional Integrity capability `document-signature-verification`. Its
+relabeled, lifecycle-flipped and spliced records retain block attribution but
+fail document authentication. See [the synthetic vectors](document-signatures/README.md).
+
 Two receipt properties are asserted as invariants rather than baselines:
 
 - **Re-issuance stability (§4).** Re-issuing over an unmodified record must

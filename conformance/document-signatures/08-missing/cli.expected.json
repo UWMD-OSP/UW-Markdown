@@ -1,0 +1,9 @@
+{
+  "ok": false,
+  "integrity": {
+    "document_signature": {
+      "state": "unsigned",
+      "reason": "missing_signature"
+    }
+  }
+}

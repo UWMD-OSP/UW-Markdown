@@ -113,7 +113,7 @@ function stripYamlComment(line: string): string {
   return line;
 }
 
-function parseYamlFrontmatter(text: string): Record<string, unknown> {
+function parseYamlFrontmatter(text: string, onMember?: ParseOptions['onFrontmatterMember']): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   const lines = text.split('\n');
   let i = 0;
@@ -125,6 +125,7 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
 
     const key = line.slice(0, colonIdx).trim();
     if (!key || key.startsWith('#')) { i++; continue; }
+    onMember?.([key]);
 
     const scalar = readFrontmatterScalar(line.slice(colonIdx + 1), i);
     // A key with no inline value (a comment alone counts as none) opens a
@@ -156,6 +157,7 @@ function parseYamlFrontmatter(text: string): Record<string, unknown> {
         const nColon = nLine.indexOf(':');
         if (nColon === -1) { i++; continue; }
         const nKey = nLine.slice(0, nColon).trim();
+        onMember?.([key, nKey]);
         const nValue = readFrontmatterScalar(nLine.slice(nColon + 1), i).value;
         if (!isBlockedSegment(nKey)) nested[nKey] = nValue;
         i++;
@@ -288,7 +290,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       // etc.) regardless of strict mode — these silently produced wrong data
       // before, which is worse than a clean error.
       rejectUnsupportedYaml(yamlLines);
-      result.frontmatter = parseYamlFrontmatter(yamlLines.join('\n')) as UWFrontmatter;
+      result.frontmatter = parseYamlFrontmatter(yamlLines.join('\n'), options.onFrontmatterMember) as UWFrontmatter;
     } catch (err) {
       if (err instanceof UWMDParseError) throw err;
       if (strict) throw new Error(`Frontmatter parse error: ${err}`);
@@ -378,6 +380,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       lineEnd,
     };
 
+    options.onBlock?.(block);
     scanned.push(block);
   }
 

@@ -11,6 +11,8 @@
 //     a dynamic import only when Node is detected, so the browser entries
 //     (`@uwmd/verify/browser`, `@uwmd/core/browser`) never evaluate it.
 
+import { verifyDocumentSignature, type DocumentSignatureResult, type DocumentSignatureVerifier } from './document-signatures.js';
+import { computeEnvelopeDigest, toUWEnvelope } from './envelope.js';
 import { canonicalize } from './integrity-canonical.js';
 import type { ParsedUWFile, UWBlock, UWBlockSignature } from './types.js';
 import { UW_SIGNATURE_ALGORITHMS } from './types.js';
@@ -104,6 +106,8 @@ export interface IntegrityIssue {
 }
 
 export interface IntegrityResult {
+  /** Explicitly requested snapshot authentication; block attribution remains separate. */
+  document_signature?: DocumentSignatureResult;
   ok: boolean;
   issues: IntegrityIssue[];
   chains_verified: number;
@@ -201,6 +205,10 @@ export interface BlockSignatureVerifier {
 }
 
 export interface VerifyChainOptions {
+  documentSignature?: unknown;
+  documentSignatureVerifier?: DocumentSignatureVerifier;
+  /** Every document state other than verified makes the integrity result fail. */
+  requireDocumentSignature?: boolean;
   /**
    * Supplied by a signing package. Without it, INT-06/INT-07 never fire and a
    * signed block is treated exactly like an unsigned one — verification is
@@ -314,9 +322,27 @@ export async function verifyChain(
 
   const sig = await verifySignatures(parsed, issues, options);
 
+  let documentSignature = options.requireDocumentSignature || Object.hasOwn(options, 'documentSignature')
+    || options.documentSignatureVerifier
+    ? await verifyDocumentSignature(parsed.raw, options.documentSignature, { signatureVerifier: options.documentSignatureVerifier })
+    : undefined;
+  if (documentSignature?.state === 'verified') {
+    try {
+      if (await computeEnvelopeDigest(toUWEnvelope(parsed)) !== documentSignature.digest) {
+        documentSignature = { state: 'failed', reason: 'malformed_source',
+          issues: [{ code: 'INT-15', message: 'Parsed input differs from the authenticated supplied source.' }] };
+      }
+    } catch {
+      documentSignature = { state: 'failed', reason: 'malformed_source',
+        issues: [{ code: 'INT-15', message: 'Parsed input cannot represent the authenticated supplied source.' }] };
+    }
+  }
+
   const errors = issues.filter((i) => i.severity === 'error').length;
   return {
-    ok: errors === 0,
+    ok: errors === 0 && documentSignature?.state !== 'failed'
+      && (!options.requireDocumentSignature || documentSignature?.state === 'verified'),
+    ...(documentSignature ? { document_signature: documentSignature } : {}),
     issues,
     chains_verified: chainsVerified,
     chains_with_hashes: chainsWithHashes,

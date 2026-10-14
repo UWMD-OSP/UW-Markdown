@@ -1,0 +1,9 @@
+{
+  "ok": false,
+  "integrity": {
+    "document_signature": {
+      "state": "unverifiable",
+      "reason": "unsupported_version"
+    }
+  }
+}

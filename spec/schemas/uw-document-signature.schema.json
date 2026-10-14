@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/uw-document-signature.schema.json",
+  "title": "Detached document snapshot signature (RFC 0084)",
+  "type": "object",
+  "required": ["kind", "signature_version", "subject", "alg", "kid", "signed_at", "sig"],
+  "additionalProperties": false,
+  "properties": {
+    "kind": { "const": "uwmd-document-signature" },
+    "signature_version": { "const": "1" },
+    "subject": {
+      "type": "object",
+      "required": ["representation", "representation_version", "canonicalization", "canonicalization_version", "digest"],
+      "additionalProperties": false,
+      "properties": {
+        "representation": { "const": "uwx-markdown" },
+        "representation_version": { "const": "1.0" },
+        "canonicalization": { "const": "uw-envelope-semantic" },
+        "canonicalization_version": { "const": "1.0" },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "alg": { "enum": ["ed25519", "es256", "es384"] },
+    "kid": { "type": "string", "minLength": 1 },
+    "signed_at": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)$" },
+    "sig": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" }
+  },
+  "allOf": [{
+    "if": { "properties": { "alg": { "const": "es384" } } },
+    "then": { "properties": { "sig": { "pattern": "^[A-Za-z0-9_-]{128}$" } } },
+    "else": { "properties": { "sig": { "pattern": "^[A-Za-z0-9_-]{85}[AQgw]$" } } }
+  }]
+}

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { verifyDocumentSignature } from '../packages/uwmd-verify/dist/index.js';
 import { verifyReserveDrawBindings } from '../packages/uwmd-verify/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
 import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/index.js';
@@ -3663,6 +3664,32 @@ async function runSizeIntensive() {
 
 const SIGNING_DIR = join(CONFORMANCE_DIR, 'signing');
 
+async function runDocumentSignatures() {
+  const signing = await import('@uwmd/signing');
+  const dir = join(CONFORMANCE_DIR, 'document-signatures');
+  for (const id of readdirSync(dir).filter(name => /^\d/.test(name)).sort()) {
+    const fixture = join(dir, id);
+    const expected = JSON.parse(readFileSync(join(fixture, 'expected.json'), 'utf8'));
+    const source = readFileSync(join(fixture, 'deal.uwx.md'), 'utf8');
+    const artifact = JSON.parse(readFileSync(join(fixture, 'signature.json'), 'utf8'));
+    let options = {};
+    if (expected.backend !== 'none') {
+      const store = await signing.loadKeyStoreFile(join(dir, 'keys', expected.backend === 'empty' ? 'empty.json' : 'keystore.json'));
+      options = { signatureVerifier: signing.createDocumentSignatureVerifier(store) };
+      if (expected.backend === 'trusted') {
+        const blocks = await verifyChain(parseUWFile(source), { signatureVerifier: signing.createBlockSignatureVerifier(store) });
+        if (blocks.signatures_verified !== (source.match(/```json uw:section=/g) ?? []).length) {
+          record('document-signatures', id, 'fail', 'Underlying block attribution unexpectedly failed');
+          continue;
+        }
+      }
+    }
+    const result = await verifyDocumentSignature(source, artifact, options);
+    const pass = result.state === expected.state && (expected.reason === undefined || result.reason === expected.reason);
+    record('document-signatures', id, pass ? 'pass' : 'fail', pass ? undefined : JSON.stringify(result));
+  }
+}
+
 async function runSigning() {
   if (!existsSync(SIGNING_DIR)) return;
 
@@ -4292,6 +4319,7 @@ const dispatch = {
   },
   'size-intensive': async () => { await runSizeIntensive(); },
   'signing': async () => { await runSigning(); },
+  'document-signatures': async () => { await runDocumentSignatures(); },
   'sensitivity': async () => { await runSensitivity(); },
   'stochastic': async () => { await runStochastic(); },
   'source': async () => { await runSource(); },

@@ -94,9 +94,12 @@ This specification defines two:
 | `uw-lite-financial` | `uw-lite-markdown` | `UW_LITE_SPEC.md` §6 financial canonical form |
 | `uw-envelope-semantic` | `uwx-markdown` | RFC 8785 canonicalization of the Document Envelope semantic value (envelope minus `generated_at`, `generator`, `semantic_digest`) |
 
-Both bind to a *semantic* form rather than raw bytes, so a receipt survives
-reflowing a label, changing comma grouping, or normalizing line endings, and
-fails only on financial change.
+Both bind to a *semantic* form rather than raw bytes. Lite receipts bind the
+financial canonical form. Structured envelope receipts also cover annotations,
+inline metadata, superseded history and retained section prose. Cosmetic
+serialization changes preserving that canonical value do not change its digest.
+Protocol §V.13 reuses the envelope subject for computation-independent document
+authentication; that detached artifact is not a computation receipt.
 
 `subject.digest` **MUST** be SHA-256 over the exact UTF-8 bytes of the named
 canonical form, serialized as `sha256:<lowercase hex>`.

@@ -1,0 +1,24 @@
+{
+  "id": "integrity__document-signatures__13-duplicate-active__verify",
+  "target": "integrity",
+  "requires_capabilities": [
+    "integrity",
+    "document-signature-verification"
+  ],
+  "command": "verify",
+  "args": [
+    "deal.uwx.md",
+    "--integrity",
+    "--document-signature",
+    "signature.json",
+    "--keystore",
+    "../keys/keystore.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/document-signatures/13-duplicate-active",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/document-signatures/13-duplicate-active/cli.expected.json",
+    "exit_code": 1
+  }
+}

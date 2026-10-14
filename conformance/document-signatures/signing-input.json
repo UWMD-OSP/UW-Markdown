@@ -1,0 +1,1 @@
+{"alg":"ed25519","kid":"uwmd-conformance-ed25519","kind":"uwmd-document-signature","signature_version":"1","signed_at":"2026-10-14T00:00:00Z","subject":{"canonicalization":"uw-envelope-semantic","canonicalization_version":"1.0","digest":"sha256:8580582b594d5d472de8339e36eab8222c8614ba911defbdd6309eb38e4402f1","representation":"uwx-markdown","representation_version":"1.0"}}

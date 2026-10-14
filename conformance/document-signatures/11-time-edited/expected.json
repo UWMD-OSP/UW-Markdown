@@ -1,0 +1,5 @@
+{
+  "state": "failed",
+  "reason": "bad_signature",
+  "backend": "trusted"
+}

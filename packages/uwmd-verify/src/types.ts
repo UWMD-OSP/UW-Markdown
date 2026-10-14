@@ -575,6 +575,10 @@ export const DEFAULT_THRESHOLDS: FinancialThresholds = {
 
 export interface ParseOptions {
   strict?: boolean;                 // throw on JSON parse errors (default: false — collect)
+  /** Observe each source block before routing/reduction (RFC 0084 accounting). */
+  onBlock?: (block: UWBlock) => void;
+  /** Observe frontmatter keys before assignment, including keys the reader refuses to retain. */
+  onFrontmatterMember?: (path: readonly string[]) => void;
   thresholds?: Partial<FinancialThresholds>;  // institution overrides
 }
 

@@ -5360,6 +5360,81 @@
       "suite": "starter-agent-profile",
       "scenario": "consumer-profile-contract",
       "target": "starter-products"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "01-valid",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "02-relabel",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "03-flip",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "04-splice",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "05-delete-history",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "06-frontmatter",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "07-cosmetic",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "08-missing",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "09-unknown-key",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "10-padded",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "11-time-edited",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "12-unsupported-version",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "13-duplicate-active",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "14-no-backend",
+      "target": "integrity"
+    },
+    {
+      "suite": "document-signatures",
+      "scenario": "15-retained-prose",
+      "target": "integrity"
     }
   ]
 }
