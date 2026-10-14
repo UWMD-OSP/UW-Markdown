@@ -308,11 +308,14 @@ default; select one alone with `--suite=<name>` (e.g. `--suite=lite`,
 `signing` belongs to the optional Integrity profile. Its required capabilities
 remain explicit; an unclaimed profile is unverifiable and an unclaimed
 capability is a reported skip, never a pass. Two
-of its five scenarios exist to pin distinctions rather than happy paths —
+block scenarios pin distinctions rather than happy paths —
 `blocks/03-signed-unknown-kid` must report `INT-06` and never `INT-07` ("I
 cannot check this" is not "this is forged"), and `blocks/05-signed-no-backend`
 verifies the same bytes as `blocks/01-signed-valid` with no key store at all
 and must report the signature as present-and-unchecked rather than passing it.
+`blocks/07-signed-padded`, `08-signed-unused-bits` and
+`09-signed-partial-sextet` refuse altered signature encodings as `INT-07`,
+even though the signed content and decoded signature prefix are unchanged.
 `modules/` carries the same distinction as `PROTO-MOD-071` vs `-072`, plus
 `modules/06-malformed`, which must refuse under `ignore` too: declining to
 verify is not a licence to admit a malformed signature into a frozen

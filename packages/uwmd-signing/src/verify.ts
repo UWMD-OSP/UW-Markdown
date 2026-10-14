@@ -119,6 +119,10 @@ export async function verifyRawSignature(
     return { ok: false, reason: 'malformed' };
   }
 
+  // Web Crypto uses fixed-width raw signatures, including ECDSA's r || s.
+  const expectedLength = alg === 'es384' ? 96 : 64;
+  if (sigBytes.length !== expectedLength) return { ok: false, reason: 'malformed' };
+
   const params = algorithmParams(alg);
   let ok: boolean;
   try {

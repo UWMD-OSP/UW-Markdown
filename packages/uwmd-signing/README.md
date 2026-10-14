@@ -64,6 +64,12 @@ behind a custom `KeyStore`.
 
 ## Verifying
 
+Signature bytes must use canonical unpadded base64url. Verifiers refuse
+padding, non-zero unused bits, impossible encoded lengths and wrong decoded
+widths as malformed (`INT-07` for blocks). Ed25519 and ES256 signatures are
+64 bytes; ES384 signatures are 96 bytes. Receipt and module verification use
+the same check. Key import separately accepts padded base64.
+
 ```ts
 import { verifyChain } from '@uwmd/core';
 import { createBlockSignatureVerifier, loadKeyStoreFile } from '@uwmd/signing';
