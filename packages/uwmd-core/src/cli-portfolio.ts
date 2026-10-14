@@ -11,8 +11,8 @@ import {
   uninterpretedPortfolioTypes,
   getPortfolioRelationships,
   type PortfolioProfile,
-} from './portfolio.js';
-import type { ProtocolError } from './protocol.js';
+  type ProtocolError,
+} from '@uwmd/verify';
 
 type Flags = Record<string, string | boolean>;
 

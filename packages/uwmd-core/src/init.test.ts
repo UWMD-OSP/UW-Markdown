@@ -3,9 +3,8 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parse as parseYaml } from 'yaml';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
-import { parseUWFile } from './parser.js';
+import { parseUWFile, type UWBlock, type UWFrontmatter } from '@uwmd/verify';
 import { resolvePolicy } from './editor.js';
-import type { UWBlock, UWFrontmatter } from './types.js';
 
 describe('generateBlankUWFile', () => {
   it('honors supplied frontmatter values and produces the standard section scaffold', () => {
@@ -289,5 +288,25 @@ describe('generateBlankUWFile — frontmatter serialization', () => {
     expect(caught).toBeInstanceOf(UWInitError);
     expect((caught as UWInitError).code).toBe('INIT_UNREPRESENTABLE_VALUE');
     expect((caught as UWInitError).field).toBe('deal_name');
+  });
+});
+
+// ─── generateBlankUWFile (moved from parser.test.ts, RFC 0083) ──────────────────────────────────────────────────────
+
+describe('generateBlankUWFile', () => {
+  it('generates a parseable .uw.md file', () => {
+    const content = generateBlankUWFile({
+      dealName: 'Test Property',
+      address: '123 Main St',
+      city: 'Phoenix',
+      state: 'AZ',
+      assetClass: 'multifamily',
+    });
+    const parsed = parseUWFile(content);
+    expect(parsed.frontmatter.deal_name).toBe('Test Property');
+    expect(parsed.frontmatter.asset_class).toBe('multifamily');
+    expect(parsed.pipeline_log).toHaveLength(1);
+    // All 22 standard sections should be present
+    expect(Object.keys(parsed.sections).length).toBeGreaterThanOrEqual(20);
   });
 });

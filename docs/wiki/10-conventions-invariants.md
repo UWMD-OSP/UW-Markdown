@@ -43,6 +43,11 @@ figures."* Agents may write an *input* a formula reads (e.g.
 ### 2. Dependency layering
 *Repository structure, both layers.*
 - Spec depends on nothing (changes need an RFC).
+- `@uwmd/verify` (RFC 0083) depends on no `@uwmd/*` package and no vendor SDK:
+  its runtime dependencies are `fast-xml-parser` and `fflate`, and its
+  `standard-closure.test.ts` refuses any other import. `@uwmd/core` depends on
+  it at an exact version and imports it only through its public entry, never a
+  deep path into the package.
 - `@uwmd/core` takes no vendor SDK as a hard dependency. `@anthropic-ai/sdk` is an
   **optional peer dependency**, reached only through a dynamic import in
   `agents/providers/anthropic.ts` — so importing `@uwmd/core` never loads it, and
@@ -52,7 +57,8 @@ figures."* Agents may write an *input* a formula reads (e.g.
   imported by code that must run in a browser (parser, validator, calc, packs)
   must not transitively pull in the SDK. Web tools import from
   `@uwmd/core/browser`.
-- Tools depend on `@uwmd/core` + their own stack. **Tools never import other tools.**
+- Tools depend on `@uwmd/core` (or only `@uwmd/verify`, when they only read
+  and verify) + their own stack. **Tools never import other tools.**
 - Conformance fixtures depend on nothing (pure data).
 
 ### 3. Editor byte preservation
@@ -75,7 +81,7 @@ equivalent, don't use it in a pack formula.
 - **What is normative here:** the metric definitions in `spec/metrics/`, the
   §VIII.1 notation they are written in, and the §VIII.5 numeric model
   (unrounded binary64, one half-away-from-zero quantization). Every pack must
-  equal its dictionary entries exactly (`packs/metric-dictionary.test.ts`), and
+  equal its dictionary entries exactly (`builtin-packs/metric-dictionary.test.ts`), and
   that is what keeps the engine, the Excel exporter and any third-party verifier
   on one set of definitions. A verifier may compute a definition any way that
   reproduces its quantized value; it owes no Excel output at all.
@@ -101,18 +107,21 @@ Excel, agents) versions its package only. There is no starter-guide version
 ### 7. Spec / schema / protocol lockstep
 *Standard.* `protocol.ts` types mirror `spec/schemas/*.schema.json` (explicitly so for
 `ModuleManifest`). Validation-code copy lives once in `BUILTIN_REMEDIATIONS`. The
-cascade order, source tags, view models, and edit policies are defined once in
-`protocol.ts`. Change them in one place; run `npm run validate-schemas`.
+source tags, edit policies and the view-model types are defined once in
+`protocol.ts`; the starter-product tables (the cascade order `CASCADE_ORDER`,
+`BUILTIN_VIEW_MODELS`, number formats, capability tokens) are defined once in
+`starter-protocol.ts` (RFC 0083), which `protocol.ts` never imports. Change
+them in one place; run `npm run validate-schemas`.
 The metric dictionary is part of the same contract: `spec/metrics/builtin.json`,
 its schema and the packs move together, and the dictionary parity test fails
-if they do not. (The cascade, view models and edit policies are starter-product
-behavior now, but their single definition still lives in `protocol.ts`.)
+if they do not. Core ships the dictionary as generated `src/metric-dictionary.ts`
+(`npm run gen-metric-dictionary`); a test fails if the copy drifts.
 
 ### 8. Workspace isolation
 *Project rule for this repository.* Every `@uwmd/*` dependency resolves through
 the local workspace link (`packages/*`, or a `file:` link from `tools/`), never
 a registry tarball, so a change is always tested against the code beside it.
-Published packages still pin each other exactly (`@uwmd/core` `4.0.0`, not a
+Published packages still pin each other exactly (`@uwmd/core` `4.1.0`, not a
 range); the workspace satisfies that pin locally, and external consumers
 resolve it from npm. `npm run verify-lockfile` fails if any lockfile resolves
 an `@uwmd/*` package from the registry or a pin disagrees with the declared

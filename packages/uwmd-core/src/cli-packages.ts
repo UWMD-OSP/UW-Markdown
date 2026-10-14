@@ -9,18 +9,15 @@ import {
   projectPackageLinksToEntityEdges,
   validateUWDealPackageManifest,
   type UWDealPackageManifest,
-} from './deal-package.js';
-import {
   projectUWDealPackageContext,
   validateUWDealPackageContext,
-} from './deal-package-context.js';
-import {
   decodeUWDealPackageZip,
   encodeUWDealPackageZip,
   verifyUWDealPackage,
-} from './deal-package-zip.js';
-import { projectLeaseAbstractToRentRoll, validateLeaseAbstract } from './lease-abstract.js';
-import type { ProtocolError } from './protocol.js';
+  projectLeaseAbstractToRentRoll,
+  validateLeaseAbstract,
+  type ProtocolError,
+} from '@uwmd/verify';
 
 type Flags = Record<string, string | boolean>;
 

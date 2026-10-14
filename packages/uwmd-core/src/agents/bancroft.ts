@@ -18,8 +18,7 @@
 // asserts the absence of a static import, because "provider-neutral" is a claim
 // worth testing rather than trusting.
 
-import type { ParsedUWFile, UWBlock } from '../types.js';
-import { parseUWFile } from '../parser.js';
+import { type ParsedUWFile, type UWBlock, parseUWFile } from '@uwmd/verify';
 import { writeAgentBlock, writeErrorEntry, buildMeta } from '../runner.js';
 import { buildAgentContext, buildAgentPrompt, isContextReady, BANCROFT_LAYERS } from '../context.js';
 import {

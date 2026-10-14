@@ -9,8 +9,8 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { issueReceipt } from '@uwmd/core';
-import type { UWReceipt } from '@uwmd/core';
+import { issueReceipt } from '@uwmd/verify';
+import type { UWReceipt } from '@uwmd/verify';
 import { checkReceipt, formatReport, receiptPathFor, summaryLine } from './receipts.js';
 
 const DEAL_PATH = resolve(

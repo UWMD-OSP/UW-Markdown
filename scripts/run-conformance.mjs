@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { verifyReserveDrawBindings } from '../packages/uwmd-core/dist/reserve-draw-bindings.js';
+import { verifyReserveDrawBindings } from '../packages/uwmd-verify/dist/reserve-draw-bindings.js';
 import { verifyReserveAccounts } from '../packages/uwmd-core/dist/index.js';
 import { verifyReplacementFundingBindings } from '../packages/uwmd-core/dist/index.js';
 // Conformance runner — exercises every fixture against the @uwmd/core
@@ -1742,14 +1742,14 @@ async function runBuiltinClassControls() {
  * satisfy the normative schema, so a refusal can only come from the interaction.
  *
  * Ownership is read through the reference library's internal accessor
- * (`dist/modules.js`), because the protocol gives a view model no consumer
+ * (`@uwmd/verify`'s `dist/modules.js`), because the protocol gives a view model no consumer
  * through which an override is otherwise observable. It is deliberately not
  * public API.
  */
 async function runModuleRegistry() {
   const dir = join(MODULES_DIR, 'registry');
   if (!existsSync(dir)) return;
-  const { declarationOwnersOf } = await import('../packages/uwmd-core/dist/modules.js');
+  const { declarationOwnersOf } = await import('../packages/uwmd-verify/dist/modules.js');
 
   const { default: Ajv2020 } = await import('ajv/dist/2020.js');
   const readSchema = (name) => JSON.parse(readFileSync(join(ROOT, 'spec', 'schemas', name), 'utf8'));

@@ -20,14 +20,14 @@ import {
   parseUWLite,
   UWX_REPRESENTATION_ID,
   validateUWFile,
-} from '@uwmd/core';
+} from '@uwmd/verify';
 import type {
   ParsedUWLite,
   UWBlock,
   UWSourceRepresentation,
   ValidationMessage,
   ValidationSeverity,
-} from '@uwmd/core';
+} from '@uwmd/verify';
 
 export type UWDiagnosticSeverity = 'error' | 'warning' | 'info' | 'hint';
 

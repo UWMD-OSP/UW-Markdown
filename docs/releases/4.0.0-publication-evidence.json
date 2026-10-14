@@ -1,0 +1,738 @@
+{
+  "verified_at": "2026-10-13T03:17:00.992Z",
+  "verification_date_local": "2026-10-12",
+  "timezone": "America/Phoenix",
+  "canonical_repository": "https://github.com/UWMD-OSP/UW-Markdown",
+  "reconciliation_base": "d52a42394be238b00c55942afc1a31cc5c00061b",
+  "tag": {
+    "name": "v4.0.0",
+    "object": "8e64b16207a3e4f849f1d031816a0a171ae43c0f",
+    "commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+    "message": "UW Markdown 4.0.0 — Format 3.0, Protocol 4.0.0 (one format, one protocol; RFC 0081)",
+    "created_at": "2026-10-13T03:04:47Z",
+    "annotated": true,
+    "unchanged": true
+  },
+  "preparation_pr": {
+    "number": 312,
+    "merged_at": "2026-10-13T02:56:08Z",
+    "merge_commit": "d52a42394be238b00c55942afc1a31cc5c00061b"
+  },
+  "main_ci": {
+    "run": 38339271185,
+    "event": "push",
+    "conclusion": "success",
+    "commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+    "completed_at": "2026-10-13T03:04:15Z",
+    "completed_before_tag": true
+  },
+  "workflow": {
+    "run": 38339991109,
+    "attempt": 1,
+    "event": "push",
+    "conclusion": "success",
+    "path": ".github/workflows/release.yml",
+    "ref": "refs/tags/v4.0.0",
+    "commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+    "url": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109",
+    "job": "Publish seven official UWMD packages",
+    "started_at": "2026-10-13T03:04:57Z",
+    "completed_at": "2026-10-13T03:09:09Z",
+    "all_steps_successful": true,
+    "every_publish_step_published": true,
+    "steps": [
+      {
+        "conclusion": "success",
+        "name": "Set up job"
+      },
+      {
+        "conclusion": "success",
+        "name": "Checkout"
+      },
+      {
+        "conclusion": "success",
+        "name": "Setup Node.js"
+      },
+      {
+        "conclusion": "success",
+        "name": "Verify the tagged tree's release records are final"
+      },
+      {
+        "conclusion": "success",
+        "name": "Upgrade npm for trusted publishing (OIDC needs >= 11.5.1)"
+      },
+      {
+        "conclusion": "success",
+        "name": "Install dependencies"
+      },
+      {
+        "conclusion": "success",
+        "name": "Build"
+      },
+      {
+        "conclusion": "success",
+        "name": "Verify publishable package contents"
+      },
+      {
+        "conclusion": "success",
+        "name": "Verify seven-package release readiness and registry-probe tests"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run unit tests"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run conformance suite (reference corpus + lite + receipts)"
+      },
+      {
+        "conclusion": "success",
+        "name": "Validate JSON Schemas"
+      },
+      {
+        "conclusion": "success",
+        "name": "Verify package versions match tag"
+      },
+      {
+        "conclusion": "success",
+        "name": "Publish @uwmd/core to npm with provenance"
+      },
+      {
+        "conclusion": "success",
+        "name": "Publish @uwmd/cli to npm with provenance"
+      },
+      {
+        "conclusion": "success",
+        "name": "Publish @uwmd/signing to npm with provenance"
+      },
+      {
+        "conclusion": "success",
+        "name": "Publish @uwmd/batch to npm with provenance"
+      },
+      {
+        "conclusion": "success",
+        "name": "Publish @uwmd/excel to npm with provenance"
+      },
+      {
+        "conclusion": "success",
+        "name": "Publish @uwmd/report to npm with provenance"
+      },
+      {
+        "conclusion": "success",
+        "name": "Publish @uwmd/lake to npm with provenance"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Setup Node.js"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Checkout"
+      },
+      {
+        "conclusion": "success",
+        "name": "Complete job"
+      }
+    ]
+  },
+  "format": "3.0",
+  "protocol": {
+    "version": "4.0.0",
+    "status": "Stable",
+    "rfcs": [
+      "0081"
+    ]
+  },
+  "format_rfcs": [
+    "0081"
+  ],
+  "verification": {
+    "local_node": "v24.14.1",
+    "local_npm": "11.21.0",
+    "consumer_npm": "11.5.1",
+    "sigstore": "4.1.1",
+    "certificate_identity_policy": "https://github.com/UWMD-OSP/UW-Markdown/.github/workflows/release.yml@refs/tags/v4.0.0",
+    "certificate_oidc_issuer_policy": "https://token.actions.githubusercontent.com",
+    "tuf_trust_root_verified": true,
+    "fulcio_chain_and_scts_verified": true,
+    "rekor_signed_entry_timestamps_and_inclusion_proofs_verified": true,
+    "sigstore_negative_controls": {
+      "wrong_identity_v3_0_0": "refused (certificate identity error)",
+      "tampered_dsse_payload": "refused (DSSE payload hash mismatch)"
+    },
+    "npm_audit_signatures": {
+      "registry_signatures": 210,
+      "attestations": 13
+    },
+    "consumer_npm_audit": {
+      "seven_packages": {
+        "info": 0,
+        "low": 0,
+        "moderate": 3,
+        "high": 0,
+        "critical": 0,
+        "total": 3
+      },
+      "six_packages_without_excel": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "seven_package_advisory_path": "@uwmd/excel@0.9.15 > exceljs@4.4.0 > uuid@8.3.2 (GHSA-w5hq-g745-h8pq, moderate, no fix available)"
+    },
+    "published_cli_identity": {
+      "core": "4.0.0",
+      "protocol": "4.0.0",
+      "format": "3.0"
+    },
+    "published_cli_portable": {
+      "passed": 336,
+      "total": 336,
+      "skipped": 0,
+      "unverifiable": 0,
+      "by_target": {
+        "module": 1,
+        "reader": 17,
+        "starter-products": 37,
+        "verifier": 281
+      },
+      "manifest_tier": "verifier",
+      "manifest_profiles": [
+        "module",
+        "integrity",
+        "representations",
+        "portfolio",
+        "sensitivity",
+        "stochastic"
+      ]
+    },
+    "consumer_checks": {
+      "checks": 19,
+      "failed": 0,
+      "covers": [
+        "core and core/browser report 4.0.0 / Protocol 4.0.0 / Format 3.0",
+        "SUPPORTED_FORMAT_VERSIONS is exactly ['3.0'] and SUPPORTED_PROTOCOL_VERSIONS exactly ['4.0.0'], in both entries",
+        "REFERENCE_IMPLEMENTATION_MANIFEST claims verifier with all six profiles at Protocol 4.0.0 / Format 3.0",
+        "twelve ASSET_CLASSES, including data_center and manufactured_housing",
+        "sixteen removed runtime exports (SPEC_* constants, migrators, reshape and v2 helpers, readConformanceTier, RETIRED_SCENARIOS, RECEIPT_RESULT_TOLERANCE) are absent from both entries",
+        "a Format 3.0 example parses and validates with no errors; a Format 2.1 document is refused as UNSUPPORTED_FORMAT_VERSION",
+        "CLI, signing, batch, Excel, report and lake each pin core 4.0.0 exactly",
+        "signing 0.3.0 stamps _meta.integrity.signature and verifies its own block; the same block under a different key for its kid is refused",
+        "computeBlockHash returns a 64-hex SHA-256 digest"
+      ],
+      "observation": "the published @uwmd/signing 0.3.0 exports SIGNING_VERSION = \"0.2.0\"; the constant was also \"0.2.0\" in 0.2.26 and does not follow the manifest version"
+    },
+    "strict_typescript_consumer": {
+      "typescript": "5.9.3",
+      "packages": 7,
+      "anthropic_sdk_installed": false,
+      "skipLibCheck_true": "pass",
+      "skipLibCheck_false": "pass"
+    },
+    "tagged_tree_release_check": {
+      "packages": 7,
+      "tests": 6,
+      "passed": 6
+    },
+    "tagged_tree_verify_release_tag": "pass",
+    "local_pack_install": "npm ci, npm run build, npm pack --ignore-scripts",
+    "published_file_count": 614
+  },
+  "packages": [
+    {
+      "name": "@uwmd/core",
+      "version": "4.0.0",
+      "latest": "4.0.0",
+      "gitHead": "d52a42394be238b00c55942afc1a31cc5c00061b",
+      "published_at": "2026-10-13T03:08:44.045Z",
+      "deprecated": null,
+      "integrity": "sha512-pkuxvCpEoF6DmMmn7+u2JY3lWzPo22k813zyozkixsTMv0LNSNQot0S5MjWtSbuVMJkkC9lyC7ONTtfSRIgzEw==",
+      "shasum": "9bd884ed90b1b187c25669331127650420d2d22c",
+      "tarball_sha256": "54b27b6516e79a9c6e59e7d59c231c0da06c9329979fcf4d6c9c8c6421d31e3d",
+      "tarball_bytes": 710025,
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/core@4.0.0",
+          "digest_matches": true,
+          "rekor_log_index": "3240215972",
+          "integrated_time": "2026-10-13T03:08:45.000Z",
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sigstore_verified": true
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/core@4.0.0",
+          "digest_matches": true,
+          "rekor_log_index": "3240196138",
+          "integrated_time": "2026-10-13T03:07:24.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v4.0.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109/attempts/1"
+        }
+      ],
+      "files": 462,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": true,
+        "mode_diffs": []
+      }
+    },
+    {
+      "name": "@uwmd/cli",
+      "version": "4.0.0",
+      "latest": "4.0.0",
+      "gitHead": "d52a42394be238b00c55942afc1a31cc5c00061b",
+      "published_at": "2026-10-13T03:12:50.645Z",
+      "deprecated": null,
+      "integrity": "sha512-MZpZAC64jdEmvrxQW/vagKxbEVlG1EdFZWk4BvZZqSvutZxRfxf9vGSNP24q77+uUfk2joJ23fhT0quofJuAig==",
+      "shasum": "eeab50356b3a96ad75aca5ecb18e0250553ee788",
+      "tarball_sha256": "e0ec681f3f4f495b37c653f7472c9f46ec019af4f2792baedd2d50eac97dcb76",
+      "tarball_bytes": 3488,
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/cli@4.0.0",
+          "digest_matches": true,
+          "rekor_log_index": "3240281051",
+          "integrated_time": "2026-10-13T03:12:51.000Z",
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sigstore_verified": true
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/cli@4.0.0",
+          "digest_matches": true,
+          "rekor_log_index": "3240214699",
+          "integrated_time": "2026-10-13T03:08:39.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v4.0.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109/attempts/1"
+        }
+      ],
+      "files": 3,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": false,
+        "mode_diffs": [
+          "package/bin/uwmd.mjs: published 0o755 local 0o644"
+        ]
+      }
+    },
+    {
+      "name": "@uwmd/signing",
+      "version": "0.3.0",
+      "latest": "0.3.0",
+      "gitHead": "d52a42394be238b00c55942afc1a31cc5c00061b",
+      "published_at": "2026-10-13T03:10:55.408Z",
+      "deprecated": null,
+      "integrity": "sha512-hlVgZXwBM0xFaf2PCM9WQ86BfUDHTDYcKXtykIL+1yo6NTnMlk0CZXvsKYWFHysApqbj7CfUXdlmt2YK9udHIA==",
+      "shasum": "7286f7c01383df82c915e44f2ccfb0c438f6b0d2",
+      "tarball_sha256": "aa7340f2db74e558b5072830613daf4fb7563011b1a2f31d21ee0474ba57a055",
+      "tarball_bytes": 18717,
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/signing@0.3.0",
+          "digest_matches": true,
+          "rekor_log_index": "3240249736",
+          "integrated_time": "2026-10-13T03:10:58.000Z",
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sigstore_verified": true
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/signing@0.3.0",
+          "digest_matches": true,
+          "rekor_log_index": "3240215722",
+          "integrated_time": "2026-10-13T03:08:44.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v4.0.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109/attempts/1"
+        }
+      ],
+      "files": 24,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": true,
+        "mode_diffs": []
+      }
+    },
+    {
+      "name": "@uwmd/batch",
+      "version": "0.8.22",
+      "latest": "0.8.22",
+      "gitHead": "d52a42394be238b00c55942afc1a31cc5c00061b",
+      "published_at": "2026-10-13T03:09:46.657Z",
+      "deprecated": null,
+      "integrity": "sha512-NdMhA93XDYEoAs6lNvledzOhpqip/bDLFA8EXzatKHVyWq3yStiNbkU/1SPcrP+oeFt5crXR5JL2C7PX1lz48g==",
+      "shasum": "da47255dcf7c95338dfe80e997a8bd78adfe1619",
+      "tarball_sha256": "2eda07628afaa4adf8eed67f262b747e75ff9c7a2de10a8790dad8aa48545dd8",
+      "tarball_bytes": 5895,
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/batch@0.8.22",
+          "digest_matches": true,
+          "rekor_log_index": "3240230952",
+          "integrated_time": "2026-10-13T03:09:47.000Z",
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sigstore_verified": true
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/batch@0.8.22",
+          "digest_matches": true,
+          "rekor_log_index": "3240216895",
+          "integrated_time": "2026-10-13T03:08:48.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v4.0.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109/attempts/1"
+        }
+      ],
+      "files": 5,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": false,
+        "mode_diffs": [
+          "package/bin/uwmd-batch.mjs: published 0o755 local 0o644"
+        ]
+      }
+    },
+    {
+      "name": "@uwmd/excel",
+      "version": "0.9.15",
+      "latest": "0.9.15",
+      "gitHead": "d52a42394be238b00c55942afc1a31cc5c00061b",
+      "published_at": "2026-10-13T03:10:34.512Z",
+      "deprecated": null,
+      "integrity": "sha512-5ExRDHiIwRfHujDHAgteGaBumt1xk+XLNifV1wGvDNphoKkvB+UpNAsFmMFd4QjKLeg5MX/nRLWOeGcmtyJX1w==",
+      "shasum": "a5809a49186a56ded9ec3614aa2756b8714084b4",
+      "tarball_sha256": "a06c896674ec6913b8c8f0e15e8c1f8f8f2e341d38136586034a4a1f03768796",
+      "tarball_bytes": 62032,
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/excel@0.9.15",
+          "digest_matches": true,
+          "rekor_log_index": "3240243122",
+          "integrated_time": "2026-10-13T03:10:36.000Z",
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sigstore_verified": true
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/excel@0.9.15",
+          "digest_matches": true,
+          "rekor_log_index": "3240218111",
+          "integrated_time": "2026-10-13T03:08:54.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v4.0.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109/attempts/1"
+        }
+      ],
+      "files": 87,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": false,
+        "mode_diffs": [
+          "package/bin/uwmd-excel.mjs: published 0o755 local 0o644"
+        ]
+      }
+    },
+    {
+      "name": "@uwmd/report",
+      "version": "0.8.27",
+      "latest": "0.8.27",
+      "gitHead": "d52a42394be238b00c55942afc1a31cc5c00061b",
+      "published_at": "2026-10-13T03:11:41.524Z",
+      "deprecated": null,
+      "integrity": "sha512-he1rCwFlb2CXqiT0C+lqiMuAarg/ld1PAJRV0uubLhw6Fltp6euyLE8sM+jIXM46OEtTIHMZFRl1s6lpCezreQ==",
+      "shasum": "4fd005d243da8cfea4c91d1ce1ef1b88a5e306f7",
+      "tarball_sha256": "b168295c47ea874faf056837714dfefb942af60d5732d95b24603767476abfef",
+      "tarball_bytes": 7074,
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/report@0.8.27",
+          "digest_matches": true,
+          "rekor_log_index": "3240262555",
+          "integrated_time": "2026-10-13T03:11:43.000Z",
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sigstore_verified": true
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/report@0.8.27",
+          "digest_matches": true,
+          "rekor_log_index": "3240218890",
+          "integrated_time": "2026-10-13T03:08:59.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v4.0.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109/attempts/1"
+        }
+      ],
+      "files": 15,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": false,
+        "mode_diffs": [
+          "package/bin/uwmd-report.mjs: published 0o755 local 0o644"
+        ]
+      }
+    },
+    {
+      "name": "@uwmd/lake",
+      "version": "0.2.11",
+      "latest": "0.2.11",
+      "gitHead": "d52a42394be238b00c55942afc1a31cc5c00061b",
+      "published_at": "2026-10-13T03:11:44.680Z",
+      "deprecated": null,
+      "integrity": "sha512-FBRimTWMELRxSIW3kSHHQ211hUAz9mYnNeHWyRLqLFQa0FZWxDbXm6n7RcJksaenfsM5fG7Pr4zsDowTz8PuTA==",
+      "shasum": "a7cfb6c43f76bb78b01efd88f0b850951096ccca",
+      "tarball_sha256": "84967b26ff48b20c142bef6deb0f44665d051d1e3f147272f82e297d73821c57",
+      "tarball_bytes": 22875,
+      "registry_signatures": [
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        },
+        {
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "valid": true
+        }
+      ],
+      "attestations": [
+        {
+          "predicate_type": "https://github.com/npm/attestation/tree/main/specs/publish/v0.1",
+          "subject": "pkg:npm/%40uwmd/lake@0.2.11",
+          "digest_matches": true,
+          "rekor_log_index": "3240263842",
+          "integrated_time": "2026-10-13T03:11:47.000Z",
+          "npm_key": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+          "sigstore_verified": true
+        },
+        {
+          "predicate_type": "https://slsa.dev/provenance/v1",
+          "subject": "pkg:npm/%40uwmd/lake@0.2.11",
+          "digest_matches": true,
+          "rekor_log_index": "3240219939",
+          "integrated_time": "2026-10-13T03:09:04.000Z",
+          "sigstore_verified": true,
+          "workflow": {
+            "ref": "refs/tags/v4.0.0",
+            "repository": "https://github.com/UWMD-OSP/UW-Markdown",
+            "path": ".github/workflows/release.yml"
+          },
+          "source_commit": "d52a42394be238b00c55942afc1a31cc5c00061b",
+          "invocation": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109/attempts/1"
+        }
+      ],
+      "files": 18,
+      "local_pack": {
+        "names_equal": true,
+        "content_diffs": 0,
+        "archive_identical": true,
+        "mode_diffs": []
+      }
+    }
+  ],
+  "module_packages": {
+    "note": "RFC 0081 D6 deleted both packages from the repository; 4.0.0 does not publish them. They stay at their final 0.2.0 (3.0.0), deprecated on 2026-10-11.",
+    "@uwmd/module-hospitality": {
+      "versions": [
+        "0.0.0-stage",
+        "0.1.10",
+        "0.1.11",
+        "0.1.12",
+        "0.1.13",
+        "0.2.0"
+      ],
+      "latest": "0.2.0",
+      "every_version_deprecated": true,
+      "last_modified": "2026-10-11T18:39:41.413Z",
+      "published_since_3_0_0": false
+    },
+    "@uwmd/module-data-center": {
+      "versions": [
+        "0.0.0-stage",
+        "0.1.10",
+        "0.1.11",
+        "0.1.12",
+        "0.1.13",
+        "0.2.0"
+      ],
+      "latest": "0.2.0",
+      "every_version_deprecated": true,
+      "last_modified": "2026-10-11T18:40:00.083Z",
+      "published_since_3_0_0": false
+    }
+  },
+  "registry_state_of_other_versions": {
+    "@uwmd/lake": {
+      "versions": [
+        "0.0.0-stage",
+        "0.2.9",
+        "0.2.10",
+        "0.2.11"
+      ],
+      "0.0.0-stage": {
+        "deprecated": "Placeholder from package bootstrap, not a release. Install the current @uwmd/lake."
+      },
+      "0.2.9": {
+        "note": "hand-published bootstrap from v2.21.0 on 2026-10-11 (3.0.0 publication record); not part of 4.0.0",
+        "deprecated": null
+      }
+    },
+    "@uwmd/excel": {
+      "0.3.0": {
+        "deprecated": "Stray 2026-08-16 publish pinned to @uwmd/core 1.3.0. Install the current @uwmd/excel, published with every UW Markdown release since 3.0.0."
+      }
+    },
+    "@uwmd/report": {
+      "0.3.0": {
+        "deprecated": "Stray 2026-08-16 publish pinned to @uwmd/core 1.3.0. Install the current @uwmd/report, published with every UW Markdown release since 3.0.0."
+      }
+    }
+  },
+  "unintended_publication": {
+    "workflow_publish_steps": 7,
+    "private_web_editor": "absent (404)",
+    "module_packages_republished": false
+  },
+  "raw_evidence_file_sha256": {
+    "attestations/batch-0.8.22.json": "e6c174549962340db81de5aa0b451576bf10816eac43647c90aeded54f82f597",
+    "attestations/cli-4.0.0.json": "ca3923ed553f07d293c0f43291722f65954880b86545e8f5e95fe929caee186d",
+    "attestations/core-4.0.0.json": "e41d86860275b0c29245fd557775f3a97f9b249989539442b96d02781c0f86e5",
+    "attestations/excel-0.9.15.json": "8ea9f81523814ea763979beaa1c81bd78dd0a8c1e2b249e0a358b6b00badfd19",
+    "attestations/lake-0.2.11.json": "75ac554fcb249b959ecb5d9a19353d346d0982bfee6fb8b2704cd4818581ef6c",
+    "attestations/report-0.8.27.json": "9824be549de2d421d35f5eeb1dd803502a8e850de0a1c00161efe935111481c5",
+    "attestations/signing-0.3.0.json": "c1732c6732b37e3bed4356980b2e7e1850e3dc9e2864c420bd084ed35c3bebef",
+    "audit-seven.json": "6af6c0490fec5d9f37801e9c9a8ca1b1e4d38b6adaefbda4babb891240610d14",
+    "audit-signatures.txt": "ae0960f539231b99456d06ce783e5b1fdbb3b52c14617393c16f943420334542",
+    "audit-six.json": "a8ca8dc29152677d6414287d0ce3166b99bad4f469300b1c703a9a0e7df0f603",
+    "consumer-check.mjs": "14ea0704b6c5999d6b3c0bc5f72fdce3d1cd2a50c638145ade5769e95f24276e",
+    "consumer-checks.txt": "615001077dba92c8598ada3a58608dad3f88007e5d2f810275ddba087915d216",
+    "packuments/batch.json": "77b716296d7bb45fb3e2f2368ad7ba5542973d403a2ab0c347d6249309bfc122",
+    "packuments/cli.json": "1816005b019e614fef29bf61f5428f6f488e843d240669a56a4c3ffe5af6ec48",
+    "packuments/core.json": "a6d31be24f054682f0751ecd123c4eca23f9e2428818f474e0b1ad4e43901019",
+    "packuments/excel.json": "1cd25a790d617067c3d332493522419d4e2e2085a678758905d910d3a0a492a9",
+    "packuments/lake.json": "cde62b4accb885a22417bf6a34ae464b885e4276c3762739803321e5ac9a5b28",
+    "packuments/module-data-center.json": "d426ec28b01c2806880ef6826ad0481c6a95e17f052c9aaae6c22cc475128063",
+    "packuments/module-hospitality.json": "f4ec5ad0f942b91398fd777a8eaa4ff4ef8a3f9a5988ff8516e01fb7a5684a8e",
+    "packuments/report.json": "ee19c6ee7bab7485a9776df1dcca35ae0d97513cffe4946c7e29811294b020a4",
+    "packuments/signing.json": "8f03cc6946fd47a334382c62e8530e1e6f93018177bc29d6a237976e2c9b16b2",
+    "published-cli-portable.json": "0fda49f6e106805d85ab1ba25fc0bb085e39ed294aa8e63b32838b890d2fdb5b",
+    "registry-keys.json": "8508f2f5ce3a85be389370d7fabd531de2aac205d16a43cf926d208172b0f8ac",
+    "registry-results.json": "21e7eb23ba63d99ba65e74a1fa2247b8265d5f8811fcb641144fc19f3f9fb0c4",
+    "sigstore-negative-controls.mjs": "902b8cc0ac2fb676d846815a947e53d4f82a260d707f530ab259e13cd6d4e924",
+    "sigstore-negative-controls.txt": "0d0f580e7479dd3c88af56ec04f529367b6f5d9b6f08aa8a2b99fbbacd261c56",
+    "strict-ts-consumer.ts": "7c617f937b66bc596a0fc542c5d844ab439a642e5773206db4938e8b4d711bf2",
+    "tarballs/batch-0.8.22.tgz": "2eda07628afaa4adf8eed67f262b747e75ff9c7a2de10a8790dad8aa48545dd8",
+    "tarballs/cli-4.0.0.tgz": "e0ec681f3f4f495b37c653f7472c9f46ec019af4f2792baedd2d50eac97dcb76",
+    "tarballs/core-4.0.0.tgz": "54b27b6516e79a9c6e59e7d59c231c0da06c9329979fcf4d6c9c8c6421d31e3d",
+    "tarballs/excel-0.9.15.tgz": "a06c896674ec6913b8c8f0e15e8c1f8f8f2e341d38136586034a4a1f03768796",
+    "tarballs/lake-0.2.11.tgz": "84967b26ff48b20c142bef6deb0f44665d051d1e3f147272f82e297d73821c57",
+    "tarballs/report-0.8.27.tgz": "b168295c47ea874faf056837714dfefb942af60d5732d95b24603767476abfef",
+    "tarballs/signing-0.3.0.tgz": "aa7340f2db74e558b5072830613daf4fb7563011b1a2f31d21ee0474ba57a055"
+  }
+}

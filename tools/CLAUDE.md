@@ -1,6 +1,6 @@
 # CLAUDE.md — `tools/`
 
-User-facing tools built on `@uwmd/core`. Deep reference:
+User-facing tools built on `@uwmd/core` and `@uwmd/verify` (RFC 0083). Deep reference:
 [`docs/wiki/08-tools.md`](../docs/wiki/08-tools.md). Root: [`CLAUDE.md`](../CLAUDE.md).
 
 ## The tools
@@ -12,7 +12,8 @@ User-facing tools built on `@uwmd/core`. Deep reference:
   `src/edits.ts` (edit dispatch — the applyEdit chokepoint), `src/catalog.ts`
   (editable-field allow-lists), `src/components/*` (UI).
   Build: `npm run build` (tsc --noEmit + vite).
-- `vscode-uwmd/` — authoring extension (syntax, folding, on-save validation).
+- `vscode-uwmd/` — authoring extension (syntax, folding, on-save validation),
+  on `@uwmd/verify` (a `file:` dependency on its built dist).
   Entry `src/extension.ts`; grammar in `syntaxes/`; bundled with esbuild; package
   via `vsce package`.
 - `docs-site/` — **published** VitePress site. `scripts/prebuild.mjs` copies
@@ -21,9 +22,11 @@ User-facing tools built on `@uwmd/core`. Deep reference:
 
 ## Rules for tool code
 
-- **Tools depend on `@uwmd/core` only** — never import another tool's code.
+- **Tools depend on the library only** — `@uwmd/core`, or `@uwmd/verify` when
+  a tool needs only to read and verify (the VS Code extension) — never on
+  another tool's code.
 - **Browser tools import from `@uwmd/core/browser`** (not `@uwmd/core`) so the
-  Anthropic SDK stays out of the bundle.
+  Anthropic SDK stays out of the bundle (or from `@uwmd/verify/browser`).
 - TypeScript, ESM, `Bundler` resolution for web tools (`vscode`/`web-editor`).
 - `docs/wiki/` is internal dev docs — **do not** add it to the docs-site nav.
 

@@ -1,7 +1,7 @@
 {
   "name": "@uwmd/core",
-  "version": "4.0.0",
-  "description": "Reference implementation of the UW Markdown standard — parser, validator, renderer, and CLI for .uw.md underwriting files.",
+  "version": "4.1.0",
+  "description": "The UW Markdown starter toolkit — editor, renderer, report, defaults and cascade, refinement, Excel emission, agents and the CLI for .uw.md underwriting files, on top of @uwmd/verify (the reference implementation of the standard), whose whole API it re-exports.",
   "repository": {
     "type": "git",
     "url": "https://github.com/UWMD-OSP/UW-Markdown.git",
@@ -38,7 +38,7 @@
     "parse": "node dist/cli.js parse",
     "validate": "node dist/cli.js validate",
     "summary": "node dist/cli.js summary",
-    "prepublishOnly": "npm run build && npm test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
+    "prepublishOnly": "npm --prefix ../uwmd-verify run build && npm run build && npm test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
@@ -53,12 +53,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "fast-xml-parser": "^5.10.1",
-    "fflate": "^0.8.3"
+    "@uwmd/verify": "0.1.0"
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
-    "@uwmd/signing": "0.3.0"
+    "@uwmd/signing": "0.4.0"
   },
   "peerDependenciesMeta": {
     "@anthropic-ai/sdk": {

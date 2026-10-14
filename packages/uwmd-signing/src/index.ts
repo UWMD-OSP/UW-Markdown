@@ -1,7 +1,7 @@
 // @uwmd/signing — block and receipt signatures for UW Markdown (RFC 0010).
 //
-// Why this is a separate package: `@uwmd/core` is deliberately
-// zero-cryptography. Signed blocks are for regulated lender data rooms and
+// Why this is a separate package: `@uwmd/verify` and `@uwmd/core` are
+// deliberately zero-cryptography. Signed blocks are for regulated lender data rooms and
 // multi-party deal flow, not the everyday case, and the overwhelming majority
 // of adopters should never take a crypto dependency to read an underwriting
 // file. Core defines the wire shape and the canonical signing input (both
@@ -55,5 +55,4 @@ export type { CapabilityTokenClaims, CapabilityVerifierOptions } from './capabil
 export { signModule, stampModuleSignature, createModuleSignatureVerifier } from './modules.js';
 export type { SignModuleOptions } from './modules.js';
 
-export const SIGNING_PACKAGE_NAME = '@uwmd/signing' as const;
-export const SIGNING_VERSION = '0.2.0';
+export { SIGNING_PACKAGE_NAME, SIGNING_VERSION } from './version.js';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { receiptSigningPayload, type UWReceipt } from '@uwmd/core';
+import { receiptSigningPayload, type UWReceipt } from '@uwmd/verify';
 import { generateSigningKeyPair, InMemoryKeyStore } from './keys.js';
 import { signReceipt, stampReceiptSignature } from './sign.js';
 import { createReceiptSignatureVerifier } from './verify.js';
@@ -33,6 +33,14 @@ const RECEIPT: UWReceipt = {
 };
 
 describe('signReceipt', () => {
+  it('refuses a padded signature through the receipt verifier', async () => {
+    const { signing, verifying } = await generateSigningKeyPair('ed25519', 'issuer-2026');
+    const signature = await signReceipt(RECEIPT, signing);
+    const signed = stampReceiptSignature(RECEIPT, { ...signature, value: `${signature.value}=` });
+    const verifier = createReceiptSignatureVerifier(new InMemoryKeyStore([verifying]));
+    await expect(verifier.verify(signed, receiptSigningPayload(signed))).resolves.toBe(false);
+  });
+
   it('signs the receipt-with-null-signature payload and verifies against it', async () => {
     const { signing, verifying } = await generateSigningKeyPair('ed25519', 'issuer-2026');
     const signed = stampReceiptSignature(RECEIPT, await signReceipt(RECEIPT, signing));

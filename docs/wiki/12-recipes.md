@@ -10,7 +10,7 @@ touch, the tests to run, and whether an RFC is likely needed
 
 ## Add a calc builtin
 
-**Files:** `packages/uwmd-core/src/calc/builtins.ts`,
+**Files:** `packages/uwmd-verify/src/calc/builtins.ts`,
 `calc/calc.test.ts`, `packs/excel-emit.ts`.
 1. Add the function to the `BUILTINS` table. Validate arg count; raise
    `CALC-TYPE-001` on type/arity errors; propagate `null` for missing data.
@@ -22,7 +22,7 @@ touch, the tests to run, and whether an RFC is likely needed
 
 ## Add a derived metric to an existing pack
 
-**Files:** `packages/uwmd-core/src/packs/multifamily.ts` (+ Excel named ranges if
+**Files:** `packages/uwmd-verify/src/builtin-packs/multifamily.ts` (+ Excel named ranges if
 new inputs).
 1. Append a `ModuleCalcDecl` (`id`, `label`, `unit`, `formula`, `deterministic:
    true`). Reference real field paths ([07 — Data model](07-data-model-reference.md)).
@@ -33,7 +33,7 @@ new inputs).
 
 ## Add a validator check
 
-**Files:** `packages/uwmd-core/src/validator.ts`, `protocol.ts`
+**Files:** `packages/uwmd-verify/src/validator.ts`, `protocol.ts`
 (`BUILTIN_REMEDIATIONS`), `validator.dq.test.ts`.
 1. Implement the check in `validateUWFile`; emit a `ValidationMessage` with a new
    `code`.
@@ -57,7 +57,7 @@ new inputs).
 ## Add an asset-class calc pack
 
 See the scaffold in [05 — Calc packs › new asset-class pack](05-calc-packs.md).
-Touches `packs/`, `defaults.ts`, `src/index.ts`, Excel layout, conformance.
+Touches verify's `builtin-packs/` and `src/index.ts` (core's `packs/` re-exports), core's `defaults.ts`, Excel layout, conformance.
 RFC: **yes** (`docs/rfcs/0003-module-asset-classes.md`).
 
 ## Add a Bancroft agent layer

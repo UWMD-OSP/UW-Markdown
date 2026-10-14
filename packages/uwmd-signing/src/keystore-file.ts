@@ -6,7 +6,7 @@
 // so that `uwmd verify --signing --keystore=<path>` has something to read and
 // so the conformance fixtures have a portable way to ship a public key.
 
-import type { UWSignatureAlgorithm } from '@uwmd/core';
+import type { UWSignatureAlgorithm } from '@uwmd/verify';
 import { isKnownAlgorithm } from './algorithms.js';
 import { SigningError } from './errors.js';
 import { InMemoryKeyStore, importPublicKey, type KeyStore, type SignerKey } from './keys.js';

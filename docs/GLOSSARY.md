@@ -27,7 +27,7 @@ marked `_meta.lifecycle.superseded: true` with a back-reference. The
 
 ### Calc engine / safe expression
 The sandboxed expression evaluator at
-[`packages/uwmd-core/src/calc/`](../packages/uwmd-core/src/calc/).
+[`packages/uwmd-verify/src/calc/`](../packages/uwmd-verify/src/calc/).
 Parses a constrained language (EBNF in protocol §VIII.1), evaluates
 without globals or I/O, and is bounded at 4096 input characters.
 
@@ -36,7 +36,7 @@ A declarative bundle of named formulas + asset-class-specific defaults
 that the starter calc engine evaluates against a deal; each pack mirrors the
 normative metric dictionary (`spec/metrics/`). The canonical
 `MULTIFAMILY_PACK` lives at
-[`packages/uwmd-core/src/packs/multifamily.ts`](../packages/uwmd-core/src/packs/multifamily.ts).
+[`packages/uwmd-verify/src/builtin-packs/multifamily.ts`](../packages/uwmd-verify/src/builtin-packs/multifamily.ts).
 
 ### Conformance tier
 One of two self-certification levels, Reader and Verifier (a Verifier
@@ -49,7 +49,7 @@ retired; editing and agent hosting are starter-product claims (RFC 0078).
 Declarative gate on which sections / fields an editor is
 allowed to modify, and via which operation type. Registered in
 `BUILTIN_EDIT_POLICIES` in
-[`packages/uwmd-core/src/protocol.ts`](../packages/uwmd-core/src/protocol.ts).
+[`packages/uwmd-verify/src/protocol.ts`](../packages/uwmd-verify/src/protocol.ts).
 See protocol §V.
 
 ### Fence annotation
@@ -121,7 +121,7 @@ either of the others. See
 ### View model
 A declarative spec for how a section renders. Registered in
 `BUILTIN_VIEW_MODELS` in
-[`packages/uwmd-core/src/protocol.ts`](../packages/uwmd-core/src/protocol.ts).
+[`packages/uwmd-core/src/starter-protocol.ts`](../packages/uwmd-core/src/starter-protocol.ts).
 See [starter guide §IV](starter/view-models.md#iv-view-models).
 
 ---
@@ -156,7 +156,7 @@ amortizing period.
 ### IRR
 Internal Rate of Return. The discount rate at which a stream of cash
 flows nets to zero. Computed by `irr()` in
-[`packages/uwmd-core/src/calc/builtins.ts`](../packages/uwmd-core/src/calc/builtins.ts).
+[`packages/uwmd-verify/src/calc/builtins.ts`](../packages/uwmd-verify/src/calc/builtins.ts).
 
 ### Loss-to-lease
 The gap between in-place rents and current market rents on the same

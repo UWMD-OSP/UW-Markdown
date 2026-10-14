@@ -6,8 +6,7 @@
 
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
-import { isConformanceTier, type ConformanceTier } from './protocol.js';
-import { UWX_EXTENSION } from './source-representation.js';
+import { isConformanceTier, type ConformanceTier, UWX_EXTENSION } from '@uwmd/verify';
 
 /**
  * Parse `--flag`, `--flag value`, and `--flag=value` forms. A bare `--flag`

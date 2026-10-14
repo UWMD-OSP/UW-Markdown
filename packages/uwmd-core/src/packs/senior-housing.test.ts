@@ -3,13 +3,16 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import type { CalcEvaluationContext } from '../protocol.js';
-import { evaluateCalc } from '../calc/index.js';
-import { parseExpression } from '../calc/parser.js';
-import { parseUWFile } from '../parser.js';
+import {
+  type CalcEvaluationContext,
+  evaluateCalc,
+  parseExpression,
+  parseUWFile,
+  quantizeDecimal,
+  resolveRoundTo,
+  SENIOR_HOUSING_PACK,
+} from '@uwmd/verify';
 import { emitExcelFormula } from './excel-emit.js';
-import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
-import { SENIOR_HOUSING_PACK } from './senior-housing.js';
 
 function excelValue(formula: string): number | null {
   const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');

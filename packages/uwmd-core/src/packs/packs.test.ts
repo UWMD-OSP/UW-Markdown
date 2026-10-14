@@ -8,9 +8,16 @@
 import { describe, it, expect } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { blockPayload, parseUWFile } from '../parser.js';
-import { evaluateCalc } from '../calc/index.js';
-import { MULTIFAMILY_PACK } from './multifamily.js';
+import {
+  blockPayload,
+  parseUWFile,
+  evaluateCalc,
+  MULTIFAMILY_PACK,
+  quantizeDecimal,
+  resolveRoundTo,
+  parseExpression,
+  type CalcEvaluationContext,
+} from '@uwmd/verify';
 import {
   DATA_CENTER_PACK, MANUFACTURED_HOUSING_PACK,
   HOSPITALITY_PACK,
@@ -24,9 +31,6 @@ import {
   STUDENT_HOUSING_PACK,
 } from './index.js';
 import { emitCalcExcelFormula, emitExcelFormula, ExcelEmitError, emitFromAst } from './excel-emit.js';
-import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
-import { parseExpression } from '../calc/parser.js';
-import type { CalcEvaluationContext } from '../protocol.js';
 
 
 // Evaluate only the emitted arithmetic/IF subset used by these pack tests.
@@ -206,7 +210,7 @@ describe('Excel emit ↔ evaluateCalc parity', () => {
       total_units: propertyContent.content['total_units'] as number,
       total_nra_sqft: propertyContent.content['total_nra_sqft'] as number,
       equity_total: (susContent.content['equity_metrics'] as Record<string, number>)['equity_total']!,
-      levered_cash_flow_y1: ((blockPayload(parsed.sections['dcf'] as import('../types.js').UWBlock) as Record<string, unknown>)['annual_cash_flows'] as Record<string, number>[]).find((row) => row['year'] === 1)!['net_cash_flow_levered']!,
+      levered_cash_flow_y1: ((blockPayload(parsed.sections['dcf'] as import('@uwmd/verify').UWBlock) as Record<string, unknown>)['annual_cash_flows'] as Record<string, number>[]).find((row) => row['year'] === 1)!['net_cash_flow_levered']!,
     };
 
     for (const c of MULTIFAMILY_PACK.calculations ?? []) {
@@ -257,5 +261,22 @@ describe('debt_structure role declarations (RFC 0066)', () => {
     const coc = readers.filter(({ calc }) => calc.id === 'cash_on_cash');
     expect(coc).toHaveLength(11);
     for (const { pack, calc } of coc) expect(calc.section_roles, pack).toBeUndefined();
+  });
+});
+
+describe('builtin pack manifests through packs/ (RFC 0083)', () => {
+  // The manifests are @uwmd/verify's (builtin-packs/); packs/index.ts
+  // re-exports them beside the Excel emitter.
+  const PACK_NAMES = [
+    'DATA_CENTER_PACK', 'HOSPITALITY_PACK', 'INDUSTRIAL_PACK', 'LAND_PACK', 'MANUFACTURED_HOUSING_PACK',
+    'MIXED_USE_PACK', 'MULTIFAMILY_PACK', 'OFFICE_PACK', 'RETAIL_PACK', 'SELF_STORAGE_PACK',
+    'SENIOR_HOUSING_PACK', 'STUDENT_HOUSING_PACK',
+  ] as const;
+
+  it('is what packs/index.ts re-exports, object for object', async () => {
+    const packs = await import('./index.js');
+    const builtin = await import('@uwmd/verify');
+    for (const name of PACK_NAMES) expect(packs[name], name).toBe(builtin[name]);
+    expect(packs.getPackForAssetClass).toBe(builtin.getPackForAssetClass);
   });
 });

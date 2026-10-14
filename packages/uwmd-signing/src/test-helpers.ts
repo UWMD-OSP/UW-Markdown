@@ -4,7 +4,7 @@
 // block factory in the public API would invite production code to build blocks
 // that never went through the parser.
 
-import { computeBlockHash, type ParsedUWFile, type UWBlock, type UWIntegrity } from '@uwmd/core';
+import { computeBlockHash, type ParsedUWFile, type UWBlock, type UWIntegrity } from '@uwmd/verify';
 
 export function makeBlock(
   sectionId: string,

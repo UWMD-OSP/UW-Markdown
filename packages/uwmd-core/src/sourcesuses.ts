@@ -13,8 +13,7 @@
 // (multifamily worked example), plus per-bucket `sources.total` / `uses.total`.
 // Whichever total keys already exist in the block are written back.
 
-import { blockPayload } from './parser.js';
-import type { ParsedUWFile, UWBlock } from './types.js';
+import { blockPayload, type ParsedUWFile, type UWBlock } from '@uwmd/verify';
 import { collector, numOrNull, type DerivedField } from './derived.js';
 
 type Row = Record<string, unknown>;
@@ -43,6 +42,15 @@ function sumLines(obj: Row): number {
   return total;
 }
 
+/** The use a typed `uses.renovation` contributes: its `budget` plus its
+ *  `contingency` (RFC 0081 §7, Format §4.8). The draw group and
+ *  `contingency_remaining` are as-of facts about how much of that amount has
+ *  been disbursed (RFC 0057, `CAPX-02`–`CAPX-04`), not further uses.
+ *  `expense_targeted`, an array, never entered the sum and still does not. */
+function renovationUse(renovation: Row): number {
+  return (num(renovation['budget']) ?? 0) + (num(renovation['contingency']) ?? 0);
+}
+
 /**
  * Foot a sources_uses content block. Pure: never mutates `content` or `parsed`.
  *
@@ -62,7 +70,10 @@ export function deriveSourcesUses(content: Row, parsed: ParsedUWFile): SourcesUs
   }
 
   const sourcesTotal = sumLines(sources);
-  let usesTotal = sumLines(uses);
+  const renovation = uses['renovation'];
+  let usesTotal = isObj(renovation)
+    ? sumLines({ ...uses, renovation: null }) + renovationUse(renovation)
+    : sumLines(uses);
   // Footing rule (RFC 0081 §7): interest and operating escrows' upfront and
   // each stated hedge premium count once in the uses total.
   if (isObj(content['uses'])) {

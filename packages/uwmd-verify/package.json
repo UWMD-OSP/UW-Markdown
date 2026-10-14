@@ -1,0 +1,61 @@
+{
+  "name": "@uwmd/verify",
+  "version": "0.1.0",
+  "description": "The reference implementation of the UW Markdown standard — read and verify .uw.md underwriting documents: reader, validation, calc evaluator, metric dictionary, receipts, integrity, modules and the verification profiles.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UWMD-OSP/UW-Markdown.git",
+    "directory": "packages/uwmd-verify"
+  },
+  "homepage": "https://uwmd.org",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./browser": {
+      "import": "./dist/browser.js",
+      "types": "./dist/browser.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "!dist/**/*.test.*",
+    "!dist/**/*.property.test.*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "typecheck:tests": "tsc -p tsconfig.test.json",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build && npm test && npm --prefix ../.. run conformance && npm --prefix ../.. run validate-schemas"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.10.1",
+    "fflate": "^0.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^3.2.6",
+    "fast-check": "^3.23.0",
+    "typescript": "^5.4.0",
+    "vitest": "^3.2.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "uwmd",
+    "underwriting",
+    "commercial-real-estate",
+    "verification",
+    "markdown"
+  ]
+}

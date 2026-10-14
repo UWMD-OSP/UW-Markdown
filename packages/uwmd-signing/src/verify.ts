@@ -10,7 +10,7 @@ import {
   type UWBlock,
   type UWBlockSignature,
   type UWReceipt,
-} from '@uwmd/core';
+} from '@uwmd/verify';
 import { algorithmParams, isKnownAlgorithm, subtle } from './algorithms.js';
 import { fromBase64Url, utf8 } from './base64.js';
 import type { KeyStore } from './keys.js';
@@ -118,6 +118,10 @@ export async function verifyRawSignature(
   } catch {
     return { ok: false, reason: 'malformed' };
   }
+
+  // Web Crypto uses fixed-width raw signatures, including ECDSA's r || s.
+  const expectedLength = alg === 'es384' ? 96 : 64;
+  if (sigBytes.length !== expectedLength) return { ok: false, reason: 'malformed' };
 
   const params = algorithmParams(alg);
   let ok: boolean;

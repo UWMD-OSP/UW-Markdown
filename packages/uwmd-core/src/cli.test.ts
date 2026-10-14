@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os';
 import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { REFERENCE_IMPLEMENTATION_MANIFEST } from './protocol.js';
+import { VERIFY_VERSION } from '@uwmd/verify';
+import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
 
 // These tests exercise built executables, stdout/stderr and exit codes.
 vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
@@ -82,10 +83,19 @@ describe('uwmd --version', () => {
     expect(result.status).toBe(0);
     expect(result.stdout.trim().split('\n')).toEqual([
       `@uwmd/core ${manifest.version}`,
+      `@uwmd/verify ${VERIFY_VERSION}`,
       `Protocol ${manifest.protocol_version}`,
       `Format ${manifest.format_version}`,
     ]);
     expect(result.stdout).not.toContain('Commands:');
+  });
+
+  it('manifest prints exactly the ImplementationManifest on stdout and the verify version on stderr', async () => {
+    const result = await run('manifest');
+    expect(result.status).toBe(0);
+    // §II.6a.2: stdout is one JSON document, and the schema admits no extra field.
+    expect(JSON.parse(result.stdout)).toEqual(JSON.parse(JSON.stringify(manifest)));
+    expect(result.stderr.trim()).toBe(`@uwmd/verify ${VERIFY_VERSION}`);
   });
 });
 

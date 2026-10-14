@@ -1,7 +1,13 @@
 # 08 — Tools
 
-All tools depend on `@uwmd/core` and nothing else from this monorepo (the
-dependency rule from [01 — Architecture](01-architecture.md)). The human-oriented
+All tools depend on the reference library — `@uwmd/core`, or only
+`@uwmd/verify` when a tool reads and verifies but never edits, renders or
+emits (RFC 0083) — and nothing else from this monorepo (the dependency rule
+from [01 — Architecture](01-architecture.md)). Today `@uwmd/batch`,
+`@uwmd/lake` and the VS Code extension build on `@uwmd/verify`;
+`@uwmd/signing` uses it for the signing payloads and keeps core for the
+capability-token types; the CLI, Excel, report and the web editor build on
+`@uwmd/core`, which re-exports everything verify exports. The human-oriented
 "which tool should I use" guide is [`docs/TOOLS.md`](../TOOLS.md); this page is the
 developer view (where the code is, how it's built, what to know when changing it).
 
@@ -108,8 +114,8 @@ npx @uwmd/batch deals --out batch-output --facts
 ```
 
 `--facts` additionally emits `uwmd-facts.jsonl` — the corpus fact table: one line per
-JSON fact per deal, the normative `block_values` row (via core's
-`flattenEnvelopeBlockValues`, never re-implemented) prefixed with deal identity
+JSON fact per deal, the normative `block_values` row (via `@uwmd/verify`'s
+`flattenEnvelopeBlockValues`, never re-implemented; batch depends only on verify) prefixed with deal identity
 (`path`, `deal_id`, `asset_class`, `semantic_digest`, `valid`) — plus a manifest with
 counts and a `deals_skipped` list. See [`docs/DATA_LAKE.md`](../DATA_LAKE.md) for the
 full lake pipeline.
@@ -123,7 +129,7 @@ The RFC 0049 reference adapter. It is a **host-side integration**, not part of t
 protocol: it reads canonical outputs the standard already produces and plans
 idempotent SQL that an adopter runs with their own client. There is no database
 driver in its dependency tree and database availability is never part of
-validation.
+validation. It depends only on `@uwmd/verify` (RFC 0083).
 
 ```ts
 await client.query(postgresLakeSchema('uwmd_lake'), []);
@@ -166,10 +172,10 @@ other builtin. `@uwmd/module-hospitality` and `@uwmd/module-data-center` were
 compatibility shells whose final 0.2.0 was published and deprecated on npm on
 2026-10-11; RFC 0081 Phase 4 deleted both packages from the repository.
 
-## Signing — `packages/uwmd-signing` (`@uwmd/signing` 0.1.0)
+## Signing — `packages/uwmd-signing` (`@uwmd/signing`; see VERSIONS.md)
 
 Block and receipt signatures (RFC 0010, protocol §V.11). Separate from
-`@uwmd/core` so the library keeps its zero-crypto guarantee: reading,
+`@uwmd/verify` and `@uwmd/core` so the library keeps its zero-crypto guarantee: reading,
 validating, editing, and computing over a `.uw.md` never require cryptography,
 and signed blocks are for regulated data rooms and multi-party deal flow, not
 the everyday case.
@@ -196,7 +202,10 @@ with an HSM never touches it. **Published:** signing 0.2.12 pairs with core
 2.8.0. The release workflow publishes core, CLI, signing and batch.
 
 The CLI reaches it by dynamic import as an optional peer, so core takes no
-dependency on a sibling package.
+dependency on a sibling package. Signing depends on `@uwmd/verify` (the
+signing payloads, verifier seams and `parseActorSource`) and on `@uwmd/core`
+for the `Capability*` types, which are starter products (RFC 0083); both pins
+are exact.
 
 ## Excel converter — `packages/uwmd-excel` (`@uwmd/excel`; see VERSIONS.md)
 
@@ -326,7 +335,7 @@ contract that disagrees with `B3` is refused as internally inconsistent.
 
 Build: `tsc`. Test: `vitest run`.
 
-## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report` 0.2.0)
+## Report PDF pipeline — `packages/uwmd-report` (`@uwmd/report`; see VERSIONS.md)
 
 `.uw.md → .pdf` for the lender package / credit memo. The HTML is produced by
 `@uwmd/core`'s `renderReportHtml` (deterministic, §7.1/§7.2); this package only
@@ -352,7 +361,7 @@ Single-file `index.html`, under 500 LOC, no build step. Drag-drop a `.uw.md` and
 it renders (embeds a minimal Parser + Renderer). Reader demo. Skip it for editing
 or calc.
 
-## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.5.0, private)
+## Web editor — `tools/web-editor` (`@uwmd/web-editor` 0.8.0, private)
 
 React 18 + Tailwind CSS 4 (Vite). Opens `.uw.md` Lite summaries by compiling their supported anchored fields into a canonical `.uwx.md` record (retaining the complete Lite source in a namespaced extension), and opens `.uwx.md` structured records directly. Export Lite is explicitly loss-reported: omitted UWX paths are listed before the smaller deal-summary projection is downloaded. Embeds `@uwmd/core/browser` (parser, validator,
 edit dispatcher, calc engine, report renderer, init scaffolder,
@@ -433,13 +442,19 @@ functions (`resolveValue`, `rankGaps`, `inferGaps`, `getAssetClassDefaults`,
 `getExprDependencies`, `extractDependencyGraph`, …) are browser-safe and are
 now exported from `@uwmd/core/browser`.
 
-## VS Code extension — `tools/vscode-uwmd` (`vscode-uwmd` 0.1.0)
+## VS Code extension — `tools/vscode-uwmd` (`vscode-uwmd`; see VERSIONS.md)
 
 Authoring extension: syntax highlighting (`syntaxes/uwmd.tmLanguage.json` —
 YAML frontmatter + Markdown + embedded JSON), section folding, document outline,
 on-save validation diagnostics tied to `BUILTIN_REMEDIATIONS`. Entry:
 `src/extension.ts`; `activationEvents: onLanguage:uwmd`. Bundled with esbuild
 (`esbuild.mjs`); package with `vsce package`. Not yet on the marketplace.
+It depends on `@uwmd/verify` only (a `file:` dependency on its built dist,
+RFC 0083): it parses, validates and verifies receipts, and never edits or
+renders. Its receipt verifier identifies as `@uwmd/verify`, the same engine
+every current receipt names (core's included), so a tampered receipt is
+`failed`. A receipt from an earlier release names that release's engine and is
+`unverifiable` (`RCP-07`) on a disagreement, as it always was across versions.
 
 **Receipt verification** — the `uwmd.verifyReceipt` command ("UW Markdown:
 Verify Receipt for This Deal") checks the `<deal>.receipt.json` sidecar against

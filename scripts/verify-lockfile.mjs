@@ -1,7 +1,7 @@
 // Verify that every @uwmd/* reference resolves to this working tree.
 //
 // The failure this exists to catch is silent. If a lockfile entry for
-// @uwmd/core ever carries a registry `resolved` URL instead of a workspace
+// @uwmd/core (or any @uwmd/* package) ever carries a registry `resolved` URL instead of a workspace
 // link, `npm ci` installs the *published* tarball, and the whole suite — tests,
 // conformance, the tools' builds — passes against a version of the library
 // nobody in this commit wrote. Green CI would then mean "the last release still
@@ -31,8 +31,15 @@ const LOCKFILES = [
   'tools/vscode-uwmd/package-lock.json',
 ];
 
-/** The workspace packages and the version each one currently declares. */
+/**
+ * The workspace packages and the version each one currently declares. Hand
+ * maintained: a package left out here is checked by nothing below, so a new
+ * workspace (as `@uwmd/verify` was, RFC 0083) must be added in the same change.
+ * The last check in this file fails if the root workspaces name one this list
+ * does not.
+ */
 const WORKSPACES = [
+  'packages/uwmd-verify',
   'packages/uwmd-core',
   'packages/uwmd-cli',
   'packages/uwmd-excel',
@@ -82,6 +89,23 @@ for (const dir of WORKSPACES) {
           `${dir}/package.json: ${field}.${name} is pinned to "${range}", but ${name} is at ${actual}.`,
         );
       }
+    }
+  }
+}
+
+// ── 3. Every workspace package is in WORKSPACES ──────────────────────────────
+// The root `workspaces` globs pick up a new package automatically; this list
+// does not. Compare the two so a new package cannot be silently unchecked.
+
+{
+  const rootWorkspaces = readJson('package.json').workspaces ?? [];
+  const listed = new Set(WORKSPACES);
+  const lock = readJson('package-lock.json');
+  for (const entry of Object.keys(lock.packages ?? {})) {
+    if (!entry.startsWith('packages/') || entry.includes('/node_modules/')) continue;
+    if (!rootWorkspaces.some((pattern) => pattern === entry || (pattern.endsWith('/*') && entry.startsWith(pattern.slice(0, -1)) && !entry.slice(pattern.length - 1).includes('/')))) continue;
+    if (!listed.has(entry)) {
+      failures.push(`scripts/verify-lockfile.mjs: workspace ${entry} is not in WORKSPACES, so none of these checks cover it.`);
     }
   }
 }

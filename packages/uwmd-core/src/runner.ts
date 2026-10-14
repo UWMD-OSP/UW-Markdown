@@ -12,9 +12,23 @@
 //
 // Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §6.3 (uwmd run)
 
-import { stampMetaIntoBlockContent, bumpRawMetaVersion } from './metadata.js';
-import type { ParsedUWFile, UWBlock, UWMeta, PipelineStatus, UWFrontmatter } from './types.js';
-import { getSection, getSectionVariant, parseUWFile } from './parser.js';
+import {
+  stampMetaIntoBlockContent,
+  bumpRawMetaVersion,
+  buildMeta,
+  type ParsedUWFile,
+  type UWBlock,
+  type UWMeta,
+  type PipelineStatus,
+  type UWFrontmatter,
+  getSection,
+  getSectionVariant,
+  parseUWFile,
+} from '@uwmd/verify';
+
+// `buildMeta` lives in `@uwmd/verify` (metadata.ts, RFC 0083); the runner keeps
+// exporting it so `import { buildMeta } from './runner.js'` is unchanged.
+export { buildMeta };
 
 // Lightweight re-parse used only to get fresh line numbers after block insertion.
 // parseUWFile is the same function — alias for clarity.
@@ -397,46 +411,4 @@ export function writeErrorEntry(
   });
 
   return updateFrontmatterField(lines.join('\n'), 'last_modified', `"${now}"`);
-}
-
-// ─── Quick helper: build a _meta object for a new block ──────────────────────
-
-export function buildMeta(
-  sectionId: string,
-  version: number,
-  opts: {
-    source: string;
-    agentId?: string;
-    agentVersion?: string;
-    actor?: string;
-    confidence?: 'high' | 'medium' | 'low';
-    humanReviewRequired?: boolean;
-    flags?: string[];
-    inputHash?: string;
-    notes?: string;
-    /** Freeze the stamp; defaults to now. See RunOptions.timestamp. */
-    timestamp?: string;
-  },
-): UWMeta {
-  const meta: UWMeta = {
-    section: sectionId,
-    provenance: {
-      source: opts.source,
-      actor: opts.actor ?? 'system',
-      agent_id: opts.agentId ?? null,
-      agent_version: opts.agentVersion ?? null,
-      timestamp: opts.timestamp ?? new Date().toISOString(),
-      notes: opts.notes ?? null,
-    },
-    quality: {
-      confidence: opts.confidence ?? 'medium',
-      human_review_required: opts.humanReviewRequired ?? false,
-      flags: opts.flags ?? [],
-      partial: false,
-      provisional: false,
-    },
-    lifecycle: { revision: version, superseded: false },
-  };
-  if (opts.inputHash) meta.integrity = { input_hash: `sha256:${opts.inputHash}` };
-  return meta;
 }

@@ -10,8 +10,7 @@
 // registered locales. CSV helpers are interchange, not display, and take no
 // locale by design.
 
-import { isCurrencyCode } from './protocol.js';
-import type { SupportedLocale } from './protocol.js';
+import { isCurrencyCode, type SupportedLocale } from '@uwmd/verify';
 import {
   BUILTIN_FORMAT_RULES,
   currencyWithRules,

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { changelogUnreleasedEntries, checkReleasedTags, checkReleaseState } from './release-state.mjs';
+import { changelogUnreleasedEntries, checkReleasedTags, checkReleaseState, dependencyDrift } from './release-state.mjs';
 import { releasePackagesForGeneration } from './release-packages.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -290,6 +290,17 @@ test('Excel, report and lake join the publication scope after the six-package 2.
   assert.equal(names[0], '@uwmd/core');
 });
 
+test('@uwmd/verify joins the publication scope after the seven-package 4.0.x generations, publishing first', () => {
+  const seven = ['@uwmd/core', '@uwmd/cli', '@uwmd/signing', '@uwmd/batch', '@uwmd/excel', '@uwmd/report', '@uwmd/lake'];
+  for (const version of ['4.0.0', '4.0.1', '4.0.2', '4.0.1-rc.1']) {
+    assert.deepEqual(releasePackagesForGeneration(version).map((pkg) => pkg.name), seven);
+  }
+  // RFC 0083: core pins @uwmd/verify exactly, so verify publishes before it.
+  for (const version of ['4.1.0', '4.1.0-rc.1', '4.2.3', '5.0.0']) {
+    assert.deepEqual(releasePackagesForGeneration(version).map((pkg) => pkg.name), ['@uwmd/verify', ...seven]);
+  }
+});
+
 test('future prepared/tagged generations require both official module rows and exact core pairings', () => {
   for (const tag of [undefined, 'v2.17.1']) {
     assert.deepEqual(checkReleaseState({ ...NEXT_PREPARED, tag }).failures, []);
@@ -452,4 +463,29 @@ test('a staged accepted spec cannot masquerade as the carried release protocol (
   assert.deepEqual(checkReleaseState(staged).failures, []);
   assert.match(checkReleaseState({ ...staged, specProtocolVersion: '4.1.0' }).failures.join('\n'), /differs from the accepted specification constant/);
   assert.match(checkReleaseState({ ...staged, specProtocolVersion: RECONCILED.protocolVersion, protocolDoc: `**Status:** Unreleased — protocol **${RECONCILED.protocolVersion}**` }).failures.join('\n'), /status line calls protocol/);
+});
+
+test('dependencyDrift flags a changed dependency set under an unchanged version (RFC 0083 Phase 2 pin drift)', () => {
+  // Signing at 0.3.1 as v4.0.1 shipped it, then repointed at @uwmd/verify in source.
+  const shipped = { name: '@uwmd/signing', version: '0.3.1', dependencies: { '@uwmd/core': '4.0.1' }, peerDependencies: { a: '1' } };
+  const repointed = { ...shipped, dependencies: { '@uwmd/core': '4.0.1', '@uwmd/verify': '0.1.0' } };
+  assert.deepEqual(dependencyDrift([{ current: repointed, previous: shipped }]), [
+    { name: '@uwmd/signing', version: '0.3.1', fields: ['dependencies'] },
+  ]);
+  // A pin change alone, a removed dependency and a peer change each count.
+  const repinned = { ...shipped, dependencies: { '@uwmd/core': '4.1.0' } };
+  const dropped = { ...shipped, dependencies: {} };
+  const peer = { ...shipped, peerDependencies: { a: '2' } };
+  assert.equal(dependencyDrift([{ current: repinned, previous: shipped }]).length, 1);
+  assert.equal(dependencyDrift([{ current: dropped, previous: { ...shipped } }]).length, 1);
+  assert.deepEqual(dependencyDrift([{ current: peer, previous: shipped }])[0].fields, ['peerDependencies']);
+  // The bump that ships it, an unchanged set (key order ignored), a new package and devDependencies pass.
+  assert.deepEqual(dependencyDrift([
+    { current: { ...repointed, version: '0.4.0' }, previous: shipped },
+    { current: { ...shipped, peerDependencies: { a: '1' }, dependencies: { '@uwmd/core': '4.0.1' } }, previous: shipped },
+    { current: { name: '@uwmd/verify', version: '0.1.0', dependencies: { fflate: '0.8.2' } } },
+    { current: { ...shipped, devDependencies: { vitest: '3' } }, previous: shipped },
+  ]), []);
+  // An absent field equals an empty one.
+  assert.deepEqual(dependencyDrift([{ current: { name: 'x', version: '1.0.0', dependencies: {} }, previous: { name: 'x', version: '1.0.0' } }]), []);
 });

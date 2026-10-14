@@ -1,6 +1,11 @@
 # @uwmd/core
 
-Reference TypeScript implementation of the UW Markdown (`.uw.md`) underwriting standard.
+The UW Markdown (`.uw.md`) starter toolkit: editor, renderer, report, defaults
+and cascade, refinement, the Excel formula emitter, agents and the CLI. It is
+built on [`@uwmd/verify`](https://www.npmjs.com/package/@uwmd/verify), the
+reference implementation of the standard, and re-exports its whole API, so
+everything below is importable from `@uwmd/core`. A verifier that needs no
+starter product can depend on `@uwmd/verify` alone.
 
 ## Install
 

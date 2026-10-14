@@ -10,9 +10,9 @@ product. Release 4.0.0 carries it, labelled Format 3.0 and Protocol 4.0.0;
 3.0.0 is the last release that reads older formats.
 
 
-> The normative contract is [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0), carried by core/CLI 4.0.0.
+> The normative contract is [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0) and [UW_PROTOCOL.md](../../spec/UW_PROTOCOL.md) (Protocol 4.0.0), carried by core/CLI 4.0.0, 4.0.1 and 4.1.0.
 
-> **Representations:** `.uw.md` is the human-readable Lite representation; `.uwx.md` is the structured representation. Their normative sources are [UW_LITE_SPEC.md](../../spec/UW_LITE_SPEC.md) and [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0). Types live in [types.ts](../../packages/uwmd-core/src/types.ts); see [07](07-data-model-reference.md).
+> **Representations:** `.uw.md` is the human-readable Lite representation; `.uwx.md` is the structured representation. Their normative sources are [UW_LITE_SPEC.md](../../spec/UW_LITE_SPEC.md) and [UW_FORMAT_SPEC.md](../../spec/UW_FORMAT_SPEC.md) (Format 3.0). Types live in [types.ts](../../packages/uwmd-verify/src/types.ts); see [07](07-data-model-reference.md).
 
 ## Anatomy of a file
 
@@ -138,7 +138,7 @@ standard data sections (§4.0–§4.20)** + the extension meta-spec (§4.21) + g
 > The exact field schema for each section is in the spec under its `§ 4.x`
 > heading. The `examples/Parkview-Apts-Glendale-AZ.uwx.md` file is the canonical
 > populated example. The display layer for these sections is
-> `BUILTIN_VIEW_MODELS` in `protocol.ts` (note: the view-model registry is a
+> `BUILTIN_VIEW_MODELS` in `starter-protocol.ts` (note: the view-model registry is a
 > *rendering convenience* and is not 1:1 with the spec's section registry).
 
 ## Multi-variant sections

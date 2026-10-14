@@ -8,7 +8,338 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- `@uwmd/signing` rejects padded base64url, non-zero unused bits, impossible
+  encoded lengths and wrong-width signatures as malformed (#322). Block,
+  receipt and module verifiers share this check; key imports still accept
+  padded base64. Three signing conformance cases pin the refusal as `INT-07`.
+
+## [4.1.0] - 2026-10-13
+
+### Released
+
+Published `@uwmd/verify` **0.1.0** (its first publication), core/CLI
+**4.1.0**, signing **0.4.0**, batch **0.9.0**, Excel **0.9.17**, report
+**0.8.29** and lake **0.3.0** from annotated `v4.1.0` on
+`9d18a13c236b6ee46857382a25ec75c0ff6ccf86`.
+[Release run 38509776606](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38509776606)
+succeeded through trusted publishing with provenance; it is the first run to
+publish eight packages, verify first, and no module package. Every registry
+version and `latest` matches, and all eight `gitHead` values name the
+authorized commit. Integrity, registry and DSSE signatures, authenticated
+TUF/Fulcio/SCT trust, Rekor timestamps and inclusion proofs, and all 666
+published file contents verify. The registry-installed CLI reports core 4.1.0
+/ verify 0.1.0 / Protocol 4.0.0 / Format 3.0 and passes **336/336** portable
+cases with no skips (Reader 17, Verifier 281, module profile 1, starter
+products 37). Isolated consumers confirm the split as delivered: the
+published `@uwmd/verify`, installed alone with no `@uwmd/core`, parses,
+validates and checks stated metrics on an example, verifies a receipt issued
+by the published core 4.1.0, and reports that receipt `failed` (`RCP-03`, not
+`RCP-07`) once a result is tampered; batch and lake install without core;
+core re-exports every verify export; and strict TypeScript compiles against
+all eight packages with `skipLibCheck: false` and no Anthropic SDK. RFC 0083
+is `implemented`; Protocol **4.0.0** stays Stable, paired with Format
+**3.0**. The `@uwmd/verify` name bootstrap is recorded in the publication
+record. The immutable tagged tree keeps its neutral preparation records.
+Exact evidence is in `docs/releases/4.1.0-publication-evidence.json` and the
+verification method in `docs/releases/4.1.0-publication.md`.
+
+### Prepared package pairing
+
+Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
+contract as 4.0.0 and 4.0.1. **`@uwmd/verify` 0.1.0** joins the release: the
+reference implementation of the standard (RFC 0083), with no `@uwmd/*`
+dependency. Core depends on verify **0.1.0** exactly and re-exports its whole
+surface. Signing **0.4.0** pins verify **0.1.0** and core **4.1.0**; batch
+**0.9.0** and lake **0.3.0** pin verify **0.1.0** in place of core; Excel
+**0.9.17** and report **0.8.29** pin core **4.1.0**. Core's optional signing
+peer is **0.4.0**. The workflow scope is eight packages, verify first:
+verify, core, CLI, signing, batch, Excel, report and lake.
+
+No normative text changes, so neither the Protocol nor the Format version
+moves (RFC 0083; wiki 11: from 3.0 the Protocol moves only when what a
+document means or how it is verified changes). Core takes a minor, not a
+patch: it gains a runtime dependency and additive exports, and removes or
+changes none (RFC 0083 Decisions). Verify starts at 0.1.0 like every new
+package. Signing, batch and lake take a minor because their dependency sets
+changed: batch and lake now depend on `@uwmd/verify` and no longer on core,
+and signing depends on both. Excel and report take their usual patch for the
+core repin. No conformance expectation, issue code, metric definition,
+stated value or receipt verdict changes. The receipt baselines already name
+`@uwmd/verify` 0.1.0 as their engine and do not move.
+
+### Receipts issued before 4.1.0
+
+Receipts now record `@uwmd/verify` as their engine (below), so a receipt
+issued by core 4.0.1 or earlier, which names `@uwmd/core` and that core's
+version, comes from a different engine. Verified by core 4.1.0, the CLI or
+`@uwmd/verify`, such a receipt still verifies when its results agree. When
+they disagree it reports **`unverifiable` (`RCP-07`), not `failed`**: a
+disagreement across two engine identities cannot be attributed to the
+document (UW Receipt §5.3). This is the specified behavior, not a defect. A
+pipeline that rejects only on `failed` would let a tampered pre-4.1.0 receipt
+through as merely unverifiable; reissue legacy receipts with 4.1.0, or treat
+`RCP-07` as a rejection.
+
+### Added
+
+- `verifyStatedMetrics(parsed, options?)` in `@uwmd/core` and
+  `@uwmd/core/browser` (RFC 0083 §2), with its result types
+  (`StatedMetricsReport`, `StatedMetricEvidence`, `StatedMetricOutcome`,
+  `StatedMetricBindings`, `VerifyStatedMetricsOptions`,
+  `StatedMetricDefinition`, `StatedMetricUnverifiableReason`). It checks every
+  numeric statement of the document's dictionary metrics against the metric
+  dictionary at its stated precision (RFC 0079) and returns one `verified`,
+  `failed` or `unverifiable` result per statement. It promotes the logic of
+  `conformance/metrics/verifier.mjs`, which now calls it; the lender fixture
+  stays 187/0/0 with identical evidence. When a document view carries no
+  source token for a statement (an envelope-decoded document, for example) and
+  the caller supplies no `statedDecimals`, the statement is `unverifiable` with
+  reason `missing_stated_precision`. Core ships `spec/metrics/builtin.json`
+  as generated package data (`npm run gen-metric-dictionary`); a test fails if
+  the copy drifts from the spec.
+- **`@uwmd/verify` 0.1.0** (`packages/uwmd-verify`, RFC 0083 Phase 2): the
+  reference implementation of the standard as its own package —
+  reader, validation, the calc evaluator and quantization, stated-precision
+  comparison, the metric dictionary and `verifyStatedMetrics`, receipts,
+  integrity, the module system, the builtin pack manifests and the
+  representation, portfolio, sensitivity, stochastic and market-data profiles.
+  Two entries, `.` and `./browser`, with the same surface. It depends on no
+  `@uwmd/*` package; its runtime dependencies are `fast-xml-parser` and
+  `fflate`. Called directly, its `evaluateCalc` and
+  `evaluateModuleCalculations` return no `display`, and its receipts name
+  `@uwmd/verify@<VERIFY_VERSION>` as the issuer. Its
+  `standard-closure.test.ts` fails on any import outside the package other
+  than the two dependencies and integrity's guarded `node:crypto` fallback,
+  and on any `@uwmd/*` dependency.
+- Additive `@uwmd/core` exports, all re-exported from `@uwmd/verify`:
+  `VERIFY_PACKAGE_NAME`, `VERIFY_VERSION`, `UWMDParseError`,
+  `CONFORMANCE_PROFILES`, `isConformanceTier`, the type `SourceTag`, the type
+  `Expr`, and the building blocks core's starter modules use
+  (`isBlockedSegment`, `writeDoubleQuotedScalar`, `isBlockRole`,
+  `blockOverrides`, `bumpRawMetaVersion`, `stampMetaIntoBlockContent`,
+  `periodReferencePath`, `getPeriodReferences`, `periodPayload`,
+  `periodReferenceContract`, `periodSection`, `resolvePeriodReference`, and
+  the source-edit seam `applyUWMDSourceEditWith`,
+  `createUWMCPApplyEditResultWith` and `UWSourceEditAdapter`). The main entry
+  also gains the type `ExtractDependencyGraphOptions`, which only the browser
+  entry exported.
+- `@uwmd/core/browser` gains every `@uwmd/verify` export it lacked, including
+  the integrity verifiers `verifyChain`, `verifyProvenance`,
+  `computeBlockHash`, `sha256Hex` and `canonicalize`, the incomplete-data
+  policy and return-tax-basis tables, `CROSS_CHECK_RULE_IDS` and
+  `CROSS_CHECK_VARIANT_PREFERENCE`, and the types that go with them
+  (`IntegrityResult`, `VerifyChainOptions`, `CascadeStep`, `GapAction`,
+  `MarketDataLookup`, …). None is Node-only.
+- `uwmd --version` prints the `@uwmd/verify` version on its own line, between
+  the `@uwmd/core` and Protocol lines. `uwmd manifest` writes it to stderr:
+  its stdout stays exactly the `ImplementationManifest` (Protocol §II.6a.2),
+  whose schema admits no other field. The bug-report form and
+  `docs/FEEDBACK.md` say where to find it, and the form's component list
+  names `@uwmd/verify`.
+- `verify-release` fails when a publishing package's `dependencies`,
+  `peerDependencies` or `optionalDependencies` differ from the release this
+  one follows while its version does not (`dependencyDrift` in
+  `release-state.mjs`); between releases it only warns, because the bump
+  belongs to the release preparation. npm never republishes a version, so the
+  change would never ship. It would have flagged the signing, batch and lake
+  repins RFC 0083 Phase 2 left to this release.
+
+### Changed
+
+- RFC 0083 Phase 1: core's standard and starter sides are cut apart in place,
+  with no public API or behavior change: every 4.0.x export keeps its name,
+  kind and entry point, and the old and new builds give byte-identical
+  `evaluateCalc` (every builtin pack declaration over every example),
+  `evaluateModuleCalculations` and `validateUWFile` results over the
+  examples. `buildMeta` moves to `metadata.ts`,
+  `MarketDataLookup` to `market-data.ts` and `readGapsContent` to
+  `gaps-content.ts`; the standard `evaluateCalc` returns no `display`, which
+  `calc-display.ts` adds for the exported `evaluateCalc` and
+  `evaluateModuleCalculations`; `bindings.ts` takes its source-edit engine as
+  an injected adapter (`bindings-edit.ts` wires the editor); the starter tables
+  of `protocol.ts` move to `starter-protocol.ts`; and the twelve builtin pack
+  manifests move to `builtin-packs/`, which `packs/` re-exports.
+  `src/standard-closure.test.ts` lists the standard module set and fails if it
+  imports any other module, the vendor SDK, or any package or `node:` builtin
+  outside an allow-list (`fast-xml-parser`, `fflate`, and integrity's guarded
+  `node:crypto` fallback).
+- RFC 0083 Phase 2: the standard module set moves from `@uwmd/core` to
+  `@uwmd/verify`, with its tests. `@uwmd/core` depends on `@uwmd/verify` at
+  exactly 0.1.0 (in place of `fast-xml-parser` and `fflate`), imports it only
+  through its public entry, and re-exports its whole surface from both
+  entries; no 4.0.x export is removed or changes kind
+  (`surface.test.ts`). Core's `evaluateCalc` and
+  `evaluateModuleCalculations` still add `display`.
+  `REFERENCE_IMPLEMENTATION_MANIFEST` names `@uwmd/core`, so it moves to
+  core's `reference-implementation.ts`; `uwmd manifest`'s stdout is unchanged.
+- **Receipts now name `@uwmd/verify` as their engine**, including receipts
+  issued through `@uwmd/core` and the CLI: `computation.engine` is
+  `@uwmd/verify` and `computation.engine_version` is `VERIFY_VERSION` (0.1.0),
+  the code that computes the results (UW Receipt §5.3). The `issuer` is
+  unchanged: `@uwmd/core@<CORE_VERSION>` through core's `issueReceipt`,
+  `uwmd-cli@<CORE_VERSION>` from the CLI. Core re-exports verify's
+  `verifyReceipt` unchanged. A verifier holding only `@uwmd/verify` therefore
+  reports a tampered core-issued receipt as `failed`, not `RCP-07`
+  `unverifiable` (the RFC 0078 boundary test). The two
+  `conformance/receipts/issue/` baselines are regenerated, and the
+  `verify/03-result-disagrees`, `10-rehashed-one-cent` and
+  `11-rehashed-subquantum-ratio` receipts name `@uwmd/verify` 0.1.0 so they
+  still test a same-engine `failed`; every receipt verdict is unchanged. From
+  here the receipt baselines move with `VERIFY_VERSION`, not core's version.
+  A receipt issued by an earlier release names `@uwmd/core` and that release's
+  version, and a disagreement on it is `RCP-07`, as across any two versions.
+- A differential run of the 96b86155 build against this one, over every
+  `examples/` and `conformance/` document (785), compares `evaluateCalc`
+  (every builtin pack declaration, document currency and MXN, both entries),
+  `evaluateModuleCalculations`, `validateUWFile`, receipt issue and verify
+  (and a tampered copy), Lite parse and compile, `applyEdit` bytes,
+  envelopes, integrity chains, `render` and `verifyStatedMetrics`, and 256
+  `uwmd` CLI invocations (`manifest`, `calc`, `validate`, `receipt issue`,
+  `summary`). The only differences are the receipt `engine` and
+  `engine_version` fields.
+- `@uwmd/signing`, `@uwmd/batch` and `@uwmd/lake` build on `@uwmd/verify`
+  (exact 0.1.0); signing also keeps `@uwmd/core` for the capability-token
+  types. Each takes its own version bump in this release (above).
+  `tools/vscode-uwmd` depends on `@uwmd/verify`; its receipt check identifies
+  as `@uwmd/verify`, the engine current receipts name, so a tampered receipt
+  is still `failed`.
+- Release tooling publishes eight packages from 4.1.0, `@uwmd/verify` first:
+  `release.yml`, `release-packages.mjs` and `release:check`, which now requires
+  every package to publish after each `@uwmd/*` package it pins. The guards
+  check the new package: `verify-lockfile` (and fails when a root workspace is
+  missing from its list), `verify-versions` (a `VERSIONS.md` row),
+  `verify-packages` (packs it, then compiles and runs a consumer with only
+  `@uwmd/verify` installed), `verify-codes` (scans both libraries) and the
+  conformance metrics control (the verifier's import graph reaches no core
+  module). CI measures coverage for both packages, each against its own
+  floor; core's lines and statements floor drops to 77 because the
+  well-covered standard modules left with their tests (since re-measured;
+  below). The first publication of `@uwmd/verify` needs a trusted publisher
+  on npmjs.com, an owner step done before the tag (wiki 11, "Account
+  prerequisite / bootstrap").
+- `@uwmd/verify`'s `standard-closure.test.ts` also treats `require(...)`,
+  `require.resolve(...)` and any `createRequire` reference as edges, so a
+  CommonJS load cannot reach outside the package unseen; a negative control
+  plants each form.
+- Core's coverage excludes the CLI entry files `cli.ts` and
+  `cli-portfolio.ts`, which run only as spawned `uwmd` processes and which no
+  in-process test loads. Counted, their never-loaded lines set a
+  platform-dependent denominator: 73.99% on Windows and 78.04% on Linux CI
+  with the same 6,760 covered lines. Excluded, the measurement no longer
+  depends on the platform: 95.83% lines and statements, so core's lines and
+  statements floor rises from 77 to 94; functions (97) and branches (81) are
+  unchanged.
+
+### Fixed
+
+- `docs/reviews/2026-09-12-pcg64-reference.md` and
+  `docs/reviews/2026-09-24-terminal-boundary-design.md` link the PCG64 oracle,
+  its tests and the property cash-flow verifier at their `@uwmd/verify`
+  paths.
+- The docs-site home page no longer calls the Excel exporter and the lake
+  adapter unpublished; both have published with every release since 3.0.0.
+
+## [4.0.1] - 2026-10-13
+
+### Released
+
+Published core/CLI **4.0.1**, signing **0.3.1**, batch **0.8.23**, Excel
+**0.9.16**, report **0.8.28** and lake **0.2.12** from `v4.0.1` on
+`442dfc6aecfb591ce744f00776a9e2c7a601854c`.
+[Release run 38429239833](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38429239833)
+succeeded through trusted publishing with provenance, and no module package
+published. Every registry version and `latest` matches, and all seven
+`gitHead` values name the authorized commit. Integrity, registry and DSSE
+signatures, authenticated TUF/Fulcio/SCT trust, Rekor timestamps and
+inclusion proofs, and all 616 published file contents verify. The
+registry-installed CLI reports core 4.0.1 / Protocol 4.0.0 / Format 3.0 and
+passes **336/336** portable cases with no skips (Reader 17, Verifier 281,
+module profile 1, starter products 37). An isolated consumer confirms both
+fixes as delivered: the published signing 0.3.1 exports `SIGNING_VERSION`
+`'0.3.1'`, equal to its manifest, and the published `deriveSourcesUses`
+derives 4,500,000 for `conformance/capex/accept-draw-with-verified-remaining`.
+Every dependent pins core 4.0.1 exactly, signing 0.3.1 stamps and verifies
+`_meta.integrity`, and strict TypeScript compiles against all seven packages
+with `skipLibCheck: false` and no Anthropic SDK. Protocol **4.0.0** stays
+Stable, paired with Format **3.0**. The immutable tagged tree keeps its
+neutral preparation records. Exact evidence is in
+`docs/releases/4.0.1-publication-evidence.json` and the verification method
+in `docs/releases/4.0.1-publication.md`.
+
+### Prepared package pairing
+
+Core/CLI **4.0.1** pair with Protocol **4.0.0** and Format **3.0**, the same
+contract as 4.0.0. Signing **0.3.1**, batch **0.8.23**, Excel **0.9.16**,
+report **0.8.28** and lake **0.2.12** pin core **4.0.1**. Core's optional
+signing peer is **0.3.1**. The workflow scope is the same seven packages:
+core, CLI, signing, batch, Excel, report and lake.
+
+This is a patch: nothing normative moves, so neither the Protocol nor the
+Format version does (wiki 11: from 3.0 the Protocol moves only when what a
+document means or how it is verified changes; starter-product changes version
+their packages only). The sources & uses footing below is a starter product;
+the Format §4.8 footing paragraph states the rule RFC 0081 §7 already implied.
+No conformance expectation, issue code, metric definition, stated value or
+receipt `results_digest` changes; only `engine_version` moves, to 4.0.1, in
+the two issued receipt baselines and the three failed-verdict verify receipts. Signing takes a patch for its own fix and
+the core repin. Batch, Excel, report and lake take a patch only because they
+pin core exactly and npm cannot republish a version with a new pin. The
+private web editor keeps 0.8.0.
+
+### Fixed
+
+- The web editor (a private starter product) reads its own name and version
+  from `tools/web-editor/package.json` for the footer and the receipt
+  `issuer`, which hard-coded `@uwmd/web-editor 0.5.0` while the package was
+  0.8.0.
+- `deriveSourcesUses` (starter sources & uses footing) counts a typed
+  `uses.renovation` as `budget + contingency`, the amount the retired
+  renovation scalars contributed (RFC 0081 §7). It summed every renovation
+  leaf, so the draw group (`contingency_used`, `drawn_to_date`) and
+  `contingency_remaining` were counted again as uses; this was the owner-Q3
+  double count RFC 0081 left out of scope. Format §4.8's footing paragraph now
+  states the rule. Derived totals change only for the 16 `conformance/capex/`
+  documents whose renovation states more than budget and contingency (e.g.
+  `accept-draw-with-verified-remaining` 6,850,000 → 4,500,000); no
+  `examples/` total, stated value, calc baseline or receipt changes, and the
+  lender fixture stays 187/0/0.
+- `@uwmd/signing` exports `SIGNING_VERSION` read from its own `package.json`;
+  the hand-kept literal said `0.2.0` in the published 0.3.0. A test pins it to
+  the manifest.
+- Status, roadmap and about pages no longer call the Excel exporter, report
+  renderer or lake adapter unpublished or "available from source"; all three
+  have published with every release since 3.0.0. The wiki's web-editor heading
+  names its current 0.8.0.
+
 ## [4.0.0] - 2026-10-12
+
+### Released
+
+Published core/CLI **4.0.0**, signing **0.3.0**, batch **0.8.22**, Excel
+**0.9.15**, report **0.8.27** and lake **0.2.11** from annotated `v4.0.0` on
+`d52a42394be238b00c55942afc1a31cc5c00061b`.
+[Release run 38339991109](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38339991109)
+succeeded through trusted publishing with provenance; it is the first run to
+publish seven packages, and no module package. Every registry version and
+`latest` matches, and all seven `gitHead` values name the authorized commit.
+Integrity, registry and DSSE signatures, authenticated TUF/Fulcio/SCT trust,
+Rekor timestamps and inclusion proofs, and all 614 published file contents
+verify. The registry-installed CLI reports Protocol 4.0.0 / Format 3.0 and
+passes **336/336** portable cases with no skips (Reader 17, Verifier 281,
+module profile 1, starter products 37). An isolated consumer confirms the
+published core reads Format 3.0 and Protocol 4.0.0 only, refuses a Format 2.1
+document as `UNSUPPORTED_FORMAT_VERSION`, claims the `verifier` tier with
+all six profiles and no longer exports the removed migration and
+compatibility symbols; every dependent pins core 4.0.0 exactly, signing 0.3.0
+stamps and verifies `_meta.integrity`, and strict TypeScript compiles against
+all seven packages with `skipLibCheck: false` and no Anthropic SDK. RFC 0081
+is `implemented`; Protocol **4.0.0** is Stable, paired with Format **3.0**.
+Both module package names stay at their final, deprecated 0.2.0, and nothing
+else was published. The immutable tagged tree keeps its neutral preparation
+records. Exact evidence is in `docs/releases/4.0.0-publication-evidence.json`
+and the verification method in `docs/releases/4.0.0-publication.md`.
 
 ### Prepared package pairing
 
@@ -23,9 +354,10 @@ peer is **0.3.0**. Signing takes a minor step because its own surface breaks
 workflow scope is seven packages: core, CLI, signing, batch, Excel, report and
 lake. `@uwmd/module-hospitality` and `@uwmd/module-data-center` (final 0.2.0,
 deprecated on npm since 2026-10-11) are no longer in the repository or the
-release. RFC 0081 stays `accepted` in the tagged preparation state.
+release. RFC 0081 stayed `accepted` in the tagged preparation state; the
+Released evidence above records the verified lifecycle transition.
 
-### Contract — Protocol 4.0.0 (RFC 0081), Format 3.0
+### Released contract — Protocol 4.0.0 (RFC 0081), Format 3.0
 
 - **Format 3.0** is the 2.1 shape with every alternate spelling removed: bare
   blocks with one inline nested `_meta`, the block digest over the payload

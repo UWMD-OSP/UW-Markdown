@@ -6,40 +6,27 @@
 // produced the value. See FORMAT_SPEC §3.4 (provisional flag) and §2.6
 // (source tags).
 
-import type { CascadeStep } from './protocol.js';
+import {
+  type CascadeStep,
+  blockPayload,
+  deepGet,
+  resolveSectionBlock,
+  type SectionSelectionOptions,
+  type BlockRole,
+  type ParsedUWFile,
+  type SourceTag,
+  type UWBlock,
+  type UWFieldOverride,
+  blockOverrides,
+  type MarketDataLookup,
+} from '@uwmd/verify';
 import { getAssetClassDefaults, type DefaultRange } from './defaults.js';
-import { blockPayload, deepGet } from './parser.js';
-import { resolveSectionBlock, type SectionSelectionOptions } from './section-resolution.js';
-import type { BlockRole, ParsedUWFile, SourceTag, UWBlock, UWFieldOverride } from './types.js';
-import { blockOverrides } from './metadata.js';
 
 // ─── Inputs ──────────────────────────────────────────────────────────────────
 
-export interface MarketDataLookup {
-  /**
-   * Resolve `field_path` against an external market-data source. Adopters
-   * implement this against CoStar, Yardi, RCA, or an internal warehouse.
-   * Returning null means "no observation available" — the cascade falls
-   * through to asset_class_default.
-   */
-  resolve(
-    field_path: string,
-    context: { asset_class: string; geo?: string },
-  ): {
-    value: unknown;
-    range?: { low: number; central: number; high: number };
-    /**
-     * Optional identity of the observation set this value came from, surfaced
-     * as `ResolvedValue.resolved_from`. Added by RFC 0022 so a market-derived
-     * value can say *which* set produced it — the gap that made receipts over
-     * market data irreproducible. Optional, so a host returning the original
-     * `{ value, range }` shape is unaffected.
-     */
-    source_id?: string;
-  } | null;
-  /** How long an observation remains usable, for staleness checks downstream. */
-  staleness_seconds: number;
-}
+// `MarketDataLookup` lives in `@uwmd/verify` (market-data.ts, RFC 0083); the
+// cascade keeps exporting it under the same name.
+export type { MarketDataLookup };
 
 /**
  * Assumptions one ancestor asserts for its descendants (RFC 0021 §5).

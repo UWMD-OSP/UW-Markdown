@@ -81,14 +81,14 @@ RFC 0044 lease-up projection surface. The following requirements are deliberate:
 | Basis / result | One property, currency, unlevered and pre-tax. A candidate wrapper retains plan, coverage/cells, bindings, source checks and envelope digest. `declared_complete` is a checked declaration, not audited economic completeness. No source/document mutation. |
 
 The current implementation makes two different horizon checks in
-[`property-cash-flows.ts`](../../packages/uwmd-core/src/property-cash-flows.ts):
+[`property-cash-flows.ts`](../../packages/uwmd-verify/src/property-cash-flows.ts):
 `dateInPeriod` and the plan test reject disposition outside the last monthly or
 quarterly calendar period; subsequent row tests reject cash outside acquisition
 through disposition. Closing-slot timing is checked separately. Case A fails
 the **plan/source-period** test, not a post-sale row test. Case B's false reserve
 assertion refuses earlier during plan validation.
 
-[`property-cash-flows.test.ts`](../../packages/uwmd-core/src/property-cash-flows.test.ts)
+[`property-cash-flows.test.ts`](../../packages/uwmd-verify/src/property-cash-flows.test.ts)
 covers late exits, post-hold cash, false reserve assertions, stable same-day
 ordering, monthly/quarterly cases and optional sale deductions. Existing
 [assembly conformance](https://github.com/UWMD-OSP/UW-Markdown/tree/dd3029d6125c9d1c7509b9906099bf93af11c034/conformance/property-cash-flow-assembly) includes

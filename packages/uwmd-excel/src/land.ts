@@ -5,7 +5,7 @@
 // The "Operating Statement" sheet is a CARRY model for this class: the expense
 // rows are the annual cost of holding the dirt and the income row is incidental
 // interim revenue, so the NOI cell is normally negative. That is correct and
-// intended — see the header comment in packs/land.ts for why the pack emits no
+// intended — see the header comment in @uwmd/core's builtin-packs/land.ts for why the pack emits no
 // cap rate, DSCR, or debt yield to go with it.
 
 import { LAND_PACK } from '@uwmd/core';

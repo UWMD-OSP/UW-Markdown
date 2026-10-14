@@ -13,8 +13,8 @@
 // carries what the verdict does and does not mean.
 
 import { readFile } from 'node:fs/promises';
-import { assertUWReceipt, verifyReceipt } from '@uwmd/core';
-import type { UWReceipt, UWReceiptVerdict, UWReceiptVerification } from '@uwmd/core';
+import { assertUWReceipt, verifyReceipt } from '@uwmd/verify';
+import type { UWReceipt, UWReceiptVerdict, UWReceiptVerification } from '@uwmd/verify';
 
 /** Conventional sidecar location (UW_RECEIPT §2). */
 export function receiptPathFor(dealPath: string): string {

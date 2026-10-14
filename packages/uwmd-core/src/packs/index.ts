@@ -1,35 +1,29 @@
-import { toBuiltinAssetClass } from '../types.js';
 // Asset-class calc packs — public surface.
 //
 // A "pack" is a ModuleManifest declaring derived-metric calcs (and, in future
 // versions, validations and view models) for a specific asset class. Packs are
 // the modular unit that lets every tool in the ecosystem (web editor, Excel
 // converter, agents, future viewers) consume the same calc definitions.
+//
+// The twelve builtin manifests and their registry live in `@uwmd/verify`
+// (`builtin-packs/`, the standard side, RFC 0083); this module re-exports them
+// beside the Excel emitter, a starter product, under the same names.
 
-import type { ModuleManifest } from '../protocol.js';
-import { MULTIFAMILY_PACK } from './multifamily.js';
-import { OFFICE_PACK } from './office.js';
-import { RETAIL_PACK } from './retail.js';
-import { INDUSTRIAL_PACK } from './industrial.js';
-import { SELF_STORAGE_PACK } from './self-storage.js';
-import { HOSPITALITY_PACK } from './hospitality.js';
-import { SENIOR_HOUSING_PACK } from './senior-housing.js';
-import { STUDENT_HOUSING_PACK } from './student-housing.js';
-import { LAND_PACK } from './land.js';
-import { DATA_CENTER_PACK } from './data-center.js';
-import { MANUFACTURED_HOUSING_PACK } from './manufactured-housing.js';
-import { MIXED_USE_PACK } from './mixed-use.js';
-
-export { MULTIFAMILY_PACK } from './multifamily.js';
-export { OFFICE_PACK } from './office.js';
-export { RETAIL_PACK } from './retail.js';
-export { INDUSTRIAL_PACK } from './industrial.js';
-export { SELF_STORAGE_PACK } from './self-storage.js';
-export { HOSPITALITY_PACK } from './hospitality.js';
-export { SENIOR_HOUSING_PACK } from './senior-housing.js';
-export { STUDENT_HOUSING_PACK } from './student-housing.js';
-export { LAND_PACK } from './land.js';
-export { MIXED_USE_PACK } from './mixed-use.js';
+export {
+  DATA_CENTER_PACK,
+  HOSPITALITY_PACK,
+  INDUSTRIAL_PACK,
+  LAND_PACK,
+  MANUFACTURED_HOUSING_PACK,
+  MIXED_USE_PACK,
+  MULTIFAMILY_PACK,
+  OFFICE_PACK,
+  RETAIL_PACK,
+  SELF_STORAGE_PACK,
+  SENIOR_HOUSING_PACK,
+  STUDENT_HOUSING_PACK,
+  getPackForAssetClass,
+} from '@uwmd/verify';
 export {
   emitFromAst,
   emitExcelFormula,
@@ -37,35 +31,3 @@ export {
   ExcelEmitError,
   type ExcelEmitOptions,
 } from './excel-emit.js';
-
-/**
- * Built-in calc packs keyed by the asset class they target. Mirrors the
- * defaults REGISTRY in `defaults.ts`. Third-party / module-loaded packs are out
- * of scope for v1 (see RFC 0003) — these are the compiled-in starter packs.
- */
-const PACK_REGISTRY: Readonly<Record<string, ModuleManifest>> = Object.freeze({
-  multifamily: MULTIFAMILY_PACK,
-  office: OFFICE_PACK,
-  retail: RETAIL_PACK,
-  industrial: INDUSTRIAL_PACK,
-  self_storage: SELF_STORAGE_PACK,
-  hospitality: HOSPITALITY_PACK,
-  senior_housing: SENIOR_HOUSING_PACK,
-  student_housing: STUDENT_HOUSING_PACK,
-  land: LAND_PACK,
-  data_center: DATA_CENTER_PACK,
-  manufactured_housing: MANUFACTURED_HOUSING_PACK,
-  mixed_use: MIXED_USE_PACK,
-});
-
-/**
- * Look up the built-in calc pack for an asset class. Returns null when no pack
- * is registered (callers may fall back to the multifamily pack or skip metrics).
- */
-export function getPackForAssetClass(asset_class: string): ModuleManifest | null {
-  return PACK_REGISTRY[toBuiltinAssetClass(asset_class) ?? asset_class] ?? null;
-}
-
-export { DATA_CENTER_PACK } from './data-center.js';
-
-export { MANUFACTURED_HOUSING_PACK } from './manufactured-housing.js';

@@ -1,9 +1,16 @@
 import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { rankGaps } from './refinement.js';
-import { parseUWFile } from './parser.js';
-import { MULTIFAMILY_PACK } from './packs/multifamily.js';
-import type { ModuleCalcDecl, ModuleManifest } from './protocol.js';
+import {
+  parseUWFile,
+  MULTIFAMILY_PACK,
+  type ModuleCalcDecl,
+  type ModuleManifest,
+  type ParsedUWFile,
+  type UWBlock,
+  evaluateCalc,
+  quantizeDecimal,
+} from '@uwmd/verify';
 
 const MINIMAL_MULTIFAMILY = `---
 uw_version: "3.0"
@@ -238,8 +245,6 @@ source_documents: []
 });
 
 // RFC 0042 acceptance cases exercise values and consumer behavior, not only ASTs.
-import type { ParsedUWFile, UWBlock } from './types.js';
-import { evaluateCalc, quantizeDecimal } from './calc/index.js';
 import { resolveValue } from './cascade.js';
 import { readFileSync } from 'node:fs';
 import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';

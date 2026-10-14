@@ -22,11 +22,15 @@ The project has five layers, each consuming the one above it:
                           ▲
                           │ implements
 ┌─────────────────────────────────────────────────────────────┐
-│  Reference        packages/uwmd-core (@uwmd/core)           │  TypeScript
-│  library          ├── parser / validator / renderer          │  library
-│                   ├── editor (starter edit dispatcher)       │
-│                   ├── calc/  (parser, evaluator, builtins)   │
-│                   ├── packs/ (12 builtin packs, excel-emit)  │
+│  Reference        packages/uwmd-verify (@uwmd/verify)       │  TypeScript
+│  implementation   ├── parser / validator / receipts          │  library:
+│  of the standard  ├── calc/  (parser, evaluator, builtins)   │  the standard
+│                   └── builtin-packs/ (12 builtin packs)      │
+├─────────────────────────────────────────────────────────────┤
+│  Starter toolkit  packages/uwmd-core (@uwmd/core)           │  re-exports
+│                   ├── editor (starter edit dispatcher)       │  verify
+│                   ├── renderer / report / cascade / defaults │
+│                   ├── packs/ (excel-emit)                    │
 │                   └── agents/ (Bancroft, starter agent host) │
 └─────────────────────────────────────────────────────────────┘
                           ▲
@@ -79,33 +83,39 @@ implement only one tier can read just the relevant sections.
 - [`spec/schemas/`](spec/schemas/) — JSON Schema 2020-12 definitions plus the
   structural UW XML XSD.
 
-## Reference library: `@uwmd/core`
+## Reference library: `@uwmd/verify` and `@uwmd/core`
 
-[`packages/uwmd-core/src`](packages/uwmd-core/src/) is the canonical
-TypeScript implementation. All file-level operations route through
-this library; tools depend on it.
+[`packages/uwmd-verify/src`](packages/uwmd-verify/src/) is the canonical
+TypeScript implementation of the standard (RFC 0083): everything a party needs
+to read and verify a document. [`packages/uwmd-core/src`](packages/uwmd-core/src/)
+is the starter toolkit on top of it; it depends on `@uwmd/verify` at an exact
+version and re-exports its whole surface. All file-level operations route
+through this library; tools depend on it. The table names the package of each
+module.
 
 | File | Responsibility |
 |---|---|
-| `parser.ts` | `.uw.md` → `ParsedUWFile` (frontmatter + sections + `_meta`). |
-| `validator.ts` | Cross-section + financial-validity + meta-integrity checks. Hosts `BUILTIN_REMEDIATIONS`, the registry referenced by protocol §III.6a. |
-| `editor.ts` | Starter-product edit dispatcher: `applyEdit()` over four operation types, gated by `BUILTIN_EDIT_POLICIES`. |
-| `bindings.ts` | HTTP negotiation/ETags and MCP resource/tool-result adapters over the shared codecs/editor. |
-| `renderer.ts` | HTML / Markdown rendering paths. PDF/DOCX are stubs deferred to a third-party pipeline. |
-| `runner.ts` + `agents/` | Starter agent host. `runBancroftAgent` is the Claude-backed reference implementation; the contract (`protocol.ts` types, [starter guide](docs/starter/ai-host.md)) is provider-neutral. |
-| `calc/` | `parser.ts` (recursive-descent), `evaluator.ts` (AST walker), `builtins.ts` (financial + math primitives). The evaluator is sandboxed: capped input, no globals, no I/O. |
-| `packs/` | One pack per builtin asset class, each equal to its normative `spec/metrics/` entries (`metric-dictionary.test.ts`). `excel-emit.ts` translates the same AST to Excel formulas, and the pack tests assert the two paths agree exactly after §VIII.5 quantization (a starter-product quality bar). |
-| `protocol.ts` | `BUILTIN_VIEW_MODELS`, `BUILTIN_EDIT_POLICIES`, the AI-host contract types. |
-| `format.ts` | Field-level formatters (currency, percent, multiple, etc.) used by view models. |
-| `context.ts` | `BANCROFT_LAYERS` definitions and `buildAgentContext`. |
-| `compactor.ts` | Materializes "live view" by collapsing superseded blocks. |
-| `init.ts` | Scaffold a new `.uw.md` from defaults. |
-| `cli.ts` | Programmatic CLI entry; surfaced via `uwmd-cli`. |
-| `browser.ts` | Subpath export excluding `@anthropic-ai/sdk` so the parser/validator/calc engine can be bundled into a web app. |
+| `parser.ts` (verify) | `.uw.md` → `ParsedUWFile` (frontmatter + sections + `_meta`). |
+| `validator.ts` (verify) | Cross-section + financial-validity + meta-integrity checks. Hosts `BUILTIN_REMEDIATIONS`, the registry referenced by protocol §III.6a. |
+| `editor.ts` (core) | Starter-product edit dispatcher: `applyEdit()` over four operation types, gated by `BUILTIN_EDIT_POLICIES`. |
+| `bindings.ts` (verify) + `bindings-edit.ts` (core) | HTTP negotiation/ETags and MCP resource/tool-result adapters over the shared codecs; core injects its editor for source edits. |
+| `renderer.ts` (core) | HTML / Markdown rendering paths. PDF/DOCX are stubs deferred to a third-party pipeline. |
+| `runner.ts` + `agents/` (core) | Starter agent host. `runBancroftAgent` is the Claude-backed reference implementation; the contract (`protocol.ts` types, [starter guide](docs/starter/ai-host.md)) is provider-neutral. |
+| `calc/` (verify) | `parser.ts` (recursive-descent), `evaluator.ts` (AST walker), `builtins.ts` (financial + math primitives). The evaluator is sandboxed: capped input, no globals, no I/O. |
+| `builtin-packs/` (verify) + `packs/` (core) | One pack manifest per builtin asset class in `builtin-packs/` (standard data), each equal to its normative `spec/metrics/` entries (`metric-dictionary.test.ts`); `packs/` re-exports them. `packs/excel-emit.ts` translates the same AST to Excel formulas, and the pack tests assert the two paths agree exactly after §VIII.5 quantization (a starter-product quality bar). |
+| `protocol.ts` (verify) | The normative contract types, `BUILTIN_EDIT_POLICIES`, `BUILTIN_REMEDIATIONS`, version constants. |
+| `starter-protocol.ts` (core) | Starter tables: `BUILTIN_VIEW_MODELS`, number formats, `CASCADE_ORDER`, the AI-host and capability-token types (RFC 0083). |
+| `format.ts` (core) | Field-level formatters (currency, percent, multiple, etc.) used by view models. |
+| `context.ts` (core) | `BANCROFT_LAYERS` definitions and `buildAgentContext`. |
+| `compactor.ts` (core) | Materializes "live view" by collapsing superseded blocks. |
+| `init.ts` (core) | Scaffold a new `.uw.md` from defaults. |
+| `cli.ts` (core) | Programmatic CLI entry; surfaced via `uwmd-cli`. |
+| `browser.ts` (both) | Subpath export excluding `@anthropic-ai/sdk` so the parser/validator/calc engine can be bundled into a web app. Verify's equals its main entry; core's adds the browser-safe starter products. |
 
 ## Tools layer
 
-Each tool depends on `@uwmd/core` (browser entry where applicable) and
+Each tool depends on `@uwmd/core`, or only `@uwmd/verify` when it reads and
+verifies without editing or rendering (browser entry where applicable), and
 nothing else from this monorepo:
 
 - `packages/uwmd-cli` — the public `uwmd` CLI. Wraps `cli.ts` and
@@ -169,10 +179,12 @@ These constraints exist to keep the boundaries clean:
 
 1. **Spec depends on nothing.** Any spec change requires an RFC
    regardless of whether implementations follow.
-2. **`@uwmd/core` keeps transport logic dependency-light.** Runtime dependencies
-   are `@anthropic-ai/sdk` (excluded from `browser`), `fast-xml-parser`, and
-   `fflate`; HTTP/MCP adapters introduce no server-SDK dependency.
-3. **Tools depend on `@uwmd/core`** plus their own UI/runtime stack.
+2. **The library keeps transport logic dependency-light.** `@uwmd/verify`'s
+   runtime dependencies are `fast-xml-parser` and `fflate`, and it depends on
+   no `@uwmd/*` package. `@uwmd/core` adds `@uwmd/verify` (exact) and the
+   optional peer `@anthropic-ai/sdk` (excluded from `browser`); HTTP/MCP
+   adapters introduce no server-SDK dependency.
+3. **Tools depend on `@uwmd/core` or `@uwmd/verify`** plus their own UI/runtime stack.
    Tools MUST NOT reach into other tools' code.
 4. **Conformance fixtures depend on nothing.** They are pure data and
    are versioned alongside the spec they exercise.
@@ -184,9 +196,9 @@ a PR.
 
 | Goal | Start here |
 |---|---|
-| Fix a parser bug | `packages/uwmd-core/src/parser.ts` + `parser.test.ts` |
-| Add a validator check | `packages/uwmd-core/src/validator.ts` (register code in `BUILTIN_REMEDIATIONS`) |
-| Add a calc builtin | `packages/uwmd-core/src/calc/builtins.ts` + `calc.test.ts`, then update `excel-emit.ts` so the Excel translation matches |
+| Fix a parser bug | `packages/uwmd-verify/src/parser.ts` + `parser.test.ts` |
+| Add a validator check | `packages/uwmd-verify/src/validator.ts` (register code in `BUILTIN_REMEDIATIONS`) |
+| Add a calc builtin | `packages/uwmd-verify/src/calc/builtins.ts` + `calc.test.ts`, then update `excel-emit.ts` so the Excel translation matches |
 | Propose a spec change | Open an RFC under `docs/rfcs/` using the template |
 | Add a conformance fixture | `conformance/documents/`, `calc/` or `starter/*/` `fixtures/` plus matching `expected/` |
 | Improve docs | Either `tools/docs-site/` or the spec/governance markdown at repo root (the docs site rebuilds from these) |

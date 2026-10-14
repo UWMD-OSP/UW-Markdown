@@ -26,6 +26,7 @@ publication state. At the time of writing:
 
 | Package or tool | How to get it |
 |---|---|
+| `@uwmd/verify` (read and verify only: the reference implementation of the standard, not a starter product) | `npm install @uwmd/verify` (release 4.1.0 on); `@uwmd/core` depends on it and re-exports it |
 | `@uwmd/core` (library) | `npm install @uwmd/core` |
 | `@uwmd/cli` (`uwmd` command) | `npx @uwmd/cli <command>` or `npm install @uwmd/cli` |
 | `@uwmd/signing` (block and receipt signatures) | `npm install @uwmd/signing` |
@@ -40,8 +41,8 @@ publication state. At the time of writing:
 
 The registry also serves a stray `0.3.0` of `@uwmd/excel` and `@uwmd/report`.
 Both are deprecated and pinned to core 1.3.0; do not install them. Install an
-exact version that pins your core, for example `@uwmd/excel@0.9.15` with
-`@uwmd/core@4.0.0`.
+exact version that pins your core, for example `@uwmd/excel@0.9.17` with
+`@uwmd/core@4.1.0`.
 
 For source-checkout calculation scenarios, see
 [Calculation context files](CALCULATION_CONTEXT.md): select period variants

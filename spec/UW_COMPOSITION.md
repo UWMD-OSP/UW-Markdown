@@ -369,7 +369,7 @@ this specification.
 
 ## 9. Reference implementation
 
-`packages/uwmd-core/src/composition.ts` — `parseUWPart`, `readExternalDirective`,
+`packages/uwmd-verify/src/composition.ts` — `parseUWPart`, `readExternalDirective`,
 `validateExternalDirective`, `resolveComposition`, `resolveComposite`, the bounds
 constants, and the error taxonomy. Browser-safe: it performs no I/O.
 

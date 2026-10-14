@@ -35,7 +35,9 @@ reproduce or classify the report without it.
   the problem, with a version or commit. When you vendor or pin UWMD packages,
   that version and the UWMD version can differ, and both matter.
 - **UWMD versions.** `npx @uwmd/cli manifest` prints the
-  @uwmd/core version and the Protocol and Format versions it implements. An
+  @uwmd/core version and the Protocol and Format versions it implements, and
+  from 4.1.0 writes the `@uwmd/verify` version to stderr; `npx @uwmd/cli
+  --version` prints all four on one screen. An
   independent implementation exposes its own manifest under Protocol §II.6a. A
   document's Format version is its `uw_version` frontmatter (`uw_lite_version`
   for Lite). Documents do not carry a Protocol version, so report the one your

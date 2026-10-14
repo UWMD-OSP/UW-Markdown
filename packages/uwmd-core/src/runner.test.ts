@@ -1,7 +1,7 @@
 // Runner tests — verify the write path produces valid, round-trippable .uw.md
 
 import { describe, it, expect } from 'vitest';
-import { parseUWFile, getSection } from './parser.js';
+import { parseUWFile, getSection, buildMeta as standardBuildMeta } from '@uwmd/verify';
 import { writeAgentBlock, writeErrorEntry, buildMeta } from './runner.js';
 import { resolveValue } from './cascade.js';
 import { buildAgentContext, isContextReady, BANCROFT_LAYERS } from './context.js';
@@ -291,21 +291,6 @@ describe('writeAgentBlock', () => {
   });
 });
 
-// ─── buildMeta tests ──────────────────────────────────────────────────────────
-
-describe('buildMeta', () => {
-  it('produces valid UWMeta with required fields', () => {
-    const meta = buildMeta('debt_structure', 1, { source: 'wizard', confidence: 'high' });
-    expect(meta.section).toBe('debt_structure');
-    expect(meta.lifecycle?.revision).toBe(1);
-    expect(meta.lifecycle?.superseded).toBe(false);
-    expect(meta.provenance?.source).toBe('wizard');
-    expect(meta.quality?.confidence).toBe('high');
-    expect(meta.provenance?.timestamp).toBeTruthy();
-    expect(Array.isArray(meta.quality?.flags)).toBe(true);
-  });
-});
-
 // ─── buildAgentContext tests ──────────────────────────────────────────────────
 
 describe('buildAgentContext', () => {
@@ -362,5 +347,11 @@ describe('BANCROFT_LAYERS', () => {
     for (const layer of BANCROFT_LAYERS) {
       expect(layer.writes.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('buildMeta', () => {
+  it('is the same function @uwmd/verify exports (public path unchanged, RFC 0083)', () => {
+    expect(buildMeta).toBe(standardBuildMeta);
   });
 });

@@ -12,14 +12,15 @@
 // against the edit context it is handed. The static §V.3 policy check is the
 // editor's job and runs regardless — a token narrows authority, never widens.
 
+// The capability-token contract is a starter product (RFC 0078 D10), so its
+// types come from `@uwmd/core`; the actor grammar is the standard's (RFC 0083).
 import type {
   CapabilityRejection,
   CapabilityVerdict,
   CapabilityVerifier,
   CapabilityVerifyContext,
-  UWSignatureAlgorithm,
 } from '@uwmd/core';
-import { parseActorSource } from '@uwmd/core';
+import { parseActorSource, type UWSignatureAlgorithm } from '@uwmd/verify';
 import { fromBase64Url, toBase64Url, utf8 } from './base64.js';
 import type { KeyStore, SigningKey } from './keys.js';
 import { signPayload } from './sign.js';

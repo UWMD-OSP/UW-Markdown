@@ -66,7 +66,7 @@ const emitted = new Set();
 /**
  * Codes that reach a `ValidationMessage`, kept separate from the rest.
  *
- * `@uwmd/core` spells two different things the same way: validation codes,
+ * The libraries spell two different things the same way: validation codes,
  * which belong in the protocol's §XI prefix table, and typed-error codes on
  * `UWPackageError` / `UWMarketDataError` and friends (`PKG-001`, `MD-002`,
  * `PKGZIP-003`), which do not — they are thrown, never collected into `issues`.
@@ -75,7 +75,11 @@ const emitted = new Set();
  */
 const validationEmitted = new Set();
 
-for (const file of sourceFiles('packages/uwmd-core/src')) {
+// Both libraries: the validator and the standard's verifiers are in
+// @uwmd/verify, and the starter toolkit in @uwmd/core can still emit codes
+// (RFC 0083). Scanning only one would let the other's codes drift unchecked.
+const SOURCE_ROOTS = ['packages/uwmd-verify/src', 'packages/uwmd-core/src'];
+for (const file of SOURCE_ROOTS.flatMap((root) => sourceFiles(root))) {
   const text = read(file);
   const isValidationSurface = text.includes('ValidationMessage');
   for (const match of text.matchAll(new RegExp(`[\"'](${CODE.source})[\"']`, 'g'))) {
@@ -93,7 +97,7 @@ for (const noise of NOT_A_CODE) {
 }
 
 if (emitted.size === 0) {
-  console.error('[FAIL] no validation codes found in packages/uwmd-core/src — the scan pattern broke, not the codebase');
+  console.error(`[FAIL] no validation codes found in ${SOURCE_ROOTS.join(' or ')} — the scan pattern broke, not the codebase`);
   process.exit(1);
 }
 

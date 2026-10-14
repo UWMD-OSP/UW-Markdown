@@ -156,6 +156,29 @@ write('05-signed-no-backend', 'deal.uwx.md', valid);
     replaceBlockJson(valid, 'property', JSON.stringify({ ...block.content, _meta: meta }, null, 2)));
 }
 
+// ── 07–09: alternate encodings of the valid signature are malformed ─────────
+{
+  const block = parseUWFile(valid).sections.property;
+  const signature = block.meta.integrity.signature;
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  const nonCanonical = signature.sig.slice(0, -1)
+    + alphabet[alphabet.indexOf(signature.sig.at(-1)) + 1];
+  for (const [scenario, sig] of [
+    ['07-signed-padded', `${signature.sig}=`],
+    ['08-signed-unused-bits', nonCanonical],
+    ['09-signed-partial-sextet', `${signature.sig}A`],
+  ]) {
+    const meta = { ...block.meta, integrity: { ...block.meta.integrity, signature: { ...signature, sig } } };
+    write(scenario, 'deal.uwx.md',
+      replaceBlockJson(valid, 'property', JSON.stringify({ ...block.content, _meta: meta }, null, 2)));
+    write(scenario, 'expected.json', `${JSON.stringify({
+      description: 'Non-canonical or wrong-length signature encoding must refuse, despite unchanged signed content.',
+      keystore: '../keys/keystore.json', ok: false,
+      signatures_present: 1, signatures_verified: 0, expected_codes: ['INT-07'],
+    }, null, 2)}\n`);
+  }
+}
+
 // ── Module manifests (RFC 0002) ─────────────────────────────────────────────
 // Same key, same key store: a host that trusts a signer trusts them for both
 // artifacts, and splitting the corpus across two keys would suggest otherwise.
@@ -185,4 +208,4 @@ writeModule('06-malformed', {
   signature: { scheme: 'uwmd-keystore', alg: 'ed25519', kid: 'uwmd-conformance-ed25519' },
 });
 
-console.log('conformance/signing: regenerated 6 block scenarios and 6 module scenarios.');
+console.log('conformance/signing: regenerated 9 block scenarios and 6 module scenarios.');

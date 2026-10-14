@@ -4,6 +4,8 @@
 // browser-usable, and `_meta.integrity.signature.sig` must round-trip identically on both
 // sides or every signature written by a browser fails in Node.
 
+import { SigningError } from './errors.js';
+
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 const B64 = `${ALPHABET}+/`;
 const B64URL = `${ALPHABET}-_`;
@@ -46,7 +48,16 @@ export function toBase64Url(bytes: Uint8Array): string {
 }
 
 export function fromBase64Url(text: string): Uint8Array {
-  return decodeWith(text, B64URL);
+  // Signature wire values are unpadded, with zero unused bits (RFC 4648).
+  // Re-encoding also rejects impossible lengths and trailing partial sextets.
+  if (!/^[A-Za-z0-9_-]*$/.test(text) || text.length % 4 === 1) {
+    throw new SigningError('SIG_MALFORMED_ENCODING', 'Expected canonical unpadded base64url.');
+  }
+  const bytes = decodeWith(text, B64URL);
+  if (toBase64Url(bytes) !== text) {
+    throw new SigningError('SIG_MALFORMED_ENCODING', 'Base64url has non-zero unused bits.');
+  }
+  return bytes;
 }
 
 /**

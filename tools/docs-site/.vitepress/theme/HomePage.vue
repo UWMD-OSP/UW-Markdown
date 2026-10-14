@@ -217,7 +217,7 @@ the post-sale value.
         <article>
           <span class="uw-index">02</span>
           <h3>Portable across tools</h3>
-          <p>The same record converts to UW JSON, UW XML, and a CSV bundle, each with a semantic digest. The CLI and core library ship on npm. A batch indexer flattens a folder of deals into a fact table for DuckDB or a warehouse. The Excel workbook exporter and the PostgreSQL lake adapter are open source but not yet published packages.</p>
+          <p>The same record converts to UW JSON, UW XML, and a CSV bundle, each with a semantic digest. The CLI and core library ship on npm. A batch indexer flattens a folder of deals into a fact table for DuckDB or a warehouse. The Excel workbook exporter and the PostgreSQL lake adapter are npm packages too.</p>
           <a href="/guide/tools">Tools and packages</a>
         </article>
         <article>

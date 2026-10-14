@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/issue-remediation.schema.json",
   "title": "UW Issue Remediation Entry",
-  "description": "One entry in a remediation registry. Renderers SHOULD surface the title and remediation text verbatim — the goal is uniform UX across every conforming implementation. Modules ship their own entries to extend BUILTIN_REMEDIATIONS. Mirrors the IssueRemediation interface in @uwmd/core/protocol.ts and is referenced by ProtocolError.code lookups. See UW_PROTOCOL.md §III.6a.",
+  "description": "One entry in a remediation registry. Renderers SHOULD surface the title and remediation text verbatim — the goal is uniform UX across every conforming implementation. Modules ship their own entries to extend BUILTIN_REMEDIATIONS. Mirrors the IssueRemediation interface in @uwmd/verify's protocol.ts and is referenced by ProtocolError.code lookups. See UW_PROTOCOL.md §III.6a.",
   "type": "object",
   "required": ["code", "severity", "title", "description", "remediation"],
   "additionalProperties": false,

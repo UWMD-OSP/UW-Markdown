@@ -18,23 +18,28 @@
 // in each input (true for all eight multifamily metrics). Diagnostics flag
 // non-monotonic ASTs.
 
-import { getPeriodReferences } from './calc/dependencies.js';
-import type { BlockRole, ParsedUWFile, DealStage, UWBlock } from './types.js';
-import type {
-  ModuleManifest,
-  ModuleCalcDecl,
-  CalcEvaluationContext,
-  PeriodRefinementIssue,
-  SectionRefinementIssue,
-} from './protocol.js';
-import { CalcError } from './calc/errors.js';
-import { periodReferenceContract, resolvePeriodReference } from './period-path.js';
-import { MULTIFAMILY_PACK } from './packs/multifamily.js';
-import { extractDependencyGraph } from './calc/dependencies.js';
-import type { Expr } from './calc/parser.js';
-import { parseExpression, periodReferencePath } from './calc/parser.js';
+import {
+  getPeriodReferences,
+  type BlockRole,
+  type ParsedUWFile,
+  type DealStage,
+  type UWBlock,
+  type ModuleManifest,
+  type ModuleCalcDecl,
+  type CalcEvaluationContext,
+  type PeriodRefinementIssue,
+  type SectionRefinementIssue,
+  CalcError,
+  periodReferenceContract,
+  resolvePeriodReference,
+  MULTIFAMILY_PACK,
+  extractDependencyGraph,
+  type Expr,
+  parseExpression,
+  periodReferencePath,
+  resolveSectionBlock,
+} from '@uwmd/verify';
 import { resolveValue, type CascadeContext, type ResolvedValue } from './cascade.js';
-import { resolveSectionBlock } from './section-resolution.js';
 
 // ─── Public types ────────────────────────────────────────────────────────────
 

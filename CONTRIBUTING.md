@@ -61,11 +61,15 @@ members (different toolchains: VitePress, Vite, vsce). Each commits its
 own `package-lock.json` and you install them with `npm install` inside
 their directory.
 
-The reference library lives at `packages/uwmd-core/`. To work on it directly:
+The reference library lives at `packages/uwmd-verify/` (the standard) and
+`packages/uwmd-core/` (the starter toolkit on top, which compiles against
+verify's `dist/`). To work on them directly:
 
 ```bash
+npm run build -w @uwmd/verify            # build verify before core
 npm run build -w @uwmd/core -- --watch   # rebuild on save
-npm test -w @uwmd/core -- --watch        # tests in watch mode
+npm test -w @uwmd/verify -- --watch      # tests in watch mode
+npm test -w @uwmd/core -- --watch
 ```
 
 ## Filing a spec change
@@ -133,7 +137,7 @@ Before opening a PR:
 - [ ] `npm test` passes (all tests green).
 - [ ] Conformance fixtures still parse without warnings (run the corpus regen script if format/parser changes).
 - [ ] If the change is normative (spec): compatibility analysis and conformance impact documented in the PR body.
-- [ ] If the change adds a public API: `packages/uwmd-core/src/index.ts` re-exports the new surface.
+- [ ] If the change adds a public API: a standard symbol is exported from `packages/uwmd-verify/src/index.ts` (core re-exports it), a starter symbol from `packages/uwmd-core/src/index.ts`.
 - [ ] CHANGELOG.md updated under `[Unreleased]`.
 
 ## Code of conduct

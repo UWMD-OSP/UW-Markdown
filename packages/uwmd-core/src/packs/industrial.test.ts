@@ -9,13 +9,16 @@
 import { describe, it, expect } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { parseUWFile } from '../parser.js';
-import { evaluateCalc } from '../calc/index.js';
-import { INDUSTRIAL_PACK } from './industrial.js';
+import {
+  parseUWFile,
+  evaluateCalc,
+  INDUSTRIAL_PACK,
+  quantizeDecimal,
+  resolveRoundTo,
+  parseExpression,
+  type CalcEvaluationContext,
+} from '@uwmd/verify';
 import { emitExcelFormula } from './excel-emit.js';
-import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
-import { parseExpression } from '../calc/parser.js';
-import type { CalcEvaluationContext } from '../protocol.js';
 
 function excelValue(formula: string): number | null {
   const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');

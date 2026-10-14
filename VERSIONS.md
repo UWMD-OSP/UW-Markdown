@@ -19,8 +19,61 @@ released independently as long as both honor the same protocol version.
 
 ## Current matrix
 
+Release 4.1.0 pairs core/CLI 4.1.0 with Protocol 4.0.0 and Format 3.0, the
+same contract as 4.0.0 and 4.0.1, and adds a package: `@uwmd/verify` 0.1.0,
+the reference implementation of the standard (RFC 0083). Verify holds
+everything a party needs to read and verify a `.uw.md`, pins no `@uwmd/*`
+package, and depends only on `fast-xml-parser` and `fflate`. Core is the
+starter toolkit on top of it: it depends on verify 0.1.0 exactly and
+re-exports its whole surface from both entries, so no 4.0.x import breaks.
+Core takes a minor for the new dependency and the additive exports. No
+normative text changes, so neither the Protocol nor the Format version moves,
+and no conformance expectation, issue code, metric definition or stated value
+changes. Receipts name `@uwmd/verify` 0.1.0 as their engine, including
+receipts issued through core and the CLI. A receipt issued by core 4.0.1 or
+earlier names `@uwmd/core` as its engine, so when its results disagree a
+4.1.0 or verify verifier reports `RCP-07` `unverifiable`, not `failed` (UW
+Receipt §5.3). Signing 0.4.0 pins verify 0.1.0 and core 4.1.0. Batch 0.9.0
+and lake 0.3.0 pin verify 0.1.0 in place of core. Excel 0.9.17 and report
+0.8.29 pin core 4.1.0 exactly. Core's optional signing peer is 0.4.0. The
+workflow scope is eight packages, verify first: verify, core, CLI, signing,
+batch, Excel, report and lake. Protocol 4.0.0 stays Stable. All eight
+packages are published from annotated tag `v4.1.0` on
+`9d18a13c236b6ee46857382a25ec75c0ff6ccf86` through trusted publishing with
+provenance; `@uwmd/verify` 0.1.0 is that name's first release and its
+`latest`. Release run 38509776606 succeeded. All registry versions,
+`latest`, `gitHead`, signatures, attestations, Rekor checks, 666 published
+files, 336 delivered-CLI portable cases and isolated consumers of all eight
+packages, of `@uwmd/verify` alone and of batch and lake without core were
+independently verified; RFC 0083 is `implemented`. Neither module package
+published again. No other package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.1.0-publication.md)
+remain separate records.
+
+Release 4.0.1 pairs core/CLI 4.0.1 with Protocol 4.0.0 and Format 3.0, the
+same contract as 4.0.0. It is a patch: nothing normative moves, so neither
+the Protocol nor the Format version does. It carries three fixes. The starter
+sources & uses footing counts a typed `uses.renovation` as budget plus
+contingency (RFC 0081 §7; Format §4.8 now states the rule), `@uwmd/signing`
+reports its own manifest version as `SIGNING_VERSION`, and the private web
+editor reads its own name and version. No conformance expectation, issue
+code, metric definition or stated value changes. Signing 0.3.1, batch 0.8.23,
+Excel 0.9.16, report 0.8.28 and lake 0.2.12 pin core 4.0.1 exactly. Core's
+optional signing peer is 0.3.1. The workflow scope is the same seven
+packages: core, CLI, signing, batch, Excel, report and lake. Protocol 4.0.0
+stays Stable. All seven packages are published from lightweight tag `v4.0.1`
+on `442dfc6aecfb591ce744f00776a9e2c7a601854c` through trusted publishing with
+provenance. Release run 38429239833 succeeded. All registry versions,
+`latest`, `gitHead`, signatures, attestations, Rekor checks, 616 published
+files, 336 delivered-CLI portable cases and an isolated consumer of all seven
+packages were independently verified; the published signing 0.3.1 exports
+`SIGNING_VERSION` `'0.3.1'`. Neither module package published again. No other
+package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.1-publication.md)
+remain separate records.
+
 Release 4.0.0 pairs core/CLI 4.0.0 with Protocol 4.0.0 and Format 3.0.
-Protocol 4.0.0 carries one accepted RFC: RFC 0081 removes every
+Protocol 4.0.0 carries one RFC: RFC 0081 removes every
 backward-compatibility path. Format 3.0 is the 2.1 shape with each alternate
 spelling removed (bare blocks with one nested `_meta`, the block digest over
 the payload minus `_meta`, one home for each fact, builtin class identifiers
@@ -37,7 +90,17 @@ batch 0.8.22, Excel 0.9.15, report 0.8.27 and lake 0.2.11 pin core 4.0.0
 exactly. Core's optional signing peer is 0.3.0. The workflow scope is seven
 packages: core, CLI, signing, batch, Excel, report and lake. The two module
 packages, final at 0.2.0 and deprecated on npm, are not part of this or any
-later release. RFC 0081 stays `accepted` in the release-prepared state.
+later release. RFC 0081 is implemented; Protocol 4.0.0 is Stable. All seven
+packages are published from immutable annotated `v4.0.0` on
+`d52a42394be238b00c55942afc1a31cc5c00061b` through trusted publishing with
+provenance. Release run 38339991109 succeeded and was the first to publish
+seven packages. All registry versions, `latest`, `gitHead`, signatures,
+attestations, Rekor checks, 614 published files, 336 delivered-CLI portable
+cases and an isolated consumer of all seven packages were independently
+verified. Neither module package published again; both stay at their final,
+deprecated 0.2.0. No other package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.0-publication.md)
+remain separate records.
 
 Release 3.0.0 pairs core/CLI 3.0.0 with Protocol 3.0.0 and Format 2.1.
 Protocol 3.0.0 carries three accepted RFCs. RFC 0078 makes the Protocol the
@@ -242,17 +305,18 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
-| UW Protocol | **4.0.0** | format 3.0 only; RFC 0081 removes every compatibility clause from 3.0.0 and replaces module `requires_tier` with `requires_conformance`; carried by core/CLI 4.0.0 |
-| `@uwmd/core` | **4.0.0** | format 3.0, protocol 4.0.0 |
-| `@uwmd/cli` (CLI) | **4.0.0** | `@uwmd/core` 4.0.0 |
-| `@uwmd/excel` | **0.9.15** | `@uwmd/core` 4.0.0, format 3.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.27** | `@uwmd/core` 4.0.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.8.22** | `@uwmd/core` 4.0.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.2.11** | `@uwmd/core` 4.0.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.3.0** | `@uwmd/core` 4.0.0, protocol §V.11 + §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.0.0 browser entry |
+| UW Protocol | **4.0.0** | format 3.0 only; RFC 0081 removes every compatibility clause from 3.0.0 and replaces module `requires_tier` with `requires_conformance`; carried by core/CLI 4.0.0, 4.0.1 and 4.1.0 |
+| `@uwmd/verify` | **0.1.0** | format 3.0, protocol 4.0.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.1.0 depends on it exactly and re-exports it |
+| `@uwmd/core` | **4.1.0** | format 3.0, protocol 4.0.0; `@uwmd/verify` 0.1.0 |
+| `@uwmd/cli` (CLI) | **4.1.0** | `@uwmd/core` 4.1.0 |
+| `@uwmd/excel` | **0.9.17** | `@uwmd/core` 4.1.0, format 3.0, explicit contextual calculations |
+| `@uwmd/report` | **0.8.29** | `@uwmd/core` 4.1.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.9.0** | `@uwmd/verify` 0.1.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.3.0** | `@uwmd/verify` 0.1.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.4.0** | `@uwmd/verify` 0.1.0 and `@uwmd/core` 4.1.0, protocol §V.11 + §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.1.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format 3.0 |
-| `tools/vscode-uwmd` | **0.2.0** | format 3.0 |
+| `tools/vscode-uwmd` | **0.2.0** | format 3.0; `@uwmd/verify` 0.1.0 (`file:` link) |
 
 
 ### Official module compatibility

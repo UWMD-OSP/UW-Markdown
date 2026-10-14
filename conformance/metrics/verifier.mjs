@@ -1,39 +1,17 @@
-// A lender with only the standard: no packs, defaults, cascade, or core barrel.
-// The reader and safe-expression evaluator are the only implementation services.
+// A lender with only the standard: `@uwmd/verify`, and nothing of `@uwmd/core`
+// (no defaults, cascade, display formatting or core barrel). Verification is
+// `verifyStatedMetrics` (RFC 0083 §2), which uses only the reader, the
+// safe-expression evaluator and the metric dictionary. This file keeps the
+// fixture plumbing: discovering examples, the Lite anchor view and the
+// statement bindings. The package entry supplies the public API; the
+// single-metric comparison `verifyStatedMetric` is module-level, so it comes
+// from the same build's `metric-verification.js`.
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { parseUWFile, blockPayload } from '../../packages/uwmd-core/dist/parser.js';
-import { resolveSectionBlock } from '../../packages/uwmd-core/dist/section-resolution.js';
-import { parseUWLite } from '../../packages/uwmd-core/dist/lite.js';
-import { parseExpression } from '../../packages/uwmd-core/dist/calc/parser.js';
-import { evaluateDeclared } from '../../packages/uwmd-core/dist/calc/evaluator.js';
-import { compareStatedMetric, getStatedDecimals } from '../../packages/uwmd-core/dist/calc/stated-precision.js';
-import { jsonStatedDecimals, quickMetricDecimals } from './numeric-tokens.mjs';
+import { getStatedDecimals, parseUWFile, parseUWLite, verifyStatedMetrics } from '../../packages/uwmd-verify/dist/index.js';
+import { verifyStatedMetric } from '../../packages/uwmd-verify/dist/metric-verification.js';
 
-export function verifyStatedMetric(metric, parsed, stated, sectionVariants, statedDecimals) {
-  try {
-    if (metric.null_semantics === 'finite_stated_number') {
-      const block = resolveSectionBlock(parsed, 'property', { sectionVariants });
-      const raw = block ? get(blockPayload(block), metric.path) : undefined;
-      if (typeof raw !== 'number' || !Number.isFinite(raw)) {
-        return { state: 'unverifiable', reason: 'missing_or_invalid_size', computed: null };
-      }
-    }
-    const value = evaluateDeclared(parseExpression(metric.formula), {
-      parsed, prior_results: {}, locale: 'en-US', ...(sectionVariants ? { sectionVariants } : {}),
-    }, metric.section_roles);
-    if (value === null) return { state: 'unverifiable', reason: 'missing_or_null_input', computed: null };
-    if (typeof value !== 'number' || !Number.isFinite(value)) {
-      return { state: 'unverifiable', reason: 'nonfinite_or_nonnumeric_result', computed: null };
-    }
-    if (typeof stated !== 'number' || !Number.isFinite(stated)) {
-      return { state: 'unverifiable', reason: 'no_numeric_statement', computed: null };
-    }
-    return compareStatedMetric(value, stated, statedDecimals, metric);
-  } catch (error) {
-    return { state: 'unverifiable', reason: error.proto?.code ?? error.code ?? 'evaluation_error', computed: null };
-  }
-}
+export { verifyStatedMetric };
 
 // Lite anchors are explicitly stated inputs. This maps the published bridge's
 // section names only; it supplies no bridge metadata or financial defaults.
@@ -64,48 +42,16 @@ function readExample(source, bindings) {
   return { parsed, litePrecision };
 }
 
-function get(object, path) {
-  return path.split('.').reduce((value, segment) => value?.[segment], object);
-}
-
-function blocks(entry) {
-  if (!entry) return [];
-  return entry.annotation ? [[undefined, entry]] : Object.entries(entry);
-}
-
 export function verifyExample(source, dictionary, bindings) {
   const { parsed, litePrecision } = readExample(source, bindings);
   const asset_class = parsed.frontmatter.asset_class;
-  const calculations = dictionary.calculations.filter(m => m.asset_classes.includes(asset_class));
-  if (!calculations.length) return null;
-  const statements = [];
-  for (const metric of calculations) {
-    const quick = parsed.frontmatter.quick_metrics?.[metric.id];
-    if (typeof quick === 'number') statements.push({ metric, path: `quick_metrics.${metric.id}`, stated: quick, statedDecimals: quickMetricDecimals(source, metric.id, quick) });
-    const paths = [...bindings.output_sections.map(s => `${s}.${metric.id}`), ...(bindings.aliases[metric.id] ?? [])];
-    for (const path of new Set(paths)) {
-      const [section, ...tail] = path.split('.');
-      for (const [variant, block] of blocks(parsed.sections[section])) {
-        const stated = get(blockPayload(block), tail.join('.'));
-        if (typeof stated !== 'number') continue;
-        statements.push({ metric, path: `${section}${variant ? `[${variant}]` : ''}.${tail.join('.')}`, stated, statedDecimals: litePrecision.get(path) ?? jsonStatedDecimals(block, tail.join('.'), stated),
-          ...(variant ? { sectionVariants: { [section]: variant } } : {}) });
-      }
-    }
-  }
-  for (const metric of dictionary.size_intensives.filter(m => m.asset_classes.includes(asset_class))) {
-    for (const [variant, block] of blocks(parsed.sections.property)) {
-      const stated = get(blockPayload(block), metric.path);
-      if (typeof stated === 'number') statements.push({ metric, path: `property${variant ? `[${variant}]` : ''}.${metric.path}`, stated, statedDecimals: litePrecision.get(`property.${metric.path}`) ?? jsonStatedDecimals(block, metric.path, stated),
-        ...(variant ? { sectionVariants: { property: variant } } : {}) });
-    }
-  }
-  const evidence = statements.map(({ metric, path, stated, sectionVariants, statedDecimals }) => ({
-    id: metric.id, path, stated, ...(statedDecimals !== undefined ? { stated_decimals: statedDecimals } : {}), ...verifyStatedMetric(metric, parsed, stated, sectionVariants, statedDecimals),
-  }));
-  const counts = { verified: 0, failed: 0, unverifiable: 0 };
-  for (const item of evidence) counts[item.state]++;
-  return { asset_class, counts, evidence };
+  // Examples whose class has no dictionary calculations are not counted.
+  if (!dictionary.calculations.some(m => m.asset_classes.includes(asset_class))) return null;
+  return verifyStatedMetrics(parsed, {
+    dictionary,
+    bindings: { output_sections: bindings.output_sections, aliases: bindings.aliases },
+    statedDecimals: litePrecision,
+  });
 }
 
 export function verifyExamples(root) {

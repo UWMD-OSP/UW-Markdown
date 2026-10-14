@@ -77,7 +77,7 @@ CI runs JSON Schema validation on every PR. The UW XML codec tests and docs-site
 
 ## Updating a schema
 
-The TypeScript types in `@uwmd/core/src/protocol.ts` and `types.ts` are
+The TypeScript types in `@uwmd/verify`'s `src/protocol.ts` and `types.ts` are
 the canonical definition. When you change one of those types, update
 the matching schema here in the **same PR**. Drift between the two is
 a normative protocol bug.

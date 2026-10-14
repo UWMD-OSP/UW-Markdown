@@ -26,7 +26,7 @@ npx @uwmd/batch deals --out batch-output --facts
 Adds `uwmd-facts.jsonl` — one JSON object per line, one line per JSON fact in
 every parseable deal — plus `uwmd-facts-manifest.json` with the counts and the
 skip list. Each row is a normative `block_values` row (UW CSV Bundle spec §3,
-produced by `@uwmd/core`'s `flattenEnvelopeBlockValues`, never re-implemented
+produced by `@uwmd/verify`'s `flattenEnvelopeBlockValues`, never re-implemented
 here) prefixed with the deal's identity: `path`, `deal_id`, `asset_class`,
 `semantic_digest`, and `valid`. Deals that parse but fail validation are
 included with `valid: false`; files that cannot produce an envelope are listed

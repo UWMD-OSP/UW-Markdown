@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { deriveDCF } from './dcf.js';
-import { parseUWFile } from './parser.js';
+import { parseUWFile } from '@uwmd/verify';
 
 function field(d: ReturnType<typeof deriveDCF>, path: string): number | undefined {
   return d.fields.find((f) => f.path === path)?.value;

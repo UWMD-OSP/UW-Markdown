@@ -1,10 +1,13 @@
 // Pre-flight check for npm Trusted Publishers (OIDC) automated publishing.
 // Verifies:
-// 1. Package versions and exact core pins across all official publishing packages (seven from 4.0.0).
+// 1. Package versions and exact @uwmd/* pins across all official publishing packages
+//    (eight from 4.1.0): @uwmd/verify pins no @uwmd/* package, core pins verify
+//    exactly, and every other package pins core or verify (or both) exactly.
 // 2. Export targets, binaries, and production build artifacts exist and resolve.
 // 3. OIDC provenance eligibility (repository metadata, public access, zero hardcoded tokens).
 // 4. .github/workflows/release.yml triggers on tag pushes and includes id-token: write,
-//    and runs `verify-release --tag` over a tagged checkout before any publish.
+//    runs `verify-release --tag` over a tagged checkout before any publish, and
+//    publishes @uwmd/verify first and every package after each @uwmd/* package it pins.
 //
 // Run: npm run release:check
 
@@ -65,13 +68,23 @@ try {
       failures.push(`${workflowPath}: ${pkg.name} must use the fail-closed registry version probe`);
     }
   }
-  // Every package pins core exactly, so core must publish first: a dependent
-  // that lands before its core version exists is an uninstallable tarball.
-  const corePublish = workflow.indexOf('working-directory: packages/uwmd-core\n');
-  for (const pkg of RELEASE_PACKAGES.filter((p) => p.name !== '@uwmd/core')) {
-    const at = workflow.indexOf(`working-directory: ${pkg.dir}\n`);
-    if (corePublish === -1 || (at !== -1 && at < corePublish)) {
-      failures.push(`${workflowPath}: ${pkg.name} publishes before @uwmd/core, which it pins exactly`);
+  // A dependent that lands before the exact @uwmd/* version it pins exists is
+  // an uninstallable tarball, so every package publishes after each one it
+  // pins (RFC 0083): @uwmd/verify first, since core, signing, batch and lake
+  // pin it, then core, which the rest pin.
+  const publishAt = new Map(RELEASE_PACKAGES.map((pkg) => [pkg.name, workflow.indexOf(`working-directory: ${pkg.dir}\n`)]));
+  const verifyAt = publishAt.get('@uwmd/verify');
+  if (verifyAt === undefined || verifyAt === -1 || [...publishAt.values()].some((at) => at !== -1 && at < verifyAt)) {
+    failures.push(`${workflowPath}: @uwmd/verify must publish first; every other package depends on it or on a package that does`);
+  }
+  for (const pkg of RELEASE_PACKAGES) {
+    const at = publishAt.get(pkg.name);
+    const pins = Object.keys(readJson(`${pkg.dir}/package.json`).dependencies ?? {}).filter((name) => name.startsWith('@uwmd/'));
+    for (const dependency of pins) {
+      const dependencyAt = publishAt.get(dependency);
+      if (dependencyAt === undefined || dependencyAt === -1 || (at !== -1 && at < dependencyAt)) {
+        failures.push(`${workflowPath}: ${pkg.name} publishes before ${dependency}, which it pins exactly`);
+      }
     }
   }
   if (/workflow_dispatch:/.test(workflow)) {
@@ -97,10 +110,30 @@ try {
     );
   }
 
-  for (const pkg of RELEASE_PACKAGES.filter((pkg) => pkg.name !== '@uwmd/core')) {
-    const pin = readJson(`${pkg.dir}/package.json`).dependencies?.['@uwmd/core'];
-    if (pin !== corePkg.version) {
-      failures.push(`${pkg.name} depends on @uwmd/core@${pin}, expected exact ${corePkg.version}`);
+  // Exact pins (RFC 0083): @uwmd/verify is the bottom of the graph and pins no
+  // @uwmd/* package; core pins verify; every other package pins core or
+  // verify, and every @uwmd/* pin names exactly the version in this tree.
+  const declared = new Map(RELEASE_PACKAGES.map((pkg) => [pkg.name, readJson(`${pkg.dir}/package.json`)]));
+  for (const pkg of RELEASE_PACKAGES) {
+    const dependencies = declared.get(pkg.name).dependencies ?? {};
+    const pins = Object.entries(dependencies).filter(([name]) => name.startsWith('@uwmd/'));
+    if (pkg.name === '@uwmd/verify') {
+      for (const [name] of pins) failures.push(`@uwmd/verify depends on ${name}; it must pin no @uwmd/* package`);
+      continue;
+    }
+    if (pkg.name === '@uwmd/core' && dependencies['@uwmd/verify'] === undefined) {
+      failures.push('@uwmd/core must depend on @uwmd/verify exactly');
+    }
+    if (dependencies['@uwmd/core'] === undefined && dependencies['@uwmd/verify'] === undefined) {
+      failures.push(`${pkg.name} depends on neither @uwmd/core nor @uwmd/verify`);
+    }
+    for (const [name, pin] of pins) {
+      const expected = declared.get(name)?.version;
+      if (expected === undefined) {
+        failures.push(`${pkg.name} depends on ${name}, which is not a package this release publishes`);
+      } else if (pin !== expected) {
+        failures.push(`${pkg.name} depends on ${name}@${pin}, expected exact ${expected}`);
+      }
     }
   }
 
@@ -125,7 +158,7 @@ try {
   }
 
   passes.push(
-    `Version synchronization: ${RELEASE_PACKAGES.length} package versions, exact core pins and VERSIONS.md match`,
+    `Version synchronization: ${RELEASE_PACKAGES.length} package versions, exact @uwmd/* pins and VERSIONS.md match`,
   );
 } catch (err) {
   failures.push(`Version synchronization check failed: ${err.message}`);

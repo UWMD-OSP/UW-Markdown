@@ -2,7 +2,7 @@
 
 > An open interoperability standard for AI- and code-driven underwriting systems.
 
-> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance. From 4.0.0 the reference implementation reads Format 3.0 and Protocol 4.0.0 only (RFC 0081); 3.0.0 is the last release that reads older formats.
+> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance, and from 4.1.0 `@uwmd/verify` first. From 4.0.0 the reference implementation reads Format 3.0 and Protocol 4.0.0 only (RFC 0081); 3.0.0 is the last release that reads older formats.
 
 **Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/UWMD-OSP/UW-Markdown](https://github.com/UWMD-OSP/UW-Markdown)
 
@@ -15,7 +15,8 @@ This repository is the home of the standard:
 - [`spec/UW_FORMAT_SPEC.md`](spec/UW_FORMAT_SPEC.md) — the file format specification.
 - [`spec/UW_PROTOCOL.md`](spec/UW_PROTOCOL.md) — UW Protocol — verification: how any party checks that a document is well formed, internally consistent and reproducible (Reader and Verifier tiers).
 - [`spec/metrics/`](spec/metrics/README.md) — the normative metric dictionary that defines every builtin metric.
-- [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI.
+- [`packages/uwmd-verify/`](packages/uwmd-verify/) — `@uwmd/verify`, the reference TypeScript implementation of the standard: read and verify a `.uw.md` with nothing else installed.
+- [`packages/uwmd-core/`](packages/uwmd-core/) — `@uwmd/core`, the reference TypeScript library and CLI: the starter toolkit on top of `@uwmd/verify`, whose whole API it re-exports.
 - [`conformance/`](conformance/) — fixtures and expected outputs implementers self-certify against.
 - [`tools/`](tools/) — starter tools (single-file web viewer, VS Code extension, VitePress documentation site; more planned). The calc engine, editor, viewer, Excel exporter, defaults and AI agents are non-normative starter products ([`docs/starter/`](docs/starter/README.md)).
 - [`examples/`](examples/) — sample deal files covering all twelve builtin asset classes in `.uwx.md` plus a UW Lite `.uw.md` summary. `Parkview-Apts-Glendale-AZ`

@@ -48,7 +48,7 @@ From the repo root:
 
 ```bash
 npm install              # one-time, registers the workspace
-npm run build -w @uwmd/core
+npm run build -w @uwmd/verify && npm run build -w @uwmd/core
 npm --prefix tools/web-editor install
 npm --prefix tools/web-editor run dev
 ```

@@ -1,17 +1,53 @@
 # Roadmap
 
-Reconciled **2026-10-12** (America/Phoenix) for release-prepared **4.0.0**
-(Protocol **4.0.0**, Format **3.0**). The current published release remains
-**3.0.0**, pairing core/CLI 3.0.0 with Stable Protocol **3.0.0** and Format
-**2.1**.
+Reconciled **2026-10-13** (America/Phoenix) for published and independently
+verified **4.1.0**, pairing core/CLI 4.1.0 and `@uwmd/verify` 0.1.0 with
+Stable Protocol **4.0.0** and Format **3.0**. No accepted RFC is waiting for a
+release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Prepared generation: 4.0.0
+## Current published release: 4.1.0
+
+Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
+contract as 4.0.x. The generation carries one RFC, which moves nothing
+normative:
+- **RFC 0083:** `@uwmd/verify` 0.1.0, the reference implementation of the
+  standard, is its own package: everything a party needs to read and verify a
+  `.uw.md`, with no `@uwmd/*` dependency. `@uwmd/core` is the starter toolkit
+  on top of it and re-exports its whole surface, so no 4.0.x import breaks.
+  Receipts name `@uwmd/verify` as their engine; a pre-4.1.0 receipt whose
+  results disagree reports `RCP-07` `unverifiable` rather than `failed`.
+
+Signing 0.4.0 pins verify 0.1.0 and core 4.1.0, batch 0.9.0 and lake 0.3.0
+pin verify 0.1.0, and Excel 0.9.17 and report 0.8.29 pin core 4.1.0. The
+workflow published eight packages, `@uwmd/verify` first, all of them from the
+release workflow with provenance; neither module package published again.
+RFC 0083 is `implemented` after shipment and independently verified
+publication. Release run 38509776606 and independent
+registry/provenance/published-file/CLI/consumer checks pass, including
+`@uwmd/verify` installed on its own. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.1.0-publication.md).
+
+## Historical publication: 4.0.1
+
+Core/CLI **4.0.1** pair with Protocol **4.0.0** and Format **3.0**, the same
+contract as 4.0.0. The patch carries no RFC and moves nothing normative: the
+starter sources & uses footing counts a typed `uses.renovation` as budget
+plus contingency (RFC 0081 §7), `@uwmd/signing` reports its own manifest
+version, and the private web editor reads its own name and version. Signing
+0.3.1, batch 0.8.23, Excel 0.9.16, report 0.8.28 and lake 0.2.12 pin core
+4.0.1. The workflow published the same seven packages, all of them from the
+release workflow with provenance; neither module package published again. Release
+run 38429239833 and independent registry/provenance/published-file/CLI/consumer
+checks pass. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.1-publication.md).
+
+## Historical publication: 4.0.0
 
 Core/CLI **4.0.0** pair with Protocol **4.0.0** and Format **3.0**. The
-generation carries one accepted RFC:
+generation carries one RFC:
 - **RFC 0081:** one format and one protocol. Format 3.0 (bare blocks with a
   nested `_meta`, one home for each fact, builtin class identifiers only) and
   Protocol 4.0.0 are the only versions the reference implementation reads;
@@ -19,11 +55,14 @@ generation carries one accepted RFC:
   are deleted. 3.0.0 is the last release that reads older formats.
 
 Signing 0.3.0, batch 0.8.22, Excel 0.9.15, report 0.8.27 and lake 0.2.11 pin
-core 4.0.0. The workflow publishes seven packages. No financial value
-changes. RFC 0081 remains `accepted` until shipment and independently
-verified publication.
+core 4.0.0. The workflow published seven packages, all of them from the
+release workflow with provenance; neither module package published again. No
+financial value changes. RFC 0081 is `implemented` after shipment and
+independently verified publication. Release run 38339991109 and independent
+registry/provenance/published-file/CLI/consumer checks pass. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.0.0-publication.md).
 
-## Current published release: 3.0.0
+## Historical publication: 3.0.0
 
 Core/CLI **3.0.0** pair with Protocol **3.0.0** and Format **2.1**. The
 generation carries three RFCs:
@@ -178,7 +217,7 @@ packages. Release automation uses npm trusted publishing (OIDC), not NPM_TOKEN.
 | Financial structures | Released | Asset-class packs, typed capital stacks, calendar cash flows and xirr/xnpv, lease-up schedules, distribution waterfalls and LP IRR hurdles. |
 | Signed block roles — RFC 0040 | Released in 2.7.0 | Role-aware cross-check selection, component exclusion, trusted edits and coverage evidence; introduced Protocol 2.7.0. |
 | Explicit period addressing — RFC 0041 | Released in 2.7.0 | Named holding years and absolute month/quarter/date selectors on five standard series; Protocol 2.8.0. |
-| Period consumers — RFCs 0042/0043 | Core APIs released in 2.8.0 | Fixed stated refinement inputs, explicit variants/overrides and contextual workbook binding APIs. Native Excel verified; standalone Excel package remains unpublished. |
+| Period consumers — RFCs 0042/0043 | Core APIs released in 2.8.0 | Fixed stated refinement inputs, explicit variants/overrides and contextual workbook binding APIs. Native Excel verified; the standalone `@uwmd/excel` package is published since 3.0.0. |
 | Explicit lease-up projection — RFC 0044 | Released in 2.8.0 | Complete explicit cash-date mapping of verified stated amounts, semantic source digest and binding evidence; read-only API and CLI. |
 | Explicit property cash-flow assembly — RFC 0045 | Released in 2.9.0 | Read-only unlevered/pre-tax, single-currency candidate assembly with explicit coverage, acquisition/disposition and reserve assertions; synthetic engineering fixtures. |
 | Supporting tools and modules | Implemented | Web editor/viewer, docs site, VS Code extension, Excel/report packages and hospitality/data-center reference modules. Publication varies; see the matrix. |
@@ -423,7 +462,7 @@ draw-to-expenditure binding shipped separately in 2.21.0 with Stable Protocol
 |---|---|---|
 | Standalone document and package example kit | RFC 0048 implemented (2.10.0) | Adopter authoring against the kit. |
 | Element/package validation and deterministic stitching | Future RFC/design candidate; no new implementation | Extend existing RFCs 0018/0021/0048 for standalone rent rolls, T-12s, debt schedules and property files; pin ZIP/folder manifests, assembly conflicts, package canonicalization/hashing, provenance and document-versus-package receipt scope. See [candidate brief](docs/roadmap/element-package-validation.md). |
-| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16** (`@uwmd/lake` 0.2.0, unpublished) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency, and the publication decision. |
+| PostgreSQL JSONB lake adapter | RFC 0049 released in 2.11.0; **live load run 2026-09-16**; `@uwmd/lake` published since 3.0.0 (0.3.0 today) | The corpus load against PostgreSQL 18 is done and found three defects, all fixed — see the [load record](docs/reviews/2026-09-16-lake-live-postgres.md). Remaining: a run against a managed service with roles and concurrency. |
 | Additional niche asset classes | Demand-gated | Bring a concrete deal/operator workflow before adding another class or module. |
 
 ### Mixed-use and speculative leasing

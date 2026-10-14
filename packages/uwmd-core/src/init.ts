@@ -1,13 +1,16 @@
 // uwmd init — generates a new blank .uwx.md file from a template
 // Spec: UW_FORMAT_SPEC.md §6 toolchain interface
 
-import { stampMetaIntoBlockContent } from './metadata.js';
-import type { AssetClass, DealStage } from './types.js';
-import { parseUWFile } from './parser.js';
-import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+import {
+  stampMetaIntoBlockContent,
+  type AssetClass,
+  type DealStage,
+  parseUWFile,
+  SUPPORTED_FORMAT_VERSIONS,
+  SCENARIOS,
+  writeDoubleQuotedScalar,
+} from '@uwmd/verify';
 import { buildMeta } from './runner.js';
-import { SCENARIOS } from './scenario.js';
-import { writeDoubleQuotedScalar } from './yaml-scalar.js';
 
 export interface InitOptions {
   dealId?: string;

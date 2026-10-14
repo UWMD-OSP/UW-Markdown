@@ -7,7 +7,7 @@ import {
   toUWEnvelope,
   type UWBlockValueRow,
   validateUWFile,
-} from '@uwmd/core';
+} from '@uwmd/verify';
 
 export const UWMD_BATCH_INDEX_VERSION = '0.2' as const;
 export const UWMD_FACT_TABLE_VERSION = '0.1' as const;

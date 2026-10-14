@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
-import { parseUWFile } from '../../packages/uwmd-core/dist/parser.js';
+import { dirname, join, resolve, sep } from 'node:path';
+import { getStatedDecimals, parseUWFile } from '../../packages/uwmd-verify/dist/index.js';
 import { verifyExample, verifyStatedMetric as verifyWithPrecision } from './verifier.mjs';
-import { getStatedDecimals } from '../../packages/uwmd-core/dist/calc/stated-precision.js';
 import { jsonNumericTokens, jsonStatedDecimals, quickMetricDecimals } from './numeric-tokens.mjs';
 
 // Synthetic controls explicitly declare the full dictionary output precision.
@@ -22,19 +21,25 @@ export function controls(root) {
   });
   return [
     ['verifier-import-graph-excludes-starter-engine', () => {
+      // RFC 0083: the verifier's whole import graph is `@uwmd/verify`'s build and
+      // this fixture; it reaches no `@uwmd/core` module at all.
       const visited = new Set();
+      const core = resolve(root, 'packages/uwmd-core') + sep;
       function inspect(file) {
         if (visited.has(file)) return;
         visited.add(file);
+        assert.ok(!file.startsWith(core), `the verifier reaches a core module: ${file}`);
         const portable = file.replaceAll('\\', '/');
         assert.doesNotMatch(portable, /\/(?:packs\/|defaults\.js$|cascade\.js$)/);
-        assert.notEqual(file, resolve(root, 'packages/uwmd-core/dist/index.js'));
         const source = readFileSync(file, 'utf8');
         for (const match of source.matchAll(/\b(?:import|export)[\s\S]*?\bfrom\s*['"](\.[^'"]+)['"]/g)) {
           inspect(resolve(dirname(file), match[1]));
         }
       }
       inspect(resolve(root, 'conformance/metrics/verifier.mjs'));
+      // The walk is real: it reached the package entry and the evaluator through it.
+      assert.ok(visited.has(resolve(root, 'packages/uwmd-verify/dist/index.js')));
+      assert.ok(visited.has(resolve(root, 'packages/uwmd-verify/dist/calc/evaluator.js')));
     }],
     ['stated-value-tampering', () => {
       assert.equal(verifyStatedMetric(metric('dscr'), simple(), 2).state, 'verified');

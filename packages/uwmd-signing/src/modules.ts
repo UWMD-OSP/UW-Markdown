@@ -12,7 +12,7 @@ import {
   type ModuleManifest,
   type ModuleSignature,
   type ModuleSignatureVerifier,
-} from '@uwmd/core';
+} from '@uwmd/verify';
 import { verifyRawSignature } from './verify.js';
 import { signPayload } from './sign.js';
 import type { KeyStore, SigningKey } from './keys.js';

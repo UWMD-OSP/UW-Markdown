@@ -38,7 +38,7 @@ body:
     attributes:
       label: UWMD versions
       description: |
-        Paste the output of `npx @uwmd/cli manifest`, which gives the @uwmd/core version and the Protocol and Format versions it implements. If you implement UWMD yourself, paste your own implementation manifest (Protocol §II.6a). In both cases add the `uw_version` from the document's frontmatter, and the version of any other affected package.
+        Paste the output of `npx @uwmd/cli manifest`, which gives the @uwmd/core version and the Protocol and Format versions it implements (from 4.1.0 it also prints the @uwmd/verify version, on stderr). If you implement UWMD yourself, paste your own implementation manifest (Protocol §II.6a). In both cases add the `uw_version` from the document's frontmatter, and the version of any other affected package.
       render: json
     validations:
       required: true
@@ -50,7 +50,8 @@ body:
       description: Choose every component that applies. Pick "Not sure" if you can't tell.
       multiple: true
       options:
-        - "@uwmd/core (parser, validator, calc engine, packs, editor)"
+        - "@uwmd/verify (parser, validator, calc evaluator, packs, receipts, integrity)"
+        - "@uwmd/core (defaults, cascade, editor, renderer, agents)"
         - "uwmd CLI (@uwmd/cli)"
         - "@uwmd/excel"
         - "@uwmd/report"

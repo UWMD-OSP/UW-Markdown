@@ -4533,6 +4533,21 @@
     },
     {
       "suite": "signing",
+      "scenario": "blocks/07-signed-padded",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/08-signed-unused-bits",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
+      "scenario": "blocks/09-signed-partial-sextet",
+      "target": "integrity"
+    },
+    {
+      "suite": "signing",
       "scenario": "modules/01-valid",
       "target": "integrity"
     },

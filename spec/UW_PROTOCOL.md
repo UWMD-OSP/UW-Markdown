@@ -1,6 +1,6 @@
 # UW Protocol — verification
 
-**Status:** Accepted release contract (RFC 0081) — protocol **4.0.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
+**Status:** Stable — protocol **4.0.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
 
 > **Protocol 4.0.0.** Accepted in [RFC 0081](../docs/rfcs/0081-one-format-one-protocol.md) and paired with core/CLI 4.0.0. This normative text describes the single final contract, with no alternate versions or spellings.
 
@@ -18,11 +18,13 @@ Excel exporter, defaults, AI agents), described non-normatively in the
 [starter products guide](../docs/starter/README.md).
 
 The reference TypeScript implementation lives in
-[`packages/uwmd-core/`](../packages/uwmd-core/). Where this document
-references a code symbol (e.g. `BUILTIN_EDIT_POLICIES`,
+[`packages/uwmd-verify/`](../packages/uwmd-verify/) (`@uwmd/verify`, the
+standard), with the starter toolkit
+[`packages/uwmd-core/`](../packages/uwmd-core/) on top of it. Where this
+document references a code symbol (e.g. `BUILTIN_EDIT_POLICIES`,
 `VALIDATOR_CODE_FAMILIES`, `SIZE_INTENSIVES`), the symbol is exported
-from `@uwmd/core` and is the single source of truth — this document
-describes what those exports mean.
+from `@uwmd/verify`, re-exported by `@uwmd/core`, and is the single
+source of truth — this document describes what those exports mean.
 
 ---
 
@@ -69,8 +71,8 @@ Three independent semvers are tracked:
   behavior. From 3.0.0 it moves only when what a document *means* or
   how it is *verified* changes. Starter-product changes version their
   packages only; there is no starter-guide version (RFC 0078 D13).
-- **Reference library version** (`@uwmd/core`'s `package.json`) — the
-  implementation. Independent semver.
+- **Reference library versions** (`@uwmd/verify`'s and `@uwmd/core`'s
+  `package.json`) — the implementation. Independent semver.
 
 An implementation declares the highest format and protocol versions it
 supports via its `ImplementationManifest` (§I.4).
@@ -168,7 +170,7 @@ that load `.uwx.md` files from third parties MAY use the manifest to
 refuse files that exceed their declared format version.
 
 **Normative schema:** [`spec/schemas/implementation-manifest.schema.json`](schemas/implementation-manifest.schema.json).
-The TypeScript interface in [`@uwmd/core/protocol.ts`](../packages/uwmd-core/src/protocol.ts)
+The TypeScript interface in [`@uwmd/verify`'s `protocol.ts`](../packages/uwmd-verify/src/protocol.ts)
 is a mirror — implementations in non-TS languages SHOULD validate
 against the JSON Schema.
 
@@ -687,7 +689,7 @@ message text otherwise).
 validator emitted eighteen, because a prose list duplicating a list
 that lives in code goes stale silently. The machine-readable registry
 is `VALIDATOR_CODE_FAMILIES` in
-[`packages/uwmd-core/src/protocol.ts`](../packages/uwmd-core/src/protocol.ts),
+[`packages/uwmd-verify/src/protocol.ts`](../packages/uwmd-verify/src/protocol.ts),
 remediation copy is `BUILTIN_REMEDIATIONS` beside it, and a test
 asserts every code in the latter resolves to a family in the former.
 The spec states the rule; the assertion enforces the list.
@@ -1874,7 +1876,7 @@ reproduce across platforms.
 > `100.49999999999999`, so that formulation yields `1.00` where
 > spreadsheet `ROUND` yields `1.01`. Shifting through a decimal string
 > (`Number("1.005e2")` → `100.5`) is correctly rounded and agrees.
-> See `packages/uwmd-core/src/calc/quantize.ts`.
+> See `packages/uwmd-verify/src/calc/quantize.ts`.
 
 ### VIII.5.1 Stated metric precision (RFC 0079)
 
@@ -3585,10 +3587,14 @@ For the tier and each profile you claim:
 
 ## Appendix B — Reference implementations
 
-- **`@uwmd/core`** — TypeScript reference: parser, validator,
-  expression evaluator and stated-figure verifiers. Verifier, with all
-  six profiles. It also carries the starter products (renderer, editor,
-  calc packs, defaults, agent host), which are not part of the standard.
+- **`@uwmd/verify`** — TypeScript reference: parser, validator,
+  expression evaluator, stated-figure verifiers, metric dictionary,
+  receipts, integrity, modules and the profiles. Verifier, with all six
+  profiles (RFC 0083).
+- **`@uwmd/core`** — the starter products on top of `@uwmd/verify`
+  (renderer, editor, defaults, cascade, agent host, CLI), which are not
+  part of the standard. It re-exports `@uwmd/verify`'s surface; `uwmd
+  manifest` reports the pair as one implementation.
 - **`tools/web-viewer/`** — Single-file reference Reader and starter
   viewer. Self-contained HTML, no build step.
 

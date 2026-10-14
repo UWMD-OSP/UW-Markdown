@@ -3,14 +3,18 @@
 // AST→Excel emitter parity. RFC 0019.
 
 import { describe, expect, it } from 'vitest';
-import type { CalcEvaluationContext, ModuleCalcDecl } from '../protocol.js';
-import { evaluateCalc } from '../calc/index.js';
-import { parseExpression } from '../calc/parser.js';
-import { parseUWFile } from '../parser.js';
+import {
+  type CalcEvaluationContext,
+  type ModuleCalcDecl,
+  evaluateCalc,
+  parseExpression,
+  parseUWFile,
+  quantizeDecimal,
+  resolveRoundTo,
+  MIXED_USE_PACK,
+} from '@uwmd/verify';
 import { buildMeta } from '../runner.js';
 import { emitExcelFormula } from './excel-emit.js';
-import { quantizeDecimal, resolveRoundTo } from '../calc/quantize.js';
-import { MIXED_USE_PACK } from './mixed-use.js';
 
 function excelValue(formula: string): number | null {
   const expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null');

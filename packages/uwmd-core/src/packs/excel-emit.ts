@@ -25,11 +25,15 @@
 //     ROUND, PMT, NPV, IRR). Functions without a clean Excel equivalent
 //     (`coalesce`, `avg` with null handling) raise EXCEL-EMIT-FN.
 
-import { parseExpression, periodReferencePath, type Expr } from '../calc/parser.js';
-import { resolveRoundTo } from '../calc/quantize.js';
-import { periodReferenceContract } from '../period-path.js';
-import { periodKeyIdentity } from '../periods.js';
-import type { PeriodExcelBinding } from '../protocol.js';
+import {
+  parseExpression,
+  periodReferencePath,
+  type Expr,
+  resolveRoundTo,
+  periodReferenceContract,
+  periodKeyIdentity,
+  type PeriodExcelBinding,
+} from '@uwmd/verify';
 
 export interface ExcelEmitOptions {
   /**
