@@ -612,7 +612,8 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 `resolveDocumentSigningSubject`, `documentSigningPayload` and
 `verifyDocumentSignature` with crypto injected through
 `DocumentSignatureVerifier`. Source scanning observes blocks before parser
-routing via `ParseOptions.onBlock`; guards reject duplicate active selection,
+routing via `ParseOptions.onBlock` and frontmatter members before assignment
+via `onFrontmatterMember`; guards reject duplicate active selection,
 lost source blocks, repeated/historical extensions, conflicting identity or
 lifecycle declarations, duplicate JSON/YAML members and ambiguous fence values.
 The subject reuses the existing envelope semantic digest with history included.

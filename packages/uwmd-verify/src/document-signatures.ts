@@ -75,24 +75,6 @@ function uniqueJsonMembers(json: string): void {
   }
 }
 
-/** The restricted YAML reader must not overwrite earlier frontmatter keys. */
-function uniqueFrontmatter(source: string): void {
-  const lines = source.split(/\r?\n/);
-  if (lines[0]?.trim() !== '---') return;
-  const scopes = new Map<number, Set<string>>();
-  for (const line of lines.slice(1)) {
-    if (/^---\s*$/.test(line)) break;
-    const match = /^( *)([A-Za-z_][A-Za-z0-9_-]*):/.exec(line);
-    if (!match) continue;
-    const indent = match[1].length;
-    for (const level of scopes.keys()) if (level > indent) scopes.delete(level);
-    const keys = scopes.get(indent) ?? new Set<string>();
-    if (['__proto__', 'constructor', 'prototype'].includes(match[2])) throw new DocumentSigningError('Unsafe frontmatter mapping key.');
-    if (keys.has(match[2])) throw new DocumentSigningError(`Duplicate frontmatter key '${match[2]}'.`);
-    keys.add(match[2]); scopes.set(indent, keys);
-  }
-}
-
 function guardBlock(block: UWBlock): void {
   if (!record(block.content) || !record(block.content['_meta']) || !record(block.meta.lifecycle)
     || typeof block.meta.lifecycle.superseded !== 'boolean' || block.meta.section !== block.annotation.section
@@ -128,12 +110,21 @@ function guardFence(line: string): void {
 /** Resolve the source actually supplied, never a filtered parsed object or stamped digest. */
 export async function resolveDocumentSigningSubject(source: string): Promise<DocumentSigningSubject> {
   try {
-    uniqueFrontmatter(source);
     const scanned: UWBlock[] = [];
+    const frontmatterMembers = new Set<string>();
     const lines = source.split(/\r?\n/);
-    const parsed = parseUWFile(source, { strict: true, onBlock: block => {
-      guardFence(lines[block.lineStart - 1]); guardBlock(block); scanned.push(block);
-    } });
+    const parsed = parseUWFile(source, {
+      strict: true,
+      onFrontmatterMember: path => {
+        if (path.some(key => key.split('.').some(segment => ['__proto__', 'constructor', 'prototype'].includes(segment)))) {
+          throw new DocumentSigningError('Unsafe frontmatter mapping key.');
+        }
+        const identity = JSON.stringify(path);
+        if (frontmatterMembers.has(identity)) throw new DocumentSigningError(`Duplicate frontmatter member ${identity}.`);
+        frontmatterMembers.add(identity);
+      },
+      onBlock: block => { guardFence(lines[block.lineStart - 1]); guardBlock(block); scanned.push(block); },
+    });
     const seen = new Set<string>();
     const extensions = new Set<string>();
     for (const block of scanned) {
