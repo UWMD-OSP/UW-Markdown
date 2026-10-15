@@ -8,6 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Added
+
+- `examples/verification/`: four runnable scripts that show what verifying a
+  document catches, using only the published `@uwmd/verify` and
+  `@uwmd/signing`: a valid document, a stated cap rate that disagrees with
+  its record, a receipt whose result was edited or whose record changed after
+  issuance (`RCP-03`, `RCP-01`), and a document snapshot signature over a
+  changed document or from an untrusted key (`INT-11`, `INT-13`). Receipts and
+  keys are created at run time. `npm run examples:verification` runs them and
+  CI gates on it. No package changes.
+
 ### Changed
 
 - The `uwmd` CLI refuses unknown flags. Every command, and every subcommand

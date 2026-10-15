@@ -13,8 +13,9 @@ overrides, inferred financial inputs or underwriting workflow. The source-token
 precision readers in `numeric-tokens.mjs` re-export the library's.
 
 It discovers every `.uw.md` / `.uwx.md` below `examples/` whose stated class has
-dictionary calculations (19 documents, including Lite, market-data and the
-standalone package record). The builtin Mesa Gateway data-center and Desert
+dictionary calculations (21 documents, including Lite, market-data, the
+standalone package record and the two `examples/verification/` documents, one
+of which states a cap rate that fails by design). The builtin Mesa Gateway data-center and Desert
 Palms manufactured-housing examples are included. Standalone non-deal records
 without a builtin dictionary class are excluded explicitly.
 Current active section blocks and frontmatter `quick_metrics` are checked;

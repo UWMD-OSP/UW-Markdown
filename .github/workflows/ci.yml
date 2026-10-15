@@ -163,6 +163,11 @@ jobs:
         # added to the runner's default and never actually gate a pull request.
         run: npm run conformance
 
+      - name: Run the verification examples
+        # examples/verification is what a new adopter runs first; each script
+        # exits 0 only when the verifier reports its documented verdicts.
+        run: npm run examples:verification
+
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added
         # without regenerating them would silently drop out of the v2 driver's

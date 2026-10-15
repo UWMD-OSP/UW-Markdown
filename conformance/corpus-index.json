@@ -5248,6 +5248,16 @@
     },
     {
       "suite": "metrics",
+      "scenario": "verification/deal.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "verification/deal.wrong-cap-rate.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
       "scenario": "verifier-import-graph-excludes-starter-engine",
       "target": "verifier"
     },
