@@ -12,13 +12,18 @@ import { join, resolve, sep } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import {
   COMMAND_FLAGS,
+  composeOutDir,
+  DEAL_STAGES,
+  DEPRECATED_FLAGS,
   defaultPartsDir,
+  deprecatedFlagWarnings,
   extractPositionals,
   flagVocabulary,
   hostConformanceFlag,
   parseFlags,
   readManifestFile,
   replaceUWExtension,
+  requestedStage,
   signingLoadFailureMessage,
   unknownFlagMessage,
 } from './cli-args.js';
@@ -235,6 +240,82 @@ describe('COMMAND_FLAGS', () => {
     for (const [command, accepted] of Object.entries(COMMAND_FLAGS)) {
       expect(new Set(accepted).size, command).toBe(accepted.length);
     }
+  });
+});
+
+describe('DEPRECATED_FLAGS', () => {
+  // Three flags 4.2.0 offered stay accepted through 4.x with a warning. The
+  // list is pinned so it cannot grow into a back door around #328's refusal.
+  const source = readFileSync(new URL('./cli.ts', import.meta.url), 'utf-8');
+  const usages = [...source.matchAll(/Usage: uwmd ([^'`]+)/g)].map((m) => m[1]!.trim());
+
+  it('is exactly validate --stage, export --compact and compose --parts', () => {
+    expect(Object.entries(DEPRECATED_FLAGS).map(([command, flags]) => [command, Object.keys(flags)]))
+      .toEqual([['validate', ['stage']], ['export', ['compact']], ['compose', ['parts']]]);
+  });
+
+  it('every deprecated flag is in its command\'s vocabulary, and no usage string advertises it', () => {
+    for (const [command, flags] of Object.entries(DEPRECATED_FLAGS)) {
+      for (const flag of Object.keys(flags)) {
+        expect(COMMAND_FLAGS[command], `${command} --${flag}`).toContain(flag);
+        for (const usage of usages.filter((u) => u.split(/\s+/)[0] === command)) {
+          expect(usage, `usage "${usage}" advertises deprecated --${flag}`).not.toMatch(new RegExp(`--${flag}\\b`));
+        }
+      }
+    }
+  });
+});
+
+describe('deprecatedFlagWarnings', () => {
+  it('warns once per deprecated flag given, naming the command and the replacement', () => {
+    expect(deprecatedFlagWarnings('export', { compact: true, stdout: true })).toEqual([
+      'uwmd export: --compact is deprecated and will be removed in a future major release; use --no-superseded, which it means.',
+    ]);
+    expect(deprecatedFlagWarnings('compose', { parts: 'frags' })[0]).toContain('use --out-dir');
+    expect(deprecatedFlagWarnings('validate', { stage: 'closing', json: true })[0])
+      .toContain('does not change the result or exit status');
+  });
+
+  it('is empty for current flags and for the same name on another command', () => {
+    expect(deprecatedFlagWarnings('validate', { json: true })).toEqual([]);
+    expect(deprecatedFlagWarnings('init', { stage: 'screening' })).toEqual([]);
+    expect(deprecatedFlagWarnings('parse', { compact: true })).toEqual([]);
+    expect(deprecatedFlagWarnings('resolve', { parts: 'p' })).toEqual([]);
+    expect(deprecatedFlagWarnings('constructor', { stage: 'x' })).toEqual([]);
+  });
+});
+
+describe('requestedStage', () => {
+  it('accepts the seven deal_stage values in pipeline order', () => {
+    expect(DEAL_STAGES).toEqual(['scope', 'screening', 'term_sheet', 'full_underwrite', 'credit_approval', 'closing', 'monitoring']);
+    for (const stage of DEAL_STAGES) expect(requestedStage(stage)).toEqual({ ok: true, stage });
+  });
+
+  it('refuses any other value, or none, listing the stages', () => {
+    const refused = requestedStage('underwriting');
+    expect(refused).toEqual({
+      ok: false,
+      message: "uwmd validate: --stage 'underwriting' is not a deal_stage. Use one of: scope, screening, term_sheet, full_underwrite, credit_approval, closing, monitoring.",
+    });
+    expect(requestedStage('Closing').ok).toBe(false);
+    expect(requestedStage(true)).toMatchObject({ ok: false, message: expect.stringContaining('--stage it needs a stage') });
+  });
+});
+
+describe('composeOutDir', () => {
+  const file = join('deals', 'deal.uwx.md');
+
+  it('defaults to the record\'s parts/ sibling and takes either spelling', () => {
+    expect(composeOutDir(file, {})).toEqual({ ok: true, dir: defaultPartsDir(file) });
+    expect(composeOutDir(file, { 'out-dir': 'frags' })).toEqual({ ok: true, dir: resolve('frags') });
+    expect(composeOutDir(file, { parts: 'frags' })).toEqual({ ok: true, dir: resolve('frags') });
+    expect(composeOutDir(file, { parts: 'frags', 'out-dir': resolve('frags') })).toEqual({ ok: true, dir: resolve('frags') });
+  });
+
+  it('refuses two different directories, and a flag without one', () => {
+    expect(composeOutDir(file, { parts: 'a', 'out-dir': 'b' })).toMatchObject({ ok: false, message: expect.stringContaining('name different directories') });
+    expect(composeOutDir(file, { parts: true })).toEqual({ ok: false, message: 'uwmd compose: --parts needs a directory.' });
+    expect(composeOutDir(file, { 'out-dir': '' })).toEqual({ ok: false, message: 'uwmd compose: --out-dir needs a directory.' });
   });
 });
 
