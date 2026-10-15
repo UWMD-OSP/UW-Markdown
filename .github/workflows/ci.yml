@@ -99,6 +99,40 @@ jobs:
         with:
           node-version: 20
       - run: npm run verify-release
+      - name: Check prepared tag records without creating a tag
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          import { changelogReleaseSections, changelogUnreleasedEntries } from './scripts/release-state.mjs';
+          const version = JSON.parse(readFileSync('packages/uwmd-core/package.json', 'utf8')).version;
+          const changelog = readFileSync('CHANGELOG.md', 'utf8');
+          const section = changelogReleaseSections(changelog).find(value => value.version === version);
+          if (section && / - \d{4}-\d{2}-\d{2}$/.test(section.heading) && !/^### Released\s*$/m.test(section.body) && changelogUnreleasedEntries(changelog).length === 0) {
+            execFileSync(process.execPath, ['scripts/verify-release.mjs', '--tag', `v${version}`], { stdio: 'inherit' });
+          } else {
+            console.log('No release-prepared generation: ordinary release-record checks apply.');
+          }
+          JS
+      - name: Observe published package identities (read-only)
+        # Public registry evidence for release preparation; never publishes.
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync } from 'node:fs';
+          import { RELEASE_PACKAGES } from './scripts/release-packages.mjs';
+          import { registryVersionState } from './scripts/registry-version-state.mjs';
+          const observed = [];
+          for (const { name, dir } of RELEASE_PACKAGES) {
+            const response = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}/latest`, { signal: AbortSignal.timeout(15000) });
+            if (!response.ok) throw new Error(`${name}: registry HTTP ${response.status}`);
+            const value = await response.json();
+            if (value.name !== name || typeof value.version !== 'string' || !value.dist?.integrity) throw new Error(`${name}: incomplete registry identity`);
+            const prepared = JSON.parse(readFileSync(`${dir}/package.json`, 'utf8')).version;
+            const prepared_state = await registryVersionState(name, prepared);
+            observed.push({ name, version: value.version, gitHead: value.gitHead ?? null, integrity: value.dist.integrity, node: value.engines?.node ?? null, prepared, prepared_state });
+          }
+          console.log(JSON.stringify({ observed_at: new Date().toISOString(), registry: 'https://registry.npmjs.org', packages: observed }, null, 2));
+          JS
 
   lint:
     name: Lint
@@ -143,6 +177,10 @@ jobs:
         if: matrix.node == 20
         run: npm run release:check
 
+
+      - name: Verify prepared archives as an isolated consumer
+        if: matrix.node == 20
+        run: node scripts/check-prepared-consumers.mjs
 
       - name: Type-check the test suite
         # `npm test` does not type-check: vitest transforms through esbuild,

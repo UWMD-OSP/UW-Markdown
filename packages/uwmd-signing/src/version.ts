@@ -10,4 +10,4 @@
 // key store. The test, not the loader, now keeps the value honest.
 
 export const SIGNING_PACKAGE_NAME = '@uwmd/signing' as const;
-export const SIGNING_VERSION = '0.5.0';
+export const SIGNING_VERSION = '0.6.0';

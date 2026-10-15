@@ -1,0 +1,817 @@
+{
+  "registry_observation": {
+    "run_id": 38761359073,
+    "job_id": 116513173061,
+    "observed_at": "2026-10-15T15:33:35.955Z",
+    "registry": "https://registry.npmjs.org",
+    "packages": [
+      {
+        "name": "@uwmd/verify",
+        "version": "0.2.0",
+        "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+        "integrity": "sha512-3n5xXlafWjWoH5enduCaiStDjbLb4erDrFdVxnQ/792rtWM5D1SUbajOFU2AAyvMokZPCUNr7XDbIu6DDOiH+Q==",
+        "node": ">=18.0.0"
+      },
+      {
+        "name": "@uwmd/core",
+        "version": "4.2.0",
+        "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+        "integrity": "sha512-/PAieEXO7YWmwEXnmnuHzm3g2KimwZOY2x4dNABsGkqznvZ5jPDhETj6lUSDE4wEYgLfGYBMEYcy1uEUvcotWw==",
+        "node": ">=18.0.0"
+      },
+      {
+        "name": "@uwmd/cli",
+        "version": "4.2.0",
+        "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+        "integrity": "sha512-TUSILgaU3wQ/Fh/xWbKZ273m3bGu7TQjfXpzwbQBkzZDP7tGcj2UqafXv/SSWAQMtcW+PnHjW6h9vpiOve89Cg==",
+        "node": ">=18.0.0"
+      },
+      {
+        "name": "@uwmd/signing",
+        "version": "0.5.0",
+        "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+        "integrity": "sha512-9ilFq9VCuzU8NiJRQVrFUBwhbKfJgIYyhxzXc7SNdjOJBA6relMeSrRO936QDHUp1b5TvgoaQf3oVKGnAAe97A==",
+        "node": ">=18.4.0"
+      },
+      {
+        "name": "@uwmd/batch",
+        "version": "0.9.1",
+        "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+        "integrity": "sha512-p/PXPKoiLls2m2Q6i5ASrDc5QUFpPiZ+k7FWTB3kq5ncZYT9b7/JCsEfk8mtT8fQQk6ihgmjYfw+z7ojDnTbQg==",
+        "node": ">=18.0.0"
+      },
+      {
+        "name": "@uwmd/excel",
+        "version": "0.9.18",
+        "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+        "integrity": "sha512-2KGNKkSwUjt99FdYodWdCzsBII1KAV3hqEfmw7og8VG6qeB4X7CGdq6x03u4/1jiLUmni0bsSykR7qntLZutMw==",
+        "node": ">=18.0.0"
+      },
+      {
+        "name": "@uwmd/report",
+        "version": "0.8.30",
+        "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+        "integrity": "sha512-4dBwKs22mjSo3wv4uQYo/GpkpwbjMUMrFApelXvTBAhuYuWP1MDe4NCzWLv68OQ3w4fb4rMZsLWsigosSV/9rA==",
+        "node": ">=18.0.0"
+      },
+      {
+        "name": "@uwmd/lake",
+        "version": "0.3.1",
+        "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+        "integrity": "sha512-yNnxr7JYAGN6eiCPrmX5xuHtjRrNPAizFAgH6Scnosbzlu7puMyXblD8gWESQTwB05UAVpjLvyBlV2ktvSx+TA==",
+        "node": ">=18.0.0"
+      }
+    ]
+  },
+  "limitations": [
+    "Final evidence-only amendment requires its own head-specific CI; final verification is appended to the PR artifacts.",
+    "Local full suite3993/180 and wrapper/profile/package failures remain failed, separate from passing remote CI.",
+    "Direct/reference portable checks and package consumers do not establish an independent financial implementation.",
+    "Local runtimes use source-lock dependencies; fresh external dependency resolution is tested on Node20 in CI.",
+    "Browser VM smoke is not a real browser; no Microsoft Excel/LibreOffice recalculation pass is claimed.",
+    "Public npm reads and repository release checks cannot confirm current account-side trusted publisher settings.",
+    "No tag, publication, deployment command or account change performed."
+  ],
+  "initial_source_base": "8099d55daae71e89ea98ff1f3e1a9c2bee8d7187",
+  "integrated_source_base": "65a55a80f28533785be592a2bd8d8086ab323e46",
+  "prepared_source_before_evidence_amendment": {
+    "head": "1db88e1f9b1287e9a3c458a5b74729043c358325",
+    "tree": "768fa8cabefb2fe6d5f48755bc03ddf1983b56b2",
+    "ci_run": 38766974029,
+    "ci_jobs_passed": 14,
+    "ci_jobs_total": 14,
+    "fresh_consumer_job": 116532619478,
+    "fresh_consumer_step": "Verify prepared archives as an isolated consumer",
+    "registry_job": 116532619521,
+    "registry": {
+      "observed_at": "2026-10-15T16:12:25.874Z",
+      "registry": "https://registry.npmjs.org",
+      "packages": [
+        {
+          "name": "@uwmd/verify",
+          "version": "0.2.0",
+          "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+          "integrity": "sha512-3n5xXlafWjWoH5enduCaiStDjbLb4erDrFdVxnQ/792rtWM5D1SUbajOFU2AAyvMokZPCUNr7XDbIu6DDOiH+Q==",
+          "node": ">=18.0.0",
+          "prepared": "0.2.1",
+          "prepared_state": "absent"
+        },
+        {
+          "name": "@uwmd/core",
+          "version": "4.2.0",
+          "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+          "integrity": "sha512-/PAieEXO7YWmwEXnmnuHzm3g2KimwZOY2x4dNABsGkqznvZ5jPDhETj6lUSDE4wEYgLfGYBMEYcy1uEUvcotWw==",
+          "node": ">=18.0.0",
+          "prepared": "4.3.0",
+          "prepared_state": "absent"
+        },
+        {
+          "name": "@uwmd/cli",
+          "version": "4.2.0",
+          "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+          "integrity": "sha512-TUSILgaU3wQ/Fh/xWbKZ273m3bGu7TQjfXpzwbQBkzZDP7tGcj2UqafXv/SSWAQMtcW+PnHjW6h9vpiOve89Cg==",
+          "node": ">=18.0.0",
+          "prepared": "4.3.0",
+          "prepared_state": "absent"
+        },
+        {
+          "name": "@uwmd/signing",
+          "version": "0.5.0",
+          "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+          "integrity": "sha512-9ilFq9VCuzU8NiJRQVrFUBwhbKfJgIYyhxzXc7SNdjOJBA6relMeSrRO936QDHUp1b5TvgoaQf3oVKGnAAe97A==",
+          "node": ">=18.4.0",
+          "prepared": "0.6.0",
+          "prepared_state": "absent"
+        },
+        {
+          "name": "@uwmd/batch",
+          "version": "0.9.1",
+          "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+          "integrity": "sha512-p/PXPKoiLls2m2Q6i5ASrDc5QUFpPiZ+k7FWTB3kq5ncZYT9b7/JCsEfk8mtT8fQQk6ihgmjYfw+z7ojDnTbQg==",
+          "node": ">=18.0.0",
+          "prepared": "0.9.2",
+          "prepared_state": "absent"
+        },
+        {
+          "name": "@uwmd/excel",
+          "version": "0.9.18",
+          "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+          "integrity": "sha512-2KGNKkSwUjt99FdYodWdCzsBII1KAV3hqEfmw7og8VG6qeB4X7CGdq6x03u4/1jiLUmni0bsSykR7qntLZutMw==",
+          "node": ">=18.0.0",
+          "prepared": "0.9.19",
+          "prepared_state": "absent"
+        },
+        {
+          "name": "@uwmd/report",
+          "version": "0.8.30",
+          "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+          "integrity": "sha512-4dBwKs22mjSo3wv4uQYo/GpkpwbjMUMrFApelXvTBAhuYuWP1MDe4NCzWLv68OQ3w4fb4rMZsLWsigosSV/9rA==",
+          "node": ">=18.0.0",
+          "prepared": "0.9.0",
+          "prepared_state": "absent"
+        },
+        {
+          "name": "@uwmd/lake",
+          "version": "0.3.1",
+          "gitHead": "238dbf35a8654e2f8394088b9c3982159b11af8f",
+          "integrity": "sha512-yNnxr7JYAGN6eiCPrmX5xuHtjRrNPAizFAgH6Scnosbzlu7puMyXblD8gWESQTwB05UAVpjLvyBlV2ktvSx+TA==",
+          "node": ">=18.0.0",
+          "prepared": "0.3.2",
+          "prepared_state": "absent"
+        }
+      ]
+    },
+    "integrated_main_ci": [
+      {
+        "id": 38763437746,
+        "sha": "65a55a80f28533785be592a2bd8d8086ab323e46",
+        "event": "push",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "unit_tests": {
+      "per_workspace": [
+        2599,
+        992,
+        7,
+        164,
+        219,
+        65,
+        5,
+        122
+      ],
+      "total_passed": 4173,
+      "total_failed": 0,
+      "files_passed": 185
+    }
+  },
+  "environment": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.21.0",
+    "npm": "11.19.0",
+    "source_local_commit": "eff4245fac39ec1dceb729842f0eb8300d900d15",
+    "source_tree": "768fa8cabefb2fe6d5f48755bc03ddf1983b56b2"
+  },
+  "package_versions": {
+    "@uwmd/batch": "0.9.2",
+    "@uwmd/excel": "0.9.19",
+    "@uwmd/verify": "0.2.1",
+    "@uwmd/lake": "0.3.2",
+    "@uwmd/report": "0.9.0",
+    "@uwmd/core": "4.3.0",
+    "@uwmd/cli": "4.3.0",
+    "@uwmd/signing": "0.6.0"
+  },
+  "package_pins": {
+    "@uwmd/batch": {
+      "dependencies": {
+        "@uwmd/verify": "0.2.1"
+      },
+      "peerDependencies": {}
+    },
+    "@uwmd/excel": {
+      "dependencies": {
+        "@uwmd/core": "4.3.0"
+      },
+      "peerDependencies": {}
+    },
+    "@uwmd/verify": {
+      "dependencies": {},
+      "peerDependencies": {}
+    },
+    "@uwmd/lake": {
+      "dependencies": {
+        "@uwmd/verify": "0.2.1"
+      },
+      "peerDependencies": {}
+    },
+    "@uwmd/report": {
+      "dependencies": {
+        "@uwmd/core": "4.3.0"
+      },
+      "peerDependencies": {}
+    },
+    "@uwmd/core": {
+      "dependencies": {
+        "@uwmd/verify": "0.2.1"
+      },
+      "peerDependencies": {
+        "@uwmd/signing": "0.6.0"
+      }
+    },
+    "@uwmd/cli": {
+      "dependencies": {
+        "@uwmd/core": "4.3.0"
+      },
+      "peerDependencies": {}
+    },
+    "@uwmd/signing": {
+      "dependencies": {
+        "@uwmd/core": "4.3.0",
+        "@uwmd/verify": "0.2.1"
+      },
+      "peerDependencies": {}
+    }
+  },
+  "contracts": {
+    "format": "3.0",
+    "protocol": "4.1.0",
+    "receipt": "1.1",
+    "metric_definitions_changed": false,
+    "pack_versions_changed": false,
+    "schemas_changed": false,
+    "RFC0085": "draft in PR335",
+    "RFC0086": "draft",
+    "RFC0087": "draft",
+    "PR349": "held; no baseline authorization"
+  },
+  "implementation_integration": [
+    {
+      "pr": 347,
+      "merge": "d452d0f508806bdadac1d20a45737bff7b163344",
+      "tested_head": "0121ac391f0288d447ba45dbe6575d386694deb2",
+      "ci_run": 38760622362,
+      "jobs_passed": 14
+    },
+    {
+      "pr": 348,
+      "merge": "65a55a80f28533785be592a2bd8d8086ab323e46",
+      "tested_head": "edea7faaeb1377e258530b40e99948707714ca17",
+      "ci_run": 38761919760,
+      "jobs_passed": 14
+    },
+    {
+      "pr": 350,
+      "merge": "8099d55daae71e89ea98ff1f3e1a9c2bee8d7187",
+      "tested_head": "464e7f0c4b0cc69170790243d50a6a5457f7f493",
+      "ci_run": 38759035200,
+      "jobs_passed": 14
+    }
+  ],
+  "receipt_identity_fixtures": [
+    {
+      "path": "conformance/receipts/issue/02-lite-industrial/expected-receipt.json",
+      "field": "computation.engine_version",
+      "before": "0.2.0",
+      "after": "0.2.1",
+      "all_other_json_equal": true
+    },
+    {
+      "path": "conformance/receipts/issue/01-uwx-multifamily/expected-receipt.json",
+      "field": "computation.engine_version",
+      "before": "0.2.0",
+      "after": "0.2.1",
+      "all_other_json_equal": true
+    },
+    {
+      "path": "conformance/receipts/verify/11-rehashed-subquantum-ratio/receipt.json",
+      "field": "computation.engine_version",
+      "before": "0.2.0",
+      "after": "0.2.1",
+      "all_other_json_equal": true
+    },
+    {
+      "path": "conformance/receipts/verify/10-rehashed-one-cent/receipt.json",
+      "field": "computation.engine_version",
+      "before": "0.2.0",
+      "after": "0.2.1",
+      "all_other_json_equal": true
+    },
+    {
+      "path": "conformance/receipts/verify/03-result-disagrees/receipt.json",
+      "field": "computation.engine_version",
+      "before": "0.2.0",
+      "after": "0.2.1",
+      "all_other_json_equal": true
+    }
+  ],
+  "local_gates": [
+    {
+      "command": "npm run build",
+      "exit": 0,
+      "result": "8 workspaces",
+      "log": "/tmp/uwmd-430-build.log"
+    },
+    {
+      "command": "npm --prefix packages/uwmd-verify test -- src/calc/quantize.test.ts src/capital-stack.test.ts src/lease-up.test.ts src/lease-up-cash-flows.test.ts src/receipts.test.ts src/version.test.ts --pool=forks --maxWorkers=1",
+      "exit": 0,
+      "result": "187 tests,6 files",
+      "log": "/tmp/uwmd-430-target-verify.log"
+    },
+    {
+      "command": "npm --prefix packages/uwmd-excel test -- src/toWorkbook.test.ts src/class-financial-workflows.test.ts src/official-builtins.test.ts src/capital-stack.test.ts src/custom-calculations.test.ts --pool=forks --maxWorkers=1",
+      "exit": 0,
+      "result": "184 tests,5 files",
+      "log": "/tmp/uwmd-430-target-excel.log"
+    },
+    {
+      "command": "npm --prefix packages/uwmd-core test -- src/dcf.workflow.test.ts src/cli-args.test.ts src/version.test.ts --pool=forks --maxWorkers=1",
+      "exit": 0,
+      "result": "51 tests,3 files",
+      "log": "/tmp/uwmd-430-target-core.log"
+    },
+    {
+      "command": "npm run typecheck:tests",
+      "exit": 0,
+      "result": "8 workspaces",
+      "log": "/tmp/uwmd-430-types.log"
+    },
+    {
+      "command": "npm test",
+      "exit": 1,
+      "result": "3993 passed /180 failed",
+      "log": "/tmp/uwmd-430-full-tests.log"
+    },
+    {
+      "command": "npm run conformance",
+      "exit": 1,
+      "result": "node:test wrapper0passed/1failed; direct runner not reached",
+      "log": "/tmp/uwmd-430-conformance.log"
+    },
+    {
+      "command": "node scripts/run-conformance.mjs",
+      "exit": 0,
+      "result": "1089passed/0failed/0updated",
+      "log": "/tmp/uwmd-430-conformance-direct.log"
+    },
+    {
+      "command": "npm run conformance:profiles",
+      "exit": 2,
+      "result": "8Python tests pass; Node checker spawnSync python3 EPERM",
+      "log": "/tmp/uwmd-430-profiles.log"
+    },
+    {
+      "command": "npm run gen-conformance-cases -- --check",
+      "exit": 0,
+      "result": "generated cases current",
+      "log": "/tmp/uwmd-430-cases.log"
+    },
+    {
+      "command": "npm run examples:verification",
+      "exit": 0,
+      "result": "1node:test aggregate; all4 examples passed",
+      "log": "/tmp/uwmd-430-examples.log"
+    },
+    {
+      "command": "npm run verify-versions",
+      "exit": 0,
+      "result": "10manifests/2constants/2protocol labels",
+      "log": "/tmp/uwmd-430-versions-final.log"
+    },
+    {
+      "command": "npm run verify-lockfile",
+      "exit": 0,
+      "result": "workspace/tool links and exact pins",
+      "log": "/tmp/uwmd-430-lockfile-final.log"
+    },
+    {
+      "command": "npm run lint",
+      "exit": 0,
+      "result": "0errors/1pre-existing HomePage.vue warning",
+      "log": "/tmp/uwmd-430-lint-final.log"
+    },
+    {
+      "command": "npm run validate-schemas",
+      "exit": 0,
+      "result": "62passed/0failed",
+      "log": "/tmp/uwmd-430-schemas-final.log"
+    },
+    {
+      "command": "npm run verify-indexes",
+      "exit": 0,
+      "result": "indexes agree",
+      "log": "/tmp/uwmd-430-indexes-final.log"
+    },
+    {
+      "command": "npm run verify-codes",
+      "exit": 0,
+      "result": "277codes/30families",
+      "log": "/tmp/uwmd-430-codes-final.log"
+    },
+    {
+      "command": "npm run verify-release",
+      "exit": 1,
+      "result": "node:test wrapper0passed/1failed",
+      "log": "/tmp/uwmd-430-release-record-final.log"
+    },
+    {
+      "command": "node scripts/verify-release.mjs --tag v4.3.0",
+      "exit": 1,
+      "result": "publication-neutral records pass; git tag listing spawnSync git EPERM",
+      "log": "/tmp/uwmd-430-tag-record-final.log"
+    },
+    {
+      "command": "npm run release:check",
+      "exit": 0,
+      "result": "8 package/workflow prerequisites; account settings not checked",
+      "log": "/tmp/uwmd-430-readiness.log"
+    },
+    {
+      "command": "npm run verify-packages",
+      "exit": 1,
+      "result": "npm pack child EROFS default cache",
+      "log": "/tmp/uwmd-430-packages.log"
+    },
+    {
+      "command": "npm --cache /tmp/uwmd-npm-cache run verify-packages",
+      "exit": 1,
+      "result": "child stdout empty; JSON parse EOF",
+      "log": "/tmp/uwmd-430-packages-cache.log"
+    },
+    {
+      "command": "npm run docs:build",
+      "exit": 1,
+      "result": "3unstaged release-document links; fixed",
+      "log": "/tmp/uwmd-430-docs.log"
+    },
+    {
+      "command": "npm run docs:build",
+      "exit": 0,
+      "result": "50.93seconds; no disabled checks",
+      "log": "/tmp/uwmd-430-docs-fixed.log"
+    },
+    {
+      "command": "python3 conformance/runner/runner.py --no-skip",
+      "exit": 0,
+      "result": "350/350,0skips; reference CLI",
+      "log": "/tmp/uwmd-430-portable.log"
+    }
+  ],
+  "local_full_suite": {
+    "passed": 3993,
+    "failed": 180,
+    "per_workspace": {
+      "verify": [
+        2599,
+        0
+      ],
+      "core": [
+        968,
+        24
+      ],
+      "batch": [
+        7,
+        0
+      ],
+      "cli": [
+        15,
+        149
+      ],
+      "excel": [
+        214,
+        5
+      ],
+      "lake": [
+        65,
+        0
+      ],
+      "report": [
+        3,
+        2
+      ],
+      "signing": [
+        122,
+        0
+      ]
+    }
+  },
+  "consumer_checks": {
+    "fresh_offline_npm_install": "FAILED: ENOTCACHED exceljs; after public cache seeding, ENOTCACHED define-data-property; not described as installed successfully",
+    "local_delivery_method": "actual npm archives extracted with copied source-lock third-party dependencies; no source @uwmd links",
+    "strict_typescript": {
+      "exit": 0,
+      "log": "/tmp/uwmd-430-delivered-types.log"
+    },
+    "public_apis": {
+      "exit": 0,
+      "log": "/tmp/uwmd-430-delivered-apis.log"
+    },
+    "fresh_registry_install_ci": {
+      "run": 38766974029,
+      "job": 116532619478,
+      "step": "Verify prepared archives as an isolated consumer",
+      "result": "PASS:8actual archives installed, strict root/browser declarations, CLI, receipts, XLSX serialization, HTML and document authentication"
+    },
+    "node18_cli_cases": [
+      {
+        "case": "version",
+        "exit": 0
+      },
+      {
+        "case": "stage-report",
+        "exit": 0
+      },
+      {
+        "case": "wrong-stated-metric",
+        "exit": 1
+      },
+      {
+        "case": "strict-misspelling",
+        "exit": 1
+      },
+      {
+        "case": "init-positional",
+        "exit": 1
+      },
+      {
+        "case": "package-demo",
+        "exit": 0
+      }
+    ],
+    "runtimes": [
+      {
+        "version": "18.0.0",
+        "result": "PASS",
+        "scope": "6supported non-signing paths; no signing/report claim",
+        "log": "/tmp/uwmd-430-runtime-18.0.0.log"
+      },
+      {
+        "version": "18.20.8",
+        "result": "PASS",
+        "scope": "6supported non-signing paths; no signing/report claim",
+        "log": "/tmp/uwmd-430-runtime-18.20.8.log"
+      },
+      {
+        "version": "20.0.0",
+        "result": "PASS",
+        "scope": "full public API probe",
+        "log": "/tmp/uwmd-430-runtime-20.0.0.log"
+      },
+      {
+        "version": "20.20.2",
+        "result": "PASS",
+        "scope": "full public API probe",
+        "log": "/tmp/uwmd-430-runtime-20.20.2.log"
+      },
+      {
+        "version": "22.23.3",
+        "result": "PASS",
+        "scope": "full public API probe",
+        "log": "/tmp/uwmd-430-runtime-22.23.3.log"
+      },
+      {
+        "version": "24.21.0",
+        "result": "PASS",
+        "scope": "full public API probe",
+        "log": "/tmp/uwmd-430-delivered-apis.log"
+      }
+    ],
+    "node18_20_cli_cases": [
+      {
+        "case": "version",
+        "exit": 0
+      },
+      {
+        "case": "stage-report",
+        "exit": 0
+      },
+      {
+        "case": "wrong-stated-metric",
+        "exit": 1
+      },
+      {
+        "case": "strict-misspelling",
+        "exit": 1
+      },
+      {
+        "case": "init-positional",
+        "exit": 1
+      },
+      {
+        "case": "package-demo",
+        "exit": 0
+      }
+    ]
+  },
+  "browser_check": {
+    "bundles": [
+      "verify/browser",
+      "core/browser",
+      "signing"
+    ],
+    "command": "esbuild <delivered entry> --bundle --platform=browser --format=esm --target=es2022 --external:node:*; node --experimental-vm-modules /tmp/uwmd430-browser/probe.mjs",
+    "result": "PASS:receipt issue/verify and document signature under browser globals; no Node imports/process/Buffer/require exposed",
+    "actual_browser_execution": false,
+    "actual_excel_recalculation": false,
+    "log": "/tmp/uwmd-430-browser-vm.log"
+  },
+  "receipt_interoperability": {
+    "node": "v20.0.0",
+    "prior": "0.2.0",
+    "current": "0.2.1",
+    "results": [
+      {
+        "label": "new verifies old",
+        "matching": "verified",
+        "edited": "unverifiable",
+        "codes": [
+          "RCP-07",
+          "RCP-03"
+        ]
+      },
+      {
+        "label": "old verifies new",
+        "matching": "verified",
+        "edited": "unverifiable",
+        "codes": [
+          "RCP-07",
+          "RCP-03"
+        ]
+      }
+    ],
+    "same_engine_disagreement": "failed for both builds",
+    "prior_archive": "published0.2.0 archive integrity matches fresh live registry observation",
+    "prior_consumer_has_core": false
+  },
+  "archives": [
+    {
+      "name": "@uwmd/verify",
+      "version": "0.2.1",
+      "size": 513268,
+      "unpackedSize": 2406137,
+      "shasum": "ba3df810773930c3a65711292f7f363d37122899",
+      "integrity": "sha512-jGCLfh40EKMmId2U1zk82/N/SKawfdMMQuSGdC1qOj1FJ8BXqryjNEwCuKjLrfF74HOIfUW8p2RIEjLQ1MdMIg==",
+      "filename": "uwmd-verify-0.2.1.tgz",
+      "file_count": 346
+    },
+    {
+      "name": "@uwmd/core",
+      "version": "4.3.0",
+      "size": 235579,
+      "unpackedSize": 1047647,
+      "shasum": "f5e4fec021c7ee7e8359bc560ba49b74efaf68d6",
+      "integrity": "sha512-l/bLoSoBZ2rYxp5+bM7GR69zDn61iZ4R97LKo6lkb51+yDO6kWtucdDhD/SMEFpxN7FGD7r31nG7vo9loRPD+A==",
+      "filename": "uwmd-core-4.3.0.tgz",
+      "file_count": 170
+    },
+    {
+      "name": "@uwmd/batch",
+      "version": "0.9.2",
+      "size": 5894,
+      "unpackedSize": 20213,
+      "shasum": "aab7f836ff8723a80472e6f78939021889062a3e",
+      "integrity": "sha512-HTOc6Zdi9SSRqL5ZJf12qG3NSDU8nZYWIRmUOTq4EnO2fAFeS+YzmMHq3vskzCcE99Y9hjf9DPa7Wxl6XzK1vQ==",
+      "filename": "uwmd-batch-0.9.2.tgz",
+      "file_count": 5
+    },
+    {
+      "name": "@uwmd/cli",
+      "version": "4.3.0",
+      "size": 3803,
+      "unpackedSize": 8567,
+      "shasum": "86175e298c281d6e6527d04526509ecf86bc25b9",
+      "integrity": "sha512-MF7exWVgvYub7jKdlMMSeoHE7MnyCwxYacIgnoR8ZBepKBbGiRYt3RDOsijOqcdYu46M4Is7bsZBQTUFlX1/zA==",
+      "filename": "uwmd-cli-4.3.0.tgz",
+      "file_count": 3
+    },
+    {
+      "name": "@uwmd/excel",
+      "version": "0.9.19",
+      "size": 64144,
+      "unpackedSize": 289516,
+      "shasum": "12155b65ac1d8f4c2faa2684e1a5828a24ae9a13",
+      "integrity": "sha512-UE1liXJH4Y1IzmXJAf9j+BDY9qEKyf/5vUShsYoCt7gTiR5mblv9ooT5ca9rTGDxfO7E8unD8JdVrjIlFfmPWg==",
+      "filename": "uwmd-excel-0.9.19.tgz",
+      "file_count": 87
+    },
+    {
+      "name": "@uwmd/lake",
+      "version": "0.3.2",
+      "size": 22921,
+      "unpackedSize": 80989,
+      "shasum": "81901e71ce44d3f3594f279f7a69fe1257d8a966",
+      "integrity": "sha512-+nO2YHKTPjPr8bp6FEoZzK6HdGQrvzSeiLioFHQLOtp34b42BXIWgDzbtiPr55nEivQz3J7NeyERn4afQeWDfw==",
+      "filename": "uwmd-lake-0.3.2.tgz",
+      "file_count": 18
+    },
+    {
+      "name": "@uwmd/report",
+      "version": "0.9.0",
+      "size": 7318,
+      "unpackedSize": 22849,
+      "shasum": "3cc544ff1ce983c33201c4ee06764cf4ab2ac110",
+      "integrity": "sha512-Vpq101+/zdzOEDj/68QbLU/BXqSj8Wo2/LLWmYh3/E/XPhDqntaY0X9b/7IBZTay/BMXv608VhEZITbJPwN0ZA==",
+      "filename": "uwmd-report-0.9.0.tgz",
+      "file_count": 15
+    },
+    {
+      "name": "@uwmd/signing",
+      "version": "0.6.0",
+      "size": 21932,
+      "unpackedSize": 68015,
+      "shasum": "60ad9f20ab15bec6f12a6b17457439d754721ac6",
+      "integrity": "sha512-f42o3yLCpQ34RLVLYjqRCsCwdSGiIpTYOHz1LaYH8L7kEG7WjPxdsQqf0ANMv8QjbwFDAsv0nXVLjK8cDHoy1g==",
+      "filename": "uwmd-signing-0.6.0.tgz",
+      "file_count": 28
+    }
+  ],
+  "preparation_failures": [
+    "Initial matrix editor matched dependency text and historical rows; corrected to exact current-table labels; historical rows restored.",
+    "Normal npm ci before and after pin edits failed at esbuild subprocess permission checks; script-disabled offline fallbacks passed.",
+    "Offline docs install failed ENOTCACHED; reused dependency tree has identical docs lock SHA256.",
+    "Docs build initially found3unstaged links; corrected to repository links and rebuilt successfully.",
+    "First local consumer setup referenced the wrong working directory; corrected before the successful type/API probes."
+  ],
+  "log_sha256": {
+    "uwmd-430-bootstrap-lint.log": "aa428f2b26cf669dd59996f97a05f7ccb7f105750742f1970a1a5b374ff82469",
+    "uwmd-430-browser-core.log": "e3e1874b9f13b04fdea2ea8a81faef4ddf424d3192c471896a25257d26d3cc3b",
+    "uwmd-430-browser-signing.log": "9f8892b680042096e21eae2893e644d9995d53c3fa3837d7f5540712187fc005",
+    "uwmd-430-browser-verify.log": "df1190cb83a540b07d38d9eef567ca42bfd84ae4fc0efd7fa25e724026851f2e",
+    "uwmd-430-browser-vm.log": "8c9d96883e268341bb2e578d40a63661a7595a70ea296b5e5ef69aacb7eceb8f",
+    "uwmd-430-build.log": "9725abaa250c449d98cee742112b865234e55ef6a62e202a1abaee32b27160a7",
+    "uwmd-430-cases.log": "54f01389fd201dbe3868250993d660d8d1a9b3dbc8b8c4d2b1c09044131743f0",
+    "uwmd-430-codes-final.log": "a192ecb90b9e5d7190baccb3956306d959fe38e029eb25c4a6e96f8c670547e6",
+    "uwmd-430-conformance-direct.log": "b76601c3ef74bb1136993065828870fd5eeadfb8e1ab4770914821267a29ea76",
+    "uwmd-430-conformance.log": "87d20a595fb79d6b536450a5edbaa03aef344e69430427f9fd45d0e82e775776",
+    "uwmd-430-consumer-harness-lint.log": "49afbc20b85a55c88708f3fe70716e9db4356627cb0432ed212b825bbe6493a6",
+    "uwmd-430-consumer-install-cached.log": "7a1c506ec5a7cd521075c0e5c9f94883dcf7bd050cc36136fa08d632fc4535b1",
+    "uwmd-430-consumer-install.log": "bdcd76322842316248711f0333dc51cc4d2034bd2ffcea4dee87dead7d714231",
+    "uwmd-430-delivered-apis-setup-failed.log": "5b56faaa7bf88002dbf9a842a0831e67f92a3e12b0623dd7895c3bfae07e0516",
+    "uwmd-430-delivered-apis.log": "23efdce1fa4b4fa3c4e703dac3769412d9f4a601374fb79cb96858696e487ccb",
+    "uwmd-430-delivered-cli-version.log": "5128f0a7bb2a3d6ea346a27dbff5d99a171131fb0701838218ba4cd48902d82c",
+    "uwmd-430-delivered-types-setup-failed.log": "a9379ecb0cd9af3e25dd04112134d5fac994723241117063ce3cdd7494a7431a",
+    "uwmd-430-delivered-types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uwmd-430-docs-fixed.log": "d48e5a0648b8049043bc0ec05966cfb67094e906b978cfe923f0f7b77b0fb54f",
+    "uwmd-430-docs-install.log": "83bc856adf5db4befcec9d2bddaa06c9b4b7bf0904e441ee99d817916d3bac67",
+    "uwmd-430-docs.log": "2345f5dccf30994325aebf6066749502f2e721e654d1fcfa9503a1eab54732a8",
+    "uwmd-430-examples.log": "a54d6c3f63c814da80cf2b7d954fde7723b52d00b8739994b5247dbce9fc2a14",
+    "uwmd-430-full-tests.log": "da43e3e8e7466a362fb4e59b0060c1f9224f276fb4a1e0b2f1cf8243cb47e8c8",
+    "uwmd-430-indexes-final.log": "ee2960a8f8f731afab48a8811b25ff99097bff8e160f410363bf67bb99ccad8e",
+    "uwmd-430-integrated-prebuild.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-430-lint-final.log": "ca0f1c01f5fb8e96a0d5c940ed941061f120c1701b021d3c52d6b2d43ead83c7",
+    "uwmd-430-lockfile-final.log": "f99fe97e68a0d81bd3184e416b1e1f3a40ad6f08217707f80e6f1f41235c88ac",
+    "uwmd-430-lockfile.log": "f99fe97e68a0d81bd3184e416b1e1f3a40ad6f08217707f80e6f1f41235c88ac",
+    "uwmd-430-npm-ci-fallback.log": "77db5b9e13bdb80b22456c2e6ac75b3ac01c91820624e007ace4d5dbf8a32625",
+    "uwmd-430-npm-ci.log": "06f23b8988f30483db976dce715d997c630bf23c5d770ce44770580eb30d7a3d",
+    "uwmd-430-packages-cache.log": "7965d6d01ee54539270bfad8c5cc9e14185f75a7e699675963910368c25b0b5d",
+    "uwmd-430-packages.log": "81fb0944de04e3f7c25e4e2709cde2a8b38079bcc17b87942f08b152ab7428a9",
+    "uwmd-430-portable.log": "75e51fd2ea6d4709c5072e4527d49b5be748bfc7c88fe118c8f7e813c6385f91",
+    "uwmd-430-prepared-npm-ci-fallback.log": "77db5b9e13bdb80b22456c2e6ac75b3ac01c91820624e007ace4d5dbf8a32625",
+    "uwmd-430-prepared-npm-ci.log": "00d822d7ec2bd38b6d964f6b28a6cc474755df7a733380c14831a64b510548b8",
+    "uwmd-430-profiles.log": "389dbe7df480459ec6cc52b48f17642854b944cbf6befabdd92f671e42e21a31",
+    "uwmd-430-readiness.log": "e9734c20bc4f6d88f56b392ab619e66caea504661f805f49621671967cf26b76",
+    "uwmd-430-receipt-interop-node20.log": "73bbef5c474cad8f7c19f14a7d2be1c39780968d154dcba8f1638c49bebac4d3",
+    "uwmd-430-release-record-final.log": "2cc1c4894144f7ad0a5ed19b940ec328d8df305b73da6a36b11a74ae8910d094",
+    "uwmd-430-runtime-18.0.0.log": "9a79e32bfeaa07ed8809661e8a2ba026655c9a1f6aa86df0b8c3a5d38a9b176f",
+    "uwmd-430-runtime-18.20.8.log": "099c41bf855ac4400ec57cccd8e599f75e0af2fa0db3f1b7729b50390dae826b",
+    "uwmd-430-runtime-20.0.0.log": "86d6ff96ca307b9b4f73210e8afe50ce838245f55545229e403012058f9dc639",
+    "uwmd-430-runtime-20.20.2.log": "23efdce1fa4b4fa3c4e703dac3769412d9f4a601374fb79cb96858696e487ccb",
+    "uwmd-430-runtime-22.23.3.log": "23efdce1fa4b4fa3c4e703dac3769412d9f4a601374fb79cb96858696e487ccb",
+    "uwmd-430-schemas-final.log": "7ebc6e090eea995d26cca1e2afc91bc1fed4132ed764d8584f3f94799780af91",
+    "uwmd-430-tag-mode.log": "e42ba314425814ea6334b497537ed7a13f10a740594d9c6d2320eb92c83dd7eb",
+    "uwmd-430-tag-record-final.log": "e42ba314425814ea6334b497537ed7a13f10a740594d9c6d2320eb92c83dd7eb",
+    "uwmd-430-target-core.log": "cf3f0d7c6343b6fd6da8dc801fb0472c7e866965b3260d8ab873dff8c22cb8f3",
+    "uwmd-430-target-excel.log": "8f3e41853db4cb68d71aedab3b03e8642922b7f008989b4117882101df77f363",
+    "uwmd-430-target-verify.log": "c2e97613ce517eed755f3cb4cb0d13bf8a723c6c0d9bb6230e73e0921287618c",
+    "uwmd-430-types.log": "0820932f5eaf6791f6368ff1c12812efbaa58f4410b17fd6027170338a6d0a9c",
+    "uwmd-430-versions-final.log": "c5a1ae49ae4d4048fad909087c35a94d6790ee535cb6c2eb9740dd615ff18e67",
+    "uwmd-430-versions.log": "e688aa3e4f77c050fbdc9bcd5d0c0ab228a2c73c34990f225775052249e750fb",
+    "uwmd-430-remote-unit-counts.json": "373a762b967886159d4399f4492599274c39c83aa7cd197e2e0c646207e91bf3",
+    "uwmd-430-delivered-cli-node18.20.json": "94a434ef9c67b8d815c05718648726082c4424d6c283dcecbaad4d71cf052305",
+    "uwmd-430-packed.json": "ff706ef7c7203865685cb6852ef11e98ab06b019127c0dd9e6e251e685d71859",
+    "uwmd-430-remote-final-evidence.json": "d4e60ca81e86c10c9adaf9931954dc7b4c9702911afc004c938fc3c80a36d6c7",
+    "uwmd-430-delivered-cli-node18.json": "6167f58e8650b7caa1d2fab9284315d84aeefa463b176dd5ea3f8c452d429b3d"
+  }
+}

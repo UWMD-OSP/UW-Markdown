@@ -68,4 +68,4 @@ deal.wrong-cap-rate.uwx.md` reports the failed cap rate and exits 1),
 `uwmd receipt issue` and `uwmd receipt verify` (scenario 3), and
 `uwmd sign-document` with `uwmd verify --document-signature` (scenario 4)
 ([CLI reference](../../docs/wiki/08-tools.md)). The CLI checks stated metrics
-from the release after 4.2.0; `@uwmd/cli` 4.2.0 prints `OK` for scenario 2.
+from core/CLI 4.3.0; `@uwmd/cli` 4.2.0 prints `OK` for scenario 2.

@@ -261,6 +261,16 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   conformance check (Reader, Verifier, profiles and starter products), the
   portable driver with `--no-skip`, and the capability-skip controls. No live
   model is called: agent checks run as deterministic replays.
+  The release-record job also observes public npm package identities and the
+  prepared versions' registry state without publishing. For a dated generation
+  with empty `[Unreleased]` and no `### Released`, it runs tag-mode record checks
+  without creating a tag. Ordinary development and post-publication records keep
+  their existing checks. Anonymous registry reads cannot confirm account-side
+  trusted publisher settings. Prepared generations also run
+  `scripts/check-prepared-consumers.mjs` on Node20: actual archives are packed,
+  installed outside the workspace and checked through strict root/browser
+  declarations, CLI and public receipt/signing/Excel/report APIs. This is package
+  integration evidence, not another financial implementation or live Excel.
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
   the eight packages `@uwmd/verify`, `@uwmd/core`, `@uwmd/cli`,
   `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and
