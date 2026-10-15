@@ -1,7 +1,8 @@
 # Interim 4.x release candidate: compatibility decision required
 
-Drafted **2026-10-15** and revised after owner review the same day, on `main`
-at `e8ed8eb6`. This record is a candidate,
+Drafted **2026-10-15**, then revised twice that day after owner review and
+after the compatibility implementation (#346). Current against `main` at
+`c4d50dbe`. This record is a candidate,
 not a release preparation. It changes no manifest, version literal or
 lockfile, and authorizes no tag or publication.
 
@@ -85,130 +86,134 @@ each 4.2.0 command actually read.
   therefore exited 1: the documented workflow never worked end to end. This
   was a README defect, not a CLI contract.
 
-## Compatibility matrix
+## Owner approval and implementation (2026-10-15)
 
-The proposed 4.3.0 keeps strict rejection and adds three narrow deprecated
-behaviors. A success is "misleading" when it reports something that did not
-happen.
+The owner approved a bounded 4.3.0 compatibility implementation. This is a
+scoped compatibility decision for this release, not a blanket
+reinterpretation of semver:
 
-| Invocation | Published 4.2.0 | `main` | Proposed 4.3.0 | Documentation obligation | Release impact |
-|---|---|---|---|---|---|
-| Unknown or misspelled flag on any command (e.g. `verify --document-signture=x`) | Ignored; `OK`, exit 0. A misleading success for security flags | Exit 1, names the flag and the accepted ones | **As `main`** | CHANGELOG upgrade note (exists) | Undeclared input refused; a safety fix, not a contract break |
-| Correctly spelled security flags (`--signing`, `--keystore`, `--document-signature`, `--integrity`, `--policy`, `--key`, `--capability-token`) | Accepted | Accepted | **Unchanged** | none | none |
-| `validate --stage <s>` | Documented; ignored; exit by validation alone, whatever the readiness for `s` | Exit 1, unknown flag | **Deprecated, narrow.** `s` must be a `deal_stage`; another value exits 1. If `stage_readiness[s]` is false, exit 1 with "not ready for `s`", reported as readiness, not as a validation failure. Otherwise the result is 4.2.0's, plus a deprecation warning. | Usage string and help mark it deprecated; Format §6.2's "there is no `--stage` option" (from #340) is corrected editorially; wiki 08; CHANGELOG deprecation | Changes the outcome only where 4.2.0's exit 0 was misleading (the D-01 class). It uses the normative `stage_readiness` computation (Format stage table, RFC 0028); no new rule |
-| `export --compact` | Undocumented alias of `--no-superseded`; worked | Exit 1, unknown flag | **Deprecated alias of `--no-superseded`** with a stderr warning | CHANGELOG deprecation; help | Fully compatible |
-| `compose --parts <dir>` | Documented in help; ignored; fragments go to `./parts` (misleading) | Exit 1, unknown flag | **Deprecated alias of `--out-dir`.** Exit 1 if both are given and differ | Correct help's `--parts` annotation; CHANGELOG | Changes the outcome only where 4.2.0 was misleading |
-| `validate --strict` | Not documented for `validate`; ignored | Exit 1 | **As `main`** | CHANGELOG | Undeclared input refused |
-| `init <name>` | Ignored; writes `new-deal.uwx.md`, exit 0. Shown only in the GitHub README example, which never worked | Exit 1, names `--output` | **As `main`** | README fixed in #333; CHANGELOG upgrade note (exists) | Undeclared input refused; never a working contract |
-| `verify` with a wrong stated metric (D-01) | `OK`, exit 0 | `FAIL`, exit 1, `stated_metrics` | **As `main`** | CHANGELOG (exists) | Conformance fix (Protocol §II.2 item 2) |
-| `package verify` with a stale semantic digest (D-10) | `UNVERIFIABLE`, exit 0 | `FAILED`, `PKGVER-003`, exit 1. An uncomputable digest stays `UNVERIFIABLE`, exit 0 | **As `main`** | CHANGELOG (exists) | Conformance fix (RFC 0018) |
+- **Strict rejection stays.** Unknown and misspelled flags still fail before
+  the command runs.
+- **`validate --stage` is restored as deprecated.** It warns and reports
+  readiness from the existing `stage_readiness`. It does not turn
+  `stage_readiness: false` into a validation failure, and it does not
+  change `validate`'s exit semantics.
+- **`export --compact` and `compose --parts`** are restored as deprecated
+  aliases; contradictory `compose` directories are refused.
+- **`init <name>`** stays refused.
+- **D-01 and D-10** are kept.
 
-**Implementation cost (not started).** It touches:
+PR #346 implements this and merged at `c4d50dbe`. The behavior below was
+demonstrated on that code, not projected.
 
-- `COMMAND_FLAGS`: `stage` for `validate`, `compact` for `export`, `parts`
-  for `compose`;
-- three handlers in `cli.ts`, plus a deprecation-warning helper;
-- the tests that pin those three refusals: 4 references in
-  `cli-args.test.ts` and 1 in `cli.smoke.test.ts`;
-- new CLI tests for each deprecated path, including `--stage` ready, not
-  ready and unknown;
-- the documentation in the matrix.
+**Reconciliation with Format §2.2 and Part V.** §2.2 fixes the seven
+`deal_stage` values. §5.1 requires validators to compute `stage_readiness`,
+and reports gaps only for the *declared* stage, as `DQ-06` info,
+"reportable but not refusable". A report-only `--stage` therefore adds no
+rule and no issue. No normative ambiguity was found, so nothing needed
+escalating.
 
-The unknown-flag refusal and its tests stay as they are.
+## Compatibility matrix (demonstrated)
 
-## Can it ship as 4.3.0?
+Published `@uwmd/cli@4.2.0` and the packed tarballs of `main` at
+`c4d50dbe` were each installed in an empty directory and run on the same
+inputs.
 
-**Yes, on one stated principle the owner should confirm.** Under semver per
-surface, the CLI's public interface is what 4.2.0 declared: its help, usage
-strings, READMEs and spec text. Under the proposal:
+| Invocation | Published 4.2.0 | Candidate (`main`) | Documentation | Release impact |
+|---|---|---|---|---|
+| `verify` with a wrong stated metric (D-01) | `OK`, exit 0 | `FAIL`, exit 1, `stated_metrics` | CHANGELOG Fixed | Conformance fix (Protocol §II.2 item 2) |
+| `package verify` demo / stale semantic digest (D-10) | `UNVERIFIABLE` 0 / `UNVERIFIABLE` 0 | `VERIFIED` 0 / `FAILED` 1 (`PKGVER-003`) | CHANGELOG Fixed | Conformance fix (RFC 0018) |
+| `verify --document-signture` / `--signign` / `--integrty` | `OK`, exit 0 | refused before running, exit 1 | CHANGELOG Changed; wiki 08 | Undeclared input refused (safety fix) |
+| `validate --stage closing` (document not ready for closing) | `CLEAN`, exit 0 | `CLEAN`, exit 0. Deprecation warning on stderr; report line "Requested with --stage closing: incomplete (reported only…)" | CHANGELOG Deprecated; Format §6.2; wiki 08; help | Compatible |
+| `validate --stage closing --json` | JSON, exit 0 | stdout identical; readiness line on stderr | same | Compatible |
+| `validate --stage underwriting` (not a `deal_stage`) | `CLEAN`, exit 0 | exit 1, lists the seven stages | same | Misleading input refused |
+| `validate <document with errors> --stage scope` | `ERRORS`, exit 1 | `ERRORS`, exit 1, plus warning | same | Compatible |
+| `validate --strict` | `CLEAN`, exit 0 (never read) | exit 1, unknown flag | CHANGELOG | Undeclared input refused |
+| `export --compact` | history dropped | byte-identical output (`generated_at` aside), plus warning | CHANGELOG Deprecated; help | Compatible |
+| `compose --parts frags` | 3 fragments in `./parts`, none in `frags/` | 3 in `frags/`, none in `./parts`, plus warning | CHANGELOG Deprecated; help corrected | The documented option now does what it said |
+| `compose --parts a --out-dir b` | wrote to `b`, exit 0 | exit 1, nothing written | CHANGELOG Deprecated | Contradiction refused |
+| `init my-deal.uwx.md` | wrote `new-deal.uwx.md`, exit 0 | exit 1, names `--output` | README fixed (#333); CHANGELOG | Undeclared input refused |
+| `init --output my-deal.uwx.md` | exit 0 | exit 0 | — | Unchanged |
 
-- every declared invocation either behaves as in 4.2.0, or changes only
-  where 4.2.0 reported a success that was not true;
-- input 4.2.0 never declared is refused (misspelled flags, `validate
-  --strict`, a positional `init` argument).
+Tests in #346 pin each row except the published-4.2.0 column:
 
-The first is the same class of correction as D-01 and D-10. The second is a
-defect fix, not removed API. That makes the generation a minor:
+- **Unit:** `DEPRECATED_FLAGS` is pinned to exactly the three flags and kept
+  out of usage strings.
+- **CLI (13 new cases, spawning the real binary):** every compatibility case
+  above, plus nine misspelled verification, signing and integrity flags
+  across five commands, and deprecated names refused on other commands.
+- **Gates on #346 (local, Node 24):** all pass, including `npm test`
+  (4,133 tests in 183 files) and conformance 1,089/0. GitHub Actions: all 14
+  checks pass; Vercel was rate-limited.
+
+## Is core/CLI 4.3.0 defensible?
+
+**Yes, under the owner's scoped compatibility decision.** Every invocation
+4.2.0 declared and that functioned either behaves as before, or now does
+what its documentation said:
+
+- `validate --stage` keeps its result and exit status and adds a readiness
+  report;
+- `export --compact` keeps its output;
+- `compose --parts` writes where documented.
+
+Every change in exit status falls into one of these groups:
+
+- **Wrong success corrected:** D-01 and D-10, as the standard requires.
+- **Misleading input refused:** a value that is not a `deal_stage`, and
+  contradictory `compose` directories.
+- **Undeclared input refused:** misspelled flags, `validate --strict` and a
+  positional `init` argument. None of these was a functioning public
+  contract.
+
+The additions are deprecation notices, the readiness line and the
+`stated_metrics` JSON member. That makes a minor:
 
 | Package | Published | Interim |
 |---|---|---|
-| `@uwmd/core`, `@uwmd/cli` | 4.2.0 | **4.3.0**. New: deprecation notices and the `stated_metrics` JSON member, beside the fixes |
-| `@uwmd/signing` | 0.5.0 | **0.6.0** (Node `>=20`; pins core 4.3.0) |
+| `@uwmd/core`, `@uwmd/cli` | 4.2.0 | **4.3.0** |
+| `@uwmd/signing` | 0.5.0 | **0.6.0** (Node `>=20`, a 0.x breaking change; pins core 4.3.0) |
 | `@uwmd/report` | 0.8.30 | **0.9.0** (Node `>=20`; output-name fix; pins core 4.3.0) |
 | `@uwmd/excel` | 0.9.18 | **0.9.19** (repins core 4.3.0) |
 | `@uwmd/verify`, batch, lake | 0.2.0, 0.9.1, 0.3.1 | unchanged, not republished |
 
 Format 3.0 and Protocol 4.1.0 stay where they are, and 5.0 stays reserved.
 
-**Residual risk, flagged.** A script that passed a flag 4.2.0 silently
-ignored will exit 1. The upgrade notes name this; it is the safety property
-the owner asked to keep.
+**Residual risk, named in the upgrade notes.** A script that passed a flag
+4.2.0 silently ignored now exits 1. The owner chose this deliberately for
+verification safety.
 
-If the owner instead treats every historical exit 0 as contract, this
-cannot be 4.3.0. In that case only the maintenance branch below can ship an
-interim release.
+**The maintenance branch is not needed.** Its only advantage was avoiding
+the classification question, which the owner has now decided for this
+release. It would also have left misspelled security flags silently
+accepted in the 4.x line.
 
-**`init <name>` alternative.** If the owner considers the README example
-binding, honoring the argument as the output name is also honest and
-compatible. It writes the file the README promised; with `--output` present
-and different, it exits 1. Recommended instead: keep the refusal. The CLI
-never declared the argument, and the refusal names `--output`.
+**The financial audit (#343, PR #345)** found no release-blocking financial
+implementation defect. Its open items (M04, M09) need RFCs, so none is
+waiting to join this release.
 
-## Fallback: a 4.x maintenance branch
+## Remaining owner decisions
 
-This branch would be cut from `v4.2.0` as `release/4.x`. It would backport
-the correctness fixes and leave the strict CLI changes on `main` for the 5.0
-launch.
+1. **Authorize the 4.3.0 release preparation** at the versions above. That
+   is a one-commit release-prepared PR under wiki 11: manifests, pins,
+   literals, lockfile, CHANGELOG `[4.3.0]`, records, and tag mode for
+   `v4.3.0`. Tagging and publication need separate authorization.
+2. **Removal timing.** The deprecated spellings say they "will be removed in
+   a future major release". Whether that is at 5.0 belongs to the pending
+   launch versioning policy (ROADMAP), so it is not asserted here.
 
-- **Backport:**
-  - D-01 (`verify` stated metrics) and D-10 (`package verify` digests);
-  - D-04 messages;
-  - the report output name;
-  - the Node floors (#339);
-  - the D-01/D-10 regression tests.
-- **Versions:** 4.2.1 for core/CLI if the backport is fixes only. Signing
-  0.6.0, report 0.9.0 and Excel 0.9.19 as above.
-- **Costs:**
-  - #332's `verify` change sits on top of #328's edits to `cli.ts`, so the
-    cherry-picks need hand resolution;
-  - the branch needs its own CHANGELOG section, and a `[4.2.1]` record
-    reconciled back onto `main` so `verify-release` still matches tags;
-  - `release.yml` publishes from any tagged commit, but no tag has come from
-    a branch before.
-- **The decisive drawback:** the branch would keep 4.2.0's silent acceptance
-  of misspelled security flags, because the refusal is the #328 change it
-  leaves out. It does not reintroduce the defect, but it leaves it unfixed
-  in the interim line. Backporting #328 to fix it brings back the same
-  classification question as above.
-
-**Recommendation.** Ship the modified 4.3.0 from `main`. Use the maintenance
-branch only if the owner rejects the classification principle.
-
-## Questions for the owner
-
-1. **Confirm the principle:** declared 4.2.0 interface = contract;
-   undeclared, silently ignored input may be refused in a 4.x minor.
-2. **Approve the three deprecated behaviors:**
-   - `validate --stage` as a readiness gate;
-   - `export --compact` as an alias;
-   - `compose --parts` as an alias of `--out-dir`.
-
-   Or name any to drop.
-3. **`init <name>`:** keep the refusal (recommended), or honor it as the
-   output name.
-4. **Authorize the implementation PR.** The release preparation comes after
-   it.
-
-## Draft upgrade notes (for the interim generation)
+## Draft upgrade notes (for 4.3.0)
 
 - **`uwmd` refuses unknown and misspelled flags with exit 1,** naming the
   flag and the accepted ones. 4.2.0 ignored them, so a misspelled
   verification or signing flag looked like a passed check.
-- **Deprecated, still accepted** (removal planned for 5.0):
-  - `validate --stage <deal_stage>` now exits 1 when the document is not
-    ready for that stage;
-  - `export --compact` means `--no-superseded`;
-  - `compose --parts <dir>` means `--out-dir <dir>`.
+- **Deprecated, still accepted:**
+  - `validate --stage <deal_stage>` reports that stage's readiness. It does
+    not change the result or exit status, and a value outside the seven
+    stages exits 1.
+  - `export --compact` means `--no-superseded`.
+  - `compose --parts <dir>` means `--out-dir <dir>`; contradictory values
+    exit 1.
 - **`uwmd init` takes no file argument.** Use `--output my-deal.uwx.md`.
 - **`uwmd verify` exits 1** when a stated metric disagrees with its
   recomputation (Protocol §II.2 item 2). `--json` adds `stated_metrics`.
@@ -223,9 +228,9 @@ branch only if the owner rejects the classification principle.
 ## Verification evidence carried from the 5.0.0 preparation
 
 This evidence was measured on `431740d8`. Its code is identical to `main` at
-`79d4c92e`; only the version numbers and release records differ. It holds
-for the proposed 4.3.0 except for the three deprecated paths, whose CLI
-checks are re-run on the implementation.
+`79d4c92e`; only the version numbers and release records differ. The three
+deprecated paths were added afterwards by #346. Their checks are in the
+matrix above, measured on `c4d50dbe`.
 
 Run locally on Linux, Node 24.21.0:
 
@@ -264,9 +269,8 @@ into an empty directory.
 
 ## Next steps
 
-1. The owner answers the four questions above.
-2. An implementation PR for the deprecated behaviors, with CLI tests, then a
-   re-run of the CLI and consumer checks.
-3. A release-prepared commit for 4.3.0 (wiki 11, state 2), with tag mode
-   re-run on it.
-4. Tagging and publication only on explicit owner authorization.
+1. The owner authorizes the 4.3.0 release preparation, or not.
+2. If authorized: a release-prepared commit (wiki 11, state 2), with tag
+   mode `v4.3.0`, the full gates and the isolated consumer checks re-run on
+   it.
+3. Tagging and publication only on separate explicit owner authorization.
