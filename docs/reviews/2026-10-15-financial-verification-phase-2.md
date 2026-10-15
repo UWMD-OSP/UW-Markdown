@@ -613,3 +613,22 @@ none is independent spreadsheet recalculation or a different financial engine.
 Only the five designated receipt `engine_version` fields move during preparation
 under wiki11; financial values/digests and normative definitions are unchanged.
 The final evidence amendment's exact CI is recorded in the preparation PR.
+
+## 4.3.0 publication follow-through — 2026-10-15
+
+The owner authorized the exact #351 generation `80c68c3d` and confirmed all8
+trusted publishers. Annotated `v4.3.0` targets that commit. Release38821844153
+published all8 package versions; separate verification38822782450 checks
+registry/dist-tags/gitHead, tarball hashes, signatures/provenance, actual fresh
+consumers, receipt engine0.2.1 and the published CLI350/350. See the
+[publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md)
+and its evidence for exact SHAs, commands, two initial incomplete registry reads
+and limits. This does not turn the recorded local full-suite/subprocess failures
+into passes or establish independent Excel recalculation.
+
+Publication does not resolve the held #349 display baseline or draft
+RFC0085/0086/0087. M04/M09 remain demonstrated consistency gaps needing source/
+basis decisions, not newly established violations of existing formulas. Issue343
+remains open. Further governed work proceeds from this audit, not a repeated
+twelve-item investigation. Public5.0 remains reserved; no production deployment
+or account changes are included.

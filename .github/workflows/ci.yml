@@ -12,9 +12,53 @@ on:
   # Manual trigger, so CI can be re-run without inventing a commit — useful
   # when a run failed for an infrastructure reason rather than a code one.
   workflow_dispatch:
+    inputs:
+      verify-publication:
+        description: 'Read-only registry, provenance and downstream verification'
+        type: boolean
+        default: false
+      release-commit:
+        description: 'Exact approved release commit (required for publication verification)'
+        type: string
+        default: ''
 
 jobs:
+  verify-publication:
+    name: Verify published release (explicit read-only request)
+    if: github.event_name == 'workflow_dispatch' && inputs['verify-publication']
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install -g npm@11.5.1
+      - run: npm ci
+      - name: Verify actual published consumers and provenance
+        env:
+          RELEASE_COMMIT: ${{ inputs['release-commit'] }}
+        run: node scripts/check-prepared-consumers.mjs --published "$RELEASE_COMMIT"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: publication-verification
+          path: |
+            publication-registry-evidence.json
+            publication-cli-conformance.json
+            publication-signatures.log
+          if-no-files-found: error
+
   verify-lockfile:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Verify workspace lockfile pins
     runs-on: ubuntu-latest
     # No `npm ci` on purpose: this job reads the lockfiles as data, and the
@@ -28,6 +72,7 @@ jobs:
       - run: npm run verify-lockfile
 
   verify-versions:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Verify version matrix
     runs-on: ubuntu-latest
     # Same rationale as the lockfile job: this reads VERSIONS.md, the package
@@ -40,6 +85,7 @@ jobs:
       - run: npm run verify-versions
 
   verify-indexes:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Verify hand-maintained indexes
     runs-on: ubuntu-latest
     # Reads the schema README, the RFC index, the prebuild copy list and CLAUDE.md as
@@ -52,6 +98,7 @@ jobs:
       - run: npm run verify-indexes
 
   verify-codes:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Verify validation-code contracts
     runs-on: ubuntu-latest
     # Reads verify's and core's sources, the two specs and the RFC frontmatter as text — no
@@ -65,6 +112,7 @@ jobs:
       - run: npm run verify-codes
 
   verify-issue-forms:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Verify issue forms and labels
     runs-on: ubuntu-latest
     # Holds the issue forms, .github/labels.json and docs/FEEDBACK.md to each
@@ -82,6 +130,7 @@ jobs:
       - run: npm run verify-issue-forms
 
   verify-release:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Verify release record
     runs-on: ubuntu-latest
     # Compares every version the CHANGELOG calls released against the git tags,
@@ -146,6 +195,7 @@ jobs:
           JS
 
   lint:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Lint
     runs-on: ubuntu-latest
     steps:
@@ -158,6 +208,7 @@ jobs:
       - run: npm run lint
 
   build-and-test:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Build and test (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
     strategy:
@@ -262,6 +313,7 @@ jobs:
           if-no-files-found: ignore
 
   web-editor:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Web editor (build + test)
     runs-on: ubuntu-latest
     # tools/* are intentionally NOT npm-workspace members, so the root `npm test`
@@ -290,6 +342,7 @@ jobs:
         working-directory: tools/web-editor
 
   vscode-extension:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: VS Code extension (build + test)
     runs-on: ubuntu-latest
     # Same reason as the web editor: tools/* are not workspace members, so the
@@ -321,6 +374,7 @@ jobs:
         working-directory: tools/vscode-uwmd
 
   coverage:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Coverage report
     runs-on: ubuntu-latest
     steps:
@@ -380,6 +434,7 @@ jobs:
           retention-days: 14
 
   validate-schemas:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Validate JSON Schemas
     runs-on: ubuntu-latest
     steps:
@@ -395,6 +450,7 @@ jobs:
         run: npm run validate-schemas
 
   windows-build-and-test:
+    if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Build, test, and conformance (Windows, Node 20)
     runs-on: windows-latest
     steps:

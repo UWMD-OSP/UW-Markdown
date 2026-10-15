@@ -273,6 +273,15 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   installed outside the workspace and checked through strict root/browser
   declarations, CLI and public receipt/signing/Excel/report APIs. This is package
   integration evidence, not another financial implementation or live Excel.
+  An explicit manual CI request can select `verify-publication` with the approved
+  `release-commit`. This request runs the publication job without duplicating
+  ordinary development jobs; PR/push CI still runs all its normal gates. The
+  read-only job checks the annotated tag target, uncached
+  registry identities/dist-tags, tarball hashes, registry signatures/attestations,
+  exact downstream installs, strict declarations and public APIs, then drives the
+  published CLI through portable conformance. It uploads its registry/signature/
+  portable evidence. It is skipped for ordinary development PRs and pushes; it
+  never publishes or changes trusted-publisher settings.
 - **`release.yml`** — on `v*` tags: build, full test, then `npm publish` for
   the eight packages `@uwmd/verify`, `@uwmd/core`, `@uwmd/cli`,
   `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and

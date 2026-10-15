@@ -1,21 +1,27 @@
 # 13 — Build status (living document)
 
-**2026-10-15 — interim4.3.0 release preparation.** Financial corrections #347
-(quantized verification/projection gates, merged `d452d0f5`) and #348 (Excel
-source fidelity/disclosures, merged `65a55a80`) follow the Phase2 review and15
-workflow regressions in #350 (`8099d55d`). Their exact final PR heads passed all14
-CI jobs separately. The revised [preparation](../releases/4.3.0-preparation.md)
-is PR351: core/CLI4.3.0, verify0.2.1, signing0.6.0, batch0.9.2, Excel0.9.19,
-report0.9.0 and lake0.3.2, with independent semver and exact dependency pins.
-Format3.0/Protocol4.1.0 and all metric definitions are unchanged. The #346
-approved CLI compatibility behavior remains. Local failed full-suite evidence
-is preserved separately from remote CI in the preparation record.
+**2026-10-15 — interim4.3.0 published and independently checked.**
+Annotated `v4.3.0` (object `1aba40faeff4553fa957355c5c0bd205f55be40f`) targets
+#351 merge `80c68c3d0950948c85a1d3a90c02cd05f3a650a4`. Release38821844153
+published all8 packages: core/CLI4.3.0, verify0.2.1, signing0.6.0, batch0.9.2,
+Excel0.9.19, report0.9.0 and lake0.3.2, with independent semver/exact pins.
+Verification38822782450 checks registry/latest/gitHead, all tarball hashes,
+signatures/provenance, fresh consumers, strict types/public APIs and the actual
+published CLI350/350. Receipts name verify0.2.1. Two early registry-visibility
+failures remain recorded; the later probe passes. See the
+[publication record](../releases/4.3.0-publication.md).
 
-5.0 remains reserved for the coordinated public launch. Its version-coordination
-policy is open; no package alignment is inferred. PR349 remains on hold; RFC0085,
-0086 and0087 remain drafts. No tag, npm publication or production deployment is
-authorized by this preparation. The latest registry observation still identifies
-the historical4.2.0 generation below; preparation does not claim publication.
+Financial corrections #347 and #348, Phase2 evidence/regressions #350 and the
+#346 CLI compatibility behavior ship. Format3.0, Protocol4.1.0, receipt1.1,
+metric formulas, schemas and numerical conformance expectations are unchanged.
+Local full-suite3993/180 and subprocess failures remain separate from successful
+remote CI; no independent spreadsheet recalculation is claimed.
+
+5.0 stays reserved for the coordinated public launch; no production deployment
+or account change occurred. PR349 remains held and RFC0085/0086/0087 remain
+drafts. Issue343 stays open for substantive decisions. The Phase2 review and
+roadmap track the next bounded sequence. Earlier release records below are
+historical.
 
 Reconciled **2026-10-14** (America/Phoenix) for published and independently
 verified **4.2.0**. `@uwmd/verify` **0.2.0**, core/CLI **4.2.0**, signing

@@ -32,6 +32,10 @@ with their independently versioned packages. Core's optional signing peer is
 draft RFC status changes. Receipt disagreements across engine identities retain
 the existing RCP-07 `unverifiable` behavior. See the
 [preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md).
+All8 versions are published and independently checked from annotated `v4.3.0`
+on `80c68c3d0950948c85a1d3a90c02cd05f3a650a4` (2026-10-15). Registry
+integrity/provenance and fresh consumers pass; see the
+[publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
 
 Release 4.2.0 pairs core/CLI 4.2.0 with Protocol 4.1.0 and Format 3.0.
 Protocol 4.1.0 carries RFC 0084: an optional detached document snapshot
