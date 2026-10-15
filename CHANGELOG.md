@@ -8,6 +8,31 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- `uwmd verify` recomputes stated metrics (Protocol §II.2 item 2). Its
+  validate phase (the default, or `--validate`) now runs `verifyStatedMetrics`
+  beside Format validation and replacement-funding verification. A stated
+  metric that disagrees with its recomputation fails the command (exit 1) and
+  is listed with its stated and recomputed values. One whose inputs are absent
+  is reported `unverifiable` and does not fail it. `--json` carries the report
+  as `stated_metrics`. Through 4.2.0 the command never ran this check, so a
+  document stating a cap rate of 0.0600 where its record gives 0.0542 printed
+  `OK` and exited 0. Every example except the deliberately wrong
+  `examples/verification/deal.wrong-cap-rate.uwx.md` still verifies.
+- `uwmd init` refuses a file argument and names the file with `--output` only.
+  Through 4.2.0 `uwmd init my-deal.uwx.md` ignored the argument and wrote
+  `new-deal.uwx.md`, so the README quick start's next command found no file.
+  The README now says `init --output my-deal.uwx.md`, which works on every
+  published CLI.
+- A missing optional `@uwmd/signing` now produces one message that names the
+  flag or command used (`--signing`, `--document-signature`,
+  `--capability-token` or `uwmd sign-document`) and how to install it,
+  including the `npx -p @uwmd/cli -p @uwmd/signing` form. A package that is
+  present but fails to load is reported as a load failure. Before,
+  `sign-document` printed Node's raw `Cannot find package` error and
+  `verify --document-signature` blamed `--signing`.
+
 ### Added
 
 - `examples/verification/`: four runnable scripts that show what verifying a

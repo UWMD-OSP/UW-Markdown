@@ -63,8 +63,9 @@ npm run examples:verification   # runs all four and checks their exit codes
   checked separately from scenarios 1 to 3. Required authentication accepts
   only `verified`.
 
-The CLI equivalents for receipts and signatures are `uwmd receipt issue`,
-`uwmd receipt verify`, `uwmd sign-document` and `uwmd verify
---document-signature` ([CLI reference](../../docs/wiki/08-tools.md)).
-`uwmd verify` does not yet recompute stated metrics, so scenario 2 is shown
-through the library only.
+The CLI equivalents are `uwmd verify` (scenarios 1 and 2: `uwmd verify
+deal.wrong-cap-rate.uwx.md` reports the failed cap rate and exits 1),
+`uwmd receipt issue` and `uwmd receipt verify` (scenario 3), and
+`uwmd sign-document` with `uwmd verify --document-signature` (scenario 4)
+([CLI reference](../../docs/wiki/08-tools.md)). The CLI checks stated metrics
+from the release after 4.2.0; `@uwmd/cli` 4.2.0 prints `OK` for scenario 2.

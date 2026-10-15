@@ -2,7 +2,7 @@
 import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { afterAll, beforeAll, describe, it, expect, vi } from 'vitest';
 import { quantizeDecimal, evaluateCalc, parseUWFile, parseCalculationContext } from '@uwmd/core';
@@ -1037,5 +1037,144 @@ describe('closed flag vocabulary', () => {
     const validate = await runCli(['validate', FIXTURE, '--json']);
     expect(validate.status).toBe(0);
     expect(() => JSON.parse(validate.stdout)).not.toThrow();
+  });
+});
+
+describe('verify recomputes stated metrics (Protocol §II.2 item 2)', () => {
+  // Through 4.2.0 `verify` never ran the stated-metric check, so a stated cap
+  // rate that disagrees with its record printed `OK` and exited 0. The two
+  // documents are the examples/verification pair; they differ in one line.
+  const VALID = resolve(__dirname, '..', '..', '..', 'examples', 'verification', 'deal.uwx.md');
+  const WRONG = resolve(__dirname, '..', '..', '..', 'examples', 'verification', 'deal.wrong-cap-rate.uwx.md');
+  const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-metrics-'));
+  afterAll(() => rmSync(temp, { recursive: true, force: true }));
+
+  it('verifies a document whose stated metrics all recompute', async () => {
+    const r = await runCli(['verify', VALID]);
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('✓  OK — deal.uwx.md');
+    expect(r.stdout).toContain('Stated metrics: 8 verified, 0 failed, 0 unverifiable');
+  });
+
+  it('fails a document with a stated metric that disagrees with its recomputation', async () => {
+    const r = await runCli(['verify', WRONG]);
+    expect(r.status).toBe(1);
+    expect(r.stdout).toContain('✗  FAIL — deal.wrong-cap-rate.uwx.md');
+    expect(r.stdout).toContain('Stated metrics: 7 verified, 1 failed, 0 unverifiable');
+    expect(r.stdout).toContain('[FAILED] quick_metrics.cap_rate: stated 0.06, recomputed 0.0542');
+    // --validate selects the same phase.
+    expect((await runCli(['verify', WRONG, '--validate'])).status).toBe(1);
+  });
+
+  it('reports the failure in --json with the same exit code', async () => {
+    const r = await runCli(['verify', WRONG, '--json']);
+    expect(r.status).toBe(1);
+    const out = JSON.parse(r.stdout);
+    expect(out.ok).toBe(false);
+    expect(out.stated_metrics.counts).toEqual({ verified: 7, failed: 1, unverifiable: 0 });
+    expect(out.stated_metrics.evidence.filter((e: { state: string }) => e.state === 'failed'))
+      .toEqual([expect.objectContaining({ id: 'cap_rate', path: 'quick_metrics.cap_rate', stated: 0.06, computed: 0.0542 })]);
+    const valid = JSON.parse((await runCli(['verify', VALID, '--json'])).stdout);
+    expect(valid.ok).toBe(true);
+    expect(valid.stated_metrics.counts).toEqual({ verified: 8, failed: 0, unverifiable: 0 });
+  });
+
+  it('reports an unverifiable metric without failing, and an unrequested check as not checked', async () => {
+    const blank = resolve(temp, 'blank.uwx.md');
+    expect((await runCli(['init', '--asset-class', 'multifamily', `--output=${blank}`])).status).toBe(0);
+    const stated = resolve(temp, 'stated-without-inputs.uwx.md');
+    writeFileSync(stated, readFileSync(blank, 'utf8').replace(/^ {2}cap_rate: null$/m, '  cap_rate: 0.0550'));
+
+    const unverifiable = await runCli(['verify', stated]);
+    expect(unverifiable.status).toBe(0);
+    expect(unverifiable.stdout).toContain('Stated metrics: 0 verified, 0 failed, 1 unverifiable');
+    expect(unverifiable.stdout).toContain('[UNVERIFIABLE] quick_metrics.cap_rate: missing_or_null_input');
+
+    const none = await runCli(['verify', blank]);
+    expect(none.status).toBe(0);
+    expect(none.stdout).toContain("Stated metrics: none stated for asset class 'multifamily'");
+
+    const skipped = await runCli(['verify', WRONG, '--integrity']);
+    expect(skipped.status).toBe(0);
+    expect(skipped.stdout).toContain('Stated metrics: not checked (validation not requested)');
+    expect(JSON.parse((await runCli(['verify', WRONG, '--integrity', '--json'])).stdout)).not.toHaveProperty('stated_metrics');
+  });
+
+  it('still verifies every builtin class example', async () => {
+    for (const [, filename] of ASSET_CLASS_FIXTURES) {
+      const r = await runCli(['verify', exampleFixture(filename), '--validate', '--json']);
+      expect(r.status, filename).toBe(0);
+      expect(JSON.parse(r.stdout).stated_metrics.counts.failed, filename).toBe(0);
+    }
+  });
+});
+
+describe('init names its file with --output only', () => {
+  // Through 4.2.0 `uwmd init my-deal.uwx.md` ignored the argument and wrote
+  // new-deal.uwx.md, so the README quick start's next command failed.
+  const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-init-'));
+  afterAll(() => rmSync(temp, { recursive: true, force: true }));
+
+  it('refuses a file argument and writes nothing', async () => {
+    const r = await spawnCli(process.execPath, [CLI_BIN, 'init', 'my-deal.uwx.md'], { encoding: 'utf8', cwd: temp });
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain("uwmd init: unexpected argument 'my-deal.uwx.md'");
+    expect(r.stderr).toContain('--output my-deal.uwx.md');
+    expect(readdirSync(temp)).toEqual([]);
+  });
+
+  it('runs the README quick start as written', async () => {
+    const init = await spawnCli(process.execPath, [CLI_BIN, 'init', '--output', 'my-deal.uwx.md'], { encoding: 'utf8', cwd: temp });
+    expect(init.status).toBe(0);
+    const validate = await spawnCli(process.execPath, [CLI_BIN, 'validate', 'my-deal.uwx.md'], { encoding: 'utf8', cwd: temp });
+    expect(validate.status).toBe(0);
+  });
+});
+
+describe('the optional @uwmd/signing peer, when it is not installed', () => {
+  // An install with core and verify but no signing: every dependency of the
+  // workspace is linked in except @uwmd/signing, and Node resolves through the
+  // links (--preserve-symlinks) instead of back into the workspace.
+  const repo = resolve(__dirname, '..', '..', '..');
+  const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-nosigning-'));
+  const modules = resolve(temp, 'node_modules');
+  mkdirSync(resolve(modules, '@uwmd'), { recursive: true });
+  for (const entry of readdirSync(resolve(repo, 'node_modules'))) {
+    const target = resolve(repo, 'node_modules', entry);
+    if (entry === '@uwmd' || entry.startsWith('.') || !statSync(target).isDirectory()) continue;
+    symlinkSync(target, resolve(modules, entry), 'junction');
+  }
+  for (const name of ['core', 'verify']) symlinkSync(resolve(repo, 'packages', `uwmd-${name}`), resolve(modules, '@uwmd', name), 'junction');
+  afterAll(() => rmSync(temp, { recursive: true, force: true }));
+
+  const run = (args: string[]) => spawnCli(
+    process.execPath,
+    ['--preserve-symlinks', '--preserve-symlinks-main', resolve(modules, '@uwmd', 'core', 'dist', 'cli.js'), ...args],
+    { encoding: 'utf8', cwd: temp },
+  );
+  const notInstalled = ': the optional @uwmd/signing package is not installed. Install it beside @uwmd/cli (npm i @uwmd/signing)';
+
+  it('still runs commands that do not need it', async () => {
+    expect((await run(['verify', FIXTURE, '--integrity'])).status).toBe(0);
+  });
+
+  it('names the flag the user passed', async () => {
+    const document = await run(['verify', FIXTURE, '--document-signature=sig.json', '--keystore=keys.json']);
+    expect(document.status).toBe(1);
+    expect(document.stderr).toContain(`--document-signature${notInstalled}`);
+    expect(document.stderr).not.toContain('--signing');
+    expect(document.stderr).not.toContain('Cannot find package');
+
+    const block = await run(['verify', FIXTURE, '--signing', '--keystore=keys.json']);
+    expect(block.status).toBe(1);
+    expect(block.stderr).toContain(`--signing${notInstalled}`);
+  });
+
+  it('gives sign-document the same message instead of a raw resolver error, and writes nothing', async () => {
+    const r = await run(['sign-document', FIXTURE, '--key=signer.json', '--out=signature.json']);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain(`uwmd sign-document${notInstalled}`);
+    expect(r.stderr).not.toContain('Cannot find package');
+    expect(existsSync(resolve(temp, 'signature.json'))).toBe(false);
   });
 });
