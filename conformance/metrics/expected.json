@@ -2059,5 +2059,205 @@
         "comparison": 3
       }
     ]
+  },
+  {
+    "example": "verification/deal.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 9,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.0542,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0542,
+        "comparison": 0.0542,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0542,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0542,
+        "comparison": 0.0542,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.4938,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.4938,
+        "comparison": 0.4938,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.4938,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.4938,
+        "comparison": 0.4938,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.514,
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.514,
+        "comparison": 1.514,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.514,
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.514,
+        "comparison": 1.514,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1083,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1083,
+        "comparison": 0.1083,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1083,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1083,
+        "comparison": 0.1083,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 180,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 180,
+        "comparison": 180
+      }
+    ]
+  },
+  {
+    "example": "verification/deal.wrong-cap-rate.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 8,
+      "failed": 1,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "cap_rate",
+        "path": "quick_metrics.cap_rate",
+        "stated": 0.06,
+        "stated_decimals": 4,
+        "state": "failed",
+        "computed": 0.0542,
+        "comparison": 0.06,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "cap_rate",
+        "path": "valuation.going_in_cap_rate",
+        "stated": 0.0542,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.0542,
+        "comparison": 0.0542,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "ltv",
+        "path": "quick_metrics.ltv",
+        "stated": 0.4938,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.4938,
+        "comparison": 0.4938,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "ltv",
+        "path": "debt_structure.ltv",
+        "stated": 0.4938,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.4938,
+        "comparison": 0.4938,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "dscr",
+        "path": "quick_metrics.dscr",
+        "stated": 1.514,
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.514,
+        "comparison": 1.514,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "dscr",
+        "path": "debt_structure.dscr",
+        "stated": 1.514,
+        "stated_decimals": 3,
+        "state": "verified",
+        "computed": 1.514,
+        "comparison": 1.514,
+        "comparison_decimals": 3
+      },
+      {
+        "id": "debt_yield",
+        "path": "quick_metrics.debt_yield",
+        "stated": 0.1083,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1083,
+        "comparison": 0.1083,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "debt_yield",
+        "path": "debt_structure.debt_yield",
+        "stated": 0.1083,
+        "stated_decimals": 4,
+        "state": "verified",
+        "computed": 0.1083,
+        "comparison": 0.1083,
+        "comparison_decimals": 4
+      },
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 180,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 180,
+        "comparison": 180
+      }
+    ]
   }
 ]
