@@ -520,3 +520,69 @@ public launch should not claim exact cross-package financial verification while
 known verifier/source-input defects remain, or construction/STR/USALI/lender
 capabilities beyond the tested contract. The owner can defer optional extensions
 with accurate scope disclosure. No 5.0 preparation or publication is authorized.
+
+
+## Final integration review — 2026-10-15
+
+**PR347:** final review confirms the shared Protocol §VIII.5 quantizer itself is
+unchanged. The callers retain their prior precision, sum in binary64 before the
+comparison boundary, handle negative ties/decimal shifts through the existing
+quantizer, and retain failed overflow comparisons. Projection tests establish
+both refusal of falsely rounded cash and exact copying of permitted stated
+amounts; no new projection rounding is introduced. A focused rerun of
+`src/calc/quantize.test.ts`, `src/capital-stack.test.ts`, `src/lease-up.test.ts`
+and `src/lease-up-cash-flows.test.ts` passes **118 tests in4 files**. PR347 is
+ready for integration review with all14 CI jobs green on `c031a9f0`.
+
+Claude's release thread [PR342](https://github.com/UWMD-OSP/UW-Markdown/pull/342)
+received an explicit financial-correctness handoff. Under wiki11/RFC0083, a
+published verifier change needs its own package identity, matching `VERIFY_VERSION`
+(receipt engine identity), dependent exact pins/versions and release-owned receipt
+issue/verify identity fixtures. This implementation repair changes neither the
+Protocol numeric rule nor its version. The audit selects no package version and
+edits no receipt fixture; Claude retains release preparation and publication.
+
+**PR348:** final review retains source aggregates without tolerance or source
+rounding, refuses genuine nonfooting, and distinguishes missing inputs from
+computed values. Its exact canonical-decimal comparison only chooses a literal
+fallback; it does not calculate an alternative financial result. Final review
+found that totals-only literal cells lacked their own recalculation disclosure.
+The bounded follow-up adds cell notes and visible adjacent status for retained
+source inputs and unavailable subtotals, and narrows README's live-recalculation
+claim. XLSX serialization/readback checks confirm the literal-subtotal disclosure
+survives export. The existing subtotal suite passes **140 tests**; build, test
+typechecking and lint pass. This follow-up changes workbook disclosure only; its
+own CI must pass before integration. Prior14-job CI success on `f2d2dcf5` does
+not certify this follow-up. No actual Excel/LibreOffice recalculation is claimed.
+
+**PR349 remains held.** History identifies `f2204bd2` (RFC0041,2026-09-12) as
+the fixture's origin: its title is “Malformed and duplicate periods”, its years
+were already `[1,1,absent]`, and that commit did not modify `renderer.ts`. Its
+rendered ordinal labels captured existing behavior, not an explicit financial
+choice. Representation refresh `938b53a0` preserved those labels; RFC0081 assigns
+the render check to starter-products. Protocol §VIII.2a governs contextual
+identity lookup, including refusal of malformed/duplicate periods; it does not
+define a chat template. This is motivation for a starter display repair, not
+permission to override an existing baseline.
+
+Smallest proposed resolution for owner review: retain rows/order/amounts and all
+PS diagnostics, display authored duplicate years and an explicit missing-year
+label, then manually review the narrowly affected starter output expectation.
+The current proposal changes only `Yr2` to `Yr1`, `Yr3` to `Yrn/a` and the derived
+estimated token count392 to393 in this fixture; an actual renderer probe confirms
+all other content is byte-equal. Ordinary ordered complete years keep their
+labels; reordered/sparse/duplicate/missing-year text and token budgets can change.
+Reader/Verifier expectations, formulas, receipts, period lookup and validation
+need no alteration. Do not add an invalid-series exception, sort/deduplicate rows,
+invent identities or bypass the failing gate. No baseline update is authorized
+or performed, and package compatibility remains the release owner's assessment.
+
+**PR350:** final evidence review confirms only documentation, draft RFC/index
+entries and15 deterministic regression tests are introduced. RFC0086 and0087 stay
+`draft`; merging this review does not accept either financial alternative.
+Head `810f283c` passed all14 CI jobs in
+[run38709465751](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38709465751).
+This final evidence amendment requires its own CI before merge. The local
+3968/180 audit suite and3970/180 and3961/180 correction suites remain failed;
+new targeted passes and remote CI do not replace those results. No normative
+file, conformance expectation, package manifest/version or release record changes.

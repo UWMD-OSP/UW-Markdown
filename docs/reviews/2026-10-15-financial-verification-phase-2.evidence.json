@@ -236,7 +236,9 @@
       "ci": "passed all14 jobs",
       "ci_run": 38708175446,
       "ci_jobs_passed": 14,
-      "ci_jobs_total": 14
+      "ci_jobs_total": 14,
+      "final_review_head": "6086db225d2e6f4b58e1317c4273ac53e24df817",
+      "final_review_ci": "requires own CI; previous head all14 jobs passed"
     },
     "349": {
       "head": "7096884fb732e3dc1ff3b1cc82f237556605f8a7",
@@ -329,7 +331,12 @@
     "uwmd-phase2-report-codes-final.log": "a192ecb90b9e5d7190baccb3956306d959fe38e029eb25c4a6e96f8c670547e6",
     "uwmd-phase2-quantization-tests.log": "9150c8a6b658e710cbe19a00809095c558e1660a8b994c9d0fda685bd5f9f352",
     "uwmd-phase2-quantization-indexes.log": "613a89940aeda30515cd4e69ca7bc4d27a3751279ce78929c5d1cec7b9d67da5",
-    "uwmd-phase2-report-ci.log": "edfb1575ee3a6b067796df6249772c7c0d64658ae13df93e081aeba8def08381"
+    "uwmd-phase2-report-ci.log": "edfb1575ee3a6b067796df6249772c7c0d64658ae13df93e081aeba8def08381",
+    "uwmd-phase2-final-347.log": "46815eb54dcd5dc7dd91c4e9e7433caca347f632e8fffd8102031d0e9d559a37",
+    "uwmd-phase2-final-348-tests.log": "5b2d284a134aa27f5a4a245e9b0c075346488ae705a584b2363a914a3e530b3f",
+    "uwmd-phase2-final-348-build.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-phase2-final-348-types.log": "ea2fa42406682b13d22dc61aadd64c18657740643e856292495929bbfe5aeb7d",
+    "uwmd-phase2-final-348-lint.log": "a9c1eba716d450d71091ad9e528e74bd9ee753278f0ac49161cff06e3e413a27"
   },
   "audit_ci_snapshot": {
     "head": "9bb46ec3ec451e04af035b04fd6a1ad08caf1a32",
@@ -337,5 +344,46 @@
     "ci_jobs_passed": 14,
     "ci_jobs_total": 14,
     "status": "passed all14 jobs; subsequent evidence-only amendments require their own CI"
+  },
+  "final_review": {
+    "verifier_focused_tests": {
+      "command": "npm --prefix packages/uwmd-verify test -- src/calc/quantize.test.ts src/capital-stack.test.ts src/lease-up.test.ts src/lease-up-cash-flows.test.ts --pool=forks --maxWorkers=1",
+      "passed": 118,
+      "files": 4,
+      "log": "/tmp/uwmd-phase2-final-347.log"
+    },
+    "excel_subtotal_tests": {
+      "passed": 140,
+      "log": "/tmp/uwmd-phase2-final-348-tests.log",
+      "disclosure": "literal input cell notes and visible status; XLSX write/read round-trip"
+    },
+    "audit_ci_before_final_review": {
+      "head": "810f283c6bbcbddca23ce91fd1acf5549dd3756c",
+      "run": 38709465751,
+      "jobs_passed": 14
+    },
+    "renderer_intent": {
+      "origin_commit": "f2204bd2fccedf26a719da7cfa2c19567a7cb1af",
+      "source_years": [
+        1,
+        1,
+        null
+      ],
+      "labels_before": [
+        "Yr1",
+        "Yr2",
+        "Yr3"
+      ],
+      "labels_proposed": [
+        "Yr1",
+        "Yr1",
+        "Yrn/a"
+      ],
+      "estimated_tokens_before": 392,
+      "estimated_tokens_proposed": 393,
+      "other_content_byte_equal": true,
+      "status": "owner review required; baseline unchanged"
+    },
+    "release_handoff": "PR342 comment6195498202; package and receipt identity work remains with Claude"
   }
 }
