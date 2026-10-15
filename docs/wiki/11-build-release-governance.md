@@ -48,10 +48,11 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
 - **Format** — `FORMAT_VERSION` in `protocol.ts` (`@uwmd/verify`; 3.0, RFC 0081) and
   `uw_version` in files. It equals the one member of
   `SUPPORTED_FORMAT_VERSIONS`; a reader refuses every other version.
-- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (Stable 4.0.0 after
-  RFC 0081 shipped and publication was independently verified; published
-  core/CLI 4.0.0, 4.0.1 and 4.1.0 pair with it and Format 3.0.
-  Historical core/CLI 3.0.0 retain Stable Protocol 3.0.0 with Format 2.1,
+- **Protocol** — `PROTOCOL_VERSION` in `protocol.ts` (Stable 4.1.0 after
+  RFC 0084 shipped and publication was independently verified; published
+  core/CLI 4.2.0 pair with it and Format 3.0. Historical core/CLI 4.0.0,
+  4.0.1 and 4.1.0 retain Stable Protocol 4.0.0 with Format 3.0,
+  core/CLI 3.0.0 retain Stable Protocol 3.0.0 with Format 2.1,
   and 2.21.0 retain Stable Protocol 2.25.0). It equals the one member of
   `SUPPORTED_PROTOCOL_VERSIONS`, and `protocol.test.ts` asserts both labels
   equal their supported sets.

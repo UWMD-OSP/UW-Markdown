@@ -1,8 +1,9 @@
 ---
 rfc: 0084
 title: Bind a document snapshot without discarding signed block attribution
-status: accepted
+status: implemented
 accepted: 2026-10-14
+implemented: 2026-10-14
 author: UWMD maintainers
 created: 2026-10-14
 depends_on:
@@ -22,9 +23,12 @@ affects:
 # RFC 0084: Bind a document snapshot without discarding signed block attribution
 
 **Accepted direction (2026-10-14).** The owner authorized implementation
-after reviewing the draft in PR #325. This PR carries the implementation
-and addresses [issue #321](https://github.com/UWMD-OSP/UW-Markdown/issues/321);
-publication remains a separate release step.
+after reviewing the draft in PR #325. That PR carries the implementation
+and addresses [issue #321](https://github.com/UWMD-OSP/UW-Markdown/issues/321).
+**Implemented; released and independently verified.** The `v4.2.0` release
+published `@uwmd/verify` 0.2.0 and core/CLI 4.2.0 with Stable Protocol 4.1.0
+and Format 3.0 (see
+[Publication and verification](#publication-and-verification-2026-10-14)).
 
 ## Summary
 
@@ -381,6 +385,24 @@ a parsed object whose semantic digest differs from its supplied raw source.
 Key rotation, external timestamp authorities, byte-exact signatures, and
 authentication of Lite or other representations remain separate work.
 No new financial convention or external npm dependency is needed.
+
+## Publication and verification (2026-10-14)
+
+Annotated `v4.2.0` targets the release-prepared merge
+`238dbf35a8654e2f8394088b9c3982159b11af8f` (PR #327).
+[Release run 38663508062](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38663508062)
+succeeded and published `@uwmd/verify` 0.2.0 first, then core/CLI 4.2.0,
+signing 0.5.0, batch 0.9.1, Excel 0.9.18, report 0.8.30 and lake 0.3.1,
+pairing Protocol 4.1.0 with Format 3.0. Independent registry, provenance,
+published-file, delivered-CLI and consumer checks passed, including the
+`conformance/document-signatures/` cases through the registry-installed CLI
+and the published `@uwmd/verify` installed with no `@uwmd/core`. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.2.0-publication.md)
+and the independent
+[verification review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-14-rfc-0084-release-hardening.md).
+Publication verification precedes this separate `accepted` → `implemented`
+reconciliation. The immutable release tag and every section above remain
+unchanged.
 
 ## Prior art
 

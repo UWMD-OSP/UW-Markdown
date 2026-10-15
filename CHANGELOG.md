@@ -27,6 +27,35 @@ protocol, and each package each carry an independent semver).
 
 ## [4.2.0] - 2026-10-14
 
+### Released
+
+Published `@uwmd/verify` **0.2.0**, core/CLI **4.2.0**, signing **0.5.0**,
+batch **0.9.1**, Excel **0.9.18**, report **0.8.30** and lake **0.3.1** from
+annotated `v4.2.0` on `238dbf35a8654e2f8394088b9c3982159b11af8f`.
+[Release run 38663508062](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38663508062)
+succeeded through trusted publishing with provenance, eight packages, verify
+first, every step a publish and none a skip. Every registry version and
+`latest` matches, and all eight `gitHead` values name the tagged commit.
+Tarball integrity, registry signatures, SLSA provenance bound to
+`refs/tags/v4.2.0` and the run, npm publish attestations and all 672
+published file contents verify; all eight archives equal a local pack of the
+tagged source byte for byte. The registry-installed CLI reports core 4.2.0 /
+verify 0.2.0 / Protocol 4.1.0 / Format 3.0 and passes **350/350** portable
+cases with no skips (Reader 17, Verifier 281, Integrity 14, module profile 1,
+starter products 37), authenticates the document-signature fixtures as
+expected, and refuses to overwrite with `init`. Isolated consumers confirm
+the published `@uwmd/verify`, installed alone with no `@uwmd/core`, resolves
+and checks document signing subjects and keeps `unsigned`, `unverifiable` and
+`failed` apart; core re-exports every verify export; batch and lake install
+without core; strict TypeScript compiles against all eight packages with
+`skipLibCheck: false`; and a receipt issued by 4.2.0 verifies under the
+published 4.1.0, whose tampered copy reports `RCP-07` `unverifiable` across
+the engine step as specified. RFC 0084 is `implemented`; Protocol **4.1.0**
+is Stable, paired with Format **3.0**. PR #328 merged to `main` after the
+preparation and is not in this release. Exact evidence is in
+`docs/releases/4.2.0-publication-evidence.json` and the verification method
+in `docs/releases/4.2.0-publication.md`.
+
 ### Prepared package pairing
 
 Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. Protocol

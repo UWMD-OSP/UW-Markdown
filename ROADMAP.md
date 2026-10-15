@@ -1,15 +1,14 @@
 # Roadmap
 
-Reconciled **2026-10-14** (America/Phoenix) for release-prepared **4.2.0**
-(Protocol **4.1.0**, Format **3.0**). The current published release remains
-**4.1.0**, pairing core/CLI 4.1.0 and `@uwmd/verify` 0.1.0 with Stable
-Protocol **4.0.0** and Format **3.0**. The one accepted RFC waiting for a
-release, RFC 0084, ships in 4.2.0.
+Reconciled **2026-10-14** (America/Phoenix) for published and independently
+verified **4.2.0**, pairing core/CLI 4.2.0 and `@uwmd/verify` 0.2.0 with
+Stable Protocol **4.1.0** and Format **3.0**. No accepted RFC is waiting for a
+release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Prepared generation: 4.2.0
+## Current published release: 4.2.0
 
 Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. The
 generation carries one RFC:
@@ -25,10 +24,15 @@ It also carries the #322 canonical-encoding refusal in `@uwmd/signing`,
 `uwmd init`'s overwrite refusal and a browser-loadable `@uwmd/signing`.
 `@uwmd/verify` 0.2.0 is the receipt engine. Signing 0.5.0 pins verify 0.2.0
 and core 4.2.0, batch 0.9.1 and lake 0.3.1 pin verify 0.2.0, and Excel 0.9.18
-and report 0.8.30 pin core 4.2.0. The workflow publishes eight packages,
-`@uwmd/verify` first.
+and report 0.8.30 pin core 4.2.0. The workflow published eight packages,
+`@uwmd/verify` first, all from the release workflow with provenance. RFC 0084
+is `implemented` after shipment and independently verified publication.
+Release run 38663508062 and independent registry/provenance/published-file/
+CLI/consumer checks pass, including the document-signature fixtures through
+the registry-installed CLI. See
+[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.2.0-publication.md).
 
-## Current published release: 4.1.0
+## Historical publication: 4.1.0
 
 Core/CLI **4.1.0** pair with Protocol **4.0.0** and Format **3.0**, the same
 contract as 4.0.x. The generation carries one RFC, which moves nothing
