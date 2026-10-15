@@ -1,15 +1,21 @@
 # 13 — Build status (living document)
 
-**2026-10-15: 5.0 is reserved for the coordinated public launch** (owner
-direction; [ROADMAP](../../ROADMAP.md)). It supersedes the core/CLI 5.0.0
-plan in the 2026-10-14 readiness assessment below and in draft PR #342.
+**2026-10-15 — interim4.3.0 release preparation.** Financial corrections #347
+(quantized verification/projection gates, merged `d452d0f5`) and #348 (Excel
+source fidelity/disclosures, merged `65a55a80`) follow the Phase2 review and15
+workflow regressions in #350 (`8099d55d`). Their exact final PR heads passed all14
+CI jobs separately. The revised [preparation](../releases/4.3.0-preparation.md)
+is PR351: core/CLI4.3.0, verify0.2.1, signing0.6.0, batch0.9.2, Excel0.9.19,
+report0.9.0 and lake0.3.2, with independent semver and exact dependency pins.
+Format3.0/Protocol4.1.0 and all metric definitions are unchanged. The #346
+approved CLI compatibility behavior remains. Local failed full-suite evidence
+is preserved separately from remote CI in the preparation record.
 
-- Interim 4.x releases continue under the current semver-per-surface
-  policy.
-- The next one is blocked on how to ship #328's and #332's CLI refusals
-  without a major: make them compatible, hold them for 5.0, or leave them
-  out. The options are in PR #342.
-- The post-launch version-coordination policy awaits owner review.
+5.0 remains reserved for the coordinated public launch. Its version-coordination
+policy is open; no package alignment is inferred. PR349 remains on hold; RFC0085,
+0086 and0087 remain drafts. No tag, npm publication or production deployment is
+authorized by this preparation. The latest registry observation still identifies
+the historical4.2.0 generation below; preparation does not claim publication.
 
 Reconciled **2026-10-14** (America/Phoenix) for published and independently
 verified **4.2.0**. `@uwmd/verify` **0.2.0**, core/CLI **4.2.0**, signing

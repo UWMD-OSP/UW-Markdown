@@ -1,6 +1,6 @@
 {
   "name": "@uwmd/verify",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "The reference implementation of the UW Markdown standard — read and verify .uw.md underwriting documents: reader, validation, calc evaluator, metric dictionary, receipts, integrity, modules and the verification profiles.",
   "repository": {
     "type": "git",

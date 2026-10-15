@@ -8,6 +8,14 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [4.3.0] - 2026-10-15
+
+Core/CLI 4.3.0 pair with Format3.0 and Protocol4.1.0. Verifier0.2.1,
+signing0.6.0, batch0.9.2, Excel0.9.19, report0.9.0 and lake0.3.2
+carry exact dependency pins for this generation. Receipts use verifier0.2.1
+as engine identity; receipt schemas, metric/pack definitions and Protocol rules
+are unchanged. See the [release preparation](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md).
+
 ### Fixed
 
 - Financial verification follow-up to [#343](https://github.com/UWMD-OSP/UW-Markdown/issues/343):
@@ -33,10 +41,9 @@ protocol, and each package each carry an independent semver).
 
 - Format spec Part VI (toolchain interface) describes the CLI as it is.
   These are editorial corrections and change no format or verification rule.
-  - §6.2 showed `uwmd validate <file> [--stage <stage>]`, an option nothing
-    read and which the CLI now refuses. Its output example listed four
-    stages. It now shows `--json` and all seven `deal_stage` values, with
-    the other report members.
+  - §6.2 documents `--json` and all seven `deal_stage` values. The approved
+    deprecated `validate --stage` remains report-only: it reports existing
+    readiness without changing validation obligations or exit semantics.
   - §6.4 listed `pdf` and `docx` render formats that core refuses. It now
     points PDF output to `uwmd-report`.
   - §6.7 states that `init` names its file with `--output`.
@@ -5872,7 +5879,7 @@ bumped every manifest and left the matrix advertising 1.3.0 across six rows, and
 Pre-public development of the format spec (`UW_FORMAT_SPEC_v1.md`) and reference
 parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 
-[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.16.0...HEAD
+[Unreleased]: https://github.com/UWMD-OSP/UW-Markdown/compare/v4.3.0...HEAD
 [2.16.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.15.0...v2.16.0
 [2.15.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.14.0...v2.15.0
 [2.14.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v2.13.0...v2.14.0
@@ -5894,3 +5901,5 @@ parser/validator/renderer/runner/Claude agent host inside `uwmd/`.
 [1.5.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.3.0...v1.5.0
 [1.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v1.1.3...v1.2.0
+
+[4.3.0]: https://github.com/UWMD-OSP/UW-Markdown/compare/v4.2.0...v4.3.0

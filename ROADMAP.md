@@ -46,16 +46,15 @@ presented for owner review, not inferred. The open questions are:
 6. **Runtime support.** How declared Node floors track the Node release
    schedule.
 
-**The next interim release is blocked on a compatibility decision.** `main`
-carries CLI changes that refuse invocations 4.2.0 accepted:
-
-- the closed flag vocabulary (#328) refuses `validate --stage`, which 4.2.0's
-  usage string advertised, the `export --compact` alias, and any unknown
-  flag;
-- `init` refuses a file argument (#332).
-
-Under the current policy these need a core major, which is reserved. The
-alternatives and a recommendation are in the draft interim-release PR #342.
+**Interim4.3.0 preparation:** the owner-approved compatibility behavior merged
+in #346; unknown/misspelled flags remain refused, while the three deprecated
+options retain the scoped compatibility behavior. Financial corrections #347
+and #348 are integrated, together with the Phase2 evidence/regressions (#350).
+The revised [preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md) and PR351
+supersede PR342's old package proposal. Verify0.2.1 and its dependent repins join
+core/CLI4.3.0; Format3.0 and Protocol4.1.0 remain unchanged. Publication is a
+separate owner-authorized action. PR349 remains held for its starter-output
+baseline decision; RFC0085/0086/0087 remain drafts with no convention accepted.
 
 
 Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. The

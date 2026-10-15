@@ -586,3 +586,30 @@ This final evidence amendment requires its own CI before merge. The local
 3968/180 audit suite and3970/180 and3961/180 correction suites remain failed;
 new targeted passes and remote CI do not replace those results. No normative
 file, conformance expectation, package manifest/version or release record changes.
+
+
+## Integration and revised release handoff
+
+Under subsequent explicit owner authorization, the audit/regressions merged as
+PR350 (`8099d55d`), quantization correction as PR347 (`d452d0f5`) and Excel
+source-fidelity correction as PR348 (`65a55a80`). Exact final heads `464e7f0c`,
+`0121ac39` and `edea7faa` passed all14 CI jobs in runs38759035200,38760622362
+and38761919760 respectively. Documentation conflicts retained both workstreams;
+no financial formula or conformance expectation was changed by these merges.
+Release preparation moved from Claude's draft342 to Codex's PR351 and the
+[existing release-artifact convention](../releases/4.3.0-preparation.md).
+Its authorized package/receipt identity updates are separate release work under
+wiki11, not an acceptance of the held starter-output change or draft financial
+RFCs. All prior local failure counts and external-evidence limits remain intact.
+
+
+The revised preparation is concrete at PR351: verify0.2.1, core/CLI4.3.0,
+signing0.6.0, batch0.9.2, Excel0.9.19, report0.9.0 and lake0.3.2. Prepared head
+`1db88e1f` passed all14 jobs in run38766974029, including4173 unit tests on
+Node20 and an actual8-archive fresh consumer installation/strict-type/API check.
+Local combined full-suite **3993/180 remains failed**. Reference1089/0, portable
+350/350 against the reference CLI and archive/VM probes are separate evidence;
+none is independent spreadsheet recalculation or a different financial engine.
+Only the five designated receipt `engine_version` fields move during preparation
+under wiki11; financial values/digests and normative definitions are unchanged.
+The final evidence amendment's exact CI is recorded in the preparation PR.

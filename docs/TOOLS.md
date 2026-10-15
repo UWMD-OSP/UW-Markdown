@@ -41,8 +41,8 @@ publication state. At the time of writing:
 
 The registry also serves a stray `0.3.0` of `@uwmd/excel` and `@uwmd/report`.
 Both are deprecated and pinned to core 1.3.0; do not install them. Install an
-exact version that pins your core, for example `@uwmd/excel@0.9.18` with
-`@uwmd/core@4.2.0`.
+exact version that pins your core, for example `@uwmd/excel@0.9.19` with
+`@uwmd/core@4.3.0`.
 
 For source-checkout calculation scenarios, see
 [Calculation context files](CALCULATION_CONTEXT.md): select period variants

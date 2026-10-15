@@ -19,6 +19,20 @@ released independently as long as both honor the same protocol version.
 
 ## Current matrix
 
+Release 4.3.0 pairs core/CLI 4.3.0 with the unchanged Protocol 4.1.0 and
+Format 3.0. Verifier 0.2.1 repairs capital-stack and lease-up comparison
+quantization under the existing Protocol VIII.5 rule; receipts name
+`@uwmd/verify` 0.2.1 as the engine. Core/CLI 4.3.0 retain the approved deprecated
+CLI compatibility behavior while rejecting unknown flags and false verification.
+Signing 0.6.0 and report 0.9.0 declare their Node20 floor; Excel 0.9.19 preserves
+source financial aggregates and discloses retained-literal editing limits.
+Batch 0.9.2 and lake 0.3.2 pin verifier 0.2.1. All eight exact package pins move
+with their independently versioned packages. Core's optional signing peer is
+0.6.0. No metric formula, Format/Protocol/receipt schema version, pack version or
+draft RFC status changes. Receipt disagreements across engine identities retain
+the existing RCP-07 `unverifiable` behavior. See the
+[preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md).
+
 Release 4.2.0 pairs core/CLI 4.2.0 with Protocol 4.1.0 and Format 3.0.
 Protocol 4.1.0 carries RFC 0084: an optional detached document snapshot
 signature over the existing `uw-envelope-semantic` digest (Protocol §V.13),
@@ -335,18 +349,18 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
-| UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.2.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
-| `@uwmd/verify` | **0.2.0** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.2.0 depends on it exactly and re-exports it |
-| `@uwmd/core` | **4.2.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.0 |
-| `@uwmd/cli` (CLI) | **4.2.0** | `@uwmd/core` 4.2.0 |
-| `@uwmd/excel` | **0.9.18** | `@uwmd/core` 4.2.0, format 3.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.30** | `@uwmd/core` 4.2.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.9.1** | `@uwmd/verify` 0.2.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.3.1** | `@uwmd/verify` 0.2.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.5.0** | `@uwmd/verify` 0.2.0 and `@uwmd/core` 4.2.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.2.0 browser entry |
+| UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.3.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
+| `@uwmd/verify` | **0.2.1** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.3.0 depends on it exactly and re-exports it |
+| `@uwmd/core` | **4.3.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.1 |
+| `@uwmd/cli` (CLI) | **4.3.0** | `@uwmd/core` 4.3.0 |
+| `@uwmd/excel` | **0.9.19** | `@uwmd/core` 4.3.0, format 3.0, explicit contextual calculations |
+| `@uwmd/report` | **0.9.0** | `@uwmd/core` 4.3.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.9.2** | `@uwmd/verify` 0.2.1, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.3.2** | `@uwmd/verify` 0.2.1, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.6.0** | `@uwmd/verify` 0.2.1 and `@uwmd/core` 4.3.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.3.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format 3.0 |
-| `tools/vscode-uwmd` | **0.2.0** | format 3.0; `@uwmd/verify` 0.2.0 (`file:` link) |
+| `tools/vscode-uwmd` | **0.2.0** | format 3.0; `@uwmd/verify` 0.2.1 (`file:` link) |
 
 
 ### Official module compatibility
