@@ -192,6 +192,35 @@ remain outside the current released contract. RFC 0070 shipped subsequently in 2
 [2.15.0](#released-in-2150), pairing core/CLI 2.15.0 with Protocol 2.19.0.
 See [VERSIONS.md](../../VERSIONS.md) and [ROADMAP.md](../../ROADMAP.md).
 
+## 2026-10-14 — Public-launch onboarding audit (published 4.2.0)
+
+The published packages were installed from npm into empty directories and
+their READMEs followed as a new adopter would. Full record:
+[launch onboarding audit](../reviews/2026-10-14-launch-onboarding-audit.md).
+
+- **Next version for PR #328.** The closed flag vocabulary refuses
+  invocations 4.2.0 documents (`validate --stage`, `export --compact`), so
+  under semver-per-surface core and CLI take a major: **5.0.0**. Signing,
+  Excel and report take repin patches. Verify, batch and lake do not move,
+  and neither do Protocol 4.1.0 and Format 3.0. This is not a lockstep
+  generation, and nothing is prepared or tagged without owner authorization.
+- **Works from npm:** `@uwmd/verify` alone, a strict TypeScript consumer of
+  every entry, browser bundles of verify and `core/browser` (run in
+  Chromium), and receipts and document signatures from the library and the
+  CLI. The four verification scenarios are runnable in
+  `examples/verification/` (PR #330).
+- **Launch blockers:** `uwmd verify` does not recompute stated metrics, so it
+  prints `OK` for a document whose stated cap rate disagrees with its record
+  (Protocol §II.2 item 2; the library reports it). The README quick start's
+  `init my-deal.uwx.md` ignores the filename, so its next `validate` exits 1.
+- **Should fix:** `npx uwmd` is advertised but the unscoped npm name is
+  unregistered. `@uwmd/signing` declares Node `>=18.4.0` but fails on 18.20.8,
+  and does not document `node:fs` as a bundler external. Missing-signing
+  errors are misleading. Stale Protocol 4.0.0 and `--stage` references remain
+  (README, VERSIONS.md pinning, Format spec Part VI). `compact` output fails
+  `verify` (`POL-02`), and `package verify` cannot reach `VERIFIED` because the
+  CLI supplies no semantic digest.
+
 ## Released in 4.1.0: the `@uwmd/verify` split (RFC 0083, 2026-10-13)
 
 [RFC 0083](../rfcs/0083-verify-package-split.md) landed in three phases and
