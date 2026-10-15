@@ -62,16 +62,17 @@ export function isKnownAlgorithm(alg: string): alg is UWSignatureAlgorithm {
 /**
  * The runtime's Web Crypto implementation.
  *
- * Node exposes it as a global from 18.0; Ed25519 specifically landed in 18.4.
- * An older runtime fails here with a code rather than a `TypeError` on
- * `undefined.subtle`.
+ * Node exposes it as `globalThis.crypto` by default from 19 (Node 18 only
+ * behind `--experimental-global-webcrypto`), so the package requires Node 20
+ * or later. A runtime without it fails here with a code rather than a
+ * `TypeError` on `undefined.subtle`.
  */
 export function subtle(): SubtleCrypto {
   const provider = (globalThis as { crypto?: { subtle?: SubtleCrypto } }).crypto?.subtle;
   if (!provider) {
     throw new SigningError(
       'SIG_NO_CRYPTO',
-      'No Web Crypto provider (globalThis.crypto.subtle) in this runtime; @uwmd/signing needs Node >= 18.4 or a browser.',
+      'No Web Crypto provider (globalThis.crypto.subtle) in this runtime; @uwmd/signing needs Node 20 or later, or a browser.',
     );
   }
   return provider;

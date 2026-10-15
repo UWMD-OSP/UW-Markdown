@@ -64,6 +64,18 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- `@uwmd/signing` and `@uwmd/report` declare `engines.node >=20.0.0` (were
+  `>=18.4.0` and `>=18.0.0`). Both already failed on Node 18. Signing needs
+  the global Web Crypto that Node 18 lacks without
+  `--experimental-global-webcrypto`, so `sign-document` and
+  `verify --document-signature` failed with `SIG_NO_CRYPTO`. That error said
+  the package "needs Node >= 18.4"; it now says Node 20 or later. Report's
+  `playwright-core ^1.49.0` resolves to releases that require Node 20 and
+  exits 1 before any output, `--format html` included. The other packages
+  keep `>=18.0.0`, which was re-run on Node 18.0.0 and 18.20.8
+  ([readiness assessment](docs/reviews/2026-10-14-next-release-readiness.md)
+  §4). Dropping a declared runtime is a breaking change for these two 0.x
+  packages.
 - The `uwmd` CLI refuses unknown flags. Every command, and every subcommand
   of `receipt`, `modules`, `lease`, `package`, `portfolio` and `market-data`,
   has a closed flag vocabulary (`COMMAND_FLAGS` in `cli-args.ts`); a flag

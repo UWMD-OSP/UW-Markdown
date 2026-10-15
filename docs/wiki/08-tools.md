@@ -206,7 +206,7 @@ const result = await verifyChain(parsed, {
 uwmd verify deal.uwx.md --signing --keystore=./keystore.json
 ```
 
-`ed25519` / `es256` / `es384` over Web Crypto (Node ≥ 18.4). Also supplies
+`ed25519` / `es256` / `es384` over Web Crypto (Node 20 or later). Also supplies
 `signReceipt` + `createReceiptSignatureVerifier`, which is what made receipt
 signing real. Key distribution is out of scope by design — the JSON key store
 in `keystore-file.ts` is a reference format, and an adopter backing a `KeyStore`
