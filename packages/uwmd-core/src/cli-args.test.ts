@@ -6,17 +6,20 @@
 // divergence: the old inline pass skipped the token after *any* `--` token,
 // so a `--flag=value` before a filename silently dropped the filename.
 
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, sep } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import {
+  COMMAND_FLAGS,
   defaultPartsDir,
   extractPositionals,
+  flagVocabulary,
   hostConformanceFlag,
   parseFlags,
   readManifestFile,
   replaceUWExtension,
+  unknownFlagMessage,
 } from './cli-args.js';
 
 describe('parseFlags', () => {
@@ -146,5 +149,90 @@ describe('readManifestFile', () => {
     writeFileSync(badPath, '{ not json');
     const bad = readManifestFile(badPath);
     expect(bad.ok).toBe(false);
+  });
+});
+
+describe('flagVocabulary', () => {
+  it('resolves a command to its own closed set', () => {
+    expect(flagVocabulary('verify', undefined)).toEqual({ command: 'verify', accepted: COMMAND_FLAGS['verify'] });
+    expect(flagVocabulary('verify', 'deal.uwx.md')).toEqual({ command: 'verify', accepted: COMMAND_FLAGS['verify'] });
+  });
+
+  it('resolves a subcommand when the first positional selects one', () => {
+    expect(flagVocabulary('receipt', 'verify')).toEqual({ command: 'receipt verify', accepted: ['json'] });
+    expect(flagVocabulary('receipt', 'issue')?.accepted).toEqual(['output', 'issued-at', 'stdout']);
+    expect(flagVocabulary('modules', 'list')?.command).toBe('modules list');
+  });
+
+  it('is undefined for an unknown command or subcommand, for no command, and for a self-parsing command', () => {
+    expect(flagVocabulary(undefined, undefined)).toBeUndefined();
+    expect(flagVocabulary('--help', undefined)).toBeUndefined();
+    expect(flagVocabulary('nonsense', 'x')).toBeUndefined();
+    expect(flagVocabulary('receipt', 'nonsense')).toBeUndefined();
+    // verify-cash-flows parses args itself and refuses under its typed JSON contract.
+    expect(flagVocabulary('verify-cash-flows', undefined)).toBeUndefined();
+    expect(COMMAND_FLAGS['verify-cash-flows']).toEqual(['variant', 'json']);
+  });
+
+  it('never reads an inherited object property as a command', () => {
+    expect(flagVocabulary('constructor', undefined)).toBeUndefined();
+    expect(flagVocabulary('receipt', 'toString')).toBeUndefined();
+  });
+});
+
+describe('unknownFlagMessage', () => {
+  const verify = flagVocabulary('verify', undefined)!;
+
+  it('is undefined when every flag is accepted', () => {
+    expect(unknownFlagMessage(verify, {})).toBeUndefined();
+    expect(unknownFlagMessage(verify, { integrity: true, json: true, keystore: 'k.json' })).toBeUndefined();
+  });
+
+  it('names the unknown flag and the command, and lists the accepted flags', () => {
+    const message = unknownFlagMessage(verify, { 'document-signture': 'x.json', keystore: 'k.json' });
+    expect(message).toBe(
+      'uwmd verify: unknown flag --document-signture. Accepted flags: --validate, --integrity, --policy, --signing, --keystore, --document-signature, --resolved, --parts, --json.',
+    );
+  });
+
+  it('names every unknown flag, in the order given', () => {
+    expect(unknownFlagMessage(flagVocabulary('receipt', 'verify')!, { output: 'x', stdout: true, json: true }))
+      .toBe('uwmd receipt verify: unknown flags --output, --stdout. Accepted flags: --json.');
+  });
+
+  it('says when the command takes no flags at all', () => {
+    expect(unknownFlagMessage(flagVocabulary('diff', undefined)!, { json: true }))
+      .toBe('uwmd diff: unknown flag --json. The command takes no flags.');
+  });
+});
+
+describe('COMMAND_FLAGS', () => {
+  // cli.ts is a top-level script, so it is read as text: every flag a usage
+  // string promises must be one the router accepts, and every command with a
+  // usage string must have a vocabulary. A flag added to one side without the
+  // other fails here before it reaches a user.
+  const source = readFileSync(new URL('./cli.ts', import.meta.url), 'utf-8');
+  const usages = [...source.matchAll(/Usage: uwmd ([^'`]+)/g)].map((m) => m[1]!.trim());
+
+  it('covers every usage string in cli.ts', () => {
+    expect(usages.length).toBeGreaterThan(30);
+    for (const usage of usages) {
+      const [command, next] = usage.split(/\s+/);
+      if (command!.startsWith('<')) continue; // the help header, `uwmd <command> <file> [options]`
+      const sub = next !== undefined && /^[a-z-]+$/.test(next) ? next : undefined;
+      if (next !== undefined && /^<[a-z-]+(\|[a-z-]+)+>$/.test(next)) continue; // `receipt <issue|verify> ...` dispatches, it is not a command
+      const key = sub !== undefined && Object.hasOwn(COMMAND_FLAGS, `${command} ${sub}`) ? `${command} ${sub}` : command!;
+      expect(COMMAND_FLAGS, `no vocabulary for "${usage}"`).toHaveProperty(key);
+      const promised = [...new Set((usage.match(/--[a-z][a-z-]*/g) ?? []).map((flag) => flag.slice(2)))];
+      for (const flag of promised) {
+        expect(COMMAND_FLAGS[key], `usage "${usage}" promises --${flag}`).toContain(flag);
+      }
+    }
+  });
+
+  it('lists no flag twice', () => {
+    for (const [command, accepted] of Object.entries(COMMAND_FLAGS)) {
+      expect(new Set(accepted).size, command).toBe(accepted.length);
+    }
   });
 });

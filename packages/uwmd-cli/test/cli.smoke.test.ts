@@ -982,3 +982,60 @@ describe('calculation context files', () => {
     });
   });
 });
+
+describe('closed flag vocabulary', () => {
+  // Through 4.1.0 the CLI kept every `--name[=value]` and each command read
+  // only the flags it knew, so a misspelled security flag passed silently.
+  const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-flags-'));
+  afterAll(() => rmSync(temp, { recursive: true, force: true }));
+
+  it('verify refuses a misspelled security flag before any work runs', async () => {
+    const r = await runCli(['verify', FIXTURE, '--document-signture=x.json', '--keystore=k.json']);
+    expect(r.status).toBe(1);
+    expect(r.stdout).toBe('');
+    expect(r.stderr).toContain('uwmd verify: unknown flag --document-signture.');
+    expect(r.stderr).toContain('--document-signature');
+  });
+
+  it('validate refuses an unknown flag, with or without --json', async () => {
+    const plain = await runCli(['validate', FIXTURE, '--jsn']);
+    expect(plain.status).toBe(1);
+    expect(plain.stdout).toBe('');
+    expect(plain.stderr).toContain('uwmd validate: unknown flag --jsn.');
+
+    const json = await runCli(['validate', FIXTURE, '--json', '--stage=screening']);
+    expect(json.status).toBe(1);
+    expect(json.stdout).toBe('');
+    expect(json.stderr).toContain('uwmd validate: unknown flag --stage.');
+  });
+
+  it('sign-document refuses an unknown flag without touching the artifact path', async () => {
+    const out = resolve(temp, 'signature.json');
+    const r = await runCli(['sign-document', FIXTURE, `--key=${resolve(temp, 'missing-signer.json')}`, `--out=${out}`, '--bogus']);
+    expect(r.status).toBe(1);
+    expect(r.stdout).toBe('');
+    expect(r.stderr).toContain('uwmd sign-document: unknown flag --bogus.');
+    expect(existsSync(out)).toBe(false);
+  });
+
+  it('names a subcommand with its command, and says when a command takes no flags', async () => {
+    const receipt = await runCli(['receipt', 'verify', FIXTURE, resolve(temp, 'receipt.json'), '--output=x']);
+    expect(receipt.status).toBe(1);
+    expect(receipt.stderr).toContain('uwmd receipt verify: unknown flag --output. Accepted flags: --json.');
+
+    const diff = await runCli(['diff', FIXTURE, FIXTURE, '--json']);
+    expect(diff.status).toBe(1);
+    expect(diff.stdout).toBe('');
+    expect(diff.stderr).toContain('uwmd diff: unknown flag --json. The command takes no flags.');
+  });
+
+  it('still accepts the flags a command knows', async () => {
+    const verify = await runCli(['verify', FIXTURE, '--integrity', '--json']);
+    expect(verify.status).toBe(0);
+    expect(() => JSON.parse(verify.stdout)).not.toThrow();
+
+    const validate = await runCli(['validate', FIXTURE, '--json']);
+    expect(validate.status).toBe(0);
+    expect(() => JSON.parse(validate.stdout)).not.toThrow();
+  });
+});

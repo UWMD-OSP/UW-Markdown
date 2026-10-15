@@ -8,6 +8,23 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Changed
+
+- The `uwmd` CLI refuses unknown flags. Every command, and every subcommand
+  of `receipt`, `modules`, `lease`, `package`, `portfolio` and `market-data`,
+  has a closed flag vocabulary (`COMMAND_FLAGS` in `cli-args.ts`); a flag
+  outside it exits 1 naming the flag and the command before any file is read.
+  Before this change the parser kept every `--name[=value]` and each
+  command read only the flags it knew, so on `@uwmd/cli@4.1.0` `uwmd verify deal.uwx.md
+  --document-signture=x.json --keystore=k.json` exited 0 with `OK`. The gate
+  generalizes the refusal `project-lease-up`, `assemble-property` and
+  `inspect-property-cash-flows` already made; `verify-cash-flows` keeps its
+  own typed JSON refusal. `validate` no longer advertises `--stage`, which
+  nothing read, and `export` drops its undocumented `--compact` alias of
+  `--no-superseded`; the usage strings now list every flag a command reads
+  (`scope --json`, `refine --asset-class`, `compose --part-prefix`/`--output`,
+  `package to-context --compact`, `--parts` beside `--resolved`).
+
 ## [4.2.0] - 2026-10-14
 
 ### Prepared package pairing

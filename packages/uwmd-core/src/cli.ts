@@ -112,6 +112,8 @@ import { CORE_VERSION } from './version.js';
 import {
   parseFlags,
   extractPositionals,
+  flagVocabulary,
+  unknownFlagMessage,
   replaceUWExtension,
   hostConformanceFlag,
   defaultPartsDir,
@@ -594,7 +596,7 @@ function cmdSummary(file: string): void {
 }
 
 async function cmdExport(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const includeSuperseded = !(flags['no-superseded'] === true || flags['compact'] === true);
+  const includeSuperseded = flags['no-superseded'] !== true;
   // --resolved exports the assembled record. Exporting the directive instead
   // would ship a document whose rent roll is a list of filenames.
   const loaded = flags['resolved']
@@ -1197,6 +1199,19 @@ function cmdRefine(file: string, flags: Record<string, string | boolean>): void 
 const flags = parseFlags(args);
 const positional = extractPositionals(args);
 
+// Every command accepts a closed set of flags (`COMMAND_FLAGS`). A flag
+// outside it is refused here, before any file is read or any work runs:
+// through 4.1.0 an unknown flag was silently ignored, so a misspelled
+// security flag on `verify` looked like a passed check.
+{
+  const vocabulary = flagVocabulary(command, positional[0]);
+  const refusal = vocabulary === undefined ? undefined : unknownFlagMessage(vocabulary, flags);
+  if (refusal !== undefined) {
+    console.error(refusal);
+    process.exit(1);
+  }
+}
+
 
 // ─── Composition (RFC 0021) ──────────────────────────────────────────────────
 
@@ -1349,12 +1364,12 @@ switch (command) {
     break;
 
   case 'validate':
-    if (!positional[0]) { console.error('Usage: uwmd validate <file> [--stage <stage>] [--institution <config.json>] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd validate <file> [--institution <config.json>] [--json]'); process.exit(1); }
     await cmdValidate(positional[0], flags);
     break;
 
   case 'verify':
-    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--signing --keystore=<path>] [--document-signature=<artifact> --keystore=<path>] [--resolved] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--signing --keystore=<path>] [--document-signature=<artifact> --keystore=<path>] [--resolved [--parts <dir>]] [--json]'); process.exit(1); }
     await cmdVerify(positional[0], flags);
     break;
   case 'sign-document': {
@@ -1640,7 +1655,7 @@ switch (command) {
   }
 
   case 'project-lease-up': {
-    if (positional.length !== 2 || Object.keys(flags).some(key => key !== 'json')) {
+    if (positional.length !== 2) {
       console.error('Usage: uwmd project-lease-up <file> <plan.json> [--json]');
       process.exit(1);
     }
@@ -1716,7 +1731,7 @@ switch (command) {
   }
 
   case 'assemble-property': {
-    if (positional.length !== 2 || Object.keys(flags).some(key => key !== 'json')) {
+    if (positional.length !== 2) {
       console.error('Usage: uwmd assemble-property <file> <plan.json> [--json]');
       process.exit(1);
     }
@@ -1738,7 +1753,7 @@ switch (command) {
   }
 
   case 'inspect-property-cash-flows': {
-    if (positional.length !== 1 || Object.keys(flags).some(key => key !== 'json')) {
+    if (positional.length !== 1) {
       console.error('Usage: uwmd inspect-property-cash-flows <file> [--json]');
       process.exit(1);
     }
@@ -1811,7 +1826,7 @@ switch (command) {
     break;
 
   case 'export':
-    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--no-superseded] [--resolved] [--stdout]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd export <file.uw.md> [--output <file.uw.json>] [--no-superseded] [--resolved [--parts <dir>]] [--stdout]'); process.exit(1); }
     await cmdExport(positional[0], flags);
     break;
 
@@ -1829,17 +1844,17 @@ switch (command) {
     break;
 
   case 'scope':
-    if (!positional[0]) { console.error('Usage: uwmd scope <file> [--asset-class multifamily] [--market-data <file>] [--output <file>]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd scope <file> [--asset-class multifamily] [--market-data <file>] [--output <file>] [--json]'); process.exit(1); }
     cmdScope(positional[0], flags);
     break;
 
   case 'refine':
-    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--market-data <file>] [--calc-context <file>] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--asset-class multifamily] [--market-data <file>] [--calc-context <file>] [--json]'); process.exit(1); }
     cmdRefine(positional[0], flags);
     break;
 
   case 'compose':
-    if (!positional[0]) { console.error('Usage: uwmd compose <file> --externalize <section> [--collection-key <k>] [--collection-path <p>] [--out-dir <dir>] [--in-place] [--dry-run]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd compose <file> --externalize <section> [--collection-key <k>] [--collection-path <p>] [--part-prefix <p>] [--out-dir <dir>] [--in-place] [--output <file>] [--dry-run]'); process.exit(1); }
     cmdCompose(positional[0], flags);
     break;
 
@@ -1888,7 +1903,7 @@ switch (command) {
       if (!target) { console.error('Usage: uwmd package list <file.uwpkg.zip> [--json]'); process.exit(1); }
       cmdPackageList(target, flags);
     } else if (sub === 'to-context') {
-      if (!target) { console.error('Usage: uwmd package to-context <file.uwpkg.zip> [--output <file.json>] [--stdout]'); process.exit(1); }
+      if (!target) { console.error('Usage: uwmd package to-context <file.uwpkg.zip> [--output <file.json>] [--stdout] [--compact]'); process.exit(1); }
       cmdPackageToContext(target, flags);
     } else if (sub === 'validate-context') {
       if (!target) { console.error('Usage: uwmd package validate-context <file.uwpkg.context.json> [--json]'); process.exit(1); }
@@ -2019,7 +2034,7 @@ Commands:
   --version, -V                Print the @uwmd/core, @uwmd/verify, Protocol and Format versions
   layers                       List Bancroft agent layers
 
-Options:
+Options (each command accepts only the flags listed for it; an unknown flag exits 1 before any work runs):
   --output <path>    Output file path (compact, init; init refuses an existing file)
   --dry-run          Show what would change without writing (compact)
   --json             JSON output on stdout, nothing else (validate, calc, edit)
