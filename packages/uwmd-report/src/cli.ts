@@ -1,10 +1,11 @@
-// uwmd-report CLI — render a .uw.md file to a lender package / credit memo.
+// uwmd-report CLI — render a .uwx.md file to a lender package / credit memo.
 //
 // Usage:
-//   uwmd-report <input.uw.md> [-o output.pdf] [--tier screener|analyst]
+//   uwmd-report <input.uwx.md> [-o output.pdf] [--tier screener|analyst]
 //                             [--format pdf|html] [--prepared-by <name>]
 //
-// Defaults output to <input>.pdf (or .html) alongside the input file. Errors
+// Defaults output to <input>.pdf (or <input>.report.html) alongside the input,
+// where <input> is the file name without its .uwx.md extension. Errors
 // go to stderr with a non-zero exit code; success prints the output path.
 
 import { readFile, writeFile } from 'node:fs/promises';
@@ -69,19 +70,20 @@ function parseArgs(argv: readonly string[]): ParsedArgs | { error: string } {
 
 export function defaultOutputName(inputPath: string, format: 'pdf' | 'html'): string {
   const base = basename(inputPath);
-  const stripped = base.endsWith('.uw.md')
-    ? base.slice(0, -'.uw.md'.length)
-    : base.slice(0, -extname(base).length);
+  // Through 0.8.30 only `.uw.md` was stripped, so `deal.uwx.md` became
+  // `deal.uwx.pdf`; Format 3.0 records are `.uwx.md`.
+  const suffix = ['.uwx.md', '.uw.md'].find((ext) => base.toLowerCase().endsWith(ext));
+  const stripped = suffix ? base.slice(0, -suffix.length) : base.slice(0, -extname(base).length);
   return `${stripped}.${format === 'html' ? 'report.html' : 'pdf'}`;
 }
 
 function printHelp(): void {
   process.stdout.write(
     [
-      'uwmd-report — render a .uw.md file to a lender package / credit memo',
+      'uwmd-report — render a .uwx.md file to a lender package / credit memo',
       '',
       'Usage:',
-      '  uwmd-report <input.uw.md> [-o output.pdf]',
+      '  uwmd-report <input.uwx.md> [-o output.pdf]',
       '',
       'Options:',
       '  -o, --output <path>     Output path (defaults next to input)',
