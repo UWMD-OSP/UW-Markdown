@@ -3,7 +3,9 @@
 ## Monorepo & tooling
 
 - **Package manager:** npm **workspaces** (`packages/*`). No turbo, no pnpm, no
-  lerna. Lockfile: `package-lock.json`. Node `>=18`.
+  lerna. Lockfile: `package-lock.json`. Node `>=18`, except
+  `@uwmd/signing` and `@uwmd/report`, which declare Node `>=20` (global Web
+  Crypto; `playwright-core`).
 - **Lint:** Biome 1.9.4 (`biome.json`), lint-only.
 - **Tests:** Vitest 3.x per package.
 - **Build:** TypeScript `tsc` per package (root `build` fans out via

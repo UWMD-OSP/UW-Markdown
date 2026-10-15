@@ -11,6 +11,11 @@ uwmd-report deal.uwx.md --tier analyst        # credit memo
 uwmd-report deal.uwx.md --format html         # → deal.report.html, no browser needed
 ```
 
+## Requirements
+
+Node 20 or later. `playwright-core` refuses older runtimes, and the CLI loads
+it for every format, including `--format html`.
+
 ## Browser resolution
 
 `playwright-core` is used **without** a bundled browser download. At runtime the

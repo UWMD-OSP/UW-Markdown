@@ -36,8 +36,9 @@ signatures as **present and unchecked**, never as valid.
 npm install @uwmd/signing
 ```
 
-Needs Web Crypto with Ed25519 as `globalThis.crypto`: Node 20 or later (on
-Node 18, run with `--experimental-global-webcrypto`) or a modern browser. A
+Needs Web Crypto with Ed25519 as `globalThis.crypto`: Node 20 or later
+(`engines` from 0.6.0; Node 18 has no global Web Crypto by default and is not
+supported) or a modern browser. A
 browser bundler must treat `node:crypto` and `node:fs` as external; both are
 reached only by guarded dynamic imports that never run in a browser. `ed25519`,
 `es256`, and `es384` are the admitted algorithms. It depends on `@uwmd/verify`

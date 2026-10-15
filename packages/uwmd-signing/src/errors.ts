@@ -10,7 +10,7 @@ export type SigningErrorCode =
   | 'SIG_MALFORMED_ENCODING'
   /** No Web Crypto provider (`crypto.subtle`) in this runtime. */
   | 'SIG_NO_CRYPTO'
-  /** The runtime rejected the algorithm — e.g. Ed25519 on a pre-18.4 Node. */
+  /** The runtime rejected the algorithm — e.g. Ed25519 on a runtime without it. */
   | 'SIG_ALGORITHM_UNSUPPORTED'
   /** Key material could not be imported (wrong format, wrong curve, corrupt). */
   | 'SIG_BAD_KEY'
