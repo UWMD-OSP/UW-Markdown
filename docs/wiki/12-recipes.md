@@ -133,3 +133,13 @@ npm run cli -- summary  examples/Parkview-Apts-Glendale-AZ.uwx.md
 npm run cli -- scope    examples/Parkview-Apts-Glendale-AZ.uwx.md
 npm run cli -- refine   examples/Parkview-Apts-Glendale-AZ.uwx.md --targets dscr,debt_yield
 ```
+
+## Show what verification catches
+
+[`examples/verification/`](../../examples/verification/README.md) holds four
+scripts that use only `@uwmd/verify` and `@uwmd/signing`: a valid document, a
+wrong stated metric, a tampered receipt and a failed document snapshot
+authentication. Each exits 0 only when the verifier reports the verdicts its
+scenario documents; CI runs them with `npm run examples:verification` after a
+build. The folder runs unchanged outside the repository against the npm
+packages.

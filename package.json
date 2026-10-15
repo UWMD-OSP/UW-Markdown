@@ -18,6 +18,7 @@
     "conformance:v2": "python conformance/runner/runner.py",
     "gen-conformance-cases": "node scripts/gen-conformance-cases.mjs",
     "conformance:profiles": "python3 -B -m unittest discover -s conformance/runner -p \"test_*.py\" && node scripts/check-conformance-profiles.mjs",
+    "examples:verification": "node --test scripts/verification-examples.test.mjs",
     "gen-signing-fixtures": "node scripts/gen-signing-fixtures.mjs",
     "gen-capability-fixtures": "node scripts/gen-capability-fixtures.mjs",
     "gen-metric-dictionary": "node scripts/gen-metric-dictionary.mjs",
