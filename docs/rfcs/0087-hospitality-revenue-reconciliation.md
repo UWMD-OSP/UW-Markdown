@@ -129,6 +129,13 @@ closed vocabularies, requiredness and new findings remain unselected.
 | Different period/status/scope/population | No same-basis equality claim, even when the product happens to agree |
 | Missing basis, source, input or unresolvable variant | Relationship not verified; no zero/default/fallback substitution. Define opt-in applicability and unsupported handling before implementation |
 
+Comparability assertions would not reroute current metric reads or override
+explicit calculation contexts and existing generic variant resolution. The
+assertion's source identities/revisions must match the inputs actually read;
+matching a different variant does not verify the displayed result. A mismatch
+of context is a basis/applicability question, not permission to recompute
+canonical RevPAR from another numerator.
+
 For rounded actual observations, prefer verifying the reported observations back
 against their declared revenue/count sources over inventing a currency tolerance
 for multiplying rounded inputs. The existing deterministic example (1,000,000

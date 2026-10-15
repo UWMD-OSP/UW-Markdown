@@ -121,8 +121,16 @@ members. The owner must approve their representation and requiredness.
 | Different finite prices on the bound basis | Report a relationship disagreement after code/severity approval; do not overwrite either source |
 | Missing price, missing binding/basis, or unresolved variant | Cannot certify the relationship; do not infer a price, equality or fallback. Legacy conformance stays separate from the optional claim |
 | Different transaction/scenario basis | Preserve both assertions with lineage; no equality finding merely because amounts differ |
-| Multiple valuation variants | Use the binding's exact variant; existing generic primary/default/base/sole selection remains authoritative for unbound calculation reads. No first-match or descriptive frontmatter scenario routing |
+| Multiple valuation variants | Use the binding's exact variant for the proposed comparison. Preserve existing calculation-context and primary/default/base/sole selection for every metric read. No first-match or descriptive frontmatter scenario routing |
 | Only underwritten/appraised value changes | No purchase-price substitution; the current formulas still name purchase price |
+
+The binding would select a reconciliation target, not reroute either existing
+metric. If `price_per_kw` was computed using a different explicit valuation
+context than the summary's bound source, the two displayed values have different
+lineage; they cannot be certified as one comparable price assertion. Match the
+actual source identity/revision used by each read before claiming reconciliation.
+Changing calculation resolution to follow the binding would be an additional
+normative choice, not an implication of this recommendation.
 
 A producer could explicitly refresh a bound summary with provenance; a verifier
 must not repair it silently. A binding to an old revision must not drift when a

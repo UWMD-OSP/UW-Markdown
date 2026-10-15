@@ -696,8 +696,8 @@ to change financial selection or validation here.
 
 ### Draft0085: authority, projections and missing history
 
-The complete [draft in #335](https://github.com/UWMD-OSP/UW-Markdown/pull/335)
-remains authoritative as a proposal, not accepted standard text. Current
+The [draft in #335](https://github.com/UWMD-OSP/UW-Markdown/pull/335) remains
+under owner review; it is not accepted standard text. Current
 Format §2.7/§6.5 compact instructions and Protocol V.10/POL-02 conflict in the
 case the draft identifies. The new4.3.0 reference probes reproduce both sides:
 
@@ -758,7 +758,9 @@ explicit summary binding to a selected valuation purchase-price assertion plus
 opt-in same-basis reconciliation. It spells out transaction/currency/interest/
 date/scenario/variant requirements, missing and ambiguous behavior, authority
 versus appraisal, legacy compatibility and the still-unselected precision/
-severity/migration decisions. Current formulas and CC-DC-08/CC-10 stay intact.
+severity/migration decisions. Current formulas and CC-DC-08/CC-10 stay intact. The proposed binding selects
+a reconciliation target, not a new calculation context; actual source identity/
+revision must match before a displayed pair can be called reconciled.
 
 [RFC0087](../rfcs/0087-hospitality-revenue-reconciliation.md) recommends explicit
 comparability assertions, keeping actual/forecast/benchmark/reconstruction
