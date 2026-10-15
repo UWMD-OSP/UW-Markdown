@@ -37,8 +37,8 @@ The eight derived metrics ship as **formulas**, not pre-computed numbers:
 | Loan / SqFt    | `=loan_amount/total_nra_sqft`                      |
 | Cash-on-Cash   | `=(noi-annual_debt_service)/equity_sponsor`        |
 
-These mirror `MULTIFAMILY_STARTER_PACK` in `@uwmd/core`, so opening the
-workbook in Excel and running `uwmd calc` against the same `.uw.md`
+These mirror `MULTIFAMILY_PACK` (exported by `@uwmd/verify` and `@uwmd/core`), so opening the
+workbook in Excel and running `uwmd calc` against the same `.uwx.md`
 produce identical numbers by construction.
 
 Editing any named-input cell updates every dependent metric. Editing any

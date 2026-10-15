@@ -25,6 +25,13 @@ node packages/uwmd-cli/bin/uwmd.mjs package create examples/standalone/package/m
 node packages/uwmd-cli/bin/uwmd.mjs package verify examples/standalone/package/standalone-demo.uwpkg.zip
 ```
 
+`package verify` checks every member's byte digest against the manifest. It
+currently prints `UNVERIFIABLE` for the three UW records and exits 0, because
+the CLI does not yet recompute their `semantic_digest` (the
+[launch audit](../../docs/reviews/2026-10-14-launch-onboarding-audit.md), D-10).
+`UNVERIFIABLE` here means "not checked", not "tampered". A byte-digest
+mismatch still prints `FAILED` and exits 1.
+
 The package contains a text source-evidence stand-in rather than a real lease
 file. Its digest demonstrates byte identity only; it does not claim authenticity,
 completeness, or legal effect.

@@ -16,12 +16,20 @@ npm install @uwmd/core
 ## Basic use
 
 ```ts
-import { parseUWFile, validateUWFile, render } from '@uwmd/core';
+import { parseUWFile, validateUWFile, verifyStatedMetrics, render } from '@uwmd/core';
 
 const parsed = parseUWFile(source);
-const validation = validateUWFile(parsed);
+const validation = validateUWFile(parsed);       // Format rules; validation.errors fail
+const metrics = verifyStatedMetrics(parsed);     // stated metrics recomputed (Protocol §II.2)
+// metrics.counts: { verified, failed, unverifiable }; any `failed` fails verification
 const summary = render(parsed, { format: 'summary' });
 ```
+
+Validation alone does not recompute stated figures. To verify a document,
+also check its stated metrics, as above, and any receipts or signatures it
+carries. [`examples/verification/`](https://github.com/UWMD-OSP/UW-Markdown/tree/main/examples/verification)
+has runnable versions with expected results. A party that only verifies can
+depend on `@uwmd/verify` instead; core re-exports all of it.
 
 Browser-safe exports are available from `@uwmd/core/browser`. The `pdf` and `docx`
 core render targets throw `UnsupportedRenderFormatError`; use `@uwmd/report` for

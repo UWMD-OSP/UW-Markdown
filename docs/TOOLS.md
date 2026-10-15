@@ -156,6 +156,7 @@ Static deploy, no backend needed. A public preview is hosted at
 ```bash
 npx @uwmd/cli init --output my-deal.uwx.md   # scaffold a full record
 npx @uwmd/cli validate my-deal.uwx.md        # check structure, rules, stage readiness
+npx @uwmd/cli verify my-deal.uwx.md          # validation, integrity and provenance (exit 1 on failure)
 npx @uwmd/cli summary my-deal.uwx.md         # print quick metrics
 npx @uwmd/cli parse my-deal.uwx.md           # to JSON
 npx @uwmd/cli report my-deal.uwx.md          # lender package / credit memo HTML
@@ -277,7 +278,7 @@ calculation, and receipts never involve an agent.
 
 ## Where each tool lives
 
-| Tool | Path | Role (Protocol 3.0 tier, or starter product) |
+| Tool | Path | Role (Protocol conformance tier, or starter product) |
 |---|---|---|
 | Web viewer | `tools/web-viewer/` | Reader |
 | VS Code extension | `tools/vscode-uwmd/` | Reader |

@@ -34,12 +34,12 @@ uwmd <command> [args]
 | `uwmd calc <file> <calc.json>` | Evaluate a calc declaration (§VIII expression notation) |
 | `uwmd run <file>` | Invoke UWMD optional Claude-backed Bancroft reference agent suite |
 | `uwmd compact <file>` | Strip superseded blocks (`--dry-run`, `--output`) |
-| `uwmd diff <a> <b>` | Diff two `.uw.md` files at the section level |
+| `uwmd diff <a> <b>` | Diff two `.uwx.md` files at the section level |
 | `uwmd summary <file>` | One-screen deal summary |
 | `uwmd export <file.uw.md>` | Write a digested, model-lossless `.uw.json` sibling |
 | `uwmd formats` | List registered machine representations |
 | `uwmd convert <file> --to uw-json\|uw-xml\|uw-csv-bundle` | Convert Markdown, verified JSON/XML, or normalized CSV ZIP bundles |
-| `uwmd layers <file>` | Show the agent-context layer breakdown |
+| `uwmd layers` | List the Bancroft agent layers (takes no file) |
 | `uwmd manifest` | Print the implementation manifest JSON: core, Protocol and Format versions, and capabilities (the `@uwmd/verify` version goes to stderr) |
 
 `uwmd --version` (or `-V`) prints the @uwmd/core, @uwmd/verify, Protocol and
@@ -119,6 +119,6 @@ rent receipts, concessions and TI/LC only; it is not a complete DCF.
 `uwmd assemble-property <file> <plan.json> [--json]` emits a read-only candidate
 for explicitly covered unlevered, pre-tax cash flows in one declared currency.
 It preserves source evidence and refuses missing or overlapping coverage. The
-plan and source are not edited; no financial inputs are inferred. CLI 2.9.0
-includes this command under Protocol 2.12.0.
+plan and source are not edited; no financial inputs are inferred. Available
+since CLI 2.9.0.
 See the [synthetic workflow](../../docs/PROPERTY_CASH_FLOW_WORKFLOW.md).

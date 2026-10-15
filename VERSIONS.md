@@ -422,9 +422,13 @@ protocol features.
 
 ## Pinning recommendations
 
-For new integrations, target Format 3.0 and the Protocol 4.0.0 contract
-listed above. Pin `@uwmd/core@^4` for readers, verifiers and the starter
-products (editor, calc host, agent host), or `@uwmd/cli@^4` for CLI scripts.
+For new integrations, target Format 3.0 and the Protocol 4.1.0 contract
+listed above. A party that only reads and verifies documents can depend on
+`@uwmd/verify` alone. It is a 0.x package, so `^0.2.0` admits only 0.2.x
+patches; pin it exactly if you need the receipt engine identity to stay
+fixed. Pin `@uwmd/core@^4` for the starter products (editor, calc host,
+agent host) or for readers and verifiers that also want them, or
+`@uwmd/cli@^4` for CLI scripts.
 Readers read Format 3.0 only; convert older documents before upgrading (see
 the CHANGELOG 4.0.0 migration notes). An agent host installs a provider SDK only if it uses that provider;
 `@anthropic-ai/sdk` remains an optional peer.

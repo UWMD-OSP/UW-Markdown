@@ -27,7 +27,7 @@ new inputs).
 1. Append a `ModuleCalcDecl` (`id`, `label`, `unit`, `formula`, `deterministic:
    true`). Reference real field paths ([07 — Data model](07-data-model-reference.md)).
 2. Ensure each path the formula reads has an Excel named range
-   (`packages/uwmd-excel/src/multifamily.ts` `NAMED_INPUTS`/`NAMED_RANGE_MAP`).
+   (`packages/uwmd-excel/src/multifamily.ts`, the `namedInputs` of `MULTIFAMILY_LAYOUT`).
 3. `npm test` (the parity test covers it). Add a calc fixture (Verifier-owned) if you
    want conformance coverage. RFC: usually additive/no, but coordinate.
 

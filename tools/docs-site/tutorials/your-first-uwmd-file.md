@@ -202,9 +202,15 @@ with the property section as a card.
   [metric dictionary](/spec/metrics/) defines each builtin metric in the
   [protocol §VIII](/spec/protocol#viii-calc-engine-contract) notation; the
   reference engine in `@uwmd/core` is one starter implementation.
-- **Verify it.** `npx @uwmd/cli receipt issue hello-deal.uwx.md` writes
-  a [verification receipt](/guide/receipts) attesting that the deal's
-  computed outputs follow from its stated inputs.
+- **Verify it.** `npx @uwmd/cli receipt issue hello-deal.uwx.md --output hello-deal.receipt.json`
+  writes a [verification receipt](/guide/receipts) attesting that the
+  deal's computed outputs follow from its stated inputs. A small deal
+  computes only the metrics whose inputs it states, so `Computed:` may read
+  well below the pack's full count; that is a completeness gap, not a
+  failure. Then check it:
+  `npx @uwmd/cli receipt verify hello-deal.uwx.md hello-deal.receipt.json`
+  prints `Receipt verification verdict: VERIFIED` and exits 0, and exits 1
+  (`FAILED`) once the record changes.
 
 If you're picking which tool to reach for, the
 [tools comparison](/guide/tools) has a decision tree.

@@ -61,6 +61,23 @@ protocol, and each package each carry an independent semver).
   (`scope --json`, `refine --asset-class`, `compose --part-prefix`/`--output`,
   `package to-context --compact`, `--parts` beside `--resolved`).
 
+### Documentation
+
+- Onboarding documentation reconciled with the published 4.2.0 packages and
+  the current specification (launch audit D-03, D-05, D-08 and §7). Changes:
+  Protocol 4.1.0 in the README and the VERSIONS.md pinning advice, with
+  guidance for depending on `@uwmd/verify` alone; a README "Verify a document"
+  section; `npx @uwmd/cli`, never the unregistered unscoped `uwmd`, in the CLI
+  description and bin header; the signing README's real runtime requirement,
+  bundler externals (`node:crypto`, `node:fs`), and a tested local key recipe
+  with expected CLI output; `.uwx.md` where Lite is refused (report, CLI
+  `diff`); real symbols and paths (`MULTIFAMILY_PACK`, the defaults exports,
+  the Excel layout); Format 3.0 in the AI page; and verification steps in the
+  core README, `docs/TOOLS.md` and the first-file tutorial. Wiki 08 notes that
+  the closed flag vocabulary is unreleased. The standalone README states what
+  `package verify` reports today. The audit record gains the D-09 and D-10
+  traces. No normative text changes.
+
 ## [4.2.0] - 2026-10-14
 
 ### Released

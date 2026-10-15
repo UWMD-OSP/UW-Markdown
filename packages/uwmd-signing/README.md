@@ -17,8 +17,9 @@ appraiser each sign their own sections, and agent-host accountability where a
 signature proves *which* agent instance wrote a block rather than merely what
 the `actor` field claims.
 
-Core owns the normative, crypto-free half — the wire shape (`_meta.integrity.signature`)
-and the canonical signing input. This package owns the algorithms. Two seams
+`@uwmd/verify` (re-exported by `@uwmd/core`) owns the normative, crypto-free
+half: the wire shape (`_meta.integrity.signature`) and the canonical signing
+input. This package owns the algorithms. Two seams
 connect them:
 
 ```ts
@@ -26,8 +27,8 @@ verifyChain(parsed, { signatureVerifier })   // blocks
 verifyReceipt(receipt, source, { signatureVerifier })  // receipts (RFC 0016)
 ```
 
-Without a verifier, core reports signatures as **present and unchecked** —
-never as valid.
+Without a `signatureVerifier`, `verifyChain` and `verifyReceipt` report
+signatures as **present and unchecked**, never as valid.
 
 ## Install
 
@@ -35,7 +36,10 @@ never as valid.
 npm install @uwmd/signing
 ```
 
-Needs Node ≥ 18.4 (Ed25519 in Web Crypto) or a modern browser. `ed25519`,
+Needs Web Crypto with Ed25519 as `globalThis.crypto`: Node 20 or later (on
+Node 18, run with `--experimental-global-webcrypto`) or a modern browser. A
+browser bundler must treat `node:crypto` and `node:fs` as external; both are
+reached only by guarded dynamic imports that never run in a browser. `ed25519`,
 `es256`, and `es384` are the admitted algorithms. It depends on `@uwmd/verify`
 for the signing payloads and verifier seams, and on `@uwmd/core` for the
 capability-token types, a starter product (RFC 0083); the examples below import
@@ -186,7 +190,7 @@ Without a verifier, a signed receipt verifies as `unverifiable` with `RCP-08`.
 ## Limits
 
 - **`signed_at` is self-asserted.** Audit-grade non-repudiation needs a
-  timestamping authority countersignature, which protocol 1.x does not define.
+  timestamping authority countersignature, which the Protocol does not define.
 - **No selective disclosure.** Signing a redacted block would need Merkle
   commitments over fields; the current design has none.
 - **Re-rooting a chain requires re-signing.** `content_hash` covers `_meta`,
@@ -195,8 +199,6 @@ Without a verifier, a signed receipt verifies as `unverifiable` with `RCP-08`.
   inclusion proof — a vendored snapshot that fails closed when stale, or
   network access at verify time. `scheme: "sigstore"` is reserved in §X.1.2 so
   adding it later stays additive.
-
-MIT. Part of the [UW Markdown](https://github.com/UWMD-OSP/UW-Markdown) monorepo.
 
 ## Authenticating a document snapshot
 
@@ -227,6 +229,31 @@ uwmd sign-document deal.uwx.md --key=signer.json --out=deal.signature.json
 uwmd verify deal.uwx.md --integrity --document-signature=deal.signature.json --keystore=trusted-keys.json
 ```
 
+The CLI loads this package on demand, so install it beside the CLI
+(`npm i @uwmd/cli @uwmd/signing`), or run
+`npx -p @uwmd/cli -p @uwmd/signing uwmd …`. A verified snapshot prints
+`Document snapshot authentication: verified` and exits 0. A changed document
+prints `failed` with `INT-11`, and a key missing from the trust store prints
+`unverifiable` with `INT-13`; both exit 1, because the flag requires
+authentication.
+
+For local testing, this script writes a throwaway Ed25519 `signer.json` and
+the matching `trusted-keys.json`. `signer.json` holds a private key; keep real
+keys in a KMS or HSM behind your own `SigningKey`.
+
+```js
+// make-keys.mjs: a throwaway Ed25519 signer and trust store for local testing.
+import { writeFileSync } from 'node:fs';
+
+const { privateKey } = await crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify']);
+const { kty, crv, x, d } = await crypto.subtle.exportKey('jwk', privateKey);
+writeFileSync('signer.json', JSON.stringify({ kid: 'local-test', alg: 'ed25519', private_key_jwk: { kty, crv, x, d } }));
+writeFileSync('trusted-keys.json', JSON.stringify({
+  keystore_version: '1',
+  keys: [{ kid: 'local-test', alg: 'ed25519', public_key_jwk: { kty, crv, x } }],
+}));
+```
+
 The CLI signer file is a local reference format with `kid`, `alg` and exactly
 one of `private_key_jwk` or `private_key_pkcs8`. `loadDocumentSigningKey` imports
 that document; production hosts may supply their own `SigningKey` directly.
@@ -241,3 +268,5 @@ excluded; this is not a signature over every original byte. Editing lifecycle,
 variant labels, membership or history requires a new document signature, while
 prior block authorship remains independently verifiable. The CLI refuses
 `--resolved` together with document authentication: it checks supplied source.
+
+MIT. Part of the [UW Markdown](https://github.com/UWMD-OSP/UW-Markdown) monorepo.
