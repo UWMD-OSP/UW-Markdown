@@ -8,6 +8,12 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Build and verification
+
+- Explicit manual CI publication verification installs exact registry versions,
+  checks tarball integrity and signatures/provenance, and runs strict consumer
+  and portable CLI checks. Ordinary development runs skip this external gate.
+
 ## [4.3.0] - 2026-10-15
 
 Core/CLI 4.3.0 pair with Format3.0 and Protocol4.1.0. Verifier0.2.1,

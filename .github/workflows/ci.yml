@@ -12,8 +12,51 @@ on:
   # Manual trigger, so CI can be re-run without inventing a commit — useful
   # when a run failed for an infrastructure reason rather than a code one.
   workflow_dispatch:
+    inputs:
+      verify-publication:
+        description: 'Read-only registry, provenance and downstream verification'
+        type: boolean
+        default: false
+      release-commit:
+        description: 'Exact approved release commit (required for publication verification)'
+        type: string
+        default: ''
 
 jobs:
+  verify-publication:
+    name: Verify published release (explicit read-only request)
+    if: github.event_name == 'workflow_dispatch' && inputs['verify-publication']
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.14.0
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install -g npm@11.5.1
+      - run: npm ci
+      - name: Verify actual published consumers and provenance
+        env:
+          RELEASE_COMMIT: ${{ inputs['release-commit'] }}
+        run: node scripts/check-prepared-consumers.mjs --published "$RELEASE_COMMIT"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: publication-verification
+          path: |
+            publication-registry-evidence.json
+            publication-cli-conformance.json
+            publication-signatures.log
+          if-no-files-found: error
+
   verify-lockfile:
     name: Verify workspace lockfile pins
     runs-on: ubuntu-latest
