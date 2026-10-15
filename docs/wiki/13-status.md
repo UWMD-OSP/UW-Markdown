@@ -223,6 +223,27 @@ their READMEs followed as a new adopter would. Full record:
   D-10 and the `uwmd-report` output name are fixed on `main`, unreleased.
   D-09 and the dangling-`parent_hash` gap are open normative questions in
   draft RFC 0085 (record §9–§11).
+- **Next-release readiness (read-only, same day):**
+  [docs/reviews/2026-10-14-next-release-readiness.md](../reviews/2026-10-14-next-release-readiness.md).
+  - **Packages that would move:** core/CLI 5.0.0, because the closed flag
+    vocabulary refuses invocations 4.2.0 accepted, while core's library API
+    is unchanged. Signing 0.5.1 (its pins), Excel 0.9.19 (its pins) and
+    report 0.8.31.
+  - **Packages that stay:** verify, batch and lake, whose packed contents are
+    byte-identical to the published ones apart from lake's README. Format and
+    Protocol don't move.
+  - **Gates:** all pass on `8203f00c`. Reference conformance is 1,089/0.
+    The portable driver gives 350/350 for both the candidate and the
+    published CLI, so it does not catch D-01 or D-10.
+  - **Node 18:** although every package declares it, `@uwmd/report` (via
+    `playwright-core`) and `@uwmd/signing` (no global Web Crypto) fail on
+    Node 18.
+  - **Open owner decisions:** the version plan, the Node floor, and D-07
+    (Part VI still shows `validate --stage`). Nothing is prepared, tagged or
+    published.
+  - **RFC 0085** records the owner's provisional direction (complete records
+    are the authority; stripped outputs are projections) as a preference,
+    still a draft.
 
 ## Released in 4.1.0: the `@uwmd/verify` split (RFC 0083, 2026-10-13)
 

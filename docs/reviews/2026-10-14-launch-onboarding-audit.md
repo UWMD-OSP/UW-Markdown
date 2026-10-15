@@ -397,3 +397,21 @@ The four verification scenarios run in CI (#330).
    Whether it blocks launch is an owner call.
 
 No other open technical blocker was found.
+
+## 12. Next-release readiness (2026-10-14)
+
+PR #337 merged (`8203f00c`). The read-only next-release assessment is
+[2026-10-14-next-release-readiness.md](2026-10-14-next-release-readiness.md).
+It adds one finding to this record:
+
+- **N-1:** `@uwmd/report` exits 1 on Node 18 (`playwright-core` 1.64
+  requires Node 20).
+
+It also widens D-06:
+
+- **N-2:** on Node 18.20.8, `@uwmd/signing` fails `sign-document` and
+  `verify --document-signature` with a message claiming Node 18.4 suffices.
+
+Both are reproduced against the published 4.2.0 set and the candidate. The
+declared floor is an owner decision. RFC 0085 §10 records the owner's
+provisional direction; the RFC remains a draft.
