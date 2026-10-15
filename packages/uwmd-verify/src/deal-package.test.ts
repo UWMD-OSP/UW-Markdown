@@ -1,5 +1,6 @@
 // UW Deal Package tests (RFC 0018 §3–§5).
 
+import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import {
   BUILTIN_EDGE_TYPES,
@@ -219,6 +220,32 @@ describe('ZIP codec', () => {
     expect(result.status).toBe('unverifiable');
     expect(result.errors).toEqual([]);
     expect(result.unverifiable_members).toContain('deal:d1');
+  });
+
+  it('refuses an archive that is missing a declared member (missing evidence)', async () => {
+    // The encoder cannot produce this; a hostile or truncated archive can.
+    const manifest = await buildManifest();
+    const zip = zipSync({
+      'manifest.json': strToU8(JSON.stringify(manifest)),
+      'records/deal.uwx.md': encoder.encode(DEAL_TEXT),
+    });
+    expect(() => decodeUWDealPackageZip(zip)).toThrow(/PKGZIP-006/);
+  });
+
+  it('applies a supplied semantic digest three ways: equal verifies, different fails, null is unverifiable', async () => {
+    const manifest = await buildManifest();
+    manifest.members[0]!.semantic_digest = `sha256:${'a'.repeat(64)}`;
+    const decoded = decodeUWDealPackageZip(await encodeUWDealPackageZip({ manifest, payloads: await buildPayloads() }));
+
+    const equal = await verifyUWDealPackage(decoded, { semanticDigestOf: async () => `sha256:${'a'.repeat(64)}` });
+    expect(equal).toEqual({ status: 'verified', errors: [], unverifiable_members: [] });
+
+    const different = await verifyUWDealPackage(decoded, { semanticDigestOf: async () => `sha256:${'b'.repeat(64)}` });
+    expect(different.status).toBe('failed');
+    expect(different.errors.map((e) => e.code)).toEqual(['PKGVER-003']);
+
+    const unknown = await verifyUWDealPackage(decoded, { semanticDigestOf: async () => null });
+    expect(unknown).toEqual({ status: 'unverifiable', errors: [], unverifiable_members: ['deal:d1'] });
   });
 });
 

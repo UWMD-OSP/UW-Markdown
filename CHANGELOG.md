@@ -10,6 +10,19 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- `uwmd package verify` checks stated semantic digests (RFC 0018). It
+  supplies `verifyUWDealPackage` with the `uw-envelope-semantic` digest of
+  each UWX member and each lossless model encoding (UW JSON, UW XML, UW CSV
+  bundle), computed by the existing `@uwmd/verify` reader and codecs, and
+  `null` for anything it cannot canonicalize (UW Lite, a record the reader
+  refuses, other media types), which stays `unverifiable`. Through 4.2.0 the
+  CLI supplied no digest function, so every stated `semantic_digest` was
+  `unverifiable` with exit 0. A member whose content changed under a
+  refreshed byte digest and a stale semantic digest passed unnoticed; it now
+  fails with `PKGVER-003` and exit 1. The shipped
+  `examples/standalone/package/standalone-demo.uwpkg.zip` now verifies.
+  `@uwmd/verify` is unchanged.
+
 - `uwmd verify` recomputes stated metrics (Protocol §II.2 item 2). Its
   validate phase (the default, or `--validate`) now runs `verifyStatedMetrics`
   beside Format validation and replacement-funding verification. A stated
