@@ -196,7 +196,7 @@ PRs #330 and #331 merged. Dispositions since:
 | D-03, D-05, D-08, §7 | Corrected in the onboarding documentation PR. No normative text changed. |
 | D-06 | Signing README now states the real requirement (Node 20+, or Node 18 with `--experimental-global-webcrypto`, which passes scenario 4). `engines` still says `>=18.4.0`: owner decision. |
 | D-07 | Format spec Part VI not edited: owner decision whether it is normative. |
-| D-09 | Traced; owner decision (below). |
+| D-09 | Traced (below); a normative inconsistency, now draft RFC 0085 (PR #335, §11). Not changed. |
 | D-10 | Traced (below); implementation defect against RFC 0018. Fixed in PR #334 (§10). |
 
 **D-09: `compact` output fails `verify` (`POL-02`).** The two sides follow two
@@ -298,3 +298,100 @@ its declared source evidence removed is refused at decode,
 Against the unfixed `cli-packages.ts`, both smoke tests and 6 of the 8 core
 tests fail. The two that pass are the guards that a refused record and an
 unstated digest are not turned into failures.
+
+## 11. Status after RFC 0085 analysis (2026-10-14)
+
+PRs #334 (D-10) and #336 (the `uwmd-report` output name and usage text)
+merged after a final diff review. Every GitHub Actions check was green; only
+the Vercel preview was red, from the free-tier deployment rate limit (a
+quota, not a build). Nothing was tagged or published. Format 3.0, Protocol
+4.1.0 and the published package versions are unchanged.
+
+**RFC 0085 (draft, PR #335)** now:
+
+- separates six properties: payload recoverability, commitment authenticity,
+  payload verification against the commitment, parent-hash continuity,
+  document-signature validity and older-reader behavior;
+- compares in-document stubs, a detached authenticated compaction manifest,
+  externally archived full history, and withdrawing `compact` as a
+  verifiable-document operation.
+
+Two measurements corrected its first draft:
+
+- A Format 3.0 reader *accepts* a payload-elided superseded block and
+  ignores a `compacted` member. On an unhashed chain it verifies `✓ OK` with
+  `POL-02` satisfied.
+- Stripping a *signed* historical payload is today an `INT-07` error.
+  `document-signatures/01-valid` with its superseded block elided gives
+  `INT-04` + `INT-07`, `signatures_verified` 3 → 2, `ok: false`. Stubs
+  therefore weaken a current guarantee unless stubbed history is reported as
+  a distinct non-verified state.
+
+**Fail-closed investigation (no edit made).** Do existing requirements
+already prohibit an unqualified successful integrity result for a chain
+whose declared predecessor is absent? **No.**
+
+- Protocol §V.10, Format §3.4 and `uwmd-block.schema.json` define
+  `parent_hash` as "null on a chain root". But §V.10 rule 2 covers only "the
+  prior block", and §V.10's editor rule stamps `parent_hash =
+  prior.content_hash` on every edit. That includes a permitted
+  `section_replace`, which discards the prior block (§V.2).
+- `editor.integrity.test.ts` pins `verifyChain` → `ok: true` on a hashed
+  `manual` replace.
+- A local experiment applied the existing `INT-01` comparison to a root with
+  a non-null `parent_hash`. It was reverted and never committed. Reference
+  conformance stayed 1,089/0 and portable 350/350.
+  `document-signatures/03-flip` and `05-delete-history` would gain `INT-01`
+  under `json-subset` expectations that still hold. One unit test failed:
+  that legitimate replace.
+
+Any fail-closed behavior is therefore a normative change: an `INT-01`
+reading, a new code, or a qualified `IntegrityResult`. Each also needs a
+decision on how `section_replace` stamps a hashed chain. The schema needs no
+change in any case. RFC 0085 §5 lists the implications.
+
+**Verified and fixed on `main` (unreleased):**
+
+| Fix | PR |
+|---|---|
+| D-01 `verify` stated metrics, D-02 `init`/README, D-04 signing errors | #332 |
+| D-03, D-05, D-08, §7 documentation | #333 |
+| D-10 package semantic digests | #334 |
+| `uwmd-report` output name | #336 |
+
+The four verification scenarios run in CI (#330).
+
+**Verified, normative decision needed:**
+
+- D-09: compaction versus `POL-02`, and compaction laundering a broken chain
+  (RFC 0085 §9 questions 1, 2, 5, 6).
+- A dangling `parent_hash` with no visible predecessor passes, and is also
+  produced by a hashed `section_replace` (RFC 0085 §9 questions 3–4).
+- D-07: whether Format spec Part VI is normative.
+- Which canonicalization a UW Lite package member's `semantic_digest` uses
+  (Lite members stay `unverifiable` until decided).
+
+**Verified, owner (non-normative) decision needed:**
+
+- whether `@uwmd/verify` should default `semanticDigestOf` (needs a verify
+  release);
+- D-06, the signing `engines` floor;
+- the `blank-*.uw.md` download URLs (delete, redirect or real Lite);
+- starter §V.8's table-pinning sentence;
+- whether `uwmd verify` should run every §II.2 item 3 verifier;
+- registering a placeholder for the unscoped `uwmd` npm name (account
+  action);
+- authorizing the next release.
+
+**Launch blockers remaining.**
+
+1. **Release-gated.** D-01 and D-02 are fixed on `main` but not published.
+   `@uwmd/cli@4.2.0`, the current `latest`, still prints `OK` for a wrong
+   stated metric, and the README quick start fails against it. They stay
+   launch blockers until a release is authorized and published.
+2. **Decision-gated.** A hashed chain whose history was removed (by
+   `compact` or by hand) verifies `OK` (RFC 0085 §1.2, §5). For a standard
+   whose purpose is verification, this should be decided before launch.
+   Whether it blocks launch is an owner call.
+
+No other open technical blocker was found.
