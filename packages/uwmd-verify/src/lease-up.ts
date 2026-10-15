@@ -16,6 +16,7 @@
 // Browser-safe; performs no I/O.
 
 import type { ParsedUWFile } from './types.js';
+import { quantizeDecimal } from './calc/quantize.js';
 import { getSection, deepGet } from './parser.js';
 import { resolveDealSize } from './protocol.js';
 
@@ -137,8 +138,8 @@ export const LEASE_UP_VERIFY_DECIMALS = Object.freeze({
 export const LEASE_UP_STABILIZED_TOLERANCE = 0.02;
 
 function roundTo(value: number, decimals: number): number {
-  const f = 10 ** decimals;
-  return Math.round(value * f) / f;
+  // Preserve the existing failed comparison for nonfinite recomputation.
+  return Number.isFinite(value) ? quantizeDecimal(value, decimals) : value;
 }
 
 function isNum(v: unknown): v is number {

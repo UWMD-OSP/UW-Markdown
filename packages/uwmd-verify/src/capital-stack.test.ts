@@ -184,3 +184,47 @@ describe('verifyCapitalStack', () => {
     expect(verifyCapitalStack({ tranches: [senior(), mezz()] }, ctx).verdict).toBe('verified');
   });
 });
+
+// Financial workflow boundary: stabilized coverage must agree with the same
+// Protocol VIII.5 quantum as emitted spreadsheet ROUND, including negative NOI.
+// Integer-rational oracle avoids binary64 multiplication at a decimal tie.
+describe('capital-stack coverage quantization at underwriting boundaries', () => {
+  const service = 1_000_000;
+  const tranches: Tranche[] = [{
+    id: 'senior', class: 'senior_debt', position: 1,
+    amount: 10_000_000, rate: 0.1, amortization_months: 0,
+  }];
+  const coverageOracle = (noi: number) => {
+    const n = BigInt(Math.abs(noi));
+    const d = BigInt(service);
+    const cents = (n * 100n * 2n + d) / (2n * d);
+    return (noi < 0 ? -1 : 1) * Number(cents) / 100;
+  };
+  for (const [noi, incorrect] of [[-1_125_000, -1.12], [1_005_000, 1]] as const) {
+    it(`verifies the correctly quantized coverage for NOI ${noi}`, () => {
+      const value = coverageOracle(noi);
+      const result = verifyCapitalStack({ tranches, sizing: [
+        { id: 'coverage', fn: 'coverage', over: 'senior', value },
+      ] }, { noi });
+      expect(result.verdict).toBe('verified');
+      expect(result.issues).toEqual([]);
+    });
+    it(`rejects the rounding-shortcut coverage for NOI ${noi}`, () => {
+      const result = verifyCapitalStack({ tranches, sizing: [
+        { id: 'coverage', fn: 'coverage', over: 'senior', value: incorrect },
+      ] }, { noi });
+      expect(result.verdict).toBe('failed');
+      expect(result.issues[0]?.code).toBe('CS-SIZING-DISAGREES');
+    });
+  }
+});
+
+// A numerical overflow is still a failed statement, not a quantizer exception.
+it('keeps nonfinite capital-stack recomputations from verifying', () => {
+  const result = verifyCapitalStack({
+    tranches: [{ id: 'senior', class: 'senior_debt', position: 1, amount: 1e-300, rate: 1 }],
+    sizing: [{ id: 'coverage', fn: 'coverage', over: 'senior', value: 1 }],
+  }, { noi: 1e300 });
+  expect(result.verdict).toBe('failed');
+  expect(result.issues[0]?.code).toBe('CS-SIZING-DISAGREES');
+});
