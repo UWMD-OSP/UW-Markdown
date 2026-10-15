@@ -813,5 +813,41 @@
     "uwmd-430-packed.json": "ff706ef7c7203865685cb6852ef11e98ab06b019127c0dd9e6e251e685d71859",
     "uwmd-430-remote-final-evidence.json": "d4e60ca81e86c10c9adaf9931954dc7b4c9702911afc004c938fc3c80a36d6c7",
     "uwmd-430-delivered-cli-node18.json": "6167f58e8650b7caa1d2fab9284315d84aeefa463b176dd5ea3f8c452d429b3d"
+  },
+  "final_registry_scope_review": {
+    "decision": "Restrict anonymous registry observations to release-prepared generations; ordinary development records incur no additional registry availability gate.",
+    "predicate": "Dated current core-version changelog section, no Released marker, empty Unreleased; same as existing tag-mode and isolated archive-consumer guards.",
+    "publication_safety": "release.yml and registry-version-state.mjs unchanged; actual publication remains fail-closed. Prepared observation errors remain fatal.",
+    "workflow_probe": {
+      "command": "node /tmp/uwmd-351-registry-scope.mjs",
+      "method": "Execute the actual workflow registry block with injected read-only inputs and registry responses; no real HTTP.",
+      "result": "PASS 9 controls: four non-prepared states make zero network calls; prepared latest/version observation succeeds; network outage, HTTP error, malformed identity and version-probe error reject.",
+      "script_sha256": "c939c59007af922ed96c5df8c57c53c47b75dceefe49fd6fe6a45a8eec5c1ff3",
+      "log_sha256": "a849b31a8cdb9e1d48b197f221ac182caabf9ed880f2753ceee7c2564dc02f59",
+      "reproduction_source": "import assert from 'node:assert/strict';\nimport { readFileSync } from 'node:fs';\nimport { changelogReleaseSections, changelogUnreleasedEntries } from '/tmp/uwmd-interim-430/scripts/release-state.mjs';\nconst workflow = readFileSync('.github/workflows/ci.yml', 'utf8');\nconst block = workflow.split('      - name: Observe published package identities (read-only)')[1].split('          JS')[0].split(\"node --input-type=module <<'JS'\\n\")[1];\nconst source = block.split('\\n').map(line => line.slice(10)).filter(line => !line.startsWith('import ')).join('\\n');\nconst AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;\nconst probe = new AsyncFunction('readFileSync', 'RELEASE_PACKAGES', 'registryVersionState', 'fetch', 'changelogReleaseSections', 'changelogUnreleasedEntries', 'console', source);\nconst prepared = '## [Unreleased]\\n\\n## [4.3.0] - 2026-10-15\\n\\n### Prepared\\n\\nRelease preparation.\\n';\nasync function run(changelog, mode) {\n  let reads=0, probes=0; const output=[];\n  const invoke = () => probe(path => path === 'CHANGELOG.md' ? changelog : '{\"version\":\"4.3.0\"}', [{name:'@uwmd/core',dir:'packages/uwmd-core'}], async () => {probes++; if(mode==='probe-failure') throw Error('registry version outage'); return 'absent';}, async () => { reads++; if(mode==='outage') throw Error('registry unavailable'); return {ok: mode!=='http-error',status:503,json:async()=> mode==='malformed' ? {} : {name:'@uwmd/core',version:'4.2.0',dist:{integrity:'sha512-example'}}};}, changelogReleaseSections, changelogUnreleasedEntries, {log:value=>output.push(value)});\n  if (['outage','http-error','malformed','probe-failure'].includes(mode)) await assert.rejects(invoke);\n  else await invoke();\n  return {reads,probes,output};\n}\nfor(const [name,text] of [\n ['ordinary development',prepared.replace('## [Unreleased]','## [Unreleased]\\n\\n### Fixed\\n\\n- Development change.')],\n ['published',prepared.replace('### Prepared','### Released')],\n ['undated candidate',prepared.replace(' - 2026-10-15','')],\n ['absent current section','## [Unreleased]\\n\\n## [4.2.0] - 2026-10-14\\n\\n### Released\\n']\n]) {const r=await run(text,'skip');assert.equal(r.reads,0);assert.equal(r.probes,0);assert.match(r.output[0],/SKIP/);console.log(`PASS: ${name}: zero registry calls`);}\nconst ok=await run(prepared,'success'); assert.equal(ok.reads,1);assert.equal(ok.probes,1);assert.equal(JSON.parse(ok.output[0]).packages[0].prepared_state,'absent');console.log('PASS: prepared generation observes latest and prepared version');\nfor(const mode of ['outage','http-error','malformed','probe-failure']) {await run(prepared,mode);console.log(`PASS: prepared ${mode} fails closed`);}\nconsole.log('PASS: 9 workflow scope/error controls');\n"
+    },
+    "checks": [
+      {
+        "command": "node scripts/registry-version-state.test.mjs",
+        "result": "PASS 6 tests, 0 failures"
+      },
+      {
+        "command": "npm run release:check",
+        "result": "PASS 6 registry tests and all eight package repository/workflow prerequisites; account-side settings not observed"
+      },
+      {
+        "command": "npm run lint",
+        "result": "PASS 0 errors, 1 existing HomePage.vue warning"
+      },
+      {
+        "command": "npm run docs:build",
+        "result": "PASS; existing same-lock dependency tree, no fresh install claimed; see prior environment limitations"
+      },
+      {
+        "command": "node scripts/verify-{versions,lockfile,indexes,codes}.mjs (each separately)",
+        "result": "PASS; versions, three locks/eight pins, indexes and 277 emitted codes"
+      }
+    ],
+    "retained_limitations": "Local full suite remains FAILED (3993 pass, 180 fail); prior wrapper/subprocess failures are preserved. This CI-only adjustment does not change packages, schemas, formulas, receipt fixtures or normative expectations. Fresh exact-head CI is required before merge; exact-main CI and tag-mode results are recorded in PR351 after merge."
   }
 }

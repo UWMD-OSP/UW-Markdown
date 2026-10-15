@@ -262,8 +262,10 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   portable driver with `--no-skip`, and the capability-skip controls. No live
   model is called: agent checks run as deterministic replays.
   The release-record job also observes public npm package identities and the
-  prepared versions' registry state without publishing. For a dated generation
-  with empty `[Unreleased]` and no `### Released`, it runs tag-mode record checks
+  prepared versions' registry state without publishing, only in release-prepared
+  state (dated current-version section, no Released marker, empty Unreleased).
+  Ordinary development records skip this external availability dependency.
+  For a dated generation with empty `[Unreleased]` and no `### Released`, it runs tag-mode record checks
   without creating a tag. Ordinary development and post-publication records keep
   their existing checks. Anonymous registry reads cannot confirm account-side
   trusted publisher settings. Prepared generations also run
