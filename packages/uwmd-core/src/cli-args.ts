@@ -102,3 +102,117 @@ export function readManifestFile(
     return { ok: false, message: e instanceof Error ? e.message : String(e) };
   }
 }
+
+/**
+ * The closed flag vocabulary of every `uwmd` command, keyed by command, or by
+ * `command subcommand` where the command dispatches on its first positional.
+ * `--version`, `-V` and `version` take no flags at all, so they are listed
+ * with an empty set, like `diff` and `summary`.
+ *
+ * Through CLI 4.1.0 `parseFlags` kept every `--name[=value]` and each command
+ * read only the flags it knew, so a misspelled or not-yet-supported flag was
+ * silently ignored: `verify deal.uwx.md --document-signture=x --keystore=k`
+ * exited 0 with "OK". For a verifier that is a hazard, so the router refuses
+ * any flag outside the command's set before it reads a file (the house
+ * pattern of closed vocabularies that refuse unknown values; the same
+ * refusal `project-lease-up`, `assemble-property` and `verify-cash-flows`
+ * already made for themselves). A flag listed here is one the command's code
+ * reads; the usage strings in `cli.ts` are held to this table by
+ * `cli-args.test.ts`.
+ */
+export const COMMAND_FLAGS: Readonly<Record<string, readonly string[]>> = {
+  parse: ['compact', 'strict'],
+  validate: ['institution', 'json'],
+  verify: ['validate', 'integrity', 'policy', 'signing', 'keystore', 'document-signature', 'resolved', 'parts', 'json'],
+  'sign-document': ['key', 'out', 'signed-at'],
+  compact: ['output', 'dry-run'],
+  diff: [],
+  render: ['format', 'profile', 'sections', 'max-tokens', 'no-meta', 'output', 'tier'],
+  run: ['agent', 'section', 'context-only', 'prompt', 'live', 'api-key', 'model', 'instructions', 'json-input', 'output'],
+  layers: [],
+  edit: ['actor', 'source', 'agent-id', 'agent-version', 'confidence', 'output', 'capability-token', 'coord-key', 'json'],
+  'project-lease-up': ['json'],
+  'verify-reserve-draws': ['json'],
+  'verify-reserve-accounts': ['json'],
+  // Parses `args` itself and refuses under its typed JSON contract; listed
+  // for the record, exempt from the router's gate (see `flagVocabulary`).
+  'verify-cash-flows': ['variant', 'json'],
+  'assemble-property': ['json'],
+  'inspect-property-cash-flows': ['json'],
+  calc: ['calc-context', 'json'],
+  init: ['name', 'address', 'city', 'state', 'zip', 'asset-class', 'asset-subtype', 'stage', 'scenario', 'tier', 'output'],
+  summary: [],
+  export: ['output', 'no-superseded', 'resolved', 'parts', 'stdout'],
+  formats: ['json'],
+  convert: ['to', 'projection-report', 'output', 'stdout'],
+  report: ['tier', 'prepared-by', 'output', 'stdout'],
+  // `scope` always writes JSON; `--json` is accepted so the read-only commands
+  // share one spelling.
+  scope: ['asset-class', 'market-data', 'output', 'json'],
+  refine: ['targets', 'top', 'asset-class', 'market-data', 'calc-context', 'json'],
+  compose: ['externalize', 'collection-key', 'collection-path', 'part-prefix', 'out-dir', 'in-place', 'output', 'dry-run'],
+  resolve: ['parts', 'output', 'json'],
+  'market-data validate': ['json'],
+  'lease validate': ['json'],
+  'lease project': ['compact'],
+  'package create': ['output'],
+  'package verify': ['json'],
+  'package list': ['json'],
+  'package to-context': ['output', 'stdout', 'compact'],
+  'package validate-context': ['json'],
+  'package edges': [],
+  'modules validate': ['tier', 'json'],
+  'modules list': ['tier', 'json'],
+  manifest: [],
+  '--version': [],
+  '-V': [],
+  version: [],
+  'portfolio validate': ['json'],
+  'portfolio edges': ['entity', 'json'],
+  'receipt issue': ['output', 'issued-at', 'stdout'],
+  'receipt verify': ['json'],
+};
+
+/** Commands that parse `args` themselves under their own closed vocabulary. */
+const SELF_PARSING_COMMANDS: ReadonlySet<string> = new Set(['verify-cash-flows']);
+
+export interface FlagVocabulary {
+  /** The command as the user names it, with its subcommand when it has one. */
+  readonly command: string;
+  readonly accepted: readonly string[];
+}
+
+/**
+ * The vocabulary that governs an invocation: the `command subcommand` entry
+ * when the first positional selects one, else the command's own. Undefined
+ * for a command the table does not know (the router prints the help text or a
+ * usage error for those) and for a self-parsing command.
+ */
+export function flagVocabulary(
+  command: string | undefined,
+  subcommand: string | undefined,
+): FlagVocabulary | undefined {
+  if (command === undefined || SELF_PARSING_COMMANDS.has(command)) return undefined;
+  const keyed = subcommand === undefined ? undefined : `${command} ${subcommand}`;
+  const key = keyed !== undefined && Object.hasOwn(COMMAND_FLAGS, keyed)
+    ? keyed
+    : Object.hasOwn(COMMAND_FLAGS, command) ? command : undefined;
+  return key === undefined ? undefined : { command: key, accepted: COMMAND_FLAGS[key] };
+}
+
+/**
+ * The refusal for flags outside a command's vocabulary, naming each unknown
+ * flag and the command, or undefined when every flag given is accepted.
+ */
+export function unknownFlagMessage(
+  vocabulary: FlagVocabulary,
+  flags: Record<string, string | boolean>,
+): string | undefined {
+  const unknown = Object.keys(flags).filter((name) => !vocabulary.accepted.includes(name));
+  if (unknown.length === 0) return undefined;
+  const named = unknown.map((name) => `--${name}`).join(', ');
+  const accepted = vocabulary.accepted.length === 0
+    ? 'The command takes no flags.'
+    : `Accepted flags: ${vocabulary.accepted.map((name) => `--${name}`).join(', ')}.`;
+  return `uwmd ${vocabulary.command}: unknown flag${unknown.length > 1 ? 's' : ''} ${named}. ${accepted}`;
+}
