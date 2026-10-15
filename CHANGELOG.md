@@ -16,6 +16,14 @@ protocol, and each package each carry an independent semver).
 
 ## [4.3.0] - 2026-10-15
 
+### Released
+
+Annotated `v4.3.0` targets `80c68c3d0950948c85a1d3a90c02cd05f3a650a4`.
+The established release workflow published all8 packages with provenance.
+Independent registry, integrity, signature/provenance and fresh downstream
+consumer checks pass, including the published CLI350/350 portable cases. See
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
+
 Core/CLI 4.3.0 pair with Format3.0 and Protocol4.1.0. Verifier0.2.1,
 signing0.6.0, batch0.9.2, Excel0.9.19, report0.9.0 and lake0.3.2
 carry exact dependency pins for this generation. Receipts use verifier0.2.1

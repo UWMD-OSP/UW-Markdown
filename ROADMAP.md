@@ -46,16 +46,25 @@ presented for owner review, not inferred. The open questions are:
 6. **Runtime support.** How declared Node floors track the Node release
    schedule.
 
-**Interim4.3.0 preparation:** the owner-approved compatibility behavior merged
-in #346; unknown/misspelled flags remain refused, while the three deprecated
-options retain the scoped compatibility behavior. Financial corrections #347
-and #348 are integrated, together with the Phase2 evidence/regressions (#350).
-The revised [preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md) and PR351
-supersede PR342's old package proposal. Verify0.2.1 and its dependent repins join
-core/CLI4.3.0; Format3.0 and Protocol4.1.0 remain unchanged. Publication is a
-separate owner-authorized action. PR349 remains held for its starter-output
-baseline decision; RFC0085/0086/0087 remain drafts with no convention accepted.
+**Interim4.3.0 published and independently checked (2026-10-15):** #351
+merged preparation as `80c68c3d`; annotated `v4.3.0` targets that exact commit.
+The established Release38821844153 published all8 independent versions with
+provenance. Verification38822782450 checks registry identities, tarball hashes,
+signatures/provenance, fresh consumers and the published CLI350/350. See the
+[publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
+The #346 compatibility behavior and #347/#348 financial correctness repairs ship;
+#350's audit/regressions remain the basis for further work. Format3.0 and
+Protocol4.1.0 are unchanged. No5.0 action or production deployment is included.
 
+**Next bounded sequence:** finish owner review of #349's exact proposed
+source-year rendering baseline; refine draft RFC0085's complete-history authority
+versus projections; obtain the source/basis decisions in draft RFC0086/0087
+before any normative implementation. Issue343 remains open with its completed
+audit dispositions. No universal price/revenue equality is implemented. Preserve
+independent-source disclosures if semantic work is deferred; do not describe
+current metric verification as proof of complete economic reconciliation.
+
+## Historical publication: 4.2.0
 
 Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. The
 generation carries one RFC:
