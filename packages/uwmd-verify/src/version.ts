@@ -10,4 +10,4 @@
 // `@uwmd/core@<CORE_VERSION>`; the engine stays this package.
 
 export const VERIFY_PACKAGE_NAME = '@uwmd/verify' as const;
-export const VERIFY_VERSION = '0.1.0';
+export const VERIFY_VERSION = '0.2.0';
