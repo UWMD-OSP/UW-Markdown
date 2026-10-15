@@ -113,6 +113,8 @@ and how it gets accepted.
 | [0081](./0081-one-format-one-protocol.md) | One format, one protocol: remove backward compatibility (pre-release cleanup) | implemented | format, protocol, core, conformance, tooling |
 | [0083](./0083-verify-package-split.md) | Split `@uwmd/verify`, the reference implementation of the standard, out of `@uwmd/core` | implemented | core, conformance, tooling |
 | [0084](./0084-document-signature-binding.md) | Bind a document snapshot without discarding signed block attribution | implemented | protocol, core, conformance, tooling |
+| [0086](./0086-data-center-purchase-price-authority.md) | Resolve data-center purchase-price authority and summary binding | draft | format, protocol, core, conformance, tooling |
+| [0087](./0087-hospitality-revenue-reconciliation.md) | Define the basis for hospitality revenue reconciliation | draft | format, protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

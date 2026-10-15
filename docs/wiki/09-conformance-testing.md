@@ -632,3 +632,14 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 ## RFC 0065 reserve draw bindings
 
 `reserve-draw-bindings.ts` exports browser-safe `verifyReserveDrawBindings(parsed, plan?)`. Its optional external `ReserveDrawBindingPlan` uses exact variants, reserve account/period/movement identities, lease-up TI/LC components or gross cash-row addresses, declared selected-draw completeness and explicit funded shares. `RDB-01`–09 findings and the two companion schemas mirror Protocol §VIII.12. CLI: `uwmd verify-reserve-draws <file> [plan.json] --json`. Synthetic default/portable fixtures, shared-quantizer cent controls and regressions preserve gross rows and the unchanged RFC 0045 reserve refusal. No document field, transfer, owner cash or financing assembly is added.
+
+### Connected financial workflow regressions
+
+Phase 2 connects existing rent/statement/debt/funding/DCF helpers and stated
+verification in `packages/uwmd-core/src/dcf.workflow.test.ts`. The authored
+scenario separates vacancy from occupied-unit rent discounts rather than
+copying the roll's total gap into a second deduction. Class workflow tests in
+`packages/uwmd-excel/src/class-financial-workflows.test.ts` populate hotel
+F&B/comp inputs and DC utility-cost branches. Their persisted-formula evaluator
+is a restricted JavaScript helper, not a live Excel recalculation. These tests
+and review probes are outside the normative conformance corpus.

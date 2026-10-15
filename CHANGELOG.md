@@ -64,6 +64,12 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Phase 2 financial verification following [#343](https://github.com/UWMD-OSP/UW-Markdown/issues/343):
+  connected acquisition and asset-class workflow regressions, deterministic
+  cash-ledger oracles, cross-package findings and release-impact evidence in
+  [the review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-verification-phase-2.md).
+  Draft RFCs 0086/0087 compare purchase-price authority and hospitality revenue
+  reconciliation alternatives; neither selects new financial semantics.
 - Financial audit intake for [#343](https://github.com/UWMD-OSP/UW-Markdown/issues/343)
   (`UWMD-METRICS-2026-10-14`, M01–M12): independent classifications,
   synthetic reproductions, authority evidence and owner decisions in
