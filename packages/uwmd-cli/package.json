@@ -1,7 +1,7 @@
 {
   "name": "@uwmd/cli",
   "version": "4.2.0",
-  "description": "Command-line installer for UW Markdown — `npx uwmd init|parse|validate|render|run` for .uw.md underwriting files. Thin wrapper over @uwmd/core.",
+  "description": "Command-line tool for UW Markdown — `npx @uwmd/cli init|validate|verify|receipt` for .uwx.md underwriting files. Thin wrapper over @uwmd/core.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UWMD-OSP/UW-Markdown.git",

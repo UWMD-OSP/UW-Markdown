@@ -116,8 +116,9 @@ value-of-information without re-resolving the cascade.
 
 ### V.8 Asset-class default tables
 
-The reference library publishes per-asset-class default tables under
-`@uwmd/core/defaults`. Each entry resolves to a `{low, central,
+The reference library publishes per-asset-class default tables from
+`@uwmd/core` (`getAssetClassDefaults(assetClass)` and the per-class
+`*_DEFAULTS` tables). Each entry resolves to a `{low, central,
 high}` triple plus a unit and source tag. Producers consuming the
 table at cascade step 5 (`asset_class_default`) MUST use the
 published `central` value as the resolved scalar and MAY surface the

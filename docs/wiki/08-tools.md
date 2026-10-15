@@ -48,9 +48,9 @@ Every command accepts a closed set of flags: `COMMAND_FLAGS` in
 [`cli-args.ts`](../../packages/uwmd-core/src/cli-args.ts), keyed by command or
 by `command subcommand`. The router refuses a flag outside the set with exit 1,
 naming the flag and the command (`uwmd verify: unknown flag
---document-signture. Accepted flags: …`), before it reads any file. Through
-CLI 4.1.0 an unknown flag was silently ignored, so a misspelled security flag
-looked like a passed check. `verify-cash-flows` parses its own arguments and
+--document-signture. Accepted flags: …`), before it reads any file. This is
+unreleased: `main` has it, but published CLI 4.2.0 and earlier silently ignore
+an unknown flag, so there a misspelled security flag looks like a passed check. `verify-cash-flows` parses its own arguments and
 refuses under its typed JSON contract instead. A flag a usage string promises
 must be in the table (`cli-args.test.ts` holds the two together), so add a new
 flag to both.

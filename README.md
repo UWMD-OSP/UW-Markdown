@@ -2,7 +2,7 @@
 
 > An open interoperability standard for AI- and code-driven underwriting systems.
 
-> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance, and from 4.1.0 `@uwmd/verify` first. From 4.0.0 the reference implementation reads Format 3.0 and Protocol 4.0.0 only (RFC 0081); 3.0.0 is the last release that reads older formats.
+> **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance, and from 4.1.0 `@uwmd/verify` first. From 4.0.0 the reference implementation reads Format 3.0 only (RFC 0081) and carries a single Protocol version (4.1.0 from 4.2.0); 3.0.0 is the last release that reads older formats.
 
 **Website:** [uwmd.org](https://uwmd.org) · **Source:** [github.com/UWMD-OSP/UW-Markdown](https://github.com/UWMD-OSP/UW-Markdown)
 
@@ -64,13 +64,31 @@ npm run cli -- validate examples/Parkview-Apts-Glendale-AZ.uw.md
 npm run cli -- convert  examples/Parkview-Apts-Glendale-AZ.uw.md --to uwx --stdout
 ```
 
+### Verify a document
+
+Verifying means checking that a document is well formed, that its stated
+figures recompute from its own inputs, and that its receipts and signatures
+hold ([Protocol](spec/UW_PROTOCOL.md) §I). A party that only verifies needs
+`@uwmd/verify` and nothing else:
+
+```bash
+npm install @uwmd/verify
+```
+
+[`examples/verification/`](examples/verification/README.md) has four
+runnable scripts with their expected results: a valid document, a wrong
+stated metric, a tampered receipt and a failed document signature. From the
+CLI, `uwmd receipt issue <file>` and `uwmd receipt verify <file>
+<receipt.json>` check that a record still produces its stated results (exit
+0 verified, 1 failed, 3 unverifiable).
+
 To open the reference web viewer, point any browser at
 [`tools/web-viewer/index.html`](tools/web-viewer/) and drop in a `.uwx.md` file.
 
 ## What ships in v1
 
 - The format spec (`UW_FORMAT_SPEC.md`) — 21 standard sections, validation rules, supersede semantics.
-- The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 4.0.0, RFCs 0078 and 0081). Display, editing, defaults and the AI agent host are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
+- The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 4.1.0; RFCs 0078, 0081 and 0084). Display, editing, defaults and the AI agent host are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
 - `@uwmd/core` - parser, validator, renderer, runner, and an optional Claude-backed Bancroft reference agent suite.
 - A conformance corpus per tier so third parties can self-certify.
 - A single-file web viewer demonstrating a Reader in <500 LOC.

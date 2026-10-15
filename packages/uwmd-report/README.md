@@ -5,10 +5,10 @@ PDF pipeline for the `.uw.md` **lender package** (spec §7.1) and **credit memo*
 `renderReportHtml` — this package only adds the headless-Chromium print step.
 
 ```bash
-uwmd-report deal.uw.md                       # → deal.pdf (tier from frontmatter)
-uwmd-report deal.uw.md --tier screener       # lender package
-uwmd-report deal.uw.md --tier analyst        # credit memo
-uwmd-report deal.uw.md --format html         # browser-free HTML output
+uwmd-report deal.uwx.md                      # → deal.uwx.pdf (tier from frontmatter)
+uwmd-report deal.uwx.md --tier screener       # lender package
+uwmd-report deal.uwx.md --tier analyst        # credit memo
+uwmd-report deal.uwx.md --format html         # browser-free HTML output
 ```
 
 ## Browser resolution

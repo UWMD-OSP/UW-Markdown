@@ -32,7 +32,7 @@ So a receipt replaces this conversation:
 with this one:
 
 > "Where did this 1.28x DSCR come from?"
-> "This record, under the multifamily pack v1.0.1. Here's the receipt — check it
+> "This record, under the multifamily pack v1.0.2. Here's the receipt — check it
 > yourself."
 
 What still needs human diligence is unchanged: whether the rent roll is real,
@@ -93,7 +93,7 @@ distinctions explicit. For example, a multifamily document without asset-level
 equity inputs can issue with:
 
 ```text
-Receipt issued for deal.uwx.md → deal.receipt.json (org.uwmd.pack.multifamily@1.0.1)
+Receipt issued for deal.uwx.md → deal.receipt.json (org.uwmd.pack.multifamily@1.0.2)
 Metric completeness: partial
 Computed: 7/8
 Uncomputed: cash_on_cash

@@ -185,3 +185,69 @@ these.
   install.
 - A standalone verifier CLI (`uwmd-verify` bin). It does not exist yet, so a
   party holding only `@uwmd/verify` has the library and no command line.
+
+## 9. Follow-up (2026-10-14)
+
+PRs #330 and #331 merged. Dispositions since:
+
+| ID | Status |
+|---|---|
+| D-01, D-02, D-04 | Fixed in PR #332 (CLI). `verify` runs `verifyStatedMetrics` in its validate phase; `init` refuses a file argument and the README says `--output`; one loader names the flag or command when `@uwmd/signing` is missing. Ten CLI-level tests, eight of which fail on the unfixed `cli.ts`. |
+| D-03, D-05, D-08, §7 | Corrected in the onboarding documentation PR. No normative text changed. |
+| D-06 | Signing README now states the real requirement (Node 20+, or Node 18 with `--experimental-global-webcrypto`, which passes scenario 4). `engines` still says `>=18.4.0`: owner decision. |
+| D-07 | Format spec Part VI not edited: owner decision whether it is normative. |
+| D-09 | Traced; owner decision (below). |
+| D-10 | Traced; implementation defect against RFC 0018 (below). Not fixed yet. |
+
+**D-09: `compact` output fails `verify` (`POL-02`).** The two sides follow two
+different normative texts. Format §2.7 says "The `uwmd compact` command strips
+superseded blocks and leaves only current versions", and §6.5 says compact
+removes every superseded block. Protocol §V defines `POL-02` as an error by a
+stated heuristic: under a `supersede_on_edit` policy (`agent/*`, `document/*`
+and the catch-all), "`_meta.lifecycle.revision > 1` with no superseded prior
+revisions visible". `verifyProvenance` (`integrity.ts`) implements exactly
+that. So every compacted section whose head is past revision 1 is, by the
+Protocol's own test, indistinguishable from an illegal `section_replace`.
+Neither implementation departs from its own text. The one implementation gap
+is that compact appends no `compact` pipeline-log entry, which §6.5 says it
+does. Even with that entry, `POL-02` does not read the log. Resolving this
+means one of: compact output is declared a non-verifiable presentation copy
+(starter-only, no normative change); `POL-02` recognizes compaction
+(normative, needs an RFC and possibly a new marker); or compact is withdrawn
+under invariant 5 ("supersede, don't destroy"). **Owner decision; nothing
+changed.**
+
+**D-10: `package verify` never reaches `VERIFIED`.** `verifyUWDealPackage`
+(`deal-package-zip.ts`) is three-state by design. It checks byte digests itself
+and checks a member's `semantic_digest` only through an injected
+`semanticDigestOf`, reporting `unverifiable` when none is supplied. The CLI
+(`cli-packages.ts` `cmdPackageVerify`) supplies none. RFC 0018 (implemented)
+says "A UW member's semantic digest MUST verify when the implementation
+supports its representation; otherwise the package is `unverifiable`". The
+reference implementation does support it: for all three UW members of
+`examples/standalone/package/`, the manifest's `semantic_digest` equals the
+`uw-envelope-semantic` digest `@uwmd/verify` computes
+(`computeEnvelopeDigest(toUWEnvelope(parseUWFile(…)))`, also the receipt
+subject digest). So the CLI's `unverifiable` violates RFC 0018. It also has a
+security consequence. A member whose content changed, with its byte `sha256`
+updated in the manifest but its `semantic_digest` stale, should be `failed`
+(`PKGVER-003`) but reports `UNVERIFIABLE` and exits 0. The smallest fix
+supplies `semanticDigestOf` from the CLI for UWX members and returns `null`
+for representations it cannot canonicalize. That touches core only;
+defaulting it inside `@uwmd/verify` would need a verify release and move the
+receipt baselines. No normative change is needed.
+
+Other defects found while correcting the documentation:
+
+- `uwmd-report` names its output `deal.uwx.pdf` / `deal.uwx.report.html` for
+  `deal.uwx.md`. `defaultOutputName` strips only `.uw.md`. Its usage string
+  still says `<input.uw.md>`, which it refuses.
+- `docs/starter/defaults-and-cascade.md` §V.8 says consumers "MAY pin a
+  specific table version via institution config". No such configuration
+  field exists. The sentence is starter guidance and was left for the owner.
+- `docs/downloads/templates/blank-{screener,analyst}.uw.md` are UWX content
+  under the Lite name (17 Lite errors each). They are served download URLs, so
+  renaming or regenerating them is left for the owner.
+- `uwmd verify` applies only replacement funding among the Protocol §II.2
+  item 3 stated-figure verifiers. The others have their own commands. Whether
+  `verify` should run them all is a product decision.
