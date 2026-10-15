@@ -22,6 +22,11 @@ protocol, and each package each carry an independent semver).
   fails with `PKGVER-003` and exit 1. The shipped
   `examples/standalone/package/standalone-demo.uwpkg.zip` now verifies.
   `@uwmd/verify` is unchanged.
+- `uwmd-report` names its default output after the input without its
+  `.uwx.md` extension (`deal.uwx.md` → `deal.pdf` / `deal.report.html`).
+  Through 0.8.30 it stripped only `.uw.md`, so Format 3.0 records produced
+  `deal.uwx.pdf`. Its help and header now say `<input.uwx.md>`; they said
+  `<input.uw.md>`, which it refuses as Lite.
 
 - `uwmd verify` recomputes stated metrics (Protocol §II.2 item 2). Its
   validate phase (the default, or `--validate`) now runs `verifyStatedMetrics`
