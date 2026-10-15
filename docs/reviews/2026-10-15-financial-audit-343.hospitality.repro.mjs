@@ -6,7 +6,10 @@ import { pathToFileURL } from 'node:url';
 const root=resolve(process.argv[2] ?? '.');
 const { parseUWFile, evaluateCalc, validateUWFile } = await import(pathToFileURL(resolve(root,'packages/uwmd-verify/dist/index.js')).href);
 const dict=JSON.parse(readFileSync(`${root}/spec/metrics/builtin.json`)).calculations;
-function record(asset,sections) {return parseUWFile(`---\nuw_version: "3.0"\nasset_class: ${asset}\n---\n`+Object.entries(sections).map(([id,value])=>`\n\`\`\`json uw:section=${id} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`).join(''));}
+function record(asset,sections) {
+  const blocks=Object.entries(sections).map(([id,value])=>`\n\`\`\`json uw:section=${id} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`).join('');
+  return parseUWFile(`---\nuw_version: "3.0"\nasset_class: ${asset}\n---\n${blocks}`);
+}
 function calc(asset,id,sections){return evaluateCalc(dict.find(x=>x.id===id&&x.asset_classes.includes(asset)),{parsed:record(asset,sections),prior_results:{},locale:'en-US'});}
 let count=0;const out=[];
 function check(name,asset,id,sections,expected){const result=calc(asset,id,sections);assert.equal(result.ok,true,name);assert.equal(result.value,expected,name);count++;out.push({name,id,result:result.value});}

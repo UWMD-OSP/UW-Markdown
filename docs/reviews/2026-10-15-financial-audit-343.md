@@ -202,11 +202,17 @@ Full-suite workspace results: verify **2,582/0**, core **951/24**, batch **7/0**
 
 Direct reference corpus breakdown: Reader 26; Verifier 688; optional Integrity 32, Module 76, Representations 135, Portfolio 14, Sensitivity 5, Stochastic 7; starter products 106. This separates the **983 standard/profile checks** from starter-tool checks; none are an independent engine. No portable-driver pass is claimed for this audit: the profile guard could not complete its subprocess stage.
 
-A minimal diagnostic `spawnSync(process.execPath,['-e','console.log(123)'])` reproduced `EPERM` with empty captured streams and status 0. All failed test files involve spawned CLI/output capture, and the wrapper/profile guard failed at that same boundary. This is infrastructure evidence, not an established numerical disagreement; a normal unrestricted CI run is still needed. This session's policy does not allow requesting unrestricted shell approval.
+A minimal diagnostic `spawnSync(process.execPath,['-e','console.log(123)'])` reproduced `EPERM` with empty captured streams and status 0. All failed test files involve spawned CLI/output capture, and the wrapper/profile guard failed at that same boundary. This is infrastructure evidence, not an established numerical disagreement; remote CI must be assessed separately from these local results. This session's policy does not allow requesting unrestricted shell approval.
 
 The initial docs failure originated in an existing `CHANGELOG.md` link to the next-release-readiness review. PR #344 fixed it in its owning workstream before this review was rebased. This report is not added to the site copy plan. No new docs-site route or normative index was introduced. Raw logs remain `/tmp/uwmd-343-*.log`; the evidence artifact records their hashes. Incidental executable-bit changes from npm installation were restored before preparing the diff.
 
 Full gates are not represented as green where infrastructure failures intervene. The initial documentation failure was corrected upstream and its final rerun passed. The auditor's earlier 4,113/1 timeout result is historical intake evidence, not this audit's result. Reference and portable-driver results are not independent implementations; only actually executed checks below are claimed.
+
+## Remote CI follow-up before merge
+
+[GitHub Actions run 38701913406](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38701913406), on review head `881fc68db968673a740b5ab9b4cdba02edf5f960`, completed all 13 non-lint jobs successfully, including Node 20/22 build and test, Windows build/test/conformance, coverage, schema and governance guards. Its Lint job alone failed on string concatenation in the hospitality reproduction helper. The follow-up uses template interpolation; all 126 local synthetic observations are unchanged, and repository lint now exits 0 (one existing warning). Final head-specific CI verification is recorded in the PR before merge.
+
+Successful remote jobs do **not** replace the local full-suite result: **3,945 passed, 170 failed** remains the result of that local run. They provide separate execution evidence in an environment without the reproduced local subprocess restriction. M04 and M09 remain demonstrated consistency gaps requiring semantic decisions, not confirmed implementation defects. No normative formula, schema, conformance baseline or release version changes in this follow-up.
 
 ## Genuine owner decisions
 
