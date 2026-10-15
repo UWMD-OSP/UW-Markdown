@@ -6,7 +6,7 @@
 
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
-import { isConformanceTier, type ConformanceTier, UWX_EXTENSION } from '@uwmd/verify';
+import { type DealStage, isConformanceTier, type ConformanceTier, STAGE_REQUIREMENTS, UWX_EXTENSION } from '@uwmd/verify';
 
 /**
  * Parse `--flag`, `--flag value`, and `--flag=value` forms. A bare `--flag`
@@ -122,7 +122,7 @@ export function readManifestFile(
  */
 export const COMMAND_FLAGS: Readonly<Record<string, readonly string[]>> = {
   parse: ['compact', 'strict'],
-  validate: ['institution', 'json'],
+  validate: ['institution', 'json', 'stage'],
   verify: ['validate', 'integrity', 'policy', 'signing', 'keystore', 'document-signature', 'resolved', 'parts', 'json'],
   'sign-document': ['key', 'out', 'signed-at'],
   compact: ['output', 'dry-run'],
@@ -142,7 +142,7 @@ export const COMMAND_FLAGS: Readonly<Record<string, readonly string[]>> = {
   calc: ['calc-context', 'json'],
   init: ['name', 'address', 'city', 'state', 'zip', 'asset-class', 'asset-subtype', 'stage', 'scenario', 'tier', 'output'],
   summary: [],
-  export: ['output', 'no-superseded', 'resolved', 'parts', 'stdout'],
+  export: ['output', 'no-superseded', 'compact', 'resolved', 'parts', 'stdout'],
   formats: ['json'],
   convert: ['to', 'projection-report', 'output', 'stdout'],
   report: ['tier', 'prepared-by', 'output', 'stdout'],
@@ -150,7 +150,7 @@ export const COMMAND_FLAGS: Readonly<Record<string, readonly string[]>> = {
   // share one spelling.
   scope: ['asset-class', 'market-data', 'output', 'json'],
   refine: ['targets', 'top', 'asset-class', 'market-data', 'calc-context', 'json'],
-  compose: ['externalize', 'collection-key', 'collection-path', 'part-prefix', 'out-dir', 'in-place', 'output', 'dry-run'],
+  compose: ['externalize', 'collection-key', 'collection-path', 'part-prefix', 'out-dir', 'parts', 'in-place', 'output', 'dry-run'],
   resolve: ['parts', 'output', 'json'],
   'market-data validate': ['json'],
   'lease validate': ['json'],
@@ -215,6 +215,73 @@ export function unknownFlagMessage(
     ? 'The command takes no flags.'
     : `Accepted flags: ${vocabulary.accepted.map((name) => `--${name}`).join(', ')}.`;
   return `uwmd ${vocabulary.command}: unknown flag${unknown.length > 1 ? 's' : ''} ${named}. ${accepted}`;
+}
+
+/**
+ * Flags 4.x still accepts only because 4.2.0 offered them, and what to use
+ * instead. Each is in `COMMAND_FLAGS` and prints a warning when given; none
+ * is advertised in a usage string. Every other unknown or misspelled flag
+ * stays refused (#328).
+ *
+ * - `validate --stage`: 4.2.0's usage string offered it and nothing read it.
+ *   It now names one `deal_stage` whose readiness is reported. Readiness is
+ *   workflow completeness, never a validation failure (Format §5.1), so the
+ *   result and exit status do not change.
+ * - `export --compact`: 4.2.0's undocumented alias of `--no-superseded`. It
+ *   is not the `compact` command.
+ * - `compose --parts`: 4.2.0's help offered it as the fragment directory,
+ *   but `compose` read only `--out-dir` and wrote to `./parts`. It is now an
+ *   alias of `--out-dir`.
+ */
+export const DEPRECATED_FLAGS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  validate: {
+    stage: 'it reports one stage\'s readiness and does not change the result or exit status; every stage\'s readiness is in the report (stage_readiness with --json).',
+  },
+  export: { compact: 'use --no-superseded, which it means.' },
+  compose: { parts: 'use --out-dir, which it means.' },
+};
+
+/** One warning per deprecated flag given to `command`, in the order given. */
+export function deprecatedFlagWarnings(command: string, flags: Record<string, string | boolean>): string[] {
+  const table = Object.hasOwn(DEPRECATED_FLAGS, command) ? DEPRECATED_FLAGS[command] : undefined;
+  if (table === undefined) return [];
+  return Object.keys(flags)
+    .filter((name) => Object.hasOwn(table, name))
+    .map((name) => `uwmd ${command}: --${name} is deprecated and will be removed in a future major release; ${table[name]}`);
+}
+
+/** The seven `deal_stage` values (Format §2.2), in pipeline order. */
+export const DEAL_STAGES = Object.keys(STAGE_REQUIREMENTS) as DealStage[];
+
+/** `validate --stage`'s value checked against the `deal_stage` vocabulary. */
+export function requestedStage(
+  value: string | boolean,
+): { ok: true; stage: DealStage } | { ok: false; message: string } {
+  if (typeof value === 'string' && (DEAL_STAGES as string[]).includes(value)) return { ok: true, stage: value as DealStage };
+  const given = typeof value === 'string' ? `'${value}' is not a deal_stage` : 'it needs a stage';
+  return { ok: false, message: `uwmd validate: --stage ${given}. Use one of: ${DEAL_STAGES.join(', ')}.` };
+}
+
+/**
+ * The fragment directory for `compose`: `--out-dir`, or its deprecated alias
+ * `--parts`, or the record's `parts/` sibling. Two different directories are
+ * refused rather than one silently winning.
+ */
+export function composeOutDir(
+  file: string,
+  flags: Record<string, string | boolean>,
+): { ok: true; dir: string } | { ok: false; message: string } {
+  const given: Array<[string, string | boolean]> = (['out-dir', 'parts'] as const)
+    .filter((name) => flags[name] !== undefined)
+    .map((name) => [name, flags[name] as string | boolean]);
+  for (const [name, value] of given) {
+    if (typeof value !== 'string' || value === '') return { ok: false, message: `uwmd compose: --${name} needs a directory.` };
+  }
+  const dirs = [...new Set(given.map(([, value]) => resolve(value as string)))];
+  if (dirs.length > 1) {
+    return { ok: false, message: `uwmd compose: --out-dir and --parts name different directories (${dirs.join(', ')}). Give only --out-dir.` };
+  }
+  return { ok: true, dir: dirs[0] ?? defaultPartsDir(file) };
 }
 
 /**

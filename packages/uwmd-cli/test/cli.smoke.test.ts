@@ -1003,10 +1003,47 @@ describe('closed flag vocabulary', () => {
     expect(plain.stdout).toBe('');
     expect(plain.stderr).toContain('uwmd validate: unknown flag --jsn.');
 
-    const json = await runCli(['validate', FIXTURE, '--json', '--stage=screening']);
+    const json = await runCli(['validate', FIXTURE, '--json', '--stages=screening']);
     expect(json.status).toBe(1);
     expect(json.stdout).toBe('');
-    expect(json.stderr).toContain('uwmd validate: unknown flag --stage.');
+    expect(json.stderr).toContain('uwmd validate: unknown flag --stages.');
+  });
+
+  it('refuses every misspelled verification, signing and integrity flag before any work runs', async () => {
+    const misspelled: Array<[string[], string]> = [
+      [['verify', FIXTURE, '--signign', '--keystore=k.json'], 'uwmd verify: unknown flag --signign.'],
+      [['verify', FIXTURE, '--signing', '--keystor=k.json'], 'uwmd verify: unknown flag --keystor.'],
+      [['verify', FIXTURE, '--integrty'], 'uwmd verify: unknown flag --integrty.'],
+      [['verify', FIXTURE, '--polcy'], 'uwmd verify: unknown flag --polcy.'],
+      [['verify', FIXTURE, '--valdate'], 'uwmd verify: unknown flag --valdate.'],
+      [['sign-document', FIXTURE, '--kye=s.json', `--out=${resolve(temp, 'never.json')}`], 'uwmd sign-document: unknown flag --kye.'],
+      [['edit', FIXTURE, resolve(temp, 'op.json'), '--capability-tokn=t.json'], 'uwmd edit: unknown flag --capability-tokn.'],
+      [['receipt', 'verify', FIXTURE, resolve(temp, 'r.json'), '--jsn'], 'uwmd receipt verify: unknown flag --jsn.'],
+      [['package', 'verify', FIXTURE, '--jsn'], 'uwmd package verify: unknown flag --jsn.'],
+    ];
+    for (const [args, message] of misspelled) {
+      const r = await runCli(args);
+      expect(r.status, args.join(' ')).toBe(1);
+      expect(r.stdout, args.join(' ')).toBe('');
+      expect(r.stderr, args.join(' ')).toContain(message);
+    }
+    expect(existsSync(resolve(temp, 'never.json'))).toBe(false);
+  });
+
+  it('does not extend a deprecated spelling to other commands, or accept a misspelling of one', async () => {
+    for (const [args, message] of [
+      [['verify', FIXTURE, '--stage=closing'], 'uwmd verify: unknown flag --stage.'],
+      [['validate', FIXTURE, '--compact'], 'uwmd validate: unknown flag --compact.'],
+      [['validate', FIXTURE, '--stag=closing'], 'uwmd validate: unknown flag --stag.'],
+      [['export', FIXTURE, '--compat', '--stdout'], 'uwmd export: unknown flag --compat.'],
+      [['compose', FIXTURE, '--externalize', 'rent_roll', '--part=x'], 'uwmd compose: unknown flag --part.'],
+    ] as Array<[string[], string]>) {
+      const r = await runCli(args);
+      expect(r.status, args.join(' ')).toBe(1);
+      expect(r.stdout, args.join(' ')).toBe('');
+      expect(r.stderr, args.join(' ')).toContain(message);
+      expect(r.stderr, args.join(' ')).not.toContain('deprecated');
+    }
   });
 
   it('sign-document refuses an unknown flag without touching the artifact path', async () => {
@@ -1106,6 +1143,102 @@ describe('verify recomputes stated metrics (Protocol §II.2 item 2)', () => {
       expect(r.status, filename).toBe(0);
       expect(JSON.parse(r.stdout).stated_metrics.counts.failed, filename).toBe(0);
     }
+  });
+});
+
+describe('deprecated 4.2.0 flags kept through 4.x (validate --stage, export --compact, compose --parts)', () => {
+  // 4.2.0 offered these three; #328 refused them as unknown. They stay
+  // accepted, each with a stderr warning, and do what they were offered for.
+  // Every other unknown flag is still refused (see 'closed flag vocabulary').
+  const VALID = resolve(__dirname, '..', '..', '..', 'examples', 'verification', 'deal.uwx.md');
+  const INVALID = resolve(__dirname, '..', '..', '..', 'conformance', 'lease', 'reject-unknown-penalty-component', 'deal.uwx.md');
+  const HISTORY = exampleFixture('parkview-after-L6.uwx.md');
+  const INLINE = resolve(__dirname, '..', '..', '..', 'conformance', 'composition', 'resolve', 'inline-vs-external', 'inline.uwx.md');
+  const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-deprecated-'));
+  afterAll(() => rmSync(temp, { recursive: true, force: true }));
+  const stageWarning = 'uwmd validate: --stage is deprecated and will be removed in a future major release';
+  const withoutGeneratedAt = (text: string) => ({ ...JSON.parse(text), generated_at: undefined });
+
+  it('validate --stage reports that stage\'s readiness and leaves the result and exit status alone', async () => {
+    const plain = await runCli(['validate', VALID]);
+    const staged = await runCli(['validate', VALID, '--stage', 'closing']);
+    expect(plain.status).toBe(0);
+    expect(staged.status).toBe(0); // closing is incomplete for this document; that is not a validation failure
+    expect(staged.stderr).toContain(stageWarning);
+    const line = '  Requested with --stage closing: incomplete (reported only; it does not change the result or exit status)';
+    expect(staged.stdout).toContain(line);
+    expect(staged.stdout.replace(`${line}\n`, '')).toBe(plain.stdout);
+    expect((await runCli(['validate', VALID, '--stage=screening'])).stdout).toContain('Requested with --stage screening: complete');
+  });
+
+  it('validate --stage keeps the failing exit of a document with validation errors', async () => {
+    const plain = await runCli(['validate', INVALID]);
+    expect(plain.status).toBe(1);
+    const staged = await runCli(['validate', INVALID, '--stage', 'scope']);
+    expect(staged.status).toBe(1);
+    expect(staged.stderr).toContain(stageWarning);
+  });
+
+  it('validate --stage --json keeps stdout identical and reports readiness on stderr', async () => {
+    const plain = await runCli(['validate', VALID, '--json']);
+    const staged = await runCli(['validate', VALID, '--json', '--stage', 'closing']);
+    expect(staged.status).toBe(plain.status);
+    expect(staged.stdout).toBe(plain.stdout);
+    expect(JSON.parse(staged.stdout).stage_readiness.closing).toBe(false);
+    expect(staged.stderr).toContain(stageWarning);
+    expect(staged.stderr).toContain('uwmd validate: --stage closing: incomplete (reported only; it does not change the result or exit status)');
+  });
+
+  it('validate --stage refuses a value outside the seven deal_stage values, and a missing one', async () => {
+    for (const args of [['--stage', 'underwriting'], ['--stage=Closing'], ['--stage']]) {
+      const r = await runCli(['validate', VALID, ...args]);
+      expect(r.status, args.join(' ')).toBe(1);
+      expect(r.stdout, args.join(' ')).toBe('');
+      expect(r.stderr, args.join(' ')).toContain('Use one of: scope, screening, term_sheet, full_underwrite, credit_approval, closing, monitoring.');
+    }
+  });
+
+  it('validate --stage on UW Lite says readiness is not checked and keeps Lite\'s result', async () => {
+    const plain = await runCli(['validate', LITE_FIXTURE]);
+    const staged = await runCli(['validate', LITE_FIXTURE, '--stage', 'screening']);
+    expect(staged.status).toBe(plain.status);
+    expect(staged.stdout).toBe(plain.stdout);
+    expect(staged.stderr).toContain('uwmd validate: --stage screening: readiness is not checked for UW Lite.');
+  });
+
+  it('export --compact is --no-superseded, with a warning', async () => {
+    const compact = await runCli(['export', HISTORY, '--compact', '--stdout']);
+    const noSuperseded = await runCli(['export', HISTORY, '--no-superseded', '--stdout']);
+    const full = await runCli(['export', HISTORY, '--stdout']);
+    expect(compact.status).toBe(0);
+    expect(compact.stderr).toContain('uwmd export: --compact is deprecated and will be removed in a future major release; use --no-superseded, which it means.');
+    expect(noSuperseded.stderr).toBe('');
+    expect(withoutGeneratedAt(compact.stdout)).toEqual(withoutGeneratedAt(noSuperseded.stdout));
+    expect(JSON.parse(compact.stdout).superseded).toEqual({});
+    expect(Object.keys(JSON.parse(full.stdout).superseded).length).toBeGreaterThan(0);
+  });
+
+  it('compose --parts writes the fragments to the directory it names, with a warning', async () => {
+    const record = resolve(temp, 'deal.uwx.md');
+    writeFileSync(record, readFileSync(INLINE, 'utf8'), 'utf8');
+    const frags = resolve(temp, 'frags');
+    const r = await runCli(['compose', record, '--externalize', 'rent_roll', `--parts=${frags}`]);
+    expect(r.status).toBe(0);
+    expect(r.stderr).toContain('uwmd compose: --parts is deprecated and will be removed in a future major release; use --out-dir, which it means.');
+    expect(readdirSync(frags).filter((f) => f.endsWith('.uwpart.md')).length).toBeGreaterThan(0);
+    expect(existsSync(resolve(temp, 'parts'))).toBe(false); // 4.2.0 wrote here regardless of --parts
+  });
+
+  it('compose refuses --parts and --out-dir naming different directories, and writes nothing', async () => {
+    const record = resolve(temp, 'conflict.uwx.md');
+    writeFileSync(record, readFileSync(INLINE, 'utf8'), 'utf8');
+    const r = await runCli(['compose', record, '--externalize', 'rent_roll', `--parts=${resolve(temp, 'a')}`, `--out-dir=${resolve(temp, 'b')}`]);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain('uwmd compose: --out-dir and --parts name different directories');
+    for (const name of ['a', 'b', 'conflict.externalized.uwx.md']) expect(existsSync(resolve(temp, name)), name).toBe(false);
+    const same = await runCli(['compose', record, '--externalize', 'rent_roll', `--parts=${resolve(temp, 'c')}`, `--out-dir=${resolve(temp, 'c')}`, '--dry-run']);
+    expect(same.status).toBe(0);
+    expect(same.stdout).toContain(`fragment(s) to ${resolve(temp, 'c')}`);
   });
 });
 

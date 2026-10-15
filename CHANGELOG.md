@@ -103,11 +103,41 @@ protocol, and each package each carry an independent semver).
   --document-signture=x.json --keystore=k.json` exited 0 with `OK`. The gate
   generalizes the refusal `project-lease-up`, `assemble-property` and
   `inspect-property-cash-flows` already made; `verify-cash-flows` keeps its
-  own typed JSON refusal. `validate` no longer advertises `--stage`, which
-  nothing read, and `export` drops its undocumented `--compact` alias of
-  `--no-superseded`; the usage strings now list every flag a command reads
+  own typed JSON refusal. Three flags 4.2.0 offered stay accepted as
+  deprecated (see `### Deprecated`). The usage strings now list every flag a
+  command reads
   (`scope --json`, `refine --asset-class`, `compose --part-prefix`/`--output`,
   `package to-context --compact`, `--parts` beside `--resolved`).
+
+### Deprecated
+
+These flags are kept through 4.x because 4.2.0 offered them. Each prints a
+stderr warning naming its replacement, and none is advertised in a usage
+string. Every other unknown or misspelled flag stays refused before the
+command runs, so a misspelled verification, signing or integrity flag still
+exits 1.
+
+- **`validate --stage <deal_stage>`.** 4.2.0's usage string offered it and
+  nothing read it.
+  - It now names one of the seven `deal_stage` values (Format §2.2) and
+    reports that stage's readiness from the existing `stage_readiness`
+    computation (§5.1). The text report gains one line; with `--json` the
+    line goes to stderr and stdout is unchanged.
+  - Readiness is workflow completeness, not validation. An incomplete stage
+    therefore changes neither the result nor the exit status.
+  - Any other value, or none, exits 1 and lists the seven. 4.2.0 accepted
+    anything.
+- **`export --compact`.** 4.2.0's undocumented alias of `--no-superseded`.
+  The output is the same (only `generated_at` differs). It is not the
+  separate `compact` command, whose open question is draft RFC 0085.
+- **`compose --parts <dir>`.** 4.2.0's help offered it as the fragment
+  directory, but `compose` read only `--out-dir` and wrote to `./parts`
+  anyway. It is now an alias of `--out-dir` and writes where it says. If
+  `--parts` and `--out-dir` name different directories, the command exits 1
+  and writes nothing.
+
+`uwmd init` still refuses a file argument and names `--output`. The argument
+was never part of the CLI's own interface.
 
 ### Documentation
 
