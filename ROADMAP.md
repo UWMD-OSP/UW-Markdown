@@ -1,12 +1,31 @@
 # Roadmap
 
-Reconciled **2026-10-14** (America/Phoenix) for published and independently
-verified **4.2.0**, pairing core/CLI 4.2.0 and `@uwmd/verify` 0.2.0 with
-Stable Protocol **4.1.0** and Format **3.0**. No accepted RFC is waiting for a
+Reconciled **2026-10-14** (America/Phoenix) for release-prepared **5.0.0**
+(Protocol **4.1.0**, Format **3.0**). The current published release remains
+**4.2.0**, pairing core/CLI 4.2.0 and `@uwmd/verify` 0.2.0 with Stable
+Protocol **4.1.0** and Format **3.0**. No accepted RFC is waiting for a
 release.
 UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
+
+## Prepared generation: 5.0.0
+
+Core/CLI **5.0.0** pair with Protocol **4.1.0** and Format **3.0**, the same
+contract as 4.2.0. The generation carries no RFC. It is the launch-hardening
+work from the
+[onboarding audit](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-14-launch-onboarding-audit.md):
+- a closed CLI flag vocabulary (#328), which is why core takes a major;
+- `verify` recomputing stated metrics (D-01);
+- `init` naming its file with `--output` only (D-02);
+- actionable missing-signing errors (D-04);
+- `package verify` checking semantic digests (D-10);
+- report output names for `.uwx.md` input;
+- a declared Node 20 floor for signing and report.
+
+Signing 0.6.0 and report 0.9.0 take minors for that floor; Excel 0.9.19
+repins core. Verify 0.2.0, batch 0.9.1 and lake 0.3.1 are unchanged. Draft
+RFC 0085 (compaction provenance) is not part of it.
 
 ## Current published release: 4.2.0
 

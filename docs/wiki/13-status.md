@@ -1,5 +1,34 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-14** (America/Phoenix) for release-prepared **5.0.0**.
+Core/CLI **5.0.0** pair with Protocol **4.1.0** and Format **3.0**, the same
+contract as 4.2.0, so neither normative version moves.
+
+- **Why core is a major:** its `uwmd` CLI refuses invocations 4.2.0
+  accepted. Every command has a closed flag vocabulary (#328), and `init`
+  takes no file argument.
+- **Fixes the generation carries:**
+  - `verify` recomputes stated metrics (D-01);
+  - `package verify` checks semantic digests (D-10);
+  - missing-signing errors name the flag (D-04);
+  - report names its output after a `.uwx.md` input;
+  - Format Part VI has editorial corrections (D-07).
+- **Package versions:**
+  - Signing **0.6.0** and report **0.9.0** take minors for their declared Node
+    `>=20` floor.
+  - Excel **0.9.19** repins core.
+  - `@uwmd/verify` **0.2.0**, batch **0.9.1** and lake **0.3.1** are unchanged
+    and are not republished.
+- **Unchanged:** receipts keep engine verify 0.2.0, and no conformance
+  expectation changes.
+- **CLI regression checks** for D-01 and D-10 are pinned apart from the
+  portable corpus (wiki 09).
+- **Draft RFC 0085** is not part of the generation.
+
+Records:
+[docs/releases/5.0.0-preparation.md](../releases/5.0.0-preparation.md) and
+[the readiness assessment](../reviews/2026-10-14-next-release-readiness.md).
+
 Reconciled **2026-10-14** (America/Phoenix) for published and independently
 verified **4.2.0**. `@uwmd/verify` **0.2.0**, core/CLI **4.2.0**, signing
 **0.5.0**, batch **0.9.1**, Excel **0.9.18**, report **0.8.30** and lake

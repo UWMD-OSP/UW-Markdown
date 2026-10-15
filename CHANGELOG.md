@@ -8,6 +8,58 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-10-14
+
+### Prepared package pairing
+
+Core/CLI **5.0.0** pair with Protocol **4.1.0** and Format **3.0**, the same
+contract as 4.2.0. Nothing normative moves: no RFC, issue code, metric
+definition, schema or conformance expectation changes, so neither the
+Protocol nor the Format version does. Format spec Part VI took editorial
+corrections only.
+
+**Core takes a major** because its `uwmd` CLI (core's bin and `./cli`
+export) refuses invocations 4.2.0 accepted and, for `validate --stage`,
+advertised. Core's library API is byte-identical to 4.2.0's. The CLI
+versions with core.
+
+**Signing 0.6.0** declares Node `>=20.0.0`. Dropping a declared runtime is a
+breaking change for a 0.x package, so it moves its minor. It pins verify
+**0.2.0** and core **5.0.0**.
+
+**Report 0.9.0** takes a minor for the same Node `>=20.0.0` floor. It also
+carries the `.uwx.md` output-name fix and pins core **5.0.0**.
+
+**Excel 0.9.19** repins core **5.0.0**. Core's optional signing peer is
+**0.6.0**.
+
+**Unchanged and not republished:** `@uwmd/verify` **0.2.0**, batch **0.9.1**
+and lake **0.3.1**. Their packed contents equal the published archives, apart
+from lake's README. `release.yml` skips a version already on npm, and
+receipts still name engine `@uwmd/verify` 0.2.0, so no receipt baseline
+moves. The workflow scope stays eight packages, verify first.
+
+### Upgrading from 4.2.0
+
+- **`uwmd` refuses unknown flags with exit 1.**
+  - `validate --stage` and `validate --strict` were never read; drop them.
+  - `export --compact` was an undocumented alias; use `--no-superseded`.
+  - A misspelled flag such as `--document-signture` used to be ignored. It
+    is now an error instead of a silent pass.
+- **`uwmd init` takes no file argument.** Use `uwmd init --output
+  my-deal.uwx.md`; 4.2.0 ignored a positional name and wrote
+  `new-deal.uwx.md`.
+- **`uwmd verify` exits 1** when a stated metric disagrees with its
+  recomputation (Protocol §II.2 item 2). `--json` adds `stated_metrics`.
+- **`uwmd package verify` exits 1** with `PKGVER-003` when a stated semantic
+  digest is stale (RFC 0018). A digest it cannot compute stays
+  `unverifiable` with exit 0.
+- **`uwmd-report deal.uwx.md`** writes `deal.pdf` / `deal.report.html`, not
+  `deal.uwx.pdf`.
+- **Node 20 or later** is required for `@uwmd/signing` (including the CLI's
+  `sign-document`, `--signing` and `--document-signature`) and for
+  `@uwmd/report`. The other packages keep Node 18.
+
 ### Fixed
 
 - Format spec Part VI (toolchain interface) describes the CLI as it is.
@@ -38,7 +90,6 @@ protocol, and each package each carry an independent semver).
   Through 0.8.30 it stripped only `.uw.md`, so Format 3.0 records produced
   `deal.uwx.pdf`. Its help and header now say `<input.uwx.md>`; they said
   `<input.uw.md>`, which it refuses as Lite.
-
 - `uwmd verify` recomputes stated metrics (Protocol §II.2 item 2). Its
   validate phase (the default, or `--validate`) now runs `verifyStatedMetrics`
   beside Format validation and replacement-funding verification. A stated
@@ -91,7 +142,7 @@ protocol, and each package each carry an independent semver).
   `playwright-core ^1.49.0` resolves to releases that require Node 20 and
   exits 1 before any output, `--format html` included. The other packages
   keep `>=18.0.0`, which was re-run on Node 18.0.0 and 18.20.8
-  ([readiness assessment](docs/reviews/2026-10-14-next-release-readiness.md)
+  ([readiness assessment](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-14-next-release-readiness.md)
   §4). Dropping a declared runtime is a breaking change for these two 0.x
   packages.
 - The `uwmd` CLI refuses unknown flags. Every command, and every subcommand

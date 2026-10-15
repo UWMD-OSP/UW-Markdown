@@ -19,6 +19,31 @@ released independently as long as both honor the same protocol version.
 
 ## Current matrix
 
+Release 5.0.0 pairs core/CLI 5.0.0 with Protocol 4.1.0 and Format 3.0, the
+same contract as 4.2.0. Nothing normative moves, so neither the Protocol nor
+the Format does. Core takes a major because its `uwmd` CLI refuses
+invocations 4.2.0 accepted:
+- every command has a closed flag vocabulary, so `validate --stage`,
+  `export --compact` (use `--no-superseded`) and any misspelled flag exit 1;
+- `init` refuses a file argument (name the file with `--output`).
+
+Core's library API is unchanged. The CLI also:
+- recomputes stated metrics in `verify`, exiting 1 on a disagreement;
+- checks stated semantic digests in `package verify`;
+- names the optional signing package when it is missing.
+
+The CLI versions with core. Signing 0.6.0 declares Node `>=20` (a breaking
+change for a 0.x package) and pins verify 0.2.0 and core 5.0.0. Report 0.9.0
+declares Node `>=20` too, names its output after a `.uwx.md` input, and pins
+core 5.0.0. Excel 0.9.19 repins core 5.0.0. Core's optional signing peer is
+0.6.0.
+
+`@uwmd/verify` 0.2.0, batch 0.9.1 and lake 0.3.1 are unchanged and not
+republished: `release.yml` skips a version already on npm. Receipts still
+name `@uwmd/verify` 0.2.0 as their engine. The workflow scope is eight
+packages, verify first: verify, core, CLI, signing, batch, Excel, report and
+lake.
+
 Release 4.2.0 pairs core/CLI 4.2.0 with Protocol 4.1.0 and Format 3.0.
 Protocol 4.1.0 carries RFC 0084: an optional detached document snapshot
 signature over the existing `uw-envelope-semantic` digest (Protocol §V.13),
@@ -335,16 +360,16 @@ versions advance independently.
 | Surface | Version | Pairs with |
 |---|---|---|
 | `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
-| UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.2.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
-| `@uwmd/verify` | **0.2.0** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.2.0 depends on it exactly and re-exports it |
-| `@uwmd/core` | **4.2.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.0 |
-| `@uwmd/cli` (CLI) | **4.2.0** | `@uwmd/core` 4.2.0 |
-| `@uwmd/excel` | **0.9.18** | `@uwmd/core` 4.2.0, format 3.0, explicit contextual calculations |
-| `@uwmd/report` | **0.8.30** | `@uwmd/core` 4.2.0, format spec §7.1/§7.2 |
+| UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.2.0 and 5.0.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
+| `@uwmd/verify` | **0.2.0** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 5.0.0 depends on it exactly and re-exports it |
+| `@uwmd/core` | **5.0.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.0 |
+| `@uwmd/cli` (CLI) | **5.0.0** | `@uwmd/core` 5.0.0 |
+| `@uwmd/excel` | **0.9.19** | `@uwmd/core` 5.0.0, format 3.0, explicit contextual calculations |
+| `@uwmd/report` | **0.9.0** | `@uwmd/core` 5.0.0, format spec §7.1/§7.2; Node 20 or later |
 | `@uwmd/batch` | **0.9.1** | `@uwmd/verify` 0.2.0, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
 | `@uwmd/lake` | **0.3.1** | `@uwmd/verify` 0.2.0, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.5.0** | `@uwmd/verify` 0.2.0 and `@uwmd/core` 4.2.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.2.0 browser entry |
+| `@uwmd/signing` | **0.6.0** | `@uwmd/verify` 0.2.0 and `@uwmd/core` 5.0.0, Node 20 or later, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 5.0.0 browser entry |
 | `tools/web-viewer` | n/a (single-file HTML, no package) | format 3.0 |
 | `tools/vscode-uwmd` | **0.2.0** | format 3.0; `@uwmd/verify` 0.2.0 (`file:` link) |
 
@@ -426,9 +451,9 @@ For new integrations, target Format 3.0 and the Protocol 4.1.0 contract
 listed above. A party that only reads and verifies documents can depend on
 `@uwmd/verify` alone. It is a 0.x package, so `^0.2.0` admits only 0.2.x
 patches; pin it exactly if you need the receipt engine identity to stay
-fixed. Pin `@uwmd/core@^4` for the starter products (editor, calc host,
+fixed. Pin `@uwmd/core@^5` for the starter products (editor, calc host,
 agent host) or for readers and verifiers that also want them, or
-`@uwmd/cli@^4` for CLI scripts.
+`@uwmd/cli@^5` for CLI scripts.
 Readers read Format 3.0 only; convert older documents before upgrading (see
 the CHANGELOG 4.0.0 migration notes). An agent host installs a provider SDK only if it uses that provider;
 `@anthropic-ai/sdk` remains an optional peer.

@@ -121,7 +121,7 @@ if they do not. Core ships the dictionary as generated `src/metric-dictionary.ts
 *Project rule for this repository.* Every `@uwmd/*` dependency resolves through
 the local workspace link (`packages/*`, or a `file:` link from `tools/`), never
 a registry tarball, so a change is always tested against the code beside it.
-Published packages still pin each other exactly (`@uwmd/core` `4.2.0`, not a
+Published packages still pin each other exactly (`@uwmd/core` `5.0.0`, not a
 range); the workspace satisfies that pin locally, and external consumers
 resolve it from npm. `npm run verify-lockfile` fails if any lockfile resolves
 an `@uwmd/*` package from the registry or a pin disagrees with the declared
