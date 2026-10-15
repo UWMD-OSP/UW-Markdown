@@ -157,3 +157,67 @@ describe('the named tolerance', () => {
     expect(LEASE_UP_STABILIZED_TOLERANCE).toBe(0.02);
   });
 });
+
+// Phase 2: the verifier gates both dated projection and full-property assembly.
+// Expected cents are literal decimal ties under Protocol VIII.5, independent
+// of the implementation's quantizer.
+describe('lease-up verification at the normative quantization boundary', () => {
+  it.each([
+    [-1.125, -1.13, 'verified'],
+    [-1.125, -1.12, 'failed'],
+    [1.005, 1.01, 'verified'],
+    [1.005, 1.00, 'failed'],
+    [-0.005, -0.01, 'verified'],
+    [-0.005, 0, 'failed'],
+  ] as const)('verifies component sum %s against stated %s as %s', (sum, stated, verdict) => {
+    const schedule: LeaseUpSchedule = {
+      model_type: 'absorption_curve',
+      period_granularity: 'monthly',
+      schedule: [{
+        period: '2028-02',
+        rent_revenue: sum > 0 ? sum : 0,
+        concessions: 0,
+        ti_lc_capex: sum < 0 ? sum : 0,
+        net_cash_flow: stated,
+      }],
+    };
+    const result = verifyLeaseUpSchedule(schedule, { total_sf: null });
+    expect(result.verdict).toBe(verdict);
+    expect(result.issues.map(issue => issue.code)).toEqual(
+      verdict === 'verified' ? [] : ['LU-NCF-DISAGREES'],
+    );
+  });
+
+  it('compares occupied square feet with the same decimal-shift boundary', () => {
+    const schedule: LeaseUpSchedule = {
+      model_type: 'absorption_curve',
+      period_granularity: 'monthly',
+      schedule: [{ period: '2028-02', occupied_sf: 1.005 }],
+      stabilized_summary: { occupied_sf: 1.01 },
+    };
+    expect(verifyLeaseUpSchedule(schedule, { total_sf: null }).verdict).toBe('verified');
+    schedule.stabilized_summary!.occupied_sf = 1;
+    expect(verifyLeaseUpSchedule(schedule, { total_sf: null }).verdict).toBe('failed');
+  });
+
+  it('sums binary64 components before quantizing once', () => {
+    const schedule: LeaseUpSchedule = {
+      model_type: 'absorption_curve',
+      period_granularity: 'monthly',
+      schedule: [{ period: '2028-02', rent_revenue: 1.004, concessions: -0.002,
+        ti_lc_capex: 0, net_cash_flow: 1 }],
+    };
+    expect(verifyLeaseUpSchedule(schedule, { total_sf: null }).verdict).toBe('verified');
+  });
+});
+
+// Finite source components can overflow when summed. The rounding correction
+// must retain the existing failed verdict instead of throwing from quantize.
+it('retains a failed verdict when finite lease-up components overflow', () => {
+  const schedule: LeaseUpSchedule = {
+    model_type: 'absorption_curve', period_granularity: 'monthly',
+    schedule: [{ period: '2028-02', rent_revenue: 1e308, concessions: 0,
+      ti_lc_capex: 1e308, net_cash_flow: 1e308 }],
+  };
+  expect(verifyLeaseUpSchedule(schedule, { total_sf: null }).verdict).toBe('failed');
+});

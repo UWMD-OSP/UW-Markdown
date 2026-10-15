@@ -10,6 +10,14 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Financial verification follow-up to [#343](https://github.com/UWMD-OSP/UW-Markdown/issues/343):
+  capital-stack sizing and lease-up statements use the existing shared decimal
+  quantizer. The multiplication shortcut could verify the wrong half-cent or
+  coverage value and reject the correct value, including negative cash flows;
+  lease-up projection could then carry that false success into dated cash flows.
+  Formula meanings, comparison precision, validation codes and conformance
+  baselines are unchanged. Regression tests cover both verdict directions and
+  projection refusal/acceptance at the established boundary.
 - Format spec Part VI (toolchain interface) describes the CLI as it is.
   These are editorial corrections and change no format or verification rule.
   - §6.2 showed `uwmd validate <file> [--stage <stage>]`, an option nothing

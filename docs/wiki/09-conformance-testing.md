@@ -643,3 +643,12 @@ copying the roll's total gap into a second deduction. Class workflow tests in
 F&B/comp inputs and DC utility-cost branches. Their persisted-formula evaluator
 is a restricted JavaScript helper, not a live Excel recalculation. These tests
 and review probes are outside the normative conformance corpus.
+
+### Financial verification boundary regressions
+
+Capital-stack sizing and lease-up stated-figure tests exercise positive decimal
+ties and negative cash flows at their existing comparison precision. The
+lease-up projection tests also assert that incorrect statements cannot seed a
+dated series. These regression tests use the shared Protocol VIII.5 quantizer;
+no tolerance, metric definition or normative fixture is changed. They belong
+to `packages/uwmd-verify/src/{capital-stack,lease-up,lease-up-cash-flows}.test.ts`.

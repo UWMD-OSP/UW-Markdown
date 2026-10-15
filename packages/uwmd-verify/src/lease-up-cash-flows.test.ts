@@ -304,3 +304,28 @@ describe('RFC 0044 explicit projection', () => {
     }
   });
 });
+
+// A successful projection must not launder an incorrectly rounded negative
+// lease-up amount into a verified dated stream.
+describe('lease-up projection quantization gate', () => {
+  it.each([-1.13, -1.125])('copies a valid half-cent-boundary stated amount %s exactly', async amount => {
+    const parsed = document();
+    Object.assign(rows(parsed)[0]!, { rent_revenue: 0, concessions: 0,
+      ti_lc_capex: -1.125, net_cash_flow: amount });
+    const result = await projectLeaseUpCashFlows(parsed, plan());
+    expect(result.series.series[0]!.amount).toBe(amount);
+    expect(result.bindings[0]!.amount).toBe(amount);
+    expect(result.series.series[0]!.date).toBe('2026-09-30');
+  });
+
+  it('refuses the toward-zero cent value with failed source evidence', async () => {
+    const parsed = document();
+    Object.assign(rows(parsed)[0]!, { rent_revenue: 0, concessions: 0,
+      ti_lc_capex: -1.125, net_cash_flow: -1.12 });
+    const issue = await refusal(parsed, plan());
+    expect(issue.code).toBe('CALC-LU-PROJECTION');
+    expect(issue.evidence?.verification?.verdict).toBe('failed');
+    expect(issue.evidence?.verification?.issues.map(item => item.code))
+      .toContain('LU-NCF-DISAGREES');
+  });
+});

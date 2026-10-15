@@ -20,6 +20,7 @@
 // primitive the format does not yet have (RFC 0026 §E).
 
 import type { ParsedUWFile } from './types.js';
+import { quantizeDecimal } from './calc/quantize.js';
 import { getSection, deepGet } from './parser.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -182,14 +183,12 @@ export const CAPITAL_STACK_SIZING_DECIMALS: Readonly<Record<SizingFn, number>> =
   weighted_cost: 4,
 };
 
-function roundTo(value: number, decimals: number): number {
-  const f = 10 ** decimals;
-  return Math.round(value * f) / f;
-}
-
 function agrees(stated: number, recomputed: number, fn: SizingFn): boolean {
   const dp = CAPITAL_STACK_SIZING_DECIMALS[fn];
-  return roundTo(stated, dp) === roundTo(recomputed, dp);
+  // Preserve a disagreement for overflow; the shared quantizer accepts finite
+  // numbers only. Finite sizing follows the Protocol VIII.5 decimal boundary.
+  return Number.isFinite(stated) && Number.isFinite(recomputed) &&
+    quantizeDecimal(stated, dp) === quantizeDecimal(recomputed, dp);
 }
 
 /** Sum a value over the tranches at or above a position; null if any is null. */
