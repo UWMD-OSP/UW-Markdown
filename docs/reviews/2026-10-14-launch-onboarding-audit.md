@@ -385,10 +385,12 @@ The four verification scenarios run in CI (#330).
 
 **Launch blockers remaining.**
 
-1. **Release-gated.** D-01 and D-02 are fixed on `main` but not published.
+1. **Release-gated.** D-01 is fixed on `main` but not published:
    `@uwmd/cli@4.2.0`, the current `latest`, still prints `OK` for a wrong
-   stated metric, and the README quick start fails against it. They stay
-   launch blockers until a release is authorized and published.
+   stated metric. It stays a launch blocker until a release is authorized
+   and published. D-02 is mitigated: the repository README now uses
+   `init --output my-deal.uwx.md`, which 4.2.0 honours (re-run 2026-10-14),
+   but 4.2.0 still ignores a positional name and writes `new-deal.uwx.md`.
 2. **Decision-gated.** A hashed chain whose history was removed (by
    `compact` or by hand) verifies `OK` (RFC 0085 §1.2, §5). For a standard
    whose purpose is verification, this should be decided before launch.
