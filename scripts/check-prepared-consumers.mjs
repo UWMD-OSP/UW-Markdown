@@ -36,17 +36,18 @@ if (!prepared && !publishedCommit) {
     }
     const registryEvidence = [];
     if (publishedCommit) {
+      assert.equal(execFileSync('git', ['cat-file', '-t', `v${coreVersion}`], { encoding: 'utf8' }).trim(), 'tag', 'Publication tag must be annotated');
       const tagCommit = execFileSync('git', ['rev-parse', `v${coreVersion}^{commit}`], { encoding: 'utf8' }).trim();
       assert.equal(tagCommit, publishedCommit, 'Publication tag target changed');
       for (const { name, version } of packed) {
-        const endpoint = `https://registry.npmjs.org/${encodeURIComponent(name)}`;
+        const endpoint = `https://registry.npmjs.org/${encodeURIComponent(name)}?uwmd_verification=${Date.now()}`;
         const response = await fetch(endpoint, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' }, signal: AbortSignal.timeout(30000) });
         assert.equal(response.status, 200, `${name}: registry unavailable`);
         const packument = await response.json();
         assert.equal(packument.name, name);
         const value = packument.versions?.[version];
-        assert.equal(value?.version, version);
-        assert.equal(packument['dist-tags']?.latest, version);
+        assert.equal(value?.version, version, `${name}@${version}: registry version not visible`);
+        assert.equal(packument['dist-tags']?.latest, version, `${name}: latest dist-tag differs`);
         assert.equal(value.gitHead, publishedCommit);
         assert.ok(value.dist?.integrity && value.dist?.shasum && value.dist?.attestations?.url && value.dist?.signatures?.length);
         const tarballUrl = new URL(value.dist.tarball);

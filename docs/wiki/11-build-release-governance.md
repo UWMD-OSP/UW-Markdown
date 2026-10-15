@@ -274,7 +274,9 @@ node scripts/verify-release.mjs --tag vX.Y.Z
   declarations, CLI and public receipt/signing/Excel/report APIs. This is package
   integration evidence, not another financial implementation or live Excel.
   An explicit manual CI request can select `verify-publication` with the approved
-  `release-commit`. The read-only job checks the annotated tag target, uncached
+  `release-commit`. This request runs the publication job without duplicating
+  ordinary development jobs; PR/push CI still runs all its normal gates. The
+  read-only job checks the annotated tag target, uncached
   registry identities/dist-tags, tarball hashes, registry signatures/attestations,
   exact downstream installs, strict declarations and public APIs, then drives the
   published CLI through portable conformance. It uploads its registry/signature/
