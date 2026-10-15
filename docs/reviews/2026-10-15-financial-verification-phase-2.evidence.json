@@ -1,0 +1,389 @@
+{
+  "source_base_sha": "c4d50dbed09c6a39296419c483cf67bd75026f93",
+  "date": "2026-10-15",
+  "scope": "Synthetic connected workflows; reference/CLI and emitted-formula evidence, not independent spreadsheet or private golden-deal certification",
+  "multifamily_oracle_rows": [
+    {
+      "io": true,
+      "expense_shock": 0,
+      "gpr": 144000,
+      "vacancy": 14400,
+      "occupied_rent_discount": 10800,
+      "concessions": 1080,
+      "egi": 123720,
+      "opex": 40000,
+      "noi": 83720,
+      "debt_service": 36000,
+      "uses": 932000,
+      "equity": 332000,
+      "levered_cash": 47720,
+      "cap_rate": 0.093022,
+      "dscr": 2.3256,
+      "cash_on_cash": 0.143735
+    },
+    {
+      "io": true,
+      "expense_shock": 150000,
+      "gpr": 144000,
+      "vacancy": 14400,
+      "occupied_rent_discount": 10800,
+      "concessions": 1080,
+      "egi": 123720,
+      "opex": 190000,
+      "noi": -66280,
+      "debt_service": 36000,
+      "uses": 932000,
+      "equity": 332000,
+      "levered_cash": -102280,
+      "cap_rate": -0.073644,
+      "dscr": -1.8411,
+      "cash_on_cash": -0.308072
+    },
+    {
+      "io": false,
+      "expense_shock": 0,
+      "gpr": 144000,
+      "vacancy": 14400,
+      "occupied_rent_discount": 10800,
+      "concessions": 1080,
+      "egi": 123720,
+      "opex": 40000,
+      "noi": 83720,
+      "debt_service": 43164,
+      "uses": 932000,
+      "equity": 332000,
+      "levered_cash": 40556,
+      "cap_rate": 0.093022,
+      "dscr": 1.9396,
+      "cash_on_cash": 0.122157
+    },
+    {
+      "io": false,
+      "expense_shock": 150000,
+      "gpr": 144000,
+      "vacancy": 14400,
+      "occupied_rent_discount": 10800,
+      "concessions": 1080,
+      "egi": 123720,
+      "opex": 190000,
+      "noi": -66280,
+      "debt_service": 43164,
+      "uses": 932000,
+      "equity": 332000,
+      "levered_cash": -109444,
+      "cap_rate": -0.073644,
+      "dscr": -1.5355,
+      "cash_on_cash": -0.329651
+    }
+  ],
+  "durable_probe": [
+    {
+      "basis": "actual/365f",
+      "days": [
+        0,
+        76,
+        198,
+        290,
+        366
+      ],
+      "expected": {
+        "total_net": 225000,
+        "moic": 1.1268,
+        "xnpv": {
+          "rate": 0.12,
+          "value": 38879.43
+        },
+        "xirr": 0.148993
+      },
+      "actual": {
+        "total_net": 225000,
+        "moic": 1.1268,
+        "xnpv": 38879.43,
+        "xirr": 0.148993
+      },
+      "verdict": "verified",
+      "shifted_40_calendar_days": "same metrics"
+    },
+    {
+      "basis": "actual/360",
+      "days": [
+        0,
+        76,
+        198,
+        290,
+        366
+      ],
+      "expected": {
+        "total_net": 225000,
+        "moic": 1.1268,
+        "xnpv": {
+          "rate": 0.12,
+          "value": 36453.32
+        },
+        "xirr": 0.146809
+      },
+      "actual": {
+        "total_net": 225000,
+        "moic": 1.1268,
+        "xnpv": 36453.32,
+        "xirr": 0.146809
+      },
+      "verdict": "verified",
+      "shifted_40_calendar_days": "same metrics"
+    },
+    {
+      "design": "M09 precision accumulation",
+      "reported": 1000000,
+      "occupied": 6000,
+      "available": 10000,
+      "adr": 166.67,
+      "reconstructed": 1000020,
+      "difference": 20
+    },
+    {
+      "design": "CC-06 ordinal versus year identity",
+      "firstNoi": 300000,
+      "yearOneNoi": 100000,
+      "selectedYearOne": 100000,
+      "validation": [
+        {
+          "code": "CC-06",
+          "severity": "warning",
+          "section": "dcf",
+          "field": "annual_cash_flows[0].noi",
+          "message": "CC-06: DCF Year 1 NOI ($300,000) deviates from noi_model NOI ($100,000) by 200.00%",
+          "value": 2,
+          "title": "DCF Year 1 NOI does not match the NOI model",
+          "remediation": "Re-run the DCF from the current noi_model projection so Year 1 NOI agrees, or correct the NOI model.",
+          "spec_ref": "\u00a75.3 CC-06"
+        },
+        {
+          "code": "CC-14",
+          "severity": "warning",
+          "section": "property",
+          "message": "CC-14: this deal record has no property section; \u00a74.1 requires it at every stage",
+          "title": "Property section missing",
+          "remediation": "Add a property section stating at least the address and asset class. If the record intentionally has no property (a non-deal profile), declare that profile in document_profile.",
+          "spec_ref": "\u00a75.3 CC-14"
+        },
+        {
+          "code": "META_MISSING",
+          "severity": "warning",
+          "section": "noi_model",
+          "message": "Section noi_model is missing _meta object"
+        },
+        {
+          "code": "META_MISSING",
+          "severity": "warning",
+          "section": "dcf",
+          "message": "Section dcf is missing _meta object"
+        }
+      ]
+    },
+    {
+      "design": "CC-06 ordinal versus year identity",
+      "firstNoi": 100000,
+      "yearOneNoi": 200000,
+      "selectedYearOne": 200000,
+      "validation": [
+        {
+          "code": "CC-14",
+          "severity": "warning",
+          "section": "property",
+          "message": "CC-14: this deal record has no property section; \u00a74.1 requires it at every stage",
+          "title": "Property section missing",
+          "remediation": "Add a property section stating at least the address and asset class. If the record intentionally has no property (a non-deal profile), declare that profile in document_profile.",
+          "spec_ref": "\u00a75.3 CC-14"
+        },
+        {
+          "code": "META_MISSING",
+          "severity": "warning",
+          "section": "noi_model",
+          "message": "Section noi_model is missing _meta object"
+        },
+        {
+          "code": "META_MISSING",
+          "severity": "warning",
+          "section": "dcf",
+          "message": "Section dcf is missing _meta object"
+        }
+      ]
+    }
+  ],
+  "local_full_suites": {
+    "audit_workflows": {
+      "passed": 3968,
+      "failed": 180
+    },
+    "verifier_quantization": {
+      "passed": 3970,
+      "failed": 180
+    },
+    "excel_subtotals": {
+      "passed": 3961,
+      "failed": 180
+    }
+  },
+  "implementation_prs": {
+    "347": {
+      "head": "c031a9f0b1daa949ddfe0e90b4a779153658f67c",
+      "ci_run": 38706761807,
+      "ci_jobs_passed": 14,
+      "ci_jobs_total": 14
+    },
+    "348": {
+      "head": "f2d2dcf5884f5a4a4ce84ae0575beed1a57dddd5",
+      "ci": "passed all14 jobs",
+      "ci_run": 38708175446,
+      "ci_jobs_passed": 14,
+      "ci_jobs_total": 14,
+      "final_review_head": "6086db225d2e6f4b58e1317c4273ac53e24df817",
+      "final_review_ci": "requires own CI; previous head all14 jobs passed"
+    },
+    "349": {
+      "head": "7096884fb732e3dc1ff3b1cc82f237556605f8a7",
+      "ci": "failed: starter-products/documents/13-period-identities render-chat baseline on Node20, Node22 and Windows",
+      "ci_run": 38708178668,
+      "linux_direct_conformance": {
+        "passed": 1088,
+        "failed": 1
+      },
+      "owner_decision": "Explicit baseline compatibility approval required; no conformance expectation changed; draft PR on review hold"
+    }
+  },
+  "log_sha256": {
+    "uwmd-phase2-report-docs-ci.log": "a8d2125608355279c1c59e1d6e2c5da8a0797e2217f88ac6a580a04f3c7a7710",
+    "uwmd-phase2-excel-conformance.log": "679f217683870e17c797a63d5c57e2a4d49574431447094fc6eaf2c3e2105881",
+    "uwmd-phase2-report-codes.log": "a192ecb90b9e5d7190baccb3956306d959fe38e029eb25c4a6e96f8c670547e6",
+    "uwmd-phase2-workflow-lint.log": "b8d0c1afe8160216907c4453a495f1380eac6b520d728275de297b534698b5fc",
+    "uwmd-phase2-parity-decimals.log": "f5533ef753b95c490982f02c4f8bfa3fb444c1e776d7d21556504cdd94e1cc2b",
+    "uwmd-phase2-excel-build.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-phase2-probe-lint.log": "fd06ed1906864d862af1b302e14f95710bd4ba5d86680bb0976e34e5bf20f03a",
+    "uwmd-phase2-report-indexes-final.log": "f023a9aacaae509c14c1a36a2c80025dc694982706ada0869d8a5789ab095cfe",
+    "uwmd-phase2-report-lint-final.log": "5792ef78b501e0954362d10d4c473a3f4548385f83f0dbf3d65e1f67f7bcf33e",
+    "uwmd-phase2-excel-lint.log": "38c4f36e95594f43eadf93d537514f62104e25e8382173ade97650d1e7e8fe90",
+    "uwmd-phase2-excel-schemas.log": "7ebc6e090eea995d26cca1e2afc91bc1fed4132ed764d8584f3f94799780af91",
+    "uwmd-phase2-class-types.log": "805976e0617798c03393d4070fb20c0ba111a1c11d0c85aa94c5027662f8ae77",
+    "uwmd-phase2-quantization-schemas.log": "7ebc6e090eea995d26cca1e2afc91bc1fed4132ed764d8584f3f94799780af91",
+    "uwmd-phase2-quantization-profiles.log": "5cecdcc118938511cb86b233560542a12fb39e1cddcdb78163f7ce13fd068a65",
+    "uwmd-phase2-renderer-lint.log": "c01fa7e0a1d78ac9d1bca1659282db642ffca3bb827bbf71bbab8427aaea93d5",
+    "uwmd-phase2-parity-build.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-phase2-report-lint.log": "6d1f655cf19369cf8c27ca51c7bc18819f584c10d7ed7c71223be9daff16bdff",
+    "uwmd-phase2-build.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-phase2-quantization-docs-ci.log": "d04276a990d45b8d9dff3158faf08020513a911a8fe46038f1bb4507fecb673c",
+    "uwmd-phase2-quantization-docs.log": "6787e461754555f015eb67981d5e66e09d574397197ba4a26dd05547c8057c89",
+    "uwmd-phase2-quantization-conformance-direct.log": "b76601c3ef74bb1136993065828870fd5eeadfb8e1ab4770914821267a29ea76",
+    "uwmd-phase2-quantization-excel.log": "0154a0b092e7917589f10d9cc1703b3ea0606625a161e336f1e511185c7bc73e",
+    "uwmd-phase2-report-tests.log": "0724a8f2c9f3aea6d4fd0779463409e60603e62a82d6f96b6ab75f6076eecc02",
+    "uwmd-phase2-renderer-type.log": "239c41a276c1380ba44a1d28ce3857694fcc3b72e7ab2e73772e146ccb50527d",
+    "uwmd-phase2-quantization-typecheck.log": "ea2fa42406682b13d22dc61aadd64c18657740643e856292495929bbfe5aeb7d",
+    "uwmd-phase2-report-build.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-phase2-quantization-lint-final.log": "1f32e654f30d8be26c90d64957a39af1b3e5ae6f5c48b6128b8a166ef577327c",
+    "uwmd-phase2-development-verify-tests.log": "11eaf8e69865248ccff313d87d50291d24ea92dfa2cdebe7d838ddc08d7d7363",
+    "uwmd-phase2-report-indexes.log": "7f7bb2c7c6f7ea01592ba354230e3499092e52946459304eb309bbba2a8adc17",
+    "uwmd-phase2-ci.log": "c7f9aadb47e8ffabb75cdc2f1769b80f630896e16ffc5d7ab732bd0401bc258f",
+    "uwmd-phase2-workflow-types.log": "239c41a276c1380ba44a1d28ce3857694fcc3b72e7ab2e73772e146ccb50527d",
+    "uwmd-phase2-report-docs-build.log": "49a857ce4985bf390fadc0de6125c70fac7612730aa860cdb99cd726d37020d6",
+    "uwmd-phase2-renderer-build.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-phase2-excel-docs.log": "449bab7b1b1367f40719d5723f827757303ac88da111c443d8ff03a6b588b519",
+    "uwmd-phase2-quantization-conformance.log": "ffc538f87b2c63bbf1e1133b2f1b2c435484beb60730b17519f6fc2f28ba07b3",
+    "uwmd-phase2-capital-before.log": "d486d0a3d07ea04ec188c81ccbddefefda13c754298a0b1a26e402e0cfbaab0d",
+    "uwmd-phase2-quantization-pack-parity.log": "99f397a09e4f8e96a897ed7c83129cb284b7f4ceaefe4a8286c8843bd43d9c27",
+    "uwmd-phase2-class-tests.log": "c16cca7bcc8a5cfd66b02d405577d06783e147e07fc18191a2c91ab11e949698",
+    "uwmd-phase2-parity-decimals-type.log": "805976e0617798c03393d4070fb20c0ba111a1c11d0c85aa94c5027662f8ae77",
+    "uwmd-phase2-parity-excel.log": "5be21a038a618eb33a1c63f312c24cbb900c4fa3e77a7aababfa858fc68eccd3",
+    "uwmd-phase2-renderer-typecheck.log": "239c41a276c1380ba44a1d28ce3857694fcc3b72e7ab2e73772e146ccb50527d",
+    "uwmd-phase2-quantization-codes.log": "a192ecb90b9e5d7190baccb3956306d959fe38e029eb25c4a6e96f8c670547e6",
+    "uwmd-phase2-report-typecheck.log": "ea2fa42406682b13d22dc61aadd64c18657740643e856292495929bbfe5aeb7d",
+    "uwmd-phase2-excel-indexes.log": "6245b43edf020e75facce6e695989184440d8e1c3f858904e0fe49b727a9b3ee",
+    "uwmd-phase2-parity-six.log": "809af7904cf83f276dd60f4de12590c105167c49efb514a754a0358325bfdffa",
+    "uwmd-phase2-renderer-tests.log": "14a51449b9909a0d491d4772155095d53b65515bdedcaa21c7da9dda38bde184",
+    "uwmd-phase2-parity-excel-build.log": "99bb7819205420d0c2caafff98cf2e72218dcf4f6db17db8fb44a29b784cb056",
+    "uwmd-phase2-report-conformance-direct.log": "b76601c3ef74bb1136993065828870fd5eeadfb8e1ab4770914821267a29ea76",
+    "uwmd-phase2-excel-codes.log": "a192ecb90b9e5d7190baccb3956306d959fe38e029eb25c4a6e96f8c670547e6",
+    "uwmd-phase2-quantization-lint.log": "a8a884a7b7b5066ab8f76ad171e657a96dda4337bac73ab3460643a06198d638",
+    "uwmd-phase2-parity-conformance.log": "033896e11529be30a7c324f13f2b919a04ad33c261b674b578ddc8574ea77013",
+    "uwmd-phase2-report-docs-build-final.log": "3e5a68ec01eb77881ba618454037707dac9a930b4a936d343b61373af3c31e2a",
+    "uwmd-phase2-report-conformance.log": "7f5e2c6d8aa9243c77740ba5cbd9d6d352ffd809080de7065bf24cb0394909af",
+    "uwmd-phase2-report-profiles.log": "c35158476f7fadcb570eda9838a2e7047d258eba011890f8e3f8dd0985f70af3",
+    "uwmd-phase2-parity-decimals-build.log": "99bb7819205420d0c2caafff98cf2e72218dcf4f6db17db8fb44a29b784cb056",
+    "uwmd-phase2-quantization-build.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-phase2-excel-test.log": "f1b5dc0afcee66abddbf45b654f7812ef1cb17c3493dc3947ec6829faa944ac8",
+    "uwmd-phase2-renderer-install.log": "222eeab7f924ea889f0556f3b56fb4284abff6a1de5fd7526367a9ba50b0e191",
+    "uwmd-phase2-excel-typecheck.log": "ea2fa42406682b13d22dc61aadd64c18657740643e856292495929bbfe5aeb7d",
+    "uwmd-phase2-parity-target.log": "fdd34666dc3f822ae4fea7a2c51aeda9456eee6f5d33309104bcb824ce06f238",
+    "uwmd-phase2-excel-profiles.log": "976c683070af5317d69b61eb6de2051edf9f973c5760e0407927f2ed10450ea0",
+    "uwmd-phase2-parity-target2.log": "fe95a2d4d8c8188c119a51c23a784d1ccc89feff10a2d9d51842339998334360",
+    "uwmd-phase2-capital-after.log": "0b52ac6d0f64b5d853ed25694fe52f0ca5bc4b38a1d6c40b584311858edb8158",
+    "uwmd-phase2-excel-conformance-direct.log": "b76601c3ef74bb1136993065828870fd5eeadfb8e1ab4770914821267a29ea76",
+    "uwmd-phase2-renderer-target.log": "f2ec057c2c21e06f609b64faf89059fe0fa0e63532d3d0aeb7940552538c3b3a",
+    "uwmd-phase2-excel-install.log": "222eeab7f924ea889f0556f3b56fb4284abff6a1de5fd7526367a9ba50b0e191",
+    "uwmd-phase2-report-schemas.log": "7ebc6e090eea995d26cca1e2afc91bc1fed4132ed764d8584f3f94799780af91",
+    "uwmd-phase2-report-docs-build-retry.log": "3be85b5bbe1897e8b86cb4c9de63b903b8b1c941e8c0afe5aacbf11edc05bf88",
+    "uwmd-phase2-workflow-tests.log": "31a63a59b6824df89e359b7c69d41a8e77b45f78ac0ff56d03fbb510a43d6fa7",
+    "uwmd-phase2-quantization-conformance-guard-direct.log": "32a95b3ef37074a60edfe4b23fdc576c5f439e7bacc1a861a1ddb615d6ab37f3",
+    "uwmd-phase2-excel-docs-install.log": "675f511948ab0ca7e0f7f1a6d2bed3846baac191900d18cd09cb28fa35b86df9",
+    "uwmd-phase2-parity-decimals-lint.log": "aaa2c32cff9133d30b0810c00c503cbd112987cbf7144af284beb9d7ca436f0c",
+    "uwmd-phase2-parity-final-six.log": "c59ebb1fa0afc73197c98fab85e2345db3d517e5fdf493a9ac7dac7bb30351f0",
+    "uwmd-phase2-parity-red.log": "eec3b74c22c9e9bc4e81a9ba3646d68f75d705fe2f180b67218b202781822275",
+    "uwmd-phase2-parity-lint.log": "66f227a6b99b00c0548507426596828af9db59a060d26faafbe935fa5f70ccb7",
+    "uwmd-phase2-parity-type.log": "805976e0617798c03393d4070fb20c0ba111a1c11d0c85aa94c5027662f8ae77",
+    "uwmd-phase2-report-codes-final.log": "a192ecb90b9e5d7190baccb3956306d959fe38e029eb25c4a6e96f8c670547e6",
+    "uwmd-phase2-quantization-tests.log": "9150c8a6b658e710cbe19a00809095c558e1660a8b994c9d0fda685bd5f9f352",
+    "uwmd-phase2-quantization-indexes.log": "613a89940aeda30515cd4e69ca7bc4d27a3751279ce78929c5d1cec7b9d67da5",
+    "uwmd-phase2-report-ci.log": "edfb1575ee3a6b067796df6249772c7c0d64658ae13df93e081aeba8def08381",
+    "uwmd-phase2-final-347.log": "46815eb54dcd5dc7dd91c4e9e7433caca347f632e8fffd8102031d0e9d559a37",
+    "uwmd-phase2-final-348-tests.log": "5b2d284a134aa27f5a4a245e9b0c075346488ae705a584b2363a914a3e530b3f",
+    "uwmd-phase2-final-348-build.log": "34ac18822fcf3c6bea0e0e015eb4a3e51d0ecfe926833d06468f8c235d56f591",
+    "uwmd-phase2-final-348-types.log": "ea2fa42406682b13d22dc61aadd64c18657740643e856292495929bbfe5aeb7d",
+    "uwmd-phase2-final-348-lint.log": "a9c1eba716d450d71091ad9e528e74bd9ee753278f0ac49161cff06e3e413a27"
+  },
+  "audit_ci_snapshot": {
+    "head": "9bb46ec3ec451e04af035b04fd6a1ad08caf1a32",
+    "ci_run": 38708466158,
+    "ci_jobs_passed": 14,
+    "ci_jobs_total": 14,
+    "status": "passed all14 jobs; subsequent evidence-only amendments require their own CI"
+  },
+  "final_review": {
+    "verifier_focused_tests": {
+      "command": "npm --prefix packages/uwmd-verify test -- src/calc/quantize.test.ts src/capital-stack.test.ts src/lease-up.test.ts src/lease-up-cash-flows.test.ts --pool=forks --maxWorkers=1",
+      "passed": 118,
+      "files": 4,
+      "log": "/tmp/uwmd-phase2-final-347.log"
+    },
+    "excel_subtotal_tests": {
+      "passed": 140,
+      "log": "/tmp/uwmd-phase2-final-348-tests.log",
+      "disclosure": "literal input cell notes and visible status; XLSX write/read round-trip"
+    },
+    "audit_ci_before_final_review": {
+      "head": "810f283c6bbcbddca23ce91fd1acf5549dd3756c",
+      "run": 38709465751,
+      "jobs_passed": 14
+    },
+    "renderer_intent": {
+      "origin_commit": "f2204bd2fccedf26a719da7cfa2c19567a7cb1af",
+      "source_years": [
+        1,
+        1,
+        null
+      ],
+      "labels_before": [
+        "Yr1",
+        "Yr2",
+        "Yr3"
+      ],
+      "labels_proposed": [
+        "Yr1",
+        "Yr1",
+        "Yrn/a"
+      ],
+      "estimated_tokens_before": 392,
+      "estimated_tokens_proposed": 393,
+      "other_content_byte_equal": true,
+      "status": "owner review required; baseline unchanged"
+    },
+    "release_handoff": "PR342 comment6195498202; package and receipt identity work remains with Claude"
+  }
+}
