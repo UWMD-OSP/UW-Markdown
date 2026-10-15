@@ -339,6 +339,35 @@ implementation reporting `round_to` and `display` alongside the four fields a
 calc baseline names is more informative, not wrong. Arrays stay
 length-sensitive — an omitted validation issue is a disagreement, not brevity.
 
+### Reference CLI regression checks (not conformance)
+
+Passing the portable driver does not mean the reference `uwmd` commands
+behave. Published `@uwmd/cli@4.2.0` passed 350/350, yet `uwmd verify`
+printed `OK` for a wrong stated metric (launch audit D-01). `uwmd package
+verify` also reported every stated semantic digest `unverifiable` (D-10).
+The portable cases project the Format and Protocol through §II.6a commands.
+They do not exercise what a starter tool's own commands decide or how they
+exit.
+
+Regressions of that kind are pinned in
+`packages/uwmd-cli/test/cli.smoke.test.ts`. Those tests spawn the real
+`bin/uwmd.mjs` and assert exit codes, text output and `--json` findings. They
+run in `npm test` on every CI leg.
+
+- **D-01:** `verify` on the `examples/verification/` pair:
+  - the valid document exits 0;
+  - the wrong cap rate exits 1, with `stated_metrics` counts and evidence;
+  - an unverifiable metric does not fail;
+  - an unrequested check is not reported.
+- **D-10:** `package verify`:
+  - the demo package is `verified`, exit 0;
+  - a stale semantic digest is `failed` with `PKGVER-003`, exit 1;
+  - a digest the CLI cannot compute is `unverifiable`, exit 0.
+
+They are starter-tool tests. They add no case, baseline or expectation to
+`conformance/`, and they change by package semver. A new normative
+obligation still goes through an RFC and the corpus.
+
 ## Schema validation
 
 `npm run validate-schemas` → [`scripts/validate-schemas.mjs`](../../scripts/validate-schemas.mjs)
