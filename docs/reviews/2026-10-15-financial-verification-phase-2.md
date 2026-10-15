@@ -478,10 +478,10 @@ This is separate successful remote evidence; its local3970/180 result stays fail
 [Excel correction run38708175446](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38708175446)
 on head `f2d2dcf5884f5a4a4ce84ae0575beed1a57dddd5` and
 [audit run38708466158](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38708466158)
-on head `9bb46ec3ec451e04af035b04fd6a1ad08caf1a32` each have13 successful
-jobs and one Node20 capability-guard job still running at this update. Neither
-is recorded as a completed green run. The later evidence-only report amendment
-requires its own head-specific CI. PR349 has **failed CI** as detailed above;
+on head `9bb46ec3ec451e04af035b04fd6a1ad08caf1a32` each passed **all14 jobs**.
+Those are head-specific remote results; the later evidence-only report amendments
+require their own CI and do not replace the failed local full suites.
+PR349 has **failed CI** as detailed above;
 that baseline disagreement is distinct from local subprocess failures. No result
 is inferred from PR347 or earlier audit CI.
 

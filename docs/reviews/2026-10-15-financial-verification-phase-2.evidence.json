@@ -233,9 +233,9 @@
     },
     "348": {
       "head": "f2d2dcf5884f5a4a4ce84ae0575beed1a57dddd5",
-      "ci": "13 jobs passed; Node20 capability guard still running at update",
+      "ci": "passed all14 jobs",
       "ci_run": 38708175446,
-      "ci_jobs_passed": 13,
+      "ci_jobs_passed": 14,
       "ci_jobs_total": 14
     },
     "349": {
@@ -334,8 +334,8 @@
   "audit_ci_snapshot": {
     "head": "9bb46ec3ec451e04af035b04fd6a1ad08caf1a32",
     "ci_run": 38708466158,
-    "ci_jobs_passed": 13,
+    "ci_jobs_passed": 14,
     "ci_jobs_total": 14,
-    "status": "Node20 capability guard running; subsequent evidence amendment requires its own CI"
+    "status": "passed all14 jobs; subsequent evidence-only amendments require their own CI"
   }
 }
