@@ -8,7 +8,55 @@ UW Markdown has completed its foundational standard and reference-engine work.
 The forward work is narrower modeling workflows, tool integration and adopter-led
 extensions. This roadmap is directional; a candidate is not a release commitment.
 
-## Current published release: 4.2.0
+## Reserved milestone: 5.0, the coordinated public launch
+
+Owner direction, 2026-10-15:
+
+- **5.0 is reserved for the coordinated public launch.** No routine release
+  uses it, even one with CLI breaking changes.
+- **The launch also sets the versioning strategy.** It establishes a
+  coordinated, durable release strategy across the npm packages, the Format,
+  the Protocol, the documentation, the website and every other public
+  version surface, to be maintained from then on.
+- **Development and interim releases continue.** Interim 4.x releases ship as
+  needed while financial audits, debugging and technical hardening finish.
+  There is no freeze.
+- **The current policy applies honestly until then.** Semver applies per
+  surface (`VERSIONS.md`, wiki 11). If an interim release contains changes
+  that would ordinarily need a major, the preparation flags the compatibility
+  issue and proposes alternatives rather than mislabeling it.
+
+**The post-launch version-coordination policy is not decided.** It is
+presented for owner review, not inferred. The open questions are:
+
+1. **Package majors at launch.** Do all `@uwmd/*` packages align to 5.0.0,
+   or do they keep independent semver? Do the 0.x packages (verify, signing,
+   batch, lake, Excel, report) graduate, and to which number?
+2. **Format and Protocol numbering.** Today Format 3.0 and Protocol 4.1.0
+   version independently of the packages. Do they stay separate streams,
+   align with the package major, or carry a launch label?
+3. **Which public surfaces carry a version.** Candidates: npm packages, the
+   Format and Protocol specs, JSON Schema identifiers, the conformance
+   corpus, the receipt engine identity, the docs site, the website, the VS
+   Code extension and the web editor.
+4. **Release channels and support.** npm dist-tags (`latest`, `next`),
+   pre-releases, and whether a 4.x maintenance line continues after launch.
+5. **Breaking changes and deprecation.** For example, warn for one minor
+   before refusing, with a documented support window.
+6. **Runtime support.** How declared Node floors track the Node release
+   schedule.
+
+**The next interim release is blocked on a compatibility decision.** `main`
+carries CLI changes that refuse invocations 4.2.0 accepted:
+
+- the closed flag vocabulary (#328) refuses `validate --stage`, which 4.2.0's
+  usage string advertised, the `export --compact` alias, and any unknown
+  flag;
+- `init` refuses a file argument (#332).
+
+Under the current policy these need a core major, which is reserved. The
+alternatives and a recommendation are in the draft interim-release PR #342.
+
 
 Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. The
 generation carries one RFC:

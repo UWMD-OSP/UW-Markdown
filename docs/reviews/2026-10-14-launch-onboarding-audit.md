@@ -415,3 +415,16 @@ It also widens D-06:
 Both are reproduced against the published 4.2.0 set and the candidate. The
 declared floor is an owner decision. RFC 0085 §10 records the owner's
 provisional direction; the RFC remains a draft.
+
+## 13. 5.0 reserved for the launch (2026-10-15)
+
+The owner reserved 5.0 for the coordinated public launch. The core/CLI
+5.0.0 numbering this record proposed (§2) is withdrawn. The compatibility
+finding stands: #328 and #332 refuse invocations 4.2.0 accepted. An interim
+release must flag that and choose one of three alternatives (draft PR #342):
+
+- make the refusals compatible;
+- hold them for 5.0;
+- leave them out of a maintenance release.
+
+It must not renumber to 5.0 or label the break a minor.

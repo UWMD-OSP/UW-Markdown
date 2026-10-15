@@ -85,6 +85,15 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   republished `0.2.0` carrying a different pin is not something npm allows, so
   leaving one behind means its repin never ships.
 
+**Major 5 is reserved** for the coordinated public launch (owner,
+2026-10-15; [ROADMAP](../../ROADMAP.md)). Interim releases stay on 4.x under
+this policy. When an interim generation contains a change that would need a
+major, its preparation flags the compatibility issue and proposes
+alternatives (make the change compatible, hold it for the launch, or leave
+it out of the release). It does not renumber the release to 5.0 or label the
+break as a minor. The post-launch coordination policy is open for owner
+review.
+
 **Cutting a `@uwmd/core` release** touches seven things beyond `package.json`,
 each with a guard that fails loudly if you miss it:
 
