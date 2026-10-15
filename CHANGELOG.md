@@ -64,6 +64,13 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- CLI regression checks for D-10. They now assert `package verify --json`'s
+  structured result: `verified` for the demo package, and `failed` with a
+  `PKGVER-003` error pointing at the stale member. They also add a stated
+  digest the CLI cannot compute, which stays `unverifiable` and exits 0.
+  Wiki 09 records that these, and the D-01 `verify` checks, are starter-tool
+  regression tests kept apart from the portable conformance corpus.
+  Published 4.2.0 passed all 350 portable cases with both defects present.
 - `examples/verification/`: four runnable scripts that show what verifying a
   document catches, using only the published `@uwmd/verify` and
   `@uwmd/signing`: a valid document, a stated cap rate that disagrees with

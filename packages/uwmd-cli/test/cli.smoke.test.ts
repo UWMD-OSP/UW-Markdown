@@ -1182,6 +1182,7 @@ describe('the optional @uwmd/signing peer, when it is not installed', () => {
 describe('package verify checks semantic digests (RFC 0018; launch audit D-10)', () => {
   // Through 4.2.0 every stated semantic_digest was reported unverifiable with
   // exit 0, so a member changed under a refreshed byte digest went unnoticed.
+  // Starter-tool regression checks, not portable conformance (wiki 09).
   const DEMO = resolve(__dirname, '..', '..', '..', 'examples', 'standalone', 'package', 'standalone-demo.uwpkg.zip');
   const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
   afterAll(() => rmSync(temp, { recursive: true, force: true }));
@@ -1191,6 +1192,9 @@ describe('package verify checks semantic digests (RFC 0018; launch audit D-10)',
     expect(r.status).toBe(0);
     expect(r.stdout).toContain('VERIFIED - standalone-demo.uwpkg.zip');
     expect(r.stdout).not.toContain('unverifiable');
+    const json = await runCli(['package', 'verify', DEMO, '--json']);
+    expect(json.status).toBe(0);
+    expect(JSON.parse(json.stdout)).toEqual({ status: 'verified', errors: [], unverifiable_members: [] });
   });
 
   it('fails a member whose content changed under a stale semantic digest, exit 1', async () => {
@@ -1210,6 +1214,29 @@ describe('package verify checks semantic digests (RFC 0018; launch audit D-10)',
     expect(r.stdout).toContain('PKGVER-003 [deal:parkview]');
     const json = await runCli(['package', 'verify', stale, '--json']);
     expect(json.status).toBe(1);
-    expect(JSON.parse(json.stdout)).toMatchObject({ status: 'failed', unverifiable_members: [] });
+    expect(JSON.parse(json.stdout)).toEqual({
+      status: 'failed',
+      errors: [expect.objectContaining({ category: 'package', code: 'PKGVER-003', pointer: 'deal:parkview' })],
+      unverifiable_members: [],
+    });
+  });
+
+  it('reports a digest it cannot compute as unverifiable, not failed, exit 0', async () => {
+    // A stated semantic digest on a representation the CLI does not
+    // canonicalize (a .uwpart.md fragment) is evidence it cannot check.
+    const decoded = decodeUWDealPackageZip(new Uint8Array(readFileSync(DEMO)));
+    const member = decoded.manifest.members.find((m) => m.id === 'part:rent-roll-210')!;
+    expect(member.semantic_digest).toBeUndefined();
+    member.semantic_digest = `sha256:${'0'.repeat(64)}`;
+    const unchecked = resolve(temp, 'unchecked.uwpkg.zip');
+    writeFileSync(unchecked, await encodeUWDealPackageZip(decoded));
+
+    const r = await runCli(['package', 'verify', unchecked]);
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('UNVERIFIABLE - unchecked.uwpkg.zip');
+    expect(r.stdout).toContain('(unverifiable) part:rent-roll-210');
+    const json = await runCli(['package', 'verify', unchecked, '--json']);
+    expect(json.status).toBe(0);
+    expect(JSON.parse(json.stdout)).toEqual({ status: 'unverifiable', errors: [], unverifiable_members: ['part:rent-roll-210'] });
   });
 });
