@@ -4197,22 +4197,29 @@ Reads a `.uwx.md` file and outputs a structured JSON object containing:
 }
 ```
 
-### 6.2 `uwmd validate <file> [--stage <stage>]`
+### 6.2 `uwmd validate <file> [--json]`
 
-Runs all validation rules (Part V) and returns:
+Runs all validation rules (Part V) and returns, with `--json`:
 
 ```json
 {
   "overall_status": "clean | warnings | errors | blocking",
   "stage_readiness": {
+    "scope": true,
     "screening": true,
+    "term_sheet": false,
     "full_underwrite": false,
     "credit_approval": false,
-    "closing": false
+    "closing": false,
+    "monitoring": false
   },
-  "issues": [ "...ValidationIssue objects..." ]
+  "issues": [ "...ValidationIssue objects..." ],
+  "...": "plus errors, warnings, info, coverage and replacement_funding_verification"
 }
 ```
+
+Readiness is reported for every `deal_stage` (§2.2); there is no `--stage`
+option.
 
 ### 6.3 `uwmd run <file> --agent <agent_id>`
 
@@ -4229,14 +4236,16 @@ Renders the file to an output format. Formats:
 
 | Format | Description | Requires |
 |---|---|---|
-| `pdf` | Lender-ready deal package PDF | L7 sections complete |
-| `docx` | Credit memo Word document | L7 sections complete |
 | `json` | Extracted data only (no prose) | Any stage |
 | `csv` | Flat metrics summary | Any stage |
 | `chat` | Compressed context for AI assistant | Any stage |
 | `summary` | One-page deal summary markdown | Screening+ |
 
 The `--tier screener` flag renders only the Tier 1 sections (no Bancroft-generated sections). The `--tier analyst` flag renders the full package.
+
+`uwmd render` does not produce PDF or Word output. The lender package and
+credit memo PDFs (Part VII) come from the separate `uwmd-report` tool
+(`@uwmd/report`); no DOCX renderer exists.
 
 ### 6.5 `uwmd compact <file>`
 
@@ -4254,6 +4263,9 @@ warn rather than reject (§5.4). `--asset-subtype` writes the open subtype
 carrier; for single-site BTR use `--asset-class multifamily --asset-subtype
 build_to_rent --scenario stabilized_acquisition` (or the actual plan).
 `uwmd init` writes only bare nested Format 3.0 blocks, with `uw_version: "3.0"`; it takes no `--format`. Lite compilation emits the same Format 3.0 contract for all twelve builtin classes. No migrate command is part of the toolchain.
+
+The new file is named with `--output <file>` (default `new-deal.uwx.md`);
+`init` takes no file argument and refuses to overwrite an existing file.
 
 Creates a new `.uwx.md` file with:
 - Populated frontmatter

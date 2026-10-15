@@ -10,6 +10,17 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Format spec Part VI (toolchain interface) describes the CLI as it is.
+  These are editorial corrections and change no format or verification rule.
+  - §6.2 showed `uwmd validate <file> [--stage <stage>]`, an option nothing
+    read and which the CLI now refuses. Its output example listed four
+    stages. It now shows `--json` and all seven `deal_stage` values, with
+    the other report members.
+  - §6.4 listed `pdf` and `docx` render formats that core refuses. It now
+    points PDF output to `uwmd-report`.
+  - §6.7 states that `init` names its file with `--output`.
+  - §6.5's `compact` pipeline-log entry is not edited: whether it should
+    exist is open in draft RFC 0085.
 - `uwmd package verify` checks stated semantic digests (RFC 0018). It
   supplies `verifyUWDealPackage` with the `uw-envelope-semantic` digest of
   each UWX member and each lossless model encoding (UW JSON, UW XML, UW CSV
