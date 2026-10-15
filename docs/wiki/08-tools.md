@@ -22,14 +22,15 @@ Command | Purpose
 ---|---
 `parse <file>` | Parse → JSON (`--compact`, `--strict`)
 `validate <file>` | Run validation (`--institution <cfg>`, `--json`)
-`verify <file>` | Validate + integrity (hashes) + provenance (`--validate`/`--integrity`/`--policy`/`--json`)
+`verify <file>` | Validate + integrity (hashes) + provenance (`--validate`/`--integrity`/`--policy`/`--json`); `--signing --keystore=<store>` checks block signatures, and `--document-signature=<artifact> --keystore=<store>` requires an authenticated document snapshot (RFC 0084; both via the optional `@uwmd/signing`)
+`sign-document <file> --key=<signer.json> --out=<signature.json>` | Write a detached document snapshot signature (RFC 0084; `--signed-at=<iso>`). The output must be a new file distinct from the source and key
 `render <file>` | Render (`--format json\|csv\|chat\|summary`, or `--profile`, `--max-tokens`, `--output`)
 `run <file> --agent <id>` | Bancroft agent, a starter product (`--context-only`, `--prompt`, `--live`, `--model`, `--api-key`, `--instructions`)
 `edit <file> <op.json>` | Apply an `EditOperation` with the starter editor (`--actor`, `--source`, `--confidence`, …)
 `calc <file> <calc.json\|formula>` | Evaluate a calc decl or inline formula
 `compact <file>` | Strip superseded blocks (`--dry-run`, `--output`)
 `diff <a> <b>` | Section-by-section comparison
-`init` | Scaffold a blank `.uwx.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--scenario`, `--tier`, `--output`); `--scenario` takes a standard business plan or reverse-DNS extension; `--asset-subtype` carries the open subtype, including multifamily `build_to_rent` (RFC 0072)
+`init` | Scaffold a blank `.uwx.md` (`--name`, `--address`, `--asset-class`, `--stage`, `--scenario`, `--tier`, `--output`); refuses to overwrite an existing file; `--scenario` takes a standard business plan or reverse-DNS extension; `--asset-subtype` carries the open subtype, including multifamily `build_to_rent` (RFC 0072)
 `summary <file>` | Print quick metrics to terminal
 `export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
 `formats` | List Lite, UWX, and registered model representations/media types (`--json`)

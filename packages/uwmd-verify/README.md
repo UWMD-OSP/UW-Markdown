@@ -42,7 +42,48 @@ const report = verifyStatedMetrics(parsed);
 
 The browser entry `@uwmd/verify/browser` exports the same surface. No module
 imports a `node:` builtin statically; SHA-256 uses Web Crypto in a browser and
-`node:crypto` in Node, loaded only when Node is detected.
+`node:crypto` in Node, loaded only when Node is detected. A browser bundler
+should treat `node:crypto` as external; the guarded dynamic import is never
+evaluated in a browser.
+
+## Document snapshot authentication (RFC 0084, Protocol §V.13)
+
+`verifyDocumentSignature(source, artifact, { signatureVerifier })` checks a
+detached document signature against the **source text actually supplied**: it
+freshly parses the source, accounts for every section block (history included),
+recomputes the `uw-envelope-semantic` digest and only then asks the injected
+backend to check the signature bytes. This package carries no cryptography;
+`@uwmd/signing` supplies the backend (`createDocumentSignatureVerifier(store)`)
+and the signer (`signDocument`).
+
+```ts
+import { verifyDocumentSignature } from '@uwmd/verify';
+
+const result = await verifyDocumentSignature(source, artifact, { signatureVerifier });
+switch (result.state) {
+  case 'verified':     // artifact admitted, trusted key, signature valid, subject digest equal
+  case 'unsigned':     // no artifact supplied
+  case 'unverifiable': // present but unchecked: unknown key, no backend, unsupported version
+  case 'failed':       // malformed artifact or source, bad signature, or a different snapshot
+}
+```
+
+Required authentication accepts only `verified`. A verified block signature
+(§V.11) attributes one block to its signer; it says nothing about variant
+labels, current/superseded state, frontmatter or which blocks the document
+contains, so block-signature counts never upgrade `unsigned` or
+`unverifiable`. A verified document signature authenticates the snapshot a
+signer assembled; it does not establish that its figures are correct.
+`verifyChain(parsed, { documentSignature, documentSignatureVerifier,
+requireDocumentSignature })` reports the same result as
+`IntegrityResult.document_signature`, separately from the block counts.
+
+Signing and verification refuse a source the envelope cannot represent
+faithfully: a block without an object `_meta.lifecycle` and boolean
+`superseded`, a `_meta.section` that disagrees with its fence, two active
+blocks for one selection key, repeated or superseded `x_*` extension blocks,
+duplicate JSON or frontmatter members, or an ambiguous fence annotation. Such
+a source reports `failed` with reason `malformed_source` (`INT-15`).
 
 ## `@uwmd/verify` and `@uwmd/core`
 

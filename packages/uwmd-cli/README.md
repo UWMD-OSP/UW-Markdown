@@ -23,14 +23,17 @@ uwmd <command> [args]
 
 | Command | What it does |
 |---|---|
-| `uwmd init [--output <file>]` | Scaffold a blank `.uwx.md` deal file |
+| `uwmd init [--output <file>]` | Scaffold a blank `.uwx.md` deal file; refuses to overwrite an existing file |
 | `uwmd parse <file>` | Parse and emit canonical JSON |
 | `uwmd validate <file>` | Run the full Format validator and print issues |
+| `uwmd verify <file>` | Validate, verify integrity (hash chains) and provenance; `--signing --keystore=<store>` also checks block signatures, and `--document-signature=<artifact> --keystore=<store>` requires an authenticated document snapshot (RFC 0084). Both need the optional `@uwmd/signing` package |
+| `uwmd sign-document <file> --key=<signer.json> --out=<signature.json>` | Write a detached document snapshot signature (RFC 0084). The output must be a new file; `--signed-at=<ISO instant>` pins the signing time |
+| `uwmd receipt issue <file>` / `uwmd receipt verify <file> <receipt.json>` | Issue or verify a detached verification receipt (RFC 0016) |
 | `uwmd render <file>` | Render to `chat`, `summary`, or full markdown |
 | `uwmd edit <file> <op.json>` | Apply an `EditOperation` (starter editor) and write back |
 | `uwmd calc <file> <calc.json>` | Evaluate a calc declaration (§VIII expression notation) |
 | `uwmd run <file>` | Invoke UWMD optional Claude-backed Bancroft reference agent suite |
-| `uwmd compact <file>` | Strip narrative; emit the canonical JSON-only form |
+| `uwmd compact <file>` | Strip superseded blocks (`--dry-run`, `--output`) |
 | `uwmd diff <a> <b>` | Diff two `.uw.md` files at the section level |
 | `uwmd summary <file>` | One-screen deal summary |
 | `uwmd export <file.uw.md>` | Write a digested, model-lossless `.uw.json` sibling |

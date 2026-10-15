@@ -534,7 +534,23 @@ function cmdInit(flags: Record<string, string | boolean>): void {
       : `new-deal${UWX_EXTENSION}`);
 
   const outPath = resolve(filename);
-  writeFileSync(outPath, content, 'utf-8');
+  // A scaffold must never replace an existing record: `init` is the one command
+  // a newcomer runs twice, and a deal file holds provenance that cannot be
+  // regenerated (invariant 5). Refuse rather than overwrite, as `sign-document`
+  // does for its artifact; `wx` closes the race between the check and the write.
+  if (existsSync(outPath)) {
+    console.error(`Refusing to overwrite existing file: ${outPath}. Choose another --output path.`);
+    process.exit(1);
+  }
+  try {
+    writeFileSync(outPath, content, { encoding: 'utf-8', flag: 'wx' });
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'EEXIST') {
+      console.error(`Refusing to overwrite existing file: ${outPath}. Choose another --output path.`);
+      process.exit(1);
+    }
+    throw err;
+  }
   console.log(`Created: ${outPath}`);
 }
 
@@ -1338,7 +1354,7 @@ switch (command) {
     break;
 
   case 'verify':
-    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--signing --keystore=<path>] [--resolved] [--json]'); process.exit(1); }
+    if (!positional[0]) { console.error('Usage: uwmd verify <file> [--validate] [--integrity] [--policy] [--signing --keystore=<path>] [--document-signature=<artifact> --keystore=<path>] [--resolved] [--json]'); process.exit(1); }
     await cmdVerify(positional[0], flags);
     break;
   case 'sign-document': {
@@ -1965,12 +1981,13 @@ Commands:
   parse    <file>              Parse file and output JSON
   validate <file>              Run all validation checks
   verify   <file>              Validate + verify integrity (hashes) + provenance (actor/policy)
-  sign-document <file> --key=<signer.json> --out=<signature.json>
-                               Authenticate a semantic snapshot without computing financials
                                --signing --keystore=<path> also checks block signatures (RFC 0010,
                                via the optional @uwmd/signing package)
-                               --document-signature=<artifact> --keystore=<path> requires
-                               authenticated semantic snapshot (RFC 0084)
+                               --document-signature=<artifact> --keystore=<path> requires an
+                               authenticated semantic snapshot (RFC 0084, via @uwmd/signing)
+  sign-document <file> --key=<signer.json> --out=<signature.json>
+                               Authenticate a semantic snapshot without computing financials
+                               (RFC 0084, via the optional @uwmd/signing package)
   render   <file>              Render to output format (see --format)
   run      <file>              Invoke a Bancroft agent (see --agent)
   edit     <file> <op.json>    Apply an EditOperation (Tier-2)
@@ -2003,7 +2020,7 @@ Commands:
   layers                       List Bancroft agent layers
 
 Options:
-  --output <path>    Output file path (compact, init)
+  --output <path>    Output file path (compact, init; init refuses an existing file)
   --dry-run          Show what would change without writing (compact)
   --json             JSON output on stdout, nothing else (validate, calc, edit)
   --calc-context <f> JSON sectionVariants/overrides (calc, refine; refine: period overrides only)
@@ -2012,7 +2029,11 @@ Options:
   --no-superseded    Drop append-only history from the .uw.json export (export)
   --resolved         Resolve externalized sections first (verify, export)
   --signing          Check _meta.integrity.signature on every block (verify; requires --keystore)
-  --keystore <path>  JSON key store mapping kid to public key (verify --signing)
+  --keystore <path>  JSON key store mapping kid to public key (verify --signing, --document-signature)
+  --document-signature <path>  Detached document signature to require (verify; needs --keystore)
+  --key <path>       Local signer document: kid, alg and one private key (sign-document)
+  --out <path>       New file for the detached document signature (sign-document)
+  --signed-at <iso>  Fix the document signing instant (sign-document; default: now)
   --parts <dir>      Fragment directory (compose, resolve, --resolved; default: ./parts)
   --externalize <s>  Section to split into fragments (compose)
   --collection-key <k>  Row identity field (compose, default: unit_id)
