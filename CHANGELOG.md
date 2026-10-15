@@ -26,6 +26,28 @@ protocol, and each package each carry an independent semver).
   encoded lengths and wrong-width signatures as malformed (#322). Block,
   receipt and module verifiers share this check; key imports still accept
   padded base64. Three signing conformance cases pin the refusal as `INT-07`.
+- `uwmd init` refuses to overwrite an existing file, whether the target is the
+  derived default name or an explicit `--output`, and exits 1 with the path.
+  Through CLI 4.1.0 a second `init` silently replaced the deal file and its
+  provenance (invariant 5). The precedent is `sign-document`, which already
+  requires a new output file.
+- `@uwmd/signing` bundles for the browser again. Since 0.3.1 `SIGNING_VERSION`
+  was read through `createRequire` from `node:module`, a static import no
+  browser resolves, while the README promised browser use and every algorithm
+  runs on Web Crypto. It is a literal again, held to the manifest by
+  `version.test.ts`, which also fails on any static `node:` import in the
+  package. The file-backed key store keeps its guarded dynamic `node:fs`.
+
+### Documentation
+
+- The `uwmd` help text lists `--document-signature`, `--key`, `--out` and
+  `--signed-at`, and files the signing flags under `verify`. The CLI README's
+  command table gains `verify`, `sign-document` and `receipt`, and describes
+  `compact` as it behaves (it strips superseded blocks). The `@uwmd/verify`
+  README documents document snapshot authentication, the four result states,
+  the sources it refuses, and bundler guidance for the guarded `node:crypto`
+  import. Wiki 08 lists the new command and flags; wiki 11 names
+  `SIGNING_VERSION` in the release checklist.
 
 ## [4.1.0] - 2026-10-13
 

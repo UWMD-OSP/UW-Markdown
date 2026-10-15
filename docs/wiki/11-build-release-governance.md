@@ -88,7 +88,11 @@ each with a guard that fails loudly if you miss it:
 1. `CORE_VERSION` in `src/version.ts` — a literal, so the browser bundle has it.
    `version.test.ts` asserts it matches the manifest. A release that bumps
    `@uwmd/verify` moves `VERIFY_VERSION` (`packages/uwmd-verify/src/version.ts`)
-   the same way, held by verify's own `version.test.ts`.
+   the same way, held by verify's own `version.test.ts`, and one that bumps
+   `@uwmd/signing` moves `SIGNING_VERSION`
+   (`packages/uwmd-signing/src/version.ts`), a literal again so the package has
+   no static `node:` import and bundles for the browser; signing's
+   `version.test.ts` holds it to the manifest.
 2. The dependents' pins and their own versions (above). `verify-lockfile`, and
    `verify-release` for a package whose dependency set changed since the last
    release while its version did not.

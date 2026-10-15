@@ -591,6 +591,28 @@ describe('uwmd CLI', () => {
       }
     });
 
+    it('init refuses to overwrite an existing file, by default name or --output', async () => {
+      // A scaffold that silently replaced a deal file destroyed its provenance
+      // (invariant 5). Both the derived default and an explicit --output refuse.
+      const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-exists-'));
+      try {
+        const first = await spawnCli(process.execPath, [CLI_BIN, 'init'], { encoding: 'utf8', cwd: temp });
+        expect(first.status).toBe(0);
+        const target = resolve(temp, 'new-deal.uwx.md');
+        writeFileSync(target, 'PRESERVE', 'utf8');
+        const again = await spawnCli(process.execPath, [CLI_BIN, 'init'], { encoding: 'utf8', cwd: temp });
+        expect(again.status).toBe(1);
+        expect(again.stderr).toContain('Refusing to overwrite existing file');
+        expect(readFileSync(target, 'utf8')).toBe('PRESERVE');
+        const explicit = await spawnCli(process.execPath, [CLI_BIN, 'init', '--output', 'new-deal.uwx.md'], { encoding: 'utf8', cwd: temp });
+        expect(explicit.status).toBe(1);
+        expect(explicit.stdout).not.toContain('Created:');
+        expect(readFileSync(target, 'utf8')).toBe('PRESERVE');
+      } finally {
+        rmSync(temp, { recursive: true, force: true });
+      }
+    });
+
     it('init --name derives a .uwx.md filename', async () => {
       const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-init-name-'));
       try {
