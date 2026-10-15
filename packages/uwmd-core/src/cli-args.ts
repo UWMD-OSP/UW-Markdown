@@ -216,3 +216,19 @@ export function unknownFlagMessage(
     : `Accepted flags: ${vocabulary.accepted.map((name) => `--${name}`).join(', ')}.`;
   return `uwmd ${vocabulary.command}: unknown flag${unknown.length > 1 ? 's' : ''} ${named}. ${accepted}`;
 }
+
+/**
+ * Why the optional `@uwmd/signing` peer could not be loaded for `usedBy` (the
+ * flag or command the user ran). A package that is not installed and one that
+ * is installed but fails to load need different repairs, so they read
+ * differently; neither repeats Node's resolver message for a missing package.
+ */
+export function signingLoadFailureMessage(usedBy: string, error: unknown): string {
+  const code = (error as { code?: unknown } | null)?.code;
+  const message = error instanceof Error ? error.message : String(error);
+  const missing = (code === 'ERR_MODULE_NOT_FOUND' || code === 'MODULE_NOT_FOUND')
+    && message.includes("'@uwmd/signing'");
+  return missing
+    ? `${usedBy}: the optional @uwmd/signing package is not installed. Install it beside @uwmd/cli (npm i @uwmd/signing), or with npx: npx -p @uwmd/cli -p @uwmd/signing uwmd …`
+    : `${usedBy}: could not load @uwmd/signing: ${message}`;
+}

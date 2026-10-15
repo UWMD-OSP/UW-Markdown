@@ -3,6 +3,7 @@ import {
   verifyReserveDrawBindings,
   verifyReserveAccounts,
   verifyReplacementFundingBindings,
+  verifyStatedMetrics,
   parseUWFile,
   validateUWFile,
   isScenarioId,
@@ -114,6 +115,7 @@ import {
   extractPositionals,
   flagVocabulary,
   unknownFlagMessage,
+  signingLoadFailureMessage,
   replaceUWExtension,
   hostConformanceFlag,
   defaultPartsDir,
@@ -308,6 +310,19 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
 }
 
 /**
+ * Load the optional `@uwmd/signing` peer for `usedBy` (the flag or command the
+ * user ran), or exit 1 with `signingLoadFailureMessage`.
+ */
+async function loadOptionalSigning<T>(usedBy: string): Promise<T> {
+  try {
+    return (await import('@uwmd/signing' as string)) as T;
+  } catch (error) {
+    console.error(signingLoadFailureMessage(usedBy, error));
+    process.exit(1);
+  }
+}
+
+/**
  * Build the `verifyChain` options from `--signing --keystore=<path>`.
  *
  * `@uwmd/signing` is reached by dynamic import and declared as an optional peer
@@ -340,15 +355,9 @@ async function signingOptions(
     createBlockSignatureVerifier(store: never): BlockSignatureVerifier;
     createDocumentSignatureVerifier(store: never): DocumentSignatureVerifier;
   }
-  let signing: SigningModule;
-  try {
-    signing = (await import('@uwmd/signing' as string)) as SigningModule;
-  } catch {
-    console.error(
-      '--signing needs the optional @uwmd/signing package. Install it with `npm i @uwmd/signing`.',
-    );
-    process.exit(1);
-  }
+  const usedBy = [flags['signing'] ? '--signing' : undefined, flags['document-signature'] ? '--document-signature' : undefined]
+    .filter((flag) => flag !== undefined).join(' and ');
+  const signing = await loadOptionalSigning<SigningModule>(usedBy);
 
   try {
     const store = await signing.loadKeyStoreFile(resolve(keystore));
@@ -390,6 +399,13 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     sections['replacement_funding_verification'] = funding;
     if (v.errors.length > 0 || (funding.state !== 'verified'
       && !(funding.state === 'not_checked' && funding.reason === 'not_applicable'))) hadError = true;
+    // Protocol §II.2 item 2: a stated metric that disagrees with its
+    // recomputation is a verification failure. One whose inputs are absent is
+    // `unverifiable`, which is reported but is not a failure. Through 4.2.0 this
+    // check never ran here, so a wrong stated cap rate printed `OK`.
+    const metrics = verifyStatedMetrics(parsed);
+    sections['stated_metrics'] = metrics;
+    if (metrics.counts.failed > 0) hadError = true;
   }
   let chain: IntegrityResult | undefined;
   let prov: IntegrityResult | undefined;
@@ -415,6 +431,19 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
         const tag = issue.severity === 'error' ? '[ERROR]' : issue.severity === 'warning' ? '[WARN] ' : '[INFO] ';
         const loc = issue.section ? ` [${issue.section}${issue.field ? `.${issue.field}` : ''}]` : '';
         console.log(`  ${tag}${loc} ${issue.code ? `${issue.code}: ` : ''}${issue.message}`);
+      }
+    }
+    const metrics = sections['stated_metrics'] as ReturnType<typeof verifyStatedMetrics> | undefined;
+    if (!metrics) {
+      console.log('Stated metrics: not checked (validation not requested)');
+    } else if (metrics.evidence.length === 0) {
+      console.log(`Stated metrics: none stated for asset class '${metrics.asset_class}'`);
+    } else {
+      const { verified, failed, unverifiable } = metrics.counts;
+      console.log(`Stated metrics: ${verified} verified, ${failed} failed, ${unverifiable} unverifiable`);
+      for (const item of metrics.evidence) {
+        if (item.state === 'failed') console.log(`  [FAILED] ${item.path}: stated ${item.stated}, recomputed ${item.computed}`);
+        else if (item.state === 'unverifiable') console.log(`  [UNVERIFIABLE] ${item.path}: ${item.reason ?? 'not checkable'}`);
       }
     }
     const funding = sections['replacement_funding_verification'] as Awaited<ReturnType<typeof verifyReplacementFundingBindings>>;
@@ -1383,8 +1412,8 @@ switch (command) {
       loadDocumentSigningKey(document: unknown): Promise<unknown>;
       signDocument(source: string, key: never, options?: { signedAt?: string }): Promise<UWDocumentSignature>;
     }
+    const signing = await loadOptionalSigning<DocumentSigningModule>('uwmd sign-document');
     try {
-      const signing = (await import('@uwmd/signing' as string)) as DocumentSigningModule;
       const key = await signing.loadDocumentSigningKey(JSON.parse(readFile(flags['key'])));
       const signature = await signing.signDocument(readFile(positional[0]), key as never,
         typeof flags['signed-at'] === 'string' ? { signedAt: flags['signed-at'] } : {});
@@ -1611,13 +1640,7 @@ switch (command) {
         loadKeyStoreFile(path: string): Promise<unknown>;
         createCapabilityVerifier(store: never): CapabilityVerifier;
       }
-      let signing: CapabilityModule;
-      try {
-        signing = (await import('@uwmd/signing' as string)) as CapabilityModule;
-      } catch {
-        console.error('--capability-token needs the optional @uwmd/signing package. Install it with `npm i @uwmd/signing`.');
-        process.exit(1);
-      }
+      const signing = await loadOptionalSigning<CapabilityModule>('--capability-token');
       try {
         const store = await signing.loadKeyStoreFile(resolve(coordKey));
         ctx.capability_token = capToken;
@@ -1817,6 +1840,13 @@ switch (command) {
   }
 
   case 'init':
+    // `init` names its file with --output only. Through 4.2.0 a positional was
+    // ignored, so `uwmd init my-deal.uwx.md` wrote new-deal.uwx.md and the
+    // next command on my-deal.uwx.md found nothing.
+    if (positional.length > 0) {
+      console.error(`uwmd init: unexpected argument '${positional[0]}'. init takes no file argument; name the new file with --output ${positional[0]}.`);
+      process.exit(1);
+    }
     cmdInit(flags);
     break;
 
@@ -1995,7 +2025,8 @@ uwmd — UW Markdown underwriting file toolkit
 Commands:
   parse    <file>              Parse file and output JSON
   validate <file>              Run all validation checks
-  verify   <file>              Validate + verify integrity (hashes) + provenance (actor/policy)
+  verify   <file>              Validate + recompute stated metrics + verify integrity (hashes)
+                               + provenance (actor/policy); a failed stated metric exits 1
                                --signing --keystore=<path> also checks block signatures (RFC 0010,
                                via the optional @uwmd/signing package)
                                --document-signature=<artifact> --keystore=<path> requires an
@@ -2015,7 +2046,7 @@ Commands:
   inspect-property-cash-flows <file> [--json]  Inventory source inputs needed for an assembly plan (read-only)
   project-lease-up <file> <plan.json>  Project verified lease-up amounts onto explicit cash dates (JSON candidate only)
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
-  init                         Generate a blank .uwx.md file
+  init                         Generate a blank .uwx.md file (name it with --output <file>)
   summary  <file>              Print quick metrics to terminal
   export   <file>              Export a digested UW JSON 1.0 document
   compose  <file>              Externalize a section into .uwpart.md fragments (RFC 0021)

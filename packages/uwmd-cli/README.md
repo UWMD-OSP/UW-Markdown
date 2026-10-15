@@ -23,10 +23,10 @@ uwmd <command> [args]
 
 | Command | What it does |
 |---|---|
-| `uwmd init [--output <file>]` | Scaffold a blank `.uwx.md` deal file; refuses to overwrite an existing file |
+| `uwmd init [--output <file>]` | Scaffold a blank `.uwx.md` deal file (default `new-deal.uwx.md`); name it with `--output`, not a file argument; refuses to overwrite an existing file |
 | `uwmd parse <file>` | Parse and emit canonical JSON |
 | `uwmd validate <file>` | Run the full Format validator and print issues |
-| `uwmd verify <file>` | Validate, verify integrity (hash chains) and provenance; `--signing --keystore=<store>` also checks block signatures, and `--document-signature=<artifact> --keystore=<store>` requires an authenticated document snapshot (RFC 0084). Both need the optional `@uwmd/signing` package |
+| `uwmd verify <file>` | Validate, recompute stated metrics (a disagreeing one exits 1; one with absent inputs is reported `unverifiable`), and verify integrity (hash chains) and provenance; `--signing --keystore=<store>` also checks block signatures, and `--document-signature=<artifact> --keystore=<store>` requires an authenticated document snapshot (RFC 0084). Both need the optional `@uwmd/signing` package |
 | `uwmd sign-document <file> --key=<signer.json> --out=<signature.json>` | Write a detached document snapshot signature (RFC 0084). The output must be a new file; `--signed-at=<ISO instant>` pins the signing time |
 | `uwmd receipt issue <file>` / `uwmd receipt verify <file> <receipt.json>` | Issue or verify a detached verification receipt (RFC 0016) |
 | `uwmd render <file>` | Render to `chat`, `summary`, or full markdown |

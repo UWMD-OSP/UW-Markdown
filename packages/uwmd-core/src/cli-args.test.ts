@@ -19,6 +19,7 @@ import {
   parseFlags,
   readManifestFile,
   replaceUWExtension,
+  signingLoadFailureMessage,
   unknownFlagMessage,
 } from './cli-args.js';
 
@@ -234,5 +235,33 @@ describe('COMMAND_FLAGS', () => {
     for (const [command, accepted] of Object.entries(COMMAND_FLAGS)) {
       expect(new Set(accepted).size, command).toBe(accepted.length);
     }
+  });
+});
+
+describe('signingLoadFailureMessage', () => {
+  // Node's own errors for the two cases; the CLI must not print the first raw.
+  const missing = Object.assign(
+    new Error("Cannot find package '@uwmd/signing' imported from /x/node_modules/@uwmd/core/dist/cli.js"),
+    { code: 'ERR_MODULE_NOT_FOUND' },
+  );
+
+  it('names the flag or command the user ran and how to install the peer', () => {
+    const message = signingLoadFailureMessage('--document-signature', missing);
+    expect(message).toMatch(/^--document-signature: the optional @uwmd\/signing package is not installed\./);
+    expect(message).toContain('npm i @uwmd/signing');
+    expect(message).toContain('npx -p @uwmd/cli -p @uwmd/signing uwmd');
+    expect(message).not.toContain('Cannot find package');
+    expect(signingLoadFailureMessage('uwmd sign-document', missing)).toMatch(/^uwmd sign-document: the optional/);
+  });
+
+  it('reports a present but broken package as a load failure, not as missing', () => {
+    const dependencyMissing = Object.assign(
+      new Error("Cannot find package '@uwmd/verify' imported from /x/node_modules/@uwmd/signing/dist/index.js"),
+      { code: 'ERR_MODULE_NOT_FOUND' },
+    );
+    expect(signingLoadFailureMessage('--signing', dependencyMissing))
+      .toBe("--signing: could not load @uwmd/signing: Cannot find package '@uwmd/verify' imported from /x/node_modules/@uwmd/signing/dist/index.js");
+    expect(signingLoadFailureMessage('--signing', new SyntaxError('Unexpected token')))
+      .toBe('--signing: could not load @uwmd/signing: Unexpected token');
   });
 });

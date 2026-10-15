@@ -41,7 +41,7 @@ constraint.
 **No clone needed** — install the scoped CLI package and scaffold or validate a deal file with:
 
 ```bash
-npx @uwmd/cli init my-deal.uwx.md
+npx @uwmd/cli init --output my-deal.uwx.md
 npx @uwmd/cli validate my-deal.uwx.md
 ```
 
