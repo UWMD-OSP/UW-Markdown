@@ -1,5 +1,12 @@
 # Next-release readiness assessment (2026-10-14)
 
+> **Superseded in part (2026-10-15).** The owner reserved 5.0 for the
+> coordinated public launch ([ROADMAP](https://github.com/UWMD-OSP/UW-Markdown/blob/main/ROADMAP.md)).
+> The core/CLI 5.0.0 plan below is therefore withdrawn. The interim release
+> stays on 4.x, and the CLI breaks it identifies (§3.1) need one of the
+> alternatives in draft PR #342. The measurements, the Node findings and the
+> gate results stand.
+
 A read-only assessment of what the next release would contain, which package
 versions it requires, and what still stands between `main` and a publication.
 It is not a release-prepared record and authorizes nothing. No manifest,

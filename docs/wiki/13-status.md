@@ -1,5 +1,16 @@
 # 13 — Build status (living document)
 
+**2026-10-15: 5.0 is reserved for the coordinated public launch** (owner
+direction; [ROADMAP](../../ROADMAP.md)). It supersedes the core/CLI 5.0.0
+plan in the 2026-10-14 readiness assessment below and in draft PR #342.
+
+- Interim 4.x releases continue under the current semver-per-surface
+  policy.
+- The next one is blocked on how to ship #328's and #332's CLI refusals
+  without a major: make them compatible, hold them for 5.0, or leave them
+  out. The options are in PR #342.
+- The post-launch version-coordination policy awaits owner review.
+
 Reconciled **2026-10-14** (America/Phoenix) for published and independently
 verified **4.2.0**. `@uwmd/verify` **0.2.0**, core/CLI **4.2.0**, signing
 **0.5.0**, batch **0.9.1**, Excel **0.9.18**, report **0.8.30** and lake

@@ -91,7 +91,7 @@ protocol, and each package each carry an independent semver).
   `playwright-core ^1.49.0` resolves to releases that require Node 20 and
   exits 1 before any output, `--format html` included. The other packages
   keep `>=18.0.0`, which was re-run on Node 18.0.0 and 18.20.8
-  ([readiness assessment](docs/reviews/2026-10-14-next-release-readiness.md)
+  ([readiness assessment](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-14-next-release-readiness.md)
   §4). Dropping a declared runtime is a breaking change for these two 0.x
   packages.
 - The `uwmd` CLI refuses unknown flags. Every command, and every subcommand
