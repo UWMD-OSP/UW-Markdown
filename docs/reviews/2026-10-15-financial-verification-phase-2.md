@@ -13,7 +13,9 @@ changes source inputs, and chat cash-flow labels inferred from row position.
 They have separate bounded implementation PRs: [#347](https://github.com/UWMD-OSP/UW-Markdown/pull/347), [#348](https://github.com/UWMD-OSP/UW-Markdown/pull/348) and [#349](https://github.com/UWMD-OSP/UW-Markdown/pull/349). The first can falsely
 verify a financial statement and propagate it into a dated projection. The second
 can export a different NOI/cap rate from the same source. The third changes the
-financial period a reader sees, while leaving the number itself unchanged.
+financial period a reader sees, while leaving the number itself unchanged. Its proposed
+correction conflicts with an existing starter-output conformance baseline and is
+on review hold; the baseline remains unchanged pending an owner decision.
 
 New acquisition and class tests connect supported functions rather than proving
 only that a dictionary entry evaluates. Fifteen new workflow tests cover positive
@@ -70,7 +72,7 @@ to an outside accounting convention. No findings below alter M04/M09's status.
 |---|---|---|---|
 | P2-01 | Verified | Implementation defect: verifier quantization, reference verification and lease-up projection | High assurance impact: wrong stated values can verify. Bounded correction in [PR #347](https://github.com/UWMD-OSP/UW-Markdown/pull/347); evaluate before interim publication. |
 | P2-02 | Verified | Implementation defect: starter Excel source-input binding/subtotal reconstruction | High on affected exports: material NOI and cap-rate differences. [PR #348](https://github.com/UWMD-OSP/UW-Markdown/pull/348); new exporter refusal is not a standard validation requirement. |
-| P2-03 | Verified | Implementation defect: starter chat renderer/reporting period labels | Medium contextual misstatement; [PR #349](https://github.com/UWMD-OSP/UW-Markdown/pull/349); no changed financial arithmetic. |
+| P2-03 | Verified | Implementation defect: starter chat renderer/reporting period labels | Medium contextual misstatement; [draft PR #349](https://github.com/UWMD-OSP/UW-Markdown/pull/349) is blocked by a starter-output baseline conflict requiring owner decision; no changed financial arithmetic. |
 | P2-04 | Needs owner decision | Joint-contract clarification: CC-06 first-array-row description versus named Year1 / stated-period addressing | Medium possibility of warning the wrong year. No unilateral validator change; establish intended contract and conformance before changing it. |
 | P2-05 | Verified | Representation/integration boundary: roll's total rent gap includes vacant rent while statement deductions split vacancy and loss-to-lease | Medium double-count risk under an unsupported automatic field copy. Explicit tested mapping works; no demonstrated automatic bridge defect or new convention selected. |
 | P2-06 | Verified | Missing modeling capability / intentionally bounded assembly | Development can state/verify amounts but does not derive a construction/refinance/funding engine. Nonblocking enhancement unless a product promises that capability. |
@@ -239,6 +241,20 @@ Yr2/10,000. HTML labels3/1 and CoC selects statedY1=10,000; its2.4m equity ratio
 is.004167. The bounded renderer correction labels each stated year and uses n/a
 when year is absent. It neither sorts cash flows nor fabricates a period identity.
 One new regression plus the existing renderer suite passes19 tests.
+
+Remote CI then exposed a compatibility constraint: the existing
+`conformance/documents/fixtures/13-period-identities.uwx.md` states years
+`[1, 1, absent]`, while its `expected/13-period-identities.rendered-chat.txt`
+baseline requires ordinal labels `Yr1, Yr2, Yr3`. The proposed correction emits
+`Yr1, Yr1, Yrn/a`. [CI run38708178668](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38708178668)
+fails that starter render-chat case on Node20, Node22 and Windows; Linux direct
+conformance reports **1088 passed / 1 failed**. This is a real output disagreement,
+not a subprocess/infrastructure failure. PR349 remains a draft on review hold.
+The evidence verifies differing period representations; acceptance of the display
+change now also **Needs owner decision** because the conformance corpus is part
+of the joint contract. No existing expectation is overridden or regenerated.
+Authorize an explicit baseline compatibility decision before proceeding with
+this proposed correction; do not bypass or weaken the gate.
 
 CC-06 is separate. Format §5.3 calls it a Year1 NOI comparison; registered
 `protocol.ts` description explicitly names `annual_cash_flows[0].noi`, and
@@ -459,8 +475,15 @@ At evidence cutoff, [verifier correction CI run38706761807](https://github.com/U
 passed **all14 jobs** on head `c031a9f0b1daa949ddfe0e90b4a779153658f67c`, including
 Node20/22, Windows, reference-CLI portable checks and capability/profile guards.
 This is separate successful remote evidence; its local3970/180 result stays failed.
-PR348/349 and this audit branch require their own head-specific CI results; none
-are inferred from PR347 or earlier audit CI.
+[Excel correction run38708175446](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38708175446)
+on head `f2d2dcf5884f5a4a4ce84ae0575beed1a57dddd5` and
+[audit run38708466158](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38708466158)
+on head `9bb46ec3ec451e04af035b04fd6a1ad08caf1a32` each have13 successful
+jobs and one Node20 capability-guard job still running at this update. Neither
+is recorded as a completed green run. The later evidence-only report amendment
+requires its own head-specific CI. PR349 has **failed CI** as detailed above;
+that baseline disagreement is distinct from local subprocess failures. No result
+is inferred from PR347 or earlier audit CI.
 
 Prior audit local3945/170 and successful remote PR345 CI remain historical evidence.
 They neither overwrite these Phase2 failures nor certify new patches. Wrapper and
@@ -481,8 +504,10 @@ separately when available. No conformance baseline was regenerated.
    cap rate today. Its compatibility behavior (typed refusal, editable totals-only
    input, explicit missing-source state) must stay visible; it does not make input
    documents newly invalid under the standard.
-3. Include **P2-03 / PR349 year labels** as a small reporting correction. It is not a new
-   financial metric and is lower risk than verifier/source-input defects.
+3. Keep **P2-03 / PR349 year labels** on review hold until the owner explicitly
+   resolves its starter-output baseline conflict. Its CI failure is established;
+   targeted unit success does not make it mergeable. The display mismatch is
+   lower risk than false verification or changed source financial inputs.
 4. Resolve P2-04's CC-06 contract description before any validator behavior change;
    test nullable/mixed-use Excel paths with actual spreadsheet evidence. Improve
    reporting assurance wording separately from adding verification obligations.

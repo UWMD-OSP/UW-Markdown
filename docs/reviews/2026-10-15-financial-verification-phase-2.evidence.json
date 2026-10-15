@@ -233,11 +233,20 @@
     },
     "348": {
       "head": "f2d2dcf5884f5a4a4ce84ae0575beed1a57dddd5",
-      "ci": "pending at evidence preparation"
+      "ci": "13 jobs passed; Node20 capability guard still running at update",
+      "ci_run": 38708175446,
+      "ci_jobs_passed": 13,
+      "ci_jobs_total": 14
     },
     "349": {
       "head": "7096884fb732e3dc1ff3b1cc82f237556605f8a7",
-      "ci": "pending at evidence preparation"
+      "ci": "failed: starter-products/documents/13-period-identities render-chat baseline on Node20, Node22 and Windows",
+      "ci_run": 38708178668,
+      "linux_direct_conformance": {
+        "passed": 1088,
+        "failed": 1
+      },
+      "owner_decision": "Explicit baseline compatibility approval required; no conformance expectation changed; draft PR on review hold"
     }
   },
   "log_sha256": {
@@ -321,5 +330,12 @@
     "uwmd-phase2-quantization-tests.log": "9150c8a6b658e710cbe19a00809095c558e1660a8b994c9d0fda685bd5f9f352",
     "uwmd-phase2-quantization-indexes.log": "613a89940aeda30515cd4e69ca7bc4d27a3751279ce78929c5d1cec7b9d67da5",
     "uwmd-phase2-report-ci.log": "edfb1575ee3a6b067796df6249772c7c0d64658ae13df93e081aeba8def08381"
+  },
+  "audit_ci_snapshot": {
+    "head": "9bb46ec3ec451e04af035b04fd6a1ad08caf1a32",
+    "ci_run": 38708466158,
+    "ci_jobs_passed": 13,
+    "ci_jobs_total": 14,
+    "status": "Node20 capability guard running; subsequent evidence amendment requires its own CI"
   }
 }
