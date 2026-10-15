@@ -197,7 +197,7 @@ PRs #330 and #331 merged. Dispositions since:
 | D-06 | Signing README now states the real requirement (Node 20+, or Node 18 with `--experimental-global-webcrypto`, which passes scenario 4). `engines` still says `>=18.4.0`: owner decision. |
 | D-07 | Format spec Part VI not edited: owner decision whether it is normative. |
 | D-09 | Traced; owner decision (below). |
-| D-10 | Traced (below); implementation defect against RFC 0018. Fixed in the D-10 PR (§10). |
+| D-10 | Traced (below); implementation defect against RFC 0018. Fixed in PR #334 (§10). |
 
 **D-09: `compact` output fails `verify` (`POL-02`).** The two sides follow two
 different normative texts. Format §2.7 says "The `uwmd compact` command strips
