@@ -64,6 +64,11 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Financial audit intake for [#343](https://github.com/UWMD-OSP/UW-Markdown/issues/343)
+  (`UWMD-METRICS-2026-10-14`, M01–M12): independent classifications,
+  synthetic reproductions, authority evidence and owner decisions in
+  [the review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-audit-343.md).
+  No metric definition, validation obligation or conformance expectation changes.
 - CLI regression checks for D-10. They now assert `package verify --json`'s
   structured result: `verified` for the demo package, and `failed` with a
   `PKGVER-003` error pointing at the stale member. They also add a stated
