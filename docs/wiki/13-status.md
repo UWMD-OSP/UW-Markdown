@@ -1,5 +1,27 @@
 # 13 — Build status (living document)
 
+Reconciled **2026-10-14** (America/Phoenix) for release-prepared **4.2.0**.
+Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. Protocol
+4.1.0 carries RFC 0084: an optional detached document snapshot signature over
+the `uw-envelope-semantic` digest (§V.13) with the Integrity capability
+`document-signature-verification`, codes `INT-09`–`INT-15`, a guarded
+source-block accounting that refuses ambiguous or lossy sources, the
+`conformance/document-signatures/` suite (15 scenarios, 14 portable cases)
+and the CLI's `sign-document` and `verify --document-signature`. Block
+signatures keep their six-field input and remain independent attribution. The
+generation also carries the #322 canonical-encoding refusal, `uwmd init`'s
+overwrite refusal and a browser-loadable `@uwmd/signing`. **`@uwmd/verify`
+0.2.0** is the engine every receipt names: the two issuance baselines and the
+three `failed` verification receipts move with it; 1,087 reference checks and
+350 portable cases otherwise stand, and the lender fixture stays 187/0/0.
+Signing **0.5.0** pins verify 0.2.0 and core 4.2.0, batch **0.9.1** and lake
+**0.3.1** pin verify 0.2.0, Excel **0.9.18** and report **0.8.30** pin core
+4.2.0, and core's optional signing peer is 0.5.0. The workflow publishes eight
+packages, `@uwmd/verify` first, through the trusted publishers already bound
+for 4.1.0. RFC 0084 stays `accepted` until publication is verified. The
+independent verification behind this preparation is
+[docs/reviews/2026-10-14-rfc-0084-release-hardening.md](../reviews/2026-10-14-rfc-0084-release-hardening.md).
+
 Reconciled **2026-10-13** (America/Phoenix) for published and independently
 verified **4.1.0**. `@uwmd/verify` **0.1.0**, core/CLI **4.1.0**, signing
 **0.4.0**, batch **0.9.0**, Excel **0.9.17**, report **0.8.29** and lake

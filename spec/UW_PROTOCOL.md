@@ -1,8 +1,8 @@
 # UW Protocol — verification
 
-**Status:** Accepted, unreleased — protocol **4.1.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
+**Status:** Accepted release contract (RFC 0084) — protocol **4.1.0**  ·  **Format pairing:** Format **3.0** ([`UW_FORMAT_SPEC.md`](UW_FORMAT_SPEC.md)) only  ·  **License:** MIT
 
-> **Protocol 4.1.0.** Adds [RFC 0084](../docs/rfcs/0084-document-signature-binding.md) document snapshot authentication to the single Format 3.0 contract. Published core/CLI 4.1.0 carry Protocol 4.0.0; package release preparation is separate.
+> **Protocol 4.1.0.** Adds [RFC 0084](../docs/rfcs/0084-document-signature-binding.md) document snapshot authentication to the single Format 3.0 contract. Core/CLI 4.2.0 pair with it; core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0.
 
 This document specifies how any party **verifies** a UW Markdown
 document: that it is well formed, that its stated figures agree with

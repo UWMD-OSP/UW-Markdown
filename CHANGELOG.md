@@ -8,6 +8,35 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-10-14
+
+### Prepared package pairing
+
+Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. Protocol
+4.1.0 carries one RFC, 0084: detached document snapshot signatures
+(Protocol §V.13), an additive change to how a document is verified, so the
+Protocol takes a minor and the Format does not move. **`@uwmd/verify` 0.2.0**
+carries the new API, constants, capability and codes and takes a minor. Core
+takes a minor for the additive re-exports, the `sign-document` and
+`--document-signature` CLI surface and the new exact verify pin; the CLI
+versions with core. Signing **0.5.0** takes a minor for `signDocument`,
+`createDocumentSignatureVerifier` and `loadDocumentSigningKey`, the
+canonical-encoding refusal (#322) and its repins to verify **0.2.0** and core
+**4.2.0**. Batch **0.9.1** and lake **0.3.1** repin verify **0.2.0**; Excel
+**0.9.18** and report **0.8.30** repin core **4.2.0**. Core's optional signing
+peer is **0.5.0**. The workflow scope is eight packages, verify first: verify,
+core, CLI, signing, batch, Excel, report and lake.
+
+Receipts name `@uwmd/verify` **0.2.0** as their engine and Protocol 4.1.0 as
+their protocol, so the two `conformance/receipts/issue/` baselines and the
+`engine_version` of the three `failed` receipts under
+`conformance/receipts/verify/` move with it (wiki 11, release items 3 and 4).
+No other conformance expectation, issue code, metric definition or stated
+value changes: 1,087 reference checks and 350 portable cases. As with every
+engine step, a receipt issued by verify 0.1.0 (core/CLI 4.1.0) whose results
+disagree under 0.2.0 reports `RCP-07` `unverifiable`, not `failed` (UW
+Receipt §5.3); reissue it with 4.2.0 or treat `RCP-07` as a rejection.
+
 ### Added
 
 - RFC 0084: optional detached document snapshot signatures. `@uwmd/verify`
