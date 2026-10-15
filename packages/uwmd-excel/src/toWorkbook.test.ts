@@ -541,6 +541,87 @@ describe(`toWorkbook — mixed_use (${MIXED_USE_FILE})`, () => {
 });
 
 describe('toWorkbook — Excel ↔ evaluateCalc parity on a stated document', () => {
+  it.each(['income.effective_gross_income', 'expenses.total_operating_expenses', 'net_operating_income'])(
+    'refuses a live statement that would replace the stated %s input', async path => {
+      const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
+      const payload = (parsed.sections['noi_model'] as UWBlock).content;
+      const parts = path.split('.');
+      const parent = parts.length === 1 ? payload : payload[parts[0]!] as Record<string, unknown>;
+      parent[parts.at(-1)!] = Number(parent[parts.at(-1)!]) + 58_000;
+      await expect(toWorkbook(parsed)).rejects.toMatchObject({
+        code: 'EXCEL-EMIT-PATH', message: expect.stringContaining(`noi_model.${path}`),
+      });
+    },
+  );
+
+  it('refuses missing expense detail when the stored totals still include it', async () => {
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
+    const payload = (parsed.sections['noi_model'] as UWBlock).content;
+    delete (payload['expenses'] as Record<string, unknown>)['real_estate_taxes'];
+    const capRate = MULTIFAMILY_LAYOUT.pack.calculations!.find(c => c.id === 'cap_rate')!;
+    expect(evaluateCalc(capRate, { parsed, prior_results: {}, locale: 'en-US' })).toMatchObject({ ok: true, value: 0.055088 });
+    // The prior export computed 176,301 of expenses instead of the stated
+    // 234,301, increasing NOI by 58,000 and cap rate to 0.063144.
+    await expect(toWorkbook(parsed)).rejects.toMatchObject({
+      code: 'EXCEL-EMIT-PATH', message: expect.stringContaining('expenses.total_operating_expenses'),
+    });
+  });
+
+  it('marks missing source NOI as uncomputed instead of reconstructing a computed metric input', async () => {
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
+    delete (parsed.sections['noi_model'] as UWBlock).content['net_operating_income'];
+    const capRate = MULTIFAMILY_LAYOUT.pack.calculations!.find(c => c.id === 'cap_rate')!;
+    expect(evaluateCalc(capRate, { parsed, prior_results: {}, locale: 'en-US' })).toMatchObject({ ok: true, value: null });
+    const wb = await toWorkbook(parsed);
+    expect(cellAt(wb, wb.definedNames.getRanges('noi').ranges[0]!)?.value).toEqual({ error: '#N/A' });
+  });
+
+  it('retains stated subtotals for a record that supplies no line detail', async () => {
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
+    const payload = (parsed.sections['noi_model'] as UWBlock).content;
+    payload['income'] = { effective_gross_income: 630_936 };
+    payload['expenses'] = { total_operating_expenses: 234_301 };
+    const wb = await toWorkbook(parsed);
+    expect(namedNumber(wb, SUBTOTAL_RANGES.egi)).toBe(630_936);
+    expect(namedNumber(wb, SUBTOTAL_RANGES.opex)).toBe(234_301);
+    // Notes and visible status survive XLSX serialization; a recipient need
+    // not read repository docs to discover that detail edits are disconnected.
+    const loaded = new ExcelJS.Workbook();
+    await loaded.xlsx.load(await wb.xlsx.writeBuffer());
+    for (const name of [SUBTOTAL_RANGES.egi, SUBTOTAL_RANGES.opex]) {
+      const cell = cellAt(loaded, loaded.definedNames.getRanges(name).ranges[0]!)!;
+      expect(String(cell.note)).toContain('Detail edits do not update this aggregate');
+      expect(cell.worksheet.getCell(cell.row, 3).value).toContain('detail edits do not recalculate');
+    }
+    expect(cellAt(wb, wb.definedNames.getRanges('noi').ranges[0]!)?.value).toMatchObject({ formula: expect.any(String) });
+  });
+
+  it('retains the exact source aggregate when decimal detail only differs through binary addition', async () => {
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
+    const payload = (parsed.sections['noi_model'] as UWBlock).content;
+    payload['income'] = { gross_potential_rent: { value: 0.1 }, other_income: { value: 0.2 }, effective_gross_income: 0.3 };
+    payload['expenses'] = { total_operating_expenses: 0 };
+    payload['net_operating_income'] = 0.3;
+    const wb = await toWorkbook(parsed);
+    const egi = cellAt(wb, wb.definedNames.getRanges(SUBTOTAL_RANGES.egi).ranges[0]!)!;
+    expect(0.1 + 0.2).not.toBe(0.3);
+    expect(egi.value).toBe(0.3);
+    expect(String(egi.note)).toContain('original unrounded source input is retained');
+  });
+
+  it('retains stated NOI when decimal subtraction would introduce a binary difference', async () => {
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
+    const payload = (parsed.sections['noi_model'] as UWBlock).content;
+    payload['income'] = { effective_gross_income: 0.3 };
+    payload['expenses'] = { total_operating_expenses: 0.1 };
+    payload['net_operating_income'] = 0.2;
+    const wb = await toWorkbook(parsed);
+    const noi = cellAt(wb, wb.definedNames.getRanges('noi').ranges[0]!)!;
+    expect(0.3 - 0.1).not.toBe(0.2);
+    expect(noi.value).toBe(0.2);
+    expect(String(noi.note)).toContain('original unrounded source input is retained');
+  });
+
   it('keeps Excel ↔ evaluateCalc parity on Parkview', async () => {
     const parsed = parseUWFile(await readFile(resolve(EXAMPLES, 'Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8'));
     const wb = await toWorkbook(parsed);

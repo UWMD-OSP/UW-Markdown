@@ -276,6 +276,18 @@ Layout:
   `NOI = EGI − total opex` foots to the stored `net_operating_income`. EGI, total
   opex, and NOI are exposed as the `effective_gross_income`,
   `total_operating_expenses`, and `noi` named ranges.
+  Export checks that these live formulas preserve the selected record's stated
+  subtotals. Conflicting line detail or an EGI/OpEx/NOI mismatch refuses export
+  with `EXCEL-EMIT-PATH`; this is an exporter limitation, not a new validation
+  obligation. Without any detail for a subtotal, its stated aggregate remains
+  an editable numeric input. A missing source subtotal becomes `#N/A` with an
+  explanatory note, so it cannot turn into a calculated zero or a reconstructed
+  value that the source calculation never read.
+  When canonical decimal inputs sum exactly but binary arithmetic differs
+  (for example, `0.1 + 0.2` versus `0.3`), export retains the original unrounded
+  source aggregate with a note instead of a live subtotal formula. This is a
+  source-preserving fallback, with no financial tolerance or input rounding;
+  subsequent detail edits do not update that aggregate.
 - **Capital Stack** sheet (`src/capital-stack.ts`, RFC 0026) — present **only
   when the document carries a `capital_stack` section**, for any asset class; a
   single-loan document produces exactly the workbook it produced before. One row

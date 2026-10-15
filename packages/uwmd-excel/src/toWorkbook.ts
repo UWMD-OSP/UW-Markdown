@@ -324,6 +324,19 @@ function writeDerivedMetricRow(
 
 // ─── Sheet 2: Operating Statement ────────────────────────────────────────────
 
+// Exact decimal comparison only selects a source-preserving fallback when
+// binary addition disagrees (0.1 + 0.2 versus 0.3). It never supplies a financial
+// result, rounds an input or establishes a reconciliation tolerance.
+function decimalSumMatches(values: readonly number[], stated: number): boolean {
+  const terms = [...values, -stated].map(value => {
+    const [mantissa, exponent = '0'] = String(value).split('e');
+    const [integer, fraction = ''] = mantissa!.split('.');
+    return { coefficient: BigInt(`${integer}${fraction}`), scale: fraction.length - Number(exponent) };
+  });
+  const scale = Math.max(...terms.map(term => term.scale));
+  return terms.reduce((sum, term) => sum + term.coefficient * 10n ** BigInt(scale - term.scale), 0n) === 0n;
+}
+
 function writeOperatingStatementSheet(
   wb: ExcelJS.Workbook,
   reader: SectionReader,
@@ -331,6 +344,65 @@ function writeOperatingStatementSheet(
 ): void {
   const ws = wb.addWorksheet('Operating Statement');
   ws.columns = [{ width: 36 }, { width: 18 }];
+
+  // A live subtotal must reproduce the source input read by the pack. When
+  // no line detail is supplied, retain the stated subtotal as an input instead
+  // of manufacturing a zero from SUM(blank cells). This is an export capability
+  // check, not a new document-validation requirement.
+  type Subtotal = { value: number | null | Refusal; live: boolean; note?: string };
+  const retainedNote = 'The live binary formula does not exactly reproduce this stated subtotal. The original unrounded source input is retained; detail edits do not update this aggregate.';
+  const subtotal = (group: 'income' | 'expenses', path: string, lines: readonly { path: string; sign?: 1 | -1 }[]): Subtotal => {
+    const stated = reader.number('noi_model', path);
+    let sum = 0;
+    let hasDetail = false;
+    const terms: number[] = [];
+    for (const line of lines) {
+      const value = reader.number('noi_model', `${group}.${line.path}`);
+      if (typeof value === 'object' && value !== null) return { value, live: false };
+      if (value !== null) hasDetail = true;
+      const term = (value ?? 0) * (line.sign ?? 1);
+      terms.push(term);
+      sum += term;
+    }
+    if (typeof stated === 'number' && hasDetail && stated !== sum) {
+      if (decimalSumMatches(terms, stated)) return { value: stated, live: false, note: retainedNote };
+      throw new ExcelEmitError('EXCEL-EMIT-PATH',
+        `The workbook reconstructs noi_model.${path} as ${sum}, but the selected source states ${stated}; the live statement cannot preserve calculation parity.`);
+    }
+    return { value: stated, live: hasDetail && typeof stated === 'number' };
+  };
+  const egi = subtotal('income', 'income.effective_gross_income', layout.incomeLines);
+  const opex = subtotal('expenses', 'expenses.total_operating_expenses', layout.expenseLines);
+  const statedNoi = reader.number('noi_model', 'net_operating_income');
+  let liveNoi = typeof egi.value === 'number' && typeof opex.value === 'number' && typeof statedNoi === 'number';
+  let noiNote: string | undefined;
+  if (liveNoi && (egi.value as number) - (opex.value as number) !== statedNoi) {
+    if (decimalSumMatches([egi.value as number, -(opex.value as number)], statedNoi as number)) {
+      liveNoi = false;
+      noiNote = retainedNote;
+    } else {
+      throw new ExcelEmitError('EXCEL-EMIT-PATH',
+        'The workbook cannot reconstruct noi_model.net_operating_income from the selected source subtotals without changing its stated value.');
+    }
+  }
+  const writeSubtotal = (cell: ExcelJS.Cell, value: number | null | Refusal, formula?: string, note?: string) => {
+    if (value === null) {
+      cell.value = { error: '#N/A' };
+      cell.note = 'Source subtotal is absent; this workbook does not calculate a replacement for the missing pack input.';
+    } else if (formula) cell.value = { formula, result: undefined };
+    else writeInputValue(cell, value);
+    if (!formula && typeof value === 'number') {
+      cell.note = note ?? 'The original source subtotal is retained as an editable input. Detail edits do not update this aggregate; edit the subtotal explicitly.';
+    }
+    if (value === null || (!formula && typeof value === 'number')) {
+      ws.getColumn(3).width = 64;
+      const status = ws.getCell(cell.row, 3);
+      status.value = value === null
+        ? 'Unavailable: source subtotal is missing.'
+        : 'Source input: detail edits do not recalculate this subtotal.';
+      status.alignment = { wrapText: true };
+    }
+  };
 
   // Income block — deduction lines carry sign:-1 so the cell shows a negative
   // magnitude and the EGI SUM nets correctly.
@@ -355,7 +427,7 @@ function writeOperatingStatementSheet(
   ws.getCell(`A${egiRow}`).value = 'Effective Gross Income';
   ws.getCell(`A${egiRow}`).font = { bold: true };
   const egiCell = ws.getCell(`B${egiRow}`);
-  egiCell.value = { formula: `SUM(B${incomeFirst}:B${incomeLast})`, result: undefined };
+  writeSubtotal(egiCell, egi.value, egi.live ? `SUM(B${incomeFirst}:B${incomeLast})` : undefined, egi.note);
   egiCell.numFmt = fmtFor('currency');
   egiCell.font = { bold: true };
   wb.definedNames.add(abs(ws.name, egiRow, 2), SUBTOTAL_RANGES.egi);
@@ -382,7 +454,7 @@ function writeOperatingStatementSheet(
   ws.getCell(`A${totalOpexRow}`).value = 'Total Operating Expenses';
   ws.getCell(`A${totalOpexRow}`).font = { bold: true };
   const totalOpexCell = ws.getCell(`B${totalOpexRow}`);
-  totalOpexCell.value = { formula: `SUM(B${opexFirst}:B${opexLast})`, result: undefined };
+  writeSubtotal(totalOpexCell, opex.value, opex.live ? `SUM(B${opexFirst}:B${opexLast})` : undefined, opex.note);
   totalOpexCell.numFmt = fmtFor('currency');
   totalOpexCell.font = { bold: true };
   wb.definedNames.add(abs(ws.name, totalOpexRow, 2), SUBTOTAL_RANGES.opex);
@@ -392,7 +464,7 @@ function writeOperatingStatementSheet(
   ws.getCell(`A${noiRow}`).value = 'Net Operating Income';
   ws.getCell(`A${noiRow}`).font = { bold: true, size: 12 };
   const noiCell = ws.getCell(`B${noiRow}`);
-  noiCell.value = { formula: `B${egiRow}-B${totalOpexRow}`, result: undefined };
+  writeSubtotal(noiCell, statedNoi, liveNoi ? `B${egiRow}-B${totalOpexRow}` : undefined, noiNote);
   noiCell.numFmt = fmtFor('currency');
   noiCell.font = { bold: true, size: 12 };
 
