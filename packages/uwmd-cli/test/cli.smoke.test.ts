@@ -5,7 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { afterAll, beforeAll, describe, it, expect, vi } from 'vitest';
-import { quantizeDecimal, evaluateCalc, parseUWFile, parseCalculationContext } from '@uwmd/core';
+import { quantizeDecimal, evaluateCalc, parseUWFile, parseCalculationContext, decodeUWDealPackageZip, encodeUWDealPackageZip, sha256BytesHex } from '@uwmd/core';
 
 // These tests exercise built executables, stdout/stderr and exit codes.
 vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
@@ -1176,5 +1176,40 @@ describe('the optional @uwmd/signing peer, when it is not installed', () => {
     expect(r.stderr).toContain(`uwmd sign-document${notInstalled}`);
     expect(r.stderr).not.toContain('Cannot find package');
     expect(existsSync(resolve(temp, 'signature.json'))).toBe(false);
+  });
+});
+
+describe('package verify checks semantic digests (RFC 0018; launch audit D-10)', () => {
+  // Through 4.2.0 every stated semantic_digest was reported unverifiable with
+  // exit 0, so a member changed under a refreshed byte digest went unnoticed.
+  const DEMO = resolve(__dirname, '..', '..', '..', 'examples', 'standalone', 'package', 'standalone-demo.uwpkg.zip');
+  const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-pkg-'));
+  afterAll(() => rmSync(temp, { recursive: true, force: true }));
+
+  it('verifies the shipped demo package, exit 0', async () => {
+    const r = await runCli(['package', 'verify', DEMO]);
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('VERIFIED - standalone-demo.uwpkg.zip');
+    expect(r.stdout).not.toContain('unverifiable');
+  });
+
+  it('fails a member whose content changed under a stale semantic digest, exit 1', async () => {
+    const decoded = decodeUWDealPackageZip(new Uint8Array(readFileSync(DEMO)));
+    const member = decoded.manifest.members.find((m) => m.id === 'deal:parkview')!;
+    const text = new TextDecoder().decode(decoded.payloads[member.path]);
+    const altered = text.replace('deal_name: Parkview Standalone Kit — Inline', 'deal_name: Parkview Standalone Kit — Altered');
+    expect(altered).not.toBe(text);
+    decoded.payloads[member.path] = new TextEncoder().encode(altered);
+    member.sha256 = `sha256:${await sha256BytesHex(decoded.payloads[member.path]!)}`;
+    const stale = resolve(temp, 'stale.uwpkg.zip');
+    writeFileSync(stale, await encodeUWDealPackageZip(decoded));
+
+    const r = await runCli(['package', 'verify', stale]);
+    expect(r.status).toBe(1);
+    expect(r.stdout).toContain('FAILED - stale.uwpkg.zip');
+    expect(r.stdout).toContain('PKGVER-003 [deal:parkview]');
+    const json = await runCli(['package', 'verify', stale, '--json']);
+    expect(json.status).toBe(1);
+    expect(JSON.parse(json.stdout)).toMatchObject({ status: 'failed', unverifiable_members: [] });
   });
 });

@@ -19,8 +19,17 @@ import {
   cmdPackageList,
   cmdPackageToContext,
   cmdPackageVerify,
+  packageMemberSemanticDigest,
 } from './cli-packages.js';
-import { type UWDealPackageManifest, encodeUWDealPackageZip, sha256BytesHex } from '@uwmd/verify';
+import {
+  type UWDealPackageManifest,
+  CORE_CODEC_REGISTRY,
+  computeEnvelopeDigest,
+  encodeUWDealPackageZip,
+  parseUWFile,
+  sha256BytesHex,
+  toUWEnvelope,
+} from '@uwmd/verify';
 
 const encoder = new TextEncoder();
 const DEAL_TEXT = "---\nuw_version: \"3.0\"\ndeal_id: d1\n---\n";
@@ -206,24 +215,6 @@ describe('package commands', () => {
     expect(errs.join('\n')).toContain('PKGZIP-002');
   });
 
-  it('cmdPackageVerify reports a stated semantic_digest it cannot check as unverifiable, without exiting', async () => {
-    const manifest = await buildManifest();
-    manifest.members[0]!.semantic_digest = `sha256:${'a'.repeat(64)}`;
-    const bytes = await encodeUWDealPackageZip({
-      manifest,
-      payloads: {
-        'records/deal.uwx.md': encoder.encode(DEAL_TEXT),
-        'sources/lease.pdf': PDF_BYTES,
-      },
-    });
-    const unverifiablePath = join(tmp, 'semantic.uwpkg.zip');
-    writeFileSync(unverifiablePath, bytes);
-    await cmdPackageVerify(unverifiablePath, {});
-    const text = logs.join('\n');
-    expect(text).toContain('UNVERIFIABLE');
-    expect(text).toContain('(unverifiable) deal:d1');
-  });
-
   it('cmdPackageList prints the members and links, and --json is machine-readable', () => {
     cmdPackageList(zipPath, {});
     const text = logs.join('\n');
@@ -264,5 +255,146 @@ describe('package commands', () => {
     // member-only types (contributes_to) have no entity-layer meaning
     expect(JSON.stringify(edges)).not.toContain('contributes_to');
     expect(edges[0]!.provenance).toHaveLength(1);
+  });
+});
+
+describe('package semantic digests (RFC 0018; launch audit D-10)', () => {
+  // RFC 0018: a UW member's semantic_digest MUST verify when the implementation
+  // supports its representation; otherwise the package is `unverifiable`.
+  // Through 4.2.0 the CLI supplied no digest function, so every stated digest
+  // was `unverifiable`, including one left stale after the member changed.
+  const ALTERED = DEAL_TEXT.replace('deal_id: d1', 'deal_id: d1-altered');
+  const semantic = async (text: string) => computeEnvelopeDigest(toUWEnvelope(parseUWFile(text)));
+  const sha = async (bytes: Uint8Array) => `sha256:${await sha256BytesHex(bytes)}`;
+
+  type Role = UWDealPackageManifest['members'][number]['role'];
+  interface Member { id: string; path: string; media_type: string; bytes: Uint8Array; semantic_digest?: string; role?: Role }
+  async function writePackage(name: string, members: Member[]): Promise<string> {
+    const manifest: UWDealPackageManifest = {
+      package_version: '1.0',
+      package_id: `pkg:test:${name}`,
+      members: await Promise.all(members.map(async (m) => {
+        const entry: UWDealPackageManifest['members'][number] = {
+          id: m.id,
+          path: m.path,
+          role: m.role ?? 'underwriting',
+          media_type: m.media_type,
+          sha256: await sha(m.bytes),
+        };
+        if (m.semantic_digest) entry.semantic_digest = m.semantic_digest;
+        return entry;
+      })),
+      links: [],
+    };
+    const payloads = Object.fromEntries(members.map((m) => [m.path, m.bytes]));
+    const path = join(tmp, `${name}.uwpkg.zip`);
+    writeFileSync(path, await encodeUWDealPackageZip({ manifest, payloads }));
+    return path;
+  }
+
+  describe('packageMemberSemanticDigest', () => {
+    it('computes the uw-envelope-semantic digest of UWX and of each lossless model encoding', async () => {
+      const expected = await semantic(DEAL_TEXT);
+      expect(await packageMemberSemanticDigest('text/vnd.uwmd.extended+markdown', encoder.encode(DEAL_TEXT))).toBe(expected);
+      expect(await packageMemberSemanticDigest('Text/VND.uwmd.extended+markdown; charset=utf-8', encoder.encode(DEAL_TEXT))).toBe(expected);
+      const envelope = toUWEnvelope(parseUWFile(DEAL_TEXT));
+      for (const [id, mediaType] of [
+        ['uw-json', 'application/vnd.uwmd.document+json'],
+        ['uw-xml', 'application/vnd.uwmd.document+xml'],
+        ['uw-csv-bundle', 'application/vnd.uwmd.csv-bundle+zip'],
+      ] as const) {
+        const encoded = await CORE_CODEC_REGISTRY.encode<string | Uint8Array>(id, envelope);
+        const bytes = typeof encoded === 'string' ? encoder.encode(encoded) : encoded;
+        expect(await packageMemberSemanticDigest(mediaType, bytes), id).toBe(expected);
+      }
+    });
+
+    it('returns null, never a digest, for what it cannot canonicalize', async () => {
+      // UW Lite: RFC 0018 does not pin the canonicalization its digest uses.
+      expect(await packageMemberSemanticDigest('text/vnd.uwmd.lite+markdown', encoder.encode('uw_version: 1.0\n'))).toBeNull();
+      expect(await packageMemberSemanticDigest('application/pdf', PDF_BYTES)).toBeNull();
+      // UWX bytes that are not UTF-8, or that the reader refuses.
+      expect(await packageMemberSemanticDigest('text/vnd.uwmd.extended+markdown', PDF_BYTES)).toBeNull();
+      expect(await packageMemberSemanticDigest('text/vnd.uwmd.extended+markdown', encoder.encode(DEAL_TEXT.replace('"3.0"', '"2.0"')))).toBeNull();
+      expect(await packageMemberSemanticDigest('application/vnd.uwmd.document+json', encoder.encode('{not json'))).toBeNull();
+    });
+  });
+
+  it('verifies a package whose stated semantic digests recompute, and does not exit', async () => {
+    const envelope = toUWEnvelope(parseUWFile(DEAL_TEXT));
+    const json = encoder.encode(await CORE_CODEC_REGISTRY.encode<string>('uw-json', envelope));
+    const path = await writePackage('valid', [
+      { id: 'deal:d1', path: 'records/deal.uwx.md', media_type: 'text/vnd.uwmd.extended+markdown', bytes: encoder.encode(DEAL_TEXT), semantic_digest: await semantic(DEAL_TEXT) },
+      { id: 'model:d1', path: 'models/deal.uw.json', media_type: 'application/vnd.uwmd.document+json', bytes: json, semantic_digest: await semantic(DEAL_TEXT), role: 'model_encoding' },
+      { id: 'source:lease', path: 'sources/lease.pdf', media_type: 'application/pdf', bytes: PDF_BYTES, role: 'source_evidence' },
+    ]);
+    await cmdPackageVerify(path, {});
+    expect(logs.join('\n')).toContain('VERIFIED - valid.uwpkg.zip');
+    logs = [];
+    await cmdPackageVerify(path, { json: true });
+    expect(JSON.parse(logs[0]!)).toEqual({ status: 'verified', errors: [], unverifiable_members: [] });
+  });
+
+  it('fails, exit 1, when a member changed under a refreshed byte digest and a stale semantic digest', async () => {
+    const path = await writePackage('stale', [
+      // sha256 is taken from the altered bytes; semantic_digest still names the original.
+      { id: 'deal:d1', path: 'records/deal.uwx.md', media_type: 'text/vnd.uwmd.extended+markdown', bytes: encoder.encode(ALTERED), semantic_digest: await semantic(DEAL_TEXT) },
+    ]);
+    await expectExit(() => cmdPackageVerify(path, {}), 1);
+    expect(logs.join('\n')).toContain('FAILED - stale.uwpkg.zip');
+    expect(logs.join('\n')).toContain('PKGVER-003 [deal:d1]');
+    logs = [];
+    await expectExit(() => cmdPackageVerify(path, { json: true }), 1);
+    const result = JSON.parse(logs[0]!);
+    expect(result.status).toBe('failed');
+    expect(result.errors.map((e: { code: string }) => e.code)).toEqual(['PKGVER-003']);
+    expect(result.unverifiable_members).toEqual([]);
+  });
+
+  it('fails a stale semantic digest on a model encoding as well', async () => {
+    const altered = encoder.encode(await CORE_CODEC_REGISTRY.encode<string>('uw-json', toUWEnvelope(parseUWFile(ALTERED))));
+    const path = await writePackage('stale-json', [
+      { id: 'model:d1', path: 'models/deal.uw.json', media_type: 'application/vnd.uwmd.document+json', bytes: altered, semantic_digest: await semantic(DEAL_TEXT), role: 'model_encoding' },
+    ]);
+    await expectExit(() => cmdPackageVerify(path, {}), 1);
+    expect(logs.join('\n')).toContain('PKGVER-003 [model:d1]');
+  });
+
+  it('reports an unsupported representation as unverifiable, never failed, and does not exit', async () => {
+    const lite = encoder.encode('---\nuw_lite: "1.0"\n---\n');
+    const path = await writePackage('lite', [
+      { id: 'deal:d1', path: 'records/deal.uwx.md', media_type: 'text/vnd.uwmd.extended+markdown', bytes: encoder.encode(DEAL_TEXT), semantic_digest: await semantic(DEAL_TEXT) },
+      // Any digest: nothing here can compute a Lite member's, so it is not compared.
+      { id: 'lease:lite', path: 'records/lease.uw.md', media_type: 'text/vnd.uwmd.lite+markdown', bytes: lite, semantic_digest: `sha256:${'a'.repeat(64)}`, role: 'lease_abstract' },
+    ]);
+    await cmdPackageVerify(path, {});
+    const text = logs.join('\n');
+    expect(text).toContain('UNVERIFIABLE - lite.uwpkg.zip');
+    expect(text).toContain('(unverifiable) lease:lite — its text/vnd.uwmd.lite+markdown semantic digest cannot be computed here');
+    expect(text).not.toContain('PKGVER-003');
+    logs = [];
+    await cmdPackageVerify(path, { json: true });
+    expect(JSON.parse(logs[0]!)).toEqual({ status: 'unverifiable', errors: [], unverifiable_members: ['lease:lite'] });
+  });
+
+  it('reports a UW member the reader refuses as unverifiable, not as a mismatch', async () => {
+    const refused = encoder.encode(DEAL_TEXT.replace('"3.0"', '"2.0"'));
+    const path = await writePackage('refused', [
+      { id: 'deal:d1', path: 'records/deal.uwx.md', media_type: 'text/vnd.uwmd.extended+markdown', bytes: refused, semantic_digest: await semantic(DEAL_TEXT) },
+    ]);
+    await cmdPackageVerify(path, {});
+    expect(logs.join('\n')).toContain('UNVERIFIABLE - refused.uwpkg.zip');
+    expect(logs.join('\n')).not.toContain('PKGVER-003');
+  });
+
+  it('checks bytes only where no semantic digest is stated', async () => {
+    // No semantic_digest stated: there is no semantic evidence to check, so
+    // the member verifies on its byte digest alone, neither failed nor unverifiable.
+    const unstated = await writePackage('unstated', [
+      { id: 'deal:d1', path: 'records/deal.uwx.md', media_type: 'text/vnd.uwmd.extended+markdown', bytes: encoder.encode(DEAL_TEXT) },
+      { id: 'source:lease', path: 'sources/lease.pdf', media_type: 'application/pdf', bytes: PDF_BYTES, role: 'source_evidence' },
+    ]);
+    await cmdPackageVerify(unstated, { json: true });
+    expect(JSON.parse(logs[0]!)).toEqual({ status: 'verified', errors: [], unverifiable_members: [] });
   });
 });

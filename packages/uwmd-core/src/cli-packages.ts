@@ -16,6 +16,12 @@ import {
   verifyUWDealPackage,
   projectLeaseAbstractToRentRoll,
   validateLeaseAbstract,
+  computeEnvelopeDigest,
+  toUWEnvelope,
+  parseUWFile,
+  CORE_CODEC_REGISTRY,
+  UW_CSV_BUNDLE_CODEC,
+  UWX_MEDIA_TYPE,
   type ProtocolError,
 } from '@uwmd/verify';
 
@@ -100,16 +106,49 @@ export async function cmdPackageCreate(manifestPath: string, flags: Flags): Prom
   }
 }
 
+/**
+ * The semantic digest (`uw-envelope-semantic`, RFC 0014) of one package member,
+ * or null when this implementation cannot canonicalize it. RFC 0018: a UW
+ * member's `semantic_digest` MUST verify when the implementation supports its
+ * representation, and the package is `unverifiable` otherwise. Supported here:
+ * UWX Markdown and the three lossless model encodings in the core codec
+ * registry (UW JSON, UW XML, UW CSV bundle), which all canonicalize to the same
+ * envelope. UW Lite is not: its package digest is not pinned to a
+ * canonicalization. A member that does not decode or parse is also null.
+ * Inability to compute is never reported as a mismatch.
+ */
+export async function packageMemberSemanticDigest(mediaType: string, bytes: Uint8Array): Promise<string | null> {
+  const normalized = mediaType.split(';', 1)[0]?.trim().toLowerCase() ?? '';
+  try {
+    if (normalized === UWX_MEDIA_TYPE) {
+      const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      return await computeEnvelopeDigest(toUWEnvelope(parseUWFile(text)));
+    }
+    const codec = CORE_CODEC_REGISTRY.findByMediaType(normalized);
+    if (!codec) return null;
+    const input = codec === UW_CSV_BUNDLE_CODEC ? bytes : new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    return await computeEnvelopeDigest(await CORE_CODEC_REGISTRY.decode(codec.descriptor.id, input));
+  } catch {
+    return null;
+  }
+}
+
 export async function cmdPackageVerify(file: string, flags: Flags): Promise<void> {
   const decoded = decodeUWDealPackageZip(readBytes(file));
-  const result = await verifyUWDealPackage(decoded);
+  const mediaTypes = new Map(decoded.manifest.members.map((member) => [member.id, member.media_type]));
+  // Through 4.2.0 no semanticDigestOf was supplied, so every stated
+  // semantic_digest reported `unverifiable`, including members whose content
+  // changed after the manifest's semantic digest was taken.
+  const result = await verifyUWDealPackage(decoded, {
+    semanticDigestOf: (id, bytes) => packageMemberSemanticDigest(mediaTypes.get(id) ?? '', bytes),
+  });
   if (flags['json']) {
     console.log(JSON.stringify(result, null, 2));
   } else {
     console.log(`\n${result.status.toUpperCase()} - ${basename(file)}\n`);
     printErrors(result.errors);
     for (const id of result.unverifiable_members) {
-      console.log(`  (unverifiable) ${id} — semantic digest could not be checked here`);
+      console.log(`  (unverifiable) ${id} — its ${mediaTypes.get(id) ?? 'unknown'} semantic digest cannot be computed here`);
     }
     console.log(
       '\nA verified package means its members are unchanged and match the manifest.',

@@ -219,7 +219,9 @@ their READMEs followed as a new adopter would. Full record:
   errors are misleading. Stale Protocol 4.0.0 and `--stage` references remain
   (README, VERSIONS.md pinning, Format spec Part VI). `compact` output fails
   `verify` (`POL-02`), and `package verify` cannot reach `VERIFIED` because the
-  CLI supplies no semantic digest.
+  CLI supplies no semantic digest. The CLI blockers (D-01, D-02, D-04) and
+  D-10 are fixed on `main`, unreleased; D-09 is an open normative question
+  (record §9–§10).
 
 ## Released in 4.1.0: the `@uwmd/verify` split (RFC 0083, 2026-10-13)
 

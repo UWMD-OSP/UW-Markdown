@@ -197,7 +197,7 @@ PRs #330 and #331 merged. Dispositions since:
 | D-06 | Signing README now states the real requirement (Node 20+, or Node 18 with `--experimental-global-webcrypto`, which passes scenario 4). `engines` still says `>=18.4.0`: owner decision. |
 | D-07 | Format spec Part VI not edited: owner decision whether it is normative. |
 | D-09 | Traced; owner decision (below). |
-| D-10 | Traced; implementation defect against RFC 0018 (below). Not fixed yet. |
+| D-10 | Traced (below); implementation defect against RFC 0018. Fixed in the D-10 PR (§10). |
 
 **D-09: `compact` output fails `verify` (`POL-02`).** The two sides follow two
 different normative texts. Format §2.7 says "The `uwmd compact` command strips
@@ -251,3 +251,50 @@ Other defects found while correcting the documentation:
 - `uwmd verify` applies only replacement funding among the Protocol §II.2
   item 3 stated-figure verifiers. The others have their own commands. Whether
   `verify` should run them all is a product decision.
+
+## 10. D-10 correction evidence
+
+**Contract reconciled.** RFC 0018 (implemented) requires a UW member's
+`semantic_digest` to verify when the implementation supports the
+representation, and `unverifiable` otherwise. The semantic digest is RFC
+0014's `uw-envelope-semantic` digest. `verifyUWDealPackage` is unchanged and
+three-state: an equal digest verifies, a different one fails (`PKGVER-003`),
+and `null` is `unverifiable`. Before this change nothing exercised the
+supplied-digest path: the `packages` conformance invariants
+(`verify-clean`, `verify-tampered`) use manifests with no `semantic_digest`,
+and the one CLI test pinned the defect (a bogus digest on a checkable UWX
+member expected `unverifiable`).
+
+**Supported representations.** For `examples/verification/deal.uwx.md`,
+the UWX parse and the `uw-json`, `uw-xml` and `uw-csv-bundle` codecs in
+`CORE_CODEC_REGISTRY` all give the same envelope digest
+(`sha256:4c7b1784…8518`), and each model encoding's stamped `semantic_digest`
+equals it. UW Lite is excluded. A Lite receipt subject uses the separate
+`uw-lite-financial` canonicalization, and RFC 0018 does not say which one a
+Lite member's `semantic_digest` uses. That is an owner question; until it is
+answered, Lite members stay `unverifiable`.
+
+**Reproduction.** `standalone-demo.uwpkg.zip` with `deal:parkview`'s
+`deal_name` edited, its `sha256` refreshed and its `semantic_digest` left
+stale. On `main` before the fix it prints `UNVERIFIABLE` for all three
+records and exits 0, the same verdict as the untouched package. After the
+fix the untouched package prints `VERIFIED` (exit 0), and the altered one
+prints `FAILED` with `PKGVER-003 [deal:parkview]` (exit 1). An archive with
+its declared source evidence removed is refused at decode,
+`[PKGZIP-006]` (exit 1), before and after.
+
+**Regression tests.**
+- Core `cli-packages.test.ts`, 8 new tests: digest parity across all four
+  representations; `null` for Lite, PDF, non-UTF-8, a refused `uw_version`
+  and malformed JSON; a valid package (exit 0); a stale UWX digest and a
+  stale UW JSON digest (exit 1, `PKGVER-003`); Lite `unverifiable` (exit 0,
+  no `PKGVER-003`); a refused record `unverifiable`, not failed; and no
+  stated digest, checked on bytes only.
+- CLI smoke, 2 spawned tests: the demo package verifies (exit 0), and the
+  stale variant fails (exit 1).
+- Verify `deal-package.test.ts`, 2 tests: the PKGZIP-006 refusal and the
+  library's three-way `semanticDigestOf` contract.
+
+Against the unfixed `cli-packages.ts`, both smoke tests and 6 of the 8 core
+tests fail. The two that pass are the guards that a refused record and an
+unstated digest are not turned into failures.
