@@ -1,8 +1,12 @@
 # 13 — Build status (living document)
 
-Reconciled **2026-10-14** (America/Phoenix) for release-prepared **4.2.0**.
-Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. Protocol
-4.1.0 carries RFC 0084: an optional detached document snapshot signature over
+Reconciled **2026-10-14** (America/Phoenix) for published and independently
+verified **4.2.0**. `@uwmd/verify` **0.2.0**, core/CLI **4.2.0**, signing
+**0.5.0**, batch **0.9.1**, Excel **0.9.18**, report **0.8.30** and lake
+**0.3.1** are published from annotated `v4.2.0` on
+`238dbf35a8654e2f8394088b9c3982159b11af8f`. They pair with Stable Protocol
+**4.1.0** and Format **3.0**. Protocol 4.1.0 carries RFC 0084, now
+`implemented`: an optional detached document snapshot signature over
 the `uw-envelope-semantic` digest (§V.13) with the Integrity capability
 `document-signature-verification`, codes `INT-09`–`INT-15`, a guarded
 source-block accounting that refuses ambiguous or lossy sources, the
@@ -18,9 +22,15 @@ Signing **0.5.0** pins verify 0.2.0 and core 4.2.0, batch **0.9.1** and lake
 **0.3.1** pin verify 0.2.0, Excel **0.9.18** and report **0.8.30** pin core
 4.2.0, and core's optional signing peer is 0.5.0. The workflow publishes eight
 packages, `@uwmd/verify` first, through the trusted publishers already bound
-for 4.1.0. RFC 0084 stays `accepted` until publication is verified. The
-independent verification behind this preparation is
-[docs/reviews/2026-10-14-rfc-0084-release-hardening.md](../reviews/2026-10-14-rfc-0084-release-hardening.md).
+for 4.1.0 ([release run 38663508062](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38663508062)).
+The registry-installed CLI passes 350/350 portable cases with no skips and
+authenticates the document-signature fixtures; the published `@uwmd/verify`,
+installed alone, resolves and checks signing subjects; all 672 published
+files equal a local pack of the tagged source. PR #328 (closed CLI flag
+vocabulary) merged to `main` after the preparation and is not in 4.2.0. See
+the [publication evidence](../releases/4.2.0-publication.md) and the
+independent
+[verification review](../reviews/2026-10-14-rfc-0084-release-hardening.md).
 
 Reconciled **2026-10-13** (America/Phoenix) for published and independently
 verified **4.1.0**. `@uwmd/verify` **0.1.0**, core/CLI **4.1.0**, signing

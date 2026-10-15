@@ -36,7 +36,18 @@ and lake 0.3.1 pin verify 0.2.0; Excel 0.9.18 and report 0.8.30 pin core
 0.2.0 as their engine; a receipt issued by 0.1.0 whose results disagree
 reports `RCP-07` `unverifiable` (UW Receipt §5.3). `uwmd init` refuses to
 overwrite an existing file. The workflow scope is eight packages, verify
-first: verify, core, CLI, signing, batch, Excel, report and lake.
+first: verify, core, CLI, signing, batch, Excel, report and lake. Protocol
+4.1.0 is Stable. All eight packages are published from annotated tag
+`v4.2.0` on `238dbf35a8654e2f8394088b9c3982159b11af8f` through trusted
+publishing with provenance. Release run 38663508062 succeeded. All registry
+versions, `latest`, `gitHead`, signatures, attestations, Rekor checks, 672
+published files (eight archives byte-equal to a local pack), 350
+delivered-CLI portable cases and isolated consumers of all eight packages, of
+`@uwmd/verify` alone and of batch and lake without core were independently
+verified; RFC 0084 is `implemented`. Neither module package published again.
+No other package generation shipped. Preparation and
+[publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.2.0-publication.md)
+remain separate records.
 
 Release 4.1.0 pairs core/CLI 4.1.0 with Protocol 4.0.0 and Format 3.0, the
 same contract as 4.0.0 and 4.0.1, and adds a package: `@uwmd/verify` 0.1.0,
