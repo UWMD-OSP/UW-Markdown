@@ -18,6 +18,19 @@ protocol, and each package each carry an independent semver).
   Formula meanings, comparison precision, validation codes and conformance
   baselines are unchanged. Regression tests cover both verdict directions and
   projection refusal/acceptance at the established boundary.
+
+- `@uwmd/excel` preserves the source NOI, EGI and operating-expense inputs
+  when exporting a single operating statement (financial verification Phase 2,
+  following #343). Live formulas previously replaced stated aggregates with
+  sums of missing or conflicting detail, changing cap rate, DSCR and other
+  dependent metrics. Contradictory detail now refuses export with
+  `EXCEL-EMIT-PATH`; totals-only inputs remain editable aggregates, and missing
+  source subtotals show `#N/A`. When exact decimal detail matches but its binary
+  sum differs, export retains the original unrounded source aggregate with a
+  note instead of rounding an input or choosing a financial tolerance. These
+  retained aggregates do not update from subsequent detail edits. No document
+  validation requirement or normative financial definition changes.
+
 - Format spec Part VI (toolchain interface) describes the CLI as it is.
   These are editorial corrections and change no format or verification rule.
   - §6.2 showed `uwmd validate <file> [--stage <stage>]`, an option nothing

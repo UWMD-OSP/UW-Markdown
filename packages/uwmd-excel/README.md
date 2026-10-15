@@ -41,9 +41,20 @@ These mirror `MULTIFAMILY_PACK` (exported by `@uwmd/verify` and `@uwmd/core`), s
 workbook in Excel and running `uwmd calc` against the same `.uwx.md`
 produce identical numbers by construction.
 
-Editing any named-input cell updates every dependent metric. Editing any
-income or expense line item updates EGI, total opex, NOI, and every metric
-that touches NOI.
+Editing a named-input cell updates its dependent formulas. When the statement
+uses live subtotals, editing its income or expense detail updates those subtotals,
+NOI and dependent metrics. Literal-source exceptions are described below.
+
+The single-statement exporter checks that live subtotal formulas reproduce
+the record's stated EGI, operating expenses and NOI. Conflicting detail refuses
+export with `EXCEL-EMIT-PATH`; the exporter does not choose a new financial
+authority or change document validation. A totals-only record retains its stated
+aggregates as editable numeric inputs with cell notes and visible status text
+explaining that detail edits do not recalculate them. A missing source subtotal is `#N/A` with
+an explanatory note, rather than a replacement calculation or a fabricated zero.
+When exact decimal detail matches but its binary sum differs from the stated
+aggregate, export retains the original unrounded aggregate with a note. That
+aggregate remains an editable input; subsequent detail edits do not update it.
 
 **Several debt blocks (RFC 0066).** A deal can state `debt_structure` as
 `_role: senior` and `_role: junior` blocks. The named inputs then hold the
