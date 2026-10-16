@@ -36,12 +36,12 @@ Paths in the table are relative to the repository. `core` abbreviates
 | `core/agents/L0b-prompt.md`, `agents/schemas.ts` | Product prompt reference and single/multiple-section tool schemas; host supplies provenance. Prompt file is not an independent execution engine. |
 | `core/agents/provider.ts`, `agents/providers/anthropic.ts`, `agents/providers/replay.ts` and tests | Product provider interface/error, optional Anthropic adapter, recording/replay cassette and request fingerprints. Provider neutrality is useful but does not make a runner part of the standard. |
 | `packages/uwmd-core/package.json`, root `package-lock.json` | Anthropic SDK is an optional peer and development dependency, loaded dynamically by the adapter. No hard runtime SDK dependency in core; none in verify. Its type loader and structural injected-client declarations must remain usable with the peer absent. |
-| `core/runner.ts` and tests | Mixed compatibility writer: `writeAgentBlock`, `writeErrorEntry`, `AgentOutput`, `RunOptions`, `RunResult`; superseding, metadata, log writes and frontmatter changes. Root and browser export it. Retain 4.x. Do not delete provenance operations with the runner. |
-| `core/context-profiles.ts` and tests | Starter context packaging (`buildContext`, five profiles, token estimates, truncation). Distinct from financial verification profiles and normative representation codecs. Retain 4.x; review product-specific packaging for 5.0. |
+| `core/runner.ts` and tests | Mixed compatibility writer: `writeAgentBlock`, `writeErrorEntry`, `AgentOutput`, `RunOptions`, `RunResult`; superseding, metadata, log writes and frontmatter changes. Root and browser export it. Preserve these generic writer APIs and `buildMeta` by default, independently of hosted-agent retirement. Later removal needs its own use-case audit and owner approval. |
+| `core/context-profiles.ts` and tests | Starter context packaging (`buildContext`, five profiles, token estimates, truncation). Distinct from financial verification profiles and normative representation codecs. Preserve generic `buildContext` and its profile/options/result types by default. Later removal requires an independent compatibility justification and owner approval. |
 | `core/cli.ts`, `cli-args.ts`; `packages/uwmd-cli/bin/uwmd.mjs`, README/tests | Product `run` and `layers`, live model/key/instruction flags, prompt/context inspection and JSON-input writing. The CLI also hosts verifier, generic edit and interoperability commands; removal must be command-scoped. |
 | `core/reference-implementation.ts`, `starter-protocol.ts` | `agent-host` advertised capability and `AgentHostCapability`; mixed tables also hold display/cascade/capability-token contracts. Remove only obsolete product claims after implementation removal. |
 | `conformance/starter/agent/`, `scripts/rerecord-cassettes.mjs` | Product shape/profile/replay fixtures and cassette tooling. Corpus ownership is starter products, not base Verifier. Keep in 4.x; isolate migration from normative fixtures and portable runner vocabulary. |
-| `.codex/skills/uwmd-{intake-scope,document-extraction,validation-triage,batch-exceptions,portfolio-rollup}/` | Five product workflow skills, each with `SKILL.md` and `agents/openai.yaml`. They propose edits rather than directly mutating files. Keep 4.x behavior; migrate product workflows separately. Their current “core sole calculator” wording is a legacy starter rule, not a restriction on conforming producers. |
+| `.codex/skills/uwmd-{intake-scope,document-extraction,validation-triage,batch-exceptions,portfolio-rollup}/` | Five product workflow skills, each with `SKILL.md` and `agents/openai.yaml`. They propose edits rather than directly mutating files. Keep 4.x behavior; any retirement requires asset/URL policy approval. No automatic copying or required migration to StackUW or another product is authorized. Their current “core sole calculator” wording is a legacy starter rule, not a restriction on conforming producers. |
 | `docs/starter/ai-host.md`, `docs/wiki/06-bancroft-agents.md`, wiki 03/08/09/12, `docs/TOOLS.md`, `docs/GLOSSARY.md`, READMEs, `tools/docs-site/ai/` | Product documentation, discovery and examples. Correct stale normative claims now; retain working compatibility instructions until removal ships. Historical RFCs/release evidence stay immutable. |
 | `core/defaults.ts`, `cascade.ts`, `gaps.ts`, `refinement.ts`, `derive*` authoring APIs and web-editor panels | Adjacent deterministic starter features, not LLM SDK integrations. This bounded cleanup does not remove or redesign them; broader modeling ownership requires its own dependency/migration review. |
 
@@ -118,3 +118,23 @@ gates, not passing claims. No test, expectation or guard was weakened. Current
 branch CI must establish the full workspace, wrapper, package and release gates
 before merge. Dependencies used existing local installations with workspace
 links pointing to this worktree; manifests and lockfiles were not changed.
+
+## Serialized integration review
+
+The coordinator reviewed the nonbreaking cleanup at
+`37246c123dd41d8a3deef1421e0158ca81ab15e7` and refined only these two review
+records. Generic writers/context APIs remain preservation defaults; host export
+retirement, command refusals and asset support remain owner-controlled proposals.
+No automatic adopter migration or package-version assignment is authorized.
+The removal proposal now names its candidate exports and the unresolved Format
+§6.3/§6.8 obligations rather than treating RFC 0078 as their implicit repeal.
+
+For this documentation-only refinement, `npm run docs:build` passes (16.63s),
+and `npm run verify-indexes` passes (two source/reference tests and all index
+checks). An initial docs attempt could not find VitePress because its reused
+local dependency symlink pointed to an absent directory; correcting that
+untracked symlink allowed the build. No manifest or lockfile changed. The
+full local subprocess failures above remain failed; this refinement does not
+reclassify them or claim a new complete local suite. Exact-head GitHub checks
+must pass before integration. No normative files, formulas, validation outcomes,
+conformance expectations, public exports, versions or release artifacts change.
