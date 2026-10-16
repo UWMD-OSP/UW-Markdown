@@ -657,9 +657,9 @@ to `packages/uwmd-verify/src/{capital-stack,lease-up,lease-up-cash-flows}.test.t
 
 `implementations/python` currently advertises parse only, with no tier or
 Verifier certification. Its standard-library unit controls and genuine external
-portable Reader run remain separate: 56 unit methods and 17 portable Reader
+portable Reader run remain separate: 59 unit methods and 17 portable Reader
 cases on the latest locally checked Windows tree. Unit tests include the nine
-nonportable Reader-owned refusal fixtures and twelve payload-level VIII.2a
+nonportable Reader-owned refusal fixtures and fifteen payload-level VIII.2a
 period controls. The latter preserve same-day cash-flow rows under RFC 0062 and
 exercise PS-01/PS-02 without claiming complete validation or portable Verifier
 passes. Role/variant resolution, expression-path integration, PS-03 and financial

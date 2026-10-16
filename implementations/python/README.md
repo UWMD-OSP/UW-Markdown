@@ -76,8 +76,8 @@ whole series before returning one row. Neither API rewrites, nets or reorders
 source. Missing identities warn and remain absent rather than being inferred.
 No new CLI command or manifest capability is advertised.
 
-Additional local evidence on Python 3.12.3/Windows: **56 unit methods passed**
-(the unchanged 44 plus 12 period controls). The actual portable Reader driver
+Additional local evidence on Python 3.12.3/Windows: **59 unit methods passed**
+(the unchanged 44 plus 15 period controls). The actual portable Reader driver
 remains **17/17**, zero skips/failures/unverifiable cases. This does not add
 Verifier conformance passes. The recovery snapshot's registry/identity concepts
 were selectively reconciled against current VIII.2a/RFC 0062; its Reader,

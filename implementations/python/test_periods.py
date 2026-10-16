@@ -1,5 +1,7 @@
 """Independent VIII.2a payload controls, without claiming calc conformance."""
 import copy
+import json
+import re
 from pathlib import Path
 import unittest
 
@@ -126,11 +128,71 @@ class PeriodTests(unittest.TestCase):
         document = parse(source)
         payload = document.projection()["sections"]["dcf"]["content"]
         checked = inspect_period_series(payload, "dcf", "annual_cash_flows")
-        self.assertEqual({i.code for i in checked.issues}, {"PS-01", "PS-02"})
+        baseline = json.loads((root / "conformance/documents/expected/13-period-identities.validation.json").read_text(encoding="utf-8"))
+        expected = {(issue["code"], issue["severity"]) for issue in baseline["issues"]
+                    if issue["code"] in ("PS-01", "PS-02")}
+        self.assertEqual({(i.code, i.severity) for i in checked.issues}, expected)
         self.assertEqual(len(checked.rows), 3)
         self.assertEqual(document.source.raw, source)
         # The fixture also requires PS-03 and unrelated validation; neither is
         # claimed by this payload-only structural foundation.
+
+
+    def test_frozen_duplicate_year_structure_and_selector_refusals(self):
+        root = Path(__file__).resolve().parents[2] / "conformance/cash-flow/reject-duplicate-year-selection"
+        document = parse((root / "deal.uwx.md").read_bytes())
+        payload = document.projection()["sections"]["dcf"]["content"]
+        baseline = json.loads((root / "expected.json").read_text(encoding="utf-8"))
+        checked = inspect_period_series(payload, "dcf", "annual_cash_flows")
+        self.assertEqual({i.code for i in checked.issues}, set(baseline["expected_codes"]))
+        for selector, expected in zip(("Y1", "Y2"), baseline["selectors"], strict=True):
+            self.assertEqual(expected["formula"], "dcf.annual_cash_flows@" + selector + ".noi")
+            self.refusal(expected["error_code"], select_period_row, payload, "dcf", "annual_cash_flows", selector)
+
+    def test_frozen_same_day_source_and_absent_ps_diagnostics(self):
+        root = Path(__file__).resolve().parents[2] / "conformance/cash-flow/valid-same-day-selection"
+        source = (root / "deal.uwx.md").read_bytes()
+        document = parse(source)
+        payload = document.projection()["sections"]["cash_flow_series"]["base"]["content"]
+        baseline = json.loads((root / "expected.json").read_text(encoding="utf-8"))
+        self.assertIn("PS-", baseline["absent_code_prefixes"])
+        checked = inspect_period_series(payload, "cash_flow_series", "series")
+        self.assertEqual(checked.issues, ())
+        self.assertEqual([row.value for row in checked.rows], baseline["expected_series"])
+        for selector, expected in zip(("2027-06-30", "2028-06-30", "2029-06-30"), baseline["selectors"], strict=True):
+            self.assertEqual(expected["formula"], "cash_flow_series.series@" + selector + ".amount")
+            if not expected["ok"]:
+                self.refusal(expected["error_code"], select_period_row, payload, "cash_flow_series", "series", selector)
+            else:
+                row = select_period_row(payload, "cash_flow_series", "series", selector)
+                self.assertEqual(None if row is None else row.get("amount"), expected["value"])
+        self.assertEqual(document.source.raw, source)
+
+    def test_frozen_single_reference_period_fixtures_without_calc_claim(self):
+        # This test-only extraction is deliberately not an expression parser.
+        # The two arithmetic formulas (01 and 04) are outside this API's scope.
+        root = Path(__file__).resolve().parents[2] / "conformance/calc/fixtures"
+        names = ("period-02-keyed-year", "period-03-calendar-quarter", "period-05-missing",
+                 "period-06-kind-mismatch", "period-07-duplicate", "period-08-unregistered",
+                 "period-09-same-day-unique", "period-10-same-day-repeated",
+                 "period-11-same-day-absent", "period-12-other-series-duplicate")
+        for name in names:
+            with self.subTest(fixture=name):
+                directory = root / name
+                declaration = json.loads((directory / "calc.json").read_text(encoding="utf-8"))
+                expected = json.loads((directory / "expected-result.json").read_text(encoding="utf-8"))
+                match = re.fullmatch(r"([a-z_]+)\.([a-z_]+)@([A-Za-z0-9-]+)\.([a-z_]+)", declaration["formula"])
+                self.assertIsNotNone(match, "test fixture changed beyond a single reference")
+                section, series, selector, field = match.groups()
+                document = parse((directory / "deal.uwx.md").read_bytes())
+                blocks = [block for block in document.source.blocks if block.section == section]
+                self.assertEqual(len(blocks), 1, "test must not silently choose a variant or history")
+                payload = blocks[0].parsed.value
+                if not expected["ok"]:
+                    self.refusal(expected["error"]["code"], select_period_row, payload, section, series, selector)
+                else:
+                    row = select_period_row(payload, section, series, selector)
+                    self.assertEqual(None if row is None else row.get(field), expected["value"])
 
 
 if __name__ == "__main__":

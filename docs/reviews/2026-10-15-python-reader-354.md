@@ -225,11 +225,23 @@ identity; cash-flow series allow repeated valid dates and refuse CALC-PERIOD-002
 only when the requested date repeats. Inspection retains original row objects
 and authored order, including repeated same-day rows.
 
-Local follow-up environment: Python 3.12.3, Windows. The 56-method unit run
-passes (unchanged 44 + 12 new period methods); the actual external portable
+Local follow-up environment: Python 3.12.3, Windows. The 59-method unit run
+passes (unchanged 44 + 15 new period methods); the actual external portable
 Reader driver passes 17/17 with zero skips, failures or unverifiable cases.
 Neither result certifies Verifier conformance. The manifest and CLI remain
 parse-only. Full document validation, active variant/role selection for calcs,
 expression parsing and selector-path integration, safe leaf traversal, override
 addressing, PS-03 and all financial verification remain unfinished. No RFC,
 version, publication or numerical-policy decision changes.
+
+Frozen corpus checks are narrow API evidence, distinct from portable passes:
+
+| Existing frozen input/baseline | Exact exercised obligation |
+| --- | --- |
+| `documents/fixtures/13-period-identities` / validation baseline | Exact PS-01 warning and PS-02 error pairs, filtered to these implemented codes; PS-03 and unrelated codes stay unclaimed |
+| `cash-flow/reject-duplicate-year-selection` | Exact expected structural code set (PS-02) and both frozen selector refusal codes |
+| `cash-flow/valid-same-day-selection` | Absent PS-family diagnostics, exact preserved source-row projection, and repeated/unique/absent-date outcomes |
+| `calc/fixtures/period-02`, `03`, `05`–`12` | Ten single-reference selector outcomes against frozen result values/refusal codes; test-only extraction, no expression or calc capability claim |
+
+The arithmetic formulas in `period-01` and `period-04` remain outside this
+payload API's scope. No arithmetic was added to make those fixtures pass.
