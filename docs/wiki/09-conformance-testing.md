@@ -692,3 +692,21 @@ these are not no-skip portable Verifier passes. The discovery manifest remains
 parse-only, and portable Reader 17/17 remains separate. See the Python README
 for result states, limitations and the unresolved role-opted extension-map
 versus Envelope extension-block shape, which yields digest_unavailable.
+
+### Independent Python reserve-draw bindings
+
+The separate `verify-reserve-draws` command implements accepted §VIII.12 source
+funding identity without assembling cash flows. All 46 unchanged generated
+binding cases run through actual shared subprocess/comparison code as direct
+case evidence; catalogue capability selection remains separate because its
+`calc-evaluate` flag is broader than this implementation. The manifest stays
+parse-only. The 103-method Python suite preserves the earlier 91 methods and
+their 28 reserve cases, adding twelve focused exact-reference, selective reserve,
+closed CF/lease-up source, monetary, precedence, overflow and snapshot controls.
+
+Selected reserve variants are verified in full while unselected variants remain
+bound only by the original complete Envelope digest. The frozen annotation-only
+superseded-source digest pins a source-lifecycle prerequisite correction without
+injecting metadata or changing the Reader projection. No normative baseline,
+receipt convention or tier claim changes. The separate extension-variant-map
+versus Envelope shape gap remains [Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365).

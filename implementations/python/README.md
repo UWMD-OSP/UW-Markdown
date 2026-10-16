@@ -9,7 +9,7 @@ translation. No PyPI name, supported Python floor or publication is decided.
 The discovery manifest advertises only `parse`, **no Reader/Verifier tier,
 full-validation, expression-calculation, signature, receipt or optional-profile capability**.
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
-reserve accounts. It does not certify every Reader or Verifier requirement.
+reserve accounts and explicit reserve-draw binding plans. It does not certify every Reader or Verifier requirement.
 
 Implemented:
 
@@ -59,7 +59,7 @@ projection or infer verified continuity from retained history.
 
 Full Format validation, document-level period/role resolution for calculations, expression
 evaluation, dictionary result checking, all applicable Protocol II.2 stated-figure
-verifiers other than the separate reserve-account check, receipts and receipt
+verifiers other than the separate reserve-account/draw-binding checks, receipts and receipt
 verification remain outstanding. Missing,
 unsupported and failed assertions must remain distinguishable. Passing Reader
 projections does not discharge any of those obligations.
@@ -161,7 +161,8 @@ is implemented by computing those source digests.
 
 The current Reader admits role-opted extension variant maps while the accepted
 Envelope schema permits a single block at each extension ID. That unresolved
-representation boundary produces `unverifiable/digest_unavailable`, without
+representation boundary ([Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365))
+produces `unverifiable/digest_unavailable`, without
 inventing an envelope shape or changing either contract. Ordinary singleton
 selection follows existing Reader semantics; no signature-only source guards
 are added. Annotation mapping collisions also refuse unavailable projection
@@ -177,3 +178,49 @@ These 28 direct case results are **not** a portable tier/capability certificatio
 run: the catalogue currently requires `calc-evaluate` for those cases and has
 no dedicated reserve token. The manifest stays parse-only; no wrapper invents
 capabilities. Genuine portable Reader runs remain separately reported as 17/17.
+
+## Standalone reserve-draw bindings
+
+`python -B implementations/python/uwmd.py verify-reserve-draws <file> [plan.json] --json`
+implements accepted Protocol §VIII.12/RFC0065. An omitted plan returns
+`not_checked/not_applicable`; explicitly supplied JSON null is invalid structure.
+The plan names exact nullable variants, account/period/movement IDs, gross
+lease-up TI/LC cells or cash-flow row ordinals, declared funded shares and
+positive allocations. No default/base/role/fence-order fallback is used.
+
+Each selected reserve variant is checked in full, including accounts/periods
+not individually selected by an edge. Unselected reserve variants do not affect
+that account verification, while the original *whole-document* Envelope digest
+still binds their content, provenance and history. Selected CF/lease-up sources
+undergo closed shape, finite amount, real calendar/order/contiguity, range and
+registered-model checks. Binding does not recompute their financial metrics.
+
+The verifier snapshots both inputs, validates inventories/edge uniqueness before
+hashing, checks stale digests before source resolution, and refuses source
+errors before allocation comparisons. It retains all finite resolved edges even
+when another source fails. In authored binding order, independent draw and
+expenditure sums use binary64 without intermediate rounding and the existing
+separate 2dp quantum. All selected draws must be fully allocated; expenditure
+totals must match the declared funded share without exceeding gross magnitude.
+Overflow preserves finite edge evidence and later independent finite mismatch
+findings. Gross expenditure, authored dates/periods and metadata remain unchanged;
+no cash-flow generation, owner-cash remainder, transfer, classification or timing
+convention is invented.
+
+The existing frozen `superseded-source` case exposed an earlier Python semantic
+projection gap: `superseded=true` in a fence must route that complete block to
+history even when the optional JSON lifecycle flag is absent. A source-lifecycle
+helper now serves Envelope/reserve/binding verification without injecting JSON
+metadata or changing the existing Reader projection/source bytes. This fixes
+implementation behavior against the accepted contract; it changes no receipt
+canonicalization rule or document-authentication admission requirement.
+
+Evidence: **103 Python methods** preserve the prior 91 controls and add twelve
+focused binding methods. Every one of the **46 unchanged generated binding
+cases** executes through the actual shared subprocess/comparison function,
+alongside the existing 28 reserve cases. Extra controls cover exact identity,
+selective/full-source verification, closed sources, precedence, monetary
+boundaries, overflow with later finite findings, evidence order and no mutation.
+These direct case results are not tier/capability certification: the catalogue
+requires broader `calc-evaluate`, which remains unimplemented and unclaimed.
+The manifest stays parse-only and genuine Reader 17/17 runs remain separate.

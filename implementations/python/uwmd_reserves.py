@@ -5,7 +5,7 @@ import math
 from uwmd_envelope import EnvelopeError, source_digest
 from uwmd_jcs import CanonicalizationError
 from uwmd_numeric import calendar_date, quantize
-from uwmd_reader import _superseded
+from uwmd_source_lifecycle import source_superseded as _superseded
 from uwmd_text import nonblank
 
 
@@ -141,6 +141,15 @@ def verify_reserve_accounts(document):
     """Read-only VIII.11 result. Snapshot all supplied data before any work."""
     document = copy.deepcopy(document)
     blocks = [block for block in document.source.blocks if block.section == "reserve_accounts" and not _superseded(block)]
+    return _verify_reserve_blocks(document, blocks)
+
+
+def _verify_reserve_blocks(document, blocks):
+    """Internal VIII.12 reuse: selected blocks, original complete source digest.
+
+    Caller supplies its already-snapshotted original document. Never construct
+    or hash a filtered document to select reserve variants.
+    """
     result = dict(state="not_checked", reason="not_applicable", source_digest=None, evidence=[], issues=[])
     if not blocks:
         return result
