@@ -520,3 +520,14 @@ provides separate JS/Python implementations and fixed bit-pattern/integer tests.
 These make proposed extraction/insertion, whole-word shifts and carry/borrow
 semantics reviewable without activating a financial kernel or claiming Verifier
 conformance.
+
+### Draft numerical procedure experiments
+
+RFC0088/#357 now includes an isolated power-procedure lab with40exact binary64
+operand pairs, an exact-rational midpoint reference and three explicitly ordered
+integer graphs. Six Python checks and two independent JS checks cover120frozen
+result/trace records. Fractional reference certificates have a bounded domain;
+a general fractional runner still requires a chosen kernel. These are unaccepted
+research artifacts, not production behavior or financial/conformance answers.
+VIII.5 quantization, IRR/NPV graph consequences, receipt identity and release
+placement remain separately governed. See the draft's pinned laboratory link.
