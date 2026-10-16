@@ -348,6 +348,37 @@ retain their precedence; no historical fallback evaluator, automatic rehash or
 new runtime identity is proposed. See the lab's measured limits before treating
 any row as an acceptance-ready whole-domain guarantee.
 
+#### Composed endpoint and reporting controls — not a complete solver
+
+The [cash-graph follow-up](https://github.com/UWMD-OSP/UW-Markdown/blob/4a76baa72c1e14ea16e3cddfca5676e8767dde5c/experiments/numerical-0088/cash-graphs/README.md)
+freezes ten synthetic cash vectors and ten reporting controls independently from
+exact rational arithmetic. Three candidate power graphs feed source-ordered
+periodic division and the existing IRR bracket/product/endpoint checks. Complete
+financial intermediate words and nested primitive-trace hashes are retained.
+No bisection executes: a case needing it reports `bisection_required` without
+claiming a root, result or digest. Dated prederived year fractions retain
+amount-times-negative-power, with the missing fractional kernel explicit.
+
+A deliberately constructed money-boundary pair changes reported values from
+1.00 to 1.01 and from -1.00 to -1.01 across graphs. The lab separately freezes
+the resulting canonical result-array bytes/digests under the existing VIII.5
+decimal-string-shift boundary. Its rational shortest-decimal derivation is not
+Python repr, exact-binary decimal rounding or a new production quantizer. Other
+controls expose endpoint 10 versus no bracket, source-order cancellation and
+subnormal reporting versus intermediate refusal. These are synthetic candidate
+consequences, not prevalence estimates, actual issued receipts or accepted
+financial expected answers.
+
+Five new Python methods and two JS tests pass the new traces/reporting controls
+on one Windows AMD64 host. The README proposes frozen-data checks over supported
+Node/Python/runtime/OS combinations for an integrator checkpoint; that coverage
+has not run here and is not inferred from existing production CI. No previous
+audit/lab/full suite was repeated. Receipt precedence, the same-engine runtime
+gap and clean-break compatibility remain as stated below; source/block/signature
+subjects and existing artifacts are not rewritten. General fractional kernels,
+complete solver trajectories, corpus impact and actual spreadsheet evidence
+remain distinct acceptance work.
+
 ### 7. Acceptance checkpoints versus implementation gates
 
 1. **Owner direction checkpoint:** choose D1–D8 or request an explicit alternative.
