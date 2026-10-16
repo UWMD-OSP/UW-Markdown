@@ -81,6 +81,7 @@ export const CASCADE_ORDER: readonly CascadeStep[] = Object.freeze([
 
 // ─── Agent host (starter guide §IX; non-normative since RFC 0078) ─────────────
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface AgentHostCapability {
   /** Layer ID this host can run (e.g. "L6"). Maps to BANCROFT_LAYERS. */
   layer_id: string;

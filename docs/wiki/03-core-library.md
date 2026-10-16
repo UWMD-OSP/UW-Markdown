@@ -1,5 +1,12 @@
 # 03 — Core library (`@uwmd/verify` and `@uwmd/core`)
 
+> **Owner direction (2026-10-15):** agents, prompts, provider integrations and
+> underwriting orchestration belong to adopter products. The current 4.x host is
+> legacy compatibility, not a recommended extension point. No public export,
+> command, provenance rule or fixture is removed here. Format §6.8 writer
+> requirements remain unchanged; RFC 0078 retired the Agent Host tier.
+
+
 Format 3.0 is the only format the reference library reads ([RFC
 0081](../rfcs/0081-one-format-one-protocol.md)): bare section payloads with an
 inline nested `_meta`, a block digest over the block minus `_meta`, and one

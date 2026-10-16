@@ -18,6 +18,11 @@ protocol, and each package each carry an independent semver).
 
 ### Documentation
 
+- Record adopter ownership of AI agents and workflows. Mark legacy host APIs
+  deprecated without removing 4.x exports/CLI behavior; replace agent-product
+  promotion with interoperability guidance and document the approval-gated
+  migration. Preserve normative fields, provenance, bindings and all baselines.
+
 - Post4.3.0 financial follow-up records the held DCF-label baseline proposal,
   compaction authority/projection recommendation and draft86/87 source/basis
   decisions. No metric, validation rule, baseline or RFC acceptance changes.

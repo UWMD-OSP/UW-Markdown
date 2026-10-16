@@ -21,6 +21,7 @@ import { buildContext, type ContextProfile, type ContextResult } from './context
 
 // ─── Agent layer definitions ──────────────────────────────────────────────────
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface LayerDefinition {
   id: string;
   layer: number;
@@ -29,14 +30,15 @@ export interface LayerDefinition {
   writes: string[];   // section IDs this layer writes
   pipelineStateKey: string;
   /**
-   * Normative context profile this layer consumes (Protocol §XI).
-   * Conformance Tier-4 verifies a host requests exactly this profile when
+   * Starter context profile this legacy layer consumes.
+   * Agent starter-product checks verify the requested profile when
    * preparing the layer's input. Phase 4 default; Phase 5 layers (L0a/L0b)
    * declare their own.
    */
   consumed_profile: ContextProfile;
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export const BANCROFT_LAYERS: LayerDefinition[] = [
   {
     id: 'L0',
@@ -123,6 +125,7 @@ export const BANCROFT_LAYERS: LayerDefinition[] = [
 
 // ─── Agent context object ─────────────────────────────────────────────────────
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface AgentContext {
   agentId: string;
   layer: LayerDefinition;
@@ -142,15 +145,16 @@ export interface AgentContext {
   chatContext: string;
   chatTokenEstimate: number;
   /**
-   * Normative context payload built from the layer's `consumed_profile`
-   * (Protocol §XI). Hosts SHOULD send this — not `chatContext` — to the
-   * agent when running under the conformance contract.
+   * Starter context payload built from the layer's `consumed_profile`.
+   * The legacy host uses this rather than `chatContext`; it is not a
+   * Reader/Verifier conformance obligation.
    */
   profileContext: ContextResult;
 }
 
 // ─── Main context builder ─────────────────────────────────────────────────────
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export function buildAgentContext(
   parsed: ParsedUWFile,
   agentId: string,
@@ -202,7 +206,7 @@ export function buildAgentContext(
     maxTokens: opts.maxChatTokens ?? 8000,
   });
 
-  // Build the normative profile context per the layer's declared consumption.
+  // Build the starter profile context per the layer's declared consumption.
   // For 'relevant', pass layer.reads as the section filter so the host receives
   // exactly the documented contract.
   const profileContext = buildContext(parsed, layer.consumed_profile, {
@@ -236,12 +240,14 @@ export function buildAgentContext(
 // Returns the system prompt + user message for a Claude API call.
 // The agent receives: its role, required output schema, and the deal context.
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface BancroftPrompt {
   systemPrompt: string;
   userMessage: string;
   outputSchemaDescription: string;
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export function buildAgentPrompt(
   context: AgentContext,
   userInstructions?: string,
@@ -354,6 +360,7 @@ function getOutputSchemaDescription(layerId: string): string {
 // ─── Context readiness check ──────────────────────────────────────────────────
 // Returns true if the context has enough data to run the agent.
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export function isContextReady(context: AgentContext): boolean {
   // Blocking flags always halt
   if (context.blockingFlags.length > 0) return false;
@@ -365,6 +372,7 @@ export function isContextReady(context: AgentContext): boolean {
 // ─── Pipeline dependency graph ────────────────────────────────────────────────
 // Returns the layers that must complete before a given layer can run.
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export function getLayerDependencies(layerId: string): string[] {
   const deps: Record<string, string[]> = {
     L0: [],

@@ -41,7 +41,7 @@ Understand the `.uw.md` file itself | [02 — The `.uw.md` format](02-uwmd-forma
 Touch `@uwmd/core` (parser/validator/editor/…) | [03 — Core library](03-core-library.md)
 Work on calc evaluation (starter engine; normative notation) | [04 — Calc engine](04-calc-engine.md)
 Add/change a metric definition or asset pack | [05 — Calc packs](05-calc-packs.md)
-Work on the Bancroft AI agents (starter product) | [06 — Bancroft agents](06-bancroft-agents.md)
+Maintain legacy Bancroft compatibility (no new agent product expansion) | [06 — Bancroft agents](06-bancroft-agents.md)
 Look up a deal's data shapes / types | [07 — Data model reference](07-data-model-reference.md)
 Work on a tool (CLI, Excel, web, VS Code) | [08 — Tools](08-tools.md)
 Add/run tests or conformance fixtures | [09 — Conformance & testing](09-conformance-testing.md)

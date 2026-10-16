@@ -29,14 +29,17 @@ import {
   type AgentRequest,
 } from '../provider.js';
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export const CASSETTE_VERSION = '1.0' as const;
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface RecordedExchange {
   /** The request this exchange answers. Compared canonically on replay. */
   request: AgentRequest;
   completion: AgentCompletion;
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface AgentCassette {
   cassette_version: typeof CASSETTE_VERSION;
   /** Which provider produced the recording, e.g. `anthropic`. */
@@ -65,7 +68,10 @@ function comparableRequest(request: AgentRequest): unknown {
   };
 }
 
-/** Stable fingerprint of a request, used for comparison and error messages. */
+/**
+ * Stable fingerprint of a request, used for comparison and error messages.
+ * @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration.
+ */
 export function agentRequestFingerprint(request: AgentRequest): string {
   return canonicalize(comparableRequest(request));
 }
@@ -78,6 +84,7 @@ export function agentRequestFingerprint(request: AgentRequest): string {
  * happily answer a *reordered* run, hiding a change in how many calls a layer
  * makes or in what order — which is exactly the kind of regression a Tier-4
  * conformance suite exists to catch.
+ * @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration.
  */
 export function createReplayProvider(cassette: AgentCassette): AgentProvider {
   if (cassette.cassette_version !== CASSETTE_VERSION) {
@@ -150,6 +157,7 @@ function asRecord(request: AgentRequest) {
   };
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface RecordingProvider extends AgentProvider {
   /** The cassette captured so far. Safe to call mid-run. */
   cassette(): AgentCassette;
@@ -163,6 +171,7 @@ export interface RecordingProvider extends AgentProvider {
  *
  * `recordedAt` is injectable so a re-recording produces a stable file rather
  * than a spurious one-line diff on every run.
+ * @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration.
  */
 export function createRecordingProvider(
   inner: AgentProvider,
@@ -193,7 +202,10 @@ export function createRecordingProvider(
   };
 }
 
-/** Parse and validate a cassette read from disk. */
+/**
+ * Parse and validate a cassette read from disk.
+ * @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration.
+ */
 export function parseAgentCassette(raw: string): AgentCassette {
   let value: unknown;
   try {

@@ -1,12 +1,20 @@
 # Starter products: AI agent host
 
+> **Owner direction (2026-10-15):** agents, prompts, provider integrations and
+> underwriting orchestration belong to adopter products. The current 4.x host is
+> legacy compatibility, not a recommended extension point. No public export,
+> command, provenance rule or fixture is removed here. Format §6.8 writer
+> requirements remain unchanged; RFC 0078 retired the Agent Host tier.
+
+
 > **Non-normative starter-product guidance (RFC 0078). Not part of the standard.**
 >
 > This page moved verbatim from [UW Protocol](../../spec/UW_PROTOCOL.md) §IX,
 > and from the retired Tier-4 Agent Host requirements (Protocol 2.x §II.4),
 > under [RFC 0078](../rfcs/0078-protocol-is-verification.md) (D3). Section
 > numbers and headings are kept so existing references still find the text;
-> relative links were re-based to this directory and nothing else changed.
+> relative links were re-based. Current ownership and starter-only wording
+> are clarified here; the retained host behavior is unchanged.
 > The requirement keywords below (MUST, SHOULD, MAY) describe how the
 > reference starter products behave and what a tool must do to stay
 > compatible with them. They are not conformance requirements of the
@@ -14,7 +22,8 @@
 
 ### II.4 Agent Host
 
-A Tier-4 Agent Host MUST satisfy all Tier-3 requirements, and additionally:
+The legacy starter Agent Host follows these rules (historically Tier-4;
+not a current conformance tier):
 
 1. Honor the `BANCROFT_LAYERS` dependency graph: layer L depends on
    inputs from earlier layers; the host MUST NOT run L until its
@@ -30,7 +39,7 @@ A Tier-4 Agent Host MUST satisfy all Tier-3 requirements, and additionally:
 
 ### IX.1 Layer DAG
 
-`BANCROFT_LAYERS` (`context.ts`) is the normative layer dependency
+`BANCROFT_LAYERS` (`context.ts`) is the legacy starter layer dependency
 graph for v1. Each layer declares its `reads` (sections it needs as
 input) and `writes` (sections it produces). A host MUST satisfy all
 `reads` before invoking a layer.
@@ -49,7 +58,7 @@ sections, and the layer's prompt template.
 
 ### IX.3 Tool schemas
 
-Two normative tool schemas are exported from
+Two starter-host tool schemas are exported from
 `packages/uwmd-core/src/agents/schemas.ts`:
 
 - `WRITE_UW_SECTION_TOOL` — single-section writes.

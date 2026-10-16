@@ -1,5 +1,12 @@
 # Starter products guide
 
+> **Owner direction (2026-10-15):** agents, prompts, provider integrations and
+> underwriting orchestration belong to adopter products. The current 4.x host is
+> legacy compatibility, not a recommended extension point. No public export,
+> command, provenance rule or fixture is removed here. Format §6.8 writer
+> requirements remain unchanged; RFC 0078 retired the Agent Host tier.
+
+
 > **Non-normative starter-product guidance (RFC 0078). Not part of the standard.**
 
 UW Markdown is two things. **The standard** is the document format plus

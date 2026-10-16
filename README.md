@@ -1,6 +1,6 @@
 # UW Markdown
 
-> An open interoperability standard for AI- and code-driven underwriting systems.
+> An open underwriting interoperability and verification standard.
 
 > **Release status:** see [`VERSIONS.md`](VERSIONS.md) for the current format, protocol and package versions. Each release publishes `@uwmd/core`, `@uwmd/cli`, `@uwmd/signing`, `@uwmd/batch`, `@uwmd/excel`, `@uwmd/report` and `@uwmd/lake` to npm with provenance, and from 4.1.0 `@uwmd/verify` first. From 4.0.0 the reference implementation reads Format 3.0 only (RFC 0081) and carries a single Protocol version (4.1.0 from 4.2.0); 3.0.0 is the last release that reads older formats.
 
@@ -9,6 +9,12 @@
 **UW Markdown** is a canonical underwriting record for commercial real-estate systems. It carries narrative, typed deal facts, deterministic calculations, validation, and append-only provenance in an open format that AI agents, services, editors, viewers, and internal platforms can all load.
 
 A deal record is a **`.uwx.md`** file — the complete, lossless underwriting record. Colloquially it is "a UW Markdown document," much as a `.docx` is "a Word document." Its lossy sibling, **UW Lite** (`.uw.md`), is a constrained human-readable summary with its own [specification](spec/UW_LITE_SPEC.md) — not an older version, and not deprecated. UWX is what a deal *is*; Lite is one way of showing it.
+
+AI agents, prompts, orchestration and model generation belong to adopter
+applications such as StackUW. UWMD supplies the contracts and deterministic
+verification APIs they use. The legacy Bancroft host is retained for 4.x
+compatibility and is not recommended for new integrations; see the
+[boundary and migration assessment](docs/reviews/2026-10-15-agent-product-boundary.md).
 
 This repository is the home of the standard:
 

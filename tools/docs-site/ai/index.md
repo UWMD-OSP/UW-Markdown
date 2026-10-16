@@ -1,76 +1,74 @@
 ---
-title: Building with AI
-description: How AI agents work with UW Markdown records — they extract and explain, while deterministic code calculates and verifies.
+title: AI-compatible integration
+description: Use UWMD's open record and verification contracts from an adopter-owned AI application.
 ---
 
-# Building with AI
+<span id="building-with-ai"></span>
 
-UW Markdown is an open standard, not a hosted AI service or a single application.
-An AI agent works with the same `.uwx.md` record that calculation engines,
-underwriting systems, and editors use, and loads it directly. No custom
-connector or MCP server is required.
+# AI-compatible integration
 
-The standard draws one firm line. **AI can extract, classify, and explain.
-Deterministic code calculates and verifies the financial results.** An agent
-reads the rent roll and T-12, writes facts and narrative into the record, and
-leaves every NOI, DSCR, and IRR to the calculation engine.
+UWMD is an open underwriting interoperability and verification standard.
+StackUW and other adopter applications own their AI agents, skills, prompts,
+model generation, workflows, orchestration and provider integrations.
+UWMD does not require a shared agent runtime or modeling architecture.
+
+An adopter can read and write the same records as a spreadsheet, internal
+credit system or other producer. Use the [Format](/spec/format), verification
+[Protocol](/spec/protocol), [metric dictionary](/spec/metrics/),
+[schemas](/spec/schemas/) and [conformance corpus](/conformance/) as the contract.
+AI can extract facts and draft narrative; deterministic code computes and verifies
+financial results. Do not invent absent source inputs or treat authentication as
+proof that financial assumptions are true.
 
 <AiBoundary />
 
-## Rules for agents
+<span id="rules-for-agents"></span>
 
-1. Preserve the Markdown narrative and labeled JSON blocks.
-2. Extract source facts, classify information, identify gaps, and draft narrative.
-3. Never calculate financial results. NOI, DSCR, LTV, debt yield, cap rate, IRR,
-   NPV, and DCF come from deterministic code or formulas.
-4. When editing, preserve bytes outside the requested edit region.
-5. Preserve provenance. Append or supersede; never silently destroy history.
-   The host, not the agent, writes each block's `_meta`.
-6. Rates are fractions (`0.055` means `5.5%`).
-7. Treat the format specification, protocol, metric dictionary, schemas, and
-   conformance fixtures as the contract.
+## Integration boundary
 
-The agent host is a starter product, not part of the standard
-([RFC 0078](/about/rfcs/0078-protocol-is-verification)). These rules come from
-the non-normative [AI agent host guide](/starter/ai-host), and the reference
-host's test fixtures check them. Rule 3 binds every tool, and the standard
-keeps its provenance rules (append or supersede, host-owned `_meta`). The
-reference agent host in `@uwmd/core` takes any model provider, including a
-recorded-replay provider that makes agent runs deterministic for testing. See
-[tools and packages](/guide/tools#programmatic-agent-host).
+- The application selects its provider, prompts, skills, assumptions and workflow.
+- Its trusted host applies document edits with the required source authority,
+  metadata, provenance and history protections. The reference editor also
+  preserves unaffected bytes for scoped edits.
+- An independent verifier checks the resulting record and its declared financial
+  assertions. Missing, failed and unverifiable results remain distinct.
+- Rates are stored as fractions, such as `0.055` for 5.5%.
 
-## Best context order
+`@uwmd/verify` supplies the reference Reader/Verifier without an agent provider.
+Other implementations can verify the same contracts independently. The reference
+`@uwmd/core` additionally supplies generic editing and rendering tools; no agent
+is needed for validation, financial verification or receipts.
 
-1. [`llms.txt`](/llms.txt) for discovery.
-2. [Quickstart](/tutorials/quickstart) and the
-   [first-record tutorial](/tutorials/your-first-uwmd-file) for orientation.
-3. [Format specification](/spec/format) for document syntax and semantics.
-4. [Protocol specification](/spec/protocol) for reader, editor, calc-host, and agent-host behavior.
-5. [Schemas](/spec/schemas/) and [conformance fixtures](/conformance/) for implementation testing.
-6. [`llms-full.txt`](/llms-full.txt) for the expanded link map.
+<span id="best-context-order"></span>
+<span id="optional-http-and-mcp-profiles"></span>
 
-## Optional HTTP and MCP profiles
+## Contract discovery and optional transports
 
-The [HTTP binding](/spec/http), [OpenAPI contract](/spec/UW_HTTP_API_v1.openapi.json),
-and [MCP binding](/spec/mcp) describe interoperable server shapes. They are
-optional profiles. This site does not expose live deal resources or mutation tools.
+Start with [`llms.txt`](/llms.txt) or [`llms-full.txt`](/llms-full.txt), then
+read the specifications and [version matrix](/about/versions). A model can work
+directly with the record; a connector is not required.
 
-The MCP profile defines `uwmd.get_document`, `uwmd.validate`, `uwmd.convert`,
-`uwmd.apply_edit`, and `uwmd.list_representations`.
+The [HTTP binding](/spec/http), [OpenAPI contract](/spec/UW_HTTP_API_v1.openapi.json)
+and [MCP binding](/spec/mcp) describe optional interoperable transports. They
+remain supported. They do not prescribe the application's provider or agent loop.
+This site does not expose live deal resources or mutation tools.
 
-## Ready-to-use instruction files
+<span id="ready-to-use-instruction-files"></span>
 
-- <a href="/downloads/ai/uwmd-skill/SKILL.md" download="SKILL.md">Codex-compatible skill</a>
-- <a href="/downloads/ai/CLAUDE.md" download="CLAUDE.md">Claude instructions</a>
-- <a href="/downloads/ai/chatgpt-project-instructions.txt" download="chatgpt-project-instructions.txt">ChatGPT project instructions</a>
-- <a href="/downloads/ai/GEMINI.md" download="GEMINI.md">Gemini instructions</a>
-- <a href="/downloads/ai/UWMD-AI-GUIDE.md" download="UWMD-AI-GUIDE.md">Platform-neutral guide</a>
+## Existing 4.x agent integrations
 
-[Bounded agent skills](/ai/skills) describes narrower, task-specific skills.
+Core 4.x still ships its legacy Bancroft host and provider APIs, now deprecated.
+The [legacy host reference](/starter/ai-host) remains available for compatibility;
+it is non-normative and is not a recommendation for new agent development.
+Format writer/provenance requirements remain unchanged.
+
+The [legacy skill assets](/ai/skills) and existing
+[instruction downloads](/downloads/#legacy-ai-instruction-files) remain reachable
+pending a separately approved retirement/migration. No implementation is
+automatically transferred to StackUW or any other adopter.
 
 ## Canonical project
 
 - Repository: <https://github.com/UWMD-OSP/UW-Markdown>
 - License: MIT
-- Authoring: UW Format 3.0 (`.uwx.md` for structured records); readers refuse any other `uw_version`.
-- Compatibility: see the [current version matrix](/about/versions) for protocol and package versions.
+- Compatibility: [independent version matrix](/about/versions)

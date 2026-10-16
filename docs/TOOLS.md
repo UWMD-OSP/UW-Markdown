@@ -66,7 +66,7 @@ It checks mathematical consistency, not economic completeness.
 | Script validation, scaffolding, or rendering | [`uwmd` CLI](#uwmd-cli) | 1 + 2 |
 | Hand the deal to a banker who lives in Excel | [Excel converter](#excel-converter) | 3 (export) |
 | Index a folder of deals, or feed a data lake | [`@uwmd/batch`](#batch-indexer) | 1 + 3 (read-only) |
-| Run an LLM agent over the deal | `runBancroftAgent` from `@uwmd/core` | 4 |
+| Build an AI-assisted underwriting workflow | An adopter-owned application using UWMD contracts | Product work |
 | Prove a deal's metrics follow from its inputs | [`uwmd receipt`](#uwmd-cli) or the [web editor](#web-editor) | 3 |
 | Check a receipt a counterparty sent you | any of the [CLI](#uwmd-cli), [web editor](#web-editor), or [VS Code extension](#vs-code-extension) | 3 |
 
@@ -248,6 +248,10 @@ Read-only by construction. Published on npm as `@uwmd/batch`.
 
 ## Programmatic agent host
 
+> **Legacy 4.x compatibility:** new agents, providers and workflows belong in
+> adopter applications. The APIs below are deprecated and remain operational
+> until an approved migration. This is not a Protocol conformance tier.
+
 Bancroft is UW Markdown's optional reference suite of staged underwriting agents. It is not required to create, read, validate, edit, calculate, convert, or exchange a deal file; other providers and application-specific agents can use the same format and the starter [agent host guide](starter/ai-host.md).
 
 **[`packages/uwmd-core/src/agents/bancroft.ts`](../packages/uwmd-core/src/agents/bancroft.ts)
@@ -268,8 +272,8 @@ The agent host contract (former Protocol §IX, now the
 [starter guide](starter/ai-host.md)) is provider-neutral; any `AgentProvider`
 implementation can stand in.
 
-Best for: building a custom underwriting pipeline. Researching what
-LLM-driven underwriting looks like end-to-end.
+Retained for existing integrations. Build new underwriting pipelines in an
+adopter product using the standard's verification, provenance and transport APIs.
 
 Skip it for: anything that needs no extraction or narrative. Validation,
 calculation, and receipts never involve an agent.

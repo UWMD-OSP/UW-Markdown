@@ -122,11 +122,11 @@ export default defineConfig({
             ],
           },
           {
-            text: 'AI agents',
+            text: 'Automation interoperability',
             items: [
-              { text: 'Building with AI', link: '/ai/' },
-              { text: 'Bounded agent skills', link: '/ai/skills' },
-              { text: 'AI agent host', link: '/starter/ai-host' },
+              { text: 'AI-compatible integration', link: '/ai/' },
+              { text: 'Legacy skill assets', link: '/ai/skills' },
+              { text: 'Legacy 4.x agent host', link: '/starter/ai-host' },
             ],
           },
         ],
@@ -164,7 +164,7 @@ export default defineConfig({
             { text: 'The standard: metric dictionary', link: '/spec/metrics/' },
             { text: 'Starter products guide', link: '/starter/' },
             { text: 'Tools and packages', link: '/guide/tools' },
-            { text: 'Building with AI', link: '/ai/' },
+            { text: 'AI-compatible integration', link: '/ai/' },
           ],
         },
       ],
@@ -194,7 +194,7 @@ export default defineConfig({
             { text: 'Cookbook', link: '/guide/cookbook' },
             { text: 'Issuing receipts', link: '/guide/receipts' },
             { text: 'Portfolio and data lake', link: '/guide/data-lake' },
-            { text: 'Building with AI', link: '/ai/' },
+            { text: 'AI-compatible integration', link: '/ai/' },
           ],
         },
         {
@@ -209,13 +209,13 @@ export default defineConfig({
       ],
       '/ai/': [
         {
-          text: 'AI agents (starter products)',
+          text: 'AI-compatible integration',
           items: [
-            { text: 'Building with AI', link: '/ai/' },
-            { text: 'Bounded agent skills', link: '/ai/skills' },
+            { text: 'AI-compatible integration', link: '/ai/' },
+            { text: 'Legacy skill assets', link: '/ai/skills' },
             { text: 'MCP binding', link: '/spec/mcp' },
             { text: 'HTTP binding', link: '/spec/http' },
-            { text: 'AI agent host guide', link: '/starter/ai-host' },
+            { text: 'Legacy 4.x host reference', link: '/starter/ai-host' },
           ],
         },
         {
@@ -271,7 +271,7 @@ export default defineConfig({
             { text: 'Editing', link: '/starter/editing' },
             { text: 'Defaults and the cascade', link: '/starter/defaults-and-cascade' },
             { text: 'Refinement and workbooks', link: '/starter/refinement-and-workbooks' },
-            { text: 'AI agent host', link: '/starter/ai-host' },
+            { text: 'Legacy 4.x agent host', link: '/starter/ai-host' },
             { text: 'Capability tokens', link: '/starter/capability-tokens' },
           ],
         },
@@ -282,7 +282,7 @@ export default defineConfig({
             { text: 'Calc conventions', link: '/guide/calc-conventions' },
             { text: 'Excel converter', link: '/guide/tools#excel-converter' },
             { text: 'Viewer', link: '/viewer/' },
-            { text: 'Building with AI', link: '/ai/' },
+            { text: 'AI-compatible integration', link: '/ai/' },
           ],
         },
         {

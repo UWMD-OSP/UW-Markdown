@@ -1,5 +1,12 @@
 # 06 — Bancroft agents (starter product)
 
+> **Owner direction (2026-10-15):** agents, prompts, provider integrations and
+> underwriting orchestration belong to adopter products. The current 4.x host is
+> legacy compatibility, not a recommended extension point. No public export,
+> command, provenance rule or fixture is removed here. Format §6.8 writer
+> requirements remain unchanged; RFC 0078 retired the Agent Host tier.
+
+
 > RFC 0078 retired Tier 4 (Agent Host) as a Protocol tier. The agent host is a
 > non-normative starter product; its former Protocol text is in
 > [`docs/starter/ai-host.md`](../starter/ai-host.md), and its fixtures still run
@@ -13,7 +20,7 @@ writer. **Agents extract and narrate; they never compute financial metrics.**
 - **Location:** [`packages/uwmd-core/src/agents/`](../../packages/uwmd-core/src/agents/)
   + [`src/context.ts`](../../packages/uwmd-core/src/context.ts)
   + [`src/context-profiles.ts`](../../packages/uwmd-core/src/context-profiles.ts)
-- **Normative contract:** `UW_PROTOCOL.md` §IX (provider-neutral). `bancroft.ts`
+- **Legacy product guide:** `docs/starter/ai-host.md` (provider-neutral, non-normative). `bancroft.ts`
   is the Claude-backed *reference* implementation.
 - **Public API (via `index.ts`):** `runBancroftAgent`, `runBancroftAgentStreaming`,
   `buildAgentContext`, `buildAgentPrompt`, `isContextReady`, `getLayerDependencies`,
@@ -29,7 +36,7 @@ skipLibCheck disabled and optional peers absent.
 ## The layer registry (`BANCROFT_LAYERS` in `context.ts`)
 
 Each `LayerDefinition` declares `id`, `layer` (number), `name`, `reads[]`,
-`writes[]`, `pipelineStateKey`, and `consumed_profile` (the normative context
+`writes[]`, `pipelineStateKey`, and `consumed_profile` (the starter context
 profile, verified by the agent starter-product checks).
 
 Layer | Name | Reads | Writes | Profile
@@ -72,7 +79,7 @@ Resolves the layer (by `L\d+` prefix; unknown → L7), collects the sections the
 layer reads (or all, for L7), always includes `deal_context` for orientation,
 records `missingRequired`/`missingOptional`, and builds:
 - `chatContext` — a token-budgeted rendered context string (via `render(..., {format:'chat'})`).
-- `profileContext` — the *normative* payload built from the layer's
+- `profileContext` — the starter payload built from the layer's
   `consumed_profile` via `buildContext` (`context-profiles.ts`). Hosts running
   under the conformance contract should send this, not `chatContext`.
 

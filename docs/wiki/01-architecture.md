@@ -1,5 +1,16 @@
 # 01 — Architecture
 
+## Agent ownership (owner direction, 2026-10-15)
+
+UWMD is an interoperability and verification standard. StackUW and other adopter
+applications own AI agents, skills, prompts, orchestration, provider integrations
+and model production. The legacy Bancroft host remains in 4.x for compatibility;
+new integrations should use the documented contracts and generic verification/
+editing APIs. Breaking removals require an approved migration. Preserve coding
+agent instructions, provenance (including agent-authored records), deterministic
+verification and HTTP/MCP bindings. RFC 0078/RFC 0083's separation remains intact.
+This direction does not authorize a 5.0 release or a normative contract change.
+
 ## The five layers
 
 The project is a stack of five layers, each consuming the one above it. This is

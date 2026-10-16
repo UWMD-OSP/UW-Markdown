@@ -63,6 +63,7 @@ async function loadSdk(): Promise<AnthropicConstructor> {
   return sdk;
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface AnthropicProviderOptions {
   apiKey: string;
   /**
@@ -79,6 +80,7 @@ export interface AnthropicProviderOptions {
  * The translation is deliberately total: everything the runner reads — tool
  * calls and token usage — is mapped explicitly, so a change in the SDK's
  * message shape surfaces here and nowhere else.
+ * @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration.
  */
 export function createAnthropicProvider(opts: AnthropicProviderOptions): AgentProvider {
   // Constructing the client is what needs the SDK, so it happens on the first

@@ -9,6 +9,7 @@ import type { AgentToolSchema } from './provider.js';
 // Using a single flexible schema rather than per-layer schemas keeps prompts
 // shorter and avoids schema drift — the system prompt describes the expected fields.
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export const WRITE_UW_SECTION_TOOL: AgentToolSchema = {
   name: 'write_uw_section',
   description: 'Write the analyzed section data back to the .uw.md deal file. Call this exactly once with your complete output. Do not call it multiple times.',
@@ -49,6 +50,7 @@ export const WRITE_UW_SECTION_TOOL: AgentToolSchema = {
 // ─── Multi-section write tool ─────────────────────────────────────────────────
 // L0 and L4 write multiple sections in one pass. They use this tool instead.
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export const WRITE_MULTIPLE_SECTIONS_TOOL: AgentToolSchema = {
   name: 'write_multiple_uw_sections',
   description: 'Write multiple sections to the .uw.md deal file in a single call. Use when your layer is responsible for more than one section.',
@@ -77,8 +79,10 @@ export const WRITE_MULTIPLE_SECTIONS_TOOL: AgentToolSchema = {
 };
 
 // Layers that write multiple sections and use the multi-section tool
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export const MULTI_SECTION_LAYERS = new Set(['L0', 'L4']);
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface ToolOutput {
   section_id: string;
   confidence: 'high' | 'medium' | 'low';

@@ -19,6 +19,7 @@
  * A tool the model may call. Structurally the JSON-Schema subset every
  * tool-calling API accepts, so a provider can usually pass it through with a
  * cast rather than a translation.
+ * @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration.
  */
 export interface AgentToolSchema {
   name: string;
@@ -30,11 +31,13 @@ export interface AgentToolSchema {
   };
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface AgentMessage {
   role: 'user' | 'assistant';
   content: string;
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface AgentRequest {
   model: string;
   max_tokens: number;
@@ -46,6 +49,7 @@ export interface AgentRequest {
   tool_choice: 'any' | 'auto';
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface AgentToolCall {
   name: string;
   input: Record<string, unknown>;
@@ -55,12 +59,14 @@ export interface AgentToolCall {
  * What the runner needs back. Deliberately *not* the vendor's message object:
  * the runner only ever reads tool calls and token usage, so widening this to
  * carry a raw response would re-couple it to a vendor's response shape.
+ * @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration.
  */
 export interface AgentCompletion {
   tool_calls: AgentToolCall[];
   usage: { input_tokens: number; output_tokens: number };
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface AgentProvider {
   /** Stable identifier, e.g. `anthropic` or `replay`. Recorded in cassettes. */
   readonly id: string;
@@ -73,7 +79,10 @@ export interface AgentProvider {
   stream?(request: AgentRequest): Promise<AgentCompletion>;
 }
 
-/** Typed error for provider selection and transport failures. */
+/**
+ * Typed error for provider selection and transport failures.
+ * @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration.
+ */
 export class AgentProviderError extends Error {
   constructor(
     readonly code:

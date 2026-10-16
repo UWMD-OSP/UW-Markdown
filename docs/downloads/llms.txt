@@ -18,7 +18,7 @@ Current versions: https://uwmd.org/about/versions
 ## Contracts
 
 - Format specification (Format 3.0, the only admitted version): https://uwmd.org/spec/format
-- Protocol (4.0.0): https://uwmd.org/spec/protocol
+- Protocol (4.1.0): https://uwmd.org/spec/protocol
 - UW Lite specification: https://uwmd.org/spec/lite
 - Schemas: https://uwmd.org/spec/schemas/
 - Conformance: https://uwmd.org/conformance/
@@ -28,6 +28,10 @@ Current versions: https://uwmd.org/about/versions
 - HTTP: https://uwmd.org/spec/http
 - OpenAPI: https://uwmd.org/spec/UW_HTTP_API_v1.openapi.json
 - MCP: https://uwmd.org/spec/mcp
+
+## AI-compatible integration
+
+Agents, skills, prompts, orchestration and model generation belong to adopter applications. UWMD supplies interoperable records and deterministic verification contracts. Existing 4.x agent-host APIs are legacy compatibility.
 
 ## Critical rules for AI
 

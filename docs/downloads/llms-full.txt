@@ -1,5 +1,8 @@
 # UW Markdown — expanded AI index
 
+
+Owner direction (2026-10-15): agents, skills, prompts, orchestration, provider integrations and model production belong to adopter applications. UWMD supplies interoperability and verification contracts. The legacy 4.x host remains for compatibility; no agent runtime is required to verify a record.
+
 UW Markdown is an open standard for commercial real-estate underwriting. Its primary artifact is the `.uwx.md` record: Markdown narrative plus typed JSON sections for deal facts, assumptions, calculation inputs, and provenance. UW Lite (`.uw.md`) is a compact summary representation with its own specification. The project is a library and specification, not a hosted deal database. AI systems can work directly with the text file; HTTP and MCP profiles are optional.
 
 ## Canonical resources

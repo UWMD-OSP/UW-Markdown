@@ -13,6 +13,17 @@ specification**, supported by static tools including a React web editor. There
 is no Express server and no database here. `underwriter.cc` is a separate
 product that consumes this standard.
 
+## Agent ownership (owner direction, 2026-10-15)
+
+UWMD is an interoperability and verification standard. StackUW and other adopter
+applications own AI agents, skills, prompts, orchestration, provider integrations
+and model production. The legacy Bancroft host remains in 4.x for compatibility;
+new integrations should use the documented contracts and generic verification/
+editing APIs. Breaking removals require an approved migration. Preserve coding
+agent instructions, provenance (including agent-authored records), deterministic
+verification and HTTP/MCP bindings. RFC 0078/RFC 0083's separation remains intact.
+This direction does not authorize a 5.0 release or a normative contract change.
+
 ## The standard vs the starter products
 
 [RFC 0078](docs/rfcs/0078-protocol-is-verification.md) splits the repo in two.

@@ -36,6 +36,7 @@ import {
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface BancroftRunOptions {
   /**
    * API key for the built-in Anthropic provider. Ignored when `provider` is
@@ -102,6 +103,7 @@ function buildRequest(
   };
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface ProgressEvent {
   stage: 'context_built' | 'calling_claude' | 'parsing_output' | 'writing_block' | 'complete' | 'error';
   message: string;
@@ -109,6 +111,7 @@ export interface ProgressEvent {
   sectionId?: string;
 }
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export interface BancroftRunResult {
   success: boolean;
   updatedContent: string;
@@ -122,6 +125,7 @@ export interface BancroftRunResult {
 
 // ─── Main entry point ─────────────────────────────────────────────────────────
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export async function runBancroftAgent(
   fileContent: string,
   agentId: string,
@@ -281,6 +285,7 @@ function extractToolOutputs(completion: AgentCompletion, toolName: string): Tool
 // Same as runBancroftAgent but uses streaming so progress events arrive in real time.
 // Useful for UI integrations (underwriter.cc wizard).
 
+/** @deprecated Legacy agent-host API. Host agents in adopter applications; retained for 4.x compatibility pending an approved migration. */
 export async function runBancroftAgentStreaming(
   fileContent: string,
   agentId: string,

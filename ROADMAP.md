@@ -69,6 +69,46 @@ audit dispositions. No universal price/revenue equality is implemented. Preserve
 independent-source disclosures if semantic work is deferred; do not describe
 current metric verification as proof of complete economic reconciliation.
 
+## Agent-product boundary (owner direction, 2026-10-15)
+
+UWMD is an open underwriting interoperability and verification standard.
+StackUW and other adopters own agents, skills, prompts, workflows, model
+production, orchestration and provider integrations. RFC 0078's verifier/product
+boundary and RFC 0083's verifier/starter split remain intact. AI compatibility
+comes through documented contracts, verification APIs and transport bindings.
+
+- **Safe 4.x cleanup:** mark legacy host-specific public declarations deprecated,
+  stop recommending the host/skills for new integrations, retain existing APIs,
+  CLI paths, peers, assets/URLs and product tests. No financial or validation change.
+- **Proposed coordinated-launch migration:** obtain explicit approval for the
+  exact host/provider/context export and CLI removals, SDK/skill retirement and
+  Format §6.3/§6.8 clarification before deleting public contracts. Do not silently
+  drop standard agent-layer declarations or provenance. This is an architectural
+  migration proposal, not 5.0 release preparation or package-version assignment.
+- **Preserve:** deterministic verifier/primitives, conformance infrastructure,
+  generic edit/context APIs, original provenance/signatures/history, source
+  identifiers, HTTP/MCP and coding-agent development instructions.
+- **No automatic migration:** copying implementations into StackUW or another
+  adopter is a separate product decision. No replacement UWMD agent package is
+  proposed. RFC0085–0088 and Issues343/354–356 remain separate workstreams.
+
+See the [inventory and compatibility assessment](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-agent-product-boundary.md)
+for exact exports, consumer/test inventory and the proposed retirement sequence.
+
+### Concurrent verification lanes
+
+| Lane | Branch / existing evidence | Ownership boundary |
+|---|---|---|
+| Independent Python (#354) | [draft #358](https://github.com/UWMD-OSP/UW-Markdown/pull/358), `codex/python-source-354`, stacked on the existing #357 numeric seed | New independent source/token foundation and tests; no Reader/Verifier claim yet; no solver changes |
+| Numerical determinism (#356) | Existing draft #357 / RFC0088; bounded follow-up on `codex/numerical-356-followup` | Numeric evidence/RFC only; no competing implementation or accepted formulas |
+| Lean architecture / scoped assurance (#355) | `codex/agent-product-boundary`, inventory above | Nonbreaking legacy-host cleanup; financial assurance design remains optional and approval-gated |
+
+The integrator alone reconciles shared roadmap/changelog/index/CI changes and
+publishes or integrates branch results. Workers do not merge or edit another
+lane. Normative decisions, RFC acceptance, conformance baseline changes,
+versioning and publication remain owner-controlled. External-session leftovers
+are preserved separately; stale engine-first launch drafts are not active work.
+
 ## Historical publication: 4.2.0
 
 Core/CLI **4.2.0** pair with Protocol **4.1.0** and Format **3.0**. The

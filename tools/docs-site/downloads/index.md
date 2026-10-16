@@ -1,6 +1,6 @@
 ---
 title: Downloads
-description: Blank UW Markdown templates, programs, examples, and AI instruction files.
+description: UW Markdown templates, programs, examples, and compatibility downloads.
 ---
 
 <script setup>
@@ -69,7 +69,15 @@ change `asset_class` when appropriate.
 - [Mixed-use (RFC 0019 components)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md)
 - [Capital stack (RFC 0026 senior + mezz + pref)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md)
 
-## AI instruction files
+<span id="ai-instruction-files"></span>
+
+## Legacy AI instruction files
+
+These existing downloads remain for compatibility. New agent instructions and
+workflows belong in adopter applications. Use the [AI-compatible integration
+guide](/ai/) and specifications for the current boundary; no downloaded
+prompt or skill is normative.
+
 
 Add the relevant file to an AI project or paste its contents into the platform's
 project instructions.
