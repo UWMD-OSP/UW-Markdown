@@ -151,9 +151,9 @@ by merging investigation evidence while the RFC remains `draft`.
 | Decision | Concrete alternatives | Recommendation and consequence |
 |---|---|---|
 | D1: Guarantee | One exact result/refusal for each admitted input and ordered procedure; or allow multiple answers within an explicit error envelope | Retain one exact result/refusal. Reported-value equality alone is insufficient at quantization ties, and an error envelope would require new comparison/digest semantics. Do not promise that every financial formula is a correctly rounded evaluation of its entire real-valued expression. |
-| D2: Positive integer powers | Sequential multiplication; fixed exponentiation-by-squaring graph; or a correctly-rounded power primitive | Prefer the correctly-rounded primitive for both integer and fractional powers, subject to feasibility evidence. It avoids introducing an integer-only accumulated-error convention. Sequential discount factors remain an explicit alternative, not an optimization interchangeable with that primitive. |
-| D3: Negative powers | Reciprocal of positive product; product of reciprocals; scaled integer procedure; or the same range-safe correctly-rounded primitive | Prefer the same primitive; reject universal reciprocal-of-positive-product because of the demonstrated lost subnormal. A scaled procedure is a viable separately specified fallback if the kernel recommendation proves impractical. |
-| D4: Transcendentals | Fully specified portable approximation algorithm/version; or correctly-rounded mathematical contract with demonstrated implementations | Prefer a correctly-rounded primitive contract for `pow`, `log` and `exp`, with independent implementation evidence. No library has yet been selected or demonstrated to satisfy this full contract. A pinned approximation is acceptable only as a new, explicitly different proposal with error/range evidence. |
+| D2: Positive integer powers | Sequential multiplication; fixed exponentiation-by-squaring graph; or a correctly-rounded power primitive | First compare a fully pinned portable power procedure with a correctly-rounded primitive. Recommend an exact specified answer for integer and fractional powers, not an unmeasured accuracy promise. Sequential discount factors remain a distinct alternative, not an interchangeable optimization. |
+| D3: Negative powers | Reciprocal of positive product; product of reciprocals; scaled integer procedure; or the same range-safe correctly-rounded primitive | Require the chosen portable procedure to handle the admitted negative-power range; reject universal reciprocal-of-positive-product because of the demonstrated lost subnormal. Measure a pinned range-safe algorithm against a correctly-rounded alternative before selection. |
+| D4: Transcendentals | Fully specified portable approximation algorithm/version; or correctly-rounded mathematical contract with demonstrated implementations | First assess a pinned fdlibm/StrictMath-style procedure against a correctly-rounded alternative, using independent reproduction and accuracy evidence. A procedure-specific exact answer and a mathematically correctly-rounded answer are different guarantees; neither is selected yet. |
 | D5: Financial graphs | Preserve current closed-form associations and zero branches; or adopt stability-oriented `log1p`/`expm1`/rearranged formulas | First pin the existing graphs below, replacing only primitive dependencies if approved. Consider stability changes separately after measuring cancellation. Do not silently widen solver domains or call tiny rates zero. |
 | D6: Range and resources | Admit the present finite input domain with bounded kernel implementation; or specify narrower admitted domains and exact refusals | Prefer preserving the presently admitted domain where practicable. Any necessary restriction needs an explicit affected-input table and owner approval; the experimental 10,000-step cap is not a limit proposal. Do not mistake the existing AST-node budget for a bound on work inside one builtin. |
 | D7: Compatibility | Governed Protocol revision and new engine version with existing receipt wire semantics; or introduce a separately versioned procedure selector/receipt mechanism | Prefer a governed Protocol revision and new verifier engine version, preserving receipt wire/signature subjects unless measured migration needs prove insufficient. Exact revision numbers and supported historical verification paths remain an owner decision. No hidden same-version procedure replacement. |
@@ -163,9 +163,11 @@ by merging investigation evidence while the RFC remains `draft`.
 
 The eight rows above separate consequences; they are not eight requests to
 approve unspecified algorithms. The immediate architectural choice is whether
-to develop the recommended single exact-result contract with range-safe
-correctly-rounded primitives, or instead develop a completely pinned ordered
-approximation such as bounded sequential discounting. Preserve the current
+to develop the recommended single exact-result contract through a fully pinned,
+range-safe algorithm with measured accuracy, or require mathematically
+correctly-rounded primitives. First investigate the former against the latter;
+bounded sequential discounting remains a separate candidate rather than the
+default for every power. Preserve the current
 quantizer and solver structure in either proposal; tolerance-based verification
 would be a separate compatibility alternative, not an implementation shortcut.
 A second owner choice is whether stability-oriented financial rearrangements
@@ -191,9 +193,40 @@ that precise compatibility impact for review; do not silently redefine the
 financial metric, substitute a cache for independent recalculation, or broaden a
 limited spreadsheet observation into a universal Excel guarantee.
 
+#### Feasibility evidence and next bounded study
+
+[Oracle's StrictMath specification](https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/StrictMath.html)
+provides a precedent for specifying reproducible algorithm results using fdlibm
+5.3 and explicit arithmetic/bit-conversion rules. It does not establish that
+any C build or untested Python/TypeScript port is interchangeable. The original
+Netlib sources describe [power](https://netlib.org/fdlibm/e_pow.c) as nearly
+rounded and give error analyses for [logarithm](https://netlib.org/fdlibm/e_log.c)
+and [exponential](https://netlib.org/fdlibm/e_exp.c); these are not universal
+correct-rounding guarantees. A pinned procedure must also close over its
+constants, helper functions, bit operations and special cases.
+
+The [MPFR manual](https://mpfr.org/mpfr-current/mpfr.html) demonstrates a
+correctly-rounded multiple-precision route, with GMP dependency and explicit
+rounding/exponent controls. Its native model does not directly supply binary64
+subnormals; emulation requires range configuration and subnormal handling.
+This supports using it as a research accuracy oracle, not assuming a lean
+browser/runtime dependency or a fixed work bound. Licensing and distribution
+also need review before any dependency decision.
+
+The next engineering study should freeze candidate source bytes/hash and the
+complete helper closure, develop isolated experimental TS/Python implementations
+from the specified procedure independently of each other, and compare algorithm
+reproduction and mathematical accuracy separately. Java StrictMath can test the
+former candidate; appropriately configured MPFR can test the latter. Freeze
+input bytes, measure hard rounding/range cases and complete financial graphs,
+and report runtime/browser/package cost and receipt-result changes. Then return
+one concrete proposal for owner acceptance. No candidate kernel is implemented
+or selected here. Experimental prototypes are research evidence, not changes to
+the current evaluator, conformance expectations or financial contract.
+
 #### Candidate primitive meaning and unresolved cases
 
-For the recommended alternative, let `B(op)` mean one IEEE754 binary64 basic
+For the correctly-rounded alternative, let `B(op)` mean one IEEE754 binary64 basic
 operation rounded to nearest, ties to even, without contraction, excess-precision
 retention, flush-to-zero or reassociation. Input decimal conversion and final
 VIII.5 quantization remain separate boundaries. Let `P(x,y)`, `L(x)` and `E(x)`
@@ -270,9 +303,10 @@ same ordered expression.
 
 1. **Owner direction checkpoint:** choose D1–D8 or request an explicit alternative.
    This authorizes completing a selected proposal, not implementation or changing
-   RFC status. The recommendation is exact ordered results with range-safe
-   correctly-rounded primitives, preserved financial graphs and receipt wire
-   format/signature subjects, pending the evidence and domain decisions described above.
+   RFC status. The recommendation is exact ordered results, a feasibility comparison of
+   pinned range-safe procedures against correctly-rounded primitives, preserved
+   financial graphs and receipt wire/signature subjects. No primitive or accuracy
+   contract is selected before the evidence/domain decisions described above.
 2. **RFC acceptance checkpoint:** return one complete primitive/domain/error and
    resource contract, selected kernel or implementable correctly-rounded strategy,
    admitted annuity domains, special-case table, exact financial graphs, numeric
@@ -415,8 +449,8 @@ The Python numeric oracle is an experiment, not an alternative accepted solver.
 
 ## Unresolved questions
 
-1. Resolve D1–D8 at the owner direction checkpoint (§6), including whether to
-   prefer correctly-rounded primitives over sequential integer discounting.
+1. Resolve D1–D8 at the owner direction checkpoint (§6), including the accuracy objective for a pinned portable procedure versus
+   correctly-rounded primitives; sequential discounting is a separate option.
    This chooses proposal development, not RFC acceptance.
 2. At the separate acceptance checkpoint (§7), approve a complete kernel,
    special-case/domain/resource/error table and financial graphs. The recommended
