@@ -96,7 +96,9 @@ protocol, and each package each carry an independent semver).
   conformance expectation, receipt identity or RFC acceptance changes. The
   candidate feasibility study pins source-byte hashes, closes the power helper
   inventory and records conditional resource bounds and bit-portability gaps;
-  it executes no candidate kernel and adds no runtime dependency.
+  it executes no candidate kernel and adds no runtime dependency. Isolated
+  JS/Python bit-adapter experiments test finite word encodings, explicit shifts
+  and carry/borrow against fixed integer vectors; no financial answers change.
 
 - Architecture cleanup reconciles RFCs 0078/0083 and Issue #355 with the
   current exports and source. Documents UWMD/StackUW ownership, inventories
