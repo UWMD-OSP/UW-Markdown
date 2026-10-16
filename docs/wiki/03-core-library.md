@@ -109,6 +109,14 @@ subset), prose, and fenced ```` ```json uw:… ```` data blocks. Produces
 per section, `pipeline_log[]`, `custom_calculations[]`, `custom_scenarios[]`,
 `extensions{}`, `superseded{}` (history), and the original `raw` text.
 
+Frontmatter string keys are decoded with the shared YAML scalar reader at
+both mapping levels. Mapping separators are found outside quoted content;
+embedded colons, escaped names and empty quoted keys retain their identities.
+`onFrontmatterMember` observes decoded paths before assignment, so document
+signing rejects decoded duplicate or unsafe names. Quoted sequence literals
+stay scalar content. Source `raw` is unchanged. Bare non-string key projection
+remains a separate unresolved contract question (Issue #354).
+
 `ParseOptions`: `strict` (throw on JSON parse errors vs. collect — default
 collect) and `thresholds` (institution overrides).
 
