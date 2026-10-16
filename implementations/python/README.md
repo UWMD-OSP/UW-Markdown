@@ -391,3 +391,34 @@ Additional controls cover all actor namespaces, exact ASCII spelling, every
 resolution tag, malformed leaf values, active physical peers, superseded flags,
 unknown payload retention and no mutation. Existing controls and discovery flags
 are unchanged.
+
+
+## Document currency assertion
+
+`python -B implementations/python/uwmd.py inspect-document-currency <file> --json`
+independently checks the accepted document-level currency assertion under Protocol
+§III.1b/RFC0046. A non-null authored value that is not exactly three uppercase
+ASCII letters emits `CUR-01` with error severity. Accepted §V.12.2 explicitly
+admits absent/null identity; evidence preserves their difference rather than
+inserting or normalizing a value. No hedge, reserve or other financial section
+is required for this document-level check.
+
+This standalone wrapper is **nonnormative** and limited to currency identity.
+It reports the exact authored value, relevant findings and a local `ok`; its
+exit is nonzero on a currency refusal. It does not provide a full frontmatter
+or document ValidationResult. Discovery remains parse-only and validate/calc/
+generic verify remain unsupported.
+
+There is no whitespace trimming, case conversion, locale/location inference,
+ISO4217 allocation lookup, display rendering, FX, precision choice or financial
+calculation. Unallocated but syntactically valid `ZZZ` stays an authored identity.
+Source bytes, parsed values, unrelated frontmatter and Reader projection remain
+unchanged; returned evidence is detached.
+
+Seven focused methods include four actual standalone scoped fixture comparisons:
+the unchanged frozen currency validation projection pins `CUR-01` error, and
+existing explicit-MXN/absent/null sources exercise accepted identity cases. An
+explicit test-only projection uses the unchanged shared subset comparator;
+these are not portable validation, rendering or binding-verification passes.
+Other controls cover exact ASCII/type admission, missing versus null, unsupported
+locale independence, no financial-block prerequisites and retained source bytes.
