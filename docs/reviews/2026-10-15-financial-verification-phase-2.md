@@ -817,3 +817,49 @@ not block the core release. The confirmed #347/#348 financial implementation
 defects are already fixed and shipped. No new financial implementation defect
 is established by this follow-up; open governed questions are not closed by
 passing conformance. This is sequencing advice, not5.0 release preparation.
+
+### DCF label correction: combined owner-approval proposal after #353
+
+PR #349 now proposes the implementation and starter expectation together; this
+is a request for final approval, not approval inferred from merging #353.
+The baseline patch above remains the historical proposal; the same exact patch
+is included in #349 for review. No standard-tier baseline is changed.
+
+Historical reconciliation: commit `f2204bd2fccedf26a719da7cfa2c19567a7cb1af`
+implemented RFC 0041 and introduced the fixture headed “Malformed and duplicate
+periods”, its validation results and its chat golden together. It did not edit
+`renderer.ts`. Its authored rows were year1/NOI100, year1/NOI101 and an absent
+year/NOI300. Later Format3 re-authoring and corpus renaming retained those years.
+No explicit ordinal-display decision was found in that RFC or its introduction.
+The existing ordinal golden is nevertheless an enforced starter regression
+contract, so changing it requires the requested owner review rather than an
+unannounced regeneration.
+
+Current Format Part IV's explicit-period preamble and Protocol VIII.2a govern
+identity-based calculation lookup and PS-01/02/03. RFC0041 does not prescribe
+chat label spelling. The proposed starter convention displays the authored year,
+including duplicates and gaps; missing values use the existing display `n/a`.
+Rows are neither sorted nor deduplicated, and the ten-row display limit remains.
+CC-06 and all normative period semantics remain untouched.
+
+Exact baseline delta in
+`conformance/documents/expected/13-period-identities.rendered-chat.txt`:
+
+- `Yr2: NOI=$101 | NCF(L)=n/a` → `Yr1: NOI=$101 | NCF(L)=n/a`.
+- `Yr3: NOI=$300 | NCF(L)=n/a` → `Yrn/a: NOI=$300 | NCF(L)=n/a`.
+- `estimatedTokens: 392` → `393` (the existing estimator applied to the new text).
+
+All other baseline characters, the source fixture, parse/validation/summary
+expectations, metric values and calculation fixtures remain unchanged. Six new
+renderer controls cover reordered, sparse, duplicate, missing and sequential
+rows plus the actual malformed-period fixture. They check ordered full output
+rows, no mutation, unchanged validation results and unchanged period-calculation
+results. Existing period suites remain separate controls for their semantics.
+
+Compatibility is limited to starter chat text and its token estimate. Consumers
+parsing ordinal chat labels must adjust; machine-readable JSON and financial
+results are unchanged. This is a core starter correction under independent
+package versioning, not a Format/Protocol revision; no version bump or release
+preparation is included. Owner decision: approve this exact two-line renderer
+change and paired starter expectation, or retain the existing display contract.
+PR #349 remains held until that decision.

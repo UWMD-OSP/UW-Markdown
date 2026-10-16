@@ -4,7 +4,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { parseUWFile } from '@uwmd/verify';
+import { evaluateCalc, parseUWFile, validateUWFile } from '@uwmd/verify';
+import type { UWBlock } from '@uwmd/verify';
 import { render, UnsupportedRenderFormatError } from './renderer.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -18,6 +19,61 @@ function loadFixture() {
 }
 
 describe('render', () => {
+  it.each([
+    { name: 'reordered', years: [3, 1], labels: ['3', '1'] },
+    { name: 'sparse', years: [2, 7], labels: ['2', '7'] },
+    { name: 'duplicate', years: [1, 1], labels: ['1', '1'] },
+    { name: 'missing', years: [undefined], labels: ['n/a'] },
+    { name: 'sequential', years: [1, 2], labels: ['1', '2'] },
+  ])('preserves authored $name cash-flow rows and period results', ({ years, labels }) => {
+    const parsed = loadFixture();
+    const template = parsed.sections['property'] as UWBlock;
+    const flows = years.map((year, index) => ({
+      ...(year === undefined ? {} : { year }),
+      noi: (index + 1) * 100,
+      net_cash_flow_levered: (index + 1) * 10,
+    }));
+    parsed.sections['dcf'] = {
+      ...template,
+      annotation: { ...template.annotation, section: 'dcf' },
+      content: { annual_cash_flows: flows },
+    };
+    const before = structuredClone(parsed);
+    const diagnostics = validateUWFile(parsed);
+    const calculation = () => evaluateCalc(
+      { id: 'year-label-control', label: 'Year label control', formula: 'dcf.annual_cash_flows@Y1.noi', deterministic: true },
+      { parsed, prior_results: {}, locale: 'en-US' },
+    );
+    const calculated = calculation();
+    const result = render(parsed, { format: 'chat' });
+    expect(result.content.split('\n').filter((line) => line.startsWith('  Yr'))).toEqual(
+      labels.map((label, index) => `  Yr${label}: NOI=$${(index + 1) * 100} | NCF(L)=$${(index + 1) * 10}`),
+    );
+    expect(parsed).toEqual(before);
+    expect(validateUWFile(parsed)).toEqual(diagnostics);
+    expect(calculation()).toEqual(calculated);
+  });
+
+  it('preserves the malformed-period fixture and its diagnostics while exposing source years', () => {
+    const path = resolve(__dirname, '../../../conformance/documents/fixtures/13-period-identities.uwx.md');
+    const raw = readFileSync(path, 'utf-8');
+    const parsed = parseUWFile(raw);
+    const before = structuredClone(parsed);
+    const findings = validateUWFile(parsed);
+    const result = render(parsed, { format: 'chat' });
+    expect(result.content.split('\n').filter((line) => line.startsWith('  Yr'))).toEqual([
+      '  Yr1: NOI=$100 | NCF(L)=n/a',
+      '  Yr1: NOI=$101 | NCF(L)=n/a',
+      '  Yrn/a: NOI=$300 | NCF(L)=n/a',
+    ]);
+    expect(result.content).toContain('[WARNING] PS-01');
+    expect(result.content).toContain('[ERROR] PS-02');
+    expect(result.content).toContain('[WARNING] PS-03');
+    expect(parsed).toEqual(before);
+    expect(validateUWFile(parsed)).toEqual(findings);
+    expect(readFileSync(path, 'utf-8')).toBe(raw);
+  });
+
   it('renders json without superseded history by default', () => {
     const parsed = parseUWFile(`---
 uw_version: "3.0"

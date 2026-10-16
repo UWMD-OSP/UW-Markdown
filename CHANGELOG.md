@@ -8,6 +8,14 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Fixed
+
+- Chat DCF rows display their authored `year` instead of their array position.
+  Reordered, sparse and duplicate years remain in source order; missing years
+  display `n/a`. The reviewed starter rendering expectation changes two labels
+  and its token estimate only. No period lookup, CC-06, diagnostics or financial
+  calculation changes.
+
 ### Documentation
 
 - Post4.3.0 financial follow-up records the held DCF-label baseline proposal,

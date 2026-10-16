@@ -554,9 +554,9 @@ Exit Value: ${money(deepGet(c, 'exit_value') ?? deepGet(c, 'terminal_value'))}`)
     // Year-by-year cash flows if present
     const flows = deepGet(c, 'annual_cash_flows') as unknown[] | undefined;
     if (flows?.length) {
-      const flowLines = flows.slice(0, 10).map((f, i) => {
+      const flowLines = flows.slice(0, 10).map((f) => {
         const flow = f as Record<string, unknown>;
-        return `  Yr${i + 1}: NOI=${money(flow['noi'] ?? flow['net_operating_income'])} | NCF(L)=${money(flow['net_cash_flow_levered'] ?? flow['levered_cash_flow'])}`;
+        return `  Yr${val(flow['year'])}: NOI=${money(flow['noi'] ?? flow['net_operating_income'])} | NCF(L)=${money(flow['net_cash_flow_levered'] ?? flow['levered_cash_flow'])}`;
       });
       sections.push(`### Annual Cash Flows\n${flowLines.join('\n')}`);
     }
