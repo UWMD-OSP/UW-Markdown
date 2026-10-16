@@ -87,7 +87,10 @@ protocol, and each package each carry an independent semver).
 - Draft RFC0088 records reproduced cross-runtime financial power, IRR and
   quantized-result digest disagreement (#356), independent Python numeric
   investigation and the narrower #355 assurance scope. No normative arithmetic,
-  conformance expectation, receipt identity or RFC acceptance changes.
+  conformance expectation, receipt identity or RFC acceptance changes. The
+  candidate feasibility study pins source-byte hashes, closes the power helper
+  inventory and records conditional resource bounds and bit-portability gaps;
+  it executes no candidate kernel and adds no runtime dependency.
 
 - Architecture cleanup reconciles RFCs 0078/0083 and Issue #355 with the
   current exports and source. Documents UWMD/StackUW ownership, inventories
