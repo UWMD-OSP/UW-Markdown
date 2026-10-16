@@ -60,7 +60,6 @@ class JCSTests(unittest.TestCase):
                 value = struct.unpack(">d", bits.to_bytes(8, "big"))[0]
                 for signed in (value, -value):
                     self.assertEqual(float(canonicalize(signed)), signed)
-                    self.assertEqual(canonicalize(signed), canonicalize(signed))
         self.assertEqual(canonicalize(math.nextafter(1e21, 0)), "999999999999999900000")
         self.assertEqual(canonicalize(math.nextafter(1e-6, 0)), "9.999999999999997e-7")
 
