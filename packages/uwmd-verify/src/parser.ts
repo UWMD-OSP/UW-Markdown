@@ -79,12 +79,54 @@ export class UWMDParseError extends Error {
   }
 }
 
+/** Locate the mapping separator without treating quoted key content as syntax. */
+function frontmatterColon(line: string, lineIndex: number): number {
+  const start = line.length - line.trimStart().length;
+  const quote = line[start];
+  // A bare key may contain colons, but its separator needs whitespace or EOL.
+  // Keep bare key spelling unchanged; typed keys are a separate policy.
+  if (quote !== '"' && quote !== "'") return line.search(/:(?=\s|$)/);
+  for (let i = start + 1; i < line.length; i++) {
+    if (quote === '"' && line[i] === '\\') { i++; continue; }
+    if (line[i] !== quote) continue;
+    if (quote === "'" && line[i + 1] === "'") { i++; continue; }
+    const rest = line.slice(i + 1);
+    const separator = i + 1 + rest.length - rest.trimStart().length;
+    // YAML 1.2 block mappings require separation after ':' even for a quoted key.
+    if (line[separator] === ':' && (separator + 1 === line.length || /[ \t]/.test(line[separator + 1]))) return separator;
+    break;
+  }
+  // Reuse scalar escape/one-line diagnostics when available, then refuse a
+  // missing mapping separator rather than silently dropping a quoted key.
+  readFrontmatterScalar(line.slice(start), lineIndex);
+  const feature = 'quoted mapping key without a colon separator';
+  throw new UWMDParseError('UNSUPPORTED_YAML_FEATURE',
+    `Frontmatter line ${lineIndex + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D).`,
+    { line: lineIndex + 1, feature });
+}
+
+function frontmatterKey(line: string, colon: number, lineIndex: number): string {
+  const key = line.slice(0, colon).trim();
+  return key.startsWith('"') || key.startsWith("'")
+    ? readFrontmatterScalar(key, lineIndex).value as string : key;
+}
+
 function rejectUnsupportedYaml(lines: string[]): void {
   for (let n = 0; n < lines.length; n++) {
     const line = lines[n];
     // Blank quoted content (inside quotes `&`, `*` and `!` are content), then
     // strip a trailing comment so `# anchor` text doesn't false-positive.
-    const codePart = stripYamlComment(maskQuotedScalar(line));
+    const trimmed = line.trimStart();
+    // Sequence items and comments are not mapping entries. In particular, a
+    // colon inside a quoted sequence scalar must never expose its indicators.
+    const colon = /^\s*(?:-\s|#)/.test(line) ? -1 : frontmatterColon(line, n);
+    // Scan the value after the actual separator: a colon inside either a
+    // quoted or plain key is content, not the beginning of its scalar value.
+    // Keep bare key syntax visible so complex-key indicators still refuse.
+    const prefix = trimmed.startsWith('"') || trimmed.startsWith("'") ? 'key' : line.slice(0, colon);
+    const masked = colon === -1 ? maskQuotedScalar(line)
+      : `${prefix}:${maskQuotedScalar(`key:${line.slice(colon + 1)}`).slice(4)}`;
+    const codePart = stripYamlComment(masked);
     for (const { pattern, feature } of UNSUPPORTED_YAML_PATTERNS) {
       if (pattern.test(codePart)) {
         throw new UWMDParseError(
@@ -120,11 +162,12 @@ function parseYamlFrontmatter(text: string, onMember?: ParseOptions['onFrontmatt
 
   while (i < lines.length) {
     const line = lines[i];
-    const colonIdx = line.indexOf(':');
+    const colonIdx = frontmatterColon(line, i);
     if (colonIdx === -1) { i++; continue; }
 
-    const key = line.slice(0, colonIdx).trim();
-    if (!key || key.startsWith('#')) { i++; continue; }
+    const rawKey = line.slice(0, colonIdx).trim();
+    if (!rawKey || rawKey.startsWith('#')) { i++; continue; }
+    const key = frontmatterKey(line, colonIdx, i);
     onMember?.([key]);
 
     const scalar = readFrontmatterScalar(line.slice(colonIdx + 1), i);
@@ -154,9 +197,9 @@ function parseYamlFrontmatter(text: string, onMember?: ParseOptions['onFrontmatt
         const nLine = lines[i];
         if (nLine.trim() === '' || nLine.trim().startsWith('#')) { i++; continue; }
         if (nLine.trim().startsWith('- ')) { i++; continue; } // skip list items in nested context
-        const nColon = nLine.indexOf(':');
+        const nColon = frontmatterColon(nLine, i);
         if (nColon === -1) { i++; continue; }
-        const nKey = nLine.slice(0, nColon).trim();
+        const nKey = frontmatterKey(nLine, nColon, i);
         onMember?.([key, nKey]);
         const nValue = readFrontmatterScalar(nLine.slice(nColon + 1), i).value;
         if (!isBlockedSegment(nKey)) nested[nKey] = nValue;

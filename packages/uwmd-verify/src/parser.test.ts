@@ -681,3 +681,69 @@ describe('one format (RFC 0081 D1): UNSUPPORTED_FORMAT_VERSION', () => {
     expect(parseUWFile(doc('uw_version: "3.0"\n')).frontmatter.uw_version).toBe('3.0');
   });
 });
+
+// Appendix D: simple quoted mapping keys retain their YAML string meaning.
+describe('quoted frontmatter mapping keys', () => {
+  const doc = (rows: string) => `---\nuw_version: "3.0"\n${rows}\n---\n`;
+
+  it('decodes quoted keys and finds the separator outside their content', () => {
+    const parsed = parseUWFile(doc('"custom_label": kept\n\'single_label\': also\n"a:b": colon\n"a: &anchor # []": literal\n\'O\'\'Brien\': person\n"\\u0063afé": unicode'));
+    expect(parsed.frontmatter).toMatchObject({ custom_label: 'kept', single_label: 'also',
+      'a:b': 'colon', 'a: &anchor # []': 'literal', "O'Brien": 'person', café: 'unicode' });
+  });
+
+  it('finds the separator after a colon inside a plain string key', () => {
+    const parsed = parseUWFile(doc('a:b: kept\nnested:\n  a:b: "value: &literal"'));
+    expect(parsed.frontmatter).toMatchObject({ 'a:b': 'kept', nested: { 'a:b': 'value: &literal' } });
+  });
+
+  it('keeps quoted sequence indicators as content during the feature pre-pass', () => {
+    const source = doc('flags:\n  - "a: &anchor"\n  - "a: *alias"\n  - "a: !!str literal"\n  - "a: [x] # literal"\n  - \'a: &single\'\n# "unterminated: comment');
+    expect(parseUWFile(source).frontmatter.flags).toEqual([
+      'a: &anchor', 'a: *alias', 'a: !!str literal', 'a: [x] # literal', 'a: &single',
+    ]);
+  });
+
+  it.each(['&anchor', '*alias', '[1, 2]', '{a: 1}'])('still refuses unsupported sequence syntax: %s', item => {
+    expect(() => parseUWFile(doc(`flags:\n  - ${item}`))).toThrow(/UNSUPPORTED_YAML_FEATURE/);
+  });
+
+  it.each(['"key":value', "'key':value", 'nested:\n  "key":value'])('refuses adjacent block mapping values: %s', rows => {
+    expect(() => parseUWFile(doc(rows))).toThrow(/UNSUPPORTED_YAML_FEATURE/);
+  });
+
+  it('preserves hash-leading and empty quoted string keys as data', () => {
+    const parsed = parseUWFile(doc('"#literal": kept\n"": empty-key\n# ignored: comment'));
+    expect(parsed.frontmatter).toMatchObject({ '#literal': 'kept', '': 'empty-key' });
+    expect(Object.hasOwn(parsed.frontmatter, '# ignored')).toBe(false);
+  });
+
+  it('decodes nested keys and reports decoded member paths without changing source', () => {
+    const source = doc('"pipeline_state":\n  "L0": complete\n  \'x:y\': pending').replaceAll('\n', '\r\n');
+    const paths: string[][] = [];
+    const parsed = parseUWFile(source, { onFrontmatterMember: path => paths.push([...path]) });
+    expect(parsed.frontmatter.pipeline_state).toEqual({ L0: 'complete', 'x:y': 'pending' });
+    expect(paths).toEqual([['uw_version'], ['pipeline_state'], ['pipeline_state', 'L0'], ['pipeline_state', 'x:y']]);
+    expect(parsed.raw).toBe(source);
+  });
+
+  it('keeps quoted numeric-looking keys as strings and unquoted key behavior', () => {
+    expect(parseUWFile(doc('"12": number-key\n"true": boolean-key\n"null": null-key\na.b: dotted')).frontmatter)
+      .toMatchObject({ '12': 'number-key', true: 'boolean-key', null: 'null-key', 'a.b': 'dotted' });
+  });
+
+  it('applies blocked-segment guards after decoding quoted keys', () => {
+    const parsed = parseUWFile(doc('"\\u005f_proto__":\n  hidden: value\n"constructor": blocked\n"nested":\n  "prototype": blocked\n  "kept": value\nafter: retained'));
+    expect(Object.hasOwn(parsed.frontmatter, '__proto__')).toBe(false);
+    expect(Object.hasOwn(parsed.frontmatter, 'constructor')).toBe(false);
+    expect((parsed.frontmatter as Record<string, unknown>).nested).toEqual({ kept: 'value' });
+    expect((parsed.frontmatter as Record<string, unknown>).after).toBe('retained');
+  });
+
+  it.each(['"broken: value', '"\\q": value', '"closed" junk: value', 'nested:\n  \'broken: value'])('refuses malformed quoted mapping keys: %s', rows => {
+    expect(() => parseUWFile(doc(rows))).toThrow(UWMDParseError);
+    try { parseUWFile(doc(rows)); } catch (error) {
+      expect((error as UWMDParseError).code).toBe('UNSUPPORTED_YAML_FEATURE');
+    }
+  });
+});

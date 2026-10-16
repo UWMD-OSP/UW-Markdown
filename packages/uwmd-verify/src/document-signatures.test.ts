@@ -74,6 +74,23 @@ describe('document source accounting', () => {
   ])('refuses malformed or ambiguous source (%#)', async source => {
     await expect(resolveDocumentSigningSubject(source)).rejects.toBeInstanceOf(DocumentSigningError);
   });
+  it('binds equivalent quoted and unquoted string keys to the same semantic subject', async () => {
+    const plain = SOURCE.replace('deal_name:', 'custom_label: kept\npipeline_state:\n  L0: complete\ndeal_name:');
+    expect(await resolveDocumentSigningSubject(SOURCE.replace('deal_name:', 'a:b: kept\ndeal_name:')))
+      .toEqual(await resolveDocumentSigningSubject(SOURCE.replace('deal_name:', '"a:b": kept\ndeal_name:')));
+    const quoted = plain.replace('custom_label:', '"custom_label":').replace('pipeline_state:', "'pipeline_state':").replace('  L0:', '  "L0":');
+    expect(await resolveDocumentSigningSubject(quoted)).toEqual(await resolveDocumentSigningSubject(plain));
+  });
+  it.each([
+    'custom_label: first\n"custom_label": second',
+    '"custom_label": first\n"\\u0063ustom_label": second',
+    'details:\n  name: first\n  "name": second',
+    '"__proto__": hidden',
+    'details:\n  "constructor": hidden',
+  ])('refuses decoded duplicate or unsafe quoted source keys (%#)', async rows => {
+    await expect(resolveDocumentSigningSubject(SOURCE.replace('deal_name:', `${rows}\ndeal_name:`)))
+      .rejects.toBeInstanceOf(DocumentSigningError);
+  });
   it('does not confuse braces/quotes in strings or arrays with object keys', async () => {
     const source = SOURCE.replace('"value":100', '"text":"\\\"a\\\":{[}","array":[{"a":1},{"a":2}]');
     await expect(resolveDocumentSigningSubject(source)).resolves.toBeDefined();
