@@ -13,8 +13,12 @@ writer. **Agents extract and narrate; they never compute financial metrics.**
 - **Location:** [`packages/uwmd-core/src/agents/`](../../packages/uwmd-core/src/agents/)
   + [`src/context.ts`](../../packages/uwmd-core/src/context.ts)
   + [`src/context-profiles.ts`](../../packages/uwmd-core/src/context-profiles.ts)
-- **Normative contract:** `UW_PROTOCOL.md` §IX (provider-neutral). `bancroft.ts`
-  is the Claude-backed *reference* implementation.
+- **Starter contract:** [AI host guide](../starter/ai-host.md) §IX,
+  non-normative since RFC 0078. `bancroft.ts` runs the optional reference suite;
+  its provider interface is neutral and its default adapter is Anthropic.
+- **Ownership:** these are retained 4.x compatibility surfaces. StackUW owns
+  modeling, agents and workflows. See the [inventory](../reviews/2026-10-15-architecture-boundary.md)
+  and [5.0 removal plan](../reviews/2026-10-15-agent-removal-5.0.md).
 - **Public API (via `index.ts`):** `runBancroftAgent`, `runBancroftAgentStreaming`,
   `buildAgentContext`, `buildAgentPrompt`, `isContextReady`, `getLayerDependencies`,
   `BANCROFT_LAYERS`, `WRITE_UW_SECTION_TOOL`, `WRITE_MULTIPLE_SECTIONS_TOOL`,
@@ -29,7 +33,7 @@ skipLibCheck disabled and optional peers absent.
 ## The layer registry (`BANCROFT_LAYERS` in `context.ts`)
 
 Each `LayerDefinition` declares `id`, `layer` (number), `name`, `reads[]`,
-`writes[]`, `pipelineStateKey`, and `consumed_profile` (the normative context
+`writes[]`, `pipelineStateKey`, and `consumed_profile` (the starter context
 profile, verified by the agent starter-product checks).
 
 Layer | Name | Reads | Writes | Profile
@@ -72,9 +76,9 @@ Resolves the layer (by `L\d+` prefix; unknown → L7), collects the sections the
 layer reads (or all, for L7), always includes `deal_context` for orientation,
 records `missingRequired`/`missingOptional`, and builds:
 - `chatContext` — a token-budgeted rendered context string (via `render(..., {format:'chat'})`).
-- `profileContext` — the *normative* payload built from the layer's
+- `profileContext` — the starter payload built from the layer's
   `consumed_profile` via `buildContext` (`context-profiles.ts`). Hosts running
-  under the conformance contract should send this, not `chatContext`.
+  under the starter compatibility contract use this payload.
 
 ## Prompt building (`buildAgentPrompt`)
 
@@ -109,7 +113,8 @@ runBancroftAgent(fileContent, agentId, opts) → Promise<BancroftRunResult>
 runBancroftAgentStreaming(fileContent, agentId, opts) → Promise<BancroftRunResult>
 ```
 
-`BancroftRunOptions`: `apiKey` (required), `model?` (default `claude-sonnet-4-6`),
+`BancroftRunOptions`: either `provider` or `apiKey` is required;
+an injected provider avoids loading the SDK. Other options: `model?` (default `claude-sonnet-4-6`),
 `maxRetries?` (default 2), `maxTokens?` (default 4096), `temperature?` (default
 0.1), `userInstructions?`, `onProgress?`.
 

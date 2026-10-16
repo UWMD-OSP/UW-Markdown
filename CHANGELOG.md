@@ -18,6 +18,13 @@ protocol, and each package each carry an independent semver).
 
 ### Documentation
 
+- Architecture cleanup reconciles RFCs 0078/0083 and Issue #355 with the
+  current exports and source. Documents UWMD/StackUW ownership, inventories
+  agent product surfaces separately from provenance and interoperability,
+  and records a separate proposed 5.0 removal plan. Corrects stale AI-host
+  normative/tier guidance. The generic editor and initializer now import
+  `buildMeta` directly from `@uwmd/verify`; runner re-exports, all 4.x APIs,
+  CLI behavior and normative contracts remain unchanged.
 - Post4.3.0 financial follow-up records the held DCF-label baseline proposal,
   compaction authority/projection recommendation and draft86/87 source/basis
   decisions. No metric, validation rule, baseline or RFC acceptance changes.

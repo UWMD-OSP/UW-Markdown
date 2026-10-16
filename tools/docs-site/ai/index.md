@@ -45,7 +45,9 @@ recorded-replay provider that makes agent runs deterministic for testing. See
 2. [Quickstart](/tutorials/quickstart) and the
    [first-record tutorial](/tutorials/your-first-uwmd-file) for orientation.
 3. [Format specification](/spec/format) for document syntax and semantics.
-4. [Protocol specification](/spec/protocol) for reader, editor, calc-host, and agent-host behavior.
+4. [Protocol specification](/spec/protocol) for Reader and Verifier requirements
+   and optional verification profiles; the [starter guide](/starter/ai-host)
+   describes the optional agent host.
 5. [Schemas](/spec/schemas/) and [conformance fixtures](/conformance/) for implementation testing.
 6. [`llms-full.txt`](/llms-full.txt) for the expanded link map.
 
