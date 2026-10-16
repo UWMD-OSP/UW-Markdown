@@ -667,8 +667,10 @@ static references: all 97 frozen calc formulas parse, and all 171 dictionary
 declarations reproduce their declared input-path sets without evaluating any
 formula. The frozen module parse refusal and period-path structural refusal
 exercise only their grammar/reference prerequisites. The implementation's
-separate static reference check validates blocked members and registered period
-identity without source lookup. Role/variant resolution, expression evaluation,
+syntax-only blocked-reference inventory flags member spellings for future safe
+traversal without rejecting valid grammar or claiming a runtime verdict. Its
+separate static reference check validates registered period identity without
+source lookup. Role/variant resolution, expression evaluation,
 PS-03 and financial verification remain separate missing work. CI retains exact-head portable
 Reader manifests on three operating systems. See the
 [Python README](../../implementations/python/README.md) and

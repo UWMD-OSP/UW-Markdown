@@ -26,8 +26,9 @@ Implemented:
   PS-01/PS-02 evidence is partial structural inspection, not document validation.
 - Protocol VIII.1 grammar parsing into immutable AST tuples and a static
   reference inventory, preserving numeric spelling, literal bracket keys and
-  period identity. A separate structural check rejects blocked members and
-  malformed/unregistered period references without reading document values.
+  period identity. A syntax-only blocked-reference inventory flags spellings
+  for future safe traversal; a separate structural check rejects malformed or
+  unregistered period references without reading document values.
 - The earlier independent seed's integer Gregorian date/day-count arithmetic,
   decimal quantizer, ordered cash totals and MOIC. These remain a small numeric
   seed, not `calc-evaluate` or financial-verification conformance.
@@ -108,8 +109,10 @@ module formula supplies a parse-refusal prerequisite, not a module-profile pass.
 `parse_expression` checks VIII.1 syntax only and retains number lexemes without
 converting or calculating them. `expression_references` returns every reference
 in syntax order, including duplicates and branches a later evaluator might
-short-circuit. `check_reference_structure` separately checks blocked members and
-registered period identities; it does not inspect document values, choose roles
+short-circuit. `blocked_references` inventories blocked traversal spellings
+without rejecting valid grammar or claiming a runtime error. Literal dotted
+keys remain distinct from path segments. `check_reference_structure` separately
+checks registered period identities; it does not inspect document values, choose roles
 or variants, enforce builtin arity, or produce a financial result. AST admission
 and static input-set agreement do not establish metric reproduction, dependency
 resolution, type correctness or any Verifier/Module capability. The manifest

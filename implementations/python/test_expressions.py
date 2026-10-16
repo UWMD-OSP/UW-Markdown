@@ -5,7 +5,7 @@ from pathlib import Path
 import unittest
 
 from uwmd import main
-from uwmd_expressions import (ExpressionError, Reference, check_reference_structure,
+from uwmd_expressions import (ExpressionError, Reference, blocked_references, check_reference_structure,
                               expression_references, parse_expression)
 
 
@@ -104,14 +104,23 @@ class ExpressionTests(unittest.TestCase):
                               ("dcf.annual_cash_flows.more@Y1", "CALC-PERIOD-001"),
                               ("cash_flow_series.series@2026-02-30.amount", "CALC-PERIOD-001"),
                               ("lease_up_schedule.schedule@2026-13.amount", "CALC-PERIOD-001"),
-                              ("dcf.annual_cash_flows@Y9007199254740992.noi", "CALC-PERIOD-001"),
-                              ("a.constructor", "CALC-PARSE-001"),
-                              ("a['__proto__']", "CALC-PARSE-001"),
-                              ("prototype.x", "CALC-PARSE-001")]:
+                              ("dcf.annual_cash_flows@Y9007199254740992.noi", "CALC-PERIOD-001")]:
             tree = parse_expression(formula)
             self.refusal(code, check_reference_structure, tree)
         check_reference_structure(parse_expression("unknown.absent + f(missing)"))
         check_reference_structure(parse_expression("a['literal.constructor']"))
+        for formula, expected in [("a.constructor", Reference("a", ("constructor",))),
+                                  ("a['__proto__']", Reference("a", ("__proto__",))),
+                                  ("prototype.x", Reference("prototype", ("x",))),
+                                  ("dcf.annual_cash_flows@Y1['constructor']",
+                                   Reference("dcf", ("annual_cash_flows", "constructor"), "Y1", 1))]:
+            # Valid grammar; safe traversal is unimplemented, so static spelling
+            # inventory cannot be promoted to a normative parse/runtime refusal.
+            tree = parse_expression(formula)
+            check_reference_structure(tree)
+            self.assertEqual(blocked_references(tree), (expected,))
+        self.assertEqual(blocked_references(parse_expression("a['literal.constructor']")), ())
+        self.assertEqual(blocked_references(parse_expression("'a.constructor'")), ())
 
     def test_host_language_and_incomplete_input_refuse(self):
         for bad in (None, True, 1, "", " ", "x = 1", "x => x", "lambda x: x", "for(;;)",

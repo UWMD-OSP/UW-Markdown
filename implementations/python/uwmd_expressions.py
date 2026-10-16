@@ -194,15 +194,23 @@ def expression_references(tree):
     return tuple(references)
 
 
+def blocked_references(tree):
+    """Inventory blocked member spellings for future safe traversal, no verdict.
+
+    These references remain grammatically valid. This syntax-only inventory
+    neither accesses a prototype nor invents a parse/runtime error code.
+    """
+    return tuple(reference for reference in expression_references(tree)
+                 if any(key in _BLOCKED for key in (reference.head, *reference.members)))
+
+
 def check_reference_structure(tree):
-    """Check static path safety and registered period syntax without resolving.
+    """Check registered period syntax without resolving document values.
 
     Unregistered period paths and invalid calendar/range selectors have existing
     CALC-PERIOD-001. No role, variant, input availability or function check.
     """
     for reference in expression_references(tree):
-        if any(key in _BLOCKED for key in (reference.head, *reference.members)):
-            _refuse("blocked path segment")
         if reference.selector is not None:
             if reference.selector_after != 1 or (reference.head, reference.members[0]) not in PERIOD_SERIES:
                 _refuse("unregistered period series path", "CALC-PERIOD-001")
