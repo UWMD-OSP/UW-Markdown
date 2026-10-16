@@ -1,5 +1,36 @@
 # 13 — Build status (living document)
 
+**Python integration checkpoint — block hashes merged; active source checks.**
+PR #369 merged as `022b01240ce88cec6f803d03e45033c4c0a6c113`, tree-identical
+to reviewed `ecf5a64e`. Exact-head CI38981952556 passes17 ordinary jobs; its
+[exact-main run](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38982753992)
+is the durable post-merge result. The bounded implementation retains132Python
+controls, Reader17/17 and explicitly hash-only evidence. Signature checking,
+ambiguous chain identity policy and complete Verifier conformance remain unclaimed.
+
+The accepted source/role continuation adds SRC-01/02/03 and ROLE-01 inventory,
+leaf override checks and pinned META-01 routing across all active physical
+blocks. Twelve focused methods include nine scoped standalone comparisons;
+selected shape diagnostics are local. Original source/history evidence and
+parse-only discovery remain intact; no full validate capability is implied.
+
+## Bounded parallel workstreams
+
+One integrator owns sequencing, independent review, shared indexes/changelog/
+status/spec files, remote publication and merges. Three workers own disjoint
+implementation or research files and use separate worktrees/remote branches.
+Focused local checks precede full exact-head CI at integration checkpoints.
+
+| Lane | Remote branch | Scope and gate |
+|---|---|---|
+| A Python verification | `codex/python-source-role-validation` | Accepted read-only verification; Python code/tests/CLI and README. Parse-only until full capability obligations are demonstrated. |
+| B numerical determinism | `codex/numerical-determinism-356` / #357 | DraftRFC0088, existing numerical study and isolated experiments; no production arithmetic, expected-result or acceptance changes. |
+| C Envelope | `codex/rfc-0089-extension-envelope` / #368 | DraftRFC0089, the existing365review section and illustrative evidence; no Envelope1/schema/digest/receipt change before owner approval. |
+
+RFC0085/#335 remains coordinated without a fourth worker. Provisional direction
+is not design acceptance. Independent versioning and the public5.0 launch
+reservation remain unchanged; StackUW owns generation, agents and workflows.
+
 **Latest Python milestone — replacement funding merged; bounded block integrity.**
 PR #367 merged as `fbbd1a7704f5c7df20e633e9123273b7dcc4ac43`, with the
 reviewed §V.12 replacement verifier, 119 Python controls, 71 explicitly adapted
