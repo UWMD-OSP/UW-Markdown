@@ -228,14 +228,19 @@ expectation, public validation result or release version changes here.
 ## Decision proposal follow-up (no new arithmetic experiment)
 
 RFC0088 §6 now presents concrete owner options D1–D8 and recommends a single
-exact result/refusal contract, range-safe correctly-rounded `pow`/`log`/`exp`
-primitives, separately pinned existing financial operation graphs, and existing
+exact result/refusal contract, a measured comparison of pinned range-safe
+`pow`/`log`/`exp` procedures against correctly-rounded primitives, separately
+pinned existing financial operation graphs, and existing
 receipt wire/signature subjects with a new engine version after approved numeric
 changes. This is a recommendation, not evidence that a portable kernel has been
 selected or demonstrated. Sequential integer products remain an explicit
 alternative; their range, stability and resource limits cannot be inherited
 silently by negative or fractional powers. No kernel, domain restriction, solver
-change or expectation has been adopted.
+change or expectation has been adopted. Official StrictMath/fdlibm and MPFR
+sources establish feasible strategy precedents, not tested UWMD cross-language
+identity. A correctly-rounded guarantee is stronger than exact algorithm
+reproduction and is not imposed as an unexamined prerequisite; the next bounded
+engineering study must measure accuracy, range, resource and deployment costs.
 
 The draft separates owner direction from RFC acceptance and implementation.
 Acceptance still needs a complete primitive special-case/domain/error/resource
