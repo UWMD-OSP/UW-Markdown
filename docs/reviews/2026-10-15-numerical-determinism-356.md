@@ -323,3 +323,36 @@ operation order, resource limits and explicit downstream NPV/IRR/quantization/
 receipt obligations. No normative or production file, frozen conformance value,
 receipt/signature artifact, public version, RFC acceptance or release preparation
 changes. No experimental recovery payload or new dependency is introduced.
+
+## 2026-10-16 — composed cash and reporting boundary controls
+
+The [cash-graph lab](../../experiments/numerical-0088/cash-graphs/README.md)
+adds ten fixed synthetic cash vectors and ten reporting controls, independently
+frozen from exact rational arithmetic. Three experimental power alternatives
+feed ordered periodic NPV and the accepted IRR bracket/endpoint checks only.
+No bisection is performed: a bracket needing it reports `bisection_required`,
+without a guessed root or result digest. Dated prederived exponents retain
+amount-times-negative-power; a half-year remains `fractional_kernel_required`.
+
+A fixed positive/negative money-boundary pair reports 1.00/1.01 and -1.00/-1.01
+under different graphs, using the existing VIII.5 decimal-string shift rather
+than rounding the exact binary fraction. Separate frozen result-array preimages
+and digests demonstrate consequences after reporting; no receipt is issued.
+Exact upper-endpoint controls independently expose endpoint 10 versus no bracket
+or an unexecuted bisection. Ordered source cancellation and true rounded
+subnormal versus intermediate refusal remain separate controls.
+
+The new Python reference uses no float, Decimal, repr, libm, Node or production
+imports. The independent JS runner checks every financial intermediate trace,
+reporting preimage and digest against frozen rational evidence. Five new focused
+Python methods and two JS tests pass on Python 3.12.3/Node 24.14.1 Windows AMD64.
+Only those new tests ran; prior audit/lab/full suites were not repeated. The
+README records exact input/source/evidence hashes and proposes supported-runtime/
+OS coverage for integrator CI without claiming it already ran.
+
+Candidate dispatch/refusal policy and numerical results remain unaccepted.
+Accepted bracket, endpoint order, stopping/tolerances, final quantizer, source/
+block/signature subjects, receipt precedence, engine/version labels and frozen
+conformance are unchanged. RCP-07 still requires different-engine disagreement;
+same-engine runtime disagreement is not excused. No fallback evaluator, automatic
+historical rehash, RFC 0085 policy, new dependency or release preparation is added.
