@@ -735,3 +735,26 @@ are excluded. Lawful role-opted extension peers therefore coexist with verified
 replacement commitments despite separate #365. Frozen RFC0076's strike-only
 control follows current RFC0081 applicability; full-term refused selections
 retain HDG-08. No pricing, metric procedure, normative expectation or tier changes.
+
+
+### Independent Python block-content and chain assessment
+
+The standalone `verify-block-integrity` command implements §V.9 hashes and bounded
+§V.10 checks with a nonnormative report, physical block evidence and explicit local
+unsupported/unavailable assessment. It supports unambiguous singleton, registered
+parallel and current role-opted identities. Historical role removal and ambiguous
+append-only grouping stay unsupported; no new chain-history policy or INT code is
+introduced. The explicit-input ordered-chain API leaves identity with its caller.
+Root/replace behavior remains unchanged. Only post-opt-in missing hashes emit
+INT-03; actual links and content comparisons emit INT-01/04 with existing severity.
+
+The 132-method suite retains the previous 119 controls. Thirteen added methods
+include 11 actual standalone frozen **hash-only** comparisons, with applicable
+INT expectations projected through the unchanged shared subset comparator. Inputs
+include the broken-chain negative, existing editor hash and nine signing sources;
+the latter are not signature-conformance passes. All physical payloads remain
+available, including finite evidence beside unsupported classification or provider
+failure. Signature counts explicitly remain present/unchecked and zero verified.
+No integrity profile or generic verify capability is advertised; discovery remains
+parse-only and genuine Reader17/17 stays separate. See the Python README for local
+count/exit semantics, supported domain and scoped API boundaries.

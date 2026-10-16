@@ -28,6 +28,15 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Add independent Python block-content hashing and bounded read-only chain
+  assessment under accepted §V.9/§V.10, with complete physical block evidence,
+  explicit opt-in/refusal diagnostics and a separately addressed ordered-chain
+  API. Historical identity ambiguity and unavailable hashes remain local partial
+  assessments rather than new INT findings. Exercise 11 frozen inputs through
+  actual hash-only standalone comparisons; preserve parse-only discovery and
+  explicitly unchecked signatures. No full integrity-profile, normative, signing,
+  history-retention, dependency or version changes.
+
 - Add independent Python standalone replacement-funding binding verification
   under accepted §V.12: scoped hedge/escrow prerequisites, property role selection,
   exact current cash references and separate JCS/SHA-256 commitments. Keep narrow
