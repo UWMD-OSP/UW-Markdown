@@ -35,7 +35,7 @@ while `sections[id]` already permits variant maps. Selecting an arbitrary peer,
 aggregating payloads or filtering the document loses admitted content and
 changes its complete semantic commitment.
 
-The requested [read-only intake in the existing Reader review](../reviews/2026-10-15-python-reader-354.md#2026-10-16--issue-365-joint-representation-rfc-intake)
+The requested [read-only intake in the existing Reader review](https://github.com/UWMD-OSP/UW-Markdown/blob/c8a7457510eea154a4aa86230b07f914550b80b0/docs/reviews/2026-10-15-python-reader-354.md#2026-10-16--issue-365-joint-representation-rfc-intake)
 contains the pinned source/type/schema/mapping/consumer evidence and alternatives.
 It is evidence of a joint representation problem, not a Python-specific bug or
 authority to invent an implementation-only shape. Its baseline `64b9b109` and
