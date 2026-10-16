@@ -42,7 +42,20 @@ class FrontmatterTests(unittest.TestCase):
     def test_quoted_simple_keys_and_duplicate_decoded_keys(self):
         self.assertEqual(self.decode("'unknown:key': retained\n\"é\": 12\n").value,
                          {"unknown:key": "retained", "é": 12})
-        for text in ["x: 1\n'x': 2\n", 'x:\n  a: 1\n  "a": 2\n', '"\\u0078": 1\nx: 2\n']:
+        raw = ('"é": kept\n"": 1.2300\n"#leading": retained\n'
+               "nested:\n  '': -2.500\n  '#tag': yes\n  'embedded:colon': retained\n").encode()
+        parsed = parse_frontmatter(raw)
+        self.assertEqual(parsed.value, {"é": "kept", "": 1.23, "#leading": "retained",
+                                        "nested": {"": -2.5, "#tag": "yes", "embedded:colon": "retained"}})
+        self.assertEqual([token.pointer for token in parsed.numbers], ["/", "/nested/"])
+        self.assertEqual([token.lexeme for token in parsed.numbers], ["1.2300", "-2.500"])
+        for token in parsed.numbers:
+            self.assertEqual(token.span.extract(raw).decode(), token.lexeme)
+        for text in ["x: 1\n'x': 2\n", 'x:\n  a: 1\n  "a": 2\n', '"\\u0078": 1\nx: 2\n',
+                     "'': 1\n\"\": 2\n"]:
+            with self.subTest(text=text), self.assertRaises(FrontmatterError):
+                self.decode(text)
+        for text in [": kept\n", "12: kept\n", "true: kept\n", "null: kept\n"]:
             with self.subTest(text=text), self.assertRaises(FrontmatterError):
                 self.decode(text)
 
