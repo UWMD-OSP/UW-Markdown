@@ -56,7 +56,7 @@ empty profiles and no tier; it advertises no validation or financial verdict.
 | Append-only sections | Every active log/calculation/scenario block retained in source order | Pipeline-log portable projection uses complete log objects; other collections use wrapped blocks; no edit claim |
 | II.1 byte preservation | Original immutable bytes, BOM/CRLF and UTF-8 spans retained; projections do not rewrite source | No edit or serialization round-trip capability |
 | Appendix D | Scalar types, comments, quotes/escapes, one nested mapping level, scalar sequences, empty sequence, feature refusals | Bare numeric/bool/null keys deliberately refuse rather than guessing JSON coercion; no complete Appendix D claim |
-| II.6a.6 portable projection | Genuine external-driver run: 17/17, no skips | Nonportable Reader tests and full capability audit still required before tier certification |
+| II.6a.6 portable projection | Genuine external-driver run: 17/17, no skips; one unit method also executes the other nine Reader-owned frozen refusals | Complete key-type/capability audit still required before tier certification |
 | XII.3 version refusal | Absent/non-string/non-3.0 version refused with existing code and declared/supported values | Only structured Markdown implemented |
 | II.1.5 conditional validator obligations | No `validate` flag; missing checks are not reported as clean | Full Verifier validation remains outstanding |
 
@@ -105,7 +105,7 @@ financial return recalculation is claimed.
 
 | Command | Actual result |
 | --- | --- |
-| `python3 -B -m unittest discover -s implementations/python -v` | **43 passed**, zero failures: 9 existing numeric + 10 existing source + 10 frontmatter + 14 Reader tests |
+| `python3 -B -m unittest discover -s implementations/python -v` | **44 passed**, zero failures: 9 existing numeric + 10 existing source + 10 frontmatter + 15 Reader tests |
 | `python3 -B conformance/runner/runner.py --impl 'python3 -B /tmp/uwmd-batch2-python/implementations/python/uwmd.py' --tier reader --no-skip --manifest-out /tmp/uwmd-batch2-python-reader-evidence.json` | **17/17 portable Reader passed**, zero failures, skips or unverifiable cases; exit 0 |
 
 The driver launches the Python CLI independently and compares the unmodified
@@ -126,10 +126,57 @@ failure is reclassified. The coordinator records applicable npm, documentation
 and exact-head GitHub gates separately. Portable Reader results remain distinct
 from reference conformance, starter tests and independent Verifier certification.
 
+### Nine nonportable Reader-owned refusal checks
+
+The corpus index owns 26 checks as Reader: the 17 portable parse projections and
+the following nine existing malformed-document refusals. A single new unit
+method reads these Reader-owned index entries, opens their frozen source and
+expected-code files, requires `must_parse: false`, and checks the actual raised
+code. It neither invokes TypeScript nor changes any baseline or generator.
+
+| Scenario under `conformance/documents/malformed/` | Existing expected code |
+| --- | --- |
+| `11-yaml-flow-mapping` | `UNSUPPORTED_YAML_FEATURE` |
+| `12-yaml-flow-sequence` | `UNSUPPORTED_YAML_FEATURE` |
+| `13-yaml-invalid-escape` | `UNSUPPORTED_YAML_FEATURE` |
+| `14-yaml-unquoted-anchor` | `UNSUPPORTED_YAML_FEATURE` |
+| `15-uw-version-1-1` | `UNSUPPORTED_FORMAT_VERSION` |
+| `16-uw-version-2-0` | `UNSUPPORTED_FORMAT_VERSION` |
+| `17-uw-version-2-1` | `UNSUPPORTED_FORMAT_VERSION` |
+| `18-uw-version-4-0` | `UNSUPPORTED_FORMAT_VERSION` |
+| `19-uw-version-absent` | `UNSUPPORTED_FORMAT_VERSION` |
+
+All nine pass within the 44-method run. The original controls tested similar
+YAML refusals and different version inputs, but had not executed these exact
+sources. The new method closes that specific evidence gap. This is not a claim
+that the TypeScript reference runner ran against Python, nor nine additional
+portable passes. All currently indexed Reader cases are now exercised through
+these two explicitly identified test paths; completeness beyond the corpus
+remains a distinct specification review.
+
+### Remaining key-type question before a tier claim
+
+Appendix D preserves YAML 1.2 scalar meaning and says mapping keys must be
+simple scalars. It does not explicitly say they must be string-valued scalars.
+Protocol XII.1 requires unknown keys to be preserved, while II.6a.6 and the
+envelope schema represent frontmatter as a JSON object, whose member names are
+strings. The Format's named-field examples do not establish a closed lexical
+grammar for unknown keys. The safe-expression identifier grammar governs
+expressions, not frontmatter admission.
+
+The precise unresolved question is whether non-string-resolving bare keys such
+as `12:`, `true:` and `null:` are outside the UW YAML subset, requiring authors
+to quote them, or are admitted and need a specified lossless JSON mapping with
+explicit collision rules (for example bare `true` versus quoted `'true'`).
+The implementation currently refuses these keys and documents that limitation;
+it does not select a coercion rule. This narrow contract clarification is
+required before claiming complete Appendix D/Reader support. Existing frozen
+Reader refusals do not answer it; no financial or numerical decision is involved.
+
 ## Next bounded work and numerical dependencies
 
-Before a Reader tier claim, complete the above-contract review and nonportable
-Reader controls, especially key-type/representation edge cases. Verifier work
+Before a Reader tier claim, complete the above-contract review, especially the
+specific key-type question and representation edge cases. Verifier work
 can proceed on structural checks, period/variant identities, safe-expression
 parsing, ordinary arithmetic/null/refusal rules, dictionary checks without
 disputed transcendentals, and explicit cash-flow coverage. Advertised

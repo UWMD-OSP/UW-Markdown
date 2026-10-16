@@ -1,6 +1,7 @@
 """Reader boundary/identity controls beyond the 17 portable projections."""
 import copy
 import json
+from pathlib import Path
 import unittest
 
 from uwmd import main
@@ -24,6 +25,26 @@ def block(section, payload=None, variant=None, role=None, superseded=False):
 
 
 class ReaderTests(unittest.TestCase):
+    def test_all_reader_owned_malformed_corpus_refusals(self):
+        # Test-only oracle: production parsing never opens corpus expectations.
+        root = Path(__file__).resolve().parents[2]
+        index = json.loads((root / "conformance/corpus-index.json").read_text(encoding="utf-8"))
+        cases = [case for case in index["cases"] if case["target"] == "reader"
+                 and case["suite"] == "documents" and case["scenario"].startswith("malformed/")]
+        self.assertEqual(len(cases), 9)
+        for case in cases:
+            prefix = root / "conformance/documents" / case["scenario"]
+            expected = json.loads(Path(str(prefix) + ".expected.json").read_text(encoding="utf-8"))
+            source = Path(str(prefix) + ".uwx.md")
+            with self.subTest(scenario=case["scenario"]):
+                self.assertIs(expected["must_parse"], False)
+                self.assertTrue(expected["expected_codes"])
+                self.assertLessEqual(set(expected["expected_codes"]),
+                                     {"UNSUPPORTED_YAML_FEATURE", "UNSUPPORTED_FORMAT_VERSION"})
+                with self.assertRaises(SourceError) as caught:
+                    parse(source.read_bytes(), filename=source.name)
+                self.assertIn(getattr(caught.exception, "code", None), expected["expected_codes"])
+
     def test_all_required_frontmatter_values_are_surfaced(self):
         document = parse(HEADER)
         self.assertEqual(document.frontmatter.value, {

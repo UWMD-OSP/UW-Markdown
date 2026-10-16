@@ -31,14 +31,16 @@ python3 -B implementations/python/uwmd.py parse conformance/documents/fixtures/0
 python3 -B conformance/runner/runner.py --impl 'python3 -B implementations/python/uwmd.py' --tier reader --no-skip
 ```
 
-Observed on Python 3.12.3/Linux: **43 unit methods passed**; the genuine portable
+Observed on Python 3.12.3/Linux: **44 unit methods passed**; the genuine portable
 Reader run passed **17/17**, with zero skips, failures or unverifiable cases.
 That portable run is separate from the ten source-scanner tests, which inspect
 17 fixture inputs but do not compare their canonical parse projections.
-Other environments require their own recorded runs.
+The additional unit method executes all nine Reader-owned malformed source
+fixtures against their existing refusal codes; those cases are not portable
+driver projections. Other environments require their own recorded runs.
 
-Remaining Reader review includes the nonportable Reader corpus, complete
-Appendix D key-type coverage, representation edge cases, and stronger
+Remaining Reader review includes complete Appendix D key-type semantics,
+representation edge cases, and stronger
 malformed/ambiguous-source controls. Active extension-role opt-in retains every
 named variant and unannotated peer in either source order. This
 seed refuses non-string-resolving bare YAML keys rather than guessing a JSON key
