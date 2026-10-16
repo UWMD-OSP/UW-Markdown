@@ -29,8 +29,8 @@ export interface LayerDefinition {
   writes: string[];   // section IDs this layer writes
   pipelineStateKey: string;
   /**
-   * Normative context profile this layer consumes (Protocol §XI).
-   * Conformance Tier-4 verifies a host requests exactly this profile when
+   * Starter context profile this layer consumes (starter guide §IX.7).
+   * Starter-product checks verify a host requests exactly this profile when
    * preparing the layer's input. Phase 4 default; Phase 5 layers (L0a/L0b)
    * declare their own.
    */
@@ -142,9 +142,9 @@ export interface AgentContext {
   chatContext: string;
   chatTokenEstimate: number;
   /**
-   * Normative context payload built from the layer's `consumed_profile`
-   * (Protocol §XI). Hosts SHOULD send this — not `chatContext` — to the
-   * agent when running under the conformance contract.
+   * Starter context payload built from the layer's `consumed_profile`
+   * (starter guide §IX.7). The optional reference host uses this payload;
+   * it is not a Reader or Verifier conformance requirement.
    */
   profileContext: ContextResult;
 }
@@ -202,7 +202,7 @@ export function buildAgentContext(
     maxTokens: opts.maxChatTokens ?? 8000,
   });
 
-  // Build the normative profile context per the layer's declared consumption.
+  // Build the starter profile context per the layer's declared consumption.
   // For 'relevant', pass layer.reads as the section filter so the host receives
   // exactly the documented contract.
   const profileContext = buildContext(parsed, layer.consumed_profile, {

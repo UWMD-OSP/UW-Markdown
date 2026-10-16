@@ -33,7 +33,7 @@ skipLibCheck disabled and optional peers absent.
 ## The layer registry (`BANCROFT_LAYERS` in `context.ts`)
 
 Each `LayerDefinition` declares `id`, `layer` (number), `name`, `reads[]`,
-`writes[]`, `pipelineStateKey`, and `consumed_profile` (the normative context
+`writes[]`, `pipelineStateKey`, and `consumed_profile` (the starter context
 profile, verified by the agent starter-product checks).
 
 Layer | Name | Reads | Writes | Profile
@@ -76,9 +76,9 @@ Resolves the layer (by `L\d+` prefix; unknown → L7), collects the sections the
 layer reads (or all, for L7), always includes `deal_context` for orientation,
 records `missingRequired`/`missingOptional`, and builds:
 - `chatContext` — a token-budgeted rendered context string (via `render(..., {format:'chat'})`).
-- `profileContext` — the *normative* payload built from the layer's
+- `profileContext` — the starter payload built from the layer's
   `consumed_profile` via `buildContext` (`context-profiles.ts`). Hosts running
-  under the conformance contract should send this, not `chatContext`.
+  under the starter compatibility contract use this payload.
 
 ## Prompt building (`buildAgentPrompt`)
 
