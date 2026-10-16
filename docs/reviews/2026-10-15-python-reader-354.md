@@ -260,3 +260,19 @@ warning. The current TypeScript series scanner instead classifies that identity
 as malformed for resolution. This Python behavior is specification-first, not
 a claim of complete TypeScript validation/resolver parity; the frozen normative
 selector fixtures do not resolve that edge independently.
+
+### Local repository gates for the period follow-up
+
+Fresh isolated Windows dependencies resolve every `@uwmd/*` package to this
+worktree. Python 3.12.3 and Node 24.14.1/npm 11.21.0 were used. Root build, all
+4,179 workspace tests across 185 files, test typechecks, official reference
+conformance (1,089/1,089), documentation build, and index/code/version/lockfile
+guards passed. Lint exited zero with the existing unused `PARKVIEW` warning in
+the docs theme. The final reviewed Python production code separately passed all
+59 unit methods and the actual external portable Reader driver 17/17 with zero
+failures, skips or unverifiable cases.
+
+These current Windows results do not erase the historical Linux subprocess
+failures or substitute for exact-head CI. Node 20/22 and cross-platform Python
+results belong to their remote CI runs. This evidence adds no portable
+Verifier capability, financial convention or independent spreadsheet result.
