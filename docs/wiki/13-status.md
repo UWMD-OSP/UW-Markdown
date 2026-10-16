@@ -1,5 +1,23 @@
 # 13 — Build status (living document)
 
+**2026-10-15 — independent Python foundation merged; narrow reserve verification.**
+PR #358 merged as `24ae8f49664a9291f097bd5bebba1c41990c3e66`. Exact-main
+CI [38862722485](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38862722485)
+succeeded: 17 ordinary checks passed; optional publication verification skipped.
+The merged foundation preserves 74 Python controls and actual portable Reader
+17/17 on three operating systems, with a parse-only manifest and no tier claim.
+PRs #357 (numerical determinism) and #335 remain drafts; owner decisions remain
+unchanged. Earlier handoff/recovery notes below are historical checkpoints.
+
+The next narrow Python implementation adds standalone reserve-account structure,
+ordered balance/explicit continuity checks and an independent complete-envelope
+digest prerequisite under accepted §VIII.11. Its direct 28-case shared-driver
+evidence is separate from capability/tier certification; no full validation,
+expression evaluator, receipt or authentication is claimed. The Reader's
+role-opted extension variant map versus Envelope 1.0's single extension block
+remains an explicit digest_unavailable boundary, not a new representation rule.
+
+
 ## Integration queue reconciliation — 2026-10-15 (America/Phoenix)
 
 Prepared against integration base **`bac58c25f15f90bc9c97402a86cad9b8f4c50d55`**,
