@@ -710,3 +710,28 @@ superseded-source digest pins a source-lifecycle prerequisite correction without
 injecting metadata or changing the Reader projection. No normative baseline,
 receipt convention or tier claim changes. The separate extension-variant-map
 versus Envelope shape gap remains [Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365).
+
+
+### Independent Python replacement-funding bindings
+
+`verify-replacement-funding` implements accepted §V.12 with scoped structural
+prerequisites and separate digest verification. Its nonnormative CLI wrapper
+exposes `structural_issues` and the exact `replacement_funding_verification`
+union, with no overall validation/readiness claim. Discovery remains parse-only;
+validate/calc remain unsupported.
+
+The 119-method suite preserves the earlier 103 methods and direct reserve28 /
+reserve-draw46 evidence. Sixteen new methods perform 71 **adapted standalone
+comparisons**: actual subprocesses, a documented test-only input adapter, then
+unchanged shared projection/subset comparison and frozen exit expectations.
+Original catalogue cases still require validate; these are not unchanged portable
+case executions or full-validation passes. Extra controls distinguish consulted
+role collisions, current/history and nullable identities, structural/async states,
+raw sign/date semantics and snapshots during await.
+
+Published USD/null digest answers pin the independent JCS preimage. Every ordered
+cash-row member is bound, but unrelated metadata/prose/metrics and extensions
+are excluded. Lawful role-opted extension peers therefore coexist with verified
+replacement commitments despite separate #365. Frozen RFC0076's strike-only
+control follows current RFC0081 applicability; full-term refused selections
+retain HDG-08. No pricing, metric procedure, normative expectation or tier changes.

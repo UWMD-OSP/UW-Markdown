@@ -9,7 +9,7 @@ translation. No PyPI name, supported Python floor or publication is decided.
 The discovery manifest advertises only `parse`, **no Reader/Verifier tier,
 full-validation, expression-calculation, signature, receipt or optional-profile capability**.
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
-reserve accounts and explicit reserve-draw binding plans. It does not certify every Reader or Verifier requirement.
+reserve accounts, explicit reserve-draw plans and replacement-funding commitments. It does not certify every Reader or Verifier requirement.
 
 Implemented:
 
@@ -224,3 +224,55 @@ boundaries, overflow with later finite findings, evidence order and no mutation.
 These direct case results are not tier/capability certification: the catalogue
 requires broader `calc-evaluate`, which remains unimplemented and unclaimed.
 The manifest stays parse-only and genuine Reader 17/17 runs remain separate.
+
+
+## Standalone replacement-funding bindings
+
+`python -B implementations/python/uwmd.py verify-replacement-funding <file> --json`
+implements accepted Protocol §V.12/RFC0070, including RFC0075 senior preference,
+RFC0076 refused selections and RFC0081's optional terms group. Its two-member
+CLI wrapper is **nonnormative**: `structural_issues` contains only the relevant
+hedge, funding, escrow, cash-source and currency prerequisites;
+`replacement_funding_verification` has the exact §V.12.3 result union. There is
+no overall validation/readiness result. `validate` and `calc` remain unsupported.
+Exit status is nonzero for relevant structural refusal or failed/unverifiable
+binding. A lawful nonapplicable path returns `not_checked/not_applicable`.
+
+The independent property selector preserves canonical current revisions,
+excludes component/invalid roles, prefers senior debt and refuses a consulted
+role collision before fallback. Exact cash lookup separately uses the authored
+variant, so an unlabelled peer cannot capture an explicitly named `default`.
+Shape/assumption, selection/reference, full selected-series structure and raw
+payment sign/date checks precede hashing. Explicit zero is admitted; payment
+must follow the initial effective date, with no expiration boundary or monetary
+quantization. Debt-only findings survive refused cash-side selection;
+`unresolvable_source` takes precedence when selection prevents assessment.
+Known strike-only hedges have no replacement-selection claim under RFC0081;
+malformed stated hedges cannot establish that exemption. Retired hedge agreement
+codes do not reappear.
+
+The digest helper hashes exactly the fixed section, authored cash variant, safe
+row index, exact document currency (or canonical null), and entire ordered
+cash-row vector. All authored row members, including absent versus null, remain
+significant. Metadata, prose, debt and top-level cash metrics are excluded; no
+metric is recomputed. This is a separate binding digest, never an Envelope or
+selected-row-only hash. Lawful unrelated extension variants therefore do not
+block it even when [Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365)
+prevents an Envelope digest. Both published monetary-identity digests match.
+
+The structural API never hashes. The separate async verifier snapshots before
+its first await, then reports verified/equal, failed/stale binding with HDG-09,
+or unverifiable structure/source/hash-provider states. Only actual inequality
+produces HDG-09, in verification rather than structural errors. Source, reference,
+commitment, provenance and caller objects remain unchanged. This consistency
+check proves neither a verified deal nor an executed cap trade.
+
+Evidence: **119 Python methods** preserve all prior 103 controls, including
+reserve28 and reserve-draw46 direct cases. Sixteen new methods include **71
+adapted standalone comparisons**: actual command subprocesses, then unchanged
+shared `replacement-funding` projection and `json_subset` comparison. A test-only
+adapter maps narrow structural findings to that projection's input. It does not
+implement validate, change generated cases/capability flags, or claim 71 portable
+or full-validation passes. The catalogue requires broader `validate`, which
+remains unimplemented. Discovery stays parse-only; genuine Reader17/17 runs stay
+separate.
