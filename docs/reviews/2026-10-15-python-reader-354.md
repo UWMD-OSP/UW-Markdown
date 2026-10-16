@@ -392,3 +392,20 @@ version difference; document-signature shape/version/source checks retain their
 accepted precedence. The owner has not accepted the tagged design, mixed
 null/default admission or any version/release allocation. All current normative
 artifacts and historical expectations remain unchanged.
+
+### 2026-10-16 — Current Envelope1 compatibility proof (read-only)
+
+The [existing-contract experiment](../../experiments/envelope-0089/README.md#current-envelope1-admission-proof-separate-from-candidate-design)
+checks the frozen historical empty1.0 and candidate tagged values through
+unchanged repository schemas with existing Ajv2020 and the existing public
+verified-JSON runtime. Ten precise layer controls and five low-level hash checks
+pass; the measured validator versions and schema/source/built-module hashes are
+frozen separately. E_NEXT alone fails version admission. The candidate wrappers
+under an intentionally false1.0 stamp fail missing required block annotation/
+content before digest comparison. Unknown members are still admitted; this is
+not a new ban on mode/blocks keys. Raw semantic hash helpers agree on candidate
+bytes but do not validate/admit their version or shape. No candidate codec,
+custom schema, compatibility shim, new conformance fixture or Protocol verdict
+is introduced. Signature/receipt/XML/CSV execution and general candidate
+validation remain unclaimed. Mixed-identity design, independent versioning and
+release placement remain unapproved owner decisions.
