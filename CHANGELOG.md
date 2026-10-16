@@ -20,7 +20,7 @@ protocol, and each package each carry an independent semver).
 
 - Add independent Python restricted-frontmatter parsing and structured Reader
   projections, preserving the existing numeric/source seed and tests. The
-  Node-free CLI passes 17 portable Reader cases with zero skips; 43 unit methods
+  Node-free CLI passes 17 portable Reader cases with zero skips; 44 unit methods
   pass. Its manifest remains partial parse-only, without a Reader/Verifier tier
   or financial-verification claim. Three-OS CI retains portable result artifacts.
 
