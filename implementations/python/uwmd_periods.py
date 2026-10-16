@@ -111,7 +111,7 @@ def _child(pointer, key):
 def inspect_period_series(payload, section, series):
     """Inspect every stated row, preserving order and original row objects.
 
-    PS-01/02 only. Missing identities warn but do not become invented values.
+    PS-01/02 only. Missing identities in present rows warn and refuse selection.
     The inspection carries no overall validation or financial verdict.
     """
     entry = PERIOD_SERIES.get((section, series))
@@ -125,9 +125,9 @@ def inspect_period_series(payload, section, series):
     rows, issues = [], []
     malformed = False
 
-    def warn(pointer, message, *, refuses=True):
+    def warn(pointer, message):
         nonlocal malformed
-        malformed = malformed or refuses
+        malformed = True
         issues.append(PeriodIssue("PS-01", "warning", pointer, message))
 
     value = payload.get(series)
@@ -150,7 +150,7 @@ def inspect_period_series(payload, section, series):
         try:
             identity = canonical_period(entry, stated)
             if identity is None:
-                warn(period_pointer, "period identity is absent or null", refuses=False)
+                warn(period_pointer, "period identity is absent or null")
             elif (entry.grammar == "calendar_period" and cadence in ("monthly", "quarterly")
                   and identity[0] != {"monthly": "month", "quarterly": "quarter"}[cadence]):
                 _invalid("period identity disagrees with stated cadence")

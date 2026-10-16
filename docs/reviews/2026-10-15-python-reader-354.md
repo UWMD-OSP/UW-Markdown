@@ -220,8 +220,8 @@ experimental pass count is attributed to this branch.
 The APIs report PS-01 warnings and PS-02 errors with JSON pointers relative to
 the supplied payload. Malformed rows are all inspected before selection refuses
 CALC-PERIOD-001, with existing duplicate-refusal precedence preserved when both
-errors are present. Absent/null identities remain unmatched and warn; they are not
-invented or rejected as malformed values. Non-cash series reject any duplicate
+errors are present. A present row with absent/null identity is malformed,
+warns PS-01 and refuses selection; no identity is inferred. Non-cash series reject any duplicate
 identity; cash-flow series allow repeated valid dates and refuse CALC-PERIOD-002
 only when the requested date repeats. Inspection retains original row objects
 and authored order, including repeated same-day rows.
@@ -254,12 +254,17 @@ refusals when both exist, including a repeated requested cash-flow date. The
 follow-up tests pin those mixed cases. Issue order follows source traversal;
 this partial API does not promise the reference validator's diagnostic ordering.
 
-One exact distinction remains explicit: VIII.2a says missing/null period identity
-resolves to null, so this foundation retains that row unmatched with a PS-01
-warning. The current TypeScript series scanner instead classifies that identity
-as malformed for resolution. This Python behavior is specification-first, not
-a claim of complete TypeScript validation/resolver parity; the frozen normative
-selector fixtures do not resolve that edge independently.
+The phrase "missing or null section/series/period resolves to null" in VIII.2a
+could refer either to an unmatched lookup or an absent identity on a present
+row. Its adjacent whole-row inspection obligation and registered year/date
+lexical grammars do not admit null identities. Existing implementation precedent
+also treats such rows as malformed; the frozen selector fixtures do not settle
+the wording ambiguity independently. The conservative decision here preserves
+that refusal: absent/null section or series, an empty valid series, and no
+matching well-formed identity return null; a present row missing its identity
+or explicitly stating null warns PS-01 and refuses CALC-PERIOD-001. Tests
+separate these cases across year/date/calendar series. No new interpretation is
+presented as authoritative and no spec or frozen baseline changes.
 
 ### Local repository gates for the period follow-up
 

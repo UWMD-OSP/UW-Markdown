@@ -73,7 +73,8 @@ select active variants, parse selector paths, traverse leaves, apply overrides,
 or inspect formulas for PS-03. `inspect_period_series` reports source-relative
 JSON pointers and returns original row objects; `select_period_row` inspects the
 whole series before returning one row. Neither API rewrites, nets or reorders
-source. Missing identities warn and remain absent rather than being inferred.
+source. Missing identities in present rows warn and refuse selection; no
+period identity is inferred.
 No new CLI command or manifest capability is advertised.
 
 Additional local evidence on Python 3.12.3/Windows: **59 unit methods passed**
@@ -86,7 +87,8 @@ imported. No numerical investigation was repeated.
 
 PS-02 is emitted once per duplicate canonical identity at the first colliding
 row pointer. Duplicate refusal precedes malformed-series refusal when both are
-present. Missing/null period identities warn and stay unmatched per VIII.2a;
-the current TypeScript series scanner classifies these as malformed during
-resolution. No complete cross-implementation validation/resolver parity is
-claimed for that edge.
+present. Absent/null sections or series and an unmatched well-formed period
+return null. A present row with missing/null identity is malformed: PS-01 warns
+and selection refuses CALC-PERIOD-001, following existing whole-row inspection
+precedent. VIII.2a's missing/null wording does not override its registered row
+grammar or justify introducing null row identities.

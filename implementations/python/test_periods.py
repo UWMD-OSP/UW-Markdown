@@ -58,16 +58,35 @@ class PeriodTests(unittest.TestCase):
             self.refusal("CALC-PERIOD-001", canonical_period, entry, bad)
         self.assertEqual(canonical_period(entry, "year_" + "0" * 5000 + "1"), ("year", 1))
 
-    def test_missing_null_empty_and_kind_mismatch_never_infer_periods(self):
+    def test_absent_series_and_unmatched_periods_differ_from_malformed_present_rows(self):
         for payload in [None, {}, {"annual_cash_flows": None}, {"annual_cash_flows": []}]:
             self.assertIsNone(select_period_row(payload, "dcf", "annual_cash_flows", "Y1"))
-        payload = {"annual_cash_flows": [{"year": 3}, {}, {"year": None}]}
+            checked = inspect_period_series(payload, "dcf", "annual_cash_flows")
+            self.assertFalse(checked.malformed)
+            self.assertEqual(checked.issues, ())
+        payload = {"annual_cash_flows": [{"year": 3}]}
         self.assertIsNone(select_period_row(payload, "dcf", "annual_cash_flows", "Y1"))
         self.assertIsNone(select_period_row(payload, "dcf", "annual_cash_flows", "2026-01-01"))
-        checked = inspect_period_series(payload, "dcf", "annual_cash_flows")
-        self.assertFalse(checked.malformed)
-        self.assertEqual([i.pointer for i in checked.issues], ["/annual_cash_flows/1/year", "/annual_cash_flows/2/year"])
-        self.assertTrue(all(i.code == "PS-01" and i.severity == "warning" for i in checked.issues))
+        for section, series, valid, invalid_rows, selectors in [
+                ("dcf", "annual_cash_flows", {"year": 3}, [{}, {"year": None}], ("Y1", "Y3")),
+                ("cash_flow_series", "series", {"date": "2026-01-01"}, [{}, {"date": None}],
+                 ("2026-01-01", "2027-01-01")),
+                ("distribution_waterfall", "stated_schedule", {"date": "2026-01-01"}, [{}, {"date": None}],
+                 ("2026-01-01", "2027-01-01"))]:
+            with self.subTest(section=section):
+                payload = {series: [valid, *invalid_rows]}
+                checked = inspect_period_series(payload, section, series)
+                self.assertTrue(checked.malformed)
+                field = "year" if section == "dcf" else "date"
+                self.assertEqual([i.pointer for i in checked.issues],
+                                 ["/" + series + "/1/" + field, "/" + series + "/2/" + field])
+                self.assertTrue(all(i.code == "PS-01" and i.severity == "warning" for i in checked.issues))
+                self.assertEqual(len(checked.rows), 3)
+                for selector in selectors:
+                    self.refusal("CALC-PERIOD-001", select_period_row, payload, section, series, selector)
+        for missing in ({}, {"period": None}):
+            payload = {"period_granularity": "monthly", "schedule": [{"period": "2026-01"}, missing]}
+            self.refusal("CALC-PERIOD-001", select_period_row, payload, "lease_up_schedule", "schedule", "2026-01")
 
     def test_all_rows_are_checked_before_returning_a_valid_match(self):
         payload = {"annual_cash_flows": [{"year": 1, "n": 100}, {"year": "bad"}, 12, {"year": -3}]}
