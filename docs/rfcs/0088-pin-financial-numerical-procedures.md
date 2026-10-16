@@ -311,6 +311,43 @@ value. Any stabilized alternative requires a separate explicit graph, accuracy
 objective and impact table. It cannot be smuggled in as an implementation of the
 same ordered expression.
 
+#### Executable dispatch and graph alternatives — still unaccepted
+
+The isolated [power procedure lab](../../experiments/numerical-0088/power-procedures/README.md)
+now freezes 40 binary64 operand pairs and compares three fully ordered integer
+graphs: sequential products with reciprocal last, binary squaring with reciprocal
+last, and binary squaring with reciprocal first. All round each basic operation
+to binary64 and stop at the first nonfinite intermediate under an explicit
+**experimental** refusal policy. The 256-step exponent admission is only a lab
+budget, not a proposed standard limit. No graph is selected for a financial name.
+
+A separate exact-rational oracle establishes one-rounded mathematical answers
+for the bounded dyadic-exponent controls by comparing exact adjacent binary64
+midpoints; it uses no host pow, libm, Decimal precision guess or reference-engine
+output. General fractional exponents remain explicitly outside its evidence
+scope, and the candidate runner reports `fractional_kernel_required` rather
+than substituting a host power. Frozen words, oracle-source/input hashes, exact
+root certificates, operation counts and per-step trace hashes make the finite
+research evidence reproducible. Independent JS graph execution matches the
+rationally derived 120 frozen graph results/traces on the measured Windows host;
+this is neither a complete portable kernel nor independent financial conformance.
+
+The lab makes signed-zero/exponent-zero, huge integer parity, negative fractional
+domain, reciprocal placement, subnormal ties, unused-square overflow and
+nearest/even primitive rounding concrete alternatives for review. Its finite
+negative-power counterexample distinguishes intermediate-range refusal from
+mathematical final underflow. Squaring and sequential graphs can differ from
+each other and from correctly rounded power. Agreement on a handful of roots
+cannot settle the general fractional/log/exp implementation or accuracy contract.
+
+NPV/IRR still require composed graph/endpoint/refusal evidence, and final VIII.5
+quantization must be tested independently of primitive nearest/even rounding.
+No solver, quantizer, financial expectation, receipt subject, source/block hash,
+engine identity, RFC status or release version changes. Existing receipt checks
+retain their precedence; no historical fallback evaluator, automatic rehash or
+new runtime identity is proposed. See the lab's measured limits before treating
+any row as an acceptance-ready whole-domain guarantee.
+
 ### 7. Acceptance checkpoints versus implementation gates
 
 1. **Owner direction checkpoint:** choose D1–D8 or request an explicit alternative.
