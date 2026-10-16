@@ -107,6 +107,11 @@ class ExpressionTests(unittest.TestCase):
                               ("dcf.annual_cash_flows@Y9007199254740992.noi", "CALC-PERIOD-001")]:
             tree = parse_expression(formula)
             self.refusal(code, check_reference_structure, tree)
+        # Static inspection sees every branch. This is not an evaluator
+        # verdict: a future evaluator must implement short-circuit resolution.
+        branch = parse_expression("false && dcf.unknown@Y1.noi")
+        self.assertEqual(expression_references(branch), (Reference("dcf", ("unknown", "noi"), "Y1", 1),))
+        self.refusal("CALC-PERIOD-001", check_reference_structure, branch)
         check_reference_structure(parse_expression("unknown.absent + f(missing)"))
         check_reference_structure(parse_expression("a['literal.constructor']"))
         for formula, expected in [("a.constructor", Reference("a", ("constructor",))),

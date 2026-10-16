@@ -123,3 +123,10 @@ The recovery expression prototype was unreviewed input: only grammar concepts
 were adapted. Its evaluator, numerical choices and incompatible Reader were
 not imported. The current implementation retains the section head across a
 period selector and preserves numeric lexemes, both pinned independently.
+
+Static period-structure inspection checks every reference in the syntax tree,
+including an invalid reference inside a potentially short-circuited branch.
+For example, `false && dcf.unknown@Y1.noi` parses, and its static inspection
+reports CALC-PERIOD-001. That is an inspection result, not an evaluator verdict:
+an evaluator would have to implement the Protocol's short-circuit rules before
+deciding which references to resolve. Actual evaluation remains unimplemented.
