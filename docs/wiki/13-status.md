@@ -4,7 +4,7 @@
 
 Canonical GitHub `main` is `50bf4c13206560848c5bb9b045f4532ad3cd8633`
 (merged #359); its CI 38846578128 passed all 14 ordinary jobs. No PR was
-merged during this closeout. All five open PRs are drafts. The local owner
+merged during this closeout. All tracked workstream PRs remain drafts. The local owner
 checkout is on an older RFC 0085 branch, and the cached `/tmp` checkout's
 `main` still points at the published release; neither is canonical main.
 Fetch GitHub before resuming. Published 4.3.0 and its independent verification
@@ -75,35 +75,80 @@ authority/basis/precision decisions remain separate. Issue #343 stays open.
 #349 was owner-approved and merged as `a18ed8ee7f502e2bd538c3c96be1584f94c458b9`;
 the older statement below that it is held is historical.
 
-### Local recovery and worker shutdown
+### GitHub-complete cross-machine recovery and worker shutdown
 
 All completed lane contents are on the GitHub heads above. Local worker commits
 have different Git metadata but identical complete trees: numerical `b2d721be`,
 Python `3cbb2562`, architecture `c8ee8964`, quoted-key fix `5e892911`.
 No worker remains running; no local test/build process was intentionally left.
 
-Unfinished, unreviewed work is preserved in place and in a local recovery archive
-outside `/tmp`: `uwmd-dev/session-backups/2026-10-15-closeout/` in the enclosing
-development workspace. It contains two verified Git bundles, full worktree
-inventory, unfinished source/evidence tarball and SHA256 checksums. **It is not
-on GitHub and must be transferred separately before leaving this machine.**
+The owner uses two separate Linux machines. The earlier manual-transfer
+requirement is withdrawn: useful unpublished work is now recoverable from the
+canonical GitHub repository on two **experimental recovery branches**, with no
+changes to #335/#357/#358/#361/#362. No manual backup transfer is required.
 
-- `/tmp/uwmd-lane-354`: unreviewed closed-session Reader/evaluator files; do not
-  replace the independently reviewed #358 implementation wholesale.
-- `/tmp/uwmd-launch-foundations`: superseded engine-first planning, including a
-  conflicting old RFC 0088 filename; preserve for recovery, do not publish it as
-  the canonical RFC. #357 owns RFC 0088.
-- `/tmp/uwmd-rfc85-authority`: unfinished RFC 0085 refinement and synthetic
-  evidence, distinct from published #335. Review before selectively resuming.
+| Recovery scope | Remote branch | Immutable recovery commit |
+| --- | --- | --- |
+| Earlier Python period/structural/expression prototype, tests and historical evidence | `experimental/recovery-python-354-2026-10-15` | `790b2c7a4ad8676f2bb8ab87e7ebe16f2af6c1d1` |
+| Unpublished RFC 0085 C+D expansion/probe and superseded projection research | `experimental/recovery-designs-2026-10-15` | `65b164b1c72d4d4fe4f14ee02f30b5ce1b9fc5a9` |
 
-Other dirty statuses are dependency/cache links or generated Python caches;
-they are not implementation work to commit. Owner worktrees and older branches
-remain untouched. Recover historical local commits from the bundles if needed,
-not by resetting active GitHub branches to stale local branch heads.
+Both branches start at canonical main `50bf4c13` and add material only under
+`experiments/recovery-2026-10-15/`, outside active implementation, RFC-index and
+conformance paths. Their README files label every claim unfinished/unreviewed.
+Each includes `RECOVERY-MANIFEST.json` with payload SHA-256 hashes. They are
+recovery references, not implementation PRs to merge.
 
-On a fresh machine: fetch main and the named PR branches, read this handoff and
-their existing reviews/RFCs, inspect the transferred inventory if using unfinished
-work, and recheck CI. Keep one serialized integrator. No RFC acceptance, normative
+- **Python:** reuse period/expression research selectively; the older Reader
+  must not replace #358's byte-preserving Reader. Preserve its historical
+  limitations and blocked numerical semantics. Its old numeric dependency has
+  known year-zero/host-date limitations; no correction is implied by archiving.
+- **Provenance:** the complete unpublished expansion and synthetic reader probe
+  are preserved separately from canonical draft #335. No proposed result state,
+  compaction behavior, archive or signature policy is accepted.
+- **Superseded planning:** the old acquisition-engine proposal and associated
+  documentation patch are historical design input only. Its former RFC 0088
+  assignment is invalid; #357 owns that number. Current owner direction keeps
+  model generation with adopters and Issue #355 bounded to financial assurance.
+
+The [recovery disposition evidence](../reviews/2026-10-15-recovery-disposition.json)
+accounts for all 54 archived source/research files, including duplicates and
+superseded work. The duplicate source scanner/tests are already byte-identical
+on #358. The nested patch-check tree, TAP renderings, obsolete announcements and
+redundant full snapshots add no unique development work. Six old documentation
+edits reconstruct byte-for-byte from their GitHub base plus the retained text
+patch; that patch is not to be applied to an active branch.
+
+Verification: all **27 recovery files** were independently read back from GitHub
+at the exact commits above, compared byte-for-byte and recovered into an empty
+directory. All **25 payload SHA-256 hashes** match both manifests. Two duplicate
+scanner files were also read back from #358 and matched. The older Python
+snapshot passes its 24 historical unit tests and 17/17 portable Reader cases in
+a disposable checkout; this does not strengthen its capability claims. Shell
+`git ls-remote` failed DNS resolution, so no successful shell clone is claimed;
+the remote refs, Git trees and every recovery file were verified through the
+GitHub API. A normal network-enabled clone/fetch needs no laptop files.
+
+The selected files contain code, public-fixture-based synthetic evidence and
+design prose. Review and secret-pattern scanning found no credentials or private
+deal material. No private repository was required. Git bundles, caches, local
+inventory files and 392 routine logs were not uploaded. Their local copies may
+be discarded after recovery verification; exact local intermediate commit
+metadata and raw logs are intentionally not preserved as a cross-machine
+dependency. Local original worktrees remain untouched, not deleted.
+
+On the other Linux machine, clone/fetch the canonical repository and read this
+handoff from `origin/codex/session-closeout-2026-10-15` until #363 is integrated:
+
+```sh
+git fetch origin
+git show origin/codex/session-closeout-2026-10-15:docs/wiki/13-status.md
+git show origin/experimental/recovery-python-354-2026-10-15:experiments/recovery-2026-10-15/python-354/README.md
+git show origin/experimental/recovery-designs-2026-10-15:experiments/recovery-2026-10-15/README.md
+```
+
+Use separate worktrees for any selective continuation; never reset current PR
+branches to these archival snapshots. Recheck live heads and CI. Keep one
+serialized integrator. No RFC acceptance, normative
 arithmetic/conformance change, release-version change, publication or 5.0 launch
 preparation is authorized by this handoff.
 
