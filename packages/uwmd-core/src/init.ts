@@ -2,6 +2,7 @@
 // Spec: UW_FORMAT_SPEC.md §6 toolchain interface
 
 import {
+  buildMeta,
   stampMetaIntoBlockContent,
   type AssetClass,
   type DealStage,
@@ -10,7 +11,6 @@ import {
   SCENARIOS,
   writeDoubleQuotedScalar,
 } from '@uwmd/verify';
-import { buildMeta } from './runner.js';
 
 export interface InitOptions {
   dealId?: string;

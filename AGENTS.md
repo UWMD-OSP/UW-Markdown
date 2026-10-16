@@ -35,7 +35,26 @@ Know which side a change is on before you start.
   multifamily (RFC 0080): class id, sections, dictionary metrics, pack, Excel
   layout, defaults and example. Modules are for third parties only.
 
-## Where things live
+## Product ownership and compatibility
+
+UWMD stays vendor-neutral and verifier-focused. StackUW owns modeling, AI
+agents and workflow products; it is an adopter, not the required producer or
+runtime for this standard. The existing Bancroft suite, provider adapters,
+prompts and workflow skills are 4.x starter compatibility surfaces, not a
+direction to expand UWMD's product scope. Preserve their public imports and
+CLI behavior in 4.x. See the
+[architecture inventory](docs/reviews/2026-10-15-architecture-boundary.md) and
+[separate 5.0 removal plan](docs/reviews/2026-10-15-agent-removal-5.0.md).
+
+Keep provenance (including agent identities), integrity, receipts, module
+declarations, HTTP/MCP interoperability, generic edit APIs and repository
+developer instructions. An `agent` field or filename alone is never evidence
+that a contract can be deleted. RFC 0078 D1/D7 and RFC 0083 still govern.
+Issue #355's latest scope is bounded financial assurance; proposed return
+bindings, ledger coverage, named identities and coverage counts require its
+RFC before editing contracts. Do not build a complete projection engine here.
+
+## Package map
 
 - `packages/uwmd-verify` — `@uwmd/verify`, the reference implementation of the
   standard (RFC 0083): reader, validation, calc evaluator, metric dictionary,

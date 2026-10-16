@@ -1,5 +1,5 @@
-// Context Profiles — normative views of a .uw.md for AI consumption
-// Spec: UW_PROTOCOL.md §XI ("Context Profiles")
+// Context Profiles — non-normative starter views of a .uw.md for AI consumption
+// Guide: docs/starter/ai-host.md §IX.7 (RFC 0078 D3; RFC 0083)
 //
 // Five profiles: summary | live | compact | full | relevant
 //

@@ -14,6 +14,7 @@
 // caller writes it back to disk.
 
 import {
+  buildMeta,
   stampMetaIntoBlockContent,
   bumpRawMetaVersion,
   isBlockRole,
@@ -33,7 +34,6 @@ import {
   computeBlockHash,
 } from '@uwmd/verify';
 import type { CapabilityVerifier } from './starter-protocol.js';
-import { buildMeta } from './runner.js';
 import { inferGaps, summarizeGaps } from './gaps.js';
 
 // ─── Public types ─────────────────────────────────────────────────────────────

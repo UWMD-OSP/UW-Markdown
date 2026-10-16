@@ -1,6 +1,14 @@
 # Bounded underwriting agent skills
 
-UW Markdown ships five project-owned Codex skills in `.codex/skills`. Each returns only structured `EditOperation` proposals for a host to validate and apply. No skill performs financial math; `@uwmd/core` remains the sole calculator.
+UW Markdown retains five starter workflow skills in `.codex/skills` for 4.x
+compatibility. Each returns structured `EditOperation` proposals for a host to
+validate and apply. No skill performs financial math. A producer uses its own
+deterministic modeling tools; a receiver can verify stated results with
+`@uwmd/verify` independently of that producer.
+
+StackUW owns modeling, agents and workflows. These optional starter skills
+are separate from the vendor-neutral format instructions available on the
+[AI guide](/ai/), and are not requirements for a conforming implementation.
 
 | Skill | Job boundary |
 |---|---|
