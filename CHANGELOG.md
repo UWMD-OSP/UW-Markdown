@@ -97,6 +97,11 @@ protocol, and each package each carry an independent semver).
   normative/tier guidance. The generic editor and initializer now import
   `buildMeta` directly from `@uwmd/verify`; runner re-exports, all 4.x APIs,
   CLI behavior and normative contracts remain unchanged.
+
+- Draft RFC0085 expands complete-record/projection consequences for missing
+  predecessors, signed history, receipts, archive availability and compaction.
+  It accepts no design and changes no normative contract or conformance result.
+
 - Post4.3.0 financial follow-up records the held DCF-label baseline proposal,
   compaction authority/projection recommendation and draft86/87 source/basis
   decisions. No metric, validation rule, baseline or RFC acceptance changes.

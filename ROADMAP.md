@@ -57,17 +57,23 @@ The #346 compatibility behavior and #347/#348 financial correctness repairs ship
 Protocol4.1.0 are unchanged. No5.0 action or production deployment is included.
 
 The [post-publication decision packet](https://github.com/UWMD-OSP/UW-Markdown/pull/353)
-includes an unapplied exact #349 golden proposal and concrete recommendations
-for draft0085 (C+D authority/projection),0086 (bound summary/opt-in comparison),
-and0087 (explicit comparability/observation precision). None is owner-approved.
+merged as documentation-only investigation; RFC0086/0087 remain draft.
+The owner approved [#349](https://github.com/UWMD-OSP/UW-Markdown/pull/349)'s
+paired DCF source-year display and exact starter baseline correction; it merged
+as `a18ed8ee` after all14 ordinary CI jobs passed. Source order, amounts,
+validation, CC-06 and normative period semantics are unchanged.
 
-**Next bounded sequence:** finish owner review of #349's exact proposed
-source-year rendering baseline; refine draft RFC0085's complete-history authority
-versus projections; obtain the source/basis decisions in draft RFC0086/0087
-before any normative implementation. Issue343 remains open with its completed
+**Next bounded sequence:** decide draft RFC0085's complete-history authority
+versus projection contract, including artifact identity, missing predecessors,
+signed history, archive availability and command compatibility. Then resolve
+RFC0086's purchase-price comparison authority and RFC0087's hospitality
+comparability/observation precision as separate financial-semantic decisions.
+All three remain drafts: the C+D, explicit binding and observation-bridge
+recommendations are not owner-approved. Issue343 stays open with its completed
 audit dispositions. No universal price/revenue equality is implemented. Preserve
-independent-source disclosures if semantic work is deferred; do not describe
-current metric verification as proof of complete economic reconciliation.
+independent-source disclosures if semantic work is deferred; current metric
+verification does not establish complete economic reconciliation. No new release
+preparation or publication is included.
 
 ## Historical publication: 4.2.0
 
