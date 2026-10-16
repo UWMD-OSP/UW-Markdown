@@ -1,6 +1,27 @@
 # 13 — Build status (living document)
 
-**Latest Python milestone — reserve accounts merged; reserve-draw bindings.**
+**Latest Python milestone — reserve draws merged; replacement-funding bindings.**
+PR #366 merged as `64b9b109abd1d0851087f31c49f07409b5433142`, with the
+reviewed §VIII.12 verifier, 103 Python controls, direct reserve28/draw46 evidence
+and separately reported Reader17/17. Exact-main CI
+[38929022272](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38929022272)
+succeeded: all 17 ordinary checks passed; optional publication verification
+skipped. The three operating-system jobs passed 103 Python methods and genuine
+Reader17/17 with zero failures, skips or unverifiable cases.
+
+The bounded continuation implements accepted §V.12 replacement commitments:
+relevant structural prerequisites and a separately recomputed exact result,
+without full validation, expression evaluation, pricing or tier claims. Its
+119-method suite preserves earlier controls and adds 71 explicitly adapted
+standalone comparisons against frozen expectations. The catalogue's validate
+capability remains unsupported and discovery stays parse-only. The selected
+cash-vector digest is independent of whole-Envelope shape;
+[Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365) remains separate.
+#357/#335 stay drafts; owner-controlled decisions remain unchanged. Older
+checkpoint statements below describe their stated historical heads.
+
+
+**Earlier Python checkpoint — reserve accounts merged; reserve-draw bindings.**
 PR #364 merged as `b733127df50962469b7f08936ae2bd6de3e46747`, with the
 reviewed standalone §VIII.11 reserve verifier, independent Envelope/JCS digest
 prerequisite, 91 Python controls, 28 direct shared reserve cases and separately

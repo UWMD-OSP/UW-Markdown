@@ -1,4 +1,5 @@
 """Node-free parse/reserve CLI; discovery remains explicitly partial without a tier."""
+import asyncio
 import json
 from pathlib import Path
 import sys
@@ -7,6 +8,7 @@ from uwmd_reader import parse
 from uwmd_source import SourceError, parse_json_source
 from uwmd_reserves import verify_reserve_accounts
 from uwmd_reserve_draws import verify_reserve_draw_bindings
+from uwmd_replacement_funding import replacement_funding_report
 
 
 def main(arguments):
@@ -14,6 +16,16 @@ def main(arguments):
         return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
                 "capabilities": ["parse"], "profiles": []}, 0
+    if len(arguments) in (2, 3) and arguments[0] == "verify-replacement-funding" and (len(arguments) == 2 or arguments[2] == "--json"):
+        try:
+            path = Path(arguments[1])
+            result = asyncio.run(replacement_funding_report(parse(path.read_bytes(), filename=path.name)))
+            refusal = result["structural_issues"] or result["replacement_funding_verification"]["state"] in ("failed", "unverifiable")
+            return result, 1 if refusal else 0
+        except SourceError as error:
+            return {"error": {"message": str(error)}}, 1
+        except OSError as error:
+            return {"error": {"message": str(error)}}, 2
     if len(arguments) >= 2 and arguments[0] == "verify-reserve-draws":
         tail = arguments[2:]
         if tail and tail[-1] == "--json":
@@ -55,7 +67,7 @@ def main(arguments):
             return {"error": diagnostic}, 1
         except OSError as error:
             return {"error": {"message": str(error)}}, 2
-    return {"error": {"message": "implemented commands: manifest, parse <file>, verify-reserve-accounts <file> [--json], verify-reserve-draws <file> [plan.json] [--json]"}}, 1
+    return {"error": {"message": "implemented commands: manifest, parse <file>, verify-reserve-accounts <file> [--json], verify-reserve-draws <file> [plan.json] [--json], verify-replacement-funding <file> [--json]"}}, 1
 
 
 if __name__ == "__main__":

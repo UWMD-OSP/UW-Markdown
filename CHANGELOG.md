@@ -28,6 +28,14 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Add independent Python standalone replacement-funding binding verification
+  under accepted §V.12: scoped hedge/escrow prerequisites, property role selection,
+  exact current cash references and separate JCS/SHA-256 commitments. Keep narrow
+  structural findings separate from the exact verification result. Compare 71
+  actual standalone outputs against frozen shared projections through a test-only
+  adapter; preserve unsupported validate/calc and parse-only discovery. No pricing,
+  full validation, tier, normative, dependency or version changes.
+
 - Add independent Python standalone reserve-draw binding verification under
   accepted §VIII.12: exact source identities, complete selected reserve variants,
   closed cash-flow/lease-up source structure, declared funded shares and ordered
