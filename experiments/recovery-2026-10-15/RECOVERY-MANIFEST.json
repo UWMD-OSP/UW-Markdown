@@ -1,0 +1,101 @@
+{
+  "status": "experimental recovery only; no conformance or acceptance claim",
+  "base_commit": "50bf4c13206560848c5bb9b045f4532ad3cd8633",
+  "files": [
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/README.md",
+      "bytes": 3358,
+      "sha256": "7fed0ba365c794ece98b8812a0959a07df0e617425afc0a82e544fc3314fde43"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-evidence/coverage-summary.json",
+      "bytes": 3612,
+      "sha256": "86b4b1e5d88aa2befecf174f975ddadedd547841421c584c20c16d553dc14cf3"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-evidence/portable-declared.json",
+      "bytes": 78168,
+      "sha256": "b1a08702721edb15d5b5f8e9ac8eb6d92bca80142980579b73b707877b8f97c2"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-evidence/portable-reader.json",
+      "bytes": 3908,
+      "sha256": "7e708e57f878491f54a4a7967747865e93923cb4f98e75fbee8f756362f9db0c"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-evidence/portable-verifier.json",
+      "bytes": 93525,
+      "sha256": "a6dbc97cbbfda3deb5ad5a83a2473c54f03306131e17a334555e6cb67046416c"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-notes/01-reader-periods.md",
+      "bytes": 2096,
+      "sha256": "71326ed7bb6d4502deceaa01d42ee7b31233b9b877d4242bdd301a9dcf1ddf72"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-notes/01-reader-periods.patch",
+      "bytes": 35194,
+      "sha256": "962f4deae4bbfa57f6edbcee476764e4025b0b761f65acb7fbddc551c5576ae3"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-notes/02-settled-evaluator.md",
+      "bytes": 2391,
+      "sha256": "a551a465c56a8359227e250e10bcb62567e3acb98e35b9fda76303de49318ca8"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-notes/READER354.md",
+      "bytes": 7075,
+      "sha256": "50f36fcafde506b545492ff3b5910aa6ba59bef857d7a5027c6184fd9802b51c"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/historical-notes/index.json",
+      "bytes": 2075,
+      "sha256": "f413877a3e8cef901606fe2503680133bfb4b7a7faa34ea54e529612a21aa01f"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/test_expressions354.py",
+      "bytes": 4983,
+      "sha256": "5b9ebabc76af024b91dc7a1fd3199981c5c92c37b41f2279edcbc1f33370697d"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/test_reader354.py",
+      "bytes": 10023,
+      "sha256": "51a62ee242a3149ed3899879482d06201159aa9d214c079f0965c7f3acf1577b"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/uwmd.py",
+      "bytes": 2635,
+      "sha256": "40b41f9936ef8aa7ca321381167a8e39cddca68e150855a655972e52f3d6be4d"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/uwmd_calendar.py",
+      "bytes": 509,
+      "sha256": "b5ca03d02afa6bfd5aaa65dc6b62311a7b5a81fdb8f47dcd871b58f3437b223e"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/uwmd_expressions.py",
+      "bytes": 14115,
+      "sha256": "2cb97dbe1866d475a6722bc600c2576d9dcf3027dbd2c58d502aaeb238d84bb7"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/uwmd_numeric.py",
+      "bytes": 3422,
+      "sha256": "08736e91dd13f7dfa493d08995ebdfa78fc46de0d066c0214cce56d73a3f8a59"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/uwmd_periods.py",
+      "bytes": 6318,
+      "sha256": "29309f294165a638f6f87d9a2139a4b3e7e28fb477a773e23eb0bfcf8d435a64"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/uwmd_reader.py",
+      "bytes": 11443,
+      "sha256": "e72f92074283f537ece65e5668f849eda357661ddfabb81b73ead0fb8b5ffe1f"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/python-354/source-snapshot/implementations/python/uwmd_validation.py",
+      "bytes": 3828,
+      "sha256": "150e7bfc9a9a331f77ac040ebc76cc3e708cdda49222f932e211018833f4b5e6"
+    }
+  ]
+}

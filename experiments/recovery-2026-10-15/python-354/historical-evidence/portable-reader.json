@@ -1,0 +1,173 @@
+{
+  "implementation": "org.uwmd.python@0.0.0-dev",
+  "manifest": {
+    "id": "org.uwmd.python",
+    "name": "Independent Python development reader",
+    "version": "0.0.0-dev",
+    "protocol_version": "4.1.0",
+    "format_version": "3.0",
+    "capabilities": [
+      "parse"
+    ],
+    "profiles": []
+  },
+  "manifest_tier": null,
+  "tiers": [
+    "reader"
+  ],
+  "profiles": [],
+  "by_target": {
+    "reader": {
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "unverifiable": 0
+    }
+  },
+  "summary": {
+    "total": 17,
+    "passed": 17,
+    "unverifiable": 0,
+    "failed": 0,
+    "skipped": 0,
+    "skipped_by_capability": {}
+  },
+  "results": [
+    {
+      "id": "reader__documents__01-minimal-screening__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__02-full-multifamily__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__04-scope-only__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__05-land-stage-overlay__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__06-mixed-use-stage-overlay__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__07-stage-overlay-control__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__08-variant-cross-checks__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__09-returns-tax-basis__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__10-declared-roles__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__11-role-collision__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__12-role-eligibility__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__13-period-identities__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__14-student-bed-counts__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__15-student-bed-counts-inconsistent__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__16-frontmatter-yaml-scalars__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__17-exit-proceeds-junior-capital__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__18-content-member-is-payload__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    }
+  ]
+}

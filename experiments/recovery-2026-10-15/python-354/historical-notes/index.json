@@ -1,0 +1,47 @@
+{
+  "base": "b87909878d0f9fd55e212366a8dced7cf05c08ad",
+  "published": false,
+  "reason": "Concurrent writer files detected in the same worktree; ownership clarification pending. No shared index/ref mutation performed.",
+  "draft1_files": [
+    "implementations/python/test_reader354.py",
+    "implementations/python/uwmd.py",
+    "implementations/python/uwmd_calendar.py",
+    "implementations/python/uwmd_periods.py",
+    "implementations/python/uwmd_reader.py",
+    "implementations/python/uwmd_validation.py"
+  ],
+  "draft2_files": [
+    "implementations/python/READER354.md",
+    "implementations/python/evidence354/build.log",
+    "implementations/python/evidence354/coverage-summary.json",
+    "implementations/python/evidence354/npm-test.log",
+    "implementations/python/evidence354/portable-declared.json",
+    "implementations/python/evidence354/portable-declared.tap",
+    "implementations/python/evidence354/portable-reader.json",
+    "implementations/python/evidence354/portable-reader.tap",
+    "implementations/python/evidence354/portable-verifier.json",
+    "implementations/python/evidence354/portable-verifier.tap",
+    "implementations/python/evidence354/reference-conformance.log",
+    "implementations/python/evidence354/targeted-tests.log",
+    "implementations/python/evidence354/typecheck-tests.log",
+    "implementations/python/test_expressions354.py",
+    "implementations/python/uwmd.py",
+    "implementations/python/uwmd_expressions.py"
+  ],
+  "excluded_other_writer_files": [
+    "implementations/python/uwmd_source.py",
+    "implementations/python/test_source.py",
+    "docs/reviews/2026-10-15-python-reader-354.md"
+  ],
+  "patch_sha256": {
+    "02-settled-evaluator.patch": "6ae00bf435eeba0db78ce69353ae21c4e05cbb1b5748b90838ed305880c40f65",
+    "01-reader-periods.patch": "962f4deae4bbfa57f6edbcee476764e4025b0b761f65acb7fbddc551c5576ae3"
+  },
+  "patch_validation": {
+    "stage1_tests": 16,
+    "stage1_portable_reader_passed": 17,
+    "stage2_tests": 24,
+    "sequential_apply": "passed",
+    "final_files_equal_working_source": true
+  }
+}

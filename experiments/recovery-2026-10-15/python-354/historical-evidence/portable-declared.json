@@ -1,0 +1,3274 @@
+{
+  "implementation": "org.uwmd.python@0.0.0-dev",
+  "manifest": {
+    "id": "org.uwmd.python",
+    "name": "Independent Python development reader",
+    "version": "0.0.0-dev",
+    "protocol_version": "4.1.0",
+    "format_version": "3.0",
+    "capabilities": [
+      "parse"
+    ],
+    "profiles": []
+  },
+  "manifest_tier": null,
+  "tiers": [
+    "reader",
+    "verifier"
+  ],
+  "profiles": [],
+  "by_target": {
+    "reader": {
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "unverifiable": 0
+    },
+    "verifier": {
+      "passed": 0,
+      "failed": 0,
+      "skipped": 281,
+      "unverifiable": 0
+    }
+  },
+  "summary": {
+    "total": 298,
+    "passed": 17,
+    "unverifiable": 0,
+    "failed": 0,
+    "skipped": 281,
+    "skipped_by_capability": {
+      "calc-evaluate": 170,
+      "validate": 111
+    }
+  },
+  "results": [
+    {
+      "id": "reader__documents__01-minimal-screening__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__02-full-multifamily__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__04-scope-only__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__05-land-stage-overlay__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__06-mixed-use-stage-overlay__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__07-stage-overlay-control__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__08-variant-cross-checks__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__09-returns-tax-basis__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__10-declared-roles__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__11-role-collision__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__12-role-eligibility__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__13-period-identities__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__14-student-bed-counts__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__15-student-bed-counts-inconsistent__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__16-frontmatter-yaml-scalars__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__17-exit-proceeds-junior-capital__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "reader__documents__18-content-member-is-payload__parse",
+      "target": "reader",
+      "tier": "reader",
+      "ok": true,
+      "skipped": false,
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__data-center-module-dependency-rounding__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__data_center-price_per_kw__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-01-valid-leap-divisible-by-4__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-02-valid-leap-divisible-by-400__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-03-valid-ordinary-date__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-04-valid-year-0000-leap__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-05-valid-year-9999-last-day__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-06-valid-first-day-of-year__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-07-invalid-not-leap-year__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-08-invalid-century-not-leap__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-09-invalid-february-30__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-10-invalid-april-31__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-11-invalid-month-00__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-12-invalid-month-13__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-13-invalid-day-00__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-14-invalid-one-digit-month__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-15-invalid-one-digit-day__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-16-invalid-two-digit-year__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-17-invalid-five-digit-year__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-18-invalid-signed-year__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-19-invalid-negative-year__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-20-invalid-expanded-year__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-21-invalid-leading-space__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-22-invalid-trailing-space__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-23-invalid-internal-space__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-24-invalid-leading-tab__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-25-invalid-trailing-newline__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-26-invalid-date-time-zulu__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-27-invalid-date-time-local__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-28-invalid-zone-suffix__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-29-invalid-offset-suffix__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-30-invalid-slash-form__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-31-invalid-compact-form__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-32-invalid-week-date__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-33-invalid-ordinal-date__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-34-invalid-full-width-digits__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-35-invalid-non-ascii-hyphen__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-36-invalid-empty-string__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-37-document-quoted-string__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-38-document-unquoted-yaml-date__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-39-document-null__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-40-document-absent-path__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-41-document-number__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-42-document-boolean__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-43-document-array__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-44-document-object__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-45-document-impossible-date__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-46-error-no-arguments__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-47-error-two-arguments__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__date-48-error-argument-propagates__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__dscr-from-section__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__hospitality-revpar__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__irr-01-out-of-bracket__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__irr-02-even-root-count__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__irr-03-conventional__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__irr-04-endpoint-root__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__irr-05-degenerate__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__land-usable-land-ratio__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__manufactured_housing-physical_occupancy__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-absent-component-null__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-data_center_noi_share__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-data_center_price_per_kw__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-manufactured_housing_noi_share__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-manufactured_housing_price_per_site__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-no-allocation-null__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-operating-business-gop__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-two-component-cap-rate__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-two-component-noi-share__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__mixed-use-two-component-price-per-unit__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-01-year-order__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-02-keyed-year__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-03-calendar-quarter__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-04-dated-series__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-05-missing__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-06-kind-mismatch__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-07-duplicate__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-08-unregistered__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-09-same-day-unique__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-10-same-day-repeated__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-11-same-day-absent__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__period-12-other-series-duplicate__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__self-storage-economic-occupancy__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__senior-housing-care-revenue-ratio__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__student-housing-pre-lease-rate__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__student-housing-rent-per-bed-monthly__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-01-primary-resolves__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-02-default-resolves__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-03-unresolvable__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-04-role-preference__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-05-explicit-variant__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-06-missing-section__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-07-explicit-missing__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-08-primary-collision__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-09-role-collision__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-10-role-unclaimed__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__calc__variant-11-explicit-beats-role__calc",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__01-minimal-screening__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__02-full-multifamily__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__04-scope-only__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__05-land-stage-overlay__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__06-mixed-use-stage-overlay__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__07-stage-overlay-control__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__08-variant-cross-checks__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__09-returns-tax-basis__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__10-declared-roles__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__11-role-collision__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__12-role-eligibility__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__13-period-identities__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__14-student-bed-counts__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__15-student-bed-counts-inconsistent__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__16-frontmatter-yaml-scalars__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__17-exit-proceeds-junior-capital__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__documents__18-content-member-is-payload__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-after-expiration__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-ambiguous-debt__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-ambiguous-sources__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-amount__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-currency__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-date__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-index--1__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-index-0_5__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-index-9007199254740992__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-kind__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-order__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-row-label__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-bad-row-member__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-before-expiration__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-currency-absent__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-currency-null__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-digest-member-missing__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-digest-syntax__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-empty-series__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-escrow-contradiction-0__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-escrow-contradiction-100__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-escrow-missing__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-escrow-reference__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-explicit-escrow__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-explicit-zero__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-invalid-effective__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-legacy-escrow__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-missing-reference__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-missing-row__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-missing-source__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-missing-sources-uses__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-missing-uses__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-nonreplacement-loan_matures_first-escrow__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-nonreplacement-loan_matures_first-outright__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-nonreplacement-unhedged-escrow__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-nonreplacement-unhedged-outright__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-on-expiration__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-outright-payment__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-payment-before-effective__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-payment-on-effective__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-positive-payment__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-reviewed-rebind__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-same-day-distinct__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-amount__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-currency-removed__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-currency__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-deletion__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-index__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-insertion__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-label__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-reorder__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-stale-variant__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-superseded-source__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-unknown-member__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-unknown-mode__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-unrelated-edit__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0070-variant-fallback-forbidden__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0075-junior-keyed-base__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0075-junior-only-hedge__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0075-malformed-hedge-beside-junior__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0075-senior-junior-escrow__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0075-senior-junior-outright__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0075-two-seniors__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0076-components-only-hedge__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0076-sources-refused-escrow-mode__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0076-sources-refused-malformed-hedge__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0076-sources-refused-replace__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0076-two-seniors-hedge-malformed__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0076-two-seniors-hedge-unfunded__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0076-two-seniors-no-hedge-escrow__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__hedge__0076-two-seniors-replace-escrow__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__absent__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__balance-mismatch__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__bank-interest__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__bare-block__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__broken-continuity__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__currency-disagrees__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__duplicate-account__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__duplicate-movement__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__duplicate-period__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__empty-explicit-movements__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__half-away-mismatch__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__invalid-date__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__large-cent-draw-contribution__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__large-cent-multiple-contributions__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__large-cent-one-cent-mismatch__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__lender-reserve__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__missing-movements__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__missing-source__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__negative-movement__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__overflow-then-finite-periods__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__overflow__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__quantum-equal__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__unclassified__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__unknown-field__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__unordered-movements__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__unordered-periods__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__verified-source-classes__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-accounts__wrong-previous-period__verify-reserve-accounts",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__absent__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__ambiguous-net-row__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__bare-block__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__cent-multiple-draws__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__cent-one-cent-share__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__cent-one-cent-unallocated__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__cent-split-draw__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__closed-plan__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__duplicate-edge__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__duplicate-selected-draw__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__duplicate-source-row__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__excess-draw-allocation__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__external-release__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__funded-share-disagrees__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__incomplete-draw__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__invalid-source-date__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__lease-up-component__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__lender-reserve__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__many-to-many-partial__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__missing-account__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__missing-completeness__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__missing-expenditure-row__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__missing-movement__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__missing-period__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__missing-reserve-variant__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__missing-source__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__nonfinite-allocation__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__null-plan__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__one-to-one__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__operating-expense__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__overbinding-gross__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__partial-expenditure__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__reserve-balance-mismatch__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__same-day-identities__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__split-draw__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__stale-digest__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__stated-final-boundary__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__subcent-allocation__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__superseded-source__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__unbound-selected-draw__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__unclassified-movement__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__undeclared-draw-edge__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__wrong-category__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__wrong-currency__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__wrong-expenditure-variant__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__reserve-draw-bindings__wrong-gross-sign__verify-reserve-draws",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "calc-evaluate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__01-stabilized_acquisition__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__02-ground_up_development__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__03-value_add__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__04-lease_up__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__05-house_flip__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__06-commercial_flip__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__07-property_conversion__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__08-land_banking__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__09-absent__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__10-null__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__11-unlisted__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__12-retired-build_to_rent__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__13-retired-nnn_single_tenant__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__14-retired-lihtc_section8__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__15-retired-distressed_reo__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__16-namespaced__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__17-malformed-namespace__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__18-non-string__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__19-btr-fallback__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__20-btr-carrier-conflict__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__21-btr-class-scope__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__22-free-subtypes__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    },
+    {
+      "id": "verifier__scenario__23-btr-reverse-conflict__validate",
+      "target": "verifier",
+      "tier": "verifier",
+      "ok": true,
+      "skipped": true,
+      "missing_capabilities": [
+        "validate"
+      ],
+      "problems": []
+    }
+  ]
+}

@@ -1,0 +1,723 @@
+diff --git a/implementations/python/test_reader354.py b/implementations/python/test_reader354.py
+new file mode 100644
+--- /dev/null
++++ b/implementations/python/test_reader354.py
+@@ -0,0 +1,167 @@
++"""Independent adversarial controls for the Reader/period slice of #354."""
++import copy
++import json
++from pathlib import Path
++import unittest
++
++from uwmd_calendar import calendar_date
++from uwmd_periods import resolve_period, selector, select_section
++from uwmd_reader import ProtocolError, decode_json, frontmatter, parse, scalar
++from uwmd_validation import validate
++
++ROOT = Path(__file__).resolve().parents[2]
++HEADER = '---\nuw_version: "3.0"\nfuture_key: retained\n---\n'
++
++
++def block(section, payload=None, variant=None, role=None, superseded=False):
++    data = {'_meta': {'section': section, 'provenance': {'source': 'manual', 'timestamp': '2026-01-01T00:00:00Z'},
++                     'quality': {'confidence': 'high', 'human_review_required': False},
++                     'lifecycle': {'revision': 1, 'superseded': superseded}}}
++    if role is not None:
++        data['_role'] = role
++    data.update(payload or {})
++    return '\n```json uw:section=' + section + (' variant=' + variant if variant else '') + '\n' + json.dumps(data) + '\n```\n'
++
++
++class ReaderTests(unittest.TestCase):
++    def test_yaml_scalars_and_comments(self):
++        self.assertEqual(scalar('"a\\n\\t\\x41\\u0042\\U00000043" # comment'), 'a\n\tABC')
++        self.assertEqual(scalar("'O''Brien # &a *b !c'"), "O'Brien # &a *b !c")
++        self.assertEqual(scalar('abc#def # comment'), 'abc#def')
++        self.assertEqual(frontmatter('x:\n  - one\n  - "two"\ny:\n  a: 1.200e-2\n')['y']['a'].token, '1.200e-2')
++
++    def test_yaml_refusals(self):
++        for source in ['x: &anchor', 'x: *alias', 'x: !!str 3', 'x: [1]', 'x: {}', 'x: |',
++                       'x: "unterminated', 'x: "a" garbage', 'x: "\\q"', 'x: 1\nx: 2',
++                       'x:\n  a: 1\n  a: 2', 'x:\n  y:\n    z: 1', '%YAML 1.2', '? x: y']:
++            with self.subTest(source=source), self.assertRaises(ProtocolError) as caught:
++                frontmatter(source)
++            self.assertEqual(caught.exception.code, 'UNSUPPORTED_YAML_FEATURE')
++
++    def test_version_and_filename_refusals(self):
++        for source in ['', HEADER.replace('"3.0"', '"2.0"'), HEADER.replace('"3.0"', '3.0')]:
++            with self.assertRaises(ProtocolError) as caught:
++                parse(source)
++            self.assertEqual(caught.exception.code, 'UNSUPPORTED_FORMAT_VERSION')
++        with self.assertRaises(ProtocolError) as caught:
++            parse(HEADER + block('property'), 'deal.uw.md')
++        self.assertEqual(caught.exception.code, 'SOURCE_CONTENT_MISMATCH')
++
++    def test_source_tokens_and_unknown_fields(self):
++        source = (HEADER + block('x_future', {'content': {'literal': True}, 'n': 1})).replace('"n": 1', '"n": 1.200e-2').replace('\n', '\r\n')
++        document = parse(source)
++        self.assertEqual(document.source, source)
++        self.assertEqual(document.blocks[0].body['n'].token, '1.200e-2')
++        self.assertEqual(document.projection()['frontmatter']['future_key'], 'retained')
++        self.assertEqual(document.projection()['extensions']['x_future']['content']['content'], {'literal': True})
++        snapshot = copy.deepcopy(document.blocks[0].body)
++        document.projection()
++        self.assertEqual(document.blocks[0].body, snapshot)
++
++    def test_duplicate_json_decoded_names_and_nonfinite(self):
++        for value in ['{"a":1,"\\u0061":2}', 'NaN', 'Infinity', '1e309', '[1,]', '{"a":01}']:
++            with self.subTest(value=value), self.assertRaises(ProtocolError):
++                decode_json(value)
++
++    def test_unclosed_and_nested_example_fences(self):
++        with self.assertRaises(ProtocolError):
++            parse(HEADER + '```json uw:section=property\n{}')
++        document = parse(HEADER + '````markdown\n```json uw:section=fake\n{}\n```\n````\n' + block('unknown'))
++        self.assertEqual([b.annotation['section'] for b in document.blocks], ['unknown'])
++
++    def test_history_and_role_opt_in_are_order_independent(self):
++        old = block('debt_structure', {'loan_amount': 10}, superseded=True)
++        senior = block('debt_structure', {'loan_amount': 20}, variant='loan', role='senior')
++        peer = block('debt_structure', {'loan_amount': 3}, variant='peer')
++        for body in (peer + old + senior, senior + peer + old):
++            document = parse(HEADER + body)
++            projection = document.projection()
++            self.assertEqual(set(projection['sections']['debt_structure']), {'loan', 'peer'})
++            self.assertEqual(projection['superseded']['debt_structure'][0]['content']['loan_amount'], 10)
++            self.assertEqual(select_section(document, 'debt_structure', role='senior').body['loan_amount'], 20)
++
++    def test_all_portable_reader_projections(self):
++        # Only the test oracle reads expected data. Runtime modules never do.
++        import importlib.util
++        spec = importlib.util.spec_from_file_location('portable_runner', ROOT / 'conformance/runner/runner.py')
++        runner = importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(runner)
++        for path in sorted((ROOT / 'conformance/runner/cases').glob('reader__*__parse.case.json')):
++            case = json.loads(path.read_text())
++            fixture = ROOT / case['fixture_dir'] / case['args'][0]
++            expected = json.loads((ROOT / case['expect']['file']).read_text())
++            with self.subTest(case=case['id']):
++                document = parse(fixture.read_bytes().decode('utf-8'), fixture)
++                self.assertEqual(runner.json_subset(expected, document.projection()), [])
++
++
++class PeriodTests(unittest.TestCase):
++    def test_calendar_is_character_only_and_year_zero_is_valid(self):
++        for value in ['0000-02-29', '2000-02-29', '9999-12-31']:
++            self.assertTrue(calendar_date(value))
++        for value in ['1900-02-29', '2026-04-31', '2024-2-29', '２０２４-01-01', '2024-01-01\n', None, 20240101]:
++            self.assertFalse(calendar_date(value))
++
++    def test_selectors_kind_and_bounds(self):
++        self.assertNotEqual(selector('Y2026'), selector('2026-01'))
++        self.assertEqual(selector('0000-Q1'), ('quarter', 0, 1))
++        for value in ['Y0', 'Y01', 'Y9007199254740992', 'Q1', '2026-00', '2026-Q5', '2026-02-29']:
++            with self.subTest(value=value), self.assertRaises(ProtocolError):
++                selector(value)
++
++    def test_exact_year_not_position_and_no_mutation(self):
++        document = parse(HEADER + block('dcf', {'annual_cash_flows': [{'year': 7, 'n': 70}, {'year': 3, 'n': 30}]}))
++        before = document.source
++        self.assertEqual(resolve_period(document, 'dcf', 'annual_cash_flows', 'Y3', ('n',)), 30)
++        self.assertIsNone(resolve_period(document, 'dcf', 'annual_cash_flows', 'Y1', ('n',)))
++        self.assertIsNone(resolve_period(document, 'dcf', 'annual_cash_flows', '2026-01-01', ('n',)))
++        self.assertEqual(document.source, before)
++
++    def test_same_day_rows_only_refuse_ambiguous_requested_date(self):
++        rows = [{'date': '2026-01-01', 'n': -100}, {'date': '2026-01-01', 'n': 10}, {'date': '2026-02-01', 'n': 20}]
++        document = parse(HEADER + block('cash_flow_series', {'series': rows}))
++        self.assertEqual(resolve_period(document, 'cash_flow_series', 'series', '2026-02-01', ('n',)), 20)
++        with self.assertRaises(ProtocolError) as caught:
++            resolve_period(document, 'cash_flow_series', 'series', '2026-01-01', ('n',))
++        self.assertEqual(caught.exception.code, 'CALC-PERIOD-002')
++        self.assertNotIn('PS-02', [i['code'] for i in validate(document)['issues']])
++        self.assertEqual(len(document.blocks[0].body['series']), 3)
++
++    def test_duplicate_keyed_years_and_malformed_unselected_rows(self):
++        for payload, code in [({'projections': {'year_01': {}, 'year_1': {}}}, 'CALC-PERIOD-002'),
++                              ({'projections': {'year_1': {}, 'bad': {}}}, 'CALC-PERIOD-001')]:
++            document = parse(HEADER + block('noi_model', payload))
++            with self.assertRaises(ProtocolError) as caught:
++                resolve_period(document, 'noi_model', 'projections', 'Y2')
++            self.assertEqual(caught.exception.code, code)
++
++    def test_missing_null_cadence_and_invalid_roles(self):
++        document = parse(HEADER + block('dcf', {'annual_cash_flows': [{'year': None}]}))
++        self.assertIsNone(resolve_period(document, 'dcf', 'annual_cash_flows', 'Y3'))
++        for role in [[], {}, False, 'unknown']:
++            body = json.loads(block('dcf', {'annual_cash_flows': []}, variant='v').split('\n')[2])
++            body['_role'] = role
++            source = HEADER + '\n```json uw:section=dcf variant=v\n' + json.dumps(body) + '\n```\n'
++            with self.subTest(role=role), self.assertRaises(ProtocolError):
++                resolve_period(parse(source), 'dcf', 'annual_cash_flows', 'Y1')
++        document = parse(HEADER + block('lease_up_schedule', {'schedule': [{'period': '2026-01'}], 'period_granularity': 'quarterly'}))
++        with self.assertRaises(ProtocolError):
++            resolve_period(document, 'lease_up_schedule', 'schedule', '2026-Q1')
++
++    def test_explicit_variant_no_fallback_component_allowed(self):
++        document = parse(HEADER + block('dcf', {'annual_cash_flows': [{'year': 2, 'n': 8}]}, variant='a', role='component'))
++        self.assertEqual(resolve_period(document, 'dcf', 'annual_cash_flows', 'Y2', ('n',), variant='a'), 8)
++        with self.assertRaises(ProtocolError):
++            resolve_period(document, 'dcf', 'annual_cash_flows', 'Y2', variant='base')
++
++    def test_validation_is_explicitly_partial_and_preserves_roles(self):
++        document = parse(HEADER + block('dcf', {'annual_cash_flows': [{'year': 1}, {'year': 1}]}, role='invalid'))
++        result = validate(document)
++        self.assertFalse(result['complete'])
++        self.assertEqual(result['verification_state'], 'unverifiable')
++        self.assertEqual({i['code'] for i in result['issues']}, {'ROLE-01', 'PS-02'})
++        self.assertEqual(document.blocks[0].body['_role'], 'invalid')
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/implementations/python/uwmd.py b/implementations/python/uwmd.py
+new file mode 100644
+--- /dev/null
++++ b/implementations/python/uwmd.py
+@@ -0,0 +1,31 @@
++"""Python-only Reader and partial structural validation CLI (#354)."""
++import json
++import pathlib
++import sys
++from uwmd_reader import ProtocolError, parse
++from uwmd_validation import validate
++
++
++def main(argv):
++    if argv == ['manifest']:
++        return {'id': 'org.uwmd.python', 'name': 'Independent Python development reader',
++                'version': '0.0.0-dev', 'protocol_version': '4.1.0', 'format_version': '3.0',
++                'capabilities': ['parse'], 'profiles': []}, 0
++    if len(argv) < 2 or argv[0] not in ('parse', 'validate'):
++        raise ProtocolError('PROTO-COMMAND-UNSUPPORTED', 'Command is not implemented')
++    path = pathlib.Path(argv[1])
++    document = parse(path.read_bytes().decode('utf-8'), path)
++    if argv[0] == 'parse':
++        return document.projection(), 0
++    return validate(document), 1
++
++
++if __name__ == '__main__':
++    try:
++        result, status = main(sys.argv[1:])
++    except ProtocolError as error:
++        result, status = {'error': error.as_dict()}, 1
++    except (OSError, UnicodeError) as error:
++        result, status = {'error': {'category': 'parse', 'code': 'PARSE_INPUT_ERROR', 'message': str(error)}}, 2
++    print(json.dumps(result, ensure_ascii=False, allow_nan=False))
++    sys.exit(status)
+diff --git a/implementations/python/uwmd_calendar.py b/implementations/python/uwmd_calendar.py
+new file mode 100644
+--- /dev/null
++++ b/implementations/python/uwmd_calendar.py
+@@ -0,0 +1,11 @@
++"""Protocol VIII.3 Gregorian predicate; character-only, including year 0000."""
++import re
++
++
++def calendar_date(value):
++    if not isinstance(value, str) or not re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', value):
++        return False
++    year, month, day = int(value[:4]), int(value[5:7]), int(value[8:])
++    leap = year % 400 == 0 or year % 4 == 0 and year % 100 != 0
++    lengths = (31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
++    return 1 <= month <= 12 and 1 <= day <= lengths[month - 1]
+diff --git a/implementations/python/uwmd_periods.py b/implementations/python/uwmd_periods.py
+new file mode 100644
+--- /dev/null
++++ b/implementations/python/uwmd_periods.py
+@@ -0,0 +1,139 @@
++"""Exact identity and selection from Protocol VIII.2/2a; never infer periods."""
++import math
++import re
++
++from uwmd_calendar import calendar_date
++from uwmd_reader import PARALLEL, ProtocolError
++
++ROLES = frozenset(('primary', 'senior', 'junior', 'summary', 'detail', 'component'))
++REGISTRY = {
++    ('dcf', 'annual_cash_flows'): ('rows', 'year', 'year'),
++    ('noi_model', 'projections'): ('keyed', None, 'year'),
++    ('lease_up_schedule', 'schedule'): ('rows', 'period', 'calendar'),
++    ('cash_flow_series', 'series'): ('rows', 'date', 'date'),
++    ('distribution_waterfall', 'stated_schedule'): ('rows', 'date', 'date'),
++}
++BLOCKED = frozenset(('constructor', 'prototype', '__proto__'))
++
++
++def refuse(code, message):
++    raise ProtocolError(code, message, 'calc')
++
++
++def selector(text):
++    if re.fullmatch(r'Y[1-9][0-9]*', text) and int(text[1:]) <= 9007199254740991:
++        return ('year', int(text[1:]))
++    if re.fullmatch(r'[0-9]{4}-Q[1-4]', text):
++        return ('quarter', int(text[:4]), int(text[-1]))
++    if re.fullmatch(r'[0-9]{4}-(0[1-9]|1[0-2])', text):
++        return ('month', int(text[:4]), int(text[-2:]))
++    if calendar_date(text):
++        return ('date', text)
++    refuse('CALC-PERIOD-001', 'Invalid period selector: ' + text)
++
++
++def period_key(value, kind, keyed=False):
++    if value is None:
++        return None
++    if kind == 'year':
++        if keyed:
++            if not isinstance(value, str) or not re.fullmatch(r'year_[0-9]+', value):
++                refuse('CALC-PERIOD-001', 'Malformed year key')
++            value = int(value[5:])
++        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 1 <= value <= 9007199254740991 or int(value) != value:
++            refuse('CALC-PERIOD-001', 'Year identity must be a positive safe integer')
++        return ('year', int(value))
++    if not isinstance(value, str):
++        refuse('CALC-PERIOD-001', 'Expected stated calendar identity')
++    result = selector(value)
++    if result[0] not in (('month', 'quarter') if kind == 'calendar' else (kind,)):
++        refuse('CALC-PERIOD-001', 'Wrong period kind')
++    return result
++
++
++def select_section(document, section, variant=None, role=None):
++    blocks = [b for b in document.blocks if b.annotation['section'] == section and not b.superseded]
++    if not blocks:
++        return None
++    # Match Reader routing before role selection; role-free singleton uses last.
++    parallel = section in PARALLEL or (any('_role' in b.body for b in blocks) and any('variant' in b.annotation for b in blocks))
++    routed = {}
++    for block in blocks:
++        routed[block.annotation.get('variant', 'default') if parallel else 'default'] = block
++    def bad(message):
++        refuse('CALC-PERIOD-003', f'{section}: {message}; variants: {list(routed)}')
++    if variant is not None:
++        candidates = [b for b in blocks if b.annotation.get('variant', 'default') == variant]
++        if not candidates:
++            bad('explicit variant absent')
++        block = candidates[-1]
++        if '_role' in block.body and (not isinstance(block.body['_role'], str) or block.body['_role'] not in ROLES):
++            bad('invalid role')
++        return block
++    eligible = {key: b for key, b in routed.items()
++                if '_role' not in b.body or isinstance(b.body['_role'], str) and b.body['_role'] in ROLES - {'component'}}
++    for desired in (role, 'primary'):
++        if desired is None:
++            continue
++        matches = [b for b in eligible.values() if b.body.get('_role') == desired]
++        if len(matches) > 1:
++            bad('role collision: ' + desired)
++        if matches:
++            return matches[0]
++    for key in ('default', 'base'):
++        if key in eligible:
++            return eligible[key]
++    if len(eligible) == 1:
++        return next(iter(eligible.values()))
++    bad('no unique eligible block')
++
++
++def inspect_series(block, section, series):
++    """Return all (identity, row) pairs; inspect every row before selection."""
++    shape, field, kind = REGISTRY[section, series]
++    value = block.body.get(series)
++    if value is None:
++        return []
++    if not isinstance(value, list if shape == 'rows' else dict):
++        refuse('CALC-PERIOD-001', 'Malformed registered series')
++    cadence = block.body.get('period_granularity')
++    if kind == 'calendar' and cadence not in ('monthly', 'quarterly'):
++        refuse('CALC-PERIOD-001', 'Missing or invalid cadence')
++    result = []
++    for key, row in (enumerate(value) if shape == 'rows' else value.items()):
++        if not isinstance(row, dict):
++            refuse('CALC-PERIOD-001', 'Series row must be an object')
++        identity = period_key(key if shape == 'keyed' else row.get(field), kind, shape == 'keyed')
++        if identity and kind == 'calendar' and identity[0] != {'monthly': 'month', 'quarterly': 'quarter'}[cadence]:
++            refuse('CALC-PERIOD-001', 'Period disagrees with cadence')
++        result.append((identity, row))
++    return result
++
++
++def resolve_period(document, section, series, requested, leaf=(), variant=None, overrides=None):
++    if (section, series) not in REGISTRY or any(key in BLOCKED for key in (section, series, *leaf)):
++        refuse('CALC-PERIOD-001', 'Invalid registered period path')
++    identity = selector(requested)
++    # Full-path override keys use the caller's parsed, canonical reference tuple.
++    address = (section, series, identity, tuple(leaf))
++    if overrides is not None and address in overrides:
++        return overrides[address]
++    block = select_section(document, section, variant)
++    if block is None:
++        return None
++    rows = inspect_series(block, section, series)
++    counts = {}
++    for key, _ in rows:
++        if key is not None:
++            counts[key] = counts.get(key, 0) + 1
++    if any(count > 1 and (section != 'cash_flow_series' or key == identity) for key, count in counts.items()):
++        refuse('CALC-PERIOD-002', 'Duplicate canonical period identity')
++    value = next((row for key, row in rows if key == identity), None)
++    for key in leaf:
++        if isinstance(value, dict):
++            value = value.get(key)
++        elif isinstance(value, list) and re.fullmatch(r'0|[1-9][0-9]*', key):
++            value = value[int(key)] if int(key) < len(value) else None
++        else:
++            return None
++    return value
+diff --git a/implementations/python/uwmd_reader.py b/implementations/python/uwmd_reader.py
+new file mode 100644
+--- /dev/null
++++ b/implementations/python/uwmd_reader.py
+@@ -0,0 +1,279 @@
++"""Independent Format 3.0 reader, written from Format II/Appendix D.
++
++Raw source and JSON numeric spellings remain available independently of the
++portable II.6a.6 projection. No defaults, financial inference or Node runtime.
++"""
++from dataclasses import dataclass
++import json
++import math
++import re
++
++
++class ProtocolError(ValueError):
++    def __init__(self, code, message, category="parse"):
++        super().__init__(message)
++        self.code, self.category = code, category
++
++    def as_dict(self):
++        return {"category": self.category, "code": self.code, "message": str(self)}
++
++
++class SourceNumber(float):
++    def __new__(cls, token):
++        value = super().__new__(cls, token)
++        if not math.isfinite(value):
++            raise ProtocolError("PARSE_JSON_ERROR", "JSON number exceeds binary64 range")
++        value.token = token
++        return value
++
++    @property
++    def decimal_places(self):
++        coefficient, _, exponent = self.token.lower().partition('e')
++        fractional = len(coefficient.partition('.')[2])
++        return max(0, fractional - int(exponent or 0))
++
++
++def decode_json(text):
++    def pairs(items):
++        result = {}
++        for key, value in items:
++            if key in result:
++                raise ProtocolError("PARSE_JSON_ERROR", "Duplicate decoded JSON member: " + key)
++            result[key] = value
++        return result
++
++    def constant(token):
++        raise ProtocolError("PARSE_JSON_ERROR", "Not a JSON number: " + token)
++
++    try:
++        return json.loads(text, parse_int=SourceNumber, parse_float=SourceNumber,
++                          parse_constant=constant, object_pairs_hook=pairs)
++    except (ValueError, OverflowError) as error:
++        if isinstance(error, ProtocolError):
++            raise
++        raise ProtocolError("PARSE_JSON_ERROR", str(error)) from error
++
++
++def yaml_error(message):
++    raise ProtocolError("UNSUPPORTED_YAML_FEATURE", message)
++
++
++_ESCAPES = dict(zip('0abtnvfre "/\\N_LP',
++                    '\0\a\b\t\n\v\f\r\x1b "/\\\x85\xa0\u2028\u2029'))
++
++
++def scalar(source):
++    """Appendix D one-line scalar, with comments outside quotes only."""
++    source = source.strip()
++    if source.startswith('#'):
++        return None
++    if source.startswith(('"', "'")):
++        quote, output, index = source[0], [], 1
++        while index < len(source):
++            char = source[index]
++            index += 1
++            if char == quote:
++                if quote == "'" and source[index:index + 1] == "'":
++                    output.append("'")
++                    index += 1
++                    continue
++                tail = source[index:]
++                if tail and not re.fullmatch(r"\s+#.*|\s*", tail):
++                    yaml_error("Trailing content after quoted scalar")
++                return ''.join(output)
++            if quote == '"' and char == '\\':
++                if index == len(source):
++                    yaml_error("Incomplete escape")
++                escape = source[index]
++                index += 1
++                if escape in 'xuU':
++                    width = {'x': 2, 'u': 4, 'U': 8}[escape]
++                    digits = source[index:index + width]
++                    if len(digits) != width or not re.fullmatch('[0-9a-fA-F]+', digits):
++                        yaml_error("Invalid Unicode escape")
++                    point = int(digits, 16)
++                    if point > 0x10ffff or 0xd800 <= point <= 0xdfff:
++                        yaml_error("Invalid Unicode scalar")
++                    output.append(chr(point))
++                    index += width
++                elif escape in _ESCAPES:
++                    output.append(_ESCAPES[escape])
++                else:
++                    yaml_error("Unknown YAML escape")
++            else:
++                output.append(char)
++        yaml_error("Unclosed quoted scalar")
++    source = re.split(r'\s+#', source, maxsplit=1)[0].rstrip()
++    if source == '[]':
++        return []
++    if re.search(r'(^|\s)[&*!]|[{}\[\]]|:\s', source) or source.startswith(('|', '>', '?', '%', '@', '`')):
++        yaml_error("Unsupported YAML construct")
++    if source.lower() in ('null', '~') or not source:
++        return None
++    if source.lower() in ('true', 'false'):
++        return source.lower() == 'true'
++    if re.fullmatch(r'[-+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][-+]?[0-9]+)?', source):
++        return SourceNumber(source)
++    return source
++
++
++def frontmatter(text):
++    rows = []
++    for line in text.splitlines():
++        if not line.strip() or line.lstrip().startswith('#'):
++            continue
++        if '\t' in line[:len(line) - len(line.lstrip())]:
++            yaml_error("Tabs in indentation")
++        indent = len(line) - len(line.lstrip(' '))
++        if indent not in (0, 2):
++            yaml_error("Only one nested mapping level is supported")
++        rows.append((indent, line[indent:]))
++    result, index = {}, 0
++    while index < len(rows):
++        indent, row = rows[index]
++        if indent:
++            yaml_error("Unexpected indentation")
++        match = re.fullmatch(r'([^:]+):(?:\s+(.*)|\s*)', row)
++        if not match:
++            yaml_error("Expected simple mapping entry")
++        key, value = match[1].strip(), match[2] or ''
++        if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_-]*', key):
++            yaml_error("Unsupported mapping key")
++        if key in result:
++            yaml_error("Duplicate mapping key: " + key)
++        index += 1
++        children = []
++        while index < len(rows) and rows[index][0] == 2:
++            children.append(rows[index][1])
++            index += 1
++        if children:
++            if value and not value.startswith('#'):
++                yaml_error("Scalar cannot have nested entries")
++            sequence = children[0].startswith('- ')
++            nested = [] if sequence else {}
++            for child in children:
++                if sequence:
++                    if not child.startswith('- '):
++                        yaml_error("Mixed sequence and mapping")
++                    nested.append(scalar(child[2:]))
++                else:
++                    match = re.fullmatch(r'([A-Za-z_][A-Za-z0-9_-]*):(?:\s+(.*)|\s*)', child)
++                    if not match or match[1] in nested:
++                        yaml_error("Invalid or duplicate nested mapping entry")
++                    nested[match[1]] = scalar(match[2] or '')
++            result[key] = nested
++        else:
++            result[key] = scalar(value)
++    return result
++
++
++PARALLEL = frozenset(('operating_statement', 'stress_tests', 'due_diligence',
++                     'lease_up_schedule', 'cash_flow_series', 'distribution_waterfall', 'reserve_accounts'))
++APPEND = frozenset(('pipeline_log', 'custom_calculations', 'custom_scenarios'))
++
++
++@dataclass
++class Block:
++    annotation: dict
++    body: dict
++    raw_json: str
++    start: int
++    end: int
++
++    @property
++    def superseded(self):
++        meta = self.body.get('_meta')
++        lifecycle = meta.get('lifecycle') if isinstance(meta, dict) else None
++        return isinstance(lifecycle, dict) and lifecycle.get('superseded') is True
++
++    def projection(self):
++        result = {'meta': self.body.get('_meta', {}),
++                  'content': {key: value for key, value in self.body.items()
++                              if key not in ('_meta', '_notes')}}
++        if '_role' in self.body:
++            result['role'] = self.body['_role']
++        if '_overrides' in self.body:
++            result['overrides'] = self.body['_overrides']
++        return result
++
++
++@dataclass
++class Document:
++    source: str
++    frontmatter: dict
++    blocks: list
++
++    def projection(self):
++        output = dict(frontmatter=self.frontmatter, sections={}, superseded={},
++                      pipeline_log=[], custom_calculations=[], custom_scenarios=[],
++                      extensions={}, prose={})
++        active = [block for block in self.blocks if not block.superseded]
++        role_parallel = ({block.annotation['section'] for block in active if '_role' in block.body}
++                         & {block.annotation['section'] for block in active if 'variant' in block.annotation})
++        for block in self.blocks:
++            section = block.annotation['section']
++            projected = block.projection()
++            if block.superseded:
++                output['superseded'].setdefault(section, []).append(projected)
++            elif section in APPEND:
++                output[section].append(block.body if section == 'pipeline_log' else projected)
++            elif section.startswith('x_'):
++                output['extensions'][section] = projected
++            elif section in PARALLEL or section in role_parallel:
++                output['sections'].setdefault(section, {})[block.annotation.get('variant', 'default')] = projected
++            else:
++                output['sections'][section] = projected
++        return output
++
++
++def parse(source, filename=None):
++    """Read without changing bytes; offsets index the supplied Unicode source."""
++    lines = source.splitlines(keepends=True)
++    if not lines or lines[0].rstrip('\r\n') != '---':
++        raise ProtocolError('UNSUPPORTED_FORMAT_VERSION', 'Declared version absent; supported: 3.0')
++    closing = next((i for i in range(1, len(lines)) if lines[i].rstrip('\r\n') == '---'), None)
++    if closing is None:
++        yaml_error('Unclosed frontmatter')
++    fm = frontmatter(''.join(lines[1:closing]))
++    if fm.get('uw_version') != '3.0':
++        raise ProtocolError('UNSUPPORTED_FORMAT_VERSION',
++                            f"Declared version {fm.get('uw_version')!r}; supported: 3.0")
++    blocks, index = [], closing + 1
++    offsets, offset = [], 0
++    for line in lines:
++        offsets.append(offset)
++        offset += len(line)
++    while index < len(lines):
++        opening = re.fullmatch(r' {0,3}(`{3,}|~{3,})([^\r\n]*)\r?\n?', lines[index])
++        if not opening:
++            index += 1
++            continue
++        fence, info = opening[1], opening[2].strip()
++        start = index
++        index += 1
++        while index < len(lines) and not re.fullmatch(r' {0,3}' + re.escape(fence[0]) + '{' + str(len(fence)) + r',}\s*', lines[index]):
++            index += 1
++        structured = info.startswith('json ') and 'uw:section=' in info
++        if index == len(lines):
++            if structured:
++                raise ProtocolError('PARSE_JSON_ERROR', 'Unclosed structured fence')
++            break
++        if structured:
++            if filename and str(filename).endswith('.uw.md'):
++                raise ProtocolError('SOURCE_CONTENT_MISMATCH', 'Structured records require .uwx.md')
++            annotation = {}
++            for attribute in info.split()[1:]:
++                if '=' not in attribute:
++                    raise ProtocolError('PARSE_JSON_ERROR', 'Malformed fence attribute')
++                key, value = attribute.split('=', 1)
++                key = 'section' if key == 'uw:section' else key
++                if key in annotation or not value:
++                    raise ProtocolError('PARSE_JSON_ERROR', 'Repeated or empty fence attribute')
++                annotation[key] = value
++            raw = ''.join(lines[start + 1:index])
++            body = decode_json(raw)
++            if not isinstance(body, dict):
++                raise ProtocolError('PARSE_JSON_ERROR', 'Block must be a JSON object')
++            blocks.append(Block(annotation, body, raw, offsets[start], offsets[index] + len(lines[index])))
++        index += 1
++    return Document(source, fm, blocks)
+diff --git a/implementations/python/uwmd_validation.py b/implementations/python/uwmd_validation.py
+new file mode 100644
+--- /dev/null
++++ b/implementations/python/uwmd_validation.py
+@@ -0,0 +1,66 @@
++"""Partial structural checks only; never a complete ValidationResult verdict.
++
++Format II.4/5/8 and Protocol III.6a/VIII.2a. Other validation families,
++financial cross-checks, stated-figure verifiers and receipts remain unimplemented.
++"""
++from uwmd_periods import REGISTRY, ROLES, inspect_series
++from uwmd_reader import ProtocolError
++
++
++def validate(document):
++    issues = []
++    def issue(code, message, pointer, severity='error'):
++        issues.append(dict(code=code, severity=severity, message=message, pointer=pointer))
++    for index, block in enumerate(document.blocks):
++        section = block.annotation['section']
++        pointer = f'blocks[{index}]'
++        meta = block.body.get('_meta')
++        if not isinstance(meta, dict):
++            issue('META_MISSING', 'Missing metadata object', pointer)
++            continue
++        if (next(iter(block.body), None) != '_meta' or 'section_id' in block.body
++                or not isinstance(meta.get('provenance'), dict)
++                or not isinstance(meta.get('lifecycle'), dict)
++                or meta.get('section') != section):
++            issue('META-01', 'Invalid Format 3.0 block shape or section identity', pointer)
++        paths = {'SECTION': ('section',), 'VERSION': ('lifecycle', 'revision'),
++                 'SOURCE': ('provenance', 'source'), 'TIMESTAMP': ('provenance', 'timestamp'),
++                 'CONFIDENCE': ('quality', 'confidence')}
++        for name, path in paths.items():
++            value = meta
++            for key in path:
++                value = value.get(key) if isinstance(value, dict) else None
++            if value is None:
++                issue('META_FIELD_MISSING_' + name, 'Required metadata field absent', pointer + '._meta.' + '.'.join(path))
++        quality = meta.get('quality', {})
++        if isinstance(quality, dict) and quality.get('confidence') == 'low' and quality.get('human_review_required') is not True:
++            issue('META_LOW_CONFIDENCE_NO_REVIEW_FLAG', 'Low confidence requires human review', pointer, 'info')
++        if block.superseded:
++            continue
++        if '_role' in block.body and (not isinstance(block.body['_role'], str) or block.body['_role'] not in ROLES):
++            issue('ROLE-01', 'Invalid active block role', pointer + '._role')
++        for registered_section, series in REGISTRY:
++            if registered_section != section or block.body.get(series) is None:
++                continue
++            try:
++                rows = inspect_series(block, section, series)
++            except ProtocolError:
++                issue('PS-01', 'Malformed registered period series', pointer + '.' + series, 'warning')
++                continue
++            if any(identity is None for identity, _ in rows):
++                issue('PS-01', 'Missing registered row period', pointer + '.' + series, 'warning')
++            counts = {}
++            for identity, _ in rows:
++                if identity is not None:
++                    counts[identity] = counts.get(identity, 0) + 1
++            if section != 'cash_flow_series':
++                for identity, count in counts.items():
++                    if count > 1:
++                        issue('PS-02', f'Duplicate canonical period {identity}', pointer + '.' + series)
++    return {'issues': issues, 'complete': False,
++            'verification_state': 'unverifiable',
++            'implemented_checks': ['META-01', 'META_*', 'ROLE-01', 'PS-01', 'PS-02'],
++            'limitations': ['Partial structural checks only; no complete validation or financial verdict',
++                            'PS-03 and all other validation families remain unimplemented',
++                            'Protocol II.2 metric, stated-figure and receipt obligations remain incomplete',
++                            'Issue #356 / draft RFC 0088 blocks affected numerical procedures']}

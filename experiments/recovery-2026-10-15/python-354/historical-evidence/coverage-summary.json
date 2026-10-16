@@ -1,0 +1,131 @@
+{
+  "environment": {
+    "python": "3.12.3",
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "normative_base": "a18ed8ee7f502e2bd538c3c96be1584f94c458b9",
+  "starting_head": "b87909878d0f9fd55e212366a8dced7cf05c08ad",
+  "targeted_tests": {
+    "methods": 24,
+    "passed": 24,
+    "failed": 0
+  },
+  "portable_reader": {
+    "total": 17,
+    "passed": 17,
+    "unverifiable": 0,
+    "failed": 0,
+    "skipped": 0,
+    "skipped_by_capability": {}
+  },
+  "portable_declared": {
+    "total": 298,
+    "passed": 17,
+    "unverifiable": 0,
+    "failed": 0,
+    "skipped": 281,
+    "skipped_by_capability": {
+      "calc-evaluate": 170,
+      "validate": 111
+    }
+  },
+  "portable_no_skip": {
+    "total": 298,
+    "passed": 17,
+    "unverifiable": 0,
+    "failed": 281,
+    "skipped": 0,
+    "skipped_by_capability": {}
+  },
+  "exploratory_comparison_without_capability_claims": [
+    {
+      "command": "calc",
+      "outcome": "baseline_difference",
+      "count": 5
+    },
+    {
+      "command": "calc",
+      "outcome": "baseline_match",
+      "count": 91
+    },
+    {
+      "command": "parse",
+      "outcome": "baseline_match",
+      "count": 17
+    },
+    {
+      "command": "validate",
+      "outcome": "baseline_difference",
+      "count": 111
+    },
+    {
+      "command": "verify-reserve-accounts",
+      "outcome": "baseline_difference",
+      "count": 28
+    },
+    {
+      "command": "verify-reserve-draws",
+      "outcome": "baseline_difference",
+      "count": 46
+    }
+  ],
+  "numerical_dependency_cases": [
+    {
+      "id": "verifier__calc__irr-01-out-of-bracket__calc",
+      "problems": [
+        "unit: missing",
+        "error: missing"
+      ]
+    },
+    {
+      "id": "verifier__calc__irr-02-even-root-count__calc",
+      "problems": [
+        "unit: missing",
+        "error: missing"
+      ]
+    },
+    {
+      "id": "verifier__calc__irr-03-conventional__calc",
+      "problems": [
+        "exit 1, expected 0: (no stderr)"
+      ]
+    },
+    {
+      "id": "verifier__calc__irr-04-endpoint-root__calc",
+      "problems": [
+        "exit 1, expected 0: (no stderr)"
+      ]
+    },
+    {
+      "id": "verifier__calc__irr-05-degenerate__calc",
+      "problems": [
+        "unit: missing",
+        "error: missing"
+      ]
+    }
+  ],
+  "other_calc_differences": [],
+  "gates": {
+    "build": "failed: tsc not found (127)",
+    "typecheck:tests": "failed: tsc not found (127)",
+    "test": "failed: vitest not found (127)",
+    "conformance": "failed: missing ajv; guard exits 1"
+  },
+  "runtime_files_sha256": {
+    "uwmd.py": "40b41f9936ef8aa7ca321381167a8e39cddca68e150855a655972e52f3d6be4d",
+    "uwmd_reader.py": "e72f92074283f537ece65e5668f849eda357661ddfabb81b73ead0fb8b5ffe1f",
+    "uwmd_calendar.py": "b5ca03d02afa6bfd5aaa65dc6b62311a7b5a81fdb8f47dcd871b58f3437b223e",
+    "uwmd_periods.py": "29309f294165a638f6f87d9a2139a4b3e7e28fb477a773e23eb0bfcf8d435a64",
+    "uwmd_validation.py": "150e7bfc9a9a331f77ac040ebc76cc3e708cdda49222f932e211018833f4b5e6",
+    "uwmd_expressions.py": "2cb97dbe1866d475a6722bc600c2576d9dcf3027dbd2c58d502aaeb238d84bb7",
+    "test_reader354.py": "51a62ee242a3149ed3899879482d06201159aa9d214c079f0965c7f3acf1577b",
+    "test_expressions354.py": "5b9ebabc76af024b91dc7a1fd3199981c5c92c37b41f2279edcbc1f33370697d"
+  },
+  "limitations": [
+    "No Verifier tier or calc-evaluate/validate claim",
+    "No cross-platform execution evidence",
+    "91 baseline-matching calc cases are exploratory matches, not certified capability passes",
+    "All base II.2 obligations beyond this slice remain outstanding; numerical blockers are only part of the gap"
+  ]
+}
