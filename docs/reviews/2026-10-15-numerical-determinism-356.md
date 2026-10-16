@@ -225,6 +225,35 @@ platform/spreadsheet evidence. RFC0085 provenance and RFC0086/0087 reconciliatio
 remain separate drafts. Issue343 stays open. No formula, schema, conformance
 expectation, public validation result or release version changes here.
 
+## Decision proposal follow-up (no new arithmetic experiment)
+
+RFC0088 §6 now presents concrete owner options D1–D8 and recommends a single
+exact result/refusal contract, range-safe correctly-rounded `pow`/`log`/`exp`
+primitives, separately pinned existing financial operation graphs, and existing
+receipt wire/signature subjects with a new engine version after approved numeric
+changes. This is a recommendation, not evidence that a portable kernel has been
+selected or demonstrated. Sequential integer products remain an explicit
+alternative; their range, stability and resource limits cannot be inherited
+silently by negative or fractional powers. No kernel, domain restriction, solver
+change or expectation has been adopted.
+
+The draft separates owner direction from RFC acceptance and implementation.
+Acceptance still needs a complete primitive special-case/domain/error/resource
+contract, feasible kernel strategy, annuity domains, frozen independently derived
+vectors, corpus impact and historical receipt compatibility. It explicitly pins
+candidate NPV/IRR, PMT/PV/FV/NPER and XNPV/XIRR associations for review without
+implementing them. Near-zero-rate cancellation and any stabilized alternatives
+remain distinct from correcting the exponentiation dependency. Existing basic
+operation order, period/date semantics, quantizer and solver brackets are not
+changed by this documentation.
+
+No completed 4,310-vector experiment was repeated or regenerated for this
+follow-up. The original local full-suite and subprocess failures below remain
+failed. The already completed remote checks cover their exact recorded heads;
+they do not constitute approval or execution evidence for these new candidate
+procedures. Independent Python Reader/Verifier development and narrow #355
+assurance remain separate workstreams; neither requires a model generator.
+
 ## Verification record
 
 Local environment: Node24.21.0, npm11.19.0, Python3.12.3, Linux/x64.
