@@ -1,12 +1,11 @@
 # Roadmap
 
-Reconciled **2026-10-14** (America/Phoenix) for published and independently
-verified **4.2.0**, pairing core/CLI 4.2.0 and `@uwmd/verify` 0.2.0 with
-Stable Protocol **4.1.0** and Format **3.0**. No accepted RFC is waiting for a
-release.
-UW Markdown has completed its foundational standard and reference-engine work.
-The forward work is narrower modeling workflows, tool integration and adopter-led
-extensions. This roadmap is directional; a candidate is not a release commitment.
+Reconciled **2026-10-15** for published and independently verified **4.3.0**,
+Format **3.0**, Protocol **4.1.0** and `@uwmd/verify` **0.2.1**. See `VERSIONS.md`
+for the independent package matrix. Reference coverage alone does not establish
+independent interoperability or complete financial reproducibility. Foundational
+verification, financial reconciliation and provenance work remains proposed or
+in progress; draft RFCs are not accepted contracts.
 
 ## Reserved milestone: 5.0, the coordinated public launch
 
@@ -57,17 +56,34 @@ The #346 compatibility behavior and #347/#348 financial correctness repairs ship
 Protocol4.1.0 are unchanged. No5.0 action or production deployment is included.
 
 The [post-publication decision packet](https://github.com/UWMD-OSP/UW-Markdown/pull/353)
-includes an unapplied exact #349 golden proposal and concrete recommendations
-for draft0085 (C+D authority/projection),0086 (bound summary/opt-in comparison),
-and0087 (explicit comparability/observation precision). None is owner-approved.
+records RFC0085–0087 alternatives. They remain drafts. #349's exact paired renderer
+and starter-golden correction is now owner-approved and merged at `a18ed8ee`;
+source order/years, amounts, CC-06, validation and financial calculations remain
+unchanged. Its prior baseline-review hold is resolved.
 
-**Next bounded sequence:** finish owner review of #349's exact proposed
-source-year rendering baseline; refine draft RFC0085's complete-history authority
-versus projections; obtain the source/basis decisions in draft RFC0086/0087
-before any normative implementation. Issue343 remains open with its completed
-audit dispositions. No universal price/revenue equality is implemented. Preserve
-independent-source disclosures if semantic work is deferred; do not describe
-current metric verification as proof of complete economic reconciliation.
+### Foundational verification sequence — proposed launch criteria
+
+Owner direction preserves RFC0078 and RFC0083: UWMD defines financial meanings
+and verifies declared assertions; StackUW and other adopters construct models.
+A comprehensive generation engine is **not** a 5.0 prerequisite. No launch date or
+release preparation is authorized by this plan.
+
+| Order / workstream | Deliverable / decision | Actual dependency and evidence |
+|---|---|---|
+| High priority: [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356), [draft0088](docs/rfcs/0088-pin-financial-numerical-procedures.md) | Resolve demonstrated power/IRR/quantized-digest disagreement; pin domains/order/range and fractional/log behavior | Independent TS/Python vectors, runtime/platform evidence, precision and receipt migration. Current formulas/expectations remain unchanged pending acceptance |
+| Parallel: [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354) | Independent Python Reader/Verifier from the specification; initial numeric kernel is incomplete | Reader, source tokens, validation/resolution, ordinary arithmetic, dictionary and exact ledger checks can progress now; affected powers/returns/annuities need #356. Full base inventory, portable cases and independent manifests; Node wrappers are not a second implementation |
+| Bounded optional assurance: [#355](https://github.com/UWMD-OSP/UW-Markdown/issues/355) | First bind headline returns to exact streams/methods/periods/variants/source identities; optional declared acquisition-ledger coverage; additional named identities require their own justified contracts | Define applicability and assertion-counting before coverage reports. Verify scoped claims, not the entire producer model. Financially verified/stated-only/failed/unverifiable remain distinct. Numerical methods depend on #356; profile-specific evidence follows acceptance |
+| Provenance: [draft0085](https://github.com/UWMD-OSP/UW-Markdown/pull/335) | Complete retained source as authority; distinct history projections; scoped authentication/continuity evidence | Owner architectural preference is design direction, not RFC acceptance. Resolve legacy-reader safety, missing predecessors, archive evidence and compatibility before implementation |
+| Financial reconciliation: draft0086 / draft0087 | Data-center purchase-price authority and hospitality comparable revenue bases | Separate owner decisions on source/variant/scenario/period/scope/precision; no universal equality or revised metric formulas inferred |
+| Cross-implementation / spreadsheet assurance | Independently verified scoped results and actual recalculation for supported spreadsheet claims | Accepted contracts and explicit source/method scope. Emitted literals/caches and the Node-backed portable driver are not independent recalculation/implementation evidence |
+
+A full pro forma row-checking expansion, revenue/expense forecasting, debt-model
+construction, scenarios, arbitrary custom-model mechanics, L2/L3, every lender
+program or every optional Python profile is not automatically required for launch.
+Each extra relationship needs a concrete assurance claim and normative justification.
+The earlier engine-first planning proposal is superseded as the working scope.
+Issue343 stays open with its remaining durable dispositions. RFC0085–0087 remain
+separate proposed foundational launch components, not automatically deferred.
 
 ## Historical publication: 4.2.0
 
