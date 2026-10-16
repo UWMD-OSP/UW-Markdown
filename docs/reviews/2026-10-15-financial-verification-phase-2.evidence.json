@@ -627,5 +627,53 @@
     },
     "existing_baseline_sha256": "2aa36f81967b905a5c634722e64eabaa83331b1ee8e82d33ae14a3fb15fa4e13",
     "proposed_patch_sha256": "81fd9fda9d7c260a0fc8694b11fcd290f45931755f14b7a863df96ea8f0b6eea"
+  },
+  "dcf_year_label_owner_review": {
+    "status": "proposed; final owner approval required; not merged",
+    "base_sha": "66a354fdec9e5766e276d6b3c36b1ba9c948ded4",
+    "implementation": "renderer labels authored flow.year through existing val helper; no row sorting or arithmetic",
+    "starter_baseline_changes": [
+      "Yr2/NOI101 -> Yr1/NOI101",
+      "Yr3/NOI300 -> Yrn/a/NOI300",
+      "estimatedTokens 392 -> 393"
+    ],
+    "normative_and_cc06_changes": false,
+    "renderer_tests": {
+      "pass": 24,
+      "fail": 0
+    },
+    "period_tests": {
+      "pass": 69,
+      "fail": 0
+    },
+    "reference_conformance": {
+      "pass": 1089,
+      "fail": 0,
+      "updated": 0
+    },
+    "portable_reference_cli": {
+      "pass": 350,
+      "fail": 0,
+      "skipped": 0,
+      "unverifiable": 0
+    },
+    "local_full_suite": {
+      "result": "failed",
+      "pass": 3999,
+      "fail": 180
+    },
+    "log_sha256": {
+      "uwmd-dcf-owner-full-tests.log": "7fc0ceeae0cbce32d591125d4eb3672b9ad2ad172d801e0ab5ead41cc31ac4bd",
+      "uwmd-dcf-owner-reference.json": "288b6975c972b05ea3e16ddbff79467204cc8419e277c68135edcf6983b1eeeb",
+      "uwmd-dcf-owner-portable.json": "e8799cd4423fbcdd2a74119bc51e5df64ce159e114395d1993433bb96bb300a3",
+      "uwmd-dcf-owner-docs-final.log": "b43c9bc0747688bbecf4b3b31fe4545183e035eb54727cfe0fc9e19b0d316dc3",
+      "uwmd-dcf-owner-types.log": "0820932f5eaf6791f6368ff1c12812efbaa58f4410b17fd6027170338a6d0a9c"
+    },
+    "limitations": [
+      "Offline ignore-scripts install; not a fresh lifecycle-enabled npm ci",
+      "Cached same-lock docs dependencies",
+      "No independent Excel recalculation or independent financial implementation",
+      "Remote CI is separate exact-head evidence"
+    ]
   }
 }

@@ -863,3 +863,22 @@ package versioning, not a Format/Protocol revision; no version bump or release
 preparation is included. Owner decision: approve this exact two-line renderer
 change and paired starter expectation, or retain the existing display contract.
 PR #349 remains held until that decision.
+
+The combined proposal was checked locally on Linux x64, Node24.21.0/npm11.19.0:
+`npm ci --ignore-scripts --offline --cache /tmp/uwmd-npm-cache` passed (not a
+normal lifecycle-enabled install); `npm run build` passed all8 workspaces;
+`npm run typecheck:tests` passed after adding the required label to the new test
+calculation declaration. Renderer tests24/24 and the three period suites69/69
+passed. `node scripts/run-conformance.mjs --json` passed1089/1089 with no update
+mode. Direct Python portable driver `--no-skip` passed350/350, with no skips or
+unverifiable results, using the reference CLI (not an independent financial
+implementation). `npm run lint` passed with one existing warning; final docs
+build passed in26.07s using cached same-lock docs dependencies.
+
+**Local `npm test` failed:3999 passed/180 failed.** The workspace counts are
+verify2599/0, core974/24, batch7/0, CLI15/149, Excel214/5, lake65/0,
+report3/2 and signing122/0 (pass/fail). The subprocess output restrictions remain
+observable; these failures are not reported as a passing local full suite and
+are distinct from #349's earlier genuine starter-baseline disagreement. `npm run conformance` also failed its Node subprocess wrapper (0 passed/1
+failed); the direct1089-case reference run above passed. Fresh
+remote CI evidence belongs to the exact PR head and is recorded on #349.
