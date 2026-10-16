@@ -44,6 +44,11 @@ Command | Purpose
 `resolve <file>` | Reassemble externalized sections from a parts directory (`--parts`, `--output`, `--json`; exits 1 unresolved)
 `layers` | List Bancroft agent layers
 
+Chat rendering labels each annual DCF row with its stated `year`, preserving
+source order, duplicate years and sparse years. An absent year displays `n/a`;
+the renderer does not infer a year from array position. This display convention
+does not alter period validation, period lookup or CC-06's existing cross-check.
+
 Every command accepts a closed set of flags: `COMMAND_FLAGS` in
 [`cli-args.ts`](../../packages/uwmd-core/src/cli-args.ts), keyed by command or
 by `command subcommand`. The router refuses a flag outside the set with exit 1,
