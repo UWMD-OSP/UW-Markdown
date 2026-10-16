@@ -514,3 +514,9 @@ quantization and conformance expectations are unchanged; source identity and a
 bounded control-flow graph establish neither accuracy nor independent Verifier
 conformance. The existing runtime investigation need not be repeated to use this
 new feasibility evidence.
+
+The isolated [word-adapter experiment](../../experiments/numerical-0088/bit-adapter/README.md)
+provides separate JS/Python implementations and fixed bit-pattern/integer tests.
+These make proposed extraction/insertion, whole-word shifts and carry/borrow
+semantics reviewable without activating a financial kernel or claiming Verifier
+conformance.
