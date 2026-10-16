@@ -1,5 +1,73 @@
 # 13 — Build status (living document)
 
+## Development continuation — 2026-10-15 (America/Phoenix)
+
+Reconciled against GitHub main **`50bf4c13206560848c5bb9b045f4532ad3cd8633`**,
+which remains unchanged. The preceding handoff below is historical evidence for
+its recorded heads. One integrator and two bounded workers used three isolated
+managed worktrees; the primary owner checkout and older worktrees were untouched.
+No recovery snapshot was merged. Published 4.3.0, Format 3.0 and Protocol 4.1.0
+remain the current generation; no version, release or RFC acceptance changed.
+
+| Lane / PR | Continuation head | Review and evidence |
+| --- | --- | --- |
+| Quoted-key parser [#362](https://github.com/UWMD-OSP/UW-Markdown/pull/362) | `0b4e7767d400b22996631901b30aa1c6b4805b54` | Existing correction reviewed; wiki completed. Fresh Windows build, 4,203 workspace tests, test typecheck and official 1,089 reference checks pass, with zero expectation updates. Schema, index, code, version, lockfile, release and docs gates pass. |
+| Independent Python [#358](https://github.com/UWMD-OSP/UW-Markdown/pull/358) | `ef1c5a725846f388e8456b43924371c42c55b08d` | Adds payload-level period identities/inspection/selection: 59 methods, genuine portable Reader 17/17, no skips. Frozen period fixtures are additional narrow API evidence, not portable Verifier passes. Fresh Windows build, 4,179 workspace tests, test typecheck, official 1,089 checks, docs and applicable guards pass. |
+| Numerical RFC 0088 [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357) | `c4581f14d4bb3032acaed5b43a5b9f2a00e2207d` | Pins eight candidate source hashes and helper closure; adds isolated independent JS/Python bit adapters. Source audit, six JS tests, six Python methods and nine retained seed methods pass, with docs/index/code/lint checks. No candidate financial kernel selected or executed. |
+| Provenance RFC 0085 [#335](https://github.com/UWMD-OSP/UW-Markdown/pull/335) | `d2ca25b73ff85d6dfeca3730b247ce360c4a0f52` | Rebased onto main; retained both changelog entries. RFC, ROADMAP and RFC-index blobs exactly match prior `ce8ae010`; docs/index checks pass. Draft remains unaccepted. |
+| Architecture [#361](https://github.com/UWMD-OSP/UW-Markdown/pull/361) | `65539e24d5e70ba7c23d57ba022fc77d5d2d0081` | Source unchanged and already based on main. Exact-head CI 38848268602 passed 14 ordinary jobs; removal/compatibility/activation choices remain proposals. |
+
+Current-head GitHub CI, readiness and merge eligibility are recorded on each PR.
+New pushes invalidate older CI as evidence for that head. Opt-in publication
+verification is skipped in ordinary runs and is never counted as a pass. The new
+Windows observations do not erase the failed Linux runs recorded below. Local
+Node 24.14.1/npm 11.21.0/Python 3.12.3 results do not establish untested runtime,
+independent spreadsheet or full Python Verifier conformance.
+
+### Selective recovery disposition and integration order
+
+Both experimental recovery branches were inspected. Python recovery contributes
+only missing period-registry/identity concepts, reconciled against accepted
+VIII.2a and RFC 0062 and implemented around the active Reader. Its older Reader,
+calendar dependency, whole-document resolver and historical pass claims were not
+imported. Current numeric/source/Reader/frontend modules and the original 44
+Python controls remain byte-identical. Integration review corrected diagnostic
+multiplicity and refusal precedence; present malformed rows, including absent/null
+identities, refuse rather than invent periods. The review records the precise
+wording ambiguity and conservative existing-reference precedent.
+
+The design recovery's expanded provenance wrapper/archive/result proposal stays
+unreviewed and outside #335; its historical projection-engine RFC assignment is
+superseded. It supplies no missing authority for numerical RFC 0088 or the
+agent-retirement proposal. No archived patch was applied. Original recovery
+commits/manifests and the disposition record below remain available unchanged.
+
+Review #362 for ordinary integration first, then #358 independently. After a
+merge, rebase siblings and retain their new evidence; once #358 lands, remove
+already-landed Python seed/CI changes from #357 without losing newer Reader CI
+or controls. Shared changelog/wiki insertions still require serialized rebases.
+Codex finishes at reviewed green PRs; the maintainer merge/release workflow stays
+in force.
+
+### Numerical and product boundaries
+
+The new candidate study closes the power/square-root/scaling/fabs/copysign helper
+graph and exposes historical C word/shift hazards. The bit-adapter experiment
+under `experiments/numerical-0088/` specifies and tests finite word operations,
+signed zero, subnormals, explicit shift counts and carry/borrow against fixed
+bit-pattern answers. It is imported by no production package or conformance
+runner. It is neither a financial oracle nor a selected portable procedure.
+Accuracy/domain evidence, exact primitive constants/graphs, financial operation
+graphs, independent vectors and compatibility/activation decisions still belong
+to draft RFC 0088. No production arithmetic or financial baseline changes.
+
+UWMD remains verifier-focused. StackUW/adopters own model generation, AI agents,
+skills and workflows. #361 introduces no runtime removal, migration requirement
+or activation. Reader key-type clarification, RFCs 0085–0088's owner-controlled
+choices, compatibility, versioning and publication remain governed separately.
+
+---
+
 ## Session handoff — 2026-10-15 (America/Phoenix)
 
 Canonical GitHub `main` is `50bf4c13206560848c5bb9b045f4532ad3cd8633`
