@@ -24,6 +24,10 @@ Implemented:
   inspect every row, preserve source order, detect year-key collisions, and
   select by exact identity with the RFC 0062 same-day cash-flow exception.
   PS-01/PS-02 evidence is partial structural inspection, not document validation.
+- Protocol VIII.1 grammar parsing into immutable AST tuples and a static
+  reference inventory, preserving numeric spelling, literal bracket keys and
+  period identity. A separate structural check rejects blocked members and
+  malformed/unregistered period references without reading document values.
 - The earlier independent seed's integer Gregorian date/day-count arithmetic,
   decimal quantizer, ordered cash totals and MOIC. These remain a small numeric
   seed, not `calc-evaluate` or financial-verification conformance.
@@ -52,8 +56,8 @@ coercion. It preserves every physical source block even where the portable
 projection exposes only the canonical value. It does not implement a signing
 projection or infer verified continuity from retained history.
 
-Full Format validation, document-level period/role resolution for calculations, safe-expression
-evaluation, dictionary checking, all applicable Protocol II.2 stated-figure
+Full Format validation, document-level period/role resolution for calculations, expression
+evaluation, dictionary result checking, all applicable Protocol II.2 stated-figure
 verifiers, receipts and receipt verification remain outstanding. Missing,
 unsupported and failed assertions must remain distinguishable. Passing Reader
 projections does not discharge any of those obligations.
@@ -92,3 +96,27 @@ return null. A present row with missing/null identity is malformed: PS-01 warns
 and selection refuses CALC-PERIOD-001, following existing whole-row inspection
 precedent. VIII.2a's missing/null wording does not override its registered row
 grammar or justify introducing null row identities.
+
+Additional grammar evidence on Python 3.12.3/Windows: **74 unit methods pass**
+(the preserved 59 plus 15 expression controls). All 97 frozen calc fixture
+formulas are admitted by the grammar; this includes formulas whose evaluation
+must fail, so no frozen result/verdict is claimed. All 171 normative dictionary
+declarations produce exactly their declared static input-path sets. Frozen
+period/variant formulas have exact reference inventories; the existing invalid
+module formula supplies a parse-refusal prerequisite, not a module-profile pass.
+
+`parse_expression` checks VIII.1 syntax only and retains number lexemes without
+converting or calculating them. `expression_references` returns every reference
+in syntax order, including duplicates and branches a later evaluator might
+short-circuit. `check_reference_structure` separately checks blocked members and
+registered period identities; it does not inspect document values, choose roles
+or variants, enforce builtin arity, or produce a financial result. AST admission
+and static input-set agreement do not establish metric reproduction, dependency
+resolution, type correctness or any Verifier/Module capability. The manifest
+and CLI remain unchanged. Local parser token/nesting limits refuse explicitly
+with CALC-LIMIT-001; those limits are implementation resource bounds.
+
+The recovery expression prototype was unreviewed input: only grammar concepts
+were adapted. Its evaluator, numerical choices and incompatible Reader were
+not imported. The current implementation retains the section head across a
+period selector and preserves numeric lexemes, both pinned independently.
