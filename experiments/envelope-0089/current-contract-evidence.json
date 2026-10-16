@@ -1,0 +1,184 @@
+{
+  "status": "UNACCEPTED DESIGN / CURRENT CONTRACT EVIDENCE",
+  "baseline": "fbbd1a7704f5c7df20e633e9123273b7dcc4ac43",
+  "node": "v24.14.1",
+  "validator_versions": {
+    "ajv": "8.20.0",
+    "ajv_formats": "3.0.1"
+  },
+  "schema_hashes": {
+    "uw-document-envelope.schema.json": "6d95e014fa1941c3d270b797a0543870ac5d477ce7a179efe698bd02e206a7ef",
+    "uwmd-block.schema.json": "da3b98e126a96c342f4020bd43d1eb81d6cc297618c4ec8baced2822e6379e41"
+  },
+  "source_hashes": {
+    "envelope.ts": "3c2d79f29163cfcbe3a4f2f53aa711e39e8ad5fdd6e42269ddec731df7f4fe9c",
+    "uwjson.ts": "589ada8ab1aa3fd9867bfeb558a348bfea7a5b7965adf21b7de4e1c8658ff97e",
+    "integrity-canonical.ts": "93f3a8b8f57e7135030bf551780fc3d9862a83d8b19d981fe3086e035c1994d3",
+    "integrity.ts": "11b4387a8360791f0a7dd9be42806698afbe9767e4b35fd89818a08fe69f00be"
+  },
+  "built_runtime_hashes": {
+    "envelope.js": "69797738a915e76b319b2715ab5d2f5d82892dc1bddb43e15903110e70d7e97c",
+    "uwjson.js": "b2dc779a521244d04a8307812f6499f4cd8aecd8cde28f6fe34b18dd572760e0",
+    "integrity-canonical.js": "6004aba57fb797df20162b895ac069799bc5e8efd1003016da73c72119cc5738",
+    "integrity.js": "b13d97cd1a906699021fbad3a3475cb6185e0b7cb5545053a8edcbea3fe46be3"
+  },
+  "low_level_hash_checks": {
+    "count": 5,
+    "admission_claim": false
+  },
+  "results": [
+    {
+      "id": "historical-empty-unsigned",
+      "schema": "accepted",
+      "schema_errors": [],
+      "verified_json": "rejected",
+      "decoder_code": "JSON_DIGEST_MISSING"
+    },
+    {
+      "id": "historical-empty-stamped",
+      "schema": "accepted",
+      "schema_errors": [],
+      "verified_json": "accepted",
+      "decoder_code": null
+    },
+    {
+      "id": "historical-empty-wrong-digest",
+      "schema": "accepted",
+      "schema_errors": [],
+      "verified_json": "rejected",
+      "decoder_code": "JSON_DIGEST_MISMATCH"
+    },
+    {
+      "id": "candidate-stamp-only",
+      "schema": "rejected",
+      "schema_errors": [
+        {
+          "path": "/envelope_version",
+          "keyword": "const"
+        }
+      ],
+      "verified_json": "rejected",
+      "decoder_code": "ENVELOPE_UNSUPPORTED_VERSION"
+    },
+    {
+      "id": "candidate-single-new-stamp",
+      "schema": "rejected",
+      "schema_errors": [
+        {
+          "path": "/envelope_version",
+          "keyword": "const"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "annotation"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "content"
+        }
+      ],
+      "verified_json": "rejected",
+      "decoder_code": "ENVELOPE_UNSUPPORTED_VERSION"
+    },
+    {
+      "id": "candidate-single-pretended-1.0",
+      "schema": "rejected",
+      "schema_errors": [
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "annotation"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "content"
+        }
+      ],
+      "verified_json": "rejected",
+      "decoder_code": "ENVELOPE_INVALID_BLOCK"
+    },
+    {
+      "id": "candidate-one-peer-new-stamp",
+      "schema": "rejected",
+      "schema_errors": [
+        {
+          "path": "/envelope_version",
+          "keyword": "const"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "annotation"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "content"
+        }
+      ],
+      "verified_json": "rejected",
+      "decoder_code": "ENVELOPE_UNSUPPORTED_VERSION"
+    },
+    {
+      "id": "candidate-one-peer-pretended-1.0",
+      "schema": "rejected",
+      "schema_errors": [
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "annotation"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "content"
+        }
+      ],
+      "verified_json": "rejected",
+      "decoder_code": "ENVELOPE_INVALID_BLOCK"
+    },
+    {
+      "id": "candidate-mixed-new-stamp",
+      "schema": "rejected",
+      "schema_errors": [
+        {
+          "path": "/envelope_version",
+          "keyword": "const"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "annotation"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "content"
+        }
+      ],
+      "verified_json": "rejected",
+      "decoder_code": "ENVELOPE_UNSUPPORTED_VERSION"
+    },
+    {
+      "id": "candidate-mixed-pretended-1.0",
+      "schema": "rejected",
+      "schema_errors": [
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "annotation"
+        },
+        {
+          "path": "/extensions/x_review",
+          "keyword": "required",
+          "missing": "content"
+        }
+      ],
+      "verified_json": "rejected",
+      "decoder_code": "ENVELOPE_INVALID_BLOCK"
+    }
+  ]
+}
