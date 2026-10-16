@@ -1,0 +1,68 @@
+{
+  "purpose": "Hand-specified bit patterns and integer operations only; no financial answers or selected kernel",
+  "finite": [
+    {"decimal": "0", "hi": "00000000", "lo": "00000000"},
+    {"decimal": "-0", "hi": "80000000", "lo": "00000000"},
+    {"decimal": "1", "hi": "3ff00000", "lo": "00000000"},
+    {"decimal": "-1", "hi": "bff00000", "lo": "00000000"},
+    {"decimal": "0.5", "hi": "3fe00000", "lo": "00000000"},
+    {"decimal": "-0.5", "hi": "bfe00000", "lo": "00000000"},
+    {"decimal": "5e-324", "hi": "00000000", "lo": "00000001"},
+    {"decimal": "-5e-324", "hi": "80000000", "lo": "00000001"},
+    {"decimal": "2.225073858507201e-308", "hi": "000fffff", "lo": "ffffffff"},
+    {"decimal": "2.2250738585072014e-308", "hi": "00100000", "lo": "00000000"},
+    {"decimal": "1.7976931348623157e308", "hi": "7fefffff", "lo": "ffffffff"},
+    {"decimal": "1.0000000000000002", "hi": "3ff00000", "lo": "00000001"},
+    {"decimal": "9007199254740991", "hi": "433fffff", "lo": "ffffffff"},
+    {"decimal": "9007199254740992", "hi": "43400000", "lo": "00000000"}
+  ],
+  "normalize": [
+    {"input": -1, "word": "ffffffff"},
+    {"input": 2147483648, "word": "80000000"},
+    {"input": 4294967296, "word": "00000000"},
+    {"input": -4294967296, "word": "00000000"},
+    {"input": 9007199254740991, "word": "ffffffff"},
+    {"input": -9007199254740991, "word": "00000001"}
+  ],
+  "signed": [
+    {"word": "00000000", "value": 0},
+    {"word": "7fffffff", "value": 2147483647},
+    {"word": "80000000", "value": -2147483648},
+    {"word": "ffffffff", "value": -1}
+  ],
+  "bitwise": [
+    {"left": "80000001", "right": "7fffffff", "and": "00000001", "or": "ffffffff", "xor": "fffffffe", "not_left": "7ffffffe"},
+    {"left": "ffffffff", "right": "00000000", "and": "00000000", "or": "ffffffff", "xor": "ffffffff", "not_left": "00000000"},
+    {"left": "0f0f0f0f", "right": "f0f0f0f0", "and": "00000000", "or": "ffffffff", "xor": "ffffffff", "not_left": "f0f0f0f0"},
+    {"left": "12345678", "right": "00ff00ff", "and": "00340078", "or": "12ff56ff", "xor": "12cb5687", "not_left": "edcba987"}
+  ],
+  "shifts": [
+    {"word": "ffffffff", "count": 0, "left": "ffffffff", "right": "ffffffff", "arithmetic": "ffffffff"},
+    {"word": "ffffffff", "count": 1, "left": "fffffffe", "right": "7fffffff", "arithmetic": "ffffffff"},
+    {"word": "80000001", "count": 0, "left": "80000001", "right": "80000001", "arithmetic": "80000001"},
+    {"word": "80000001", "count": 1, "left": "00000002", "right": "40000000", "arithmetic": "c0000000"},
+    {"word": "80000001", "count": 31, "left": "80000000", "right": "00000001", "arithmetic": "ffffffff"},
+    {"word": "80000001", "count": 32, "left": "00000000", "right": "00000000", "arithmetic": "ffffffff"},
+    {"word": "7fffffff", "count": 31, "left": "80000000", "right": "00000000", "arithmetic": "00000000"},
+    {"word": "7fffffff", "count": 32, "left": "00000000", "right": "00000000", "arithmetic": "00000000"},
+    {"word": "00000001", "count": 31, "left": "80000000", "right": "00000000", "arithmetic": "00000000"},
+    {"word": "00000001", "count": 32, "left": "00000000", "right": "00000000", "arithmetic": "00000000"},
+    {"word": "00000000", "count": 32, "left": "00000000", "right": "00000000", "arithmetic": "00000000"},
+    {"word": "00010001", "count": 16, "left": "00010000", "right": "00000001", "arithmetic": "00000001"},
+    {"word": "80000000", "count": 16, "left": "00000000", "right": "00008000", "arithmetic": "ffff8000"}
+  ],
+  "add": [
+    {"left": "ffffffff", "right": "00000001", "word": "00000000", "carry": 1},
+    {"left": "7fffffff", "right": "00000001", "word": "80000000", "carry": 0},
+    {"left": "ffffffff", "right": "ffffffff", "word": "fffffffe", "carry": 1},
+    {"left": "80000000", "right": "80000000", "word": "00000000", "carry": 1},
+    {"left": "00000000", "right": "00000000", "word": "00000000", "carry": 0}
+  ],
+  "sub": [
+    {"left": "00000000", "right": "00000001", "word": "ffffffff", "borrow": 1},
+    {"left": "80000000", "right": "00000001", "word": "7fffffff", "borrow": 0},
+    {"left": "ffffffff", "right": "ffffffff", "word": "00000000", "borrow": 0},
+    {"left": "00000001", "right": "ffffffff", "word": "00000002", "borrow": 1},
+    {"left": "80000000", "right": "7fffffff", "word": "00000001", "borrow": 0}
+  ]
+}
