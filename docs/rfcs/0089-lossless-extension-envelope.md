@@ -96,9 +96,18 @@ collect peers before selection, including peers without a role. The entry stores
 the collection, never a financial-role selection result. The projector MUST use
 `mode: variants` if and only if the agreed active-role plus explicit-variant
 opt-in holds, including a collection containing only one current peer; otherwise
-it MUST use `mode: single`. Decoders MUST check that the tag agrees with those
-routing predicates over the entry's active blocks. Model conversion does not
-create a separate model-only mode that would change the source commitment.
+it MUST use `mode: single`. This fixes the source-to-model canonical subject.
+
+Directly authored model inputs have explicit semantic mode intent, as generic
+model variant collections need not derive from Markdown role opt-in. A decoder
+MUST preserve that declared mode, including one-peer variants mode without a
+role; it validates the wrapper/identity rules rather than silently collapsing
+it to a singleton. JSON/XML/CSV conversion preserves that model intent.
+Model-to-Markdown conversion MUST refuse when reprojecting the proposed source
+cannot preserve the exact mode, identities and complete block values. It MUST
+NOT invent a role, change an annotation or discard a peer to make conversion
+succeed. Thus a direct model and a Markdown-projected model may intentionally
+have distinct semantic subjects, but the same source has one canonical mode.
 
 **Proposed clarification requiring owner approval:** in that opted-in extension,
 an unlabelled current peer is a distinct null identity, including alongside a
@@ -242,6 +251,7 @@ outputs. The names below are a proposed fixture matrix, not new accepted cases.
 | Positive `extension-mixed-identities` | Subject to D2 approval: null and explicit `default` remain distinct in either source order, including one-peer variants mode. A lone role-bearing explicitly named peer uses variants mode; the same routed source cannot also have a single-mode canonical subject. |
 | Positive `extension-history-prose` | Full `_meta`, payload, annotations, per-block prose, unknown members, absent/null, Unicode and ordered history survive all model codecs. |
 | Positive `extension-labels` | Legal collision-prone and escaped names, empty strings where admitted, UTF16 ordering, `/` and `~`; no wrapper guessing or invented name bans. |
+| Positive/negative `direct-model-mode` | Role-free and one-peer directly authored variants models preserve mode across JSON/XML/CSV; model-to-Markdown refuses if deterministic source reprojection cannot preserve it without changing roles/content. |
 | Positive `role-routing-controls` | Role-free repeated singleton and superseded-role nonactivation retain existing routing; removing the last active role follows the approved D2 boundary. |
 | Negative `extension-entry-invalid` | Wrong tag, unknown wrapper member, empty variants list, duplicate identity, identity/annotation disagreement, noncanonical order, superseded block in active slot, or duplicate block placement refuses. |
 | Negative `csv-extension-invalid` | Conflicting mode, duplicate/gapped ordinal, wrong variant or pointer, missing declared prose/value rows, inventory/hash mismatch or reconstructed digest mismatch refuses. |
