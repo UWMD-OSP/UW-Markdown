@@ -57,12 +57,14 @@ coercion. It preserves every physical source block even where the portable
 projection exposes only the canonical value. It does not implement a signing
 projection or infer verified continuity from retained history.
 
-Full Format validation, document-level period/role resolution for calculations, expression
-evaluation, dictionary result checking, all applicable Protocol II.2 stated-figure
-verifiers other than the separate reserve-account/draw-binding checks, receipts and receipt
-verification remain outstanding. Missing,
-unsupported and failed assertions must remain distinguishable. Passing Reader
-projections does not discharge any of those obligations.
+Full Format validation, document-level period/role resolution for calculations,
+expression evaluation, dictionary result checking and the remaining applicable
+Protocol II.2 verifiers remain outstanding. Separate reserve-account/draw-binding
+checks, §V.12 replacement commitments and block hashes/bounded chain assessment
+implement only their documented scopes. The full integrity profile, signatures,
+receipts and receipt verification remain unimplemented. Missing, unsupported and
+failed assertions must remain distinguishable. Passing Reader projections does
+not discharge those remaining obligations.
 
 Issue [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) separately affects
 cross-runtime power/logarithm procedures, annuities and periodic/dated returns.
@@ -276,3 +278,63 @@ implement validate, change generated cases/capability flags, or claim 71 portabl
 or full-validation passes. The catalogue requires broader `validate`, which
 remains unimplemented. Discovery stays parse-only; genuine Reader17/17 runs stay
 separate.
+
+
+## Block hashes and bounded chain assessment
+
+`python -B implementations/python/uwmd.py verify-block-integrity <file> --json`
+adds independent Protocol §V.9 block hashing and a bounded §V.10 chain assessment.
+This command's report and local assessment vocabulary are **nonnormative**. It
+is not the full `IntegrityResult`, an integrity-profile claim, full validation,
+signature verification or document authentication. Discovery stays parse-only;
+generic verify, validate and calc remain unsupported.
+
+`compute_block_hash` snapshots an explicit fenced object, removes only top-level
+`_meta`, canonicalizes with independent RFC8785 JCS and hashes UTF-8 using stdlib
+SHA-256. The result is lowercase unprefixed hex. Literal payload `content`, nested
+`_meta`, `_role`, `_overrides`, `_notes`, absent/null distinctions and array order
+are included. Entire top-level provenance/lifecycle/integrity metadata is excluded.
+No old digest rule, source rewrite, financial procedure or Envelope is involved.
+
+The file checker retains every physical block, including superseded history,
+with exact authored variant, source ordinal and actual hash evidence. It assesses
+unambiguous singleton sequences, registered parallel identities and current
+role-opted variant identities. Missing labels and explicitly named `default`
+remain distinct. It does not apply financial role preferences or discard old
+payloads. Where removed historical roles or multiple append-only entries leave
+chain identity outside this implementation's supported domain, it retains all
+block hashes but returns local `unsupported` assessment and `ok: false`, without
+inventing an INT finding or choosing a new historical grouping policy. Counts
+cover classified chains only. `verify_block_chain` instead takes an explicitly
+addressed ordered block sequence; the caller owns that identity and ordering.
+
+Wholly unhashed supported sequences are skipped and remain unchecked. Only
+missing hashes **after** opt-in produce INT-03 warning; parent mismatches against
+the immediately prior retained block produce INT-01 error; stamped content drift
+produces INT-04 warning. Earlier unhashed prefixes do not acquire an extra rule.
+A retained first block's non-null parent does not create a new missing-history
+refusal: accepted replace/root behavior and pending history decisions are kept.
+INT-02 belongs to editing and is not emitted by read-only assessment.
+
+The nonnormative local `ok` is strict: any reported finding, unsupported chain or
+unavailable hash makes it false. `complete` means only this supported assessment
+finished. `unavailable` distinguishes malformed local inputs, unsupported hashing
+metadata, JCS refusal or failed/malformed SHA providers from actual mismatches.
+No fabricated INT-01/04 is used for those failures. Evidence for other performed
+checks is retained. CLI exit is nonzero whenever local `ok` is false.
+
+Signature presence is counted, always with `signatures_checked: false` and
+`signatures_verified: 0`. No signature format, key, algorithm or authenticity
+check is performed; a matching block hash does not authenticate its author or
+prove that history is complete. Existing signing fixtures supply **hash-only**
+evidence, never signature-conformance passes. No broader profile flag is added.
+
+Evidence: **132 Python methods** preserve the earlier 119 controls, including
+Reader17, direct reserve28/draw46 and 71 adapted replacement comparisons. Thirteen
+new methods include **11 actual standalone frozen hash-only comparisons**: the
+broken-parent fixture, the existing editor's pre-edit block and nine block-signing
+sources. A test-only projection compares applicable INT-01/03/04 expectations via
+the unchanged shared subset comparator; it never claims full signing or portable
+integrity passes. Further controls cover exact scope, opt-in prefixes, independent
+parent/content failures, nullable/current/history identities, unsupported grouping,
+hash-provider/JCS failures, unchanged roots and snapshots before the first await.

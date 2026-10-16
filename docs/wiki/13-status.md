@@ -1,6 +1,26 @@
 # 13 — Build status (living document)
 
-**Latest Python milestone — reserve draws merged; replacement-funding bindings.**
+**Latest Python milestone — replacement funding merged; bounded block integrity.**
+PR #367 merged as `fbbd1a7704f5c7df20e633e9123273b7dcc4ac43`, with the
+reviewed §V.12 replacement verifier, 119 Python controls, 71 explicitly adapted
+standalone comparisons and separate Reader17/17. Exact-main CI
+[38980859508](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38980859508)
+succeeded: all 17 ordinary checks passed; optional publication verification
+skipped. Ubuntu, Windows and macOS jobs passed 119 Python methods and genuine
+Reader17/17 with zero failures, skips or unverifiable cases.
+
+The bounded continuation adds accepted §V.9 hashes and supported §V.10 sequence
+assessment, preserving all physical blocks and explicit unchecked signatures.
+Its 132-method suite retains the earlier controls and adds 11 frozen hash-only
+standalone comparisons. Historical identity ambiguity stays locally unsupported;
+no new missing-history/root refusal or full integrity-profile claim is added.
+Discovery remains parse-only; generic verify/validate/calc stay unsupported.
+The work is independent of Envelope #365 and draft numerical RFC0088.
+#357/#335 remain drafts; owner-controlled decisions remain preserved. Older
+checkpoint statements below describe their stated historical heads.
+
+
+**Earlier Python checkpoint — reserve draws merged; replacement-funding bindings.**
 PR #366 merged as `64b9b109abd1d0851087f31c49f07409b5433142`, with the
 reviewed §VIII.12 verifier, 103 Python controls, direct reserve28/draw46 evidence
 and separately reported Reader17/17. Exact-main CI
