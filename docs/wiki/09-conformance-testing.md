@@ -769,3 +769,16 @@ are not portable validate passes. Selected local shape diagnostics have no
 invented registered code or severity. Superseded history remains retained and
 outside this active-source scope. Full metadata, conditional reference and
 policy verification remain separate. Discovery stays parse-only with no tier.
+
+
+### Independent Python document-currency identity
+
+The standalone `inspect-document-currency` command applies existing CUR-01 to
+non-null authored declarations without trimming, case conversion, ISO allocation
+lookup or display-locale inference. Absent and null declarations retain distinct
+evidence and have no currency finding, following the accepted §V.12.2 clarification
+and existing central currency validator. Seven focused methods include four actual
+standalone fixture comparisons scoped to currency findings. They do not claim
+complete frontmatter validation, rendering, portable validate or Verifier conformance.
+Prior source/role, binding, integrity and Reader controls remain unchanged; discovery
+stays parse-only.

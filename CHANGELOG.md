@@ -28,6 +28,11 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Add independent Python standalone document-currency identity inspection under
+  accepted CUR-01, preserving authored absent/null/value evidence without
+  normalization, locale inference, ISO allocation lookup or financial math. Keep
+  parse-only discovery and scoped evidence separate from full validation.
+
 - Add independent Python active-block source/provenance and role inspection,
   including leaf override actor/resolution checks, pinned metadata routing and
   separate local shape diagnostics. Preserve unknown payloads and source bytes,
