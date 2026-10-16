@@ -296,3 +296,30 @@ exercise the numeric seed, not the complete cross-runtime arithmetic experiment.
 The Python driver testing the TS reference is not a second Python implementation.
 The arithmetic experiment is observational evidence, not the conformance suite.
 No independent Microsoft Excel recalculation or signed receipt test was run here.
+
+## 2026-10-16 — bounded exact-reference procedure lab
+
+The [isolated lab](../../experiments/numerical-0088/power-procedures/README.md)
+adds executable, unaccepted integer/fractional dispatch and three exact integer
+operation-graph alternatives. Forty fixed input-word pairs, independent exact
+rational midpoint answers/certificates and 120 graph result/trace records are
+frozen separately. Python rational arithmetic derives the evidence without
+floating pow/libm or an arbitrary decimal precision; independently authored JS
+executes basic binary64 operations and checks the frozen outputs and trace hashes.
+Six focused Python methods and two JS tests passed on Python3.12.3 /
+Node24.14.1, Windows AMD64. Full-suite gates were not run for this chunk.
+
+This advances procedure/domain/resource evidence beyond the completed runtime
+reproduction and source audit, neither of which was repeated. Sequential and
+squaring results differ on a fixed127-period primitive input; reciprocal-first
+and reciprocal-last differ in rounding and range. The rational root reference
+is deliberately bounded to exponent numerator magnitude256 and dyadic denominator
+at most16; no general fractional/log/exp kernel is supplied. The lab's integer
+budget256 and local status names are not UWMD admission/refusal rules. Primitive
+nearest/even ties do not substitute for final VIII.5 half-away quantization.
+
+The README pins exact input/evidence/source hashes, candidate special-case order,
+operation order, resource limits and explicit downstream NPV/IRR/quantization/
+receipt obligations. No normative or production file, frozen conformance value,
+receipt/signature artifact, public version, RFC acceptance or release preparation
+changes. No experimental recovery payload or new dependency is introduced.
