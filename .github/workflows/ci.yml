@@ -23,6 +23,21 @@ on:
         default: ''
 
 jobs:
+  python-numeric-kernel:
+    name: Independent Python numeric seed (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # No Node installation or npm dependency. This tests the incomplete seed,
+      # not Reader/Verifier conformance or transcendental cross-runtime identity.
+      - run: python -m unittest discover -s implementations/python -v
+
   verify-publication:
     name: Verify published release (explicit read-only request)
     if: github.event_name == 'workflow_dispatch' && inputs['verify-publication']
