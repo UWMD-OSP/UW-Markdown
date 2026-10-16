@@ -59,6 +59,11 @@ protocol, and each package each carry an independent semver).
   explicitly unchecked signatures. No full integrity-profile, normative, signing,
   history-retention, dependency or version changes.
 
+- Publish the requested Issue #365 representation intake in the existing Reader
+  review and add draft RFC 0089 for a minimal versioned lossless extension entry.
+  Candidate identity, codec, commitment and release decisions remain unapproved;
+  no Envelope 1.0, schema, digest, receipt, version or fixture changes.
+
 - Add independent Python standalone replacement-funding binding verification
   under accepted §V.12: scoped hedge/escrow prerequisites, property role selection,
   exact current cash references and separate JCS/SHA-256 commitments. Keep narrow
