@@ -1,0 +1,18 @@
+{
+  "scope": "Existing-reader boundary and identity observations only; no new capability implementation",
+  "source_commit": "eac353046f082f67f9660a38991f6122a6a99f9b",
+  "observations": {
+    "whole_projection_markdown_refusal": "UNSUPPORTED_FORMAT_VERSION",
+    "whole_projection_uw_json_refusal": "ENVELOPE_UNSUPPORTED_VERSION",
+    "ignored_frontmatter_marker_still_reads_as_format": "3.0",
+    "renamed_suffix_changes_neither_content_reader": true,
+    "crlf_raw_identity_differs_but_guarded_semantic_subject_matches": true,
+    "legacy_history_omitting_envelope_still_accepted": true,
+    "source_bytes_unchanged": true
+  },
+  "limitations": [
+    "Not an independent reader implementation",
+    "No new projection verification, archive linking, states or conformance expectations implemented",
+    "No signature backend or financial computation exercised"
+  ]
+}

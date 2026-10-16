@@ -1,0 +1,294 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 0f287881..777c18b1 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -18,6 +18,11 @@ protocol, and each package each carry an independent semver).
+ 
+ ### Documentation
+ 
++- Propose dependency-ordered foundational launch criteria in ROADMAP: C+D
++  provenance, separate financial reconciliation contracts, bounded normative L1,
++  genuinely independent Python and actual spreadsheet/cross-engine evidence.
++  Draft RFC0088 scopes the L1 design; no normative behavior or release is changed.
++
+ - Post4.3.0 financial follow-up records the held DCF-label baseline proposal,
+   compaction authority/projection recommendation and draft86/87 source/basis
+   decisions. No metric, validation rule, baseline or RFC acceptance changes.
+diff --git a/ROADMAP.md b/ROADMAP.md
+index 20c63c9e..0a15c73b 100644
+--- a/ROADMAP.md
++++ b/ROADMAP.md
+@@ -1,12 +1,12 @@
+ # Roadmap
+ 
+-Reconciled **2026-10-14** (America/Phoenix) for published and independently
+-verified **4.2.0**, pairing core/CLI 4.2.0 and `@uwmd/verify` 0.2.0 with
+-Stable Protocol **4.1.0** and Format **3.0**. No accepted RFC is waiting for a
+-release.
+-UW Markdown has completed its foundational standard and reference-engine work.
+-The forward work is narrower modeling workflows, tool integration and adopter-led
+-extensions. This roadmap is directional; a candidate is not a release commitment.
++Reconciled **2026-10-15** (America/Phoenix): published4.3.0 is the exact
++`80c68c3d` release generation; current main is `a18ed8ee` after the approved DCF
++label correction. Format3.0 / Protocol4.1.0 / verifier0.2.1 remain current.
++Existing foundations are implemented, but full acquisition reproducibility,
++genuinely independent verification and the proposed provenance/reconciliation
++contracts are not complete. The proposal below follows the owner's expanded
++launch direction; it accepts no tentative RFC and authorizes no5.0 preparation.
+ 
+ ## Reserved milestone: 5.0, the coordinated public launch
+ 
+@@ -46,6 +46,125 @@ presented for owner review, not inferred. The open questions are:
+ 6. **Runtime support.** How declared Node floors track the Node release
+    schedule.
+ 
++## Proposed foundational completion criteria for the public launch
++
++Owner planning direction,2026-10-15: there is no deadline-driven5.0 release.
++Complete most or all foundational verification, reproducibility, interoperability
++and provenance work before asking for coordinated-launch authorization. RFC0085–87
++and Issues354–355 are proposed launch components, not automatically deferred.
++The owner has **not accepted their tentative contracts** or authorized5.0 release
++preparation/publication. This section is the dependency-ordered proposal in the
++existing roadmap, not a separate planning system or package-version matrix.
++
++### Reconciled evidence and actual gaps
++
++Current main is `a18ed8ee` (#349 owner-approved DCF display correction), following
++merged documentation-only #353 (`66a354f`). Main CI38831554581 passes14 ordinary
++jobs,4,179 tests,1,089 reference checks and350 portable cases. The portable cases
++are Reader17, Verifier281, Integrity14, module1 and starter37. Issue354's older
++1,069/336 counts are a historical checkpoint. There is one implementation:
++`runner.py` invokes the TypeScript CLI; it is not an independent Python verifier.
++The dictionary currently has171 class calculation entries/89 distinct ids and11
++size-intensive entries; none constitutes the proposed L1 acquisition profile.
++
++Published4.3.0 remains the exact80c68c3d generation, Format3.0/Protocol4.1.0,
++verifier0.2.1. The later DCF correction is merged development, not retroactively
++published4.3.0 behavior. Phase1/Phase2 financial reports remain the evidence;
++local full-suite failures (including current3999pass/180fail) are not passing
++local gates. No independent Microsoft Excel recalculation has been established.
++
++### Workstreams, dependencies and completion evidence
++
++All criteria below are **proposed launch gates**, not statements of completion.
++Accepted contract changes precede their implementations and baseline changes.
++
++| Workstream | Normative decision gate | Implementation deliverable | Conformance / independent evidence | Actual prerequisite |
++|---|---|---|---|---|
++| **Provenance — RFC0085 / #335** | Accept a concrete C+D artifact, raw versus semantic identity/authentication/continuity scope, missing-parent/manual-replace/archive states and compatibility migration | Preserve the authoritative source; distinct projection create/verify workflow; scoped history and authenticated archive evidence; retire or explicitly resolve unsafe stripped-record emission for launch | Positive/negative roots, visible mismatches, absent history, manual replacement, unhashed input, signed history, wrong/missing archive, repeated hashes/variants, reader rejection and receipt-subject cases. Independent Python rejection/hash/continuity vectors where that capability is claimed; signing known-answer and separately identified crypto evidence | Current guarded source/semantic digest and signature contracts. Does not depend on L1 financial formulas |
++| **Financial reconciliation — RFC0086 and0087 / #343** | Resolve each independently: price comparison authority/transaction basis/variant; hospitality period/status/scenario/revenue and room-night scope; source precision and missing/failed/unverifiable behavior before codes/severity | Implement only the accepted relation, metadata/disclosure and migration; preserve existing formulas unless an accepted RFC explicitly changes them | Matching/conflicting/same-versus-different basis, missing/ambiguous source, revision drift, precision/rounding and zero-denominator controls; dual-implementation vectors for any claimed normative checks | Owner source/basis decisions and bounded representation. No USALI/STR/lender convention is authority without edition/effective-date/scope evidence |
++| **Normative L1 acquisition profile — #355 / draft RFC0088** | Approve bounded L1 scope; declared convention registry and admissible combinations; pinned algorithms, field/output mappings, precision/solver/failure behavior, profile/receipt compatibility; selective RFC0078 D1/D7 amendment only on acceptance | Working optional forecast-verification engine and read-only API/CLI: sources/uses/equity through revenue/NOI/NCF, fixed debt, exit, cash flows and returns. Explicit refusal for unsupported assumptions | Portable procedure and whole-deal fixtures; alternative contested conventions plus negative controls. Quantized outputs reproduced by TS, independent Python and independently authored/recalculated spreadsheet | Accepted L1 procedures and schema, existing period/day-count/quantization/IRR foundations. Multifamily L1 need not wait for hospitality/data-center reconciliation design; all scoped work converges before launch |
++| **Independent Python Reader/Verifier — #354** | No new financial convention: implement the existing normative contract. Owner selects location/runtime/dependency/public distribution; ambiguities need governed resolution, not copying TS | Genuine Python parser, validation, dictionary evaluation and CLI protocol; no Node subprocess, JS translation or remote-verification dependency. Initial proposal: Python3.10+ stdlib-only, repository location still unselected | All required Reader/Verifier cases, currently17+281, with zero required skips/unverifiable/divergences. Expand portable coverage for base obligations hidden in TS-only tests. Run without Node installed; preserve implementation identity, Python/OS versions and manifests | Current contract/corpus and §II.6a protocol; can start immediately in parallel. Passing current portable cases is necessary, not proof of every unported obligation |
++| **Independent L1 reproduction** | Same accepted L1 profile, no Python-specific convention fork; define equality at the normative quantized boundary and exact failure semantics | Python L1 implementation from the normative procedures; both engines consume identical synthetic source/convention declarations | All required L1 cases in both engines; independent ledger/oracle checks; negative verdicts and precision/overflow/irregular-date cases. Record and resolve genuine ambiguities without regenerating expectations for one engine | Python base Reader/Verifier plus accepted L1 spec/corpus; package publication itself is not a prerequisite for independent CI evidence |
++| **Excel and cross-surface fidelity** | Accepted L1 procedure mappings; explicit supported workbook scope, literal/source-input policy and editing limitations; resolve solver/timing discrepancies rather than inventing tolerance | Source-faithful Excel emission and supported profile formulas; CLI/report/verification figures traced to the same selected sources and quantization | Independently authored acquisition workbook actually recalculated in identified Microsoft Excel version for an Excel parity claim; other engines named separately. Fresh inputs/outputs, formulas, cached-versus-recalculated status, rounding/solver analysis and refusal controls. Emission/XML inspection alone is insufficient | Stable accepted L1 conventions and implemented procedures. Existing #348 literal fallback disclosures remain; unsupported live recalculation cannot be claimed |
++| **Launch evidence and assurance claims** | Owner approves precise advertised scope, exclusions, remaining exceptions, compatibility and coordinated-version policy | Existing docs/formula pages generated from dictionary/profile sources, reproducible public synthetic examples, integrated manifests and truthful Reader/Verifier/profile claims | Pinned spec/corpus/engine commits; CI manifests from independent implementations and supported OS/runtime matrix; actual spreadsheet evidence; no material unexplained numerical disagreements or false verified results | All selected foundational workstreams complete, then explicit owner authorization for release preparation and publication as separate actions |
++
++### Dependency order
++
++1. **Freeze evidence, not development.** Keep existing audit dispositions and
++   baseline source SHAs. Distinguish author-approved direction from accepted RFC,
++   implementation, conformance and publication. No5.0 package/version/tag work.
++2. **Resolve three design lanes in parallel:** RFC0085's history/projection
++   contract; RFC0086/87's separate comparison bases; draft0088's L1 procedures.
++   Base Python Reader/Verifier can proceed against the current contract now.
++3. **Accept bounded contracts before coding them.** Complete actual algorithms,
++   closed representations/conventions, error/applicability states and compatibility
++   paths. Issue355's convention comment is a proposal, not the registry. Do not
++   edit implemented RFC0078 or normative formulas on the strength of issue text.
++4. **Implement approved reference behavior with synthetic regression controls,**
++   keeping unrelated fixes bounded. Make newly required procedure/relationship
++   cases portable. Reuse the metric dictionary; do not create a second registry.
++5. **Complete independent Python base → L1 evidence** against the same accepted
++   corpus. Resolve spec gaps openly. Reuse deterministic definitions, not TS
++   source code/behavior as a hidden oracle; disclose provenance and permitted
++   shared normative data. Independent implementation does not mean using a
++   different algorithm where the standard pins one.
++6. **Converge cross-package, independent and spreadsheet evidence.** Test end-to-end
++   cash-flow identities, negative verdicts and unsupported conditions. Archive
++   signed/source-identity and projection scope evidence. New crypto dependencies
++   or signing claims require explicit capability decisions.
++7. **Only then request a launch decision.** Publish the evidence/limitations and
++   genuine outstanding exceptions in existing review/RFC/roadmap artifacts. Owner
++   approval of completion criteria is not approval of RFC semantics or permission
++   to prepare/tag/publish/deploy5.0.
++
++### Bounded scope and exclusions
++
++Recommend L1's first financial scope be stabilized multifamily, all equity or one
++fixed-rate loan, with explicitly declared inputs and complete equity/exit returns.
++The owner must confirm this boundary in draft0088. No automatic requirement for
++all possible asset classes, preferred-equity/multi-tranche forecast generation,
++lease rollover/recoveries, construction draws/tax, L2/L3 custom vectors, lender
++programs or general goal-seek. Existing builtin class/financing contracts remain
++valid and their existing claimed capabilities must keep passing.
++
++Require Python base Reader/Verifier **and L1** for the proposed foundational
++claim. Do not automatically require its module, portfolio, stochastic,
++sensitivity, full cryptographic Integrity or every representation profile.
++Python must not claim a profile on the strength of explicit unavailable outcomes.
++For the foundational provenance guarantee, require independently checked wrapper
++refusal, canonical/hash identity and continuity vectors; decide whether complete
++cross-implementation signed-archive verification is an advertised launch claim.
++If it is, an independent supported crypto verification path becomes a concrete
++prerequisite; a stdlib-only runtime's unchecked signatures are insufficient.
++
++RFC0086/87 can finish with a bounded accepted same-basis comparison contract and
++explicit unsupported-basis behavior; every external institutional accounting
++bridge is not required. Retaining distinct metrics must be a conscious accepted
++semantic choice with truthful claims, not an automatic deferral of reconciliation.
++Resolve provenance's unsafe legacy emission/retirement plan for launch rather
++than merely adding a marker older readers ignore. Actual breaking activation
++requires owner authorization and honest semver; interim4.x development continues
++through additive APIs, accepted compatible fixes and draft design work.
++
++### Evidence that will actually close a launch criterion
++
++A workstream closes only with an accepted contract where needed, its implemented
++behavior, passing applicable positive/negative conformance, independently scoped
++evidence and known limitations. A proposal, issue closure, a receipt over stated
++inputs, reference+portable-driver success, emitted XLSX, or equal cached values
++alone cannot close the corresponding foundational guarantee. Quantify tested
++coverage and explain omissions; do not advertise universal economic correctness.
++Record the exact supported runtime/OS matrix rather than assuming every Python
++profile or platform is certified. There is no foundation-completion claim yet.
++
++Owner decisions still needed: approve/amend this bounded launch scope; D1–D5 of
++draft0085; RFC0086/87 authority/basis/precision/applicability; draft0088 procedures
++and packaging; Python location/runtime/dependency/distribution (PyPI setup needs
++separate authorization); actual spreadsheet engine/access and parity scope;
++required signed-history independence scope; and eventual coordinated versioning.
++The owner can change the proposed gates explicitly, with the resulting guarantee
++and evidence limitation stated. No calendar deadline overrides a correctness gap.
++
+ **Interim4.3.0 published and independently checked (2026-10-15):** #351
+ merged preparation as `80c68c3d`; annotated `v4.3.0` targets that exact commit.
+ The established Release38821844153 published all8 independent versions with
+@@ -57,17 +176,14 @@ The #346 compatibility behavior and #347/#348 financial correctness repairs ship
+ Protocol4.1.0 are unchanged. No5.0 action or production deployment is included.
+ 
+ The [post-publication decision packet](https://github.com/UWMD-OSP/UW-Markdown/pull/353)
+-includes an unapplied exact #349 golden proposal and concrete recommendations
+-for draft0085 (C+D authority/projection),0086 (bound summary/opt-in comparison),
+-and0087 (explicit comparability/observation precision). None is owner-approved.
+-
+-**Next bounded sequence:** finish owner review of #349's exact proposed
+-source-year rendering baseline; refine draft RFC0085's complete-history authority
+-versus projections; obtain the source/basis decisions in draft RFC0086/0087
+-before any normative implementation. Issue343 remains open with its completed
+-audit dispositions. No universal price/revenue equality is implemented. Preserve
+-independent-source disclosures if semantic work is deferred; do not describe
+-current metric verification as proof of complete economic reconciliation.
++merged documentation-only. The owner approved #349's paired source-year display
++and starter baseline correction; merged main `a18ed8ee` passes14 ordinary CI jobs.
++Source order, amounts, validation, CC-06 and normative period semantics are unchanged.
++[Draft RFC0085](https://github.com/UWMD-OSP/UW-Markdown/pull/335) is a concrete C+D
++proposal, not accepted. RFC0086/0087 remain separate draft financial decisions;
++draft0088 scopes the proposed L1 profile. Issues343/354/355 remain open. Follow
++the foundational dependency order above; do not treat this work as automatically
++post-launch or claim existing ratio checks certify end-to-end reconciliation.
+ 
+ ## Historical publication: 4.2.0
+ 
+diff --git a/conformance/README.md b/conformance/README.md
+index ebdbe834..9c9cd729 100644
+--- a/conformance/README.md
++++ b/conformance/README.md
+@@ -15,15 +15,15 @@ describe content; they do not confer a tier claim.
+ | Target | Reference checks | Portable CLI cases |
+ |---|---:|---:|
+ | Reader | 26 | 17 |
+-| Verifier | 686 | 281 |
++| Verifier | 688 | 281 |
+ | Module | 76 | 1 |
+-| Integrity | 14 | 0 |
++| Integrity | 32 | 14 |
+ | Representations | 135 | 0 |
+ | Portfolio | 14 | 0 |
+ | Sensitivity | 5 | 0 |
+ | Stochastic | 7 | 0 |
+ | Starter products | 106 | 37 |
+-| **Total** | **1,069** | **336** |
++| **Total** | **1,089** | **350** |
+ 
+ The before count was 1,053 default + three opt-in agent-shape checks; all 1,056
+ now run by default, and five new Verifier checks (marked `added` in the index)
+@@ -33,8 +33,11 @@ shape-insensitivity check), leaving 1,054. RFC 0081 Phase 4 deletes the
+ checks that exercised only a backward-compatibility path (the `meta-v2` and
+ `migrate` suites, the retired-format projections and the module compatibility
+ shells) and adds refusal cases for what those paths used to admit, leaving
+-1,069. Portable cases project a subset of those same checks, so 336 is not an
+-additional corpus. All expectations are preserved. The index
++1,069 at that checkpoint. Subsequent additions bring the current total to1,089,
++including the expanded Integrity checks. The table above reflects main `a18ed8ee`.
++Portable cases project350 of those checks, not an additional corpus. The approved
++starter DCF-label correction is recorded in PR #349; this count/documentation
++refresh changes no expectation. The index
+ and generated cases are checked for exact ownership, missing/duplicate results
+ and generation drift.
+ 
+diff --git a/conformance/runner/README.md b/conformance/runner/README.md
+index 522ebec9..bb26fd0c 100644
+--- a/conformance/runner/README.md
++++ b/conformance/runner/README.md
+@@ -17,13 +17,18 @@ python conformance/runner/runner.py --impl "./target/release/uwmd"
+ python conformance/runner/runner.py --impl "python -m uwmd" --tier verifier --profile module
+ ```
+ 
++**This Python program is a driver, not an independent UWMD implementation.**
++The default command still invokes the TypeScript reference CLI. Issue #354
++proposes the separate independent Python Reader/Verifier; no pass for that
++implementation is claimed by this driver running the reference CLI.
++
+ Python 3.10+, standard library only. That constraint is deliberate: a driver
+ that needs a package index is a driver an air-gapped implementer cannot run.
+ 
+ ## What it does not cover
+ 
+-**`npm run conformance` remains the full CI gate:** 1,069 reference checks.
+-This driver retains all 336 CLI projections, including Reader, Verifier,
++**`npm run conformance` remains the full CI gate:** 1,089 reference checks (main `a18ed8ee`).
++This driver retains all 350 CLI projections, including Reader, Verifier,
+ Module and separately reported starter-product cases. A portable result
+ claims coverage of those cases, not the omitted cross-fixture contracts.
+ 
+diff --git a/docs/rfcs/README.md b/docs/rfcs/README.md
+index f5861793..e86d9f2c 100644
+--- a/docs/rfcs/README.md
++++ b/docs/rfcs/README.md
+@@ -115,6 +115,7 @@ and how it gets accepted.
+ | [0084](./0084-document-signature-binding.md) | Bind a document snapshot without discarding signed block attribution | implemented | protocol, core, conformance, tooling |
+ | [0086](./0086-data-center-purchase-price-authority.md) | Resolve data-center purchase-price authority and summary binding | draft | format, protocol, core, conformance, tooling |
+ | [0087](./0087-hospitality-revenue-reconciliation.md) | Define the basis for hospitality revenue reconciliation | draft | format, protocol, core, conformance, tooling |
++| [0088](./0088-reproducible-l1-acquisition-projections.md) | Reproduce stated L1 acquisition projections under declared conventions | draft | format, protocol, core, conformance, tooling |
+ 
+ `0012` is an unused number, left as a gap so existing references keep their
+ meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
+diff --git a/docs/wiki/13-status.md b/docs/wiki/13-status.md
+index abb7b2b9..ecd337a1 100644
+--- a/docs/wiki/13-status.md
++++ b/docs/wiki/13-status.md
+@@ -13,13 +13,18 @@ failures remain recorded; the later probe passes. See the
+ 
+ Financial corrections #347 and #348, Phase2 evidence/regressions #350 and the
+ #346 CLI compatibility behavior ship. Format3.0, Protocol4.1.0, receipt1.1,
+-metric formulas, schemas and numerical conformance expectations are unchanged.
+-Local full-suite3993/180 and subprocess failures remain separate from successful
+-remote CI; no independent spreadsheet recalculation is claimed.
++metric formulas, schemas and financial conformance expectations are unchanged.
++The release-era local3993/180 and latest follow-up3999/180 full suites remain
++failed, separate from successful remote CI; no independent spreadsheet recalculation is claimed.
+ 
+ 5.0 stays reserved for the coordinated public launch; no production deployment
+-or account change occurred. PR349 remains held and RFC0085/0086/0087 remain
+-drafts. Issue343 stays open for substantive decisions. The Phase2 review and
++or account change occurred. PR349 was owner-approved and merged as `a18ed8ee`; its main CI38831554581
++passes14 ordinary jobs,4,179 tests,1,089 reference and350 portable cases.
++RFC0085/0086/0087 remain drafts. The owner now prioritizes completing foundational
++work before launch; ROADMAP proposes L1/Python/provenance/reconciliation and
++independent Excel evidence gates. Draft0088 scopes the L1 design and accepts no
++convention. Issues354/355 are proposals; no independent Python verifier or
++normative L1 profile exists yet. Issue343 stays open for substantive decisions. The Phase2 review and
+ roadmap track the next bounded sequence. Earlier release records below are
+ historical.
+ 

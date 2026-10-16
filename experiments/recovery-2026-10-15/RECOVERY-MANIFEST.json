@@ -1,0 +1,36 @@
+{
+  "status": "experimental recovery only; no conformance or acceptance claim",
+  "base_commit": "50bf4c13206560848c5bb9b045f4532ad3cd8633",
+  "files": [
+    {
+      "path": "experiments/recovery-2026-10-15/README.md",
+      "bytes": 2870,
+      "sha256": "effedb75dc0be6ba23b512c90b17e36dae675e259192b532e8e1d059d3cf67d2"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/provenance-85/compaction-design.evidence.json",
+      "bytes": 869,
+      "sha256": "e617c49ac45b3ce0bf084804fd9119a21b83529a70205eabfd231bfe06abb70e"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/provenance-85/compaction-design.repro.mjs",
+      "bytes": 3473,
+      "sha256": "96d375c92e471632a3065e711c95a800a5b01498986c9be16593bf499ee39c22"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/provenance-85/draft-analysis.md",
+      "bytes": 69404,
+      "sha256": "96831cf90922e245911acd6e11da0079142393575e46302b6683f13dc2f4a405"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/superseded-projection/historical-planning.patch",
+      "bytes": 23257,
+      "sha256": "79ac8714f9c7833c51c5e0161cb1cf561955e5c61cbc939953205036b96ac473"
+    },
+    {
+      "path": "experiments/recovery-2026-10-15/superseded-projection/historical-proposal.md",
+      "bytes": 13220,
+      "sha256": "18a71aa6a47a01fe06534b5d6ae32e2d3ce3f0432f8fff72cff9ef0a39ed387f"
+    }
+  ]
+}
