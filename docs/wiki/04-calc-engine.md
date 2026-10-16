@@ -502,3 +502,15 @@ unknown amounts, unsupported economic assertions and out-of-hold cash refuse.
 Three new schemas and the normative VIII.9.6 text mirror the public types.
 The [workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md) uses explicitly synthetic data;
 core/CLI 2.9.0 publish the implementation. Real-deal validation remains separate.
+
+## Draft numerical procedure feasibility (#356, RFC 0088)
+
+The [candidate-source closure study](../reviews/2026-10-15-fdlibm-closure-356.md)
+freezes public fdlibm source hashes, inventories the power/square-root/scaling
+helpers and identifies finite-work and bit-adapter obligations for a possible
+portable kernel. Its audit downloads or reads source bytes only; it executes no
+numerical candidate. RFC 0088 remains draft. Current arithmetic, domains, errors,
+quantization and conformance expectations are unchanged; source identity and a
+bounded control-flow graph establish neither accuracy nor independent Verifier
+conformance. The existing runtime investigation need not be repeated to use this
+new feasibility evidence.
