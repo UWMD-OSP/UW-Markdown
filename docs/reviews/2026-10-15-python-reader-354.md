@@ -199,3 +199,37 @@ stated-result verifiers, receipts and receipt verification remain unimplemented
 here. No projection/model-generation engine, AI-agent runtime, provider SDK or
 new optional profile is introduced. RFCs 0085–0088 remain separate drafts;
 Issue #355's assurance scope is not expanded by this implementation.
+
+## Bounded period foundation follow-up
+
+This follow-up leaves all existing numeric/source/Reader/frontmatter production
+files and their 44 tests unchanged. `uwmd_periods.py` adds the closed five-entry
+VIII.2a registry, kind-qualified selector identities, keyed `year_01`/`year_1`
+collision detection, all-row inspection and row selection in an already selected
+section payload. It uses the existing Gregorian predicate, including year zero.
+The existing malformed period fixture supplies one additional narrow source
+integration control; its PS-03 and unrelated validation expectations are not
+claimed as implemented.
+
+Recovery snapshot `experimental/recovery-python-354-2026-10-15` was inspected as
+unreviewed input. Its registry/identity concepts were useful missing foundations;
+they were reconciled against current Protocol VIII.2a and RFC 0062 and adapted
+without its incompatible Reader or whole-document resolver. No historical
+experimental pass count is attributed to this branch.
+
+The APIs report PS-01 warnings and PS-02 errors with JSON pointers relative to
+the supplied payload. Malformed rows are all inspected before selection refuses
+CALC-PERIOD-001. Absent/null identities remain unmatched and warn; they are not
+invented or rejected as malformed values. Non-cash series reject any duplicate
+identity; cash-flow series allow repeated valid dates and refuse CALC-PERIOD-002
+only when the requested date repeats. Inspection retains original row objects
+and authored order, including repeated same-day rows.
+
+Local follow-up environment: Python 3.12.3, Windows. The 56-method unit run
+passes (unchanged 44 + 12 new period methods); the actual external portable
+Reader driver passes 17/17 with zero skips, failures or unverifiable cases.
+Neither result certifies Verifier conformance. The manifest and CLI remain
+parse-only. Full document validation, active variant/role selection for calcs,
+expression parsing and selector-path integration, safe leaf traversal, override
+addressing, PS-03 and all financial verification remain unfinished. No RFC,
+version, publication or numerical-policy decision changes.
