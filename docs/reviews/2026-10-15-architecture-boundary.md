@@ -138,3 +138,39 @@ full local subprocess failures above remain failed; this refinement does not
 reclassify them or claim a new complete local suite. Exact-head GitHub checks
 must pass before integration. No normative files, formulas, validation outcomes,
 conformance expectations, public exports, versions or release artifacts change.
+
+
+## Post-merge proposal refinement
+
+At main `50bf4c13206560848c5bb9b045f4532ad3cd8633`, the
+[existing removal proposal](2026-10-15-agent-removal-5.0.md) was refined to
+identify the exact root/browser removal facets, in-repository callers,
+command-mode refusals, SDK closure, workflow/download distinctions and owner
+support-policy decisions. It also identifies Format §1.2/§1.3, pipeline/source
+wording, §6.3/§6.4/§6.8 and dependent Protocol/module references requiring
+individual governed treatment. RFC 0078 does not implicitly repeal them.
+
+The retained boundary is concrete: generic writers and root `buildContext`
+remain public by default; source authority, agent provenance, immutable history,
+metadata, integrity/signatures, receipts, generic edits, representations,
+HTTP/MCP and contributor instructions survive runtime retirement. No StackUW
+code transfer or particular adopter destination is required. #355 remains an
+optional bounded financial-assurance workstream, not model generation.
+
+The worker refinement changes these two review records only; the integrator
+also adds its corresponding Unreleased changelog entry. Earlier validation counts
+above describe their original checked tree and are not a new full-suite result
+for this documentation refinement. No implementation, normative file, expected
+output, public API, dependency, version or release artifact is changed.
+
+
+Targeted checks for this proposal refinement: `npm run verify-indexes` passed
+(two source/reference tests and all index checks); `npm run docs:build` passed
+in 17.28 seconds with existing highlighting/chunk-size warnings; and
+`git diff --check` passed. The checks reused cached dependencies through
+untracked local symlinks; no dependency installation, manifest or lockfile
+change was needed. The checked worker diff contains only the two existing review documents; the
+coordinator adds the corresponding changelog entry during PR integration.
+Full implementation, package, runtime and conformance gates were not rerun for
+this prose-only proposal; the earlier subprocess failures remain recorded,
+not reclassified. This is not new independent-verifier or Excel evidence.
