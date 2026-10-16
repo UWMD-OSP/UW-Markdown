@@ -231,6 +231,10 @@ Power includes a square-root fast path and a scaling/copy-sign dependency;
 porting only three transcendental bodies would leave that candidate incomplete.
 This source-only result does not select a kernel, establish accuracy, certify a
 port or replace the outstanding domain/error and independent-vector evidence.
+The linked study now also provides isolated independent JS/Python word-adapter
+experiments and fixed bit-pattern tests for extraction/insertion, signed words,
+whole-word shifts and carry/borrow. These are prerequisite research only; no
+complete numerical kernel or financial expected answer is supplied.
 
 #### Candidate primitive meaning and unresolved cases
 

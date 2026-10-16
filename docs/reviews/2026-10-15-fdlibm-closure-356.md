@@ -128,6 +128,23 @@ negative-base parity, normalization carries and scaling underflow explicitly.
 Record raw candidate answers, independently justified accuracy-oracle answers,
 composed financial outcomes and final quantization separately.
 
+## Isolated bit-adapter feasibility follow-up
+
+The [experimental word adapter](../../experiments/numerical-0088/bit-adapter/README.md)
+makes the proposed word model executable independently in JS and Python. It
+specifies finite binary64 extraction/insertion, signed/unsigned32 interpretation,
+explicit count0/count32 shifts and wrapped addition/subtraction with carry and
+borrow. Fixed bit-pattern/integer known answers are shared data, not output from
+a host financial function or either candidate implementation. Each language runs
+its own test suite without invoking the other.
+
+This narrows one engineering prerequisite; no complete numerical kernel exists.
+In particular, its count32 rule is experimental adapter semantics, not an
+implicit acceptance of a meaning for undefined C operations. Every later helper
+translation still needs an explicit site mapping and independent correctness
+review. Nonfinite conversion is deliberately refused in this isolated adapter;
+that limitation selects no financial builtin domain or public refusal code.
+
 No host-majority answer, source hash, finite-work bound or Java name settles D1–D8.
 The precise remaining decisions are the numerical guarantee and selected
 procedure, complete admitted domains/refusal timing, approved financial graphs
