@@ -8,6 +8,9 @@ commitment/version consequences, and a future conformance matrix. This is a
 joint normative representation problem, not a Python-specific defect. The shape,
 mixed-identity clarification and release placement are owner decisions. No live
 Envelope, schema, digest, receipt, fixture, version or RFC acceptance change.
+Five synthetic candidate subjects now freeze stamp, mode and nullable-identity
+boundaries; independent Python/Node checks agree. Concrete XML/CSV descriptors
+and positive/negative/cross-version fixture procedures remain proposed only.
 RFCs0085/0088 stay separate; public5.0 remains reserved for launch.
 
 **Latest Python milestone — replacement funding merged; bounded block integrity.**
