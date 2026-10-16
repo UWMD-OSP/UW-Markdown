@@ -50,6 +50,12 @@ protocol, and each package each carry an independent semver).
   skip historical role reclassification and retain parse-only discovery without
   full validation or tier claims.
 
+- Extend draft RFC 0088 with isolated, testable integer-power procedure graphs,
+  exact-rational bounded fractional references and 40 frozen operand pairs.
+  Independent JS checks 120 result/trace records. Laboratory budgets, rounding,
+  downstream solver/quantization and receipt boundaries remain explicit and
+  unaccepted; production arithmetic and expectations are unchanged.
+
 - Add independent Python block-content hashing and bounded read-only chain
   assessment under accepted §V.9/§V.10, with complete physical block evidence,
   explicit opt-in/refusal diagnostics and a separately addressed ordered-chain
