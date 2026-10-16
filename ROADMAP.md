@@ -56,6 +56,11 @@ The #346 compatibility behavior and #347/#348 financial correctness repairs ship
 #350's audit/regressions remain the basis for further work. Format3.0 and
 Protocol4.1.0 are unchanged. No5.0 action or production deployment is included.
 
+The [post-publication decision packet](https://github.com/UWMD-OSP/UW-Markdown/pull/353)
+includes an unapplied exact #349 golden proposal and concrete recommendations
+for draft0085 (C+D authority/projection),0086 (bound summary/opt-in comparison),
+and0087 (explicit comparability/observation precision). None is owner-approved.
+
 **Next bounded sequence:** finish owner review of #349's exact proposed
 source-year rendering baseline; refine draft RFC0085's complete-history authority
 versus projections; obtain the source/basis decisions in draft RFC0086/0087

@@ -97,6 +97,57 @@ scenario measure. Explicit binding preserves scenarios at a higher representatio
 cost. Disclosure alone preserves compatibility but offers no reconciliation
 guarantee. No alternative is represented as owner-approved or rejected.
 
+## Integrator recommendation for owner review — 2026-10-15
+
+**Proposed direction, not an accepted decision:** prefer an explicit binding of
+the frontmatter summary to one valuation purchase-price assertion, with opt-in
+same-basis reconciliation. Preserve today's formulas and unbound records until
+a governed compatibility path is accepted. Disclosure of each current numerator
+and denominator can proceed as starter documentation; it does not certify their
+agreement. Do not introduce a universal equality or silently unify formulas.
+
+For the proposed binding, `valuation.purchase_price` is the authority for the
+specifically bound transaction consideration; the summary restates that source.
+This is not authority for appraisal/underwritten value or for a different
+transaction interest. Required comparison inputs would identify the exact source
+section/variant and revision/snapshot, currency, acquired interest/allocation,
+transaction/effective date and actual/forecast or alternative modeling case.
+These are proposed semantic requirements, not new field names or required schema
+members. The owner must approve their representation and requiredness.
+
+| Case | Recommended proposed treatment |
+|---|---|
+| Same explicitly bound basis and values | Verify only the declared relationship, under an approved precision procedure; keep the existing metric formulas |
+| Different finite prices on the bound basis | Report a relationship disagreement after code/severity approval; do not overwrite either source |
+| Missing price, missing binding/basis, or unresolved variant | Cannot certify the relationship; do not infer a price, equality or fallback. Legacy conformance stays separate from the optional claim |
+| Different transaction/scenario basis | Preserve both assertions with lineage; no equality finding merely because amounts differ |
+| Multiple valuation variants | Use the binding's exact variant for the proposed comparison. Preserve existing calculation-context and primary/default/base/sole selection for every metric read. No first-match or descriptive frontmatter scenario routing |
+| Only underwritten/appraised value changes | No purchase-price substitution; the current formulas still name purchase price |
+
+The binding would select a reconciliation target, not reroute either existing
+metric. If `price_per_kw` was computed using a different explicit valuation
+context than the summary's bound source, the two displayed values have different
+lineage; they cannot be certified as one comparable price assertion. Match the
+actual source identity/revision used by each read before claiming reconciliation.
+Changing calculation resolution to follow the binding would be an additional
+normative choice, not an implication of this recommendation.
+
+A producer could explicitly refresh a bound summary with provenance; a verifier
+must not repair it silently. A binding to an old revision must not drift when a
+new scenario is authored. Missing or ambiguous binding targets require their own
+approved result/applicability behavior; existing calculation-resolution codes do
+not automatically become relationship-validation codes.
+
+The retained M04 oracle demonstrates10m versus12m prices over1,000kW producing
+10,000 versus12,000 under the two existing formulas. Formula unification would
+change one result; a reconciliation assertion would instead change what can be
+claimed about those results. Both are normative changes. CC-DC-08's exact load
+identity and CC-10's price tolerance do not supply a tolerance for this new
+relationship. Output `round_to:2` alone does not specify source-price comparison.
+The owner must choose precision, missing-basis applicability/severity and migration
+before implementation. Old readers/verifiers cannot be assumed to understand a
+new binding/profile; advertise its scope and define unsupported handling.
+
 ## Unresolved questions
 
 - Are the two prices always one economic fact, or can interests/dates/scenarios differ?

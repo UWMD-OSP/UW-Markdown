@@ -385,5 +385,247 @@
       "status": "owner review required; baseline unchanged"
     },
     "release_handoff": "PR342 comment6195498202; package and receipt identity work remains with Claude"
+  },
+  "post_4_3_governed_followup": {
+    "status": "Decision proposals only; no baseline, integrity rule or metric change",
+    "reference_commit": "80c68c3d0950948c85a1d3a90c02cd05f3a650a4",
+    "core": "4.3.0",
+    "verify": "0.2.1",
+    "node": "24.21.0",
+    "command": "node docs/reviews/2026-10-15-financial-verification-phase-2.followup.repro.mjs /tmp/uwmd-interim-430",
+    "result": "PASS:7 rendering controls and2 compaction observations; source/current payload/diagnostic preservation assertions pass",
+    "source_sha256": "c11fa5d97aee8bfb755f4b06cdb084b825113f82189465fde21df0c44e7eb580",
+    "observations": {
+      "scope": "4.3.0 reference implementation observations; #349 label proposal only, not accepted behavior; no financial arithmetic or baseline writes",
+      "year_labels": [
+        {
+          "name": "existing duplicate/missing fixture",
+          "input_rows": [
+            {
+              "year": 1,
+              "noi": 100
+            },
+            {
+              "year": 1,
+              "noi": 101
+            },
+            {
+              "noi": 300
+            }
+          ],
+          "actual_rows": [
+            "  Yr1: NOI=$100 | NCF(L)=n/a",
+            "  Yr2: NOI=$101 | NCF(L)=n/a",
+            "  Yr3: NOI=$300 | NCF(L)=n/a"
+          ],
+          "proposed_rows": [
+            "  Yr1: NOI=$100 | NCF(L)=n/a",
+            "  Yr1: NOI=$101 | NCF(L)=n/a",
+            "  Yrn/a: NOI=$300 | NCF(L)=n/a"
+          ],
+          "actual_tokens": 392,
+          "proposed_tokens": 393,
+          "source_sha256": "bbc58a5400ab28a4e7106950d26ee4004a65b924868c91945ef92c643b52c65e",
+          "source_and_diagnostics_unchanged": true
+        },
+        {
+          "name": "reordered",
+          "input_rows": [
+            {
+              "year": 3,
+              "noi": 300
+            },
+            {
+              "year": 1,
+              "noi": 100
+            }
+          ],
+          "actual_rows": [
+            "  Yr1: NOI=$300 | NCF(L)=n/a",
+            "  Yr2: NOI=$100 | NCF(L)=n/a"
+          ],
+          "proposed_rows": [
+            "  Yr3: NOI=$300 | NCF(L)=n/a",
+            "  Yr1: NOI=$100 | NCF(L)=n/a"
+          ],
+          "actual_tokens": 343,
+          "proposed_tokens": 343,
+          "source_sha256": "bf6aad6e12404bbd2be77d06716f67e873e5b3e61b86998f87b4752d72e5ef2c",
+          "source_and_diagnostics_unchanged": true
+        },
+        {
+          "name": "sparse",
+          "input_rows": [
+            {
+              "year": 2,
+              "noi": 100
+            },
+            {
+              "year": 7,
+              "noi": 101
+            }
+          ],
+          "actual_rows": [
+            "  Yr1: NOI=$100 | NCF(L)=n/a",
+            "  Yr2: NOI=$101 | NCF(L)=n/a"
+          ],
+          "proposed_rows": [
+            "  Yr2: NOI=$100 | NCF(L)=n/a",
+            "  Yr7: NOI=$101 | NCF(L)=n/a"
+          ],
+          "actual_tokens": 343,
+          "proposed_tokens": 343,
+          "source_sha256": "2c96fc07398612af601400208757d0dcb47c17ece607b7e51a1baabb997e4f36",
+          "source_and_diagnostics_unchanged": true
+        },
+        {
+          "name": "missing",
+          "input_rows": [
+            {
+              "noi": 300
+            }
+          ],
+          "actual_rows": [
+            "  Yr1: NOI=$300 | NCF(L)=n/a"
+          ],
+          "proposed_rows": [
+            "  Yrn/a: NOI=$300 | NCF(L)=n/a"
+          ],
+          "actual_tokens": 357,
+          "proposed_tokens": 358,
+          "source_sha256": "43539c7f43e15c93e2541633994a2adb451b606dfe81bba6d1587b6c9a0a6874",
+          "source_and_diagnostics_unchanged": true
+        },
+        {
+          "name": "duplicate",
+          "input_rows": [
+            {
+              "year": 1,
+              "noi": 100
+            },
+            {
+              "year": 1,
+              "noi": 101
+            }
+          ],
+          "actual_rows": [
+            "  Yr1: NOI=$100 | NCF(L)=n/a",
+            "  Yr2: NOI=$101 | NCF(L)=n/a"
+          ],
+          "proposed_rows": [
+            "  Yr1: NOI=$100 | NCF(L)=n/a",
+            "  Yr1: NOI=$101 | NCF(L)=n/a"
+          ],
+          "actual_tokens": 363,
+          "proposed_tokens": 363,
+          "source_sha256": "89ac296ed9a053772d234b0a33b198e0361bfa93b888b7d085bda94b52d5bdd0",
+          "source_and_diagnostics_unchanged": true
+        },
+        {
+          "name": "sequential positive control",
+          "input_rows": [
+            {
+              "year": 1,
+              "noi": 100
+            },
+            {
+              "year": 2,
+              "noi": 101
+            }
+          ],
+          "actual_rows": [
+            "  Yr1: NOI=$100 | NCF(L)=n/a",
+            "  Yr2: NOI=$101 | NCF(L)=n/a"
+          ],
+          "proposed_rows": [
+            "  Yr1: NOI=$100 | NCF(L)=n/a",
+            "  Yr2: NOI=$101 | NCF(L)=n/a"
+          ],
+          "actual_tokens": 343,
+          "proposed_tokens": 343,
+          "source_sha256": "b0537d2c47c9d1bb0c94d935d787ad466407a4e4cf239f08e03b1b0d25091b2f",
+          "source_and_diagnostics_unchanged": true
+        },
+        {
+          "name": "empty positive control",
+          "input_rows": [],
+          "actual_rows": [],
+          "proposed_rows": [],
+          "actual_tokens": 322,
+          "proposed_tokens": 322,
+          "source_sha256": "68cd975d475cc2c432a1e57dde776b391786fdf973791e9b1215230e3a3f0199",
+          "source_and_diagnostics_unchanged": true
+        }
+      ],
+      "compaction": [
+        {
+          "path": "conformance/documents/malformed/04-broken-chain.uwx.md",
+          "input_sha256": "311a52a71437908b12835bc3147bbc6eb1d5aa88ef5815bcaf2b9f6d98bbd5ea",
+          "compacted_sha256": "e397c94eb726c7e60b85d958472d0da2eeb81e8e53a9fd2995131ee187bcaa28",
+          "original_source_unchanged": true,
+          "current_payloads_unchanged": true,
+          "chain_before": {
+            "ok": false,
+            "issues": [
+              "INT-01"
+            ]
+          },
+          "chain_after": {
+            "ok": true,
+            "issues": []
+          },
+          "policy_before": {
+            "ok": true,
+            "issues": []
+          },
+          "policy_after": {
+            "ok": true,
+            "issues": []
+          },
+          "pipeline_entries_before": 0,
+          "pipeline_entries_after": 0
+        },
+        {
+          "path": "examples/parkview-after-L6.uwx.md",
+          "input_sha256": "ccaff717e9cb5d3f029c66840ebe4f1a46e0eef1914347865f78c50d177cc4b6",
+          "compacted_sha256": "222ab2b76296935456d0733aa5157fca082216de72277aba112c74f4cd8e1ddf",
+          "original_source_unchanged": true,
+          "current_payloads_unchanged": true,
+          "chain_before": {
+            "ok": true,
+            "issues": []
+          },
+          "chain_after": {
+            "ok": true,
+            "issues": []
+          },
+          "policy_before": {
+            "ok": true,
+            "issues": []
+          },
+          "policy_after": {
+            "ok": false,
+            "issues": [
+              "POL-02"
+            ]
+          },
+          "pipeline_entries_before": 12,
+          "pipeline_entries_after": 12
+        }
+      ]
+    },
+    "limitations": "Reference runtime only. In-memory renderer transformation reproduces the exact2-line proposal in #349; it is not accepted or merged and writes no expected outputs. Compaction results restate existing RFC0085 evidence on4.3.0, not a new normative interpretation. Local full-suite/subprocess failures remain separate.",
+    "checks": {
+      "probe": "PASS7rendering controls+2compaction observations",
+      "lint": "PASS0errors/1existing HomePage.vue warning",
+      "docs_build": "PASS16.89s, existing same-lock docs dependencies; no fresh install claimed",
+      "indexes": "PASS63schemas/86RFCs",
+      "codes": "PASS277emittedcodes",
+      "proposed_patch_applicability": "PASSgit apply --check; not applied",
+      "normative_implementation_diff": "EMPTY: spec/conformance/packages/.github unchanged by follow-up",
+      "prior_full_suite": "RemainsFAILED3993pass/180fail; no new full local suite claimed"
+    },
+    "existing_baseline_sha256": "2aa36f81967b905a5c634722e64eabaa83331b1ee8e82d33ae14a3fb15fa4e13",
+    "proposed_patch_sha256": "81fd9fda9d7c260a0fc8694b11fcd290f45931755f14b7a863df96ea8f0b6eea"
   }
 }

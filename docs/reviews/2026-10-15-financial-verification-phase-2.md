@@ -632,3 +632,188 @@ basis decisions, not newly established violations of existing formulas. Issue343
 remains open. Further governed work proceeds from this audit, not a repeated
 twelve-item investigation. Public5.0 remains reserved; no production deployment
 or account changes are included.
+
+## Post-publication governed follow-up — 2026-10-15
+
+This continues the completed audit after verified4.3.0 publication. It does not
+repeat M01–M12, change a normative definition or accept RFC0085–0087. The
+[follow-up probe](2026-10-15-financial-verification-phase-2.followup.repro.mjs)
+runs against built4.3.0 reference code at `80c68c3d`; its observations are
+appended to the existing evidence JSON. Seven rendering controls and two
+compaction observations pass their source/payload/diagnostic preservation
+assertions. This is reference-code evidence, not another financial engine.
+
+### Held #349: what the period fixture actually establishes
+
+Protocol VIII.2a and Format PartIV's explicit-period preamble/RFC0041 select cash-flow periods by stated
+identity, never row position. They govern lookup and PS diagnostics, not the
+chat template's literal labels. Format §6.4 identifies chat as a compressed
+rendering. RFC0081 classifies this specific portable case as `starter-products`
+(`starter-products__documents__13-period-identities__render-chat`), requiring
+`render-chat`; it does not change Reader/Verifier financial arithmetic.
+
+The fixture is explicitly titled "Malformed and duplicate periods". Its DCF
+rows are year1/NOI100, year1/NOI101, absent-year/NOI300. Commit `f2204bd2`
+added that fixture and its ordinal golden at the same time as period lookup,
+without changing renderer.ts. Subsequent `938b53a0` refreshed representation
+baselines; RFC0081 later re-authored/renamed the corpus. No inspected decision
+text prescribes ordinal chat labels. Evidence therefore supports captured
+implementation behavior rather than an explicit permanent ordinal-display
+decision. The existing golden is nevertheless the current starter gate and
+must not be dismissed or silently regenerated.
+
+**Recommendation for owner review:** use the existing #349 two-line renderer
+change. Preserve authored row order and amounts; show each authored year, even
+when repeated; show `n/a` when absent; do not sort, renumber, deduplicate, infer
+a holding year or repair PS-01/02/03. Keep the existing10-row display limit.
+
+| Synthetic input years | Current labels | Proposed labels |
+|---|---|---|
+| Fixture1,1,absent | 1,2,3 | 1,1,n/a |
+| Reordered3,1 | 1,2 | 3,1 |
+| Sparse2,7 | 1,2 | 2,7 |
+| Absent | 1 | n/a |
+| Duplicate1,1 | 1,2 | 1,1 |
+| Sequential1,2; empty | unchanged | unchanged |
+
+The proposal changes exactly `Yr2: NOI=$101`→`Yr1: NOI=$101`,
+`Yr3: NOI=$300`→`Yrn/a: NOI=$300`, and estimatedTokens392→393 in this
+chat golden. Every other character, amount and diagnostic is preserved.
+The [exact unapplied patch](2026-10-15-financial-verification-phase-2.year-labels.proposed.patch)
+is for owner review only. `git apply --check` tests applicability without
+changing the baseline. No expected file is modified in this follow-up.
+
+Classification: **Verified** display/identity mismatch on reordered/sparse rows;
+**Needs owner decision** for expected starter rendering. Layer: core starter
+renderer/tests and one starter golden. Compatibility: chat text/token budgets
+change; source bytes, calculations, schemas, receipts and other render formats
+do not. Rebase #349 after approval, add explicit duplicate/sparse positive
+controls, apply only the approved patch, and run renderer/default/portable
+checks. Keep the PR held until that decision; do not condition rendering on
+validation success merely to retain the old malformed-row golden. CC-06's
+ordinal cash-flow description remains a separate question, not authorization
+to change financial selection or validation here.
+
+### Draft0085: authority, projections and missing history
+
+The [draft in #335](https://github.com/UWMD-OSP/UW-Markdown/pull/335) remains
+under owner review; it is not accepted standard text. Current
+Format §2.7/§6.5 compact instructions and Protocol V.10/POL-02 conflict in the
+case the draft identifies. The new4.3.0 reference probes reproduce both sides:
+
+| Existing input | Before compact | After compact |
+|---|---|---|
+| Broken parent-chain fixture | verifyChain fails INT-01 | verifyChain reports ok with no issues after the predecessor is removed |
+| Parkview-after-L6 policy | verifyProvenance ok | POL-02 error after required prior revisions are removed |
+| Parkview pipeline entries | 12 | 12; no compact entry appended |
+
+All current section payloads and the original source string remain unchanged.
+The clean post-compaction chain verdict does **not** prove recovered history.
+Protocol V.10's editor rule and the existing hashed `section_replace` test also
+permit a single visible head retaining the discarded predecessor hash. A new
+root-parent failure would therefore change current obligations; do not add it
+under INT-01 without deciding legitimate replacement behavior. POL-02 checks
+visible structure, not archived payload authenticity. A compact log entry alone
+cannot satisfy that check or establish missing history.
+
+**Recommendation for owner review:** prefer C+D: complete archived records are
+the verification authority; history-stripped outputs are convenience
+projections. Preserve the exact original bytes for recoverability and distinguish
+raw-byte identity from the semantic snapshot digest. Preserve original hashes,
+supersession history and signatures in the archive. Verify it under existing
+capabilities/key trust; do not silently retrieve unavailable external history or
+certify a projection as the original. This follows the owner's provisional
+preference, without accepting it.
+
+A retained original block signature authenticates its existing signed payload
+commitment and attribution; it does not sign parent_hash (Protocol V.9/V.11).
+Absent signed payload is not payload verification and must not be counted as
+verified historical content. A pre-compaction RFC0084 snapshot signature binds
+the complete original snapshot/history and does not transfer to a stripped
+copy. Signing the projection anew authenticates its exporter/output, not the
+missing source history. Signed metadata-only stubs currently fail INT-07;
+keep that behavior. No payload-free stubs, POL-02 exception, altered INT-01
+meaning, changed counts or qualified-success state is implemented.
+
+Older readers can ignore a new compacted flag, so a field alone cannot prevent
+overclaim. Prefer a clearly distinct display/export artifact that does not
+declare itself a complete UWMD record; a different filename suffix alone also
+does not change a parser's semantics. The owner must choose representation,
+archive binding/availability requirements and claim vocabulary before governed
+Format/Protocol/conformance work. A missing archive is not verified history.
+The independent replace/root-parent question must be decided separately.
+
+The missing compact log entry is a **Verified pre-existing implementation/
+documentation gap**, already noted in #335, against the current §6.5 toolchain
+statement; no new financial defect. It belongs to a separate bounded CLI repair
+if that command survives, including existing/missing-log, dry-run, signed-source
+and byte-preservation cases. Do not combine it with a new verification exception
+or assume that adding a log fixes the normative conflict. Compaction semantics
+remain held pending RFC acceptance, as instructed.
+
+### Draft0086 and0087: recommended decision packets
+
+[RFC0086](../rfcs/0086-data-center-purchase-price-authority.md) now recommends
+explicit summary binding to a selected valuation purchase-price assertion plus
+opt-in same-basis reconciliation. It spells out transaction/currency/interest/
+date/scenario/variant requirements, missing and ambiguous behavior, authority
+versus appraisal, legacy compatibility and the still-unselected precision/
+severity/migration decisions. Current formulas and CC-DC-08/CC-10 stay intact. The proposed binding selects
+a reconciliation target, not a new calculation context; actual source identity/
+revision must match before a displayed pair can be called reconciled.
+
+[RFC0087](../rfcs/0087-hospitality-revenue-reconciliation.md) recommends explicit
+comparability assertions, keeping actual/forecast/benchmark/reconstruction
+separate. Period endpoints, as-of/status, revenue scope, eligible supply/sales,
+occupancy basis and observation precision must match before reconciliation is
+claimed. For rounded actuals, the proposed bridge checks the observed ADR and
+occupancy back against eligible revenue/count sources at declared precision,
+rather than inventing a tolerance for multiplying rounded observations.
+Full-precision forecast assumptions remain distinct. Canonical reported-revenue
+RevPAR, CC-HOSP-04 and all zero/missing/refusal behavior remain unchanged.
+Current detailed USALI accounting evidence is still unverified.
+
+Both remain **Needs owner decision**, at Format/schema/Protocol-validation/
+conformance layers if adopted. These are proposed semantics, not owner-approved
+fields, precision rules, findings or profiles. No universal equality or metric
+formula change is implemented, and no future version number is selected.
+
+### Remaining #343 dispositions and bounded sequence
+
+The Phase1 M01–M12 matrix remains the disposition record; no second registry is
+created. M02/M03/M05/M11/M12 retain their established specified behavior and need
+no corrective RFC. M03's actual-utilization interpretation and M05's external
+100-based scale remain explicitly distinct from UWMD's current inputs/ratio.
+M01/M08 need exact accounting authority, edition/effective date, scope and
+exclusions before any alternative F&B/GOP definition is supportable. M06/M10
+remain occupancy/period/area-basis representation or adopter-profile gaps; M07
+needs explicit eligible room populations for an external benchmark claim.
+Those institutional/program extensions are deferred, not failed arithmetic.
+M04/M09 use the existing draft86/87 decision packets above. Issue343 stays open.
+
+Recommended sequence after verified4.3.0 publication:
+
+1. Publication verification and release-record reconciliation #352 are complete
+   (merged `a5ba1ba5`). Retain the financial quantization/source-fidelity
+   regressions. No further tag or publication is implied.
+2. Owner reviews #349's exact display proposal; then a bounded renderer/
+   regression/golden correction in that PR, without financial changes.
+3. Owner chooses RFC0085 authority/projection direction and resolves the
+   independent replace/root-parent semantics before any integrity change.
+4. Owner chooses RFC0086 binding/applicability/precision and RFC0087 basis/
+   precision/eligibility contracts. Revise drafts into implementation-ready
+   governed proposals, then separate bounded implementations after acceptance.
+5. Defer authority-specific hospitality, senior-housing, area and lender-program
+   extensions until actual adopter requirements and primary evidence exist.
+
+Before coordinated public5.0 launch, recommend resolving the visible #349
+label decision and making public provenance/compaction claims match the actual
+verified scope. Any promise that compacted output is complete verified history
+needs the RFC0085 decision/implementation first, or that promise must be omitted.
+M04/M09 do not universally block launch: decide/implement their proposed
+relationships if promised, otherwise disclose independent source/basis limits
+and do not claim full economic reconciliation. Institutional alternatives need
+not block the core release. The confirmed #347/#348 financial implementation
+defects are already fixed and shipped. No new financial implementation defect
+is established by this follow-up; open governed questions are not closed by
+passing conformance. This is sequencing advice, not5.0 release preparation.

@@ -103,6 +103,63 @@ cost. Authority-specific bridges address adopter needs while requiring evidence
 that the current public accounting schedules do not fully supply. None is
 selected or represented as an owner-approved convention.
 
+## Integrator recommendation for owner review — 2026-10-15
+
+**Proposed direction, not an accepted decision:** prefer explicit comparability
+assertions, with a separate observation-rounding bridge where justified. Keep
+canonical RevPAR and every current metric formula unchanged. Universal revenue
+equality would conflate independently meaningful actual, forecast, benchmark
+and reconstructed figures; disclosure alone remains the compatible fallback
+until the proposed relationship is accepted.
+
+The proposed basis binds each assertion to exact source variants/revisions and
+identifies: period start/end with endpoint convention; actual/forecast status
+and as-of/cutoff; modeling scenario; currency and eligible room-revenue scope;
+available and occupied/eligible sold room-night populations; occupancy definition;
+and input precision/rounding authority. A single frontmatter scenario or equal
+numerical product cannot establish that these dimensions match. Field names,
+closed vocabularies, requiredness and new findings remain unselected.
+
+| Figure/basis | Recommended proposed treatment |
+|---|---|
+| Reported actual revenue and room-night observations | Use actual eligible populations and declared input precision. Compare observed ADR with reported eligible revenue/eligible occupied nights, and observed occupancy with occupied/available nights, at the declared observation precision |
+| Full-precision forecast assumptions | Where the same basis is explicitly asserted, compare the forecast chain using its authored inputs and established metric quantization. No new tolerance or hidden reconstruction is implied |
+| Benchmark/comp-set observation | Preserve its own period, eligibility and authority. Do not bind it to subject NOI or infer actuals from it |
+| Reconstructed revenue | Identify it as ADR × occupancy × available nights under the current dictionary, rather than silently replacing reported NOI room revenue |
+| Different period/status/scope/population | No same-basis equality claim, even when the product happens to agree |
+| Missing basis, source, input or unresolvable variant | Relationship not verified; no zero/default/fallback substitution. Define opt-in applicability and unsupported handling before implementation |
+
+Comparability assertions would not reroute current metric reads or override
+explicit calculation contexts and existing generic variant resolution. The
+assertion's source identities/revisions must match the inputs actually read;
+matching a different variant does not verify the displayed result. A mismatch
+of context is a basis/applicability question, not permission to recompute
+canonical RevPAR from another numerator.
+
+For rounded actual observations, prefer verifying the reported observations back
+against their declared revenue/count sources over inventing a currency tolerance
+for multiplying rounded inputs. The existing deterministic example (1,000,000
+reported revenue over6,000 occupied nights; cent ADR166.67 reconstructs1,000,020)
+shows why product equality is insufficient. This proposed bridge requires owner
+approval of rounding authority/precision; it is not a rule already supplied by
+Protocol VIII.5. Full-precision modeled inputs and rounded observed inputs must
+not be silently interchanged.
+
+Zero occupancy with positive supply can produce zero reconstructed revenue only
+when the other required inputs exist. Canonical RevPAR still uses reported
+room revenue/supply. Zero supply retains the existing division refusal; absent
+ADR remains absent rather than inferred zero. Current CC-HOSP-04 still forbids
+an ADR/occupancy fallback for canonical RevPAR. No comparison may merge failed,
+missing and unverifiable states.
+
+A universal equality changes old verdicts. New comparability/basis representation
+and opt-in verification need explicit capability/profile applicability, schema
+compatibility and migration; they cannot be hidden in a package patch. Any
+USALI/STR/program compliance bridge additionally needs the exact authority,
+edition/effective date, revenue inclusions/exclusions and eligible supply/sales
+schedules. Detailed current USALI accounting schedules remain unverified in
+this audit; no institutional convention is invented to fill them.
+
 ## Unresolved questions
 
 - Which comparability assertion, if any, belongs to the global format?
