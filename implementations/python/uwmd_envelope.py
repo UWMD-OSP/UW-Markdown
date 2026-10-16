@@ -7,7 +7,8 @@ import hashlib
 import re
 
 from uwmd_jcs import CanonicalizationError, canonicalize
-from uwmd_reader import APPEND, PARALLEL, _superseded
+from uwmd_reader import APPEND, PARALLEL
+from uwmd_source_lifecycle import source_superseded as _superseded
 from uwmd_text import trim
 
 

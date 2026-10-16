@@ -28,6 +28,16 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Add independent Python standalone reserve-draw binding verification under
+  accepted §VIII.12: exact source identities, complete selected reserve variants,
+  closed cash-flow/lease-up source structure, declared funded shares and ordered
+  binary64 allocations at the existing currency quantum. Retain finite evidence
+  and refusal precedence. Preserve the original whole-Envelope digest and fix
+  annotation-only superseded history without injecting source JSON or changing
+  Reader projection. Exercise all 46 unchanged binding cases through shared
+  subprocess/comparison code; discovery remains parse-only without broader calc,
+  tier, receipt or authentication claims. No normative or version changes.
+
 - Add independent Python standalone reserve-account verification with complete
   Envelope 1.0 semantic SHA-256/JCS source digests, closed source-attributable
   structure, ordered binary64 balances and explicitly claimed continuity at

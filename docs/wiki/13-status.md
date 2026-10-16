@@ -1,5 +1,27 @@
 # 13 — Build status (living document)
 
+**Latest Python milestone — reserve accounts merged; reserve-draw bindings.**
+PR #364 merged as `b733127df50962469b7f08936ae2bd6de3e46747`, with the
+reviewed standalone §VIII.11 reserve verifier, independent Envelope/JCS digest
+prerequisite, 91 Python controls, 28 direct shared reserve cases and separately
+reported Reader 17/17. Exact-main CI
+[38924242203](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38924242203)
+succeeded: all 17 ordinary checks passed; optional publication verification
+skipped.
+
+The bounded continuation implements accepted §VIII.12 reserve-draw bindings:
+exact nullable source identities, selected-variant full reserve checks, closed
+CF/lease-up structural sources and ordered allocations at the existing quantum.
+Its 103-method suite retains all prior controls and adds the 46 unchanged direct
+shared binding cases. Discovery stays parse-only; no expression evaluator, full
+validation, tier, receipt or authentication claim is added. The prerequisite
+fence-only superseded-history projection fix preserves source content and the
+existing Reader projection. [Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365)
+separately tracks the unresolved extension-map/Envelope shape boundary. #357 and
+#335 remain drafts, with all owner-controlled decisions preserved. Older
+checkpoint statements below describe their stated historical heads.
+
+
 **2026-10-15 — independent Python foundation merged; narrow reserve verification.**
 PR #358 merged as `24ae8f49664a9291f097bd5bebba1c41990c3e66`. Exact-main
 CI [38862722485](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38862722485)
