@@ -118,7 +118,9 @@ def _mapping_entry(text: str) -> tuple[str, str, int]:
         key, token = _scalar(text[:end])
         if token is not None or not isinstance(key, str) or not key:
             raise FrontmatterError("mapping key must be a simple string")
-    if not key or end + 1 < len(text) and text[end + 1] not in " \t":
+    # An empty quoted scalar is a valid string key. Bare empty/non-string
+    # keys have already refused above; do not conflate those source forms.
+    if end + 1 < len(text) and text[end + 1] not in " \t":
         raise FrontmatterError("invalid YAML mapping delimiter")
     start = end + 1
     while start < len(text) and text[start] in " \t":

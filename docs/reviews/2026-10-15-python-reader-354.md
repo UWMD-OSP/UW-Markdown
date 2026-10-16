@@ -78,6 +78,13 @@ offsets separately from binary64 values. `1.2300`, `1e-6`, `-0` and
 `9007199254740993` are not reconstructed from float formatting. Multibyte
 characters before a number cannot move its source span.
 
+The final string-key review reproduced an unjustified empty-key refusal:
+the expanded quoted-key test failed before correction, then passed after the
+decoder admitted empty quoted keys at both mapping levels. Quoted `#`-leading
+and embedded-colon keys remain strings; empty-key numeric pointers (`/` and
+`/nested/`) retain exact spans/precision. Bare empty or non-string-resolving keys
+remain refused without choosing the separately unresolved key-coercion policy.
+
 Appendix D retains YAML 1.2 scalar meaning. The decoder follows the
 [Core tag-resolution table](https://yaml.org/spec/1.2.2/#1032-tag-resolution):
 unsigned octal/hex spellings resolve numerically; signed prefixed spellings
