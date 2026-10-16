@@ -24,6 +24,11 @@ protocol, and each package each carry an independent semver).
 
 ### Documentation
 
+- Refine the approval-gated agent-product retirement proposal with exact public
+  exports, browser facets, governed Format references, command refusals,
+  downstream consumers and asset support decisions. No public removal or
+  normative change is approved or implemented.
+
 - Architecture cleanup reconciles RFCs 0078/0083 and Issue #355 with the
   current exports and source. Documents UWMD/StackUW ownership, inventories
   agent product surfaces separately from provenance and interoperability,
