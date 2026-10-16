@@ -1,0 +1,233 @@
+{
+  "status": "unaccepted-design-evidence-not-conformance",
+  "baseline": "fbbd1a7704f5c7df20e633e9123273b7dcc4ac43",
+  "candidate_label": "E_NEXT is a design placeholder, not an admitted wire version",
+  "scope": "ASCII member names and strings, null, booleans, empty containers and integer 1 only; not a general JCS implementation or financial evidence",
+  "vectors": [
+    {
+      "name": "historical-empty",
+      "semantic_value": {
+        "envelope_version": "1.0",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "rfc-0089-synthetic",
+          "deal_name": "Extension representation evidence"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {},
+        "superseded": {}
+      },
+      "canonical_utf8": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"1.0\",\"extensions\":{},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"rfc-0089-synthetic\",\"deal_name\":\"Extension representation evidence\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "sha256": "sha256:f5beb1161b4b5fd740de62e696f4250d378341faf670df22b375bb96ac94eb1b"
+    },
+    {
+      "name": "candidate-empty",
+      "semantic_value": {
+        "envelope_version": "E_NEXT",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "rfc-0089-synthetic",
+          "deal_name": "Extension representation evidence"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {},
+        "superseded": {}
+      },
+      "canonical_utf8": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"E_NEXT\",\"extensions\":{},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"rfc-0089-synthetic\",\"deal_name\":\"Extension representation evidence\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "sha256": "sha256:2e6b1d662d193a3e8e0db57cf58e2316baff0513867974151013e8a4d3da6c03"
+    },
+    {
+      "name": "candidate-single",
+      "semantic_value": {
+        "envelope_version": "E_NEXT",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "rfc-0089-synthetic",
+          "deal_name": "Extension representation evidence"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_review": {
+            "mode": "single",
+            "block": {
+              "annotation": {
+                "section": "x_review",
+                "variant": "default"
+              },
+              "content": {
+                "_meta": {
+                  "section": "x_review",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "reviewer",
+                    "timestamp": "2026-10-16T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                },
+                "note": "synthetic"
+              }
+            }
+          }
+        },
+        "superseded": {}
+      },
+      "canonical_utf8": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"E_NEXT\",\"extensions\":{\"x_review\":{\"block\":{\"annotation\":{\"section\":\"x_review\",\"variant\":\"default\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"reviewer\",\"source\":\"manual\",\"timestamp\":\"2026-10-16T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_review\"},\"note\":\"synthetic\"}},\"mode\":\"single\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"rfc-0089-synthetic\",\"deal_name\":\"Extension representation evidence\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "sha256": "sha256:2da09d70a50e2224427d889b22c6d74cb2cd577f9c35812406c95e8e62660d03"
+    },
+    {
+      "name": "candidate-one-peer",
+      "semantic_value": {
+        "envelope_version": "E_NEXT",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "rfc-0089-synthetic",
+          "deal_name": "Extension representation evidence"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_review": {
+            "mode": "variants",
+            "blocks": [
+              {
+                "variant": "default",
+                "block": {
+                  "annotation": {
+                    "section": "x_review",
+                    "variant": "default"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_review",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "reviewer",
+                        "timestamp": "2026-10-16T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "note": "synthetic"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "superseded": {}
+      },
+      "canonical_utf8": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"E_NEXT\",\"extensions\":{\"x_review\":{\"blocks\":[{\"block\":{\"annotation\":{\"section\":\"x_review\",\"variant\":\"default\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"reviewer\",\"source\":\"manual\",\"timestamp\":\"2026-10-16T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_review\"},\"note\":\"synthetic\"}},\"variant\":\"default\"}],\"mode\":\"variants\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"rfc-0089-synthetic\",\"deal_name\":\"Extension representation evidence\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "sha256": "sha256:9c06f2272c1b3ee7a3d3d79666507fe0a9be6432686df35a5a41c85af3957a79"
+    },
+    {
+      "name": "candidate-mixed",
+      "semantic_value": {
+        "envelope_version": "E_NEXT",
+        "format_version": "3.0",
+        "frontmatter": {
+          "uw_version": "3.0",
+          "deal_id": "rfc-0089-synthetic",
+          "deal_name": "Extension representation evidence"
+        },
+        "sections": {},
+        "pipeline_log": [],
+        "custom_calculations": [],
+        "custom_scenarios": [],
+        "extensions": {
+          "x_review": {
+            "mode": "variants",
+            "blocks": [
+              {
+                "variant": null,
+                "block": {
+                  "annotation": {
+                    "section": "x_review"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_review",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "reviewer",
+                        "timestamp": "2026-10-16T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "note": "synthetic",
+                    "_role": "primary"
+                  }
+                }
+              },
+              {
+                "variant": "default",
+                "block": {
+                  "annotation": {
+                    "section": "x_review",
+                    "variant": "default"
+                  },
+                  "content": {
+                    "_meta": {
+                      "section": "x_review",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "reviewer",
+                        "timestamp": "2026-10-16T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    },
+                    "note": "synthetic"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "superseded": {}
+      },
+      "canonical_utf8": "{\"custom_calculations\":[],\"custom_scenarios\":[],\"envelope_version\":\"E_NEXT\",\"extensions\":{\"x_review\":{\"blocks\":[{\"block\":{\"annotation\":{\"section\":\"x_review\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"reviewer\",\"source\":\"manual\",\"timestamp\":\"2026-10-16T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_review\"},\"_role\":\"primary\",\"note\":\"synthetic\"}},\"variant\":null},{\"block\":{\"annotation\":{\"section\":\"x_review\",\"variant\":\"default\"},\"content\":{\"_meta\":{\"lifecycle\":{\"revision\":1,\"superseded\":false},\"provenance\":{\"actor\":\"reviewer\",\"source\":\"manual\",\"timestamp\":\"2026-10-16T00:00:00Z\"},\"quality\":{\"confidence\":\"high\",\"human_review_required\":false},\"section\":\"x_review\"},\"note\":\"synthetic\"}},\"variant\":\"default\"}],\"mode\":\"variants\"}},\"format_version\":\"3.0\",\"frontmatter\":{\"deal_id\":\"rfc-0089-synthetic\",\"deal_name\":\"Extension representation evidence\",\"uw_version\":\"3.0\"},\"pipeline_log\":[],\"sections\":{},\"superseded\":{}}",
+      "sha256": "sha256:618f1ab9e45b9db190beaa91415700d14ca68040748d459db3d3fb886aa9ce6a"
+    }
+  ]
+}
