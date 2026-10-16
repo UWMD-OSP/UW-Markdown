@@ -371,6 +371,16 @@ conformance. It does independently show that a stamp-only change moves an
 extension-free subject and that one-peer `single` and `variants` have different
 subjects even with the same underlying block.
 
+The [read-only current-contract proof](https://github.com/UWMD-OSP/UW-Markdown/blob/ea7f83c30da38e4af84abd031832a8026b108cc6/experiments/envelope-0089/README.md#current-envelope1-admission-proof-separate-from-candidate-design)
+separately exercises unchanged Envelope1 schemas and the existing verified-JSON
+decoder. Ten controls isolate current version, block-shape and received-digest
+refusals; tagged entries cannot become legal1.0 blocks by relabelling their stamp.
+Unknown members remain allowed: their missing required block fields cause this
+shape refusal. Five low-level canonical/hash comparisons also pass, but those
+helpers do not perform version/shape admission. Hash agreement is not codec
+support. This proof adds no candidate validator or live fixture and exercises
+no signature/receipt state machine or XML/CSV decoder.
+
 Once the owner approves a design, each proposed positive fixture must specify
 (1) original synthetic source(s), (2) the independently authored complete model,
 (3) exact canonical UTF-8 and digest, (4) expected JSON/XML/CSV decoding, and
