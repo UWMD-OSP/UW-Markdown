@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Decode quoted YAML frontmatter string keys and locate mapping separators
+  without splitting quoted or plain key content. Preserve quoted sequence
+  literals and apply existing document-signing duplicate/unsafe-key guards to
+  decoded member paths. No bare non-string key policy or financial formula
+  changes; release preparation must assess affected semantic signing subjects.
+
 - Chat DCF rows display their authored `year` instead of their array position.
   Reordered, sparse and duplicate years remain in source order; missing years
   display `n/a`. The reviewed starter rendering expectation changes two labels
