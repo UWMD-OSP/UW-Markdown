@@ -652,3 +652,26 @@ lease-up projection tests also assert that incorrect statements cannot seed a
 dated series. These regression tests use the shared Protocol VIII.5 quantizer;
 no tolerance, metric definition or normative fixture is changed. They belong
 to `packages/uwmd-verify/src/{capital-stack,lease-up,lease-up-cash-flows}.test.ts`.
+
+## Independent Python foundation
+
+`implementations/python` currently advertises parse only, with no tier or
+Verifier certification. Its standard-library unit controls and genuine external
+portable Reader run remain separate: 74 unit methods and 17 portable Reader
+cases on the latest locally checked Windows tree. Unit tests include the nine
+nonportable Reader-owned refusal fixtures and fifteen payload-level VIII.2a
+period controls. The latter preserve same-day cash-flow rows under RFC 0062 and
+exercise PS-01/PS-02 without claiming complete validation or portable Verifier
+passes. Fifteen further expression controls check grammar/immutable ASTs and
+static references: all 97 frozen calc formulas parse, and all 171 dictionary
+declarations reproduce their declared input-path sets without evaluating any
+formula. The frozen module parse refusal and period-path structural refusal
+exercise only their grammar/reference prerequisites. The implementation's
+syntax-only blocked-reference inventory flags member spellings for future safe
+traversal without rejecting valid grammar or claiming a runtime verdict. Its
+separate static reference check validates registered period identity without
+source lookup. Role/variant resolution, expression evaluation,
+PS-03 and financial verification remain separate missing work. CI retains exact-head portable
+Reader manifests on three operating systems. See the
+[Python README](../../implementations/python/README.md) and
+[requirement inventory](../reviews/2026-10-15-python-reader-354.md).

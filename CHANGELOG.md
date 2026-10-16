@@ -33,6 +33,19 @@ protocol, and each package each carry an independent semver).
   downstream consumers and asset support decisions. No public removal or
   normative change is approved or implemented.
 
+- Add independent Python restricted-frontmatter parsing and structured Reader
+  projections, preserving the existing numeric/source seed and tests. The
+  Node-free CLI passes 17 portable Reader cases with zero skips; 74 unit methods
+  pass, including 15 new payload-level period identity/inspection controls.
+  Partial PS-01/PS-02 evidence and exact row selection preserve the same-day
+  cash-flow exception without adding a validation/calculation capability.
+  Add immutable safe-expression ASTs and syntax-only reference checks, with 15
+  further controls covering 97 frozen calc formulas, the existing module parse
+  refusal and exact static input sets for 171 dictionary declarations. No formula
+  evaluation or metric reproduction is claimed by these structural checks.
+  Its manifest remains partial parse-only, without a Reader/Verifier tier
+  or financial-verification claim. Three-OS CI retains portable result artifacts.
+
 - Architecture cleanup reconciles RFCs 0078/0083 and Issue #355 with the
   current exports and source. Documents UWMD/StackUW ownership, inventories
   agent product surfaces separately from provenance and interoperability,
