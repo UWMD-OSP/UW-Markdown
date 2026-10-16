@@ -1,5 +1,15 @@
 # 13 — Build status (living document)
 
+**Representation design — Issue #365 remains unapproved.** The requested
+[intake is preserved in the existing Reader review](../reviews/2026-10-15-python-reader-354.md#2026-10-16--issue-365-joint-representation-rfc-intake).
+[Draft RFC 0089](../rfcs/0089-lossless-extension-envelope.md) proposes a minimal
+versioned tagged extension entry, explicit identity handling, cross-codec and
+commitment/version consequences, and a future conformance matrix. This is a
+joint normative representation problem, not a Python-specific defect. The shape,
+mixed-identity clarification and release placement are owner decisions. No live
+Envelope, schema, digest, receipt, fixture, version or RFC acceptance change.
+RFCs0085/0088 stay separate; public5.0 remains reserved for launch.
+
 **Latest Python milestone — replacement funding merged; bounded block integrity.**
 PR #367 merged as `fbbd1a7704f5c7df20e633e9123273b7dcc4ac43`, with the
 reviewed §V.12 replacement verifier, 119 Python controls, 71 explicitly adapted
