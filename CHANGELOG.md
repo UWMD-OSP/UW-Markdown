@@ -84,6 +84,11 @@ protocol, and each package each carry an independent semver).
   Its manifest remains partial parse-only, without a Reader/Verifier tier
   or financial-verification claim. Three-OS CI retains portable result artifacts.
 
+- Draft RFC0088 records reproduced cross-runtime financial power, IRR and
+  quantized-result digest disagreement (#356), independent Python numeric
+  investigation and the narrower #355 assurance scope. No normative arithmetic,
+  conformance expectation, receipt identity or RFC acceptance changes.
+
 - Architecture cleanup reconciles RFCs 0078/0083 and Issue #355 with the
   current exports and source. Documents UWMD/StackUW ownership, inventories
   agent product surfaces separately from provenance and interoperability,
