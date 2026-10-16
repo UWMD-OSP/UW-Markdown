@@ -141,6 +141,165 @@ the accepted procedure, not whichever host generated the stress input. The
 concrete candidate above is intentionally narrower than a complete replacement
 numeric contract.
 
+### 6. Concrete owner decision proposal
+
+This section is a **decision-ready recommendation**, not an accepted numerical
+revision. The choices below narrow the remaining work; choosing a direction does
+not fill an unspecified kernel or authorize implementation. No option is selected
+by merging investigation evidence while the RFC remains `draft`.
+
+| Decision | Concrete alternatives | Recommendation and consequence |
+|---|---|---|
+| D1: Guarantee | One exact result/refusal for each admitted input and ordered procedure; or allow multiple answers within an explicit error envelope | Retain one exact result/refusal. Reported-value equality alone is insufficient at quantization ties, and an error envelope would require new comparison/digest semantics. Do not promise that every financial formula is a correctly rounded evaluation of its entire real-valued expression. |
+| D2: Positive integer powers | Sequential multiplication; fixed exponentiation-by-squaring graph; or a correctly-rounded power primitive | Prefer the correctly-rounded primitive for both integer and fractional powers, subject to feasibility evidence. It avoids introducing an integer-only accumulated-error convention. Sequential discount factors remain an explicit alternative, not an optimization interchangeable with that primitive. |
+| D3: Negative powers | Reciprocal of positive product; product of reciprocals; scaled integer procedure; or the same range-safe correctly-rounded primitive | Prefer the same primitive; reject universal reciprocal-of-positive-product because of the demonstrated lost subnormal. A scaled procedure is a viable separately specified fallback if the kernel recommendation proves impractical. |
+| D4: Transcendentals | Fully specified portable approximation algorithm/version; or correctly-rounded mathematical contract with demonstrated implementations | Prefer a correctly-rounded primitive contract for `pow`, `log` and `exp`, with independent implementation evidence. No library has yet been selected or demonstrated to satisfy this full contract. A pinned approximation is acceptable only as a new, explicitly different proposal with error/range evidence. |
+| D5: Financial graphs | Preserve current closed-form associations and zero branches; or adopt stability-oriented `log1p`/`expm1`/rearranged formulas | First pin the existing graphs below, replacing only primitive dependencies if approved. Consider stability changes separately after measuring cancellation. Do not silently widen solver domains or call tiny rates zero. |
+| D6: Range and resources | Admit the present finite input domain with bounded kernel implementation; or specify narrower admitted domains and exact refusals | Prefer preserving the presently admitted domain where practicable. Any necessary restriction needs an explicit affected-input table and owner approval; the experimental 10,000-step cap is not a limit proposal. Do not mistake the existing AST-node budget for a bound on work inside one builtin. |
+| D7: Compatibility | Governed Protocol revision and new engine version with existing receipt wire semantics; or introduce a separately versioned procedure selector/receipt mechanism | Prefer a governed Protocol revision and new verifier engine version, preserving receipt wire/signature subjects unless measured migration needs prove insufficient. Exact revision numbers and supported historical verification paths remain an owner decision. No hidden same-version procedure replacement. |
+| D8: Evidence | TS-only or host-power agreement; or frozen vectors plus genuinely independent implementations and platform coverage | Require frozen independent TS/Python evidence, corpus impact and actual scoped spreadsheet recalculation before claiming the corresponding guarantees. A runtime-pinned reference release alone does not close #356. |
+
+#### Immediate owner direction versus engineering completion
+
+The eight rows above separate consequences; they are not eight requests to
+approve unspecified algorithms. The immediate architectural choice is whether
+to develop the recommended single exact-result contract with range-safe
+correctly-rounded primitives, or instead develop a completely pinned ordered
+approximation such as bounded sequential discounting. Preserve the current
+quantizer and solver structure in either proposal; tolerance-based verification
+would be a separate compatibility alternative, not an implementation shortcut.
+A second owner choice is whether stability-oriented financial rearrangements
+belong in this same revision; recommend holding them separately. A third is the
+migration policy: recommend existing receipt wire/signature subjects with an
+explicitly versioned numerical contract and new verifier engine version; exact
+activation and historical support follow measured impact, not a version assigned
+in this draft. These direction choices do not accept the RFC.
+
+Kernel selection, complete domains/refusal points, resource evidence and frozen
+independent vectors are engineering completion work. Return a concrete restriction
+for approval only if preserving today's admitted domain proves impractical; do
+not ask the owner to approve an unspecified cap. The established request for
+independent evidence is not permission to choose an algorithm from whichever
+runtime wins a comparison.
+
+Native spreadsheet power/logarithm functions must be tested against the selected
+contract rather than presumed interchangeable with its primitives. Identify the
+supported workbook formulas, actual recalculation engine/version and any live
+formula versus retained-literal limitations before advertising parity. If a
+selected procedure cannot be reproduced through an existing export path, return
+that precise compatibility impact for review; do not silently redefine the
+financial metric, substitute a cache for independent recalculation, or broaden a
+limited spreadsheet observation into a universal Excel guarantee.
+
+#### Candidate primitive meaning and unresolved cases
+
+For the recommended alternative, let `B(op)` mean one IEEE754 binary64 basic
+operation rounded to nearest, ties to even, without contraction, excess-precision
+retention, flush-to-zero or reassociation. Input decimal conversion and final
+VIII.5 quantization remain separate boundaries. Let `P(x,y)`, `L(x)` and `E(x)`
+mean the correctly-rounded binary64 values of their respective mathematical
+power, natural-log and exponential functions over their **explicitly admitted
+real domains**. Correct rounding is a semantic requirement, not permission to
+implement `P` as `E(B(y*L(x)))` or to use any host libm without proof.
+
+This notation alone is not a complete replacement contract. Before acceptance,
+the domain table must enumerate finite input requirements, null/type propagation,
+positive and negative zero, `0^0`, zero with negative exponents, negative bases
+with integer versus fractional exponents, log boundaries, infinity/NaN results,
+gradual underflow and signed-zero results. It must distinguish a correctly rounded
+zero after genuine underflow from zero caused by an overflowing intermediate.
+The evidence does not yet justify a particular library, its hardest rounding
+cases or a universal runtime/resource bound. Do not substitute a tolerance for
+that missing evidence. Existing null/error behavior outside the agreed change
+must remain explicit, rather than being inherited accidentally from a kernel.
+The scope manifest must also close over `sqrt` and each affected optional-profile
+primitive; deciding three transcendental functions alone does not establish a
+whole-Verifier or whole-profile numerical guarantee. Unimplemented optional
+profiles must remain unclaimed rather than being counted as tested.
+
+A sequential alternative needs a different exact definition: multiplication
+order, exponent domain, maximum work, negative-base parity, overflow/underflow
+behavior and every refusal point. Computing a stream's successive positive
+discount factors once may avoid quadratic repeated work, but is equivalent to
+restarting from one only where the specified intermediate/refusal graph proves
+it. A low-level numeric recurrence or kernel is not an iterative financial
+solver; acceptance must explicitly reconcile VIII.3's existing iteration wording.
+
+#### Candidate financial operation graphs for review
+
+The following preserves current reference associations as a **proposal**; the
+normative financial-name table does not itself establish all of them. `B`
+applies to each displayed basic operation, source flows accumulate left to right,
+and omitted `fv`/`pv` arguments mean zero only where the builtin already defines
+that optional argument. These expressions are not a mandate to generate debt
+schedules, select underwriting assumptions or produce a model.
+
+| Function | Exact candidate graph, subject to domain/error approval |
+|---|---|
+| Periodic NPV | `b=B(1+r)`; for index `t=0..n-1`, `d=P(b,t)`, `term=B(flow[t]/d)`, `sum=B(sum+term)` starting at positive zero. |
+| IRR | Existing bracket/endpoints/bisection/tolerances/200-step refusal, using the candidate NPV graph; preserve current multiplication sign tests and midpoint associations. No Newton step, flow normalization or outside-bracket fallback. |
+| PMT | If `r==0`, `B(pv/n)`; otherwise `b=B(1+r)`, `d=P(b,-n)`, `den=B(1-d)`, result `B(B(pv*r)/den)`. |
+| FV | If `r==0`, `B(pv+B(pmt*n))`; otherwise `g=P(B(1+r),n)`, `a=B(pv*g)`, `c=B(B(pmt*B(g-1))/r)`, result `B(a+c)`. |
+| PV | If `r==0`, `B(B(pmt*n)+fv)`; otherwise `d=P(B(1+r),-n)`, `a=B(B(pmt*B(1-d))/r)`, `c=B(fv*d)`, result `B(a+c)`. |
+| NPER | If `r==0`, `B(B(pv-fv)/pmt)`; otherwise `a=B(pmt-B(fv*r))`, `b=B(pmt-B(pv*r))`, `q=B(a/b)`, `den=L(B(1+r))`, result `B(L(q)/den)`. Retain closed form; no iterative amortization search. |
+| XNPV | Existing integer day count divided last into binary64 `t`; `b=B(1+r)`, `term=B(amount*P(b,-t))`, left-to-right binary64 sum. Do not replace multiplication by division, even at integer-looking `t`. |
+| XIRR | Existing VIII.9.3 solver, using the candidate XNPV graph; no native Excel solver substitution. |
+
+Domains and error timing are a separate acceptance item. In particular, PMT's
+current source rejects zero periods but does not actually reject every negative
+period; the error's “n must be >0” prose is not evidence of a complete normative
+domain. Do not classify a fractional-period observation as an ordinary mortgage
+counterexample or silently make periods positive integers. Specify admitted
+negative/fractional periods for each annuity builtin, the `r<=-1` cases and real
+solution conditions, and nonfinite intermediate versus final-value handling.
+IRR/XIRR's pinned bracket-failure and exact endpoint behavior remain their own
+rules, not generic primitive-error defaults. Preserve the distinction between
+an asserted result the pinned procedure refuses and inputs that cannot be
+verified; selecting a kernel must not silently reclassify either verdict.
+
+A correctly-rounded primitive does not remove cancellation in `1+r`, `1-d`,
+`g-1` or the log quotient. For example, a sufficiently small nonzero `r` may make
+`B(1+r)==1`; taking the zero-rate branch based on that comparison would change
+the graph. Preserve the exact `r==0` branch in the initial proposal, measure these
+cases, and return the approved refusal when the procedure cannot return a finite
+value. Any stabilized alternative requires a separate explicit graph, accuracy
+objective and impact table. It cannot be smuggled in as an implementation of the
+same ordered expression.
+
+### 7. Acceptance checkpoints versus implementation gates
+
+1. **Owner direction checkpoint:** choose D1–D8 or request an explicit alternative.
+   This authorizes completing a selected proposal, not implementation or changing
+   RFC status. The recommendation is exact ordered results with range-safe
+   correctly-rounded primitives, preserved financial graphs and receipt wire
+   format/signature subjects, pending the evidence and domain decisions described above.
+2. **RFC acceptance checkpoint:** return one complete primitive/domain/error and
+   resource contract, selected kernel or implementable correctly-rounded strategy,
+   admitted annuity domains, special-case table, exact financial graphs, numeric
+   boundary/quantization rules, affected-contract manifest and receipt migration.
+   No “TBD kernel” or host-dependent escape hatch may remain in the normative
+   guarantee. The owner explicitly accepts that complete revision under governance.
+3. **Implementation and evidence gate:** only after acceptance, implement the
+   chosen contract in independent TS/Python paths; add approved conformance cases;
+   measure every changed result/refusal over existing corpus and supported
+   consumers; run package/receipt/Excel gates. Merging this evidence-only draft
+   neither opens this gate nor changes any conformance expectation.
+4. **Claim/publication gate:** require the actual independent-platform evidence
+   for every advertised scope, owner-approved compatibility/version activation
+   and release authorization. Documentation can disclose current limitations in
+   the meantime. No 5.0 preparation, acceptance or publication follows implicitly.
+
+Frozen evidence must identify exact input bytes and their hash, binary64 operand
+and expected-result encodings (including signed zero/subnormal cases), declared
+precision and expected public result/refusal, operation-graph/kernel revision,
+independent oracle derivation, and tested runtime/OS/architecture. Include the
+existing observed differences as counterexamples, not answers selected by a
+majority of hosts. Independently establish hard rounding cases with justified
+bounds; the current 100-digit diagnostic is not a universal correct-rounding
+proof. Keep raw primitive vectors, composed financial graphs, final quantization,
+public assertions and receipt digests as separate layers so one agreeing digest
+does not hide an untested branch or refusal.
+
 ## Compatibility analysis
 
 - **Reader / source identity:** parsing, original payloads, source bytes, block
@@ -171,6 +330,30 @@ numeric contract.
   and identify supported verification histories. Do not rewrite conformance to
   bless one host's observations. Timing remains owner-controlled; no 5.0 release
   preparation is authorized.
+
+### Receipt compatibility cases to approve and demonstrate
+
+A new numerical procedure needs a new `@uwmd/verify` engine **version**, not an
+invented engine name or runtime identity field. Exact dependent pins and receipt
+fixture changes belong to the later approved implementation/release work. A
+Protocol change also needs an explicit source/module compatibility plan under
+the current supported-version policy; merely incrementing a package does not
+amend the normative contract.
+
+| Reverification case | Existing-rule consequence to preserve / required evidence |
+|---|---|
+| Original source bytes, payload hashes or document signature | Numerical changes do not rewrite them. Preserve the original artifacts and verify their existing subjects independently of recomputation. |
+| Receipt format/digest/signature fails an earlier check | Preserve that existing precedence; a new engine must not turn damaged or invalidly signed evidence into an RCP-07 escape. |
+| Same engine identity, changed-runtime recomputation disagrees | Existing different-engine RCP-07 does not cover this demonstrated problem. Disclose it; do not retroactively change the stored identity or infer an original runtime from its version. |
+| Different engine versions, recomputation agrees | Version difference alone does not establish unverifiability; follow existing receipt checks. |
+| Different engine versions, recomputation disagrees | Apply existing RCP-07 subject to preceding checks; distinguish authenticated original receipt evidence from independently reproduced financial results. |
+| Archived old evaluator used for historical reproduction | Record exact evaluator/runtime evidence separately. It can reproduce a chosen environment but cannot prove the old host-power contract was portable. Do not add automatic fallback or claim historical identity without this evidence. |
+
+Recommend retaining the current receipt wire format initially. If supporting two
+numerical regimes requires a selector or schema change after compatibility
+measurement, return that precise contract for separate owner approval. No
+historical receipt may be reissued or rewritten solely to remove a disagreement;
+newly issued evidence must be distinguishable from the original.
 
 ## Conformance impact
 
@@ -232,10 +415,12 @@ The Python numeric oracle is an experiment, not an alternative accepted solver.
 
 ## Unresolved questions
 
-1. Choose the numerical guarantee and complete integer/negative/fractional/log/exp
-   contract, including accuracy objectives versus reproducible operation order.
-2. Approve exact domains/resource bounds/error behavior where the current text is
-   incomplete; confirm whether stronger correctness requires dependency choices.
+1. Resolve D1–D8 at the owner direction checkpoint (§6), including whether to
+   prefer correctly-rounded primitives over sequential integer discounting.
+   This chooses proposal development, not RFC acceptance.
+2. At the separate acceptance checkpoint (§7), approve a complete kernel,
+   special-case/domain/resource/error table and financial graphs. The recommended
+   primitive contract is not complete until these details and evidence exist.
 3. Choose compatibility activation and versioning after measurements, including
    historical receipt verification support. No old receipt may be rewritten.
 4. Approve independent-platform and spreadsheet evidence required for advertised
