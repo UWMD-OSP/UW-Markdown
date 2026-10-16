@@ -313,7 +313,7 @@ same ordered expression.
 
 #### Executable dispatch and graph alternatives — still unaccepted
 
-The isolated [power procedure lab](../../experiments/numerical-0088/power-procedures/README.md)
+The isolated [power procedure lab](https://github.com/UWMD-OSP/UW-Markdown/blob/c45539d768f85126691c748ab3a8d704399d3a19/experiments/numerical-0088/power-procedures/README.md)
 now freezes 40 binary64 operand pairs and compares three fully ordered integer
 graphs: sequential products with reciprocal last, binary squaring with reciprocal
 last, and binary squaring with reciprocal first. All round each basic operation
