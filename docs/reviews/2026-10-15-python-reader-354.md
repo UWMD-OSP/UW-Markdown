@@ -374,3 +374,21 @@ A bounded RFC/implementation should cover only the chosen representation correct
 7. Whole-source reserve/binding digest behavior, stale binding refusal without arithmetic, and untouched separate block/row/result commitments. No financial convention or experimental numerical kernel activation.
 
 This original intake changed no source files, normative text, RFC state, PR/issue or public branch. Its publication and draft RFC are documentation-only follow-ups; this evidence section does not adopt their proposal. The separate final #366 code review examined exact head `deebe48ce697b787c763b033e614763f8937f73c` and reported no material defect; completed prior test and numerical investigations were not repeated.
+
+### 2026-10-16 — Draft RFC 0089 candidate refinement (not acceptance)
+
+The separate [draft RFC 0089](../rfcs/0089-lossless-extension-envelope.md) now
+spells candidate source-to-mode rules, exact null/string identity, canonical
+peer ordering, JSON/XML/CSV mapping examples and positive/negative/cross-version
+fixture procedures. Its [small frozen preimage experiment](../../experiments/envelope-0089/README.md)
+contains five synthetic subjects checked independently with Python and Node.
+It demonstrates stamp-only digest impact and one-peer mode identity in a bounded
+ASCII/integer domain; it does not establish general JCS, codec or signature
+conformance, change current admission, or implement the candidate. Current CSV
+extension descriptors use null; the proposed new mapping explicitly changes
+current extension rows to exact annotation identity and keeps historical row
+semantics separate. Receipt RCP-10 still requires digest disagreement as well as
+version difference; document-signature shape/version/source checks retain their
+accepted precedence. The owner has not accepted the tagged design, mixed
+null/default admission or any version/release allocation. All current normative
+artifacts and historical expectations remain unchanged.

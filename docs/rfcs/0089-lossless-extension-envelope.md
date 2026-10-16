@@ -71,7 +71,10 @@ interface UWExtensionVariant {
 // extensions: Record<string, UWExtensionEntry>;
 ```
 
-Both wrapper alternatives and each variant record are closed objects. A `single`
+Both wrapper alternatives and each variant record are closed objects. An entry's
+map key, `block.annotation.section` and `block.content._meta.section` must agree.
+Each annotation variant, when present, is a string; null is represented only by
+an absent annotation member, never a null-valued annotation. A `single`
 entry contains exactly one existing complete Envelope block. A `variants` entry
 contains a nonempty array with exactly one current block per exact nullable
 identity. The record's `variant` MUST equal the block's authored annotation
@@ -133,6 +136,25 @@ projector orders the newly constructed array this way before stamping it.
 Active peer source order is not a new semantic property. History arrays and
 other ordered arrays retain their existing semantic order.
 
+These examples pin the candidate boundary; they do not amend current routing:
+
+| Source/model condition | Candidate result |
+|---|---|
+| One unlabelled current block, with or without a role | `single`; no explicit variant fence activates the opt-in. |
+| One current block explicitly named `default`, role absent | `single`; the authored annotation remains `default`. |
+| That one named current block with a role | `variants`, one record with identity `"default"`; no singleton collapse. |
+| Named peers `base` (primary) and `detail` (no role), in either source order | `variants`, both exact records; collect before any property-level selection. |
+| An unlabelled primary peer and named `default` peer | Under the proposed clarification only, `variants` with null first then `"default"`; current-contract admission remains an owner question. |
+| Role on superseded history only; current peer has no role | No opt-in from history; current singleton routing and ordered history remain distinct. |
+| Directly authored one-peer `variants` model with no role | Preserve its mode through model codecs; refuse Markdown conversion if source reprojection would be `single`. |
+
+Repeated current revisions of the same declared identity follow the accepted
+ordinary current-revision rule, not the new array order. The owner must approve
+the exact nullable identity grouping for mixed opt-in sources; this draft does
+not infer it from the existing `default` map key. V.13's stricter collision
+refusal remains a separate admission step. Equal payload values in distinct
+identities are legal peers, never a reason to deduplicate them.
+
 ### D3 — Payload and model fidelity
 
 Preserve complete annotations, complete fenced payloads (with `_meta` exactly
@@ -173,6 +195,71 @@ Envelope versions would require a separately specified capability/binding
 contract; this draft introduces neither. MCP conversion still decodes once
 through the shared model rather than selecting a peer per consumer.
 
+#### Candidate wire examples (not admitted representations)
+
+The full synthetic JSON semantic values are frozen in
+[`candidate-preimages.json`](../../experiments/envelope-0089/candidate-preimages.json).
+`candidate-mixed` contains this entry spine; `A` and `B` below denote the complete
+unchanged block values in that file, not literal JSON members or wire aliases:
+
+```text
+extensions.x_review = {
+  mode: "variants",
+  blocks: [ { variant: null, block: A },
+            { variant: "default", block: B } ]
+}
+A.annotation = { section: "x_review" }
+B.annotation = { section: "x_review", variant: "default" }
+```
+
+The proposed XML subtree carries the same tag, ordered records and exact null.
+The comment stands for the complete typed block subtree, not an omitted value
+permitted in an exchange artifact:
+
+```xml
+<uw:extensions uw:type="object">
+  <uw:x_review uw:type="object">
+    <uw:blocks uw:type="array">
+      <uw:item uw:type="object">
+        <uw:block uw:type="object"><!-- complete block A --></uw:block>
+        <uw:variant uw:type="null"/>
+      </uw:item>
+      <uw:item uw:type="object">
+        <uw:block uw:type="object"><!-- complete block B --></uw:block>
+        <uw:variant uw:type="string">default</uw:variant>
+      </uw:item>
+    </uw:blocks>
+    <uw:mode uw:type="string">variants</uw:mode>
+  </uw:x_review>
+</uw:extensions>
+```
+
+This is a subtree sketch using the accepted typed-tree mechanism, not a claim
+that existing XML1 accepts E_NEXT. The full document requires the independently
+approved root version/namespace relationship and every required model member.
+A nested annotation member named `variant` is separate from the record identity;
+null identity leaves that annotation member absent.
+
+Candidate `blocks.csv` rows for the same two blocks are below. Append the proposed
+mode column to the existing six columns; preserve JSON-cell lexical rules. Every
+record ends CRLF, all cells are quoted, and no extra space is part of a cell:
+
+```csv
+"block_ref","collection","section_json","variant_json","ordinal","state","extension_mode"
+"/extensions/x_review/blocks/0/block","extensions","""x_review""","null","0","current","variants"
+"/extensions/x_review/blocks/1/block","extensions","""x_review""","""default""","1","current","variants"
+```
+
+For `single`, use `/extensions/x_review/block`, empty ordinal and `single` mode.
+Proposed `variant_json` on a current extension row is its exact annotation variant
+or null, including single mode; this explicitly changes Envelope1's extension
+row rule, which always uses null. Rows for `superseded` retain their existing
+state, historical ordinal, pointer and null variant descriptor; their exact
+annotation lives in `block_values.csv`. `extension_mode` is empty on those rows
+and all non-extension rows. Do not conflate history order with variants order.
+The remaining required typed rows, prose, document members and manifest inventory
+must still be complete. These three descriptor rows are not a standalone bundle.
+
 ### D5 — Canonicalization, commitments and authentication
 
 Keep RFC8785, UTF-8 and SHA256 unchanged. Remove only the existing top-level
@@ -186,7 +273,7 @@ than silently replacing 1.0 bytes. Exact version labels are unassigned.
 | Consumer/commitment | Compatibility consequence |
 |---|---|
 | JSON/XML/CSV semantic digests | Recompute only for a newly issued artifact under the accepted new regime; verify the received stamp under its declared supported regime. Never overwrite a historical stamp in place. |
-| Receipts | Coordinate `canonicalization_version` and source-subject generation; preserve existing RCP-10 canonicalization-mismatch versus RCP-07 engine-mismatch precedence. No same-regime subject mismatch is excused by trying another hash. Financial `results_digest` remains a separate commitment and need not change for container-only changes. |
+| Receipts | Coordinate `canonicalization_version` and source-subject generation; preserve existing RCP-10 canonicalization-mismatch versus RCP-07 engine-mismatch precedence. RCP-10 needs both a differing version and a disagreeing digest; a version difference alone is not an issue. No same-regime subject mismatch is excused by trying another hash. Financial `results_digest` remains a separate commitment and need not change for container-only changes. |
 | Document signatures V.13 | New source subject/version constants and schema accounting would be required. Preserve existing duplicate singleton, unsafe-source, repeated-extension-id and superseded-extension admission guards. Ordinary lossless conversion does not make those sources authenticatable. Expanding the authenticated source domain is outside this RFC. Unsupported subject versions stay unverifiable/INT-14; same-regime subject mismatch stays failed/INT-11. |
 | V.9 block hashes / V.11 block signatures | Unchanged inputs when payloads and six signing fields are unchanged. They do not authenticate peer assembly and cannot replace document authentication. |
 | V.12 replacement payment | Unchanged fixed selected ordered vector/currency/variant/index commitment; no Envelope version enters it. |
@@ -198,6 +285,17 @@ must specify its guarded singleton-extension projection under D1 and retain the
 current source-domain refusal rules; the legacy singleton block shape cannot be
 silently hashed alongside E_NEXT. Schema support for a new subject version is a
 future accepted change, not authority for current verifiers to accept it.
+
+Version/state controls must retain their accepted ordering, not merely their
+code names. For receipts: an uncanonicalizable source is RCP-09 before comparison;
+a differing source digest is RCP-01 unless the canonicalization version also
+differs (RCP-10), before unknown pack/key and later engine/result checks. RCP-07
+only applies to recomputation disagreement plus differing engine identity. For
+document signatures: malformed artifact/encoding precedes version support;
+unsupported version precedes source projection and digest comparison; same-regime
+source/accounting guard failure is INT-15 before subject equality and crypto.
+No caller may use a new stamp to turn a malformed artifact into merely unknown
+version, or use a crypto-valid old subject to bypass the guarded source.
 
 ## Compatibility analysis
 
@@ -253,13 +351,56 @@ outputs. The names below are a proposed fixture matrix, not new accepted cases.
 | Positive `extension-labels` | Legal collision-prone and escaped names, empty strings where admitted, UTF16 ordering, `/` and `~`; no wrapper guessing or invented name bans. |
 | Positive/negative `direct-model-mode` | Role-free and one-peer directly authored variants models preserve mode across JSON/XML/CSV; model-to-Markdown refuses if deterministic source reprojection cannot preserve it without changing roles/content. |
 | Positive `role-routing-controls` | Role-free repeated singleton and superseded-role nonactivation retain existing routing; removing the last active role follows the approved D2 boundary. |
-| Negative `extension-entry-invalid` | Wrong tag, unknown wrapper member, empty variants list, duplicate identity, identity/annotation disagreement, noncanonical order, superseded block in active slot, or duplicate block placement refuses. |
+| Negative `extension-entry-invalid` | Wrong tag, unknown wrapper member, empty variants list, duplicate identity, identity/annotation disagreement, noncanonical order, superseded block in active slot, or duplicate source-identity placement refuses. Equal content under distinct lawful identities is retained. |
 | Negative `csv-extension-invalid` | Conflicting mode, duplicate/gapped ordinal, wrong variant or pointer, missing declared prose/value rows, inventory/hash mismatch or reconstructed digest mismatch refuses. |
 | Negative `authenticated-extension-domain` | Repeated/superseded extension source still refuses V.13 authentication even if ordinary conversion preserves it. Existing unsafe/duplicate source guards remain. |
 | Cross-version `envelope1-rejects-new` | The pinned Envelope1 contract rejects the candidate new stamp/shape; no 1.0 decoder extension or fallback is added. New readers refuse unsupported legacy regimes under the clean break. |
 | Cross-version `subject-stamp-only` | A formerly representable singleton/no-extension document has new canonical bytes/digest from E_NEXT; retain both independently frozen historical and candidate subjects. |
 | Cross-version `receipt-signature-states` | Unsupported signature subject→INT-14; same-regime subject mismatch→INT-11; differing receipt canonicalization with disagreeing source digests→RCP-10, separately from engine RCP-07. Never compare/relabel across regimes as an old verified artifact. |
 | Cross-version `other-commitments` | Unchanged block, block-signing and V.12 subjects; stale whole-source draw plan refused. Financial result commitments have independent controls and no regenerated expected arithmetic. |
+
+### Frozen candidate subjects and fixture procedures
+
+The [experimental evidence README](../../experiments/envelope-0089/README.md)
+provides five bounded candidate preimages and independent Python/Node rechecks.
+The only selected version string is the design token `E_NEXT`; every candidate
+stamp is deliberately unsupported today. These are design evidence, not approved
+conformance or production canonicalization. ASCII-only evidence does not prove
+non-ASCII ordering, floating-point serialization, source routing or codec
+conformance. It does independently show that a stamp-only change moves an
+extension-free subject and that one-peer `single` and `variants` have different
+subjects even with the same underlying block.
+
+Once the owner approves a design, each proposed positive fixture must specify
+(1) original synthetic source(s), (2) the independently authored complete model,
+(3) exact canonical UTF-8 and digest, (4) expected JSON/XML/CSV decoding, and
+(5) required source accounting and round-trip outcome. Test two source orders
+against the same expected peer subject, then change one peer, its exact label,
+role, prose or lifecycle and require the stated identity change. Cosmetic key
+order and line-ending controls must retain the subject. Freeze explicit
+supplementary/BMP labels whose UTF16 and code-point orders differ; empty labels
+are tested only after confirming their source admission. Invalid Unicode,
+non-finite numbers, duplicate decoded members and unsafe keys retain existing
+canonicalization/source refusal rules.
+
+Each negative fixture starts from a valid independently frozen artifact, mutates
+exactly the named field and declares which layer refuses before digest checking.
+For example, swapping the null/default records is a noncanonical-array error,
+not permission for a decoder to sort and successfully verify a received stamp;
+changing only one record identity is an identity/annotation error. A metadata
+or payload mutation with a structurally valid model is instead a received-digest
+mismatch. Do not let an unrelated missing block hide the intended control.
+
+Cross-version fixtures preserve original artifacts byte-for-byte and name the
+old/new supported-regime assumptions. Pair an old and candidate no-extension
+subject to isolate the stamp effect. For receipts, test version-only difference
+with equal digests separately from version-plus-digest mismatch, and include an
+unknown-pack/result disagreement so earlier subject precedence is observable.
+For signatures, combine unknown version with bad source and malformed artifact
+with unknown version to pin the ordering above. For whole-source plans, retain
+the original plan digest, present the candidate source and require stale refusal;
+only a separately issued reviewed plan can bind the new identity. No fixture is
+permission for an old-version runtime path or rewriting historical expectations.
 
 Inventory affected existing suites before implementation: representation JSON,
 XML and CSV round trips; document-signature projection/version guards; receipt
