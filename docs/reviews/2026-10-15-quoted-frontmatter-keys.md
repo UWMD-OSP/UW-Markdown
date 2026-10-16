@@ -113,3 +113,26 @@ numeric/boolean/null YAML keys and their JSON projection require their own
 existing Issue #354 clarification; this correction concerns string keys and does
 not settle that question. RFCs 0085–0088 remain drafts. No 5.0 preparation or
 publication is authorized.
+
+## Resume verification on Windows
+
+The 2026-10-15 continuation reconciled main `50bf4c13` and the exact prior PR
+head `588107a5` with the GitHub-complete handoff. The correction and regression
+controls were already present; review found no missing recovery implementation
+to import. Wiki 03 now documents decoded key paths and the signing boundary.
+
+A fresh isolated worktree with local workspace links, Windows, Node **24.14.1**,
+npm **11.21.0** and Python **3.12.3** passes the full root build, test typecheck
+and **all 4,203 unit tests across 185 files**, including **2,623 verifier tests**.
+The official `npm run conformance` gate passes its 12 target/ownership tests and
+**1,089 reference checks**, with zero failures or updated expectations. Lint
+passes with the existing unrelated HomePage.vue warning; all 62 compiled schemas,
+indexes, codes, versions, local-workspace lockfile pins and release guards pass.
+The documentation build passes in **17.89s**. Dependencies were installed only
+to initialize the new worktree; no manifest or lockfile changes result.
+
+These are new Windows observations. The failed Linux runs above remain failed
+historical results; no cross-platform test evidence is inferred from this run.
+GitHub CI for the final continuation commit is recorded separately on PR #362.
+No signature/receipt fallback, normative expectation, package version or release
+preparation is added by this completion.
