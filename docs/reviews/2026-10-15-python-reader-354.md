@@ -219,7 +219,8 @@ experimental pass count is attributed to this branch.
 
 The APIs report PS-01 warnings and PS-02 errors with JSON pointers relative to
 the supplied payload. Malformed rows are all inspected before selection refuses
-CALC-PERIOD-001. Absent/null identities remain unmatched and warn; they are not
+CALC-PERIOD-001, with existing duplicate-refusal precedence preserved when both
+errors are present. Absent/null identities remain unmatched and warn; they are not
 invented or rejected as malformed values. Non-cash series reject any duplicate
 identity; cash-flow series allow repeated valid dates and refuse CALC-PERIOD-002
 only when the requested date repeats. Inspection retains original row objects
@@ -245,3 +246,17 @@ Frozen corpus checks are narrow API evidence, distinct from portable passes:
 
 The arithmetic formulas in `period-01` and `period-04` remain outside this
 payload API's scope. No arithmetic was added to make those fixtures pass.
+
+Integrator reconciliation limits PS-02 to one diagnostic per duplicate canonical
+identity, at the first colliding row's source-relative pointer; all subsequent
+rows remain retained. Duplicate refusals take precedence over malformed-series
+refusals when both exist, including a repeated requested cash-flow date. The
+follow-up tests pin those mixed cases. Issue order follows source traversal;
+this partial API does not promise the reference validator's diagnostic ordering.
+
+One exact distinction remains explicit: VIII.2a says missing/null period identity
+resolves to null, so this foundation retains that row unmatched with a PS-01
+warning. The current TypeScript series scanner instead classifies that identity
+as malformed for resolution. This Python behavior is specification-first, not
+a claim of complete TypeScript validation/resolver parity; the frozen normative
+selector fixtures do not resolve that edge independently.

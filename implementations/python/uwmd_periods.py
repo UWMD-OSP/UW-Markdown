@@ -139,7 +139,7 @@ def inspect_period_series(payload, section, series):
     cadence = payload.get("period_granularity")
     if entry.grammar == "calendar_period" and cadence not in ("monthly", "quarterly"):
         warn("/period_granularity", "calendar series requires monthly or quarterly cadence")
-    seen = set()
+    seen, duplicates = set(), set()
     for key, row in (enumerate(value) if entry.shape == "rows" else value.items()):
         pointer = _child(root, key)
         if not isinstance(row, dict):
@@ -159,7 +159,8 @@ def inspect_period_series(payload, section, series):
             identity = None
         rows.append(PeriodRow(identity, pointer, row))
         if identity is not None:
-            if identity in seen and section != "cash_flow_series":
+            if identity in seen and identity not in duplicates and section != "cash_flow_series":
+                duplicates.add(identity)
                 issues.append(PeriodIssue("PS-02", "error", period_pointer,
                                           "duplicate canonical period identity"))
             seen.add(identity)
@@ -176,9 +177,9 @@ def select_period_row(payload, section, series, selector):
         _invalid("unregistered period series")
     requested = parse_period_selector(selector)
     inspected = inspect_period_series(payload, section, series)
-    if inspected.malformed:
-        _invalid("malformed registered period series")
     matches = [row.value for row in inspected.rows if row.identity == requested]
     if any(issue.code == "PS-02" for issue in inspected.issues) or len(matches) > 1:
         raise PeriodError("CALC-PERIOD-002", "duplicate canonical period identity")
+    if inspected.malformed:
+        _invalid("malformed registered period series")
     return matches[0] if matches else None

@@ -83,3 +83,10 @@ Verifier conformance passes. The recovery snapshot's registry/identity concepts
 were selectively reconciled against current VIII.2a/RFC 0062; its Reader,
 calendar replacement, broad resolver and historical result claims were not
 imported. No numerical investigation was repeated.
+
+PS-02 is emitted once per duplicate canonical identity at the first colliding
+row pointer. Duplicate refusal precedes malformed-series refusal when both are
+present. Missing/null period identities warn and stay unmatched per VIII.2a;
+the current TypeScript series scanner classifies these as malformed during
+resolution. No complete cross-implementation validation/resolver parity is
+claimed for that edge.

@@ -76,11 +76,17 @@ class PeriodTests(unittest.TestCase):
                          ["/annual_cash_flows/1/year", "/annual_cash_flows/2", "/annual_cash_flows/3/year"])
         self.refusal("CALC-PERIOD-001", select_period_row, payload, "dcf", "annual_cash_flows", "Y1")
 
-    def test_duplicate_diagnostics_are_per_collision(self):
+    def test_duplicate_diagnostics_are_per_identity_and_precede_malformed(self):
         payload = {"annual_cash_flows": [{"year": 1}, {"year": 2}, {"year": 1}, {"year": 1}]}
         issues = inspect_period_series(payload, "dcf", "annual_cash_flows").issues
         self.assertEqual([(i.code, i.severity, i.pointer) for i in issues], [
-            ("PS-02", "error", "/annual_cash_flows/2/year"), ("PS-02", "error", "/annual_cash_flows/3/year")])
+            ("PS-02", "error", "/annual_cash_flows/2/year")])
+        self.refusal("CALC-PERIOD-002", select_period_row, payload, "dcf", "annual_cash_flows", "Y2")
+        payload["annual_cash_flows"].append({"year": "malformed"})
+        checked = inspect_period_series(payload, "dcf", "annual_cash_flows")
+        self.assertTrue(checked.malformed)
+        self.assertEqual([i.code for i in checked.issues], ["PS-02", "PS-01"])
+        self.assertEqual(len(checked.rows), 5)
         self.refusal("CALC-PERIOD-002", select_period_row, payload, "dcf", "annual_cash_flows", "Y2")
 
     def test_calendar_cadence_is_stated_even_for_empty_series(self):
@@ -106,6 +112,7 @@ class PeriodTests(unittest.TestCase):
         self.refusal("CALC-PERIOD-002", select_period_row, payload, "cash_flow_series", "series", "2026-01-01")
         self.assertEqual(payload, before)
         payload["series"].append({"date": "2028-02-30"})
+        self.refusal("CALC-PERIOD-002", select_period_row, payload, "cash_flow_series", "series", "2026-01-01")
         self.refusal("CALC-PERIOD-001", select_period_row, payload, "cash_flow_series", "series", "2027-01-01")
 
     def test_waterfall_duplicates_have_no_cash_flow_exception(self):
