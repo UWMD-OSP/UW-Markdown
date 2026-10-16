@@ -675,3 +675,20 @@ PS-03 and financial verification remain separate missing work. CI retains exact-
 Reader manifests on three operating systems. See the
 [Python README](../../implementations/python/README.md) and
 [requirement inventory](../reviews/2026-10-15-python-reader-354.md).
+
+### Independent Python reserve-account milestone
+
+The standalone Python `verify-reserve-accounts` command implements Format §4.28
+and Protocol §VIII.11 without expression evaluation or a tier claim. Its own
+Envelope 1.0/JCS/SHA-256 prerequisite preserves annotations, complete payloads,
+metadata, retained prose and explicit history. Independent known source digests
+from receipt/signature fixtures test hashing only, with no receipt or signature
+verification claim. The 91-method Python suite preserves all earlier 74 methods.
+
+Twenty-eight unchanged reserve cases are executed by the actual shared driver's
+`run_case` subprocess/comparison function as explicit case evidence. Catalogue
+selection requires `calc-evaluate`, which this implementation does not claim;
+these are not no-skip portable Verifier passes. The discovery manifest remains
+parse-only, and portable Reader 17/17 remains separate. See the Python README
+for result states, limitations and the unresolved role-opted extension-map
+versus Envelope extension-block shape, which yields digest_unavailable.

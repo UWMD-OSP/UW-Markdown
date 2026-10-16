@@ -7,9 +7,9 @@ external packages, hosted services, production fixture lookup, or TypeScript
 translation. No PyPI name, supported Python floor or publication is decided.
 
 The discovery manifest advertises only `parse`, **no Reader/Verifier tier,
-validation, calculation, signature, receipt or optional-profile capability**.
-The adapter currently reads structured Format 3.0 Markdown only. It is not ready
-to verify a UWMD record or certify every Reader requirement.
+full-validation, expression-calculation, signature, receipt or optional-profile capability**.
+The adapter reads structured Format 3.0 Markdown and separately verifies stated
+reserve accounts. It does not certify every Reader or Verifier requirement.
 
 Implemented:
 
@@ -59,7 +59,8 @@ projection or infer verified continuity from retained history.
 
 Full Format validation, document-level period/role resolution for calculations, expression
 evaluation, dictionary result checking, all applicable Protocol II.2 stated-figure
-verifiers, receipts and receipt verification remain outstanding. Missing,
+verifiers other than the separate reserve-account check, receipts and receipt
+verification remain outstanding. Missing,
 unsupported and failed assertions must remain distinguishable. Passing Reader
 projections does not discharge any of those obligations.
 
@@ -130,3 +131,49 @@ For example, `false && dcf.unknown@Y1.noi` parses, and its static inspection
 reports CALC-PERIOD-001. That is an inspection result, not an evaluator verdict:
 an evaluator would have to implement the Protocol's short-circuit rules before
 deciding which references to resolve. Actual evaluation remains unimplemented.
+
+## Standalone reserve-account verification
+
+`python -B implementations/python/uwmd.py verify-reserve-accounts <file> --json`
+implements accepted Format §4.28 and Protocol §VIII.11. It snapshots parsed
+source, checks closed account/period/movement facts and provenance, then checks
+authored-order binary64 balance identities and explicitly claimed continuity
+at the existing separately applied 2dp half-away boundary. No movement class,
+missing row or financial assumption is inferred. All active reserve variants
+are inspected independently; source rows and metadata remain unchanged.
+
+The result distinguishes absent `not_checked/not_applicable`, structural or
+digest/nonfinite `unverifiable`, finite disagreement `failed`, and `verified`.
+Overflow does not discard later finite period evidence. Exit status is 1 for
+failed/unverifiable, 0 for verified/absent. Balance agreement does not establish
+source authenticity, economic completeness or correct producer classification.
+No gross expenditure, cash-flow assembly, formula evaluation or receipt is made.
+
+The prerequisite `uwmd_envelope.py` projects complete Envelope 1.0 blocks,
+annotations, metadata, retained prose, collections and explicit superseded
+history, including extension history. Its SHA-256 preimage excludes only the
+three top-level volatile members. `uwmd_jcs.py` independently implements RFC8785
+UTF-16 key ordering, Unicode/refusal and ECMAScript binary64 number serialization
+using exact integer-rational shortest-decimal search; it never calls Node.
+Existing frozen receipt/document-signature *subject digests* are test oracles
+only. No receipt verification, document authentication or Integrity capability
+is implemented by computing those source digests.
+
+The current Reader admits role-opted extension variant maps while the accepted
+Envelope schema permits a single block at each extension ID. That unresolved
+representation boundary produces `unverifiable/digest_unavailable`, without
+inventing an envelope shape or changing either contract. Ordinary singleton
+selection follows existing Reader semantics; no signature-only source guards
+are added. Annotation mapping collisions also refuse unavailable projection
+rather than erase an authored field.
+
+Verification evidence: 91 Python unit methods preserve all earlier 74 controls
+and execute every one of the 28 unchanged generated reserve cases through the
+actual shared driver's subprocess/comparison function. They also pin published
+RFC8785 vectors, independent frozen whole-source digests, prose/annotation/history
+mutations, source/schema nonblank semantics, no mutation, monetary boundaries,
+compound date/order findings, overflow precedence and retained finite evidence.
+These 28 direct case results are **not** a portable tier/capability certification
+run: the catalogue currently requires `calc-evaluate` for those cases and has
+no dedicated reserve token. The manifest stays parse-only; no wrapper invents
+capabilities. Genuine portable Reader runs remain separately reported as 17/17.

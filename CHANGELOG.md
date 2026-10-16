@@ -26,6 +26,17 @@ protocol, and each package each carry an independent semver).
   and its token estimate only. No period lookup, CC-06, diagnostics or financial
   calculation changes.
 
+### Added
+
+- Add independent Python standalone reserve-account verification with complete
+  Envelope 1.0 semantic SHA-256/JCS source digests, closed source-attributable
+  structure, ordered binary64 balances and explicitly claimed continuity at
+  the existing currency quantum. Preserve distinct absent/unverifiable/failed/
+  verified states and later finite evidence after overflow. All 28 unchanged
+  reserve cases execute through shared subprocess/comparison code; discovery
+  stays parse-only without calc, full validation, tier, receipt or signature
+  claims. No financial convention, normative contract or version changes.
+
 ### Documentation
 
 - Refine the approval-gated agent-product retirement proposal with exact public

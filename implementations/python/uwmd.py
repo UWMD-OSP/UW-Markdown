@@ -1,10 +1,11 @@
-"""Node-free II.6a adapter for the explicitly partial Python parse capability."""
+"""Node-free parse/reserve CLI; discovery remains explicitly partial without a tier."""
 import json
 from pathlib import Path
 import sys
 
 from uwmd_reader import parse
 from uwmd_source import SourceError
+from uwmd_reserves import verify_reserve_accounts
 
 
 def main(arguments):
@@ -12,6 +13,15 @@ def main(arguments):
         return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
                 "capabilities": ["parse"], "profiles": []}, 0
+    if len(arguments) in (2, 3) and arguments[0] == "verify-reserve-accounts" and (len(arguments) == 2 or arguments[2] == "--json"):
+        try:
+            path = Path(arguments[1])
+            result = verify_reserve_accounts(parse(path.read_bytes(), filename=path.name))
+            return result, 1 if result["state"] in ("failed", "unverifiable") else 0
+        except SourceError as error:
+            return {"error": {"message": str(error)}}, 1
+        except OSError as error:
+            return {"error": {"message": str(error)}}, 2
     if len(arguments) == 2 and arguments[0] == "parse":
         try:
             path = Path(arguments[1])
@@ -25,7 +35,7 @@ def main(arguments):
             return {"error": diagnostic}, 1
         except OSError as error:
             return {"error": {"message": str(error)}}, 2
-    return {"error": {"message": "only manifest and parse <file> are implemented"}}, 1
+    return {"error": {"message": "implemented commands: manifest, parse <file>, verify-reserve-accounts <file> [--json]"}}, 1
 
 
 if __name__ == "__main__":
