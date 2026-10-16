@@ -15,7 +15,7 @@ remain recorded below and in the publication record.
 | Numerical #357 / RFC 0088 | `codex/numerical-determinism-356` | `32aed4629dcbacd2dffaae1453cfa5d843a9ff66` | 38848963510: success, 17 ordinary jobs |
 | Python #358 / Issue #354 | `codex/python-source-354` | `b079923ab765a75852b7751b2cd45deecc9bb19e` | 38850234668: success, 17 ordinary jobs |
 | Architecture #361 / Issue #355 | `codex/agent-retirement-scope` | `65539e24d5e70ba7c23d57ba022fc77d5d2d0081` | 38848268602: success, 14 ordinary jobs |
-| Quoted-key correction #362 | `codex/quoted-frontmatter-key-fidelity` | `588107a5c14ff40ddb146e62dcbeccdd76349e3f` | 38850699635: running; 13 ordinary jobs passed, Node 20 job unfinished |
+| Quoted-key correction #362 | `codex/quoted-frontmatter-key-fidelity` | `588107a5c14ff40ddb146e62dcbeccdd76349e3f` | 38850699635: success, 14 ordinary jobs |
 | Provenance #335 / RFC 0085 | `claude/rfc-0085-compaction-provenance` | `ce8ae0100a28b9fe82612a651afce1f8c041d425` | Previously verified 38831751616: success, 14 ordinary jobs |
 
 The opt-in publication-observation job is skipped in ordinary PR runs; it is
