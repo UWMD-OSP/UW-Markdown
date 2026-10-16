@@ -198,7 +198,7 @@ through the shared model rather than selecting a peer per consumer.
 #### Candidate wire examples (not admitted representations)
 
 The full synthetic JSON semantic values are frozen in
-[`candidate-preimages.json`](../../experiments/envelope-0089/candidate-preimages.json).
+[`candidate-preimages.json`](https://github.com/UWMD-OSP/UW-Markdown/blob/52c699ffe6bbb166310005be7bdc32960d6f80d1/experiments/envelope-0089/candidate-preimages.json).
 `candidate-mixed` contains this entry spine; `A` and `B` below denote the complete
 unchanged block values in that file, not literal JSON members or wire aliases:
 
@@ -361,7 +361,7 @@ outputs. The names below are a proposed fixture matrix, not new accepted cases.
 
 ### Frozen candidate subjects and fixture procedures
 
-The [experimental evidence README](../../experiments/envelope-0089/README.md)
+The [experimental evidence README](https://github.com/UWMD-OSP/UW-Markdown/blob/52c699ffe6bbb166310005be7bdc32960d6f80d1/experiments/envelope-0089/README.md)
 provides five bounded candidate preimages and independent Python/Node rechecks.
 The only selected version string is the design token `E_NEXT`; every candidate
 stamp is deliberately unsupported today. These are design evidence, not approved
