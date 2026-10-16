@@ -224,6 +224,14 @@ one concrete proposal for owner acceptance. No candidate kernel is implemented
 or selected here. Experimental prototypes are research evidence, not changes to
 the current evaluator, conformance expectations or financial contract.
 
+The [candidate-source closure study](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-fdlibm-closure-356.md)
+now freezes eight exact Netlib source hashes and identifies the power helper
+closure, conditional fixed-word resource bound and required bit-adapter rules.
+Power includes a square-root fast path and a scaling/copy-sign dependency;
+porting only three transcendental bodies would leave that candidate incomplete.
+This source-only result does not select a kernel, establish accuracy, certify a
+port or replace the outstanding domain/error and independent-vector evidence.
+
 #### Candidate primitive meaning and unresolved cases
 
 For the correctly-rounded alternative, let `B(op)` mean one IEEE754 binary64 basic
