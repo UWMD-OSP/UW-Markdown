@@ -1,5 +1,240 @@
 # 13 — Build status (living document)
 
+## Integration queue reconciliation — 2026-10-15 (America/Phoenix)
+
+Prepared against integration base **`bac58c25f15f90bc9c97402a86cad9b8f4c50d55`**,
+after the two completed integrations below. Current PR heads and their exact CI
+runs remain authoritative after further rebases; the older session sections below
+are historical evidence. Published 4.3.0, Format 3.0, Protocol 4.1.0 and receipt
+1.1 remain unchanged. No release preparation, normative expectation change or
+RFC acceptance is implied by this queue cleanup.
+
+- **Parser [#362](https://github.com/UWMD-OSP/UW-Markdown/pull/362), merged
+  `9aa26bf9b00248cd49d4bbfa39b30ea818d8971d`.** Reviewed head
+  `0b4e7767d400b22996631901b30aa1c6b4805b54` passes all 14 ordinary CI jobs in
+  [38853895243](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38853895243).
+  Fresh Windows build, all 4,203 workspace tests, test typecheck and official
+  1,089 reference checks pass, with zero updated expectations. Existing
+  Appendix D scalar meaning already requires decoded string-key identity;
+  bare typed-key policy remains separate. Decoded duplicate/unsafe names refuse.
+  Final real-Ed25519 and receipt controls verify equivalent plain/quoted keys.
+  Historically misdecoded subjects refuse INT-11/RCP-01 under existing rules,
+  before any signature fallback. Source bytes and old artifacts are not rewritten.
+  Publication engine/pin/version decisions remain separately governed.
+- **Architecture [#361](https://github.com/UWMD-OSP/UW-Markdown/pull/361), merged
+  `bac58c25f15f90bc9c97402a86cad9b8f4c50d55`.** Rebased reviewed head
+  `f25eaec17e0ae2698d8f27d1573cec3c2115fec0` passes all 14 ordinary CI jobs in
+  [38855904488](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38855904488).
+  Proposal blobs are unchanged. Only the two existing planning/evidence documents
+  and their changelog entry are integrated. No public export, runtime, SDK,
+  skill/workflow asset, URL, compatibility policy or activation is removed or
+  approved. RFC, normative text, conformance and version states are unchanged.
+- **Independent Python [#358](https://github.com/UWMD-OSP/UW-Markdown/pull/358).**
+  The published `ef1c5a72` foundation has 59 methods and genuine portable Reader
+  17/17 with zero skips, including three-OS CI 38854398177. The bounded continuation
+  adds grammar/AST and syntax-only reference evidence without expression evaluation.
+  Complete Format validation, runtime resolution, financial verification and
+  receipts remain unfinished; the manifest remains parse-only with no tier claim.
+  Final reviewed continuation heads and CI belong on the PR, not in old pass counts.
+- **[RFC 0088 / #357](https://github.com/UWMD-OSP/UW-Markdown/pull/357) and
+  [RFC 0085 / #335](https://github.com/UWMD-OSP/UW-Markdown/pull/335) stay draft.**
+  The former's pinned candidate helper/resource study and isolated JS/Python bit
+  adapters select no production financial kernel. The latter's projection/archive
+  proposal is not accepted. Rebase these lanes after integrations; once #358 lands,
+  remove only already-landed Python seed/CI deltas from #357 while retaining all
+  newer Reader controls and CI. Exact procedures, financial conventions,
+  compatibility, activation, versions and RFC acceptance remain owner decisions.
+
+### Durable recovery and CI evidence
+
+Both remote recovery refs were rechecked through GitHub and still point to their
+original immutable commits:
+
+| Recovery branch | Preserved commit |
+| --- | --- |
+| `experimental/recovery-python-354-2026-10-15` | `790b2c7a4ad8676f2bb8ab87e7ebe16f2af6c1d1` |
+| `experimental/recovery-designs-2026-10-15` | `65b164b1c72d4d4fe4f14ee02f30b5ce1b9fc5a9` |
+
+The [54-file disposition record](../reviews/2026-10-15-recovery-disposition.json)
+is preserved byte-for-byte, including original recovery readback/manifests and
+all limits on historical evidence. No recovery branch or archived patch is
+merged. Only missing period/grammar concepts were selectively reviewed against
+accepted Protocol text and adapted around the active Python Reader; the old
+Reader, calendar dependency, evaluator and superseded model-generation proposal
+remain recovery research. Original source/Reader/seed controls are retained.
+
+The previous #363 head `6c682663` passed 14 ordinary jobs in CI 38854600106.
+Its Vercel preview failed at the project deployment rate limit; GitHub branch
+protection/rulesets and `gh pr checks --required` reported no required preview
+gate. The refreshed handoff needs its own current-head ordinary CI; its PR
+records that exact outcome. Rate-limited previews are reported separately, with
+no status rewrite, account change, paid-plan action or admin bypass. Explicit
+publication observation is skipped in ordinary development and never counted as
+a pass. Failed historical Linux runs below remain failed; new Windows and CI
+passes do not erase them. No independent spreadsheet or full Python Verifier
+conformance is claimed.
+
+UWMD stays lean and verifier-focused. StackUW/adopters own model generation,
+AI agents, skills and workflows. The owner's current session authorizes the
+bounded parser, planning-document and durable-handoff integrations; it authorizes
+no proposed numerical contract, product retirement, release or publication.
+
+---
+
+## Session handoff — 2026-10-15 (America/Phoenix)
+
+Canonical GitHub `main` is `50bf4c13206560848c5bb9b045f4532ad3cd8633`
+(merged #359); its CI 38846578128 passed all 14 ordinary jobs. No PR was
+merged during this closeout. All tracked workstream PRs remain drafts. The local owner
+checkout is on an older RFC 0085 branch, and the cached `/tmp` checkout's
+`main` still points at the published release; neither is canonical main.
+Fetch GitHub before resuming. Published 4.3.0 and its independent verification
+remain recorded below and in the publication record.
+
+| Lane / PR | GitHub branch | Exact current head | Latest CI at closeout |
+| --- | --- | --- | --- |
+| Numerical #357 / RFC 0088 | `codex/numerical-determinism-356` | `32aed4629dcbacd2dffaae1453cfa5d843a9ff66` | 38848963510: success, 17 ordinary jobs |
+| Python #358 / Issue #354 | `codex/python-source-354` | `b079923ab765a75852b7751b2cd45deecc9bb19e` | 38850234668: success, 17 ordinary jobs |
+| Architecture #361 / Issue #355 | `codex/agent-retirement-scope` | `65539e24d5e70ba7c23d57ba022fc77d5d2d0081` | 38848268602: success, 14 ordinary jobs |
+| Quoted-key correction #362 | `codex/quoted-frontmatter-key-fidelity` | `588107a5c14ff40ddb146e62dcbeccdd76349e3f` | 38850699635: success, 14 ordinary jobs |
+| Provenance #335 / RFC 0085 | `claude/rfc-0085-compaction-provenance` | `ce8ae0100a28b9fe82612a651afce1f8c041d425` | Previously verified 38831751616: success, 14 ordinary jobs |
+
+The opt-in publication-observation job is skipped in ordinary PR runs; it is
+not counted as a pass. Recheck exact heads and CI before integrating anything.
+The four current lanes target main directly. #358 is no longer stacked on #357.
+
+### Completed evidence and next bounded steps
+
+- **Python:** 44 unit methods and genuine 17/17 portable Reader cases pass on
+  Ubuntu, Windows and macOS, with no skipped/failed/unverifiable cases. Nine
+  additional frozen Reader refusal fixtures are unit coverage, not extra
+  portable passes. Manifest remains parse-only, without a tier or Verifier
+  claim. Source-scanner input counts are not conformance results. Bare
+  numeric/boolean/null YAML-key projection remains unresolved. Continue Reader
+  completeness independently of numerical semantics. Review #358 for ordinary
+  integration; after it lands, reconcile #357 to remove already-landed Python
+  seed/CI changes while preserving the newer Reader CI, README and every test.
+- **Numerical:** reproduced cross-runtime evidence and architectural choices
+  are preserved. RFC 0088 is direction-ready, not yet a fully specified,
+  acceptance-ready numerical contract. Next research must pin one procedure,
+  constants/helpers/bit semantics, admitted domains and resource behavior,
+  financial operation graphs, independently derived vectors, accuracy/range
+  evidence and receipt/consumer compatibility before acceptance. Experimental
+  work must remain outside production evaluators and normative expectations.
+- **Architecture:** exact proposed future export, CLI, SDK, documentation and
+  workflow-asset retirement scope is in the existing
+  [removal proposal](../reviews/2026-10-15-agent-removal-5.0.md) on #361.
+  Preserve generic editing/context, neutral provenance, bindings and developer
+  instructions. No automatic StackUW migration or public deletion under 4.x.
+- **Quoted keys:** #362 fixes demonstrated string-key misdecoding and signing
+  source-accounting paths, with sequence-literal regressions. Local verifier
+  tests pass 2,623/2,623 and direct reference checks 1,089/1,089 with no baseline
+  updates. Wait for current-head CI, then review separately. Corrected semantic
+  signing subjects may differ for historically misdecoded records; future
+  release work must assess verifier identity/pins and historical compatibility.
+  This is not permission to rewrite signatures, receipts or baselines.
+
+Local full-suite results remain **failed**, separately from remote CI: Python
+foundation 3,999 passed / 180 failed; quoted-key correction 4,023 passed / 180
+failed. Subprocess-dependent wrapper/profile/release/package failures remain
+recorded; direct reference-runner success does not turn those gates green.
+No independent Microsoft Excel recalculation or full Python Verifier is claimed.
+
+### Remaining owner-controlled decisions
+
+RFC 0088 requires direction on an exactly specified portable procedure versus
+universally correctly rounded primitives, whether stability rearrangements are
+separate, and numerical-contract/engine versioning with existing receipt wire
+subjects versus a new selector. Recommended directions are portable procedure,
+separate rearrangements and existing wire subjects, subject to concrete evidence.
+No kernel, domain restriction, activation or RFC acceptance is approved.
+
+The architecture proposal requires approval of the exact removal set, governed
+producer/writer boundary, retired-command refusal behavior, asset/URL transition
+policy and eventual activation. RFCs 0085–0088 remain drafts; 0086/0087 financial
+authority/basis/precision decisions remain separate. Issue #343 stays open.
+#349 was owner-approved and merged as `a18ed8ee7f502e2bd538c3c96be1584f94c458b9`;
+the older statement below that it is held is historical.
+
+### GitHub-complete cross-machine recovery and worker shutdown
+
+All completed lane contents are on the GitHub heads above. Local worker commits
+have different Git metadata but identical complete trees: numerical `b2d721be`,
+Python `3cbb2562`, architecture `c8ee8964`, quoted-key fix `5e892911`.
+No worker remains running; no local test/build process was intentionally left.
+
+The owner uses two separate Linux machines. The earlier manual-transfer
+requirement is withdrawn: useful unpublished work is now recoverable from the
+canonical GitHub repository on two **experimental recovery branches**, with no
+changes to #335/#357/#358/#361/#362. No manual backup transfer is required.
+
+| Recovery scope | Remote branch | Immutable recovery commit |
+| --- | --- | --- |
+| Earlier Python period/structural/expression prototype, tests and historical evidence | `experimental/recovery-python-354-2026-10-15` | `790b2c7a4ad8676f2bb8ab87e7ebe16f2af6c1d1` |
+| Unpublished RFC 0085 C+D expansion/probe and superseded projection research | `experimental/recovery-designs-2026-10-15` | `65b164b1c72d4d4fe4f14ee02f30b5ce1b9fc5a9` |
+
+Both branches start at canonical main `50bf4c13` and add material only under
+`experiments/recovery-2026-10-15/`, outside active implementation, RFC-index and
+conformance paths. Their README files label every claim unfinished/unreviewed.
+Each includes `RECOVERY-MANIFEST.json` with payload SHA-256 hashes. They are
+recovery references, not implementation PRs to merge.
+
+- **Python:** reuse period/expression research selectively; the older Reader
+  must not replace #358's byte-preserving Reader. Preserve its historical
+  limitations and blocked numerical semantics. Its old numeric dependency has
+  known year-zero/host-date limitations; no correction is implied by archiving.
+- **Provenance:** the complete unpublished expansion and synthetic reader probe
+  are preserved separately from canonical draft #335. No proposed result state,
+  compaction behavior, archive or signature policy is accepted.
+- **Superseded planning:** the old acquisition-engine proposal and associated
+  documentation patch are historical design input only. Its former RFC 0088
+  assignment is invalid; #357 owns that number. Current owner direction keeps
+  model generation with adopters and Issue #355 bounded to financial assurance.
+
+The [recovery disposition evidence](../reviews/2026-10-15-recovery-disposition.json)
+accounts for all 54 archived source/research files, including duplicates and
+superseded work. The duplicate source scanner/tests are already byte-identical
+on #358. The nested patch-check tree, TAP renderings, obsolete announcements and
+redundant full snapshots add no unique development work. Six old documentation
+edits reconstruct byte-for-byte from their GitHub base plus the retained text
+patch; that patch is not to be applied to an active branch.
+
+Verification: all **27 recovery files** were independently read back from GitHub
+at the exact commits above, compared byte-for-byte and recovered into an empty
+directory. All **25 payload SHA-256 hashes** match both manifests. Two duplicate
+scanner files were also read back from #358 and matched. The older Python
+snapshot passes its 24 historical unit tests and 17/17 portable Reader cases in
+a disposable checkout; this does not strengthen its capability claims. Shell
+`git ls-remote` failed DNS resolution, so no successful shell clone is claimed;
+the remote refs, Git trees and every recovery file were verified through the
+GitHub API. A normal network-enabled clone/fetch needs no laptop files.
+
+The selected files contain code, public-fixture-based synthetic evidence and
+design prose. Review and secret-pattern scanning found no credentials or private
+deal material. No private repository was required. Git bundles, caches, local
+inventory files and 392 routine logs were not uploaded. Their local copies may
+be discarded after recovery verification; exact local intermediate commit
+metadata and raw logs are intentionally not preserved as a cross-machine
+dependency. Local original worktrees remain untouched, not deleted.
+
+On the other Linux machine, clone/fetch the canonical repository and read this
+handoff from `origin/codex/session-closeout-2026-10-15` until #363 is integrated:
+
+```sh
+git fetch origin
+git show origin/codex/session-closeout-2026-10-15:docs/wiki/13-status.md
+git show origin/experimental/recovery-python-354-2026-10-15:experiments/recovery-2026-10-15/python-354/README.md
+git show origin/experimental/recovery-designs-2026-10-15:experiments/recovery-2026-10-15/README.md
+```
+
+Use separate worktrees for any selective continuation; never reset current PR
+branches to these archival snapshots. Recheck live heads and CI. Keep one
+serialized integrator. No RFC acceptance, normative
+arithmetic/conformance change, release-version change, publication or 5.0 launch
+preparation is authorized by this handoff.
+
+---
+
 **2026-10-15 — interim4.3.0 published and independently checked.**
 Annotated `v4.3.0` (object `1aba40faeff4553fa957355c5c0bd205f55be40f`) targets
 #351 merge `80c68c3d0950948c85a1d3a90c02cd05f3a650a4`. Release38821844153

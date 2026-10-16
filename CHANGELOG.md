@@ -16,6 +16,10 @@ protocol, and each package each carry an independent semver).
   decoded member paths. No bare non-string key policy or financial formula
   changes; release preparation must assess affected semantic signing subjects.
 
+- Refresh the developer status handoff with exact lane heads, GitHub recovery
+  references, resumed branch reconciliation, current verification evidence and
+  preserved owner decisions. No runtime or normative behavior changes.
+
 - Chat DCF rows display their authored `year` instead of their array position.
   Reordered, sparse and duplicate years remain in source order; missing years
   display `n/a`. The reviewed starter rendering expectation changes two labels
