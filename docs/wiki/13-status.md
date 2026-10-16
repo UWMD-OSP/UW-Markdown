@@ -1,5 +1,114 @@
 # 13 — Build status (living document)
 
+## Session handoff — 2026-10-15 (America/Phoenix)
+
+Canonical GitHub `main` is `50bf4c13206560848c5bb9b045f4532ad3cd8633`
+(merged #359); its CI 38846578128 passed all 14 ordinary jobs. No PR was
+merged during this closeout. All five open PRs are drafts. The local owner
+checkout is on an older RFC 0085 branch, and the cached `/tmp` checkout's
+`main` still points at the published release; neither is canonical main.
+Fetch GitHub before resuming. Published 4.3.0 and its independent verification
+remain recorded below and in the publication record.
+
+| Lane / PR | GitHub branch | Exact current head | Latest CI at closeout |
+| --- | --- | --- | --- |
+| Numerical #357 / RFC 0088 | `codex/numerical-determinism-356` | `32aed4629dcbacd2dffaae1453cfa5d843a9ff66` | 38848963510: success, 17 ordinary jobs |
+| Python #358 / Issue #354 | `codex/python-source-354` | `b079923ab765a75852b7751b2cd45deecc9bb19e` | 38850234668: success, 17 ordinary jobs |
+| Architecture #361 / Issue #355 | `codex/agent-retirement-scope` | `65539e24d5e70ba7c23d57ba022fc77d5d2d0081` | 38848268602: success, 14 ordinary jobs |
+| Quoted-key correction #362 | `codex/quoted-frontmatter-key-fidelity` | `588107a5c14ff40ddb146e62dcbeccdd76349e3f` | 38850699635: running; 13 ordinary jobs passed, Node 20 job unfinished |
+| Provenance #335 / RFC 0085 | `claude/rfc-0085-compaction-provenance` | `ce8ae0100a28b9fe82612a651afce1f8c041d425` | Previously verified 38831751616: success, 14 ordinary jobs |
+
+The opt-in publication-observation job is skipped in ordinary PR runs; it is
+not counted as a pass. Recheck exact heads and CI before integrating anything.
+The four current lanes target main directly. #358 is no longer stacked on #357.
+
+### Completed evidence and next bounded steps
+
+- **Python:** 44 unit methods and genuine 17/17 portable Reader cases pass on
+  Ubuntu, Windows and macOS, with no skipped/failed/unverifiable cases. Nine
+  additional frozen Reader refusal fixtures are unit coverage, not extra
+  portable passes. Manifest remains parse-only, without a tier or Verifier
+  claim. Source-scanner input counts are not conformance results. Bare
+  numeric/boolean/null YAML-key projection remains unresolved. Continue Reader
+  completeness independently of numerical semantics. Review #358 for ordinary
+  integration; after it lands, reconcile #357 to remove already-landed Python
+  seed/CI changes while preserving the newer Reader CI, README and every test.
+- **Numerical:** reproduced cross-runtime evidence and architectural choices
+  are preserved. RFC 0088 is direction-ready, not yet a fully specified,
+  acceptance-ready numerical contract. Next research must pin one procedure,
+  constants/helpers/bit semantics, admitted domains and resource behavior,
+  financial operation graphs, independently derived vectors, accuracy/range
+  evidence and receipt/consumer compatibility before acceptance. Experimental
+  work must remain outside production evaluators and normative expectations.
+- **Architecture:** exact proposed future export, CLI, SDK, documentation and
+  workflow-asset retirement scope is in the existing
+  [removal proposal](../reviews/2026-10-15-agent-removal-5.0.md) on #361.
+  Preserve generic editing/context, neutral provenance, bindings and developer
+  instructions. No automatic StackUW migration or public deletion under 4.x.
+- **Quoted keys:** #362 fixes demonstrated string-key misdecoding and signing
+  source-accounting paths, with sequence-literal regressions. Local verifier
+  tests pass 2,623/2,623 and direct reference checks 1,089/1,089 with no baseline
+  updates. Wait for current-head CI, then review separately. Corrected semantic
+  signing subjects may differ for historically misdecoded records; future
+  release work must assess verifier identity/pins and historical compatibility.
+  This is not permission to rewrite signatures, receipts or baselines.
+
+Local full-suite results remain **failed**, separately from remote CI: Python
+foundation 3,999 passed / 180 failed; quoted-key correction 4,023 passed / 180
+failed. Subprocess-dependent wrapper/profile/release/package failures remain
+recorded; direct reference-runner success does not turn those gates green.
+No independent Microsoft Excel recalculation or full Python Verifier is claimed.
+
+### Remaining owner-controlled decisions
+
+RFC 0088 requires direction on an exactly specified portable procedure versus
+universally correctly rounded primitives, whether stability rearrangements are
+separate, and numerical-contract/engine versioning with existing receipt wire
+subjects versus a new selector. Recommended directions are portable procedure,
+separate rearrangements and existing wire subjects, subject to concrete evidence.
+No kernel, domain restriction, activation or RFC acceptance is approved.
+
+The architecture proposal requires approval of the exact removal set, governed
+producer/writer boundary, retired-command refusal behavior, asset/URL transition
+policy and eventual activation. RFCs 0085–0088 remain drafts; 0086/0087 financial
+authority/basis/precision decisions remain separate. Issue #343 stays open.
+#349 was owner-approved and merged as `a18ed8ee7f502e2bd538c3c96be1584f94c458b9`;
+the older statement below that it is held is historical.
+
+### Local recovery and worker shutdown
+
+All completed lane contents are on the GitHub heads above. Local worker commits
+have different Git metadata but identical complete trees: numerical `b2d721be`,
+Python `3cbb2562`, architecture `c8ee8964`, quoted-key fix `5e892911`.
+No worker remains running; no local test/build process was intentionally left.
+
+Unfinished, unreviewed work is preserved in place and in a local recovery archive
+outside `/tmp`: `uwmd-dev/session-backups/2026-10-15-closeout/` in the enclosing
+development workspace. It contains two verified Git bundles, full worktree
+inventory, unfinished source/evidence tarball and SHA256 checksums. **It is not
+on GitHub and must be transferred separately before leaving this machine.**
+
+- `/tmp/uwmd-lane-354`: unreviewed closed-session Reader/evaluator files; do not
+  replace the independently reviewed #358 implementation wholesale.
+- `/tmp/uwmd-launch-foundations`: superseded engine-first planning, including a
+  conflicting old RFC 0088 filename; preserve for recovery, do not publish it as
+  the canonical RFC. #357 owns RFC 0088.
+- `/tmp/uwmd-rfc85-authority`: unfinished RFC 0085 refinement and synthetic
+  evidence, distinct from published #335. Review before selectively resuming.
+
+Other dirty statuses are dependency/cache links or generated Python caches;
+they are not implementation work to commit. Owner worktrees and older branches
+remain untouched. Recover historical local commits from the bundles if needed,
+not by resetting active GitHub branches to stale local branch heads.
+
+On a fresh machine: fetch main and the named PR branches, read this handoff and
+their existing reviews/RFCs, inspect the transferred inventory if using unfinished
+work, and recheck CI. Keep one serialized integrator. No RFC acceptance, normative
+arithmetic/conformance change, release-version change, publication or 5.0 launch
+preparation is authorized by this handoff.
+
+---
+
 **2026-10-15 — interim4.3.0 published and independently checked.**
 Annotated `v4.3.0` (object `1aba40faeff4553fa957355c5c0bd205f55be40f`) targets
 #351 merge `80c68c3d0950948c85a1d3a90c02cd05f3a650a4`. Release38821844153
