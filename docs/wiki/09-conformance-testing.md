@@ -758,3 +758,14 @@ failure. Signature counts explicitly remain present/unchecked and zero verified.
 No integrity profile or generic verify capability is advertised; discovery remains
 parse-only and genuine Reader17/17 stays separate. See the Python README for local
 count/exit semantics, supported domain and scoped API boundaries.
+
+### Independent Python active source/role inventory
+
+The standalone `inspect-source-roles` command inventories SRC-01/02/03 and
+ROLE-01 across every active physical block, plus pinned META-01 routing. Twelve
+focused methods include nine explicitly scoped actual standalone comparisons
+through unchanged frozen expectations and the shared subset comparator; these
+are not portable validate passes. Selected local shape diagnostics have no
+invented registered code or severity. Superseded history remains retained and
+outside this active-source scope. Full metadata, conditional reference and
+policy verification remain separate. Discovery stays parse-only with no tier.

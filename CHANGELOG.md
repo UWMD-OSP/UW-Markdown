@@ -28,6 +28,12 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Add independent Python active-block source/provenance and role inspection,
+  including leaf override actor/resolution checks, pinned metadata routing and
+  separate local shape diagnostics. Preserve unknown payloads and source bytes,
+  skip historical role reclassification and retain parse-only discovery without
+  full validation or tier claims.
+
 - Add independent Python block-content hashing and bounded read-only chain
   assessment under accepted §V.9/§V.10, with complete physical block evidence,
   explicit opt-in/refusal diagnostics and a separately addressed ordered-chain

@@ -338,3 +338,56 @@ the unchanged shared subset comparator; it never claims full signing or portable
 integrity passes. Further controls cover exact scope, opt-in prefixes, independent
 parent/content failures, nullable/current/history identities, unsupported grouping,
 hash-provider/JCS failures, unchanged roots and snapshots before the first await.
+
+
+## Active source and role inventory
+
+`python -B implementations/python/uwmd.py inspect-source-roles <file> --json`
+performs a bounded independent Format §2.5/§2.6/§2.8 inventory. The report is a
+**nonnormative standalone wrapper**, not `ValidationResult`, complete Format
+validation or a Reader/Verifier tier claim. Discovery stays parse-only;
+validate, calc and generic verify remain unsupported.
+
+`inspect_source_roles` snapshots the document and inspects every active physical
+block, including earlier active blocks hidden by canonical singleton selection,
+all parallel variants, extension sections and unselected role peers. It reports
+exact SRC-01 actor-grammar failures, SRC-02 resolution tags in actor fields,
+SRC-03 unknown resolution values and ROLE-01 invalid active scalar roles. The
+same actor/resolution checks apply to admitted top-level `_overrides` entries.
+Actor and resolution fields are never moved, normalized, inferred or repaired;
+`manual` is an actor and cannot be used as a resolution. Explicit null differs
+from an absent optional resolution. `_meta.role` and retired flat metadata are
+never interpreted as aliases. Pinned META-01 routing checks reject non-nested
+metadata, late `_meta`, mismatched section identity and `section_id` wrappers.
+
+Registered findings are separate from `shape_findings`, which are explicitly
+local diagnostics with no invented registered code or severity. Selected
+provenance/quality/lifecycle member types and override path/confidence/reason/note
+shapes are checked against the accepted block schema. These checks do not invent
+an override path grammar, traverse a target, require its existence, reject unknown
+payload/annotation members, or apply override precedence to underwriting values.
+An agent source requires the `agent_id` member; admitted null remains unchanged.
+JSON integer semantics admit revision `1.0` and reject booleans.
+
+Historical blocks are explicitly counted as skipped by this active-source scope;
+their payloads remain retained and roles are not reclassified. Source byte spans,
+physical ordinals and exact authored variants distinguish findings on repeated
+active blocks. Returned evidence is detached and the original source/Reader
+projection remains unchanged. The wrapper's local `ok` requires both finding
+lists to be empty; CLI exit is nonzero when this bounded inventory refuses.
+
+The live underscore provenance-completeness family, full timestamp/metadata
+schema validation, conditional market-data/composition reference verification,
+edit authority, role selection for calculations and signatures remain separate
+obligations. This inventory does not add defaults, financial behavior or a full
+validation capability.
+
+Evidence: twelve focused Python methods include **nine actual standalone scoped
+fixture comparisons**, using unchanged frozen expectations and the shared subset
+comparator through an explicit test-only projection. Source vocabulary fixtures,
+bare metadata negatives and declared/invalid role fixtures are checked only for
+the implemented finding families; these are not portable validate passes.
+Additional controls cover all actor namespaces, exact ASCII spelling, every
+resolution tag, malformed leaf values, active physical peers, superseded flags,
+unknown payload retention and no mutation. Existing controls and discovery flags
+are unchanged.
