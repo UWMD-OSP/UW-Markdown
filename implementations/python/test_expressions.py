@@ -67,6 +67,8 @@ class ExpressionTests(unittest.TestCase):
         self.assertEqual(parse_expression("unknown()"), ("call", "unknown", ()))
         self.assertEqual(parse_expression("if(true, f(a), null)"),
             ("call", "if", (("boolean", True), ("call", "f", (reference("a"),)), ("null",))))
+        self.assertEqual(parse_expression("pow(a, pow(b, c))"),
+            ("call", "pow", (reference("a"), ("call", "pow", (reference("b"), reference("c"))))))
         for valid in ("pow(1.2, 31)", "irr(-100, 110)", "is_calendar_date()", "1 / 0", "null ? 1 : 2"):
             # Runtime domains, arity, convergence and null ternary behavior are
             # outside parsing; no numerical-policy choice is made here.
@@ -113,7 +115,7 @@ class ExpressionTests(unittest.TestCase):
 
     def test_host_language_and_incomplete_input_refuse(self):
         for bad in (None, True, 1, "", " ", "x = 1", "x => x", "lambda x: x", "for(;;)",
-                    "[1, 2]", "{x: 1}", "a; b", "a ** b", "a & b", "a | b", "a // b", "a # comment",
+                    "[1, 2]", "{x: 1}", "a; b", "a ** b", "a ^ b", "a & b", "a | b", "a // b", "a # comment",
                     "/*comment*/ 1", "a += 1", "a[0] = 1", "a...b", "a @", "a.b@", "(a", "a)"):
             with self.subTest(formula=bad):
                 self.refusal("CALC-PARSE-001", parse_expression, bad)
