@@ -83,6 +83,11 @@ findings in the affected-case manifest. Existing completeness warnings and infor
 severity and relative order. In particular the five closed missing-field
 suffixes remain unchanged; this RFC adds neither `META_FIELD_MISSING_ACTOR` nor
 a separate actor code. Independent existing errors on other fields still apply.
+Late `_meta` placement and `_meta.section` disagreement remain Format
+requirements, but are not part of this existing wrapper/nested-object predicate
+and MUST NOT suppress actor admission. This RFC assigns neither condition a new
+`META-01` meaning or other registered diagnostic. A partial implementation must
+report an uncovered requirement honestly rather than invent that allocation.
 
 Keep every preexisting visible-model metadata-shape finding at its original
 checkpoint and in its original order. Append newly exposed retained-physical
@@ -236,8 +241,18 @@ and protect the inventory container from accidental callback mutation.
 
 Affected reference files are `parser.ts`, `validator.ts`, `protocol.ts` and their
 focused tests. Add schema/type parity checks and independently matched Python
-predicate/source controls without changing its CLI/capability claims. Integration
-owns actual broader consumer/conformance disposition and exact-head CI. This
+predicate/source controls without changing its CLI/capability claims. The
+prelaunch Python partial source inspector previously bundled late `_meta` and
+section disagreement into `META-01`. Correct that code allocation: only the
+exact wrapper/nested-object predicate suppresses actor admission and receives
+the governed shape diagnostic across physical blocks. Keep those two separate
+requirements as uncoded local shape findings in the inspector's active scope,
+with unsuccessful local assessment retained, rather than preserving incorrect
+codes for compatibility or extending them to history. Preserve identifiable old
+unit expectations and record the explicit correction. A late/mismatched but
+nested-valid block with no actor still owes the actor finding. This is no claim
+that the inspector is a complete validator or that those requirements vanished.
+Integration owns actual broader consumer/conformance disposition and exact-head CI. This
 worker draft supplies no activated implementation, acceptance or full-suite
 result. Implementations in other languages may retain their own physical block
 inventory so long as they meet the same operation and diagnostic contract.
