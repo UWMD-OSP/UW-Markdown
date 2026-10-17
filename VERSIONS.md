@@ -17,6 +17,46 @@ together would force every adopter to track every library release.
 The same logic applies to the protocol: an editor and a verifier can be
 released independently as long as both honor the same protocol version.
 
+## Public launch compatibility policy (owner decision, 2026-10-16)
+
+UWMD 5.0 is the first official public compatibility baseline. Every earlier
+version, including published 4.x packages, is prelaunch development history.
+The official launch ecosystem has no obligation to preserve compatibility with
+those versions. Major 5 retains the existing npm organization, package names
+and publication history; it is version-name continuity, not a legacy-support
+promise or a reset to version 1.
+
+Prefer clean, coherent and deterministic launch contracts. Do not retain pre-5.0
+readers, numerical procedures, Envelope codecs, receipt verification regimes,
+deprecated APIs or compatibility shims solely for backward compatibility.
+Breaking prelaunch behavior is permitted. Normative changes still require RFC
+discipline, synchronized specifications/schemas/conformance, independent
+verification and the applicable owner decisions. This policy accepts no draft
+RFC, numerical procedure, representation design or retirement implementation.
+
+Preserve original repository commits, tags, issued artifacts, signing evidence
+and release records accurately. Historical identity and verdict analysis remains
+audit evidence, not a requirement to support the old contract. Do not rewrite
+that evidence or imply that a prelaunch artifact is authenticated or financially
+verified under a new launch contract. Previously published npm artifacts cannot
+be erased by this policy, and existing consumers do not migrate automatically.
+Any newly issued artifact must be attributable to the actually supplied source
+and the separately approved contract; it is not a relabeled historical artifact.
+
+Format, Protocol, packages, modules and other public surfaces remain independently
+versioned. No requirement aligns every component to 5.0.0. Exact launch versions,
+post-launch support details and implementation activation follow their normal
+review gates. No 5.0 tag or publication is authorized without separate explicit
+owner launch approval.
+
+This decision applies to RFCs 0085, 0088 and 0089, Python verification,
+agent-product retirement and launch preparation. Older prelaunch compatibility
+commitments below describe their historical releases; they are not mandatory
+launch-design constraints. Current implementation and corpus behavior change
+only through their reviewed engineering or normative changes. For #373, strict
+RFC 8785 rejection of malformed Unicode is approved forward behavior; preserve
+historical evidence without a malformed-input verification fallback.
+
 ## Current matrix
 
 Release 4.3.0 pairs core/CLI 4.3.0 with the unchanged Protocol 4.1.0 and
@@ -402,6 +442,11 @@ These were candidate versions when the plan was written. See the
 [1.1+ interchange release plan](docs/releases/1.1-plus-interchange-plan.md).
 
 ## Compatibility rules
+
+The rules below describe the existing prelaunch release streams. They do not
+require the launch implementation to support those streams; the explicit
+[public launch policy](#public-launch-compatibility-policy-owner-decision-2026-10-16)
+governs that boundary. Independent versioning and honest release records remain.
 
 1. **A reader supports exactly the format it names.** From Format 3.0
    a reader refuses every other `uw_version`, newer minors included, as

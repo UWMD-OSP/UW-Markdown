@@ -5,6 +5,15 @@ boundary, not an RFC acceptance or a new conformance obligation. UWMD owns the
 vendor-neutral exchange standard and verification. StackUW owns modeling,
 agents and workflows; other producers remain equally valid adopters.
 
+## Launch-policy update (2026-10-16)
+
+This dated 4.x cleanup inventory remains evidence of the reviewed source, not a
+mandatory legacy-support contract. The [explicit owner policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+sets5.0 as the first public compatibility baseline; older retention/migration
+wording below does not constrain a clean approved launch. Preserve historical
+records. Exact product removals and normative changes still require scoped
+review and applicable RFC/conformance synchronization. No release is authorized.
+
 ## Authority and reconciliation
 
 | Evidence | Meaning for this cleanup |
