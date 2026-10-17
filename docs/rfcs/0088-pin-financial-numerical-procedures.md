@@ -865,3 +865,61 @@ closure does not supply full cross-platform financial/receipt proof, universal
 accuracy, all graph/day-count/stated-figure coverage, issuer trust or RFC
 acceptance. Owner procedure/accuracy/refusal choices and production activation
 remain open under the major-5 launch policy.
+
+### Composed accuracy and cancellation checkpoint (unaccepted)
+
+The [bounded cancellation study](https://github.com/UWMD-OSP/UW-Markdown/blob/b2c16fcf/experiments/numerical-0088/cancellation-accuracy/README.md)
+adds36 new exact scalar PMT/PV/FV controls, including both neighbors/ties of the
+binary64 `1+rate` collapse boundary, signed zero and integer periods1/360. It
+preserves exact-rational real-formula certificates, the ordered graph with an
+ideal correctly rounded power, independently executed pinned JS/Python graphs,
+and actual builtin/evaluator/decimal-string-quantizer outcomes. The ideal-power
+graph is a mathematical counterfactual of the already-rounded base, **not** an
+executed MPFR adapter, new financial graph or primitive-B implementation claim.
+
+In this bounded domain, A and the ideal-power graph agree on all36 raw words;
+30 differ from whole-real-formula RN-even. After the existing12-place VIII.5
+procedure,21 finite values differ and five nonfinite raw results are refused
+while the exact-real reference remains finite. At rate word `3ca0000000000000`
+(+2^-53), one-period PMT refuses, while PV/FV report0 instead of reference1;
+the latter have exact relative real error1. The next positive rate word gives
+reported PMT0.5/PV2 instead of reference1. Both input-base rounding and later
+cancellation are material: correctly rounding only the power primitive cannot
+restore a discarded rate or imply whole-formula accuracy.
+
+Two additional natural WindowsNode24.14.1 host/candidate changes occur at
+negative rate word `bc90000000000001`, one period: host PMT raw-infinity/refusal
+becomes candidate reporting0.25, and host PV reporting0 becomes candidate4;
+the exact-real references report1. These are local measured financial
+reporting/refusal differences, not the historical IRR endpoint or newly executed
+receipt differences. Original receipts and all old4204/178/4730 evidence remain
+unchanged. Any receipt consequences still require their own actual API evidence.
+
+Capture4573db25/tree2d4019c5 records WindowsAMD64, CPython3.12.3 and
+Node24.14.1/V8 13.6.233.17-node.44. Sixteen compressed artifacts preserve591583
+raw bytes and200 complete ordered rows per candidate graph implementation;
+103 source/reference and86 compiled-JS identities remain unchanged. The rational
+oracle is bounded to listed word inputs, exact unit/zero scalar amounts, integer
+periods1/360 and12-place reporting; midpoint search is at most63 iterations.
+Its38,169-bit maximum exact certificate is a research resource observation,
+not a proposed production domain/work limit or a universal accuracy proof.
+
+**D1/D5 recommendation:** keep A as the lean provisional procedure direction,
+but do not equate primitive accuracy with an end-to-end financial accuracy
+promise. Before accepting that promise, choose whether known large composed
+errors/refusals are acceptable under an explicitly limited exact-procedure
+contract, or require a separately stated financial accuracy objective plus
+evidenced graph/domain changes. Choosing B alone cannot resolve these examples.
+No zero-rate cutoff, stable formula, tolerance or new refusal rule is selected.
+Existing financial graph/solver conventions remain unchanged in this draft.
+
+Published9c0322a7 ordinaryCI39061421563 has17 successful jobs and one skipped
+publication observation: production Node20/22 and WindowsNode20 gates, three
+Python foundation/raw-kernel jobs and the named repository/tooling guards.
+LinuxNode20 also executed the previous19-control actual receipt matrix and
+immutable historical trajectory checks. These are scoped regressions; this new
+36-case study was absent from that head. Green17 does not establish exhaustive
+primitive accuracy, all financial graphs/day counts, a global composed error
+bound, spreadsheet recalculation or owner acceptance. Optional research
+39061421580 was cancelled, never passed. Frozen historical cross-platform
+artifacts retain their original source/runtime scopes.
