@@ -44,7 +44,7 @@ a normative oracle. Its nine actual CLI responses have exit1, preserve sources,
 and honestly contain partial validation plus unallocated local evidence; their
 uncoded error envelopes do not satisfy ProtocolError's required code/category.
 
-The [existing Reader review](../reviews/2026-10-15-python-reader-354.md#2026-10-17--nine-native-refusals-and-draft-rfc0091)
+The [existing Reader review](https://github.com/UWMD-OSP/UW-Markdown/blob/90ee5217af8e430db7a1a4e737bda76e6991598f/docs/reviews/2026-10-15-python-reader-354.md#2026-10-17--nine-native-refusals-and-draft-rfc0091)
 links exhaustive original-source hashes, all nine responses, independent current
 TypeScript findings and read-only Python/Node predicate inventories. Source,
 schema, conformance and introducing RFCs jointly establish authority. Schema
