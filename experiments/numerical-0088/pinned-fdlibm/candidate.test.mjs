@@ -121,3 +121,21 @@ test('observed public wrapper policy stays separate from raw internal exceptions
   assert.equal(currentPolicy('pow', [value('601dd55745cbb7ed'), 2]).reason, 'nonfinite_result');
   assert.equal(run({ op: 'pow', x: '4000000000000000', y: '3fe0000000000000' }).bits, '3ff6a09e667f3bcd');
 });
+
+test('negative-unit parity/domain across every finite exponent field uses full exact words', () => {
+  for (let field = 0; field < 0x7ff; field += 1) {
+    for (const tail of [0n, 0x80000001n, 0xfffffffffffffn]) {
+      const significand = field === 0 ? tail : (1n << 52n) | tail;
+      const shift = field === 0 ? -1074 : field - 1075;
+      const divisor = shift < 0 ? 1n << BigInt(-shift) : 1n;
+      const integral = shift >= 0 || significand % divisor === 0n;
+      const odd = integral && (shift > 0 ? false : ((significand / divisor) & 1n) !== 0n);
+      for (const sign of [0n, 1n << 63n]) {
+        const word = (sign | BigInt(field) << 52n | tail).toString(16).padStart(16, '0');
+        const observed = K.pow(-1, value(word));
+        if (!integral) assert(Number.isNaN(observed), word);
+        else assert.equal(observed, odd ? -1 : 1, word);
+      }
+    }
+  }
+});
