@@ -7,6 +7,7 @@ import hashlib
 import json
 import platform
 import sys
+import subprocess
 import zipfile
 from pathlib import Path
 from kernel import evaluate_record, require_binary64
@@ -66,6 +67,8 @@ def measure():
     differences = [row for row in accuracy if row['candidate_word'] != row['mathematical_word']]
     result = {'status': 'UNACCEPTED independent Python source-reproduction and bounded accuracy observations',
               'python': sys.version, 'platform': platform.platform(), 'machine': platform.machine(),
+              'checkout_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=HERE, text=True).strip(),
+              'checkout_tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=HERE, text=True).strip(),
               'input_hashes': identities, 'implementation_hashes': {p.name: sha(p.read_bytes()) for p in sorted(HERE.glob('*.py'))},
               'native_comparisons': native_results, 'math_cases': len(accuracy),
               'mathematical_word_agreements': len(accuracy) - len(differences), 'mathematical_disagreements': differences,
