@@ -94,7 +94,10 @@ checkpoint and in its original order. Append newly exposed retained-physical
 shape findings there in physical source order, deduplicating block references
 already shape-checked through the visible model. All shape findings precede the
 new actor findings. Insert the actor pass after that shape checkpoint and before role, period-series
-and source-vocabulary checks. Retain the relative order of all old findings.
+and source-vocabulary checks. Retain the relative order of all old TypeScript ValidationResult findings.
+The partial Python inspector is not that DTO: its explicit registered/local
+shape separation below is a governed correction, not a claim to preserve its
+previous unsupported META-01 allocations or interleaving.
 Actor findings follow retained physical source order, then model-only traversal
 order as defined below. Use available section/source context without inventing
 source positions for hand-built blocks. Equal-valued but distinct physical
@@ -234,7 +237,7 @@ retaining their already-accepted rules.
 `@uwmd/verify` owns the parser/validator/registry change; core's existing
 re-export remains sufficient. A private parser-origin inventory can be a
 `WeakMap<ParsedUWFile, readonly UWBlock[]>` keyed by the original parsed object,
-without a serialized field or new public export. Only actor admission consults
+without a serialized field or new public export. Actor admission and its preceding exact wrapper-shape accounting consult
 that inventory in this proposal; existing current-value checks are not
 wholesale redirected to physical history. Code must preserve object references
 and protect the inventory container from accidental callback mutation.
