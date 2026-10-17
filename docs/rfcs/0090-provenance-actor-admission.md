@@ -45,7 +45,7 @@ identifies twelve unchanged source/expectation pairs at main
 The packet's original78-error/eight-exit projection remains identifiable as
 historical evidence. The candidate now independently executes the original
 source, portable CLI and complete indexed-corpus inventory; see the existing
-[Reader review](../reviews/2026-10-15-python-reader-354.md#2026-10-17--governed-actor-reconciliation-candidate)
+[Reader review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-python-reader-354.md#2026-10-17--governed-actor-reconciliation-candidate)
 and its actor-inventory companions. Results distinguish direct API exposure,
 actual consuming operations and governed expectation changes.
 
