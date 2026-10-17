@@ -56,10 +56,20 @@ existing reserve/draw/replacement/snapshot/hash-failure/source-evidence coverage
 This is preservation evidence for the private API work; the actual 111-case
 validate CLI gate is still unrun because that command remains unsupported.
 
+The next accepted closure adds canonical-only FV field routing, malformed
+present metadata/leaf-annotation and conditional provenance-reference checks,
+field/stage/declaration policy specificity, and required terminal-tax assessment
+members. The 45 focused validation methods pass, including the unchanged 111
+API projections. Unreviewed private FV shortcut paths were removed; unknown
+payload at those paths is retained without selecting plausibility behavior.
+Normal G1 reassessment still admits a lone trigger. Terminal assessment fields
+use their own accepted schema and accurate diagnostic pointers.
+
 The CLI still refuses `validate` and discovery remains parse-only. Completion
-still needs the remaining audited field/condition integration and explicit
-unsupported-composition command transport; derived footing has no invented
-stated-versus-derived discrepancy code. The command/wire/refusal and nonportable
+still needs the remaining audited field/condition integration, disposition of
+the actual required-actor conflict below, and explicit unsupported-composition
+command transport; derived footing has no invented stated-versus-derived
+discrepancy code. The command/wire/refusal and nonportable
 gates below must then pass. Existing local shape findings are not guessed
 registered codes.
 
@@ -122,12 +132,65 @@ Scope field readiness stays false for unresolved property content. The other
 stage booleans report the accepted section-presence table, not whole-record
 completeness; `composition_assessment.status` must be consulted separately.
 
-The current 33 focused validation methods include eleven external-boundary
-methods and two FV audit methods. External controls include the unchanged
+The preceding 33 focused validation methods include eleven external-boundary
+methods and two FV audit methods; the newer closure brings that count to 45. External controls include the unchanged
 frozen missing-part source's unresolved meaning, exact roles/history, malformed
 directives, source retention and V.12 consultation precedence. No fragment
 resolution, smaller partial collection, network fetch, composition-suite pass,
 new receipt interpretation or CLI capability follows.
+
+### Metadata admission and the remaining required-actor conflict
+
+[Format 2.4–2.5](../../spec/UW_FORMAT_SPEC.md),
+[Protocol III.6a](../../spec/UW_PROTOCOL.md), and the
+[block schema](../../spec/schemas/uwmd-block.schema.json) distinguish absent
+completeness fields from malformed present metadata. The integrated API retains
+published warning/info/error routing, adds no META suffix, and inspects all
+active physical blocks rather than only selected heads. Low leaf confidence
+does not mutate the orthogonal human-review flag. Unknown payload, historical
+provenance and `_notes` are retained; optional signature/integrity content is
+not promoted into ordinary validation.
+
+The schema's date-time shape uses [RFC 3339 5.6–5.7](https://www.rfc-editor.org/rfc/rfc3339.html#section-5.6):
+calendar-real dates, fractions, offsets, case-insensitive T/Z and structural
+UTC month-end leap-second slots. This checks syntax/calendar placement without
+asserting an actual IERS-announced leap second or authenticating an event.
+Conditional market-data/inheritance references are checked for required shape
+and digest spelling, without resolving or inventing their source facts.
+Incomplete-data policy selection uses published field specificity, then stage
+specificity, then declaration order; adopter declarations precede equal-rank
+defaults. Validation reports applicable halts and never performs substitution.
+
+There is one concrete joint-contract gate: Format 2.5b and the block schema
+require `_meta.provenance.actor`, and III.6a assigns outside-Format shape to
+META-01; unchanged frozen document assertions omit actor and would change if
+its absence produced that error. In particular,
+[05-land-stage-overlay](../../conformance/documents/fixtures/05-land-stage-overlay.uwx.md)
+explicitly expects `overall_status: clean` and `issues: []`.
+The twelve affected portable ids are:
+
+- `verifier__documents__05-land-stage-overlay__validate`
+- `verifier__documents__06-mixed-use-stage-overlay__validate`
+- `verifier__documents__07-stage-overlay-control__validate`
+- `verifier__documents__08-variant-cross-checks__validate`
+- `verifier__documents__09-returns-tax-basis__validate`
+- `verifier__documents__10-declared-roles__validate`
+- `verifier__documents__11-role-collision__validate`
+- `verifier__documents__12-role-eligibility__validate`
+- `verifier__documents__13-period-identities__validate`
+- `verifier__documents__14-student-bed-counts__validate`
+- `verifier__documents__15-student-bed-counts-inconsistent__validate`
+- `verifier__documents__17-exit-proceeds-junior-capital__validate`
+
+A read-only audit compared a hypothetical required-actor META-01 result through
+the unchanged shared `project`/`json_subset` functions to identify these exact
+assertions; it was not an additional conformance pass. The partial API preserves
+the frozen absence behavior while refusing malformed **present** actors. That
+does not make actor optional under the Format, create an ACTOR completeness
+suffix, inject provenance, or establish complete validation. Contract/baseline
+disposition is required before the whole command claim. Unlike this explicit
+contradiction, omitted metadata severity prose is settled by ordinary published
+precedent and does not require an owner decision.
 
 ### CC coverage ledger
 
@@ -163,14 +226,14 @@ does not reproduce DSCR/IRR or another model to perform these plausibility check
 | Codes | Condition and severity | Implemented source / remaining gate |
 |---|---|---|
 | FV-01 / FV-02 | Cap rate below 3% / above 15%, warning | valuation.going_in_cap_rate. |
-| FV-03 | Debt yield below 7%, warning | debt_structure.sizing_metrics.debt_yield (and current top-level fallback); source-location applicability remains audited. |
-| FV-04 | DSCR below 1.20 warning / below 1.00 error | Senior debt sizing_metrics.dscr_underwritten (and current dscr fallback); exact boundaries and institution overrides tested. |
+| FV-03 | Debt yield below 7%, warning | debt_structure.sizing_metrics.debt_yield only; unsupported top-level shortcuts are retained as unknown data, not selected. |
+| FV-04 | DSCR below 1.20 warning / below 1.00 error | Senior debt sizing_metrics.dscr_underwritten only; exact boundaries and institution overrides tested. |
 | FV-05 / FV-06 | Equity multiple below 1 / above 5, warning | dcf.returns.equity_multiple. |
 | FV-07 / FV-08 | Levered IRR below 5% / above 40%, warning | dcf.returns.levered_irr; no IRR procedure is executed here. |
-| FV-09 | LTV above 75% warning / above 85% error | Senior debt sizing_metrics.ltv (and current top-level fallback). |
-| FV-10 / FV-11 | OpEx ratio below 20% / above 70%, warning | Initial implementation reads top-level NOI expense_ratio; canonical expenses.expense_ratio needs integration and focused proof before promotion. |
-| FV-12 | Annual rent growth above 8%, warning | Initial NOI revenue_growth_rate / year_1 projection carrier; canonical DCF assumptions.revenue_growth_rate needs integration and exact carrier applicability. |
-| FV-13 / FV-14 | Vacancy below 2% / above 40%, warning | Initial NOI vacancy_rate / income vacancy shortcuts; canonical income.vacancy_credit_loss.rate_applied needs integration and exact carrier applicability. |
+| FV-09 | LTV above 75% warning / above 85% error | Senior debt sizing_metrics.ltv only; no top-level shortcut. |
+| FV-10 / FV-11 | OpEx ratio below 20% / above 70%, warning | noi_model.expenses.expense_ratio; canonical/null/type/override controls pass without a top-level fallback. |
+| FV-12 | Annual rent growth above 8%, warning | dcf.assumptions.revenue_growth_rate; no NOI or cash_flow_projection alias and no growth model is run. |
+| FV-13 / FV-14 | Vacancy below 2% / above 40%, warning | noi_model.income.vacancy_credit_loss.rate_applied; missing/null/wrong-type values do not fall through to shortcuts. |
 
 The construction-LTC row in Format 5.2 has 80%/90% thresholds, but the current
 registered FV registry contains FV-01–14 and names no separate LTC finding.
@@ -184,12 +247,12 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | Family | Implemented scope | Minimum remaining validation obligation |
 |---|---|---|
 | LOC / CUR / descriptive identity | Locale/currency vocabulary, builtin/custom class syntax, scenario and BTR agreement | Complete frontmatter presence/type/source applicability, preserving unknown fields; descriptive values never select models. |
-| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Reconcile present-but-invalid provenance/quality/lifecycle/leaf-annotation shape with accepted registered routing. The source inspector's local shape inventory must not be silently ignored or concatenated as guessed codes. Required metadata and conditional provenance remain an applicability gate, not an invented numerical/owner blocker. |
-| DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, default stage halt pairs | Complete field-specific institution-policy matching, exact gaps/overrides conditions and externalized-field unavailability. |
+| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Present malformed provenance/quality/lifecycle/leaf shape now maps once per physical block to META-01; the five absent completeness fields retain their exact warnings. Conditional references and agent identity are checked without fetching or inferring provenance. Required-actor absence is the concrete frozen-contract conflict below; remaining metadata applicability must still be audited. |
+| DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | Field-specific institution matching and equal-specificity overrides now have controls; finish exact gap/override consumption and externalized-field unavailability without executing substitution/default actions. |
 | MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Exhaustive closed-field shape/applicability and stated sizing declaration guards. Financial stack sizing reproduction is a separate mandatory Verifier obligation. |
-| LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Complete LU model/row/schema-field admission and declaration applicability; period inspection is not evaluation or stated-aggregate verification. |
-| TAX / CAPX | Frozen diagnostic arrays, same-quantum tax equations, abatement/draw/target/payback rules | Complete closed-object/stated-member/null/conditional shape audit, including terminal versus normal line distinctions; no savings applied. |
-| LSE / REC | Frozen arrays, lease dates/steps/options/remedies/balances and settled recovery arithmetic | Complete optional administrative-fee/gross-up/cap/true-up shape/conditions and exact source-reference admission. No cap history or pool allocation is generated. |
+| LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Complete LU model/row/schema-field admission and declaration applicability; LU-01's pinned period trigger does not itself assign every remaining schema-field failure a registered code. Period inspection is not evaluation or stated-aggregate verification. |
+| TAX / CAPX | Frozen diagnostic arrays, same-quantum tax equations, abatement/draw/target/payback rules | Terminal required assessment versus optional normal G1 group is now controlled. Finish closed-object/stated-member/null/conditional applicability; no savings applied. |
+| LSE / REC | Frozen arrays, lease dates/steps/options/remedies/balances and settled recovery arithmetic | Complete optional administrative-fee/gross-up/cap/true-up shape/conditions and exact source-reference admission. Schema bounds alone do not assign those conditions to REC-01 (explicit share/cap pct) or REC-02 (method/companions/accumulation); do not invent that routing. No cap history or pool allocation is generated. |
 | HDG / ESC / V.12 | Existing selected-source structure and exact separate binding union; external consulted-source gating is local only | Preserve all scalar/date/group/source/refusal conditions, debt-only evidence and no false result from unresolved content; complete future command transport must exclude local null as a normative result. |
 | WF | Tier/split/hurdle/clawback structure and current exact cash identity | Exhaustive closed payload/optional stated-field shape; actual outcomes, IRR hurdles and clawback arithmetic remain separate stated-figure verification. |
 | RSV / BED | Existing reserve structure and student bed/date rules | Complete per-source/class/optional-member application and malformed-input evidence; RSV balance verification remains separate and unchanged. |

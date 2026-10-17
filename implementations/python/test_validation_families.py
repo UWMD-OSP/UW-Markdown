@@ -156,6 +156,18 @@ class ValidationFamilyTests(unittest.TestCase):
                 body=tranche|alteration
                 self.assertIn(code,selected_codes(validate(document(capital_stack={"tranches":[body]})),("CS-",)))
 
+    def test_terminal_tax_requires_assessment_but_normal_g1_trigger_remains_valid(self):
+        normal=document(noi_model={"expenses":{"real_estate_taxes":{"value":1,"reassessment":{"trigger":"sale"}}}})
+        self.assertEqual(selected_codes(validate(normal),("TAX-",)),[])
+        terminal=document(dcf={"exit_analysis":{"terminal_tax":{"trigger":"none","in_exit_noi":False}}})
+        result=validate(terminal)
+        self.assertEqual(selected_codes(result,("TAX-",)),["TAX-01"])
+        finding=next(i for i in result["issues"] if i["code"]=="TAX-01")
+        self.assertEqual(finding["field"],"exit_analysis.terminal_tax")
+        terminal=document(dcf={"exit_analysis":{"terminal_tax":{"trigger":"none","assessed_value":10,
+            "millage_rate":.1,"indicated_tax":1,"in_exit_noi":False}}})
+        self.assertEqual(selected_codes(validate(terminal),("TAX-",)),[])
+
     def test_wide_declared_tax_magnitude_uses_existing_decimal_shift(self):
         self.assertEqual(_tax_quantize(15000000000000,-13),20000000000000)
         self.assertEqual(_tax_quantize(-15000000000000,-13),-20000000000000)

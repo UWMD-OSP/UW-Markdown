@@ -10,6 +10,7 @@ import re
 from uwmd_binding_sources import finite
 from uwmd_currency import inspect_document_currency
 from uwmd_source_validation import inspect_source_roles
+from uwmd_validation_provenance import metadata_shape, incomplete_policy
 from uwmd_validation_selection import active_blocks, select_section, field, is_externalized
 
 STAGES = ("scope", "screening", "term_sheet", "full_underwrite",
@@ -104,6 +105,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     document, fm = ledger.document, ledger.document.frontmatter.value
     source = inspect_source_roles(document)
     ledger.issues.extend(source["issues"])
+    metadata_shape(ledger, source)
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
         ledger.issue("LOC-01", "error", "frontmatter", "locale", "Locale is outside the registered vocabulary", value=fm["locale"])
@@ -130,9 +132,6 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     gaps = field(gap_selection.block.parsed.value, "items") if gap_selection.block is not None else []
     gaps = gaps if isinstance(gaps, list) else []
     stage = fm.get("deal_stage")
-    halt = {("rent_roll", "full_underwrite"), ("noi_model", "full_underwrite"),
-            ("debt_structure", "term_sheet"), ("valuation", "full_underwrite"),
-            ("borrower_sponsor", "credit_approval"), ("compliance", "closing")}
     for block in active_blocks(document):
         body, section = block.parsed.value, block.section
         meta = body.get("_meta")
@@ -156,18 +155,26 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         quality = meta.get("quality")
         if not isinstance(quality, dict):
             continue
-        if quality.get("confidence") == "low" and quality.get("human_review_required") is not True:
+        overrides = body.get("_overrides")
+        low_leaf = isinstance(overrides,list) and any(
+            isinstance(entry,dict) and entry.get("confidence")=="low" for entry in overrides)
+        if (quality.get("confidence") == "low" or low_leaf) and quality.get("human_review_required") is not True:
             ledger.issue("META_LOW_CONFIDENCE_NO_REVIEW_FLAG", "info", section, "_meta.quality.human_review_required", "Low confidence requires a review disclosure")
         if quality.get("partial") is True and not (isinstance(body.get("_overrides"), list) and body["_overrides"]):
             ledger.issue("DQ-03", "warning", section, "_overrides", "Partial data requires a field annotation inventory")
         if quality.get("provisional") is True:
             if not any(isinstance(g, dict) and g.get("section") == section for g in gaps):
                 ledger.issue("DQ-01", "warning", section, "_meta.quality.provisional", "Provisional block has no matching gap")
-            applicable = [p for p in incomplete_policies if p.get("section") == section
-                          and p.get("stage", stage) == stage and not p.get("field_path")]
-            action = applicable[0].get("action", {}).get("kind") if applicable else ("halt" if (section, stage) in halt else None)
-            if action == "halt":
-                ledger.issue("DQ-02", "error", section, "_meta.quality.provisional", "Declared stage requires observed rather than provisional data")
+            paths = {None}
+            paths.update(p["field_path"] for p in incomplete_policies
+                         if isinstance(p,dict) and p.get("section")==section and isinstance(p.get("field_path"),str))
+            actions = [incomplete_policy(section,path,stage,incomplete_policies) for path in paths]
+            halts = [policy for policy in actions if policy is not None
+                     and isinstance(policy.get("action"),dict) and policy["action"].get("kind")=="halt"]
+            if halts:
+                ledger.issue("DQ-02", "error", section, "_meta.quality.provisional",
+                             "Declared stage requires observed rather than provisional data",
+                             value={"policy_fields": sorted({p.get("field_path","") for p in halts})})
     present = {b.section for b in active_blocks(document)}
     if stage in STAGES:
         for section in sections_required(stage, asset):

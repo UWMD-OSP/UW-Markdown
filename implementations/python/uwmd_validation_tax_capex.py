@@ -63,7 +63,11 @@ def tax_rules(ledger):
                 r = reassessment
                 group = ("assessed_value", "millage_rate", "indicated_tax")
                 extras = ("jurisdiction", "value_basis", "assessment_ratio", "round_to_decimals")
-                group_stated = any(r.get(k) is not None for k in (*group, *extras))
+                # The normal G1 reassessment admits a lone trigger. The
+                # separate terminal schema requires all assessment members.
+                group_stated = terminal or any(r.get(k) is not None for k in (*group, *extras))
+                def rpath(member=""):
+                    return member if terminal else "reassessment" + ("."+member if member else "")
                 valid = r.get("trigger") in ("sale", "construction_completion", "statutory_cycle", "none")
                 if group_stated:
                     valid = valid and all(finite(r.get(k)) for k in group)
@@ -76,13 +80,13 @@ def tax_rules(ledger):
                 missing = [key for key in group if r.get(key) is None]
                 if any(r.get(key) is not None for key in group) and missing:
                     for key in missing:
-                        issue("TAX-01", "reassessment." + key, "Every stated assessment group requires this member")
+                        issue("TAX-01", rpath(key), "Every stated assessment group requires this member")
                 elif not valid:
-                    issue("TAX-01", "reassessment", "Reassessment vocabulary, assessment group or product is invalid")
+                    issue("TAX-01", rpath(), "Reassessment vocabulary, assessment group or product is invalid")
                 if group_stated and all(finite(r.get(k)) for k in group):
                     product = r["assessed_value"] * r["millage_rate"]
                     if not _money_equal(product, r["indicated_tax"]):
-                        issue("TAX-02", "reassessment.indicated_tax", "Indicated tax must equal assessed value times millage")
+                        issue("TAX-02", rpath("indicated_tax"), "Indicated tax must equal assessed value times millage")
                     places = r.get("round_to_decimals")
                     places = 2 if places is None else places
                     if finite(places) and int(places) == places :
