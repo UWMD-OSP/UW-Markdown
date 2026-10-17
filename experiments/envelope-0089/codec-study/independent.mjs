@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
-const require = createRequire(new URL('../../../../package.json', import.meta.url));
+const require = createRequire(new URL('../../../package.json', import.meta.url));
 const { XMLParser, XMLValidator } = require('fast-xml-parser');
 export const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const check = (condition, reason) => { if (!condition) throw new TypeError(reason); };
@@ -80,7 +80,7 @@ function tree(rows) {
     if (kind === 'object' || kind === 'array') { check(lexical === '', 'container lexical'); value = kind === 'array' ? [] : object(); }
     else {
       value = token(lexical);
-      check((kind === 'null' && value === null) || (kind === typeof value && value !== null && !['object', 'undefined'].includes(typeof value)), 'scalar type');
+      check((kind === 'null' && value === null) || ((kind === 'string' && typeof value === 'string') || (kind === 'number' && typeof value === 'number') || (kind === 'boolean' && typeof value === 'boolean')), 'scalar type');
     }
     nodes.set(id, { path, kind, value });
   }
@@ -178,7 +178,7 @@ export function decodeCsv(files) {
     check(refs.has(blockRef) && scope === 'block' && ref === `${blockRef}/prose` && !prose.has(blockRef), 'prose ref');
     const value = token(lexical); check(typeof value === 'string', 'prose string'); prose.set(blockRef, value);
   }
-  for (const [ref, collection, sectionJson, variantJson, ordinal, state, mode] of records) {
+  for (const [ref, collection, sectionJson, variantJson, ordinal, _state, mode] of records) {
     const section = token(sectionJson);
     const variant = token(variantJson);
     check(typeof section === 'string' && (variant === null || typeof variant === 'string'), 'descriptor identity');
@@ -221,7 +221,7 @@ const lexical = text => {
   return JSON.stringify(text).replace(/[\u007f-\uffff]/g, ch => `\\u${ch.charCodeAt(0).toString(16).padStart(4, '0')}`);
 };
 export function decodeXml(text) {
-  check(Buffer.byteLength(text) <= 1048576 && !text.includes('<!') && /^[\x00-\x7f]*$/.test(text), 'XML declaration/domain');
+  check(Buffer.byteLength(text) <= 1048576 && !text.includes('<!') && [...text].every(ch => ch.charCodeAt(0) <= 127), 'XML declaration/domain');
   check(XMLValidator.validate(text) === true, 'XML syntax');
   const parser = new XMLParser({ preserveOrder: true, ignoreAttributes: false, attributeNamePrefix: '', trimValues: false, parseTagValue: false, parseAttributeValue: false, ignoreDeclaration: true });
   const roots = parser.parse(text); check(roots.length === 1, 'XML root');
@@ -242,7 +242,7 @@ export function decodeXml(text) {
     const text = children[0]?.['#text'] ?? '';
     if (attrs.type === 'string') return string(text);
     const value = token(text);
-    check((attrs.type === 'null' && value === null) || (attrs.type === typeof value && ['number', 'boolean'].includes(typeof value)), 'XML scalar type');
+    check((attrs.type === 'null' && value === null) || ((attrs.type === 'number' && typeof value === 'number') || (attrs.type === 'boolean' && typeof value === 'boolean')), 'XML scalar type');
     return value;
   }
   return validate(read(roots[0], false, 0, true));

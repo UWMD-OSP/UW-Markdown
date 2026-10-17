@@ -39,7 +39,7 @@ test('CSV duplicate/ref/mode/scope/overlap/digest mutations refuse after valid d
     ['blocks.csv', text => text.replace('"default""', '"other""')],
     ['blocks.csv', text => text.replace('"variants"', '"single"')],
     ['blocks.csv', text => text.replace('/blocks/0/block', '/blocks/2/block')],
-    ['block_values.csv', text => text + text.split('\r\n')[1] + '\r\n'],
+    ['block_values.csv', text => `${text}${text.split('\r\n')[1]}\r\n`],
     ['document.csv', text => text.replace('E_NEXT', 'unsupported')],
     ['document.csv', text => text.replace(/sha256:[a-f0-9]{64}/, `sha256:${'0'.repeat(64)}`)],
   ];
