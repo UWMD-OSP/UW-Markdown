@@ -146,7 +146,9 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
                 result,findings,_,_=self.report(raw,"waterfall_claims")
                 errors=[i for i in result["issues"] if i["code"]=="WF-10"]
                 self.assertEqual(len(errors),int(refused))
-                self.assertEqual(bool(findings),refused)
+                # Null is admitted by the field's optional schema, while the
+                # lp_em_floor conditional requires its value via registered WF-10.
+                self.assertEqual(bool(findings),refused and value is not None)
         # Unused companions still have their declared shape; no inactive field
         # becomes a normalized/ignored payload value.
         claim=dict(basis="lp_em_floor",floor_multiple=1.5,floor_rate="bad",cap="promote_received")
