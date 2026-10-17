@@ -1,5 +1,6 @@
 """Canonical FV and integrated provenance/policy controls; no CLI claim."""
 import copy
+import json
 import unittest
 
 from test_reader import HEADER, block
@@ -192,7 +193,11 @@ class ValidationProvenanceTests(unittest.TestCase):
         actor["_meta"]["section"]="wrong"
         actor={"value":1,**actor}
         malformed=body_with_meta();malformed["_meta"]["provenance"]=None
-        raw=HEADER+block("property",actor)+block("property",malformed)+block("property",{"value":1})
+        # Reader's block() convenience helper supplies _meta and moves it
+        # first; explicit fences preserve the malformed input under test.
+        raw=HEADER
+        for payload in (actor,malformed,{"value":1}):
+            raw+=b"~~~json uw:section=property\n"+json.dumps(payload).encode()+b"\n~~~\n"
         parsed=parse(raw);before=copy.deepcopy(parsed)
         result=validate(parsed)
         source_issues=inspect_source_roles(parsed)["issues"]
