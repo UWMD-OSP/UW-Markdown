@@ -74,9 +74,29 @@ def verify():
     # Every original corpus artifact remains byte-identical except one explicitly
     # attributed diagnostic expectation; its original bytes remain in the archive.
     allowed = "conformance/capital-stack/senior-reconciles-debt-structure/expected.json"
+    authored_history = ROOT / "examples/standalone/authored-2026-10-17/history.json"
+    additions = {}
+    if authored_history.exists():
+        # The owner's later option(a) adds NEW positive cases; preserve every
+        # original indexed assertion and financial expectation, in original order.
+        history = json.loads(authored_history.read_text(encoding="utf-8"))
+        additions = {x["path"]: x for x in history["additive_originals"]}
+        assert set(additions) == {"conformance/corpus-index.json", "conformance/metrics/expected.json"}
     for artifact in load("baseline-catalog")["artifacts"]:
-        if artifact["path"] != allowed:
-            assert hashlib.sha256((ROOT / artifact["path"]).read_bytes()).hexdigest() == artifact["sha256"], artifact["path"]
+        path = artifact["path"]
+        if path in additions:
+            original = base64.b64decode(additions[path]["base64"])
+            assert hashlib.sha256(original).hexdigest() == artifact["sha256"]
+            before, now = json.loads(original), json.loads((ROOT / path).read_text(encoding="utf-8"))
+            if isinstance(before, list):
+                assert now[:len(before)] == before and len(now) == len(before) + 4
+                assert all(x["example"].startswith("standalone/authored-2026-10-17/") for x in now[len(before):])
+            else:
+                assert {**now, "cases": now["cases"][:len(before["cases"]) ]} == before
+                assert len(now["cases"]) == len(before["cases"]) + 11
+                assert all("authored" in x["scenario"] for x in now["cases"][len(before["cases"]):])
+        elif path != allowed:
+            assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == artifact["sha256"], path
     before = load("original-capital-expectation")
     after = json.loads((ROOT / allowed).read_text(encoding="utf-8"))
     assert set(after) == set(before) == {"why", "agree_codes", "mismatch_codes"}

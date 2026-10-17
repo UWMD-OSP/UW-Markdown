@@ -2259,5 +2259,85 @@
         "comparison": 180
       }
     ]
+  },
+  {
+    "example": "standalone/authored-2026-10-17/inline-deal.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 3,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 3,
+        "comparison": 3
+      }
+    ]
+  },
+  {
+    "example": "standalone/authored-2026-10-17/externalized-deal.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 3,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 3,
+        "comparison": 3
+      }
+    ]
+  },
+  {
+    "example": "standalone/authored-2026-10-17/package/records/inline-deal.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 3,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 3,
+        "comparison": 3
+      }
+    ]
+  },
+  {
+    "example": "standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md",
+    "asset_class": "multifamily",
+    "counts": {
+      "verified": 1,
+      "failed": 0,
+      "unverifiable": 0
+    },
+    "evidence": [
+      {
+        "id": "total_units",
+        "path": "property.total_units",
+        "stated": 3,
+        "stated_decimals": 0,
+        "state": "verified",
+        "computed": 3,
+        "comparison": 3
+      }
+    ]
   }
 ]

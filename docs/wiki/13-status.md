@@ -24,11 +24,22 @@ portable validate inputs, and five native counterfactual check differences.
 The owner authorized a bounded implementation for final review, not final RFC
 acceptance. Candidate TS/Python predicates and one attributable capital-stack
 expectation are prepared on unchanged sources. Four standalone zero-error
-assertions expose RFC0048's positive-example promise and remain unresolved;
+assertions exposed RFC0048's positive-example promise; the owner
+selected newly authored replacements as recorded below;
 original examples/package bytes are preserved. No schema or release is changed. META-01 stays
 narrow; complete Python validation and its nonportable/three-platform gates
 remain open, with parse-only discovery. The existing Reader review preserves
 all cases and the27-schema audit; RFC0085/0088/0089 remain draft.
+
+**RFC0048 kit disposition — owner option (a), 2026-10-17.** New positive
+examples are authored separately under `examples/standalone/authored-2026-10-17/`
+with explicit block declarations/reasons, new provenance/identities and a new
+package. Originals remain metadata-incomplete historical examples with unchanged
+bytes and ZIP; no zero-error or fidelity assertion is weakened. Original
+auxiliary checks remain and new-kit equivalents are added. StackUW's audited
+current Format3 adapter emits both flags; its older omission-preserving helper
+and externally supplied metadata require separate classification. RFC0091 stays
+draft/unmerged pending final review and exact-head CI; no versions or launch.
 
 **Python priority — minimum-complete capabilities.** The current implementation
 has no Reader/Verifier tier and advertises only parse. The completion matrix in

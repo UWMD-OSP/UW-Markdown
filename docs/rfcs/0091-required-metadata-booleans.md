@@ -176,9 +176,9 @@ standalone zero-error assertions remain unchanged and currently fail, because
 accepted RFC0048 promises every kit example validates. Their six absent review
 flags have no authored canonical values in the original revisions. Neither
 `review_status`, narrative review flags nor `buildMeta` defaults for NEW blocks
-can establish those omitted historical declarations. Final owner disposition
-is required: author new valid positive examples while preserving originals,
-or explicitly amend/reclassify the kit's positive validation promise. No metadata
+can establish those omitted historical declarations. The owner selected new authored positive examples while preserving originals
+on2026-10-17; the implementation of that disposition is specified below.
+RFC0048's positive-validation promise is not amended. No metadata
 is invented and no package, signature or original source is rewritten. The hook
 uses placeholder messages and no new registry copy, so it is not a final render
 baseline or complete consumer-impact measurement.
@@ -213,7 +213,7 @@ UWMD5.0 tag, release preparation or publication is authorized.
 ## Implementation acceptance packet — owner review pending
 
 The bounded candidate implements exactly these predicates in TypeScript and
-Python. [The existing review](https://github.com/UWMD-OSP/UW-Markdown/blob/87262741/docs/reviews/2026-10-15-python-reader-354.md#rfc0091-implementation-acceptance-packet)
+Python. [The existing review](https://github.com/UWMD-OSP/UW-Markdown/blob/c558a55656562f619154aa21e26ebd383173da13/docs/reviews/2026-10-15-python-reader-354.md#rfc0091-implementation-acceptance-packet)
 records independent review, exhaustive original-source/consumer dispositions,
 actual CLI and receipt boundaries, focused negative controls and exact CI.
 The archive retains before/after observations and original expectation evidence.
@@ -225,3 +225,48 @@ A model-only diagnostic's section follows the existing actor traversal context
 This does not invent annotation authority for an inconsistent hand-built model.
 Source-origin findings use the physical block's annotation. Exact field paths
 remain canonical in both operations.
+
+## Owner RFC0048 disposition — 2026-10-17
+
+The owner selected option (a): genuinely author new positive examples and retain
+the originals as metadata-incomplete history. This approves that kit disposition,
+not final RFC0091 acceptance, readiness, merge or release. RFC0048's promise and
+all zero-error positive-validation assertions remain unchanged.
+
+The four new records are under `examples/standalone/authored-2026-10-17/` with
+new document/member/package identities, canonical provenance and six explicit
+review/lifecycle declarations with one-line reasons in `declarations.json`.
+The inline/externalized carriers share one NEW logical deal identity and
+canonical metadata because full resolved equivalence is required; each has its
+own package member and byte identity. No metadata/frontmatter is excluded from
+that comparison. All six new blocks explicitly declare superseded false.
+
+The new abstract, source note and both rent-roll blocks require human review
+before real use. The two deliberately authored fictional property blocks do not
+require human fact-review for their structural demonstration purpose. These are
+new author decisions, never inferred from narrative review_status or flags or
+retroactively attributed to the old author. Five new fragments have separate
+part identities and explicit metadata. The new dated fragment uses accepted
+Format4.26's series field with the original stated rows, without new arithmetic.
+
+Every original source, embedded member, ZIP and signed/receipt fixture remains
+byte-identical. Prior index/metric expectation bytes are retained; only eleven
+new case/index entries and four NEW metric rows are appended. The four original
+positive profile case names now load newly authored positive inputs, retaining
+the exact zero-error condition. All original auxiliary composition, fragment,
+API and package predicates remain on original bytes; the same seven predicates
+also exercise the new kit. Separate controls require the old six META-02 errors
+and preserve the complete history inventory. This is not a legacy admission shim.
+
+A bounded downstream-writer inventory distinguishes current public Format3
+serialization from old internal adapters and passthrough. StackUW at audited
+commit fea704ee6a2b4d01057f216880678445347c76fe has an omission-preserving
+reshapeMetaV1toV2 helper in packages/underwriting-engine/src/export/meta-v2.ts,
+but its current default Format3 writer calls toFormat3Meta, which emits both
+required booleans. The blanket current-writer omission claim is therefore not
+verified at that head. Typed fresh outputs avoid META02/03; untyped malformed
+values or bypassed/externally supplied admitted metadata remain exposed.
+Defaulted booleans do not prove underlying facts or authorization to repair an
+old source. Genuine Format2 refusals and wrapper precedence remain distinct.
+The writer inventory is source/synthetic-probe evidence, not deployed-service
+certification; no StackUW code is modified by this RFC.

@@ -624,3 +624,107 @@ and sources, confirming the0-to1 example exits. Direct verifier receipt API
 closures contain no @uwmd imports and are independently verified unaffected.
 All eight deterministic test signatures are preserved and independently verified
 with node:crypto against the included SPKI and exact canonical payloads.
+
+
+## RFC0091 owner option (a) — authored replacement positive kit
+
+Owner disposition2026-10-17 selects genuinely new positive examples, while all
+four originals, the original ZIP and signed/receipt evidence stay byte-identical
+as metadata-incomplete history. RFC0048's positive-validation promise remains
+as written. This direction does not accept RFC0091 or authorize readiness/merge.
+
+New kit: `examples/standalone/authored-2026-10-17/`, author
+`codex/standalone-kit-2026-10-17`, authored_at2026-10-17T21:34:15Z,
+source`system/standalone-kit`; package`pkg:standalone:authored:2026-10-17`.
+The lease abstract is`doc:standalone:2026-10-17:lease-abstract`, source note
+`note:standalone:2026-10-17:transcription`. Both deal carriers represent NEW
+logical deal`uw_standalone_authored_2026_10_17`; distinct physical members are
+`example:standalone:2026-10-17:inline-deal` and`...:externalized-deal`, with
+distinct byte digests. This preserves the full resolved canonical/digest equality
+required by RFC0048 without ignoring any frontmatter or metadata.
+
+| New top-level block | Review required | Superseded | Authored reason |
+|---|---|---|---|
+| lease abstract / deal_context | true | false | Review unresolved illustrative legal terms before use; this is a new revision-1 document head. |
+| source note / deal_context | true | false | Compare the illustrative transcription with an actual source before use; this is a new note head. |
+| inline / property | false | false | A deliberately authored fictional structural example needs no human fact-review for that purpose; this is the new record head. |
+| inline / rent_roll | true | false | Review illustrative tenant inputs before underwriting reliance; this is the new record head. |
+| externalized / property | false | false | The same fictional structural property and NEW logical record head in the externalized carrier. |
+| externalized / rent_roll | true | false | The same tenant-input review requirement and NEW record head, retained through externalization. |
+
+Exact one-line reasons are canonical provenance.notes and declarations.json;
+no boolean is derived from review_status or narrative flags. False for a fictional
+property is not evidence of a real property review. New fragments have explicit
+reviewtrue/supersededfalse and own part IDs; new source text is an explicit
+illustrative stand-in. No new financial amount, formula or result is computed.
+
+Original21 non-README standalone artifacts (including the original ZIP) and
+all original subject/signature/receipt/schema fixtures are pinned among2731
+unchanged artifacts in history.json. The original README is updated only for
+historical classification and directing adopters to the new kit. Original
+corpus-index/metrics expected bytes are separately preserved;11case/index rows
+and4new metric expectations are appended, with every old row unchanged/in order.
+Those new metric rows retain the same existing total_units-only observation
+on unchanged fictional numeric payloads, not a numerical rebaseline.
+
+The original four zero-error assertions keep their exact predicate while loading
+the replacement positives. All seven original auxiliary API/fragment/composition/
+package assertions continue on original bytes; the same seven also test the new
+kit. Eight additional node:test controls verify immutable history, additive-only
+expectations, six declarations/reasons, explicit missing-flag negative findings,
+old six META02 errors, four actual CLI exits/partitions/source preservation,
+new fragment validity/full canonical equivalence, and deterministic ZIP identity/
+semantic verification/source-context exclusion. No assertion is weakened.
+
+Authoring controls caught a double-prefixed new part reference and an old
+illustrative cash-flow `flows` member outside accepted Format4.26. Only the new
+copy now uses `series` with the same two rows; the old fragment is unchanged.
+Manual probe initially addressed UWPart.frontmatter instead of UWPart.part_id;
+the focused test then needed UWPart.blocks rather than treating variant maps
+as blocks. Those harness/data-authoring corrections do not change production
+selection, validation or arithmetic. Default crypto-light package verification
+without an injected semantic resolver reports unverifiable by design; the actual
+public CLI and explicit semantic-resolver controls verify all four semantic
+digests. No weaker verification status is claimed as VERIFIED.
+
+### Downstream writer inventory and activation consequences
+
+`2026-10-17-validation-diagnostic-gap-354.writers.json` preserves a bounded,
+independently audited source/probe summary. Full private auditSHA
+559d5a75da445999d66c4af3495ae1f5e686250868865e038671396dc2a2d0b0
+remains in the existing maintainer evidence; unrelated private guidance/status
+is deliberately excluded from this public inventory.
+
+| Writer/path | Observed current behavior | If RFC0091 activates |
+|---|---|---|
+| StackUW packages/underwriting-engine/src/export/meta-v2.ts: reshapeMetaV1toV2 | Old/direct helper preserves missing flat review/superseded values; its comments concern the historical Format2 path. | Not evidence of the current Format3 emission path. A bypassed output with admitted canonical parents can owe META02/03; existing Format2/wrapper refusals retain precedence. |
+| StackUW same file: toFormat3Meta; serialize.ts public Format3 branch; export-to-uwmd.ts default3.0 | Explicit canonical review and superseded booleans via flatvalue??false; Markdown, envelope, MCP/HTTP export routes call this adapter. | Well-typed emitted booleans do not gain META02/03. This is no proof of review truth, all conformance, or deployed version. Untyped nonbooleans still owe errors. |
+| StackUW backend/services/uwmd/marketDataDocument.ts | Emits false/false explicitly. | No missing-boolean finding on that emitted shape. |
+| StackUW internal watermark metadata | Sparse flat metadata is adapted at final Format3 serialization. | Do not confuse an internal sparse object with an emitted canonical block. |
+| UWMD buildMeta and its init/editor/host/Lite callers | Emit both booleans; sparse editor patches merge with full metadata. | Well-typed fresh helper output is unaffected; no generic safe-writer claim for untyped patches. |
+| UWMD low-level writeAgentBlock/restamp/renderer/Envelope codecs | Preserve caller-authored metadata and can retain omissions; they do not promise source repair. | Missing/invalid flags under admitted parents gain errors, including retained physical history; newly issued policy counts/validation exits can change. No source repair or automatic receipt-verdict rule follows. |
+
+At StackUW sourceheadfea704ee6a2b4d01057f216880678445347c76fe, the blanket claim
+that the current engine Format3 writer omits the booleans is **contradicted** by
+source and synthetic adapter/serializer probes. The narrower old-helper omission
+is **verified**. Four metadata-only controls cover absent/false/true/untyped values;
+this is not a financial engine run or live deployed-service audit. No downstream
+repository was edited. Adoption owners remain responsible for any bypassed old
+writer, explicit malformed flags or existing authored records; the validator
+must not default or rewrite those sources to suppress new errors.
+
+Final exact-head CI and independent checkpoint verification will be recorded
+in existing PR378/Issue354. RFC0091 stays draft/unmerged; all other RFCs retain
+their separate states. No package/specification version, tag or release.
+
+
+Bounded independent Python WIP0a6c replay of the four new and four historical
+records is preserved in authored-python.json (rawSHA
+a6dd9fff9617fe22bce0e2deee93da73e9b1fef6988ed74fdd5921299fcc0226). The new abstract, source note and
+inline record are normal zero-error/exit0 results. The new externalized record
+has zero metadata errors but returns an honest typed COMP-UNRESOLVED/exit1:
+this implementation does not resolve package parts. It is not a four-of-four
+Python complete-validation claim. Historical cases keep META02 counts1/1/2/2;
+all source/runtime hashes are unchanged, and parse-only discovery remains.
+The reference CLI's separate four positives/zero-error/exit0 controls do not
+certify a Python resolver or a complete Verifier tier.

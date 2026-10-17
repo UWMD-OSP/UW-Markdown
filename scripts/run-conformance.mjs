@@ -2123,9 +2123,10 @@ function loadParts(dir) {
 
 const STANDALONE_DIR = join(ROOT, 'examples', 'standalone');
 
-async function runStandalone() {
-  if (!existsSync(STANDALONE_DIR)) {
-    record('standalone', '(none)', 'pass', 'no standalone document kit');
+async function runStandaloneKit(directory = STANDALONE_DIR, prefix = '', profilesDirectory = directory, withProfiles = true, sourceId = 'source:anchor-lease') {
+  const emit = (scenario, status, message) => record('standalone', `${prefix}${scenario}`, status, message);
+  if (!existsSync(directory)) {
+    emit('(none)', 'pass', 'no standalone document kit');
     return;
   }
 
@@ -2135,65 +2136,65 @@ async function runStandalone() {
     ['inline-deal', 'inline-deal.uwx.md'],
     ['externalized-deal', 'externalized-deal.uwx.md'],
   ];
-  for (const [id, file] of profileDocuments) {
+  for (const [id, file] of (withProfiles ? profileDocuments : [])) {
     try {
-      const parsed = parseUWFile(readFileSync(join(STANDALONE_DIR, file), 'utf8'));
+      const parsed = parseUWFile(readFileSync(join(profilesDirectory, file), 'utf8'));
       const validation = validateUWFile(parsed);
-      record('standalone', `profiles/${id}`, validation.errors.length === 0 ? 'pass' : 'fail',
+      emit(`profiles/${id}`, validation.errors.length === 0 ? 'pass' : 'fail',
         validation.errors.map((e) => e.code).join(', ') || undefined);
     } catch (e) {
-      record('standalone', `profiles/${id}`, 'fail', e.message);
+      emit(`profiles/${id}`, 'fail', e.message);
     }
   }
 
   try {
-    const abstract = JSON.parse(readFileSync(join(STANDALONE_DIR, 'lease-abstract.json'), 'utf8'));
+    const abstract = JSON.parse(readFileSync(join(directory, 'lease-abstract.json'), 'utf8'));
     const errors = validateLeaseAbstract(abstract);
-    record('standalone', 'lease-abstract/api-shape', errors.length === 0 ? 'pass' : 'fail',
+    emit('lease-abstract/api-shape', errors.length === 0 ? 'pass' : 'fail',
       errors.map((e) => e.code).join(', ') || undefined);
   } catch (e) {
-    record('standalone', 'lease-abstract/api-shape', 'fail', e.message);
+    emit('lease-abstract/api-shape', 'fail', e.message);
   }
 
-  const { parts, error: partsError } = loadParts(STANDALONE_DIR);
-  record('standalone', 'fragments/standalone-parse', partsError || parts.size !== 5 ? 'fail' : 'pass',
+  const { parts, error: partsError } = loadParts(directory);
+  emit('fragments/standalone-parse', partsError || parts.size !== 5 ? 'fail' : 'pass',
     partsError ? partsError.message : parts.size !== 5 ? `parsed ${parts.size} fragments, expected 5` : undefined);
 
   try {
-    const externalized = parseUWFile(readFileSync(join(STANDALONE_DIR, 'externalized-deal.uwx.md'), 'utf8'));
-    const inline = parseUWFile(readFileSync(join(STANDALONE_DIR, 'inline-deal.uwx.md'), 'utf8'));
+    const externalized = parseUWFile(readFileSync(join(directory, 'externalized-deal.uwx.md'), 'utf8'));
+    const inline = parseUWFile(readFileSync(join(directory, 'inline-deal.uwx.md'), 'utf8'));
     const resolution = resolveComposition(externalized, { parts });
     const canonicalMatches = resolution.status === 'resolved'
       && canonicalizeUWEnvelope(toUWEnvelope(resolution.document)) === canonicalizeUWEnvelope(toUWEnvelope(inline));
-    record('standalone', 'composition/inline-external-canonical', canonicalMatches ? 'pass' : 'fail',
+    emit('composition/inline-external-canonical', canonicalMatches ? 'pass' : 'fail',
       canonicalMatches ? undefined : `resolution ${resolution.status}: ${issueCodes(resolution).join(', ')}`);
     if (canonicalMatches) {
       const [resolvedDigest, inlineDigest] = await Promise.all([
         computeEnvelopeDigest(toUWEnvelope(resolution.document)),
         computeEnvelopeDigest(toUWEnvelope(inline)),
       ]);
-      record('standalone', 'composition/inline-external-digest', resolvedDigest === inlineDigest ? 'pass' : 'fail',
+      emit('composition/inline-external-digest', resolvedDigest === inlineDigest ? 'pass' : 'fail',
         resolvedDigest === inlineDigest ? resolvedDigest : `${resolvedDigest} != ${inlineDigest}`);
     }
   } catch (e) {
-    record('standalone', 'composition/inline-external', 'fail', e.message);
+    emit('composition/inline-external', 'fail', e.message);
   }
 
   try {
-    const manifestPath = join(STANDALONE_DIR, 'package', 'manifest.json');
+    const manifestPath = join(directory, 'package', 'manifest.json');
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     const manifestErrors = validateUWDealPackageManifest(manifest);
-    record('standalone', 'package/manifest', manifestErrors.length === 0 ? 'pass' : 'fail',
+    emit('package/manifest', manifestErrors.length === 0 ? 'pass' : 'fail',
       manifestErrors.map((e) => e.code).join(', ') || undefined);
 
     const payloads = Object.fromEntries(manifest.members.map((member) => [
       member.path,
-      readFileSync(join(STANDALONE_DIR, 'package', member.path)),
+      readFileSync(join(directory, 'package', member.path)),
     ]));
     const encoded = await encodeUWDealPackageZip({ manifest, payloads });
     const decoded = decodeUWDealPackageZip(encoded);
     const verification = await verifyUWDealPackage(decoded);
-    record('standalone', 'package/integrity', verification.errors.length === 0 ? 'pass' : 'fail',
+    emit('package/integrity', verification.errors.length === 0 ? 'pass' : 'fail',
       verification.errors.map((e) => e.code).join(', ') || verification.status);
 
     const context = projectUWDealPackageContext(decoded.manifest, {
@@ -2204,13 +2205,22 @@ async function runStandalone() {
       ),
     });
     const contextErrors = validateUWDealPackageContext(context);
-    const sourceOmitted = context.source_evidence?.['source:anchor-lease']?.status === 'not_transferred'
+    const sourceOmitted = context.source_evidence?.[sourceId]?.status === 'not_transferred'
       && !JSON.stringify(context).includes('Example source-evidence stand-in');
-    record('standalone', 'package/context-boundary', contextErrors.length === 0 && sourceOmitted ? 'pass' : 'fail',
+    emit('package/context-boundary', contextErrors.length === 0 && sourceOmitted ? 'pass' : 'fail',
       contextErrors.map((e) => e.code).join(', ') || (sourceOmitted ? undefined : 'source evidence leaked into context'));
   } catch (e) {
-    record('standalone', 'package/integrity', 'fail', e.message);
+    emit('package/integrity', 'fail', e.message);
   }
+}
+
+async function runStandalone() {
+  const authored = join(STANDALONE_DIR, 'authored-2026-10-17');
+  // Keep every original auxiliary assertion on the original bytes. Only the
+  // four positive profile inputs move to newly authored replacement records.
+  await runStandaloneKit(STANDALONE_DIR, '', authored);
+  // Exercise the same fidelity/fragment/API/package predicates on the new kit.
+  await runStandaloneKit(authored, 'authored/', authored, false, 'source:standalone:2026-10-17:anchor-lease');
 }
 
 const readCase = (dir, name) => JSON.parse(readFileSync(join(dir, name), 'utf8'));

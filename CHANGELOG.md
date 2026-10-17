@@ -13,8 +13,10 @@ protocol, and each package each carry an independent semver).
 - Prepare draft RFC0091's narrow META-02/03 required-boolean admission in both
   validators, with retained physical/history and canonical mutable-model
   controls. Preserve META-01, completeness rules, original subjects and prior
-  expectations; the standalone positive-example disposition and final RFC
-  acceptance remain open. No schema, release version or capability promotion.
+  expectations; owner option (a) authors a new positive standalone kit while
+  preserving originals as metadata-incomplete history. Keep strict positive
+  validation, full composition and package-fidelity controls. Final RFC
+  acceptance remains open. No schema, release version or capability promotion.
 
 - Enforce RFC0090's required nonempty-string provenance actor with narrow
   META-01/error across retained physical blocks. Preserve wrapper precedence,
