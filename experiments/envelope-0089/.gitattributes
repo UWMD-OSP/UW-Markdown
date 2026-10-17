@@ -1,0 +1,3 @@
+# Frozen transport/source subjects are hashed as bytes. Do not convert EOLs.
+codec-examples/** -text
+codec-examples/**/*.csv whitespace=cr-at-eol

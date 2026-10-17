@@ -68,9 +68,9 @@ assert.equal(vectors.length, 5);
 console.log('5/5 frozen candidate preimages agree (independent Node check)');
 ```
 
-The file intentionally includes no experimental decoder/validator. Candidate
-validation, source collection and cross-codec tests require an accepted design
-before production implementation. Changing the design or replacing `E_NEXT` with
+The original preimage file intentionally contains no decoder/validator. The
+subsequent isolated prototype below tests a candidate mapping for review;
+production validation, source collection and codecs still require acceptance. Changing the design or replacing `E_NEXT` with
 an approved literal produces new design evidence; it never relabels these frozen
 subjects or rewrites historical receipt/signature/plan expectations.
 
@@ -134,3 +134,146 @@ runtime/dependency, changed contract or unexpected layer fails explicitly; there
 is no substitute validator or automatic dependency setup. Built hashes identify
 the measured module files; they are not a compiler-reproducibility attestation
 or a hash of the complete transitive runtime closure.
+
+
+## Complete candidate codec artifacts and explicit reissuance examples
+
+**UNACCEPTED design evidence.** The new prototype implements illustrative candidate
+JSON, XML typed-tree and normalized CSV-directory encode/decode, not an approved
+UWMD codec, production validator, live fixture suite or discovery capability.
+`E_NEXT`, `C_NEXT`, `B_NEXT` and `urn:uwmd:unaccepted:rfc0089` are lab tokens. No
+actual Envelope, canonicalization, bundle or XML namespace version is allocated.
+The first five preimages and the old-contract proof above remain unchanged.
+
+[codec-examples/matrix.json](codec-examples/matrix.json) inventories 60 frozen files
+(115,483 bytes): five complete examples, not XML ellipses or descriptor-only CSV.
+Every case includes `document.uw.json`, `document.uw.xml`, exact no-final-LF
+`subject.jcs`, a digest, and all six CSV directory files (`manifest.json`,
+`document.csv`, `frontmatter.csv`, `blocks.csv`, `block_values.csv`, `prose.csv`).
+CSV text is UTF8, quote-all, CRLF; typed scalar cells contain canonical JSON.
+Local `.gitattributes` disables EOL conversion only for the digest-pinned example
+artifacts, so checkout cannot silently invalidate their byte inventories.
+The matrix hashes all59 case artifacts; the matrix does not hash itself.
+
+| Case directory | Current entry | Source / history / unknown-value control |
+|---|---|---|
+| [single](codec-examples/single/document.uw.json) | One `single` block, authored variant `default`, no role | Complete original structured source and explicit proposed reissuance plan. |
+| [one-peer](codec-examples/one-peer/document.uw.json) | `variants` with one exact `default` record | Existing primary role activates candidate source mode; no collapse to single. |
+| [mixed-null-default](codec-examples/mixed-null-default/document.uw.json) | Null identity followed by literal `default` | Null means absent annotation; literal label remains authored. Its source admission is prospective, not accepted. |
+| [ordered-history](codec-examples/ordered-history/document.uw.json) | Named base/detail peers plus two historical blocks | Revisions1/2 retain source order and full content; current base is revision3. No authentication-domain expansion. |
+| [direct-model-unknown](codec-examples/direct-model-unknown/document.uw.json) | Direct `single` model | Unknown Envelope member and annotation survive all model codecs. This prototype refuses Markdown emission rather than inventing a carrier. |
+
+All blocks retain a nested unknown metadata member and unknown payload containing
+`a/~b` keys, `member`/`item`, null, absent versus present-null controls, empty
+object/array/string, a fractional JSON scalar, CR/LF/tab, `<&>`, quotes, emoji and
+BMP Unicode. The ordinary member named `content` is payload, not a wrapper.
+Prose, `_notes`, `_overrides`, complete `_meta` and exact annotations are preserved.
+No financial value is inferred or calculated. Full values decoded from JSON,
+XML and CSV must equal the independently frozen JSON model before digest equality
+is checked; checking a raw hash alone would not establish fidelity.
+
+### Exact experimental algorithm and boundaries
+
+- [`candidate_codec.py`](candidate_codec.py) validates the closed tagged wrappers,
+  exact nullable identity/annotation agreement, section agreement, active/history
+  placement, duplicate identities and canonical null-first/UTF16 peer order. It
+  does not sort, deduplicate, normalize or select a peer while decoding a received
+  model. It verifies the received subject after those candidate structural checks.
+  All other legal payload and unknown top-level values in its domain are retained.
+- JSON rejects duplicate decoded members. XML uses typed object/array/scalar
+  elements and escaped member names, retains array order, rejects duplicates,
+  undeclared types/attributes, DTD/entities and mixed scalar children; literal CR
+  is emitted as a numeric reference to avoid XML line-ending normalization. The
+  XML namespace token is deliberately experimental, not a proposed allocation.
+- CSV flattens complete frontmatter and each annotation/meta/content scope, with
+  strict RFC6901 escaping, explicit container rows and typed scalar JSON. It
+  restores `_meta` exactly once, preserves prose separately, reconstructs explicit
+  modes and canonical ordinals, and checks the received descriptors against exact
+  reconstructed pointers/identities. Inventory hash/size/file-set checks precede
+  typed reconstruction; received semantic digest is checked last. Tests that
+  exercise inner refusals recompute only disposable transport inventories, so a
+  trivial outer checksum error does not hide the intended control.
+- [`source_examples.py`](source_examples.py) uses the unchanged retained Reader
+  scanner, **not its default-key parse projection**, for a narrow proposed D2
+  projection. Four complete `original.uwx.md` files reproduce their frozen models;
+  source accounting binds every physical example block to an exact source-body
+  hash, nullable identity and current/history state. It does not guess a peer.
+  Reversing both mixed-source peers preserves the same candidate model/subject.
+- Directly authored one-peer variants without a role round-trip through all three
+  model codecs; Markdown emission refuses when reprojection would change mode.
+  The existing ParsedUWFile/portable projection is not fixed by this experiment:
+  the prospective mixed fixture retains two physical source blocks but aliases
+  them through `default` in that old projection. Any lawful mixed-identity decision
+  must address that public wire/type contract as well as Envelope/codecs.
+
+This is a **validation subset**, not a complete future normative validator. It
+supports empty builtin collections and extension/history blocks with the existing
+annotation/content/optional-prose shape. Nonempty builtin collections, unknown
+Envelope-block-extra members, empty history slots, unsupported source annotation
+spellings and unmarked overwritten source revisions explicitly refuse in this
+prototype. Those limits are **not proposed bans**. A complete implementation must
+preserve every legal member in its supported mapping or refuse explicitly; it
+must not silently strip those values or advertise this subset as full fidelity.
+No ZIP archive, HTTP/MCP version negotiation, full schema validation, signature,
+receipt, financial verification, release or production migration is implemented.
+
+**XML expressiveness is a separate visible limit.** Legal JSON can contain NUL
+in a string or member name; XML1 cannot directly carry it. Focused controls retain
+those values through candidate JSON and CSV and require explicit XML refusal.
+This is not a new global restriction on legal JSON or extension payloads. To
+promise such values across XML, a governed mapping option could add a versioned
+escaped JSON-string lexical form for both value text **and member names** (for
+example an explicitly tagged encoding attribute/name-json field). Current XML1
+would refuse those new attributes; namespace/codec-version accounting and exact
+escaping/canonicalization rules need owner design approval. A fallback that drops
+the character, sanitizes a key or silently emits a different subject is excluded.
+
+### Migration behavior: new issuance, no historical rewrite
+
+The four `reissuance-plan.json` files are executable **proposed plans**, not
+receipts, signatures or proof of historical authentication. They retain the exact
+original raw SHA256, complete physical source accounting, new subject digest and
+unassigned canonicalization token. They issue no cryptographic or financial
+artifact. Original source/old issued artifact bytes remain untouched.
+
+| Available evidence | Proposed clean-break outcome |
+|---|---|
+| Complete attributable original source, named/singleton cases | After owner approval, parse the original source under the approved routing, retain all legal content/history, project E_NEXT once and issue a new representation under C_NEXT. Archive the original identity separately. |
+| Complete original mixed null/default source | Block implementation until the mixed-admission and ParsedUWFile/Protocol decisions are approved; do not use the current default-key projection to migrate. |
+| Only a demonstrably complete attributable archive | A reviewed reconstruction may be a source for **new issuance** if it proves every relevant value, identity, mode, prose and history. The prototype does not implement/archive-certify this route; it requires review, not trust in a digest alone. |
+| Only a lossy Envelope1 export missing a legal peer/history, incomplete archive, or only an old digest/signature/receipt | **Blocked:** missing values/attribution cannot be recovered by changing a version or recalculating a hash. Obtain original source or a complete attributable archive. Never select/merge/fabricate peers. |
+| Complete source whose repeated/superseded extensions remain outside V.13's guarded domain | Ordinary candidate encoding may succeed; document signing/authentication still refuses. A codec correction is not permission to issue a document signature over an ineligible source. |
+| Existing receipt/signature or whole-source binding plan | Retain its exact old bytes/subject as evidence. If a new artifact is required, separately authorize and issue it under the accepted new subject rules; recompute required receipt verification and independently review a new plan. Old whole-source plans are stale, never silently rehashed into verified plans. |
+
+`reissue_from_source(None)` explicitly refuses with the local prototype reason
+`ORIGINAL_SOURCE_OR_COMPLETE_ATTRIBUTABLE_ARCHIVE_REQUIRED`. It neither constructs
+an alleged recovered source nor uses an old receipt/signature to supply missing
+content. Existing block hashes/signatures and V.12 row commitments remain separate
+subjects; an outer-container change does not silently reinterpret them. No legacy
+reader shim, old/new dual hash, fallback evaluator, automatic receipt refresh or
+historical expected-value rewrite is introduced. Version/release placement and
+public5.0 remain owner-controlled; no actual version is chosen.
+
+### Focused reproduction and measured results
+
+```sh
+python -B experiments/envelope-0089/freeze_codec_examples.py --check
+python -B -m unittest discover -s experiments/envelope-0089 -p test_candidate_codec.py -v
+node --test experiments/envelope-0089/codec-subjects.test.mjs
+```
+
+Generation without `--check` is first-creation-only and refuses to overwrite an
+existing example directory. The checker/tests do not regenerate frozen files.
+The prototype reuses the existing independent Python JCS primitive; it does not
+replace or test a new financial kernel. Node separately reconstructs JCS text
+using UTF16 key ordering and ECMAScript primitive serialization from all five
+frozen models, checks their exact subject bytes/digests and all59 artifact hashes.
+This is independent subject verification, not a second independent XML/CSV codec.
+
+Measured on Python3.12.3 / Node24.14.1, Windows AMD64: seventeen focused Python
+methods and two Node tests pass, covering all five complete cross-codec cases,
+identity/mode/history/unknown values, immutable source accounting, descriptor/
+manifest/digest corruption, duplicate/order/type/version refusals, Unicode/
+escaped pointers, XML representability, direct-model/source conversion refusal
+and missing-original migration refusal. Only these new focused checks ran; no
+old proof, broad audit, production suite or live conformance baseline was rerun.
