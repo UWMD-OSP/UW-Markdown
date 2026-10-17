@@ -29,7 +29,7 @@ class FrontmatterTests(unittest.TestCase):
                              'b: "Caf\\u00e9 \\"Tower\\" \\x41\\U0001F600"\n'
                              'c: "\\0\\a\\b\\t\\n\\v\\f\\r\\e\\ \\/\\\\\\N\\_\\L\\P"\n')
         self.assertEqual(result.value["a"], "O'Brien # &x *y !z {a} [b]")
-        self.assertEqual(result.value["b"], 'CafÃ© "Tower" AðŸ˜€')
+        self.assertEqual(result.value["b"], 'Café "Tower" A😀')
         self.assertEqual(result.value["c"], '\0\a\b\t\n\v\f\r\x1b /\\\x85\xa0\u2028\u2029')
 
     def test_comments_and_plain_punctuation(self):
@@ -39,20 +39,20 @@ class FrontmatterTests(unittest.TestCase):
                                        "c": "Suite [West]", "d": "# retained", "e": None})
 
     def test_mapping_and_sequence_source_spans(self):
-        raw = '"Ã©/~":\r\n  first: -1.200e-2 # value\r\nrows:\r\n  - 0.0550\r\n  -\r\n  - "2"\r\n'.encode()
+        raw = '"é/~":\r\n  first: -1.200e-2 # value\r\nrows:\r\n  - 0.0550\r\n  -\r\n  - "2"\r\n'.encode()
         parsed = parse_frontmatter(raw, byte_offset=9)
-        self.assertEqual(parsed.value, {"Ã©/~": {"first": -.012}, "rows": [.055, None, "2"]})
-        self.assertEqual([token.pointer for token in parsed.numbers], ["/Ã©~1~0/first", "/rows/0"])
+        self.assertEqual(parsed.value, {"é/~": {"first": -.012}, "rows": [.055, None, "2"]})
+        self.assertEqual([token.pointer for token in parsed.numbers], ["/é~1~0/first", "/rows/0"])
         for token in parsed.numbers:
             self.assertEqual(token.span.extract(b"123456789" + raw).decode(), token.lexeme)
 
     def test_quoted_simple_keys_and_duplicate_decoded_keys(self):
-        self.assertEqual(self.decode("'unknown:key': retained\n\"Ã©\": 12\n").value,
-                         {"unknown:key": "retained", "Ã©": 12})
-        raw = ('"Ã©": kept\n"": 1.2300\n"#leading": retained\n'
+        self.assertEqual(self.decode("'unknown:key': retained\n\"é\": 12\n").value,
+                         {"unknown:key": "retained", "é": 12})
+        raw = ('"é": kept\n"": 1.2300\n"#leading": retained\n'
                "nested:\n  '': -2.500\n  '#tag': yes\n  'embedded:colon': retained\n").encode()
         parsed = parse_frontmatter(raw)
-        self.assertEqual(parsed.value, {"Ã©": "kept", "": 1.23, "#leading": "retained",
+        self.assertEqual(parsed.value, {"é": "kept", "": 1.23, "#leading": "retained",
                                         "nested": {"": -2.5, "#tag": "yes", "embedded:colon": "retained"}})
         self.assertEqual([token.pointer for token in parsed.numbers], ["/", "/nested/"])
         self.assertEqual([token.lexeme for token in parsed.numbers], ["1.2300", "-2.500"])
@@ -106,11 +106,11 @@ class FrontmatterTests(unittest.TestCase):
                          {"x":[{"id":"kept"}]})
 
     def test_sequence_mapping_source_offsets_empty_item_and_quoted_keys(self):
-        raw = ('"Ã©/~":\r\n  - "": -1.200e-2 # retained spelling\r\n'
+        raw = ('"é/~":\r\n  - "": -1.200e-2 # retained spelling\r\n'
                "    'a/b~c': 0x10\r\n  -\r\n    id: kept\r\n    flags: []\r\n").encode()
         parsed = parse_frontmatter(raw, byte_offset=11)
-        self.assertEqual(parsed.value, {"Ã©/~":[{"":-.012, "a/b~c":16}, {"id":"kept", "flags":[]}]})
-        self.assertEqual([t.pointer for t in parsed.numbers], ["/Ã©~1~0/0/", "/Ã©~1~0/0/a~1b~0c"])
+        self.assertEqual(parsed.value, {"é/~":[{"":-.012, "a/b~c":16}, {"id":"kept", "flags":[]}]})
+        self.assertEqual([t.pointer for t in parsed.numbers], ["/é~1~0/0/", "/é~1~0/0/a~1b~0c"])
         for token in parsed.numbers:
             self.assertEqual(token.span.extract(b"12345678901" + raw).decode(), token.lexeme)
 
