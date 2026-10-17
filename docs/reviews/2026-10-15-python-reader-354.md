@@ -732,3 +732,21 @@ certify a Python resolver or a complete Verifier tier.
 The original Python8 audit JSON has CRLF outer formatting; its gzip archive
 preserves those exact bytes (compressedSHA b5e60b34ac175cacc87f8eea5c16e555a0ce6b3fc5f3049a3647388edb1a27f7).
 No Git text conversion of an evidence JSON display copy is used as raw identity.
+
+Independent replacement-kit checkpoint review at9c874bb0 is preserved losslessly
+in authored-review.json.gz (rawSHA
+29ae23a83bb9519ff441111fadd93f55aa67bb5ffc184e9449196e108046cd0f). Eight focused tests and the18 indexed
+standalone assertions pass; all21 original non-README standalone artifacts and
+all2731 protected Git subjects match the pinned c558 committed bytes exactly.
+Only11new index rows and4new metric rows are appended. The new ZIP hasSHA
+8cb9ce0d80784c367a9f545621a27189685c8efab0a82f10254cafd4dedb0679;
+its10members plusmanifest, all copies/digests and semantic-resolver checks pass.
+The actual public package CLI returns VERIFIED/exit0. The low-level no-provider
+API remains honestly unverifiable for semantic digests; it is not substituted
+for the explicit semantic/CLI proof. All original auxiliary predicates remain.
+
+Local integration at the committed kit checkpoint passes native1106/1106 and
+portable350/350 with zero updates/skips. Exact-final-head CI remains required
+before any readiness representation. Earlier c558 CI39070553296's14success/
+3failure/1skip is preserved as the old four-example contract failure, not
+retrospectively relabeled green. Draft status and final owner acceptance remain.
