@@ -153,8 +153,67 @@ No local assessment list proves complete schema coverage. General dictionary,
 state-and-verify financial outcomes and receipt verification remain subsequent
 base-Verifier obligations. No numerical procedure or optional profile is enabled.
 
-### Nine native refusals - exact reconciliation (2026-10-17)
+### Owner-authorized RFC0091 candidate implementation (2026-10-17)
 
+The owner supports the focused [RFC0091 direction in draft PR378](https://github.com/UWMD-OSP/UW-Markdown/pull/378)
+and authorized implementation/independent verification, **not final acceptance
+or merge**. The candidate source checker now emits META-02/error for canonical
+`_meta.quality.human_review_required` and META-03/error for canonical
+`_meta.lifecycle.superseded` when absent/null/nonboolean. Literal true/false pass.
+These are the only new codes. The source-only commit is isolated from this WIP's
+complete-validation modules so the integrator can include it in the governed
+RFC PR without pulling the unfinished validator.
+
+Existing wrapper/nested-object rejection and whole-missing-meta handling remain
+prior. Missing/nonobject quality skips only META-02; an admitted lifecycle can
+still owe META-03. An actor-only META-01 suppresses neither flag. The new pass
+runs after every shape finding and every actor, then physical block order with
+02 before03, before existing active ROLE/SRC checks. Every retained physical
+reference is assessed, including history, overwritten peers, variants, append
+collections and extensions. Equal-valued distinct blocks remain distinct;
+repeated references in a constructed Document are identity-deduplicated by this
+pass only. This does not expand the population or sequencing of other checks.
+
+Python's existing Document/source.blocks current parsed values are the operation
+input. An in-place canonical mutation is assessed without reparsing stale raw or
+selecting a projected replacement. No new TypeScript-style model union API,
+raw equality certificate, fence fallback, inferred flag or source edit is added.
+The source-only checker retains its original local shape evidence. The WIP
+pipeline consumes only duplicate flag evidence with an exact registered owner,
+physical index, canonical field and currently failed predicate, retaining it in
+private handled_shape_findings. Wrong/missing owners and unrelated local shapes
+cannot become ordinary success. This candidate closes the prior three boolean-
+only partial refusals: **all nine now return normal invalid results**, with the
+six new findings on malformed02/03/10 and all prior registered findings retained.
+Otherwise-shaped late metadata, section mismatch, missing/nonobject quality and
+other unallocated conditions still use the explicit partial boundary.
+
+Eight new main-compatible focused methods cover every JSON type/absence,
+boolean positives, container and actor precedence, all physical populations,
+exact identity/evidence order, mutable models, read-only/detached evidence and
+unrelated local requirements. The original17 source methods are unchanged.
+The separate WIP ownership test covers missing/wrong field/index/severity owners,
+stale current predicates and missing-quality independence. The following four
+existing WIP assertions change explicitly under the candidate direction; no
+source or frozen expectation is repaired or weakened:
+
+| Existing control | Previous assertion | Candidate assertion / attribution |
+|---|---|---|
+| provenance `test_present_metadata_shapes_remain_uncoded_local_evidence` (renamed `test_present_metadata_shapes_keep_exact_registered_or_local_owners`) | Invalid review/superseded values remain local only | These two exact fields now owe META-02/03 error and handled duplicate evidence; every other typed case retains its original uncoded requirement. |
+| metadata admission `test_all_base_typed_fields_refuse_without_invented_registered_routing` | Review0/supersedednull appear in local findings | Exact allocated candidate errors and retained handled evidence; no unrelated typed-field allocation or generic META-01. |
+| refusal reconciliation `test_valid_nested_shape_late_section_quality_and_actor_only_errors_remain_local` (renamed `test_valid_nested_shape_keeps_unallocated_requirements_separate_from_actor_and_flags`) | Actor plus two absent flags has uncoded partial refusal | Actor META-01 plus META-02/03 gives normal invalid; late/section/missing-quality cases still have exact local refusals. |
+| frozen-nine CLI control (renamed `test_exact_nine_sources_with_candidate_flags_return_normal_invalid`) | Six normal invalid, three partial refusals | Nine normal invalid, exact02/03 pair on each of the formerthree; all other registered/native subset assertions remain. |
+
+The sensitivity packet and six-normal/three-partial checkpoint below are retained
+as **pre-implementation evidence**, not a claim that the RFC is already accepted.
+Independent final-head full Python, actual111 and Reader17 checks remain required
+before publication; this focused candidate still advertises only parse. Wider
+admission, negative-wire, applicable nonportable and cross-platform capability
+gates are unchanged. No release, version or acceptance state is changed here.
+
+### Nine native refusals - pre-candidate reconciliation (2026-10-17)
+
+This section preserves the checkpoint before owner-authorized RFC0091 code.
 The historical native99 audit matched structural projections but had90 normal
 responses and nine partial refusals. Replaying **only those nine** now yields
 six normal **invalid** responses and three remaining partial refusals. All nine
@@ -200,14 +259,15 @@ metadata now assert the unchanged registered invalid result; original main
 source/role/Reader controls are unchanged.
 
 The smallest residual gap **among these nine** is two required booleans under
-Format2.5 and the block schema. Proposed, **unaccepted and unimplemented** codes
-are META-02/error at `_meta.quality.human_review_required` and META-03/error at
+Format2.5 and the block schema. At that checkpoint the proposed, **unaccepted and then-unimplemented** codes
+were META-02/error at `_meta.quality.human_review_required` and META-03/error at
 `_meta.lifecycle.superseded`, for absent/null/nonboolean values. Only valid owning
 objects after the existing wrapper/nested precondition admit these checks;
 nonobject quality must not cascade into a boolean error. Whole-missing metadata
 and other typed/required conditions retain their separate applicability. New
 all-retained-physical scope is an explicit RFC decision, not an automatic
-extension of RFC0090's actor scope. No new code is activated here.
+extension of RFC0090's actor scope. The later candidate above implements only
+that owner-authorized direction; acceptance remains pending.
 
 Independent read-only sensitivity over734 unchanged sources exactly matches
 root's source hashes and rows:725 parse, nine retain source refusals. Proposed
@@ -263,8 +323,8 @@ rationale must be a string; omission and the exact empty string remain admitted.
 | Timestamp string/date-time | Completeness warning when absent; uncoded local shape finding for typed/date-time refusal | Existing RFC3339 calendar/offset/fraction/leap-slot controls; no event-authentication assertion. |
 | Promoted block/leaf missing market_data_ref | Existing DQ-06/error plus retained local required-reference evidence | Registered finding: current section entries/all current variants, independent of quality shape or financial role selection. Local reference evidence: every active physical block, including overwritten/append/extension peers. History keeps its separate shape/actor-only scope. |
 | Authored market_data_ref: document_id/as_of/digest, optional rationale; inherited_from: document_id/digest/distance | Uncoded local shape findings | References checked whenever authored; conditional absence also checked for market promotion / block inherited_assumption. Lowercase SHA256 digest; positive JSON-integer distance. Empty text and unknown reference members retain schema-admitted meaning; no lookup or provenance authentication. |
-| Required quality confidence/review flag; optional flags/partial/provisional; forbidden field_overrides | Existing completeness/info/DQ findings preserved; unallocated type/shape findings remain local | Exact enums/booleans/string arrays, with confidence and review kept orthogonal. Missing optional members are not fabricated. |
-| Lifecycle positive integer revision / boolean superseded | Uncoded local shape findings where unallocated | JSON integer semantics distinguish bool. This checks field shape, not a newly invented chain grouping, revision-history policy or integrity verdict. |
+| Required quality confidence/review flag; optional flags/partial/provisional; forbidden field_overrides | Existing completeness/info/DQ findings preserved; owner-authorized candidate META-02 handles only the review boolean; other unallocated type/shape findings remain local | Exact enums/booleans/string arrays, with confidence and review kept orthogonal. Missing optional members are not fabricated. |
+| Lifecycle positive integer revision / boolean superseded | Owner-authorized candidate META-03 handles only superseded; unallocated revision shapes remain local | JSON integer semantics distinguish bool. This checks field shape, not a newly invented chain grouping, revision-history policy or integrity verdict. |
 | Leaf path/confidence/source/resolution/reason/note | Existing SRC vocabulary errors; unallocated leaf shapes local | Every active authored entry; path string/type evidence only, no guessed target existence or new path grammar. Unknown entry members remain retained. |
 | `_notes`, unknown payload and optional integrity/signature content | Informative / unchecked at this base boundary | No ordinary validation of `_notes`, no INT/signature/profile claim or metadata rewrite. |
 

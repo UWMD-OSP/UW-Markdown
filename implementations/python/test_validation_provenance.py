@@ -53,7 +53,7 @@ class ValidationProvenanceTests(unittest.TestCase):
         self.assertFalse(any(code.startswith("FV-") for code,_ in codes(validate(parsed))))
         self.assertEqual(parsed,before)
 
-    def test_present_metadata_shapes_remain_uncoded_local_evidence(self):
+    def test_present_metadata_shapes_keep_exact_registered_or_local_owners(self):
         for path,value in (
             (("quality","confidence"),True),(("quality","human_review_required"),"yes"),
             (("quality","flags"),[1]),(("quality","partial"),"yes"),
@@ -66,7 +66,15 @@ class ValidationProvenanceTests(unittest.TestCase):
                 self.assertTrue(inventory["shape_findings"])
                 result=validate(parsed)
                 self.assertNotIn(("META-01","error"),codes(result))
-                self.assertIn("_meta."+".".join(path),local_fields(result))
+                field = "_meta."+".".join(path)
+                owner = {("quality", "human_review_required"): "META-02",
+                         ("lifecycle", "superseded"): "META-03"}.get(path)
+                if owner:
+                    self.assertNotIn(field,local_fields(result))
+                    self.assertIn((owner,"error"),codes(result))
+                    self.assertIn(field,[f["field"] for f in result["metadata_assessment"]["handled_shape_findings"]])
+                else:
+                    self.assertIn(field,local_fields(result))
                 self.assertEqual(parsed,before)
                 self.assertFalse(any(c.startswith("META_FIELD_INVALID") for c,_ in codes(result)))
 
