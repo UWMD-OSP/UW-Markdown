@@ -18,17 +18,22 @@ new registered severity, suffix or timestamp policy is inferred. Full structural
 validation and complete Verifier capability remain unclaimed; discovery stays
 parse-only. RFC0088/#357 and RFC0089/#368 remain independent unaccepted drafts.
 
-**Issue365 representation design remains unaccepted.** DraftRFC0089/#368
-preserves the requested read-only intake in the existing PythonReader354 review.
-The candidate versioned/tagged design includes mixed nullable/named identities,
-codec/canonicalization/signature/receipt consequences and future fixture matrices;
-no current Envelope1, schema or historical subject is changed. Five illustrative
-synthetic preimages have independent Python/Node hash evidence. A separate
-unchanged-schema/verified-JSON proof has ten admission controls and five low-level
-hash comparisons: raw hash agreement does not admit a version or candidate shape.
-This is not general JCS, candidate-codec, signature, receipt or XML/CSV conformance.
-Design, mixed-identity clarification and independent version/regime/release
-allocation remain owner decisions; no compatibility shim or 5.0 decision is made.
+**Issue365 — concrete candidate codecs and new issuance.** DraftRFC0089/#368
+now includes five complete JSON/XML/normalized-CSV examples with original source
+or direct-model origin, exact canonical subjects and explicit reissuance plans.
+Sixty frozen files retain exact null/literaldefault identities, one-peer mode,
+ordered history, annotations, unknown members and prose. Twenty focused Python
+methods, two independent Node subject/artifact checks and independent peer review
+pass; three prototype fidelity defects were corrected without changing frozen
+artifacts. These are isolated experimental codecs, not production capabilities.
+
+Migration from missing/lossy content refuses; new representations/attestations
+require separately approved subject rules and issuance, never old evidence
+rewriting. Mixed identity affects Format/Protocol portable and public parsed
+projections as well as Envelope. XML1-inexpressible JSON strings/member names
+need an explicit governed escaping or refusal boundary. Container design,
+identity/version/regime/release decisions remain unaccepted; current Envelope1,
+source digests, receipt rules, schemas and public versions are unchanged.
 
 ## Bounded parallel workstreams
 

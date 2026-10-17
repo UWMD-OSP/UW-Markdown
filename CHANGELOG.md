@@ -28,6 +28,12 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Extend draft RFC0089 with five complete candidate JSON/XML/CSV examples,
+  explicit physical-source accounting and proposed new-issuance/refusal behavior.
+  Preserve all60 frozen artifacts while correcting prototype binary64 decoding,
+  XML whitespace and retained prose fidelity; leave current Envelope1, schemas,
+  historical subjects, receipts and version decisions unchanged.
+
 - Add independent Python standalone document-currency identity inspection under
   accepted CUR-01, preserving authored absent/null/value evidence without
   normalization, locale inference, ISO allocation lookup or financial math. Keep
