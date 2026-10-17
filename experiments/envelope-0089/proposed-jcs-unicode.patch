@@ -1,0 +1,49 @@
+--- a/packages/uwmd-verify/src/integrity-canonical.ts
++++ b/packages/uwmd-verify/src/integrity-canonical.ts
+@@ -66,6 +66,19 @@
+   let out = '"';
+   for (let i = 0; i < s.length; i++) {
+     const code = s.charCodeAt(i);
++    // RFC 8785 §3.2.2.2: reject invalid Unicode; never sanitize before hashing.
++    if (code >= 0xd800 && code <= 0xdbff) {
++      const next = s.charCodeAt(i + 1);
++      if (!(next >= 0xdc00 && next <= 0xdfff)) {
++        throw new TypeError('canonicalize: cannot serialize an unpaired high surrogate');
++      }
++      out += s[i] + s[i + 1];
++      i++;
++      continue;
++    }
++    if (code >= 0xdc00 && code <= 0xdfff) {
++      throw new TypeError('canonicalize: cannot serialize an unpaired low surrogate');
++    }
+     const escaped = ESCAPE_MAP[code];
+     if (escaped !== undefined) {
+       out += escaped;
+--- a/packages/uwmd-verify/src/integrity-canonical.test.ts
++++ b/packages/uwmd-verify/src/integrity-canonical.test.ts
+@@ -42,4 +42,24 @@
+     expect(out).toContain('"signature":"sig..."');
+     expect(out).toContain('"payload":{"content_hash":"abc"}');
+   });
++
++  it.each(['\ud800', '\ud801', '\udbff', '\udc00', '\udfff', 'x\ud800y'])(
++    'rejects unpaired surrogate strings in values and member names: %j', (value) => {
++      expect(() => canonicalize(value)).toThrow(/unpaired/);
++      expect(() => canonicalize({ value })).toThrow(/unpaired/);
++      expect(() => canonicalize({ [value]: 1 })).toThrow(/unpaired/);
++      expect(() => canonicalize([{ nested: value }])).toThrow(/unpaired/);
++    },
++  );
++
++  it('preserves paired surrogates, replacement characters and NUL escaping', () => {
++    expect(canonicalize({ pair: '\ud83d\ude00', replacement: '\ufffd', nul: '\u0000' }))
++      .toBe('{"nul":"\\u0000","pair":"\ud83d\ude00","replacement":"\ufffd"}');
++  });
++
++  it('retains UTF-16 ordering and does not normalize valid Unicode', () => {
++    expect(canonicalize({ '\ue000': 2, '\ud83d\ude00': 1 }))
++      .toBe('{"\ud83d\ude00":1,"\ue000":2}');
++    expect(canonicalize('\u00e9')).not.toBe(canonicalize('e\u0301'));
++  });
+ });

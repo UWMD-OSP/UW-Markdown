@@ -1,13 +1,16 @@
 // Read-only reproduction of external review claims against pinned main sources.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync,writeFileSync,readdirSync } from 'node:fs';
+import { readFileSync,writeFileSync,readdirSync,existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 import { dirname,resolve,join,basename } from 'node:path';
 import { fileURLToPath,pathToFileURL } from 'node:url';
 const here=dirname(fileURLToPath(import.meta.url));
 const runtime=resolve(process.argv[2]);
+const outputIndex=process.argv.indexOf('--output');
+const _outputPath=outputIndex>=0?resolve(process.argv[outputIndex+1]):null;
+const reportPath=process.argv[3]&&!process.argv[3].startsWith('--')?process.argv[3]:null;
 const pin='3eee0fbab3f5682dc345804782994dc22d321fae';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const copy=value=>JSON.parse(JSON.stringify(value));
@@ -144,7 +147,7 @@ assert.ok(python.unicode.filter(r=>!r.id.endsWith('replacement')&&!r.id.endsWith
 for(const path of sourcePaths)assert.equal(hash(readFileSync(join(runtime,path))),sourceHashes[path],`Changed protected input ${path}`);
 const result={scope:'UNACCEPTED EXTERNAL REVIEW REPRODUCTION; no normative/source/schema/version changes',pinned_main:pin,
  runtime:{node:process.version,v8:process.versions.v8,platform:process.platform,architecture:process.arch,ajv:requireRuntime('ajv/package.json').version},
- external_review:process.argv[3]?{name:basename(process.argv[3]),sha256:hash(readFileSync(process.argv[3])),authority:'external unverified claims until independently reproduced'}:null,
+ external_review:reportPath?{name:basename(reportPath),sha256:hash(readFileSync(reportPath)),authority:'external unverified claims until independently reproduced'}:null,
  source_hashes:sourceHashes,built_module_hashes:Object.fromEntries(sources.map(name=>[`${name}.js`,hash(readFileSync(join(runtime,`packages/uwmd-verify/dist/${name}.js`)))])),
  normative_reference:{uri:'https://www.rfc-editor.org/rfc/rfc8785.txt',sections:['3.1','3.2.2.2','3.2.3','3.2.4'],interpretation:'JCS string admission covers values and property names, rejects lone surrogates, preserves valid Unicode without normalization, then encodes UTF8.'},
  extension_projection:{classification:'Verified',receipt,observations:extension},selection_controls:selection,unicode_admission:{classification:'Verified',observations:unicode},
