@@ -312,9 +312,20 @@ overlap with a nonempty block descriptor. Reconstruct the declared empty slot
 before final complete-model/digest validation. For example,
 `[{"path":"/superseded/x_review","kind":"array"}]` preserves an authored empty
 history slot. This is a concrete mapping proposal, not a ban on the legal empty
-model domain or a field admitted under CSV1. It is not implemented by the frozen
-codec-study and requires independently authored positive/negative fixtures before
-acceptance; existing21 artifacts must not be rewritten to pretend otherwise.
+model domain or a field admitted under CSV1. The original frozen codec-study
+still refuses these slots; its21 artifacts remain unchanged. The separate
+[empty-carrier checkpoint](https://github.com/UWMD-OSP/UW-Markdown/blob/f0f710fe668e7d7e9db4b3cf60e4664effed1e6c/experiments/envelope-0089/empty-collections/README.md)
+now reconstructs three complete candidate values through CSV and actual ZIP,
+including absent-versus-empty slots and a mixed ten-block value retaining all
+block extras. Its28 new artifacts preserve exact JSON/JCS/CSV/ZIP bytes. Derived
+Python and independently maintained Node readers reject twelve carrier
+mutations per decoder after refreshed transport inventory; five Python methods
+and four Node tests pass on one Windows host. This closes a concrete carrier
+proof gap, not full schema/source admission, cross-platform proof or owner
+acceptance. The copied mixed model retains the earlier lab's partial metadata;
+round-trip equality does not certify its Format validation or authenticated
+source. No legal empty is discarded, no original proof is rewritten, and no new
+Envelope/CSV label is allocated by executing the candidate.
 
 #### Complete candidate codec examples (unaccepted)
 

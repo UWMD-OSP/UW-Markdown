@@ -18,7 +18,9 @@ Three frozen models distinguish an absent slot from an explicit empty one and
 retain a mixed complete ten-block model from the previous study, including all
 block extras, tagged null/default identities and ordered history. Escaped `/` and
 `~` names have exact identities. Both the complete model and received subject are
-checked after CSV and real deterministic STORE ZIP reconstruction. There are28
+checked after CSV and real deterministic STORE ZIP reconstruction. The copied
+mixed model retains the prior lab's partial metadata; equality is not full Format
+validation or source admission. There are28
 new artifacts, separate from the unchanged prior21/60 and seven-model real-crypto
 observations. This is codec equality, not authenticated or complete source.
 
