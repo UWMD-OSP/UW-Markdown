@@ -2,3 +2,4 @@
 *.mjs text eol=lf
 fixtures/** -text
 fixtures/**/*.csv whitespace=cr-at-eol
+evidence/** -text
