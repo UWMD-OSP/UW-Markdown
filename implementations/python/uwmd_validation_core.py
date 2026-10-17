@@ -119,7 +119,8 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     document, fm = ledger.document, ledger.document.frontmatter.value
     source = inspect_source_roles(document)
     ledger.issues.extend(source["issues"])
-    metadata = metadata_assessment(document, source)
+    missing_meta_blocks = set()
+    physical = {id(block): index for index, block in enumerate(document.source.blocks)}
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
         ledger.issue("LOC-01", "error", "frontmatter", "locale", "Locale is outside the registered vocabulary", value=fm["locale"])
@@ -151,6 +152,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         meta = body.get("_meta")
         if "_meta" not in body:
             ledger.issue("META_MISSING", "warning", section, "_meta", "Block provenance metadata is absent")
+            missing_meta_blocks.add(physical[id(block)])
             continue
         if not isinstance(meta, dict):
             continue  # Present malformed shape already has the registered META-01.
@@ -217,4 +219,4 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
             continue
         if stale:
             ledger.issue("DQ-05", "info", "gaps", "items[" + str(index) + "].last_checked", "Gap exceeds the disclosed freshness threshold")
-    return metadata
+    return metadata_assessment(document, source, missing_meta_blocks=missing_meta_blocks)

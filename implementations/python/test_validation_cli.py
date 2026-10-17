@@ -1,0 +1,172 @@
+"""Real validation command/transport evidence, not capability certification."""
+import copy
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+from test_reader import HEADER
+from test_validation import ROOT, well_formed, validate
+from test_validation_external import external
+from uwmd import main
+from uwmd_reader import parse
+from uwmd_source_validation import inspect_source_roles
+from uwmd_validation_provenance import metadata_assessment
+
+
+def fence(body, *, historical=False):
+    annotation="~~~json uw:section=property"+(" superseded=true" if historical else "")
+    return (annotation+"\n"+json.dumps(body,ensure_ascii=True)+"\n~~~\n").encode()
+
+
+def property_source():
+    return HEADER+well_formed("property",address="A",asset_class="multifamily",
+                             units=12,total_units=12,asking_price=100)
+
+
+class ValidationCLITests(unittest.TestCase):
+    def setUp(self):
+        self.temporary=tempfile.TemporaryDirectory(prefix="uwmd-python-validation-cli-")
+        self.addCleanup(self.temporary.cleanup)
+        self.path=Path(self.temporary.name)/"input.uwx.md"
+
+    def command(self, raw):
+        self.path.write_bytes(raw)
+        result=subprocess.run([sys.executable,"-B",str(ROOT/"implementations/python/uwmd.py"),
+            "validate",str(self.path),"--json"],capture_output=True,encoding="utf8",timeout=30)
+        value=json.loads(result.stdout)  # Fails extra stdout frames/logging.
+        self.assertEqual(self.path.read_bytes(),raw)
+        return value,result.returncode
+
+    def test_real_command_result_partitions_readiness_and_parse_only_discovery(self):
+        result,status=self.command(property_source())
+        self.assertEqual(status,0)
+        self.assertEqual(result["overall_status"],"clean")
+        self.assertEqual(len(result["stage_readiness"]),7)
+        self.assertEqual(len(result["coverage"]),15)
+        for name,severity in (("errors","error"),("warnings","warning"),("info","info")):
+            self.assertEqual(result[name],[i for i in result["issues"] if i["severity"]==severity])
+        self.assertEqual(result["replacement_funding_verification"]["state"],"not_checked")
+        self.assertNotIn("metadata_assessment",result)
+        self.assertNotIn("error",result)
+        manifest,status=main(["manifest"])
+        self.assertEqual((status,manifest["capabilities"],manifest["profiles"]),(0,["parse"],[]))
+
+    def test_registered_whole_missing_metadata_warning_is_consumed_not_suppressed(self):
+        body=dict(address="A",asset_class="multifamily",units=12,total_units=12)
+        raw=HEADER+fence(body)
+        source=parse(raw);before=copy.deepcopy(source)
+        inventory=inspect_source_roles(source)
+        self.assertEqual([f["field"] for f in inventory["shape_findings"]],["_meta"])
+        report=validate(source)
+        self.assertEqual(report["metadata_assessment"]["shape_findings"],[])
+        self.assertEqual([i["code"] for i in report["warnings"]],["META_MISSING"])
+        result,status=self.command(raw)
+        self.assertEqual((status,result["overall_status"]),(0,"warnings"))
+        self.assertEqual([i["code"] for i in result["warnings"]],["META_MISSING"])
+        self.assertEqual(source,before)
+
+    def test_absence_consumption_requires_exact_covered_authored_block(self):
+        body=parse(property_source()).source.blocks[0].parsed.value
+        late={"value":1,**body}
+        raw=HEADER+fence({"units":12})+fence(late)+fence({"units":12},historical=True)
+        source=parse(raw);inventory=inspect_source_roles(source)
+        self.assertEqual([f["context"]["block_index"] for f in inventory["shape_findings"]],[0,1])
+        for covered in ((),(1,),(2,)):
+            local=metadata_assessment(source,inventory,missing_meta_blocks=covered)["shape_findings"]
+            self.assertEqual([f["context"]["block_index"] for f in local],[0,1])
+        local=metadata_assessment(source,inventory,missing_meta_blocks=(0,1,2))["shape_findings"]
+        self.assertEqual([(f["context"]["block_index"],f["field"]) for f in local],[(1,"_meta")])
+        integrated=validate(source)
+        self.assertEqual(sum(i["code"]=="META_MISSING" for i in integrated["issues"]),1)
+        self.assertEqual([f["context"]["block_index"] for f in
+                          integrated["metadata_assessment"]["shape_findings"]],[1])
+
+    def test_late_typed_and_section_shape_requirements_have_uncoded_local_refusal(self):
+        body=parse(property_source()).source.blocks[0].parsed.value
+        typed=copy.deepcopy(body);typed["_meta"]["quality"]["confidence"]=False
+        section=copy.deepcopy(body);section["_meta"]["section"]="wrong"
+        late={"value":1,**body}
+        for value in (typed,section,late):
+            with self.subTest(value=value):
+                result,status=self.command(HEADER+fence(value))
+                self.assertEqual(status,1)
+                self.assertNotIn("code",result["error"])
+                self.assertNotIn("overall_status",result)
+                self.assertTrue(result["metadata_assessment"]["shape_findings"])
+                self.assertIn("partial_validation_result",result)
+        # A declared fixed lease-up payload has separate unallocated shape evidence.
+        raw=property_source()+well_formed("lease_up_schedule",model="not_registered",
+            period_granularity="monthly",stabilization_target="2026-01",
+            schedule=[{"period":"2026-01"}])
+        result,status=self.command(raw)
+        self.assertEqual(status,1)
+        self.assertTrue(result["section_assessment"]["lease_up_schedule"]["shape_findings"])
+        self.assertNotIn("code",result["error"])
+
+    def test_actor_and_present_null_meta_use_registered_errors_without_inferred_attribution(self):
+        actor=parse(property_source()).source.blocks[0].parsed.value
+        del actor["_meta"]["provenance"]["actor"]
+        for body in (actor,{"_meta":None}):
+            result,status=self.command(HEADER+fence(body))
+            self.assertEqual((status,result["overall_status"]),(1,"errors"))
+            self.assertEqual([i["code"] for i in result["errors"]],["META-01"])
+            self.assertNotIn("error",result)
+        malformed={"_meta":{"section":"property"}}
+        result,status=self.command(HEADER+fence(malformed))
+        self.assertEqual(status,1)
+        self.assertNotIn("code",result["error"])
+        self.assertIn("META-01",[i["code"] for i in result["partial_validation_result"]["errors"]])
+
+    def test_external_composition_refuses_without_cli_null_binding_union(self):
+        raw=HEADER+external("property")
+        result,status=self.command(raw)
+        self.assertEqual(status,1)
+        self.assertEqual(result["error"]["code"],"COMP-UNRESOLVED")
+        self.assertEqual(result["composition_assessment"]["status"],"unresolved")
+        self.assertNotIn("overall_status",result)
+        # A consulted source likewise remains unperformed in the private API;
+        # the command must never serialize that local None as a V.12 result.
+        raw=property_source()+external("debt_structure")
+        result,status=self.command(raw)
+        self.assertEqual(status,1)
+        self.assertNotEqual(result["partial_validation_result"].get(
+            "replacement_funding_verification","not_present"),None)
+
+    def test_blocking_workflow_status_alone_does_not_change_command_failure_policy(self):
+        raw=property_source().replace(b"unknown_key: retained",b"blocking_flags:\n  - human_review")
+        result,status=self.command(raw)
+        self.assertEqual(result["overall_status"],"blocking")
+        self.assertEqual(result["errors"],[])
+        self.assertEqual(status,0)
+
+    def test_async_stale_binding_refuses_without_mutating_synchronous_partition(self):
+        source=ROOT/"conformance/hedge/0070-stale-amount/deal.uwx.md"
+        result,status=self.command(source.read_bytes())
+        self.assertEqual(status,1)
+        self.assertEqual(result["errors"],[])
+        self.assertEqual(result["overall_status"],"warnings")
+        binding=result["replacement_funding_verification"]
+        self.assertEqual((binding["state"],binding["reason"]),("failed","stale_binding"))
+        self.assertNotIn("HDG-09",[i["code"] for i in result["issues"]])
+
+    def test_source_usage_io_and_internal_failures_are_not_validation_verdicts(self):
+        result,status=self.command(property_source().replace(b'uw_version: "3.0"',b'uw_version: "2.0"'))
+        self.assertEqual(status,1)
+        self.assertEqual(result["error"]["code"],"UNSUPPORTED_FORMAT_VERSION")
+        self.assertNotIn("overall_status",result)
+        self.assertEqual(main(["validate"])[1],1)
+        self.assertEqual(main(["validate",str(self.path),"--wrong"])[1],1)
+        self.assertEqual(main(["validate",str(self.path.parent/"absent")])[1],2)
+        self.path.write_bytes(property_source())
+        with patch("uwmd.validate_document",side_effect=RuntimeError("test failure")):
+            result,status=main(["validate",str(self.path),"--json"])
+        self.assertEqual(status,2)
+        self.assertNotIn("overall_status",result)
+
+
+if __name__=="__main__":
+    unittest.main()

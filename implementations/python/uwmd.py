@@ -1,4 +1,4 @@
-"""Node-free parse/reserve CLI; discovery remains explicitly partial without a tier."""
+"""Node-free structured CLI; discovery remains parse-only without a tier."""
 import asyncio
 import json
 from pathlib import Path
@@ -12,6 +12,43 @@ from uwmd_replacement_funding import replacement_funding_report
 from uwmd_block_integrity import BlockIntegrityError, verify_block_integrity
 from uwmd_source_validation import inspect_source_roles
 from uwmd_currency import inspect_document_currency
+from uwmd_validation import validate_document
+from uwmd_validation_selection import ValidationUnavailable
+
+
+def _validation_response(result):
+    """Separate accepted output from local unsupported-input evidence.
+
+    These refusals are not a new ValidationResult state or diagnostic allocation.
+    Unallocated requirements cannot become a successful partial validation.
+    """
+    local = ("composition_assessment", "metadata_assessment", "section_assessment")
+    structural = {key: value for key, value in result.items() if key not in local}
+    if structural.get("replacement_funding_verification") is None:
+        structural.pop("replacement_funding_verification", None)
+    composition = result["composition_assessment"]
+    if composition["status"] != "resolved":
+        return dict(error=dict(category="validate", code="COMP-UNRESOLVED",
+                               message="Externalized sections are unresolved; complete validation is unavailable."),
+                    partial_validation_result=structural,
+                    **{key: result[key] for key in local}), 1
+    unallocated = bool(result["metadata_assessment"]["shape_findings"]) or any(
+        assessment["shape_findings"] for assessment in result["section_assessment"].values())
+    if unallocated:
+        return dict(error=dict(message="Unallocated structural requirements remain; complete validation is unavailable."),
+                    partial_validation_result=structural,
+                    **{key: result[key] for key in local}), 1
+    # V.12 is a separately checked union, not an async mutation of the
+    # synchronous structural status, issue arrays or stage readiness.
+    binding = structural.get("replacement_funding_verification")
+    if binding is None:
+        return dict(error=dict(message="Replacement-funding assessment is unavailable."),
+                    partial_validation_result=structural), 1
+    # Blocking flags/readiness describe workflow; the accepted cmdValidate
+    # operation fails for actual errors or the separate binding refusal.
+    refused = (bool(structural["errors"])
+               or binding["state"] in ("failed", "unverifiable"))
+    return structural, 1 if refused else 0
 
 
 def main(arguments):
@@ -19,6 +56,25 @@ def main(arguments):
         return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
                 "capabilities": ["parse"], "profiles": []}, 0
+    if arguments and arguments[0] == "validate":
+        if len(arguments) not in (2, 3) or (len(arguments) == 3 and arguments[2] != "--json"):
+            return {"error": {"message": "validate <file> [--json]"}}, 1
+        try:
+            path = Path(arguments[1])
+            document = parse(path.read_bytes(), filename=path.name)
+            return _validation_response(asyncio.run(validate_document(document)))
+        except SourceError as error:
+            diagnostic = {"message": str(error)}
+            if hasattr(error, "code"):
+                diagnostic["code"] = error.code
+            return {"error": diagnostic}, 1
+        except ValidationUnavailable as error:
+            return {"error": {"message": str(error)}}, 1
+        except OSError as error:
+            return {"error": {"message": str(error)}}, 2
+        except Exception as error:
+            # An implementation defect is never a structural validation verdict.
+            return {"error": {"message": "Internal validation failure: " + str(error)}}, 2
     if len(arguments) in (2, 3) and arguments[0] == "verify-block-integrity" and (len(arguments) == 2 or arguments[2] == "--json"):
         try:
             path = Path(arguments[1])
@@ -97,7 +153,7 @@ def main(arguments):
             return {"error": diagnostic}, 1
         except OSError as error:
             return {"error": {"message": str(error)}}, 2
-    return {"error": {"message": "implemented commands: manifest, parse <file>, verify-reserve-accounts <file> [--json], verify-reserve-draws <file> [plan.json] [--json], verify-replacement-funding <file> [--json], verify-block-integrity <file> [--json], inspect-source-roles <file> [--json], inspect-document-currency <file> [--json]"}}, 1
+    return {"error": {"message": "implemented commands: manifest, parse <file>, validate <file> [--json], verify-reserve-accounts <file> [--json], verify-reserve-draws <file> [plan.json] [--json], verify-replacement-funding <file> [--json], verify-block-integrity <file> [--json], inspect-source-roles <file> [--json], inspect-document-currency <file> [--json]"}}, 1
 
 
 if __name__ == "__main__":

@@ -52,7 +52,54 @@ without carrying a compatibility implementation merely to keep it passing.
 ## Complete validation implementation — in progress
 
 
-### Current checkpoint — accepted RFC0090 integration and CS admission
+### Current checkpoint — real validate command, capability unclaimed
+
+`python -B implementations/python/uwmd.py validate <file> --json` now invokes
+the independent orchestration on a fresh parse of the supplied bytes. Supported
+inline inputs return the structural ValidationResult fields, all seven stage
+booleans, all fifteen CC coverage entries and the separately checked V.12 result.
+Exactly one JSON document is written to stdout. Structural errors or failed/
+unverifiable V.12 return exit1; warning-only results return0. Frontmatter blocking
+flags retain `overall_status: blocking` but do not alone fail this operation:
+they halt a producer workflow (Format3.3), while the accepted CLI fails on actual
+structural errors or the separate binding refusal. Parse refusals preserve
+allocated codes; I/O/internal failures return2. Validation never writes input.
+
+This is an implemented, **unadvertised developing command**, not a complete
+validation/Verifier claim. The manifest still claims only parse. Known uncovered
+inputs refuse explicitly: unresolved Composition uses accepted COMP-UNRESOLVED;
+unallocated metadata or lease-up shape requirements use an uncoded local error.
+Both refusal forms carry detached local assessments and an explicitly labeled
+`partial_validation_result`, not a new normative ValidationResult state.
+The private unperformed V.12 `None` is omitted from CLI partial output rather
+than serialized as a new union member. Normal CLI output excludes prototype
+assessment siblings.
+
+Whole-absent metadata retains its registered META_MISSING warning and accepted
+warning-only exit. Its duplicated inspector-local absence finding is consumed
+only for the exact physical block index where completeness actually emitted that
+warning, after confirming authored absence. A late/present/null metadata object,
+another block or uncovered history cannot match by field name alone. Other
+unallocated conditions remain visible; the source inspector is unchanged.
+
+`run_validation_cases.py` executes each unchanged portable validate case through
+the actual command and unchanged shared `run_case` comparison. A transparent
+subprocess observer retains exact argv/stdout/stderr/exits plus source/case/
+expected/result hashes; it neither alters case flags nor advertises validate.
+That direct case evidence is separate from an advertised-capability run, which
+would report missing-capability failures under `--no-skip`. Current111-case
+execution results will be recorded at the committed source checkpoint.
+
+Exact remaining gates include typed/conditional provenance and reference
+admission beyond the allocated families; closed optional REC administrative-fee,
+gross-up/cap and true-up shapes; CS sizing declaration shapes; WF optional stated
+outcome/schedule shape and reference applicability; all applicable family-order/
+partition/negative-wire controls; and composition package/part resolution.
+No local assessment list proves complete schema coverage. General dictionary,
+state-and-verify financial outcomes and receipt verification remain subsequent
+base-Verifier obligations. No numerical procedure or optional profile is enabled.
+
+### Prior checkpoint — accepted RFC0090 integration and CS admission
 
 The validation WIP now includes exact accepted main
 `afcc615897aca301c7b5ec070bba7c0bd253e4ef` by history merge; no candidate
@@ -94,9 +141,9 @@ It showed no CS finding for absent/null/cash/accrued and one CS-01 for unknown
 in both locations. This is API regression evidence, not portable CLI conformance.
 The source bytes are reused for the after-fix comparison.
 
-The command/discovery boundary is unchanged: `validate` is unsupported, the
-manifest remains parse-only, and the actual 111-case validate subprocess gate
-is not claimed. Governed current API projections and focused nonportable controls
+At that prior checkpoint `validate` was unsupported and only API projections
+were run. The real command above supersedes that transport limitation; discovery
+remains parse-only and a complete validate capability is not claimed. Governed current API projections and focused nonportable controls
 do not settle remaining unallocated schema conditions, composition transport,
 all family applicability, financial stated figures or a full Verifier tier.
 
@@ -183,8 +230,8 @@ reserve/draw/replacement evidence and compare the unchanged 111 validation API
 projections; they do not execute the unsupported validate command. No npm/full
 JavaScript suite or new cross-platform claim is included in this worker evidence.
 
-The CLI still refuses `validate` and discovery remains parse-only. RFC0090
-resolves the actor diagnostic/corpus gate. Completion still needs the remaining
+The prior CLI refusal is superseded by the current bounded command above;
+discovery remains parse-only. RFC0090 resolves the actor diagnostic/corpus gate. Completion still needs the remaining
 audited field/condition integration, applicable family/completeness ordering and
 partitions, and explicit command/refusal transport for unsupported composition;
 derived footing has no invented stated-versus-derived discrepancy code.
@@ -604,7 +651,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | RSV / BED | Existing reserve structure and student bed/date rules | Complete per-source/class/optional-member application and malformed-input evidence; RSV balance verification remains separate and unchanged. |
 | CLS / class rules / MOD | Fixed fields and accepted class-specific definitions/rules; all 61 unchanged builtin validation code projections | Exhaustive role/type/conditional/input applicability, retaining separate class checks versus generic 171-metric reproduction and raw size lookup. |
 | External composition | Local unresolved/directive assessment, exact presence and dependent-field gating | No part resolver is implemented. A complete validate command must transport unsupported/unresolved composition explicitly, never present this private partial assessment as a complete normative report. |
-| General command and result | Complete partition keys, seven stage keys, fifteen coverage keys; 111 direct API projections | Actual 111 validate subprocess/stdout/exit/refusal cases are **not run** because validate remains unsupported. No flag/tier promotion until the full applicable boundary, unsupported-input transport and preservation/full required gates pass. |
+| General command and result | Real unadvertised command, exact result partitions, seven stage keys, fifteen coverage keys, separate V.12 and explicit unsupported-input refusal | Execute all111 unchanged actual portable cases and complete the specific field/domain, ordering and nonportable gates above. Parse-only discovery remains unchanged until whole-capability proof passes. |
 
 This is a completion backlog inside the single integrated validator. It does
 not authorize more isolated inspector commands. General dictionary comparison,
@@ -830,7 +877,7 @@ may be rewritten to make the Python report green.
    assertions (17 genuine portable cases plus nine frozen refusals), additional
    contract-boundary controls, unchanged source bytes and explicit manifest
    evidence. Optional representations/signatures are not part of this gate.
-2. **Next implementation: complete `validate`, not another inspector.** Use one
+2. **Complete the implemented `validate` capability, not another inspector.** Use one
    orchestration API with reusable selected-source/role/period/currency/reserve/
    replacement helpers; finish missing registered structural, threshold, class
    and cross-check families internally, preserving the accepted metadata-family
@@ -839,7 +886,7 @@ may be rewritten to make the Python report green.
    every registered CC coverage entry, stage overlays, source-order/role/absence/
    refusal controls, all 111 current governed portable validate cases through the real
    command, plus every applicable nonportable validation assertion and separate
-   V.12 failure states. Only then add `validate`; no Verifier tier follows yet.
+   V.12 failure states. Only then advertise `validate`; no Verifier tier follows yet.
 3. **Close metric reproduction and the chosen calculation method.** Implement
    document runtime selection, lazy null/refusal semantics, token precision and
    every builtin dictionary definition/size selector. Gate: all 171 definitions
