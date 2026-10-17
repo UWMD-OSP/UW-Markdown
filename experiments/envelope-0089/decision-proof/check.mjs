@@ -14,7 +14,7 @@ assert(rootIndex >= 0 && args[rootIndex + 1], 'explicit --verify-root is require
 const verifyRoot = resolve(args[rootIndex + 1]);
 const create = args.includes('--create');
 assert(args.length === (create || args.includes('--check') ? 3 : 2), 'only --verify-root PATH and --create/--check are accepted');
-const paths = ['experiments/envelope-0089/decision-proof/auth-review.mjs', 'experiments/envelope-0089/decision-proof/projection.mjs', 'experiments/envelope-0089/decision-proof/check.mjs', 'experiments/envelope-0089/codec-study/independent.mjs', 'spec/UW_FORMAT_SPEC.md', 'spec/UW_PROTOCOL.md', 'spec/UW_RECEIPT.md', 'spec/schemas/uw-envelope.schema.json', 'spec/schemas/uw-document-signature.schema.json', 'spec/schemas/uw-receipt.schema.json'];
+const paths = ['experiments/envelope-0089/decision-proof/auth-review.mjs', 'experiments/envelope-0089/decision-proof/projection.mjs', 'experiments/envelope-0089/decision-proof/check.mjs', 'experiments/envelope-0089/codec-study/independent.mjs', 'spec/UW_FORMAT_SPEC.md', 'spec/UW_PROTOCOL.md', 'spec/UW_RECEIPT.md', 'spec/schemas/uw-document-envelope.schema.json', 'spec/schemas/uw-document-signature.schema.json', 'spec/schemas/uw-receipt.schema.json'];
 const hashes = Object.fromEntries(paths.map(path => [path, sha(readFileSync(new URL(path, root)))]));
 const destination = new URL('frozen/observations.json', here);
 let expected;
