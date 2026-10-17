@@ -169,7 +169,12 @@ class SourceValidationTests(unittest.TestCase):
         self.assertTrue(inspect(payload(_overrides=[{"path":""}]))["ok"])
 
     def test_meta_routing_shape_is_pinned_and_flat_source_is_not_interpreted(self):
-        for value in ({"value":1},{"_meta":None},{"_meta":{"source":"market_data","section":"property"}},
+        missing=inspect({"value":1})
+        self.assertEqual(missing["issues"],[])
+        self.assertFalse(missing["ok"])
+        self.assertEqual([f["field"] for f in missing["shape_findings"]],["_meta"])
+        self.assertTrue(all("code" not in f and "severity" not in f for f in missing["shape_findings"]))
+        for value in ({"_meta":None},{"_meta":{"source":"market_data","section":"property"}},
                       payload(section_id="property")):
             self.assertIn("META-01",codes(inspect(value)))
             self.assertNotIn("SRC-02",codes(inspect(value)))
