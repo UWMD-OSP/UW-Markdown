@@ -18,6 +18,18 @@ new registered severity, suffix or timestamp policy is inferred. Full structural
 validation and complete Verifier capability remain unclaimed; discovery stays
 parse-only. RFC0088/#357 and RFC0089/#368 remain independent unaccepted drafts.
 
+**Issue365 representation design remains unaccepted.** DraftRFC0089/#368
+preserves the requested read-only intake in the existing PythonReader354 review.
+The candidate versioned/tagged design includes mixed nullable/named identities,
+codec/canonicalization/signature/receipt consequences and future fixture matrices;
+no current Envelope1, schema or historical subject is changed. Five illustrative
+synthetic preimages have independent Python/Node hash evidence. A separate
+unchanged-schema/verified-JSON proof has ten admission controls and five low-level
+hash comparisons: raw hash agreement does not admit a version or candidate shape.
+This is not general JCS, candidate-codec, signature, receipt or XML/CSV conformance.
+Design, mixed-identity clarification and independent version/regime/release
+allocation remain owner decisions; no compatibility shim or 5.0 decision is made.
+
 ## Bounded parallel workstreams
 
 One integrator owns sequencing, independent review, shared indexes/changelog/
