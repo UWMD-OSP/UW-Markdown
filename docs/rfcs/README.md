@@ -125,6 +125,8 @@ its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
 | [0089](./0089-lossless-extension-envelope.md) | Preserve extension variants in a versioned Envelope | draft | format, protocol, core, conformance, tooling |
 
+| [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
+
 ## Status values
 
 This is the authoritative list. An RFC's frontmatter `status:` must be one of

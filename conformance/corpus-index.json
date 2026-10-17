@@ -5475,6 +5475,61 @@
       "suite": "documents",
       "scenario": "malformed/29-actor-shape-precedence",
       "target": "verifier"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "authored/lease-abstract/api-shape",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "authored/fragments/standalone-parse",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "authored/composition/inline-external-canonical",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "authored/composition/inline-external-digest",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "authored/package/manifest",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "authored/package/integrity",
+      "target": "representations"
+    },
+    {
+      "suite": "standalone",
+      "scenario": "authored/package/context-boundary",
+      "target": "representations"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "standalone/authored-2026-10-17/inline-deal.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "standalone/authored-2026-10-17/externalized-deal.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "standalone/authored-2026-10-17/package/records/inline-deal.uwx.md",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md",
+      "target": "verifier"
     }
   ]
 }

@@ -1,10 +1,8 @@
 # Versions
 
-UW Markdown ships three independently-versioned surfaces. The format
-spec, the protocol spec, and each implementation package each carry
-their own semver per the policy in
-[CHANGELOG.md](CHANGELOG.md#versioning). This file is the
-authoritative compatibility matrix.
+Format and Protocol are separate normative surfaces. npm packages follow the
+owner release rule below: prelaunch4.x.x, then a coordinated5.0.0 public launch.
+This file also records the versions actually released.
 
 ## Why three streams?
 
@@ -17,45 +15,29 @@ together would force every adopter to track every library release.
 The same logic applies to the protocol: an editor and a verifier can be
 released independently as long as both honor the same protocol version.
 
-## Public launch compatibility policy (owner decision, 2026-10-16)
+<a id="public-launch-compatibility-policy-owner-decision-2026-10-16"></a>
+## Public launch rule (owner decision, 2026-10-17)
 
-UWMD 5.0 is the first official public compatibility baseline. Every earlier
-version, including published 4.x packages, is prelaunch development history.
-The official launch ecosystem has no obligation to preserve compatibility with
-those versions. Major 5 retains the existing npm organization, package names
-and publication history; it is version-name continuity, not a legacy-support
-promise or a reset to version 1.
+The owner rule at the top of AGENTS.md and CLAUDE.md
+supersedes earlier compatibility and artifact-preservation directions.
+5.0.0 is exclusively the official public launch: **every @uwmd npm package
+moves to5.0.0 together then**. All prelaunch releases use4.x.x and may ship
+from main as needed, including incompatible changes.
 
-Prefer clean, coherent and deterministic launch contracts. Do not retain pre-5.0
-readers, numerical procedures, Envelope codecs, receipt verification regimes,
-deprecated APIs or compatibility shims solely for backward compatibility.
-Breaking prelaunch behavior is permitted. Normative changes still require RFC
-discipline, synchronized specifications/schemas/conformance, independent
-verification and the applicable owner decisions. This policy accepts no draft
-RFC, numerical procedure, representation design or retirement implementation.
+Before launch there is zero backward compatibility. Do not prepare migration
+notes, deprecation paths, consumer-breakage analyses, version-bump recommendations
+or preservation/repair of prelaunch documents, signatures, receipts or artifacts.
+Jared is the sole prelaunch consumer; prelaunch documents are not public inputs.
+Drop compatibility-only and artifact-preservation-only work. Current numerical,
+verification, read-only source-integrity and conformance requirements remain;
+those are current contracts, not legacy support obligations.
 
-Preserve original repository commits, tags, issued artifacts, signing evidence
-and release records accurately. Historical identity and verdict analysis remains
-audit evidence, not a requirement to support the old contract. Do not rewrite
-that evidence or imply that a prelaunch artifact is authenticated or financially
-verified under a new launch contract. Previously published npm artifacts cannot
-be erased by this policy, and existing consumers do not migrate automatically.
-Any newly issued artifact must be attributable to the actually supplied source
-and the separately approved contract; it is not a relabeled historical artifact.
-
-Format, Protocol, packages, modules and other public surfaces remain independently
-versioned. No requirement aligns every component to 5.0.0. Exact launch versions,
-post-launch support details and implementation activation follow their normal
-review gates. No 5.0 tag or publication is authorized without separate explicit
-owner launch approval.
-
-This decision applies to RFCs 0085, 0088 and 0089, Python verification,
-agent-product retirement and launch preparation. Older prelaunch compatibility
-commitments below describe their historical releases; they are not mandatory
-launch-design constraints. Current implementation and corpus behavior change
-only through their reviewed engineering or normative changes. For #373, strict
-RFC 8785 rejection of malformed Unicode is approved forward behavior; preserve
-historical evidence without a malformed-input verification fallback.
+Format and Protocol remain distinct normative surfaces; the coordinated5.0.0
+rule applies to npm package releases. Earlier matrix entries below report what
+was released, not versions to repeat or compatibility commitments. No package
+number, release, tag or publication is changed by recording this rule. The
+public launch still requires separate explicit owner approval, and normative
+changes still require RFC discipline and synchronized specifications/conformance.
 
 ## Current matrix
 
@@ -441,60 +423,14 @@ above and the changelog for shipped versions.
 These were candidate versions when the plan was written. See the
 [1.1+ interchange release plan](docs/releases/1.1-plus-interchange-plan.md).
 
-## Compatibility rules
+## Development and release policy
 
-The rules below describe the existing prelaunch release streams. They do not
-require the launch implementation to support those streams; the explicit
-[public launch policy](#public-launch-compatibility-policy-owner-decision-2026-10-16)
-governs that boundary. Independent versioning and honest release records remain.
-
-1. **A reader supports exactly the format it names.** From Format 3.0
-   a reader refuses every other `uw_version`, newer minors included, as
-   `UNSUPPORTED_FORMAT_VERSION` (Protocol §XII.3, RFC 0081). Within a
-   supported version, unknown sections, frontmatter keys and `x_*`
-   extension blocks are surfaced, never errors (Protocol §II.1 item 3,
-   §XII.1–XII.2). Through 3.0.0 format minors were additive and readers
-   kept every earlier 1.x and 2.x version readable; 3.0.0 is the last
-   release that reads them.
-2. **Protocol minor versions strengthen requirements monotonically.**
-   A 1.1-conformant tool is automatically 1.0-conformant. New required
-   behavior in a 1.x protocol is opt-in for 1.0 tools and becomes
-   normative at the next major.
-3. **Library majors require explicit re-pinning.** A `@uwmd/core`
-   major (2.0.0, 3.0.0, 4.0.0) may break the calling shape; its patches
-   and minors will not, and are safe to update through normal
-   `npm install`.
-4. **A format major requires a protocol major.** A `.uw.md` v2 file
-   requires UW Protocol v2 or later to be fully read. The reverse does not
-   hold: Protocol 3.0 changed the conformance model, not what any document
-   means, so it pairs with Format 2.x (RFC 0078 §4). Format 3.0 pairs with
-   Protocol 4.0.0 (RFC 0081).
-
-### RFC 0062 errata treatment (released in 2.14.0)
-
-The owner selected Protocol 2.17.1 for reconciliation of contradictory released
-requirements. This patch changes PS-02 applicability and permits unique-date
-cash-flow selection despite duplicate dates elsewhere. It does not claim
-byte-identical validation verdicts with 2.17.0. The existing minor-version
-monotonicity rule does not resolve contradictory requirements; this narrowly
-recorded erratum reconciles them without general relaxation of period rules.
-See [RFC 0062](docs/rfcs/0062-same-day-cash-flow-selection.md), accepted by Jared
-on 2026-09-24 and released in core/CLI 2.14.0 on 2026-10-02. This is not a
-blanket patch policy for new
-protocol features.
-
-## Pinning recommendations
-
-For new integrations, target Format 3.0 and the Protocol 4.1.0 contract
-listed above. A party that only reads and verifies documents can depend on
-`@uwmd/verify` alone. It is a 0.x package, so `^0.2.0` admits only 0.2.x
-patches; pin it exactly if you need the receipt engine identity to stay
-fixed. Pin `@uwmd/core@^4` for the starter products (editor, calc host,
-agent host) or for readers and verifiers that also want them, or
-`@uwmd/cli@^4` for CLI scripts.
-Readers read Format 3.0 only; convert older documents before upgrading (see
-the CHANGELOG 4.0.0 migration notes). An agent host installs a provider SDK only if it uses that provider;
-`@anthropic-ai/sdk` remains an optional peer.
+Apply the2026-10-17 owner rule above. Earlier release descriptions are not
+compatibility obligations. Use the current source, accepted RFCs and conformance
+for development; do not maintain old readers, receipts, APIs or document repair
+paths for prelaunch consumers. Current source/digest correctness remains part of
+verification. No prelaunch migration guide or version-bump recommendation is
+required.
 
 ## Release coordination
 
