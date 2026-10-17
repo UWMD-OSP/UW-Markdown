@@ -11,9 +11,9 @@ protocol, and each package each carry an independent semver).
 ### Fixed
 
 - Keep absent Python metadata outside the present-malformed META-01 domain.
-  Report an uncoded local completeness gap rather than inventing a registered
-  severity; preserve the standalone command's incomplete status and parse-only
-  discovery.
+  Keep completeness outside this partial inventory as an uncoded local diagnostic;
+  preserve the full validator's published warning/info/error precedence and the
+  standalone command's incomplete status and parse-only discovery.
 
 - Decode quoted YAML frontmatter string keys and locate mapping separators
   without splitting quoted or plain key content. Preserve quoted sequence

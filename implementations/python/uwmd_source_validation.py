@@ -77,8 +77,8 @@ def inspect_source_roles(document):
         meta = body.get("_meta")
         if "_meta" not in body:
             # Absence belongs to the distinct provenance-completeness family.
-            # This partial inventory does not assign that family's missing severity.
-            shape("_meta", "Metadata is absent; provenance completeness is not assessed by this partial command.")
+            # Completeness findings belong to the full validator, not this inventory.
+            shape("_meta", "Metadata is absent; provenance completeness is outside this partial command.")
         elif not isinstance(meta, dict):
             routing.append("A nested _meta object is required.")
         else:

@@ -800,7 +800,9 @@ catalogue has350 cases, including298Reader+Verifier. Those inventories are not
 new Python pass counts. All171 current builtin dictionary formulas use arithmetic
 and only six named `round` calls, so that work can advance independently of
 RFC0088's power/return procedures. Reader key/identity/lifecycle boundaries and
-metadata-completeness severities remain explicit contract/proof gaps. Missing
-`_meta` is locally diagnosed without manufacturing META-01 or a severity; this
-partial correction does not implement completeness validation. Discovery remains
+metadata-family prose omission remain explicit. Preserve published missing-meta/
+missing-field warnings, low-confidence info and malformed-shape META-01 error;
+this ordinary implementation decision needs no owner approval. Missing `_meta`
+is locally diagnosed without manufacturing META-01; the partial inventory does
+not implement the full completeness family. Discovery remains
 parse-only until the whole claimed capability is demonstrated.

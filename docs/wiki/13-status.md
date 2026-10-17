@@ -8,7 +8,8 @@ complete `validate` surface, followed by metric/calculation-method closure,
 remaining stated-figure verification and receipt verification. More isolated
 inspectors do not close those obligations. Current dictionary arithmetic can
 advance independently of RFC0088; source identity/lifecycle, key admission and
-missing metadata severities are explicit boundaries rather than guessed rules.
+published metadata severities are preserved by ordinary precedent; their prose
+omission is a documentation gap, not an owner blocker.
 
 The prior currency checkpoint #371 merged as
 `fbf8f66aa00fa2ca50dbf4dd7d006d3b3a3b53b1`, identical to reviewedf3b3ee47.
@@ -17,7 +18,8 @@ passes17 ordinary jobs; Ubuntu/Windows/macOS each demonstrate151methods and
 Reader17/17. [Exact-main CI38985670740](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38985670740)
 is tracked separately. No complete-tier claim follows. A focused correction
 keeps absent metadata outside the registered present-malformed META-01 domain
-without inventing the missing completeness severity; twelve focused methods pass.
+without adding completeness findings outside the partial inventory; twelve focused
+methods pass.
 
 ## Bounded parallel workstreams
 
