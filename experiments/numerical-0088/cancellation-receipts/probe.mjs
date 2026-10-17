@@ -74,7 +74,7 @@ function invalidSignature(receipt) {
   return result;
 }
 const rows = [];
-async function check(id, receipt, item, { other_version = false, no_backend = false } = {}, expected) {
+async function check(id, receipt, item, { other_version = false, no_backend = false }, expected) {
   const before = JSON.stringify(receipt);
   const payload = api.receiptSigningPayload(receipt);
   const calls = [];
