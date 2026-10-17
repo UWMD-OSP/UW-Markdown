@@ -786,7 +786,7 @@ stays parse-only.
 
 ### Python minimum-complete capability gates
 
-The [current completion matrix](https://github.com/UWMD-OSP/UW-Markdown/blob/83f1a9b5/implementations/python/README.md#minimum-complete-capability-path--2026-10-16)
+The [current completion matrix](https://github.com/UWMD-OSP/UW-Markdown/blob/22372265039ec5748b9eff22ad623cbf2537a407/implementations/python/README.md#minimum-complete-capability-path--2026-10-16)
 separates Reader proof, complete Format validation, dictionary reproduction,
 all stated-figure verifiers and receipt verification from optional profiles.
 The next cohesive implementation milestone is one real `validate` command with
