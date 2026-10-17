@@ -35,4 +35,30 @@ primitive events separately from the older evidence. Unmodified and baseline
 loader controls run only two finite success controls; the candidate runs the
 bounded matrix. No full workspace/corpus/native research loop is run.
 
-No observation is claimed until a committed evidence manifest is present.
+The first capture is frozen in `evidence/manifest.json` at checkout
+`f29258a2528f56b7536b40aae108e4a63a7aadc4` (tree
+`b8a2bda34b67498d8c0b15767ebdf30cad43bccb`), after merging accepted main
+`afcc615897aca301c7b5ec070bba7c0bd253e4ef`. It records Windows AMD64,
+Python 3.12.3, Node 24.14.1, V8 13.6.233.17-node.44 and OpenSSL 3.5.5.
+Thirteen compressed artifacts retain complete raw observations, signed payloads,
+backend calls, loader transformations and primitive events. All source/dist
+identities were equal before and after execution. Offline checks independently
+verify 18 real Ed25519 signature byte-validity outcomes across 19 candidate
+controls; they do not rerun receipt APIs.
+
+Unmodified, baseline-loader and candidate issuance agree exactly for the frozen
+multi-period IRR input, including the independent Python reported binary64 word
+`3fb6c64e16bf6113` (`0.088963394693`). A valid signed receipt reaches the real
+backend once and verifies even when verifier engine-version metadata differs.
+Wrong reported-value controls deliberately edit the result; these are synthetic
+finite disagreements, not an observed natural host/candidate numeric difference.
+With a newly valid signature they preserve same-engine RCP-03 versus
+other-version RCP-07/RCP-03; a retained invalid signature produces RCP-01 first.
+
+The old endpoint receipt is reused as a frozen input, not reissued. Candidate
+recomputation refuses: both newly valid and deliberately invalid research
+signatures produce RCP-03 before any backend call. Missing-backend, subject,
+held/unavailable input and unavailable-pack controls preserve their separate
+accepted earlier exits. These observations do not change receipt precedence or
+solve the refused computation. No new whole financial corpus, cross-platform
+claim, accuracy guarantee, issuer trust or normative acceptance follows.
