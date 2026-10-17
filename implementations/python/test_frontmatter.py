@@ -136,7 +136,6 @@ class FrontmatterTests(unittest.TestCase):
                 self.decode(text)
             self.assertEqual(caught.exception.code, "UNSUPPORTED_YAML_FEATURE")
 
-
     def test_sequence_mapping_actual_cli_preserves_complete_source(self):
         raw = HEADER.replace(b"unknown_key: retained",
             b'modules:\n  - id: com.example.specialty_facility\n    version: ">=0.1.0 <1.0.0"\n'

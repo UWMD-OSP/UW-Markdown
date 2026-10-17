@@ -139,35 +139,42 @@ class ValidationCLITests(unittest.TestCase):
         self.assertNotEqual(result["partial_validation_result"].get(
             "replacement_funding_verification","not_present"),None)
 
-    def test_directive_error_transport_precedes_unresolved_and_preserves_assessment_order(self):
+    def test_composition_transport_preserves_first_issue_without_global_directive_priority(self):
         for directive,want in (
             (None,"COMP-DIRECTIVE-MALFORMED"),
             (dict(parts=["a"],part_count=True),"COMP-DIRECTIVE-MALFORMED"),
             (dict(parts=["a","a"],part_count=2),"COMP-DUP-KEY"),
             (dict(parts=["a"],part_count=2),"COMP-COUNT-MISMATCH"),
             (dict(parts=["a","a"],part_count=3,unknown=True),"COMP-DUP-KEY")):
-            with self.subTest(directive=directive):
-                # An earlier unresolved directive cannot erase the existing
-                # later directive-admission error. No part lookup is performed.
-                raw=property_source()+external("rent_roll")+external("valuation",directive)
-                document=parse(raw);before=copy.deepcopy(document)
-                report=validate(document);original=copy.deepcopy(report)
-                result,status=self.command(raw)
-                self.assertEqual((status,result["error"]["category"],result["error"]["code"]),
-                                 (1,"validate",want))
-                assessment=report["composition_assessment"]
-                first=next(issue for issue in assessment["issues"] if issue["code"]!="COMP-UNRESOLVED")
-                self.assertEqual(result["error"],first)
-                self.assertEqual(result["composition_assessment"],assessment)
-                self.assertEqual(result["partial_validation_result"]["issues"],report["issues"])
-                self.assertFalse(any(i["code"].startswith("COMP-") for i in report["issues"]))
-                self.assertNotIn("overall_status",result)
-                response,exit_code=_validation_response(report)
-                self.assertEqual(exit_code,1)
-                self.assertIsNot(response["error"],first)
-                response["error"]["message"]="consumer edit"
-                self.assertEqual(report,original)
-                self.assertEqual(document,before)
+            for earlier_unresolved in (False,True):
+                with self.subTest(directive=directive,earlier_unresolved=earlier_unresolved):
+                    bad=external("valuation",directive);unresolved=external("rent_roll")
+                    raw=property_source()+(unresolved+bad if earlier_unresolved else bad+unresolved)
+                    document=parse(raw);before=copy.deepcopy(document)
+                    report=validate(document);original=copy.deepcopy(report)
+                    result,status=self.command(raw)
+                    first_code="COMP-UNRESOLVED" if earlier_unresolved else want
+                    self.assertEqual((status,result["error"]["category"],result["error"]["code"]),
+                                     (1,"validate",first_code))
+                    assessment=report["composition_assessment"];first=assessment["issues"][0]
+                    self.assertIn(want,[i["code"] for i in assessment["issues"]])
+                    self.assertEqual(result["error"],first)
+                    self.assertEqual(result["composition_assessment"],assessment)
+                    self.assertEqual(result["partial_validation_result"]["issues"],report["issues"])
+                    self.assertFalse(any(i["code"].startswith("COMP-") for i in report["issues"]))
+                    self.assertNotIn("overall_status",result)
+                    response,exit_code=_validation_response(report)
+                    self.assertEqual(exit_code,1)
+                    self.assertIsNot(response["error"],first)
+                    response["error"]["message"]="consumer edit"
+                    self.assertEqual(report,original)
+                    self.assertEqual(document,before)
+        # Defensive local response if an incomplete provider reports unresolved
+        # without an issue; never replace a real first issue with this fallback.
+        report=validate(parse(property_source()))
+        report["composition_assessment"]={"status":"unresolved","externalized":["rent_roll"],"issues":[]}
+        response,status=_validation_response(report)
+        self.assertEqual((status,response["error"]["code"]),(1,"COMP-UNRESOLVED"))
 
     def test_frozen_count_and_missing_part_errors_use_real_cli_without_resolution_claim(self):
         for folder in ("reject/count-mismatch","unresolved/missing-part"):
