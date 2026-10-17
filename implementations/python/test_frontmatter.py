@@ -1,5 +1,12 @@
 """Known-answer Appendix D controls; no TypeScript or expected-output lookups."""
 import unittest
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+from test_reader import HEADER
 
 from uwmd_frontmatter import FrontmatterError, parse_frontmatter
 
@@ -128,6 +135,24 @@ class FrontmatterTests(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(FrontmatterError) as caught:
                 self.decode(text)
             self.assertEqual(caught.exception.code, "UNSUPPORTED_YAML_FEATURE")
+
+
+    def test_sequence_mapping_actual_cli_preserves_complete_source(self):
+        raw = HEADER.replace(b"unknown_key: retained",
+            b'modules:\n  - id: com.example.specialty_facility\n    version: ">=0.1.0 <1.0.0"\n'
+            b'unknown_key:\n  - "a/b~c": 1.2300\n    label: "Caf\\u00e9"')
+        with tempfile.TemporaryDirectory(prefix="uwmd-yaml-sequence-cli-") as folder:
+            path = Path(folder) / "input.uwx.md"
+            for source in (raw, raw.replace(b"\n", b"\r\n")):
+                path.write_bytes(source)
+                command = subprocess.run([sys.executable, "-B", str(Path(__file__).with_name("uwmd.py")),
+                    "parse", str(path)], capture_output=True, encoding="utf-8", timeout=30)
+                self.assertEqual(command.returncode, 0, command.stderr)
+                value = json.loads(command.stdout)
+                self.assertEqual(value["frontmatter"]["modules"],
+                    [{"id": "com.example.specialty_facility", "version": ">=0.1.0 <1.0.0"}])
+                self.assertEqual(value["frontmatter"]["unknown_key"], [{"a/b~c": 1.23, "label": "Café"}])
+                self.assertEqual(path.read_bytes(), source)
 
     def test_unsupported_features_refuse_existing_code(self):
         for text in ["x: &anchor\n", "x: *alias\n", "x: !!str 3\n", "x: |\n", "x: >\n",
