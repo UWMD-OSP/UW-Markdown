@@ -106,6 +106,13 @@ manifest["summary"]["volatile_timestamp_only_cases"] = sum(
     for c in manifest["cases"])
 manifest["summary"]["raw_primitive_word_changes"] = len(manifest["primitive_changes_when_aligned"])
 manifest["summary"]["primitive_changes_by_site"] = dict(collections.Counter(d["site"] for d in manifest["primitive_changes_when_aligned"]))
+# Shard large arrays without changing any row; the repository JSON lint limit is 1 MiB.
+for field, name, descriptor in [("cases", "observed-impact.cases.jsonl", "case_artifact"),
+                                 ("primitive_changes_when_aligned", "observed-impact.primitives.jsonl", "primitive_changes_artifact")]:
+    rows = manifest.pop(field)
+    raw = "".join(json.dumps(row, separators=(",", ":"), ensure_ascii=False) + "\n" for row in rows).encode("utf-8")
+    (base / name).write_bytes(raw)
+    manifest[descriptor] = {"path": name, "count": len(rows), "sha256": sha(raw), "restores_field": field}
 manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
 print(json.dumps({"manifest": manifest_path.name, "summary": manifest["summary"],
                   "archive_bytes": sum(x["gzip_bytes"] for x in artifacts), "artifacts": len(artifacts)}, indent=2))

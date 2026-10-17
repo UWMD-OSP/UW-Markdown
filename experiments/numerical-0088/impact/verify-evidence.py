@@ -8,6 +8,14 @@ import pathlib
 base = pathlib.Path(__file__).resolve().parent
 manifest = json.loads((base / "observed-impact.json").read_text(encoding="utf-8"))
 sha = lambda data: hashlib.sha256(data).hexdigest()
+for descriptor in ("case_artifact", "primitive_changes_artifact"):
+    artifact = manifest[descriptor]
+    raw = (base / artifact["path"]).read_bytes()
+    assert sha(raw) == artifact["sha256"]
+    rows = [json.loads(line) for line in raw.splitlines()]
+    assert len(rows) == artifact["count"]
+    manifest[artifact["restores_field"]] = rows
+
 streams = {}
 for artifact in manifest["evidence_artifacts"]:
     path = base / artifact["path"]
