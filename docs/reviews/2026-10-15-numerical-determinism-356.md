@@ -560,3 +560,22 @@ follow-up records checkout/tree, Node/V8, binary/source hashes and exact command
 for future runs, while the workflow now explicitly checks out the reviewed head.
 No historical observation or expected answer was regenerated. The final updated
 head requires its own CI; the green historical runs do not certify later edits.
+
+### Approved integration identity and immutable replay
+
+After #373 merged, ordinary CI run 39000455194 failed the historical
+receipt-source hash comparison; all behavioral observations still agreed. The
+original 8,149-byte observations file remains frozen at SHA-256
+`60ea71d476eb290ba40af0fe59d4a3fc640ade24b8c5e9b84cf22f9ed79d21a5`.
+The isolated replay now pins the complete historical and approved-current
+six-file identity maps separately in `integration-identities.json`, then compares
+every remaining behavioral field exactly. Only the reviewed receipt-source
+identity differs, following #373; no result, refusal, backend-call count,
+conformance expectation or financial procedure was regenerated. Unrecorded
+source changes, byte tampering, behavioral changes and the former write option
+are refused. Six focused guard controls run beside the existing replay in CI.
+
+The earlier nine-platform kernel run remains evidence for its recorded source
+commit. Its executable candidate/input/collector/workflow closure is unchanged;
+new replay accounting is tested by ordinary CI and does not create a new claim
+of cross-platform kernel execution.

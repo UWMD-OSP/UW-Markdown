@@ -147,7 +147,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const destination = new URL('observations.json', import.meta.url);
   const frozenBytes = readFileSync(destination);
   const identities = JSON.parse(readFileSync(new URL('integration-identities.json', import.meta.url), 'utf8'));
-  // Refuse tampered evidence before invoking production APIs.
+  // Refuse tampered evidence before collecting current behavioral observations.
   assert.equal(HASH(frozenBytes), identities.historical.observations_sha256, 'frozen observations SHA-256');
   const result = await observe();
   verifyReplay(result, frozenBytes, identities);

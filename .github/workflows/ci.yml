@@ -297,6 +297,7 @@ jobs:
         # Reuse this existing build; no extra install or full corpus replay.
         run: |
           node experiments/numerical-0088/astra-review/reproduce.mjs
+          node --test experiments/numerical-0088/astra-review/reproduce.test.mjs
           python3 -B experiments/numerical-0088/impact/verify-evidence.py
           python3 -B experiments/numerical-0088/impact/verify-financial-evidence.py
 
