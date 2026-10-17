@@ -159,7 +159,26 @@ test('new ZIP covers each new artifact identity and exact copy, verifies all sem
   }
   const verified = await verifyUWDealPackage(decoded, { semanticDigestOf: async (_id, bytes) => computeEnvelopeDigest(toUWEnvelope(parseUWFile(new TextDecoder().decode(bytes)))) });
   assert.deepEqual(verified, { status: 'verified', errors: [], unverifiable_members: [] });
-  assert.deepEqual(Buffer.from(await encodeUWDealPackageZip(decoded)), raw);
+  assert.equal(sha(raw), declarations.package_archive.sha256);
+  // The codec explicitly permits timezone-dependent DOS metadata. Preserve
+  // exact archive reproduction by supplying the fixture's authored parameter;
+  // never normalize the stored ZIP or treat a semantic roundtrip as raw identity.
+  const reproduction = spawnSync(process.execPath, ['--input-type=module', '-e', `
+    import { readFileSync } from 'node:fs';
+    import { encodeUWDealPackageZip, decodeUWDealPackageZip } from './packages/uwmd-verify/dist/index.js';
+    const input = readFileSync(process.argv[1]);
+    process.stdout.write(Buffer.from(await encodeUWDealPackageZip(decodeUWDealPackageZip(input))).toString('base64'));
+  `, join(current, 'package/standalone-authored.uwpkg.zip')], {
+    cwd: root, encoding: 'utf8',
+    env: { ...process.env, TZ: declarations.package_archive.reproduction_timezone },
+  });
+  assert.equal(reproduction.status, 0, reproduction.stderr);
+  assert.deepEqual(Buffer.from(reproduction.stdout, 'base64'), raw);
+  const native = await encodeUWDealPackageZip(decoded);
+  assert.deepEqual(await encodeUWDealPackageZip(decoded), native);
+  const roundtrip = decodeUWDealPackageZip(native);
+  assert.deepEqual(roundtrip.manifest, decoded.manifest);
+  assert.deepEqual(roundtrip.payloads, decoded.payloads);
   const contents = Object.fromEntries(manifest.members.filter(x => x.role !== 'source_evidence').map(x => [x.id, new TextDecoder().decode(decoded.payloads[x.path])]));
   const context = projectUWDealPackageContext(manifest, { contents });
   assert.deepEqual(validateUWDealPackageContext(context), []);

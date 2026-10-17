@@ -77,3 +77,13 @@ The latter receive only additive cases for these new records. All older
 expectations and original fidelity/composition assertions remain active.
 The four original profiles are metadata-incomplete historical examples and retain
 six META-02 errors under the draft candidate; there is no legacy exception.
+
+### Exact archive reproduction parameter
+
+The checked-in NEW archive was authored with timezone `Etc/GMT+7` and SHA256
+`8cb9ce0d80784c367a9f545621a27189685c8efab0a82f10254cafd4dedb0679`.
+The existing codec explicitly converts its fixed instant to local DOS timestamps;
+ZIP timestamps are nonsemantic. The exact-byte reproduction control supplies
+that authored environment parameter in an isolated process. It also verifies
+native-host repeat encoding and complete member/manifest roundtrip equality.
+Neither this nor any test normalizes stored archives or changes production codecs.

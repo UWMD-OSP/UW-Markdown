@@ -750,3 +750,28 @@ portable350/350 with zero updates/skips. Exact-final-head CI remains required
 before any readiness representation. Earlier c558 CI39070553296's14success/
 3failure/1skip is preserved as the old four-example contract failure, not
 retrospectively relabeled green. Draft status and final owner acceptance remain.
+
+
+The first authored-kit CI39072486033 atf8090509 exposed an overbroad new ZIP
+reproduction assertion: it compared native-host re-encoding with an archive
+created in a different timezone. Existing deal-package-zip.ts27–35 explicitly
+permits local DOS timestamp differences; schema/RFC0018 exclude those fields
+from member semantic identity. This is a test/fixture-parameter error, not an
+established production codec defect or a new portability contract. The failed
+run and its logs remain preserved; its passing steps are not a green run.
+
+The authored archive's timezone parameterEtc/GMT+7 is now explicit in declarations;
+its exact SHA8cb9ce0d...edb0679 and bytes remain unchanged. Exact-byte reproduction
+uses an isolated child with that declared environment parameter. Native-host
+repeat encoding, full decoded manifest/member equality, all raw member hashes,
+four semantic digests and original2731-artifact preservation remain checked.
+No assertion of source/member/subject integrity or positive validity is loosened;
+no archive normalized, no production codec/schema/numerical semantics changed.
+
+Independent timezone evidence is preserved losslessly in zip-timezone.json.gz
+(rawSHA9aabdea10939c72714f4b7fd332c7dc3fef081cb224f253ab9ad531d2c78d637). Both archives are9228bytes;
+only44 DOS timestamp bytes differ across11local/11central headers, while all
+member names/uncompressed bytes are identical. Etc/GMT+7 exactly reproduces
+frozenSHA8cb9...0679; UTC produces2c3c3767b3773b9e91d66898c1ee589eba44b935c79b1c6c00b04712b451419b.
+The corrected eight controls pass under UTC with both Node24.14.1 and the
+preserved official Node20.20.2 executable. No storedZIP or UWX byte changes.
