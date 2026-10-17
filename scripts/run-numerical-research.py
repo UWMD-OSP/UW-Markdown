@@ -85,7 +85,11 @@ def main():
             if kind == "js":
                 counts = {key: int(value) for key, value in re.findall(r"^# (tests|pass|fail|cancelled|skipped|todo)\s+(\d+)\s*$", stdout, re.M)}
                 complete = complete and counts.get("tests", 0) > 0 and counts.get("pass") == counts.get("tests")
-                complete = complete and all(counts.get(key) == 0 for key in ("fail", "cancelled", "skipped", "todo"))
+                complete = complete and all(counts.get(key) == 0 for key in ("fail", "skipped", "todo"))
+                # Actual Node18.0 TAP omits the cancelled counter. Positive total,
+                # pass==total and zero exit still exclude an incomplete test run.
+                complete = complete and (counts.get("cancelled") == 0 or
+                    (version == (18, 0) and "cancelled" not in counts))
             elif kind == "js-assertions":
                 match = re.fullmatch(r"PASS (\d+) independent JS classifications and result/trace records\s*", stdout)
                 expected = len(json.loads((ROOT / "experiments/numerical-0088/integer-dispatch/inputs.json").read_text())["cases"])

@@ -9,7 +9,8 @@ const evidence = JSON.parse(readFileSync(new URL('./evidence.json', import.meta.
 assert.equal(createHash('sha256').update(raw).digest('hex'), evidence.input_sha256);
 assert.equal(inputs.length, evidence.cases.length);
 for (let i = 0; i < inputs.length; i += 1) {
-  const input = inputs[i], expected = evidence.cases[i];
+  const input = inputs[i];
+  const expected = evidence.cases[i];
   assert.equal(input.id, expected.id);
   assert.deepEqual(classify(input.x, input.y), expected.classification, `${input.id}/classification`);
   assert.deepEqual(graph(input.x, input.y), expected.graph, `${input.id}/result-trace`);
