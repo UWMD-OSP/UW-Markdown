@@ -173,7 +173,7 @@ defaults. Validation reports applicable halts and never performs substitution.
 There is one concrete required-field/frozen-behavior gate: Format 2.5b and
 the block schema require `_meta.provenance.actor`, while unchanged frozen
 document assertions omit actor. This does **not** establish that missing actor
-must currently emit META-01: RFC 0081 `3 pins that code to legacy wrapper and
+must currently emit META-01: RFC 0081 section 3 pins that code to legacy wrapper and
 nested-object shape, and III.6a's closed five completeness names exclude actor.
 No absent-actor diagnostic allocation is settled here. The following assertions
 would change under a hypothetical added required-actor error. In particular,
@@ -230,7 +230,7 @@ implemented ledger, with remaining proof limits named explicitly.
 | CC-16 | One info finding per unresolvable section, affected checks sorted | Reporting only; not one of the fifteen coverage entries and not a financial failure. |
 
 The CC-03 canonical rate closure follows [Format 4.7 / 4.24 / 5.3](../../spec/UW_FORMAT_SPEC.md)
-and [RFC 0026 `A](../../docs/rfcs/0026-capital-stack.md): the selected senior loan
+and [RFC 0026 section A](../../docs/rfcs/0026-capital-stack.md): the selected senior loan
 states `interest_rate`, and its coupon must agree exactly with the single
 senior-debt tranche's `rate`. The unrelated `rate_pct` payload is preserved,
 never an alias. The published amount tolerance remains $100 (CC-03 remediation
