@@ -48,6 +48,14 @@ unverifiable cases. These checks include the existing standalone reserve/draw/
 replacement controls; they do not enable the still-unsupported `validate` CLI.
 No full JavaScript suite was run for this worker checkpoint.
 
+After the committed external-source assessment, the full Python suite passed
+**187 methods** (151 original controls plus 36 integrated-validation/YAML methods)
+in 42.333 seconds. The actual shared Reader subprocess again passed **17/17**,
+with zero failed, skipped or unverifiable cases. The full Python controls retain
+existing reserve/draw/replacement/snapshot/hash-failure/source-evidence coverage.
+This is preservation evidence for the private API work; the actual 111-case
+validate CLI gate is still unrun because that command remains unsupported.
+
 The CLI still refuses `validate` and discovery remains parse-only. Completion
 still needs the remaining audited field/condition integration and explicit
 unsupported-composition command transport; derived footing has no invented
