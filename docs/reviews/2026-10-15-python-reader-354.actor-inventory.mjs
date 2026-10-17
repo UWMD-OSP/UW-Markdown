@@ -3,6 +3,7 @@
 // No production import is redirected outside the explicitly supplied checkout.
 // Static proposals are never reported as candidate execution.
 import assert from 'node:assert/strict';
+import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { appendFileSync, existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -188,7 +189,7 @@ ${source}`;
   if (injected && unit) source = `import { expect as __actorExpect } from 'vitest';\n${source}`;
   return injected ? source : null;
 }
-// Node loader hooks are used only for explicit own-checkout dist imports/CLI.
+// Node loader hooks bind explicit checkout dist imports/CLI; shared workspace aliases are never trusted.
 let loaderRoot = ROOT;
 export function initialize(data) { loaderRoot = data.root; }
 export async function resolve(specifier, context, nextResolve) {
@@ -264,7 +265,7 @@ async function apiControls(root) {
   const bad = () => { const value = meta(); delete value.provenance.actor; return { _meta: value }; };
   const good = () => ({ _meta: meta() });
   const tests = [];
-  for (const [label, value] of [['absent', undefined], ['null', null], ['empty', ''], ['number', 3], ['false', false], ['array', []], ['object', {}], ['space', ' '], ['unicode', 'ÃƒÆ’Ã‚Â¤Ãƒâ€šÃ‚Â½Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¨ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦'], ['principal-not-source-tag', 'manual']]) {
+  for (const [label, value] of [['absent', undefined], ['null', null], ['empty', ''], ['number', 3], ['false', false], ['array', []], ['object', {}], ['space', ' '], ['unicode', '\u4f5c\u8005'], ['principal-not-source-tag', 'manual']]) {
     const payload = good();
     if (value === undefined) delete payload._meta.provenance.actor; else payload._meta.provenance.actor = value;
     tests.push({ id: `actor-${label}`, parsed: parse(source([fence('property', payload)])) });
@@ -373,6 +374,49 @@ async function cliObserve(root, output) {
   }
   return { kind: 'actual-portable-validate-cli-calls-not-full-runner-comparison', identity: identity(root), cases: rows, journal: readJournal(journal) };
 }
+async function receiptProbe(candidateRoot) {
+  const originalPath = 'examples/Parkview-Apts-Glendale-AZ.uwx.md';
+  const original = readFileSync(join(ROOT, originalPath), 'utf8');
+  const removed = '      "actor": "jared",\n'.replaceAll('\\n', '\n');
+  const position = original.indexOf(removed);
+  assert(position >= 0, 'Exact authored actor line must exist');
+  const actorAbsent = original.slice(0, position) + original.slice(position + removed.length);
+  const options = { filename: originalPath, issued_at: '2026-10-17T00:00:00.000Z', issuer: 'unaccepted-actor-inventory' };
+  const engines = {};
+  const apis = {};
+  for (const [name, root] of [['baseline', ROOT], ['candidate', candidateRoot]]) {
+    const api = await import(pathToFileURL(join(root, 'packages/uwmd-verify/dist/index.js')).href);
+    apis[name] = api;
+    const receipts = {};
+    for (const [label, source] of [['authored', original], ['actor_absent', actorAbsent]]) {
+      const issued = await api.issueReceipt(source, options);
+      const payload = api.receiptSigningPayload(issued);
+      receipts[label] = { issued, signing_payload_sha256: sha(payload), signing_payload_bytes: Buffer.byteLength(payload),
+        verified_by_same_engine: await api.verifyReceipt(issued, source, { filename: originalPath }) };
+    }
+    engines[name] = { identity: identity(root), receipts };
+  }
+  const baseline = engines.baseline.receipts.actor_absent;
+  const candidate = engines.candidate.receipts.actor_absent;
+  assert.deepEqual(baseline.issued.subject, candidate.issued.subject);
+  assert.deepEqual(baseline.issued.computation, candidate.issued.computation);
+  assert.equal(candidate.issued.policy.validation.errors, baseline.issued.policy.validation.errors + 1);
+  const adjusted = structuredClone(baseline.issued);
+  adjusted.policy.validation.errors++;
+  assert.deepEqual(adjusted, candidate.issued);
+  assert.notEqual(baseline.signing_payload_sha256, candidate.signing_payload_sha256);
+  const cross = {
+    baseline_checks_candidate_receipt: await apis.baseline.verifyReceipt(candidate.issued, actorAbsent, { filename: originalPath }),
+    candidate_checks_baseline_receipt: await apis.candidate.verifyReceipt(baseline.issued, actorAbsent, { filename: originalPath }),
+  };
+  for (const result of [baseline.verified_by_same_engine, candidate.verified_by_same_engine, ...Object.values(cross)]) assert.equal(result.verdict, 'verified');
+  return { kind: 'actual-same-bytes-actor-absent-receipt-boundary', source: fileIdentity(ROOT, originalPath),
+    transformation: { removed_exact_utf8_line: removed, first_character_offset: position, count: 1, original_sha256: sha(original), actor_absent_sha256: sha(actorAbsent) },
+    options, engines, cross_verification: cross,
+    conclusion: { same_input_subject_and_computation: true, candidate_policy_errors_delta: 1, signing_payload_changed_only_by_policy_error_count: true,
+      unsigned_same_and_cross_verification: 'verified', cryptographic_signature_exercised: false,
+      limits: 'Policy count is receipt evidence, not a new receipt refusal or document-signature admission rule. No real financial receipt signature/backend proof is claimed.' } };
+}
 async function nativeObserve(root, output) {
   const journal = `${output}.journal.jsonl`;
   assert(!existsSync(journal));
@@ -383,16 +427,97 @@ async function nativeObserve(root, output) {
     driver: fileIdentity(ROOT, 'scripts/run-conformance.mjs'), original_corpus_index: fileIdentity(ROOT, 'conformance/corpus-index.json'),
     actual: { exit_code: result.status, signal: result.signal, stderr: result.stderr, stdout: result.stdout, report }, journal: readJournal(journal) };
 }
+function unpackInventory(inventory) {
+  const table = inventory.catalog_tables;
+  assert.equal(table.encoding, 'gzip+base64');
+  const compressed = Buffer.from(table.data, 'base64');
+  assert.equal(compressed.length, table.gzip_bytes);
+  assert.equal(sha(compressed), table.gzip_sha256);
+  const decoded = gunzipSync(compressed, { maxOutputLength: 32 * 1024 * 1024 });
+  assert.equal(decoded.length, table.decoded_bytes);
+  assert.equal(sha(decoded), table.decoded_sha256);
+  const tables = JSON.parse(decoded.toString('utf8'));
+  assert.deepEqual(Object.keys(tables), table.keys);
+  const { catalog_tables: _table, ...rest } = inventory;
+  for (const key of table.keys) assert(!Object.hasOwn(rest, key));
+  return { ...rest, ...tables };
+}
+function checkInventory(path) {
+  const inventory = unpackInventory(JSON.parse(readFileSync(path, 'utf8')));
+  assert.equal(inventory.kind, 'complete-original-actor-case-inventory');
+  assert.equal(inventory.sources.length, 798);
+  assert.equal(inventory.indexed_cases.length, 1089);
+  assert.equal(inventory.original_artifacts.length, 2636);
+  assert.equal(inventory.portable_validate.length, 111);
+  const originals = inventory.original_artifacts;
+  const batch = spawnSync('git', ['-C', ROOT, 'cat-file', '--batch'], { input: originals.map(row => `${row.git_blob_oid}\n`).join(''), maxBuffer: 256 * 1024 * 1024 });
+  assert.equal(batch.status, 0, String(batch.stderr));
+  let offset = 0;
+  for (const row of originals) {
+    const end = batch.stdout.indexOf(10, offset);
+    const header = batch.stdout.subarray(offset, end).toString();
+    assert(!header.endsWith(' missing'), row.path);
+    const length = Number(header.split(' ')[2]);
+    offset = end + 1;
+    assert.equal(sha(batch.stdout.subarray(offset, offset + length)), row.git_blob_sha256 ?? row.sha256, row.path);
+    offset += length + 1;
+  }
+  assert.equal(offset, batch.stdout.length);
+  for (const row of inventory.raw_evidence) {
+    const bytes = readFileSync(row.absolute_path);
+    assert.equal(bytes.length, row.bytes, row.name);
+    assert.equal(sha(bytes), row.sha256, row.name);
+  }
+  const raw = name => JSON.parse(readFileSync(inventory.raw_evidence.find(row => row.name === name).absolute_path, 'utf8'));
+  const before = raw('baseline-sources-v2.json').sources;
+  const after = raw('candidate-sources.json').sources;
+  for (let i = 0; i < before.length; i++) {
+    assert.equal(before[i].sha256, after[i].sha256);
+    if (!before[i].actual) continue;
+    assert.deepEqual(after[i].actual.issues.filter(issue => !(issue.code === 'META-01' && issue.field === '_meta.provenance.actor')), before[i].actual.issues);
+  }
+  const baseNative = raw('baseline-native.json');
+  const candidateNative = raw('candidate-native.json');
+  assert.deepEqual(baseNative.actual.report.summary, { pass: 1089, fail: 0, updated: 0 });
+  assert.deepEqual(candidateNative.actual.report.summary, { pass: 1052, fail: 37, updated: 0 });
+  const consumers = data => data.journal.filter(row => row.kind.startsWith('consumer')).map(row => ({ kind: row.kind, name: row.name, input: row.input, actual: row.actual }));
+  assert.deepEqual(consumers(baseNative), consumers(candidateNative));
+  assert.equal(consumers(baseNative).length, 32);
+  assert.equal(inventory.portable_validate.filter(row => row.baseline_exit === 0 && row.candidate_exit === 1).length, 8);
+  assert.equal(inventory.unit_and_api.exact_input_result_changed_calls, 173);
+  assert.equal(inventory.unit_and_api.unpaired_cli_subprocess_input_result_multisets_identical, true);
+  const receipt = raw('same-input-receipt.json');
+  const baselineReceipt = receipt.engines.baseline.receipts.actor_absent.issued;
+  const candidateReceipt = receipt.engines.candidate.receipts.actor_absent.issued;
+  assert.deepEqual(baselineReceipt.subject, candidateReceipt.subject);
+  assert.deepEqual(baselineReceipt.computation, candidateReceipt.computation);
+  const adjusted = structuredClone(baselineReceipt);
+  adjusted.policy.validation.errors++;
+  assert.deepEqual(adjusted, candidateReceipt);
+  return { original_blobs_verified: originals.length, preserved_raw_files_verified: inventory.raw_evidence.length,
+    original_indexed_cases: 1089, original_expected_mismatches: 37, actual_validate_commands_each: 111,
+    source_inputs: 798, paired_consumer_events: 32, same_input_receipt_policy_delta: 1 };
+}
 const direct = process.argv[1] && pathResolve(process.argv[1]) === SELF;
 if (direct) {
   const [mode, output, suppliedRoot] = process.argv.slice(2);
   const root = suppliedRoot ? pathResolve(suppliedRoot) : ROOT;
   assert(output, 'Usage: actor-inventory.mjs catalog|sources|unit|cli OUTPUT [CHECKOUT] (never overwrites output)');
   let result;
+  if (mode === 'unpack-inventory') {
+    assert(suppliedRoot, 'Supply a new output path for unpack-inventory');
+    noOverwrite(pathResolve(suppliedRoot), unpackInventory(JSON.parse(readFileSync(output, 'utf8'))));
+    process.exit(0);
+  }
+  if (mode === 'check-inventory') {
+    console.log(JSON.stringify(checkInventory(output)));
+    process.exit(0);
+  }
   if (mode === 'catalog') result = catalog(root);
   else if (mode === 'sources') result = await sourceScan(root);
   else if (mode === 'controls') result = await apiControls(root);
   else if (mode === 'unit') result = await unitObserve(root, output);
+  else if (mode === 'receipt-probe') result = await receiptProbe(root);
   else if (mode === 'native') result = await nativeObserve(root, output);
   else if (mode === 'cli') result = await cliObserve(root, output);
   else throw new Error(`Unknown mode ${mode}`);
