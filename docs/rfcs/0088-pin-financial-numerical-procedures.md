@@ -238,7 +238,7 @@ complete numerical kernel or financial expected answer is supplied.
 
 #### Actual procedure alternatives — owner recommendation, not acceptance
 
-The [concrete procedure comparison and new integer lab](https://github.com/UWMD-OSP/UW-Markdown/blob/494b55e6130bd11700a2a30fb523c59e8db28551/experiments/numerical-0088/integer-dispatch/README.md)
+The [concrete procedure comparison and new integer lab](https://github.com/UWMD-OSP/UW-Markdown/blob/0be37dd2e13491e6840ed81f1de3da8a49efbee8/experiments/numerical-0088/integer-dispatch/README.md)
 specify the following concrete design alternatives. Their **implementation/evidence
 status differs**; a specified API adapter is not executable evidence. The lab
 includes exact source/archive hashes, special/domain tables, conversion and work
@@ -381,7 +381,7 @@ same ordered expression.
 
 #### Executable dispatch and graph alternatives — still unaccepted
 
-The isolated [power procedure lab](https://github.com/UWMD-OSP/UW-Markdown/blob/eaf4cf675a79cb9fa5e741c791976fad9f987a11/experiments/numerical-0088/power-procedures/README.md)
+The isolated [power procedure lab](https://github.com/UWMD-OSP/UW-Markdown/blob/0be37dd2e13491e6840ed81f1de3da8a49efbee8/experiments/numerical-0088/power-procedures/README.md)
 now freezes 40 binary64 operand pairs and compares three fully ordered integer
 graphs: sequential products with reciprocal last, binary squaring with reciprocal
 last, and binary squaring with reciprocal first. All round each basic operation
@@ -418,7 +418,7 @@ any row as an acceptance-ready whole-domain guarantee.
 
 #### Composed endpoint and reporting controls — not a complete solver
 
-The [cash-graph follow-up](https://github.com/UWMD-OSP/UW-Markdown/blob/eaf4cf675a79cb9fa5e741c791976fad9f987a11/experiments/numerical-0088/cash-graphs/README.md)
+The [cash-graph follow-up](https://github.com/UWMD-OSP/UW-Markdown/blob/0be37dd2e13491e6840ed81f1de3da8a49efbee8/experiments/numerical-0088/cash-graphs/README.md)
 freezes ten synthetic cash vectors and ten reporting controls independently from
 exact rational arithmetic. Three candidate power graphs feed source-ordered
 periodic division and the existing IRR bracket/product/endpoint checks. Complete
@@ -576,10 +576,10 @@ kernel if selected, `cash-flow-series.ts` and dependent procedures. Core
 re-exports verify; no model-generation engine or new package is proposed.
 Public exports and error changes must be enumerated in that implementation PR.
 
-Current draft contains read-only observation scripts and an incomplete independent
-Python seed (quantization/calendar/ordered cash totals), not replacement TS
-financial code. It claims neither calc-evaluate nor Reader/Verifier conformance.
-The Python numeric oracle is an experiment, not an alternative accepted solver.
+Current draft contains isolated observation/reference/candidate experiments, not
+replacement production financial code or a Python implementation delta. It claims
+neither calc-evaluate nor Reader/Verifier conformance. Python implementation work
+continues independently; the numerical oracle here is not an accepted solver.
 
 ## Alternatives considered
 

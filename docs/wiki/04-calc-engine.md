@@ -541,3 +541,24 @@ boundary controls. Missing fractional kernels and bisection-required cases have
 no invented result or digest. These are one-host evidence, not cross-platform
 financial conformance, a full solver or an issued receipt. Normative arithmetic,
 legacy subjects, conformance expectations and RFC acceptance remain unchanged.
+
+
+### RFC0088 concrete procedure decision checkpoint
+
+The unaccepted comparison now specifies three actual alternatives: one pinned
+fdlibm closure for every exponent class, an MPFR4.2.2/GMP6.3.0 binary64 adapter
+with explicit ternary/subnormal handling and unresolved patch/resource/build
+proof, or a full-word reciprocal-first integer graph plus the fdlibm fractional
+path. It recommends developing the first procedure if exact reproducible answers
+are the objective; a correctly-rounded primitive requirement instead selects the
+second contract and its unresolved implementation obligations. This is direction,
+not acceptance. The integer hybrid has24 frozen word controls and a1077-basic-op
+bound; that evidence does not execute fdlibm/MPFR/fractional kernels or a full
+financial solver. Primitive rounding, VIII.5 reporting, IRR/NPV graph choices,
+receipt compatibility and release activation remain distinct.
+
+A root-owned focused collector records exact runtime/OS/architecture, checkout
+head/tree, frozen hashes and command logs across six CI rows, without dependency
+installation or a workspace build. Its local success proves17Python methods,
+four TAP methods and24 classification/trace records only. The remote matrix is
+pending this checkpoint; do not infer a completed platform or whole-kernel claim.
