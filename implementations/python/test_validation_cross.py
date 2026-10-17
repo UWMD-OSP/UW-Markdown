@@ -116,10 +116,16 @@ class ValidationCrossTests(unittest.TestCase):
                 path = root / (name + ".uwx.md")
                 raw = path.read_bytes()
                 result, _ = report(raw)
-                # The governed baseline is a unique code union, including
-                # RFC0090 actor findings; no actual issue family is excluded.
+                # Explicit owner-authorized RFC0091 candidate delta against
+                # unchanged frozen sources/expectations. Preserve every actual
+                # code, including the agree/mismatch financial distinction.
                 actual = sorted({i["code"] for i in result["issues"]})
-                self.assertEqual(actual, expected[name + "_codes"])
+                candidate = sorted(set(expected[name + "_codes"]) | {"META-02", "META-03"})
+                self.assertEqual(actual, candidate)
+                self.assertEqual([(i["code"], i["context"]["block_index"]) for i in result["issues"]
+                                  if i["code"] in ("META-02", "META-03")],
+                                 [("META-02", 0), ("META-03", 0)])
+                self.assertEqual("CC-03" in actual, name == "mismatch")
                 self.assertEqual(path.read_bytes(), raw)
         # These are only the frozen document diagnostic assertions, not stack
         # sizing recomputation, a portable case execution or a capability pass.
