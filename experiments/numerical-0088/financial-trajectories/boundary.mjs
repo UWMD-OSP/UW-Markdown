@@ -19,8 +19,8 @@ const rows=inputs.cases.map(input=>{
     }else value=BUILTINS[input.op](input.op==='npv'?[fromBits(input.rate),...flows]:input.op==='irr'?flows:input.args.map(fromBits));
     result={status:'returned',raw:encoded(value)};
     try{result.quantized=encoded(quantizeDecimal(value,input.places));}
-    catch(error){result.quantization_refusal=error.code;}
-  }catch(error){result={status:'refused',code:error.code??error.message};}
+    catch(error){result.quantization_refusal=error.code??error.proto?.code;}
+  }catch(error){result={status:'refused',code:error.code??error.proto?.code??error.message};}
   return {id:input.id,op:input.op,result};
 });
 const reporting=inputs.reporting_controls.map(input=>({id:input.id,value:encoded(quantizeDecimal(fromBits(input.bits),input.places))}));
