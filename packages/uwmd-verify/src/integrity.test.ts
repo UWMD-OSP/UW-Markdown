@@ -10,6 +10,7 @@ import {
   type BlockSigVerdict,
 } from './integrity.js';
 import { parseUWFile } from './parser.js';
+import { InvalidUnicodeError } from './integrity-canonical.js';
 import type { ParsedUWFile, UWBlock, UWBlockSignature, UWIntegrity, UWLifecycle, UWProvenance, UWQuality } from './types.js';
 
 /** Nested overrides for a test block's `_meta`, merged member by member. */
@@ -369,5 +370,38 @@ describe('RFC 0081 Format 3.0 payload digest', () => {
       const changed = { ...block, content: { ...block.content, [field]: 'different' } };
       expect(await computeBlockHash(changed)).not.toBe(before);
     }
+  });
+});
+
+
+describe('JCS block signature error boundaries', () => {
+  it.each(['kid', 'actor'] as const)('maps malformed committed %s to INT-07 without calling a backend', async field => {
+    const block = await hashed(makeBlock('property', { x: 1 }));
+    block.meta.integrity!.signature = { ...SIG, ...(field === 'kid' ? { kid: '\ud800' } : {}) };
+    if (field === 'actor') block.meta.provenance.actor = '\ud800';
+    const before = JSON.stringify(block);
+    expect(await computeBlockHash(block)).toBe(block.meta.integrity!.content_hash);
+    expect(() => blockSigningPayload(block)).toThrow(InvalidUnicodeError);
+    let calls = 0;
+    const recording: BlockSignatureVerifier = { verify: async () => { calls++; return { ok: true }; } };
+    for (const options of [{}, { signatureVerifier: recording }]) {
+      const result = await verifyChain(makeFile({ property: block }), options);
+      expect(result).toMatchObject({ ok: false, signatures_present: 1, signatures_verified: 0 });
+      expect(result.issues.map(issue => issue.code)).toEqual(['INT-07']);
+    }
+    expect(calls).toBe(0);
+    expect(JSON.stringify(block)).toBe(before);
+  });
+
+  it('does not inspect excluded metadata for an unsigned block', async () => {
+    const block = await hashed(makeBlock('property', { x: 1 }, { provenance: { actor: '\ud800' } }));
+    expect(await verifyChain(makeFile({ property: block }))).toMatchObject({ ok: true, signatures_present: 0, signatures_verified: 0 });
+  });
+
+  it('does not catch arbitrary backend exceptions in the input-encoding guard', async () => {
+    const block = await hashed(makeBlock('property', { x: 1 }));
+    block.meta.integrity!.signature = SIG;
+    const error = new TypeError('backend failure');
+    await expect(verifyChain(makeFile({ property: block }), { signatureVerifier: { verify: async () => { throw error; } } })).rejects.toBe(error);
   });
 });

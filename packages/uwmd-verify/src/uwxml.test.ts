@@ -103,3 +103,23 @@ describe('UW XML 1.0', () => {
     await expect(parseUWXml(xml, { maxDepth: 1 })).rejects.toThrow();
   });
 });
+
+
+describe('shared JCS admission preserves XML1 refusal boundaries', () => {
+  it.each(['\ud800', '\ud801', '\udc00'])(
+    'keeps XML_CHARACTER_INVALID for unpaired values and member names %j', async (value) => {
+      for (const invalid of [{ value }, { [value]: 'kept' }]) {
+        const result = stringifyUWXml({ ...envelope, invalid });
+        await expect(result).rejects.toBeInstanceOf(UWXmlError);
+        await expect(result).rejects.toMatchObject({ code: 'XML_CHARACTER_INVALID' });
+      }
+    },
+  );
+
+  it('does not relabel an unrelated canonicalization error as an XML character error', async () => {
+    await expect(stringifyUWXml({ ...envelope, invalid: Number.NaN }))
+      .rejects.toThrow(/non-finite/);
+    await expect(stringifyUWXml({ ...envelope, invalid: Number.NaN }))
+      .rejects.not.toBeInstanceOf(UWXmlError);
+  });
+});

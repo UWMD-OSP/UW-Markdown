@@ -75,7 +75,11 @@ def inspect_source_roles(document):
                 issue("ROLE-01", "_role", "An active block role must be one admitted scalar role.")
         routing = []
         meta = body.get("_meta")
-        if not isinstance(meta, dict):
+        if "_meta" not in body:
+            # Absence belongs to the distinct provenance-completeness family.
+            # Completeness findings belong to the full validator, not this inventory.
+            shape("_meta", "Metadata is absent; provenance completeness is outside this partial command.")
+        elif not isinstance(meta, dict):
             routing.append("A nested _meta object is required.")
         else:
             if next(iter(body), None) != "_meta":

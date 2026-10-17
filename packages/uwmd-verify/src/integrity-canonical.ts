@@ -11,6 +11,9 @@
  */
 export function canonicalize(value: unknown): string { return serialize(value); }
 
+// Internal discriminator for representation adapters; not a public entry export.
+export class InvalidUnicodeError extends TypeError {}
+
 function serialize(value: unknown): string {
   if (value === null) return 'null';
   if (value === undefined) return 'null'; // JSON has no undefined; treat as null
@@ -66,6 +69,19 @@ function serializeString(s: string): string {
   let out = '"';
   for (let i = 0; i < s.length; i++) {
     const code = s.charCodeAt(i);
+    // RFC 8785 §3.2.2.2: reject invalid Unicode; never sanitize before hashing.
+    if (code >= 0xd800 && code <= 0xdbff) {
+      const next = s.charCodeAt(i + 1);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) {
+        throw new InvalidUnicodeError('canonicalize: cannot serialize an unpaired high surrogate');
+      }
+      out += s[i] + s[i + 1];
+      i++;
+      continue;
+    }
+    if (code >= 0xdc00 && code <= 0xdfff) {
+      throw new InvalidUnicodeError('canonicalize: cannot serialize an unpaired low surrogate');
+    }
     const escaped = ESCAPE_MAP[code];
     if (escaped !== undefined) {
       out += escaped;

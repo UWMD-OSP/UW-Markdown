@@ -11,6 +11,259 @@ full-validation, expression-calculation, signature, receipt or optional-profile 
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
 reserve accounts, explicit reserve-draw plans and replacement-funding commitments. It does not certify every Reader or Verifier requirement.
 
+## Minimum-complete capability path — 2026-10-16
+
+This assessment uses main `fbf8f66a` (through #371). It inventories code and
+accepted contracts; it is **not a new conformance run**. Earlier run counts below
+are historical evidence. The current tree contains 151 unit methods, counted
+from their definitions, not 151 newly executed tests.
+
+The next engineering milestone is **complete structural validation**, integrating
+the existing checks behind one `validate <file> --json` result. Further isolated
+inspection commands do not close that capability. Keep discovery at
+`capabilities: ["parse"]`, `profiles: []`, with no tier, until each complete
+claim has its own exit evidence.
+
+### Minimum requirements and current implementation
+
+[Protocol II.1–II.6a](../../spec/UW_PROTOCOL.md) separates the two tiers.
+Reader requires structured parsing, current/history routing and preservation of
+unknown data; it does **not** require full validation, expression evaluation,
+representations or signatures. Verifier adds complete Format validation,
+dictionary reproduction, every applicable stated-figure verifier and receipt
+verification. It checks stated inputs; it does not generate financial models,
+fill defaults, host agents, or require starter rendering/editing workflows.
+
+| Obligation and accepted authority | Present Python scope | Required closure |
+|---|---|---|
+| Reader parsing: Format II, Appendix D; Protocol II.1, XII.1–2 | `uwmd_source`, `uwmd_frontmatter`, `uwmd_reader` retain bytes, number tokens, unknown data, physical blocks and the portable projection. Existing evidence: 17 portable parse cases and nine additional frozen Reader refusals. | Settle the bare scalar-key question below; audit source admission, all current registered/unknown sections and canonical lifecycle routing. Do not impose validation on otherwise parseable incomplete records. |
+| Reader current/history identity: Format 2.4, 2.7–2.8; Protocol II.6a.6 | Registered parallel sections, role opt-in and append collections are implemented. Verification uses `source_superseded`; Reader projection currently tests only JSON lifecycle metadata. | Align and test the two source-lifecycle paths and exact nullable versus named variant identities before certification. The existing `reserve-draw-bindings/superseded-source` source has fence-only `superseded=true`: verification treats it as history, while the parse projection currently exposes it as current. Preserve the authored metadata and physical history. |
+| Full `validate`: Format II–V and 6.2; Protocol III.6a, V.12 | No `validate` command or `ValidationResult`. Reusable checks cover SRC-01/02/03, ROLE-01, bounded META-01, CUR-01, payload PS-01/02, reserve structure, and selected binding-source/hedge structure. Local shape findings are not registered validator verdicts; helper applicability must be reconciled before integration. | Implement all applicable registered rule families, role-aware selection, stage readiness, complete CC coverage and the exact result/exit integration below. Preserve published metadata warning/info/error distinctions rather than introducing new severities. |
+| Standard metrics: Protocol II.2.2, VIII.2, VIII.5.1, XIII; [dictionary](../../spec/metrics/README.md) | Source numeric precision, AST parsing, calendar and quantization foundations exist. No statement discovery, runtime resolution, comparison API or document metric report. | Reproduce all 171 class-scoped definitions and eleven raw primary-size selectors, with exact class/id lookup, lazy null branches, role/variant selection and retained source precision. Verified/failed/unverifiable remain distinct; absent inputs are never filled. |
+| General calculation method: Protocol II.2.6, VIII.1–6 | `uwmd_expressions` parses grammar and inventories references; `uwmd_periods` inspects already-selected payloads. `uwmd_numeric` provides a small seed. No execution, document lookup, overrides, prior-result evaluation, complete builtins or `calc` command. | If using expression evaluation, implement the full grammar, resolution, operator/null/lazy semantics and listed builtin signatures/refusals. Return schema-conforming quantized `CalcResult` objects; arrays preserve declaration order. AST admission or a few successful operations cannot justify `calc-evaluate`. |
+| Calendar cash flows: Protocol VIII.9; Format 4.26 | Integer Gregorian dates, three day counts, ordered totals/MOIC and selected-source structural prerequisites only. | Complete declared/stated metric verification, source/variant/override refusal, quantized results and xnpv/xirr procedure. `calc-cash-flow` has a separate declaration/refusal contract; these functions are not expression-callable. |
+| Property cash-flow assembly: Protocol VIII.9.5–9.6 | Closed lease-up/CF source checks used by bindings; no assembly or complete stated-result verifier. | Independently reproduce every accepted stated assembly/projection claim, coverage/source admission and explicit refusal. Reproducing a producer's stated model is verification; generating missing models remains outside this implementation's purpose. |
+| Distribution waterfalls: Protocol VIII.10; Format 4.27 | Not implemented. | Full applicable structure, allocation/stated outcomes, hurdle/clawback procedures and finite ordered evidence; do not equate structural WF checks with outcome verification. |
+| Reserve accounts: Protocol VIII.11; Format 4.28 | `uwmd_reserves`: complete standalone structure/balance/continuity verification with ordered binary64 arithmetic, 2dp comparison, source digest and required states. Existing evidence: all 28 unchanged cases through shared `run_case`. | Retain this implementation and evidence, integrate structural findings into validation, and close the lawful-source Envelope boundary below. This is not general calculation support. |
+| Reserve draw bindings: Protocol VIII.12 | `uwmd_reserve_draws`, `uwmd_binding_sources`: complete standalone selected-source/allocation checks; selected reserve variants verify in full, original whole-document digest retained. Existing evidence: all 46 unchanged cases through shared `run_case`. | Retain exact nullable variants, plan/source/digest/arithmetic precedence and evidence; close the same Envelope boundary. Omitted plan is not a selected/verified plan. |
+| Replacement funding: Protocol V.12; RFCs 0070/0075/0076/0081 | `uwmd_replacement_funding`: exact selected-cash commitment and structural prerequisites, snapshots and accepted result union. Existing evidence: 71 explicitly adapted standalone comparisons, **not** portable `validate` passes. | Integrate the existing async verifier beside, never inside, structural errors. Complete validation must invoke it for applicable outright funding and refuse incomplete/failed verification. Its selected-cash digest is independent of #365. |
+| Receipts: Protocol II.2.4; [UW Receipt 3–5, 10–11](../../spec/UW_RECEIPT.md) | JCS and Envelope digest prerequisites only. No receipt parsing, recomputation, verdict API or command. Digest-only matches against receipt subjects are not receipt verification. | Implement exact supported receipt shape/version, subject canonicalization, pack/version/engine identity, reference inputs, output coverage/recomputation/results digest and precedence. Return exactly verified/failed/unverifiable with RCP findings. Unknown packs/versions, unavailable references or absent signature backends must remain unverifiable. Issuance is not required to close a read-only Verifier. |
+
+The dependency helpers are not additional capabilities: `uwmd_jcs` implements
+independent RFC 8785 canonicalization; `uwmd_envelope` projects complete semantic
+content; `uwmd_text` pins ECMAScript whitespace; and
+`uwmd_source_lifecycle` preserves verification history selection. Their tests
+support the callers above. No production module calls Node, imports TypeScript,
+looks up expected results, or supplies absent underwriting values.
+
+### The complete validation boundary
+
+The result is the existing `ValidationResult`: `overall_status` (clean,
+warnings, errors or blocking), all seven `stage_readiness` booleans, `issues`,
+partitioned `errors`/`warnings`/`info`, and `coverage`. Each issue carries
+registered code, severity and message plus applicable section/field/evidence.
+[Format 5.1–5.3](../../spec/UW_FORMAT_SPEC.md) requires class-adjusted readiness,
+DQ-06 stage gaps, role-aware selection and one coverage entry per registered
+CC check: evaluated, or skipped with section_absent, variant_unresolvable,
+field_absent or not_applicable. A missing coverage entry is unimplemented,
+not clean. Coverage does not change overall status.
+
+Integration must apply each helper's accepted conditions, not concatenate local
+inventories. For example, the frozen missing-meta source pins META_MISSING;
+an absent `_meta` must not be relabeled META-01 merely because a local shape
+check rejects it. Present malformed metadata and retired wrappers have their
+own META-01 contract (RFC 0081 section 3). The complete validator must preserve
+published META_MISSING and META_FIELD_MISSING_* warnings and the informational
+low-confidence finding; this inventory does not yet emit that family.
+
+Complete validation includes the applicable CC, FV, DQ, MU, CS, LU, RT, PS,
+ROLE, LOC, CUR, TAX, LSE, HDG/ESC, WF, REC, RSV structure, CAPX, BED, META,
+SRC, builtin CLS/class-specific and builtin rule families registered by
+Protocol III.6a and their accepted Format/RFC rules. This includes all official
+builtin classes, not just multifamily. External module loading/custom formulas,
+editing policies and optional integrity checks are not silently made mandatory
+by this inventory; apply their owning capability and accepted case context.
+PS-03 needs actual value-use inspection; static inspection of every AST branch
+cannot substitute for an evaluator's short-circuit behavior.
+
+`replacement_funding_verification` is a separate sibling result under V.12;
+HDG-09 must never be appended to synchronous structural errors. A structurally
+clean but stale, unavailable or uninvoked applicable outright binding is not a
+complete successful result. Preserve accepted 0076 selection refusals together
+with 0081's narrower all-or-none hedge-terms applicability.
+
+Portable stdout must be exactly one JSON document; diagnostics use stderr.
+Exit 0 means success, 1 a protocol-described refusal/error with parseable JSON,
+and 2 an unrecoverable internal error (II.6a.2). Operational refusals must be
+expressible as [ProtocolError](../../spec/schemas/protocol-error.schema.json);
+a calc failure has category `calc`, registered code and null value, rather than
+a fabricated successful result. These are whole-command gates, not new wrapper
+or capability names. The existing narrow wrappers have local `ok` meanings
+and do not provide these command contracts.
+
+The other mandatory result boundaries also remain explicit:
+
+- `calc` returns `calc_id`, `ok` and `value` under the
+  [CalcResult schema](../../spec/schemas/calc-result.schema.json), with numeric
+  values quantized once and protocol errors separately identified. Missing
+  input/null is not an invented zero, ambiguous selection is CALC-RESOLVE-002,
+  and nonboolean logical operands are CALC-TYPE-001. The current local CLI
+  diagnostic envelope is not yet a complete ProtocolError adapter.
+- Cash-flow and waterfall verification use the accepted three verdicts.
+  A stated IRR whose procedure raises is failed; undefined MOIC is
+  unverifiable; an absent metric is not checked. Waterfall failure outranks
+  indeterminacy. Property assembly has closed plan/result schemas and typed
+  CALC-CF-ASSEMBLY reasons with nested source evidence (VIII.9.6), rather than
+  a generic successful calc or reconstructed producer assumptions.
+- Reserve results have `state`, optional `reason`, `source_digest`,
+  `evidence` and `issues` under the two accepted verification schemas.
+  Absent section/omitted plan is not_checked/not_applicable; malformed
+  prerequisites, unavailable digest and nonfinite arithmetic remain
+  unverifiable; stale draw commitment or finite disagreement is failed.
+  The commands exit 1 for failed/unverifiable, 0 for verified/not_applicable.
+- A receipt verifier returns `verdict`, `issues` and, when available,
+  recomputed results. UW Receipt 5.1 orders unavailable canonicalization
+  (RCP-09), subject mismatch (RCP-01 or version-aware RCP-10), resolved
+  reference mismatch (RCP-12), inability to decide (RCP-05/06/08/11), invalid
+  signature, output coverage/value disagreement (RCP-02/03, or engine-aware
+  RCP-07), then results-digest mismatch (RCP-04), before verified. Equal
+  subject hashes alone cannot pass this sequence. The existing reference CLI
+  is `receipt verify <file> <receipt.json>`; the portable six-command table
+  has no receipt operation, so a genuine API/CLI adapter is needed for its
+  nonportable assertions.
+
+### Optional scope does not enlarge the minimum
+
+| Optional claim | Current status and closure boundary |
+|---|---|
+| Module profile (`module-load`, `calc-evaluate`; Protocol VII/X, II.3) | Not implemented. A base Verifier may reproduce builtin metrics by any method; module/document-declared custom formulas remain unverifiable without this profile. If it evaluates expressions, II.2.6 still applies. |
+| Integrity profile (`integrity`, `signing`; V.9–11) | `uwmd_block_integrity` supplies V.9 hashes and bounded V.10 chain assessment, including explicit unsupported identity classification. All physical history stays visible; signatures remain unchecked. Eleven hash-only standalone comparisons are not signature passes. Complete supported-domain chain classification and block-signature verification are missing. |
+| Document snapshot authentication (`document-signature-verification`; V.13) | Not implemented; separate optional Integrity-profile capability. Existing semantic digest controls do not implement guarded authentication, trusted keys or signature verdicts. No tier requires it. |
+| Representations profile and discovery (I.5/II.3; representation specs) | No advertised representation entries or codecs/negotiation. Lite/XML/CSV/Envelope round trips and source/model/view fidelity are separate from structured Markdown Reader certification. #365 affects a lawful source-to-Envelope shape, not a requirement that every Reader implement codecs. |
+| Portfolio; sensitivity; stochastic (XV; VIII.7; VIII.8) | Not implemented; separate optional flags, contracts and profile-owned evidence. Their absence cannot prevent a complete base Reader/Verifier claim. |
+| Rendering, editing, refinement, AI hosting/workflows | Starter products, outside both tiers. No Python implementation is needed to complete base verification; StackUW owns financial-model generation, agents, skills and workflows. |
+
+A receipt with a signature and no verification backend must report RCP-08
+unverifiable; implementing every signing algorithm is not a prerequisite for
+the read-only receipt verifier. It cannot silently accept the signature.
+Receipt issuance, block authorship, document authentication and arithmetic
+recomputation attest different things and must not substitute for one another.
+
+### Actual corpus obligations and evidence
+
+Counts below were read from the existing
+[ownership index](../../conformance/corpus-index.json) and generated
+[portable cases](../../conformance/runner/cases), not inferred from suite names
+or older README totals:
+
+| Owner | Indexed reference checks | Portable cases |
+|---|---:|---:|
+| Reader | 26 | 17 |
+| Verifier | 688 | 281 |
+| Module | 76 | 1 |
+| Integrity | 32 | 14 |
+| Representations | 135 | 0 |
+| Portfolio | 14 | 0 |
+| Sensitivity | 5 | 0 |
+| Stochastic | 7 | 0 |
+| Starter products, reported separately | 106 | 37 |
+| Total | 1,089 | 350 |
+
+The 281 portable Verifier cases are **111 validate** (17 documents, 71 hedge,
+23 scenario), **96 calc**, **28 reserve accounts** and **46 reserve draws**.
+Validate cases require `validate`; calc cases require `calc-evaluate`;
+the two reserve commands require both `parse` and `calc-evaluate`. Directly
+running the 74 unchanged reserve cases proves those commands but bypasses
+catalogue discovery, deliberately and explicitly. It cannot justify claiming
+the broader calculation capability. With the current parse-only manifest,
+a selected portable Reader+Verifier run would run 17 and capability-skip 281;
+that is an inventory prediction, not a newly executed result.
+
+Portable comparisons are subsets, with length-sensitive arrays and only named
+projections/masks; full validation output is not proved by a code-set projection.
+The current Python 71 replacement, eleven hash-only, nine source/role and four
+currency comparisons explicitly adapt to narrower standalone outputs. They
+are useful evidence, not additional unchanged portable passes or complete
+validation/profile claims.
+
+The nonportable Verifier checks matter: the index includes 41 metric checks,
+61 builtin-owned checks stored under `modules`, 12 receipt checks, 20 cash-flow,
+85 property-assembly, 42 waterfall, 11 capital-stack checks, plus full structural
+families. Directory names do not make builtin classes optional modules.
+Closure must reproduce their unchanged accepted assertions independently,
+using shared comparison functions where suitable and clearly labeled API
+adapters for contracts the portable driver does not expose. Running the
+TypeScript reference suite alone does not test Python.
+
+An absent/empty capability list means **claim everything**, not nothing.
+Unclaimed profile cases are unverifiable, capability omissions are skipped,
+and neither counts as passed. Certification must publish manifest, selector,
+exact source head, commands, counts and skips; `--no-skip` rejects incomplete
+selected claims (II.6/II.6a). No corpus, expected file or capability requirement
+may be rewritten to make the Python report green.
+
+### Real dependencies and contract questions
+
+| Boundary | Consequence for closure |
+|---|---|
+| Appendix D scalar keys | Bare `12:`, `true:`, `null:` have YAML scalar meanings, but JSON frontmatter has string member names. Admission/coercion/collision behavior is not pinned by the frozen cases; Python refuses them. Resolve this narrow source contract before Reader certification; quoted string keys already work. |
+| Unlabelled versus literal `default` variants | Current parse projection uses `attributes.get("variant", "default")`, so admitted unlabelled and explicitly named `default` peers can collapse despite physical retention. Prove exact source identity, no silent peer loss and stable current/history selection at the Reader surface; coordinate the joint representation question with #365 instead of inventing a mapping or choosing a peer. Explicit local unsupported refusal is honest partial behavior while unresolved, not proof of complete Reader support for lawful admitted input. |
+| Metadata completeness prose omission | III.6a names the five missing-field paths and explicitly pins the low-confidence info finding, but omits the other severities. Preserve the accepted published validator precedent: META_MISSING and all five META_FIELD_MISSING_* findings are warning, META_LOW_CONFIDENCE_NO_REVIEW_FLAG is info, and present-malformed META-01 is error. This is an ordinary implementation decision, recorded under the repository's precedent rule, not an owner blocker or permission to alter severity. Independently implement the triggers and report the prose omission separately. |
+| [#365](https://github.com/UWMD-OSP/UW-Markdown/issues/365), lawful role-opted extension variants versus Envelope 1.0 singleton extension slots | Source is retained and digest callers report unavailable rather than discard peers or invent a new shape. Whole-source reserve/draw and future receipt commitments need the accepted representation resolution for these documents. Structural validation, selected-cash replacement commitments, block hashes and ordinary dictionary arithmetic are independently implementable. Draft proposals are not an accepted codec contract. |
+| [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) / RFC 0088 numerical determinism | Full pow/log/exp/annuity/NPV/IRR/XNPV/XIRR paths need accepted cross-runtime procedures/order. Experiments do not select them. All 171 current dictionary formulas use arithmetic/conditionals and, as their only named function, round (six occurrences); their definitions do not themselves depend on those procedures. Complete general builtin support and numerical-dependent stated-figure branches still do. |
+| Historical role changes in chain grouping | Bounded chain reports explicitly mark unsupported identity classification. Do not invent a history/orphan policy or call this complete Integrity support; it is optional and does not block base validation/metrics. |
+| Stale counts and portable catalogue granularity | “21 sections” in II.1 and old corpus README totals are documentary drift, not a new closed registry. Recognize current Format Part IV and preserve unknown IDs. Broad reserve-case calc flags and missing portable receipt/metric cases are evidence/discovery limitations, not permission to omit normative Verifier work or fabricate a narrower flag. |
+
+### Ordered capability-closing milestones and exit gates
+
+1. **Close the Reader proof alongside validation work.** Reconcile the identified
+   source/key/lifecycle boundaries; retain required frontmatter parsing, unknown
+   data and exact current/history/variant behavior. Gate: all 26 Reader-owned
+   assertions (17 genuine portable cases plus nine frozen refusals), additional
+   contract-boundary controls, unchanged source bytes and explicit manifest
+   evidence. Optional representations/signatures are not part of this gate.
+2. **Next implementation: complete `validate`, not another inspector.** Use one
+   orchestration API with reusable selected-source/role/period/currency/reserve/
+   replacement helpers; finish missing registered structural, threshold, class
+   and cross-check families internally, preserving the accepted metadata-family
+   severities. Gate: complete result fields/partitions,
+   every registered CC coverage entry, stage overlays, source-order/role/absence/
+   refusal controls, all 111 unchanged portable validate cases through the real
+   command, plus every applicable nonportable validation assertion and separate
+   V.12 failure states. Only then add `validate`; no Verifier tier follows yet.
+3. **Close metric reproduction and the chosen calculation method.** Implement
+   document runtime selection, lazy null/refusal semantics, token precision and
+   every builtin dictionary definition/size selector. Gate: all 171 definitions
+   across twelve classes, eleven raw-size contracts, all 41 metric checks and
+   adversarial missing/type/zero/selection/precision controls. If expressions
+   are the method, finish II.2.6's entire builtin/grammar contract and the
+   96 Verifier calc cases before advertising `calc-evaluate`; dictionary-only
+   success never promotes that flag. Independent arithmetic work can proceed
+   while the numerical procedures are resolved.
+4. **Close all remaining stated-figure obligations.** Integrate existing
+   reserve/draw/replacement verifiers and independently complete calendar
+   cash flows, lease-up/property assembly and waterfalls. Gate: all applicable
+   indexed assertions, exact schemas/states/precedence, original-source digest,
+   finite ordered evidence and numerical cross-platform results; accepted
+   #365/0088 resolutions are prerequisites only for the paths they affect.
+   Missing claims, unavailable inputs and real disagreement remain distinct.
+5. **Close receipt verification, then certify the base Verifier.** Implement the
+   read-only receipt contract and its 12 indexed verification assertions,
+   including recomputation, reference-input and identity/precedence controls;
+   do not require issuance or optional signing success. Gate: audit all
+   26 Reader + 688 Verifier indexed assertions against their actual required
+   capabilities and accepted contexts; pass every applicable base assertion,
+   with optional requirements separately identified. Run the real 298-case portable
+   Reader+Verifier selection without capability skips, explicit exclusions/
+   refusals for unclaimed optional profiles, unchanged corpus and repeatable
+   independent cross-platform evidence. Claim a Verifier tier only when all
+   II.2 obligations, including nonportable ones, are implemented and demonstrated.
+
+## Implementation detail and historical evidence
+
+The following sections retain the evidence from earlier bounded milestones;
+their counts describe those checkpoints, not the current complete capability.
+
 Implemented:
 
 - Original UTF-8 bytes, BOM/CRLF preservation, physical block order, exact JSON
