@@ -348,3 +348,66 @@ and focused lint pass. The same-source independent boundary replay passes.
 Required final-head CI remains a separate checkpoint; neither the failed initial
 run nor these focused results are a claim of complete interoperability. Historical
 invalid-subject activation remains owner-held, with no fixture or version changes.
+
+### 2026-10-17 — Governed actor reconciliation candidate
+
+The owner explicitly approved the Issue354 diagnostic direction: required
+nonempty actor, narrow META-01/error, all retained physical blocks, no inferred
+attribution and existing wrapper/missing-metadata precedence.
+[RFC0090](../rfcs/0090-provenance-actor-admission.md) remains draft for final
+text acceptance. Its synchronized implementation, Format/Protocol prose and
+proposed expectations do not activate the contract on main. Schema and public
+types already require actor and remain unchanged. No public version, receipt
+rule, arithmetic or release state is selected.
+
+The independent actor-inventory companions preserve the original main
+`b2ac5d8f068308fd690de824b963135974ec5fb8`, source/old expectation identities,
+actual candidate findings, negative controls and operation-specific consequences.
+The original798 source files yield738 validations and60 parse refusals;162
+API inputs gain574 actor errors, with no other issue-object/order changes.
+This broad API observation is distinct from actual consumers. All111 original
+portable validate calls execute:12 changed responses/78 actor errors, eight
+0-to1 exits, four1-to1 and99 byte-equivalent responses/exits. The known12
+paths are listed in RFC0090 and the original Issue354 packet.
+
+The original native indexed replay is1089/1089 before and1052/1089 after
+against untouched old expectations. Exactly37 assertions differ:12 validation
+projections,24 displays for those same documents, and
+`conformance/capital-stack/senior-reconciles-debt-structure/expected.json`.
+Only those measured expected files are prepared explicitly. Display changes
+are actor lines/derived overall status/token counts; capital-stack CC-03
+financial agreement/disagreement is retained beside the new actor finding.
+Original sources and old expectations stay pinned in Git; no automatic update
+or fabricated principal repairs them. Six new disposable malformed fixtures
+24–29 yield1095/1095 under the proposed expectations. The first root checkpoint
+reported1070pass/25fail after the12 validation changes but before the25
+remaining governed display/reconciliation dispositions; that failure is retained.
+
+Independent review caught and corrected two material scope gaps: the Python
+partial inspector's unsupported META-01 allocation for late metadata/section
+disagreement could suppress actor admission, and new synthetic `x:` fixtures
+did not use the real `x_` extension route. The Python requirements remain uncoded
+local findings with unsuccessful local assessment; no required actor is hidden.
+The corrected extension control exercises actual overwritten physical evidence.
+
+The parser keeps an internal operation-local inventory of mutable block
+references; no public DTO or Envelope shape changes. Validation observes model
+edits and never reparses stale `raw`; copied models cannot claim omitted-source
+coverage. Physical-shape precedence is explicitly governed rather than silently
+letting overwritten malformed wrappers escape both checks. Other historical
+financial/source/role checks retain their applicability.
+
+Receipt/signature consequences are measured separately in the inventory; a
+new focused receipt control removes an actor only from a disposable Parkview
+copy. Issuance records one additional validation error while calculations remain
+identical, and existing verifyReceipt still verifies that newly issued receipt.
+Actually removing actor content changes its semantic subject; changing diagnostic
+allocation on identical source bytes does not. New policy counts can change a
+new receipt's signing payload. No old receipt is rewritten, reissued or declared
+authenticated under a new rule.
+
+The separate Python complete-validation checkpoint306c136f has242 local tests
+and actual Reader17/17; it preserves actor RFC work separately and still
+advertises parse only. These are distinct from the actor candidate's163 Python
+methods. RFC0085/0088/0089 remain separately draft; final RFC0090 text acceptance
+and exact-head integration review are still required.

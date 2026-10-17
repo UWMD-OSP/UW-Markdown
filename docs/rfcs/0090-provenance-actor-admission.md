@@ -40,9 +40,12 @@ reconciles the joint contract explicitly.
 The [original decision packet](https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6229116406)
 identifies twelve unchanged source/expectation pairs at main
 `b2ac5d8f068308fd690de824b963135974ec5fb8`, with78 missing actors.
-It reuses twelve actual historical TypeScript CLI executions and preserves their
-original results. Its proposed78 actor errors and eight CLI0-to1 transitions are a
-counterfactual, not a new execution or a complete all-corpus impact claim.
+The packet's original78-error/eight-exit projection remains identifiable as
+historical evidence. The candidate now independently executes the original
+source, portable CLI and complete indexed-corpus inventory; see the existing
+[Reader review](../reviews/2026-10-15-python-reader-354.md#2026-10-17--governed-actor-reconciliation-candidate)
+and its actor-inventory companions. Results distinguish direct API exposure,
+actual consuming operations and governed expectation changes.
 
 ## Proposed change
 
@@ -194,10 +197,11 @@ identity before preparing governed changed expectations. The twelve known
 portable document stems below are under `conformance/documents/fixtures/`
 (`.uwx.md`) and `conformance/documents/expected/` (`.validation.json`); the
 original pair for each is pinned by the exact main commit above and the linked
-packet. These counts are the original proposal, pending executed implementation
-results and wider inventory; they are not a new baseline.
+packet. The candidate independently reproduces these actor counts and CLI exits.
+The proposed expectations below are governed draft changes, pending final
+acceptance; the original commit remains the historical baseline.
 
-| Stem | Proposed additional errors | Original status/CLI exit |
+| Stem | Executed additional actor errors | Original status/CLI exit |
 |---|---:|---|
 | `05-land-stage-overlay` | 9 | clean/0 |
 | `06-mixed-use-stage-overlay` | 10 | clean/0 |
@@ -212,17 +216,33 @@ results and wider inventory; they are not a new baseline.
 | `15-student-bed-counts-inconsistent` | 2 | errors/1 |
 | `17-exit-proceeds-junior-capital` | 3 | clean/0 |
 
-Acceptance requires exact source/old-expectation hashes and new expected
-findings/status/exit changes, including any wider corpus consumers. Account
-separately for newly exposed physical shape findings from the unchanged wrapper
-predicate; the78-actor projection is not a bound on all additional findings. Do not run
-an unreviewed blanket `--update`. Negative controls must cover missing/null/
-empty/numeric/boolean/array/object actors, valid arbitrary and whitespace
-strings, whole-missing `_meta`, malformed wrapper/nested shape precedence,
-multiple physical peers, superseded and overwritten entries, all append-only
-collections and extensions. Include malformed wrappers/nested objects hidden by physical
-reduction, showing shape refusal before actor suppression. Pin issue
-multiplicity/order and actor field paths.
+The original798-source direct API comparison executes738 validations and60
+parse refusals.162 sources gain574 actor errors; stripping only those new
+actor findings leaves existing issue objects and order unchanged. No original
+source exposes an additional hidden-wrapper finding, while explicit negative
+controls pin that proposed physical-shape applicability. This is API exposure,
+not a claim that every financial command invokes ordinary validation.
+
+All111 original portable validate CLIs execute:12 responses change by78 actor
+errors, eight exits change0-to1 and four remain1;99 responses/exits remain
+byte-equivalent. The original1089-case native indexed replay passes1089 before
+the change and1052 after, against untouched original expectations. Its37
+measured differences are12 validate projections,24 rendered validation displays
+and one capital-stack assertion. The candidate explicitly prepares only those
+37 expected-file dispositions, retaining original source and expectation
+identities; no blanket `--update`, actor fabrication or historical rewrite.
+Rendering changes contain actor diagnostics, derived overall status and token
+counts only. The capital-stack agree/mismatch sources retain their financial
+CC-03 distinction and now each owe their existing missing actor.
+
+Six new malformed-corpus controls cover absent/null/exact-empty/non-string
+actors, actual `x_` extension overwrite, historical and append scope, and wrapper
+precedence. Their established corpus contract asserts code presence; focused
+TypeScript/Python controls and the independent inventory additionally pin actor
+field paths, multiplicity, ordering, arbitrary nonempty/whitespace strings,
+whole-missing metadata, hidden malformed wrappers and exact identity deduplication.
+The joint candidate suite passes1095 indexed cases after these explicit
+proposed dispositions. This demonstrates the draft; it does not accept it.
 
 Mutable-model controls must cover in-place canonical actor edits, model-only
 additions, replacements/removals retaining physical evidence, divergent meta
@@ -256,8 +276,7 @@ unit expectations and record the explicit correction. A late/mismatched but
 nested-valid block with no actor still owes the actor finding. This is no claim
 that the inspector is a complete validator or that those requirements vanished.
 Integration owns actual broader consumer/conformance disposition and exact-head CI. This
-worker draft supplies no activated implementation, acceptance or full-suite
-result. Implementations in other languages may retain their own physical block
+draft supplies no normative activation or acceptance. Implementations in other languages may retain their own physical block
 inventory so long as they meet the same operation and diagnostic contract.
 
 ## Alternatives considered
