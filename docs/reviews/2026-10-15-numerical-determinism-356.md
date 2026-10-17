@@ -539,3 +539,24 @@ The first targeted receipt attempt correctly refused a fixture with no UWX fence
 its failed streams remain explicitly separate. The corrected valid-source study,
 not that attempt, supplies the 24 historical receipt controls. No cryptographic
 validity claim is inferred from stubs, and no historical artifact is changed.
+
+
+### Frozen native corroboration and exact execution identity
+
+Research run38993665625 and ordinaryCI38993665613 completed successfully for
+published0c2f01cd. The research job actually checked out PR test merge
+a6d05240e80325019a87bac6a5426a6b61fccc8d (main3eee plus0c2f), not the head
+commit itself; source hashes match the reviewed head. Nine original artifact
+ZIPs and a read-only verifier now preserve the complete observations under
+`experiments/numerical-0088/native-reference/evidence/run-38993665625/`.
+Independent integrator verification confirms4204 inputs in each of3native
+and6Node streams:3435 exact non-NaN words and769 NaN-class comparisons. GCC13.3,
+Clang18.1.3 withUBSan and AppleClang21 onarm64 reproduce all five independently
+certified one-ULP mathematical discrepancies. This corroborates procedure results
+under those builds; it proves neither universal correct rounding nor a global
+error bound. Archive digests match the GitHub artifact API. Original missing
+native provenance fields remain explicitly missing. A provenance-only collector
+follow-up records checkout/tree, Node/V8, binary/source hashes and exact commands
+for future runs, while the workflow now explicitly checks out the reviewed head.
+No historical observation or expected answer was regenerated. The final updated
+head requires its own CI; the green historical runs do not certify later edits.

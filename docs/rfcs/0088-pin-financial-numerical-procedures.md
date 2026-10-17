@@ -691,3 +691,19 @@ only after acceptance and does not reopen RFC0078.
 - RFC0023, RFC0024 and RFC0034 establish final quantization and solver/day-count
   procedures. This proposal closes their demonstrated dependency gap rather than
   treating outside modeling conventions as authority.
+
+
+### Observed native/reference checkpoint (research only)
+
+The frozen native evidence at
+`experiments/numerical-0088/native-reference/evidence/run-38993665625/` retains
+all9 original GitHub artifact ZIPs, their API-verified digests and an offline
+verifier. Three strict compiler builds and six Node streams agree on4204 frozen
+inputs (3435 exact non-NaN words,769 NaN classes). Every build retains the five
+mathematical counterexamples above. This is finite compiler/runtime evidence,
+not universal accuracy, a complete independent Python kernel or owner acceptance.
+The actual historical checkout was the PR test merge a6d05240, with source hashes
+matching0c2f; future research runs explicitly check out their reviewed head and
+record additional actual executable provenance. Missing historical fields are
+not invented. The same source graphs, exact-rational expectations, conformance
+and receipt rules remain unchanged.
