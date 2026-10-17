@@ -63,7 +63,10 @@ for (const row of base.material.cases.filter(row => row.source.admission?.allowe
 }
 assert.equal(cases.length, 4);
 const material = { status: 'ACCEPTED RECEIPT 5.5 OBSERVATION; NOT A NEW REGIME OR HISTORICAL ARTIFACT MIGRATION', cases, conclusion: 'Equal digests plus differing canonicalization-version metadata proceed normally. Signature mutation fails with RCP-01; a valid disposable research signature verifies. No C_UNSUPPORTED canonicalizer is implemented or exercised.' };
-const historical = JSON.parse(readFileSync(new URL('frozen/receipt-version.json', here)));
+const historicalBytes = readFileSync(new URL('frozen/receipt-version.json', here));
+assert.equal(sha(historicalBytes), 'b33a2975bdac1b790da63689c276237ee5a96aa7ba815fc9bc75ec8da550e554', 'original receipt observations bytes');
+const historical = JSON.parse(historicalBytes);
+for (const [path, digest] of Object.entries(historical.identities.helper_and_contract_hashes)) assert.equal(sha(readFileSync(new URL(path, root))), digest, `unchanged historical receipt helper/contract ${path}`);
 assert.deepEqual(material, historical.material, 'ALL receipt artifacts, payloads, results and backend calls still match actual historical observations');
 if (create) {
   assert(!existsSync(destination), 'refusing frozen evidence overwrite');
