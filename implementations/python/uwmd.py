@@ -28,8 +28,14 @@ def _validation_response(result):
         structural.pop("replacement_funding_verification", None)
     composition = result["composition_assessment"]
     if composition["status"] != "resolved":
-        return dict(error=dict(category="validate", code="COMP-UNRESOLVED",
-                               message="Externalized sections are unresolved; complete validation is unavailable."),
+        # Directive admission precedes unsupported part lookup. Retain the
+        # assessment's existing source/rule order and all of its evidence.
+        directive_codes = ("COMP-DIRECTIVE-MALFORMED", "COMP-DUP-KEY", "COMP-COUNT-MISMATCH")
+        error = next((dict(issue) for issue in composition["issues"]
+                      if issue["code"] in directive_codes),
+                     dict(category="validate", code="COMP-UNRESOLVED",
+                          message="Externalized sections are unresolved; complete validation is unavailable."))
+        return dict(error=error,
                     partial_validation_result=structural,
                     **{key: result[key] for key in local}), 1
     unallocated = bool(result["metadata_assessment"]["shape_findings"]) or any(

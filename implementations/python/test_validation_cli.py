@@ -12,7 +12,7 @@ from unittest.mock import patch
 from test_reader import HEADER
 from test_validation import ROOT, well_formed, validate
 from test_validation_external import external
-from uwmd import main
+from uwmd import main, _validation_response
 from uwmd_reader import parse
 from uwmd_source import SourceError
 from uwmd_validation_selection import ValidationUnavailable
@@ -138,6 +138,51 @@ class ValidationCLITests(unittest.TestCase):
         self.assertEqual(status,1)
         self.assertNotEqual(result["partial_validation_result"].get(
             "replacement_funding_verification","not_present"),None)
+
+    def test_directive_error_transport_precedes_unresolved_and_preserves_assessment_order(self):
+        for directive,want in (
+            (None,"COMP-DIRECTIVE-MALFORMED"),
+            (dict(parts=["a"],part_count=True),"COMP-DIRECTIVE-MALFORMED"),
+            (dict(parts=["a","a"],part_count=2),"COMP-DUP-KEY"),
+            (dict(parts=["a"],part_count=2),"COMP-COUNT-MISMATCH"),
+            (dict(parts=["a","a"],part_count=3,unknown=True),"COMP-DUP-KEY")):
+            with self.subTest(directive=directive):
+                # An earlier unresolved directive cannot erase the existing
+                # later directive-admission error. No part lookup is performed.
+                raw=property_source()+external("rent_roll")+external("valuation",directive)
+                document=parse(raw);before=copy.deepcopy(document)
+                report=validate(document);original=copy.deepcopy(report)
+                result,status=self.command(raw)
+                self.assertEqual((status,result["error"]["category"],result["error"]["code"]),
+                                 (1,"validate",want))
+                assessment=report["composition_assessment"]
+                first=next(issue for issue in assessment["issues"] if issue["code"]!="COMP-UNRESOLVED")
+                self.assertEqual(result["error"],first)
+                self.assertEqual(result["composition_assessment"],assessment)
+                self.assertEqual(result["partial_validation_result"]["issues"],report["issues"])
+                self.assertFalse(any(i["code"].startswith("COMP-") for i in report["issues"]))
+                self.assertNotIn("overall_status",result)
+                response,exit_code=_validation_response(report)
+                self.assertEqual(exit_code,1)
+                self.assertIsNot(response["error"],first)
+                response["error"]["message"]="consumer edit"
+                self.assertEqual(report,original)
+                self.assertEqual(document,before)
+
+    def test_frozen_count_and_missing_part_errors_use_real_cli_without_resolution_claim(self):
+        for folder in ("reject/count-mismatch","unresolved/missing-part"):
+            root=ROOT/"conformance/composition"/folder
+            source=root/"record.uwx.md";raw=source.read_bytes()
+            expected=json.loads((root/"expected.json").read_text(encoding="utf8"))
+            result,status=self.command(raw)
+            self.assertEqual((status,result["error"]["category"],result["error"]["code"]),
+                             (1,"validate",expected["expected_code"]))
+            self.assertEqual(result["composition_assessment"]["status"],"unresolved")
+            self.assertIn("rent_roll",result["composition_assessment"]["externalized"])
+            self.assertNotIn("overall_status",result)
+            self.assertEqual(source.read_bytes(),raw)
+            # Only the frozen code/unresolved assertion is compared; no parts,
+            # inline equivalence, canonical form or composition-suite pass.
 
     def test_blocking_workflow_status_alone_does_not_change_command_failure_policy(self):
         raw=property_source().replace(b"unknown_key: retained",b"blocking_flags:\n  - human_review")

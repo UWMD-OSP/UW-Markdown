@@ -72,8 +72,13 @@ Validation never writes input.
 
 This is an implemented, **unadvertised developing command**, not a complete
 validation/Verifier claim. The manifest still claims only parse. Detected
-unsupported inputs refuse explicitly: unresolved Composition uses accepted
-COMP-UNRESOLVED; unallocated metadata, lease-up or the REC/CS/WF shapes below
+unsupported inputs refuse explicitly: Composition exposes its first existing
+directive-admission error (COMP-DIRECTIVE-MALFORMED, COMP-DUP-KEY or
+COMP-COUNT-MISMATCH), preserving assessment source/rule order and every issue;
+COMP-UNRESOLVED is the fallback when the directives are admitted but package
+parts remain unavailable. This is admission before unsupported resolution,
+not a new global ordering rule or a part resolver. Unallocated metadata,
+lease-up or the REC/CS/WF shapes below
 use an uncoded local error.
 Both refusal forms carry detached local assessments and an explicitly labeled
 `partial_validation_result`, not a new normative ValidationResult state.
@@ -806,7 +811,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | WF | Tier/split/hurdle/clawback structure and current exact cash identity; optional clawback/outcome/schedule schema-fragment admission | Complete remaining top-level/source applicability; actual outcomes, IRR hurdles and clawback arithmetic remain separate stated-figure verification. |
 | RSV / BED | Existing reserve structure and student bed/date rules | Complete per-source/class/optional-member application and malformed-input evidence; RSV balance verification remains separate and unchanged. |
 | CLS / class rules / MOD | Fixed fields and accepted class-specific definitions/rules; all 61 unchanged builtin validation code projections | Exhaustive role/type/conditional/input applicability, retaining separate class checks versus generic 171-metric reproduction and raw size lookup. |
-| External composition | Local unresolved/directive assessment, exact presence and dependent-field gating | UW_COMPOSITION section 8 permits unresolved reporting without a part resolver. Prove malformed-directive precedence, accepted COMP-UNRESOLVED transport and no complete-record presentation; resolver implementation itself is not a required validate gate. |
+| External composition | Local unresolved/directive assessment, exact presence and dependent-field gating | UW_COMPOSITION section 8 permits unresolved reporting without a part resolver. The command now preserves the existing first directive-admission error before fallback COMP-UNRESOLVED, with full assessments retained. Focused actual CLI controls include frozen count-mismatch/missing-part assertions; no complete-record, part-resolution or composition-suite claim. Remaining full negative-wire/applicability proof is distinct from implementing an optional resolver. |
 | General command and result | Real unadvertised command, exact result partitions, seven stage keys, fifteen coverage keys, separate V.12 and explicit unsupported-input refusal | All111 unchanged actual portable cases passed at the prior source checkpoint. Preserve that proof on each new production checkpoint and close the specific admission/refusal, ordering and nonportable gates above, with independent three-OS evidence before promotion. Parse-only discovery remains unchanged until whole-capability proof passes. |
 
 This is a completion backlog inside the single integrated validator. It does
