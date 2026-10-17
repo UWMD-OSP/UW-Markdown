@@ -74,6 +74,11 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Extend unaccepted RFC0088 research with two natural cancellation receipt
+  cases, exact source/result/signature bindings and bounded independent replay.
+  Preserve refusal-before-backend behavior and distinguish authenticated replay
+  from whole-formula accuracy; activate no arithmetic or receipt rule.
+
 - Incorporate independently verified Astra review evidence into draft RFC 0088.
   Add a complete isolated pinned-fdlibm candidate, exact constants/word/resource
   contracts, independent mathematical/native research and a full indexed impact

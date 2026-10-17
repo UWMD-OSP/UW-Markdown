@@ -1783,3 +1783,17 @@ invariants move to Representations, and five new validate-only Verifier checks
 (`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
 1,061 (Verifier 679 / 280 portable, Module 68 / 1). Release: published in
 core/CLI 3.0.0 with Stable Protocol 3.0.0.
+
+### 2026-10-17 — RFC0088 natural cancellation receipt evidence (draft)
+
+The bounded cancellation-receipt study connects two unchanged candidate inputs
+to12 actual issue/verify controls with new public-test-key signatures. Windows
+host PMT refuses while candidate reports0.25; host PV reports0 while candidate
+reports4, against the separate exact whole-real reference1. Successful
+recomputation reaches signature/different-engine precedence; recomputation
+refusal yields RCP-03 before the supplied backend. These are measured existing
+rules, not activation or whole-formula accuracy. The integrator independently
+replayed the two-input study and checked frozen payload/result/source bindings.
+CI adds local Linux observation and a separate replay of the preserved actually
+issued Windows PV receipt. No old4730-row matrix is regenerated; RFC0088 stays
+draft with production arithmetic, receipts, corpus and versions untouched.
