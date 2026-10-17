@@ -313,7 +313,7 @@ projection or infer verified continuity from retained history.
 Full Format validation, document-level period/role resolution for calculations,
 expression evaluation, dictionary result checking and the remaining applicable
 Protocol II.2 verifiers remain outstanding. Separate reserve-account/draw-binding
-checks, §V.12 replacement commitments and block hashes/bounded chain assessment
+checks, `V.12 replacement commitments and block hashes/bounded chain assessment
 implement only their documented scopes. The full integrity profile, signatures,
 receipts and receipt verification remain unimplemented. Missing, unsupported and
 failed assertions must remain distinguishable. Passing Reader projections does
@@ -390,7 +390,7 @@ deciding which references to resolve. Actual evaluation remains unimplemented.
 ## Standalone reserve-account verification
 
 `python -B implementations/python/uwmd.py verify-reserve-accounts <file> --json`
-implements accepted Format §4.28 and Protocol §VIII.11. It snapshots parsed
+implements accepted Format `4.28 and Protocol `VIII.11. It snapshots parsed
 source, checks closed account/period/movement facts and provenance, then checks
 authored-order binary64 balance identities and explicitly claimed continuity
 at the existing separately applied 2dp half-away boundary. No movement class,
@@ -437,7 +437,7 @@ capabilities. Genuine portable Reader runs remain separately reported as 17/17.
 ## Standalone reserve-draw bindings
 
 `python -B implementations/python/uwmd.py verify-reserve-draws <file> [plan.json] --json`
-implements accepted Protocol §VIII.12/RFC0065. An omitted plan returns
+implements accepted Protocol `VIII.12/RFC0065. An omitted plan returns
 `not_checked/not_applicable`; explicitly supplied JSON null is invalid structure.
 The plan names exact nullable variants, account/period/movement IDs, gross
 lease-up TI/LC cells or cash-flow row ordinals, declared funded shares and
@@ -484,11 +484,11 @@ The manifest stays parse-only and genuine Reader 17/17 runs remain separate.
 ## Standalone replacement-funding bindings
 
 `python -B implementations/python/uwmd.py verify-replacement-funding <file> --json`
-implements accepted Protocol §V.12/RFC0070, including RFC0075 senior preference,
+implements accepted Protocol `V.12/RFC0070, including RFC0075 senior preference,
 RFC0076 refused selections and RFC0081's optional terms group. Its two-member
 CLI wrapper is **nonnormative**: `structural_issues` contains only the relevant
 hedge, funding, escrow, cash-source and currency prerequisites;
-`replacement_funding_verification` has the exact §V.12.3 result union. There is
+`replacement_funding_verification` has the exact `V.12.3 result union. There is
 no overall validation/readiness result. `validate` and `calc` remain unsupported.
 Exit status is nonzero for relevant structural refusal or failed/unverifiable
 binding. A lawful nonapplicable path returns `not_checked/not_applicable`.
@@ -536,7 +536,7 @@ separate.
 ## Block hashes and bounded chain assessment
 
 `python -B implementations/python/uwmd.py verify-block-integrity <file> --json`
-adds independent Protocol §V.9 block hashing and a bounded §V.10 chain assessment.
+adds independent Protocol `V.9 block hashing and a bounded `V.10 chain assessment.
 This command's report and local assessment vocabulary are **nonnormative**. It
 is not the full `IntegrityResult`, an integrity-profile claim, full validation,
 signature verification or document authentication. Discovery stays parse-only;
@@ -593,10 +593,10 @@ parent/content failures, nullable/current/history identities, unsupported groupi
 hash-provider/JCS failures, unchanged roots and snapshots before the first await.
 
 
-## Active source and role inventory
+## Metadata, active source and role inventory
 
 `python -B implementations/python/uwmd.py inspect-source-roles <file> --json`
-performs a bounded independent Format §2.5/§2.6/§2.8 inventory. The report is a
+performs a bounded independent Format `2.5/`2.6/`2.8 inventory. The report is a
 **nonnormative standalone wrapper**, not `ValidationResult`, complete Format
 validation or a Reader/Verifier tier claim. Discovery stays parse-only;
 validate, calc and generic verify remain unsupported.
@@ -614,7 +614,7 @@ never interpreted as aliases. Pinned META-01 routing checks reject non-nested
 metadata, late `_meta`, mismatched section identity and `section_id` wrappers.
 
 Registered findings are separate from `shape_findings`, which are explicitly
-local diagnostics with no invented registered code or severity. Selected
+local diagnostics with no invented registered code or severity. Other selected
 provenance/quality/lifecycle member types and override path/confidence/reason/note
 shapes are checked against the accepted block schema. These checks do not invent
 an override path grammar, traverse a target, require its existence, reject unknown
@@ -622,8 +622,8 @@ payload/annotation members, or apply override precedence to underwriting values.
 An agent source requires the `agent_id` member; admitted null remains unchanged.
 JSON integer semantics admit revision `1.0` and reject booleans.
 
-Historical blocks are explicitly counted as skipped by this active-source scope;
-their payloads remain retained and roles are not reclassified. Source byte spans,
+Historical blocks are counted as skipped by the active source/role checks;
+their metadata shape and actor are inspected, and their roles are not reclassified. Source byte spans,
 physical ordinals and exact authored variants distinguish findings on repeated
 active blocks. Returned evidence is detached and the original source/Reader
 projection remains unchanged. The wrapper's local `ok` requires both finding
@@ -635,23 +635,72 @@ edit authority, role selection for calculations and signatures remain separate
 obligations. This inventory does not add defaults, financial behavior or a full
 validation capability.
 
-Evidence: twelve focused Python methods include **nine actual standalone scoped
-fixture comparisons**, using unchanged frozen expectations and the shared subset
-comparator through an explicit test-only projection. Source vocabulary fixtures,
+Evidence: the original twelve focused methods include **nine actual standalone scoped
+fixture comparisons**, using the shared subset comparator through an explicit
+test-only projection. The actor candidate below explicitly adds its new diagnostic
+expectations alongside the frozen prelaunch assertions; it does not claim those
+old assertions pass unchanged. Source vocabulary fixtures,
 bare metadata negatives and declared/invalid role fixtures are checked only for
 the implemented finding families; these are not portable validate passes.
 Additional controls cover all actor namespaces, exact ASCII spelling, every
 resolution tag, malformed leaf values, active physical peers, superseded flags,
-unknown payload retention and no mutation. Existing controls and discovery flags
-are unchanged.
+unknown payload retention and no mutation. Discovery flags remain unchanged.
+
+
+### Actor reconciliation candidate — 2026-10-17
+
+This branch implements the owner's bounded direction for coordinated RFC
+integration; final RFC text and normative activation remain unaccepted. It adds
+META-01/error at `_meta.provenance.actor` for absent, null, exact empty string
+or non-string values. Every nonempty string is retained, including whitespace;
+there is no trimming, actor namespace rule, inferred principal or alias fallback.
+Other typed metadata findings remain uncoded local assessments.
+
+The existing wrapper/nested-object checks run first across all retained physical
+blocks, followed by the actor pass in physical source order, then the existing
+active ROLE/SRC checks. Whole-missing metadata remains a completeness matter
+(local in this partial command); malformed wrappers/nested objects receive their
+existing single META-01 and no actor cascade. History, append/extension blocks,
+unselected variants and overwritten physical peers receive actor checks. History
+roles and sources are not reclassified. The legacy `blocks_checked` and
+`history_blocks_skipped` counters describe only the active source/role pass.
+
+The current canonical inline parsed `_meta` is authoritative. The operation
+snapshots `Document.source.blocks`; it does not silently reparse immutable raw
+bytes or certify a caller-mutated model as the original source. Physical spans
+remain origin evidence, not a source/model consistency verdict. Inputs and source
+bytes are unchanged. No new command, capability, full validation or tier claim
+is introduced.
+
+Governed test delta: the previous source-test blob
+`0333e25bd130d024b25e8c53784f3394aa162894` asserted malformed actor `0` only
+as a local finding and compared three actor-absent role documents without actor
+codes. The candidate now explicitly expects META-01/error instead of the actor
+local finding, and 11/8/8 actor findings on the unchanged documents below.
+These are candidate diagnostic assertions, not rewritten frozen validate results
+or a complete affected-corpus inventory.
+
+| Unchanged source fixture | Git blob |
+| --- | --- |
+| `10-declared-roles.uwx.md` | `cf59916f6d05e96ba2d34cff2405453b25945279` |
+| `11-role-collision.uwx.md` | `0231d5b466b733637f8fd062fbd515ba0bf82f82` |
+| `12-role-eligibility.uwx.md` | `6c2a00fc74c4305315a4af235abe4c889914b573` |
+
+Four additional focused methods cover actor value boundaries, all-physical
+coverage, shape/actor/role/source ordering and parsed-model authority. Existing
+source, timestamp, quality, lifecycle and override diagnostics keep their
+registered-versus-local allocation. Changing an actor would leave the V.9
+content hash (which excludes `_meta`) unchanged but can change block signatures,
+Envelope/document signatures and receipt subjects; this implementation changes
+diagnostics only and never repairs actors or reissues historical evidence.
 
 
 ## Document currency assertion
 
 `python -B implementations/python/uwmd.py inspect-document-currency <file> --json`
 independently checks the accepted document-level currency assertion under Protocol
-§III.1b/RFC0046. A non-null authored value that is not exactly three uppercase
-ASCII letters emits `CUR-01` with error severity. Accepted §V.12.2 explicitly
+`III.1b/RFC0046. A non-null authored value that is not exactly three uppercase
+ASCII letters emits `CUR-01` with error severity. Accepted `V.12.2 explicitly
 admits absent/null identity; evidence preserves their difference rather than
 inserting or normalizing a value. No hedge, reserve or other financial section
 is required for this document-level check.
