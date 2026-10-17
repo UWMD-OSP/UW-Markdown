@@ -102,7 +102,9 @@ current routing or a missing schema default. No byte insertion or coercion.
 
 Preserve whole-missing-meta handling and existing wrapper/nested-object shape
 precedence. No new child boolean finding on a rejected metadata container.
-A missing/nonobject quality object is not reinterpreted as META-02; its separate
+A missing/nonobject quality object suppresses only META-02, unless the exact
+existing wrapper/nested-object predicate already rejects the whole container.
+Other admitted parents, actor and independent findings remain assessed. Its separate
 required-container diagnostic remains outside this RFC. Preserve all existing
 completeness warnings, low-confidence informational findings, actor errors and
 unrelated source/role/financial findings. An actor-only META-01 does not suppress
@@ -174,13 +176,14 @@ baseline or complete consumer-impact measurement.
 
 ## Activation gates and historical consequences
 
-Before owner acceptance/activation: independently verify the two predicates,
+Before owner acceptance and final integration: independently verify the two predicates,
 full physical/model populations and ordering; run absent/null/every-type and
 container/actor/override/source-boundary controls in both implementations;
 measure the complete applicable native/portable/producer/receipt consumers;
 prepare explicit governed expectations on original sources; synchronize
 Format/Protocol/registry/validators/conformance/documentation; and obtain green
-exact-final-head and exact-main CI. The current schema already requires both
+exact-final-head CI. After merge, verify exact-main CI before treating integration
+as complete. The current schema already requires both
 booleans and must be verified unchanged, not altered for cosmetic lockstep.
 
 Diagnostic-only assessment of the same bytes does not itself change payload,

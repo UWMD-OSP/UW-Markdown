@@ -6,6 +6,7 @@ path. Python and Node separately assess the two proposed boolean predicates.
 import argparse
 import hashlib
 import json
+import platform
 import subprocess
 import sys
 from pathlib import Path
@@ -49,6 +50,15 @@ def node(paths, script):
 
 
 def capture():
+    authority = "001cc001d36d8b4a219bb6516f40db69d1a8dc34"
+    # Refuse a different executed implementation; draft docs are allowed.
+    subprocess.run(["git", "diff", "--exit-code", authority, "--",
+        "packages/uwmd-verify/src", "packages/uwmd-verify/package.json",
+        "implementations/python"], cwd=ROOT, check=True, capture_output=True)
+    closure = {path.relative_to(ROOT).as_posix(): sha(path.read_bytes())
+        for directory, pattern in [("packages/uwmd-verify/src", "*.ts"),
+                ("packages/uwmd-verify/dist", "*.js"), ("implementations/python", "*.py")]
+        for path in sorted((ROOT / directory).rglob(pattern))}
     sources, admitted, refused, exposure = [], [], [], []
     for path in sorted((ROOT / "conformance").rglob("*.uwx.md")):
         name = path.relative_to(ROOT).as_posix()
@@ -121,7 +131,11 @@ console.log(JSON.stringify(JSON.parse(fs.readFileSync(0,'utf8')).map(path=>({pat
     # No new validator, result or fixture is generated. These are predicate
     # exposures; owning operations must be measured before governed activation.
     return dict(scope="Draft-only two-boolean sensitivity and nine-case reference reproduction",
-        authority_main="001cc001d36d8b4a219bb6516f40db69d1a8dc34",
+        authority_main=authority,
+        executed_implementation_matches_authority=True, executed_source_and_dist_sha256=closure,
+        reproduction_sha256=sha(Path(__file__).read_bytes()),
+        runtime=dict(python=sys.version, platform=platform.platform(),
+            node=subprocess.check_output(["node", "--version"], text=True).strip()),
         sources=sources, parse_refusals=refused,
         schema_hashes=[dict(path=f"spec/schemas/{s}.schema.json",
             sha256=sha((ROOT / f"spec/schemas/{s}.schema.json").read_bytes())) for s in SCHEMAS],

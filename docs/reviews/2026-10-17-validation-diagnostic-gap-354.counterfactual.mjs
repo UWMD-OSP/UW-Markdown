@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 // Isolated RFC0091 sensitivity only. Never part of production/CI activation.
 // node --loader ./docs/reviews/2026-10-17-validation-diagnostic-gap-354.counterfactual.mjs scripts/run-conformance.mjs --json
 // Reads compiled main, injects only the draft predicate in memory, writes no sources or expectations.
@@ -5,6 +6,7 @@ export async function load(url, context, nextLoad) {
   const result = await nextLoad(url, context);
   if (!url.endsWith('/uwmd-verify/dist/validator.js')) return result;
   const text = String(result.source);
+  if (createHash('sha256').update(text).digest('hex') !== 'a1bfc6f35f392d2f4824fa3af021f396a107988dcce6cca4a444a7ca53092bc4') throw new Error('Counterfactual requires pinned main validator build');
   const anchor = '    checkProvenanceActors(parsed, issues);';
   if (text.split(anchor).length !== 2) throw new Error('Counterfactual requires the reviewed actor checkpoint');
   const injection = `
