@@ -546,6 +546,19 @@ a divergent convenience meta alias cannot repair it. Fresh-source conclusions
 require a fresh parse of the exact operation input. Protocol §III.6a defines
 ordering; RFC 0090 defines the precise model boundary.
 
+**Required boolean admission (RFC0091).** An absent, null or nonboolean
+canonical `_meta.quality.human_review_required` is `META-02`/error; the same
+condition at `_meta.lifecycle.superseded` is `META-03`/error. Literal true and
+false are valid without coercion or inferred defaults. Apply these predicates
+to every retained physical block, including historical and otherwise unselected
+blocks, and to supplied model-only blocks using the actor authority/identity
+boundary above. Whole-missing-meta and existing wrapper/nested-object shape
+precedence suppress child findings; a missing/nonobject quality container
+suppresses only META-02. An actor-only error does not suppress either flag.
+Existing completeness rules and META-01 retain their scope. Protocol §III.6a
+defines exact attribution and ordering; these allocations do not extend to
+other missing or malformed metadata members.
+
 ### 2.6 Source Identifiers
 
 `_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); a resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.

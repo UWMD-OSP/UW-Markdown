@@ -128,6 +128,7 @@ export function validateUWFile(
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
   checkProvenanceActors(parsed, issues);
+  checkMetadataBooleans(parsed, issues);
   checkBlockRoles(parsed, issues);
   checkPeriodSeries(parsed, issues);
   checkSourceVocabulary(parsed, issues);
@@ -3187,6 +3188,33 @@ function checkProvenanceActors(parsed: ParsedUWFile, issues: ValidationMessage[]
   // Physical order, then model-only additions in the existing collection order.
   // A hand-built/spread/serialized model has model-only evidence. Its raw text
   // does not certify source coverage or replace the model being assessed.
+  for (const block of parsedPhysicalBlocks(parsed)) walk(block.annotation.section, block);
+  for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
+}
+
+// RFC 0091 candidate: only the two required canonical boolean members.
+function checkMetadataBooleans(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const visited = new Set<UWBlock>();
+  const walk = (sectionId: string, block: UWBlock): void => {
+    if (visited.has(block)) return;
+    visited.add(block);
+    const meta = block.content['_meta'];
+    if (meta === undefined || malformedMetaShape(block)) return;
+    const admitted = meta as Record<string, unknown>;
+    for (const [group, field, code] of [
+      ['quality', 'human_review_required', 'META-02'],
+      ['lifecycle', 'superseded', 'META-03'],
+    ] as const) {
+      const parent = admitted[group];
+      if (!metaObject(parent) || typeof parent[field] === 'boolean') continue;
+      const path = `_meta.${group}.${field}`;
+      issues.push({
+        code, severity: 'error', section: sectionId, field: path,
+        message: `Block ${path} must be a boolean.`,
+        remediation: `State ${path} explicitly as true or false; do not infer a flag.`,
+      });
+    }
+  };
   for (const block of parsedPhysicalBlocks(parsed)) walk(block.annotation.section, block);
   for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
 }
