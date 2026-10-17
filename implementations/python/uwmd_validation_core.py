@@ -10,7 +10,8 @@ import re
 from uwmd_binding_sources import finite
 from uwmd_currency import inspect_document_currency
 from uwmd_source_validation import inspect_source_roles
-from uwmd_validation_provenance import metadata_assessment, incomplete_policy
+from uwmd_validation_provenance import (metadata_assessment, incomplete_policy,
+                                        market_data_accepted, missing_market_reference)
 from uwmd_validation_selection import active_blocks, select_section, field
 
 STAGES = ("scope", "screening", "term_sheet", "full_underwrite",
@@ -191,6 +192,13 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
                 ledger.issue("DQ-02", "error", section, "_meta.quality.provisional",
                              "Declared stage requires observed rather than provisional data",
                              value={"policy_fields": sorted({p.get("field_path","") for p in halts})})
+    # RFC0022 section 4 and its published DQ-06/error allocation. This is
+    # distinct from DQ-06/info for missing declared-stage sections below.
+    # Promotion can be leaf-specific and does not depend on quality shape.
+    for block in active_blocks(document):
+        if market_data_accepted(block.parsed.value) and missing_market_reference(block.parsed.value):
+            ledger.issue("DQ-06", "error", block.section, "_meta.provenance.market_data_ref",
+                         "A market_data_accepted value must identify its observation set, vintage and digest")
     present = _section_presence(document)
     if stage in STAGES:
         for section in sections_required(stage, asset):
