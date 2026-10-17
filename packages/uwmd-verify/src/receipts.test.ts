@@ -926,7 +926,7 @@ describe('JCS Unicode admission at receipt boundaries', () => {
 
 
 describe('JCS receipt artifact error boundaries', () => {
-  const source = '---\nuw_version: "3.0"\ndeal_id: "jcs-boundary"\n---\n';
+  const source = '---\nuw_version: "3.0"\ndeal_id: "jcs-boundary"\n---\n\n```json uw:section=x_control\n{"_meta":{"section":"x_control","lifecycle":{"revision":1,"superseded":false}},"value":1}\n```\n';
   const pack = { ...MULTIFAMILY_PACK, id: 'test.jcs-boundary', calculations: [
     { id: 'constant', label: 'Boundary control', formula: '1', deterministic: true },
   ] };
