@@ -61,7 +61,9 @@ def main():
         for name, test, freeze in LABS:
             folder = Path("experiments/numerical-0088") / name
             # Direct entry works on the declared Node18.0 floor; --test arrived later.
-            commands.append((name + "-js", node_runner + [str(folder / test)], "js"))
+            kind = "js-assertions" if name == "integer-dispatch" else "js"
+            runner = ["node"] if kind == "js-assertions" else node_runner
+            commands.append((name + "-js", runner + [str(folder / test)], kind))
             if args.python_controls:
                 commands.extend([
                     (name + "-freeze", [sys.executable, "-B", str(folder / freeze), "--check"], "freeze"),
@@ -84,6 +86,12 @@ def main():
                 counts = {key: int(value) for key, value in re.findall(r"^# (tests|pass|fail|cancelled|skipped|todo)\s+(\d+)\s*$", stdout, re.M)}
                 complete = complete and counts.get("tests", 0) > 0 and counts.get("pass") == counts.get("tests")
                 complete = complete and all(counts.get(key) == 0 for key in ("fail", "cancelled", "skipped", "todo"))
+            elif kind == "js-assertions":
+                match = re.fullmatch(r"PASS (\d+) independent JS classifications and result/trace records\s*", stdout)
+                expected = len(json.loads((ROOT / "experiments/numerical-0088/integer-dispatch/inputs.json").read_text())["cases"])
+                complete = complete and match is not None and int(match[1]) == expected and expected > 0
+                counts = {"frozen_cases": int(match[1]), "classification_comparisons": int(match[1]),
+                          "result_trace_comparisons": int(match[1])} if match else {}
             elif kind == "python":
                 match = re.search(r"Ran (\d+) tests? in", stderr)
                 counts = {"methods": int(match[1])} if match else {}
