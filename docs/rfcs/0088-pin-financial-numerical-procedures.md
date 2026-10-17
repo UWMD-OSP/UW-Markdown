@@ -365,7 +365,7 @@ schedules, select underwriting assumptions or produce a model.
 | PMT | If `r==0`, `B(pv/n)`; otherwise `b=B(1+r)`, `d=P(b,-n)`, `den=B(1-d)`, result `B(B(pv*r)/den)`. |
 | FV | If `r==0`, `B(pv+B(pmt*n))`; otherwise `g=P(B(1+r),n)`, `a=B(pv*g)`, `c=B(B(pmt*B(g-1))/r)`, result `B(a+c)`. |
 | PV | If `r==0`, `B(B(pmt*n)+fv)`; otherwise `d=P(B(1+r),-n)`, `a=B(B(pmt*B(1-d))/r)`, `c=B(fv*d)`, result `B(a+c)`. |
-| NPER | If `r==0`, `B(B(pv-fv)/pmt)`; otherwise `a=B(pmt-B(fv*r))`, `b=B(pmt-B(pv*r))`, `q=B(a/b)`, `den=L(B(1+r))`, result `B(L(q)/den)`. Retain closed form; no iterative amortization search. |
+| NPER | Current observed sequence: if `r==0`, refuse `pmt==0`, then `B(B(pv-fv)/pmt)`; otherwise `a=B(pmt-B(fv*r))`, `b=B(pmt-B(pv*r))`; refuse `b==0`, then evaluate `q_guard=B(a/b)` and refuse `q_guard<=0`. Repeat `q=B(a/b)`; evaluate `num=L(q)` before `base=B(1+r)`, `den=L(base)`, result `B(num/den)`. Raw-log specials and admitted-domain/refusal approval remain separate. Retain closed form; no iterative amortization search. |
 | XNPV | Existing integer day count divided last into binary64 `t`; `b=B(1+r)`, `term=B(amount*P(b,-t))`, left-to-right binary64 sum. Do not replace multiplication by division, even at integer-looking `t`. |
 | XIRR | Existing VIII.9.3 solver, using the candidate XNPV graph; no native Excel solver substitution. |
 
@@ -988,3 +988,60 @@ already identified above. A successfully verified candidate receipt demonstrates
 repeatable stated procedure/signature checking; it cannot by itself establish
 useful whole-formula accuracy. No stable financial formula, tolerance, numerical
 selector or new signing domain is selected, and RFC0088 remains draft.
+
+### Complete bounded NPER log-consumer checkpoint (unaccepted)
+
+The [14-input NPER study](https://github.com/UWMD-OSP/UW-Markdown/blob/56526800/experiments/numerical-0088/nper-log-quotient/README.md)
+adds independent composed log-quotient evidence, distinct from the old178 scalar
+and4730-row power-consumer studies. Exact real-input log intervals use rational
+atanh-series tails, exact interval division and midpoint RN certification; ideal
+positive-log rounding on already-rounded graph inputs remains a separate
+counterfactual with explicit raw IEEE specials, not an executed MPFR/B adapter.
+Five mathematically undefined expressions are classified separately from actual
+builtin/evaluator return or refusal. No new real-domain admission rule is inferred.
+
+Nine real-expression answers are certified: two zero-rate rational branches and
+seven log-quotient interval proofs, all complete at80terms. The two independent
+candidate graph executions retain141 ordered guard/operation rows, including
+the guard's ratio division and its repeated calculation, numerator log before
+base/denominator log, short-circuit refusals and original exceptional-value bits.
+The NPER table above now records that actual sequence rather than its earlier
+abbreviated denominator-log-first presentation. This is a draft research-record
+correction, not production activation or a new normative financial procedure.
+
+A and the ideal-log graph have equal result/refusal in all14 inputs. Actual
+unmodified/baseline/candidate boundaries agree on the captured WindowsNode24
+runtime; no new host difference or universal platform claim follows. Among nine
+certified real results, two finite outputs are one adjacent word from whole-real
+RN but report the same12-place value; two nonfinite outputs refuse despite
+finite mathematical answers; one raw negative-zero output reports0 against
+reference1. Individually correctly rounded positive-real logs do not establish
+whole-formula RN: an exact dyadic rate/payment/pv/fv case with real result3
+returns word `4007ffffffffffff`, while certified whole-real RN is
+`4008000000000000`. Both report3 at the existing final boundary.
+
+At rate-1, the current raw internal `log(0)` gives -infinity and the quotient
+returns+0/report0, although the real log-quotient expression is undefined.
+Rate-2 instead reaches raw NaN and final CALC-TYPE-001. Applying the public log
+wrapper's domain guard internally would change these observed semantics; this
+study does not do so. These controls expose the exact real-domain/IEEE-special/
+final-refusal decision still owed by a complete acceptance contract, without
+selecting a new rate cutoff, stable log1p formula, iterative solver or tolerance.
+
+Capture7747e60d/tree7bcfa001 records WindowsAMD64, CPython3.12.3,
+Node24.14.1/V8 13.6.233.17-node.44. Sixteen compressed artifacts preserve314642
+raw bytes and all104 source/reference plus86 compiled-JS identities unchanged.
+Manifest SHA-256 is
+`d9582a6764e4b7c403f87860ee33e64417769843eaeb591a386e7341da1a2141`.
+The largest certificate is34671bits; at most256oracle-series terms/63midpoint
+search iterations are a bounded research procedure, not a production work limit.
+Original NaN bits remain raw, with class-only comparison explicitly separate.
+
+This closes one log-consumer evidence gap for14 fixed four-argument word inputs.
+It does not establish a global accuracy/resource bound, null/nonfinite/defaulted
+argument semantics, other financial consumers/day counts, spreadsheet parity or
+new receipt consequences. Existing cancellation/receipt/native/platform artifacts
+remain unchanged. A remains provisional; choosing stronger primitive rounding
+alone does not resolve composed accuracy or financial-domain/refusal policy.
+The owner must select that complete contract before accepting new numerical
+semantics. RFC0088 remains draft; no production/schema/corpus/version changes.

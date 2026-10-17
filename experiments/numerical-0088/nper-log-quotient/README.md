@@ -62,8 +62,8 @@ rational branches plus seven logarithm-quotient enclosures, all certified at80
 terms. Five real-formula undefined cases are classified separately. The largest
 certificate numerator/denominator is 34671 bits; this is a bounded oracle
 observation, not a kernel hostile-input resource guarantee or new admission cap.
-Five focused methods check exact known-period identities, all four endpoint
-sign combinations for interval division/zero-denominator refusal, unique-rounding
+Five focused methods check exact known-period identities, exact endpoint
+interval division/zero-denominator refusal, unique-rounding
 quotient enclosures, source short circuits before log, and internal IEEE versus
 real-domain separation.
 
