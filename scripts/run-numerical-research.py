@@ -54,10 +54,14 @@ def main():
         before = hashes()
         report["tracked_hashes_before"] = before
         commands = []
+        version = tuple(int(part) for part in report["node"]["node"].removeprefix("v").split(".")[:2])
+        # Node18.0 emits TAP directly; later versions support explicit reporter
+        # selection, avoiding their runtime-dependent default reporter.
+        node_runner = ["node"] + (["--test-reporter=tap"] if version >= (18, 8) else [])
         for name, test, freeze in LABS:
             folder = Path("experiments/numerical-0088") / name
             # Direct entry works on the declared Node18.0 floor; --test arrived later.
-            commands.append((name + "-js", ["node", str(folder / test)], "js"))
+            commands.append((name + "-js", node_runner + [str(folder / test)], "js"))
             if args.python_controls:
                 commands.extend([
                     (name + "-freeze", [sys.executable, "-B", str(folder / freeze), "--check"], "freeze"),
