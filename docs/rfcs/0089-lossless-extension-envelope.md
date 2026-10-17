@@ -442,12 +442,37 @@ pins complete historical/current helper identities and six passing Node tests;
 all21 candidate fixtures/artifacts remain unchanged. This fixes the experiment,
 not a production codec or normative contract.
 
-The new evidence closes the earlier absence of an independent CSV/XML reader
-and actual ZIP execution for these models only. It does not establish the full
-schema/builtin domain, empty history/map representation, a complete independent
-source projector, new-regime authentication or cross-platform interoperability.
-The exact mapping, admitted domain and version commitments still require the
-owner's design approval; no V.13 or RFC0085 admission is expanded.
+That checkpoint closed the earlier absence of an independent CSV/XML reader
+and actual ZIP execution for its two models only. Its historical empty-slot
+limit remains unchanged; the separate empty-carrier checkpoint above supplies
+bounded absent/empty history/map evidence. Neither establishes the full
+schema/builtin domain, a complete independent source projector, new-regime
+verification/issuance or cross-platform interoperability. The exact mapping,
+admitted domain and version commitments still require the owner's design
+approval; no V.13 or RFC0085 admission is expanded.
+
+#### Independent namespace checkpoint for the lexical XML option
+
+The [namespace decision proof](https://github.com/UWMD-OSP/UW-Markdown/blob/66d037289d22040aaffe83cb192de314b441037a/experiments/envelope-0089/namespace-proof/README.md)
+reads those two frozen XML files directly. The preserved Python ElementTree
+reader and a separately authored Node namespace reconstructor agree on38
+actual-byte controls: ten accepted and28 refused per implementation. Accepted
+prefix replacement, default element namespaces, child-local prefix shadowing
+and normalized namespace URI character references preserve the complete decoded
+value, independent JCS preimage and candidate semantic digest. Unbound or wrong
+bindings, reserved XML/XMLNS bindings, qualified candidate mapping attributes,
+duplicate decoded names, invalid lexical strings and DTD controls refuse.
+An escaped ampersand control ensures namespace references are not decoded twice.
+
+These scoped expanded-name rules follow
+[Namespaces in XML1.0](https://www.w3.org/TR/xml-names/); choosing a new carrier
+does not make prefix spelling a new semantic identity. The proof remains bounded
+to these two models, ASCII carrier/QName spellings, size/depth limits and the
+recorded parsers/runtime. It is not a general XML parser, malformed-input,
+complete namespace/name-domain, schema or source-authentication proof. Candidate
+bare `type`/`name-json` attributes are distinct from current XML1's mapping.
+The earlier artifacts, BOM correction and initial transport record remain
+preserved; no production codec or namespace is activated.
 
 ### D5 — Canonicalization, commitments and authentication
 
@@ -735,7 +760,7 @@ production correction is introduced by this draft.
 | Accounting | Required candidate meaning and evidence |
 |---|---|
 | Canonical current | Retain every admitted current named peer under the exact role opt-in and one approved nullable identity rule. Ordinary revision selection happens within that identity, never between different peers. A decoded tagged array cannot contain two current records with the same identity; reject rather than deduplicate. |
-| Explicit history | Preserve complete blocks explicitly marked superseded, in physical source order, separately from active peers. Neither a role in history nor its position activates current variant mode. An empty history slot and unknown block members need explicit model-domain fixtures; the current prototype refuses them. |
+| Explicit history | Preserve complete blocks explicitly marked superseded, in physical source order, separately from active peers. Neither a role in history nor its position activates current variant mode. The original prototype's empty-slot/block-extra limits remain historical; the later codec and empty-carrier checkpoints demonstrate bounded examples, not complete model-domain admission. |
 | Physical source | Retain original bytes and account for every scanned block independently of current selection. Identify a block by source position and exact source-body evidence, not payload equality. An unmarked overwritten revision is not automatically equivalent to explicitly superseded history or authenticated retained history. |
 
 Format §2.7 says last non-superseded block; the current ordinary TypeScript
@@ -828,12 +853,13 @@ implicitly authorized by either option above. No normalization, replacement
 character, invented label restriction or raw XML numeric-reference workaround
 solves the full-domain problem.
 
-The current TypeScript canonicalizer's treatment of lone UTF-16 surrogates is a
-separate existing JCS issue. RFC8785 §3.2.2.2 requires an error for those strings,
-including member names; valid pairs and U+FFFD must remain unchanged. Fixing that
-admission defect cannot recover omitted peers or establish a new XML regime.
-Its historical digest/receipt consequences require a separate bounded review;
-this RFC changes neither canonicalizer nor receipt verdicts.
+The initial review's TypeScript lone-surrogate behavior was a separate JCS
+admission defect. RFC8785 §3.2.2.2 requires an error for those strings, including
+member names; valid pairs and U+FFFD remain unchanged. The strict correction
+and public error boundaries were reviewed and integrated separately in PR373.
+That correction cannot recover omitted peers or establish a new XML regime.
+Its historical subject consequences remain recorded separately; this draft
+changes neither canonicalizer nor receipt verdicts.
 
 ### Commitments, provenance and the evidence still missing
 
@@ -858,10 +884,13 @@ and proof of history completeness are different claims.
 subjects and60 artifacts remain unchanged. The later two-model/21-artifact codec
 study adds complete block extras across all six collections, a Python codec plus a separately
 authored Node reader for CSV/ZIP/lexical XML, preserved physical-source
-controls and exact complete-value/preimage comparisons. **Not established:**
-complete schema/builtin admission, empty history/map carrier, complete numeric
-and source/portable projection domains, general ZIP/transport coverage,
-cross-platform independent runs or real new-regime receipt/signature execution. No
+controls and exact complete-value/preimage comparisons. The separate empty-carrier
+and namespace checkpoints add bounded empty-slot and namespace evidence without replacing those artifacts. **Not established:**
+complete schema/builtin admission, complete numeric and source/portable projection
+domains, general XML/parser/ZIP/transport coverage, cross-platform independent
+runs or real new-regime verification/issuance. The decision proof's real Ed25519
+binding controls establish exact subject mutation effects, not accepted
+new-regime source admission or a complete receipt implementation. No
 production migration or legacy-regime support is required by the pre-5.0 policy.
 A shared encoder/decoder round-trip cannot substitute for independent expected
 models and implementations.
@@ -910,14 +939,27 @@ Do not merge an experimental recovery snapshot or implement a private shape firs
 
 ## Owner decision package (recommended, not accepted)
 
-The smallest coherent design decision is three linked choices. Pre-5.0 backward
-support is already excluded by owner policy and is not a competing option.
+The smallest coherent design decision is approval or revision of the three
+linked choices below. The recommended package is one new tagged lossless
+representation with an exact portable subset, total lexical XML and complete
+CSV carriers, and a governed complete-model subject. This remains a proposal.
+
+Several constraints are already settled rather than additional owner choices:
+Format2.8 named-peer legality and role opt-in; Format2.7 last-current selection
+within an applicable identity; separate explicit history versus physical source
+accounting; preservation of every legal block/unknown member; and unchanged
+V.13 source admission. A parse minimum cannot substitute for a complete subject.
+RFC0090's accepted actor/source-inventory correction does not decide nullable
+extension routing, authenticate a lossy projection or accept RFC0085 authority.
+Receipt5.5's equal-results-digest metadata path remains unchanged. Pre-5.0
+backward support is already excluded; no legacy reader or automatic rehashing
+is an option needed for this design.
 
 | Owner choice | Recommended coherent answer | Scope/evidence still required before acceptance |
 |---|---|---|
 | Tagged identity and portable projection | Approve D1 single/variants wrappers and D2's exact opted-in null identity distinct from literal `default`; use the D2b extension/history minimum. Keep ordinary current selection, explicit history and physical source accounting separate. | Coordinate Format mixed-admission wording, portable subset text, reference public API shapes and exact duplicate/current-order fixtures. No unrelated builtin collection redesign. |
-| Complete exchange mapping | Choose total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Govern namespace/codec/bundle text and full schema domain; add empty-map/history and independent XML namespace/ZIP/domain fixtures. Existing codec evidence is bounded, with its BOM defect/correction preserved. |
-| Whole-model authentication subject | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported Envelope/codec and V.13 subject refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance and §5.5 matching-digest rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Independently version Envelope, Protocol, Format if its meaning changes, mappings, signature schema/constants and packages. Actual wire labels and release placement require a later coordinated decision; no5.0 tag/publication without separate launch approval. |
+| Complete exchange mapping | Choose total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Approve exact mapping/domain text, then synchronize schemas and complete domain fixtures. Bounded empty-map/history, independent namespace and actual ZIP evidence now exists; general parser/domain/transport and cross-platform proof remains open. The BOM defect/correction stays preserved. |
+| New commitment regime | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported Envelope/codec and V.13 subject refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance and §5.5 matching-digest rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Independently version Envelope, Protocol, Format if its meaning changes, mappings, signature schema/constants and packages. Actual wire labels and release placement require a later coordinated decision; no5.0 tag/publication without separate launch approval. |
 
 Approving a direction does not complete the acceptance gates above. RFC0085
 retained-history authority and RFC0088 numerical procedures are not accepted by
