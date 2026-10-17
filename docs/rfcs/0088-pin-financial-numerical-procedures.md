@@ -498,7 +498,7 @@ does not hide an untested branch or refusal.
 
 The owner's provisional preference is A for evaluation, not acceptance. The
 external Astra report is independently classified in the existing
-[Issue #356 review](../reviews/2026-10-15-numerical-determinism-356.md#astra-review-intake-and-independent-verification).
+[Issue #356 review](https://github.com/UWMD-OSP/UW-Markdown/blob/55b1b1ccfa7c52346f40d57f760f29214bd4fa78/docs/reviews/2026-10-15-numerical-determinism-356.md#astra-review-intake-and-independent-verification).
 It is not automatically authoritative. That intake records the report hash,
 current production/spec/fixture reconciliation, receipt precedence qualification,
 IRR underflow/tolerance mechanisms, NPV internal exceptional values, complete
