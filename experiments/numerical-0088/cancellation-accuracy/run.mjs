@@ -49,7 +49,7 @@ function boundary(item) {
   const result = { id: item.id, raw: encoded(value) };
   try { result.quantized = encoded(quantizeDecimal(value, item.places)); }
   catch (error) { result.quantization_refusal = error.code ?? error.proto?.code; }
-  const source = `---\nr: ${Object.is(r, -0) ? '-0' : String(r)}\nn: ${item.n}\namount: ${String(amount)}\nother: ${String(other)}\n---\n`;
+  const source = `---\nuw_version: \"3.0\"\nr: ${Object.is(r, -0) ? '-0' : String(r)}\nn: ${item.n}\namount: ${String(amount)}\nother: ${String(other)}\n---\n`;
   const parsed = parseUWFile(source);
   assert.equal(toBits(parsed.frontmatter.r), item.rate, item.id);
   const declaration = { id: 'research_scalar', label: 'Exact synthetic scalar input', formula: `${item.op}(r,n,amount${item.op === 'pmt' ? '' : ',other'})`, deterministic: true, round_to: item.places };

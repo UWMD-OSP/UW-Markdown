@@ -41,3 +41,9 @@ No observation is claimed until frozen evidence is committed. This is not a new
 financial convention, replacement kernel, accuracy guarantee, conformance
 baseline, receipt authentication rule, compatibility layer or RFC acceptance.
 Original4204/178/4730 evidence and all prior artifacts remain unchanged.
+
+The first capture at47ba12cd stopped at the actual parser because its generated
+scalar envelope omitted required `uw_version`. No evidence destination was
+created; scratch `uwmd-cancellation-accuracy-zqo3x91f` preserves the first attempt.
+The harness now supplies the current required Format declaration. No parser,
+numerical operation, mathematical reference or expected answer was changed.
