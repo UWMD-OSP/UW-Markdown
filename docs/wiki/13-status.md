@@ -1802,3 +1802,17 @@ invariants move to Representations, and five new validate-only Verifier checks
 (`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
 1,061 (Verifier 679 / 280 portable, Module 68 / 1). Release: published in
 core/CLI 3.0.0 with Stable Protocol 3.0.0.
+
+### 2026-10-17 — RFC0089 raw JSON admission evidence (draft)
+
+A bounded36-vector study preserves21 old Node/Python duplicate-name admission
+differences. A separate strict Node research boundary and Python profile agree
+on12 accepted/24 refused. Under the old Node path,28 actual carrier spellings
+produce the same model and valid original raw research Ed25519 signature;
+strict preflight rejects20 duplicate carriers before crypto, while eight valid
+spellings still verify. This is raw transport admission disagreement, not a
+signature break, current public artifact verdict or new receipt rule. The
+integrator independently read/replayed the artifact; Node20 CI reuses the same
+bounded check. Existing model/codec/namespace/authentication evidence remains
+unchanged. RFC0089's concrete mapping/authentication choices stay unaccepted;
+no schema, Envelope1 behavior, version or launch state changes.

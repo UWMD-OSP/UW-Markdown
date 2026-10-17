@@ -308,6 +308,7 @@ jobs:
           python3 -B -m unittest discover -s experiments/envelope-0089/empty-collections -p test_empty.py -v
           node --test experiments/envelope-0089/empty-collections/independent.test.mjs
           python3 -B experiments/envelope-0089/namespace-proof/check.py
+          python3 -B experiments/envelope-0089/json-boundary/capture.py
 
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added

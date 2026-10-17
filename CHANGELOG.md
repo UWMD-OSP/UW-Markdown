@@ -73,6 +73,11 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Bound RFC0089's proposed raw JSON duplicate-name admission with independent
+  model/CSV-manifest observations and synthetic subject-signature controls.
+  Preserve prior evidence and distinguish carrier ambiguity from signature
+  validity; activate no codec, schema, receipt or version contract.
+
 - Independently classify the Astra Envelope review in the existing RFC0089/365
   artifacts; propose exact source accounting, portable identity, complete block
   member carriers and XML alternatives while preserving all current contracts.
