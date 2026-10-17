@@ -41,7 +41,7 @@ version or launch date is proposed.
 | Primitive work bound | Existing source analysis: fixed branches, only sqrt has bounded word loops; port must preserve that closure | 53-bit destination does not bound internal precision or allocation; no portable hostile-input maximum established | At most 1,024 iterations / 1,077 basic operations for integer path; A bound for fractional/log/exp |
 | Executable evidence here | Word adapters only; no complete port | Source/API analysis and exact rational double-rounding counterexample only; no MPFR execution | Independent rational and JS integer implementations, 24 frozen cases; fractional/log/exp unimplemented |
 | Shipping cost / feasibility | 43,025 source bytes in pinned C closure, not a bundle measurement; TS/Python software ports still required | Native C MPFR+GMP, or a separately built/validated Wasm distribution plus bindings; no JS/Python/OS package measurements | Small integer graph plus essentially A's remaining closure; integer counter up to 1,024 bits |
-| Dependency / license | No new runtime dependency required by a software port; retain Sun source notice | MPFR LGPL v3-or-later; GMP LGPLv3 or GPLv2 dual licensing in selected archive; distribution/linking review needed | Same notices/closure obligation as A, plus new independently authored graph |
+| Dependency / license | No new runtime dependency required by a software port; retain Sun source notice | MPFR LGPL v3-or-later; GMP LGPLv3-or-later or GPLv2-or-later dual licensing in selected archive; distribution/linking review needed | Same notices/closure obligation as A, plus new independently authored graph |
 | Main blocker | Complete independent ports, constant-word/site mapping and measured accuracy/domain/impact | Adapter execution evidence, deployment/license review and resource policy/proof | New rounding semantics without measured benefit; still incomplete fractional kernel |
 
 ## Common boundaries, explicitly proposed rather than accepted
@@ -82,7 +82,7 @@ selection, not every internal algorithmic temporary.
 
 ## A: exact fdlibm procedure, no integer substitution
 
-Identity is the unchanged [eight-file source manifest](../../../../docs/reviews/2026-10-15-fdlibm-closure-356.sources.json),
+Identity is the unchanged [eight-file source manifest](../../../docs/reviews/2026-10-15-fdlibm-closure-356.sources.json),
 not the label “fdlibm”, “StrictMath” or whichever libm ships with a host.
 In particular [Netlib e_pow.c](https://netlib.org/fdlibm/e_pow.c),
 `763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122`,
@@ -106,7 +106,7 @@ exponential are **not** calls to the standalone log/exp functions.
 
 `log` and `exp` are separately the exact pinned e_log.c/e_exp.c range reduction,
 polynomial and scaling graphs. The sqrt, scalbn, fabs and copysign closure is
-mandatory. The [source/adapter study](../../../../docs/reviews/2026-10-15-fdlibm-closure-356.md)
+mandatory. The [source/adapter study](../../../docs/reviews/2026-10-15-fdlibm-closure-356.md)
 records its conditional bound (at most 76 sqrt loop-body executions under the
 specified word mapping); this is not a complete evaluator cost bound. No exponent-
 sized multiplication loop is used. Implement every C signed/unsigned32 operation,
@@ -148,11 +148,11 @@ and Transcendental Functions, is the primary API contract. Candidate adapter:
 2. Decode each finite input word: normal `s=(2^52+fraction)` and
    `e=exponent_field-1075`; subnormal `s=fraction`, `e=-1074`. Apply sign to the
    integer s and call `mpfr_set_z_2exp(input,s,e,MPFR_RNDN)`, requiring exact
-   ternary zero. This represents the exact binary64 value at precision53.
+   ternary zero. This represents the exact binary64 value at precision 53.
    For zero use `mpfr_set_zero(input,+1/-1)` separately: integer zero loading
    would erase -0. No decimal reparse or language `long` truncation is allowed.
 3. Apply the common input/special table above, then use precisely `mpfr_pow`,
-   `mpfr_log` or `mpfr_exp` with `MPFR_RNDN` and destination precision53. Generic
+   `mpfr_log` or `mpfr_exp` with `MPFR_RNDN` and destination precision 53. Generic
    `mpfr_pow` receives the exact input exponent object even for huge integers;
    do not narrow y through `pow_si`/`pow_uj`. `mpfr_powr` and a user-level
    `mpfr_exp(B(y*mpfr_log(x)))` are different procedures. MPFR can internally
@@ -178,15 +178,15 @@ and Transcendental Functions, is the primary API contract. Candidate adapter:
 
 The MPFR API guarantees correctly-rounded target-precision operations. The
 subnormal adapter supplies binary64's missing grid; correct rounding is not
-inferred from choosing precision53 alone. A new exact-rational test illustrates
+inferred from choosing precision 53 alone. A new exact-rational test illustrates
 an actual failure of that shortcut: with u=2^-1074 and
-v=1.5u-2^-1128, unbounded-exponent precision53 rounds to 1.5u, then a naïve
+v=1.5u-2^-1128, unbounded-exponent precision 53 rounds to 1.5u, then a naïve
 binary64 conversion chooses 2u, although v rounds directly to u. Negative v has
 the analogous -u/-2u discrepancy. This proves the need for ternary preservation;
 it is **not** a claim that this lab executed MPFR or that a particular pow input
 produces v. Real pow/log/exp subnormal vectors must exercise the library adapter.
 
-The selected src/pow.c and src/log.c use precision-growing Ziv loops. A precision53
+The selected src/pow.c and src/log.c use precision-growing Ziv loops. A precision 53
 destination neither fixes their working precision nor bounds time/memory. The
 whole archive pins implementation identity, but no proven maximum over all
 admitted binary64 input pairs is established here. A wall-clock timeout is not
@@ -199,7 +199,7 @@ build, exact bindings/context/flags, memory policy, notices and independent test
 coverage. A Python package wrapping an arbitrary installed MPFR version is not
 this adapter. No dependency or binaries are added here. Shipping size, startup,
 per-call cost, allocator limits and threading are **unmeasured**. The archive
-license files identify MPFR LGPL v3-or-later and GMP's LGPLv3/GPLv2 choice; actual
+license files identify MPFR LGPL v3-or-later and GMP's LGPLv3-or-later/GPLv2-or-later choice; actual
 link/distribution obligations need review before adoption. This source analysis
 does not approve an external runtime dependency.
 
@@ -225,9 +225,9 @@ Common specials precede this graph. Every executed nonfinite basic result stops
 with local `intermediate_nonfinite`; rounded zero is retained and does not stop
 the remaining finite graph. There is no unused final square, final reciprocal,
 exponent32 narrowing, 2^53 safe-integer restriction or exponent256 lab admission.
-A finite integral exponent has bit length<=1024 and popcount<=53: at most1023
-squares plus53 accumulator multiplies, plus1 initial reciprocal for negative y.
-Thus at most1077 basic operations; the bound excludes word parsing/classification
+A finite integral exponent has bit length<=1024 and popcount<=53: at most 1023
+squares plus 53 accumulator multiplies, plus 1 initial reciprocal for negative y.
+Thus at most 1077 basic operations; the bound excludes word parsing/classification
 and enclosing financial expression/solver work. These constants are structural
 bounds, not new input refusals or financial conventions.
 
@@ -238,7 +238,7 @@ mistake successful integer vectors for whole-domain power or Verifier conformanc
 
 ## Frozen new evidence and earlier counterexamples
 
-[inputs.json](./inputs.json) has24 fixed word pairs; [evidence.json](./evidence.json)
+[inputs.json](./inputs.json) has 24 fixed word pairs; [evidence.json](./evidence.json)
 freezes classifications, independent exact step results/counts/trace hashes and
 the old bounded mathematical reference where applicable. No random host-generated
 power values or new financial expected answers are used. The reused rational
@@ -249,11 +249,11 @@ arbitrary decimal precision is used as an unbounded oracle.
 
 | Frozen new control | Integer-graph result / exact scope |
 |---|---|
-| 0.5^MAXfinite | +0 after1076 operations; exact real result below half-minsub |
-| 2^(-MAXfinite) | +0 after1077 operations, including reciprocal |
-| (-0.5)^(2^53-1) | -0 after105 operations; exact odd parity |
-| (1+2^-52)^(2^53) | Graph word `401d8e64b16f0b93`,54 operations; mathematical CR answer not claimed |
-| (1+2^-52)^257 | `3ff0000000000101`,10 operations; no256 cap |
+| 0.5^MAXfinite | +0 after 1076 operations; exact real result below half-minsub |
+| 2^(-MAXfinite) | +0 after 1077 operations, including reciprocal |
+| (-0.5)^(2^53-1) | -0 after 105 operations; exact odd parity |
+| (1+2^-52)^(2^53) | Graph word `401d8e64b16f0b93`, 54 operations; mathematical CR answer not claimed |
+| (1+2^-52)^257 | `3ff0000000000101`, 10 operations; no 256 cap |
 | Word601dd55745cbb7ed raised to-2 | Nonzero subnormal `000012688b70e62b`; agrees with bounded exact mathematical reference |
 | 2^.5 | `fdlibm_fractional_required`; independent bounded mathematical word `3ff6a09e667f3bcd` is not substituted |
 | 1.1^-31 (exact represented operands) | Graph `3faaacadc6ed30d0`, one-rounded mathematical `3faaacadc6ed30ca` |
@@ -282,9 +282,9 @@ permit exchanging these associations. PMT/PV/FV/NPER use the RFC's B-parenthesiz
 closed forms and exact r==0 branches. Tiny nonzero rates for which B(1+r)==1 do
 not enter a zero-rate branch, and no log1p/expm1 stabilization is implicit.
 
-IRR still evaluates periodic NPV at -0.999 and10, forms the binary64 sign product,
+IRR still evaluates periodic NPV at -0.999 and 10, forms the binary64 sign product,
 follows the existing bracket-failure and exact lower-then-upper endpoint order,
-then bisects at most200 times with abs(NPV)<1e-9 or half interval<1e-12. No
+then bisects at most 200 times with abs(NPV)<1e-9 or half interval<1e-12. No
 Newton polish, bracket expansion, flow scaling or new tolerance is proposed.
 XIRR retains its separately accepted solver with the dated graph. Kernel output
 changes can change a bracket sign or later branch; frozen endpoint evidence
@@ -364,3 +364,16 @@ existing expectations. Six new Python methods include the exact subnormal adapte
 hazard and hand-proved huge-exponent parity/operation bounds. Local observations
 are recorded with the commit checkpoint; proposed CI rows are not claimed here.
 No prior numerical audit, old lab or full workspace suite is repeated.
+
+Actual local observation: Python **3.12.3**, Node **24.14.1**, Windows 11 build
+26200 AMD64/x64. Freeze check, all **6** new Python methods and all **24** JS
+classification/result/trace comparisons pass. This is one-host evidence; no
+MPFR/fdlibm kernel execution or cross-runtime/OS observation is implied.
+
+| New artifact | SHA-256 |
+|---|---|
+| inputs.json | `9b37fb8f29b9995a20feb75a72588b6a736f57f4ffc6d48d4d6b4bcf7fd103e3` |
+| evidence.json | `ab23318bb0f6be44c021132f738e54a19598492a68814e5012cd0374377c545d` |
+| hybrid_reference.py | `87b04c8f44d5407382fc237dd79a7fd0ff9b1fe7f7e8523106311c575af98682` |
+| hybrid.mjs | `b9e867766cf04c6dd9f82d18411af23c0080deefee1ddb31effc8d49aa656347` |
+| sources.json | `def53756d54ab6112ba2c8554cc702f78cbec6d81f2febc07c039c27fd38ac22` |

@@ -356,3 +356,44 @@ block/signature subjects, receipt precedence, engine/version labels and frozen
 conformance are unchanged. RCP-07 still requires different-engine disagreement;
 same-engine runtime disagreement is not excused. No fallback evaluator, automatic
 historical rehash, RFC 0085 policy, new dependency or release preparation is added.
+
+## 2026-10-16 — actual procedure comparison and full-word integer alternative
+
+The [new bounded comparison](../../experiments/numerical-0088/integer-dispatch/README.md)
+now specifies three actual end-to-end designs, rather than only reproducibility
+requirements: A, the pinned eight-file fdlibm procedure across exponent classes;
+B, an MPFR4.2.2/GMP6.3.0 exact binary64 word/subnormal adapter; and C, an explicit
+full-word integer reciprocal-first binary graph with A's fractional/log/exp path.
+The RFC recommends **developing A**, conditionally on complete independent ports,
+accuracy and contract evidence. The smallest owner choice is procedure-specific
+exact answers versus B's stronger primitive correct-rounding contract. This is
+proposal direction, not numerical adoption or RFC acceptance.
+
+C now executes every finite integral binary64 exponent in at most 1024 iterations
+and 1077 basic operations, including initial negative-power reciprocal. It has no
+old 256 lab cap or safe-integer narrowing. Twenty-four frozen word controls retain
+huge odd/even signs, signed underflow, unused-square overflow, fractional-kernel
+absence and the independently proved graph-versus-correct-rounding difference.
+No C speed or bundle saving is measured; the remaining A kernel is still needed,
+so a shorter integer graph alone does not justify a distinct numerical contract.
+
+B pins official archive/content hashes and exact input loading, range, operation
+ternary/subnormalize and word encoding. Six focused Python methods include an
+exact rational subnormal double-rounding counterexample to the 53-bit/get_d
+shortcut. The MPFR/GMP sources were read inertly; no library was built, installed
+or executed, and no complete source-closure audit or universal work bound is
+claimed. A's original e_pow hash was rechecked, without repeating the completed
+eight-file audit. Exact bytes, primary-source URLs, license and signature-check
+limits are in the new sources manifest and README.
+
+Freeze check, six new Python methods and 24 direct JS classification/result/trace
+controls pass on Python 3.12.3/Node 24.14.1, Windows 11 AMD64. Only new focused tests
+ran; preceding labs/audit/full workspace checks were not repeated and every prior
+experiment blob is unchanged. The integrator owns pending targeted runtime/OS
+coverage; it cannot certify unimplemented A/B or C fractional kernels.
+
+The comparison keeps accepted financial associations, solver/tolerances, VIII.5,
+receipt precedence, source/signature subjects and pre-release clean-break policy
+explicit. It introduces no production import, new runtime dependency, normative
+expected answer, corpus rebaseline, compatibility layer, version or release work.
+The 5.0 launch timing and RFC0085 provenance remain owner-controlled and separate.
