@@ -39279,7 +39279,10 @@
       "packages/uwmd-verify/dist/calc/builtins.js:304:35": 1,
       "packages/uwmd-verify/dist/cash-flow-series.js:114:32": 668,
       "packages/uwmd-verify/dist/cash-flow-series.js:101:27": 2
-    }
+    },
+    "eligible_numeric_sites": 20,
+    "exercised_numeric_sites": 10,
+    "unexercised_numeric_sites": 10
   },
   "receipt_identity_observations": [
     {
@@ -49999,6 +50002,78 @@
       "replacements": [],
       "snapshots": [],
       "excluded": []
+    }
+  ],
+  "numeric_sites_not_exercised": [
+    {
+      "site": "packages/uwmd-core/dist/debt.js:46:31",
+      "path": "packages/uwmd-core/dist/debt.js",
+      "op": "pow",
+      "excluded": false,
+      "text": "(1 + rate) ** -n"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:126:35",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "pow",
+      "excluded": false,
+      "text": "(1 + rate) ** -n"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:137:27",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "pow",
+      "excluded": false,
+      "text": "(1 + rate) ** t"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:188:19",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "pow",
+      "excluded": false,
+      "text": "base ** exp"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:205:16",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "log",
+      "excluded": false,
+      "text": "Math.log(n)"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:215:19",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "exp",
+      "excluded": false,
+      "text": "Math.exp(n)"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:236:24",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "pow",
+      "excluded": false,
+      "text": "(1 + rate) ** n"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:252:26",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "pow",
+      "excluded": false,
+      "text": "(1 + rate) ** -n"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:280:16",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "log",
+      "excluded": false,
+      "text": "Math.log(num / den)"
+    },
+    {
+      "site": "packages/uwmd-verify/dist/calc/builtins.js:280:38",
+      "path": "packages/uwmd-verify/dist/calc/builtins.js",
+      "op": "log",
+      "excluded": false,
+      "text": "Math.log(1 + rate)"
     }
   ]
 }
