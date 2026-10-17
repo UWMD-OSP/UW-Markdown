@@ -30,7 +30,7 @@ export function typed(value, ancestors = new Set()) {
   ancestors.delete(value);
   return result;
 }
-function emit(event) { appendFileSync(output, JSON.stringify({ sequence: sequence++, ...event }) + '\n'); }
+function emit(event) { appendFileSync(output, `${JSON.stringify({ sequence: sequence++, ...event })}\n`); }
 function operation(op, args, site) {
   let result;
   try {
