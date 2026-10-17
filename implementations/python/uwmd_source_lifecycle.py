@@ -1,6 +1,8 @@
-"""Historical source flags without mutating the retained Reader/raw projection."""
-from uwmd_reader import _superseded
+"""Read-only lifecycle routing from both accepted source locations (Format 2.4)."""
 
 
 def source_superseded(block):
-    return _superseded(block) or dict(block.attributes).get("superseded") == "true"
+    meta = block.parsed.value.get("_meta")
+    lifecycle = meta.get("lifecycle") if isinstance(meta, dict) else None
+    return (isinstance(lifecycle, dict) and lifecycle.get("superseded") is True
+            or dict(block.attributes).get("superseded") == "true")
