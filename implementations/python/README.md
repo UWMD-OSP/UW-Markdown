@@ -65,6 +65,14 @@ payload at those paths is retained without selecting plausibility behavior.
 Normal G1 reassessment still admits a lone trigger. Terminal assessment fields
 use their own accepted schema and accurate diagnostic pointers.
 
+At the committed canonical-field/metadata checkpoint, the full Python suite
+passed **199 methods** in 42.499 seconds: all 151 original test methods remain
+unchanged, plus 45 validation and three YAML methods. The actual shared Reader
+subprocess passed **17/17**, with zero failed, skipped or unverifiable cases.
+The CLI/discovery source is byte-identical to the main baseline. This run also
+preserves the existing reserve/draw/replacement and read-only/snapshot evidence.
+It does not turn the 111 direct API projections into validate CLI passes.
+
 The CLI still refuses `validate` and discovery remains parse-only. Completion
 still needs the remaining audited field/condition integration, disposition of
 the actual required-actor conflict below, and explicit unsupported-composition
