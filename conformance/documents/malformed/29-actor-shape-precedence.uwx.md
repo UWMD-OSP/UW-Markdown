@@ -10,10 +10,10 @@ deal_stage: screening
 ```json uw:section=property
 {"section_id": "property", "_meta": {"provenance": {}, "lifecycle": {}}, "content": {}}
 ```
-```json uw:section=x:actor 
+```json uw:section=x_actor 
 {
   "_meta": {
-    "section": "x:actor",
+    "section": "x_actor",
     "provenance": {
       "source": "manual",
       "actor": "",

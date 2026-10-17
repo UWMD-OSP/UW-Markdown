@@ -7,10 +7,10 @@ deal_stage: screening
 
 # RFC0090 actor admission control
 
-```json uw:section=x:actor_0 
+```json uw:section=x_actor_0 
 {
   "_meta": {
-    "section": "x:actor_0",
+    "section": "x_actor_0",
     "provenance": {
       "source": "manual",
       "actor": 0,
@@ -34,10 +34,10 @@ deal_stage: screening
 }
 ```
 
-```json uw:section=x:actor_1 
+```json uw:section=x_actor_1 
 {
   "_meta": {
-    "section": "x:actor_1",
+    "section": "x_actor_1",
     "provenance": {
       "source": "manual",
       "actor": false,
@@ -61,10 +61,10 @@ deal_stage: screening
 }
 ```
 
-```json uw:section=x:actor_2 
+```json uw:section=x_actor_2 
 {
   "_meta": {
-    "section": "x:actor_2",
+    "section": "x_actor_2",
     "provenance": {
       "source": "manual",
       "actor": [],
@@ -88,10 +88,10 @@ deal_stage: screening
 }
 ```
 
-```json uw:section=x:actor_3 
+```json uw:section=x_actor_3 
 {
   "_meta": {
-    "section": "x:actor_3",
+    "section": "x_actor_3",
     "provenance": {
       "source": "manual",
       "actor": {},

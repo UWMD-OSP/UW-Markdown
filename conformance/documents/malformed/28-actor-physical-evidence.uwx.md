@@ -61,10 +61,10 @@ deal_stage: screening
 }
 ```
 
-```json uw:section=x:peer variant=first
+```json uw:section=x_peer variant=first
 {
   "_meta": {
-    "section": "x:peer",
+    "section": "x_peer",
     "provenance": {
       "source": "manual",
       "actor": "",
@@ -88,10 +88,10 @@ deal_stage: screening
 }
 ```
 
-```json uw:section=x:peer variant=second
+```json uw:section=x_peer variant=second
 {
   "_meta": {
-    "section": "x:peer",
+    "section": "x_peer",
     "provenance": {
       "source": "manual",
       "actor": "fixture-author",
