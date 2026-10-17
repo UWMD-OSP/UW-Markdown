@@ -433,3 +433,99 @@ Missing original source plus no complete attributable archive blocks migration;
 old subjects remain immutable and new authentication/receipts/plans require their
 own approved issuance. V.13 guards, all existing schemas/codecs, current digests,
 receipts, conformance flags/expectations and reserved5.0 remain unchanged.
+
+
+### 2026-10-16 — Independent Astra RFC0089 review: existing defects and design gates
+
+External input: `Recommendation keep RFC 0089 in dra.txt`, 17,559 original bytes,
+SHA256 `60c4469f95d1317d469362b159dd9be7f1ca37740dad89aaaac6fd5b04d9614d`.
+It reviewed main `3eee0fbab3f5682dc345804782994dc22d321fae` and draft368
+`2ebe454a923072018e1af067285dd3140a10d40f`. Its recommendations are evidence,
+not instructions, owner decisions or automatically established defects. The
+integrator independently inspected the accepted contracts/current code, checked
+RFC8785 and XML1, and separately reproduced the canonicalizer word/byte behavior.
+The existing Envelope experiment contains focused executable reproductions and
+frozen source/schema/runtime/observation identities. Production files, normative
+schemas, existing fixtures/results, package versions and release states remain
+unchanged.
+
+| Finding | Classification and independently established scope |
+|---|---|
+| TypeScript extension peer/history loss | **Verified.** `parser.ts` routes `x_` before superseded/variant handling. The four-physical-block source retains only one extension and no extension history. Changing a discarded active peer, or discarded history, changes raw source SHA256 but leaves its receipt subject unchanged. A fixed control receipt still verifies; this is a lossy projection, not a cryptographic collision. Python retains both named peers/history and refuses the unavailable Envelope1 digest; V.13 refuses that source. |
+| Lone-surrogate JCS admission | **Verified.** Distinct U+D800/U+D801/U+DC00 strings, as values and keys, retain distinct UTF16 code units in canonical text but UTF8 conversion substitutes U+FFFD. Their digest inputs match the real U+FFFD string. Schema and verified-JSON admission do not catch it. Valid surrogate pairs remain distinct. RFC8785 §3.2.2.2 requires refusal, not substitution/normalization. |
+| CSV block extras | **Verified.** The unchanged Envelope schema admits an extra outer block member. Encoding then decoding loses it and fails CSV_DIGEST_MISMATCH, both directory and actual ZIP APIs; the no-extra control passes. Payload/annotation extras and unknown outer-document members are separate carriers and do not solve this block-member loss. |
+| Universal XML1 mapping over the admitted JCS domain | **Contradicted.** NUL/U+FFFE/U+FFFF values or member names are legal JCS strings and outside XML1's Char production; XML character references cannot make them legal. The lab's explicit refusal is safe, but does not prove universal interchange. |
+| Tagged candidate's full fidelity | **Partially verified.** Five frozen models/60 artifacts demonstrate the stated bounded domain, identities, mode, explicit history, payload/prose and local negative controls. Nonempty builtin composition, legal block extras, empty history slots and overwritten unmarked revisions remain outside the prototype. Absence/literal-default source coexistence is an unaccepted decision. |
+| Commitment and reissuance effects | **Partially verified.** Envelope stamps, wrappers and newly retained content change subject bytes; current commitment/version and source guards are inspectable and old-regime controls are reproducible. Candidate accounting plans are not real receipts, signatures, authenticated archives or executed migrations. |
+| Complete cross-implementation/new-regime interoperability | **Unverified.** Node independently verifies subjects/artifacts, not a second XML/CSV decoder. New-regime authentication, actual candidate ZIP exchange and full-domain independent migration remain unproved. |
+| RFC0085 retained-history compatibility | **Partially verified as architecture.** Lossless retention can support its proposed authority; neither draft is accepted and metadata/hashes alone cannot prove historical completeness. No archive replacement or transfer of old authentication is justified. |
+
+#### Existing-contract defect dispositions; no activation in this PR
+
+1. **Shared JCS Unicode rejection:** a small separate implementation correction is
+   justified under the already adopted RFC8785 contract. Reject unpaired high/low
+   surrogates in the shared string serializer, covering values and member names;
+   preserve valid pairs, U+FFFD, control escaping, UTF16 sort order and all valid
+   preimages. Regression controls must cover direct/nested values/keys and public
+   digest/receipt/signature boundaries. This changes historically accepted invalid
+   inputs to refusal and can change receipt/document verdicts. Prepare a bounded
+   patch for review, but obtain explicit disposition of those authentication
+   compatibility effects before activation; never sanitize input or rewrite an
+   old artifact to keep it verified. No new numerical/financial rule is needed.
+2. **Extension routing/source-accounting:** accepted Format2.8/RFC0040/0066 require
+   named peers, but Envelope1 cannot represent them. Do not repair peer storage
+   by inventing a map in its singleton slot. Moving explicit history routing
+   earlier can also change current heads and authenticated subjects. A bounded
+   parser/history correction or whole-source receipt guard needs an exact
+   compatibility decision and regression evidence before activation. Retain the
+   source and V.13 guard; the coherent lossless public/wire correction stays in
+   RFC0089. No automatic first/last-peer choice, digest refresh or receipt rewrite.
+3. **CSV legal block members:** the defect is established, but full preservation
+   has no existing CSV1 carrier: the normative scope vocabulary is closed to
+   annotation/meta/content, plus separately carried prose. A fourth scope is a
+   mapping change, not an implementation-only interpretation. Keep its complete
+   carrier/version proposal in RFC0089. An encoder-side refusal could prevent a
+   self-unreadable artifact, but would narrow current accepted inputs; it is not
+   a model-fidelity fix or permission to drop members. No schema tightening,
+   silent extra field, downgraded view claim or baseline rewrite is authorized.
+
+The receipt projection example does not establish that a real historical issued
+receipt was exploited or that the discarded content was previously authenticated.
+The frozen receipt is an unsigned, fixed constant-calculation control. It proves
+the current binding omission and verdict path. Block signatures cover their own
+subjects; they do not prove full peer assembly. Do not retroactively widen the
+scope of an old digest/signature.
+
+#### Exact remaining normative decisions for draft0089
+
+- Choose the lossless tagged extension design and its precise current/history
+  domain; settle mixed absent/literal-default identity and the corresponding
+  portable minimum projection, public API and Format/Protocol consequences.
+  Same-identity current-revision controls must reconcile Format2.7's last-current
+  text with observed TypeScript higher-revision/first-tie routing. Preserve
+  physical accounting separately; no prototype refusal becomes normative by use.
+- Approve a carrier for every schema-admitted block member, including unknown
+  extras, across JSON/CSV/XML and all current/history/builtin collections. The
+  RFC proposes an explicit new-version `block-extra` typed-row scope.
+- Choose total reversible XML lexical escaping for both names and values or an
+  explicitly partial representability contract. The RFC now defines an ASCII
+  JSON-string lexical alternative, strict decode/duplicate rules and a separate
+  base64 option; none is accepted or silently added to XML1.
+- Select coherent subject/version and independent codec/Format/Protocol/package
+  accounting, unsupported-version/refusal precedence and clean-break new issuance
+  from complete attributable retained content. Preserve historical artifacts and
+  unchanged independent block/V.12 subjects. No number or release is selected;
+  UWMD5.0 remains reserved for its owner-approved public launch.
+
+Preserving V.13's repeated/superseded-extension authentication refusal is the
+current scope. Expanding it would require an additional explicit decision and
+independent authentication proof; codec acceptance cannot imply that expansion.
+RFC0085's authority model remains under its existing ownership. Existing source
+archives must not be replaced by clean projections or claims of recovered history.
+
+Before acceptance, freeze independent complete expected models/preimages and
+positive/negative/cross-version fixtures for each chosen boundary. Add a genuinely
+independent XML/CSV decoder, actual candidate ZIP/security evidence, new-regime
+receipt/signature execution and unsupported-version/migration/refusal controls.
+Resolve existing defect dispositions explicitly. Production deployment and any
+release remain separately controlled; green research CI does not accept a draft.

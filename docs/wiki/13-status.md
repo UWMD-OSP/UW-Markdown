@@ -38,6 +38,19 @@ need an explicit governed escaping or refusal boundary. Container design,
 identity/version/regime/release decisions remain unaccepted; current Envelope1,
 source digests, receipt rules, schemas and public versions are unchanged.
 
+**Independent Astra0089 review.** Existing TypeScript extension routing loses
+named peers/history before receipt subject construction; shared JCS admits lone
+surrogates with replacement UTF8 digest inputs; CSV loses schema-admitted outer
+block members and then refuses its own reconstructed digest. Focused evidence and
+compatibility dispositions live in the existing Reader review/Envelope experiment.
+No production correction is activated. Shared JCS refusal is a bounded existing-
+contract correction candidate; receipt/source effects require review before use.
+Lossless peer representation, complete CSV carriers and total-versus-partial XML
+remain governed RFC0089 design decisions. The draft now separates canonical current,
+explicit history and all physical blocks, with concrete portable/XML/CSV proposals
+and pre-acceptance independent authentication/ZIP/migration gates. RFC0085 and0088
+remain separate drafts; public versions and reserved5.0 are unchanged.
+
 ## Bounded parallel workstreams
 
 One integrator owns sequencing, independent review, shared indexes/changelog/

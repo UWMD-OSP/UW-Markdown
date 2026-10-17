@@ -33,6 +33,10 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Independently classify the Astra Envelope review in the existing RFC0089/365
+  artifacts; propose exact source accounting, portable identity, complete block
+  member carriers and XML alternatives while preserving all current contracts.
+
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.
   Prioritize one complete validate surface, dictionary/stated-figure reproduction
