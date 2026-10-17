@@ -66,6 +66,15 @@ metadata requirements remain local, including active member-order and section
 identity findings. History/unknown payload and source bytes stay retained.
 The older decision packet and pre-reconciliation results below are historical.
 
+The integrated inspector-prefix assertion is a bounded prototype control: it
+proves the current API copies that inspector's issues without dropping or
+reclassifying them. It does not establish the global sequence of all
+ValidationResult families or completeness findings. RFC0090's preservation of
+the old global issue sequence specifically constrains the TypeScript change;
+Python must still verify every applicable accepted ordering/precedence constraint,
+complete partitions and command/refusal transport before claiming validate.
+No financial-family reordering follows from this control.
+
 Capital-stack structural admission now distinguishes absent optional `accrual`
 from authored null. Format4.24/RFC0026 allocates malformed tranches to CS-01;
 the normative tranche schema closes accrual to `cash | accrued | split`, and
@@ -174,13 +183,13 @@ reserve/draw/replacement evidence and compare the unchanged 111 validation API
 projections; they do not execute the unsupported validate command. No npm/full
 JavaScript suite or new cross-platform claim is included in this worker evidence.
 
-The CLI still refuses `validate` and discovery remains parse-only. Completion
-still needs the remaining audited field/condition integration, disposition of
-the actual required-actor conflict below, and explicit unsupported-composition
-command transport; derived footing has no invented stated-versus-derived
-discrepancy code. The command/wire/refusal and nonportable
-gates below must then pass. Existing local shape findings are not guessed
-registered codes.
+The CLI still refuses `validate` and discovery remains parse-only. RFC0090
+resolves the actor diagnostic/corpus gate. Completion still needs the remaining
+audited field/condition integration, applicable family/completeness ordering and
+partitions, and explicit command/refusal transport for unsupported composition;
+derived footing has no invented stated-versus-derived discrepancy code.
+The command/wire/refusal and nonportable gates below must then pass. Existing
+local shape findings are not guessed registered codes.
 
 The source prerequisite found at the first checkpoint is now implemented:
 one mapping layer inside YAML sequence items, including the exact `modules`
@@ -825,9 +834,10 @@ may be rewritten to make the Python report green.
    orchestration API with reusable selected-source/role/period/currency/reserve/
    replacement helpers; finish missing registered structural, threshold, class
    and cross-check families internally, preserving the accepted metadata-family
-   severities. Gate: complete result fields/partitions,
+   severities. Gate: complete result fields/partitions and every applicable
+   family/completeness ordering and precedence constraint,
    every registered CC coverage entry, stage overlays, source-order/role/absence/
-   refusal controls, all 111 unchanged portable validate cases through the real
+   refusal controls, all 111 current governed portable validate cases through the real
    command, plus every applicable nonportable validation assertion and separate
    V.12 failure states. Only then add `validate`; no Verifier tier follows yet.
 3. **Close metric reproduction and the chosen calculation method.** Implement
