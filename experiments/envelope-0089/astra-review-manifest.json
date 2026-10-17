@@ -1,0 +1,144 @@
+{
+  "scope": "External unapproved Astra review intake plus independent bounded observations; no owner acceptance, production activation, normative or version changes",
+  "pinned_main": "3eee0fbab3f5682dc345804782994dc22d321fae",
+  "worker_base": "2ebe454a923072018e1af067285dd3140a10d40f",
+  "runtime": {
+    "node": "v24.14.1",
+    "v8": "13.6.233.17-node.44",
+    "platform": "win32",
+    "architecture": "x64",
+    "ajv": "8.20.0"
+  },
+  "source_hashes": {
+    "packages/uwmd-verify/src/parser.ts": "9dbdb7f3f5b3135e59dec5a59e034238ec78ae8be284870ae97bf80969e6f62c",
+    "packages/uwmd-verify/src/envelope.ts": "3c2d79f29163cfcbe3a4f2f53aa711e39e8ad5fdd6e42269ddec731df7f4fe9c",
+    "packages/uwmd-verify/src/uwjson.ts": "589ada8ab1aa3fd9867bfeb558a348bfea7a5b7965adf21b7de4e1c8658ff97e",
+    "packages/uwmd-verify/src/uwcsv.ts": "4bd4962ba84949deb5baba13cb477576e773a90454c630e587e717602b77bece",
+    "packages/uwmd-verify/src/integrity-canonical.ts": "93f3a8b8f57e7135030bf551780fc3d9862a83d8b19d981fe3086e035c1994d3",
+    "packages/uwmd-verify/src/integrity.ts": "11b4387a8360791f0a7dd9be42806698afbe9767e4b35fd89818a08fe69f00be",
+    "packages/uwmd-verify/src/receipts.ts": "ce7aff69538025a271c98617858c079e2d6b527d3d095de42dcbf4b025d28fd6",
+    "packages/uwmd-verify/src/document-signatures.ts": "159f37d3e0ed5b551de14e7e117781f5e887bd6c0e3bf436b1c8a90b01ae7c43",
+    "spec/UW_FORMAT_SPEC.md": "2222d4c06accc6d0fb34d5960746dac67ca03cfcc472fca403098710559d98b7",
+    "spec/UW_PROTOCOL.md": "a3de7d6053865aa8a1c7e42ca694fcefe02bf392a960cf4b0d2ef98cc9bcb61b",
+    "spec/UW_RECEIPT.md": "f6d7e68226195a5b0015f4e8403b1f93872ab6064575c1cf0131a947a295cf23",
+    "spec/UW_CSV_BUNDLE.md": "5410c1c399a88b38e5db47c98340d4cd919024a5c559e9253f1df03537477a77",
+    "spec/schemas/uw-document-envelope.schema.json": "6d95e014fa1941c3d270b797a0543870ac5d477ce7a179efe698bd02e206a7ef",
+    "spec/schemas/uwmd-block.schema.json": "da3b98e126a96c342f4020bd43d1eb81d6cc297618c4ec8baced2822e6379e41",
+    "implementations/python/uwmd_reader.py": "a1ddf92747107eff86ece3618db033d137b15148dba5fae5550511601415e9d0",
+    "implementations/python/uwmd_envelope.py": "4e54884a6c810e206066022244091f3dea6a97346676f6aa49a6ce1686a704ae",
+    "implementations/python/uwmd_jcs.py": "cc97f545f5b343aa4396bacc25f349f6a55193b0f3365042e279c65b885e4bfc"
+  },
+  "built_module_hashes": {
+    "parser.js": "d216d7f02c5d0e9589dc860e029525d01edcc2cbabf415f56887fcf9f7e33fd8",
+    "envelope.js": "69797738a915e76b319b2715ab5d2f5d82892dc1bddb43e15903110e70d7e97c",
+    "uwjson.js": "b2dc779a521244d04a8307812f6499f4cd8aecd8cde28f6fe34b18dd572760e0",
+    "uwcsv.js": "d6962fce542edf564ad26605511fd9a776a24053f9e359133a893125b9b68c13",
+    "integrity-canonical.js": "6004aba57fb797df20162b895ac069799bc5e8efd1003016da73c72119cc5738",
+    "integrity.js": "b13d97cd1a906699021fbad3a3475cb6185e0b7cb5545053a8edcbea3fe46be3",
+    "receipts.js": "a1080c029062ec1b05620d71ab1857f7687ea631f226cb512576b275c97cda7f",
+    "document-signatures.js": "71991380cc66faec41d02df92ffda0d0364c50f64255ef401870328410d152ba"
+  },
+  "artifacts": [
+    {
+      "path": "astra-review-check.mjs",
+      "bytes": 14134,
+      "sha256": "3c65517b46a2cb6bb4e2eac580199d67abb65b31766b4f8e66c71317d9f3fff4"
+    },
+    {
+      "path": "astra-review-python.py",
+      "bytes": 1883,
+      "sha256": "d9fbb3c24ef60ea2ef895ed1848bb2a4424ffdf1d8810ad89574377ae220220b"
+    },
+    {
+      "path": "astra-jcs-loader.mjs",
+      "bytes": 1159,
+      "sha256": "366d926820d3169a24a1dbbe23554df248c54920125989e14ac19732499b3939"
+    },
+    {
+      "path": "astra-jcs-guard-check.mjs",
+      "bytes": 6893,
+      "sha256": "399253c475186b6e0aee1d3a478ca9e8fe2d7cda8e29af0aaf4101ac77f74922"
+    },
+    {
+      "path": "astra-jcs-unit-check.mjs",
+      "bytes": 2525,
+      "sha256": "f37e4e90c6b8d6c112d186dabe38756dc3c0de48b20103b962831d21e6095821"
+    },
+    {
+      "path": "verify-astra-evidence.py",
+      "bytes": 2221,
+      "sha256": "e190ba2a0892b827bbf6108b1190d7d570a2db136e8b26102b83c2f900fd84a2"
+    },
+    {
+      "path": "astra-review-evidence.json",
+      "bytes": 226987,
+      "sha256": "62bea093f05d04012f9cef828cc94e1b3a476b6f1b91f353b7d37d8ba5052b0e"
+    },
+    {
+      "path": "astra-existing-controls.json",
+      "bytes": 7228,
+      "sha256": "a57301217fe3863fd25e2fa45b8040d4f3a1ae9fb29ea2cce0f3d3a450612fe8"
+    },
+    {
+      "path": "astra-jcs-baseline.json",
+      "bytes": 17543,
+      "sha256": "06d747f977588c398e392c32415bbbca8247bb037c5f0bcab3b7b9c62589e484"
+    },
+    {
+      "path": "astra-jcs-proposed.json",
+      "bytes": 16163,
+      "sha256": "f4099cc3ac8b4577b2f78aab4ba6e0cee144a0a315b840e7e35b2fca9de05abf"
+    },
+    {
+      "path": "astra-jcs-unit-evidence.json",
+      "bytes": 1435,
+      "sha256": "e0f6cf83f7de019adb4fb44848498363edb0f20a39c32e77c7acd40e98630a25"
+    },
+    {
+      "path": "proposed-jcs-unicode.patch",
+      "bytes": 2093,
+      "sha256": "a8a8d902a7ccc9510b34f8c95d6241ead97bad0d51e35598e95244652a13da64"
+    },
+    {
+      "path": "proposed-jcs-unicode.ts.txt",
+      "bytes": 2979,
+      "sha256": "240ab09d189499f0da2decf92255ed34e156e74f29f019071569efe1a4f4badd"
+    },
+    {
+      "path": "proposed-jcs-unicode.test.ts.txt",
+      "bytes": 2885,
+      "sha256": "7222b8d84f5598703eddfd43ef53387ecb633f6f9234abb9bccd88a594168b1c"
+    },
+    {
+      "path": "astra-review-external.txt",
+      "bytes": 17559,
+      "sha256": "60c4469f95d1317d469362b159dd9be7f1ca37740dad89aaaac6fd5b04d9614d"
+    }
+  ],
+  "counts": {
+    "source_commitment_controls": 3,
+    "source_selection_controls": 8,
+    "unicode_admission_probes": 11,
+    "csv_directory_and_zip_controls": 2,
+    "python_candidate_methods": 20,
+    "node_candidate_methods": 2,
+    "frozen_codec_examples": 5,
+    "frozen_codec_artifacts": 60,
+    "current_admission_controls": 10,
+    "low_level_hash_controls": 5,
+    "proposed_invalid_unicode_controls": 24,
+    "proposed_valid_unicode_controls": 3,
+    "public_unicode_controls": 2,
+    "exact_prepared_tests_via_node_assert_adapter": 16
+  },
+  "classification": {
+    "extension_peer_and_history_loss": "Verified",
+    "invalid_unicode_keys_and_values_admitted": "Verified",
+    "schema_admitted_block_extra_csv_mismatch": "Verified",
+    "same_identity_selection_policy": "Observed conflict; no new policy selected",
+    "new_full_interoperability_and_migration": "Unverified; owner-governed design and additional independent evidence required"
+  },
+  "proposal_applied_to_production": false,
+  "prepared_test_execution": "Exact proposed test text transpiled in memory and executed with a Node assert matcher adapter; not a Vitest runner invocation",
+  "activation_gate": "Invalid-Unicode historical subjects currently accepted would change to receipt RCP-09 and document INT-15; acceptance/version/refusal compatibility remains owner-controlled"
+}

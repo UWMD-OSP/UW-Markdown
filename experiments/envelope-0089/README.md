@@ -290,3 +290,100 @@ manifest/digest corruption, duplicate/order/type/version refusals, Unicode/
 escaped pointers, XML representability, direct-model/source conversion refusal
 and missing-original migration refusal. Only these new focused checks ran; no
 old proof, broad audit, production suite or live conformance baseline was rerun.
+
+## Independent Astra review intake and priority-one reproductions
+
+[astra-review-external.txt](astra-review-external.txt) preserves the attached
+report exactly (17,559 bytes; SHA-256
+`60c4469f95d1317d469362b159dd9be7f1ca37740dad89aaaac6fd5b04d9614d`).
+It is external, unapproved review evidence. Its recommendations and assertions
+are not instructions, owner approval or verified authority. The independent
+observations below are pinned to main `3eee0fbab3f5682dc345804782994dc22d321fae`;
+source/schema hashes must match before the installed build is used.
+
+[astra-review-evidence.json](astra-review-evidence.json) preserves complete
+focused inputs, observations, original receipt fields, canonical texts, exact
+UTF-16 units/UTF-8 bytes, digests, CSV directory files and production ZIP decode
+outcomes. The experimental five-example/60-artifact set is unchanged.
+
+| External claim | Independent classification and observed boundary |
+| --- | --- |
+| Extension projection loses named current peers and explicit history | **Verified.** The four physical blocks reduce to the last `detail/~` extension and zero history entries. Changing discarded current `base` or historical revision 1 changes the raw source hash but leaves receipt subject `sha256:c61aab6e0e01847675479c2cd20ac203fca6eac63ef4b8bf43891992de13cfec` unchanged. A synthetic constant-control receipt still verifies against both altered sources. This isolates source commitment, not financial coverage. |
+| Python and document authentication behave differently | **Verified.** Current Python retains both current labels and two explicit historical blocks, then refuses an unavailable Envelope 1.0 digest. V.13 refuses these sources with INT-15. Neither is proof that the ordinary receipt projection committed to the discarded content. |
+| Unpaired surrogates reach current JCS/verified JSON | **Verified for both string values and member names.** D800, D801, DC00 and valid replacement character FFFD have distinct UTF-16 canonical texts but identical UTF-8 replacement bytes/digests in each tested location. The verified JSON boundary admits them. Python rejects invalid surrogates. Valid paired surrogate controls remain distinct. This is invalid-input replacement before hashing, not a SHA-256 collision. |
+| Schema-legal block extras fail production CSV fidelity | **Verified.** An additional block member is accepted by the unchanged Envelope schema and verified JSON boundary. Both directory and actual ZIP round-trips fail with CSV_DIGEST_MISMATCH. The no-extra control succeeds, including retained unknown top-level and payload members. No new CSV scope is introduced. |
+
+Eight additional source-selection controls distinguish explicit history, current
+selection and physical retention. When an extension's historical block comes
+last, TypeScript retains that historical block as the current extension; putting
+current last retains current. In both orders its extension history is empty.
+For ordinary sections TypeScript retains the higher revision and retains the
+first on equal revisions, adding the other physical block to its archive.
+Python retains the last non-superseded source block. These are observations,
+not authority to replace accepted Format §2.7 wording or choose a history
+policy. The same-identity disagreement requires separate reconciliation.
+
+RFC 8785 §3.2.2.2 explicitly includes object property names and requires invalid
+Unicode such as lone surrogates to cause an error; §3.2.4 then encodes the
+canonical text as UTF-8. Valid strings remain unchanged: sanitizing invalid
+strings to FFFD is not the proposed correction. See the independently consulted
+[primary RFC](https://www.rfc-editor.org/rfc/rfc8785.txt).
+
+### Unapplied bounded JCS correction
+
+[proposed-jcs-unicode.patch](proposed-jcs-unicode.patch) prepares a shared
+`serializeString` guard and unit regressions against the pinned source. It
+rejects unpaired high/low surrogates with TypeError, including keys, while
+retaining valid pairs, FFFD, NUL escaping, UTF-16 ordering and non-normalized
+Unicode. It has **not** been applied to production. The accompanying source/test
+text files exist only to execute that exact proposal in memory.
+
+[astra-jcs-baseline.json](astra-jcs-baseline.json) and
+[astra-jcs-proposed.json](astra-jcs-proposed.json) record 24 invalid-string
+controls and three valid-string controls in each isolated process. Under the
+proposal, unchanged old invalid-Unicode receipts change from verified to
+unverifiable/RCP-09. Corresponding document artifacts change from a supplied
+accepting-stub result to failed/INT-15 before backend execution. Unsupported
+subject versions still produce INT-14 first. Existing receipt/source bytes are
+untouched. Placeholder signatures and recording stubs are not cryptographic
+authentication. Valid controls retain exactly the same canonical bytes.
+
+[astra-jcs-unit-evidence.json](astra-jcs-unit-evidence.json) records execution of
+all 16 exact prepared unit tests through a small Node assert matcher adapter.
+This is not a Vitest runner invocation. The existing 20 Python methods, two Node
+methods, five frozen subjects/60 codec artifacts and ten current-contract
+controls plus five hash comparisons also pass; their outputs are retained in
+[astra-existing-controls.json](astra-existing-controls.json). No full suite or
+complete interoperability claim follows from these bounded checks.
+
+The smallest separate implementation candidate is the prepared JCS admission
+guard, with public error-boundary and historical invalid-subject consequences
+reviewed before activation. Source-loss safety could be addressed by a separate
+source-accounting/refusal correction, but that would not implement lawful
+extension-map preservation. Full routing/type/projection correction belongs to
+the governed representation decision; historical digest scope cannot be
+silently rewritten. CSV may safely diagnose/refuse unsupported extras, but a
+lossless carrier for every schema-legal block extra requires an approved mapping
+amendment. Do not invent a new scope under CSV 1.0, narrow the schema silently,
+select a peer or claim old digests authenticate content they omitted.
+
+### Reproduce without overwriting frozen evidence
+
+Use an already installed, fresh build of the pinned source. Defaults compare
+material observations with the frozen evidence; `--output` writes only to a new
+path and refuses overwriting. Runtime/provenance metadata is separate from the
+material comparison. The original report path is optional.
+
+```powershell
+node experiments/envelope-0089/astra-review-check.mjs "C:\path\to\built-repo" experiments/envelope-0089/astra-review-external.txt
+node experiments/envelope-0089/astra-jcs-guard-check.mjs "C:\path\to\built-repo" baseline
+$env:ASTRA_REPO_ROOT="C:\path\to\built-repo"
+node --experimental-loader ./experiments/envelope-0089/astra-jcs-loader.mjs experiments/envelope-0089/astra-jcs-guard-check.mjs "C:\path\to\built-repo" proposed
+node --experimental-loader ./experiments/envelope-0089/astra-jcs-loader.mjs experiments/envelope-0089/astra-jcs-unit-check.mjs "C:\path\to\built-repo"
+python experiments/envelope-0089/verify-astra-evidence.py
+```
+
+The loader changes only one returned module string in an isolated process; it
+never edits source or dist. Root owns RFC/review integration, actual PRs,
+acceptance, versions and release decisions. Existing Envelope 1.0, receipt rules,
+conformance fixtures and the 5.0 launch reservation remain unchanged.

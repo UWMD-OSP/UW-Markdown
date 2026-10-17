@@ -1,0 +1,24 @@
+{
+  "scope": "Exact prepared unit-test text executed through Node assert adapter; NOT actual Vitest invocation or production activation",
+  "test_source_sha256": "7222b8d84f5598703eddfd43ef53387ecb633f6f9234abb9bccd88a594168b1c",
+  "proposal_source_sha256": "240ab09d189499f0da2decf92255ed34e156e74f29f019071569efe1a4f4badd",
+  "passed": 16,
+  "executed": [
+    "sorts object keys by code-unit comparison",
+    "produces identical output regardless of key insertion order",
+    "serializes booleans, null, and integers per RFC 8785",
+    "throws on non-finite numbers",
+    "escapes JSON control characters",
+    "drops undefined object values (matches JSON.stringify)",
+    "handles arrays in document order",
+    "strips nothing: integrity members serialize like any other (RFC 0081 §3)",
+    "rejects unpaired surrogate strings in values and member names: \"\\ud800\"",
+    "rejects unpaired surrogate strings in values and member names: \"\\ud801\"",
+    "rejects unpaired surrogate strings in values and member names: \"\\udbff\"",
+    "rejects unpaired surrogate strings in values and member names: \"\\udc00\"",
+    "rejects unpaired surrogate strings in values and member names: \"\\udfff\"",
+    "rejects unpaired surrogate strings in values and member names: \"x\\ud800y\"",
+    "preserves paired surrogates, replacement characters and NUL escaping",
+    "retains UTF-16 ordering and does not normalize valid Unicode"
+  ]
+}
