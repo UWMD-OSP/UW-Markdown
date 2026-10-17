@@ -13,10 +13,12 @@ OUT = HERE / "evidence"
 HASH = lambda raw: hashlib.sha256(raw).hexdigest()
 
 
-def verify():
+def historical():
     evidence = json.loads((OUT / "observations.json").read_text(encoding="utf8"))
     assert evidence["status"] == "UNAPPROVED RFC0089 BOUNDED RESEARCH / NOT CONFORMANCE OR AUTHENTICATION"
-    for item in evidence["closure"]: assert HASH((ROOT / item["path"]).read_bytes()) == item["sha256"], item["path"]
+    for item in evidence["closure"]:
+        raw = subprocess.check_output(["git", "show", evidence["source_commit"] + ":" + item["path"]], cwd=ROOT)
+        assert HASH(raw) == item["sha256"], item["path"]
     for result in evidence["commands"]:
         assert result["exit_code"] == 0
         for stream in ("stdout", "stderr"):
@@ -28,7 +30,59 @@ def verify():
         for item in case["artifacts"]:
             raw = (HERE / "fixtures" / case["case"] / item["path"]).read_bytes()
             assert len(raw) == item["bytes"] and HASH(raw) == item["sha256"]
-    print("Read-only codec-study evidence closure verified; tests were not rerun")
+    return evidence
+
+
+def verify():
+    evidence = historical()
+    correction = OUT / "bom-correction/observations.json"
+    if correction.exists():
+        fixed = json.loads(correction.read_text(encoding="utf8"))
+        assert fixed["format"] == "rfc0089-bom-byte-correction-v1"
+        assert HASH((OUT / "observations.json").read_bytes()) == fixed["historical_observations_sha256"]
+        old = {item["path"]: item["sha256"] for item in evidence["closure"]}
+        assert fixed["historical_hashes"] == old
+        assert set(fixed["current_hashes"]) == set(old)
+        changed = {path for path in old if old[path] != fixed["current_hashes"][path]}
+        prefix = "experiments/envelope-0089/codec-study/"
+        assert changed == {prefix + name for name in ("capture.py", "independent.mjs", "independent.test.mjs")}
+        current = fixed["current_hashes"]
+        for result in fixed["commands"]:
+            assert result["exit_code"] == 0
+            for stream in ("stdout", "stderr"):
+                artifact = result[stream]
+                assert Path(artifact["path"]).name == artifact["path"]
+                assert HASH((correction.parent / artifact["path"]).read_bytes()) == artifact["sha256"]
+    else:
+        current = {item["path"]: item["sha256"] for item in evidence["closure"]}
+    for path, expected in current.items(): assert HASH((ROOT / path).read_bytes()) == expected, path
+    print("Read-only historical/current codec-study closure verified; tests were not rerun")
+
+
+def capture_correction():
+    target = OUT / "bom-correction"
+    if target.exists(): raise SystemExit("Refusing to overwrite frozen BOM correction evidence")
+    evidence = historical()
+    commands = [["node", "--test", "experiments/envelope-0089/codec-study/independent.test.mjs"], ["python", "-B", "experiments/envelope-0089/codec-study/freeze.py", "--check"]]
+    streams, results = {}, []
+    for i, command in enumerate(commands):
+        result = subprocess.run(command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(f"BOM correction command {i}: exit {result.returncode}")
+        if result.returncode:
+            sys.stdout.buffer.write(result.stdout + result.stderr)
+            raise SystemExit("Focused correction failed; evidence not frozen")
+        row = {"command": command, "exit_code": result.returncode}
+        for stream in ("stdout", "stderr"):
+            name = f"command-{i}.{stream}.txt"
+            raw = getattr(result, stream)
+            streams[name] = raw; row[stream] = {"path": name, "sha256": HASH(raw)}
+        results.append(row)
+    old = {item["path"]: item["sha256"] for item in evidence["closure"]}
+    fixed = {"format": "rfc0089-bom-byte-correction-v1", "status": "UNAPPROVED RESEARCH CORRECTION; ORIGINAL OBSERVATIONS RETAINED, NOT GENERAL ZIP CONFORMANCE", "historical_observations_sha256": HASH((OUT / "observations.json").read_bytes()), "historical_source_commit": evidence["source_commit"], "historical_hashes": old, "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT).decode().strip(), "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT).decode().strip(), "current_hashes": {path: HASH((ROOT / path).read_bytes()) for path in old}, "reason": "TextDecoder stripped BOM before inventory comparison. Preserve BOM and check actual raw ZIP payload sizes/SHA before decoding; original model/ZIP/XML/CSV fixture bytes unchanged.", "runtime": {"python": platform.python_version(), "node": subprocess.check_output(["node", "--version"]).decode().strip(), "platform": platform.system()}, "commands": results, "observed": {"node_tests": 6, "fixture_artifacts": 21, "bom_mutation": "Python zipfile creates valid CRC/size archive with only document.csv BOM added; untouched inventory now refuses. Directory carrier also refuses.", "python_codec": "unchanged; no redundant Python unit rerun"}}
+    target.mkdir()
+    for name, raw in streams.items(): (target / name).write_bytes(raw)
+    (target / "observations.json").write_bytes((json.dumps(fixed, indent=2) + "\n").encode())
+    verify()
 
 
 def capture():
@@ -58,6 +112,7 @@ def capture():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(); parser.add_argument("--capture", action="store_true"); parser.add_argument("--check", action="store_true"); args = parser.parse_args()
-    if args.capture and args.check: parser.error("choose capture or check")
-    capture() if args.capture else verify()
+    parser = argparse.ArgumentParser(); group = parser.add_mutually_exclusive_group(); group.add_argument("--capture", action="store_true"); group.add_argument("--capture-correction", action="store_true"); group.add_argument("--check", action="store_true"); args = parser.parse_args()
+    if args.capture: capture()
+    elif args.capture_correction: capture_correction()
+    else: verify()
