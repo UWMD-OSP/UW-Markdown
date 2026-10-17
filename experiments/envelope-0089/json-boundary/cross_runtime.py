@@ -21,6 +21,9 @@ NATIVE = [
     (33, "trailing-comma", "Expected double-quoted property name in JSON at position 7 (line 1 column 8)", "Expected double-quoted property name in JSON at position 7"),
 ]
 PROFILES = ("v24.14.1", "v20.20.2")
+INPUTS = {32: "dd1cadb254629e9b14afb090f2976f34fdfaaf91cdaba9a57eae86b290ebd0ed",
+          33: "aa99a5ce3eb0dd8355f0bfb15376ea1d862ad75d0d278af1f8c280ca8c02c640"}
+PROVENANCE_SHA = "1d45f5e81a2d3f6093780ab795d024ab0cb77d33c1e4ff48d2fab0b7296f9de2"
 
 def sha(raw):
     return hashlib.sha256(raw).hexdigest()
@@ -37,6 +40,7 @@ def expected(profile):
     for index, vector, old, new in NATIVE:
         row = value["behavior"]["rows"][index]["node"]
         assert (row["case"], row["carrier"], row["vector"]) == ("syntax-only", "json-data", vector)
+        assert row["input_sha256"] == INPUTS[index], "exact native syntax input"
         event = row["historical"]
         assert event == dict(accepted=False, error_name="SyntaxError", error_message=old, raw_crypto_verify_calls=0)
         assert stdout.count(old.encode("utf8")) == 1
@@ -60,6 +64,7 @@ def compare(actual, stdin, stdout, stderr):
 def check_reference():
     raw = (HERE/"node20-reference/actual.json").read_bytes()
     assert sha(raw) == NODE20_SHA, "exact independently captured Node20 reference"
+    assert sha((HERE/"node20-reference/runtime-provenance.json").read_bytes()) == PROVENANCE_SHA, "official Windows runtime reference provenance"
     reference = json.loads(raw)
     assert reference["runtime"]["node"] == "v20.20.2"
     compare(reference, gzip.decompress((HERE/"evidence/node.stdin.json.gz").read_bytes()),
