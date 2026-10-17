@@ -66,6 +66,29 @@ def timestamp_shape(value):
                for y in (year-1,year,year+1) for m in range(1,13))
 
 
+def market_data_accepted(body):
+    """RFC0022 promotion includes a stated block or leaf resolution tag."""
+    meta = body.get("_meta")
+    provenance = meta.get("provenance") if isinstance(meta, dict) else None
+    overrides = body.get("_overrides")
+    return (isinstance(provenance, dict) and provenance.get("resolution") == "market_data_accepted"
+            or isinstance(overrides, list) and any(isinstance(entry, dict)
+                and entry.get("resolution") == "market_data_accepted" for entry in overrides))
+
+
+def missing_market_reference(body):
+    """Published DQ-06 presence test; object/array shape is assessed separately.
+
+    Empty objects/arrays are present JSON values, unlike null, false, zero or
+    the exact empty string. Never apply Python container truthiness here.
+    """
+    meta = body.get("_meta")
+    provenance = meta.get("provenance") if isinstance(meta, dict) else None
+    reference = provenance.get("market_data_ref") if isinstance(provenance, dict) else None
+    return (reference is None or reference is False or reference == ""
+            or finite(reference) and reference == 0)
+
+
 def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
     """LOCAL sibling, not ValidationResult findings or full schema validation.
 
@@ -106,7 +129,9 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
         for resolution, key, names in (
                 ("market_data_accepted", "market_data_ref", ("document_id", "as_of", "digest")),
                 ("inherited_assumption", "inherited_from", ("document_id", "digest", "distance"))):
-            if key not in provenance and provenance.get("resolution") != resolution:
+            required = (market_data_accepted(block.parsed.value) if key == "market_data_ref"
+                        else provenance.get("resolution") == resolution)
+            if key not in provenance and not required:
                 continue
             reference = provenance.get(key)
             valid = isinstance(reference, dict)
@@ -121,6 +146,9 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
                          and _DIGEST.fullmatch(reference["digest"]) is not None)
             if not valid:
                 malformed(key, "Conditional provenance reference must satisfy its required shape")
+            if (key == "market_data_ref" and isinstance(reference, dict)
+                    and "rationale" in reference and not isinstance(reference["rationale"], str)):
+                malformed(key + ".rationale", "A stated market-data rationale must be a string")
     return dict(shape_findings=findings)
 
 

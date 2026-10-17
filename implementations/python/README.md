@@ -111,17 +111,78 @@ exit1 without altering their registered issue arrays. Focused current controls
 pass nine real-command methods and eight optional-admission methods.
 Discovery remains parse-only and the whole-capability gates below remain open.
 
-Exact remaining gates include complete typed/conditional provenance and
-reference admission beyond the allocated families; unreviewed top-level and
-other optional payload domains; CS selector/source semantics beyond declaration
-shape and all sizing/outcome recomputation; REC source-reference admission and
-financial verification; all applicable family-order/partition/negative-wire
-controls; and composition package/part resolution. These are remaining completion
-obligations, not a claim that the bounded shape collector discovers every
-unsupported authored input.
+Exact remaining validate gates include accepted transport for unallocated
+metadata/section shape conditions; unreviewed top-level and other optional
+payload domains; CS selector/source admission beyond declaration shape; REC
+source-reference admission; all applicable family-order/partition/negative-wire
+controls; malformed/unresolved composition refusal precedence; and independent
+cross-platform command evidence. These are remaining validation obligations,
+not a claim that the bounded shape collector discovers every unsupported
+authored input. CS sizing, waterfall outcomes and the other stated-figure
+recomputations are subsequent base-Verifier obligations, rather than automatic
+blockers to the structural validate command. Composition resolution is optional:
+UW_COMPOSITION section 8 permits a conforming implementation to report an
+externalized section unresolved instead of presenting the record as complete.
 No local assessment list proves complete schema coverage. General dictionary,
 state-and-verify financial outcomes and receipt verification remain subsequent
 base-Verifier obligations. No numerical procedure or optional profile is enabled.
+
+### Base-metadata field admission checkpoint
+
+The integrated admission audit covers every declared non-integrity member in
+[Format 2.5–2.6](../../spec/UW_FORMAT_SPEC.md), the base metadata/leaf portions of
+[uwmd-block.schema.json](../../spec/schemas/uwmd-block.schema.json), and the
+conditional references of RFCs 0021/0022. This is field admission within the
+existing validate command, not another inspector or complete validation claim.
+
+The audit found two concrete false-clean paths and one missing registered
+finding. A leaf-only `market_data_accepted` declaration previously returned
+clean/exit0 without a reference, and a non-string `market_data_ref.rationale`
+also returned clean/exit0. Block-level missing-reference input already refused
+locally but omitted its published diagnostic. The existing DQ-06/error allocation
+in [RFC0022's implementation record](../../docs/rfcs/0022-market-data-documents.md)
+now applies to promoted block **or leaf** resolution lacking a usable reference;
+it is distinct from DQ-06/info for missing declared-stage sections under RFC0028.
+Empty object/array references are present under the published presence test and
+remain malformed local shape findings; null, false, zero and exact-empty strings
+are absent. No Python container truthiness is substituted. A stated optional
+rationale must be a string; omission and the exact empty string remain admitted.
+
+| Field / accepted condition | Registered finding or local assessment | Applicable evidence boundary |
+|---|---|---|
+| Whole absent `_meta`; five absent completeness fields | Existing META_MISSING / META_FIELD_MISSING_* warnings | Exact active physical block; duplicate local whole-absence is consumed only at the actual completeness index. |
+| Retired `section_id`, nonobject `_meta`, malformed provenance/lifecycle object | Existing META-01/error | All retained physical blocks; exact wrapper predicate precedes actor, with no expanded allocation. |
+| Required nonempty canonical actor | Existing META-01/error; no local duplicate | All physical blocks including history/overwritten/append/extensions; absent/null/empty/non-string refuse, whitespace remains authored. |
+| First `_meta` member and matching `_meta.section` | Uncoded local shape findings | Active physical blocks, including overwritten peers; no silent correction or history reclassification. |
+| Source/resolution vocabulary at block or leaf | Existing SRC-01/02/03 errors | Exact authored values on active physical blocks; no alias or movement between fields. |
+| Agent source requires agent_id; nullable agent_id/agent_version/notes types | Uncoded local shape findings | Agent_id may explicitly be null; no agent identity inferred. Unknown provenance members remain informative. |
+| Timestamp string/date-time | Completeness warning when absent; uncoded local shape finding for typed/date-time refusal | Existing RFC3339 calendar/offset/fraction/leap-slot controls; no event-authentication assertion. |
+| Promoted block/leaf missing market_data_ref | Existing DQ-06/error plus retained local required-reference evidence | Active physical blocks; independent of quality shape, role eligibility or canonical financial selection. |
+| Authored market_data_ref: document_id/as_of/digest, optional rationale; inherited_from: document_id/digest/distance | Uncoded local shape findings | References checked whenever authored; conditional absence also checked for market promotion / block inherited_assumption. Lowercase SHA256 digest; positive JSON-integer distance. Empty text and unknown reference members retain schema-admitted meaning; no lookup or provenance authentication. |
+| Required quality confidence/review flag; optional flags/partial/provisional; forbidden field_overrides | Existing completeness/info/DQ findings preserved; unallocated type/shape findings remain local | Exact enums/booleans/string arrays, with confidence and review kept orthogonal. Missing optional members are not fabricated. |
+| Lifecycle positive integer revision / boolean superseded | Uncoded local shape findings where unallocated | JSON integer semantics distinguish bool. This checks field shape, not a newly invented chain grouping, revision-history policy or integrity verdict. |
+| Leaf path/confidence/source/resolution/reason/note | Existing SRC vocabulary errors; unallocated leaf shapes local | Every active authored entry; path string/type evidence only, no guessed target existence or new path grammar. Unknown entry members remain retained. |
+| `_notes`, unknown payload and optional integrity/signature content | Informative / unchecked at this base boundary | No ordinary validation of `_notes`, no INT/signature/profile claim or metadata rewrite. |
+
+Ten new focused methods inventory the entire declared field set and test
+required/type/nullable/conditional controls, both reference objects, exact
+presence semantics, schema-admitted empty/zero values, all leaf members,
+registered precedence, detached evidence, active physical/history distinctions
+and four real CLI subprocess inputs. A retained frozen promoted-source control
+preserves its existing unrelated metadata refusals and tests a model-only
+rationale mutation; it does not claim a promotion or full validation case pass.
+Source bytes and current parsed models
+remain unchanged. They supplement existing source/actor/timestamp controls;
+field inventory alone is not a schema conformance claim.
+
+Required conditions with no allocated ordinary diagnostic still receive the
+explicit local refusal described above. A registered error elsewhere in a block
+does not consume an unrelated local requirement: for example META-01 on bad
+provenance does not cover an invalid quality review flag. Complete negative-wire
+acceptance must resolve that transport boundary without broad META-01 expansion,
+new suffixes or silently discarded findings. The all111 portable execution at
+the prior checkpoint remains distinct from these additional admission controls;
+new-head portable/nonportable/cross-platform proof is not implied by inspection.
 
 ### Prior checkpoint — accepted RFC0090 integration and CS admission
 
@@ -664,7 +725,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | Family | Implemented scope | Minimum remaining validation obligation |
 |---|---|---|
 | LOC / CUR / descriptive identity | Locale/currency vocabulary, builtin/custom class syntax, scenario and BTR agreement | Complete frontmatter presence/type/source applicability, preserving unknown fields; descriptive values never select models. |
-| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Accepted RFC0090 actor META-01 plus wrapper/nested-shape and SRC/ROLE findings are registered unchanged; actor findings are not duplicated locally. Other unallocated typed/required metadata and conditional references remain local, while the five completeness warnings stay exact. The original actor/corpus conflict is now governed history, not a remaining gate. |
+| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Accepted RFC0090 actor META-01 plus wrapper/nested-shape and SRC/ROLE findings are registered unchanged; actor findings are not duplicated locally. Every declared base metadata/leaf field is now audited; promoted block/leaf missing-reference DQ-06/error is integrated separately from stage-gap info. Unallocated typed/conditional shape findings remain local, while the five completeness warnings stay exact. Complete negative-wire transport for these conditions remains a gate. The original actor/corpus conflict is now governed history, not a remaining gate. |
 | DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | All seven presence lists, overlays and role-selected scope readiness now share tested inputs; scope completeness treats absent/null/exact empty strings as missing without trimming, coercion or claiming field-type validity. Field-specific institution matching and equal-specificity overrides have controls; finish exact gap/override consumption and remaining externalized-field applicability without executing substitution/default actions. |
 | MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Authored optional accrual now enforces the closed enum, including explicit-null refusal under existing CS-01, for top-level and component stacks. Complete remaining closed-field shape/applicability and stated sizing declaration guards; financial stack sizing reproduction stays separate. |
 | LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Fixed LU model/assumption/row/summary field shape is now integrated as local section_assessment where no LU diagnostic is allocated; existing LU-01–04 remain unchanged. Diagnostic/admission allocation for those schema conditions is still a complete-command gate. Period/shape inspection is not evaluation or stated-aggregate verification. |
@@ -674,8 +735,8 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | WF | Tier/split/hurdle/clawback structure and current exact cash identity; optional clawback/outcome/schedule schema-fragment admission | Complete remaining top-level/source applicability; actual outcomes, IRR hurdles and clawback arithmetic remain separate stated-figure verification. |
 | RSV / BED | Existing reserve structure and student bed/date rules | Complete per-source/class/optional-member application and malformed-input evidence; RSV balance verification remains separate and unchanged. |
 | CLS / class rules / MOD | Fixed fields and accepted class-specific definitions/rules; all 61 unchanged builtin validation code projections | Exhaustive role/type/conditional/input applicability, retaining separate class checks versus generic 171-metric reproduction and raw size lookup. |
-| External composition | Local unresolved/directive assessment, exact presence and dependent-field gating | No part resolver is implemented. A complete validate command must transport unsupported/unresolved composition explicitly, never present this private partial assessment as a complete normative report. |
-| General command and result | Real unadvertised command, exact result partitions, seven stage keys, fifteen coverage keys, separate V.12 and explicit unsupported-input refusal | Execute all111 unchanged actual portable cases and complete the specific field/domain, ordering and nonportable gates above. Parse-only discovery remains unchanged until whole-capability proof passes. |
+| External composition | Local unresolved/directive assessment, exact presence and dependent-field gating | UW_COMPOSITION section 8 permits unresolved reporting without a part resolver. Prove malformed-directive precedence, accepted COMP-UNRESOLVED transport and no complete-record presentation; resolver implementation itself is not a required validate gate. |
+| General command and result | Real unadvertised command, exact result partitions, seven stage keys, fifteen coverage keys, separate V.12 and explicit unsupported-input refusal | All111 unchanged actual portable cases passed at the prior source checkpoint. Preserve that proof on each new production checkpoint and close the specific admission/refusal, ordering and nonportable gates above, with independent three-OS evidence before promotion. Parse-only discovery remains unchanged until whole-capability proof passes. |
 
 This is a completion backlog inside the single integrated validator. It does
 not authorize more isolated inspector commands. General dictionary comparison,
@@ -830,7 +891,7 @@ recomputation attest different things and must not substitute for one another.
 
 ### Actual corpus obligations and evidence
 
-Counts below were read from the existing
+Current accepted-main `afcc6158` counts below were read from the existing
 [ownership index](../../conformance/corpus-index.json) and generated
 [portable cases](../../conformance/runner/cases), not inferred from suite names
 or older README totals:
@@ -838,7 +899,7 @@ or older README totals:
 | Owner | Indexed reference checks | Portable cases |
 |---|---:|---:|
 | Reader | 26 | 17 |
-| Verifier | 688 | 281 |
+| Verifier | 694 | 281 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 135 | 0 |
@@ -846,7 +907,16 @@ or older README totals:
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products, reported separately | 106 | 37 |
-| Total | 1,089 | 350 |
+| Total | 1,095 | 350 |
+
+A separate integrator audit at prior checkpoint `0a2cbd9d` executed 99 native
+structural comparison projections through the real Python CLI: 21 tax, 21 lease,
+18 capex, 16 recovery and 23 malformed-document comparisons. All projections
+matched, but only 90 returned normal ValidationResult responses; nine returned
+explicit partial local refusals. This is **not** 99 complete case passes or all
+nonportable validation coverage. The nine refused inputs retain unsupported
+REC conditional-shape or metadata evidence rather than silently returning clean.
+Report SHA-256: `80b09523e92f5e379e064241f2c0ccbd9d9e8357f6ff552b605543f8b5e75287`.
 
 The 281 portable Verifier cases are **111 validate** (17 documents, 71 hedge,
 23 scenario), **96 calc**, **28 reserve accounts** and **46 reserve draws**.
@@ -931,7 +1001,7 @@ may be rewritten to make the Python report green.
    read-only receipt contract and its 12 indexed verification assertions,
    including recomputation, reference-input and identity/precedence controls;
    do not require issuance or optional signing success. Gate: audit all
-   26 Reader + 688 Verifier indexed assertions against their actual required
+   26 Reader + 694 Verifier indexed assertions against their actual required
    capabilities and accepted contexts; pass every applicable base assertion,
    with optional requirements separately identified. Run the real 298-case portable
    Reader+Verifier selection without capability skips, explicit exclusions/
