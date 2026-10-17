@@ -397,3 +397,145 @@ receipt precedence, source/signature subjects and pre-release clean-break policy
 explicit. It introduces no production import, new runtime dependency, normative
 expected answer, corpus rebaseline, compatibility layer, version or release work.
 The 5.0 launch timing and RFC0085 provenance remain owner-controlled and separate.
+
+
+## Astra review intake and independent verification
+
+External review: “Review RFC 0088 reproducibility”, reviewed PR #357 head
+`e33a2a6dcc5b0c87107f51c4615083acc33e1942`. Retrieved read-only from the existing
+review chat on 2026-10-16 (America/Phoenix). Its complete final text has UTF-8
+SHA-256 `decd80e44c4efc0b95e202f8b277fb9147487ff71dbd87d561b30eb153df2134`.
+It is external evidence, not owner approval or automatically verified authority.
+The owner provisionally prefers A for further research; B remains an alternative
+for a correctly rounded primitive objective; C has not justified its added graph.
+No RFC status, financial convention, expectation, receipt rule, version or release
+state changes in this follow-up.
+
+Current code/specification/corpus reconciliation is main
+`3eee0fbab3f5682dc345804782994dc22d321fae` (#372 merged, exact-main CI
+38989037136 successful). The review's old runtime/source evidence is historical
+where explicitly labeled. The earlier complete six-row research artifacts were
+already independently checked; they are not re-run as a new historical audit.
+
+### Independent classification
+
+| Astra finding | Classification | Fresh evidence and exact limit |
+|---|---|---|
+| Recomputing an original success can return failed/RCP-03 before engine attribution | **Verified** | The unchanged public receipt API returns immediately when computeReceiptResults throws. Fourteen synthetic receipt controls distinguish finite disagreement, forced refusal, subject/held-input corruption, absent references, signatures and late results_digest. The forced pack swap is control-flow evidence, not itself an A-induced transition. |
+| This precedes signature checks | **Partially verified** | A supplied backend is not executed on refusal, even if it would reject. Missing-backend RCP-08 is checked earlier. Receipt §5.1 invalid-signature precedence and §5.3 engine-disagreement language need joint reconciliation with the exception path. Behavior is preserved. |
+| A new engine version plus existing RCP-07 covers every value/refusal change | **Contradicted** | Finite successful disagreement reaches RCP-07; recomputation exception reaches failed/RCP-03 first. Subject/input checks are early, while results_digest corruption is checked only after successful agreement. |
+| irr(0,0) returns -0.999 | **Verified** | Both endpoint NPVs equal zero; lower endpoint is returned before bisection. This is the current procedure, not evidence of a unique economic root. |
+| irr(1e-200,1e-200) returns 4.5005 | **Verified** | Endpoint NPVs are positive, but their product underflows to positive zero. The bracket test is bypassed and the absolute 1e-9 value tolerance accepts the first midpoint. No solver repair or flow normalization is authorized. |
+| The exceptional NPV can return finite zero while public pow refuses | **Verified, with API qualification** | The denominator overflows to Infinity, division yields zero and the financial result is finite. A source-bound rate reaches evaluateCalc; scientific notation is not an admitted expression literal. Raw Infinity, primitive guard and final quantization are separate layers. |
+| Final rounding cannot repair unspecified upstream arithmetic | **Verified** | Existing frozen money/rate/12-decimal controls remain unchanged. Primitive nearest/even and the current decimal-string half-away quantizer are different procedures. No tolerance, source-precision or double-rounding change is made. |
+| Complete A/B execution had not been demonstrated by old green research CI | **Verified historically; current A evidence is bounded** | The earlier matrix tested the implemented integer/cash labs. This follow-up adds a complete isolated A raw closure and separate native/platform measurements. It does not execute B, prove universal accuracy, implement a full independent Python kernel or demonstrate spreadsheet parity. |
+| A is nearly rounded rather than universally correctly rounded | **Verified bounded counterexamples** | Exact-rational certificates establish 178 mathematical answers independently. A agrees on 173 words and retains five one-ULP discrepancies, including exp(1) and selected powers. This disproves a universal correct-rounding claim, not establishes a global one-ULP bound. |
+| Dictionary-only scope is insufficient | **Verified inventory; partially verified impact** | All production roots below are inventoried. The full indexed measurement passes 1,089 baseline/candidate assertions with unchanged protected bytes, but explicit capture/unexercised-site gaps prevent complete compatibility claims. |
+| Evidence was partly deferred until after acceptance | **Verified and corrected in the draft** | RFC §7 now requires isolated independent implementations, financial/receipt impact and domain/resource evidence before owner acceptance; production integration and release remain separate gates. |
+| Selecting public refusal policy, solver stability repairs, receipt precedence and activation | **Needs owner decision** | No current behavior is silently changed. The evidence identifies concrete alternatives and consequences; A preference is research direction only. |
+
+The [fresh current-behavior harness](https://github.com/UWMD-OSP/UW-Markdown/blob/6260e9fefd48f96b4b22a9e9396cfc34d43b609f/experiments/numerical-0088/astra-review/reproduce.mjs)
+and adjacent observations freeze two IRR branch traces, nine exceptional-value
+controls, fourteen receipt precedence controls and signed-payload identity
+consequences. They invoke freshly built, unchanged production APIs. The signature
+backend is a stub for call-order observation, never authentication evidence. A
+new engine marker changes the receipt signing payload even when subject and
+results digests agree; original artifacts remain untouched.
+
+### Production numerical consumer inventory
+
+| Owning code / functions | Numerical dependency and assurance boundary |
+|---|---|
+| verify/calc/builtins.ts: pmt, npv, pow, log, exp, fv, pv, nper, irr | Periodic amount/divisor powers, annuity closed forms, log quotient and existing bracket/bisection. Public type/null/domain/result guards remain distinct from raw IEEE helpers. |
+| verify/cash-flow-series.ts: xnpvOf, xirrOf and their public verifiers | Ordered amount times negative power; exact day-count construction and final division into a binary64 exponent; base Verifier obligations. Integral-looking year fractions do not permit changing multiplication to division. |
+| verify/capital-stack.ts: trancheAnnualDebtService, verifyCapitalStack | Amortization power and derived ADS/structural assertions. Do not replace a prescribed closed form with a schedule solver. |
+| verify/waterfall.ts: hurdleBalance, computeWaterfall, verifyWaterfall | Discount/forward hurdle powers, compounded preference balances, party XIRR and clawback consequences. Base Verifier obligations, not merely optional authoring. |
+| verify/calc/prng.ts and stochastic.ts | Normal-tail logarithm, sqrt-based triangular/normal sampling, evaluator per draw and sample-standard-deviation sqrt. Preserve PCG64 and existing VIII.8.3 normal-tail tolerance. |
+| verify/calc/sensitivity.ts, module rules/calculations, metric verification and receipts | Inherit evaluator behavior, selections, public results/refusals and quantization. Dynamic module formulas require complete coverage; the current 171 builtin definitions alone do not exercise all consumers. |
+| core/debt.ts: pmt, deriveDebt | Separate starter amortization and monthly-first rounding. It is not normative generation required of a verifier, but remains a reference-tool compatibility obligation. |
+| verify/calc/quantize.ts, stated-precision and dated/capital-stack checks | Existing decimal-string shift, unit/round_to defaults, source-token precision, signed-zero handling and final-only comparison. |
+| verify/waterfall.ts: roundTo; validator recovery checks | Separate existing scaled power/Math.round rules. Inventory and measure them; do not silently fold a quantizer correction into primitive pinning. |
+| core derived/dcf/rentroll/sourcesuses and UI/report formatting | Additional starter rounding and display conventions; distinguish arithmetic/reporting from presentation. Excel emits formulas and needs actual scoped recalculation evidence. |
+
+The static inventory includes all package numerical sites, with BigInt-only
+powers excluded from floating replacement. The isolated measurement replaces
+only floating powers and Math.log/Math.exp in memory; sqrt and all original
+financial operation associations, branches, tolerances and quantizer algorithms
+remain unchanged. All loaded dist and protected source/spec/fixture hashes are
+retained. No source, build product or corpus expectation is edited.
+
+### Exact candidate impact and receipt compatibility evidence
+
+The [indexed impact artifact](https://github.com/UWMD-OSP/UW-Markdown/blob/6260e9fefd48f96b4b22a9e9396cfc34d43b609f/experiments/numerical-0088/impact/README.md)
+contains all 1,089 exact case keys/owners, input and expectation identities,
+per-case observation/status differences, declared coverage gaps and full frozen
+compressed streams. Both modes pass 1,089 assertions with zero failures/updates.
+The 14,145 primitive observations align by site and exact inputs; 671 raw words
+change (periodic IRR 1, dated IRR 668, dated NPV 2). No captured reported-number or
+state/refusal change is observed. Six retained source-string differences are
+strictly timestamps from starter editing, not numeric procedure changes.
+
+These results do not prove all outputs unchanged: 108 cases have no visible
+actual binding, other captures can omit unasserted values, and only 10 of 20
+eligible floating numerical sites are exercised. Sixteen receipt cases capture
+receipt fields with unchanged observed subject/results digests and results; two
+refusal cases issue no receipt. No signature-validity claim follows from that.
+Targeted financial/receipt probes separately address previously unexercised
+builtins and the original stress counterexamples; they are not new normative
+fixtures or a corpus rebaseline.
+
+The [complete raw candidate](https://github.com/UWMD-OSP/UW-Markdown/blob/6260e9fefd48f96b4b22a9e9396cfc34d43b609f/experiments/numerical-0088/pinned-fdlibm/README.md)
+retains all eight exact source files/notices, rationally derived constant words,
+explicit per-site word semantics, all seven executable bodies, wrapper/domain
+separation and a conservative 76-loop-body scalar bound. The
+[native corroboration](https://github.com/UWMD-OSP/UW-Markdown/blob/6260e9fefd48f96b4b22a9e9396cfc34d43b609f/experiments/numerical-0088/native-reference/README.md)
+uses 4,204 frozen operands, strict compiler/environment checks and explicit
+historical-C adapters. Compiler agreement is not a mathematical accuracy oracle.
+The existing research workflow retains exact Node/OS/architecture/compiler,
+input/source hashes and complete outputs. Read exact final run/artifact evidence
+on #357 before claiming completed native/cross-runtime execution.
+
+### Remaining pre-acceptance gates
+
+- Independently review every constant, word site, raw special case, wrapper and
+  structural resource bound; complete full independent implementation coverage
+  and justify the chosen accuracy objective beyond a finite sample.
+- Extend complete financial trajectories and actual-value/refusal captures to
+  unexercised consumers, dynamic modules and unasserted outputs. Do not turn a
+  green assertion or absent delta into universal compatibility evidence.
+- Resolve success-to-refusal attribution and authentication/error precedence,
+  source/module consequences, receipt wire/identity needs and clean-break
+  activation. Retain old bytes, subjects and signatures; separately authorize
+  any new issuance rather than rehashing history.
+- Preserve current IRR weaknesses unless a separate financial decision changes
+  sign tests, scaling, branches, bracket, tolerances or stopping. Settle exact
+  public domains/refusal timing without blanket internal finite guards.
+- Obtain browser and actual spreadsheet recalculation evidence for every
+  advertised scope. Existing Stochastic tolerance remains unchanged.
+- Owner acceptance of the complete evidenced revision, then separately controlled
+  production integration/activation and independent version/release decisions.
+  No schema/corpus change, release preparation or 5.0 allocation is authorized.
+
+
+### Genuine candidate receipt transitions beyond the indexed corpus
+
+The [targeted frozen study](https://github.com/UWMD-OSP/UW-Markdown/blob/dcf8eab50d7f0fd6829b02cf1f3138c0089a7fd7/experiments/numerical-0088/impact/README.md#focused-financial-and-historical-receipt-study)
+executes 48 public financial controls, five starter debt cases and 24 historical
+receipt checks. All ten numeric sites unexercised by the indexed corpus are now
+reached across these two complementary studies. Complete branch/domain and
+actual-value coverage is still not claimed.
+
+The finite power case changes reported twelve-decimal output from
+284.851576559724 to 284.851576559723; default six-place output agrees. Original
+endpoint IRR changes from 10 to CALC-IRR-DIVERGE. Candidate issuance refuses
+RCP_COMPUTATION_FAILED. Reverification of its unchanged original receipt returns
+failed/RCP-03 for either engine marker and never invokes supplied accepting or
+rejecting signature stubs. Missing backend yields RCP-08 earlier. The finite power
+disagreement reaches RCP-07 for different engines with an accepting stub, while
+an invoked rejecting stub yields RCP-01. Full source, old/new receipt fields,
+subjects/results digests, signing payloads and call evidence are frozen.
+
+The first targeted receipt attempt correctly refused a fixture with no UWX fence;
+its failed streams remain explicitly separate. The corrected valid-source study,
+not that attempt, supplies the 24 historical receipt controls. No cryptographic
+validity claim is inferred from stubs, and no historical artifact is changed.

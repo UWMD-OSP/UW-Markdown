@@ -562,3 +562,32 @@ head/tree, frozen hashes and command logs across six CI rows, without dependency
 installation or a workspace build. Its local success proves17Python methods,
 four TAP methods and24 classification/trace records only. The remote matrix is
 pending this checkpoint; do not infer a completed platform or whole-kernel claim.
+
+
+### Astra review and complete isolated A research
+
+RFC 0088's provisional research direction is pinned fdlibm. A complete isolated
+raw JavaScript candidate now covers all seven bodies, including fractional
+powers, with exact constant words, explicit word sites, current-policy wrapper
+separation and a conservative 76-loop-body scalar bound. It imports no production
+code and has no host-transcendental fallback. Independent mathematical controls
+retain five one-ULP discrepancies among 178 answers: procedure agreement is
+separate from correct rounding. Native and cross-runtime claims require their
+exact CI/artifact evidence, not inference from source provenance.
+
+The existing Issue #356 review now classifies the external Astra findings against
+current source/specifications and fresh probes. Both IRR edge cases and NPV's
+internal Infinity versus public refusal distinction are reproduced without fixes.
+The full 1,089-case indexed baseline/candidate measurement passes all assertions,
+with 671 raw primitive-word changes and explicit actual-capture limits. Targeted
+48-case public financial, five-case starter debt and 24-case historical receipt
+controls fill the ten unexercised static numeric sites, without rebaselining.
+
+A real original IRR endpoint changes from 10 to CALC-IRR-DIVERGE under the candidate.
+Old receipt verification returns failed/RCP-03 before different-engine attribution
+or execution of a supplied signature backend; absent backend RCP-08 is earlier.
+The finite power boundary instead reaches RCP-07 after signature verification.
+Engine version changes alone do not resolve every transition. Receipt state and
+authentication/error precedence remain owner-controlled; current behavior stays.
+Research precedes RFC acceptance; production integration and release are separate.
+See the existing RFC/review and experiments/numerical-0088 impact artifacts.

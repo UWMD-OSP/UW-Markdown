@@ -118,7 +118,7 @@ Evaluate dependency footprint, licensing, browser/Python availability, special
 cases, decimal-to-binary conversion and subnormals before selecting a kernel.
 `exp(y*log(x))` is not equivalent to correctly rounded pow without its own ordered
 definition. Merely naming libm or a runtime version is insufficient for a
-language-neutral standard. This draft selects no library.
+language-neutral standard. The owner provisionally prefers A for further isolated evaluation; no procedure is accepted for production.
 
 Reject a blanket promise that equality after quantization is automatic. Adjacent
 values can straddle an admitted tie. Permitting two quantized answers requires
@@ -246,9 +246,9 @@ limits, cost/license feasibility, old frozen counterexamples and acceptance test
 
 | Candidate | Exact procedure and integer/negative convention | Status and consequence |
 |---|---|---|
-| **A — recommended proposal direction** | The exact eight-file Netlib closure, including `e_pow.c` SHA-256 `763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122`, with explicit binary64 constants, basic-operation boundaries and defined word-site mapping. Call `__ieee754_pow` for integral and fractional exponents, including its pinned +1/-1/+2/+0.5 fast paths, split log2/general exponential graph, huge-exponent branches and scaling; log/exp use their separate pinned bodies. No running-product or universal reciprocal substitution. | Full TS/Python kernel unimplemented. Source closure and bit adapters exist. Fixed branches plus conditionally bounded software sqrt support a lean bounded implementation; accuracy/corpus/domain/port evidence is incomplete. Guarantee is exact procedure output, **not** universal mathematical correct rounding. |
+| **A — recommended proposal direction** | The exact eight-file Netlib closure, including `e_pow.c` SHA-256 `763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122`, with explicit binary64 constants, basic-operation boundaries and defined word-site mapping. Call `__ieee754_pow` for integral and fractional exponents, including its pinned +1/-1/+2/+0.5 fast paths, split log2/general exponential graph, huge-exponent branches and scaling; log/exp use their separate pinned bodies. No running-product or universal reciprocal substitution. | The full isolated JavaScript raw closure now exists, including fractional powers, exact constants and software helpers. Independent mathematical/native/corpus evidence is separately scoped below; a full independent Python kernel and whole-domain accuracy/consumer proof remain incomplete. Guarantee is exact procedure output, **not** universal mathematical correct rounding. |
 | **B — if primitive correct rounding is required** | MPFR **4.2.2** / GMP **6.3.0**, exact binary64-word loading, destination precision 53, exponent range emin=-1073/emax=1024 set before operations, named `mpfr_pow`/`mpfr_log`/`mpfr_exp` with MPFR_RNDN, **actual operation ternary** passed to `mpfr_subnormalize`, then exact word encoding. No integer-width cast, powr, host libm or exp(y*log(x)) substitute. | Correct-rounding API contract, not a verified implementation: unpatched4.2.2 and the reduced-range adapter are unexecuted, with upstream BUGS and exact patch applicability unresolved. Actual range/subnormal/counterexample tests are required; precision 53 alone cannot establish this guarantee. Internal Ziv precision growth/allocation has no demonstrated universal hostile-input bound. Native/Wasm packaging, license and independent adapter tests remain required. |
-| **C — explicit hybrid, not recommended without measured benefit** | For every exactly integral finite binary64 y, decode its full exact integer magnitude, form f=B(1/x) first for negative y, then binary squaring with ordered accumulator multiplies and no unused final square; immediately refuse any nonfinite basic result. Fractional powers and log/exp use exactly A. | Integer part independently executable in this lab; A fractional/log/exp still unimplemented and reported missing. At most1024 loop iterations /1077 basic operations, without a 256 cap or safe-integer restriction. Distinct rounding/refusal semantics; no measured bundle or speed saving justifies a separate contract. |
+| **C — explicit hybrid, not recommended without measured benefit** | For every exactly integral finite binary64 y, decode its full exact integer magnitude, form f=B(1/x) first for negative y, then binary squaring with ordered accumulator multiplies and no unused final square; immediately refuse any nonfinite basic result. Fractional powers and log/exp use exactly A. | Only C's integer branch is wired in its lab; the separate new A prototype does not establish a complete tested hybrid. At most1024 loop iterations /1077 basic operations, without a 256 cap or safe-integer restriction. Distinct rounding/refusal semantics; no measured bundle or speed saving justifies a separate contract. |
 
 Recommend **A across all exponent classes**, rather than adding C merely because
 its integer implementation is shorter. A's general fractional power already
@@ -447,29 +447,41 @@ subjects and existing artifacts are not rewritten. General fractional kernels,
 complete solver trajectories, corpus impact and actual spreadsheet evidence
 remain distinct acceptance work.
 
-### 7. Acceptance checkpoints versus implementation gates
+### 7. Research, acceptance and production are separate gates
 
-1. **Owner direction checkpoint:** choose D1–D8 or request an explicit alternative.
-   This authorizes completing a selected proposal, not implementation or changing
-   RFC status. The recommendation is exact ordered results, a feasibility comparison of
-   pinned range-safe procedures against correctly-rounded primitives, preserved
-   financial graphs and receipt wire/signature subjects. No primitive or accuracy
-   contract is selected before the evidence/domain decisions described above.
-2. **RFC acceptance checkpoint:** return one complete primitive/domain/error and
-   resource contract, selected kernel or implementable correctly-rounded strategy,
-   admitted annuity domains, special-case table, exact financial graphs, numeric
-   boundary/quantization rules, affected-contract manifest and receipt migration.
-   No “TBD kernel” or host-dependent escape hatch may remain in the normative
-   guarantee. The owner explicitly accepts that complete revision under governance.
-3. **Implementation and evidence gate:** only after acceptance, implement the
-   chosen contract in independent TS/Python paths; add approved conformance cases;
-   measure every changed result/refusal over existing corpus and supported
-   consumers; run package/receipt/Excel gates. Merging this evidence-only draft
-   neither opens this gate nor changes any conformance expectation.
-4. **Claim/publication gate:** require the actual independent-platform evidence
-   for every advertised scope, owner-approved compatibility/version activation
-   and release authorization. Documentation can disclose current limitations in
-   the meantime. No 5.0 preparation, acceptance or publication follows implicitly.
+1. **Provisional direction:** the owner prefers A for further isolated evaluation.
+   B remains an alternative if correctly rounded primitives prove necessary; C
+   has not demonstrated sufficient benefit. This is not RFC acceptance or
+   authorization for production integration or activation.
+2. **Independent pre-acceptance research:** complete an isolated executable
+   procedure, exact constants/word maps, domains, exception/public-refusal rules
+   and deterministic resource analysis. Independently exercise it against
+   pinned reference implementations and mathematical certificates over declared
+   domains. Retain complete inputs, words, failures and exact source/runtime/
+   platform/compiler identity. Measure financial trajectories, existing-corpus
+   results AND refusals, reporting boundaries and receipt compatibility BEFORE
+   the owner evaluates acceptance. Do not activate or rebaseline to do research.
+3. **Owner acceptance:** return a complete evidenced revision with no TBD kernel,
+   host-math escape, unspecified word site, hidden finite-intermediate refusal
+   or machine-dependent numerical timeout. Resolve the receipt exception and
+   authentication precedence conflict, retained solver edge cases, historical
+   identity consequences and the exact compatibility/version scope. Green CI
+   and a complete prototype do not accept this RFC.
+4. **Separately controlled production integration:** only after acceptance and
+   authorization, integrate the contract into reference packages and independent
+   implementations, synchronize approved specs/schemas/conformance changes and
+   run exact-head package, receipt and Excel gates. Research implementations
+   required by gate 2 cannot be deferred until this gate. Existing arithmetic,
+   expectations and receipt behavior remain unchanged now.
+5. **Claims and release:** actual independent platform/browser and spreadsheet
+   evidence must support every advertised scope. Unmeasured exports/profiles
+   stay explicitly limited. Obtain separate activation/version/release approval;
+   no public 5.0 preparation follows implicitly.
+
+The existing Stochastic normal-tail tolerance in VIII.8.3 remains unchanged.
+A pinned logarithm can improve an implementation without changing that optional
+profile's normative guarantee or expectations. Primitive RN-even, final VIII.5
+quantization, public refusals and verification verdicts are distinct boundaries.
 
 Frozen evidence must identify exact input bytes and their hash, binary64 operand
 and expected-result encodings (including signed zero/subnormal cases), declared
@@ -481,6 +493,56 @@ bounds; the current 100-digit diagnostic is not a universal correct-rounding
 proof. Keep raw primitive vectors, composed financial graphs, final quantization,
 public assertions and receipt digests as separate layers so one agreeing digest
 does not hide an untested branch or refusal.
+
+### 8. Astra review and complete isolated A research
+
+The owner's provisional preference is A for evaluation, not acceptance. The
+external Astra report is independently classified in the existing
+[Issue #356 review](../reviews/2026-10-15-numerical-determinism-356.md#astra-review-intake-and-independent-verification).
+It is not automatically authoritative. That intake records the report hash,
+current production/spec/fixture reconciliation, receipt precedence qualification,
+IRR underflow/tolerance mechanisms, NPV internal exceptional values, complete
+consumer inventory and remaining evidence limits.
+
+The [isolated A candidate](https://github.com/UWMD-OSP/UW-Markdown/blob/6260e9fefd48f96b4b22a9e9396cfc34d43b609f/experiments/numerical-0088/pinned-fdlibm/README.md)
+implements every raw integer/fractional power, log/exp and helper path, exact
+constant words, explicit C word-site interpretations, raw IEEE exceptional
+values, separate current-policy wrappers and deterministic scalar resources.
+It has no host-transcendental fallback. Independent mathematical certificates
+retain five one-ULP discrepancies among 178 controls; neither a universal
+correct-rounding claim nor a global one-ULP bound follows. Native/compiler and
+cross-runtime results are separately recorded by exact run/artifact identity.
+A complete independent Python kernel and whole-domain accuracy remain gates.
+
+The exact existing-corpus manifest retains all 1,089 case identities and protected
+input hashes. Both measured modes pass all assertions, with 671 aligned primitive
+word differences and no captured reported-number/refusal differences. This is
+not full compatibility proof: 108 cases lack visible actual bindings and only
+10 of 20 eligible numeric sites are exercised. Targeted public financial/receipt
+controls and explicit unknown cells remain separate from unchanged expectations.
+
+Fresh current-behavior probes reproduce irr(0,0)=-0.999 through lower-endpoint
+precedence, and irr of two positive 1e-200 flows=4.5005 through sign-product
+underflow followed by absolute-value tolerance. The NPV overflow example returns
+finite zero internally, while public pow refuses its nonfinite result. Use a
+source-bound rate; scientific-notation literals are outside the calc grammar.
+No solver, quantizer, null/type rule or internal refusal policy is silently fixed.
+
+The targeted study reaches the ten static numerical sites absent from that
+corpus trace: 48 public financial cases, five starter debt cases and 24 historical
+receipt checks. It demonstrates actual A-induced changes: the twelve-decimal
+power result changes while its default-six result agrees; original endpoint IRR
+10 becomes CALC-IRR-DIVERGE. The untouched old IRR receipt reaches failed/RCP-03
+even for a different engine marker, without supplied-backend execution. Finite
+power disagreement instead reaches RCP-07. These are measured compatibility
+consequences, not a synthetic pack-swap assumption or approved new receipt rules.
+
+Current receipt recomputation refusal returns failed/RCP-03 before engine
+attribution and execution of a supplied signature backend. Missing-backend
+RCP-08 is earlier, and results_digest corruption is later than successful value
+agreement. RCP-07 does not cover every success-to-refusal transition. The joint
+compatibility/precedence decision must be resolved before acceptance; production
+behavior and historical subjects/signatures remain unchanged now.
 
 ## Compatibility analysis
 
@@ -496,8 +558,7 @@ does not hide an untested branch or refusal.
   public-boundary result changes that digest even without unquantized signing.
   Same engine/version under another runtime can currently disagree and be blamed
   as failure. An eventual kernel change requires a new verifier engine identity
-  and exact dependent pins; existing Receipt5.3 RCP-07 handles a disagreement
-  across different engine identities subject to existing precedence. Different
+  and exact dependent pins; existing Receipt5.3 RCP-07 handles successful finite recomputation disagreement across different engines. A recomputation exception instead returns failed/RCP-03 before engine attribution and execution of a supplied signature backend; a version bump alone does not cover that transition. Different
   engine identity alone does not make an agreeing receipt unverifiable. No new
   runtime field, signature domain or receipt wire version is presumed. If one is
   needed, specify it separately and obtain owner approval.
@@ -526,10 +587,14 @@ amend the normative contract.
 | Reverification case | Existing-rule consequence to preserve / required evidence |
 |---|---|
 | Original source bytes, payload hashes or document signature | Numerical changes do not rewrite them. Preserve the original artifacts and verify their existing subjects independently of recomputation. |
-| Receipt format/digest/signature fails an earlier check | Preserve that existing precedence; a new engine must not turn damaged or invalidly signed evidence into an RCP-07 escape. |
+| Malformed receipt, subject or held-input digest | Preserve wire rejection and decisive early subject/held-input mismatch checks. Results digest is a separate later check. |
+| Signature availability and validity | Missing backend yields RCP-08 before recomputation. A supplied backend is invoked only after successful recomputation; a throw bypasses it, including an invalid signature. Resolve this joint spec/implementation precedence conflict before acceptance; preserve behavior now. |
 | Same engine identity, changed-runtime recomputation disagrees | Existing different-engine RCP-07 does not cover this demonstrated problem. Disclose it; do not retroactively change the stored identity or infer an original runtime from its version. |
 | Different engine versions, recomputation agrees | Version difference alone does not establish unverifiability; follow existing receipt checks. |
-| Different engine versions, recomputation disagrees | Apply existing RCP-07 subject to preceding checks; distinguish authenticated original receipt evidence from independently reproduced financial results. |
+| Different engines, successful finite recomputation disagrees | Existing RCP-07 follows supplied signature verification and precedes results-digest corruption checking. It cannot authenticate an unchecked signature. |
+| Original success becomes recomputation refusal | Current failed/RCP-03 and empty recomputed list occur before engine attribution/supplied-backend execution. RCP-07 does not cover this case. State and authentication/error precedence require explicit approval. |
+| Results digest alone is corrupt | RCP-04 is reached after successful recomputation and result agreement, never after an earlier refusal/disagreement. |
+| New receipt changes engine metadata or results | Engine metadata alone changes the signed receipt payload; changed reported results can also change results_digest while source/subject stay unchanged. Retain original artifacts; new issuance is distinct evidence. |
 | Archived old evaluator used for historical reproduction | Record exact evaluator/runtime evidence separately. It can reproduce a chosen environment but cannot prove the old host-power contract was portable. Do not add automatic fallback or claim historical identity without this evidence. |
 
 Recommend retaining the current receipt wire format initially. If supporting two
@@ -540,7 +605,7 @@ newly issued evidence must be distinguishable from the original.
 
 ## Conformance impact
 
-No expected output changes are authorized in this draft. Before implementation,
+No expected output changes are authorized in this draft. Before acceptance and production integration,
 produce an exact manifest of affected existing `conformance/calc/`, dated-flow,
 receipt and profile cases. Candidate-versus-current experiments are not that
 normative manifest and do not replace it.
@@ -571,7 +636,7 @@ Proposed positive/negative controls:
 
 ## Reference implementation
 
-Follow-up only after acceptance: `@uwmd/verify`'s `calc/builtins.ts`, numeric
+Production follow-up only after acceptance and separate authorization: `@uwmd/verify`'s `calc/builtins.ts`, numeric
 kernel if selected, `cash-flow-series.ts` and dependent procedures. Core
 re-exports verify; no model-generation engine or new package is proposed.
 Public exports and error changes must be enumerated in that implementation PR.

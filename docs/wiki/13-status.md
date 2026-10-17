@@ -1,5 +1,23 @@
 # 13 — Build status (living document)
 
+**Current reconciliation.** Main is `3eee0fbab3f5682dc345804782994dc22d321fae`
+(#372 merged). [Exact-main CI 38989037136](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38989037136)
+is green. Python's complete-validation lane continues independently with
+parse-only discovery; no complete Reader/Verifier claim follows.
+
+**RFC 0088 Astra follow-up — draft research only.** The existing review records
+independent classifications, genuine receipt RCP-03 success-to-refusal evidence,
+IRR branch/tolerance and NPV exceptional-value controls. A complete isolated A
+raw candidate, constant/word/resource maps, 178 mathematical controls and exact
+indexed/targeted impact artifacts are now reviewable. All 1,089 existing indexed
+assertions pass in the measured baseline/candidate runs, with explicit capture
+limits; targeted financial/receipt probes demonstrate real changes outside the
+old corpus. Native/compiler and cross-runtime results require exact CI evidence.
+No production arithmetic, schema, corpus expectation, receipt rule, package
+version, RFC acceptance or release state is changed. A is provisionally preferred
+for evaluation, B remains an alternative and C has not shown sufficient benefit.
+Envelope RFC 0089 and provenance RFC 0085 retain their existing ownership.
+
 **Python priority — minimum-complete capabilities.** The current implementation
 has no Reader/Verifier tier and advertises only parse. The completion matrix in
 the Python README now maps accepted obligations, implemented scope, exact corpus

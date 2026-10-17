@@ -33,6 +33,14 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Incorporate independently verified Astra review evidence into draft RFC 0088.
+  Add a complete isolated pinned-fdlibm candidate, exact constants/word/resource
+  contracts, independent mathematical/native research and a full indexed impact
+  manifest with explicit coverage limits. Reproduce actual changed reported
+  results and success-to-refusal receipt precedence; require research evidence
+  before owner acceptance while preserving production arithmetic, expectations,
+  receipt behavior, independent versions and release states.
+
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.
   Prioritize one complete validate surface, dictionary/stated-figure reproduction
