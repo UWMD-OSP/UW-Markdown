@@ -249,7 +249,7 @@ retains its stricter repeated/superseded-extension refusals. This clarification
 neither accepts draft RFC0085 history completeness nor makes ordinary current
 selection proof that every physical source block was authenticated.
 
-The [decision proof](../../experiments/envelope-0089/decision-proof/README.md)
+The [decision proof](https://github.com/UWMD-OSP/UW-Markdown/blob/c1c60b879e5e41530fcc35a5b949147328f7b9ed/experiments/envelope-0089/decision-proof/README.md)
 freezes exact extension/history minimum examples from seven preserved complete
 models. It demonstrates that changing `_notes` or retained prose can leave the
 portable minimum unchanged while changing the complete semantic subject and
@@ -506,7 +506,7 @@ record or retained-history authority. Candidate financial receipt issuance and
 verification remain unimplemented until the new subject/routing contract is
 accepted; byte-binding experiments must not be described as that implementation.
 
-The focused [real Ed25519 evidence](../../experiments/envelope-0089/decision-proof/README.md)
+The focused [real Ed25519 evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/c1c60b879e5e41530fcc35a5b949147328f7b9ed/experiments/envelope-0089/decision-proof/README.md)
 uses an openly known research key with Node crypto, not accepting stubs. Seven
 preserved models supply42 mutation pairs and14 label-change pairs for document
 and receipt-shaped signing inputs. Full payload, metadata, notes or prose changes
@@ -518,13 +518,24 @@ Actual current production APIs separately admit two exact source/model controls
 and refuse two repeated/history sources before gated candidate signing. Three
 model-only inputs have no attributable source for gated issuance. Current-label
 control artifacts verify using real Ed25519; source `_notes` mutations return
-INT11/RCP01 before backend execution. Candidate labels remain unsupported today:
-actual current document/receipt checks return INT14/RCP10 with backend0 despite
-valid signature bytes. Relabeling a candidate digest as current produces current
+INT11/RCP01 before backend execution. Current document signatures reject candidate
+subject labels with INT14/backend0. The candidate receipt controls return
+RCP10/backend0 because both the digest and canonicalization version differ;
+valid signature bytes do not change that precedence. Relabeling a candidate digest as current produces current
 subject/source refusal, never transferred authentication. The source/compiled
 hashes and every complete artifact/payload/result are frozen independently from
 runtime metadata; no production label, schema, financial result or receipt rule
 changes.
+
+The separate four-control receipt metadata probe preserves accepted Receipt
+§5.5 precisely: a differing canonicalization version with matching digests is
+not an issue and normal verification proceeds. Changing only that signed field
+while retaining the original test signature fails RCP01/backend1; re-signing the
+disposable control with the public research key verifies/backend1. This does
+not implement the named canonicalizer, migrate a historical artifact or justify
+blanket unsupported-label refusal for receipts. The RCP10 mixed-peer observation
+does not establish Envelope1 source completeness; Issue365 remains the separate
+representation defect. No candidate financial receipt was issued.
 
 ## Compatibility analysis
 
@@ -555,7 +566,10 @@ required to construct or verify the representation.
 
 The owner has selected a pre-5.0 clean break; this is no longer a proposal to
 maintain compatibility with earlier published packages. Implement only the
-approved current regime, with clear refusal of unsupported containers/subjects.
+approved current regime, with clear refusal of unsupported containers and V.13
+subjects. Receipt canonicalization-version handling retains §5.5, including
+normal verification for matching digests; no new blanket metadata refusal is
+implied.
 Do not add an old-version reader, codec, receipt regime, dual-hash fallback,
 grandfathering period or migration shim solely for pre-5.0 compatibility. An archived
 old decoder may remain immutable research evidence without becoming a supported
@@ -880,7 +894,7 @@ support is already excluded by owner policy and is not a competing option.
 |---|---|---|
 | Tagged identity and portable projection | Approve D1 single/variants wrappers and D2's exact opted-in null identity distinct from literal `default`; use the D2b extension/history minimum. Keep ordinary current selection, explicit history and physical source accounting separate. | Coordinate Format mixed-admission wording, portable subset text, reference public API shapes and exact duplicate/current-order fixtures. No unrelated builtin collection redesign. |
 | Complete exchange mapping | Choose total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Govern namespace/codec/bundle text and full schema domain; add empty-map/history and independent XML namespace/ZIP/domain fixtures. Existing codec evidence is bounded, with its BOM defect/correction preserved. |
-| Whole-model authentication subject | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported-regime refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Independently version Envelope, Protocol, Format if its meaning changes, mappings, signature schema/constants and packages. Actual wire labels and release placement require a later coordinated decision; no5.0 tag/publication without separate launch approval. |
+| Whole-model authentication subject | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported Envelope/codec and V.13 subject refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance and §5.5 matching-digest rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Independently version Envelope, Protocol, Format if its meaning changes, mappings, signature schema/constants and packages. Actual wire labels and release placement require a later coordinated decision; no5.0 tag/publication without separate launch approval. |
 
 Approving a direction does not complete the acceptance gates above. RFC0085
 retained-history authority and RFC0088 numerical procedures are not accepted by
