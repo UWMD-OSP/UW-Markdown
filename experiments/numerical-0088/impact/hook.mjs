@@ -73,6 +73,8 @@ export async function load(url, context, nextLoad) {
     return rootNode=>ts.visitNode(rootNode,visit);
   }]);
   let output=ts.createPrinter().printFile(transformed.transformed[0]);
+  // A prepended import must not move the executable hashbang to line two.
+  output=output.replace(/^#![^\n]*\n/, '');
   transformed.dispose();
   if(replacements.length || snapshots.length) output=`import {pow as __researchPow,log as __researchLog,exp as __researchExp,capture as __researchCapture} from ${JSON.stringify(runtime)};\n`+output;
   appendFileSync(process.env.RESEARCH_TRANSFORMS,JSON.stringify({path:rel,source_sha256:sha(source),transformed_sha256:sha(output),replacements,snapshots,excluded})+'\n');
