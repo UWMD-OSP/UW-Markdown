@@ -1,5 +1,11 @@
 # RFC 0089 candidate preimages (unaccepted)
 
+**Later bounded codec evidence:** [codec-study/README.md](codec-study/README.md)
+adds independent Python/Node decoding of complete block-extra CSV, actual ZIP
+and total escaped-lexical XML. Its two frozen models/21 artifacts and measured
+limits supplement the historical experiments below; no original prototype,
+artifact, version or live conformance expectation is rewritten.
+
 These five frozen subjects support the documentation-only
 [draft RFC](../../docs/rfcs/0089-lossless-extension-envelope.md). They are not
 live conformance fixtures, a codec, a proposed version allocation or evidence of

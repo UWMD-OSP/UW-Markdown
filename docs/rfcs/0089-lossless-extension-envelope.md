@@ -313,6 +313,45 @@ would reject new marker attributes; codec/namespace/version rules and positive/
 negative escaping fixtures must be governed. No option is accepted here, and
 sanitizing/dropping characters or silently changing the subject is excluded.
 
+#### Independent block-extra, lexical XML and actual ZIP checkpoint
+
+The later [codec study](../../experiments/envelope-0089/codec-study/README.md)
+adds two complete synthetic models and21 frozen artifacts without changing the
+original prototype or expectations. Each model includes ten blocks across all
+six block collections, complete outer block extras, unknown members, empty
+containers, absent/null distinctions, exact null versus literal `default`,
+metadata and prose. Python and separately authored Node readers reconstruct the
+same frozen values from CSV directories, actual ZIP bytes and escaped-lexical
+XML, then independently check their JCS preimages/digests. Five Python methods
+and five Node tests pass on the recorded Windows runtime. Node also checks the
+original59 case-artifact hashes and independently reproduces physical source
+ordinals/current/history/body hashes for the two preserved source controls.
+This is bounded research, not complete schema or conformance evidence.
+
+The CSV study concretely implements the proposed fourth `block-extra` scope
+for every block location, including an explicit empty object root and reserved
+member-overlap refusal. It does not add that scope to CSV1. Its deterministic
+ZIP STORE profile checks local/central headers, CRC, inventory and reconstructed
+subject, with explicit path/flag/method/symlink/size/version refusals. Deflate,
+ZIP64 and broader transport-policy requirements are not settled by this profile.
+
+The XML study makes the total lexical alternative executable: a generic typed
+`uw:value` root contains the complete model; object children are `uw:member`
+with exact ASCII JSON-string `name-json`; array children are `uw:value`.
+Strings use the same ASCII JSON lexical encoding, with lowercase escapes and
+paired supplementary units, before XML entity escaping. Exact type/attribute,
+lexical re-encoding and duplicate-decoded-name checks precede model/digest
+comparison. NUL, U+FFFE/U+FFFF, CR/LF/TAB and valid supplementary values/names
+round-trip without normalization. The namespace and all E_NEXT/C_NEXT/B_NEXT
+labels remain unallocated research tokens. This alternative is not accepted.
+
+The new evidence closes the earlier absence of an independent CSV/XML reader
+and actual ZIP execution for these models only. It does not establish the full
+schema/builtin domain, empty history/map representation, a complete independent
+source projector, new-regime authentication or cross-platform interoperability.
+The exact mapping, admitted domain and version commitments still require the
+owner's design approval; no V.13 or RFC0085 admission is expanded.
+
 ### D5 — Canonicalization, commitments and authentication
 
 Keep RFC8785, UTF-8 and SHA256 unchanged. Remove only the existing top-level
@@ -644,12 +683,14 @@ retained hashes, turn a failed source into an authenticated one by compaction,
 or describe reissuance as recovery of historical attribution. History preservation
 and proof of history completeness are different claims.
 
-**Established bounded evidence:** five frozen candidate models, their exact
-subjects, JSON/XML/CSV-directory examples, source accounting and local negative
-controls; independent Node subject/artifact checks. **Not established:** a second
-independent XML/CSV decoder, complete schema-admitted blocks/builtin composition,
-the total XML alternative, actual ZIP interoperability, complete source/portable
-projection semantics or real new-regime receipt/signature execution. No
+**Established bounded evidence:** the original five frozen candidate models,
+subjects and60 artifacts remain unchanged. The later two-model/21-artifact codec
+study adds complete block extras across all six collections, a Python codec plus a separately
+authored Node reader for CSV/ZIP/lexical XML, preserved physical-source
+controls and exact complete-value/preimage comparisons. **Not established:**
+complete schema/builtin admission, empty history/map carrier, complete numeric
+and source/portable projection domains, general ZIP/transport coverage,
+cross-platform independent runs or real new-regime receipt/signature execution. No
 production migration or legacy-regime support is required by the pre-5.0 policy.
 A shared encoder/decoder round-trip cannot substitute for independent expected
 models and implementations.

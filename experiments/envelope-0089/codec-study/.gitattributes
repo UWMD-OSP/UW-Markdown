@@ -3,3 +3,4 @@
 fixtures/** -text
 fixtures/**/*.csv whitespace=cr-at-eol
 evidence/** -text
+evidence/*.txt whitespace=cr-at-eol
