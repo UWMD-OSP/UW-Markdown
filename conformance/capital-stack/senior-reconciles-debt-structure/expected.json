@@ -1,10 +1,14 @@
 {
-  "why": "RFC0090 candidate: both unchanged sources lack required actors and owe META-01; equal senior debt still owes no CC-03, while mismatched senior debt owes CC-03 as well. Original expectations remain pinned at main b2ac5d8.",
+  "why": "RFC0091 candidate: unchanged sources lack actor, review and superseded members and owe META-01/02/03. Equal senior debt still owes no CC-03; mismatched senior debt additionally owes CC-03. Original actor-only expectation is preserved in the RFC0091 impact archive; no source or financial expectation changed.",
   "agree_codes": [
-    "META-01"
+    "META-01",
+    "META-02",
+    "META-03"
   ],
   "mismatch_codes": [
     "CC-03",
-    "META-01"
+    "META-01",
+    "META-02",
+    "META-03"
   ]
 }

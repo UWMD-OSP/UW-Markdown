@@ -21,16 +21,16 @@ establish nine missing diagnostic allocations. Six cases have accepted owning
 errors or fail an existing container-admission precondition. The remaining three
 contain six missing required boolean members with no registered diagnostic.
 
-The smallest requested owner decision is whether to allocate `META-02`/error for
+The owner has authorized preparing and independently verifying `META-02`/error for
 `_meta.quality.human_review_required` and `META-03`/error for
 `_meta.lifecycle.superseded`, with the precise applicability, precedence and
-operation boundaries below. These are validation findings, category `validate`
+operation boundaries below. Final RFC acceptance and merge remain unapproved. These are validation findings, category `validate`
 when represented as Protocol errors; ordinary `ValidationMessage` objects gain
 no `category` member. This proposal does not expand `META-01`, the five closed
 `META_FIELD_MISSING_<FIELD>` suffixes, or the low-confidence informational rule.
 It allocates no generic schema/fallback diagnostic and no release version.
 
-The proposed historical/physical applicability is an explicit new choice for
+The owner-supported historical/physical applicability is explicit for
 these two fields, not an automatic extension of RFC0090's actor allocation.
 Accepting the final RFC would still require synchronized implementation,
 independent verification and governed conformance dispositions before activation.
@@ -170,7 +170,16 @@ These are five affected **checks**, not a claim that five expected files should
 be rewritten. The standalone sources are outside the734 conformance-source
 inventory. Before activation, decide and measure their governed examples/source
 or assertion dispositions, including dependent identities/package evidence.
-Preserve original records. This RFC changes none of those artifacts. The hook
+Preserve original records. The draft implementation changes only the capital-stack diagnostic-code
+expectation on unchanged sources; its original expectation is archived. Four
+standalone zero-error assertions remain unchanged and currently fail, because
+accepted RFC0048 promises every kit example validates. Their six absent review
+flags have no authored canonical values in the original revisions. Neither
+`review_status`, narrative review flags nor `buildMeta` defaults for NEW blocks
+can establish those omitted historical declarations. Final owner disposition
+is required: author new valid positive examples while preserving originals,
+or explicitly amend/reclassify the kit's positive validation promise. No metadata
+is invented and no package, signature or original source is rewritten. The hook
 uses placeholder messages and no new registry copy, so it is not a final render
 baseline or complete consumer-impact measurement.
 
@@ -200,3 +209,19 @@ stated-result and receipt capabilities remain separate. This narrow allocation
 does not solve every remaining typed admission obligation. RFC0085/0088/0089
 remain separate drafts. No Format/Protocol/package version is allocated, and no
 UWMD5.0 tag, release preparation or publication is authorized.
+
+## Implementation acceptance packet — owner review pending
+
+The bounded candidate implements exactly these predicates in TypeScript and
+Python. [The existing review](../reviews/2026-10-15-python-reader-354.md#rfc0091-implementation-acceptance-packet)
+records independent review, exhaustive original-source/consumer dispositions,
+actual CLI and receipt boundaries, focused negative controls and exact CI.
+The archive retains before/after observations and original expectation evidence.
+Draft status is intentional; candidate spec wording in this unmerged PR is not
+accepted repository authority. No other RFC or release state changes.
+
+A model-only diagnostic's section follows the existing actor traversal context
+(collection key for keyed collections, block annotation for append entries).
+This does not invent annotation authority for an inconsistent hand-built model.
+Source-origin findings use the physical block's annotation. Exact field paths
+remain canonical in both operations.

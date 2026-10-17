@@ -485,3 +485,132 @@ The RFC lists each affected check and distinguishes expected-error-set changes
 from zero-error standalone example assertions. Original sources, schemas,
 expectations, signatures, receipts and versions stay unchanged. Normal required
 CI runs without the research hook and must remain green.
+
+
+## RFC0091 implementation acceptance packet
+
+Owner direction authorizes the bounded implementation and independent verification,
+not final RFC acceptance or merge. RFC0091 remains draft. Candidate production
+changes implement only META-02/error and META-03/error for absent, null or
+nonboolean canonical review/superseded members, with both booleans valid.
+META-01, closed completeness suffixes, low-confidence info and unrelated typed
+admission remain unchanged. No coercion, inferred flags or source repair.
+
+TypeScript: 18 focused controls plus all25 accepted actor/shape controls pass;
+complete workspace4291 tests pass. Python's isolated source change630b03a2
+(e3807b0a in the integrator) adds eight controls; bounded main-based175 methods
+pass. Independent review of both implementations found no material predicate,
+parent precedence, physical/history, mutable-model or identity-order defect.
+Model-only section attribution follows existing traversal context, not invented
+annotation authority. The Python WIP separately consumes only exact matching
+field/block/error/predicate ownership; missing quality and unrelated local
+requirements remain visible. Its0a6cf833 checkpoint passes299 methods,
+111 actual validation CLI cases and Reader17 locally on Windows. Initial274e
+capital-stack expectation failure is preserved; the explicit union correction
+adds only02/03, retaining CC-03 iff financially mismatched. Discovery remains
+parse-only; this is not complete validation/Verifier or three-OS WIP proof.
+
+### Exact original-source impact and disposition
+
+[The read-only verification companion](./2026-10-17-validation-diagnostic-gap-354.implementation.py)
+checks the [manifest](./2026-10-17-validation-diagnostic-gap-354.implementation.json)
+and losslessly archived raw baseline/candidate observations. The original
+27-schema/734-source audit and original read-only counterfactual are preserved
+unchanged; actor-specific observer proposal fields are historical, not a new
+boolean oracle. Actual candidate findings independently match all943 proposed
+locations in205 unchanged uwx sources:488 review and455 superseded absences,
+including two historical findings. No source is repaired. The wider804-input
+direct API scan admits744/refuses60 unchanged;223 direct-assessment inputs gain
+961 findings. The extra18 are uwpart fragment inputs, not18 newly failing
+whole-document/native cases. There are96 direct-API validation-status changes;
+these are not96 portable expectation changes.
+
+Independent dispositions retain every205 source/943 field location,195 owning
+expectation identities and actual-consumer links.54 source identities have
+historical whole-validation calls;151 are reached by scoped APIs or lack such
+a call in that frozen journal. That historical graph is qualified; the new
+current-run consumer journal is the actual candidate evidence. Invalid fixture
+purpose, narrower financial/profile assertions and positive examples must not
+be conflated. No205-file baseline rewrite is justified.
+
+Actual13 additional baseline/candidate CLI subprocesses confirm all nine native
+inputs stay exit1, the three admitted missing-boolean cases gain exactly six
+findings, and all four positive kit examples flip0-to1 with six META-02 errors.
+Full error/warning/info partitions and original source bytes are checked.
+
+All111 actual portable validate subprocess responses, exits and source/case
+identities are exactly equal to baseline. All32 paired native issuance,
+receipt-verification and document-signature consumer events are exactly equal.
+The actual initial native runner confirms1090 pass/5 differences/0updates.
+One explicit candidate expectation change adds02/03 to the capital-stack
+agree/mismatch code unions on unchanged sources; CC-03 remains mismatch-only.
+Its exact original bytes and all2648 original corpus artifact identities are
+preserved. All other original corpus artifacts remain byte-identical. After
+that governed correction, native conformance is1091 pass/4 fail/0updates.
+
+The four remaining failures are `standalone/profiles/lease-abstract-v1`,
+`source-note-v1`, `inline-deal`, `externalized-deal`. Six top-level blocks omit
+human_review_required, while superseded is explicitlyfalse and actors are
+example-kit. Their original and introducing canonical revisions contain no
+review-boolean declaration; narrative review_status/flags cannot supply one.
+Accepted RFC0048's definition of done promises every example parses and
+validates. Keeping the existing zero-error assertions exposes that genuine
+joint-contract conflict rather than hiding it in expected diagnostics.
+
+The complete kit audit preserves17 disk source/copy files with20 omitted review
+members,12 historical-version checks, three identical embedded record copies,
+and the original ZIP's10entries/ninepayloads. Package/semantic identity tests
+continue passing with original bytes. `buildMeta` already defaults reviewfalse
+and supersededfalse for NEW metadata; this is not an author declaration for an
+omitted historical member. No original file, ZIP, signed subject or issued
+receipt was changed.
+
+**Smallest remaining owner disposition:** choose (a) genuinely author replacement
+positive kit examples with explicit review declarations and provenance, retaining
+originals as history, or (b) explicitly amend RFC0048's positive-validation promise
+and classify the originals as metadata-incomplete historical/focused examples.
+The integrator recommends (a) for a clean launch kit, with new authored identity
+and packaging verified, rather than inferring missing values. Neither option
+is activated by provisional diagnostic direction. The four failures are not
+permission to weaken validation or silently accept final RFC text.
+
+### Receipt and adopter boundaries
+
+[The executable receipt probe](./2026-10-17-validation-diagnostic-gap-354.receipts.mjs)
+uses original Parkview bytes plus disposable, JSON-validated in-memory omissions.
+Four vectors establish exact0/1/1/2 new policy errors; baseline/candidate subjects,
+computation/results and every other receipt member stay equal per same-byte
+vector. All16 issuer/verifier pairings preserve unsigned verified, real
+public-test Ed25519 verified, missing-backend unverifiable and tampered-policy
+signature failed (RCP-01). No historical artifact is authenticated or reissued.
+The initial harness removed finalsuperseded leaving a trailingcomma; two failed
+assumption runs were stopped, independently diagnosed, and the transformation
+now preserves validJSON and checks each fence before issuance. That malformed
+input was not evidence of a flag/receipt implementation defect. A baseline
+rebuild did not resolve the harness error and is not claimed as the fix.
+
+Same-byte diagnostics change no V9 payload hash, V11 block-signature bytes,
+document/Envelope or receipt subject. Actually inserting a boolean changes raw,
+package and complete document/Envelope/receipt subjects, but V9 excludes all_meta
+and V11 binds content_hash/section/actor/timestamp/kid/signed_at, so a boolean-only
+edit does not itself change V11 signing bytes. New author/timestamp can. New
+receipt policy counts change receipt signing bytes; verification semantics and
+precedence are unchanged. Validation status or a receipt's policy count is not
+a financial verification verdict. Existing CLI/tests transport errors normally;
+no producer/adopter interface, public type/export, schema, version or release
+is changed. RFC0085/0088/0089 remain separately draft;5.0 remains owner-reserved.
+
+### Integration gates
+
+The bounded validators, registry, Format/Protocol candidate text, tests and one
+attributed expectation are synchronized in draft#378. Existing schemas already
+require these booleans and remain byte-identical. Exact-final-head CI will be
+recorded in the PR and Issue354. Four positive-example contract failures block
+green integration/final acceptance; do not describe the earlier green draft-only
+run39066205003 as implementation evidence. Final owner acceptance and subsequent
+exact-main CI remain separate gates; no merge is authorized in this packet.
+
+Local portable reference conformance350/350 passes independently even though the
+native positive-example gate blocks the ordinary CI job before its portable step.
+Initial docs builds exposed a review link outside the docs-site copy set; the
+link must target its preserved GitHub artifact, not an uncopied local page.

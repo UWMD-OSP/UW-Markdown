@@ -21,7 +21,11 @@ partial refusals into existing REC/container admissions and two genuinely
 unallocated required boolean conditions. Independent two-runtime evidence
 measures943 absent fields in205 unchanged conformance sources, no affected
 portable validate inputs, and five native counterfactual check differences.
-No schema, frozen expectation or runtime diagnostic is activated. META-01 stays
+The owner authorized a bounded implementation for final review, not final RFC
+acceptance. Candidate TS/Python predicates and one attributable capital-stack
+expectation are prepared on unchanged sources. Four standalone zero-error
+assertions expose RFC0048's positive-example promise and remain unresolved;
+original examples/package bytes are preserved. No schema or release is changed. META-01 stays
 narrow; complete Python validation and its nonportable/three-platform gates
 remain open, with parse-only discovery. The existing Reader review preserves
 all cases and the27-schema audit; RFC0085/0088/0089 remain draft.

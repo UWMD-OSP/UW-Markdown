@@ -1,0 +1,136 @@
+{
+  "scope": "RFC0091 unaccepted bounded implementation impact, original-source/expectation evidence and actual consumers; not a new conformance baseline",
+  "baseline_main": "001cc001d36d8b4a219bb6516f40db69d1a8dc34",
+  "candidate_production_checkpoint": "18dda017",
+  "python_wip_checkpoint": "0a6cf833a9c54a134c346b096eb9976c41e0b62f",
+  "archive_sha256": "398d62960e6ccacf9ec26a80ebc41cee8abb2cdad3450f4c6c2b91787fd85110",
+  "archive_bytes": 3552161,
+  "decoded_archive_sha256": "9c49320c50056a3dcce953a10b7fbf11c53aaf88fc475ecf8ec7ccf16c00f526",
+  "files": {
+    "baseline-catalog": {
+      "bytes": 1331591,
+      "sha256": "4bb0afc801d8bb808a4b15008eba1b2e68bf78abf43d25cc973136458784efbb"
+    },
+    "baseline-cli": {
+      "bytes": 2211070,
+      "sha256": "7924a76815526105aaca6e2629ab1604da337e59a8fc4ebeaecd5a0968ab2fc6"
+    },
+    "baseline-native": {
+      "bytes": 4020488,
+      "sha256": "5dd06b70bf4bffe941530c0ba4bd062949e6e0e6d986330646e6270ab931251a"
+    },
+    "baseline-sources": {
+      "bytes": 4367247,
+      "sha256": "69ce355f845a902cef8a985dc768a409090c7a2e6a8dca47c12eeb25781bee1f"
+    },
+    "candidate-cli": {
+      "bytes": 2211070,
+      "sha256": "f40545ea1d34f4c771d9c989cf1e8878fc37663a2ebb92f9e68b4e9b1c17519f"
+    },
+    "candidate-native": {
+      "bytes": 4262744,
+      "sha256": "80297d9e6daaa3d57814650d22245f991e7110631b0e1902839beefcd0f5c9a4"
+    },
+    "candidate-sources": {
+      "bytes": 4844980,
+      "sha256": "8434fbd4fc1fe9b1f1020c45aed2bddac91a02d954d8373f3c2c1565343fa44e"
+    },
+    "candidate-unit": {
+      "bytes": 21895,
+      "sha256": "fff45dbd190ac78c56e2dca1410277698571c0f6b11f26cf666a16785f96df9d"
+    },
+    "codes": {
+      "bytes": 350,
+      "sha256": "69755174b9c8668c193f24c1d71fe3e25e27f3d2499440af4c2a45b11e7b6650"
+    },
+    "final-lint": {
+      "bytes": 877,
+      "sha256": "afa9e01677f592e4d2b625766167c80f72cc6c6ef490604da861c7bf3655ca90"
+    },
+    "final-native": {
+      "bytes": 77583,
+      "sha256": "0763dd2df0eb7a959635b6ea5e1d0f29de4d2e803be538f494f8922f8228bff6"
+    },
+    "independent-dispositions": {
+      "bytes": 668789,
+      "sha256": "2fd368250f0895d59a34b109983f96cbb7887d6fadf2ab25c5517b78a5e1e4e8"
+    },
+    "independent-review": {
+      "bytes": 7261,
+      "sha256": "8fbdac93d30d4a4acd76a924e8651a41b84025996de10711e8c2dfc23be7e62a"
+    },
+    "indexes": {
+      "bytes": 1276,
+      "sha256": "097d5f99297dc0d0331618bd5271f5e58beb4abe14fd0aad28e9da1501bd567f"
+    },
+    "original-capital-expectation": {
+      "bytes": 328,
+      "sha256": "43331f63fecf48025ddd710e096bc540a9166a2b8b805569a2be775fc6a79f70"
+    },
+    "original-diagnostic-packet": {
+      "bytes": 577211,
+      "sha256": "1d691edd7b6fae7ed85dea596008656bc3b2bb49db347591ae3c67585ef71eeb"
+    },
+    "python-WIP-final-actual111.log": {
+      "bytes": 7914,
+      "sha256": "5024184fef1efe5544da4bf21b8952dc1b0f82d8b5ac4f7cf60986790c7f298b"
+    },
+    "python-WIP-final-full-python.log": {
+      "bytes": 53005,
+      "sha256": "c0f27472d8695cfdd5986ab81a8224223e728029f85df8999a9dc7cec2be0d34"
+    },
+    "python-WIP-final-reader17.log": {
+      "bytes": 1261,
+      "sha256": "bcd395420f8a882135a80808d026f2d582c23659ba34e2a8dad49bdf38a27317"
+    },
+    "python-WIP-final-report.json": {
+      "bytes": 1899,
+      "sha256": "6649bb1b1396bdb7d5b24b687529f02f3af6240d9ad0e028132e304626b554ca"
+    },
+    "python-WIP-initial-failure": {
+      "bytes": 55176,
+      "sha256": "5da7b6adfded8127b3c70fe0e77aee739dacda78829d6320222de215942bb040"
+    },
+    "python-nine-actual-CLI": {
+      "bytes": 62330,
+      "sha256": "e93d7671625a1f41cf548bc01c5b6ec9b090a72f878ec1e9f476f67d6d5a13b7"
+    },
+    "python175": {
+      "bytes": 28221,
+      "sha256": "aa5b1e507568469c67c4b020b3f094b91f5f260b5b39cbf0b2162324c233c2b1"
+    },
+    "receipt-boundary": {
+      "bytes": 417268,
+      "sha256": "6eda4c3a87d002cdfe45d2606ccb3b2f38a81a042d3478efc782e00e81a5472f"
+    },
+    "schemas": {
+      "bytes": 2611,
+      "sha256": "cf3eef832b4b55d38d07aab11fbf306adde5567dd3913cc0bfd2634f82697cd5"
+    },
+    "typecheck": {
+      "bytes": 637,
+      "sha256": "41ea4ca9aa0d5cb5a5ee3a8b877062bc3df2fc469d049f5d989f9396e823aaaa"
+    },
+    "actual13-cli": {
+      "sha256": "c848281b738098565e49412488bc8960b5b0b4a5beaabd0c8af67a7ebbcd732d",
+      "bytes": 214900
+    },
+    "portable350": {
+      "sha256": "3251b6360b8f40cbc4b82b3c6208ca541ab7cbeb3c2697bc88fd630a5265657c",
+      "bytes": 76169
+    },
+    "portable350-log": {
+      "sha256": "5599faa9d04e8b897d69058990ee7587ba1a4114c776969b5e99559370daebd6",
+      "bytes": 26587
+    },
+    "initial-docs-failure": {
+      "sha256": "4d1333bd845ed28fdc435f3123c558cd71de7033d9a675217cdc789ac608902d",
+      "bytes": 30737
+    },
+    "second-docs-failure": {
+      "sha256": "ac233c2c89ba6ded6e8bacc2103b4e78936f2bf46629f914e66247d20f1a48fa",
+      "bytes": 30737
+    }
+  },
+  "remaining_owner_disposition": "Four standalone positive-validation promises under accepted RFC0048; no fabricated metadata or silently weakened assertions."
+}
