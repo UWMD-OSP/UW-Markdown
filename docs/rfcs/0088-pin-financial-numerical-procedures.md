@@ -22,6 +22,14 @@ cross-runtime identity. It does **not** select or implement the issue's suggeste
 running-product rule, fractional-power concession, or new validation obligation.
 Existing Protocol4.1.0, Format3.0, receipts and expectations remain unchanged.
 
+The [owner launch policy (2026-10-16)](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+establishes UWMD 5 as the first public compatibility baseline. All pre-5 versions,
+including published 4.x, are historical; this proposal has no obligation to support
+their readers, evaluators or receipts. Keep major-5 continuity and independently
+version each affected surface under that policy. This resolves the legacy-support
+question, not the numerical procedure, accuracy guarantee or RFC acceptance.
+Tags and publication require separate authorization.
+
 ## Motivation
 
 Protocol VIII.3 pins IRR's bracket/bisection but leaves exponentiation implicit.
@@ -132,7 +140,7 @@ evidence management, not normative cross-runtime conformance.
 
 Before acceptance, this draft needs a complete operation/domain/error table;
 chosen negative and fractional procedures; resource bounds; independently generated
-known-answer vectors; compatibility measurements over current corpus/deals; and
+known-answer vectors; impact measurements over current corpus/deals; and
 the numerical guarantee the standard actually promises. The current observation
 archive contains aggregate counts and selected first examples, not the full
 experimental stream. Some stress inputs are generated with Python native power;
@@ -157,7 +165,7 @@ by merging investigation evidence while the RFC remains `draft`.
 | D4: Transcendentals | Fully specified portable approximation algorithm/version; or correctly-rounded mathematical contract with demonstrated implementations | Compare the exact eight-file fdlibm closure (A) against the MPFR4.2.2/GMP6.3.0 adapter (B) below. Recommend A proposal completion; universal correct rounding would select a distinct B guarantee. Neither is accepted. |
 | D5: Financial graphs | Preserve current closed-form associations and zero branches; or adopt stability-oriented `log1p`/`expm1`/rearranged formulas | First pin the existing graphs below, replacing only primitive dependencies if approved. Consider stability changes separately after measuring cancellation. Do not silently widen solver domains or call tiny rates zero. |
 | D6: Range and resources | Admit the present finite input domain with bounded kernel implementation; or specify narrower admitted domains and exact refusals | Prefer preserving the presently admitted domain where practicable. Any necessary restriction needs an explicit affected-input table and owner approval; the experimental 10,000-step cap is not a limit proposal. Do not mistake the existing AST-node budget for a bound on work inside one builtin. |
-| D7: Compatibility | Governed Protocol revision and new engine version with existing receipt wire semantics; or introduce a separately versioned procedure selector/receipt mechanism | Prefer a governed Protocol revision and new verifier engine version, preserving receipt wire/signature subjects unless measured migration needs prove insufficient. Exact revisions and activation remain an owner decision. Follow the pre-release clean break; no legacy evaluator or hidden same-version procedure replacement. |
+| D7: Launch activation and versions | The owner has resolved pre-5 support: none is required. Choose the launch numerical contract and its affected independent surface versions, within major-5 continuity. | Prefer a governed Protocol revision and new verifier engine version, retaining receipt wire/signature subjects unless the launch contract itself requires an approved change. No backward reader, dual evaluator or procedure selector is required for pre-5 artifacts. Exact revisions and activation remain owner-controlled; do not hide an arithmetic change behind an unchanged version or infer tag/publication authority. |
 | D8: Evidence | TS-only or host-power agreement; or frozen vectors plus genuinely independent implementations and platform coverage | Require frozen independent TS/Python evidence, corpus impact and actual scoped spreadsheet recalculation before claiming the corresponding guarantees. A runtime-pinned reference release alone does not close #356. |
 
 #### Immediate owner direction versus engineering completion
@@ -174,9 +182,11 @@ authorizes completing the proposal, not activating it or accepting this RFC.
 Keep financial associations, the quantizer and solver unchanged in either path.
 Stability-oriented log1p/expm1 rearrangements remain a separate explicit decision.
 Retain current receipt wire/signature subjects with a new verifier engine version
-and governed Protocol revision after impact measurement. Follow the owner's
-pre-release clean break without historical evaluator fallbacks or compatibility
-layers. Exact versions and activation remain owner-controlled.
+and governed Protocol revision after impact measurement. Apply the owner launch
+policy above: no historical evaluator fallback, backward reader or dual numerical
+regime is required for pre-5 support. Exact independent versions and activation
+remain owner-controlled within major-5 continuity; tags/publication require
+separate authorization.
 
 Kernel selection, complete domains/refusal points, resource evidence and frozen
 independent vectors are engineering completion work. Return a concrete restriction
@@ -190,7 +200,7 @@ contract rather than presumed interchangeable with its primitives. Identify the
 supported workbook formulas, actual recalculation engine/version and any live
 formula versus retained-literal limitations before advertising parity. If a
 selected procedure cannot be reproduced through an existing export path, return
-that precise compatibility impact for review; do not silently redefine the
+that precise export impact for review; do not silently redefine the
 financial metric, substitute a cache for independent recalculation, or broaden a
 limited spreadsheet observation into a universal Excel guarantee.
 
@@ -289,8 +299,9 @@ half-away quantization. IRR/XIRR bracket, endpoint precedence, stopping criteria
 and tolerances remain unchanged. A complete solver trajectory is not supplied by
 the endpoint-only lab. Existing RCP-07 precedence and its same-engine disagreement
 gap remain disclosed; numerical changes neither rewrite source/signature subjects
-nor historical receipts. Follow a versioned clean break, with no legacy evaluator,
-new runtime field or compatibility shell inferred from this comparison.
+nor historical receipts. Apply the launch policy without a legacy evaluator,
+pre-5 procedure selector or compatibility shell. This comparison does not require
+a new runtime field or authorize old artifacts under new numerical semantics.
 
 Acceptance tests must cover complete independent word/constant/site maps, each
 kernel's real special/range branches and hard mathematical rounding certificates;
@@ -442,7 +453,7 @@ on one Windows AMD64 host. The README proposes frozen-data checks over supported
 Node/Python/runtime/OS combinations for an integrator checkpoint; that coverage
 has not run here and is not inferred from existing production CI. No previous
 audit/lab/full suite was repeated. Receipt precedence, the same-engine runtime
-gap and clean-break compatibility remain as stated below; source/block/signature
+gap and launch-contract requirements remain as stated below; source/block/signature
 subjects and existing artifacts are not rewritten. General fractional kernels,
 complete solver trajectories, corpus impact and actual spreadsheet evidence
 remain distinct acceptance work.
@@ -459,14 +470,18 @@ remain distinct acceptance work.
    pinned reference implementations and mathematical certificates over declared
    domains. Retain complete inputs, words, failures and exact source/runtime/
    platform/compiler identity. Measure financial trajectories, existing-corpus
-   results AND refusals, reporting boundaries and receipt compatibility BEFORE
-   the owner evaluates acceptance. Do not activate or rebaseline to do research.
+   results AND refusals, reporting boundaries and receipt authentication/error
+   precedence BEFORE the owner evaluates acceptance. Historical comparisons are
+   audit evidence, not a requirement to support pre-5 numerical regimes. Do not
+   activate or rebaseline to do research.
 3. **Owner acceptance:** return a complete evidenced revision with no TBD kernel,
    host-math escape, unspecified word site, hidden finite-intermediate refusal
    or machine-dependent numerical timeout. Resolve the receipt exception and
-   authentication precedence conflict, retained solver edge cases, historical
-   identity consequences and the exact compatibility/version scope. Green CI
-   and a complete prototype do not accept this RFC.
+   authentication precedence conflict and retained solver edge cases for the
+   launch contract, and identify affected independent versions and activation.
+   Retain historical identity consequences as audit evidence; pre-5 support is
+   already resolved by owner policy. Green CI and a complete prototype do not
+   accept this RFC.
 4. **Separately controlled production integration:** only after acceptance and
    authorization, integrate the contract into reference packages and independent
    implementations, synchronize approved specs/schemas/conformance changes and
@@ -475,8 +490,9 @@ remain distinct acceptance work.
    expectations and receipt behavior remain unchanged now.
 5. **Claims and release:** actual independent platform/browser and spreadsheet
    evidence must support every advertised scope. Unmeasured exports/profiles
-   stay explicitly limited. Obtain separate activation/version/release approval;
-   no public 5.0 preparation follows implicitly.
+   stay explicitly limited. Keep major-5 continuity and independently version
+   affected surfaces under the owner policy. Obtain separate activation/version
+   approval and explicit tag/publication authorization; this draft grants none.
 
 The existing Stochastic normal-tail tolerance in VIII.8.3 remains unchanged.
 A pinned logarithm can improve an implementation without changing that optional
@@ -517,7 +533,7 @@ A complete independent Python kernel and whole-domain accuracy remain gates.
 The exact existing-corpus manifest retains all 1,089 case identities and protected
 input hashes. Both measured modes pass all assertions, with 671 aligned primitive
 word differences and no captured reported-number/refusal differences. This is
-not full compatibility proof: 108 cases lack visible actual bindings and only
+not a complete impact assessment: 108 cases lack visible actual bindings and only
 10 of 20 eligible numeric sites are exercised. Targeted public financial/receipt
 controls and explicit unknown cells remain separate from unchanged expectations.
 
@@ -534,59 +550,79 @@ receipt checks. It demonstrates actual A-induced changes: the twelve-decimal
 power result changes while its default-six result agrees; original endpoint IRR
 10 becomes CALC-IRR-DIVERGE. The untouched old IRR receipt reaches failed/RCP-03
 even for a different engine marker, without supplied-backend execution. Finite
-power disagreement instead reaches RCP-07. These are measured compatibility
-consequences, not a synthetic pack-swap assumption or approved new receipt rules.
+power disagreement instead reaches RCP-07. These are measured behavioral and
+identity consequences, not a synthetic pack-swap assumption or approved new
+receipt rules. The 24 historical receipt checks remain audit evidence; the launch
+policy does not require cross-regime verification of those pre-5 receipts.
 
 Current receipt recomputation refusal returns failed/RCP-03 before engine
 attribution and execution of a supplied signature backend. Missing-backend
 RCP-08 is earlier, and results_digest corruption is later than successful value
 agreement. RCP-07 does not cover every success-to-refusal transition. The joint
-compatibility/precedence decision must be resolved before acceptance; production
+authentication/error-precedence decision for the launch contract must be resolved
+before acceptance, independently of any pre-5 support obligation. Production
 behavior and historical subjects/signatures remain unchanged now.
 
-## Compatibility analysis
+## Launch contract and historical audit evidence
 
-- **Reader / source identity:** parsing, original payloads, source bytes, block
-  hashes and document-signature subjects do not change. A changed recomputation
-  must never rewrite signed historical data. Old documents can remain readable
-  while their asserted calculations need version-aware evaluation.
+The owner launch policy resolves the support boundary: UWMD 5 is the first public
+compatibility baseline, and all pre-5 artifacts are historical, including
+published 4.x. There is no required backward reader, dual numerical evaluator,
+pre-5 procedure selector, migration shim or historical-receipt verification regime.
+Retaining an artifact as audit evidence neither admits it to the launch contract
+nor authenticates it using new semantics.
+
+- **Reader / source identity:** numerical changes do not rewrite original payloads,
+  source bytes, block hashes or document-signature subjects. Preserve signed
+  historical artifacts as evidence; this is not a promise of pre-5 reader or
+  asserted-calculation support.
 - **Verifier:** replacing powers changes permitted raw/quantized values and even
   solver refusals. Normative Protocol revision and independent package versions
-  must be chosen under current policy after impact measurements, not concealed
-  as a non-normative formula cleanup. This RFC does not assign release versions.
+  must be chosen under the launch policy after impact measurements, not concealed
+  as a non-normative formula cleanup. Keep major-5 continuity while versioning
+  affected surfaces independently. This RFC assigns no release versions.
 - **Receipts:** VIII.5 already requires quantized calc-result digests. The observed
   public-boundary result changes that digest even without unquantized signing.
   Same engine/version under another runtime can currently disagree and be blamed
-  as failure. An eventual kernel change requires a new verifier engine identity
-  and exact dependent pins; existing Receipt5.3 RCP-07 handles successful finite recomputation disagreement across different engines. A recomputation exception instead returns failed/RCP-03 before engine attribution and execution of a supplied signature backend; a version bump alone does not cover that transition. Different
-  engine identity alone does not make an agreeing receipt unverifiable. No new
-  runtime field, signature domain or receipt wire version is presumed. If one is
-  needed, specify it separately and obtain owner approval.
+  as failure. An eventual kernel change requires a new verifier engine version
+  and exact dependent pins. As historical evidence, existing Receipt5.3 RCP-07
+  handles successful finite recomputation disagreement across different engines.
+  A recomputation exception instead returns failed/RCP-03 before engine attribution
+  and execution of a supplied signature backend; a version bump alone does not
+  decide that authentication/error ordering. Different engine identity alone does
+  not make an agreeing receipt unverifiable under the existing rules. Pin the
+  approved launch behavior explicitly; do not carry a pre-5 verification regime.
+  No new runtime field, signature domain or receipt wire version is presumed.
+  Any such change must serve the launch contract and receive owner approval.
 - **Modules / profiles / consumers:** expressions and downstream debt/returns can
   change even if schemas do not. Inventory current dictionary/packs, optional
   profiles, browser consumers and Excel emission. A package boundary cannot make
   incompatible normative arithmetic optional. No new generation capability is
   required from adopters. Historical Tier3 names in the template are replaced by
   today's Reader/Verifier and optional-profile model.
-- **Migration:** retain old receipt/source artifacts unchanged, publish measured
-  old/new results and refusal differences, version the accepted contract honestly,
-  and state the clean-break activation for current consumers. Do not rewrite
-  conformance to
-  bless one host's observations. Timing remains owner-controlled; no 5.0 release
-  preparation is authorized.
+- **Activation / audit:** retain old receipt/source artifacts unchanged and retain
+  measured old/new results and refusal differences as audit evidence. Version the
+  accepted launch contract honestly and state its activation for current consumers;
+  no legacy transition mechanism is required. Do not rewrite conformance to bless
+  one host's observations or reinterpret old receipts as new issuance. Timing
+  remains owner-controlled; no release, tag or publication is authorized.
 
-### Receipt compatibility cases to approve and demonstrate
+### Receipt audit cases and launch requirements
 
 A new numerical procedure needs a new `@uwmd/verify` engine **version**, not an
 invented engine name or runtime identity field. Exact dependent pins and receipt
-fixture changes belong to the later approved implementation/release work. A
-Protocol change also needs an explicit source/module compatibility plan under
-the current supported-version policy; merely incrementing a package does not
-amend the normative contract.
+fixture changes belong to later approved implementation/release work. Pin the
+launch contract's admitted source/module versions and receipt authentication,
+refusal and result-digest behavior; merely incrementing a package does not amend
+the normative contract. No pre-5 compatibility plan is required.
 
-| Reverification case | Existing-rule consequence to preserve / required evidence |
+The table records existing behavior and distinct audit subjects, not a required
+pre-5 support matrix. Launch acceptance must resolve its actual authentication
+and refusal rules without automatically admitting historical receipts.
+
+| Audit / launch case | Existing observation and launch requirement |
 |---|---|
-| Original source bytes, payload hashes or document signature | Numerical changes do not rewrite them. Preserve the original artifacts and verify their existing subjects independently of recomputation. |
+| Original source bytes, payload hashes or document signature | Numerical changes do not rewrite them. Preserve original artifacts as audit evidence. For artifacts admitted by the launch contract, verify the applicable subjects independently of recomputation; preservation alone does not grant admission. |
 | Malformed receipt, subject or held-input digest | Preserve wire rejection and decisive early subject/held-input mismatch checks. Results digest is a separate later check. |
 | Signature availability and validity | Missing backend yields RCP-08 before recomputation. A supplied backend is invoked only after successful recomputation; a throw bypasses it, including an invalid signature. Resolve this joint spec/implementation precedence conflict before acceptance; preserve behavior now. |
 | Same engine identity, changed-runtime recomputation disagrees | Existing different-engine RCP-07 does not cover this demonstrated problem. Disclose it; do not retroactively change the stored identity or infer an original runtime from its version. |
@@ -595,13 +631,14 @@ amend the normative contract.
 | Original success becomes recomputation refusal | Current failed/RCP-03 and empty recomputed list occur before engine attribution/supplied-backend execution. RCP-07 does not cover this case. State and authentication/error precedence require explicit approval. |
 | Results digest alone is corrupt | RCP-04 is reached after successful recomputation and result agreement, never after an earlier refusal/disagreement. |
 | New receipt changes engine metadata or results | Engine metadata alone changes the signed receipt payload; changed reported results can also change results_digest while source/subject stay unchanged. Retain original artifacts; new issuance is distinct evidence. |
-| Archived old evaluator used for historical reproduction | Record exact evaluator/runtime evidence separately. It can reproduce a chosen environment but cannot prove the old host-power contract was portable. Do not add automatic fallback or claim historical identity without this evidence. |
+| Historical reproductions (audit only) | Retain exact evaluator/runtime provenance with existing observations. Reproduction of one chosen environment does not prove the old host-power contract was portable. No archived evaluator, fallback or ongoing historical verification service is required. |
 
-Recommend retaining the current receipt wire format initially. If supporting two
-numerical regimes requires a selector or schema change after compatibility
-measurement, return that precise contract for separate owner approval. No
-historical receipt may be reissued or rewritten solely to remove a disagreement;
-newly issued evidence must be distinguishable from the original.
+Recommend retaining the current receipt wire format for the launch contract
+unless its own approved requirements need a change. Supporting two numerical
+regimes is not required by historical pre-5 artifacts and is not proposed here.
+No historical receipt may be rewritten or treated as newly authenticated solely
+to remove a disagreement; newly issued evidence must be distinguishable from
+the original. Preserve the original audit record without grandfathering it.
 
 ## Conformance impact
 
@@ -628,8 +665,10 @@ Proposed positive/negative controls:
    do not authorize changing amount-times-negative-power to division.
 7. Independent Python and TS kernel vectors on multiple runtimes/OS/architectures;
    portable driver wrapping Node does not count as independent verification.
-8. Old/new engine receipt agreement, cross-engine disagreement RCP-07, same-engine
-   disagreement, result digest/signature preservation and historical source checks.
+8. Launch-admitted engine agreement/disagreement, authentication/error precedence,
+   result digest/signature subjects and source checks under the approved contract.
+   Retain pre-5 cross-engine and success-to-refusal observations as audit controls,
+   not required legacy support or authority to rewrite historical subjects.
 9. Actual spreadsheet recalculation for supported claims with its engine/version;
    native Excel XIRR does not override UWMD's pinned solver. Cached values are not
    recalculation evidence.
@@ -669,9 +708,11 @@ continues independently; the numerical oracle here is not an accepted solver.
 2. At the separate acceptance checkpoint (§7), approve a complete kernel,
    special-case/domain/resource/error table and financial graphs. The recommended
    primitive contract is not complete until these details and evidence exist.
-3. Choose compatibility activation and versioning after measurements, including
-   unchanged historical receipt evidence and the clean-break activation. No old
-   receipt may be rewritten.
+3. Choose launch activation and affected independent versions after measurements,
+   within the resolved major-5 policy, and approve receipt authentication/refusal
+   precedence. Pre-5 support is not an open choice in this RFC. Preserve historical
+   audit evidence; no old receipt may be rewritten or automatically authenticated
+   under new semantics. Tags/publication require separate authorization.
 4. Approve independent-platform and spreadsheet evidence required for advertised
    guarantees before the coordinated launch; no artificial release deadline.
 
