@@ -52,8 +52,10 @@ for (const [label, source, delta] of [['authored', original, 0], ['review_absent
   assert.deepEqual(adjusted, issued.candidate);
   assert.equal(payloads.baseline === payloads.candidate, delta === 0);
   const results = [];
+  const signedReceipts = {};
   for (const issuer of ['baseline', 'candidate']) {
     const signed = { ...issued[issuer], signature: { algorithm: 'ed25519', key_id: 'public-test-only-0091', value: sign(null, Buffer.from(payloads[issuer]), privateKey).toString('base64url') } };
+    signedReceipts[issuer] = signed;
     for (const verifier of ['baseline', 'candidate']) {
       let calls = 0;
       const backend = { async verify(receipt, payload) { calls++; return verify(null, Buffer.from(payload), publicKey, Buffer.from(receipt.signature.value, 'base64url')); } };
@@ -68,7 +70,7 @@ for (const [label, source, delta] of [['authored', original, 0], ['review_absent
       results.push({ issuer, verifier, unsigned, valid, noBackend, invalid, backend_calls: calls });
     }
   }
-  rows.push({ label, source_sha256: sha(source), expected_error_delta: delta, issued, signing_payloads: payloads, results });
+  rows.push({ label, source_sha256: sha(source), expected_error_delta: delta, issued, signed_receipts: signedReceipts, signing_payloads: payloads, results });
 }
 assert.deepEqual(raw, readFileSync(join(candidateRoot, name)));
 writeFileSync(output, `${JSON.stringify({ kind: 'actual-RFC0091-same-byte-issuance-and-public-test-crypto', identities, source: { path: name, sha256: sha(raw) }, transformations: { review: r, lifecycle: l, both }, test_public_key_spki_base64: publicKey.export({ format: 'der', type: 'spki' }).toString('base64'), options, rows, limits: 'Disposable in-memory field omissions only; original artifacts remain unchanged. Policy counts change issuance signing input, not subject/results or receipt verification rules. Does not authenticate historical artifacts under a new regime.' }, null, 2)}\n`);

@@ -614,3 +614,13 @@ Local portable reference conformance350/350 passes independently even though the
 native positive-example gate blocks the ordinary CI job before its portable step.
 Initial docs builds exposed a review link outside the docs-site copy set; the
 link must target its preserved GitHub artifact, not an uncopied local page.
+
+The additional13-CLI replay explicitly maps and traces each checkout's own
+core/verify runtime. An initial baseline invocation followed the numerical
+worktree's shared node_modules junction into candidate verify; that report is
+archived as negative harness evidence and is excluded from baseline claims.
+The corrected26-process report pins all resolved URLs, loaded files, raw streams
+and sources, confirming the0-to1 example exits. Direct verifier receipt API
+closures contain no @uwmd imports and are independently verified unaffected.
+All eight deterministic test signatures are preserved and independently verified
+with node:crypto against the included SPKI and exact canonical payloads.

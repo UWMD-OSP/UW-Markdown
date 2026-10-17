@@ -213,7 +213,7 @@ UWMD5.0 tag, release preparation or publication is authorized.
 ## Implementation acceptance packet — owner review pending
 
 The bounded candidate implements exactly these predicates in TypeScript and
-Python. [The existing review](../reviews/2026-10-15-python-reader-354.md#rfc0091-implementation-acceptance-packet)
+Python. [The existing review](https://github.com/UWMD-OSP/UW-Markdown/blob/87262741/docs/reviews/2026-10-15-python-reader-354.md#rfc0091-implementation-acceptance-packet)
 records independent review, exhaustive original-source/consumer dispositions,
 actual CLI and receipt boundaries, focused negative controls and exact CI.
 The archive retains before/after observations and original expectation evidence.

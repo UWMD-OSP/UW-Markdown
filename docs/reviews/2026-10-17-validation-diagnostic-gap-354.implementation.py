@@ -23,7 +23,10 @@ def verify():
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     raw = ARCHIVE.read_bytes()
     assert hashlib.sha256(raw).hexdigest() == manifest["archive_sha256"]
-    packed = json.loads(gzip.decompress(raw))
+    decoded = gzip.decompress(raw)
+    assert hashlib.sha256(decoded).hexdigest() == manifest["decoded_archive_sha256"]
+    packed = json.loads(decoded)
+    assert manifest["files"] == {name: {k: v for k, v in item.items() if k != "base64"} for name, item in packed.items()}
     files = {}
     for name, item in packed.items():
         value = base64.b64decode(item["base64"])
@@ -76,6 +79,8 @@ def verify():
             assert hashlib.sha256((ROOT / artifact["path"]).read_bytes()).hexdigest() == artifact["sha256"], artifact["path"]
     before = load("original-capital-expectation")
     after = json.loads((ROOT / allowed).read_text(encoding="utf-8"))
+    assert set(after) == set(before) == {"why", "agree_codes", "mismatch_codes"}
+    assert after["why"].startswith("RFC0091 candidate:")
     for key in ("agree_codes", "mismatch_codes"):
         assert after[key] == sorted(before[key] + ["META-02", "META-03"])
     for row in load("actual13-cli")["rows"]:
