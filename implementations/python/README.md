@@ -53,9 +53,10 @@ structural errors or the separate binding refusal. Parse refusals preserve
 allocated codes; I/O/internal failures return2. Validation never writes input.
 
 This is an implemented, **unadvertised developing command**, not a complete
-validation/Verifier claim. The manifest still claims only parse. Known uncovered
-inputs refuse explicitly: unresolved Composition uses accepted COMP-UNRESOLVED;
-unallocated metadata or lease-up shape requirements use an uncoded local error.
+validation/Verifier claim. The manifest still claims only parse. Detected
+unsupported inputs refuse explicitly: unresolved Composition uses accepted
+COMP-UNRESOLVED; unallocated metadata, lease-up or the REC/CS/WF shapes below
+use an uncoded local error.
 Both refusal forms carry detached local assessments and an explicitly labeled
 `partial_validation_result`, not a new normative ValidationResult state.
 The private unperformed V.12 `None` is omitted from CLI partial output rather
@@ -74,14 +75,33 @@ the actual command and unchanged shared `run_case` comparison. A transparent
 subprocess observer retains exact argv/stdout/stderr/exits plus source/case/
 expected/result hashes; it neither alters case flags nor advertises validate.
 That direct case evidence is separate from an advertised-capability run, which
-would report missing-capability failures under `--no-skip`. Current111-case
-execution results will be recorded at the committed source checkpoint.
+would report missing-capability failures under `--no-skip`. The first actual run
+at `b254047c` passed111/111 with zero failed/skipped, but three additional
+malformed REC/CS/WF optional-shape probes still returned clean/exit0. That
+first result is preserved as narrower evidence, not a complete admission proof.
 
-Exact remaining gates include typed/conditional provenance and reference
-admission beyond the allocated families; closed optional REC administrative-fee,
-gross-up/cap and true-up shapes; CS sizing declaration shapes; WF optional stated
-outcome/schedule shape and reference applicability; all applicable family-order/
-partition/negative-wire controls; and composition package/part resolution.
+The integrated local optional-shape assessment now inspects current inline
+recovery terms/true-up rows, top-level and component stack sizing declarations,
+and WF stated outcomes/schedules against their exact normative schema fragments.
+It preserves schema-admitted null/empty/zero, distinguishes bool from numbers,
+checks fixed closed unions/objects and never computes a sizing or outcome.
+These shape conditions receive no invented registered diagnostic; the command
+refuses them with detached local field/source evidence. The bounded checker
+explicitly refuses unsupported schema validation keywords, including in
+conditional/union branches, rather than treating an unchecked condition as valid.
+Unknown unrelated payload is preserved, externalized payload stays unresolved,
+and history is not financially reclassified. Existing registered REC/CS/WF
+semantic checks and arithmetic are unchanged.
+
+Exact remaining gates include complete typed/conditional provenance and
+reference admission beyond the allocated families; unreviewed top-level and
+other optional payload domains, including WF clawback field companions outside
+the currently allocated branches; CS selector/source semantics beyond declaration
+shape and all sizing/outcome recomputation; REC source-reference admission and
+financial verification; all applicable family-order/partition/negative-wire
+controls; and composition package/part resolution. These are remaining completion
+obligations, not a claim that the bounded shape collector discovers every
+unsupported authored input.
 No local assessment list proves complete schema coverage. General dictionary,
 state-and-verify financial outcomes and receipt verification remain subsequent
 base-Verifier obligations. No numerical procedure or optional profile is enabled.

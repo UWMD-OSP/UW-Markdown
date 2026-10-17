@@ -16,6 +16,7 @@ from uwmd_validation_structure import composition_rules, waterfall_rules
 from uwmd_validation_builtins import builtin_rules
 from uwmd_validation_external import composition_assessment
 from uwmd_validation_selection import is_externalized
+from uwmd_validation_optional_shapes import optional_shape_assessments
 
 
 async def validate_document(document, *, now=None, gap_staleness_days=14,
@@ -61,4 +62,5 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
                 replacement_funding_verification=copy.deepcopy(binding),
                 composition_assessment=copy.deepcopy(composition),
                 metadata_assessment=copy.deepcopy(metadata),
-                section_assessment={"lease_up_schedule": copy.deepcopy(lease_up)})
+                section_assessment={"lease_up_schedule": copy.deepcopy(lease_up),
+                                    **copy.deepcopy(optional_shape_assessments(snapshot))})
