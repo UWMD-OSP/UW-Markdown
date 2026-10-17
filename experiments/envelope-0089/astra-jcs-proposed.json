@@ -1,0 +1,481 @@
+{
+  "scope": "UNAPPLIED JCS guard proposal, isolated module loader only; no normative/version/production edits or cryptographic authentication",
+  "mode": "proposed",
+  "runtime": {
+    "node": "v24.14.1",
+    "v8": "13.6.233.17-node.44",
+    "platform": "win32",
+    "architecture": "x64"
+  },
+  "production_source_sha256": "93f3a8b8f57e7135030bf551780fc3d9862a83d8b19d981fe3086e035c1994d3",
+  "proposal_source_sha256": "240ab09d189499f0da2decf92255ed34e156e74f29f019071569efe1a4f4badd",
+  "low_level_controls": [
+    {
+      "text": "\ud800",
+      "kind": "scalar",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\ud800",
+      "kind": "value",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\ud800",
+      "kind": "key",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\ud800",
+      "kind": "nested",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\ud801",
+      "kind": "scalar",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\ud801",
+      "kind": "value",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\ud801",
+      "kind": "key",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\ud801",
+      "kind": "nested",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udbff",
+      "kind": "scalar",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udbff",
+      "kind": "value",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udbff",
+      "kind": "key",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udbff",
+      "kind": "nested",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udc00",
+      "kind": "scalar",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired low surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udc00",
+      "kind": "value",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired low surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udc00",
+      "kind": "key",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired low surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udc00",
+      "kind": "nested",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired low surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udfff",
+      "kind": "scalar",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired low surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udfff",
+      "kind": "value",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired low surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udfff",
+      "kind": "key",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired low surrogate"
+        }
+      }
+    },
+    {
+      "text": "\udfff",
+      "kind": "nested",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired low surrogate"
+        }
+      }
+    },
+    {
+      "text": "x\ud800y",
+      "kind": "scalar",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "x\ud800y",
+      "kind": "value",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "x\ud800y",
+      "kind": "key",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    },
+    {
+      "text": "x\ud800y",
+      "kind": "nested",
+      "outcome": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      }
+    }
+  ],
+  "valid_controls": {
+    "canonical": "{\"nul\":\"\\u0000\",\"pair\":\"😀\",\"replacement\":\"�\"}",
+    "utf8_sha256": "15add53e4e137b938b25bbf6046437536a61f494d4474b379b50557a1663924b",
+    "utf16_order": "{\"😀\":1,\"\":2}",
+    "composed": "\"é\"",
+    "decomposed": "\"é\""
+  },
+  "public_controls": [
+    {
+      "id": "invalid-value",
+      "source": "---\nuw_version: \"3.0\"\ndeal_id: \"rfc0089-single\"\ndeal_name: \"Extension representation evidence\"\nx_absent_vs_null: null\n---\n\n## Synthetic single / block 0\n\nExact prose <&> with \"quotes\".\n\n```json uw:section=x_review variant=default\n{\n  \"_meta\": {\n    \"section\": \"x_review\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"actor\": \"reviewer\",\n      \"timestamp\": \"2026-10-16T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    },\n    \"x_unknown_metadata\": {\n      \"retained\": [\n        null,\n        \"\",\n        {\n          \"a/~b\": true\n        }\n      ]\n    }\n  },\n  \"note\": \"\\ud800\",\n  \"content\": {\n    \"unknown\": {\n      \"a/~b\": [\n        null,\n        {},\n        [],\n        \"\",\n        1.5\n      ],\n      \"member\": \"<&> \\\"quoted\\\"\",\n      \"item\": \"CR\\rLF\\nTAB\\t\",\n      \"emoji\": \"😀\",\n      \"bmp\": \"\"\n    }\n  },\n  \"_notes\": null,\n  \"_overrides\": [\n    {\n      \"path\": \"not_a_target\",\n      \"note\": \"retained only; no inference\"\n    }\n  ]\n}\n```\n",
+      "source_sha256": "7c44c6fca4b8e13828bd4c0443f14941d2d0a40ac56535ca1780fcae1a8f5d15",
+      "old_receipt": {
+        "receipt_version": "1.1",
+        "subject": {
+          "representation": "uwx-markdown",
+          "representation_version": "1.0",
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "1.0",
+          "digest": "sha256:18f10404ecfb257f51636046e1315135695e75aa64332fe1e0634a9e5beb9453"
+        },
+        "computation": {
+          "pack": "research.rfc0089.unicode-control",
+          "pack_version": "0.0.0-research",
+          "engine": "research-only.unicode-control",
+          "engine_version": "0.0.0-research",
+          "protocol_version": "4.1.0",
+          "results": [
+            {
+              "calc_id": "constant",
+              "value": 1,
+              "computed": true
+            }
+          ],
+          "results_digest": "sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff"
+        },
+        "policy": {
+          "policy_set": "builtin",
+          "policy_set_version": "1.0",
+          "validation": {
+            "errors": 0,
+            "warnings": 1
+          }
+        },
+        "issued_at": "2026-10-17T00:00:00Z",
+        "issuer": "research-only",
+        "signature": null
+      },
+      "old_receipt_json_sha256": "2b7ca7894024748f2a1d7005f2f866d30d972685a69dcbe964b5f5e08ffccdde",
+      "receipt_verification": {
+        "verdict": "unverifiable",
+        "issues": [
+          {
+            "code": "RCP-09",
+            "severity": "indeterminate",
+            "message": "The record could not be canonicalized for comparison: canonicalize: cannot serialize an unpaired high surrogate"
+          }
+        ]
+      },
+      "document_artifact": {
+        "kind": "uwmd-document-signature",
+        "signature_version": "1",
+        "subject": {
+          "representation": "uwx-markdown",
+          "representation_version": "1.0",
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "1.0",
+          "digest": "sha256:18f10404ecfb257f51636046e1315135695e75aa64332fe1e0634a9e5beb9453"
+        },
+        "alg": "ed25519",
+        "kid": "research-placeholder",
+        "signed_at": "2026-10-17T00:00:00Z",
+        "sig": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "document_verification": {
+        "state": "failed",
+        "reason": "malformed_source",
+        "issues": [
+          {
+            "code": "INT-15",
+            "message": "Cannot authenticate source: canonicalize: cannot serialize an unpaired high surrogate"
+          }
+        ]
+      },
+      "unsupported_subject_verification": {
+        "state": "unverifiable",
+        "reason": "unsupported_version",
+        "issues": [
+          {
+            "code": "INT-14",
+            "message": "Unsupported document-signature version or subject."
+          }
+        ]
+      },
+      "signature_backend_calls": 0,
+      "verified_json_boundary": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      },
+      "receipt_unchanged": true
+    },
+    {
+      "id": "invalid-key",
+      "source": "---\nuw_version: \"3.0\"\ndeal_id: \"rfc0089-single\"\ndeal_name: \"Extension representation evidence\"\nx_absent_vs_null: null\n---\n\n## Synthetic single / block 0\n\nExact prose <&> with \"quotes\".\n\n```json uw:section=x_review variant=default\n{\n  \"_meta\": {\n    \"section\": \"x_review\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"actor\": \"reviewer\",\n      \"timestamp\": \"2026-10-16T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    },\n    \"x_unknown_metadata\": {\n      \"retained\": [\n        null,\n        \"\",\n        {\n          \"a/~b\": true\n        }\n      ]\n    }\n  },\n  \"\\ud801\": \"key-control\", \"note\": \"synthetic\",\n  \"content\": {\n    \"unknown\": {\n      \"a/~b\": [\n        null,\n        {},\n        [],\n        \"\",\n        1.5\n      ],\n      \"member\": \"<&> \\\"quoted\\\"\",\n      \"item\": \"CR\\rLF\\nTAB\\t\",\n      \"emoji\": \"😀\",\n      \"bmp\": \"\"\n    }\n  },\n  \"_notes\": null,\n  \"_overrides\": [\n    {\n      \"path\": \"not_a_target\",\n      \"note\": \"retained only; no inference\"\n    }\n  ]\n}\n```\n",
+      "source_sha256": "0af6daddb73be543336e4637be038dd0e1ad61a77a4f1bbd03777c79bb7f6787",
+      "old_receipt": {
+        "receipt_version": "1.1",
+        "subject": {
+          "representation": "uwx-markdown",
+          "representation_version": "1.0",
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "1.0",
+          "digest": "sha256:19618daa0cf6e5ff202399838e62d5a2f4008f164f901de02f7ef01fc42e5d6f"
+        },
+        "computation": {
+          "pack": "research.rfc0089.unicode-control",
+          "pack_version": "0.0.0-research",
+          "engine": "research-only.unicode-control",
+          "engine_version": "0.0.0-research",
+          "protocol_version": "4.1.0",
+          "results": [
+            {
+              "calc_id": "constant",
+              "value": 1,
+              "computed": true
+            }
+          ],
+          "results_digest": "sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff"
+        },
+        "policy": {
+          "policy_set": "builtin",
+          "policy_set_version": "1.0",
+          "validation": {
+            "errors": 0,
+            "warnings": 1
+          }
+        },
+        "issued_at": "2026-10-17T00:00:00Z",
+        "issuer": "research-only",
+        "signature": null
+      },
+      "old_receipt_json_sha256": "d10d5cc3186eb1e2b17046f962e7efec901fe5cb8090385d9a94082906e2e1f4",
+      "receipt_verification": {
+        "verdict": "unverifiable",
+        "issues": [
+          {
+            "code": "RCP-09",
+            "severity": "indeterminate",
+            "message": "The record could not be canonicalized for comparison: canonicalize: cannot serialize an unpaired high surrogate"
+          }
+        ]
+      },
+      "document_artifact": {
+        "kind": "uwmd-document-signature",
+        "signature_version": "1",
+        "subject": {
+          "representation": "uwx-markdown",
+          "representation_version": "1.0",
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "1.0",
+          "digest": "sha256:19618daa0cf6e5ff202399838e62d5a2f4008f164f901de02f7ef01fc42e5d6f"
+        },
+        "alg": "ed25519",
+        "kid": "research-placeholder",
+        "signed_at": "2026-10-17T00:00:00Z",
+        "sig": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "document_verification": {
+        "state": "failed",
+        "reason": "malformed_source",
+        "issues": [
+          {
+            "code": "INT-15",
+            "message": "Cannot authenticate source: canonicalize: cannot serialize an unpaired high surrogate"
+          }
+        ]
+      },
+      "unsupported_subject_verification": {
+        "state": "unverifiable",
+        "reason": "unsupported_version",
+        "issues": [
+          {
+            "code": "INT-14",
+            "message": "Unsupported document-signature version or subject."
+          }
+        ]
+      },
+      "signature_backend_calls": 0,
+      "verified_json_boundary": {
+        "refused": {
+          "name": "TypeError",
+          "code": null,
+          "message": "canonicalize: cannot serialize an unpaired high surrogate"
+        }
+      },
+      "receipt_unchanged": true
+    }
+  ],
+  "unit_patch": "proposed-jcs-unicode.patch",
+  "signature_stub_is_cryptography": false
+}
