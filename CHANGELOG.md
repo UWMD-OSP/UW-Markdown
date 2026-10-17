@@ -13,6 +13,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Extend draft RFC0088 research with bounded exact-rational PMT/PV/FV cancellation
+  and actual refusal/reporting evidence, separating primitive reproducibility from
+  whole-formula accuracy. Preserve all prior observations and production procedures;
+  no accuracy objective, financial graph, receipt policy or version is accepted.
+
 - Enforce RFC0090's required nonempty-string provenance actor with narrow
   META-01/error across retained physical blocks. Preserve wrapper precedence,
   mutable-model authority and historical source/expectation identities; govern
