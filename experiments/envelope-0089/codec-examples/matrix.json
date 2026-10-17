@@ -1,0 +1,341 @@
+{
+  "status": "UNACCEPTED CANDIDATE CODEC EXAMPLES / NOT CONFORMANCE",
+  "tokens": {
+    "envelope": "E_NEXT",
+    "canonicalization": "C_NEXT",
+    "bundle": "B_NEXT",
+    "xml_namespace": "urn:uwmd:unaccepted:rfc0089"
+  },
+  "cases": [
+    {
+      "case": "single",
+      "semantic_digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2",
+      "source_available": true,
+      "artifacts": [
+        {
+          "path": "csv/block_values.csv",
+          "bytes": 3145,
+          "sha256": "fb3c02228e03c892833c077d5518c60ff64fdf66ce32bab4cb67291a46cb09b8"
+        },
+        {
+          "path": "csv/blocks.csv",
+          "bytes": 185,
+          "sha256": "2c48fe48b969a6f63ab22ca4c96922d63afbf9c8a36b07eca2b9445502606dbb"
+        },
+        {
+          "path": "csv/document.csv",
+          "bytes": 307,
+          "sha256": "8cd36a5266831c666177ee825afc22b8d99f37a9567058070af0d673238878e0"
+        },
+        {
+          "path": "csv/frontmatter.csv",
+          "bytes": 226,
+          "sha256": "054a418e085d52b91095048434fb672b8a41722ddd1a0c8c6b2029a89b44e761"
+        },
+        {
+          "path": "csv/manifest.json",
+          "bytes": 1111,
+          "sha256": "aaf695a7aa73b7711c70324ae082a63dd81b8679c879099e14a5378f940b17f0"
+        },
+        {
+          "path": "csv/prose.csv",
+          "bytes": 193,
+          "sha256": "0fc2dfa60f17bdecabdd2752998920d317e73806fb8b3dfb3d76ea45b217ed1a"
+        },
+        {
+          "path": "digest.txt",
+          "bytes": 72,
+          "sha256": "80d4595ffc923294b26d12c96fefb23fee274d0ceca59915f58fe15da3fa14b1"
+        },
+        {
+          "path": "document.uw.json",
+          "bytes": 1980,
+          "sha256": "6b4c3c34526bf39d4e16526a460a6a321446b8569f50e9cc4e0fbecee0696a85"
+        },
+        {
+          "path": "document.uw.xml",
+          "bytes": 2842,
+          "sha256": "75f7db110c19b93e06a6f9fdf26135a46a1d34231b582f5692f929c437180af6"
+        },
+        {
+          "path": "original.uwx.md",
+          "bytes": 1084,
+          "sha256": "95a5b6ce2bb81478f39197f01be78f258e6f1b1e4281eadbcd70542feec8c217"
+        },
+        {
+          "path": "reissuance-plan.json",
+          "bytes": 866,
+          "sha256": "fad251c9eab3c0728bbac1192d0be32f465c0faf036d488cbb5d7f08519394b4"
+        },
+        {
+          "path": "subject.jcs",
+          "bytes": 999,
+          "sha256": "5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2"
+        }
+      ]
+    },
+    {
+      "case": "one-peer",
+      "semantic_digest": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15",
+      "source_available": true,
+      "artifacts": [
+        {
+          "path": "csv/block_values.csv",
+          "bytes": 3586,
+          "sha256": "0735b99314134f3fe1c3b5d6d39b5e7f0ec95971e3fc03add6e734707d8ffe4b"
+        },
+        {
+          "path": "csv/blocks.csv",
+          "bytes": 197,
+          "sha256": "1a40537221a81e4773e2c5b4e287feaf9361a0e931904eb302ae26d5657a7497"
+        },
+        {
+          "path": "csv/document.csv",
+          "bytes": 309,
+          "sha256": "8ee141426622bac612927759d710bf79625b06d79a50c472464eeb65ea8fe5a4"
+        },
+        {
+          "path": "csv/frontmatter.csv",
+          "bytes": 228,
+          "sha256": "2c4c551defb52fe92b84027c1762d0f986b77aa14388761746ea717b2931769f"
+        },
+        {
+          "path": "csv/manifest.json",
+          "bytes": 1111,
+          "sha256": "3af5739215dfdaf4303c548e14d537458f96b4c19e3fb49de1e9780e77a656cb"
+        },
+        {
+          "path": "csv/prose.csv",
+          "bytes": 213,
+          "sha256": "b04c0dd29bb5bbd633fc5743ef728b0af1be7655f60298d4ecdf6242dd26faff"
+        },
+        {
+          "path": "digest.txt",
+          "bytes": 72,
+          "sha256": "e202935967ae788bea81d96add52c67e2b02b86813ff09a24c581304185cd2d1"
+        },
+        {
+          "path": "document.uw.json",
+          "bytes": 2326,
+          "sha256": "528eaa9c024c4c47ba7611daf53d5e1a9637149eba967dbfeceac03599ec739d"
+        },
+        {
+          "path": "document.uw.xml",
+          "bytes": 3017,
+          "sha256": "a07c5cfea3c34171fadf4eb44957bba421dcd6db6c7c16179c2e98a9be7bb03b"
+        },
+        {
+          "path": "original.uwx.md",
+          "bytes": 1110,
+          "sha256": "69d47c257f090d7bd9f6b37b360acf39668db156269174adc56dc21db4f6d06a"
+        },
+        {
+          "path": "reissuance-plan.json",
+          "bytes": 866,
+          "sha256": "8c59a4353546ecd9f5c12967959485889d55a07a735626fac597073470c498ac"
+        },
+        {
+          "path": "subject.jcs",
+          "bytes": 1056,
+          "sha256": "3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15"
+        }
+      ]
+    },
+    {
+      "case": "mixed-null-default",
+      "semantic_digest": "sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd",
+      "source_available": true,
+      "artifacts": [
+        {
+          "path": "csv/block_values.csv",
+          "bytes": 6949,
+          "sha256": "f07f8474e50eeeb7c45bed4707d382e29ccd847bb650da3ccf3fc301b2343a58"
+        },
+        {
+          "path": "csv/blocks.csv",
+          "bytes": 296,
+          "sha256": "2228b3f2d089adbaaebf8398448da96e8964553d400026f51df7d87f5f39ee95"
+        },
+        {
+          "path": "csv/document.csv",
+          "bytes": 319,
+          "sha256": "21ae7ef426c21a9fb88aea08be3963bb76b81f0dd3998d6e3aeee176dff8d758"
+        },
+        {
+          "path": "csv/frontmatter.csv",
+          "bytes": 238,
+          "sha256": "0dea6d4319841a5fae6188a050df09e910596091b9619dfbe665d7d3d885018d"
+        },
+        {
+          "path": "csv/manifest.json",
+          "bytes": 1111,
+          "sha256": "4e44f60c8d7fd85b5e45798333571a3090511bc02b2be6adcb56255e2d2f45c1"
+        },
+        {
+          "path": "csv/prose.csv",
+          "bytes": 400,
+          "sha256": "9e6a2f20335eeef17855bc95fb5ab1792e91c9933f9b32d0d5a822a52503e548"
+        },
+        {
+          "path": "digest.txt",
+          "bytes": 72,
+          "sha256": "a840d937e6e9bc07c5ca0e39cebdd8da9f9273dbb05ab61030d1094207e1c339"
+        },
+        {
+          "path": "document.uw.json",
+          "bytes": 4069,
+          "sha256": "8dcb834e839d40c6929f064c63410e6959c4372b1fcd68988b62e9209ff72fa4"
+        },
+        {
+          "path": "document.uw.xml",
+          "bytes": 5035,
+          "sha256": "67d4b3a81e0ff2c474590a051d5584098012f20021a6cf5550c75c20fc083127"
+        },
+        {
+          "path": "original.uwx.md",
+          "bytes": 2088,
+          "sha256": "4fe5cb2134982df21269bc58b83f29d6542036ddfda2b631d1b668410baa904c"
+        },
+        {
+          "path": "reissuance-plan.json",
+          "bytes": 1079,
+          "sha256": "36061fa7a3bd8b0c2c821af1e3098153c1176bfbab78bff8f17ae2cd9e7c3403"
+        },
+        {
+          "path": "subject.jcs",
+          "bytes": 1759,
+          "sha256": "5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd"
+        }
+      ]
+    },
+    {
+      "case": "ordered-history",
+      "semantic_digest": "sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2",
+      "source_available": true,
+      "artifacts": [
+        {
+          "path": "csv/block_values.csv",
+          "bytes": 13201,
+          "sha256": "513e376867160e9ec688da4aad86b138c28087ac66d41c4545999123ca3c7e22"
+        },
+        {
+          "path": "csv/blocks.csv",
+          "bytes": 463,
+          "sha256": "91916bdf839f1cf5fbd1b3a356b21788452c4ed1eb0ffbfa4db6c2ac3279a7aa"
+        },
+        {
+          "path": "csv/document.csv",
+          "bytes": 316,
+          "sha256": "3a06759882f084d502d0d7048abec85594f14ec65024479aa073d8d137bd4420"
+        },
+        {
+          "path": "csv/frontmatter.csv",
+          "bytes": 235,
+          "sha256": "0b02096e484acef91f071e7f806c9b016fde175fa15108a7d3aad53760c71d8e"
+        },
+        {
+          "path": "csv/manifest.json",
+          "bytes": 1112,
+          "sha256": "e3ec9074babceb12e0ae53218a73dea7f5d9d2e85b55e776a1e54a5d903d051a"
+        },
+        {
+          "path": "csv/prose.csv",
+          "bytes": 690,
+          "sha256": "65d7c9824def183b2f69de2a7a7272ad7f79d715e26e141d070156fa17dc0f7c"
+        },
+        {
+          "path": "digest.txt",
+          "bytes": 72,
+          "sha256": "c59d2dccf7f7fee259ea413acf8d3be214ae740b023bb7a0a6f59e8a5abcbe82"
+        },
+        {
+          "path": "document.uw.json",
+          "bytes": 7221,
+          "sha256": "f89bf04c09a62b999e351d00c5ef5b806617fa821468f0c12822d76625408cd4"
+        },
+        {
+          "path": "document.uw.xml",
+          "bytes": 9332,
+          "sha256": "1836b65e7f563d2e89e9c179f030ee741e2a789ea410db202ce8478f9c682871"
+        },
+        {
+          "path": "original.uwx.md",
+          "bytes": 4145,
+          "sha256": "531eeb3d977bd0d73d0ead87635bbc88ba31b272b96cf7c3d417455a217472fb"
+        },
+        {
+          "path": "reissuance-plan.json",
+          "bytes": 1518,
+          "sha256": "bedf0044dc579039518c937c28a8260024b74a08c52abc6bfcccd7d7658f9986"
+        },
+        {
+          "path": "subject.jcs",
+          "bytes": 3239,
+          "sha256": "05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2"
+        }
+      ]
+    },
+    {
+      "case": "direct-model-unknown",
+      "semantic_digest": "sha256:ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87",
+      "source_available": false,
+      "artifacts": [
+        {
+          "path": "csv/block_values.csv",
+          "bytes": 3237,
+          "sha256": "4dd87902f27f3e8ff9f03e2b0089455d00c93baaf69ee256987e68945fa3b2fc"
+        },
+        {
+          "path": "csv/blocks.csv",
+          "bytes": 185,
+          "sha256": "2c48fe48b969a6f63ab22ca4c96922d63afbf9c8a36b07eca2b9445502606dbb"
+        },
+        {
+          "path": "csv/document.csv",
+          "bytes": 393,
+          "sha256": "066d8ac3b6e13d36a3046602c5a9a2ffc155e85bcff615a01deb9f25ae839d72"
+        },
+        {
+          "path": "csv/frontmatter.csv",
+          "bytes": 240,
+          "sha256": "cf44a4728cfa6c07222e283ec435e5775587f2000d7ee0a43e1962f85d95b338"
+        },
+        {
+          "path": "csv/manifest.json",
+          "bytes": 1111,
+          "sha256": "cc47d50e186e962f03de5524c11fb4b39753cccba3ff534adc28d96e52bb76ef"
+        },
+        {
+          "path": "csv/prose.csv",
+          "bytes": 193,
+          "sha256": "0fc2dfa60f17bdecabdd2752998920d317e73806fb8b3dfb3d76ea45b217ed1a"
+        },
+        {
+          "path": "digest.txt",
+          "bytes": 72,
+          "sha256": "70242ac371fcb9bf06d41300a7d9a5b7fa9f854fc94f9043ed078bc69761b6e1"
+        },
+        {
+          "path": "document.uw.json",
+          "bytes": 2156,
+          "sha256": "36c4568bdf19161f01fa25a4aa39a416d28fbf7b69697f6ef85cb5ab8273365d"
+        },
+        {
+          "path": "document.uw.xml",
+          "bytes": 3226,
+          "sha256": "f13ebe109bb504dabac8dba3317238208479502ad4081235bf2e32be85ffdaab"
+        },
+        {
+          "path": "origin.json",
+          "bytes": 215,
+          "sha256": "9fe170edbdbbbadc7e7fc16a1eb1dec3258a04cdd2f83d02c78d0551701a372c"
+        },
+        {
+          "path": "subject.jcs",
+          "bytes": 1111,
+          "sha256": "ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87"
+        }
+      ]
+    }
+  ]
+}

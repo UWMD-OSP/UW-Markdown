@@ -1,0 +1,37 @@
+{
+  "status": "UNACCEPTED RFC0089 DIRECTORY EXAMPLE",
+  "bundle_version": "B_NEXT",
+  "envelope_version": "E_NEXT",
+  "format_version": "3.0",
+  "canonicalization_version": "C_NEXT",
+  "semantic_digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2",
+  "normalized_value_encoding": "canonical-json",
+  "csv_dialect": "rfc4180",
+  "inventory": [
+    {
+      "path": "block_values.csv",
+      "bytes": 3145,
+      "sha256": "fb3c02228e03c892833c077d5518c60ff64fdf66ce32bab4cb67291a46cb09b8"
+    },
+    {
+      "path": "blocks.csv",
+      "bytes": 185,
+      "sha256": "2c48fe48b969a6f63ab22ca4c96922d63afbf9c8a36b07eca2b9445502606dbb"
+    },
+    {
+      "path": "document.csv",
+      "bytes": 307,
+      "sha256": "8cd36a5266831c666177ee825afc22b8d99f37a9567058070af0d673238878e0"
+    },
+    {
+      "path": "frontmatter.csv",
+      "bytes": 226,
+      "sha256": "054a418e085d52b91095048434fb672b8a41722ddd1a0c8c6b2029a89b44e761"
+    },
+    {
+      "path": "prose.csv",
+      "bytes": 193,
+      "sha256": "0fc2dfa60f17bdecabdd2752998920d317e73806fb8b3dfb3d76ea45b217ed1a"
+    }
+  ]
+}

@@ -409,3 +409,24 @@ custom schema, compatibility shim, new conformance fixture or Protocol verdict
 is introduced. Signature/receipt/XML/CSV execution and general candidate
 validation remain unclaimed. Mixed-identity design, independent versioning and
 release placement remain unapproved owner decisions.
+
+### 2026-10-16 — Concrete unaccepted RFC0089 codec/reissuance examples
+
+The [isolated candidate lab](../../experiments/envelope-0089/README.md#complete-candidate-codec-artifacts-and-explicit-reissuance-examples)
+now freezes five complete JSON/XML/normalized-CSV models, four original structured
+sources with physical accounting/reissuance plans, exact canonical subjects and
+artifact inventories. The examples cover single, one-peer variants, mixed null/
+literal-default, ordered history and direct-model unknown members. Seventeen
+focused Python methods and two independent Node subject/artifact tests pass.
+The lab is a validation/codec subset, not a complete normative validator or new
+Reader/Verifier capability; unsupported prototype domains refuse explicitly.
+Legal JSON strings/member names that XML1 cannot express remain legal JSON/CSV
+and trigger an explicit XML refusal; a versioned escaped-string/name mapping is
+an unapproved design option. Source reprojection uses retained physical blocks,
+not the existing default-key ParsedUWFile/portable projection, whose mixed-null/
+default collision this Envelope candidate alone does not fix. Admitting that
+mixed identity entails public projection/type/Protocol/Format accounting too.
+Missing original source plus no complete attributable archive blocks migration;
+old subjects remain immutable and new authentication/receipts/plans require their
+own approved issuance. V.13 guards, all existing schemas/codecs, current digests,
+receipts, conformance flags/expectations and reserved5.0 remain unchanged.

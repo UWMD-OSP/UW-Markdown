@@ -1,0 +1,78 @@
+{
+  "envelope_version": "E_NEXT",
+  "format_version": "3.0",
+  "frontmatter": {
+    "uw_version": "3.0",
+    "deal_id": "rfc0089-single",
+    "deal_name": "Extension representation evidence",
+    "x_absent_vs_null": null
+  },
+  "sections": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {
+    "x_review": {
+      "mode": "single",
+      "block": {
+        "annotation": {
+          "section": "x_review",
+          "variant": "default"
+        },
+        "content": {
+          "_meta": {
+            "section": "x_review",
+            "provenance": {
+              "source": "manual",
+              "actor": "reviewer",
+              "timestamp": "2026-10-16T00:00:00Z"
+            },
+            "quality": {
+              "confidence": "high",
+              "human_review_required": false
+            },
+            "lifecycle": {
+              "revision": 1,
+              "superseded": false
+            },
+            "x_unknown_metadata": {
+              "retained": [
+                null,
+                "",
+                {
+                  "a/~b": true
+                }
+              ]
+            }
+          },
+          "note": "synthetic",
+          "content": {
+            "unknown": {
+              "a/~b": [
+                null,
+                {},
+                [],
+                "",
+                1.5
+              ],
+              "member": "<&> \"quoted\"",
+              "item": "CR\rLF\nTAB\t",
+              "emoji": "😀",
+              "bmp": ""
+            }
+          },
+          "_notes": null,
+          "_overrides": [
+            {
+              "path": "not_a_target",
+              "note": "retained only; no inference"
+            }
+          ]
+        },
+        "prose": "## Synthetic single / block 0\n\nExact prose <&> with \"quotes\"."
+      }
+    }
+  },
+  "superseded": {},
+  "semantic_digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2"
+}
