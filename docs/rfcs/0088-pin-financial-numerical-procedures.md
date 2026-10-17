@@ -753,7 +753,7 @@ and receipt rules remain unchanged.
 
 ### Independent raw Python procedure checkpoint (unaccepted)
 
-The [new isolated Python implementation](../../experiments/numerical-0088/python-fdlibm/README.md)
+The [new isolated Python implementation](https://github.com/UWMD-OSP/UW-Markdown/blob/cd4a9daa52c09c7f0f856cd02f47ee0a44b9ad30/experiments/numerical-0088/python-fdlibm/README.md)
 implements the same seven raw helpers directly from the frozen C, independently
 structured from the JS candidate, including all integer/fractional powers. It
 uses explicit binary64 words, signed32/unsigned32 operations, IEEE zero division
