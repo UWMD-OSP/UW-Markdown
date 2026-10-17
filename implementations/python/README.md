@@ -313,7 +313,7 @@ projection or infer verified continuity from retained history.
 Full Format validation, document-level period/role resolution for calculations,
 expression evaluation, dictionary result checking and the remaining applicable
 Protocol II.2 verifiers remain outstanding. Separate reserve-account/draw-binding
-checks, `V.12 replacement commitments and block hashes/bounded chain assessment
+checks, §V.12 replacement commitments and block hashes/bounded chain assessment
 implement only their documented scopes. The full integrity profile, signatures,
 receipts and receipt verification remain unimplemented. Missing, unsupported and
 failed assertions must remain distinguishable. Passing Reader projections does
@@ -390,7 +390,7 @@ deciding which references to resolve. Actual evaluation remains unimplemented.
 ## Standalone reserve-account verification
 
 `python -B implementations/python/uwmd.py verify-reserve-accounts <file> --json`
-implements accepted Format `4.28 and Protocol `VIII.11. It snapshots parsed
+implements accepted Format §4.28 and Protocol §VIII.11. It snapshots parsed
 source, checks closed account/period/movement facts and provenance, then checks
 authored-order binary64 balance identities and explicitly claimed continuity
 at the existing separately applied 2dp half-away boundary. No movement class,
@@ -437,7 +437,7 @@ capabilities. Genuine portable Reader runs remain separately reported as 17/17.
 ## Standalone reserve-draw bindings
 
 `python -B implementations/python/uwmd.py verify-reserve-draws <file> [plan.json] --json`
-implements accepted Protocol `VIII.12/RFC0065. An omitted plan returns
+implements accepted Protocol §VIII.12/RFC0065. An omitted plan returns
 `not_checked/not_applicable`; explicitly supplied JSON null is invalid structure.
 The plan names exact nullable variants, account/period/movement IDs, gross
 lease-up TI/LC cells or cash-flow row ordinals, declared funded shares and
@@ -484,11 +484,11 @@ The manifest stays parse-only and genuine Reader 17/17 runs remain separate.
 ## Standalone replacement-funding bindings
 
 `python -B implementations/python/uwmd.py verify-replacement-funding <file> --json`
-implements accepted Protocol `V.12/RFC0070, including RFC0075 senior preference,
+implements accepted Protocol §V.12/RFC0070, including RFC0075 senior preference,
 RFC0076 refused selections and RFC0081's optional terms group. Its two-member
 CLI wrapper is **nonnormative**: `structural_issues` contains only the relevant
 hedge, funding, escrow, cash-source and currency prerequisites;
-`replacement_funding_verification` has the exact `V.12.3 result union. There is
+`replacement_funding_verification` has the exact §V.12.3 result union. There is
 no overall validation/readiness result. `validate` and `calc` remain unsupported.
 Exit status is nonzero for relevant structural refusal or failed/unverifiable
 binding. A lawful nonapplicable path returns `not_checked/not_applicable`.
@@ -536,7 +536,7 @@ separate.
 ## Block hashes and bounded chain assessment
 
 `python -B implementations/python/uwmd.py verify-block-integrity <file> --json`
-adds independent Protocol `V.9 block hashing and a bounded `V.10 chain assessment.
+adds independent Protocol §V.9 block hashing and a bounded §V.10 chain assessment.
 This command's report and local assessment vocabulary are **nonnormative**. It
 is not the full `IntegrityResult`, an integrity-profile claim, full validation,
 signature verification or document authentication. Discovery stays parse-only;
@@ -596,13 +596,14 @@ hash-provider/JCS failures, unchanged roots and snapshots before the first await
 ## Metadata, active source and role inventory
 
 `python -B implementations/python/uwmd.py inspect-source-roles <file> --json`
-performs a bounded independent Format `2.5/`2.6/`2.8 inventory. The report is a
+performs a bounded independent Format §2.5/§2.6/§2.8 inventory. The report is a
 **nonnormative standalone wrapper**, not `ValidationResult`, complete Format
 validation or a Reader/Verifier tier claim. Discovery stays parse-only;
 validate, calc and generic verify remain unsupported.
 
-`inspect_source_roles` snapshots the document and inspects every active physical
-block, including earlier active blocks hidden by canonical singleton selection,
+`inspect_source_roles` snapshots the current parsed-value model. Its source/role
+checks inspect every active physical block, including earlier active blocks
+hidden by canonical singleton selection,
 all parallel variants, extension sections and unselected role peers. It reports
 exact SRC-01 actor-grammar failures, SRC-02 resolution tags in actor fields,
 SRC-03 unknown resolution values and ROLE-01 invalid active scalar roles. The
@@ -623,7 +624,8 @@ An agent source requires the `agent_id` member; admitted null remains unchanged.
 JSON integer semantics admit revision `1.0` and reject booleans.
 
 Historical blocks are counted as skipped by the active source/role checks;
-their metadata shape and actor are inspected, and their roles are not reclassified. Source byte spans,
+their metadata shape and actor are inspected, and their roles are not
+reclassified. Source byte spans,
 physical ordinals and exact authored variants distinguish findings on repeated
 active blocks. Returned evidence is detached and the original source/Reader
 projection remains unchanged. The wrapper's local `ok` requires both finding
@@ -699,8 +701,8 @@ diagnostics only and never repairs actors or reissues historical evidence.
 
 `python -B implementations/python/uwmd.py inspect-document-currency <file> --json`
 independently checks the accepted document-level currency assertion under Protocol
-`III.1b/RFC0046. A non-null authored value that is not exactly three uppercase
-ASCII letters emits `CUR-01` with error severity. Accepted `V.12.2 explicitly
+§III.1b/RFC0046. A non-null authored value that is not exactly three uppercase
+ASCII letters emits `CUR-01` with error severity. Accepted §V.12.2 explicitly
 admits absent/null identity; evidence preserves their difference rather than
 inserting or normalizing a value. No hedge, reserve or other financial section
 is required for this document-level check.
