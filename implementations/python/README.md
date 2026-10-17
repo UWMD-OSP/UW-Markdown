@@ -98,6 +98,18 @@ The CLI/discovery source is byte-identical to the main baseline. This run also
 preserves the existing reserve/draw/replacement and read-only/snapshot evidence.
 It does not turn the 111 direct API projections into validate CLI passes.
 
+The readiness closure now shares the active section-presence inventory and
+scope missing-field test between the seven booleans and declared-stage rules.
+Scope reads the same eligible property selection as ordinary validation, so a
+later component/invalid-role peer cannot overwrite it and a selected external
+property cannot borrow an inline peer's fields. Eight new focused methods bring
+the integrated-validation total to 60. They exercise all seven stage tables
+across all twelve builtin classes and an unknown-class base-list control, each
+required-section removal for the base/land/mixed-use/new builtin cases, role
+collisions, current/history, external presence and explicit zero/null values.
+These are source-level read-only API controls, not a full field-type validator,
+new command, capability pass or cleared-diligence/final-loan claim.
+
 The CLI still refuses `validate` and discovery remains parse-only. Completion
 still needs the remaining audited field/condition integration, disposition of
 the actual required-actor conflict below, and explicit unsupported-composition
@@ -219,6 +231,26 @@ The twelve affected portable ids are:
 - `verifier__documents__15-student-bed-counts-inconsistent__validate`
 - `verifier__documents__17-exit-proceeds-junior-capital__validate`
 
+Exact source/expected pairs are retained in the
+[prior audit](https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6229113134)
+and its [diagnostic-allocation amendment](https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6229116406).
+This inventory reuses that evidence; the twelve API/CLI/schema probes were not repeated.
+
+| Frozen source | Frozen expected validation projection |
+|---|---|
+| [conformance/documents/fixtures/05-land-stage-overlay.uwx.md](../../conformance/documents/fixtures/05-land-stage-overlay.uwx.md) | [conformance/documents/expected/05-land-stage-overlay.validation.json](../../conformance/documents/expected/05-land-stage-overlay.validation.json) |
+| [conformance/documents/fixtures/06-mixed-use-stage-overlay.uwx.md](../../conformance/documents/fixtures/06-mixed-use-stage-overlay.uwx.md) | [conformance/documents/expected/06-mixed-use-stage-overlay.validation.json](../../conformance/documents/expected/06-mixed-use-stage-overlay.validation.json) |
+| [conformance/documents/fixtures/07-stage-overlay-control.uwx.md](../../conformance/documents/fixtures/07-stage-overlay-control.uwx.md) | [conformance/documents/expected/07-stage-overlay-control.validation.json](../../conformance/documents/expected/07-stage-overlay-control.validation.json) |
+| [conformance/documents/fixtures/08-variant-cross-checks.uwx.md](../../conformance/documents/fixtures/08-variant-cross-checks.uwx.md) | [conformance/documents/expected/08-variant-cross-checks.validation.json](../../conformance/documents/expected/08-variant-cross-checks.validation.json) |
+| [conformance/documents/fixtures/09-returns-tax-basis.uwx.md](../../conformance/documents/fixtures/09-returns-tax-basis.uwx.md) | [conformance/documents/expected/09-returns-tax-basis.validation.json](../../conformance/documents/expected/09-returns-tax-basis.validation.json) |
+| [conformance/documents/fixtures/10-declared-roles.uwx.md](../../conformance/documents/fixtures/10-declared-roles.uwx.md) | [conformance/documents/expected/10-declared-roles.validation.json](../../conformance/documents/expected/10-declared-roles.validation.json) |
+| [conformance/documents/fixtures/11-role-collision.uwx.md](../../conformance/documents/fixtures/11-role-collision.uwx.md) | [conformance/documents/expected/11-role-collision.validation.json](../../conformance/documents/expected/11-role-collision.validation.json) |
+| [conformance/documents/fixtures/12-role-eligibility.uwx.md](../../conformance/documents/fixtures/12-role-eligibility.uwx.md) | [conformance/documents/expected/12-role-eligibility.validation.json](../../conformance/documents/expected/12-role-eligibility.validation.json) |
+| [conformance/documents/fixtures/13-period-identities.uwx.md](../../conformance/documents/fixtures/13-period-identities.uwx.md) | [conformance/documents/expected/13-period-identities.validation.json](../../conformance/documents/expected/13-period-identities.validation.json) |
+| [conformance/documents/fixtures/14-student-bed-counts.uwx.md](../../conformance/documents/fixtures/14-student-bed-counts.uwx.md) | [conformance/documents/expected/14-student-bed-counts.validation.json](../../conformance/documents/expected/14-student-bed-counts.validation.json) |
+| [conformance/documents/fixtures/15-student-bed-counts-inconsistent.uwx.md](../../conformance/documents/fixtures/15-student-bed-counts-inconsistent.uwx.md) | [conformance/documents/expected/15-student-bed-counts-inconsistent.validation.json](../../conformance/documents/expected/15-student-bed-counts-inconsistent.validation.json) |
+| [conformance/documents/fixtures/17-exit-proceeds-junior-capital.uwx.md](../../conformance/documents/fixtures/17-exit-proceeds-junior-capital.uwx.md) | [conformance/documents/expected/17-exit-proceeds-junior-capital.validation.json](../../conformance/documents/expected/17-exit-proceeds-junior-capital.validation.json) |
+
 A read-only audit compared a hypothetical required-actor META-01 result through
 the unchanged shared `project`/`json_subset` functions to identify these exact
 assertions; it was not an additional conformance pass. The partial API preserves
@@ -309,7 +341,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 |---|---|---|
 | LOC / CUR / descriptive identity | Locale/currency vocabulary, builtin/custom class syntax, scenario and BTR agreement | Complete frontmatter presence/type/source applicability, preserving unknown fields; descriptive values never select models. |
 | SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Present malformed provenance/quality/lifecycle/leaf shape now maps once per physical block to META-01; the five absent completeness fields retain their exact warnings. Conditional references and agent identity are checked without fetching or inferring provenance. Required-actor absence is the concrete frozen-contract conflict below; remaining metadata applicability must still be audited. |
-| DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | Field-specific institution matching and equal-specificity overrides now have controls; finish exact gap/override consumption and externalized-field unavailability without executing substitution/default actions. |
+| DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | All seven presence lists, overlays and role-selected scope readiness now share tested inputs; scope completeness preserves non-null presence without claiming field-type validity. Field-specific institution matching and equal-specificity overrides have controls; finish exact gap/override consumption and remaining externalized-field applicability without executing substitution/default actions. |
 | MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Exhaustive closed-field shape/applicability and stated sizing declaration guards. Financial stack sizing reproduction is a separate mandatory Verifier obligation. |
 | LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Complete LU model/row/schema-field admission and declaration applicability; LU-01's pinned period trigger does not itself assign every remaining schema-field failure a registered code. Period inspection is not evaluation or stated-aggregate verification. |
 | TAX / CAPX | Frozen diagnostic arrays, same-quantum tax equations, abatement/draw/target/payback rules | Terminal required assessment versus optional normal G1 group is now controlled. Finish closed-object/stated-member/null/conditional applicability; no savings applied. |
