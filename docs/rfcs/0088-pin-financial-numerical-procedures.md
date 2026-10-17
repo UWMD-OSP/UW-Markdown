@@ -953,7 +953,7 @@ behavior, with one separate baseline-loader instrumentation repeat:
 | Host-issued PV verified by candidate, same engine/version labels | Failed RCP-03 | 1 |
 | Same PV receipt, different verifier-version option | Unverifiable RCP-07/RCP-03 | 1 |
 | Corrupted research signature on host PV | Failed RCP-01 | 1 |
-| Candidate PMT back to refusing host, valid or invalid signature / same or different version | Failed RCP-03 on recomputation refusal | 0 |
+| Candidate PMT back to refusing host: valid signature at same/different version; invalid signature at same version | Failed RCP-03 on recomputation refusal | 0 |
 | Missing backend on the signed bridge inputs | Unverifiable RCP-08 | 0 |
 | Candidate PV back to host | Failed RCP-03 | 1 |
 
