@@ -1,3 +1,8 @@
+> **Owner rule,2026-10-17:** prelaunch compatibility, migration/version analysis
+> and historical-artifact retention work described below is retired. Apply the
+> rule in AGENTS.md/CLAUDE.md. Current diagnostic/conformance tests remain;
+> the old retention inventory and replay companion are not required checks.
+
 # Independent Python structured Reader foundation — Issue #354
 
 Status: **partial `parse` capability, no Reader/Verifier tier certification**.

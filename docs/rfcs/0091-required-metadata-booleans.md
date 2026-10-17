@@ -24,9 +24,10 @@ new-kit declarations:
 
 The owner also required:
 
-> Merge only after a green exact-head CI run on the final commit, keeping all 2,731 preserved artifacts byte-identical.
+The initial integration required exact-head CI and an artifact freeze. The later
+owner rule below retires that prelaunch retention requirement; normal CI remains.
 
-Merging the synchronized implementation activates this contract on main; normal
+The synchronized implementation is integrated on main; normal
 integration review, exact-final-head CI and subsequent exact-main verification
 remain required. Acceptance allocates no release version and authorizes no tag,
 npm publication or public launch.
@@ -50,9 +51,9 @@ schema/fallback diagnostic.
 | D1 | META-02/error and META-03/error for the two already-required canonical boolean members; literal true/false only | Owner decision; existing Format/schema types |
 | D2 | Existing container/actor precedence, independent findings and exact field attribution; flags pass follows shape/actor and precedes role/period/source | Independently reviewed bounded implementation |
 | D3 | All retained physical blocks, including history, plus explicit mutable-model identity union | Owner-approved operation boundaries; no history-authority decision for RFC0085 |
-| D4 | Governed diagnostic expectation and new authored positives; all2,731 protected original artifacts unchanged | Owner RFC0048 option(a), six declarations accepted2026-10-17 |
+| D4 | Governed diagnostic expectations and authored positives; no ongoing prelaunch artifact freeze | Six declarations accepted; later2026-10-17 owner rule retires retention work |
 | D5 | Activation can change validation exits and newly issued receipt policy counts; no source or historical-subject repair | Explicit owner activation decision; existing receipt rules |
-| D6 | Version recommendation only; no version allocation, publication or launch approval | Independent surface versioning and first-public-baseline policy |
+| D6 | No prelaunch version recommendation;4.x.x development and coordinated npm5.0.0 launch | Later2026-10-17 explicit owner rule |
 
 ## Evidence and joint contract
 
@@ -293,43 +294,19 @@ old source. Genuine Format2 refusals and wrapper precedence remain distinct.
 The writer inventory is source/synthetic-probe evidence, not deployed-service
 certification; no StackUW code is modified by this RFC.
 
-## Activation impact and version recommendation
+## Subsequent owner release rule — 2026-10-17
 
-The owner's2026-10-17 activation direction is explicit:
+The owner's later rule supersedes this RFC's prelaunch compatibility,
+artifact-retention, migration-note and version-recommendation obligations.
+Every @uwmd npm package launches together at5.0.0; prelaunch releases use4.x.x
+from main as needed. There is no prelaunch backward compatibility or document,
+signature, receipt or historical-artifact preservation/repair work. The former
+2,731-artifact freeze and previous migration/version appendix are retired.
 
-> META-02/03 errors on incomplete admitted canonical metadata, including history; validation exit codes and newly issued receipt policy counts may change; sources and historical subjects are never repaired or rewritten.
-
-This is breaking for validation consumers: some formerly successful operations
-now return errors/exit1, and consumers must handle the new registered codes and
-newly issued receipt policy counts. Valid explicit booleans retain admission.
-Parent-container and unrelated issue precedence remain unchanged. Reassessing
-unchanged bytes does not change their subject digest or retrospectively
-reissue/authenticate historical artifacts. Receipt verification rules, signature
-rules, financial calculations and engine/version labels are unchanged here.
-
-**Recommendation, not an allocation:** use major-level treatment for this
-breaking validation/Protocol contract and affected stable public implementation
-surfaces; incorporate it into the separately approved public-launch baseline
-rather than calling it a compatible patch or minor. Independently versioned
-pre-1.0 packages may use their own breaking minor increment when a release is
-approved. This does not make every surface5.0.0. No Format syntax/type version
-change is required solely for this RFC: both boolean fields and their required
-types already exist. Exact release numbers, dependency repins and receipt engine
-identity/conformance treatment belong to a separate approved release change.
-Major5 remains reserved for the public launch; no release is prepared here.
-
-### Writer migration note
-
-Writers must explicitly choose literal booleans for both fields on newly authored
-blocks according to intended review and lifecycle state, including blocks they
-retain as history; omission, null and nonboolean values under admitted canonical
-parents receive META-02/03. StackUW's toFormat3Meta currently defaults both to
-false: that satisfies type admission, but does not prove that review is unnecessary
-or that the lifecycle declaration is correct. Audit those defaults and pass
-intentional values rather than inferring them from narrative flags or inserting
-false merely to silence validation. Preserve incomplete historical records,
-bytes, signatures and receipts as history. If a corrected record is needed,
-author an attributable replacement with its own identity/provenance and any
-newly required signatures/receipts; never relabel or repair an issued historical
-subject. Revalidate new output and update consumer error/exit/policy handling;
-no legacy-admission shim or automatic consumer migration is introduced.
+The accepted META-02/03 predicates, retained-physical-block applicability,
+container/actor precedence, mutable-model authority and diagnostic ordering remain
+unchanged. Retained blocks supplied to a current verification operation remain
+part of that operation; this does not require retaining a prelaunch corpus.
+Current verification stays read-only, with source/digest and receipt rules tested
+as current contracts. No numerical rule, schema, capability, package number or
+release is changed by this policy correction.

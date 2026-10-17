@@ -1,17 +1,7 @@
-// The public surface of @uwmd/core across the @uwmd/verify split (RFC 0083 §3).
-//
-// Core re-exports verify's whole surface and adds the starter products, so no
-// existing import of `@uwmd/core` or `@uwmd/core/browser` breaks. Two checks:
-//
-//   1. Superset of 4.0.x. Every runtime name and every declaration export
-//      (as name:value|type) that core's two entries had at 96b86155 — 4.0.1
-//      plus Phase 1 — is still there, with the same kind
-//      (`fixtures/public-surface-4.0.json`, captured from that build).
-//   2. Verify is fully re-exported. Every `@uwmd/verify` export is a core
-//      export, from both entries, and is the same binding — except the three
-//      names core deliberately overrides with its own wrappers.
+// Current @uwmd/core -> @uwmd/verify runtime/declaration binding contract.
+// The owner's2026-10-17 rule retires the frozen4.0.x superset requirement.
+// Current verify exports and the three intentional wrapper bindings remain checked.
 
-import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
@@ -19,14 +9,6 @@ import * as verifyBrowser from '@uwmd/verify/browser';
 import * as verifyIndex from '@uwmd/verify';
 import * as coreBrowser from './browser.js';
 import * as coreIndex from './index.js';
-
-interface Surface {
-  runtime: string[];
-  declarations: string[];
-}
-const BASELINE = JSON.parse(
-  readFileSync(new URL('./fixtures/public-surface-4.0.json', import.meta.url), 'utf8'),
-) as { index: Surface; browser: Surface };
 
 /** Core's own wrappers, which shadow verify's export of the same name. */
 const OVERRIDES = ['evaluateCalc', 'evaluateModuleCalculations', 'issueReceipt'];
@@ -70,14 +52,6 @@ describe.each(ENTRIES)('@uwmd/core $name entry', ({ name, core, verify, file }) 
   const coreExports = core as Record<string, unknown>;
   const verifyExports = verify as Record<string, unknown>;
 
-  it('keeps every 4.0.x runtime export (superset)', () => {
-    expect(missing(BASELINE[name].runtime, Object.keys(core))).toEqual([]);
-  });
-
-  it('keeps every 4.0.x declaration export, with the same kind (superset)', () => {
-    expect(missing(BASELINE[name].declarations, declarations(file))).toEqual([]);
-  }, 60_000);
-
   it('re-exports every @uwmd/verify runtime export', () => {
     expect(missing(Object.keys(verify), Object.keys(core))).toEqual([]);
   });
@@ -104,8 +78,8 @@ describe('@uwmd/core entries', () => {
     }
   });
 
-  it('add only names, never drop one, relative to the baseline (negative control)', () => {
-    // The comparison itself must fail on a dropped name.
+  it('detect missing runtime/type names in current export coverage (negative control)', () => {
+    // Current re-export coverage must detect an omitted runtime/type binding.
     expect(missing(['parseUWFile', 'noSuchExport'], Object.keys(coreIndex))).toEqual(['noSuchExport']);
     expect(missing(['UWBlock:type', 'UWBlock:value'], declarations(ENTRIES[0].file))).toEqual(['UWBlock:value']);
   }, 60_000);

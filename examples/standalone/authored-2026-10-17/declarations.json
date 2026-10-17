@@ -91,10 +91,5 @@
       "superseded": false,
       "reason": "Human review is required before reusing this illustrative stated-data fragment; revision 1 is the current block of its new part identity."
     }
-  ],
-  "package_archive": {
-    "sha256": "8cb9ce0d80784c367a9f545621a27189685c8efab0a82f10254cafd4dedb0679",
-    "reproduction_timezone": "Etc/GMT+7",
-    "clock_boundary": "Existing codec converts its fixed instant to local DOS timestamp fields. This names the authored archive build environment; timestamps remain nonsemantic."
-  }
+  ]
 }
