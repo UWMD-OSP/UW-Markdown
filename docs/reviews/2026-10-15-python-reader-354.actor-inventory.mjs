@@ -13,6 +13,7 @@ const SELF = fileURLToPath(import.meta.url);
 const ROOT = pathResolve(dirname(SELF), '../..');
 const KEY = Symbol.for('uwmd.actor.inventory');
 const sha = value => createHash('sha256').update(value).digest('hex');
+const EXECUTED_OBSERVER_SHA256 = sha(readFileSync(SELF));
 const slash = value => value.replaceAll('\\', '/');
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const json = value => JSON.stringify(value, (_key, entry) => typeof entry === 'number' && !Number.isFinite(entry) ? { $number: String(entry) } : entry);
@@ -25,14 +26,34 @@ function git(root, ...args) {
   assert.equal(result.status, 0, result.stderr);
   return result.stdout.trimEnd();
 }
+const blobMaps = new Map();
+function blobHashes(root) {
+  if (blobMaps.has(root)) return blobMaps.get(root);
+  const paths = git(root, 'ls-files').split('\n');
+  const batch = spawnSync('git', ['-C', root, 'cat-file', '--batch'], { input: paths.map(path => `HEAD:${path}\n`).join(''), maxBuffer: 512 * 1024 * 1024 });
+  assert.equal(batch.status, 0, String(batch.stderr));
+  const hashes = new Map();
+  let offset = 0;
+  for (const path of paths) {
+    const end = batch.stdout.indexOf(10, offset);
+    const header = batch.stdout.subarray(offset, end).toString();
+    offset = end + 1;
+    if (header.endsWith(' missing')) continue;
+    const length = Number(header.split(' ')[2]);
+    hashes.set(path, sha(batch.stdout.subarray(offset, offset + length)));
+    offset += length + 1;
+  }
+  assert.equal(offset, batch.stdout.length);
+  blobMaps.set(root, hashes);
+  return hashes;
+}
 function fileIdentity(root, path) {
   const bytes = readFileSync(join(root, path));
-  const blob = spawnSync('git', ['-C', root, 'show', `HEAD:${slash(path)}`]);
-  return { path: slash(path), bytes: bytes.length, sha256: sha(bytes), git_blob_sha256: blob.status === 0 ? sha(blob.stdout) : null };
+  return { path: slash(path), bytes: bytes.length, sha256: sha(bytes), git_blob_sha256: blobHashes(root).get(slash(path)) ?? null };
 }
 function identity(root) {
   const files = git(root, 'ls-files', 'packages/uwmd-verify/src', 'packages/uwmd-core/src', 'packages/uwmd-cli/bin');
-  return { checkout_commit: git(root, 'rev-parse', 'HEAD'), checkout_tree: git(root, 'rev-parse', 'HEAD^{tree}'), node: process.version,
+  return { checkout_commit: git(root, 'rev-parse', 'HEAD'), checkout_tree: git(root, 'rev-parse', 'HEAD^{tree}'), observer_sha256: EXECUTED_OBSERVER_SHA256, node: process.version,
     v8: process.versions.v8, platform: process.platform, architecture: process.arch,
     implementation: files.split('\n').filter(path => !path.endsWith('.test.ts')).map(path => fileIdentity(root, path)) };
 }
@@ -118,9 +139,8 @@ export function instrument(source, path, unit = false) {
   const context = unit ? '{test: __actorExpect.getState().currentTestName ?? null, test_file: __actorExpect.getState().testPath ?? null}' : '{entry: process.argv[1] ?? null}';
   let injected = false;
   if (/\/uwmd-verify\/(src\/parser\.ts|dist\/parser\.js)$/.test(normalized)) {
-    const anchor = /routeBlock\(result, block, block\.annotation\.section, block\.annotation, block\.prose, roleVariantSections\);\n(\s*)return result;/g;
-    assert.equal([...source.matchAll(anchor)].length, 1, 'Exactly one parser routing-complete anchor');
-    source = source.replace(anchor, 'routeBlock(result, block, block.annotation.section, block.annotation, block.prose, roleVariantSections);\n$1__actorRemember(result, scanned, content);\n$1return result;');
+    const anchor = 'routeBlock(result, block, block.annotation.section, block.annotation, block.prose, roleVariantSections);';
+    source = replaceExactly(source, anchor, `${anchor}\n  __actorRemember(result, scanned, content);`);
     source = `import { remember as __actorRemember } from ${JSON.stringify(runtime)};\n${source}`;
     injected = true;
   }
@@ -175,10 +195,10 @@ function catalog(root) {
 }
 async function sourceScan(root) {
   const api = await import(pathToFileURL(join(root, 'packages/uwmd-verify/dist/index.js')).href);
-  const paths = git(root, 'ls-files', 'conformance').split('\n').filter(path => /\.(?:uwx|uw)\.md$/.test(path));
+  const paths = git(ROOT, 'ls-files', 'conformance').split('\n').filter(path => /\.(?:uwx|uw|uwpart)\.md$/.test(path));
   const rows = [];
   for (const path of paths) {
-    const raw = readFileSync(join(root, path), 'utf8');
+    const raw = readFileSync(join(ROOT, path), 'utf8');
     const physical = [];
     try {
       const parsed = api.parseUWFile(raw, { onBlock: block => physical.push(block) });
@@ -186,13 +206,62 @@ async function sourceScan(root) {
       const model = inspectModel(parsed);
       try {
         const result = api.validateUWFile(parsed);
-        rows.push({ ...fileIdentity(root, path), parse: 'executed', validation: 'executed', model,
+        rows.push({ ...fileIdentity(ROOT, path), parse: 'executed', validation: 'executed', model,
           actual: { overall_status: result.overall_status, errors: result.errors.length, issues: result.issues, result_sha256: sha(json(result)) },
           proposal_executed: false });
-      } catch (error) { rows.push({ ...fileIdentity(root, path), parse: 'executed', validation: 'refused', model, error: { name: error.name, code: error.code ?? null, message: error.message } }); }
-    } catch (error) { rows.push({ ...fileIdentity(root, path), parse: 'refused', observed_prefix_blocks: physical.length, error: { name: error.name, code: error.code ?? null, message: error.message } }); }
+      } catch (error) { rows.push({ ...fileIdentity(ROOT, path), parse: 'executed', validation: 'refused', model, error: { name: error.name, code: error.code ?? null, message: error.message } }); }
+    } catch (error) { rows.push({ ...fileIdentity(ROOT, path), parse: 'refused', observed_prefix_blocks: physical.length, error: { name: error.name, code: error.code ?? null, message: error.message } }); }
   }
-  return { kind: 'direct-source-api-scan-not-corpus-driver-conformance', identity: identity(root), sources: rows };
+  return { kind: 'direct-source-api-scan-not-corpus-driver-conformance', identity: identity(root), input_checkout: git(ROOT, 'rev-parse', 'HEAD'), sources: rows };
+}
+async function apiControls(root) {
+  const api = await import(pathToFileURL(join(root, 'packages/uwmd-verify/dist/index.js')).href);
+  const meta = () => ({ section: 'property', version: 1, provenance: { source: 'manual', actor: 'author' }, lifecycle: { superseded: false } });
+  const fence = (section, payload, extras = '') => `\`\`\`json uw:section=${section} v=1${extras ? ` ${extras}` : ''}\n${JSON.stringify(payload)}\n\`\`\``.replaceAll('\\`', '`').replaceAll('\\n', '\n');
+  const source = blocks => `---\nuw_version: "3.0"\ndeal_id: actor-inventory\nasset_class: multifamily\n---\n\n${blocks.join('\n\n')}\n`.replaceAll('\\n', '\n');
+  const parse = raw => { const physical = []; const parsed = api.parseUWFile(raw, { onBlock: block => physical.push(block) }); remember(parsed, physical, raw); return parsed; };
+  const bad = () => { const value = meta(); delete value.provenance.actor; return { _meta: value }; };
+  const good = () => ({ _meta: meta() });
+  const tests = [];
+  for (const [label, value] of [['absent', undefined], ['null', null], ['empty', ''], ['number', 3], ['false', false], ['array', []], ['object', {}], ['space', ' '], ['unicode', 'ä½œè€…'], ['principal-not-source-tag', 'manual']]) {
+    const payload = good();
+    if (value === undefined) delete payload._meta.provenance.actor; else payload._meta.provenance.actor = value;
+    tests.push({ id: `actor-${label}`, parsed: parse(source([fence('property', payload)])) });
+  }
+  for (const [id, payload] of [['whole-meta-absent', {}], ['meta-null', { _meta: null }], ['meta-flat', { _meta: { actor: '' } }], ['provenance-array', { _meta: { ...meta(), provenance: [] } }], ['lifecycle-array', { _meta: { ...meta(), lifecycle: [] } }], ['section-wrapper', { ...bad(), section_id: 'property' }]]) tests.push({ id, parsed: parse(source([fence('property', payload)])) });
+  tests.push({ id: 'overwritten-current-invalid-before-valid', parsed: parse(source([fence('property', bad()), fence('property', good())])) });
+  tests.push({ id: 'overwritten-extension-invalid-before-valid', parsed: parse(source([fence('x_example', bad()), fence('x_example', good())])) });
+  tests.push({ id: 'superseded-annotation-invalid', parsed: parse(source([fence('property', bad(), 'superseded=true'), fence('property', good())])) });
+  const history = bad(); history._meta.lifecycle.superseded = true;
+  tests.push({ id: 'superseded-lifecycle-invalid', parsed: parse(source([fence('property', history), fence('property', good())])) });
+  tests.push({ id: 'unselected-role-peer-invalid', parsed: parse(source([fence('property', { ...bad(), _role: { kind: 'component', component_id: 'other' } }, 'variant=unselected'), fence('property', { ...good(), _role: { kind: 'property' } }, 'variant=selected')])) });
+  tests.push({ id: 'all-six-model-collections-and-history', parsed: parse(source([fence('property', bad()), fence('x_extension', bad()), fence('pipeline_log', bad()), fence('custom_calculations', bad()), fence('custom_scenarios', bad()), fence('property', bad(), 'superseded=true')])) });
+  tests.push({ id: 'newly-exposed-wrapper-before-actor', parsed: parse(source([fence('property', { section_id: 'property', ...bad() }), fence('property', good()), fence('x_tail', bad())])) });
+  const stale = parse(source([fence('property', bad())])); stale.raw = source([fence('property', good())]);
+  tests.push({ id: 'stale-raw-does-not-repair-content', parsed: stale });
+  const rawBad = parse(source([fence('property', good())])); rawBad.raw = source([fence('property', bad())]);
+  tests.push({ id: 'stale-raw-does-not-inject-error', parsed: rawBad });
+  const repaired = parse(source([fence('property', bad())])); repaired.sections.property.content._meta.provenance.actor = 'repaired';
+  tests.push({ id: 'in-place-content-edit-is-current-authority', parsed: repaired });
+  const divergent = parse(source([fence('property', bad())])); divergent.sections.property.meta = meta();
+  tests.push({ id: 'convenience-meta-cannot-repair-content', parsed: divergent });
+  const divergentGood = parse(source([fence('property', good())])); divergentGood.sections.property.meta = {};
+  tests.push({ id: 'convenience-meta-cannot-invalidate-content', parsed: divergentGood });
+  const serial = JSON.parse(JSON.stringify(parse(source([fence('x_example', bad()), fence('x_example', good())]))));
+  tests.push({ id: 'serialized-model-no-recovered-physical-history', parsed: serial });
+  const modelOnly = parse(source([fence('property', good())]));
+  const added = parse(source([fence('x_added', bad())])).extensions.x_added;
+  modelOnly.extensions.x_added = added;
+  tests.push({ id: 'model-only-addition-after-physical', parsed: modelOnly });
+  const duplicate = parse(source([fence('property', bad())])); duplicate.extensions.x_alias = duplicate.sections.property;
+  tests.push({ id: 'same-object-model-alias-identity-dedup', parsed: duplicate });
+  const replaced = parse(source([fence('property', bad())])); replaced.sections.property = parse(source([fence('property', good())])).sections.property;
+  tests.push({ id: 'replaced-model-keeps-retained-physical-evidence', parsed: replaced });
+  return { kind: 'actual-api-authority-precedence-controls', identity: identity(root), cases: tests.map(({ id, parsed }) => {
+    const model = inspectModel(parsed);
+    try { const result = api.validateUWFile(parsed); return { id, model, actual: { overall_status: result.overall_status, issues: result.issues, errors: result.errors.length } }; }
+    catch (error) { return { id, model, actual: { refused: true, name: error.name, message: error.message } }; }
+  }) };
 }
 async function unitObserve(root, output) {
   const { startVitest } = await import('vitest/node');
@@ -227,16 +296,16 @@ async function unitObserve(root, output) {
     failed, files: tests, journal: readJournal(journal) };
 }
 async function cliObserve(root, output) {
-  const cases = git(root, 'ls-files', 'conformance/runner/cases').split('\n').filter(path => path.endsWith('.case.json')).map(path => ({ path, declaration: JSON.parse(readFileSync(join(root, path), 'utf8')) })).filter(row => row.declaration.command === 'validate');
+  const cases = git(ROOT, 'ls-files', 'conformance/runner/cases').split('\n').filter(path => path.endsWith('.case.json')).map(path => ({ path, declaration: JSON.parse(readFileSync(join(ROOT, path), 'utf8')) })).filter(row => row.declaration.command === 'validate');
   const journal = `${output}.journal.jsonl`;
   assert(!existsSync(journal));
   const rows = [];
   for (const { path, declaration: entry } of cases) {
-    const args = entry.args.map((arg, i) => i === 0 && entry.fixture_dir ? join(root, entry.fixture_dir, arg) : arg);
+    const args = entry.args.map((arg, i) => i === 0 && entry.fixture_dir ? join(ROOT, entry.fixture_dir, arg) : arg);
     const runResult = run(root, [join(root, 'packages/uwmd-cli/bin/uwmd.mjs'), 'validate', ...args], journal);
     let result = null;
     try { result = JSON.parse(runResult.stdout); } catch { /* Refusal output is preserved separately. */ }
-    rows.push({ id: entry.id, case: fileIdentity(root, path), expected: entry.expect?.file ? fileIdentity(root, entry.expect.file) : null,
+    rows.push({ id: entry.id, case: fileIdentity(ROOT, path), expected: entry.expect?.file ? fileIdentity(ROOT, entry.expect.file) : null,
       command: ['node', 'packages/uwmd-cli/bin/uwmd.mjs', 'validate', ...entry.args],
       actual: { exit_code: runResult.status, signal: runResult.signal, stderr: runResult.stderr, stdout_sha256: sha(runResult.stdout), result }, expected_exit_code: entry.expect?.exit_code ?? null });
   }
@@ -250,6 +319,7 @@ if (direct) {
   let result;
   if (mode === 'catalog') result = catalog(root);
   else if (mode === 'sources') result = await sourceScan(root);
+  else if (mode === 'controls') result = await apiControls(root);
   else if (mode === 'unit') result = await unitObserve(root, output);
   else if (mode === 'cli') result = await cliObserve(root, output);
   else throw new Error(`Unknown mode ${mode}`);
