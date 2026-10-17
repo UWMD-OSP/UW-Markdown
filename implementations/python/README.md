@@ -141,8 +141,15 @@ clean/exit0 without a reference, and a non-string `market_data_ref.rationale`
 also returned clean/exit0. Block-level missing-reference input already refused
 locally but omitted its published diagnostic. The existing DQ-06/error allocation
 in [RFC0022's implementation record](../../docs/rfcs/0022-market-data-documents.md)
-now applies to promoted block **or leaf** resolution lacking a usable reference;
-it is distinct from DQ-06/info for missing declared-stage sections under RFC0028.
+now applies to promoted block **or leaf** resolution lacking a usable reference
+within the published checkDataQuality population: current `sections` entries
+and every current variant, including financially ineligible component variants.
+It excludes overwritten peers, append collections, extensions and history;
+all active physical blocks still retain their existing local required/typed
+reference evidence. RFC0090 broadens only its shape/actor population, not this
+other registered check. Wider DQ-06 diagnostic applicability would require a
+separate governed clarification; no source evidence is discarded here.
+This is distinct from DQ-06/info for missing declared-stage sections under RFC0028.
 Empty object/array references are present under the published presence test and
 remain malformed local shape findings; null, false, zero and exact-empty strings
 are absent. No Python container truthiness is substituted. A stated optional
@@ -157,7 +164,7 @@ rationale must be a string; omission and the exact empty string remain admitted.
 | Source/resolution vocabulary at block or leaf | Existing SRC-01/02/03 errors | Exact authored values on active physical blocks; no alias or movement between fields. |
 | Agent source requires agent_id; nullable agent_id/agent_version/notes types | Uncoded local shape findings | Agent_id may explicitly be null; no agent identity inferred. Unknown provenance members remain informative. |
 | Timestamp string/date-time | Completeness warning when absent; uncoded local shape finding for typed/date-time refusal | Existing RFC3339 calendar/offset/fraction/leap-slot controls; no event-authentication assertion. |
-| Promoted block/leaf missing market_data_ref | Existing DQ-06/error plus retained local required-reference evidence | Active physical blocks; independent of quality shape, role eligibility or canonical financial selection. |
+| Promoted block/leaf missing market_data_ref | Existing DQ-06/error plus retained local required-reference evidence | Registered finding: current section entries/all current variants, independent of quality shape or financial role selection. Local reference evidence: every active physical block, including overwritten/append/extension peers. History keeps its separate shape/actor-only scope. |
 | Authored market_data_ref: document_id/as_of/digest, optional rationale; inherited_from: document_id/digest/distance | Uncoded local shape findings | References checked whenever authored; conditional absence also checked for market promotion / block inherited_assumption. Lowercase SHA256 digest; positive JSON-integer distance. Empty text and unknown reference members retain schema-admitted meaning; no lookup or provenance authentication. |
 | Required quality confidence/review flag; optional flags/partial/provisional; forbidden field_overrides | Existing completeness/info/DQ findings preserved; unallocated type/shape findings remain local | Exact enums/booleans/string arrays, with confidence and review kept orthogonal. Missing optional members are not fabricated. |
 | Lifecycle positive integer revision / boolean superseded | Uncoded local shape findings where unallocated | JSON integer semantics distinguish bool. This checks field shape, not a newly invented chain grouping, revision-history policy or integrity verdict. |
@@ -183,6 +190,52 @@ acceptance must resolve that transport boundary without broad META-01 expansion,
 new suffixes or silently discarded findings. The all111 portable execution at
 the prior checkpoint remains distinct from these additional admission controls;
 new-head portable/nonportable/cross-platform proof is not implied by inspection.
+
+### Next coherent payload-admission gate — proposal
+
+The next subsystem is exhaustive admission of the **formal normative payload
+schemas**, not four isolated property probes or another public inspector.
+Its bounded inventory contains 27 artifacts:
+
+| Formal section or nested domain | Existing schema artifacts to reconcile |
+|---|---|
+| Capital / component / calendar / waterfall / lease-up / reserves / gaps | section-capital-stack, section-components, section-cash-flow-series, section-distribution-waterfall, section-lease-up-schedule, section-reserve-accounts, section-gaps |
+| Official builtin payloads | section-dc-capacity/power/revenue; section-hotel-brand/food-beverage/metrics; section-mhc-sites; rent-roll-hospitality |
+| Tax / sources / capex | tax-terminal, tax-reassessment, tax-abatement, sources-uses-escrow, renovation-draw, expense-targeted-capex |
+| Commercial lease / recoveries / hedge | lease-termination-option, lease-escalation-schedule, lease-co-tenancy, lease-recovery-terms, lease-recovery-true-up, debt-rate-hedge |
+
+These are schema filenames under `spec/schemas` without `.schema.json` suffixes;
+the starter refinement-issue output schema and optional-profile/representation/
+receipt schemas are outside this structural payload inventory. Required work is
+one explicit domain/applicability map, not automatically applying every schema
+to every record. Preserve section presence, current identity/role/class rules,
+null/omission conditions, external unresolved status and history scope. Route
+universal `_meta`, `_role`, `_overrides` and `_notes` through their owning Format
+contracts: several closed section schemas omit valid universal annotations.
+Unknown members remain retained wherever the owning contract admits them.
+
+Actual schema keywords beyond the current fragment checker include `anyOf`,
+`dependentRequired` and `uniqueItems`; fixed period, currency, nonblank and digest
+patterns; date-time through the existing RFC3339 predicate; and two registered
+local cross-schema references (components to capital stack, renovation draw to
+expense-targeted capex). No network resolver or new dependency is needed.
+Unsupported required keywords must explicitly refuse, including unused union/
+conditional branches. Existing registered semantic loops remain separate;
+schema constraints do not invent new ordinary codes. Exit gates are exhaustive
+field/condition tests per artifact, all current-source/class/null boundaries,
+registered versus uncovered-local evidence, unchanged complete portable CLI
+comparisons and independent nonportable/wire checks before capability promotion.
+
+A second inventory must separately identify **explicit normative Format rules**
+for domains without complete schemas. There is no general property schema.
+The integrator's four prior-source probes (address=true, asking_price=true,
+asset_class={}, total_units="twelve") are observed accepted outputs, not four
+established normative defects. Property's illustrative JSON depicts an address
+object while existing sources also use strings; asking_price is not in that
+property template. Neither examples nor a TypeScript-only interface establish
+exhaustive required types or authorize new failure diagnostics. Preserve those
+observations and pin each actual rule/condition before adding admission behavior.
+This proposal authorizes no broad implementation or new conformance claim.
 
 ### Prior checkpoint — accepted RFC0090 integration and CS admission
 

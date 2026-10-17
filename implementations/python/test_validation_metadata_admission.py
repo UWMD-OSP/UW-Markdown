@@ -209,13 +209,20 @@ class MetadataAdmissionTests(unittest.TestCase):
                 authored["_meta"]["lifecycle"]["superseded"] = True
                 authored["_meta"]["provenance"]["actor"] = None
             raw += fence(authored, section)
+        # Every current variant is checked, even a component that financial
+        # role selection would exclude. The replaced alpha peer remains local.
+        for variant in ("alpha", "alpha", "beta"):
+            authored = body(); authored["_meta"]["section"] = "operating_statement"
+            authored["_meta"]["provenance"]["resolution"] = "market_data_accepted"
+            authored["_role"] = "component"
+            raw += fence(authored, "operating_statement", " variant=" + variant)
         document = parse(raw); before = copy.deepcopy(document)
         result = validate(document)
         self.assertEqual([i["section"] for i in result["issues"]
             if (i["code"], i["severity"]) == ("DQ-06", "error")],
-            ["property", "property", "pipeline_log", "x_private"])
+            ["property", "operating_statement", "operating_statement"])
         self.assertEqual([f["context"]["block_index"] for f in
-            result["metadata_assessment"]["shape_findings"]], [0, 1, 2, 3])
+            result["metadata_assessment"]["shape_findings"]], [0, 1, 2, 3, 5, 6, 7])
         actor = [i for i in result["issues"] if i["field"] == "_meta.provenance.actor"]
         self.assertEqual([i["context"]["block_index"] for i in actor], [4])
         self.assertEqual(document, before)
