@@ -1,5 +1,5 @@
 // RFC 0084 / Protocol §V.13: crypto-free authentication of a document snapshot.
-import { canonicalize } from './integrity-canonical.js';
+import { canonicalize, InvalidUnicodeError } from './integrity-canonical.js';
 import { computeEnvelopeDigest, toUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
 import { parseUWFile } from './parser.js';
 import { UW_SIGNATURE_ALGORITHMS, type UWBlock, type UWSignatureAlgorithm } from './types.js';
@@ -194,6 +194,15 @@ export async function verifyDocumentSignature(
   if (!wellFormed(artifact)) return {
     state: 'failed', reason: 'malformed', issues: [{ code: 'INT-09', message: 'Malformed document-signature artifact.' }],
   };
+  // Protocol §V.13.3: admitted artifact encoding precedes version/source checks.
+  // Only the current signing input is inspected; signature bytes stay excluded.
+  let payload: string;
+  try {
+    payload = documentSigningPayload(artifact);
+  } catch (error) {
+    if (!(error instanceof InvalidUnicodeError)) throw error;
+    return { state: 'failed', reason: 'malformed', issues: [{ code: 'INT-09', message: 'Document-signature input contains invalid Unicode.' }] };
+  }
   const subject = artifact.subject;
   if (artifact.signature_version !== '1' || subject.representation !== 'uwx-markdown' || subject.representation_version !== '1.0'
     || subject.canonicalization !== 'uw-envelope-semantic' || subject.canonicalization_version !== '1.0') return {
@@ -209,7 +218,7 @@ export async function verifyDocumentSignature(
     state: 'unverifiable', reason: 'no_backend', issues: [{ code: 'INT-13', message: 'Document signature is present but unchecked.' }],
   };
   try {
-    const verdict = await options.signatureVerifier.verify(documentSigningPayload(artifact), artifact);
+    const verdict = await options.signatureVerifier.verify(payload, artifact);
     if (verdict.ok) return { state: 'verified', kid: artifact.kid, digest: actual.digest, issues: [] };
     if (verdict.reason === 'unknown_kid') return {
       state: 'unverifiable', reason: 'unknown_kid', issues: [{ code: 'INT-13', message: `Unknown document signing key '${artifact.kid}'.` }],
