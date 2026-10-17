@@ -275,6 +275,19 @@ and perturbation over the default ranges. Exposed via `uwmd refine`.
 
 ## integrity.ts
 
+The shared JCS serializer rejects unpaired UTF-16 surrogates with `TypeError`,
+including object member names, before conversion to UTF-8. Valid surrogate pairs,
+U+FFFD, control escaping and UTF-16 key ordering are preserved exactly; Unicode
+is never normalized. This enforces the already adopted RFC8785 string domain.
+Invalid strings formerly accepted through replacement UTF-8 cannot retain a
+verified subject by sanitization: receipt verification reports RCP-09 and document
+authentication reports INT-15 before a backend is invoked. Unsupported signature
+subjects retain INT-14 precedence. Historical source/artifact bytes and existing
+valid conformance subjects are not rewritten. The bounded correction's activation
+and historical invalid-subject consequences require explicit integration review;
+it neither implements RFC0089 nor changes Envelope1, schemas or public versions.
+
+
 `verifyChain(parsed, options?)` (async) checks the `content_hash`/`parent_hash`
 supersede chain; `verifyProvenance(parsed, policies?)` checks actor/policy
 authority. `integrity-canonical.ts` `canonicalize()` defines the canonical form
