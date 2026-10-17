@@ -55,6 +55,11 @@
           "path": "mpfr-4.2.2/doc/mpfr.texi",
           "bytes": 235144,
           "sha256": "e43f21fef9676db4b6bc809a5f47310913881f9ee714bc15932a23cfc5fc7cf3"
+        },
+        {
+          "path": "mpfr-4.2.2/BUGS",
+          "bytes": 3460,
+          "sha256": "e33323d9a8a5dafb250c9e4d5c62004ce5f011e9d97b4398b0ea2bffd80b965f"
         }
       ]
     },
