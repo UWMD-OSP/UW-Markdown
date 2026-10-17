@@ -8,6 +8,9 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Draft RFC0088 research: add actual composed-receipt issuance, real test-key signatures and independent signing-payload/source binding. Keep earlier graph artifacts immutable under an exact accepted-main identity transition; no financial or receipt semantics activate.
+
+
 ### Changed
 
 - Enforce RFC0090's required nonempty-string provenance actor with narrow

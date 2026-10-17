@@ -329,19 +329,24 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Check composed numerical trajectories (unaccepted)
+      - name: Check frozen trajectories and actual composed receipts (unaccepted)
         if: matrix.node == 20 && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
-        # Reuse this build and Python runtime. Keep new raw observations separate
-        # from the immutable one-host archive; this is research, not conformance.
+        # Verify every frozen numerical identity; only the accepted Protocol prose
+        # transition is admitted. Reuse prior graph evidence and capture the new
+        # bounded receipt matrix; no redundant 4730-row/native research replay.
         run: |
           python3 -B -m unittest discover -s experiments/numerical-0088/financial-trajectories -p "test_*.py" -v
-          python3 -B experiments/numerical-0088/financial-trajectories/capture.py --check experiments/numerical-0088/financial-trajectories/evidence
-          python3 -B experiments/numerical-0088/financial-trajectories/capture.py --capture "${{ runner.temp }}/financial-trajectory-observations"
+          python3 -B experiments/numerical-0088/integration/verify_trajectory.py
+          python3 -B -m unittest discover -s experiments/numerical-0088/integration -p "test_*.py" -v
+          python3 -B experiments/numerical-0088/composed-receipts/capture.py --check experiments/numerical-0088/composed-receipts/evidence
+          node experiments/numerical-0088/composed-receipts/check.mjs
+          node experiments/numerical-0088/composed-receipts/check-binding.mjs
+          python3 -B experiments/numerical-0088/composed-receipts/capture.py --capture "${{ runner.temp }}/composed-receipt-observations"
       - uses: actions/upload-artifact@v6
         if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
         with:
-          name: isolated-financial-trajectories-node20
-          path: ${{ runner.temp }}/financial-trajectory-observations/
+          name: isolated-composed-receipts-node20
+          path: ${{ runner.temp }}/composed-receipt-observations/
           if-no-files-found: error
           retention-days: 14
 
