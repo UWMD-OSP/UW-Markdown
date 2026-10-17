@@ -1,0 +1,169 @@
+{
+  "status": "UNACCEPTED fixed scalar NPER word inputs; not underwriting model or financial expected-answer generation",
+  "reference_scope": {
+    "cases": 14,
+    "exact_inputs": "finite binary64 words; all4arguments explicit; zero branch and real-log domain classified separately",
+    "log_proof": "atanh geometric-tail rational bounds at80/128/256terms, exact intervaldivision and binary64 adjacent-midpoint RN; no host transcendentals",
+    "quantizer": "whole-real binary64 RN first, then separately acceptedVIII.5 decimal-string quantizer at12places",
+    "resource": "bounded listed inputs only; atmost256terms per log enclosure,63midpoint search iterations; no production cap/domain proposal"
+  },
+  "references": {
+    "pinned-fdlibm/math_reference.py": "ac78413e80961298d096ca4a2566bd3b72d6636049a5ccb18ca596bbd3349ef5",
+    "power-procedures/reference.py": "87d3609c85876c4e2c41b5f71b5c8e0377a7c953ab5846ef1f6c09fb736b3808",
+    "cash-graphs/cash_reference.py": "fa53dd358bcbe35f65b11ee206cb6d0295f2a34e53ed1b286e405e586e9c4bf2",
+    "python-fdlibm/kernel.py": "2f66b40ad7bd1bf5f1cc965574a82239a9ccde2816af4aa4cd5825fda648aa69",
+    "pinned-fdlibm/kernel.mjs": "9cea03d62c453d2c6428f076aab1203c04920585f90dcb9815a98967f28fb5be",
+    "pinned-fdlibm/words.mjs": "c3bb33ff8b2124bc048a0bb9b7b10d3de318b33e20308091abd079459b434914",
+    "pinned-fdlibm/constants.mjs": "6479a8f04cc3e990cd1316d22cdfa164f83bd0acc56905a60c7a7dbc0c65cc25",
+    "pinned-fdlibm/constants.json": "e9793112e7a5d0e2c1ccb2f8d8dd9bbc35608598cf725cb8e5ee44117dad59d9",
+    "impact/hook.mjs": "dfce317208322858842951fbf3a1b52f8650f7c8060c9e2203290eb65fca6682",
+    "impact/runtime.mjs": "d3e91c127dd27380603d225dde16b5b83069bdc0cb4ec430b71adf83475dfe5e"
+  },
+  "cases": [
+    {
+      "id": "zero_rate",
+      "args": [
+        "0000000000000000",
+        "4000000000000000",
+        "4024000000000000",
+        "4000000000000000"
+      ],
+      "places": 12,
+      "known_real_periods": 4
+    },
+    {
+      "id": "negative_zero",
+      "args": [
+        "8000000000000000",
+        "4000000000000000",
+        "4024000000000000",
+        "4000000000000000"
+      ],
+      "places": 12,
+      "known_real_periods": 4
+    },
+    {
+      "id": "exact_two",
+      "args": [
+        "3fe0000000000000",
+        "4022000000000000",
+        "4024000000000000",
+        "0000000000000000"
+      ],
+      "places": 12,
+      "known_real_periods": 2
+    },
+    {
+      "id": "exact_three",
+      "args": [
+        "3fd0000000000000",
+        "405f400000000000",
+        "406e800000000000",
+        "0000000000000000"
+      ],
+      "places": 12,
+      "known_real_periods": 3
+    },
+    {
+      "id": "exact_twenty_four",
+      "args": [
+        "3ff0000000000000",
+        "4170000000000000",
+        "416fffffe0000000",
+        "0000000000000000"
+      ],
+      "places": 12,
+      "known_real_periods": 24
+    },
+    {
+      "id": "fractional_solution",
+      "args": [
+        "3fc0000000000000",
+        "4024000000000000",
+        "4034000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    },
+    {
+      "id": "positive_below_half",
+      "args": [
+        "3c90000000000000",
+        "3ff0000000000000",
+        "3ff0000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    },
+    {
+      "id": "positive_half",
+      "args": [
+        "3ca0000000000000",
+        "3ff0000000000000",
+        "3ff0000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    },
+    {
+      "id": "negative_above_half_gap",
+      "args": [
+        "bc90000000000001",
+        "3ff0000000000000",
+        "3ff0000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    },
+    {
+      "id": "denominator_zero",
+      "args": [
+        "3fe0000000000000",
+        "3ff0000000000000",
+        "4000000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    },
+    {
+      "id": "nonpositive_ratio",
+      "args": [
+        "3fe0000000000000",
+        "3ff0000000000000",
+        "4008000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    },
+    {
+      "id": "zero_payment",
+      "args": [
+        "0000000000000000",
+        "0000000000000000",
+        "3ff0000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    },
+    {
+      "id": "rate_minus_one",
+      "args": [
+        "bff0000000000000",
+        "3ff0000000000000",
+        "3ff0000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    },
+    {
+      "id": "rate_below_minus_one",
+      "args": [
+        "c000000000000000",
+        "3ff0000000000000",
+        "3ff0000000000000",
+        "0000000000000000"
+      ],
+      "places": 12
+    }
+  ]
+}
