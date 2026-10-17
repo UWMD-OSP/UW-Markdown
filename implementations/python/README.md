@@ -1074,3 +1074,15 @@ does not override true in the other. Authored metadata, payload, spans, raw byte
 and historical evidence are preserved without injecting missing JSON members.
 This fixes the existing reserve-draw superseded-source parse discrepancy; it
 changes no Envelope shape, digest rule, receipt verdict, discovery or tier claim.
+
+### Integrated Reader/current-main checkpoint
+
+After history-preserving reconciliation with #375/main `b2ac5d8f`, the combined
+implementation passes **223 Python methods** (52.039s) and genuine shared Reader
+**17/17**, zero failed/skipped/unverifiable. All158 main test-method ASTs are
+unchanged, including the original151 and seven lifecycle regressions. The
+validation implementation remains the independently reviewed `9508de10` code;
+main adds the accepted shared source-lifecycle correction. CLI/discovery is
+byte-identical to main; actual111 validate subprocess cases remain unsupported
+and unrun. The local metadata/composition assessments and earlier111 API subset
+comparisons cannot be promoted into complete validation or Verifier evidence.
