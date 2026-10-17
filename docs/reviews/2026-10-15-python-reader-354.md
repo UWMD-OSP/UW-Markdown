@@ -281,3 +281,48 @@ These current Windows results do not erase the historical Linux subprocess
 failures or substitute for exact-head CI. Node 20/22 and cross-platform Python
 results belong to their remote CI runs. This evidence adds no portable
 Verifier capability, financial convention or independent spreadsheet result.
+
+
+### 2026-10-16 — Bounded JCS correction: authenticated-input compatibility
+
+DraftPR373 separates existing RFC8785 string admission from RFC0089's proposed
+container/mappings. The initial minimal guard leaves valid subjects unchanged,
+but rejecting invalid Unicode affects more than source digests. The linked
+`2026-10-15-python-reader-354.jcs-boundaries.repro.mjs` and preserved
+`2026-10-15-python-reader-354.jcs-boundaries.initial.json` reproduce baseline
+versus initial guard behavior using synthetic constant/string packs and recording
+stubs. Stubs establish ordering, never cryptographic validity. Source and built
+canonicalizer hashes are recorded; these are research observations, not fixture
+expectations or newly selected normative outcomes.
+
+The initial guard made signed receipt metadata/payload canonicalization and late
+invalid-string results digest verification throw; invalid document key ids reached
+INT13/backend_error without a backend call. Invalid block-signing actor/kid inputs
+also threw. Unsigned receipt metadata and fields excluded from each committed
+input were unaffected. Direct digest/signing-input helpers appropriately retain
+a typed domain refusal. Do not globally reject excluded metadata to simplify
+handling, or label all these cases source RCP09.
+
+Independent accepted-contract review identifies bounded existing-code handling:
+Receipt5.1 step4/signature nonvalidation uses RCP01, step6/nonrecomputable results
+digest uses late RCP04; issuance requires the existing typed RCP_COMPUTATION_FAILED
+error. ProtocolV.13/RFC0084 malformed admitted signing input uses INT09 rather than
+a backend-outage label. Block six-field signing-input refusal uses existing INT07
+malformed-signature handling with present count retained and backend uncalled.
+These are routine implementation catches, not new receipt codes or separate
+owner-controlled conventions. Existing earlier subject/input/pack/key/backend
+and engine precedence must remain intact. Only the internal Unicode error is
+caught; arbitrary backend exceptions are not relabeled as invalid signatures.
+
+RequiredCI38995064642 at initial0af95aff failed one existing XML assertion: the
+earlier JCS rejection escaped instead of XML_CHARACTER_INVALID. The correction
+preserves that exact XML public boundary using a private typed Unicode subclass;
+it does not change XML1's domain, mappings or any existing assertion. Focused
+183 tests, build and test typecheck pass after that correction; broader boundary
+regressions remain an explicit follow-up checkpoint. The failed CI is retained,
+not described as green.
+
+The genuine owner hold remains activation and historical invalid-subject/verdict
+consequences. No source sanitization, old-artifact rewrite, receipt reissuance,
+version allocation, normative schema change or release is authorized. Full
+Envelope/CSV/XML interoperability remains a separate unaccepted RFC0089 decision.
