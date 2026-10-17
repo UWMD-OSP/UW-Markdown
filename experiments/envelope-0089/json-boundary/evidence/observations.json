@@ -1,0 +1,1401 @@
+{
+  "behavior": {
+    "artifacts": {
+      "all-block-extras": {
+        "alg": "ed25519",
+        "kid": "rfc0089-public-test-seed-only",
+        "kind": "uwmd-document-signature",
+        "sig": "vmg9uQskMT6R5QAGlKZHK6Znuz5jWOrD7zUKRB_8uqORD9uRZwxF5lebTHGGOPjov9vDtq1V8Dk68zUKQ7TZDQ",
+        "signature_version": "1",
+        "signed_at": "2026-10-17T00:00:00Z",
+        "signing_payload_sha256": "320b6d7228dd2daf1081dd27e0f37a9fff1f48ab50bd7a2e16f76582f9255d4c",
+        "subject": {
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "C_NEXT",
+          "digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "representation": "uwx-markdown",
+          "representation_version": "E_NEXT"
+        }
+      },
+      "xml-lexical-domain": {
+        "alg": "ed25519",
+        "kid": "rfc0089-public-test-seed-only",
+        "kind": "uwmd-document-signature",
+        "sig": "uCbYtp6DTZlonfofoJp_aBDussOl2OALwz7IfwAWBnyDKhKQMAyr5ci9egGjp6lK9Ylurtr9Gi_BCoQBz6wXBQ",
+        "signature_version": "1",
+        "signed_at": "2026-10-17T00:00:00Z",
+        "signing_payload_sha256": "33d9daa39c725303a82184d4e630790e054733671a79caeb0cae7fb4cace4463",
+        "subject": {
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "C_NEXT",
+          "digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "representation": "uwx-markdown",
+          "representation_version": "E_NEXT"
+        }
+      }
+    },
+    "public_key_spki_der_base64": "MCowBQYDK2VwAyEAA6EHv/POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg=",
+    "rows": [
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "2f6679693a708ef207c4f1cd1c59ce42457b7817a2090cefbc044cc2dea5c23d",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "vector": "original"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "2f6679693a708ef207c4f1cd1c59ce42457b7817a2090cefbc044cc2dea5c23d",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "vector": "original"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "5e58857f315c166e5f866ed1cfe20483b0619f9f8bad692a884c462a2e9ee43a",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "vector": "escaped-unique-name"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "5e58857f315c166e5f866ed1cfe20483b0619f9f8bad692a884c462a2e9ee43a",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "vector": "escaped-unique-name"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "18a3b6522739a6b44a00dc99a9c2d94690ccf282b12bee9ac70bdea4e3eedef3",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "duplicate-identical"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "18a3b6522739a6b44a00dc99a9c2d94690ccf282b12bee9ac70bdea4e3eedef3",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "duplicate-identical"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "9efa9537329cd1b631435b83db36ba5b124209309a4daafafe881d7f888c17fd",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "9efa9537329cd1b631435b83db36ba5b124209309a4daafafe881d7f888c17fd",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "58d40eb7c87564f9af41a8f0f8f5389e041c993e3f96e001e0b54debdd891a5c",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "escaped-duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "58d40eb7c87564f9af41a8f0f8f5389e041c993e3f96e001e0b54debdd891a5c",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "escaped-duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "b3fd59a6b060ef9d3881c703d4c644cf6d51277a6bb4c93d779a233b0faccf22",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "nested-duplicate-identical"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "b3fd59a6b060ef9d3881c703d4c644cf6d51277a6bb4c93d779a233b0faccf22",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "nested-duplicate-identical"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "7b9d1ec8513dc5a8a0d5f4429e45700edfbf5c12ced9676232ed6e176b243054",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "nested-escaped-duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "7b9d1ec8513dc5a8a0d5f4429e45700edfbf5c12ced9676232ed6e176b243054",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "nested-escaped-duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "2c23e1358ce68eadd77fc9edc7fe3506186ec2c1479e71d2e30cd1d7fe6138ee",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "vector": "original"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "2c23e1358ce68eadd77fc9edc7fe3506186ec2c1479e71d2e30cd1d7fe6138ee",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "vector": "original"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "eba925b25abdf7eaeee25807548b1c063b8736932548fbfd960f3494fd430191",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "vector": "escaped-unique-name"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "eba925b25abdf7eaeee25807548b1c063b8736932548fbfd960f3494fd430191",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "vector": "escaped-unique-name"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "57f53f514593d90162cd3797530b2063287084c0b7a3de02ff69d4a9dcabbbe6",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "duplicate-identical"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "57f53f514593d90162cd3797530b2063287084c0b7a3de02ff69d4a9dcabbbe6",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "duplicate-identical"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "ba227f5af9418b114005427f9c3c0fd29cb56b0faa21df43c1d3e1729001fdd1",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "ba227f5af9418b114005427f9c3c0fd29cb56b0faa21df43c1d3e1729001fdd1",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "5a6333ede2a423cd2cde3de2e6919f984409fc13993c93763c4e5f7c9e19f9c2",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "escaped-duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "5a6333ede2a423cd2cde3de2e6919f984409fc13993c93763c4e5f7c9e19f9c2",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "escaped-duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "6789b182ebe62b3b24d417ea3a57e55986f740de40e4f84a4c6ad01ef1e4fc13",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "nested-duplicate-identical"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "6789b182ebe62b3b24d417ea3a57e55986f740de40e4f84a4c6ad01ef1e4fc13",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "nested-duplicate-identical"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+          },
+          "input_sha256": "6fc446bca9b7fc09584f3870b01fb4ee875d14768c5bba96a02371fb681a1604",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "nested-escaped-duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "all-block-extras",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "6fc446bca9b7fc09584f3870b01fb4ee875d14768c5bba96a02371fb681a1604",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "nested-escaped-duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "383d658c524e5b4d10ceb4f2bf233be5e2840925532e09be98047fcad06264c0",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "vector": "original"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "383d658c524e5b4d10ceb4f2bf233be5e2840925532e09be98047fcad06264c0",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "vector": "original"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "912a18ebb63b6f5730c79fd5e8590714fddb6a76092bd38e15ab8b01b386b78d",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "vector": "escaped-unique-name"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "912a18ebb63b6f5730c79fd5e8590714fddb6a76092bd38e15ab8b01b386b78d",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "vector": "escaped-unique-name"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "9dffc1c955ba2d001c866effb93eb9a97203bb12dc3737ce3228fce65bc52033",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "duplicate-identical"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "9dffc1c955ba2d001c866effb93eb9a97203bb12dc3737ce3228fce65bc52033",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "duplicate-identical"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "8c172e18986450bd4d206ea100fa97e36268f3ff3571aa8acc994b2445059be6",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "8c172e18986450bd4d206ea100fa97e36268f3ff3571aa8acc994b2445059be6",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "ed34f85951fafa216527a21d773b9f5cb3840abf55f110953215f505f8e94de1",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "escaped-duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "ed34f85951fafa216527a21d773b9f5cb3840abf55f110953215f505f8e94de1",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "escaped-duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "951bbdf31f6d654cc39759121ca3517f742657ed1f44f0539ac5d135702851cc",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "nested-duplicate-identical"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "951bbdf31f6d654cc39759121ca3517f742657ed1f44f0539ac5d135702851cc",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "nested-duplicate-identical"
+        }
+      },
+      {
+        "node": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "fb6be95fb6698cde0f33521318a6d0205ce503fbd4a4b17ef20bffd36dca6a36",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "nested-escaped-duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "model-json",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "fb6be95fb6698cde0f33521318a6d0205ce503fbd4a4b17ef20bffd36dca6a36",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "nested-escaped-duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "f09931b290b76ad9ac2912f8e5a6fb3a40f5eebbb3c8f14bf93b0473b6d0ca41",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "vector": "original"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "f09931b290b76ad9ac2912f8e5a6fb3a40f5eebbb3c8f14bf93b0473b6d0ca41",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "vector": "original"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "3e3bb80a43bf8e4ac080857b925e8ad23aa739f26957973e978df0699d31a9f3",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "vector": "escaped-unique-name"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "3e3bb80a43bf8e4ac080857b925e8ad23aa739f26957973e978df0699d31a9f3",
+          "strict": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "vector": "escaped-unique-name"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "2c349e9391dca76b6543b3f3626d964e391a5eb3bb40172df14ade684c9f4aac",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "duplicate-identical"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "2c349e9391dca76b6543b3f3626d964e391a5eb3bb40172df14ade684c9f4aac",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "duplicate-identical"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "192f05ff502fba80f53201f9c8c5e517871c93777079c73e91e97de50931a000",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "192f05ff502fba80f53201f9c8c5e517871c93777079c73e91e97de50931a000",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "417f03c64d5b51f9feaaf36be13ed0abfbd572c2a73e8617bff213841e28cd9d",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "escaped-duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "417f03c64d5b51f9feaaf36be13ed0abfbd572c2a73e8617bff213841e28cd9d",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "escaped-duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "254734da4543bd690be32ef8956844cdcdb5ee23760f6c6b8060243cf2d7cb6a",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "nested-duplicate-identical"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "254734da4543bd690be32ef8956844cdcdb5ee23760f6c6b8060243cf2d7cb6a",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "nested-duplicate-identical"
+        }
+      },
+      {
+        "node": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": true,
+            "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+            "original_raw_signature_valid": true,
+            "raw_crypto_verify_calls": 1,
+            "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+          },
+          "input_sha256": "635ff442409f274be71a539eb8ff014c45be934cb070d0bf540b2db98a45d158",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "nested-escaped-duplicate-conflicting"
+        },
+        "python": {
+          "carrier": "csv-manifest",
+          "case": "xml-lexical-domain",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "635ff442409f274be71a539eb8ff014c45be934cb070d0bf540b2db98a45d158",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "nested-escaped-duplicate-conflicting"
+        }
+      },
+      {
+        "node": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "{\"e\u0301\":1,\"\u00e9\":2}",
+            "raw_crypto_verify_calls": 0
+          },
+          "input_sha256": "af71395a15f6e8b5f28fa35ab3a0f0f613a621f7366443c83b1f6bee19418d26",
+          "strict": {
+            "accepted": true,
+            "canonical_value": "{\"e\u0301\":1,\"\u00e9\":2}",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "normalization-distinct-keys"
+        },
+        "python": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "{\"e\u0301\":1,\"\u00e9\":2}"
+          },
+          "input_sha256": "af71395a15f6e8b5f28fa35ab3a0f0f613a621f7366443c83b1f6bee19418d26",
+          "strict": {
+            "accepted": true,
+            "canonical_value": "{\"e\u0301\":1,\"\u00e9\":2}"
+          },
+          "vector": "normalization-distinct-keys"
+        }
+      },
+      {
+        "node": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "{\"a\":2}",
+            "raw_crypto_verify_calls": 0
+          },
+          "input_sha256": "c95ba945b310a34906bbfc28ce1346b87741d5a2b3066d1d3ecfa0acbd86392c",
+          "strict": {
+            "accepted": false,
+            "error_message": "duplicate decoded JSON key",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "escaped-alias-duplicate"
+        },
+        "python": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "c95ba945b310a34906bbfc28ce1346b87741d5a2b3066d1d3ecfa0acbd86392c",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: duplicate decoded JSON key",
+            "error_name": "Refusal"
+          },
+          "vector": "escaped-alias-duplicate"
+        }
+      },
+      {
+        "node": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "{\"A\":1,\"a\":2}",
+            "raw_crypto_verify_calls": 0
+          },
+          "input_sha256": "0d0e3924a16d7710884d7aaf5ddacfafcef0079c6717e1415b8074f911635606",
+          "strict": {
+            "accepted": true,
+            "canonical_value": "{\"A\":1,\"a\":2}",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "case-distinct-keys"
+        },
+        "python": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "{\"A\":1,\"a\":2}"
+          },
+          "input_sha256": "0d0e3924a16d7710884d7aaf5ddacfafcef0079c6717e1415b8074f911635606",
+          "strict": {
+            "accepted": true,
+            "canonical_value": "{\"A\":1,\"a\":2}"
+          },
+          "vector": "case-distinct-keys"
+        }
+      },
+      {
+        "node": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "{\"slash\":\"/\",\"text\":\"{\\\"x\\\":1}\"}",
+            "raw_crypto_verify_calls": 0
+          },
+          "input_sha256": "31b970143ddba6f7c461f5e1ca1c8a03907a238b768ae28144239cb357e621af",
+          "strict": {
+            "accepted": true,
+            "canonical_value": "{\"slash\":\"/\",\"text\":\"{\\\"x\\\":1}\"}",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "string-delimiters"
+        },
+        "python": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "{\"slash\":\"/\",\"text\":\"{\\\"x\\\":1}\"}"
+          },
+          "input_sha256": "31b970143ddba6f7c461f5e1ca1c8a03907a238b768ae28144239cb357e621af",
+          "strict": {
+            "accepted": true,
+            "canonical_value": "{\"slash\":\"/\",\"text\":\"{\\\"x\\\":1}\"}"
+          },
+          "vector": "string-delimiters"
+        }
+      },
+      {
+        "node": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": false,
+            "error_message": "Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)",
+            "error_name": "SyntaxError",
+            "raw_crypto_verify_calls": 0
+          },
+          "input_sha256": "dd1cadb254629e9b14afb090f2976f34fdfaaf91cdaba9a57eae86b290ebd0ed",
+          "strict": {
+            "accepted": false,
+            "error_message": "JSON trailing input",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "trailing-input"
+        },
+        "python": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: Extra data: line 1 column 3 (char 2)",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "dd1cadb254629e9b14afb090f2976f34fdfaaf91cdaba9a57eae86b290ebd0ed",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: Extra data: line 1 column 3 (char 2)",
+            "error_name": "Refusal"
+          },
+          "vector": "trailing-input"
+        }
+      },
+      {
+        "node": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": false,
+            "error_message": "Expected double-quoted property name in JSON at position 7 (line 1 column 8)",
+            "error_name": "SyntaxError",
+            "raw_crypto_verify_calls": 0
+          },
+          "input_sha256": "aa99a5ce3eb0dd8355f0bfb15376ea1d862ad75d0d278af1f8c280ca8c02c640",
+          "strict": {
+            "accepted": false,
+            "error_message": "JSON string",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "trailing-comma"
+        },
+        "python": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: Expecting property name enclosed in double quotes: line 1 column 8 (char 7)",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "aa99a5ce3eb0dd8355f0bfb15376ea1d862ad75d0d278af1f8c280ca8c02c640",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: Expecting property name enclosed in double quotes: line 1 column 8 (char 7)",
+            "error_name": "Refusal"
+          },
+          "vector": "trailing-comma"
+        }
+      },
+      {
+        "node": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "[0,1,125]",
+            "raw_crypto_verify_calls": 0
+          },
+          "input_sha256": "f48e8d53686d89d7056f4d07ef54be0c23d415e5704841be377e916f2ecc7b1c",
+          "strict": {
+            "accepted": true,
+            "canonical_value": "[0,1,125]",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "number-spellings"
+        },
+        "python": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": true,
+            "canonical_value": "[0,1,125]"
+          },
+          "input_sha256": "f48e8d53686d89d7056f4d07ef54be0c23d415e5704841be377e916f2ecc7b1c",
+          "strict": {
+            "accepted": true,
+            "canonical_value": "[0,1,125]"
+          },
+          "vector": "number-spellings"
+        }
+      },
+      {
+        "node": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": false,
+            "error_message": "nonfinite",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "input_sha256": "d211ced314c89ef3a96c490266d9e1f5ece32bc90991512a067ff2e1b2e16bbc",
+          "strict": {
+            "accepted": false,
+            "error_message": "nonfinite JSON",
+            "error_name": "TypeError",
+            "raw_crypto_verify_calls": 0
+          },
+          "vector": "overflowing-number"
+        },
+        "python": {
+          "carrier": "json-data",
+          "case": "syntax-only",
+          "historical": {
+            "accepted": false,
+            "error_message": "invalid JSON: JSON number outside finite binary64",
+            "error_name": "Refusal"
+          },
+          "input_sha256": "d211ced314c89ef3a96c490266d9e1f5ece32bc90991512a067ff2e1b2e16bbc",
+          "strict": {
+            "accepted": false,
+            "error_message": "invalid JSON: JSON number outside finite binary64",
+            "error_name": "Refusal"
+          },
+          "vector": "overflowing-number"
+        }
+      }
+    ]
+  },
+  "created_at": "2026-10-17T20:12:53.973045+00:00",
+  "executed_git_head": "13bc90fa3e82d2a443db755f040911e970b9fa58",
+  "node_dependency_sha256": {
+    "fast-xml-parser/lib/fxp.cjs": "d046ec315b87b0eca2ef1927617a857b4107e586e6bf6f2ed6ef43dec095684c"
+  },
+  "raw": {
+    "node_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "node_stdin_sha256": "4eafca0eb65819c380568d562c13e87b2ed5c2341dcb482294e619e99a373f4f",
+    "node_stdout_sha256": "6a250e84fb74c607534c3b2655e4194f12d225b9240f77f4a98428f4847feba9"
+  },
+  "runtime": {
+    "node": "v24.14.1",
+    "node_openssl": "3.5.5",
+    "python": "3.12.3",
+    "python_openssl": "OpenSSL 3.0.13 30 Jan 2024"
+  },
+  "scope": "UNAPPROVED raw JSON model/CSV-manifest boundary profile; research crypto binding only, not public artifact verification or source admission",
+  "source_sha256": {
+    "docs/rfcs/0014-multi-format-interchange.md": "34519f75324e77d55b492194a6d48b9d324049a59588d3a77e38828b29d923c0",
+    "experiments/envelope-0089/candidate_codec.py": "1bfce515104c4ed545277ca078689d24a201fae800bc479b28530dc4c19a79a3",
+    "experiments/envelope-0089/codec-study/codec.py": "3914ed411b7948ce4c5d2c7646044d037311263e3770610e818e21fc42e9876d",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/csv/block_values.csv": "e2cf2e9ab3231c932f7fed2fa12b24cdd3cd440497a0086467ee0503a294a8b0",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/csv/blocks.csv": "a2ec4001b4140af884d54edaa640847fdf40eb979e8074b8a70a426d21ac3e5e",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/csv/document.csv": "5e6a98322a3a902b8eff7e230ef9f300ff946b6d9304c40e4d204abf2775bcf8",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/csv/frontmatter.csv": "cd86bfac9d0bf038473054624cc4f7864f55694d8e33b7e7057fe06867f3b537",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/csv/manifest.json": "2c23e1358ce68eadd77fc9edc7fe3506186ec2c1479e71d2e30cd1d7fe6138ee",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/csv/prose.csv": "60205fd89896bb2a4ada79f8075ef40797345b40512c449102fff6df0259bdff",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/model.json": "2f6679693a708ef207c4f1cd1c59ce42457b7817a2090cefbc044cc2dea5c23d",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/csv/block_values.csv": "0ff2607062a67dc1082cc107aa2fb2316ab2f07efe4a4cb669306dd26b1588c5",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/csv/blocks.csv": "a2ec4001b4140af884d54edaa640847fdf40eb979e8074b8a70a426d21ac3e5e",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/csv/document.csv": "1303a950f9657584121859b65dea9d1118ebdbc670ef8bfdc2014c6517816f64",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/csv/frontmatter.csv": "07466e996022345973baab55c6a5ceca1feec768edeed3528de04d8b12b2a4f0",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/csv/manifest.json": "f09931b290b76ad9ac2912f8e5a6fb3a40f5eebbb3c8f14bf93b0473b6d0ca41",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/csv/prose.csv": "60205fd89896bb2a4ada79f8075ef40797345b40512c449102fff6df0259bdff",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/model.json": "383d658c524e5b4d10ceb4f2bf233be5e2840925532e09be98047fcad06264c0",
+    "experiments/envelope-0089/codec-study/independent.mjs": "675a1c082e5bbfe003204a088e4b127556a74a1b3e98f86f0f61c3e159268453",
+    "experiments/envelope-0089/json-boundary/capture.py": "88c9ef5dab5e96147fdc66ef318a4833f2c9718a79b495a9678107ce15ec1007",
+    "experiments/envelope-0089/json-boundary/observe.mjs": "0d02376a0960264c0dac948126ad0d10f4ba4f0e4159fb01bf7fdfd381055972",
+    "experiments/envelope-0089/json-boundary/strict.mjs": "b5dbca08c9d8891742996dfa3fb31dc558cbcb27f4b7d7dcb6f28776ea61ddfb",
+    "experiments/envelope-0089/json-boundary/vectors.py": "0a382b1efb76364e97e4631b567d99c4cb75fc27cd369990bbbb6b8e845c8063",
+    "implementations/python/uwmd_jcs.py": "cc97f545f5b343aa4396bacc25f349f6a55193b0f3365042e279c65b885e4bfc",
+    "package-lock.json": "d6c8ac690a48a38597b347d61ab7ab0b9a1ed2bcbbccd73f3cbb344c5b9cefbf",
+    "spec/UW_CSV_BUNDLE.md": "5410c1c399a88b38e5db47c98340d4cd919024a5c559e9253f1df03537477a77",
+    "spec/schemas/uw-document-envelope.schema.json": "6d95e014fa1941c3d270b797a0543870ac5d477ce7a179efe698bd02e206a7ef"
+  }
+}
