@@ -18,6 +18,10 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Route Python Reader fence-only `superseded=true` blocks to ordered history
+  before role/variant selection, consistently with existing source verification.
+  Preserve original metadata and bytes; keep discovery parse-only.
+
 - Reject unpaired UTF-16 surrogates in JCS values and member names before UTF-8
   digest conversion, as required by the existing RFC8785 contract. Preserve all
   valid Unicode and frozen subjects; cover receipt/source refusal and document

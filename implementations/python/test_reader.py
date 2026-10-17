@@ -164,6 +164,88 @@ class ReaderTests(unittest.TestCase):
         self.assertNotIn("meta", document.projection()["sections"]["property"])
         self.assertEqual(document.source.blocks[0].parsed.value, {})
 
+    def test_fence_only_history_preserves_authored_metadata_and_source(self):
+        for meta_state in (False, None):
+            old = block("property", {"n": 1, "unknown": {"kept": True}})
+            if meta_state is None:
+                old = old.replace(b'"superseded": false', b'"other": false')
+            old = old.replace(b'uw:section=property', b'uw:section=property superseded=true')
+            raw = HEADER + old + block("property", {"n": 2})
+            document = parse(raw)
+            before = copy.deepcopy([item.parsed.value for item in document.source.blocks])
+            result = document.projection()
+            self.assertEqual(result["sections"]["property"]["content"]["n"], 2)
+            history = result["superseded"]["property"][0]
+            self.assertEqual(history["content"]["unknown"], {"kept": True})
+            self.assertEqual(history["meta"], before[0]["_meta"])
+            self.assertEqual(document.source.raw, raw)
+            self.assertEqual([item.parsed.value for item in document.source.blocks], before)
+
+    def test_lifecycle_history_is_not_resurrected_by_false_fence(self):
+        old = block("property", {"n": 1}, superseded=True)
+        old = old.replace(b'uw:section=property', b'uw:section=property superseded=false')
+        result = parse(HEADER + old).projection()
+        self.assertNotIn("property", result["sections"])
+        self.assertEqual(result["superseded"]["property"][0]["content"]["n"], 1)
+
+    def test_fence_history_role_cannot_activate_named_peer_collection(self):
+        old = block("property", {"n": 0}, variant="old", role="primary")
+        old = old.replace(b'uw:section=property', b'uw:section=property superseded=true')
+        raw = HEADER + old + block("property", {"n": 1}, variant="a")
+        raw += block("property", {"n": 2}, variant="b")
+        result = parse(raw).projection()
+        self.assertEqual(result["sections"]["property"]["content"]["n"], 2)
+        self.assertEqual(result["superseded"]["property"][0]["role"], "primary")
+
+    def test_fence_history_routing_applies_to_every_collection_family(self):
+        for section in ("operating_statement", "x_future", "future_section",
+                        "pipeline_log", "custom_calculations", "custom_scenarios"):
+            with self.subTest(section=section):
+                old = block(section, {"n": 1}, variant="old")
+                old = old.replace(('uw:section=' + section).encode(),
+                                  ('uw:section=' + section + ' superseded=true').encode())
+                raw = HEADER + old + block(section, {"n": 2}, variant="current")
+                result = parse(raw).projection()
+                self.assertEqual([v["content"]["n"] for v in result["superseded"][section]], [1])
+                if section == "operating_statement":
+                    self.assertEqual(set(result["sections"][section]), {"current"})
+                elif section == "x_future":
+                    self.assertEqual(result["extensions"][section]["content"]["n"], 2)
+                elif section in ("pipeline_log", "custom_calculations", "custom_scenarios"):
+                    self.assertEqual(len(result[section]), 1)
+                else:
+                    self.assertEqual(result["sections"][section]["content"]["n"], 2)
+
+    def test_fence_history_without_metadata_does_not_inject_metadata(self):
+        raw = HEADER + b'```json uw:section=property superseded=true\n{"n":1}\n```\n'
+        result = parse(raw).projection()
+        self.assertNotIn("property", result["sections"])
+        self.assertEqual(result["superseded"]["property"], [{"content": {"n": 1}}])
+
+    def test_fence_history_flag_is_exact_and_preserves_physical_order(self):
+        raw = HEADER
+        for value, number in (("true", 1), ("TRUE", 2), ("false", 3), ("true", 4)):
+            body = block("property", {"n": number})
+            raw += body.replace(b'uw:section=property', ('uw:section=property superseded=' + value).encode())
+        result = parse(raw).projection()
+        self.assertEqual(result["sections"]["property"]["content"]["n"], 3)
+        self.assertEqual([v["content"]["n"] for v in result["superseded"]["property"]], [1, 4])
+
+    def test_existing_superseded_source_parse_command_retains_history(self):
+        root = Path(__file__).resolve().parents[2]
+        path = root / "conformance/reserve-draw-bindings/superseded-source/deal.uwx.md"
+        raw = path.read_bytes()
+        document = parse(raw)
+        expected_history = [item for item in document.source.blocks
+                            if dict(item.attributes).get("superseded") == "true"]
+        self.assertTrue(expected_history)
+        result, status = main(["parse", str(path)])
+        self.assertEqual(status, 0)
+        for item in expected_history:
+            projected = result["superseded"][item.section]
+            self.assertTrue(any(value.get("meta") == item.parsed.value.get("_meta") for value in projected))
+        self.assertEqual(path.read_bytes(), raw)
+
     def test_manifest_is_explicitly_partial_and_missing_commands_do_not_pass(self):
         manifest, status = main(["manifest"])
         self.assertEqual(status, 0)
