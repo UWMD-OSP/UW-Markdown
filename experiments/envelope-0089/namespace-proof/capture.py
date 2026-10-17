@@ -41,7 +41,7 @@ def run():
     assert node.returncode == 0, node.stderr.decode("utf8")
     node_value = json.loads(node.stdout.decode("utf8"))
     node_rows = node_value["rows"]
-    assert len(node_rows) == len(python_rows) == 36
+    assert len(node_rows) == len(python_rows) == 38
     for py, js in zip(python_rows, node_rows):
         for key in ("case", "vector", "input_sha256", "accepted"):
             assert py[key] == js[key], (key, py, js)
@@ -71,14 +71,14 @@ def main():
         (EVIDENCE / "node.stdin.json").write_bytes(stdin)
         (EVIDENCE / "node.stdout.json").write_bytes(stdout)
         (EVIDENCE / "node.stderr.txt").write_bytes(stderr)
-        print("Created new namespace evidence: 36 vectors / 10 accepted / 26 refused per implementation")
+        print("Created new namespace evidence: 38 vectors / 10 accepted / 28 refused per implementation")
     else:
         frozen = json.loads((EVIDENCE / "observations.json").read_bytes())
         for name in ("behavior", "source_sha256", "node_dependency_sha256", "raw", "scope"):
             assert actual[name] == frozen[name], "namespace replay mismatch: " + name
         for name, raw in (("node.stdin.json", stdin), ("node.stdout.json", stdout), ("node.stderr.txt", stderr)):
             assert (EVIDENCE/name).read_bytes() == raw, name
-        print("Namespace proof PASS: 36 vectors / 10 accepted / 26 refused per implementation")
+        print("Namespace proof PASS: 38 vectors / 10 accepted / 28 refused per implementation")
         print("Current runtime (informational): " + json.dumps(actual["runtime"], sort_keys=True))
 
 if __name__ == "__main__":

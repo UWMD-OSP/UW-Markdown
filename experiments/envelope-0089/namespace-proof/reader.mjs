@@ -30,7 +30,7 @@ function expanded(name, namespaces, attribute = false) {
 export function decodeNamespaceXml(text) {
   check(Buffer.byteLength(text) <= 1048576 && !text.includes('<!') && [...text].every(ch => ch.charCodeAt(0) <= 127), 'XML bounded declaration/domain');
   check(XMLValidator.validate(text) === true, 'XML syntax');
-  const parser = new XMLParser({ preserveOrder: true, ignoreAttributes: false, attributeNamePrefix: '', trimValues: false, parseTagValue: false, parseAttributeValue: false, ignoreDeclaration: true });
+  const parser = new XMLParser({ preserveOrder: true, ignoreAttributes: false, attributeNamePrefix: '', trimValues: false, parseTagValue: false, parseAttributeValue: false, ignoreDeclaration: true, htmlEntities: { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" } });
   const roots = parser.parse(text);
   check(roots.length === 1, 'XML root');
   function read(node, expectedLocal, inherited, depth = 0) {

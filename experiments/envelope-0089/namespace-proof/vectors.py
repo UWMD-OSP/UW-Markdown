@@ -25,6 +25,7 @@ def vectors():
             ("default-namespace", default, True),
             ("scoped-prefix-shadow-restores-parent", raw.replace(leaf, scoped), True),
             ("normalized-namespace-uri", raw.replace(NS, NS.replace(":", "&#58;", 1), 1), True),
+            ("escaped-reference-is-not-recursive", raw.replace(NS, NS.replace(":", "&amp;#58;", 1), 1), False),
             ("unbound-prefix", raw.replace("<uw:", "<q:").replace("</uw:", "</q:"), False),
             ("wrong-root-uri", raw.replace(NS, "urn:foreign", 1), False),
             ("wrong-child-rebinding", raw.replace(leaf, leaf.replace("<uw:member", '<uw:member xmlns:uw="urn:foreign"')), False),
