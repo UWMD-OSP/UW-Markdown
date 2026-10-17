@@ -593,3 +593,37 @@ complete Python financial evaluator, solver/quantizer/receipt proof or RFC
 acceptance. Ordinary CI adds conditional tests and separately labeled evidence
 in the existing three Python jobs, pinned to the actual reviewed head; no extra
 platform jobs or production activation. Original numerical evidence stays intact.
+
+### Complete bounded financial trajectories (unaccepted)
+
+The [composed trajectory study](https://github.com/UWMD-OSP/UW-Markdown/blob/d8e16f7dc34c0b92729f55d32a8ec8b0aa050f80/experiments/numerical-0088/financial-trajectories/README.md)
+connects the independent Python raw kernel to current periodic NPV/IRR,
+actual/365f XNPV/XIRR and PMT procedures. Nineteen fixed word-input cases retain
+4,730 complete candidate operation/evaluation/bracket/iteration/update/exit
+rows. Separate JS graphs agree with Python under an explicitly separate
+NaN-class comparison projection; original NaN bits remain in the raw archives.
+Actual unmodified production agrees with the host graphs and baseline loader;
+actual isolated power injection agrees with the candidate graphs. Every finite
+reported result and eight boundary controls agree with the production decimal-
+string quantizer through an independent rational reporting reference.
+
+The original capture pins checkout5c034dd0/tree80d24a81, CPython3.12.3 Windows
+AMD64 and Node24.14.1/V8 13.6.233.17-node.44. Twenty-one compressed artifacts
+preserve all raw traces, distinct comparison projection, actual API outputs,
+loader events/transforms and command logs. The sole final result/refusal change
+in these controls is the known endpoint10 to CALC-IRR-DIVERGE transition;
+its exact21flow words link to the preserved actual receipt RCP-03/RCP-07/backend
+controls. Those receipt executions are reused evidence, not newly performed
+cryptographic authentication or a new precedence rule.
+
+Ordinary Node20 CI reuses its build/Python runtime for focused controls, immutable
+archive/source verification and a separate complete observation archive. Record
+actual run/head/runtime/artifact identities before calling that execution green.
+The earlier raw-kernel three-platform results are independent evidence; neither
+they nor this original one-host capture supplies three-platform financial proof.
+Remaining gates include other financial graphs/day counts, whole-domain accuracy,
+complete stated-figure/receipt integration and advertised spreadsheet parity.
+No iteration-cap exhaustion was observed. Owner acceptance of the complete
+procedure/accuracy/refusal contract and separate production activation remain
+required; no arithmetic, schema, fixture, receipt, package version or launch state
+changes in this study.

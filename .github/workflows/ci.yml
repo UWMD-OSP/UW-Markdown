@@ -329,6 +329,22 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Check composed numerical trajectories (unaccepted)
+        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
+        # Reuse this build and Python runtime. Keep new raw observations separate
+        # from the immutable one-host archive; this is research, not conformance.
+        run: |
+          python3 -B -m unittest discover -s experiments/numerical-0088/financial-trajectories -p "test_*.py" -v
+          python3 -B experiments/numerical-0088/financial-trajectories/capture.py --check experiments/numerical-0088/financial-trajectories/evidence
+          python3 -B experiments/numerical-0088/financial-trajectories/capture.py --capture "${{ runner.temp }}/financial-trajectory-observations"
+      - uses: actions/upload-artifact@v6
+        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
+        with:
+          name: isolated-financial-trajectories-node20
+          path: ${{ runner.temp }}/financial-trajectory-observations/
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures
         # through the §II.6a CLI protocol, which is what a non-TypeScript
