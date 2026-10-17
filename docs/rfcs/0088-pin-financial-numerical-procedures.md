@@ -97,9 +97,10 @@ accumulate error. Exponentiation by squaring is efficient but another procedure.
 An exponent-scaled significand/exponent implementation could preserve range, but
 its renormalization, rounding and final underflow must be fully pinned.
 
-Recommend assessing bounded positive discounting independently, then selecting a
-range-safe negative-power procedure with exact vectors. Do **not** impose a
-universal reciprocal rule now. PMT/PV/FV cannot be changed merely by replacing
+The concrete comparison in section 6 now recommends developing one pinned
+procedure across positive, negative and fractional exponents. Its bounded integer
+alternative remains distinct. Do **not** impose a universal reciprocal rule now.
+PMT/PV/FV cannot be changed merely by replacing
 one operator while leaving allowed periods and parentheses implicit.
 
 Determinism does not imply best numerical accuracy. A 100-digit Decimal control
@@ -151,31 +152,31 @@ by merging investigation evidence while the RFC remains `draft`.
 | Decision | Concrete alternatives | Recommendation and consequence |
 |---|---|---|
 | D1: Guarantee | One exact result/refusal for each admitted input and ordered procedure; or allow multiple answers within an explicit error envelope | Retain one exact result/refusal. Reported-value equality alone is insufficient at quantization ties, and an error envelope would require new comparison/digest semantics. Do not promise that every financial formula is a correctly rounded evaluation of its entire real-valued expression. |
-| D2: Positive integer powers | Sequential multiplication; fixed exponentiation-by-squaring graph; or a correctly-rounded power primitive | First compare a fully pinned portable power procedure with a correctly-rounded primitive. Recommend an exact specified answer for integer and fractional powers, not an unmeasured accuracy promise. Sequential discount factors remain a distinct alternative, not an interchangeable optimization. |
-| D3: Negative powers | Reciprocal of positive product; product of reciprocals; scaled integer procedure; or the same range-safe correctly-rounded primitive | Require the chosen portable procedure to handle the admitted negative-power range; reject universal reciprocal-of-positive-product because of the demonstrated lost subnormal. Measure a pinned range-safe algorithm against a correctly-rounded alternative before selection. |
-| D4: Transcendentals | Fully specified portable approximation algorithm/version; or correctly-rounded mathematical contract with demonstrated implementations | First assess a pinned fdlibm/StrictMath-style procedure against a correctly-rounded alternative, using independent reproduction and accuracy evidence. A procedure-specific exact answer and a mathematically correctly-rounded answer are different guarantees; neither is selected yet. |
+| D2: Positive integer powers | Sequential multiplication; fixed exponentiation-by-squaring graph; or a correctly-rounded power primitive | Develop candidate A below: one exact pinned fdlibm procedure for all exponent classes, with measured accuracy. Candidate B is the concrete correctly-rounded alternative if that stronger objective is required. Sequential discount factors remain a distinct alternative, not an interchangeable optimization. |
+| D3: Negative powers | Reciprocal of positive product; product of reciprocals; scaled integer procedure; or the same range-safe correctly-rounded primitive | Use the same selected A/B primitive for negative powers; reject universal reciprocal-of-positive-product because of the demonstrated lost subnormal. C pins reciprocal-first squaring but changes rounding and still needs A for fractional powers. |
+| D4: Transcendentals | Fully specified portable approximation algorithm/version; or correctly-rounded mathematical contract with demonstrated implementations | Compare the exact eight-file fdlibm closure (A) against the MPFR4.2.2/GMP6.3.0 adapter (B) below. Recommend A proposal completion; universal correct rounding would select a distinct B guarantee. Neither is accepted. |
 | D5: Financial graphs | Preserve current closed-form associations and zero branches; or adopt stability-oriented `log1p`/`expm1`/rearranged formulas | First pin the existing graphs below, replacing only primitive dependencies if approved. Consider stability changes separately after measuring cancellation. Do not silently widen solver domains or call tiny rates zero. |
 | D6: Range and resources | Admit the present finite input domain with bounded kernel implementation; or specify narrower admitted domains and exact refusals | Prefer preserving the presently admitted domain where practicable. Any necessary restriction needs an explicit affected-input table and owner approval; the experimental 10,000-step cap is not a limit proposal. Do not mistake the existing AST-node budget for a bound on work inside one builtin. |
-| D7: Compatibility | Governed Protocol revision and new engine version with existing receipt wire semantics; or introduce a separately versioned procedure selector/receipt mechanism | Prefer a governed Protocol revision and new verifier engine version, preserving receipt wire/signature subjects unless measured migration needs prove insufficient. Exact revision numbers and supported historical verification paths remain an owner decision. No hidden same-version procedure replacement. |
+| D7: Compatibility | Governed Protocol revision and new engine version with existing receipt wire semantics; or introduce a separately versioned procedure selector/receipt mechanism | Prefer a governed Protocol revision and new verifier engine version, preserving receipt wire/signature subjects unless measured migration needs prove insufficient. Exact revisions and activation remain an owner decision. Follow the pre-release clean break; no legacy evaluator or hidden same-version procedure replacement. |
 | D8: Evidence | TS-only or host-power agreement; or frozen vectors plus genuinely independent implementations and platform coverage | Require frozen independent TS/Python evidence, corpus impact and actual scoped spreadsheet recalculation before claiming the corresponding guarantees. A runtime-pinned reference release alone does not close #356. |
 
 #### Immediate owner direction versus engineering completion
 
 The eight rows above separate consequences; they are not eight requests to
-approve unspecified algorithms. The immediate architectural choice is whether
-to develop the recommended single exact-result contract through a fully pinned,
-range-safe algorithm with measured accuracy, or require mathematically
-correctly-rounded primitives. First investigate the former against the latter;
-bounded sequential discounting remains a separate candidate rather than the
-default for every power. Preserve the current
-quantizer and solver structure in either proposal; tolerance-based verification
-would be a separate compatibility alternative, not an implementation shortcut.
-A second owner choice is whether stability-oriented financial rearrangements
-belong in this same revision; recommend holding them separately. A third is the
-migration policy: recommend existing receipt wire/signature subjects with an
-explicitly versioned numerical contract and new verifier engine version; exact
-activation and historical support follow measured impact, not a version assigned
-in this draft. These direction choices do not accept the RFC.
+approve unspecified algorithms. The smallest architectural choice is now concrete:
+**develop A's exact pinned fdlibm procedure, or require B's correctly-rounded
+primitives through the specified MPFR binary64 adapter**. Recommend A, conditional
+on complete independent ports, accuracy and domain/resource evidence. C's integer
+hybrid is executable but not recommended as a distinct contract without measured
+benefit; it still requires A's fractional/log/exp closure. Choosing an architecture
+authorizes completing the proposal, not activating it or accepting this RFC.
+
+Keep financial associations, the quantizer and solver unchanged in either path.
+Stability-oriented log1p/expm1 rearrangements remain a separate explicit decision.
+Retain current receipt wire/signature subjects with a new verifier engine version
+and governed Protocol revision after impact measurement. Follow the owner's
+pre-release clean break without historical evaluator fallbacks or compatibility
+layers. Exact versions and activation remain owner-controlled.
 
 Kernel selection, complete domains/refusal points, resource evidence and frozen
 independent vectors are engineering completion work. Return a concrete restriction
@@ -205,7 +206,7 @@ and [exponential](https://netlib.org/fdlibm/e_exp.c); these are not universal
 correct-rounding guarantees. A pinned procedure must also close over its
 constants, helper functions, bit operations and special cases.
 
-The [MPFR manual](https://mpfr.org/mpfr-current/mpfr.html) demonstrates a
+The [MPFR 4.2.2 manual](https://www.mpfr.org/mpfr-4.2.2/mpfr.html) demonstrates a
 correctly-rounded multiple-precision route, with GMP dependency and explicit
 rounding/exponent controls. Its native model does not directly supply binary64
 subnormals; emulation requires range configuration and subnormal handling.
@@ -213,16 +214,15 @@ This supports using it as a research accuracy oracle, not assuming a lean
 browser/runtime dependency or a fixed work bound. Licensing and distribution
 also need review before any dependency decision.
 
-The next engineering study should freeze candidate source bytes/hash and the
-complete helper closure, develop isolated experimental TS/Python implementations
-from the specified procedure independently of each other, and compare algorithm
-reproduction and mathematical accuracy separately. Java StrictMath can test the
-former candidate; appropriately configured MPFR can test the latter. Freeze
-input bytes, measure hard rounding/range cases and complete financial graphs,
-and report runtime/browser/package cost and receipt-result changes. Then return
-one concrete proposal for owner acceptance. No candidate kernel is implemented
-or selected here. Experimental prototypes are research evidence, not changes to
-the current evaluator, conformance expectations or financial contract.
+The source identities are now frozen in the source-only closure study and the
+concrete comparison below. The next implementation study must complete independent
+isolated TS/Python ports of the selected proposal, reproduce exact procedure
+outputs and compare mathematical accuracy separately. A correctly configured
+MPFR adapter is a candidate accuracy reference, not an already executed oracle.
+Keep input hashes, hard rounding/range cases, complete financial graphs and
+runtime/browser/package costs distinct from receipt-result impact. No complete
+A/B kernel is implemented or selected here, and the prototypes change no current
+evaluator or conformance expectation.
 
 The [candidate-source closure study](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-fdlibm-closure-356.md)
 now freezes eight exact Netlib source hashes and identifies the power helper
@@ -235,6 +235,74 @@ The linked study now also provides isolated independent JS/Python word-adapter
 experiments and fixed bit-pattern tests for extraction/insertion, signed words,
 whole-word shifts and carry/borrow. These are prerequisite research only; no
 complete numerical kernel or financial expected answer is supplied.
+
+#### Actual procedure alternatives — owner recommendation, not acceptance
+
+The [concrete procedure comparison and new integer lab](https://github.com/UWMD-OSP/UW-Markdown/blob/6ff79438579b16625f02db36d93b517fb3c26cd7/experiments/numerical-0088/integer-dispatch/README.md)
+specify the following concrete design alternatives. Their **implementation/evidence
+status differs**; a specified API adapter is not executable evidence. The lab
+includes exact source/archive hashes, special/domain tables, conversion and work
+limits, cost/license feasibility, old frozen counterexamples and acceptance tests.
+
+| Candidate | Exact procedure and integer/negative convention | Status and consequence |
+|---|---|---|
+| **A — recommended proposal direction** | The exact eight-file Netlib closure, including `e_pow.c` SHA-256 `763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122`, with explicit binary64 constants, basic-operation boundaries and defined word-site mapping. Call `__ieee754_pow` for integral and fractional exponents, including its pinned +1/-1/+2/+0.5 fast paths, split log2/general exponential graph, huge-exponent branches and scaling; log/exp use their separate pinned bodies. No running-product or universal reciprocal substitution. | Full TS/Python kernel unimplemented. Source closure and bit adapters exist. Fixed branches plus conditionally bounded software sqrt support a lean bounded implementation; accuracy/corpus/domain/port evidence is incomplete. Guarantee is exact procedure output, **not** universal mathematical correct rounding. |
+| **B — if primitive correct rounding is required** | MPFR **4.2.2** / GMP **6.3.0**, exact binary64-word loading, destination precision 53, exponent range emin=-1073/emax=1024 set before operations, named `mpfr_pow`/`mpfr_log`/`mpfr_exp` with MPFR_RNDN, **actual operation ternary** passed to `mpfr_subnormalize`, then exact word encoding. No integer-width cast, powr, host libm or exp(y*log(x)) substitute. | Specified but not built/executed here. MPFR's target-precision guarantee plus correct range/subnormal adapter can supply binary64 correct rounding; precision 53 alone cannot. Internal Ziv precision growth/allocation has no demonstrated universal hostile-input bound. Native/Wasm packaging, license and independent adapter tests remain required. |
+| **C — explicit hybrid, not recommended without measured benefit** | For every exactly integral finite binary64 y, decode its full exact integer magnitude, form f=B(1/x) first for negative y, then binary squaring with ordered accumulator multiplies and no unused final square; immediately refuse any nonfinite basic result. Fractional powers and log/exp use exactly A. | Integer part independently executable in this lab; A fractional/log/exp still unimplemented and reported missing. At most1024 loop iterations /1077 basic operations, without a 256 cap or safe-integer restriction. Distinct rounding/refusal semantics; no measured bundle or speed saving justifies a separate contract. |
+
+Recommend **A across all exponent classes**, rather than adding C merely because
+its integer implementation is shorter. A's general fractional power already
+needs the same helper closure; C does not remove that dependency and introduces
+a different graph at integer exponents. Frozen reciprocal-first versus one-rounded
+power controls disagree (1.1^-31 gives words `3faaacadc6ed30d0` versus
+`3faaacadc6ed30ca`). Earlier money/IRR controls already prove that changing an
+integer graph can change reported values and endpoint/refusal branches. Those
+are comparisons of existing experimental graphs, **not measured A-versus-B
+outputs**. No source comment or host vote is a substitute for that pending test.
+
+For B, source provenance pins MPFR archive SHA-256
+`b67ba0383ef7e8a8563734e2e889ef5ec3c3b898a01d00fa0a6869ad81c6ce01`
+and GMP archive SHA-256
+`a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898`,
+plus exact manual, implementation and license member hashes. Archives were read
+inertly with verified HTTPS; upstream release signatures were not checked. No
+library is installed or added as a dependency. MPFR LGPL v3-or-later, GMP's dual
+license, browser/native distribution cost and context isolation require review.
+A preserves the original Sun notice; no port or bundle-size claim follows from
+its 43,025 source bytes.
+
+The specified B adapter decodes each normal/subnormal word as signed integer
+significand times an exact power of two, loads with `mpfr_set_z_2exp` and handles
+signed zero separately. After the selected operation, subnormal rounding must
+retain its actual ternary; an arbitrary precision 53 approximation followed by
+`mpfr_get_d` is **not** the proposed correctly-rounded procedure. With u=2^-1074,
+exact v=1.5u-2^-1128 rounds to u; precision 53 then naïve double conversion rounds
+to 2u. The new rational control proves that hazard without claiming MPFR execution
+or a pow/log/exp input producing v. Final finite MPFR output is encoded through
+exact `mpfr_get_z_2exp` integer shifts (no nonzero discarded bits), with zero sign
+preserved. Actual primitive boundary vectors must still test the adapter.
+
+All three designs preserve the explicit financial operation table in this RFC:
+periodic amount/divisor remains distinct from dated amount*negative-power;
+primitive nearest/even remains distinct from final VIII.5 decimal-string
+half-away quantization. IRR/XIRR bracket, endpoint precedence, stopping criteria
+and tolerances remain unchanged. A complete solver trajectory is not supplied by
+the endpoint-only lab. Existing RCP-07 precedence and its same-engine disagreement
+gap remain disclosed; numerical changes neither rewrite source/signature subjects
+nor historical receipts. Follow a versioned clean break, with no legacy evaluator,
+new runtime field or compatibility shell inferred from this comparison.
+
+Acceptance tests must cover complete independent word/constant/site maps, each
+kernel's real special/range branches and hard mathematical rounding certificates;
+B must fail a ternary-discarding subnormal-adapter mutant. Add full financial
+trajectories, final quantizer neighbors, affected current-corpus manifests,
+public assertion/result-array/receipt cases and actual supported spreadsheet
+recalculation. Measure the selected implementation on supported runtimes/OS and
+architectures with retained hashes/versions/failures. Six new Python methods and
+24 independent JS classification/result/trace records pass on one Windows AMD64
+host (Python3.12.3, Node24.14.1); this proves neither complete A/B/C portability
+nor the pending integrator CI matrix. Architecture direction, final RFC acceptance,
+implementation conformance and publication remain separate checkpoints.
 
 #### Candidate primitive meaning and unresolved cases
 
@@ -441,7 +509,8 @@ does not hide an untested branch or refusal.
   today's Reader/Verifier and optional-profile model.
 - **Migration:** retain old receipt/source artifacts unchanged, publish measured
   old/new results and refusal differences, version the accepted contract honestly,
-  and identify supported verification histories. Do not rewrite conformance to
+  and state the clean-break activation for current consumers. Do not rewrite
+  conformance to
   bless one host's observations. Timing remains owner-controlled; no 5.0 release
   preparation is authorized.
 
@@ -536,7 +605,8 @@ The Python numeric oracle is an experiment, not an alternative accepted solver.
    special-case/domain/resource/error table and financial graphs. The recommended
    primitive contract is not complete until these details and evidence exist.
 3. Choose compatibility activation and versioning after measurements, including
-   historical receipt verification support. No old receipt may be rewritten.
+   unchanged historical receipt evidence and the clean-break activation. No old
+   receipt may be rewritten.
 4. Approve independent-platform and spreadsheet evidence required for advertised
    guarantees before the coordinated launch; no artificial release deadline.
 
