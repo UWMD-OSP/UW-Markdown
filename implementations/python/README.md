@@ -112,6 +112,15 @@ collisions, current/history, external presence, exact empty strings, preserved w
 These are source-level read-only API controls, not a full field-type validator,
 new command, capability pass or cleared-diligence/final-loan claim.
 
+At corrected source checkpoint `9508de10`, the full Python suite passed
+**216 methods** in 46.798 seconds: all 151 original methods remain unchanged,
+plus 62 validation and three YAML methods. The actual shared Reader subprocess
+passed **17/17**, with zero failed, skipped or unverifiable cases. CLI/discovery
+remains byte-identical to the baseline. These runs preserve existing standalone
+reserve/draw/replacement evidence and compare the unchanged 111 validation API
+projections; they do not execute the unsupported validate command. No npm/full
+JavaScript suite or new cross-platform claim is included in this worker evidence.
+
 The CLI still refuses `validate` and discovery remains parse-only. Completion
 still needs the remaining audited field/condition integration, disposition of
 the actual required-actor conflict below, and explicit unsupported-composition
