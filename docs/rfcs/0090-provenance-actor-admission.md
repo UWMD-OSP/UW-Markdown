@@ -41,7 +41,7 @@ The [original decision packet](https://github.com/UWMD-OSP/UW-Markdown/issues/35
 identifies twelve unchanged source/expectation pairs at main
 `b2ac5d8f068308fd690de824b963135974ec5fb8`, with78 missing actors.
 It reuses twelve actual historical TypeScript CLI executions and preserves their
-original results. Its proposed78 errors and eight CLI0-to1 transitions are a
+original results. Its proposed78 actor errors and eight CLI0-to1 transitions are a
 counterfactual, not a new execution or a complete all-corpus impact claim.
 
 ## Proposed change
@@ -72,15 +72,23 @@ Apply these decisions per assessed block, in this order:
 | Otherwise actor absent/null/exact-empty/non-string | One `META-01`/error at `_meta.provenance.actor`. |
 | Otherwise nonempty actor string | No actor finding. |
 
-This does not broaden existing malformed-wrapper checks to every physical block
-or turn all metadata-schema failures into `META-01`. Existing completeness
-warnings and informational findings retain their current applicability, codes,
+Use the exact existing wrapper/nested-object predicate and message for all
+assessed blocks. After existing visible-model shape findings, assess previously
+unseen parser-retained physical references with that same predicate. This is an
+explicit proposed applicability correction: malformed overwritten/unselected
+blocks must not escape both shape refusal and actor admission. It adds no new
+typed requirement and does not turn other metadata-schema failures into
+`META-01`. Record newly exposed shape findings separately from new actor
+findings in the affected-case manifest. Existing completeness warnings and informational findings retain their current applicability, codes,
 severity and relative order. In particular the five closed missing-field
 suffixes remain unchanged; this RFC adds neither `META_FIELD_MISSING_ACTOR` nor
 a separate actor code. Independent existing errors on other fields still apply.
 
-All preexisting metadata-shape findings remain before the new actor findings.
-Insert the actor pass after that shape checkpoint and before role, period-series
+Keep every preexisting visible-model metadata-shape finding at its original
+checkpoint and in its original order. Append newly exposed retained-physical
+shape findings there in physical source order, deduplicating block references
+already shape-checked through the visible model. All shape findings precede the
+new actor findings. Insert the actor pass after that shape checkpoint and before role, period-series
 and source-vocabulary checks. Retain the relative order of all old findings.
 Actor findings follow retained physical source order, then model-only traversal
 order as defined below. Use available section/source context without inventing
@@ -197,12 +205,16 @@ results and wider inventory; they are not a new baseline.
 | `17-exit-proceeds-junior-capital` | 3 | clean/0 |
 
 Acceptance requires exact source/old-expectation hashes and new expected
-findings/status/exit changes, including any wider corpus consumers. Do not run
+findings/status/exit changes, including any wider corpus consumers. Account
+separately for newly exposed physical shape findings from the unchanged wrapper
+predicate; the78-actor projection is not a bound on all additional findings. Do not run
 an unreviewed blanket `--update`. Negative controls must cover missing/null/
 empty/numeric/boolean/array/object actors, valid arbitrary and whitespace
 strings, whole-missing `_meta`, malformed wrapper/nested shape precedence,
 multiple physical peers, superseded and overwritten entries, all append-only
-collections and extensions. Pin issue multiplicity/order and actor field paths.
+collections and extensions. Include malformed wrappers/nested objects hidden by physical
+reduction, showing shape refusal before actor suppression. Pin issue
+multiplicity/order and actor field paths.
 
 Mutable-model controls must cover in-place canonical actor edits, model-only
 additions, replacements/removals retaining physical evidence, divergent meta
