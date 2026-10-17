@@ -40,7 +40,9 @@ frozen manifest; the JSON summary alone is not all raw measurement evidence.
 
 ## Frozen local observation
 
-[observed-impact.json](observed-impact.json) records one completed baseline and
+[observed-impact.json](observed-impact.json), with its hash-bound
+[cases](observed-impact.cases.jsonl) and [primitive changes](observed-impact.primitives.jsonl),
+records one completed baseline and
 candidate measurement on Node 24.14.1 / V8 13.6.233.17-node.44, Windows x64,
 against the fresh existing build identified in the manifest. The candidate's
 complete closure and all protected source/build inputs are hashed there.
@@ -96,3 +98,7 @@ Verify all archived streams and the frozen case/primitive inventories:
 ```powershell
 python experiments/numerical-0088/impact/verify-evidence.py
 ```
+
+The frozen JSON header references compact JSON Lines shards to keep each JSON
+artifact below the repository lint size limit. Reconstructing the two arrays
+from those shards preserves every original row and typed value exactly.
