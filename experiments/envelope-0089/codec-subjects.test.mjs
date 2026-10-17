@@ -17,12 +17,12 @@ test('five independently reconstructed candidate JCS subjects and all frozen art
   assert.equal(matrix.cases.length, 5);
   let artifacts = 0;
   for (const example of matrix.cases) {
-    const prefix = example.case + '/';
-    const model = JSON.parse(read(prefix + 'document.uw.json'));
+    const prefix = `${example.case}/`;
+    const model = JSON.parse(read(`${prefix}document.uw.json`));
     const {generated_at, generator, semantic_digest, ...semantic} = model;
     const text = JSON.stringify(sorted(semantic));
-    assert.equal(text, read(prefix + 'subject.jcs').toString('utf8'), example.case);
-    assert.equal('sha256:' + hash(Buffer.from(text, 'utf8')), semantic_digest, example.case);
+    assert.equal(text, read(`${prefix}subject.jcs`).toString('utf8'), example.case);
+    assert.equal(`sha256:${hash(Buffer.from(text, 'utf8'))}`, semantic_digest, example.case);
     assert.equal(semantic_digest, example.semantic_digest);
     for (const artifact of example.artifacts) {
       const raw = read(prefix + artifact.path);
@@ -31,8 +31,8 @@ test('five independently reconstructed candidate JCS subjects and all frozen art
       artifacts += 1;
     }
     if (example.source_available) {
-      const plan = JSON.parse(read(prefix + 'reissuance-plan.json'));
-      assert.equal(plan.original_sha256, hash(read(prefix + 'original.uwx.md')));
+      const plan = JSON.parse(read(`${prefix}reissuance-plan.json`));
+      assert.equal(plan.original_sha256, hash(read(`${prefix}original.uwx.md`)));
       assert.equal(plan.new_source_digest, semantic_digest);
     }
   }
