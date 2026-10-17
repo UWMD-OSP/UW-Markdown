@@ -259,6 +259,13 @@ their stack sizing outcomes are a separate obligation. All 52 focused validation
 methods pass, including the existing 111 direct API projections. This is no
 additional portable command or complete capability claim.
 
+At this committed source checkpoint the full Python suite passed **206 methods**
+in 46.748 seconds (all 151 original methods unchanged, plus 52 integrated
+validation and three YAML methods). The actual shared Reader subprocess passed
+**17/17**, with zero failed, skipped or unverifiable cases. Existing standalone
+reserve/draw/replacement controls remain in that full suite; validate CLI and
+manifest claims remain unchanged. No JavaScript full suite was run in this lane.
+
 ### FV conditions and field locations
 
 [Format 5.2](../../spec/UW_FORMAT_SPEC.md) fixes defaults, institution overrides
