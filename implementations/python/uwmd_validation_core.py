@@ -11,7 +11,7 @@ from uwmd_binding_sources import finite
 from uwmd_currency import inspect_document_currency
 from uwmd_source_validation import inspect_source_roles
 from uwmd_validation_provenance import metadata_shape, incomplete_policy
-from uwmd_validation_selection import active_blocks, select_section, field, is_externalized
+from uwmd_validation_selection import active_blocks, select_section, field
 
 STAGES = ("scope", "screening", "term_sheet", "full_underwrite",
           "credit_approval", "closing", "monitoring")
@@ -84,15 +84,26 @@ def sections_required(stage, asset_class):
     return source
 
 
+def _section_presence(document):
+    """Format 5.1 counts active presence, including unresolved external refs."""
+    return {block.section for block in active_blocks(document)}
+
+
+def _scope_missing_fields(prop):
+    """DQ-04 presence only; do not infer field types or replace explicit zero."""
+    missing = [path for path in ("address", "asset_class") if field(prop, path) is None]
+    if all(field(prop, path) is None for path in ("units", "asking_price")):
+        missing.append("units|asking_price")
+    return missing
+
+
 def stage_readiness(document):
-    present = {b.section for b in active_blocks(document)}
+    present = _section_presence(document)
     result = {s: set(sections_required(s, document.frontmatter.value.get("asset_class"))) <= present for s in STAGES}
-    property_blocks = active_blocks(document, "property")
-    prop = property_blocks[-1].parsed.value if property_blocks else {}
-    result["scope"] = (result["scope"] and not is_externalized(property_blocks[-1])
-        and field(prop, "address") is not None
-        and field(prop, "asset_class") is not None
-        and any(field(prop, p) is not None for p in ("units", "asking_price")))
+    selected = select_section(document, "property")
+    prop = selected.block.parsed.value if selected.block is not None else {}
+    result["scope"] = (result["scope"] and selected.block is not None
+                       and not _scope_missing_fields(prop))
     return result
 
 
@@ -175,17 +186,16 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
                 ledger.issue("DQ-02", "error", section, "_meta.quality.provisional",
                              "Declared stage requires observed rather than provisional data",
                              value={"policy_fields": sorted({p.get("field_path","") for p in halts})})
-    present = {b.section for b in active_blocks(document)}
+    present = _section_presence(document)
     if stage in STAGES:
         for section in sections_required(stage, asset):
             if section != "property" and section not in present:
                 ledger.issue("DQ-06", "info", section, "", "Declared stage requires this section")
         if stage == "scope" and not selected.externalized:
-            for path in ("address", "asset_class"):
-                if field(prop, path) is None:
-                    ledger.issue("DQ-04", "error", "property", path, "Scope-stage property field is absent")
-            if all(field(prop, p) is None for p in ("units", "asking_price")):
-                ledger.issue("DQ-04", "error", "property", "units|asking_price", "Scope requires stated units or asking price")
+            for path in _scope_missing_fields(prop):
+                message = ("Scope requires stated units or asking price" if path == "units|asking_price"
+                           else "Scope-stage property field is absent")
+                ledger.issue("DQ-04", "error", "property", path, message)
     if now is None:
         instant = datetime.now(timezone.utc)
     elif isinstance(now, datetime):
