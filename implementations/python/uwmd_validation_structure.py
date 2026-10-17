@@ -53,7 +53,9 @@ def _stack(ledger, payload, section, root):
                 issue("CS-02b", path + ".rate", "Split rates must reconcile to the stated total")
         elif "cash_rate" in tranche or "accrued_rate" in tranche:
             issue("CS-02b", path, "Component rates must not appear outside a split coupon")
-        if (mode is not None and mode not in ("cash", "accrued", "split")
+        # Format 4.24 / tranche schema: omission is optional, authored null
+        # is outside the closed enum. No default/payment mode is inferred.
+        if ("accrual" in tranche and mode not in ("cash", "accrued", "split")
                 or any(tranche.get(k) is not None and not _integer(tranche[k])
                        for k in ("amortization_months", "io_months", "term_months"))):
             issue("CS-01", path, "Stated accrual and debt month terms violate the tranche contract")

@@ -37,10 +37,10 @@ Preserve original sources, historical artifacts and their original verification
 results. Preservation does not authenticate them under a new semantic regime,
 transfer an old signature/receipt to a new subject, or make a frozen prelaunch
 pass new conformance evidence automatically. Current frozen tests remain
-unchanged in this checkpoint; any launch-contract/corpus revision needs its
-governed RFC, synchronized specification/schema/protocol/tests and required
-owner decisions. This compatibility policy does not allocate a missing-actor
-diagnostic or resolve the actor gate below.
+governed independently; any launch-contract/corpus revision needs its
+RFC, synchronized specification/schema/protocol/tests and required owner
+decisions. RFC0090 now resolves actor admission as described below; the launch
+policy alone did not allocate that diagnostic.
 
 The policy accepts no draft RFC or numerical procedure and authorizes no
 release, version selection, tag or publication. Format, Protocol and package
@@ -50,6 +50,46 @@ identify its own applicable corpus and proof, preserving earlier evidence
 without carrying a compatibility implementation merely to keep it passing.
 
 ## Complete validation implementation — in progress
+
+
+### Current checkpoint — accepted RFC0090 integration and CS admission
+
+The validation WIP now includes exact accepted main
+`afcc615897aca301c7b5ec070bba7c0bd253e4ef` by history merge; no candidate
+actor branch was cherry-picked. [RFC0090](../../docs/rfcs/0090-provenance-actor-admission.md)
+allocates META-01/error to absent/null/exact-empty/non-string actors on every
+retained physical block, with existing wrapper/whole-missing-metadata precedence,
+shape-before-actor-before-role/source ordering and current parsed-model authority.
+The integrated API consumes those registered findings unchanged. It no longer
+duplicates actor findings in local `metadata_assessment`; other unallocated
+metadata requirements remain local, including active member-order and section
+identity findings. History/unknown payload and source bytes stay retained.
+The older decision packet and pre-reconciliation results below are historical.
+
+Capital-stack structural admission now distinguishes absent optional `accrual`
+from authored null. Format4.24/RFC0026 allocates malformed tranches to CS-01;
+the normative tranche schema closes accrual to `cash | accrued | split`, and
+RFC0050 admits split only for preferred equity with its stated component rates.
+Authored null and other out-of-enum values therefore receive existing CS-01,
+for both top-level and component stacks. This corrects an independently observed
+Python gap; the current TypeScript validator also lacks the general enum guard,
+so its omission is not used as authority. Rate/null and other domains are
+unchanged; no default, coupon calculation, sizing verification or new convention
+is introduced. Current/history/external applicability, malformed containers,
+split allocation and source preservation have focused integrated controls.
+
+Before-fix evidence is retained in TEMP as ten exact source/full-API-output pairs
+at `306c136f`, manifest SHA-256
+`ed4e332393992a23b3db4ee88fc344b67c0bc0854411a4596edadcd74de6ebd8`.
+It showed no CS finding for absent/null/cash/accrued and one CS-01 for unknown
+in both locations. This is API regression evidence, not portable CLI conformance.
+The source bytes are reused for the after-fix comparison.
+
+The command/discovery boundary is unchanged: `validate` is unsupported, the
+manifest remains parse-only, and the actual 111-case validate subprocess gate
+is not claimed. Governed current API projections and focused nonportable controls
+do not settle remaining unallocated schema conditions, composition transport,
+all family applicability, financial stated figures or a full Verifier tier.
 
 The developing `uwmd_validation.validate_document` API composes one structural
 `ValidationResult` and the separately invoked V.12 result from a copied source
@@ -209,7 +249,11 @@ directives, source retention and V.12 consultation precedence. No fragment
 resolution, smaller partial collection, network fetch, composition-suite pass,
 new receipt interpretation or CLI capability follows.
 
-### Metadata admission and the remaining required-actor conflict
+### Historical metadata/actor assessment — before RFC0090 reconciliation
+
+The following records the pre-RFC0090 WIP and original frozen expectations.
+It is superseded for current actor admission by the checkpoint above and the
+accepted RFC; it does not require an old-actor fallback.
 
 [Format 2.4–2.5](../../spec/UW_FORMAT_SPEC.md),
 [Protocol III.6a](../../spec/UW_PROTOCOL.md), and the
@@ -307,9 +351,12 @@ complete validation. Contract/baseline disposition is required before the whole
 command claim; this implementation does not infer an actor META-01 rule. Unlike this required-field/frozen-behavior gap, omitted metadata severity prose is settled by ordinary published
 precedent and does not require an owner decision.
 
-### Actor diagnostic decision packet — proposal only, 2026-10-17
+### Historical actor diagnostic proposal — superseded by accepted RFC0090
 
-**No activation or approval.** The required actor contract is already settled:
+**Historical proposal, not the current allocation.** This packet preceded
+the accepted RFC0090 history integration above. Its alternatives and owner
+questions are retained as evidence, not outstanding activation gates.
+The required actor contract was already settled:
 [Format 2.5b](../../spec/UW_FORMAT_SPEC.md),
 [Protocol V.3](../../spec/UW_PROTOCOL.md),
 [UWProvenance.actor](../../packages/uwmd-verify/src/types.ts) and the
@@ -537,9 +584,9 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | Family | Implemented scope | Minimum remaining validation obligation |
 |---|---|---|
 | LOC / CUR / descriptive identity | Locale/currency vocabulary, builtin/custom class syntax, scenario and BTR agreement | Complete frontmatter presence/type/source applicability, preserving unknown fields; descriptive values never select models. |
-| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Only the existing inspector's allocated wrapper/nested-object META-01 and SRC/ROLE issues are integrated as registered findings. Unallocated typed/required metadata, actor and conditional-reference findings remain in the uncoded local metadata_assessment; the five completeness warnings stay exact. Diagnostic allocation and the twelve positive-corpus actor omissions remain a genuine contract gate, not optional metadata. |
+| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Accepted RFC0090 actor META-01 plus wrapper/nested-shape and SRC/ROLE findings are registered unchanged; actor findings are not duplicated locally. Other unallocated typed/required metadata and conditional references remain local, while the five completeness warnings stay exact. The original actor/corpus conflict is now governed history, not a remaining gate. |
 | DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | All seven presence lists, overlays and role-selected scope readiness now share tested inputs; scope completeness treats absent/null/exact empty strings as missing without trimming, coercion or claiming field-type validity. Field-specific institution matching and equal-specificity overrides have controls; finish exact gap/override consumption and remaining externalized-field applicability without executing substitution/default actions. |
-| MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Exhaustive closed-field shape/applicability and stated sizing declaration guards. Financial stack sizing reproduction is a separate mandatory Verifier obligation. |
+| MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Authored optional accrual now enforces the closed enum, including explicit-null refusal under existing CS-01, for top-level and component stacks. Complete remaining closed-field shape/applicability and stated sizing declaration guards; financial stack sizing reproduction stays separate. |
 | LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Fixed LU model/assumption/row/summary field shape is now integrated as local section_assessment where no LU diagnostic is allocated; existing LU-01–04 remain unchanged. Diagnostic/admission allocation for those schema conditions is still a complete-command gate. Period/shape inspection is not evaluation or stated-aggregate verification. |
 | TAX / CAPX | Frozen diagnostic arrays, same-quantum tax equations, abatement/draw/target/payback rules | Terminal required assessment versus optional normal G1 group is now controlled. Finish closed-object/stated-member/null/conditional applicability; no savings applied. |
 | LSE / REC | Frozen arrays, lease dates/steps/options/remedies/balances and settled recovery arithmetic | Complete optional administrative-fee/gross-up/cap/true-up shape/conditions and exact source-reference admission. Schema bounds alone do not assign those conditions to REC-01 (explicit share/cap pct) or REC-02 (method/companions/accumulation); do not invent that routing. No cap history or pool allocation is generated. |

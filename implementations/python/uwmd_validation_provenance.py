@@ -69,9 +69,9 @@ def timestamp_shape(value):
 def metadata_assessment(document, source_inventory):
     """LOCAL sibling, not ValidationResult findings or full schema validation.
 
-    Retain all selected-shape inventory evidence, including required actor
-    absence, plus bounded timestamp/reference checks. No META-01 inference:
-    accepted wrapper/nested-object findings remain unchanged in the inventory.
+    Retain unallocated selected-shape inventory evidence plus bounded timestamp/
+    reference checks. RFC0090 actor findings already belong to registered
+    inventory issues, never duplicate local evidence or broader META-01 routing.
     Empty local findings alone do not prove full metadata/schema conformance.
     """
     findings = copy.deepcopy(source_inventory["shape_findings"])
