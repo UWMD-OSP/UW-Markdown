@@ -12,6 +12,7 @@ association within each C expression is retained; each float operator is binary6
 """
 import json
 import struct
+import sys
 from pathlib import Path
 
 MASK = 0xffffffff
@@ -466,3 +467,16 @@ def evaluate_record(record):
     magnitude = word(value) & 0x7fffffffffffffff
     kind = 'nan' if magnitude > 0x7ff0000000000000 else 'infinity' if magnitude == 0x7ff0000000000000 else 'finite'
     return {'id': record['id'], 'op': op, 'kind': kind, 'bits': to_bits(value)}
+
+
+def require_binary64():
+    """Harness precondition, not a numerical/public refusal or full FP proof."""
+    if (sys.float_info.radix, sys.float_info.mant_dig, sys.float_info.max_exp) != (2, 53, 1024):
+        raise RuntimeError('research requires IEEE binary64 float')
+    one = from_bits('3ff0000000000000')
+    half_ulp = from_bits('3ca0000000000000')
+    normal = from_bits('0010000000000000')
+    if to_bits(one + half_ulp) != '3ff0000000000000' or to_bits(one + 3.0 * half_ulp) != '3ff0000000000002':
+        raise RuntimeError('research requires nearest/ties-even arithmetic')
+    if to_bits(normal * from_bits('3cb0000000000000')) != '0000000000000001':
+        raise RuntimeError('research requires gradual underflow')

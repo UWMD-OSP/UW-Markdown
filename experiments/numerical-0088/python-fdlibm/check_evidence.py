@@ -9,7 +9,7 @@ import platform
 import sys
 import zipfile
 from pathlib import Path
-from kernel import evaluate_record
+from kernel import evaluate_record, require_binary64
 
 HERE = Path(__file__).resolve().parent
 LAB = HERE.parent
@@ -29,6 +29,7 @@ def verify_inputs():
 
 
 def measure():
+    require_binary64()
     identities = verify_inputs()
     operands = json.loads((LAB / 'native-reference/inputs.json').read_bytes())['cases']
     actual = [evaluate_record(case) for case in operands]
