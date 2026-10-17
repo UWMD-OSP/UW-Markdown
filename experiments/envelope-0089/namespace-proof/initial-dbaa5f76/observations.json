@@ -1,0 +1,728 @@
+{
+  "behavior": {
+    "accepted": 10,
+    "refused": 28,
+    "rows": [
+      {
+        "node": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "e96d1cadcd8c51de571665c679caa1034d653ab25e5331afc5f057a6eaec92a9",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "original"
+        },
+        "python": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "e96d1cadcd8c51de571665c679caa1034d653ab25e5331afc5f057a6eaec92a9",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "original"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "500a2bc86c5e89416ce351ff77d7807b1a5e4a1521d1bbc945d5ca32939ebddc",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "renamed-prefix"
+        },
+        "python": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "500a2bc86c5e89416ce351ff77d7807b1a5e4a1521d1bbc945d5ca32939ebddc",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "renamed-prefix"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "4779e4255c13e206a336782aeaa69f9bb381d85e72d99a9effb106edf655fcf0",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "default-namespace"
+        },
+        "python": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "4779e4255c13e206a336782aeaa69f9bb381d85e72d99a9effb106edf655fcf0",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "default-namespace"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "ef3720d69a63f206c0fcf9677d3b6daf4538dcfe474f76a240a6f090260499d0",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "scoped-prefix-shadow-restores-parent"
+        },
+        "python": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "ef3720d69a63f206c0fcf9677d3b6daf4538dcfe474f76a240a6f090260499d0",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "scoped-prefix-shadow-restores-parent"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "a5d36d5279409531c26eae1c419a9563cca2b94c7572928514e5b92213029e5b",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "normalized-namespace-uri"
+        },
+        "python": {
+          "accepted": true,
+          "case": "all-block-extras",
+          "complete_model_jcs_sha256": "5ec4ef5110a0e0269e288e2bcfc58dcb8e8e1ff4dde2b022c3d4b9a321f74998",
+          "input_sha256": "a5d36d5279409531c26eae1c419a9563cca2b94c7572928514e5b92213029e5b",
+          "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+          "vector": "normalized-namespace-uri"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML expanded element",
+          "error_name": "TypeError",
+          "input_sha256": "fde6eca3a8bc340b3d23c82fef587a9f4107231f322ae20beea28a5c37e91cba",
+          "vector": "escaped-reference-is-not-recursive"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML namespace/depth",
+          "error_name": "Refusal",
+          "input_sha256": "fde6eca3a8bc340b3d23c82fef587a9f4107231f322ae20beea28a5c37e91cba",
+          "vector": "escaped-reference-is-not-recursive"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML unbound prefix",
+          "error_name": "TypeError",
+          "input_sha256": "75d00d3f2bb059d1dddd46b701d0e254afe9b4a6507b2d7b69a6fb510295bb74",
+          "vector": "unbound-prefix"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "75d00d3f2bb059d1dddd46b701d0e254afe9b4a6507b2d7b69a6fb510295bb74",
+          "vector": "unbound-prefix"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML expanded element",
+          "error_name": "TypeError",
+          "input_sha256": "dbad289fd01859756927130dd729dcc2ce11beaedecca859943305ff23d7c69c",
+          "vector": "wrong-root-uri"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML namespace/depth",
+          "error_name": "Refusal",
+          "input_sha256": "dbad289fd01859756927130dd729dcc2ce11beaedecca859943305ff23d7c69c",
+          "vector": "wrong-root-uri"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML expanded element",
+          "error_name": "TypeError",
+          "input_sha256": "3583c7dacc06ab77af9b4aa9863c8d4908a01465d235d708e61b7c5cbf1c5727",
+          "vector": "wrong-child-rebinding"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML namespace/depth",
+          "error_name": "Refusal",
+          "input_sha256": "3583c7dacc06ab77af9b4aa9863c8d4908a01465d235d708e61b7c5cbf1c5727",
+          "vector": "wrong-child-rebinding"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML expanded element",
+          "error_name": "TypeError",
+          "input_sha256": "0a567fb3ecf4a0d6938a61a201987ddc0c375ec226b498e519e107580ab2c0ed",
+          "vector": "default-undeclaration"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML namespace/depth",
+          "error_name": "Refusal",
+          "input_sha256": "0a567fb3ecf4a0d6938a61a201987ddc0c375ec226b498e519e107580ab2c0ed",
+          "vector": "default-undeclaration"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML reserved xml binding",
+          "error_name": "TypeError",
+          "input_sha256": "b38fdd7c7c9ca5ee2f1e5a1e326b5e4874725a617b12962dc6cc35f5952778e5",
+          "vector": "reserved-xml-binding"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "b38fdd7c7c9ca5ee2f1e5a1e326b5e4874725a617b12962dc6cc35f5952778e5",
+          "vector": "reserved-xml-binding"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML reserved xml binding",
+          "error_name": "TypeError",
+          "input_sha256": "2e4ff69c62394595b88338bdbfff3d0ba200dd96b58ed255dd093aabaf5e82f2",
+          "vector": "reserved-uri-other-prefix"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "2e4ff69c62394595b88338bdbfff3d0ba200dd96b58ed255dd093aabaf5e82f2",
+          "vector": "reserved-uri-other-prefix"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML reserved namespace",
+          "error_name": "TypeError",
+          "input_sha256": "6125bf3221b69c1ff596484a8d74e1368a3b8971a9e5f85f2d87a7569914ad5b",
+          "vector": "reserved-xmlns-prefix"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "6125bf3221b69c1ff596484a8d74e1368a3b8971a9e5f85f2d87a7569914ad5b",
+          "vector": "reserved-xmlns-prefix"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML empty prefix binding",
+          "error_name": "TypeError",
+          "input_sha256": "2dfca507612268b310bfafdd4689f16544dfb2394cca69cd620d55ee92106279",
+          "vector": "empty-prefixed-binding"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "2dfca507612268b310bfafdd4689f16544dfb2394cca69cd620d55ee92106279",
+          "vector": "empty-prefixed-binding"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML mapping attribute must be unqualified",
+          "error_name": "TypeError",
+          "input_sha256": "37e8c083145034e45422f464cf040a6a5eb3fdf6f8f0384ede27b178e40c24eb",
+          "vector": "qualified-mapping-attribute"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML attributes",
+          "error_name": "Refusal",
+          "input_sha256": "37e8c083145034e45422f464cf040a6a5eb3fdf6f8f0384ede27b178e40c24eb",
+          "vector": "qualified-mapping-attribute"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML duplicate restored key",
+          "error_name": "TypeError",
+          "input_sha256": "7ae311fcb115520f931b55cab1348f34d0b2b6dbdbc854382c118f7a52c84e24",
+          "vector": "duplicate-restored-key"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML duplicate decoded name",
+          "error_name": "Refusal",
+          "input_sha256": "7ae311fcb115520f931b55cab1348f34d0b2b6dbdbc854382c118f7a52c84e24",
+          "vector": "duplicate-restored-key"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML lexical spelling",
+          "error_name": "TypeError",
+          "input_sha256": "07039465ed1329b156720a8bdc3ad8b59399854b416b693073a78a825c089f08",
+          "vector": "noncanonical-string-escape"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML lexical spelling",
+          "error_name": "Refusal",
+          "input_sha256": "07039465ed1329b156720a8bdc3ad8b59399854b416b693073a78a825c089f08",
+          "vector": "noncanonical-string-escape"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "invalid Unicode",
+          "error_name": "TypeError",
+          "input_sha256": "f7b134849e5cee4766ed5fe4ca1b87501262a626ecf45de41c1d0badbc05abc0",
+          "vector": "surrogate-string"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "invalid Unicode",
+          "error_name": "CanonicalizationError",
+          "input_sha256": "f7b134849e5cee4766ed5fe4ca1b87501262a626ecf45de41c1d0badbc05abc0",
+          "vector": "surrogate-string"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML bounded declaration/domain",
+          "error_name": "TypeError",
+          "input_sha256": "6a4b2b64f22a86c2463dbf1cf40a20fabfd4abaf16d8068680c0a9a681d8ccbd",
+          "vector": "doctype"
+        },
+        "python": {
+          "accepted": false,
+          "case": "all-block-extras",
+          "error_message": "XML declaration/domain",
+          "error_name": "Refusal",
+          "input_sha256": "6a4b2b64f22a86c2463dbf1cf40a20fabfd4abaf16d8068680c0a9a681d8ccbd",
+          "vector": "doctype"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "55af0df51b65411db2f3d7303bbf51c17ee90e6d7b72dbbefaf7fff1fc4d810c",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "original"
+        },
+        "python": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "55af0df51b65411db2f3d7303bbf51c17ee90e6d7b72dbbefaf7fff1fc4d810c",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "original"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "34f827425ece3030e7617662db9aa67bd5ea250168319e14758a7a198156b448",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "renamed-prefix"
+        },
+        "python": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "34f827425ece3030e7617662db9aa67bd5ea250168319e14758a7a198156b448",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "renamed-prefix"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "1a85cba1ac6cb1c362d8d2497a86c4773b2749c9548e773efdbc707590887927",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "default-namespace"
+        },
+        "python": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "1a85cba1ac6cb1c362d8d2497a86c4773b2749c9548e773efdbc707590887927",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "default-namespace"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "7325bc11319dfe224a7a30d6f8fe5faa3ad5091d0f14c4dc29daa2c8bd1b7a8b",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "scoped-prefix-shadow-restores-parent"
+        },
+        "python": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "7325bc11319dfe224a7a30d6f8fe5faa3ad5091d0f14c4dc29daa2c8bd1b7a8b",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "scoped-prefix-shadow-restores-parent"
+        }
+      },
+      {
+        "node": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "212e1956c43c4d012239b8357f21202e234a22001b6f0bad2fbb4e6d995a977d",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "normalized-namespace-uri"
+        },
+        "python": {
+          "accepted": true,
+          "case": "xml-lexical-domain",
+          "complete_model_jcs_sha256": "18afd57cc21b696b226619a916cb56072dbcacfc8153df71e182f1ecd8a8c7ea",
+          "input_sha256": "212e1956c43c4d012239b8357f21202e234a22001b6f0bad2fbb4e6d995a977d",
+          "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+          "vector": "normalized-namespace-uri"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML expanded element",
+          "error_name": "TypeError",
+          "input_sha256": "c08035b7081ede160d61bdab17e14b6e07ca488c98088116397184624fc3ab9a",
+          "vector": "escaped-reference-is-not-recursive"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML namespace/depth",
+          "error_name": "Refusal",
+          "input_sha256": "c08035b7081ede160d61bdab17e14b6e07ca488c98088116397184624fc3ab9a",
+          "vector": "escaped-reference-is-not-recursive"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML unbound prefix",
+          "error_name": "TypeError",
+          "input_sha256": "649b23ab0bdb8a373d2c43211e8ef72abad061c95b434d52534b964f7bb6d6a4",
+          "vector": "unbound-prefix"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "649b23ab0bdb8a373d2c43211e8ef72abad061c95b434d52534b964f7bb6d6a4",
+          "vector": "unbound-prefix"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML expanded element",
+          "error_name": "TypeError",
+          "input_sha256": "80fcf86f0d2f6189c8adb6381186004ee9034b27501be96c3eaf01c772738e7f",
+          "vector": "wrong-root-uri"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML namespace/depth",
+          "error_name": "Refusal",
+          "input_sha256": "80fcf86f0d2f6189c8adb6381186004ee9034b27501be96c3eaf01c772738e7f",
+          "vector": "wrong-root-uri"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML expanded element",
+          "error_name": "TypeError",
+          "input_sha256": "e4b101b2dcf53dd9c4d928d60a846764276e316e32029996a5c6b7b18162e053",
+          "vector": "wrong-child-rebinding"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML namespace/depth",
+          "error_name": "Refusal",
+          "input_sha256": "e4b101b2dcf53dd9c4d928d60a846764276e316e32029996a5c6b7b18162e053",
+          "vector": "wrong-child-rebinding"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML expanded element",
+          "error_name": "TypeError",
+          "input_sha256": "b8bb89f2e8742b2601af81d64b92da69356be7aa68c8ce61007258c4f2071e1b",
+          "vector": "default-undeclaration"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML namespace/depth",
+          "error_name": "Refusal",
+          "input_sha256": "b8bb89f2e8742b2601af81d64b92da69356be7aa68c8ce61007258c4f2071e1b",
+          "vector": "default-undeclaration"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML reserved xml binding",
+          "error_name": "TypeError",
+          "input_sha256": "a9dbc88851538eba12e86f17ccef307d52d1e0188def9ddf05dc666ef8af4e5d",
+          "vector": "reserved-xml-binding"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "a9dbc88851538eba12e86f17ccef307d52d1e0188def9ddf05dc666ef8af4e5d",
+          "vector": "reserved-xml-binding"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML reserved xml binding",
+          "error_name": "TypeError",
+          "input_sha256": "01114018db7cadee3754ffd1ece678d328c5ac03b47457182132b75e12aa5a91",
+          "vector": "reserved-uri-other-prefix"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "01114018db7cadee3754ffd1ece678d328c5ac03b47457182132b75e12aa5a91",
+          "vector": "reserved-uri-other-prefix"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML reserved namespace",
+          "error_name": "TypeError",
+          "input_sha256": "963fa427114b89a91aa55f6e3dd6c6374f08b23a7fbfd02ab191ce1b30066bcf",
+          "vector": "reserved-xmlns-prefix"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "963fa427114b89a91aa55f6e3dd6c6374f08b23a7fbfd02ab191ce1b30066bcf",
+          "vector": "reserved-xmlns-prefix"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML empty prefix binding",
+          "error_name": "TypeError",
+          "input_sha256": "267287323590ed1d6990139180e4f06e9a4c4b1162558b7afc302aaafdff0570",
+          "vector": "empty-prefixed-binding"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML syntax",
+          "error_name": "Refusal",
+          "input_sha256": "267287323590ed1d6990139180e4f06e9a4c4b1162558b7afc302aaafdff0570",
+          "vector": "empty-prefixed-binding"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML mapping attribute must be unqualified",
+          "error_name": "TypeError",
+          "input_sha256": "a923455da41d195206401fb55d5b7deb56a720db00c97f7293484a2054db2842",
+          "vector": "qualified-mapping-attribute"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML attributes",
+          "error_name": "Refusal",
+          "input_sha256": "a923455da41d195206401fb55d5b7deb56a720db00c97f7293484a2054db2842",
+          "vector": "qualified-mapping-attribute"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML duplicate restored key",
+          "error_name": "TypeError",
+          "input_sha256": "f6e3f497cff147a083f3ba9b6f2eb06aeda2eef2138544beb598d3d7693a9158",
+          "vector": "duplicate-restored-key"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML duplicate decoded name",
+          "error_name": "Refusal",
+          "input_sha256": "f6e3f497cff147a083f3ba9b6f2eb06aeda2eef2138544beb598d3d7693a9158",
+          "vector": "duplicate-restored-key"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML lexical spelling",
+          "error_name": "TypeError",
+          "input_sha256": "d64b11e5bdb3b3e00fb0c1b56a6e2cdf39fc2a2a12d06f5267f94eefa751912d",
+          "vector": "noncanonical-string-escape"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML lexical spelling",
+          "error_name": "Refusal",
+          "input_sha256": "d64b11e5bdb3b3e00fb0c1b56a6e2cdf39fc2a2a12d06f5267f94eefa751912d",
+          "vector": "noncanonical-string-escape"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "invalid Unicode",
+          "error_name": "TypeError",
+          "input_sha256": "67be2db926c4b99b400f135be6d3aba23259ec91898abd7a4c5e6ae3d5dc3e9c",
+          "vector": "surrogate-string"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "invalid Unicode",
+          "error_name": "CanonicalizationError",
+          "input_sha256": "67be2db926c4b99b400f135be6d3aba23259ec91898abd7a4c5e6ae3d5dc3e9c",
+          "vector": "surrogate-string"
+        }
+      },
+      {
+        "node": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML bounded declaration/domain",
+          "error_name": "TypeError",
+          "input_sha256": "4b928515a7e116ec1f48ad1aca1e43940db64ad87c971a1d24f735398b215403",
+          "vector": "doctype"
+        },
+        "python": {
+          "accepted": false,
+          "case": "xml-lexical-domain",
+          "error_message": "XML declaration/domain",
+          "error_name": "Refusal",
+          "input_sha256": "4b928515a7e116ec1f48ad1aca1e43940db64ad87c971a1d24f735398b215403",
+          "vector": "doctype"
+        }
+      }
+    ]
+  },
+  "created_at": "2026-10-17T19:35:59.641895+00:00",
+  "executed_git_head": "dbaa5f7670b9fa4e241dd331e701aa77acef7641",
+  "node_dependency_sha256": {
+    "fast-xml-parser/lib/fxp.cjs": "d046ec315b87b0eca2ef1927617a857b4107e586e6bf6f2ed6ef43dec095684c"
+  },
+  "raw": {
+    "node_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "node_stdin_sha256": "e79831a538a20cb84e45543a45763f02dcb009f345fd41248b95a75033c56692",
+    "node_stdout_sha256": "69f88ae84c90d68962e609457a1cb8c1d0edb12ef5808f389d7e41d5cbf8323f"
+  },
+  "runtime": {
+    "expat": "expat_2.6.0",
+    "node": "v24.14.1",
+    "python": "3.12.3"
+  },
+  "scope": "UNAPPROVED candidate lexical XML; two frozen models, bounded ASCII carriers and QName grammar; not general XML/domain/source/auth conformance",
+  "source_sha256": {
+    "docs/rfcs/0014-multi-format-interchange.md": "34519f75324e77d55b492194a6d48b9d324049a59588d3a77e38828b29d923c0",
+    "experiments/envelope-0089/candidate_codec.py": "1bfce515104c4ed545277ca078689d24a201fae800bc479b28530dc4c19a79a3",
+    "experiments/envelope-0089/codec-study/codec.py": "3914ed411b7948ce4c5d2c7646044d037311263e3770610e818e21fc42e9876d",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/document.xml": "e96d1cadcd8c51de571665c679caa1034d653ab25e5331afc5f057a6eaec92a9",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/model.json": "2f6679693a708ef207c4f1cd1c59ce42457b7817a2090cefbc044cc2dea5c23d",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/document.xml": "55af0df51b65411db2f3d7303bbf51c17ee90e6d7b72dbbefaf7fff1fc4d810c",
+    "experiments/envelope-0089/codec-study/fixtures/xml-lexical-domain/model.json": "383d658c524e5b4d10ceb4f2bf233be5e2840925532e09be98047fcad06264c0",
+    "experiments/envelope-0089/codec-study/independent.mjs": "675a1c082e5bbfe003204a088e4b127556a74a1b3e98f86f0f61c3e159268453",
+    "experiments/envelope-0089/namespace-proof/capture.py": "4e686f5de74e4a8d50a731b4a5cfc801c2bec794526f108d4fc53005aba17a11",
+    "experiments/envelope-0089/namespace-proof/observe.mjs": "1cd92ca240e2a9bbf79157ba282a93f9568b46745b4eb8f2e1c07cde06e03d14",
+    "experiments/envelope-0089/namespace-proof/reader.mjs": "0ae682a65a3d33a41dd6e5c4a7024370b5d26b3d2d44a33a6525ca441353a7c3",
+    "experiments/envelope-0089/namespace-proof/vectors.py": "f26ef4d5908fd85ccdbda02ea4231cdcfac568057254715a2bf7342cf2e73042",
+    "implementations/python/uwmd_jcs.py": "cc97f545f5b343aa4396bacc25f349f6a55193b0f3365042e279c65b885e4bfc",
+    "package-lock.json": "d6c8ac690a48a38597b347d61ab7ab0b9a1ed2bcbbccd73f3cbb344c5b9cefbf",
+    "spec/UW_FORMAT_SPEC.md": "dd5be6e14f3a147c8c99320d5ba329c1ba90babe8d5b370b5638fb747de126d7",
+    "spec/UW_PROTOCOL.md": "80a59032f436ccf85ad1476d35a1251234955354f99f5e9da89ee701d6946a86",
+    "spec/UW_XML_MAPPING.md": "52815057e25da98f10337ebdc0be330bcb4861622936cb95e3ea9ea3dbd3fcda",
+    "spec/schemas/uw-document-envelope.schema.json": "6d95e014fa1941c3d270b797a0543870ac5d477ce7a179efe698bd02e206a7ef"
+  }
+}
