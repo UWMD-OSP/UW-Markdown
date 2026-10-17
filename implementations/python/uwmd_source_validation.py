@@ -36,7 +36,7 @@ def _integer(value):
             and math.isfinite(value) and value >= 1 and int(value) == value)
 
 
-def _metadata_routing(body, section):
+def _metadata_routing(body):
     routing = []
     meta = body.get("_meta")
     if "_meta" not in body:
@@ -44,10 +44,6 @@ def _metadata_routing(body, section):
     elif not isinstance(meta, dict):
         routing.append("A nested _meta object is required.")
     else:
-        if next(iter(body), None) != "_meta":
-            routing.append("_meta must be the first block member.")
-        if meta.get("section") != section:
-            routing.append("_meta.section must match the exact fence section.")
         if not isinstance(meta.get("provenance"), dict) or not isinstance(meta.get("lifecycle"), dict):
             routing.append("Nested provenance and lifecycle objects are required.")
     if "section_id" in body:
@@ -73,7 +69,7 @@ def inspect_source_roles(document):
         body = block.parsed.value
         context = dict(block_index=index, variant=dict(block.attributes).get("variant"),
                        body_byte_start=block.body_span.start, body_byte_end=block.body_span.end)
-        routing = _metadata_routing(body, block.section)
+        routing = _metadata_routing(body)
         if routing:
             result["issues"].append(dict(code="META-01", severity="error", section=block.section,
                 field="_meta", message=" ".join(routing), context=context))
@@ -84,7 +80,8 @@ def inspect_source_roles(document):
         if not isinstance(actor, str) or actor == "":
             result["issues"].append(dict(code="META-01", severity="error", section=block.section,
                 field="_meta.provenance.actor",
-                message="Actor must be a nonempty string; no principal is inferred.",
+                message="Block _meta.provenance.actor must be a nonempty string.",
+                remediation="State the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor.",
                 context=copy.deepcopy(context)))
     for index, block in enumerate(snapshot.source.blocks):
         if source_superseded(block):
@@ -117,6 +114,12 @@ def inspect_source_roles(document):
         if "_meta" not in body:
             shape("_meta", "Metadata is absent; provenance completeness is outside this partial command.")
         if isinstance(meta, dict):
+            # These requirements have no META-01 allocation in RFC 0081.
+            # Retain them locally in the existing active-only assessment.
+            if next(iter(body), None) != "_meta":
+                shape("_meta", "_meta must be the first block member.")
+            if meta.get("section") != block.section:
+                shape("_meta.section", "_meta.section must match the exact fence section.")
             provenance = meta.get("provenance")
             if isinstance(provenance, dict):
                 vocabulary(provenance, "_meta.provenance")

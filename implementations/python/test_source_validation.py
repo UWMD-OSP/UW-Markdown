@@ -186,9 +186,17 @@ class SourceValidationTests(unittest.TestCase):
             self.assertIn("META-01",codes(inspect(value)))
             self.assertNotIn("SRC-02",codes(inspect(value)))
         value=payload();value["_meta"]["section"]="wrong"
-        self.assertEqual(codes(inspect(value)),["META-01"])
+        result=inspect(value)
+        self.assertEqual(codes(result),[])
+        self.assertFalse(result["ok"])
+        self.assertEqual([(f["field"],f["message"]) for f in result["shape_findings"]],
+            [("_meta.section","_meta.section must match the exact fence section.")])
         proper=payload();late={"value":1,"_meta":proper["_meta"]}
-        self.assertEqual(codes(inspect(late)),["META-01"])
+        result=inspect(late)
+        self.assertEqual(codes(result),[])
+        self.assertFalse(result["ok"])
+        self.assertEqual([(f["field"],f["message"]) for f in result["shape_findings"]],
+            [("_meta","_meta must be the first block member.")])
 
     def test_selected_provenance_shape_stays_local_and_has_no_legacy_fallback(self):
         value=payload();value["_meta"]["provenance"]={"source":"agent/A","actor":0,"timestamp":False}
@@ -230,6 +238,10 @@ class SourceValidationTests(unittest.TestCase):
                 self.assertEqual([(i["code"],i["severity"],i["field"]) for i in result["issues"]],
                     [("META-01","error","_meta.provenance.actor")])
                 self.assertFalse(result["ok"])
+                self.assertEqual(result["issues"][0]["message"],
+                    "Block _meta.provenance.actor must be a nonempty string.")
+                self.assertEqual(result["issues"][0]["remediation"],
+                    "State the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor.")
                 self.assertFalse(any(f["field"]=="_meta.provenance.actor" for f in result["shape_findings"]))
         for actor in (" ","\t\n","manual","someone:anywhere","é","\u0000"):
             value=payload();value["_meta"]["provenance"]["actor"]=actor
@@ -272,6 +284,37 @@ class SourceValidationTests(unittest.TestCase):
                      {"section_id":"property","value":1}):
             self.assertEqual([(i["code"],i["field"]) for i in inspect(body)["issues"]],
                              [("META-01","_meta")])
+
+    def test_candidate_unallocated_order_identity_checks_never_suppress_actor(self):
+        for kind in ("late_meta","wrong_section","both"):
+            for historical in (False,True):
+                with self.subTest(kind=kind,historical=historical):
+                    value=payload()
+                    del value["_meta"]["provenance"]["actor"]
+                    if kind in ("wrong_section","both"):
+                        value["_meta"]["section"]="other"
+                    if kind in ("late_meta","both"):
+                        value={"value":1,"_meta":value["_meta"]}
+                    document=parse(HEADER+fence(value,superseded=historical))
+                    before=copy.deepcopy(document)
+                    result=inspect_source_roles(document)
+                    self.assertEqual([(i["code"],i["field"]) for i in result["issues"]],
+                        [("META-01","_meta.provenance.actor")])
+                    self.assertFalse(result["ok"])
+                    fields=[] if historical else (
+                        ["_meta","_meta.section"] if kind=="both" else
+                        ["_meta"] if kind=="late_meta" else ["_meta.section"])
+                    self.assertEqual([f["field"] for f in result["shape_findings"]],fields)
+                    self.assertTrue(all("code" not in f and "severity" not in f
+                                        for f in result["shape_findings"]))
+                    self.assertEqual(document,before)
+                    # Restoring the actor does not turn other requirements into
+                    # historical META-01 allocation or active clean success.
+                    document.source.blocks[0].parsed.value["_meta"]["provenance"]["actor"]="author"
+                    result=inspect_source_roles(document)
+                    self.assertEqual(result["issues"],[])
+                    self.assertEqual(result["ok"],historical)
+                    self.assertEqual([f["field"] for f in result["shape_findings"]],fields)
 
     def test_candidate_parsed_model_authority_does_not_reparse_or_certify_raw(self):
         document=parse(HEADER+fence(payload()))
