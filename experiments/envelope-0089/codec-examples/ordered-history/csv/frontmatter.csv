@@ -1,0 +1,6 @@
+"pointer","json_type","value_json"
+"","object",""
+"/deal_id","string","""rfc0089-ordered-history"""
+"/deal_name","string","""Extension representation evidence"""
+"/uw_version","string","""3.0"""
+"/x_absent_vs_null","null","null"

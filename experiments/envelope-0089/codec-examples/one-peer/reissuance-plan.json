@@ -1,0 +1,18 @@
+{
+  "status": "UNACCEPTED REISSUANCE PLAN / NOT AUTHENTICATION",
+  "original_sha256": "69d47c257f090d7bd9f6b37b360acf39668db156269174adc56dc21db4f6d06a",
+  "new_source_digest": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15",
+  "canonicalization_version": "C_NEXT",
+  "source_accounting": [
+    {
+      "source_ordinal": 0,
+      "section": "x_review",
+      "variant": "default",
+      "state": "current",
+      "source_body_sha256": "a265278495fafb45f26ddb638f079b50eaccd8eccd3319ec35c1129c4a4d684a"
+    }
+  ],
+  "old_artifacts": "retain exact bytes/subjects; never relabel or rehash as historical proof",
+  "new_attestations": "separately authorize and issue new receipt/signature/plan when needed; none created here",
+  "authentication_domain": "V13 repeated/superseded-extension guards retained; these sources may remain ineligible"
+}
