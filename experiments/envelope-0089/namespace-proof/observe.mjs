@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { decodeNamespaceXml } from './reader.mjs';
 import { jcs, sha } from '../codec-study/independent.mjs';
 const vectors = JSON.parse(readFileSync(0, 'utf8'));
@@ -13,4 +14,10 @@ for (const row of vectors) {
   if (result.accepted !== row.expected_accepted) throw new TypeError(`namespace outcome mismatch ${row.case}/${row.vector}: ${JSON.stringify(result)}`);
   rows.push({ case: row.case, vector: row.vector, input_sha256: sha(Buffer.from(row.text)), ...result });
 }
-console.log(JSON.stringify(rows));
+const require = createRequire(import.meta.url);
+const dependencies = Object.fromEntries(Object.keys(require.cache).sort().map(path => {
+  const label = path.replaceAll('\\', '/').split('/node_modules/').at(-1);
+  if (label === path) throw new TypeError('unclassified dependency');
+  return [label, sha(readFileSync(path))];
+}));
+console.log(JSON.stringify({ rows, dependencies }));
