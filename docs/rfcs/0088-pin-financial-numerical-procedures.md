@@ -923,3 +923,68 @@ primitive accuracy, all financial graphs/day counts, a global composed error
 bound, spreadsheet recalculation or owner acceptance. Optional research
 39061421580 was cancelled, never passed. Frozen historical cross-platform
 artifacts retain their original source/runtime scopes.
+
+### Natural cancellation receipts and bidirectional precedence (unaccepted)
+
+The [two-input actual receipt study](https://github.com/UWMD-OSP/UW-Markdown/blob/aa83459d/experiments/numerical-0088/cancellation-receipts/README.md)
+connects the new cancellation counterexamples to actual issuance/verification,
+without repeating the36-case oracle or4730-row financial graph capture. It uses
+only PMT/PV at frozen negative rate word `bc90000000000001`, one period, unit
+amount/zero other value and12-place reporting. The previously certified
+whole-real reference reports1; the candidate reports0.25/4. The comparison
+keeps mathematical accuracy, exact procedural output and authentication separate.
+
+On the captured WindowsNode24.14.1 host, actual PMT issuance throws
+RCP_COMPUTATION_FAILED and produces no partial receipt. Host PV issues0;
+the candidate actually issues0.25/4. No result is edited to manufacture a
+finite disagreement. Host and candidate PV unsigned receipts have identical
+source subject and every other field except naturally computed results and
+results_digest. Every issued/signed artifact is newly synthetic, uses the
+existing engine name with explicit research-version metadata, and is signed by
+a deliberately public disposable test key. None authenticates an original
+conformance receipt or establishes a producer's identity/trust.
+
+Twelve primary real-API controls preserve the following accepted current
+behavior, with one separate baseline-loader instrumentation repeat:
+
+| New natural case | Actual verdict / codes | Real backend calls |
+| --- | --- | --- |
+| Candidate's own PMT/PV receipts | Verified despite disagreement with whole-real reference accuracy | 1 each |
+| Host-issued PV verified by candidate, same engine/version labels | Failed RCP-03 | 1 |
+| Same PV receipt, different verifier-version option | Unverifiable RCP-07/RCP-03 | 1 |
+| Corrupted research signature on host PV | Failed RCP-01 | 1 |
+| Candidate PMT back to refusing host, valid or invalid signature / same or different version | Failed RCP-03 on recomputation refusal | 0 |
+| Missing backend on the signed bridge inputs | Unverifiable RCP-08 | 0 |
+| Candidate PV back to host | Failed RCP-03 | 1 |
+
+The host's own PV agreement supplies the remaining positive control. All12
+receipt/source/result-digest/signing-payload bindings and real signature outcomes
+(10 byte-valid/two invalid) are independently checked offline through the pinned
+accepted canonicalizer; three detached-payload negative controls refuse. Seven
+primary backend invocations are recorded. Independently checking byte validity
+when the actual API returned before its backend is **not** API authentication.
+No authentication workaround or new refusal precedence is introduced.
+
+Capture00ee57d7/treeaeb86cb4 records WindowsAMD64, CPython3.12.3,
+Node24.14.1/V8 13.6.233.17-node.44/OpenSSL3.5.5;16 compressed artifacts
+preserve193176 raw bytes. All106 source/reference and86 compiled-JS identities
+are unchanged, and consumed host/candidate scratch artifacts remain byte-exact.
+Manifest SHA-256 is
+`8fa5f57a05b7c7607ff172c2a5fc7175789ebe76a0648e13ac7ae6725c117b22`.
+
+Matching hosts follow their actually observed agreement branches, rather than
+being forced to exhibit the original Windows refusal/0 result. The candidate
+probe also accepts the frozen newly issued Windows host record as a gzip input
+for a separately recorded cross-runtime replay; support for that command alone
+is not an observed Linux execution. The earlier Linux36-case host agreement and
+all original raw studies/receipts retain their original scope. No new global
+runtime/domain/accuracy guarantee, production activation, component version,
+legacy regime or automatic artifact reissuance follows.
+
+This closes the natural financial-output-to-receipt evidence gap for these two
+inputs, including the reverse finite-to-refusal path. The remaining owner choice
+is the complete procedure/accuracy/refusal contract and the joint receipt policy
+already identified above. A successfully verified candidate receipt demonstrates
+repeatable stated procedure/signature checking; it cannot by itself establish
+useful whole-formula accuracy. No stable financial formula, tolerance, numerical
+selector or new signing domain is selected, and RFC0088 remains draft.
