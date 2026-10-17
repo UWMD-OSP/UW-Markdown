@@ -5,6 +5,7 @@ import { fileURLToPath,pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { spawnSync,execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 const here=dirname(fileURLToPath(import.meta.url));
 const arg=name=>{const i=process.argv.indexOf(name);if(i<0||!process.argv[i+1])throw new Error(`Required ${name}`);return process.argv[i+1];};
 const repo=resolve(arg('--repo-root'));
@@ -22,6 +23,30 @@ const tracked=git('ls-files','-z').split('\0').filter(Boolean);
 const protectedPaths=tracked.filter(p=>/^(spec\/|conformance\/|packages\/|implementations\/|package(?:-lock)?\.json$|VERSIONS\.md$|CHANGELOG\.md$|releases\/)/.test(p));
 const hashes=paths=>Object.fromEntries(paths.map(p=>[p,sha(readFileSync(join(repo,p)))]));
 const protectedBefore=hashes(protectedPaths);
+const ts=createRequire(join(repo,'package.json'))('typescript');
+const distPaths=[];
+for(const pkg of readdirSync(join(repo,'packages'),{withFileTypes:true}).filter(e=>e.isDirectory())){
+ const base=join(repo,'packages',pkg.name,'dist');
+ try { for(const path of readdirSync(base,{recursive:true}).filter(p=>p.endsWith('.js')&&!p.endsWith('.test.js')))distPaths.push(relative(repo,join(base,path)).replaceAll('\\','/')); }
+ catch(error){if(error.code!=='ENOENT')throw error;}
+}
+const distBefore=hashes(distPaths.sort());
+const staticSites=[];
+for(const path of distPaths){
+ const source=readFileSync(join(repo,path),'utf8');
+ const ast=ts.createSourceFile(path,source,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS);
+ function inspect(node){
+  const at=()=>`${path}:${ast.getLineAndCharacterOfPosition(node.getStart(ast)).line+1}:${ast.getLineAndCharacterOfPosition(node.getStart(ast)).character+1}`;
+  if(ts.isBinaryExpression(node)&&node.operatorToken.kind===ts.SyntaxKind.AsteriskAsteriskToken){
+   const text=node.getText(ast),bigint=/\bBigInt\s*\(|\b[0-9]+n\b/.test(text);
+   staticSites.push({site:at(),path,op:'pow',excluded:bigint,text});
+  }
+  if(ts.isCallExpression(node)&&ts.isPropertyAccessExpression(node.expression)&&node.expression.expression.getText(ast)==='Math'&&['log','exp'].includes(node.expression.name.text))staticSites.push({site:at(),path,op:node.expression.name.text,excluded:false,text:node.getText(ast)});
+  ts.forEachChild(node,inspect);
+ }
+ inspect(ast);
+}
+
 const candidates=[];
 function walk(dir){for(const ent of readdirSync(dir,{withFileTypes:true})){const path=join(dir,ent.name);if(ent.isDirectory())walk(path);else candidates.push(path);}}
 walk(dirname(candidate));
@@ -46,11 +71,17 @@ for(const mode of ['baseline','candidate']){
  if(caseRows.some(c=>c.capture_errors.length))throw new Error(`${mode} capture errors; scratch ${scratch}`);
  const transformed=lines(transforms);
  if(!transformed.some(t=>t.path==='scripts/run-conformance.mjs'&&t.snapshots.length>0))throw new Error('Runner instrumentation missing');
+ const loadedPaths=new Set(transformed.map(t=>t.path));
+ const transformedSites=new Set(transformed.flatMap(t=>t.replacements.map(r=>r.site)));
+ for(const expected of staticSites.filter(s=>!s.excluded&&loadedPaths.has(s.path)))if(!transformedSites.has(expected.site))throw new Error(`Unclassified loaded numeric site ${expected.site}`);
+ for(const actual of transformedSites)if(!staticSites.some(s=>!s.excluded&&s.site===actual))throw new Error(`Unexpected numeric replacement ${actual}`);
  if(mode==='baseline' && (child.status!==0||report.summary.fail!==0))throw new Error(`Instrumented baseline is not green; inspect ${scratch}`);
  runs[mode]={started,finished:new Date().toISOString(),exit_code:child.status,report,rows,cases,primitives:observed.filter(e=>e.kind==='primitive'),transformed,
   events_sha256:sha(readFileSync(events)),transforms_sha256:sha(readFileSync(transforms))};
  console.error(`${mode}: ${report.summary.pass} pass, ${report.summary.fail} fail, ${caseRows.length} indexed captures, ${runs[mode].primitives.length} primitive observations`);
 }
+const distAfter=hashes(distPaths);
+if(JSON.stringify(distBefore)!==JSON.stringify(distAfter))throw new Error('Built dist inputs changed during measurement');
 const protectedAfter=hashes(protectedPaths);
 if(JSON.stringify(protectedBefore)!==JSON.stringify(protectedAfter))throw new Error('Protected source/schema/corpus/version inputs changed during measurement');
 const candidateAfter=Object.fromEntries(candidates.sort().map(p=>[relative(dirname(candidate),p).replaceAll('\\','/'),sha(readFileSync(p))]));
@@ -86,6 +117,7 @@ const perSite=run=>Object.fromEntries([...new Set(run.primitives.map(e=>e.site))
 const manifest={schema_version:'research-impact-1',scope:'Unaccepted isolated candidate observations; no conformance rebaseline or production activation',
  repository_commit:git('rev-parse','HEAD'),repository_tree:git('rev-parse','HEAD^{tree}'),node:process.version,v8:process.versions.v8,platform:process.platform,architecture:process.arch,
  candidate_entry:relative(dirname(candidate),candidate),candidate_closure_sha256:candidateBefore,
+ built_input_hashes:distBefore,built_inputs_unchanged:true,numeric_site_inventory:staticSites,numeric_sites_not_loaded:staticSites.filter(s=>!s.excluded&&!runs.candidate.transformed.some(t=>t.path===s.path)),
  corpus_sha256:sha(readFileSync(corpusPath)),indexed_case_count:corpus.length,protected_input_hashes:protectedBefore,protected_inputs_unchanged:true,
  preserved_semantics:['Financial operation order, solver branches/tolerances and quantization unchanged','Math.sqrt unchanged in consumers','Raw pow/log/exp only; existing public refusal guards retained'],
  limits:['All indexed assertion outcomes measured; visible result captures do not prove every internal or unasserted value unchanged','Primitive traces are global and not attributed to cases','Metric assertion closures may have no visible complete actual result','Changed results/refusals outside this corpus remain unknown','Observed receipt equality does not authorize rewriting historical identities or signatures'],
