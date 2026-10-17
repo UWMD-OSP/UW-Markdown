@@ -113,3 +113,39 @@ total lexical XML/full CSV carrier, and a new complete semantic subject with
 unchanged authentication admission. Exact labels, full domain fixtures, normative
 text/schema/projection synchronization and independent version/release decisions
 still precede acceptance. No5.0 tag/publication is authorized by this experiment.
+
+## Subject identity, assessment and issuance are separate commitments
+
+This clarification reuses existing frozen evidence; it adds no experiment,
+source repair, numerical procedure, signing capability or receipt rule.
+
+| Operation | Bytes/value/subject consequence | What the evidence does not establish |
+|---|---|---|
+| Equivalent raw carrier spelling | The raw JSON/manifest bytes may differ while the decoded complete value, JCS preimage and subject stay equal. The raw-JSON proof demonstrates this for escaped unique names; ambiguous duplicates are a separate proposed admission refusal. | A valid subject signature does not certify unambiguous raw parsing, inventory bytes or full schema/source admission. |
+| Apply a validation rule to the same exact source | No source, block payload or Envelope subject changes merely because assessment gains an error. A newly issued receipt can state a different validation count and therefore different signing bytes. | A diagnostic change is not a source edit, automatic receipt reissue, new financial result or retrospective invalidation of every old receipt. |
+| Actually author a missing metadata boolean | The raw source and whole Envelope subject change. V.9 omits _meta; V.11 binds only content_hash, section, actor, timestamp, kid and signed_at, so a boolean-only change does not itself alter those block commitments. | A new flag is not evidence of what an earlier author intended. A block signature does not cover all metadata or replace the document subject. Recompute any newly issued receipt under its own contract. |
+| Allocate the proposed new Envelope/subject stamp | Including E_NEXT changes every complete structured-model subject, even without extensions; the source Markdown need not change. | Unchanged financial outputs, validation counts or V.9/V.11 bytes cannot transfer a signature to that new whole-model subject. |
+
+The accepted RFC0090 investigation provides a concrete same-byte assessment
+control in the preserved
+[actor inventory](https://github.com/UWMD-OSP/UW-Markdown/blob/6a7f045246ad72286908f7151c75773cf2a5d6c5/docs/reviews/2026-10-15-python-reader-354.actor-inventory.json).
+It first created one disposable actor-absent input (SHA256
+`9db0770e88101e42a5d3c843c855bd5e2b1ff9194b644d17371542a0837c5acb`),
+then assessed those identical bytes under the before/candidate contracts.
+The recorded subject and results_digest remain equal; policy errors change0to1
+and signing-payload SHA changes4905dc87…tod88274d6…. Unsigned same/cross receipt
+verification returns verified. This was **not** an actual cryptographic receipt
+signature proof; it does not replace the separately frozen Ed25519 controls or
+claim that the original source was never edited to prepare the disposable input.
+The later actor acceptance does not relabel these historical observations as a
+new execution.
+
+Accordingly, the proposed E_NEXT/C_NEXT decision concerns exact represented
+values and their declared commitment, not permission to repair source validity.
+Keep parse projection, model/schema admission, document-source signing admission,
+validation findings, receipt policy and raw transport inventories explicit.
+A producer's existing buildMeta default for a NEW block is not authorization to
+backfill historical metadata, select an arbitrary peer or infer retained-history
+authority. RFC0085/0088/0089 remain separate; draft RFC0091 is neither accepted
+nor needed to define this distinction. Historical source/artifact bytes and
+subjects remain preserved; no legacy runtime path or launch is introduced.
