@@ -2,8 +2,8 @@
 
 The starter toolkit, built on [`@uwmd/verify`](../uwmd-verify/CLAUDE.md) (the
 reference implementation of the standard, RFC 0083). Core depends on verify at
-an exact version and re-exports its whole surface, so every 4.0.x import of
-`@uwmd/core` and `@uwmd/core/browser` keeps working. Deep reference:
+an exact version and re-exports its current surface. Follow the owner rule at
+the top of the root AGENTS.md/CLAUDE.md; there is no prelaunch API-retention gate. Deep reference:
 [`docs/wiki/03-core-library.md`](../../docs/wiki/03-core-library.md). See also
 the root [`CLAUDE.md`](../../CLAUDE.md).
 
@@ -12,8 +12,8 @@ the root [`CLAUDE.md`](../../CLAUDE.md).
 - `index.ts` — **the public API surface**: `export * from '@uwmd/verify'` plus
   the starter exports. Export new starter symbols here (and in `browser.ts` if
   browser-safe); new standard symbols go in verify's `index.ts`.
-  `surface.test.ts` holds both entries to a superset of the 4.0.x surface
-  (`fixtures/public-surface-4.0.json`) and to every verify export.
+  `surface.test.ts` checks current verifier re-exports and intentional wrapper
+  bindings. The owner rule retires the frozen4.0.x export-superset gate.
 - Three names shadow verify's on purpose: `evaluateCalc` and
   `evaluateModuleCalculations` (`calc-display.ts`, which adds `display`), and
   `issueReceipt` (`receipt-engine.ts`, which defaults the `issuer` to

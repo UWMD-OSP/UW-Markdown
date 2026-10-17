@@ -13,7 +13,8 @@ protocol, and each package each carry an independent semver).
 - Apply the2026-10-17 owner rule in both agent entry points: all @uwmd npm
   packages launch together at5.0.0; prelaunch releases use4.x.x from main,
   with incompatible changes allowed. Retire prelaunch compatibility analysis,
-  migration/deprecation work, bump recommendations and artifact-retention gates.
+  migration/deprecation work, bump recommendations, artifact-retention gates and
+  the frozen4.0.x core-export superset gate.
   Keep current RFC, deterministic verification, conformance and source integrity.
 
 
