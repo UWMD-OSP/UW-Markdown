@@ -474,6 +474,39 @@ bare `type`/`name-json` attributes are distinct from current XML1's mapping.
 The earlier artifacts, BOM correction and initial transport record remain
 preserved; no production codec or namespace is activated.
 
+#### Raw JSON carrier admission before object validation (unaccepted)
+
+For the proposed new regime, reject duplicate **decoded** JSON member names
+before object construction, including nested and unknown members and the CSV
+manifest. Do not silently select first/last or deduplicate a received ambiguous
+carrier. An escaped unique name remains legal; case and Unicode normalization
+are not aliasing rules. Typed schema/model validation remains a separate step.
+This recommends explicit raw transport admission text under the complete-mapping
+choice, not a new metadata shape, financial rule or receipt diagnostic.
+
+The [raw JSON boundary study](https://github.com/UWMD-OSP/UW-Markdown/blob/bd28d42c0cc63296278e1a62bc81535b2d7e8d8b/experiments/envelope-0089/json-boundary/README.md)
+uses actual preserved model/CSV-manifest bytes.36 controls retain21 historical
+acceptance differences: the existing Python duplicate-aware path refuses names
+that Node's ordinary `JSON.parse` path erases before model/manifest validation.
+A separate bounded Node adapter and Python strict profile agree on12 accepted
+and24 refused. Under Node's original path, all28 actual carrier cases retain the
+same complete model/preimage and the same valid raw research Ed25519 subject
+signature. Under strict preflight,20 duplicate carriers refuse before crypto;
+the eight valid carrier spellings still verify. This is transport-admission
+asymmetry, **not a signature break** or current public artifact verification.
+The remaining eight cases are syntax-only controls, not new UWMD key admission.
+
+[RFC8259 section4](https://www.rfc-editor.org/rfc/rfc8259.html#section-4)
+describes the interoperability risk, and
+[RFC8785 section3.1](https://www.rfc-editor.org/rfc/rfc8785.html#section-3.1)
+requires unique names in adapted JCS data. A JSON Schema object or later JCS call
+cannot recover raw occurrences already erased by parsing. The new carrier and
+manifest boundary therefore needs explicit governed text/fixtures; this study
+does not retroactively allocate errors for every existing JSON API, extend V.13
+source admission or apply a new blanket receipt-input rule. Existing helpers
+and frozen observations remain unchanged. Full grammar/resource/security/domain
+and cross-platform proof remain open; no new-regime issuance is implemented.
+
 ### D5 — Canonicalization, commitments and authentication
 
 Keep RFC8785, UTF-8 and SHA256 unchanged. Remove only the existing top-level
@@ -958,7 +991,7 @@ is an option needed for this design.
 | Owner choice | Recommended coherent answer | Scope/evidence still required before acceptance |
 |---|---|---|
 | Tagged identity and portable projection | Approve D1 single/variants wrappers and D2's exact opted-in null identity distinct from literal `default`; use the D2b extension/history minimum. Keep ordinary current selection, explicit history and physical source accounting separate. | Coordinate Format mixed-admission wording, portable subset text, reference public API shapes and exact duplicate/current-order fixtures. No unrelated builtin collection redesign. |
-| Complete exchange mapping | Choose total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Approve exact mapping/domain text, then synchronize schemas and complete domain fixtures. Bounded empty-map/history, independent namespace and actual ZIP evidence now exists; general parser/domain/transport and cross-platform proof remains open. The BOM defect/correction stays preserved. |
+| Complete exchange mapping | Choose total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Approve exact mapping/domain and raw duplicate-name admission text, then synchronize schemas and complete domain fixtures. Bounded empty-map/history, independent namespace and actual ZIP evidence now exists; general parser/domain/transport and cross-platform proof remains open. The BOM defect/correction stays preserved. |
 | New commitment regime | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported Envelope/codec and V.13 subject refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance and §5.5 matching-digest rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Independently version Envelope, Protocol, Format if its meaning changes, mappings, signature schema/constants and packages. Actual wire labels and release placement require a later coordinated decision; no5.0 tag/publication without separate launch approval. |
 
 Approving a direction does not complete the acceptance gates above. RFC0085
