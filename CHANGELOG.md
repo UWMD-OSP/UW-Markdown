@@ -13,6 +13,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Refine draft RFC0089 owner choices and independently check scoped XML namespace
+  behavior for the existing candidate carriers. Preserve historical codec/authentication
+  evidence; no Envelope, schema, subject, receipt or version contract is activated.
+
 - Enforce RFC0090's required nonempty-string provenance actor with narrow
   META-01/error across retained physical blocks. Preserve wrapper precedence,
   mutable-model authority and historical source/expectation identities; govern
