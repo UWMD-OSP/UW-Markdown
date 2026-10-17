@@ -1,0 +1,493 @@
+{
+  "status": "UNACCEPTED RESEARCH EVIDENCE",
+  "procedure": "reciprocal-first-binary-integer-v1",
+  "oracle": "exact rational RN-even at every basic-operation boundary; not generally one-rounded power",
+  "input_sha256": "9b37fb8f29b9995a20feb75a72588b6a736f57f4ffc6d48d4d6b4bcf7fd103e3",
+  "reference_sha256": "87b04c8f44d5407382fc237dd79a7fd0ff9b1fe7f7e8523106311c575af98682",
+  "reused_rounding_helper_sha256": "87d3609c85876c4e2c41b5f71b5c8e0377a7c953ab5846ef1f6c09fb736b3808",
+  "max_basic_operations": 1077,
+  "cases": [
+    {
+      "id": "maximum-positive-underflow",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "bit_length": 1024,
+        "popcount": 53,
+        "basic_operation_bound": 1076
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "0000000000000000",
+        "operations": 1076,
+        "trace_sha256": "092e2714bff492a8fa51ce64f4fa64d87c96e6311531d1825a18562075597d5b"
+      },
+      "bounded_mathematical_reference": {
+        "status": "outside_oracle_scope"
+      }
+    },
+    {
+      "id": "maximum-negative-underflow",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": false,
+        "bit_length": 1024,
+        "popcount": 53,
+        "basic_operation_bound": 1077
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "0000000000000000",
+        "operations": 1077,
+        "trace_sha256": "6f86a37b7a5f59448af9e38441dcdd57cf8054cd93fb2be6fb00711cd0cdfe59"
+      },
+      "bounded_mathematical_reference": {
+        "status": "outside_oracle_scope"
+      }
+    },
+    {
+      "id": "maximum-even-negative-base",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "bit_length": 1024,
+        "popcount": 53,
+        "basic_operation_bound": 1076
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "0000000000000000",
+        "operations": 1076,
+        "trace_sha256": "b2055c249118f4a8d0acb45b4b186338c6636c883d46cc66d10343dc4a06fb82"
+      },
+      "bounded_mathematical_reference": {
+        "status": "outside_oracle_scope"
+      }
+    },
+    {
+      "id": "last-odd-negative-underflow",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "bit_length": 53,
+        "popcount": 53,
+        "basic_operation_bound": 105
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "8000000000000000",
+        "operations": 105,
+        "trace_sha256": "4261d438ab769da520679a69e349b0c60d2772fc08576adfa3fdb0bd911bab41"
+      },
+      "bounded_mathematical_reference": {
+        "status": "outside_oracle_scope"
+      }
+    },
+    {
+      "id": "beyond-safe-integer-near-one",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "bit_length": 54,
+        "popcount": 1,
+        "basic_operation_bound": 54
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "401d8e64b16f0b93",
+        "operations": 54,
+        "trace_sha256": "7ab223f3a50f80f0703aa7c7e5e81ecf1b069b1e3bbea00b8e0dbb73be7c6351"
+      },
+      "bounded_mathematical_reference": {
+        "status": "outside_oracle_scope"
+      }
+    },
+    {
+      "id": "beyond-old-lab-budget",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "bit_length": 9,
+        "popcount": 2,
+        "basic_operation_bound": 10
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "3ff0000000000101",
+        "operations": 10,
+        "trace_sha256": "3cfc82a97f1e5b996fce217871511b872d9332a95ea35669a646fcccd3755712"
+      },
+      "bounded_mathematical_reference": {
+        "status": "outside_oracle_scope"
+      }
+    },
+    {
+      "id": "negative-two-subnormal",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": false,
+        "bit_length": 2,
+        "popcount": 1,
+        "basic_operation_bound": 3
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "000012688b70e62b",
+        "operations": 3,
+        "trace_sha256": "8d9614368d815b79d66f7fa4d5611ebb2f47d82f92c89538d47c92b126c793bd"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "000012688b70e62b",
+        "proof": {
+          "exact": false,
+          "lower": "000012688b70e62b",
+          "upper": "000012688b70e62c",
+          "midpoint_relation": "below",
+          "denominator": 1
+        }
+      }
+    },
+    {
+      "id": "unused-square-not-executed",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "bit_length": 1,
+        "popcount": 1,
+        "basic_operation_bound": 1
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "601dd55745cbb7ed",
+        "operations": 1,
+        "trace_sha256": "a450f3630f5e6b7e24a716cb1d8a7dd689484eaf2062f71d932e8bfb95998913"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "601dd55745cbb7ed",
+        "proof": {
+          "exact": true
+        }
+      }
+    },
+    {
+      "id": "positive-two-overflow",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "bit_length": 2,
+        "popcount": 1,
+        "basic_operation_bound": 2
+      },
+      "graph": {
+        "status": "intermediate_nonfinite",
+        "operations": 1,
+        "trace_sha256": "d1fca7559e85315b4a26007eda59eefec1dd171044e890bff8f32e5094029ec2"
+      },
+      "bounded_mathematical_reference": {
+        "status": "rounded_overflow",
+        "bits": "7ff0000000000000"
+      }
+    },
+    {
+      "id": "reciprocal-first-overflow",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": true,
+        "bit_length": 1,
+        "popcount": 1,
+        "basic_operation_bound": 2
+      },
+      "graph": {
+        "status": "intermediate_nonfinite",
+        "operations": 1,
+        "trace_sha256": "7e85d93fb49ee30e447e63ab039536a2589dffd98f375e0b6a8bd616e24d3ec3"
+      },
+      "bounded_mathematical_reference": {
+        "status": "rounded_overflow",
+        "bits": "7ff0000000000000"
+      }
+    },
+    {
+      "id": "fractional-positive-unimplemented",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "graph": {
+        "status": "fdlibm_fractional_required",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "3ff6a09e667f3bcd",
+        "proof": {
+          "exact": false,
+          "lower": "3ff6a09e667f3bcc",
+          "upper": "3ff6a09e667f3bcd",
+          "midpoint_relation": "above",
+          "denominator": 2
+        }
+      }
+    },
+    {
+      "id": "negative-fractional-domain",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "graph": {
+        "status": "negative_fractional_domain",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "negative_fractional_domain"
+      }
+    },
+    {
+      "id": "negative-zero-last-odd",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "bit_length": 53,
+        "popcount": 53,
+        "basic_operation_bound": 105
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "8000000000000000",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "8000000000000000"
+      }
+    },
+    {
+      "id": "negative-zero-first-even",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "bit_length": 54,
+        "popcount": 1,
+        "basic_operation_bound": 54
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "0000000000000000",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "0000000000000000"
+      }
+    },
+    {
+      "id": "zero-negative-exponent",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": true,
+        "bit_length": 1,
+        "popcount": 1,
+        "basic_operation_bound": 2
+      },
+      "graph": {
+        "status": "zero_negative_exponent",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "zero_negative_exponent"
+      }
+    },
+    {
+      "id": "zero-negative-zero-exponent",
+      "classification": {
+        "kind": "zero_exponent"
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "3ff0000000000000",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "3ff0000000000000"
+      }
+    },
+    {
+      "id": "finite-admission-before-zero",
+      "classification": {
+        "kind": "nonfinite_input"
+      },
+      "graph": {
+        "status": "nonfinite_input",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "nonfinite_input"
+      }
+    },
+    {
+      "id": "negative-unit-last-odd",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "bit_length": 53,
+        "popcount": 53,
+        "basic_operation_bound": 105
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "bff0000000000000",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "bff0000000000000"
+      }
+    },
+    {
+      "id": "negative-unit-first-even",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "bit_length": 54,
+        "popcount": 1,
+        "basic_operation_bound": 54
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "3ff0000000000000",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "3ff0000000000000"
+      }
+    },
+    {
+      "id": "unit-subnormal-fractional",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "3ff0000000000000",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "3ff0000000000000"
+      }
+    },
+    {
+      "id": "smallest-positive-fractional",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "graph": {
+        "status": "fdlibm_fractional_required",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "outside_oracle_scope"
+      }
+    },
+    {
+      "id": "closest-fractional-below-one",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "graph": {
+        "status": "fdlibm_fractional_required",
+        "operations": 0,
+        "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "bounded_mathematical_reference": {
+        "status": "outside_oracle_scope"
+      }
+    },
+    {
+      "id": "negative-odd-three",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": true,
+        "bit_length": 2,
+        "popcount": 2,
+        "basic_operation_bound": 4
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "bfc0000000000000",
+        "operations": 4,
+        "trace_sha256": "3cbdb270ec81cbafde0a064dd0256f91b414c9ac691cc20ff50d7b8658646bf9"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "bfc0000000000000",
+        "proof": {
+          "exact": true
+        }
+      }
+    },
+    {
+      "id": "one-rounded-power-difference",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": true,
+        "bit_length": 5,
+        "popcount": 5,
+        "basic_operation_bound": 10
+      },
+      "graph": {
+        "status": "finite",
+        "bits": "3faaacadc6ed30d0",
+        "operations": 10,
+        "trace_sha256": "346056f1310c692a57852df8dc9dbe91cfc1d8d96bb124caeb699128ba7bd98d"
+      },
+      "bounded_mathematical_reference": {
+        "status": "finite",
+        "bits": "3faaacadc6ed30ca",
+        "proof": {
+          "exact": false,
+          "lower": "3faaacadc6ed30ca",
+          "upper": "3faaacadc6ed30cb",
+          "midpoint_relation": "below",
+          "denominator": 1
+        }
+      }
+    }
+  ]
+}

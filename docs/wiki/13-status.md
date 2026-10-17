@@ -4,6 +4,25 @@
 
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
+**Frozen numerical investigation baseline.** The study used `3eee0fbab3f5682dc345804782994dc22d321fae`
+(#372 merged); it is historical evidence, not current main. [Exact-main CI 38989037136](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38989037136)
+is green. Python's complete-validation lane continues independently with
+parse-only discovery; no complete Reader/Verifier claim follows.
+
+**RFC 0088 Astra follow-up — draft research only.** The existing review records
+independent classifications, genuine receipt RCP-03 success-to-refusal evidence,
+IRR branch/tolerance and NPV exceptional-value controls. A complete isolated A
+raw candidate, constant/word/resource maps, 178 mathematical controls and exact
+indexed/targeted impact artifacts are now reviewable. All 1,089 existing indexed
+assertions pass in the measured baseline/candidate runs, with explicit capture
+limits; targeted financial/receipt probes demonstrate real changes outside the
+old corpus. Frozen native/compiler and cross-runtime evidence is recorded in exact-head
+research CI38994434317 at a617fd26; policy-only reconciliation does not rerun it.
+No production arithmetic, schema, corpus expectation, receipt rule, package
+version, RFC acceptance or release state is changed. A is provisionally preferred
+for evaluation, B remains an alternative and C has not shown sufficient benefit.
+Envelope RFC 0089 and provenance RFC 0085 retain their existing ownership.
+
 **Python priority — minimum-complete capabilities.** The current implementation
 has no Reader/Verifier tier and advertises only parse. The completion matrix in
 the Python README now maps accepted obligations, implemented scope, exact corpus

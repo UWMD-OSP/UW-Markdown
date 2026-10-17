@@ -31,6 +31,8 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -39,6 +41,19 @@ jobs:
       # claims full Verifier coverage or resolves RFC 0088 numerical semantics.
       - name: Independent unit controls
         run: python -m unittest discover -s implementations/python -v
+      # Isolated unaccepted research, separately labeled from Reader evidence.
+      # Reuse these three Python runtimes; no additional job or dependency install.
+      - name: Independent Python numerical procedure research (unaccepted)
+        if: hashFiles('experiments/numerical-0088/python-fdlibm/test_kernel.py') != ''
+        run: |
+          python -B -m unittest discover -s experiments/numerical-0088/python-fdlibm -p "test_*.py" -v
+          python -B experiments/numerical-0088/python-fdlibm/check_evidence.py --output "${{ runner.temp }}/python-fdlibm-observations.json"
+      - uses: actions/upload-artifact@v6
+        if: always() && hashFiles('experiments/numerical-0088/python-fdlibm/test_kernel.py') != ''
+        with:
+          name: isolated-python-fdlibm-${{ matrix.os }}
+          path: ${{ runner.temp }}/python-fdlibm-observations.json
+          if-no-files-found: error
       - name: Portable Reader projections (no capability skips)
         run: python conformance/runner/runner.py --impl "python implementations/python/uwmd.py" --tier reader --no-skip --manifest-out python-reader-conformance.json
       - uses: actions/upload-artifact@v6
@@ -292,6 +307,14 @@ jobs:
         # examples/verification is what a new adopter runs first; each script
         # exits 0 only when the verifier reports its documented verdicts.
         run: npm run examples:verification
+      - name: Check isolated numerical review evidence
+        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/astra-review/reproduce.mjs') != ''
+        # Reuse this existing build; no extra install or full corpus replay.
+        run: |
+          node experiments/numerical-0088/astra-review/reproduce.mjs
+          node --test experiments/numerical-0088/astra-review/reproduce.test.mjs
+          python3 -B experiments/numerical-0088/impact/verify-evidence.py
+          python3 -B experiments/numerical-0088/impact/verify-financial-evidence.py
 
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added
@@ -305,6 +328,22 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Check composed numerical trajectories (unaccepted)
+        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
+        # Reuse this build and Python runtime. Keep new raw observations separate
+        # from the immutable one-host archive; this is research, not conformance.
+        run: |
+          python3 -B -m unittest discover -s experiments/numerical-0088/financial-trajectories -p "test_*.py" -v
+          python3 -B experiments/numerical-0088/financial-trajectories/capture.py --check experiments/numerical-0088/financial-trajectories/evidence
+          python3 -B experiments/numerical-0088/financial-trajectories/capture.py --capture "${{ runner.temp }}/financial-trajectory-observations"
+      - uses: actions/upload-artifact@v6
+        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
+        with:
+          name: isolated-financial-trajectories-node20
+          path: ${{ runner.temp }}/financial-trajectory-observations/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures

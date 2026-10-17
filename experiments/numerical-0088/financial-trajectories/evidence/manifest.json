@@ -1,0 +1,342 @@
+{
+  "status": "UNACCEPTED complete bounded financial trajectory observations, not conformance",
+  "checkout_commit": "5c034dd063aa3e57a6d42d0384a768a700cb1c14",
+  "checkout_tree": "80d24a81ce7dfc2f578e51832945eb65df3ad6e6",
+  "sources": {
+    "experiments/numerical-0088/astra-review/integration-identities.json": "37da9779bb4c08708aae8bc6d2db87b6d87c0a226d96de130d06cf061b5da325",
+    "experiments/numerical-0088/astra-review/observations.json": "60ea71d476eb290ba40af0fe59d4a3fc640ade24b8c5e9b84cf22f9ed79d21a5",
+    "experiments/numerical-0088/cash-graphs/cash_reference.py": "fa53dd358bcbe35f65b11ee206cb6d0295f2a34e53ed1b286e405e586e9c4bf2",
+    "experiments/numerical-0088/financial-trajectories/boundary.mjs": "fd3f2f12048658ff201044e60c3f8536954c5d16309068998c4c3a5a18addcb5",
+    "experiments/numerical-0088/financial-trajectories/capture.py": "415153618c74075c7ca1d1ba91934e28fbb8f9845f9091ca42d3fae2a2900893",
+    "experiments/numerical-0088/financial-trajectories/inputs.json": "1e78c5ad9e26ac4ee7ece9f7153931db9828155773b7c08c77cb0b15c9f93145",
+    "experiments/numerical-0088/financial-trajectories/js_graph.mjs": "02bf832f731a3d951d556a82d023751961ec0a7809e96d369fa34c0bc3535953",
+    "experiments/numerical-0088/financial-trajectories/python_graph.py": "977f676148ff1998d7a5f94af4c2af560164dd8689a2f2b749a797eb5c4cb7c5",
+    "experiments/numerical-0088/financial-trajectories/run_js.mjs": "586f0ff56431f799270786aa46310a1704efa37d2c4938c2b9a3d8f657db75ad",
+    "experiments/numerical-0088/financial-trajectories/test_trajectories.py": "b160c3ca276377923bb762b2e34e0d2f9b365e7d99cb82488e2ef65e263b9220",
+    "experiments/numerical-0088/impact/financial-evidence/baseline.financial.json": "7be6073869deb69b8b8836266934e53bd9f1d7b4df21f8c022ddaca308c32999",
+    "experiments/numerical-0088/impact/financial-evidence/candidate.financial.json": "df87f0b39f1698ba7ee04e8176471dddf156e2ca21d4ad4b29245e9584189a1e",
+    "experiments/numerical-0088/impact/financial-evidence/manifest.json": "5d5aa3493c2f9cc1c86229eaeefdfac2aefae9a5e9c3902be1637bd2319e0749",
+    "experiments/numerical-0088/impact/hook.mjs": "dfce317208322858842951fbf3a1b52f8650f7c8060c9e2203290eb65fca6682",
+    "experiments/numerical-0088/impact/runtime.mjs": "d3e91c127dd27380603d225dde16b5b83069bdc0cb4ec430b71adf83475dfe5e",
+    "experiments/numerical-0088/pinned-fdlibm/constants.json": "e9793112e7a5d0e2c1ccb2f8d8dd9bbc35608598cf725cb8e5ee44117dad59d9",
+    "experiments/numerical-0088/pinned-fdlibm/constants.mjs": "6479a8f04cc3e990cd1316d22cdfa164f83bd0acc56905a60c7a7dbc0c65cc25",
+    "experiments/numerical-0088/pinned-fdlibm/kernel.mjs": "9cea03d62c453d2c6428f076aab1203c04920585f90dcb9815a98967f28fb5be",
+    "experiments/numerical-0088/pinned-fdlibm/words.mjs": "c3bb33ff8b2124bc048a0bb9b7b10d3de318b33e20308091abd079459b434914",
+    "experiments/numerical-0088/power-procedures/reference.py": "87d3609c85876c4e2c41b5f71b5c8e0377a7c953ab5846ef1f6c09fb736b3808",
+    "experiments/numerical-0088/python-fdlibm/evidence-inputs.json": "59f7e08818d5bdfc1b9cc020039c589ec905a3071e9bb995a17efd51a85371b9",
+    "experiments/numerical-0088/python-fdlibm/kernel.py": "2f66b40ad7bd1bf5f1cc965574a82239a9ccde2816af4aa4cd5825fda648aa69",
+    "packages/uwmd-verify/src/calc/builtins.ts": "a10ece89e9de48f819fff281827cd2b882c69b5587d23b7b90819c275eea3d0d",
+    "packages/uwmd-verify/src/calc/day-count.ts": "023689e2769ca5d90eaddb1da80261424ada88cfeb1e01f2aa10f9fca9f75e93",
+    "packages/uwmd-verify/src/calc/quantize.ts": "e55950721064527ef25dabad1f476f43f3c6e5708478ca184b3802c7071dac05",
+    "packages/uwmd-verify/src/cash-flow-series.ts": "8e44d13e49568a309454bb19429ea44cd9d5529a94c611a4e0ee242290a430a7",
+    "packages/uwmd-verify/src/receipts.ts": "330888cf68e5e3b76ceefd2b798cfd40b244fc6d71ea528bacf945682152b54a",
+    "spec/UW_PROTOCOL.md": "a3de7d6053865aa8a1c7e42ca694fcefe02bf392a960cf4b0d2ef98cc9bcb61b",
+    "spec/UW_RECEIPT.md": "f6d7e68226195a5b0015f4e8403b1f93872ab6064575c1cf0131a947a295cf23"
+  },
+  "dist_before_and_after": {
+    "packages/uwmd-verify/dist/asset-class.js": "9b64d4ec1ce313315c2faab4a960809d13c79fadbcd066f625494406832a778d",
+    "packages/uwmd-verify/dist/bindings.js": "f5cf9a09d39af509eb396091d27c640bab22a97547cfe619d19e22d7c9ef4c4a",
+    "packages/uwmd-verify/dist/block-roles.js": "3494b9406cb1553b132e6c4b9100db5523411a8239827f644d403fdbf1094f15",
+    "packages/uwmd-verify/dist/browser.js": "ead01e1ca25c85fd2e538fed03264dc237b988dd6222c7066870a84ac4cc5212",
+    "packages/uwmd-verify/dist/builtin-class-content.js": "955041bf35180bd577459bb3c014ba2f65d86a32c8885404b30f9284874b799c",
+    "packages/uwmd-verify/dist/builtin-class-validation.js": "eda161c44e131d2b009097bd807a746f3763d85dab7749133b17e96423eb2d00",
+    "packages/uwmd-verify/dist/builtin-packs/data-center.js": "31384fd42c4739f01a1994263ec7470df0655dfe2bc040d57493cc171d949a0b",
+    "packages/uwmd-verify/dist/builtin-packs/hospitality.js": "33c69399cd08638728b1d6730c2d02a6a0c4bc73b9fe597f55da56ad32eff81c",
+    "packages/uwmd-verify/dist/builtin-packs/index.js": "f57a11cc9cca748608bc24b738ad838817966ad30aa65c9ecf46536abe24db96",
+    "packages/uwmd-verify/dist/builtin-packs/industrial.js": "1f35fb92cc0d1a1fe24ddbb82419cec37f5fd09ff78db9e010d6f58beac92261",
+    "packages/uwmd-verify/dist/builtin-packs/land.js": "02ffb2076d945c89bd40a1619975a1a34785c336aa30306ec44c675dd5f1046d",
+    "packages/uwmd-verify/dist/builtin-packs/manufactured-housing.js": "db467160470acdcc587d8ec17ad52b40f145a50270a19d515e3e5f177fc3c6a6",
+    "packages/uwmd-verify/dist/builtin-packs/mixed-use.js": "d719547861a0976aeab9d41eac586464c014d9db53d2dff61404dc1061addae9",
+    "packages/uwmd-verify/dist/builtin-packs/multifamily.js": "08566ac62d2203860d3b080388302f3ff29c12d3fdf8be2436f92258dd40d91d",
+    "packages/uwmd-verify/dist/builtin-packs/office.js": "9c2cb8fe2c814964187a50c0867bcede3be2cdcfa96fb06ce99b5cabdc6cd470",
+    "packages/uwmd-verify/dist/builtin-packs/retail.js": "4ee41ebc5d53e7b4d2b6390f19cbf3149014c6b90ff61490e8f49224a515320a",
+    "packages/uwmd-verify/dist/builtin-packs/self-storage.js": "4a470cdf1c32d3cbb06de8c9243669da2aa74efd4d74ead500957427cad43079",
+    "packages/uwmd-verify/dist/builtin-packs/senior-housing.js": "4ce8db87d3aa375515b65fdcd99da67d6a9db3008723a6024119437766bbff09",
+    "packages/uwmd-verify/dist/builtin-packs/student-housing.js": "65a73317dde4a24541b63039531e70842d044c9b05514440fdaa2db2c605bc20",
+    "packages/uwmd-verify/dist/calc/builtins.js": "a1a21b3f342cb5a08c61cd5051ac7b8715670a33a045a8dbaca77e9773c2d764",
+    "packages/uwmd-verify/dist/calc/dated-flows.js": "252f1176566cdf1ed5652cbaa671ce238075b864d5cacb350359a07f3df0d7d7",
+    "packages/uwmd-verify/dist/calc/day-count.js": "0ababeaa0740ba664ab55573cdb391e4e583f2179d727ff047787a7af1af74f7",
+    "packages/uwmd-verify/dist/calc/dependencies.js": "1c5281a8f3c428b2bb0ee872678e18c6be01d11020a2e72d9e028437165caf27",
+    "packages/uwmd-verify/dist/calc/errors.js": "15266fe1dba3912fcba92bcbd9d21a9ce00e6ebe6368f479173ff771c98100d1",
+    "packages/uwmd-verify/dist/calc/evaluator.js": "501b08f434c13290a1958005ac38f5f2ddf2e11852af6c6053020f3c78ea9bd4",
+    "packages/uwmd-verify/dist/calc/index.js": "46dae354b576a42cc346d245d7eea03759089d161df9ae072941f425d19a662f",
+    "packages/uwmd-verify/dist/calc/parser.js": "2331eb3bb6704b49a813c500594ea55dd651f39e0d73882ec7880b9263d34316",
+    "packages/uwmd-verify/dist/calc/prng.js": "a8b60c4d1ffa583b507f12a5777938157df90ad870cd564264dbd46437d047e8",
+    "packages/uwmd-verify/dist/calc/quantize.js": "fc9c8c5900c2941c8f2a8d3fb426e4c4876ac1efa10edcecdc4b4c2f94c73dfd",
+    "packages/uwmd-verify/dist/calc/sensitivity.js": "d4592377397140927b3d16017e44722203feb251b00317412506f210949532e3",
+    "packages/uwmd-verify/dist/calc/stated-precision.js": "a6fcad1d0b82dcb54d982aad385662979a82d367831b261f6054f0e80b9dee86",
+    "packages/uwmd-verify/dist/calc/stochastic.js": "8af1acddc021bd05805af4707dbdf93acc4b8eebf653fda009ee3f286f675308",
+    "packages/uwmd-verify/dist/capital-stack.js": "7279ca733cbff3fb85275a8b3135270dd5846f4b0ebef5dbfd5975dbca671c24",
+    "packages/uwmd-verify/dist/cash-flow-series.js": "b19600a95b6eaa96db693c2316f78af9731b0d5f0a4ae370e4ca043232127d2b",
+    "packages/uwmd-verify/dist/codec.js": "df8bd0c2604f8b2872aa8ed00ba16f728e1e372cf758ca911347280ed9c29d1c",
+    "packages/uwmd-verify/dist/codecs.js": "91e48a9fc27192a93bbd5063eb9d61993872a4979e07b14fc299265cc7afda23",
+    "packages/uwmd-verify/dist/composition.js": "748efaca395623ed086b32303a31e04383cbfd05bf4cfe2c11f0c6f05833450b",
+    "packages/uwmd-verify/dist/deal-package-context.js": "49c059591ca931377568938523dc6a89ec70969d6652689887ccbb0ef4ead8db",
+    "packages/uwmd-verify/dist/deal-package-zip.js": "f99a0b52533d9e3282dfe352f134362d95b8dc2995b5b0870008140200b1d4fd",
+    "packages/uwmd-verify/dist/deal-package.js": "a46d382023362fc9f29a3cb4d03ca4ab61b1fba7dc019cd1fb8da6b28ebb9006",
+    "packages/uwmd-verify/dist/document-signatures.js": "b3f1364c3f1b9324715cb457d5847cda3bf8f2d52541dce299a8f44d18179300",
+    "packages/uwmd-verify/dist/envelope.js": "69797738a915e76b319b2715ab5d2f5d82892dc1bddb43e15903110e70d7e97c",
+    "packages/uwmd-verify/dist/gaps-content.js": "586d14b06255368cda96e5fee967b92d57893e49eedcbc207bb0e1691106a95d",
+    "packages/uwmd-verify/dist/index.js": "cc9b16c32c19eee44df10901d9e3232634d426fc4c49e3de10368bde45f0c41f",
+    "packages/uwmd-verify/dist/integrity-canonical.js": "3b4ea8f34e83ce31c207e0329001eed97ff50283c912e3314b493a649601ac97",
+    "packages/uwmd-verify/dist/integrity.js": "189d4f09549b002dba4425ade55556b6894d39fa5ca8c05e6b4d593cd749511d",
+    "packages/uwmd-verify/dist/lease-abstract.js": "4173b1f751e8ef214d9ecc451b61be2b1b076d4bcfb8b0f953f5b292e868359e",
+    "packages/uwmd-verify/dist/lease-up-cash-flows.js": "3741c46a6af2ec823535d19d190366a810845dc2022eef9d80aa5ffb357d9484",
+    "packages/uwmd-verify/dist/lease-up-structure.js": "e6314cf33d23e06f0056c6d967ed197f7adba13ad9ebc1a5c4a0daa91c527c9e",
+    "packages/uwmd-verify/dist/lease-up.js": "34572b25b4a51a6a8f556b799f3a748c54cc2e2152d66d67e763990250881ff5",
+    "packages/uwmd-verify/dist/lite-bridge.js": "93c70b25dd66a94caf05abae56b537bdef444eb03c3e44aa7036063e913c2279",
+    "packages/uwmd-verify/dist/lite.js": "58bc42cc2c44a02354a08f1196a23c8c6168974727cfe64c557287cc9a1a0292",
+    "packages/uwmd-verify/dist/market-data.js": "802ebfad8f09e31fb0b208cbb8e0db35039c448f551c63cc689e73002948c831",
+    "packages/uwmd-verify/dist/metadata.js": "addbf8ac9bfea2db0393cfc4427f8942db09ebafc5eb525b963d117f96530657",
+    "packages/uwmd-verify/dist/metric-dictionary.js": "7e004d7fa8856ec74c26899a63e7871060b6c09544a71ec8e51960a462dc9ce7",
+    "packages/uwmd-verify/dist/metric-verification.js": "2853b7bcccfdaa9c078df956a08d8ef67b9f52ed90a4ae57c021c76601884ca8",
+    "packages/uwmd-verify/dist/module-runtime.js": "38b363e4d361ffa63427e9fd3cd583e0255d6928b49c318cc41facb2cb6f9a71",
+    "packages/uwmd-verify/dist/module-signing.js": "2f85691ed32a0c03d326d2c848055dadbb7c2128a20b91c8ee62335c56efec44",
+    "packages/uwmd-verify/dist/modules.js": "0635b5f0eefee6ecd916aac1bdd27b8fdca75254a00c666e67bba53fcec23115",
+    "packages/uwmd-verify/dist/negotiation.js": "c580de756f0b6c7fa9bc22b594926911f73c9784c1ca19080a9bf901347b6b3f",
+    "packages/uwmd-verify/dist/parser.js": "d216d7f02c5d0e9589dc860e029525d01edcc2cbabf415f56887fcf9f7e33fd8",
+    "packages/uwmd-verify/dist/period-path.js": "5d9ce1cb67719c6f85d0c75d1aa1085b2703ceaf37837f954bfa33434e63fd8d",
+    "packages/uwmd-verify/dist/period-validation.js": "bbf181d23209aee88471ceca45c54d94f11f173db494039049bdaeca3dbac5d9",
+    "packages/uwmd-verify/dist/periods.js": "bec1d3cda3a784186be1eddac5ee91a9d9e0b8f73c2fa9665673d53a2c01dbef",
+    "packages/uwmd-verify/dist/portfolio.js": "a9cbb748c155f95ecb3e74050adb716bd1a2fad3d93183d7b970c4280f404078",
+    "packages/uwmd-verify/dist/property-cash-flow-inputs.js": "367d41f0e37e01c7b14428011594e0dc35c103821165b50e67cca4f9239c0bbf",
+    "packages/uwmd-verify/dist/property-cash-flows.js": "1eaecae206ea26b7a8b0202655fa0f12fb372701f17273f1ee21360105e3328b",
+    "packages/uwmd-verify/dist/protocol.js": "7b11f26bff052e478d688098fbdd15c17c0d944d6bfcabbb6498306976c7dfb8",
+    "packages/uwmd-verify/dist/receipts.js": "f4236fce7deae96207ab49f934e7a024363bfdc7146e3106b39a013411bd7cba",
+    "packages/uwmd-verify/dist/replacement-funding-structure.js": "f257182219329bc0241da86f2db0920446ace6a7a22162f778a7d8c1a297cdf1",
+    "packages/uwmd-verify/dist/replacement-funding.js": "2f8a1f333a7de30fc1b9620fd8bb09ea301780ffeff810f0b1dcac9d0a4f20dc",
+    "packages/uwmd-verify/dist/reserve-accounts-structure.js": "a2e58afffe206ef71264ac18624a563e036428ffd371adb6342de91c2775bf75",
+    "packages/uwmd-verify/dist/reserve-accounts.js": "4d60a78fafd95a8358f072f801bb7d81466072bce257ca42b0e02c756fb6aac6",
+    "packages/uwmd-verify/dist/reserve-draw-bindings.js": "7f1de6d72c6b27adb8376d8a1c77d0d7c54750dc99d9ab3b565ba3f5da1ecb62",
+    "packages/uwmd-verify/dist/scenario.js": "fca890e1e27fd14949a33b1b7bcc9e61eaa2861d8ba24f170b89f140df97b993",
+    "packages/uwmd-verify/dist/section-resolution.js": "6a4ea13697ceef26272a4247e39c1662f4d17db5a29eaf3959a05eb93a0edbfc",
+    "packages/uwmd-verify/dist/source-representation.js": "717bbc36b69f94f9b02a217dcc14526aa5011e3be0f4350478428ffd251d2fa9",
+    "packages/uwmd-verify/dist/types.js": "e3179a49e80c2fc89274c7ca285932dc743ca99e3789ca7a61cf48a6f3dc8abb",
+    "packages/uwmd-verify/dist/uwcsv.js": "d6962fce542edf564ad26605511fd9a776a24053f9e359133a893125b9b68c13",
+    "packages/uwmd-verify/dist/uwjson.js": "b2dc779a521244d04a8307812f6499f4cd8aecd8cde28f6fe34b18dd572760e0",
+    "packages/uwmd-verify/dist/uwxml.js": "45a86c2e2ca5e913f3350be1732263cb70ee34d810524e7524528ede7f45ef72",
+    "packages/uwmd-verify/dist/validator.js": "f258cab44a5d768e2a744ccac7549e03b324bb33411f1ff0cadd4f36f1382afc",
+    "packages/uwmd-verify/dist/version.js": "0ccbf2b63b23eb44da371e10d149511e6d168552b7d394ab8eaef92c918d88d1",
+    "packages/uwmd-verify/dist/waterfall.js": "1228277fd4f1e9a57cfa84b506f4d56cb4f9239f518408964fd6b2cd3537d1ea",
+    "packages/uwmd-verify/dist/yaml-scalar.js": "c7d5a8ae0d2d1bef15e68aa39f76397228df22e03fbc75d7c3c3c32f3e47055a",
+    "packages/uwmd-verify/dist/zip-safety.js": "b07304b36176a7a1796346752bc64e897ac6b2003084e9d253c23ea8410dbc0a"
+  },
+  "commands": [
+    {
+      "name": "js_host",
+      "command": [
+        "node",
+        "<repo>\\experiments\\numerical-0088\\financial-trajectories\\run_js.mjs",
+        "host",
+        "<scratch>\\js_host.json"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "js_candidate",
+      "command": [
+        "node",
+        "<repo>\\experiments\\numerical-0088\\financial-trajectories\\run_js.mjs",
+        "candidate",
+        "<scratch>\\js_candidate.json"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "boundary_unmodified",
+      "command": [
+        "node",
+        "<repo>\\experiments\\numerical-0088\\financial-trajectories\\boundary.mjs"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "boundary_baseline",
+      "command": [
+        "node",
+        "--experimental-loader",
+        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "<repo>\\experiments\\numerical-0088\\financial-trajectories\\boundary.mjs"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "boundary_candidate",
+      "command": [
+        "node",
+        "--experimental-loader",
+        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "<repo>\\experiments\\numerical-0088\\financial-trajectories\\boundary.mjs"
+      ],
+      "exit": 0
+    }
+  ],
+  "python_runtime": {
+    "python": "3.12.3 (tags/v3.12.3:f6650f9, Apr  9 2024, 14:05:25) [MSC v.1938 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64"
+  },
+  "node_runtime": {
+    "node": "v24.14.1",
+    "v8": "13.6.233.17-node.44"
+  },
+  "cases": 19,
+  "candidate_rows": 4730,
+  "normalized_candidate_sha256": "082c7ded4e258a983af451faa53580e24eff5bcfa9ff992768fa3e87a07d2883",
+  "changes": [
+    {
+      "id": "irr_primitive_transition",
+      "host_result": {
+        "status": "returned",
+        "raw": {
+          "kind": "finite",
+          "bits": "4024000000000000"
+        },
+        "reporting": {
+          "status": "reported",
+          "bits": "4024000000000000",
+          "token": "10",
+          "coefficient": "1",
+          "exponent": 1,
+          "shifted": "42a2309ce5400000",
+          "rounded_integer": "10000000000000"
+        }
+      },
+      "candidate_result": {
+        "status": "refused",
+        "code": "CALC-IRR-DIVERGE"
+      },
+      "host_rows": 175,
+      "candidate_rows": 175
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "baseline.events.jsonl.gz",
+      "sha256": "aa6c83212c7ce7e0d1a23728d7c2f9636711661e48fb2487bba575b33effc88a",
+      "raw_sha256": "d29f2b3c8ca2e7534906f5b6d366b970374a030d4e3a899faa34ee5549555d9d",
+      "raw_bytes": 228438
+    },
+    {
+      "path": "baseline.transforms.jsonl.gz",
+      "sha256": "61fab2ed024f05990d4043862f829c27c5ed6df85bb77a876c9da6802f34e918",
+      "raw_sha256": "1910931b1a5c687afc1cfaa8fe24b1bc3c0377cc95058f4fe835a6988f03af65",
+      "raw_bytes": 2528
+    },
+    {
+      "path": "boundary_baseline.json.gz",
+      "sha256": "685f373224a43dacfbe2b09458407bbe2c1f2fed156c38fab8eaaf7c64d52d3b",
+      "raw_sha256": "dd38dae460d518120238d18fa44d823c2aad78311e4b93d4d64ac5161091fabe",
+      "raw_bytes": 6402
+    },
+    {
+      "path": "boundary_baseline.stderr.gz",
+      "sha256": "856807ed1f364d2e71861534dcb4a0447121b3bda45c0fc81896853ea04e7134",
+      "raw_sha256": "e4ddf40c9449b65486f0ed397e7fcf3e5c679af169ee9a8e55cb12079dd75d75",
+      "raw_bytes": 455
+    },
+    {
+      "path": "boundary_baseline.stdout.gz",
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "path": "boundary_candidate.json.gz",
+      "sha256": "f8f3a16dcb95e3b76b8d2d993cd4a7931895a054fe30c6936224e22f09c58952",
+      "raw_sha256": "d3ccca007d772eb1de767dc280b8a879bc475d0078a3ce5bcb5decc804f2f431",
+      "raw_bytes": 6246
+    },
+    {
+      "path": "boundary_candidate.stderr.gz",
+      "sha256": "5b696f67c399091fd1c9fc8191c12aee07ef0eb6700102c819ba8d86cfa7792c",
+      "raw_sha256": "95a975a907af3e37df11ab7cea9a42b632cdfa41fd0f1d91830822b8a6b3ff96",
+      "raw_bytes": 455
+    },
+    {
+      "path": "boundary_candidate.stdout.gz",
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "path": "boundary_unmodified.json.gz",
+      "sha256": "71d810760aa8b4e7903b9245344e72a040024fa3a22c33add8df3e125a7f224c",
+      "raw_sha256": "44a280f02a14b5045adaca27702b3064356a0f277df427df6804ca226ac9b4ea",
+      "raw_bytes": 6404
+    },
+    {
+      "path": "boundary_unmodified.stderr.gz",
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "path": "boundary_unmodified.stdout.gz",
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "path": "candidate-normalized.json.gz",
+      "sha256": "e329fda0cd7ad42a5d9982146d59db28cc07993cd14f39e2efb441362c8fc750",
+      "raw_sha256": "71653c5c78f9c5d3cc1a8ea8f35724fc810699f9fcd4a9d1b5938eeda81f4b29",
+      "raw_bytes": 1080921
+    },
+    {
+      "path": "candidate.events.jsonl.gz",
+      "sha256": "294707ff2583d53e0b4163927765234a6dcb7cf699a26f9d3f27dea2fa65dcef",
+      "raw_sha256": "9b7a7af48852b368064f91c3573b5106289d9cc8d13d668252b6c92c3645bc2d",
+      "raw_bytes": 228440
+    },
+    {
+      "path": "candidate.transforms.jsonl.gz",
+      "sha256": "61fab2ed024f05990d4043862f829c27c5ed6df85bb77a876c9da6802f34e918",
+      "raw_sha256": "1910931b1a5c687afc1cfaa8fe24b1bc3c0377cc95058f4fe835a6988f03af65",
+      "raw_bytes": 2528
+    },
+    {
+      "path": "js_candidate.json.gz",
+      "sha256": "d8ac82d7379e270c76cb86de2bab86ba21cc46a5f0b0d2c27066908d87a593c6",
+      "raw_sha256": "9b57ec5667ec11afaedd8049cbac5cf5beb8d7c9e1723fbd40da089fc5c8fb24",
+      "raw_bytes": 1082465
+    },
+    {
+      "path": "js_candidate.stderr.gz",
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "path": "js_candidate.stdout.gz",
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "path": "js_host.json.gz",
+      "sha256": "f7bd541bd3242bd3959e80b39514862467022bcc27c907ee4cd20f0d08ac004d",
+      "raw_sha256": "79588c93235824968617fd12ba52116773efc75fe8de26249614d245b6eb2d67",
+      "raw_bytes": 1082710
+    },
+    {
+      "path": "js_host.stderr.gz",
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "path": "js_host.stdout.gz",
+      "sha256": "46b50c321b39e89a491b6727a01628c34245605a30beb3e7414c5e01cff90e6e",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_bytes": 0
+    },
+    {
+      "path": "python.json.gz",
+      "sha256": "8d474b780b8cf23ee8e7f4f67fff20ba17049b151f69c4e270f48a50143abfd7",
+      "raw_sha256": "1ba41ef5605df4cb2982109c5d0e7b2f08d3723b480ea11f6925f323f75661bb",
+      "raw_bytes": 1082551
+    }
+  ],
+  "receipt_scope": "Existing exact actual receipt API RCP-03/RCP-07/backend evidence is source-pinned and reused; no new receipt verification regime or new issuance executed."
+}

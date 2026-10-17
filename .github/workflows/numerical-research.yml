@@ -1,0 +1,87 @@
+name: Numerical procedure research
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/numerical-0088/**'
+      - 'docs/rfcs/0088-*'
+      - 'docs/reviews/2026-10-15-numerical*'
+      - 'scripts/run-numerical-research.py'
+      - '.github/workflows/numerical-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-procedures:
+    name: Frozen procedures (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - { os: ubuntu-latest, node: '18.0.0', python_controls: false }
+          - { os: ubuntu-latest, node: '20', python_controls: false }
+          - { os: ubuntu-latest, node: '22', python_controls: false }
+          - { os: ubuntu-latest, node: '24', python_controls: true }
+          - { os: windows-latest, node: '24', python_controls: true }
+          - { os: macos-latest, node: '24', python_controls: true }
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # No dependency installation, workspace build, historical probe or oracle regeneration.
+      - name: Execute frozen controls and retain exact provenance
+        env:
+          RESEARCH_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python -B scripts/run-numerical-research.py --output numerical-research-artifacts ${{ matrix.python_controls && '--python-controls' || '' }}
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: numerical-research-${{ matrix.os }}-node-${{ matrix.node }}
+          path: numerical-research-artifacts/
+          if-no-files-found: error
+          retention-days: 14
+
+  native-corroboration:
+    name: Native candidate (${{ matrix.os }}, ${{ matrix.cc }}, sanitize=${{ matrix.sanitize }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - { os: ubuntu-latest, cc: gcc, sanitize: false }
+          - { os: ubuntu-latest, cc: clang, sanitize: true }
+          - { os: macos-latest, cc: clang, sanitize: false }
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compare independent native source with raw JavaScript candidate
+        run: python -B experiments/numerical-0088/native-reference/compare.py --cc ${{ matrix.cc }} --output native-research-artifacts ${{ matrix.sanitize && '--sanitize' || '' }}
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: native-research-${{ matrix.os }}-${{ matrix.cc }}-${{ matrix.sanitize }}
+          path: native-research-artifacts/
+          if-no-files-found: error
+          retention-days: 14

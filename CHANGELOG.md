@@ -53,11 +53,25 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Incorporate independently verified Astra review evidence into draft RFC 0088.
+  Add a complete isolated pinned-fdlibm candidate, exact constants/word/resource
+  contracts, independent mathematical/native research and a full indexed impact
+  manifest with explicit coverage limits. Reproduce actual changed reported
+  results and success-to-refusal receipt precedence; require research evidence
+  before owner acceptance while preserving production arithmetic, expectations,
+  receipt behavior, independent versions and release states.
+
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.
   Prioritize one complete validate surface, dictionary/stated-figure reproduction
   and receipt verification over further isolated inspectors; optional profiles
   and draft numerical/representation decisions remain separate.
+
+- Compare concrete unaccepted RFC0088 procedures: the pinned fdlibm closure,
+  an explicitly unverified MPFR binary64 adapter and a bounded full-word integer
+  hybrid. Freeze 24 new word controls and separate procedure choice, accuracy,
+  resource, receipt and clean-break activation questions. Add focused dependency-free
+  runtime evidence collection without changing production arithmetic or baselines.
 
 - Add independent Python standalone document-currency identity inspection under
   accepted CUR-01, preserving authored absent/null/value evidence without
@@ -69,6 +83,14 @@ protocol, and each package each carry an independent semver).
   separate local shape diagnostics. Preserve unknown payloads and source bytes,
   skip historical role reclassification and retain parse-only discovery without
   full validation or tier claims.
+
+- Extend draft RFC 0088 with isolated, testable integer-power procedure graphs,
+  exact-rational bounded fractional references and 40 frozen operand pairs.
+  Independent JS checks 120 result/trace records. Laboratory budgets, rounding,
+  downstream solver/quantization and receipt boundaries remain explicit and
+  unaccepted; production arithmetic and expectations are unchanged. Extend the
+  isolated evidence with ten synthetic ordered cash/IRR-endpoint controls and
+  ten reporting controls; no full solver or receipt issuance claim.
 
 - Add independent Python block-content hashing and bounded read-only chain
   assessment under accepted §V.9/§V.10, with complete physical block evidence,
@@ -125,6 +147,16 @@ protocol, and each package each carry an independent semver).
   evaluation or metric reproduction is claimed by these structural checks.
   Its manifest remains partial parse-only, without a Reader/Verifier tier
   or financial-verification claim. Three-OS CI retains portable result artifacts.
+
+- Draft RFC0088 records reproduced cross-runtime financial power, IRR and
+  quantized-result digest disagreement (#356), independent Python numeric
+  investigation and the narrower #355 assurance scope. No normative arithmetic,
+  conformance expectation, receipt identity or RFC acceptance changes. The
+  candidate feasibility study pins source-byte hashes, closes the power helper
+  inventory and records conditional resource bounds and bit-portability gaps;
+  it executes no candidate kernel and adds no runtime dependency. Isolated
+  JS/Python bit-adapter experiments test finite word encodings, explicit shifts
+  and carry/borrow against fixed integer vectors; no financial answers change.
 
 - Architecture cleanup reconciles RFCs 0078/0083 and Issue #355 with the
   current exports and source. Documents UWMD/StackUW ownership, inventories

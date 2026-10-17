@@ -502,3 +502,92 @@ unknown amounts, unsupported economic assertions and out-of-hold cash refuse.
 Three new schemas and the normative VIII.9.6 text mirror the public types.
 The [workflow](../PROPERTY_CASH_FLOW_WORKFLOW.md) uses explicitly synthetic data;
 core/CLI 2.9.0 publish the implementation. Real-deal validation remains separate.
+
+## Draft numerical procedure feasibility (#356, RFC 0088)
+
+The [candidate-source closure study](../reviews/2026-10-15-fdlibm-closure-356.md)
+freezes public fdlibm source hashes, inventories the power/square-root/scaling
+helpers and identifies finite-work and bit-adapter obligations for a possible
+portable kernel. Its audit downloads or reads source bytes only; it executes no
+numerical candidate. RFC 0088 remains draft. Current arithmetic, domains, errors,
+quantization and conformance expectations are unchanged; source identity and a
+bounded control-flow graph establish neither accuracy nor independent Verifier
+conformance. The existing runtime investigation need not be repeated to use this
+new feasibility evidence.
+
+The isolated [word-adapter experiment](../../experiments/numerical-0088/bit-adapter/README.md)
+provides separate JS/Python implementations and fixed bit-pattern/integer tests.
+These make proposed extraction/insertion, whole-word shifts and carry/borrow
+semantics reviewable without activating a financial kernel or claiming Verifier
+conformance.
+
+### Draft numerical procedure experiments
+
+RFC0088/#357 now includes an isolated power-procedure lab with40exact binary64
+operand pairs, an exact-rational midpoint reference and three explicitly ordered
+integer graphs. Six Python checks and two independent JS checks cover120frozen
+result/trace records. Fractional reference certificates have a bounded domain;
+a general fractional runner still requires a chosen kernel. These are unaccepted
+research artifacts, not production behavior or financial/conformance answers.
+VIII.5 quantization, IRR/NPV graph consequences, receipt identity and release
+placement remain separately governed. See the draft's pinned laboratory link.
+
+
+The same unaccepted research lab now composes ten synthetic cash vectors with
+those power graphs, retaining source-order financial operations, endpoint-only
+IRR decisions, separate VIII.5 reporting and exact result-array research digests.
+Five new Python and two JS checks compare thirty financial traces and ten decimal
+boundary controls. Missing fractional kernels and bisection-required cases have
+no invented result or digest. These are one-host evidence, not cross-platform
+financial conformance, a full solver or an issued receipt. Normative arithmetic,
+legacy subjects, conformance expectations and RFC acceptance remain unchanged.
+
+
+### RFC0088 concrete procedure decision checkpoint
+
+The unaccepted comparison now specifies three actual alternatives: one pinned
+fdlibm closure for every exponent class, an MPFR4.2.2/GMP6.3.0 binary64 adapter
+with explicit ternary/subnormal handling and unresolved patch/resource/build
+proof, or a full-word reciprocal-first integer graph plus the fdlibm fractional
+path. It recommends developing the first procedure if exact reproducible answers
+are the objective; a correctly-rounded primitive requirement instead selects the
+second contract and its unresolved implementation obligations. This is direction,
+not acceptance. The integer hybrid has24 frozen word controls and a1077-basic-op
+bound; that evidence does not execute fdlibm/MPFR/fractional kernels or a full
+financial solver. Primitive rounding, VIII.5 reporting, IRR/NPV graph choices,
+receipt compatibility and release activation remain distinct.
+
+A root-owned focused collector records exact runtime/OS/architecture, checkout
+head/tree, frozen hashes and command logs across six CI rows, without dependency
+installation or a workspace build. Its local success proves17Python methods,
+four TAP methods and24 classification/trace records only. The remote matrix is
+pending this checkpoint; do not infer a completed platform or whole-kernel claim.
+
+
+### Astra review and complete isolated A research
+
+RFC 0088's provisional research direction is pinned fdlibm. A complete isolated
+raw JavaScript candidate now covers all seven bodies, including fractional
+powers, with exact constant words, explicit word sites, current-policy wrapper
+separation and a conservative 76-loop-body scalar bound. It imports no production
+code and has no host-transcendental fallback. Independent mathematical controls
+retain five one-ULP discrepancies among 178 answers: procedure agreement is
+separate from correct rounding. Native and cross-runtime claims require their
+exact CI/artifact evidence, not inference from source provenance.
+
+The existing Issue #356 review now classifies the external Astra findings against
+current source/specifications and fresh probes. Both IRR edge cases and NPV's
+internal Infinity versus public refusal distinction are reproduced without fixes.
+The full 1,089-case indexed baseline/candidate measurement passes all assertions,
+with 671 raw primitive-word changes and explicit actual-capture limits. Targeted
+48-case public financial, five-case starter debt and 24-case historical receipt
+controls fill the ten unexercised static numeric sites, without rebaselining.
+
+A real original IRR endpoint changes from 10 to CALC-IRR-DIVERGE under the candidate.
+Old receipt verification returns failed/RCP-03 before different-engine attribution
+or execution of a supplied signature backend; absent backend RCP-08 is earlier.
+The finite power boundary instead reaches RCP-07 after signature verification.
+Engine version changes alone do not resolve every transition. Receipt state and
+authentication/error precedence remain owner-controlled; current behavior stays.
+Research precedes RFC acceptance; production integration and release are separate.
+See the existing RFC/review and experiments/numerical-0088 impact artifacts.

@@ -1,0 +1,3881 @@
+{
+  "contract_commit": "a18ed8ee7f502e2bd538c3c96be1584f94c458b9",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "vector_count": 4310,
+  "runtimes": [
+    {
+      "runtime": "v18.0.0",
+      "v8": "10.1.124.8-node.13",
+      "arch": "x64",
+      "receiptBoundary": {
+        "declaration": {
+          "id": "power_boundary",
+          "formula": "pow(1.2, 31)",
+          "round_to": 12
+        },
+        "calculated": {
+          "calc_id": "power_boundary",
+          "ok": true,
+          "value": 284.851576559723,
+          "round_to": 12
+        },
+        "results": [
+          {
+            "calc_id": "power_boundary",
+            "computed": true,
+            "value": 284.851576559723
+          }
+        ],
+        "digest": "sha256:61ccb1ceeb458dbd3bad9aa381effd8d6e826a2bf77b53435d76228267f084c4"
+      },
+      "negativePowerBoundary": {
+        "declaration": {
+          "id": "negative_power_range",
+          "formula": "pow(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, -2) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "round_to": 6
+        },
+        "calculated": {
+          "calc_id": "negative_power_range",
+          "ok": true,
+          "value": 1,
+          "round_to": 6
+        },
+        "candidateFinal": 0
+      }
+    },
+    {
+      "runtime": "v18.20.8",
+      "v8": "10.2.154.26-node.39",
+      "arch": "x64",
+      "receiptBoundary": {
+        "declaration": {
+          "id": "power_boundary",
+          "formula": "pow(1.2, 31)",
+          "round_to": 12
+        },
+        "calculated": {
+          "calc_id": "power_boundary",
+          "ok": true,
+          "value": 284.851576559723,
+          "round_to": 12
+        },
+        "results": [
+          {
+            "calc_id": "power_boundary",
+            "computed": true,
+            "value": 284.851576559723
+          }
+        ],
+        "digest": "sha256:61ccb1ceeb458dbd3bad9aa381effd8d6e826a2bf77b53435d76228267f084c4"
+      },
+      "negativePowerBoundary": {
+        "declaration": {
+          "id": "negative_power_range",
+          "formula": "pow(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, -2) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "round_to": 6
+        },
+        "calculated": {
+          "calc_id": "negative_power_range",
+          "ok": true,
+          "value": 1,
+          "round_to": 6
+        },
+        "candidateFinal": 0
+      }
+    },
+    {
+      "runtime": "v20.0.0",
+      "v8": "11.3.244.4-node.3",
+      "arch": "x64",
+      "receiptBoundary": {
+        "declaration": {
+          "id": "power_boundary",
+          "formula": "pow(1.2, 31)",
+          "round_to": 12
+        },
+        "calculated": {
+          "calc_id": "power_boundary",
+          "ok": true,
+          "value": 284.851576559723,
+          "round_to": 12
+        },
+        "results": [
+          {
+            "calc_id": "power_boundary",
+            "computed": true,
+            "value": 284.851576559723
+          }
+        ],
+        "digest": "sha256:61ccb1ceeb458dbd3bad9aa381effd8d6e826a2bf77b53435d76228267f084c4"
+      },
+      "negativePowerBoundary": {
+        "declaration": {
+          "id": "negative_power_range",
+          "formula": "pow(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, -2) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "round_to": 6
+        },
+        "calculated": {
+          "calc_id": "negative_power_range",
+          "ok": true,
+          "value": 1,
+          "round_to": 6
+        },
+        "candidateFinal": 0
+      }
+    },
+    {
+      "runtime": "v20.20.2",
+      "v8": "11.3.244.8-node.38",
+      "arch": "x64",
+      "receiptBoundary": {
+        "declaration": {
+          "id": "power_boundary",
+          "formula": "pow(1.2, 31)",
+          "round_to": 12
+        },
+        "calculated": {
+          "calc_id": "power_boundary",
+          "ok": true,
+          "value": 284.851576559723,
+          "round_to": 12
+        },
+        "results": [
+          {
+            "calc_id": "power_boundary",
+            "computed": true,
+            "value": 284.851576559723
+          }
+        ],
+        "digest": "sha256:61ccb1ceeb458dbd3bad9aa381effd8d6e826a2bf77b53435d76228267f084c4"
+      },
+      "negativePowerBoundary": {
+        "declaration": {
+          "id": "negative_power_range",
+          "formula": "pow(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, -2) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "round_to": 6
+        },
+        "calculated": {
+          "calc_id": "negative_power_range",
+          "ok": true,
+          "value": 1,
+          "round_to": 6
+        },
+        "candidateFinal": 0
+      }
+    },
+    {
+      "runtime": "v22.23.3",
+      "v8": "12.4.254.21-node.57",
+      "arch": "x64",
+      "receiptBoundary": {
+        "declaration": {
+          "id": "power_boundary",
+          "formula": "pow(1.2, 31)",
+          "round_to": 12
+        },
+        "calculated": {
+          "calc_id": "power_boundary",
+          "ok": true,
+          "value": 284.851576559723,
+          "round_to": 12
+        },
+        "results": [
+          {
+            "calc_id": "power_boundary",
+            "computed": true,
+            "value": 284.851576559723
+          }
+        ],
+        "digest": "sha256:61ccb1ceeb458dbd3bad9aa381effd8d6e826a2bf77b53435d76228267f084c4"
+      },
+      "negativePowerBoundary": {
+        "declaration": {
+          "id": "negative_power_range",
+          "formula": "pow(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, -2) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "round_to": 6
+        },
+        "calculated": {
+          "calc_id": "negative_power_range",
+          "ok": true,
+          "value": 1,
+          "round_to": 6
+        },
+        "candidateFinal": 0
+      }
+    },
+    {
+      "runtime": "v24.21.0",
+      "v8": "13.6.233.17-node.53",
+      "arch": "x64",
+      "receiptBoundary": {
+        "declaration": {
+          "id": "power_boundary",
+          "formula": "pow(1.2, 31)",
+          "round_to": 12
+        },
+        "calculated": {
+          "calc_id": "power_boundary",
+          "ok": true,
+          "value": 284.851576559724,
+          "round_to": 12
+        },
+        "results": [
+          {
+            "calc_id": "power_boundary",
+            "computed": true,
+            "value": 284.851576559724
+          }
+        ],
+        "digest": "sha256:5ea98e7cfada4cf05903ec3492ddcc733888d3c4f5f65242602d46fea80d55f2"
+      },
+      "negativePowerBoundary": {
+        "declaration": {
+          "id": "negative_power_range",
+          "formula": "pow(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, -2) * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 * 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "round_to": 6
+        },
+        "calculated": {
+          "calc_id": "negative_power_range",
+          "ok": true,
+          "value": 1,
+          "round_to": 6
+        },
+        "candidateFinal": 0
+      }
+    }
+  ],
+  "stability": [
+    {
+      "base": 1.01,
+      "exponent": 360,
+      "decimal_100_digit_reference": "35.94964132768503437151490063113056339136637265713159709011004270000015800402329435249919146765106231",
+      "native": 35.949641327685036,
+      "candidate_product": 35.949641327685036,
+      "native_error_in_ulps": "0.25367566623744342329681597499583598327659654681599461891040501151609108813512692352414160605151232",
+      "product_error_in_native_ulps": "0.25367566623744342329681597499583598327659654681599461891040501151609108813512692352414160605151232"
+    },
+    {
+      "base": 1.00000001,
+      "exponent": 10000,
+      "decimal_100_digit_reference": "1.000100004999058812965488182688356399995972108443156970784736158523359946691346725953498695099816383",
+      "native": 1.0001000049990587,
+      "candidate_product": 1.0001000049990583,
+      "native_error_in_ulps": "0.456874566637396651249998228081859912966618343545867078334494159765941205139175387242786990711635968",
+      "product_error_in_native_ulps": "2.456874566637396651249998228081859912966618343545867078334494159765941205139175387242786990711635968"
+    },
+    {
+      "base": 1e+155,
+      "exponent": -2,
+      "decimal_100_digit_reference": "9.999999999999999856475369181796635463336677624785780308058018324977526239607211435220830467473568206E-311",
+      "native": 1e-310,
+      "candidate_product": 0.0,
+      "native_error_in_ulps": "0.06154475244784484935630538922838024263339402844028863101813377687232463867706766251816717210911836983",
+      "product_error_in_native_ulps": "20240225330731.06154475244784484935630538922838024263339402844028863101813377687232463867706766251817"
+    },
+    {
+      "base": 0.99,
+      "exponent": -360,
+      "decimal_100_digit_reference": "37.26747294745978312885863547415569359500617064746046334981048129229301726713258380898370265400941947",
+      "native": 37.26747294745978,
+      "candidate_product": 37.267472947459794,
+      "native_error_in_ulps": "0.48605533448335144246321965209514927179498922393430977170674475804772152488414277992118995036143616",
+      "product_error_in_native_ulps": "1.51394466551664855753678034790485072820501077606569022829325524195227847511585722007881004963856384"
+    }
+  ],
+  "comparisons": {
+    "python-vs-v18.0.0": {
+      "counts": {
+        "integer_product:refusal-or-nonfinite": 2,
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "nper:refusal-or-nonfinite": 2,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pmt:refusal-or-nonfinite": 5,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pow:refusal-or-nonfinite": 2,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:refusal-or-nonfinite": {
+          "input": {
+            "id": 0,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 0,
+            "error": "(34, 'Numerical result out of range')"
+          },
+          "right": {
+            "id": 0,
+            "error": "CALC-TYPE-001"
+          }
+        },
+        "integer_product:refusal-or-nonfinite": {
+          "input": {
+            "id": 1,
+            "fn": "integer_product",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 1,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 1,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          }
+        },
+        "pmt:refusal-or-nonfinite": {
+          "input": {
+            "id": 338,
+            "fn": "pmt",
+            "args": [
+              1e-16,
+              1,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 338,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 338,
+            "nonfinite": "Infinity"
+          }
+        },
+        "nper:refusal-or-nonfinite": {
+          "input": {
+            "id": 353,
+            "fn": "nper",
+            "args": [
+              1e-16,
+              60000,
+              1000000,
+              0
+            ]
+          },
+          "left": {
+            "id": 353,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 353,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 0.0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "python-vs-v18.20.8": {
+      "counts": {
+        "integer_product:refusal-or-nonfinite": 2,
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "nper:refusal-or-nonfinite": 2,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pmt:refusal-or-nonfinite": 5,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pow:refusal-or-nonfinite": 2,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:refusal-or-nonfinite": {
+          "input": {
+            "id": 0,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 0,
+            "error": "(34, 'Numerical result out of range')"
+          },
+          "right": {
+            "id": 0,
+            "error": "CALC-TYPE-001"
+          }
+        },
+        "integer_product:refusal-or-nonfinite": {
+          "input": {
+            "id": 1,
+            "fn": "integer_product",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 1,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 1,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          }
+        },
+        "pmt:refusal-or-nonfinite": {
+          "input": {
+            "id": 338,
+            "fn": "pmt",
+            "args": [
+              1e-16,
+              1,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 338,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 338,
+            "nonfinite": "Infinity"
+          }
+        },
+        "nper:refusal-or-nonfinite": {
+          "input": {
+            "id": 353,
+            "fn": "nper",
+            "args": [
+              1e-16,
+              60000,
+              1000000,
+              0
+            ]
+          },
+          "left": {
+            "id": 353,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 353,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 0.0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "python-vs-v20.0.0": {
+      "counts": {
+        "integer_product:refusal-or-nonfinite": 2,
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "nper:refusal-or-nonfinite": 2,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pmt:refusal-or-nonfinite": 5,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pow:refusal-or-nonfinite": 2,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:refusal-or-nonfinite": {
+          "input": {
+            "id": 0,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 0,
+            "error": "(34, 'Numerical result out of range')"
+          },
+          "right": {
+            "id": 0,
+            "error": "CALC-TYPE-001"
+          }
+        },
+        "integer_product:refusal-or-nonfinite": {
+          "input": {
+            "id": 1,
+            "fn": "integer_product",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 1,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 1,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          }
+        },
+        "pmt:refusal-or-nonfinite": {
+          "input": {
+            "id": 338,
+            "fn": "pmt",
+            "args": [
+              1e-16,
+              1,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 338,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 338,
+            "nonfinite": "Infinity"
+          }
+        },
+        "nper:refusal-or-nonfinite": {
+          "input": {
+            "id": 353,
+            "fn": "nper",
+            "args": [
+              1e-16,
+              60000,
+              1000000,
+              0
+            ]
+          },
+          "left": {
+            "id": 353,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 353,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 0.0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "python-vs-v20.20.2": {
+      "counts": {
+        "integer_product:refusal-or-nonfinite": 2,
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "nper:refusal-or-nonfinite": 2,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pmt:refusal-or-nonfinite": 5,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pow:refusal-or-nonfinite": 2,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:refusal-or-nonfinite": {
+          "input": {
+            "id": 0,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 0,
+            "error": "(34, 'Numerical result out of range')"
+          },
+          "right": {
+            "id": 0,
+            "error": "CALC-TYPE-001"
+          }
+        },
+        "integer_product:refusal-or-nonfinite": {
+          "input": {
+            "id": 1,
+            "fn": "integer_product",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 1,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 1,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          }
+        },
+        "pmt:refusal-or-nonfinite": {
+          "input": {
+            "id": 338,
+            "fn": "pmt",
+            "args": [
+              1e-16,
+              1,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 338,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 338,
+            "nonfinite": "Infinity"
+          }
+        },
+        "nper:refusal-or-nonfinite": {
+          "input": {
+            "id": 353,
+            "fn": "nper",
+            "args": [
+              1e-16,
+              60000,
+              1000000,
+              0
+            ]
+          },
+          "left": {
+            "id": 353,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 353,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 0.0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "python-vs-v22.23.3": {
+      "counts": {
+        "integer_product:refusal-or-nonfinite": 2,
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "nper:refusal-or-nonfinite": 2,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pmt:refusal-or-nonfinite": 5,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pow:refusal-or-nonfinite": 2,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:refusal-or-nonfinite": {
+          "input": {
+            "id": 0,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 0,
+            "error": "(34, 'Numerical result out of range')"
+          },
+          "right": {
+            "id": 0,
+            "error": "CALC-TYPE-001"
+          }
+        },
+        "integer_product:refusal-or-nonfinite": {
+          "input": {
+            "id": 1,
+            "fn": "integer_product",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 1,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 1,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          }
+        },
+        "pmt:refusal-or-nonfinite": {
+          "input": {
+            "id": 338,
+            "fn": "pmt",
+            "args": [
+              1e-16,
+              1,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 338,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 338,
+            "nonfinite": "Infinity"
+          }
+        },
+        "nper:refusal-or-nonfinite": {
+          "input": {
+            "id": 353,
+            "fn": "nper",
+            "args": [
+              1e-16,
+              60000,
+              1000000,
+              0
+            ]
+          },
+          "left": {
+            "id": 353,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 353,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 0.0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "python-vs-v24.21.0": {
+      "counts": {
+        "integer_product:refusal-or-nonfinite": 2,
+        "nper:refusal-or-nonfinite": 2,
+        "pmt:refusal-or-nonfinite": 5,
+        "pow:refusal-or-nonfinite": 2
+      },
+      "first_examples": {
+        "pow:refusal-or-nonfinite": {
+          "input": {
+            "id": 0,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 0,
+            "error": "(34, 'Numerical result out of range')"
+          },
+          "right": {
+            "id": 0,
+            "error": "CALC-TYPE-001"
+          }
+        },
+        "integer_product:refusal-or-nonfinite": {
+          "input": {
+            "id": 1,
+            "fn": "integer_product",
+            "args": [
+              0.001000000000000001,
+              -360
+            ]
+          },
+          "left": {
+            "id": 1,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 1,
+            "nonfinite": "Infinity"
+          }
+        },
+        "pmt:refusal-or-nonfinite": {
+          "input": {
+            "id": 338,
+            "fn": "pmt",
+            "args": [
+              1e-16,
+              1,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 338,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 338,
+            "nonfinite": "Infinity"
+          }
+        },
+        "nper:refusal-or-nonfinite": {
+          "input": {
+            "id": 353,
+            "fn": "nper",
+            "args": [
+              1e-16,
+              60000,
+              1000000,
+              0
+            ]
+          },
+          "left": {
+            "id": 353,
+            "error": "float division by zero"
+          },
+          "right": {
+            "id": 353,
+            "nonfinite": "Infinity"
+          }
+        }
+      }
+    },
+    "v18.0.0-vs-v24.21.0": {
+      "counts": {
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          },
+          "right": {
+            "id": 489,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "v18.20.8-vs-v24.21.0": {
+      "counts": {
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          },
+          "right": {
+            "id": 489,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "v20.0.0-vs-v24.21.0": {
+      "counts": {
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          },
+          "right": {
+            "id": 489,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "v20.20.2-vs-v24.21.0": {
+      "counts": {
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          },
+          "right": {
+            "id": 489,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "v22.23.3-vs-v24.21.0": {
+      "counts": {
+        "irr:quantized": 2,
+        "irr:refusal-or-nonfinite": 4,
+        "npv:quantized": 71,
+        "pmt:quantized": 1,
+        "pow:quantized": 2,
+        "pow:raw-only": 6,
+        "pv:quantized": 2
+      },
+      "first_examples": {
+        "pow:raw-only": {
+          "input": {
+            "id": 16,
+            "fn": "pow",
+            "args": [
+              0.001000000000000001,
+              7
+            ]
+          },
+          "left": {
+            "id": 16,
+            "value": 1.0000000000000076e-21,
+            "bits": "3b92e3b40a0e9b78",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 16,
+            "value": 1.0000000000000078e-21,
+            "bits": "3b92e3b40a0e9b79",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        },
+        "pow:quantized": {
+          "input": {
+            "id": 226,
+            "fn": "pow",
+            "args": [
+              1.2,
+              31
+            ]
+          },
+          "left": {
+            "id": 226,
+            "value": 284.8515765597234,
+            "bits": "4071cda00ebe20d6",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20cf"
+            ]
+          },
+          "right": {
+            "id": 226,
+            "value": 284.85157655972347,
+            "bits": "4071cda00ebe20d7",
+            "quantized": [
+              "4071cd999999999a",
+              "4071cda00f34506a",
+              "4071cda00ebe20e0"
+            ]
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 418,
+            "fn": "pv",
+            "args": [
+              0.055,
+              31,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 418,
+            "value": 204907.83010370508,
+            "bits": "4109035ea40d694d",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694d"
+            ]
+          },
+          "right": {
+            "id": 418,
+            "value": 204907.8301037051,
+            "bits": "4109035ea40d694e",
+            "quantized": [
+              "4109035ea3d70a3d",
+              "4109035ea40d90e2",
+              "4109035ea40d694e"
+            ]
+          }
+        },
+        "pmt:quantized": {
+          "input": {
+            "id": 422,
+            "fn": "pmt",
+            "args": [
+              0.055,
+              2.5,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 422,
+            "value": 439015.151458225,
+            "bits": "411acb9c9b17dd6c",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd6c"
+            ]
+          },
+          "right": {
+            "id": 422,
+            "value": 439015.15145822463,
+            "bits": "411acb9c9b17dd66",
+            "quantized": [
+              "411acb9c9999999a",
+              "411acb9c9b17ce53",
+              "411acb9c9b17dd66"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 489,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.727499949325601e+20
+            ]
+          },
+          "left": {
+            "id": 489,
+            "error": "CALC-IRR-DIVERGE"
+          },
+          "right": {
+            "id": 489,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 500,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.9194342495775046e+32
+            ]
+          },
+          "left": {
+            "id": 500,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          },
+          "right": {
+            "id": 500,
+            "value": 10,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 744,
+            "fn": "npv",
+            "args": [
+              -0.9989,
+              -1,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.03,
+              -3.3024213310096414e-05
+            ]
+          },
+          "left": {
+            "id": 744,
+            "value": 1.1805916207174113e+21,
+            "bits": "4450000000000000",
+            "quantized": [
+              "4450000000000000",
+              "4450000000000000",
+              "4450000000000000"
+            ]
+          },
+          "right": {
+            "id": 744,
+            "value": 0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        }
+      }
+    },
+    "python-current-vs-candidate-product": {
+      "counts": {
+        "fv:quantized": 6,
+        "irr:quantized": 30,
+        "irr:refusal-or-nonfinite": 5,
+        "npv:quantized": 447,
+        "npv:raw-only": 80,
+        "pmt:quantized": 8,
+        "pv:quantized": 8
+      },
+      "first_examples": {
+        "pmt:quantized": {
+          "input": {
+            "id": 377,
+            "fn": "pmt",
+            "args": [
+              0.004166666666666667,
+              3,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 377,
+            "value": 336114.9611094163,
+            "bits": "411483cbd82d111c",
+            "quantized": [
+              "411483cbd70a3d71",
+              "411483cbd82cf52c",
+              "411483cbd82d111c"
+            ]
+          },
+          "right": {
+            "id": 377,
+            "value": 336114.96110941033,
+            "bits": "411483cbd82d10b5",
+            "quantized": [
+              "411483cbd70a3d71",
+              "411483cbd82cf52c",
+              "411483cbd82d10b5"
+            ]
+          }
+        },
+        "fv:quantized": {
+          "input": {
+            "id": 378,
+            "fn": "fv",
+            "args": [
+              0.004166666666666667,
+              3,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 378,
+            "value": 1015564.6730324073,
+            "bits": "412efe195897b425",
+            "quantized": [
+              "412efe19570a3d71",
+              "412efe195897a67a",
+              "412efe195897b425"
+            ]
+          },
+          "right": {
+            "id": 378,
+            "value": 1015564.6730324075,
+            "bits": "412efe195897b427",
+            "quantized": [
+              "412efe19570a3d71",
+              "412efe195897a67a",
+              "412efe195897b427"
+            ]
+          }
+        },
+        "pv:quantized": {
+          "input": {
+            "id": 379,
+            "fn": "pv",
+            "args": [
+              0.004166666666666667,
+              3,
+              1000,
+              1000000
+            ]
+          },
+          "left": {
+            "id": 379,
+            "value": 990578.6203142685,
+            "bits": "412e3ae53d99d4f1",
+            "quantized": [
+              "412e3ae53d70a3d7",
+              "412e3ae53d99cbef",
+              "412e3ae53d99d4f1"
+            ]
+          },
+          "right": {
+            "id": 379,
+            "value": 990578.6203142684,
+            "bits": "412e3ae53d99d4f0",
+            "quantized": [
+              "412e3ae53d70a3d7",
+              "412e3ae53d99cbef",
+              "412e3ae53d99d4f0"
+            ]
+          }
+        },
+        "npv:quantized": {
+          "input": {
+            "id": 390,
+            "fn": "npv",
+            "args": [
+              0.004166666666666667,
+              -1000000,
+              50000,
+              60000,
+              70000,
+              1100000
+            ]
+          },
+          "left": {
+            "id": 390,
+            "value": 260283.93917496654,
+            "bits": "410fc5df836e2a34",
+            "quantized": [
+              "410fc5df851eb852",
+              "410fc5df836e2eb2",
+              "410fc5df836e2a34"
+            ]
+          },
+          "right": {
+            "id": 390,
+            "value": 260283.9391749663,
+            "bits": "410fc5df836e2a2c",
+            "quantized": [
+              "410fc5df851eb852",
+              "410fc5df836e2eb2",
+              "410fc5df836e2a2c"
+            ]
+          }
+        },
+        "irr:refusal-or-nonfinite": {
+          "input": {
+            "id": 488,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              6.115909044841455e+19
+            ]
+          },
+          "left": {
+            "id": 488,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 488,
+            "error": "CALC-IRR-DIVERGE"
+          }
+        },
+        "irr:quantized": {
+          "input": {
+            "id": 499,
+            "fn": "irr",
+            "args": [
+              -1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.7449402268886406e+31
+            ]
+          },
+          "left": {
+            "id": 499,
+            "value": 10.0,
+            "bits": "4024000000000000",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4024000000000000"
+            ]
+          },
+          "right": {
+            "id": 499,
+            "value": 9.999999999679886,
+            "bits": "4023fffffffd4010",
+            "quantized": [
+              "4024000000000000",
+              "4024000000000000",
+              "4023fffffffd4050"
+            ]
+          }
+        },
+        "npv:raw-only": {
+          "input": {
+            "id": 732,
+            "fn": "npv",
+            "args": [
+              5e-07,
+              -1,
+              0.01,
+              0.02,
+              0.03,
+              0.04,
+              0.05,
+              0.06,
+              0.0,
+              0.01,
+              0.02,
+              0.7600043850104957
+            ]
+          },
+          "left": {
+            "id": 732,
+            "value": 0.0,
+            "bits": "0000000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          },
+          "right": {
+            "id": 732,
+            "value": -1.1102230246251565e-16,
+            "bits": "bca0000000000000",
+            "quantized": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

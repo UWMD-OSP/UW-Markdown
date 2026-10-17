@@ -1,0 +1,206 @@
+{
+  "status": "UNACCEPTED RESEARCH INPUTS; words, not decimal labels, define operands",
+  "provenance": "Fixed by author from binary64 identities and decimal-to-binary64 conversion using CPython struct; no host power generated operands. Labels are explanatory only.",
+  "cases": [
+    {
+      "id": "zero-zero",
+      "x": "0000000000000000",
+      "y": "0000000000000000"
+    },
+    {
+      "id": "negative-zero-zero",
+      "x": "8000000000000000",
+      "y": "8000000000000000"
+    },
+    {
+      "id": "negative-zero-odd",
+      "x": "8000000000000000",
+      "y": "4008000000000000"
+    },
+    {
+      "id": "negative-zero-even",
+      "x": "8000000000000000",
+      "y": "4000000000000000"
+    },
+    {
+      "id": "negative-zero-half",
+      "x": "8000000000000000",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "zero-negative",
+      "x": "0000000000000000",
+      "y": "c000000000000000"
+    },
+    {
+      "id": "negative-zero-negative",
+      "x": "8000000000000000",
+      "y": "c008000000000000"
+    },
+    {
+      "id": "negative-base-fractional",
+      "x": "c000000000000000",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "negative-base-odd",
+      "x": "c000000000000000",
+      "y": "4008000000000000"
+    },
+    {
+      "id": "negative-base-negative-odd",
+      "x": "c000000000000000",
+      "y": "c008000000000000"
+    },
+    {
+      "id": "negative-one-huge-odd",
+      "x": "bff0000000000000",
+      "y": "433fffffffffffff"
+    },
+    {
+      "id": "negative-one-huge-even",
+      "x": "bff0000000000000",
+      "y": "4340000000000000"
+    },
+    {
+      "id": "huge-integer-budget",
+      "x": "4000000000000000",
+      "y": "4340000000000000"
+    },
+    {
+      "id": "boundary-below-integer",
+      "x": "4000000000000000",
+      "y": "3fefffffffffffff"
+    },
+    {
+      "id": "nan-before-zero",
+      "x": "7ff8000000000001",
+      "y": "0000000000000000"
+    },
+    {
+      "id": "infinity-input",
+      "x": "7ff0000000000000",
+      "y": "3ff0000000000000"
+    },
+    {
+      "id": "nonfinite-exponent",
+      "x": "3ff0000000000000",
+      "y": "fff0000000000000"
+    },
+    {
+      "id": "order-1.1-31",
+      "x": "3ff199999999999a",
+      "y": "403f000000000000"
+    },
+    {
+      "id": "order-1.0001-127",
+      "x": "3ff00068db8bac71",
+      "y": "405fc00000000000"
+    },
+    {
+      "id": "order-1.0001-256",
+      "x": "3ff00068db8bac71",
+      "y": "4070000000000000"
+    },
+    {
+      "id": "negative-order-1.1-31",
+      "x": "3ff199999999999a",
+      "y": "c03f000000000000"
+    },
+    {
+      "id": "large-base-negative-two",
+      "x": "601dd55745cbb7ed",
+      "y": "c000000000000000"
+    },
+    {
+      "id": "large-base-negative-three",
+      "x": "e01dd55745cbb7ed",
+      "y": "c008000000000000"
+    },
+    {
+      "id": "unused-final-square",
+      "x": "5ff0000000000000",
+      "y": "3ff0000000000000"
+    },
+    {
+      "id": "overflow-final",
+      "x": "5ff0000000000000",
+      "y": "4000000000000000"
+    },
+    {
+      "id": "minnormal-square",
+      "x": "0010000000000000",
+      "y": "4000000000000000"
+    },
+    {
+      "id": "minsubnormal-sqrt",
+      "x": "0000000000000001",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "minsubnormal-fourth-root",
+      "x": "0000000000000001",
+      "y": "3fd0000000000000"
+    },
+    {
+      "id": "max-sqrt",
+      "x": "7fefffffffffffff",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "sqrt-two",
+      "x": "4000000000000000",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "quarter-two",
+      "x": "4000000000000000",
+      "y": "3fd0000000000000"
+    },
+    {
+      "id": "three-quarters-two",
+      "x": "4000000000000000",
+      "y": "3fe8000000000000"
+    },
+    {
+      "id": "negative-three-quarters-two",
+      "x": "4000000000000000",
+      "y": "bfe8000000000000"
+    },
+    {
+      "id": "fifteen-sixteenths-two",
+      "x": "4000000000000000",
+      "y": "3fee000000000000"
+    },
+    {
+      "id": "near-one-sqrt",
+      "x": "3ff0000000000001",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "below-one-sqrt",
+      "x": "3fefffffffffffff",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "half-minsubnormal-power",
+      "x": "3280000000000000",
+      "y": "4014000000000000"
+    },
+    {
+      "id": "negative-half-minsubnormal-power",
+      "x": "b280000000000000",
+      "y": "4014000000000000"
+    },
+    {
+      "id": "exact-minsubnormal-power",
+      "x": "1e60000000000000",
+      "y": "4000000000000000"
+    },
+    {
+      "id": "general-fraction-outside-oracle",
+      "x": "4000000000000000",
+      "y": "3ff199999999999a"
+    }
+  ]
+}
