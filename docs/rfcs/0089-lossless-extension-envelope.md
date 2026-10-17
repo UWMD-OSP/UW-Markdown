@@ -35,7 +35,7 @@ while `sections[id]` already permits variant maps. Selecting an arbitrary peer,
 aggregating payloads or filtering the document loses admitted content and
 changes its complete semantic commitment.
 
-The requested [read-only intake in the existing Reader review](https://github.com/UWMD-OSP/UW-Markdown/blob/c8a7457510eea154a4aa86230b07f914550b80b0/docs/reviews/2026-10-15-python-reader-354.md#2026-10-16--issue-365-joint-representation-rfc-intake)
+The requested [read-only intake in the existing Reader review](https://github.com/UWMD-OSP/UW-Markdown/blob/d2fdd8f3a9da0abb8f60c487141c839d9601e53e/docs/reviews/2026-10-15-python-reader-354.md#2026-10-16--issue-365-joint-representation-rfc-intake)
 contains the pinned source/type/schema/mapping/consumer evidence and alternatives.
 It is evidence of a joint representation problem, not a Python-specific bug or
 authority to invent an implementation-only shape. Its baseline `64b9b109` and
@@ -198,7 +198,7 @@ through the shared model rather than selecting a peer per consumer.
 #### Candidate wire examples (not admitted representations)
 
 The full synthetic JSON semantic values are frozen in
-[`candidate-preimages.json`](https://github.com/UWMD-OSP/UW-Markdown/blob/52c699ffe6bbb166310005be7bdc32960d6f80d1/experiments/envelope-0089/candidate-preimages.json).
+[`candidate-preimages.json`](https://github.com/UWMD-OSP/UW-Markdown/blob/d2fdd8f3a9da0abb8f60c487141c839d9601e53e/experiments/envelope-0089/candidate-preimages.json).
 `candidate-mixed` contains this entry spine; `A` and `B` below denote the complete
 unchanged block values in that file, not literal JSON members or wire aliases:
 
@@ -361,7 +361,7 @@ outputs. The names below are a proposed fixture matrix, not new accepted cases.
 
 ### Frozen candidate subjects and fixture procedures
 
-The [experimental evidence README](https://github.com/UWMD-OSP/UW-Markdown/blob/52c699ffe6bbb166310005be7bdc32960d6f80d1/experiments/envelope-0089/README.md)
+The [experimental evidence README](https://github.com/UWMD-OSP/UW-Markdown/blob/d2fdd8f3a9da0abb8f60c487141c839d9601e53e/experiments/envelope-0089/README.md)
 provides five bounded candidate preimages and independent Python/Node rechecks.
 The only selected version string is the design token `E_NEXT`; every candidate
 stamp is deliberately unsupported today. These are design evidence, not approved
@@ -371,7 +371,7 @@ conformance. It does independently show that a stamp-only change moves an
 extension-free subject and that one-peer `single` and `variants` have different
 subjects even with the same underlying block.
 
-The [read-only current-contract proof](https://github.com/UWMD-OSP/UW-Markdown/blob/ea7f83c30da38e4af84abd031832a8026b108cc6/experiments/envelope-0089/README.md#current-envelope1-admission-proof-separate-from-candidate-design)
+The [read-only current-contract proof](https://github.com/UWMD-OSP/UW-Markdown/blob/d2fdd8f3a9da0abb8f60c487141c839d9601e53e/experiments/envelope-0089/README.md#current-envelope1-admission-proof-separate-from-candidate-design)
 separately exercises unchanged Envelope1 schemas and the existing verified-JSON
 decoder. Ten controls isolate current version, block-shape and received-digest
 refusals; tagged entries cannot become legal1.0 blocks by relabelling their stamp.
