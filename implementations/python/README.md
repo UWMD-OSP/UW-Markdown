@@ -11,6 +11,30 @@ full-validation, expression-calculation, signature, receipt or optional-profile 
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
 reserve accounts, explicit reserve-draw plans and replacement-funding commitments. It does not certify every Reader or Verifier requirement.
 
+## Complete validation implementation — in progress
+
+The developing `uwmd_validation.validate_document` API composes one structural
+`ValidationResult` and the separately invoked V.12 result from a copied source
+snapshot. It currently integrates source/role/provenance, stage overlays,
+descriptive identity/currency/locale, all fifteen registered CC coverage entries,
+stated-value thresholds, period/static-selector/return-basis/student-bed checks,
+cash/lease/reserve structure and existing hedge/escrow prerequisites. It does not
+supply absent financial inputs or evaluate an unaccepted numerical procedure.
+
+The CLI still refuses `validate` and discovery remains parse-only. Remaining
+MU/CS, TAX, LSE/REC, CAPX, WF and official builtin field/rule obligations must be
+implemented and demonstrated before complete validation is claimed. External
+sections and the already documented source-identity boundaries also need their
+accepted applicability controls. Existing local shape findings are not guessed
+registered codes.
+
+Eight new focused methods pass locally, including direct API comparison against
+all 111 unchanged portable validation projections and result partition/coverage/
+readiness/read-only/role/metadata/async-separation controls. These are **not 111
+CLI executions or portable capability passes**. No old control or corpus file
+was changed; the original 151 methods were not rerun at this checkpoint.
+The full command/wire/refusal and applicable nonportable gates below remain open.
+
 ## Minimum-complete capability path — 2026-10-16
 
 This assessment uses main `fbf8f66a` (through #371). It inventories code and
@@ -83,8 +107,9 @@ Protocol III.6a and their accepted Format/RFC rules. This includes all official
 builtin classes, not just multifamily. External module loading/custom formulas,
 editing policies and optional integrity checks are not silently made mandatory
 by this inventory; apply their owning capability and accepted case context.
-PS-03 needs actual value-use inspection; static inspection of every AST branch
-cannot substitute for an evaluator's short-circuit behavior.
+PS-03 is the statically recognizable selector-kind mismatch check specified by
+VIII.2a under default section selection. Its inspection of syntax, including
+conditional branches, is not a runtime short-circuit/evaluation verdict.
 
 `replacement_funding_verification` is a separate sibling result under V.12;
 HDG-09 must never be appended to synchronous structural errors. A structurally
