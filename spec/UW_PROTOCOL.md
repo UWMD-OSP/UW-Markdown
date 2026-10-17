@@ -674,8 +674,12 @@ frontmatter.
 `_meta.provenance.actor`. Existing wrapper/nested-object shape failures and
 whole-missing-meta handling take precedence and suppress the additional actor
 finding for that block. Preserve completeness codes, severities, applicability
-and relative order. All old metadata-shape findings precede the new actor pass;
-the actor pass precedes role, period-series and source-vocabulary checks.
+and relative order. Preserve all existing visible-model shape findings first;
+then apply the exact existing wrapper/nested-object predicate/message to
+previously unseen retained physical block references in source order. This
+explicit proposed source-accounting correction precedes the actor pass and
+adds no other metadata-schema requirement. The actor pass precedes role,
+period-series and source-vocabulary checks.
 
 Source validation MUST include every retained physical block before reduction,
 including history, overwritten selections, variants, append-only entries and

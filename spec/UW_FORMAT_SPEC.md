@@ -529,7 +529,10 @@ canonical `_meta.provenance.actor` produces one `META-01`/error with field
 apply `source` grammar, infer or insert a principal. A whole missing `_meta`,
 a retired `section_id` wrapper, or malformed `_meta`/nested `provenance` or
 `lifecycle` retains its existing handling without an additional actor error.
-This narrow rule does not allocate other metadata-schema failures to `META-01`.
+Apply the exact existing wrapper/nested-object predicate also to previously
+unseen retained physical blocks; newly exposed shape findings precede actor
+findings. This explicit source-accounting correction does not allocate other
+metadata-schema failures to `META-01`.
 
 Source validation MUST account for every retained physical structured block
 before routing/reduction, including superseded, overwritten, append-only,
