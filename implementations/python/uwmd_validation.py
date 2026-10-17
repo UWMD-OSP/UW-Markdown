@@ -28,7 +28,7 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
     """
     snapshot = copy.deepcopy(document)
     ledger = Ledger(snapshot)
-    basic_rules(ledger, now=now, gap_staleness_days=gap_staleness_days,
+    metadata = basic_rules(ledger, now=now, gap_staleness_days=gap_staleness_days,
                 incomplete_policies=incomplete_policies)
     cross_checks(ledger)
     financial_thresholds(ledger, thresholds)
@@ -59,4 +59,5 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
                 issues=issues, errors=partitions["error"], warnings=partitions["warning"],
                 info=partitions["info"], coverage=copy.deepcopy(ledger.coverage),
                 replacement_funding_verification=copy.deepcopy(binding),
-                composition_assessment=copy.deepcopy(composition))
+                composition_assessment=copy.deepcopy(composition),
+                metadata_assessment=copy.deepcopy(metadata))
