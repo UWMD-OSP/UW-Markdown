@@ -298,6 +298,7 @@ jobs:
         run: |
           python3 --version
           node --version
+          git fetch --no-tags --depth=1 origin a3570c3c72633c0abd564a66d863c26a62a14604
           python3 -B experiments/envelope-0089/codec-study/capture.py --check
           python3 -B experiments/envelope-0089/codec-study/freeze.py --check
           python3 -B -m unittest discover -s experiments/envelope-0089/codec-study -p test_codec.py -v
