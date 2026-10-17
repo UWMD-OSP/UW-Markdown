@@ -35,7 +35,13 @@ describe('META-01', () => {
 
   it('refuses a section_id wrapper member as an error', () => {
     const issues = meta01({ section_id: 'property', _meta: meta, content: { total_units: 10 } });
-    expect(issues).toMatchObject([{ severity: 'error', section: 'property' }]);
+    expect(issues).toMatchObject([{
+      severity: 'error', section: 'property',
+      remediation: expect.stringContaining('bare payload with inline nested _meta'),
+    }]);
+    expect(issues[0].remediation).toContain('_meta.section matching the fence');
+    expect(issues[0].remediation).toContain('_meta.provenance.actor as a nonempty string');
+    expect(issues[0].remediation).toContain('do not infer an actor');
   });
 
   it('refuses a flat _meta as an error', () => {
@@ -58,7 +64,7 @@ describe('META-01', () => {
 });
 
 
-// RFC 0090 candidate: exact actor admission and retained physical evidence.
+// RFC 0090: exact actor admission and retained physical evidence.
 const header = '---\nuw_version: "3.0"\nasset_class: multifamily\ndeal_id: actor\n---\n';
 const fence = (id: string, payload: Record<string, unknown>, suffix = '') =>
   `\`\`\`json uw:section=${id} ${suffix}\n${JSON.stringify(payload)}\n\`\`\`\n`;

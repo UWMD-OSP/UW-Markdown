@@ -57,12 +57,12 @@ def inspect_source_roles(document):
     The current parsed-value model is authoritative; source spans identify its
     origins, not a certificate that mutable values still equal original bytes.
     History is actor/shape-checked but its roles/sources are not reclassified.
-    This candidate wrapper remains separate from complete ValidationResult.
+    This bounded wrapper remains separate from complete ValidationResult.
     """
     snapshot = copy.deepcopy(document)
     result = dict(scope="physical_metadata_and_active_source_provenance_and_roles", ok=True, issues=[],
                   shape_findings=[], blocks=[], history_blocks_skipped=0, blocks_checked=0)
-    # Candidate actor reconciliation: complete the existing metadata-shape pass
+    # RFC0090 actor admission: complete the existing metadata-shape pass
     # before actor admission, then retain active ROLE/SRC ordering below.
     eligible = []
     for index, block in enumerate(snapshot.source.blocks):

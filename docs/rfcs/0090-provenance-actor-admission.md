@@ -1,7 +1,7 @@
 ---
 rfc: 0090
 title: Admit required provenance actors with an explicit diagnostic
-status: draft
+status: accepted
 author: codex
 created: 2026-10-17
 affects:
@@ -21,20 +21,22 @@ canonical `_meta.provenance.actor` after existing block-shape precedence.
 Check every retained physical block, including history, append-only entries and
 unselected peers, without fabricating attribution or changing content selection.
 Make the distinction between fresh-source validation and mutable-model assessment
-explicit. The owner approved this direction, but **this RFC remains draft**:
-final review, acceptance and synchronized activation are separate gates. No
-version or release is selected, and no conformance expectation changes merely
-because this draft exists.
+explicit. The owner accepted the substantive contract reviewed at
+`c870dbd63e6972ae849faf31a2be68ec43855377`, including its governed conformance
+expectations, subject to final integration corrections and exact-head CI.
+This RFC records that accepted contract; merging its synchronized implementation
+activates it on main. Acceptance allocates no release version and authorizes no
+publication or public-launch tag.
 
 ## Motivation
 
 Format2.5b and ProtocolV.3 already require an initiating principal.
 `UWProvenance.actor` is a required string; the normative block schema requires
-`actor`, `type: string`, `minLength: 1`. The existing validator does not allocate
-a diagnostic for that requirement. Its `META-01` covers bare/nested shape, while
+`actor`, `type: string`, `minLength: 1`. The pre-reconciliation validator did not allocate
+a diagnostic for that requirement. Its `META-01` covered bare/nested shape, while
 ProtocolIII.6a closes `META_FIELD_MISSING_<FIELD>` to five names that exclude
-`ACTOR`. Schema rejection and the preserved positive diagnostic corpus therefore
-disagree. None of these artifacts generally outranks the others; this RFC
+`ACTOR`. Schema rejection and the preserved diagnostic corpus therefore
+disagreed. None of these artifacts generally outranks the others; this RFC
 reconciles the joint contract explicitly.
 
 The [original decision packet](https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6229116406)
@@ -47,7 +49,16 @@ source, portable CLI and complete indexed-corpus inventory; see the existing
 and its actor-inventory companions. Results distinguish direct API exposure,
 actual consuming operations and governed expectation changes.
 
-## Proposed change
+## Decisions
+
+| Decision | Accepted contract | Basis |
+|---|---|---|
+| D1 | Narrow META-01/error actor admission; arbitrary nonempty strings, no inferred attribution | Owner decision; already-required schema/type |
+| D2 | Existing shape and whole-missing-meta precedence; shape then actor then later families | RFC0081 and explicit owner-approved ordering |
+| D3 | Retained physical references plus mutable-model identity union; no silent raw reparse | Owner-approved source/model authority and historical scope |
+| D4 | Synchronized prose/validators/governed expectations; unchanged existing schema and versions | Joint contract and independent material review |
+
+## Accepted contract
 
 ### D1. Principal domain and one diagnostic
 
@@ -78,7 +89,7 @@ Apply these decisions per assessed block, in this order:
 Use the exact existing wrapper/nested-object predicate and message for all
 assessed blocks. After existing visible-model shape findings, assess previously
 unseen parser-retained physical references with that same predicate. This is an
-explicit proposed applicability correction: malformed overwritten/unselected
+explicit applicability correction: malformed overwritten/unselected
 blocks must not escape both shape refusal and actor admission. It adds no new
 typed requirement and does not turn other metadata-schema failures into
 `META-01`. Record newly exposed shape findings separately from new actor
@@ -159,10 +170,10 @@ shape, role, financial or historical-authority rule is changed.
 ## Compatibility analysis
 
 Original actor-less records retain their exact bytes and remain parseable under
-the existing parser, but a validator implementing this accepted proposal emits
+the existing parser, but a validator implementing this contract emits
 new errors. A parse-only Reader owes no new validation claim. A Reader claiming
 `validate`, and every Verifier, must implement the accepted actor rule within
-its declared source/model operation boundary. This draft does not promote the
+its declared source/model operation boundary. This RFC does not promote the
 Python implementation's discovery beyond parse-only or complete its Verifier.
 Module manifests and metric arithmetic are unchanged; authored module/extension
 blocks receive the same actor predicate when assessed.
@@ -189,7 +200,7 @@ backend proof and asserts neither universal receipt invariance nor a new refusal
 Apply the [owner's prelaunch compatibility policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16):
 all pre5 releases are historical, with no old-reader, grandfathering or migration
 shim requirement. Format/Protocol/package versions remain independent decisions
-for their actual changes. This draft selects none;5.0 publication still needs
+for their actual changes. This RFC selects none;5.0 publication still needs
 separate owner launch approval. RFC0085,0088 and0089 retain separate ownership
 and draft status.
 
@@ -201,8 +212,8 @@ portable document stems below are under `conformance/documents/fixtures/`
 (`.uwx.md`) and `conformance/documents/expected/` (`.validation.json`); the
 original pair for each is pinned by the exact main commit above and the linked
 packet. The candidate independently reproduces these actor counts and CLI exits.
-The proposed expectations below are governed draft changes, pending final
-acceptance; the original commit remains the historical baseline.
+The expectations below are the owner-approved governed disposition; the original
+commit remains the historical baseline.
 
 | Stem | Executed additional actor errors | Original status/CLI exit |
 |---|---:|---|
@@ -221,9 +232,15 @@ acceptance; the original commit remains the historical baseline.
 
 The original798-source direct API comparison executes738 validations and60
 parse refusals.162 sources gain574 actor errors; stripping only those new
-actor findings leaves existing issue objects and order unchanged. No original
+actor findings leaves existing issue objects and order unchanged at that
+reviewed head. The final integration correction also expands the registered
+META-01 remediation to mention the required nonempty actor while retaining bare
+payload/nested-shape guidance. Existing shape findings therefore receive that
+intentional guidance update; their codes, severity, messages, applicability and
+relative order remain unchanged. Frozen pre-correction observations are not
+rewritten or relabeled as a final-head full-object invariance claim. No original
 source exposes an additional hidden-wrapper finding, while explicit negative
-controls pin that proposed physical-shape applicability. This is API exposure,
+controls pin that physical-shape applicability. This is API exposure,
 not a claim that every financial command invokes ordinary validation.
 
 All111 original portable validate CLIs execute:12 responses change by78 actor
@@ -231,7 +248,7 @@ errors, eight exits change0-to1 and four remain1;99 responses/exits remain
 byte-equivalent. The original1089-case native indexed replay passes1089 before
 the change and1052 after, against untouched original expectations. Its37
 measured differences are12 validate projections,24 rendered validation displays
-and one capital-stack assertion. The candidate explicitly prepares only those
+and one capital-stack assertion. The implementation changes only those
 37 expected-file dispositions, retaining original source and expectation
 identities; no blanket `--update`, actor fabrication or historical rewrite.
 Rendering changes contain actor diagnostics, derived overall status and token
@@ -244,8 +261,9 @@ precedence. Their established corpus contract asserts code presence; focused
 TypeScript/Python controls and the independent inventory additionally pin actor
 field paths, multiplicity, ordering, arbitrary nonempty/whitespace strings,
 whole-missing metadata, hidden malformed wrappers and exact identity deduplication.
-The joint candidate suite passes1095 indexed cases after these explicit
-proposed dispositions. This demonstrates the draft; it does not accept it.
+The synchronized suite passes1095 indexed cases after these explicit governed
+dispositions. Eight derived portable exit declarations change0-to1; no original
+source or unrelated expectation is changed.
 
 Mutable-model controls must cover in-place canonical actor edits, model-only
 additions, replacements/removals retaining physical evidence, divergent meta
@@ -261,7 +279,7 @@ retaining their already-accepted rules.
 re-export remains sufficient. A private parser-origin inventory can be a
 `WeakMap<ParsedUWFile, readonly UWBlock[]>` keyed by the original parsed object,
 without a serialized field or new public export. Actor admission and its preceding exact wrapper-shape accounting consult
-that inventory in this proposal; existing current-value checks are not
+that inventory under this contract; existing current-value checks are not
 wholesale redirected to physical history. Code must preserve object references
 and protect the inventory container from accidental callback mutation.
 
@@ -278,9 +296,11 @@ codes for compatibility or extending them to history. Preserve identifiable old
 unit expectations and record the explicit correction. A late/mismatched but
 nested-valid block with no actor still owes the actor finding. This is no claim
 that the inspector is a complete validator or that those requirements vanished.
-Integration owns actual broader consumer/conformance disposition and exact-head CI. This
-draft supplies no normative activation or acceptance. Implementations in other languages may retain their own physical block
-inventory so long as they meet the same operation and diagnostic contract.
+Integration verifies the broader consumer/conformance disposition and exact-head
+CI before merging. Implementations in other languages may retain their own
+physical block inventory so long as they meet the same operation and diagnostic
+contract. Acceptance does not claim complete Python validation or Verifier
+capability.
 
 ## Alternatives considered
 
@@ -298,20 +318,24 @@ inventory so long as they meet the same operation and diagnostic contract.
 - Exempting historical or extension blocks weakens the required principal and
   incorrectly treats history non-reclassification as metadata immunity.
 
-## Unresolved questions
+## Integration and release disposition
 
-Final owner review must accept the exact diagnostic allocation, operation
-boundary and governed expectations after independent material review. The
-implementation/affected-consumer inventory must demonstrate all claimed
-results; counts above alone cannot close that gate. Independent version and
-release placement remain later decisions. There is no open question about
-whether a required actor can be inferred or made optional by implementation.
+The owner has accepted the diagnostic allocation, operation boundary, ordering,
+historical applicability and governed expectations reviewed at the pinned head.
+Final integration rechecks all37 affected expected files, source preservation,
+identity/precedence controls and receipt consequences, updates the registered
+remediation, and requires exact-final-head and exact-main CI.
+
+No substantive actor decision remains open. Package, Format and Protocol
+release versions remain independently controlled and are not allocated here.
+This change prepares no release, publication or5.0 launch. RFC0085,0088 and0089
+remain separately draft. A required actor cannot be inferred or made optional.
 
 ## Prior art
 
 The accepted Format nested provenance schema and RFC0081's bare block/shape
 precedence establish the existing principal domain and diagnostic boundary.
 ProtocolV.13 / RFC0084 demonstrates why source-taking operations account for
-physical blocks before a reduced model can hide them; this proposal does not
+physical blocks before a reduced model can hide them; this contract does not
 import that feature's narrower authenticated source domain. ProtocolII keeps
 parsing, validation and complete Verifier obligations distinct.

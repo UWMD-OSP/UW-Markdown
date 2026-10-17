@@ -641,7 +641,7 @@ validation capability.
 
 Evidence: the original twelve focused methods include **nine actual standalone scoped
 fixture comparisons**, using the shared subset comparator through an explicit
-test-only projection. The actor candidate below explicitly adds its new diagnostic
+test-only projection. The accepted actor rule below adds its governed diagnostic
 expectations alongside the frozen prelaunch assertions; it does not claim those
 old assertions pass unchanged. Source vocabulary fixtures,
 bare metadata negatives and declared/invalid role fixtures are checked only for
@@ -651,10 +651,9 @@ resolution tag, malformed leaf values, active physical peers, superseded flags,
 unknown payload retention and no mutation. Discovery flags remain unchanged.
 
 
-### Actor reconciliation candidate — 2026-10-17
+### Required actor admission — RFC0090
 
-This branch implements the owner's bounded direction for coordinated RFC
-integration; final RFC text and normative activation remain unaccepted. It adds
+Accepted RFC0090 defines the bounded actor contract implemented here. It adds
 META-01/error at `_meta.provenance.actor` for absent, null, exact empty string
 or non-string values. Every nonempty string is retained, including whitespace;
 there is no trimming, actor namespace rule, inferred principal or alias fallback.
@@ -691,9 +690,9 @@ is introduced.
 Governed test delta: the previous source-test blob
 `0333e25bd130d024b25e8c53784f3394aa162894` asserted malformed actor `0` only
 as a local finding and compared three actor-absent role documents without actor
-codes. The candidate now explicitly expects META-01/error instead of the actor
+codes. The governed tests now explicitly expect META-01/error instead of the actor
 local finding, and 11/8/8 actor findings on the unchanged documents below.
-These are candidate diagnostic assertions, not rewritten frozen validate results
+These are governed diagnostic assertions, not rewritten frozen validate results
 or a complete affected-corpus inventory.
 
 | Unchanged source fixture | Git blob |

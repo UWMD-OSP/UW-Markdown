@@ -614,7 +614,7 @@ capability is unconditional: every implementation owes it.
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
-| `META-*` | Format 3.0 bare/nested block shape (`META-01`, RFC 0081). | `validate` | `error` |
+| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor (`META-01`, RFCs 0081/0090). | `validate` | `error` |
 | `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
 | `CLS-NN` | Official builtin field contracts (RFC 0080, RFC 0081). | `validate` | error |
@@ -668,7 +668,7 @@ The separate hyphenated `META-01` rejects a block that is not in the Format
 fences under `.uw.md`; `UNSUPPORTED_FORMAT_VERSION` rejects absent or non-3.0
 frontmatter.
 
-**Proposed actor admission (RFC 0090, draft; not activated).** Extend only
+**Required actor admission (RFC 0090).** Extend only
 `META-01`/error to absent, null, exact-empty or non-string canonical
 `_meta.provenance.actor`, one finding per assessed block, field
 `_meta.provenance.actor`. Existing wrapper/nested-object shape failures and
@@ -677,7 +677,7 @@ finding for that block. Preserve completeness codes, severities, applicability
 and relative order. Preserve all existing visible-model shape findings first;
 then apply the exact existing wrapper/nested-object predicate/message to
 previously unseen retained physical block references in source order. This
-explicit proposed source-accounting correction precedes the actor pass and
+explicit source-accounting correction precedes the actor pass and
 adds no other metadata-schema requirement. The actor pass precedes role,
 period-series and source-vocabulary checks.
 
@@ -848,7 +848,7 @@ On every write, the host MUST set:
   host knows it.
 - `_meta.provenance.timestamp` — current ISO-8601 UTC timestamp.
 - `_meta.provenance.actor` — REQUIRED nonempty string naming the initiating
-  human or system principal. The draft RFC 0090 diagnostic proposal performs no
+  human or system principal. RFC 0090 actor admission performs no
   trimming, source-namespace grammar or principal inference.
 - `_meta.provenance.agent_id`, `_meta.provenance.agent_version` —
   populated for agent writes; null otherwise.

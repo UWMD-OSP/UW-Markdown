@@ -49,12 +49,12 @@ validator must surface this problem," not "the validator must surface
    `node scripts/run-conformance.mjs --suite=documents` from the repo root
    and confirm the new fixture passes.
 
-## RFC0090 draft controls
+## RFC0090 actor controls
 
 Fixtures24–29 pin absent, null, exact-empty and non-string actor rejection,
 retained history/overwritten extension/append coverage and wrapper precedence.
 The existing malformed-corpus contract asserts code presence; focused
 `validator.block-shape.test.ts` and the cited actor inventory additionally pin
 field paths, multiplicity, ordering, arbitrary nonempty strings, mutable-model
-authority and no duplicate actor cascade. These are proposed governed expectations
-in the RFC draft, with no historical source repair or RFC acceptance implied.
+authority and no duplicate actor cascade. These are the governed expectations accepted with RFC0090; historical sources
+and original expectation evidence remain unchanged.

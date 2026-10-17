@@ -419,3 +419,32 @@ and actual Reader17/17; it preserves actor RFC work separately and still
 advertises parse only. These are distinct from the actor candidate's163 Python
 methods. RFC0085/0088/0089 remain separately draft; final RFC0090 text acceptance
 and exact-head integration review are still required.
+
+### 2026-10-17 — Accepted RFC0090 integration corrections
+
+The owner accepted the substantive contract and governed expectation disposition
+reviewed at `c870dbd63e6972ae849faf31a2be68ec43855377`, authorizing integration
+after the final corrections and exact-head CI. RFC0090/index and current
+Format/Protocol/status prose now record acceptance. Package/specification release
+versions remain unallocated; no publication or launch is authorized. The dated
+candidate section and frozen inventory above remain historical evidence.
+
+The final registry remediation retains the bare-payload/inline nested metadata
+and matching-section instructions and explicitly adds the required nonempty
+`_meta.provenance.actor`, with no inferred attribution. Existing shape issues
+receive that guidance through enrichment. Accordingly, the frozen c870 proof of
+unchanged nonactor issue objects is scoped to that head: final codes, severities,
+fields, shape messages, applicability and unrelated ordering are unchanged, while
+the requested remediation copy is intentionally different. A consumer-level
+shape regression pins both guidance paths; actor-specific guidance remains
+unchanged. No diagnostic trigger or result precedence changes in this correction.
+
+Final independent review rechecks the37 measured expected-file dispositions
+and eight derived exits against the original main and reviewed head, all original
+source/authenticated artifacts, physical/model identity and historical controls,
+and measured receipt effects. The six new negative fixtures merely replace
+their draft citation labels with the accepted RFC name; their asserted codes
+and source bytes are unchanged. No original expectation is regenerated or
+unrelated baseline altered. Final exact-head and post-merge exact-main CI are
+recorded on PR376 and the existing Issue354 amendment; no prior green run is
+substituted for either gate.
