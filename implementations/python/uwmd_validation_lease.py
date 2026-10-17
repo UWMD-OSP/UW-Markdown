@@ -27,7 +27,7 @@ def _money(a, b):
 
 def lease_rules(ledger):
     document = ledger.document
-    current_cash = {dict(b.attributes).get("variant") for b in current_blocks(document, "cash_flow_series")}
+    current_cash = {dict(b.attributes).get("variant") for b in current_blocks(document, "cash_flow_series", include_external=True)}
     for block in current_blocks(document, "rent_roll"):
         roll = block.parsed.value
         tenants = roll.get("tenants")

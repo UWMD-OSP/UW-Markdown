@@ -21,7 +21,7 @@ stated-value thresholds, period/static-selector/return-basis/student-bed checks,
 cash/lease/reserve structure and existing hedge/escrow prerequisites. It does not
 supply absent financial inputs or evaluate an unaccepted numerical procedure.
 
-The next local chunk integrates MU/CS, TAX, LSE/REC, CAPX and structural WF
+The integrated API also contains MU/CS, TAX, LSE/REC, CAPX and structural WF
 checks, and official field/rule checks for data center, hospitality and
 manufactured housing. Their private arithmetic executor accepts only the
 repository's accepted class-specific dictionary definitions and fixed class assertions;
@@ -29,7 +29,7 @@ it never executes document/custom expressions, applies models or supplies missin
 values. Each dictionary intermediate follows its declared quantum. This narrow
 internal prerequisite does not implement the complete calculation interface.
 
-Twenty validation-focused methods pass locally: the 111 unchanged portable validation
+The first twenty validation-focused methods passed locally: the 111 unchanged portable validation
 projections through the direct API; exact diagnostic arrays (including repeated
 codes) for all 76 TAX/CAPX/LSE/REC fixtures; the 17 waterfall and two capital-stack
 document structural assertions; all 61 unchanged builtin-source validation code
@@ -41,7 +41,7 @@ obligations and were not asserted here. No corpus file or original test assertio
 changed. Three new YAML methods exercise legal sequence mappings and strict
 refusal/span controls.
 
-After committing the source changes, the full Python suite passed **174 methods**
+At the preceding source-admission checkpoint, the full Python suite passed **174 methods**
 (151 original controls plus 23 new validation/YAML methods). The actual shared
 portable Reader subprocess passed **17/17**, with zero failed, skipped or
 unverifiable cases. These checks include the existing standalone reserve/draw/
@@ -49,10 +49,11 @@ replacement controls; they do not enable the still-unsupported `validate` CLI.
 No full JavaScript suite was run for this worker checkpoint.
 
 The CLI still refuses `validate` and discovery remains parse-only. Completion
-still needs the accepted external-section applicability rules, derived
-sources/uses footing and a full field/condition audit of the integrated families,
-then the command/wire/refusal and nonportable gates below. Existing local shape
-findings are not guessed registered codes.
+still needs the remaining audited field/condition integration and explicit
+unsupported-composition command transport; derived footing has no invented
+stated-versus-derived discrepancy code. The command/wire/refusal and nonportable
+gates below must then pass. Existing local shape findings are not guessed
+registered codes.
 
 The source prerequisite found at the first checkpoint is now implemented:
 one mapping layer inside YAML sequence items, including the exact `modules`
@@ -71,6 +72,130 @@ definitions. General income/debt dictionary verification is a separate surface;
 zero debt is not turned into an unrelated class-validation error. MHC conditional
 ownership/rent agreement emits CC-MH-06/07; individual required/stated field
 shape retains CLS-04, as the frozen missing/null/home-rent controls distinguish.
+
+## Validation applicability audit — 2026-10-16
+
+This audit covers the developing API, not a complete validation claim. Accepted
+authorities are [Format 2–5](../../spec/UW_FORMAT_SPEC.md),
+[Protocol III.6a / VIII](../../spec/UW_PROTOCOL.md) and the referenced schemas/
+RFCs. All fifteen registered CC entries are produced, including skips; all
+fourteen FV codes have focused threshold/severity/type/override controls.
+Reachable codes and passing projections do not establish every field condition.
+
+### External source boundary
+
+The **local** `composition_assessment` sibling uses the existing
+CompositionResolution precedent: `status: resolved | unresolved`,
+`externalized` section ids in source order, and ProtocolError-shaped `issues`.
+It is not a normative ValidationResult member or a full composition-resolution
+result. No new validation status or severity is introduced. A current fence
+marked `external=true` is unresolved; a payload member merely named `external`
+does not change an inline block's meaning. Malformed directives receive accepted
+COMP shape/count/duplicate findings in this separate assessment, not guessed
+validator findings.
+
+Current identity and role selection run before content availability is checked.
+An exact selected external statement yields field_absent coverage with an
+explicit unresolved detail; it never falls through to another variant.
+CC-14 counts its presence, and CC-13 exempts an externalized property. Source,
+metadata and role checks still inspect every active physical block; payload
+rules do not interpret directives as incomplete reserve/cash/class data.
+Existing cash identities can satisfy WF/REC reference existence while their
+contribution/distribution facts remain unavailable. External components still
+obey CC-11's unconditional asset-class restriction.
+
+The existing V.12 helper privately inventories blocks it actually consults.
+Only a consulted external dependency makes this local API's
+`replacement_funding_verification` **null (unperformed)**. That null is not an
+accepted V.12 result, is never emitted by the existing standalone V.12 command,
+and cannot be transported as a complete future validate result. Unrelated or
+unselected external blocks do not suppress an otherwise decidable V.12 union.
+Scope field readiness stays false for unresolved property content. The other
+stage booleans report the accepted section-presence table, not whole-record
+completeness; `composition_assessment.status` must be consulted separately.
+
+The current 33 focused validation methods include eleven external-boundary
+methods and two FV audit methods. External controls include the unchanged
+frozen missing-part source's unresolved meaning, exact roles/history, malformed
+directives, source retention and V.12 consultation precedence. No fragment
+resolution, smaller partial collection, network fetch, composition-suite pass,
+new receipt interpretation or CLI capability follows.
+
+### CC coverage ledger
+
+The implementation records selection evidence only for role-bearing sources;
+all comparisons require finite stated operands. The following is the actual
+implemented ledger, with remaining proof limits named explicitly.
+
+| Check | Implemented condition / source selection | Remaining audit gate |
+|---|---|---|
+| CC-01 | Detail rent roll versus preferred t12 operating statement GPR, 3% | Complete canonical field-location and zero/malformed operand controls. |
+| CC-02 | Senior debt stated LTV versus selected valuation, 0.005 | Undefined ratio and full canonical valuation/input applicability. |
+| CC-03 | Senior loan amount against source bucket and one senior stack tranche; rate agreement | Multiple senior tranches are not aggregated; retain undefined-leg coverage and complete source bucket applicability. |
+| CC-04 | Stated total_sources versus total_uses, tolerance 1 | Accepted derived uses are a separate calculation rule; no invented stated-versus-derived discrepancy finding. |
+| CC-05 | Senior debt underwriting NOI versus selected NOI, 1% | Audit all admitted source locations, not inferred NOI. |
+| CC-06 | First DCF annual row NOI versus NOI model, 2% published precedent | Complete first-year identity/registered field applicability; do not silently introduce a selector or numeric rule. |
+| CC-07 | Selected DCF and stress base exit cap, 0.005 | Canonical assumption paths and unavailable operands. |
+| CC-08 | Preferred appraisal due diligence versus valuation, tolerance 1000 | Complete canonical nested/flat carrier applicability. |
+| CC-09 | Senior debt versus stress base annual debt service, tolerance 500 | Complete canonical carrier/partial-leg controls. |
+| CC-10 | Stated uses purchase price versus valuation, tolerance 100 | Canonical typed uses and unavailable inputs. |
+| CC-11 | Active components section presence allowed only for mixed_use, including externalized components | Presence is independently checked; payload MU rules remain separate. |
+| CC-12 | Ordered sum of stated finite component NOIs versus property NOI | Full malformed/component inclusion/applicability audit; no new aggregation/tolerance convention. |
+| CC-13 | Registered class primary-size presence, deal profile only; missing/externalized property exempt | Full per-class field shape and zero/null/role evidence; existing raw-size registry stays authoritative. |
+| CC-14 | Unconditional deal-record property presence, including unresolved external reference | Non-deal profile and Lite/source discrimination must remain exact. |
+| CC-15 | Eligible base/default/sole lease-up scenario versus NOI, 2% | Complete variant/canonical field controls; role cannot select another scenario. |
+| CC-16 | One info finding per unresolvable section, affected checks sorted | Reporting only; not one of the fifteen coverage entries and not a financial failure. |
+
+### FV conditions and field locations
+
+[Format 5.2](../../spec/UW_FORMAT_SPEC.md) fixes defaults, institution overrides
+and strict below/above comparisons. The current code reads stated values and
+does not reproduce DSCR/IRR or another model to perform these plausibility checks.
+
+| Codes | Condition and severity | Implemented source / remaining gate |
+|---|---|---|
+| FV-01 / FV-02 | Cap rate below 3% / above 15%, warning | valuation.going_in_cap_rate. |
+| FV-03 | Debt yield below 7%, warning | debt_structure.sizing_metrics.debt_yield (and current top-level fallback); source-location applicability remains audited. |
+| FV-04 | DSCR below 1.20 warning / below 1.00 error | Senior debt sizing_metrics.dscr_underwritten (and current dscr fallback); exact boundaries and institution overrides tested. |
+| FV-05 / FV-06 | Equity multiple below 1 / above 5, warning | dcf.returns.equity_multiple. |
+| FV-07 / FV-08 | Levered IRR below 5% / above 40%, warning | dcf.returns.levered_irr; no IRR procedure is executed here. |
+| FV-09 | LTV above 75% warning / above 85% error | Senior debt sizing_metrics.ltv (and current top-level fallback). |
+| FV-10 / FV-11 | OpEx ratio below 20% / above 70%, warning | Initial implementation reads top-level NOI expense_ratio; canonical expenses.expense_ratio needs integration and focused proof before promotion. |
+| FV-12 | Annual rent growth above 8%, warning | Initial NOI revenue_growth_rate / year_1 projection carrier; canonical DCF assumptions.revenue_growth_rate needs integration and exact carrier applicability. |
+| FV-13 / FV-14 | Vacancy below 2% / above 40%, warning | Initial NOI vacancy_rate / income vacancy shortcuts; canonical income.vacancy_credit_loss.rate_applied needs integration and exact carrier applicability. |
+
+The construction-LTC row in Format 5.2 has 80%/90% thresholds, but the current
+registered FV registry contains FV-01–14 and names no separate LTC finding.
+Do not fabricate FV-15 or overload another code. Reconcile the ordinary
+published routing before a complete command claim; no financial threshold
+decision is needed. Likewise, derived uses footing in Format 4.8 G1 does not
+by itself register a new CC-04 stated-versus-derived disagreement.
+
+### Remaining family / field-condition gates
+
+| Family | Implemented scope | Minimum remaining validation obligation |
+|---|---|---|
+| LOC / CUR / descriptive identity | Locale/currency vocabulary, builtin/custom class syntax, scenario and BTR agreement | Complete frontmatter presence/type/source applicability, preserving unknown fields; descriptive values never select models. |
+| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Reconcile present-but-invalid provenance/quality/lifecycle/leaf-annotation shape with accepted registered routing. The source inspector's local shape inventory must not be silently ignored or concatenated as guessed codes. Required metadata and conditional provenance remain an applicability gate, not an invented numerical/owner blocker. |
+| DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, default stage halt pairs | Complete field-specific institution-policy matching, exact gaps/overrides conditions and externalized-field unavailability. |
+| MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Exhaustive closed-field shape/applicability and stated sizing declaration guards. Financial stack sizing reproduction is a separate mandatory Verifier obligation. |
+| LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Complete LU model/row/schema-field admission and declaration applicability; period inspection is not evaluation or stated-aggregate verification. |
+| TAX / CAPX | Frozen diagnostic arrays, same-quantum tax equations, abatement/draw/target/payback rules | Complete closed-object/stated-member/null/conditional shape audit, including terminal versus normal line distinctions; no savings applied. |
+| LSE / REC | Frozen arrays, lease dates/steps/options/remedies/balances and settled recovery arithmetic | Complete optional administrative-fee/gross-up/cap/true-up shape/conditions and exact source-reference admission. No cap history or pool allocation is generated. |
+| HDG / ESC / V.12 | Existing selected-source structure and exact separate binding union; external consulted-source gating is local only | Preserve all scalar/date/group/source/refusal conditions, debt-only evidence and no false result from unresolved content; complete future command transport must exclude local null as a normative result. |
+| WF | Tier/split/hurdle/clawback structure and current exact cash identity | Exhaustive closed payload/optional stated-field shape; actual outcomes, IRR hurdles and clawback arithmetic remain separate stated-figure verification. |
+| RSV / BED | Existing reserve structure and student bed/date rules | Complete per-source/class/optional-member application and malformed-input evidence; RSV balance verification remains separate and unchanged. |
+| CLS / class rules / MOD | Fixed fields and accepted class-specific definitions/rules; all 61 unchanged builtin validation code projections | Exhaustive role/type/conditional/input applicability, retaining separate class checks versus generic 171-metric reproduction and raw size lookup. |
+| External composition | Local unresolved/directive assessment, exact presence and dependent-field gating | No part resolver is implemented. A complete validate command must transport unsupported/unresolved composition explicitly, never present this private partial assessment as a complete normative report. |
+| General command and result | Complete partition keys, seven stage keys, fifteen coverage keys; 111 direct API projections | Actual 111 validate subprocess/stdout/exit/refusal cases are **not run** because validate remains unsupported. No flag/tier promotion until the full applicable boundary, unsupported-input transport and preservation/full required gates pass. |
+
+This is a completion backlog inside the single integrated validator. It does
+not authorize more isolated inspector commands. General dictionary comparison,
+calendar cash-flow/property assembly/waterfall stated outcomes and receipt
+verification remain mandatory base-Verifier milestones after this validation
+boundary; optional Integrity/Module/Representations profiles do not enlarge
+the minimum. Existing #365 and RFC 0088 limits remain explicit where actually
+dependent, without blocking independent accepted structural work.
 
 ## Minimum-complete capability path — 2026-10-16
 

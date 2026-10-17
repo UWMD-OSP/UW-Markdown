@@ -10,7 +10,7 @@ import re
 from uwmd_binding_sources import finite
 from uwmd_currency import inspect_document_currency
 from uwmd_source_validation import inspect_source_roles
-from uwmd_validation_selection import active_blocks, select_section, field
+from uwmd_validation_selection import active_blocks, select_section, field, is_externalized
 
 STAGES = ("scope", "screening", "term_sheet", "full_underwrite",
           "credit_approval", "closing", "monitoring")
@@ -88,7 +88,8 @@ def stage_readiness(document):
     result = {s: set(sections_required(s, document.frontmatter.value.get("asset_class"))) <= present for s in STAGES}
     property_blocks = active_blocks(document, "property")
     prop = property_blocks[-1].parsed.value if property_blocks else {}
-    result["scope"] = (result["scope"] and field(prop, "address") is not None
+    result["scope"] = (result["scope"] and not is_externalized(property_blocks[-1])
+        and field(prop, "address") is not None
         and field(prop, "asset_class") is not None
         and any(field(prop, p) is not None for p in ("units", "asking_price")))
     return result
@@ -172,7 +173,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         for section in sections_required(stage, asset):
             if section != "property" and section not in present:
                 ledger.issue("DQ-06", "info", section, "", "Declared stage requires this section")
-        if stage == "scope":
+        if stage == "scope" and not selected.externalized:
             for path in ("address", "asset_class"):
                 if field(prop, path) is None:
                     ledger.issue("DQ-04", "error", "property", path, "Scope-stage property field is absent")

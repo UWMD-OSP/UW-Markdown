@@ -6,7 +6,7 @@ being implemented. It never writes source or recomputes financial models.
 """
 import copy
 
-from uwmd_replacement_funding import replacement_funding_report
+from uwmd_replacement_funding import _check as _binding_check, _verify as _binding_verify
 from uwmd_validation_core import Ledger, basic_rules, stage_readiness
 from uwmd_validation_cross import cross_checks, financial_thresholds
 from uwmd_validation_series import series_rules, bed_rules
@@ -14,6 +14,8 @@ from uwmd_validation_tax_capex import tax_rules, capex_rules
 from uwmd_validation_lease import lease_rules
 from uwmd_validation_structure import composition_rules, waterfall_rules
 from uwmd_validation_builtins import builtin_rules
+from uwmd_validation_external import composition_assessment
+from uwmd_validation_selection import is_externalized
 
 
 async def validate_document(document, *, now=None, gap_staleness_days=14,
@@ -38,11 +40,15 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
     composition_rules(ledger)
     waterfall_rules(ledger)
     builtin_rules(ledger)
-    binding = await replacement_funding_report(snapshot)
-    # Currency and each current cash series are already checked globally;
-    # V.12 still retains its exact source prerequisites in its separate union.
-    ledger.issues.extend(i for i in binding["structural_issues"]
-                         if i["code"].startswith(("HDG-", "ESC-")))
+    composition = composition_assessment(snapshot)
+    check = _binding_check(snapshot)
+    # A LOCAL unperformed boundary, never an extra accepted V.12 union state.
+    # Do not turn unavailable external payload into absent/malformed hedge data.
+    if any(is_externalized(block) for block in check.consulted):
+        binding = None
+    else:
+        ledger.issues.extend(i for i in check.issues if i["code"].startswith(("HDG-", "ESC-")))
+        binding = await _binding_verify(check, None)
     issues = copy.deepcopy(ledger.issues)
     partitions = {severity: [i for i in issues if i["severity"] == severity]
                   for severity in ("error", "warning", "info")}
@@ -52,4 +58,5 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
     return dict(overall_status=status, stage_readiness=stage_readiness(snapshot),
                 issues=issues, errors=partitions["error"], warnings=partitions["warning"],
                 info=partitions["info"], coverage=copy.deepcopy(ledger.coverage),
-                replacement_funding_verification=copy.deepcopy(binding["replacement_funding_verification"]))
+                replacement_funding_verification=copy.deepcopy(binding),
+                composition_assessment=copy.deepcopy(composition))

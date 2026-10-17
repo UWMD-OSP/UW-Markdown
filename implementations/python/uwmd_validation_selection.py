@@ -20,6 +20,7 @@ class Selection:
     reason: str | None = None
     detail: str = ""
     evidence: dict | None = None
+    externalized: bool = False
 
 
 def active_blocks(document, section=None):
@@ -27,22 +28,28 @@ def active_blocks(document, section=None):
                  if (section is None or b.section == section) and not source_superseded(b))
 
 
-def current_blocks(document, section):
+def is_externalized(block):
+    """The accepted Composition 3 marker, not an arbitrary payload key."""
+    return dict(block.attributes).get("external") == "true"
+
+
+def current_blocks(document, section, *, include_external=False):
     blocks = active_blocks(document, section)
     parallel = section in PARALLEL or (
         any("_role" in b.parsed.value for b in blocks)
         and any("variant" in dict(b.attributes) for b in blocks))
     if not parallel:
-        return blocks[-1:]
+        blocks = blocks[-1:]
+        return blocks if include_external else tuple(b for b in blocks if not is_externalized(b))
     current = {}
     for block in blocks:
         current[dict(block.attributes).get("variant")] = block
-    return tuple(current.values())
+    return tuple(b for b in current.values() if include_external or not is_externalized(b))
 
 
 def select_section(document, section, *, preferred_key=None, preferred_role=None,
                    lease_up_base=False):
-    blocks = current_blocks(document, section)
+    blocks = current_blocks(document, section, include_external=True)
     if not blocks:
         return Selection(reason="section_absent", detail=section + " is absent")
     role_bearing = any("_role" in b.parsed.value for b in blocks)
@@ -55,6 +62,9 @@ def select_section(document, section, *, preferred_key=None, preferred_role=None
         evidence = {"via": via}
         if "variant" in dict(block.attributes):
             evidence["variant"] = dict(block.attributes)["variant"]
+        if is_externalized(block):
+            return Selection(reason="field_absent", detail=section + " is externalized and unresolved",
+                             evidence=evidence if role_bearing else None, externalized=True)
         return Selection(block=block, evidence=evidence if role_bearing else None)
     def refused(detail, reason="variant_unresolvable"):
         return Selection(reason=reason, detail=section + ": " + detail)

@@ -2,7 +2,7 @@
 from uwmd_binding_sources import finite
 from uwmd_numeric import quantize
 from uwmd_validation_core import BUILTINS
-from uwmd_validation_selection import current_blocks
+from uwmd_validation_selection import current_blocks, is_externalized
 
 
 def _integer(value, minimum=0):
@@ -96,7 +96,8 @@ def composition_rules(ledger):
 
 def waterfall_rules(ledger):
     document = ledger.document
-    cash = {dict(b.attributes).get("variant"): b.parsed.value for b in current_blocks(document, "cash_flow_series")}
+    cash = {dict(b.attributes).get("variant"): b
+            for b in current_blocks(document, "cash_flow_series", include_external=True)}
     for block in current_blocks(document, "distribution_waterfall"):
         payload = block.parsed.value
         def issue(code, path, message, severity="error"):
@@ -160,8 +161,10 @@ def waterfall_rules(ledger):
         if series is None:
             issue("WF-02", "cash_flow_ref", "Waterfall must reference a current exact cash-flow variant")
             rows = []
+        elif is_externalized(series):
+            rows = None  # Identity exists; contribution/distribution facts are unresolved.
         else:
-            rows = series.get("series")
+            rows = series.parsed.value.get("series")
             rows = rows if isinstance(rows, list) else []
             if not any(isinstance(row, dict) and finite(row.get("amount")) and row["amount"] < 0 for row in rows):
                 issue("WF-03", "cash_flow_ref", "Referenced vector contains no stated capital contribution")
@@ -182,5 +185,5 @@ def waterfall_rules(ledger):
             tax = clawback.get("net_of_tax_rate")
             if tax is not None and (not finite(tax) or not 0 <= tax < 1):
                 issue("WF-13", "clawback.net_of_tax_rate", "Net-of-tax rate must be a stated fraction below one")
-            if not any(isinstance(row, dict) and finite(row.get("amount")) and row["amount"] > 0 for row in rows):
+            if rows is not None and not any(isinstance(row, dict) and finite(row.get("amount")) and row["amount"] > 0 for row in rows):
                 issue("WF-15", "clawback", "Clawback provision has no stated distribution", "warning")

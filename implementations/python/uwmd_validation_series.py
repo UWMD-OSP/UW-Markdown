@@ -4,7 +4,7 @@ from uwmd_expressions import ExpressionError, parse_expression, expression_refer
 from uwmd_numeric import calendar_date
 from uwmd_periods import PERIOD_SERIES, inspect_period_series, parse_period_selector, PeriodError
 from uwmd_reserves import reserve_structure
-from uwmd_validation_selection import active_blocks, current_blocks, select_section, field
+from uwmd_validation_selection import active_blocks, current_blocks, select_section, field, is_externalized
 
 
 def series_rules(ledger):
@@ -17,7 +17,7 @@ def series_rules(ledger):
     # VIII.2a explicitly specifies a STATIC default-selection kind check. It is
     # not an evaluator verdict and includes every syntactic conditional branch.
     for block in active_blocks(document):
-        if block.section not in ("custom_calculations", "custom_scenarios"):
+        if is_externalized(block) or block.section not in ("custom_calculations", "custom_scenarios"):
             continue
         body = block.parsed.value
         entries = [body]

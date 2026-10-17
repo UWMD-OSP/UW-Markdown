@@ -143,8 +143,10 @@ def _resolver(document, prior, roles):
             return None
         if ref.selector is None and ref.head in fm:
             value = fm[ref.head]
-        elif current_blocks(document, ref.head):
+        elif current_blocks(document, ref.head, include_external=True):
             selection = select_section(document, ref.head, preferred_role=roles.get(ref.head))
+            if selection.externalized:
+                return None
             if selection.block is None:
                 raise _OperationError("CALC-RESOLVE-002", selection.detail)
             value = selection.block.parsed.value
@@ -193,7 +195,7 @@ def builtin_rules(ledger):
     if not isinstance(asset, str) or asset not in _SCHEMAS:return
     for section, filename in _SCHEMAS[asset].items():
         blocks = current_blocks(document, section)
-        if not blocks and section in ("dc_capacity", "mhc_sites"):
+        if not current_blocks(document, section, include_external=True) and section in ("dc_capacity", "mhc_sites"):
             ledger.issue("CLS-03", "error", section, "", "Required official class section is absent")
         schema = json.loads((_ROOT/"spec/schemas"/filename).read_text(encoding="utf-8"))
         for block in blocks:

@@ -85,9 +85,10 @@ def cross_checks(ledger):
     s, v = read("CC-10", "sources_uses"), read("CC-10", "valuation")
     compare("CC-10", number(s, "uses.purchase_price"), number(v, "purchase_price"), 100,
             section="sources_uses", path="uses.purchase_price")
-    components = read("CC-11", "components")
-    ledger.cover("CC-11", components is not None)
-    if components is not None and fm.get("asset_class") != "mixed_use":
+    component_presence = bool(active_blocks(document, "components"))
+    ledger.cover("CC-11", component_presence, reason="section_absent" if not component_presence else None,
+                 detail="Components section is absent")
+    if component_presence and fm.get("asset_class") != "mixed_use":
         ledger.issue("CC-11", "error", "components", "", "Components are only admitted for mixed-use records")
     c, n = read("CC-12", "components"), read("CC-12", "noi_model")
     values = [v.get("net_operating_income") for k, v in (c or {}).items()
@@ -114,7 +115,9 @@ def cross_checks(ledger):
             ledger.cover("CC-13", reason="not_applicable", detail="No property-level primary size is registered")
         else:
             prop = read("CC-13", "property")
-            if prop is None:
+            if ledger._reads["CC-13"][-1][1].externalized:
+                ledger.cover("CC-13", reason="not_applicable", detail="Property is externalized; size belongs to unresolved content")
+            elif prop is None:
                 ledger.cover("CC-13")
             else:
                 registry = json.loads((Path(__file__).resolve().parents[2] / "spec/metrics/builtin.json").read_text(encoding="utf-8"))
