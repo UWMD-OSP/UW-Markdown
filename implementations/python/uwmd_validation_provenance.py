@@ -9,6 +9,7 @@ import re
 
 from uwmd_binding_sources import finite
 from uwmd_numeric import calendar_date, _ordinal
+from uwmd_source_validation import _metadata_routing
 
 _TIMESTAMP = re.compile(r"([0-9]{4}-[0-9]{2}-[0-9]{2})[Tt]([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\.[0-9]+)?([Zz]|[+-][0-9]{2}:[0-9]{2})\Z")
 _DIGEST = re.compile(r"sha256:[0-9a-f]{64}\Z")
@@ -149,7 +150,27 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
             if (key == "market_data_ref" and isinstance(reference, dict)
                     and "rationale" in reference and not isinstance(reference["rationale"], str)):
                 malformed(key + ".rationale", "A stated market-data rationale must be a string")
-    return dict(shape_findings=findings)
+    # RFC0081/0090 reject these containers before descendant admission. Actor-
+    # only META-01 and otherwise-shaped late/mismatched metadata do not qualify.
+    # Preserve the original local evidence separately instead of reallocating it
+    # to META-01 or discarding independent leaf-annotation requirements.
+    rejected_containers = {
+        issue["context"]["block_index"] for issue in source_inventory["issues"]
+        if issue["code"] == "META-01" and issue.get("field") == "_meta"
+        and _metadata_routing(document.source.blocks[issue["context"]["block_index"]].parsed.value)}
+    retained, handled = [], []
+    for finding in findings:
+        field = finding["field"]
+        if (finding["context"]["block_index"] in rejected_containers
+                and (field == "_meta" or field.startswith("_meta."))):
+            handled.append(dict(**finding, registered_code="META-01",
+                                disposition="blocked_by_registered_metadata_shape"))
+        else:
+            retained.append(finding)
+    result = dict(shape_findings=retained)
+    if handled:
+        result["handled_shape_findings"] = handled
+    return result
 
 
 def incomplete_policy(section, field_path, stage, policies=()):

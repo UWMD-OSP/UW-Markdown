@@ -27,6 +27,8 @@ def _money(a, b):
 
 def lease_rules(ledger):
     document = ledger.document
+    represented = {}
+    physical = {id(block): index for index, block in enumerate(document.source.blocks)}
     current_cash = {dict(b.attributes).get("variant") for b in current_blocks(document, "cash_flow_series", include_external=True)}
     for block in current_blocks(document, "rent_roll"):
         roll = block.parsed.value
@@ -39,6 +41,8 @@ def lease_rules(ledger):
             root = "tenants[" + str(ordinal) + "]"
             def issue(code, suffix, message):
                 ledger.issue(code, "error", "rent_roll", root + ("." + suffix if suffix else ""), message)
+            def represented_shape(suffix, constraint, code):
+                represented[(physical[id(block)], root + "." + suffix, constraint)] = code
             start, end = tenant.get("lease_commencement"), tenant.get("lease_expiration")
             term = calendar_date(start) and calendar_date(end)
             schedule = tenant.get("escalation_schedule")
@@ -117,6 +121,15 @@ def lease_rules(ledger):
             if ((share is not None and (not finite(share) or not 0 < share <= 1))
                     or pct is not None and (not finite(pct) or not 0 < pct < 1)):
                 issue("REC-01", "recovery_terms", "Recovery shares and cap rates must be fractions in their admitted ranges")
+                for value, suffix, upper in ((share, "pro_rata_share", "maximum"),
+                                             (pct, "cap.pct", "exclusiveMaximum")):
+                    if value is not None and not finite(value):
+                        represented_shape("recovery_terms." + suffix, ("type", ("number", "null")), "REC-01")
+                    elif finite(value):
+                        if value <= 0:
+                            represented_shape("recovery_terms." + suffix, ("exclusiveMinimum", 0), "REC-01")
+                        if value > 1 or upper == "exclusiveMaximum" and value == 1:
+                            represented_shape("recovery_terms." + suffix, (upper, 1), "REC-01")
             method_needed = any(value is not None for key, value in terms.items() if key not in ("method", "cap"))
             valid = (not method_needed or method is not None)
             if method is not None:
@@ -133,8 +146,12 @@ def lease_rules(ledger):
                 valid = False
             if method_needed and method is None:
                 issue("REC-02", "recovery_terms.method", "A stated recovery member requires its method")
+                if "method" not in terms:
+                    represented_shape("recovery_terms.method", ("required", None), "REC-02")
             if not valid:
                 issue("REC-02", "recovery_terms", "Recovery method, required companions or stated cap treatment is invalid")
+                if method is not None and pct is not None and "accumulation" not in cap:
+                    represented_shape("recovery_terms.cap.accumulation", ("required", None), "REC-02")
             pool = terms.get("recoverable_pool")
             if pool is not None and (not isinstance(pool, list) or not pool or any(k not in _POOL for k in pool)):
                 issue("REC-03", "recovery_terms.recoverable_pool", "Pool must name registered operating-expense keys, never totals/ratios/capital")
@@ -171,3 +188,4 @@ def lease_rules(ledger):
                 reference = row.get("cash_flow_ref")
                 if reference is not None and (not isinstance(reference, dict) or not isinstance(reference.get("variant"), str) or reference["variant"] not in current_cash):
                     issue("REC-09", path + ".cash_flow_ref", "Cash-flow reference must name a current exact variant")
+    return represented

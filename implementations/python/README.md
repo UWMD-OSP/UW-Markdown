@@ -90,9 +90,10 @@ assessment siblings.
 Whole-absent metadata retains its registered META_MISSING warning and accepted
 warning-only exit. Its duplicated inspector-local absence finding is consumed
 only for the exact physical block index where completeness actually emitted that
-warning, after confirming authored absence. A late/present/null metadata object,
-another block or uncovered history cannot match by field name alone. Other
-unallocated conditions remain visible; the source inspector is unchanged.
+warning, after confirming authored absence. A late/present metadata object,
+another block or uncovered history cannot match by field name alone. Existing
+META-01 container rejection and exact REC ownership are reconciled below; other
+unallocated conditions remain visible. The source inspector is unchanged.
 
 `run_validation_cases.py` executes each unchanged portable validate case through
 the actual command and unchanged shared `run_case` comparison. A transparent
@@ -112,8 +113,9 @@ distinct from the positive `until_lp_em` tier hurdle; the prior Python `>0`
 guard was an implementation defect, not an owner decision.
 It preserves schema-admitted null/empty/zero, distinguishes bool from numbers,
 checks fixed closed unions/objects and never computes a sizing or outcome.
-These shape conditions receive no invented registered diagnostic; the command
-refuses them with detached local field/source evidence. The bounded checker
+These shape conditions receive no invented registered diagnostic. Conditions
+not already represented by an exact registered check cause a command refusal
+with detached local field/source evidence. The bounded checker
 explicitly refuses unsupported schema validation keywords, including in
 conditional/union branches, rather than treating an unchecked condition as valid.
 Unknown unrelated payload is preserved, externalized payload stays unresolved,
@@ -150,6 +152,77 @@ externalized section unresolved instead of presenting the record as complete.
 No local assessment list proves complete schema coverage. General dictionary,
 state-and-verify financial outcomes and receipt verification remain subsequent
 base-Verifier obligations. No numerical procedure or optional profile is enabled.
+
+### Nine native refusals - exact reconciliation (2026-10-17)
+
+The historical native99 audit matched structural projections but had90 normal
+responses and nine partial refusals. Replaying **only those nine** now yields
+six normal **invalid** responses and three remaining partial refusals. All nine
+retain identical registered issue arrays, severity partitions, status, seven
+readiness values, fifteen coverage entries and separate V.12 results. Sources
+and expected files are unchanged. This is not a new99-case complete-validation
+claim or capability promotion.
+
+Paths below are relative to `conformance/`; each document expected file is in
+`documents/malformed/`, and each recovery expected file is beside its source.
+
+| Exact source | Exact expected file | Individual condition and current disposition |
+|---|---|---|
+| `recoveries/reject-cap-without-accumulation/deal.uwx.md` | `recoveries/reject-cap-without-accumulation/expected.json` | Stated method/cap.pct requires cap.accumulation: existing REC-02. Normal invalid. |
+| `recoveries/reject-share-as-percent/deal.uwx.md` | `recoveries/reject-share-as-percent/expected.json` | pro_rata_share exceeds1: existing REC-01, fixed maximum1. Normal invalid. |
+| `recoveries/reject-member-without-method/deal.uwx.md` | `recoveries/reject-member-without-method/expected.json` | Non-null recovery member requires method: existing REC-02. Frozen two-REC-02 array and generic companion finding remain unchanged. Normal invalid. |
+| `documents/malformed/02-low-confidence-no-review.uwx.md` | `02-low-confidence-no-review.expected.json` | Valid nested containers, two absent booleans; low-confidence info and actor META-01 are independent. Partial refusal. |
+| `documents/malformed/03-sources-uses-mismatch.uwx.md` | `03-sources-uses-mismatch.expected.json` | Same two absent booleans; CC04/other registered findings retained. Partial refusal. |
+| `documents/malformed/10-property-section-missing.uwx.md` | `10-property-section-missing.expected.json` | Same two absent booleans; section/readiness findings retained. Partial refusal. |
+| `documents/malformed/20-flat-meta.uwx.md` | `20-flat-meta.expected.json` | Missing nested provenance/lifecycle: existing shape META-01 precedes descendant admission. Local quality evidence retained privately. Normal invalid. |
+| `documents/malformed/21-section-id-wrapper.uwx.md` | `21-section-id-wrapper.expected.json` | Retired section_id wrapper: existing shape META-01. Its induced late-_meta evidence remains private. Normal invalid. |
+| `documents/malformed/29-actor-shape-precedence.uwx.md` | `29-actor-shape-precedence.expected.json` | First block wrapper META-01 and second block actor META-01 remain independent. First block descendant cascades retained privately. Normal invalid. |
+
+REC ownership follows accepted Format4.3, RFC0081 section7 and the unchanged
+recovery schema. The existing semantic loop records ownership only when it emits
+the owning diagnostic. Matching requires physical block index, exact tenant
+field and exact schema constraint, including bound/type. A generic REC code
+elsewhere cannot cover another field, row, variant or changed schema bound.
+Covered evidence remains in private `handled_shape_findings`, not an additional
+normative issue. Other REC/CS/WF admission and arithmetic are unchanged.
+
+[RFC0081 section3](../../docs/rfcs/0081-one-format-one-protocol.md) and
+[RFC0090](../../docs/rfcs/0090-provenance-actor-admission.md) establish the existing
+wrapper/nested-object precondition. An actual shape META-01 at `_meta` **and**
+that exact container predicate are required. Descendant local `_meta` findings
+remain in private `handled_shape_findings`, disposition
+`blocked_by_registered_metadata_shape`; this does not allocate them META-01.
+Actor-only errors, otherwise-shaped late/section/quality requirements,
+independent `_overrides` findings and registered SRC errors stay independent.
+History gains no new active local-schema pass. Two earlier WIP assertions that
+required extra local refusals for missing cap.accumulation and malformed nested
+metadata now assert the unchanged registered invalid result; original main
+source/role/Reader controls are unchanged.
+
+The smallest residual gap **among these nine** is two required booleans under
+Format2.5 and the block schema. Proposed, **unaccepted and unimplemented** codes
+are META-02/error at `_meta.quality.human_review_required` and META-03/error at
+`_meta.lifecycle.superseded`, for absent/null/nonboolean values. Only valid owning
+objects after the existing wrapper/nested precondition admit these checks;
+nonobject quality must not cascade into a boolean error. Whole-missing metadata
+and other typed/required conditions retain their separate applicability. New
+all-retained-physical scope is an explicit RFC decision, not an automatic
+extension of RFC0090's actor scope. No new code is activated here.
+
+Independent read-only sensitivity over734 unchanged sources exactly matches
+root's source hashes and rows:725 parse, nine retain source refusals. Proposed
+all-physical checks find **943 absent booleans in205 sources** (488 review flags,
+455 superseded flags); active physical scope finds941, with two historical flags
+added by all-physical scope. All observed failures are absent fields; present
+null/nonboolean negatives still need governed controls. These are source/API
+exposures, not205 frozen expectation changes: many commands do not perform
+ordinary validation. None of the111 portable validate source identities is
+affected. The three native documents above contribute six instances. An expanded
+physical/history rule needs a new affected-case inventory before acceptance.
+New diagnostics do not themselves alter source bytes or hash subjects. Source
+remediation that changes metadata can change Envelope/document-receipt subjects
+even though block content hashing excludes metadata; no global digest-invariance
+claim follows. Other admission and complete negative-wire gates remain open.
 
 ### Base-metadata field admission checkpoint
 
@@ -207,10 +280,12 @@ remain unchanged. They supplement existing source/actor/timestamp controls;
 field inventory alone is not a schema conformance claim.
 
 Required conditions with no allocated ordinary diagnostic still receive the
-explicit local refusal described above. A registered error elsewhere in a block
-does not consume an unrelated local requirement: for example META-01 on bad
-provenance does not cover an invalid quality review flag. Complete negative-wire
-acceptance must resolve that transport boundary without broad META-01 expansion,
+explicit local refusal described above. An actor-only META-01 or an unrelated
+registered error does not consume a local requirement. An existing registered
+wrapper/nested-object rejection is an admission precondition: its descendant
+local metadata evidence remains retained privately but does not require another
+refusal transport. This does not allocate those descendants to META-01. Complete
+negative-wire acceptance must resolve the remaining boundary without broad META-01 expansion,
 new suffixes or silently discarded findings. The all111 portable execution at
 the prior checkpoint remains distinct from these additional admission controls;
 new-head portable/nonportable/cross-platform proof is not implied by inspection.
@@ -1087,10 +1162,12 @@ or older README totals:
 A separate integrator audit at prior checkpoint `0a2cbd9d` executed 99 native
 structural comparison projections through the real Python CLI: 21 tax, 21 lease,
 18 capex, 16 recovery and 23 malformed-document comparisons. All projections
-matched, but only 90 returned normal ValidationResult responses; nine returned
+matched at that historical checkpoint, but only 90 returned normal ValidationResult responses; nine returned
 explicit partial local refusals. This is **not** 99 complete case passes or all
 nonportable validation coverage. The nine refused inputs retain unsupported
 REC conditional-shape or metadata evidence rather than silently returning clean.
+The current exact-nine reconciliation above supersedes only that refusal count;
+this broader historical report remains unchanged.
 Report SHA-256: `80b09523e92f5e379e064241f2c0ccbd9d9e8357f6ff552b605543f8b5e75287`.
 
 The 281 portable Verifier cases are **111 validate** (17 documents, 71 hedge,
