@@ -121,7 +121,7 @@ the integrated-validation total to 60 before two metadata-routing regressions
 bring the current focused total to 62. They exercise all seven stage tables
 across all twelve builtin classes and an unknown-class base-list control, each
 required-section removal for the base/land/mixed-use/new builtin cases, role
-collisions, current/history, external presence and explicit zero/null values.
+collisions, current/history, external presence, exact empty strings, preserved whitespace and explicit zero/null values.
 These are source-level read-only API controls, not a full field-type validator,
 new command, capability pass or cleared-diligence/final-loan claim.
 
@@ -270,7 +270,8 @@ The twelve affected portable ids are:
 Exact source/expected pairs are retained in the
 [prior audit](https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6229113134)
 and its [diagnostic-allocation amendment](https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6229116406).
-This inventory reuses that evidence; the twelve API/CLI/schema probes were not repeated.
+This inventory reuses that evidence; the joint schema/reference-CLI audit was not repeated.
+Ordinary preservation tests still compare their existing API projections.
 
 | Frozen source | Frozen expected validation projection |
 |---|---|
@@ -377,7 +378,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 |---|---|---|
 | LOC / CUR / descriptive identity | Locale/currency vocabulary, builtin/custom class syntax, scenario and BTR agreement | Complete frontmatter presence/type/source applicability, preserving unknown fields; descriptive values never select models. |
 | SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Only the existing inspector's allocated wrapper/nested-object META-01 and SRC/ROLE issues are integrated as registered findings. Unallocated typed/required metadata, actor and conditional-reference findings remain in the uncoded local metadata_assessment; the five completeness warnings stay exact. Diagnostic allocation and the twelve positive-corpus actor omissions remain a genuine contract gate, not optional metadata. |
-| DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | All seven presence lists, overlays and role-selected scope readiness now share tested inputs; scope completeness preserves non-null presence without claiming field-type validity. Field-specific institution matching and equal-specificity overrides have controls; finish exact gap/override consumption and remaining externalized-field applicability without executing substitution/default actions. |
+| DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | All seven presence lists, overlays and role-selected scope readiness now share tested inputs; scope completeness treats absent/null/exact empty strings as missing without trimming, coercion or claiming field-type validity. Field-specific institution matching and equal-specificity overrides have controls; finish exact gap/override consumption and remaining externalized-field applicability without executing substitution/default actions. |
 | MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Exhaustive closed-field shape/applicability and stated sizing declaration guards. Financial stack sizing reproduction is a separate mandatory Verifier obligation. |
 | LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Complete LU model/row/schema-field admission and declaration applicability; LU-01's pinned period trigger does not itself assign every remaining schema-field failure a registered code. Period inspection is not evaluation or stated-aggregate verification. |
 | TAX / CAPX | Frozen diagnostic arrays, same-quantum tax equations, abatement/draw/target/payback rules | Terminal required assessment versus optional normal G1 group is now controlled. Finish closed-object/stated-member/null/conditional applicability; no savings applied. |

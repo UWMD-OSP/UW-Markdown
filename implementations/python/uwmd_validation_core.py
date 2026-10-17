@@ -90,11 +90,14 @@ def _section_presence(document):
 
 
 def _scope_missing_fields(prop):
-    """DQ-04 presence only; do not infer field types or replace explicit zero."""
-    missing = [path for path in ("address", "asset_class") if field(prop, path) is None]
-    if all(field(prop, path) is None for path in ("units", "asking_price")):
-        missing.append("units|asking_price")
-    return missing
+    """Published scope presence: absent/null/exact empty string, no trimming."""
+    def missing(path):
+        value = field(prop, path)
+        return value is None or value == ""
+    paths = [path for path in ("address", "asset_class") if missing(path)]
+    if all(missing(path) for path in ("units", "asking_price")):
+        paths.append("units|asking_price")
+    return paths
 
 
 def stage_readiness(document):

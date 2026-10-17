@@ -106,7 +106,13 @@ class ValidationReadinessTests(unittest.TestCase):
             ({"units": None, "asking_price": 0}, True, []),
             ({"address": None}, False, ["address"]),
             ({"asset_class": None}, False, ["asset_class"]),
-            ({"units": False, "address": ""}, True, [])):
+            ({"address": ""}, False, ["address"]),
+            ({"asset_class": ""}, False, ["asset_class"]),
+            ({"units": ""}, False, ["units|asking_price"]),
+            ({"units": None, "asking_price": ""}, False, ["units|asking_price"]),
+            ({"units": "", "asking_price": 0}, True, []),
+            ({"units": False, "address": " ", "asset_class": " "}, True, []),
+            ({"units": " "}, True, [])):
             with self.subTest(values=values):
                 parsed = parse(header() + property_block(**values)); before = copy.deepcopy(parsed)
                 result = validate(parsed)
@@ -114,7 +120,7 @@ class ValidationReadinessTests(unittest.TestCase):
                 self.assertEqual([i["field"] for i in result["issues"] if i["code"] == "DQ-04"], missing)
                 self.assertEqual(parsed, before)
         # DQ-04 checks presence; this does not certify string/count field types,
-        # infer zero, or establish that malformed full input is valid.
+        # infer zero, trim whitespace, or establish malformed full input is valid.
 
     def test_presence_readiness_does_not_inherit_unstated_future_field_claims(self):
         raw = header("screening") + well_formed("property") + well_formed("debt_structure") + well_formed("validation")
