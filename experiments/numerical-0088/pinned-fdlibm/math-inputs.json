@@ -1,0 +1,983 @@
+{
+  "status": "Fixed exact word accuracy controls; independently certified, no host math generation",
+  "cases": [
+    {
+      "id": "sqrt-subnormal-bit-0",
+      "op": "sqrt",
+      "x": "0000000000000001"
+    },
+    {
+      "id": "sqrt-subnormal-bit-1",
+      "op": "sqrt",
+      "x": "0000000000000002"
+    },
+    {
+      "id": "sqrt-subnormal-bit-2",
+      "op": "sqrt",
+      "x": "0000000000000004"
+    },
+    {
+      "id": "sqrt-subnormal-bit-3",
+      "op": "sqrt",
+      "x": "0000000000000008"
+    },
+    {
+      "id": "sqrt-subnormal-bit-4",
+      "op": "sqrt",
+      "x": "0000000000000010"
+    },
+    {
+      "id": "sqrt-subnormal-bit-5",
+      "op": "sqrt",
+      "x": "0000000000000020"
+    },
+    {
+      "id": "sqrt-subnormal-bit-6",
+      "op": "sqrt",
+      "x": "0000000000000040"
+    },
+    {
+      "id": "sqrt-subnormal-bit-7",
+      "op": "sqrt",
+      "x": "0000000000000080"
+    },
+    {
+      "id": "sqrt-subnormal-bit-8",
+      "op": "sqrt",
+      "x": "0000000000000100"
+    },
+    {
+      "id": "sqrt-subnormal-bit-9",
+      "op": "sqrt",
+      "x": "0000000000000200"
+    },
+    {
+      "id": "sqrt-subnormal-bit-10",
+      "op": "sqrt",
+      "x": "0000000000000400"
+    },
+    {
+      "id": "sqrt-subnormal-bit-11",
+      "op": "sqrt",
+      "x": "0000000000000800"
+    },
+    {
+      "id": "sqrt-subnormal-bit-12",
+      "op": "sqrt",
+      "x": "0000000000001000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-13",
+      "op": "sqrt",
+      "x": "0000000000002000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-14",
+      "op": "sqrt",
+      "x": "0000000000004000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-15",
+      "op": "sqrt",
+      "x": "0000000000008000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-16",
+      "op": "sqrt",
+      "x": "0000000000010000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-17",
+      "op": "sqrt",
+      "x": "0000000000020000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-18",
+      "op": "sqrt",
+      "x": "0000000000040000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-19",
+      "op": "sqrt",
+      "x": "0000000000080000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-20",
+      "op": "sqrt",
+      "x": "0000000000100000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-21",
+      "op": "sqrt",
+      "x": "0000000000200000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-22",
+      "op": "sqrt",
+      "x": "0000000000400000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-23",
+      "op": "sqrt",
+      "x": "0000000000800000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-24",
+      "op": "sqrt",
+      "x": "0000000001000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-25",
+      "op": "sqrt",
+      "x": "0000000002000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-26",
+      "op": "sqrt",
+      "x": "0000000004000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-27",
+      "op": "sqrt",
+      "x": "0000000008000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-28",
+      "op": "sqrt",
+      "x": "0000000010000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-29",
+      "op": "sqrt",
+      "x": "0000000020000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-30",
+      "op": "sqrt",
+      "x": "0000000040000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-31",
+      "op": "sqrt",
+      "x": "0000000080000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-32",
+      "op": "sqrt",
+      "x": "0000000100000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-33",
+      "op": "sqrt",
+      "x": "0000000200000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-34",
+      "op": "sqrt",
+      "x": "0000000400000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-35",
+      "op": "sqrt",
+      "x": "0000000800000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-36",
+      "op": "sqrt",
+      "x": "0000001000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-37",
+      "op": "sqrt",
+      "x": "0000002000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-38",
+      "op": "sqrt",
+      "x": "0000004000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-39",
+      "op": "sqrt",
+      "x": "0000008000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-40",
+      "op": "sqrt",
+      "x": "0000010000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-41",
+      "op": "sqrt",
+      "x": "0000020000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-42",
+      "op": "sqrt",
+      "x": "0000040000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-43",
+      "op": "sqrt",
+      "x": "0000080000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-44",
+      "op": "sqrt",
+      "x": "0000100000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-45",
+      "op": "sqrt",
+      "x": "0000200000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-46",
+      "op": "sqrt",
+      "x": "0000400000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-47",
+      "op": "sqrt",
+      "x": "0000800000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-48",
+      "op": "sqrt",
+      "x": "0001000000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-49",
+      "op": "sqrt",
+      "x": "0002000000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-50",
+      "op": "sqrt",
+      "x": "0004000000000000"
+    },
+    {
+      "id": "sqrt-subnormal-bit-51",
+      "op": "sqrt",
+      "x": "0008000000000000"
+    },
+    {
+      "id": "sqrt-word-000fffffffffffff",
+      "op": "sqrt",
+      "x": "000fffffffffffff"
+    },
+    {
+      "id": "sqrt-word-0010000000000000",
+      "op": "sqrt",
+      "x": "0010000000000000"
+    },
+    {
+      "id": "sqrt-word-0010000000000001",
+      "op": "sqrt",
+      "x": "0010000000000001"
+    },
+    {
+      "id": "sqrt-word-3fefffffffffffff",
+      "op": "sqrt",
+      "x": "3fefffffffffffff"
+    },
+    {
+      "id": "sqrt-word-3ff0000000000000",
+      "op": "sqrt",
+      "x": "3ff0000000000000"
+    },
+    {
+      "id": "sqrt-word-3ff0000000000001",
+      "op": "sqrt",
+      "x": "3ff0000000000001"
+    },
+    {
+      "id": "sqrt-word-3ff3988dffffffff",
+      "op": "sqrt",
+      "x": "3ff3988dffffffff"
+    },
+    {
+      "id": "sqrt-word-3ff3988e00000000",
+      "op": "sqrt",
+      "x": "3ff3988e00000000"
+    },
+    {
+      "id": "sqrt-word-3ff3988e00000001",
+      "op": "sqrt",
+      "x": "3ff3988e00000001"
+    },
+    {
+      "id": "sqrt-word-3ffbb679ffffffff",
+      "op": "sqrt",
+      "x": "3ffbb679ffffffff"
+    },
+    {
+      "id": "sqrt-word-3ffbb67a00000000",
+      "op": "sqrt",
+      "x": "3ffbb67a00000000"
+    },
+    {
+      "id": "sqrt-word-3ffbb67a00000001",
+      "op": "sqrt",
+      "x": "3ffbb67a00000001"
+    },
+    {
+      "id": "sqrt-word-4000000000000000",
+      "op": "sqrt",
+      "x": "4000000000000000"
+    },
+    {
+      "id": "sqrt-word-7fefffffffffffff",
+      "op": "sqrt",
+      "x": "7fefffffffffffff"
+    },
+    {
+      "id": "log-word-0000000000000001",
+      "op": "log",
+      "x": "0000000000000001"
+    },
+    {
+      "id": "log-word-000fffffffffffff",
+      "op": "log",
+      "x": "000fffffffffffff"
+    },
+    {
+      "id": "log-word-0010000000000000",
+      "op": "log",
+      "x": "0010000000000000"
+    },
+    {
+      "id": "log-word-3fe0000000000000",
+      "op": "log",
+      "x": "3fe0000000000000"
+    },
+    {
+      "id": "log-word-3fefffffffffffff",
+      "op": "log",
+      "x": "3fefffffffffffff"
+    },
+    {
+      "id": "log-word-3ff0000000000000",
+      "op": "log",
+      "x": "3ff0000000000000"
+    },
+    {
+      "id": "log-word-3ff0000000000001",
+      "op": "log",
+      "x": "3ff0000000000001"
+    },
+    {
+      "id": "log-word-3ff0000000000002",
+      "op": "log",
+      "x": "3ff0000000000002"
+    },
+    {
+      "id": "log-word-3ff61479ffffffff",
+      "op": "log",
+      "x": "3ff61479ffffffff"
+    },
+    {
+      "id": "log-word-3ff6147a00000000",
+      "op": "log",
+      "x": "3ff6147a00000000"
+    },
+    {
+      "id": "log-word-3ff6b85100000000",
+      "op": "log",
+      "x": "3ff6b85100000000"
+    },
+    {
+      "id": "log-word-4000000000000000",
+      "op": "log",
+      "x": "4000000000000000"
+    },
+    {
+      "id": "log-word-7fefffffffffffff",
+      "op": "log",
+      "x": "7fefffffffffffff"
+    },
+    {
+      "id": "exp-word-0000000000000000",
+      "op": "exp",
+      "x": "0000000000000000"
+    },
+    {
+      "id": "exp-word-8000000000000000",
+      "op": "exp",
+      "x": "8000000000000000"
+    },
+    {
+      "id": "exp-word-3e10000000000000",
+      "op": "exp",
+      "x": "3e10000000000000"
+    },
+    {
+      "id": "exp-word-be10000000000000",
+      "op": "exp",
+      "x": "be10000000000000"
+    },
+    {
+      "id": "exp-word-3fd62e41ffffffff",
+      "op": "exp",
+      "x": "3fd62e41ffffffff"
+    },
+    {
+      "id": "exp-word-3fd62e4200000000",
+      "op": "exp",
+      "x": "3fd62e4200000000"
+    },
+    {
+      "id": "exp-word-3fd62e4200000001",
+      "op": "exp",
+      "x": "3fd62e4200000001"
+    },
+    {
+      "id": "exp-word-3fe0000000000000",
+      "op": "exp",
+      "x": "3fe0000000000000"
+    },
+    {
+      "id": "exp-word-bfe0000000000000",
+      "op": "exp",
+      "x": "bfe0000000000000"
+    },
+    {
+      "id": "exp-word-3ff0000000000000",
+      "op": "exp",
+      "x": "3ff0000000000000"
+    },
+    {
+      "id": "exp-word-bff0000000000000",
+      "op": "exp",
+      "x": "bff0000000000000"
+    },
+    {
+      "id": "scalbn-0000000000000000--2147483648",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": -2147483648
+    },
+    {
+      "id": "scalbn-0000000000000000--1075",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": -1075
+    },
+    {
+      "id": "scalbn-0000000000000000--1074",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": -1074
+    },
+    {
+      "id": "scalbn-0000000000000000--54",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": -54
+    },
+    {
+      "id": "scalbn-0000000000000000--1",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": -1
+    },
+    {
+      "id": "scalbn-0000000000000000-0",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": 0
+    },
+    {
+      "id": "scalbn-0000000000000000-1",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": 1
+    },
+    {
+      "id": "scalbn-0000000000000000-53",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": 53
+    },
+    {
+      "id": "scalbn-0000000000000000-1024",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": 1024
+    },
+    {
+      "id": "scalbn-0000000000000000-2147483647",
+      "op": "scalbn",
+      "x": "0000000000000000",
+      "n": 2147483647
+    },
+    {
+      "id": "scalbn-8000000000000000--2147483648",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": -2147483648
+    },
+    {
+      "id": "scalbn-8000000000000000--1075",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": -1075
+    },
+    {
+      "id": "scalbn-8000000000000000--1074",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": -1074
+    },
+    {
+      "id": "scalbn-8000000000000000--54",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": -54
+    },
+    {
+      "id": "scalbn-8000000000000000--1",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": -1
+    },
+    {
+      "id": "scalbn-8000000000000000-0",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": 0
+    },
+    {
+      "id": "scalbn-8000000000000000-1",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": 1
+    },
+    {
+      "id": "scalbn-8000000000000000-53",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": 53
+    },
+    {
+      "id": "scalbn-8000000000000000-1024",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": 1024
+    },
+    {
+      "id": "scalbn-8000000000000000-2147483647",
+      "op": "scalbn",
+      "x": "8000000000000000",
+      "n": 2147483647
+    },
+    {
+      "id": "scalbn-0000000000000001--2147483648",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": -2147483648
+    },
+    {
+      "id": "scalbn-0000000000000001--1075",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": -1075
+    },
+    {
+      "id": "scalbn-0000000000000001--1074",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": -1074
+    },
+    {
+      "id": "scalbn-0000000000000001--54",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": -54
+    },
+    {
+      "id": "scalbn-0000000000000001--1",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": -1
+    },
+    {
+      "id": "scalbn-0000000000000001-0",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": 0
+    },
+    {
+      "id": "scalbn-0000000000000001-1",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": 1
+    },
+    {
+      "id": "scalbn-0000000000000001-53",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": 53
+    },
+    {
+      "id": "scalbn-0000000000000001-1024",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": 1024
+    },
+    {
+      "id": "scalbn-0000000000000001-2147483647",
+      "op": "scalbn",
+      "x": "0000000000000001",
+      "n": 2147483647
+    },
+    {
+      "id": "scalbn-000fffffffffffff--2147483648",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": -2147483648
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1075",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": -1075
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1074",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": -1074
+    },
+    {
+      "id": "scalbn-000fffffffffffff--54",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": -54
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": -1
+    },
+    {
+      "id": "scalbn-000fffffffffffff-0",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": 0
+    },
+    {
+      "id": "scalbn-000fffffffffffff-1",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": 1
+    },
+    {
+      "id": "scalbn-000fffffffffffff-53",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": 53
+    },
+    {
+      "id": "scalbn-000fffffffffffff-1024",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": 1024
+    },
+    {
+      "id": "scalbn-000fffffffffffff-2147483647",
+      "op": "scalbn",
+      "x": "000fffffffffffff",
+      "n": 2147483647
+    },
+    {
+      "id": "scalbn-0010000000000000--2147483648",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": -2147483648
+    },
+    {
+      "id": "scalbn-0010000000000000--1075",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": -1075
+    },
+    {
+      "id": "scalbn-0010000000000000--1074",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": -1074
+    },
+    {
+      "id": "scalbn-0010000000000000--54",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": -54
+    },
+    {
+      "id": "scalbn-0010000000000000--1",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": -1
+    },
+    {
+      "id": "scalbn-0010000000000000-0",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": 0
+    },
+    {
+      "id": "scalbn-0010000000000000-1",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": 1
+    },
+    {
+      "id": "scalbn-0010000000000000-53",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": 53
+    },
+    {
+      "id": "scalbn-0010000000000000-1024",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": 1024
+    },
+    {
+      "id": "scalbn-0010000000000000-2147483647",
+      "op": "scalbn",
+      "x": "0010000000000000",
+      "n": 2147483647
+    },
+    {
+      "id": "scalbn-3ff0000000000000--2147483648",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": -2147483648
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1075",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": -1075
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1074",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": -1074
+    },
+    {
+      "id": "scalbn-3ff0000000000000--54",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": -54
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": -1
+    },
+    {
+      "id": "scalbn-3ff0000000000000-0",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": 0
+    },
+    {
+      "id": "scalbn-3ff0000000000000-1",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": 1
+    },
+    {
+      "id": "scalbn-3ff0000000000000-53",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": 53
+    },
+    {
+      "id": "scalbn-3ff0000000000000-1024",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": 1024
+    },
+    {
+      "id": "scalbn-3ff0000000000000-2147483647",
+      "op": "scalbn",
+      "x": "3ff0000000000000",
+      "n": 2147483647
+    },
+    {
+      "id": "scalbn-bff0000000000000--2147483648",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": -2147483648
+    },
+    {
+      "id": "scalbn-bff0000000000000--1075",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": -1075
+    },
+    {
+      "id": "scalbn-bff0000000000000--1074",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": -1074
+    },
+    {
+      "id": "scalbn-bff0000000000000--54",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": -54
+    },
+    {
+      "id": "scalbn-bff0000000000000--1",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": -1
+    },
+    {
+      "id": "scalbn-bff0000000000000-0",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": 0
+    },
+    {
+      "id": "scalbn-bff0000000000000-1",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": 1
+    },
+    {
+      "id": "scalbn-bff0000000000000-53",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": 53
+    },
+    {
+      "id": "scalbn-bff0000000000000-1024",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": 1024
+    },
+    {
+      "id": "scalbn-bff0000000000000-2147483647",
+      "op": "scalbn",
+      "x": "bff0000000000000",
+      "n": 2147483647
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--2147483648",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": -2147483648
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1075",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": -1075
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1074",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": -1074
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--54",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": -54
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": -1
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-0",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": 0
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-1",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": 1
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-53",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": 53
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-1024",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": 1024
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-2147483647",
+      "op": "scalbn",
+      "x": "7fefffffffffffff",
+      "n": 2147483647
+    },
+    {
+      "id": "bounded-math-power-0",
+      "op": "pow",
+      "x": "4000000000000000",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "bounded-math-power-1",
+      "op": "pow",
+      "x": "4030000000000000",
+      "y": "3fd0000000000000"
+    },
+    {
+      "id": "bounded-math-power-2",
+      "op": "pow",
+      "x": "4000000000000000",
+      "y": "bfe0000000000000"
+    },
+    {
+      "id": "bounded-math-power-3",
+      "op": "pow",
+      "x": "3ff0000000000001",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "bounded-math-power-4",
+      "op": "pow",
+      "x": "3ff3333333333333",
+      "y": "403f000000000000"
+    },
+    {
+      "id": "bounded-math-power-5",
+      "op": "pow",
+      "x": "3ff199999999999a",
+      "y": "c03f000000000000"
+    },
+    {
+      "id": "bounded-math-power-6",
+      "op": "pow",
+      "x": "601dd55745cbb7ed",
+      "y": "c000000000000000"
+    },
+    {
+      "id": "bounded-math-power-7",
+      "op": "pow",
+      "x": "4000000000000000",
+      "y": "3ff8000000000000"
+    }
+  ]
+}
