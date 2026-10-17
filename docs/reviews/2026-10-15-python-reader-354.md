@@ -631,3 +631,46 @@ historical subjects/results remain audit evidence, not compatibility gates.
 The specific Envelope/projection/codec and RFC0085 history-authority choices,
 new-regime authentication evidence and independent version allocation remain
 unapproved. No experiment, frozen answer, schema or release is changed here.
+
+### 2026-10-17 — Exact minimum and real authentication decision checkpoint
+
+The [focused decision proof](https://github.com/UWMD-OSP/UW-Markdown/blob/c1c60b879e5e41530fcc35a5b949147328f7b9ed/experiments/envelope-0089/decision-proof/README.md)
+reuses seven unchanged candidate models and four original source files. It
+freezes the proposed exact extension/history parse minimum separately from the
+complete subject. Real Ed25519 controls (public research seed) retain42 mutation
+pairs and14 label pairs: payload/metadata/notes/prose change commitments; key
+order and excluded Envelope volatility do not. Notes/prose can change full
+subjects while leaving the portable minimum unchanged. Cryptographic byte
+binding is not source completeness, trusted issuance or financial verification.
+
+Actual current V.13 admission precedes candidate document gating: singleton and
+one-peer sources map exactly to the complete frozen model after admission;
+mixed nullable peers and ordered extension history refuse INT15, and three
+model-only inputs have no attributable source gate. Current-label document
+artifacts and literal1 constant-pack receipts verify with real backends; changed
+source notes refuse INT11/RCP01 before backend execution. Candidate document
+labels refuse INT14. Candidate receipt controls yield RCP10 because both digest
+and canonicalization version differ, not simply because a label is unsupported.
+
+Four additional actual Receipt5.5 controls preserve matching digests: changing
+only signed canonicalization-version metadata proceeds to the real backend;
+retaining its original test signature fails RCP01, while a new disposable test
+signature verifies. This does not implement that canonicalizer, reissue a
+historical artifact or change accepted receipt rules. No candidate financial
+receipt is issued. V.13's extra source bans are not new receipt prerequisites.
+
+Root and independent numerical-lane reviews found no material remaining defect;
+root read-only executions reproduce both matrices and focused Biome passes.
+The original WindowsNode24 observations, full179source/86compiled hash maps,
+helper/spec/schema identities and all prior21/60 artifacts remain unchanged.
+Ordinary Node20 CI reuses its existing build for exact deterministic material
+replay; actual CI results must be recorded separately from this local evidence.
+
+The draft converges to three linked owner choices: tagged/null identity plus
+exact portable minimum; total lexical XML/full CSV block-extra and explicit
+empty-collection carrier; a new complete semantic subject with unchanged V.13
+admission and Receipt5.5. Empty-container and full schema/domain fixtures,
+independent codec/platform/namespace/ZIP evidence and actual candidate financial
+receipt verification remain incomplete. Direction approval does not complete
+these acceptance gates. RFC0085 retained-history authority and RFC0088 numerics
+remain separately unaccepted. No normative, package/version or launch change.
