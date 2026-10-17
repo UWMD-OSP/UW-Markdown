@@ -1,6 +1,7 @@
 """Fixed optional-shape admission; no financial outcome or capability claim."""
 import copy
 import json
+import math
 from pathlib import Path
 import tempfile
 import unittest
@@ -133,6 +134,31 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
             stated_schedule=[{"date":"2026-02-01","by_tier":[{"tier":0,"lp":0,"gp":None}]}]))
         _,findings,_,_=self.report(raw,"waterfall_claims")
         self.assertEqual(findings,[])
+
+    def test_clawback_floor_multiple_has_its_own_accepted_strictly_above_one_domain(self):
+        for value,refused in ((0,True),(.5,True),(1,True),
+                              (math.nextafter(1,math.inf),False),(1.5,False),
+                              (None,True),(False,True),(True,True)):
+            with self.subTest(floor_multiple=value):
+                claim=dict(basis="lp_em_floor",floor_multiple=value,cap="promote_received")
+                raw=property_source()+cash()+well_formed("distribution_waterfall",
+                                                        **waterfall(clawback=claim))
+                result,findings,_,_=self.report(raw,"waterfall_claims")
+                errors=[i for i in result["issues"] if i["code"]=="WF-10"]
+                self.assertEqual(len(errors),int(refused))
+                self.assertEqual(bool(findings),refused)
+        # Unused companions still have their declared shape; no inactive field
+        # becomes a normalized/ignored payload value.
+        claim=dict(basis="lp_em_floor",floor_multiple=1.5,floor_rate="bad",cap="promote_received")
+        result,findings,_,_=self.report(property_source()+cash()+well_formed(
+            "distribution_waterfall",**waterfall(clawback=claim)),"waterfall_claims")
+        self.assertFalse(any(i["code"]=="WF-10" for i in result["issues"]))
+        self.assertIn("clawback.floor_rate",[f["field"] for f in findings])
+        for claim in (None,dict(basis="lp_em_floor",floor_multiple=1.5,
+                               floor_rate=None,net_of_tax_rate=0,cap="promote_received")):
+            _,findings,_,_=self.report(property_source()+cash()+well_formed(
+                "distribution_waterfall",**waterfall(clawback=claim)),"waterfall_claims")
+            self.assertEqual(findings,[])
 
     def test_current_history_external_and_unknown_unrelated_payload_are_distinct(self):
         bad=parse(HEADER+well_formed("capital_stack",**stack("bad"))).source.blocks[0].parsed.value

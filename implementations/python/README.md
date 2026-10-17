@@ -95,7 +95,10 @@ first result is preserved as narrower evidence, not a complete admission proof.
 
 The integrated local optional-shape assessment now inspects current inline
 recovery terms/true-up rows, top-level and component stack sizing declarations,
-and WF stated outcomes/schedules against their exact normative schema fragments.
+and WF clawback/stated outcomes/schedules against their exact normative schema
+fragments. Clawback `floor_multiple` follows accepted RFC0059's strict `>1`,
+distinct from the positive `until_lp_em` tier hurdle; the prior Python `>0`
+guard was an implementation defect, not an owner decision.
 It preserves schema-admitted null/empty/zero, distinguishes bool from numbers,
 checks fixed closed unions/objects and never computes a sizing or outcome.
 These shape conditions receive no invented registered diagnostic; the command
@@ -108,8 +111,7 @@ semantic checks and arithmetic are unchanged.
 
 Exact remaining gates include complete typed/conditional provenance and
 reference admission beyond the allocated families; unreviewed top-level and
-other optional payload domains, including WF clawback field companions outside
-the currently allocated branches; CS selector/source semantics beyond declaration
+other optional payload domains; CS selector/source semantics beyond declaration
 shape and all sizing/outcome recomputation; REC source-reference admission and
 financial verification; all applicable family-order/partition/negative-wire
 controls; and composition package/part resolution. These are remaining completion
@@ -1165,7 +1167,7 @@ RFC0076 refused selections and RFC0081's optional terms group. Its two-member
 CLI wrapper is **nonnormative**: `structural_issues` contains only the relevant
 hedge, funding, escrow, cash-source and currency prerequisites;
 `replacement_funding_verification` has the exact §V.12.3 result union. There is
-no overall validation/readiness result. `validate` and `calc` remain unsupported.
+no overall validation/readiness result. `calc` remains unsupported; the unadvertised `validate` command has the bounded scope above.
 Exit status is nonzero for relevant structural refusal or failed/unverifiable
 binding. A lawful nonapplicable path returns `not_checked/not_applicable`.
 
@@ -1216,7 +1218,7 @@ adds independent Protocol §V.9 block hashing and a bounded §V.10 chain assessm
 This command's report and local assessment vocabulary are **nonnormative**. It
 is not the full `IntegrityResult`, an integrity-profile claim, full validation,
 signature verification or document authentication. Discovery stays parse-only;
-generic verify, validate and calc remain unsupported.
+generic verify and calc remain unsupported. The unadvertised validate command has the bounded scope above.
 
 `compute_block_hash` snapshots an explicit fenced object, removes only top-level
 `_meta`, canonicalizes with independent RFC8785 JCS and hashes UTF-8 using stdlib
@@ -1275,7 +1277,7 @@ hash-provider/JCS failures, unchanged roots and snapshots before the first await
 performs a bounded independent Format §2.5/§2.6/§2.8 inventory. The report is a
 **nonnormative standalone wrapper**, not `ValidationResult`, complete Format
 validation or a Reader/Verifier tier claim. Discovery stays parse-only;
-validate, calc and generic verify remain unsupported.
+calc and generic verify remain unsupported. The unadvertised validate command has the bounded scope above.
 
 `inspect_source_roles` snapshots the current parsed-value model. Its source/role
 checks inspect every active physical block, including earlier active blocks
@@ -1452,7 +1454,7 @@ members and universal annotations receive no invented allocation. Three focused
 methods cover exact presence/type boundaries, ownership, order and no mutation.
 This helper adds no command or capability; discovery remains parse-only.
 
-### Integrated Reader/current-main checkpoint
+### Historical integrated Reader/current-main checkpoint — before real validate
 
 After history-preserving reconciliation with #375/main `b2ac5d8f`, the combined
 implementation passes **223 Python methods** (52.039s) and genuine shared Reader

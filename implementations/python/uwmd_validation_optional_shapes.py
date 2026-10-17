@@ -176,7 +176,7 @@ def optional_shape_assessments(document):
                 check(block,"capital_stack_sizing",stack["sizing"],
                       "section-capital-stack.schema.json","properties/sizing",component+".capital_stack.sizing")
     for block in current_blocks(document,"distribution_waterfall"):
-        for key in ("stated_outcomes","stated_schedule"):
+        for key in ("clawback","stated_outcomes","stated_schedule"):
             if key in block.parsed.value:
                 check(block,"waterfall_claims",block.parsed.value[key],
                       "section-distribution-waterfall.schema.json","properties/"+key,key)
