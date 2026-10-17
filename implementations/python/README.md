@@ -154,7 +154,8 @@ stage booleans report the accepted section-presence table, not whole-record
 completeness; `composition_assessment.status` must be consulted separately.
 
 The preceding 33 focused validation methods include eleven external-boundary
-methods and two FV audit methods; the newer closure brings that count to 45. External controls include the unchanged
+methods and two FV audit methods; subsequent metadata and CC-03 closures bring
+that count to 52. External controls include the unchanged
 frozen missing-part source's unresolved meaning, exact roles/history, malformed
 directives, source retention and V.12 consultation precedence. No fragment
 resolution, smaller partial collection, network fetch, composition-suite pass,
@@ -182,10 +183,13 @@ Incomplete-data policy selection uses published field specificity, then stage
 specificity, then declaration order; adopter declarations precede equal-rank
 defaults. Validation reports applicable halts and never performs substitution.
 
-There is one concrete joint-contract gate: Format 2.5b and the block schema
-require `_meta.provenance.actor`, and III.6a assigns outside-Format shape to
-META-01; unchanged frozen document assertions omit actor and would change if
-its absence produced that error. In particular,
+There is one concrete required-field/frozen-behavior gate: Format 2.5b and
+the block schema require `_meta.provenance.actor`, while unchanged frozen
+document assertions omit actor. This does **not** establish that missing actor
+must currently emit META-01: RFC 0081 `3 pins that code to legacy wrapper and
+nested-object shape, and III.6a's closed five completeness names exclude actor.
+No absent-actor diagnostic allocation is settled here. The following assertions
+would change under a hypothetical added required-actor error. In particular,
 [05-land-stage-overlay](../../conformance/documents/fixtures/05-land-stage-overlay.uwx.md)
 explicitly expects `overall_status: clean` and `issues: []`.
 The twelve affected portable ids are:
@@ -209,8 +213,8 @@ assertions; it was not an additional conformance pass. The partial API preserves
 the frozen absence behavior while refusing malformed **present** actors. That
 does not make actor optional under the Format, create an ACTOR completeness
 suffix, inject provenance, or establish complete validation. Contract/baseline
-disposition is required before the whole command claim. Unlike this explicit
-contradiction, omitted metadata severity prose is settled by ordinary published
+disposition is required before the whole command claim; this implementation
+does not infer an absent-actor META-01 rule. Unlike this required-field/frozen-behavior gap, omitted metadata severity prose is settled by ordinary published
 precedent and does not require an owner decision.
 
 ### CC coverage ledger
@@ -223,7 +227,7 @@ implemented ledger, with remaining proof limits named explicitly.
 |---|---|---|
 | CC-01 | Detail rent roll versus preferred t12 operating statement GPR, 3% | Complete canonical field-location and zero/malformed operand controls. |
 | CC-02 | Senior debt stated LTV versus selected valuation, 0.005 | Undefined ratio and full canonical valuation/input applicability. |
-| CC-03 | Senior loan amount against source bucket and one senior stack tranche; rate agreement | Multiple senior tranches are not aggregated; retain undefined-leg coverage and complete source bucket applicability. |
+| CC-03 | Senior loan amount against sources.loan_amount and one senior stack tranche ($100 tolerance); exact tranche.rate against debt_structure.interest_rate | Canonical rate, missing/null/type/zero, role/history/external and independent-leg controls now pass. Multiple senior tranches are not aggregated; full source bucket applicability remains audited. |
 | CC-04 | Stated total_sources versus total_uses, tolerance 1 | Accepted derived uses are a separate calculation rule; no invented stated-versus-derived discrepancy finding. |
 | CC-05 | Senior debt underwriting NOI versus selected NOI, 1% | Audit all admitted source locations, not inferred NOI. |
 | CC-06 | First DCF annual row NOI versus NOI model, 2% published precedent | Complete first-year identity/registered field applicability; do not silently introduce a selector or numeric rule. |
@@ -237,6 +241,23 @@ implemented ledger, with remaining proof limits named explicitly.
 | CC-14 | Unconditional deal-record property presence, including unresolved external reference | Non-deal profile and Lite/source discrimination must remain exact. |
 | CC-15 | Eligible base/default/sole lease-up scenario versus NOI, 2% | Complete variant/canonical field controls; role cannot select another scenario. |
 | CC-16 | One info finding per unresolvable section, affected checks sorted | Reporting only; not one of the fifteen coverage entries and not a financial failure. |
+
+The CC-03 canonical rate closure follows [Format 4.7 / 4.24 / 5.3](../../spec/UW_FORMAT_SPEC.md)
+and [RFC 0026 `A](../../docs/rfcs/0026-capital-stack.md): the selected senior loan
+states `interest_rate`, and its coupon must agree exactly with the single
+senior-debt tranche's `rate`. The unrelated `rate_pct` payload is preserved,
+never an alias. The published amount tolerance remains $100 (CC-03 remediation
+declaration); no rate tolerance, aggregation or new numerical procedure is added.
+Seven focused methods include adjacent finite binary64 rates, explicit zero,
+missing/null/malformed operands and no-stack behavior.
+[RFC 0040 diagnostics](../../docs/rfcs/0040-variant-role-resolution.md)
+permits another independent leg to evaluate when one consulted section is
+unresolvable. The controls demonstrate exactly that, including source/stack
+amount evidence beside a debt-role collision or unavailable external debt.
+The unchanged frozen agree/mismatch document diagnostic assertions also pass;
+their stack sizing outcomes are a separate obligation. All 52 focused validation
+methods pass, including the existing 111 direct API projections. This is no
+additional portable command or complete capability claim.
 
 ### FV conditions and field locations
 

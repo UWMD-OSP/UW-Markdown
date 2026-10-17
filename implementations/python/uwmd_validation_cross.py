@@ -55,7 +55,10 @@ def cross_checks(ledger):
             for other, path in ((loan, "loan_amount"), (senior, "sources.loan_amount")):
                 if finite(other) and finite(tranche.get("amount")):
                     comparisons.append((tranche["amount"], other, path, 100))
-            rate = number(debt, "rate_pct")
+            # Format 4.7 / RFC 0026: the senior loan's canonical coupon.
+            # Exact rate agreement is distinct from the published $100 amount
+            # tolerance; unknown payload named rate_pct is not an alias.
+            rate = number(debt, "interest_rate")
             if finite(rate) and finite(tranche.get("rate")):
                 comparisons.append((tranche["rate"], rate, "rate", 0))
     ledger.cover("CC-03", bool(comparisons))
