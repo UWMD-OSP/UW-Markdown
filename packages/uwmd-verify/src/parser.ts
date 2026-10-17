@@ -14,6 +14,16 @@ import type {
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import { maskQuotedScalar, readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from './yaml-scalar.js';
 
+// RFC 0090: retain pre-reduction block references for bounded metadata admission.
+// This is private model evidence, not an immutable source certificate. In-place
+// model edits remain visible; raw text is never reparsed behind the caller.
+const retainedPhysicalBlocks = new WeakMap<ParsedUWFile, readonly UWBlock[]>();
+
+/** Internal only: deliberately absent from the package's public barrels. */
+export function parsedPhysicalBlocks(parsed: ParsedUWFile): readonly UWBlock[] {
+  return retainedPhysicalBlocks.get(parsed) ?? [];
+}
+
 // ─── Regex patterns ───────────────────────────────────────────────────────────
 
 // Opening fence: ```json uw:section=<id> [key=value ...]
@@ -434,6 +444,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
     && !block.meta?.lifecycle?.superseded && block.annotation.superseded !== true && block.annotation.variant !== undefined)
     .map(block => block.annotation.section));
   for (const block of scanned) routeBlock(result, block, block.annotation.section, block.annotation, block.prose, roleVariantSections);
+  retainedPhysicalBlocks.set(result, Object.freeze([...scanned]));
   return result;
 }
 
