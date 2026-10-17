@@ -83,7 +83,9 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
         result,findings,_,_=self.report(self.recoveries(
             recovery_terms={"method":"net","cap":{"pct":.03}}),"lease_recoveries")
         self.assertIn("REC-02",[issue["code"] for issue in result["issues"]])
-        self.assertTrue(findings)
+        self.assertEqual(findings,[])
+        self.assertEqual(result["section_assessment"]["lease_recoveries"]["handled_shape_findings"][0]["registered_code"],
+                         "REC-02")
 
     def test_true_up_closed_shape_preserves_signed_credits_and_empty_array(self):
         row=dict(period_start="2026-01-01",period_end="2026-01-31",pool_actual=0,

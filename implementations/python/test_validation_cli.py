@@ -121,8 +121,8 @@ class ValidationCLITests(unittest.TestCase):
         malformed={"_meta":{"section":"property"}}
         result,status=self.command(HEADER+fence(malformed))
         self.assertEqual(status,1)
-        self.assertNotIn("code",result["error"])
-        self.assertIn("META-01",[i["code"] for i in result["partial_validation_result"]["errors"]])
+        self.assertNotIn("error",result)
+        self.assertIn("META-01",[i["code"] for i in result["errors"]])
 
     def test_external_composition_refuses_without_cli_null_binding_union(self):
         raw=HEADER+external("property")

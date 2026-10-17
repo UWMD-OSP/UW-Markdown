@@ -71,8 +71,8 @@ def _violations(value,schema,root,path=""):
         siblings={key:item for key,item in schema.items() if key!="$ref"}
         return _violations(value,target,root,path)+_violations(value,siblings,root,path)
     out=[]
-    def problem(message):
-        out.append(dict(field=path,message=message))
+    def problem(message, constraint=None):
+        out.append(dict(field=path,message=message,_constraint=constraint))
     kinds=schema.get("type",())
     if isinstance(kinds,str):kinds=(kinds,)
     matches=(not kinds or value is None and "null" in kinds
@@ -83,7 +83,8 @@ def _violations(value,schema,root,path=""):
         or finite(value) and "number" in kinds
         or finite(value) and int(value)==value and "integer" in kinds)
     if not matches:
-        return [dict(field=path,message="Value does not satisfy the fixed schema type")]
+        return [dict(field=path,message="Value does not satisfy the fixed schema type",
+                     _constraint=("type", tuple(kinds)))]
     if "enum" in schema and not any(_same(value,item) for item in schema["enum"]):
         problem("Value is outside the fixed schema enumeration")
     if "const" in schema and not _same(value,schema["const"]):
@@ -91,7 +92,8 @@ def _violations(value,schema,root,path=""):
     if isinstance(value,dict):
         for key in schema.get("required",()):
             if key not in value:
-                out.append(dict(field=path+("." if path else "")+key,message="Required authored member is absent"))
+                out.append(dict(field=path+("." if path else "")+key,message="Required authored member is absent",
+                                _constraint=("required", None)))
         properties=schema.get("properties",{})
         for key,item in value.items():
             target=path+("." if path else "")+key
@@ -120,7 +122,7 @@ def _violations(value,schema,root,path=""):
                           ("exclusiveMinimum",lambda bound:value>bound),
                           ("exclusiveMaximum",lambda bound:value<bound)):
             if key in schema and not valid(schema[key]):
-                problem("Number is outside the fixed "+key+" bound")
+                problem("Number is outside the fixed "+key+" bound", (key, schema[key]))
     for child in schema.get("allOf",()):
         out.extend(_violations(value,child,root,path))
     if "oneOf" in schema:
@@ -134,8 +136,9 @@ def _violations(value,schema,root,path=""):
     return out
 
 
-def optional_shape_assessments(document):
+def optional_shape_assessments(document, *, registered_recovery_shapes=None):
     """Current inline payload admission; history is not financially reclassified."""
+    represented = registered_recovery_shapes or {}
     result={name:dict(shape_findings=[]) for name in
             ("lease_recoveries","capital_stack_sizing","waterfall_claims")}
     physical={id(block):index for index,block in enumerate(document.source.blocks)}
@@ -152,8 +155,18 @@ def optional_shape_assessments(document):
         findings=([dict(field=field,message=message) for message in unsupported]
                   if unsupported else _violations(value,schema,root,field))
         for finding in findings:
-            result[family]["shape_findings"].append(dict(section=block.section,
-                                                        **finding,context=dict(context)))
+            constraint = finding.pop("_constraint", None)
+            evidence = dict(section=block.section, **finding, context=dict(context))
+            code = (represented.get((physical[id(block)], finding["field"], constraint))
+                    if family == "lease_recoveries" else None)
+            if code:
+                # Exact physical row, authored field and schema constraint only.
+                # Retain evidence; never infer ownership from a generic REC code.
+                result[family].setdefault("handled_shape_findings", []).append(dict(
+                    **evidence, registered_code=code,
+                    disposition="represented_by_registered_recovery_finding"))
+            else:
+                result[family]["shape_findings"].append(evidence)
     for block in current_blocks(document,"rent_roll"):
         tenants=block.parsed.value.get("tenants")
         if not isinstance(tenants,list):continue

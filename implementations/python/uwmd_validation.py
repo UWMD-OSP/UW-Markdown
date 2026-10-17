@@ -37,7 +37,7 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
     bed_rules(ledger)
     tax_rules(ledger)
     capex_rules(ledger)
-    lease_rules(ledger)
+    recovery_shapes = lease_rules(ledger)
     composition_rules(ledger)
     waterfall_rules(ledger)
     builtin_rules(ledger)
@@ -63,4 +63,5 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
                 composition_assessment=copy.deepcopy(composition),
                 metadata_assessment=copy.deepcopy(metadata),
                 section_assessment={"lease_up_schedule": copy.deepcopy(lease_up),
-                                    **copy.deepcopy(optional_shape_assessments(snapshot))})
+                                    **copy.deepcopy(optional_shape_assessments(
+                                        snapshot, registered_recovery_shapes=recovery_shapes))})
