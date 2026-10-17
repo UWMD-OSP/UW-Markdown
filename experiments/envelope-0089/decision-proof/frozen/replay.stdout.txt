@@ -1,0 +1,1 @@
+PASS {"candidate_models":7,"real_ed25519_mutation_pairs":42,"real_ed25519_label_pairs":14,"supplied_sources":4,"admitted_source_controls":2,"refused_source_controls":2,"missing_source_controls":3}; original source/model/helper bytes preserved; real Ed25519 is not source/financial certification
