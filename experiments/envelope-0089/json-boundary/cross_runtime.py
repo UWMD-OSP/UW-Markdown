@@ -81,6 +81,8 @@ def main():
         out.mkdir(parents=True, exist_ok=False)
     binary = shutil.which("node")
     metadata = dict(started_at=datetime.now(timezone.utc).isoformat(), python=sys.version,
+        checker_sha256=sha(Path(__file__).read_bytes()),
+        guard_tests_sha256=sha((HERE/"test_cross_runtime.py").read_bytes()),
         node_binary_name=Path(binary).name if binary else None, node_binary_sha256=sha(Path(binary).read_bytes()) if binary else None)
     (out/"execution.json").write_bytes(capture.encoded(metadata))
     original_run = capture.subprocess.run

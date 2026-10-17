@@ -1816,3 +1816,13 @@ integrator independently read/replayed the artifact; Node20 CI reuses the same
 bounded check. Existing model/codec/namespace/authentication evidence remains
 unchanged. RFC0089's concrete mapping/authentication choices stay unaccepted;
 no schema, Envelope1 behavior, version or launch state changes.
+
+The initial JSON study CI39066319530 failed its native diagnostic-text byte
+comparison: independent Node20.20.2 reproduction finds exactly two syntax-only
+JSON.parse message suffix differences from Node24.14.1. Original helpers and
+frozen evidence remain byte-identical. A separate fail-closed checker permits
+only those two measured message pairs at exact input/vector identities; all
+acceptance/classes/models/crypto/source/dependency/raw-stream controls remain
+strict. Actual Node20 reference streams and failure evidence are preserved.
+Four mutant guard methods and both measured runtime replays pass before the
+corrected exact-head CI; the failed run is never represented as successful proof.

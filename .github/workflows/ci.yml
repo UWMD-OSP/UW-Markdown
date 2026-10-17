@@ -308,7 +308,16 @@ jobs:
           python3 -B -m unittest discover -s experiments/envelope-0089/empty-collections -p test_empty.py -v
           node --test experiments/envelope-0089/empty-collections/independent.test.mjs
           python3 -B experiments/envelope-0089/namespace-proof/check.py
-          python3 -B experiments/envelope-0089/json-boundary/capture.py
+          python3 -B -m unittest discover -s experiments/envelope-0089/json-boundary -p test_cross_runtime.py -v
+          python3 -B experiments/envelope-0089/json-boundary/cross_runtime.py --out "${{ runner.temp }}/envelope-json-boundary"
+
+      - uses: actions/upload-artifact@v6
+        if: matrix.node == 20 && always() && hashFiles('experiments/envelope-0089/json-boundary/cross_runtime.py') != ''
+        with:
+          name: isolated-envelope-json-boundary-node20
+          path: ${{ runner.temp }}/envelope-json-boundary/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added
