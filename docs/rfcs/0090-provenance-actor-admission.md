@@ -180,8 +180,11 @@ now refuse; newly issued receipt validation counts/signing inputs may change.
 This RFC creates no rule refusing every receipt on validation errors, and does
 not alter existing receipt recomputation, signature, canonicalization-version
 or verdict precedence. V.13's existing source-admission guards remain separate.
-The implementation review must inventory actual consumer results rather than
-assert universal receipt invariance or invent a new refusal.
+The measured32 native receipt/document-signature consumer events are unchanged.
+A same-byte actor-absent source probe preserves subject/results but changes the
+new receipt's policy error count0-to1 and signing preimage only by that count;
+unsigned own/cross verification remains verified. This supplies no real signature
+backend proof and asserts neither universal receipt invariance nor a new refusal.
 
 Apply the [owner's prelaunch compatibility policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16):
 all pre5 releases are historical, with no old-reader, grandfathering or migration

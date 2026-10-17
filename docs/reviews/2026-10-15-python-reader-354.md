@@ -397,9 +397,17 @@ coverage. Physical-shape precedence is explicitly governed rather than silently
 letting overwritten malformed wrappers escape both checks. Other historical
 financial/source/role checks retain their applicability.
 
-Receipt/signature consequences are measured separately in the inventory; a
-new focused receipt control removes an actor only from a disposable Parkview
-copy. Issuance records one additional validation error while calculations remain
+Receipt/signature consequences are measured separately in the
+[complete inventory](./2026-10-15-python-reader-354.actor-inventory.json), using
+the [read-only observer](./2026-10-15-python-reader-354.actor-inventory.mjs).
+The32 paired native consumer events (four issueReceipt returns, two issuance
+refusals,11 verifyReceipt and15 verifyDocumentSignature) have identical inputs
+and results/refusals. A separate same-byte actor-absent probe preserves subject
+`sha256:a9f6e8470143980521ec443b378ca42722805f435a3deaf7731a13dfae5d7d37`
+and results, while policy errors change0-to1 and the signing payload changes
+only by that count. Both engines' own/cross unsigned verification stays verified;
+this is no cryptographic signature/backend claim. A new focused receipt control
+removes an actor only from a disposable Parkview copy. Issuance records one additional validation error while calculations remain
 identical, and existing verifyReceipt still verifies that newly issued receipt.
 Actually removing actor content changes its semantic subject; changing diagnostic
 allocation on identical source bytes does not. New policy counts can change a
