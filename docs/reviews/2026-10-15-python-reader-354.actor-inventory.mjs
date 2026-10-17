@@ -19,6 +19,7 @@ const object = value => value !== null && typeof value === 'object' && !Array.is
 const json = value => JSON.stringify(value, (_key, entry) => typeof entry === 'number' && !Number.isFinite(entry) ? { $number: String(entry) } : entry);
 function state() {
   globalThis[KEY] ??= { origins: new WeakMap(), sequence: 0 };
+  globalThis[KEY].pending ??= [];
   return globalThis[KEY];
 }
 function git(root, ...args) {
@@ -58,6 +59,7 @@ function identity(root) {
     implementation: files.split('\n').filter(path => !path.endsWith('.test.ts')).map(path => fileIdentity(root, path)) };
 }
 function emit(row) {
+  if (row.kind !== 'indexed-case') state().pending.push(row.sequence);
   const output = process.env.UWMD_ACTOR_JOURNAL;
   if (output) appendFileSync(output, `${json(row)}\n`);
 }
@@ -129,6 +131,21 @@ export function observedValidate(fn, args, context = {}) {
     throw error;
   }
 }
+export async function observedAPI(name, fn, args, context = {}) {
+  const input = { arguments_sha256: sha(json(args)), source_sha256: typeof args[0] === 'string' ? sha(args[0]) : null };
+  try {
+    const result = await fn(...args);
+    emit({ kind: 'consumer-api', sequence: state().sequence++, name, context, input, actual: { result, result_sha256: sha(json(result)) } });
+    return result;
+  } catch (error) {
+    emit({ kind: 'consumer-api-refusal', sequence: state().sequence++, name, context, input, actual: { name: error.name, code: error.code ?? null, message: error.message } });
+    throw error;
+  }
+}
+export function observedCase(suite, scenario, status, message) {
+  const related_events = state().pending.splice(0);
+  emit({ kind: 'indexed-case', sequence: state().sequence++, suite, scenario, status, message: message ?? null, related_events });
+}
 function replaceExactly(source, anchor, replacement) {
   assert.equal(source.split(anchor).length, 2, `Observer anchor must occur once: ${anchor.slice(0, 80)}`);
   return source.replace(anchor, replacement);
@@ -149,6 +166,25 @@ export function instrument(source, path, unit = false) {
     source = `import { observedValidate as __actorObserve } from ${JSON.stringify(runtime)};\n${source}\nexport function validateUWFile(...args) { return __actorObserve(__actorOriginalValidateUWFile, args, ${context}); }\n`;
     injected = true;
   }
+  if (normalized.includes('/uwmd-verify/') && ['src/receipts.ts', 'dist/receipts.js', 'src/document-signatures.ts', 'dist/document-signatures.js'].some(suffix => normalized.endsWith(suffix))) {
+    for (const name of normalized.includes('/receipts.') ? ['issueReceipt', 'verifyReceipt'] : ['verifyDocumentSignature']) {
+      source = replaceExactly(source, `export async function ${name}(`, `async function __actorOriginal_${name}(`);
+      source += `
+export async function ${name}(...args) { return __actorObserveAPI(${JSON.stringify(name)}, __actorOriginal_${name}, args, ${context}); }
+`;
+    }
+    source = `import { observedAPI as __actorObserveAPI } from ${JSON.stringify(runtime)};
+${source}`;
+    injected = true;
+  }
+  if (normalized.endsWith('/scripts/run-conformance.mjs')) {
+    source = replaceExactly(source, 'function record(suite, scenario, status, message) {', 'function record(suite, scenario, status, message) {\n  __actorObservedCase(suite, scenario, status, message);');
+    source = `import { observedCase as __actorObservedCase } from ${JSON.stringify(runtime)};
+${source}`;
+    // Preserve a shebang as the first line when prepending imports.
+    source = source.replace('#!/usr/bin/env node', '');
+    injected = true;
+  }
   if (injected && unit) source = `import { expect as __actorExpect } from 'vitest';\n${source}`;
   return injected ? source : null;
 }
@@ -162,7 +198,12 @@ export async function resolve(specifier, context, nextResolve) {
     assert(existsSync(path), `Explicit local workspace dependency unavailable: ${path}`);
     return { url: pathToFileURL(path).href, shortCircuit: true };
   }
-  return nextResolve(specifier, context);
+  const result = await nextResolve(specifier, context);
+  if (result.url.startsWith('file:')) {
+    const match = slash(fileURLToPath(result.url)).match(/\/packages\/(uwmd-[^/]+)\/dist\/(.*)$/);
+    if (match) return { url: pathToFileURL(join(loaderRoot, 'packages', match[1], 'dist', match[2])).href, shortCircuit: true };
+  }
+  return result;
 }
 export async function load(url, context, nextLoad) {
   const result = await nextLoad(url, context);
@@ -223,7 +264,7 @@ async function apiControls(root) {
   const bad = () => { const value = meta(); delete value.provenance.actor; return { _meta: value }; };
   const good = () => ({ _meta: meta() });
   const tests = [];
-  for (const [label, value] of [['absent', undefined], ['null', null], ['empty', ''], ['number', 3], ['false', false], ['array', []], ['object', {}], ['space', ' '], ['unicode', 'Ã¤Â½Å“Ã¨â‚¬â€¦'], ['principal-not-source-tag', 'manual']]) {
+  for (const [label, value] of [['absent', undefined], ['null', null], ['empty', ''], ['number', 3], ['false', false], ['array', []], ['object', {}], ['space', ' '], ['unicode', 'ÃƒÆ’Ã‚Â¤Ãƒâ€šÃ‚Â½Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã‚Â¨ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦'], ['principal-not-source-tag', 'manual']]) {
     const payload = good();
     if (value === undefined) delete payload._meta.provenance.actor; else payload._meta.provenance.actor = value;
     tests.push({ id: `actor-${label}`, parsed: parse(source([fence('property', payload)])) });
@@ -320,15 +361,27 @@ async function cliObserve(root, output) {
   assert(!existsSync(journal));
   const rows = [];
   for (const { path, declaration: entry } of cases) {
-    const args = entry.args.map((arg, i) => i === 0 && entry.fixture_dir ? join(ROOT, entry.fixture_dir, arg) : arg);
+    const fixture = join(ROOT, entry.fixture_dir ?? '');
+    const args = entry.args.map(arg => entry.path_args !== false && existsSync(join(fixture, arg)) ? join(fixture, arg) : arg);
+    const expectedPath = entry.expect?.file ? entry.expect.file.includes('/') ? entry.expect.file : slash(relative(ROOT, join(fixture, entry.expect.file))) : null;
     const runResult = run(root, [join(root, 'packages/uwmd-cli/bin/uwmd.mjs'), 'validate', ...args], journal);
     let result = null;
     try { result = JSON.parse(runResult.stdout); } catch { /* Refusal output is preserved separately. */ }
-    rows.push({ id: entry.id, case: fileIdentity(ROOT, path), expected: entry.expect?.file ? fileIdentity(ROOT, entry.expect.file) : null,
+    rows.push({ id: entry.id, case: fileIdentity(ROOT, path), expected: expectedPath ? fileIdentity(ROOT, expectedPath) : null,
       command: ['node', 'packages/uwmd-cli/bin/uwmd.mjs', 'validate', ...entry.args],
       actual: { exit_code: runResult.status, signal: runResult.signal, stderr: runResult.stderr, stdout_sha256: sha(runResult.stdout), result }, expected_exit_code: entry.expect?.exit_code ?? null });
   }
   return { kind: 'actual-portable-validate-cli-calls-not-full-runner-comparison', identity: identity(root), cases: rows, journal: readJournal(journal) };
+}
+async function nativeObserve(root, output) {
+  const journal = `${output}.journal.jsonl`;
+  assert(!existsSync(journal));
+  const result = run(root, [join(ROOT, 'scripts/run-conformance.mjs'), '--json'], journal, ROOT);
+  let report = null;
+  try { report = JSON.parse(result.stdout); } catch { /* Preserve raw output and refusal separately. */ }
+  return { kind: 'actual-original-indexed-corpus-driver-observation', identity: identity(root), input_checkout: git(ROOT, 'rev-parse', 'HEAD'),
+    driver: fileIdentity(ROOT, 'scripts/run-conformance.mjs'), original_corpus_index: fileIdentity(ROOT, 'conformance/corpus-index.json'),
+    actual: { exit_code: result.status, signal: result.signal, stderr: result.stderr, stdout: result.stdout, report }, journal: readJournal(journal) };
 }
 const direct = process.argv[1] && pathResolve(process.argv[1]) === SELF;
 if (direct) {
@@ -340,6 +393,7 @@ if (direct) {
   else if (mode === 'sources') result = await sourceScan(root);
   else if (mode === 'controls') result = await apiControls(root);
   else if (mode === 'unit') result = await unitObserve(root, output);
+  else if (mode === 'native') result = await nativeObserve(root, output);
   else if (mode === 'cli') result = await cliObserve(root, output);
   else throw new Error(`Unknown mode ${mode}`);
   noOverwrite(output, result);
