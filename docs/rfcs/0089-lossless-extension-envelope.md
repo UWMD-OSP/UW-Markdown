@@ -199,6 +199,63 @@ silently revise the existing baseline or claim full Reader conformance from an
 experimental Envelope round-trip. The isolated source example below reads
 retained physical source rather than changing any current parsed API or wire.
 
+### D2b — Exact recommended portable minimum (unaccepted)
+
+Keep Protocol II.6a.6's subset contract: a baseline names required fields and
+an implementation may emit more. Do not make an implementation's internal
+`ParsedUWFile` shape normative. Replace only the affected extension collection
+minimum with these identity-bearing forms:
+
+```ts
+type PortableBlockMinimum = {
+  meta?: JsonValue; // present iff the authored payload carried _meta
+  content: Record<string, JsonValue>;
+};
+type PortableExtensionMinimum =
+  | { mode: 'single'; block: PortableBlockMinimum }
+  | { mode: 'variants'; blocks: Array<{
+      variant: string | null;
+      block: PortableBlockMinimum;
+    }> };
+// extensions: Record<string, PortableExtensionMinimum>
+// superseded[id]: PortableBlockMinimum[], in explicit history source order
+```
+
+`meta` copies the authored `_meta` value without filling defaults; absent and
+explicit null remain different. `content` contains the authored payload members
+except `_meta` and `_notes`, following the accepted minimum. In particular,
+`_role`, `_overrides`, unknown values and an ordinary member named `content`
+remain inside content when authored. Optional role/override echoes add no
+required baseline keys. Existing builtin/append-only projection conventions are
+unchanged, including the pipeline log's existing complete entry objects.
+
+A variants record carries the exact nullable identity even when the original
+annotation would otherwise be outside the minimum: null and literal `default`
+are distinct, null sorts first, duplicate exact identities refuse and decoding
+never sorts a received stamped collection into validity. The single-mode
+minimum does not require an annotation echo; its complete authored annotation,
+including any non-routing label, remains in the full Envelope. History blocks
+retain their ordered authored metadata/content; they do not become current
+variant records. Envelope block extras and retained prose remain mandatory for
+model-fidelity exchange and commitment, not new parse-minimum requirements.
+
+Current selection means the **last physically occurring non-superseded block
+within the applicable exact identity**, as Format2.7 states; revision numbers
+do not replace source order. Explicitly superseded blocks retain physical order
+in history. An overwritten but unmarked current block is still a physical source
+record, not authority to change its lifecycle or relabel it as explicit history.
+V.13 independently refuses ambiguous/duplicate selection before routing and
+retains its stricter repeated/superseded-extension refusals. This clarification
+neither accepts draft RFC0085 history completeness nor makes ordinary current
+selection proof that every physical source block was authenticated.
+
+The [decision proof](../../experiments/envelope-0089/decision-proof/README.md)
+freezes exact extension/history minimum examples from seven preserved complete
+models. It demonstrates that changing `_notes` or retained prose can leave the
+portable minimum unchanged while changing the complete semantic subject and
+invalidating its signatures. The minimum is therefore **not** an authentication
+preimage or a reconstruction source for omitted history/prose/annotations.
+
 ### D3 — Payload and model fidelity
 
 Preserve complete annotations, complete fenced payloads (with `_meta` exactly
@@ -241,6 +298,23 @@ admission and legacy codec support are not implementation requirements. Accurate
 current-regime descriptors and clear unsupported-regime refusal suffice; this
 RFC adds no compatibility capability/binding layer. MCP conversion still decodes once
 through the shared model rather than selecting a peer per consumer.
+
+**Recommended completion of the CSV candidate's empty-container carrier:**
+add `empty_collections_json` to the proposed new mapping's `document.csv`, with
+a canonical JSON array of closed `{path, kind}` records. Permit only empty
+builtin variant-map slots at `/sections/<escaped-id>` (`kind: "object"`) and
+empty explicit-history slots at `/superseded/<escaped-id>` (`kind: "array"`).
+All required outer collections already have their fixed map/array shape. Empty
+containers inside block scopes, extras and frontmatter use existing typed root
+rows, not this field. Sort these records by exact RFC6901 path in UTF16 order;
+reject duplicate/aliased paths, noncanonical order, wrong kind/location and any
+overlap with a nonempty block descriptor. Reconstruct the declared empty slot
+before final complete-model/digest validation. For example,
+`[{"path":"/superseded/x_review","kind":"array"}]` preserves an authored empty
+history slot. This is a concrete mapping proposal, not a ban on the legal empty
+model domain or a field admitted under CSV1. It is not implemented by the frozen
+codec-study and requires independently authored positive/negative fixtures before
+acceptance; existing21 artifacts must not be rewritten to pretend otherwise.
 
 #### Complete candidate codec examples (unaccepted)
 
@@ -403,6 +477,54 @@ version, or use a crypto-valid old subject to bypass the guarded source.
 These current-regime refusal controls do not require implementing an archived
 canonicalization or receipt regime. Compare under the approved current contract;
 never retry a historical hash procedure to obtain an acceptable verdict.
+
+### D5a — Recommended authentication boundary and real binding evidence
+
+Recommend the new complete E_NEXT semantic value, minus only the existing three
+volatile members, as the C_NEXT whole-model preimage. Keep the existing
+`uw-envelope-semantic` domain name while separately allocating its new supported
+version after approval. The Envelope and canonicalization labels participate in
+their own declared commitments; a similar financial result or a valid old
+signature cannot substitute a different subject/version.
+
+**Document authentication remains source-gated.** A future V.13 counterpart for
+the new subject must freshly parse and account for the supplied Markdown under
+the existing admission guards, then construct D1 exactly. Repeated extension ids,
+superseded extensions, duplicate selection and unsafe/ambiguous source still
+refuse. The singleton/one-peer eligible fixtures can map to D1 after that guard;
+ordinary legal mixed peers and extension history may be losslessly converted
+without becoming V.13-authenticatable. Directly authored candidate models lack
+that source proof. No generic model-signature capability or additional signing
+admission is introduced by this RFC.
+
+**Receipts keep their own accepted issuance obligations.** Their subject uses
+the approved ordinary whole-Envelope projection, not the portable minimum; pack
+recomputation and complete-result/parse refusals still apply. Do not turn V.13's
+extra authentication bans into a new receipt rule. A signed receipt attests its
+stated computation/subject and does not by itself prove every physical source
+record or retained-history authority. Candidate financial receipt issuance and
+verification remain unimplemented until the new subject/routing contract is
+accepted; byte-binding experiments must not be described as that implementation.
+
+The focused [real Ed25519 evidence](../../experiments/envelope-0089/decision-proof/README.md)
+uses an openly known research key with Node crypto, not accepting stubs. Seven
+preserved models supply42 mutation pairs and14 label-change pairs for document
+and receipt-shaped signing inputs. Full payload, metadata, notes or prose changes
+break signatures; semantic-preserving key order and excluded Envelope volatility
+do not. Label changes cannot reuse a signature. These are cryptographic byte
+controls, not identity trust, financial correctness or source completeness.
+
+Actual current production APIs separately admit two exact source/model controls
+and refuse two repeated/history sources before gated candidate signing. Three
+model-only inputs have no attributable source for gated issuance. Current-label
+control artifacts verify using real Ed25519; source `_notes` mutations return
+INT11/RCP01 before backend execution. Candidate labels remain unsupported today:
+actual current document/receipt checks return INT14/RCP10 with backend0 despite
+valid signature bytes. Relabeling a candidate digest as current produces current
+subject/source refusal, never transferred authentication. The source/compiled
+hashes and every complete artifact/payload/result are frozen independently from
+runtime metadata; no production label, schema, financial result or receipt rule
+changes.
 
 ## Compatibility analysis
 
@@ -749,14 +871,22 @@ Do not merge an experimental recovery snapshot or implement a private shape firs
    rehashing:** excluded by the owner's public-launch compatibility policy.
    Historical archives remain evidence; new issuance is not historical proof.
 
-## Unresolved questions
+## Owner decision package (recommended, not accepted)
 
-| Owner decision | Proposed answer; not accepted |
-|---|---|
-| Exact minimal extension shape | D1 tagged single/variants entries with identity-bearing records; no unrelated collection rewrite. |
-| Mixed unlabelled/named admission and affected projections | D2 preserves the opted-in unlabelled peer as exact null, distinct from literal `default`; coordinate Format, Protocol portable subset projection and reference public API implications explicitly. |
-| XML1-inexpressible legal strings/member names | Do not ban legal JSON values. Choose an explicitly versioned escaped lexical mapping or a clearly governed representability refusal; the lab implements the latter as an experimental limit only. |
-| Version/regime labels and release placement | The owner has settled the pre-5.0 compatibility policy. Specific representation/subject labels and independent Envelope/Protocol/Format-if-needed/codec/canonicalization/package versions still require design approval; no 5.0 tag/publication without separate launch approval. |
+The smallest coherent design decision is three linked choices. Pre-5.0 backward
+support is already excluded by owner policy and is not a competing option.
+
+| Owner choice | Recommended coherent answer | Scope/evidence still required before acceptance |
+|---|---|---|
+| Tagged identity and portable projection | Approve D1 single/variants wrappers and D2's exact opted-in null identity distinct from literal `default`; use the D2b extension/history minimum. Keep ordinary current selection, explicit history and physical source accounting separate. | Coordinate Format mixed-admission wording, portable subset text, reference public API shapes and exact duplicate/current-order fixtures. No unrelated builtin collection redesign. |
+| Complete exchange mapping | Choose total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Govern namespace/codec/bundle text and full schema domain; add empty-map/history and independent XML namespace/ZIP/domain fixtures. Existing codec evidence is bounded, with its BOM defect/correction preserved. |
+| Whole-model authentication subject | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported-regime refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Independently version Envelope, Protocol, Format if its meaning changes, mappings, signature schema/constants and packages. Actual wire labels and release placement require a later coordinated decision; no5.0 tag/publication without separate launch approval. |
+
+Approving a direction does not complete the acceptance gates above. RFC0085
+retained-history authority and RFC0088 numerical procedures are not accepted by
+this package; legal archival storage is not proof of completeness. No automatic
+migration, old-regime decoder/hash fallback, historical artifact rewrite or
+implicit model generation is proposed.
 
 No expansion of V.13 authentication admission is proposed. RFC0085 compaction
 and RFC0088 numerical determinism remain separate drafts; this RFC accepts neither
