@@ -15,7 +15,7 @@ def document():
             "rounding_helper_sha256": hashlib.sha256(HELPER.read_bytes()).hexdigest(),
             "limits": {"power_numerator_magnitude": 256, "power_dyadic_denominator": 16,
                        "exp_absolute_input": 1, "series_terms_attempts": [80, 128, 256]},
-            "cases": [{"id": c["id"], "reference": answer(c)} for c in json.loads(raw)["cases"]}
+            "cases": [{"id": c["id"], "reference": answer(c)} for c in json.loads(raw)["cases"]]}
 
 
 if __name__ == "__main__":
