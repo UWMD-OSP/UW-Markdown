@@ -34,19 +34,42 @@ stated-value thresholds, period/static-selector/return-basis/student-bed checks,
 cash/lease/reserve structure and existing hedge/escrow prerequisites. It does not
 supply absent financial inputs or evaluate an unaccepted numerical procedure.
 
-The CLI still refuses `validate` and discovery remains parse-only. Remaining
-MU/CS, TAX, LSE/REC, CAPX, WF and official builtin field/rule obligations must be
-implemented and demonstrated before complete validation is claimed. External
-sections and the already documented source-identity boundaries also need their
-accepted applicability controls. Existing local shape findings are not guessed
-registered codes.
+The next local chunk integrates MU/CS, TAX, LSE/REC, CAPX and structural WF
+checks, and official field/rule checks for data center, hospitality and
+manufactured housing. Their private arithmetic executor accepts only the
+repository's builtin dictionary definitions and fixed accepted class assertions;
+it never executes document/custom expressions, applies models or supplies missing
+values. Each dictionary intermediate follows its declared quantum. This narrow
+internal prerequisite does not implement the complete calculation interface.
 
-Eight new focused methods pass locally, including direct API comparison against
-all 111 unchanged portable validation projections and result partition/coverage/
-readiness/read-only/role/metadata/async-separation controls. These are **not 111
-CLI executions or portable capability passes**. No old control or corpus file
-was changed; the original 151 methods were not rerun at this checkpoint.
-The full command/wire/refusal and applicable nonportable gates below remain open.
+Twenty new focused methods pass locally: the 111 unchanged portable validation
+projections through the direct API; exact diagnostic arrays (including repeated
+codes) for all 76 TAX/CAPX/LSE/REC fixtures; the 17 waterfall and two capital-stack
+document structural assertions; twelve source-admitted builtin validation code
+projections; and decoded-API class, type, quantum, partition, coverage, readiness,
+read-only, role, metadata and async-separation controls. These are **not CLI
+executions, complete financial-case passes or portable capability passes**.
+Frozen expected calculations and bare waterfall outcome cases are separate
+obligations and were not asserted here. No old control or corpus file changed;
+the original 151 methods were not rerun at this checkpoint.
+
+The CLI still refuses `validate` and discovery remains parse-only. Completion
+still needs the accepted external-section applicability rules, derived
+sources/uses footing and a full field/condition audit of the integrated families,
+then the command/wire/refusal and nonportable gates below. Existing local shape
+findings are not guessed registered codes.
+
+A concrete source prerequisite remains: 49 of 61 builtin-class documents
+(the manufactured-housing family) contain a `modules` sequence of objects with
+a four-space `version` continuation. The existing restricted YAML parser refuses
+those unchanged sources with `UNSUPPORTED_YAML_FEATURE`. Format 2.2a explicitly
+shows this spelling and defines object entries; Appendix D admits sequences and
+one-level nested mappings without a sequence-object example. This is an existing
+source-admission gap to reconcile against those accepted provisions, not a
+financial/numerical decision or a demonstrated new normative conflict. The tests
+retain the refusal and compare no adapted sources; separate decoded-API controls
+exercise the manufactured-housing validation contract. No all-61-source,
+Reader-tier or complete validation claim follows from these partial projections.
 
 ## Minimum-complete capability path — 2026-10-16
 
