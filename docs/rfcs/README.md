@@ -125,6 +125,8 @@ its RFC was written, and records that process failure rather than hiding it. See
 its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
 
+| [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
+
 ## Status values
 
 This is the authoritative list. An RFC's frontmatter `status:` must be one of

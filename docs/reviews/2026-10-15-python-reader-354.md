@@ -1,3 +1,8 @@
+> **Owner rule,2026-10-17:** prelaunch compatibility, migration/version analysis
+> and historical-artifact retention work described below is retired. Apply the
+> rule in AGENTS.md/CLAUDE.md. Current diagnostic/conformance tests remain;
+> the old retention inventory and replay companion are not required checks.
+
 # Independent Python structured Reader foundation — Issue #354
 
 Status: **partial `parse` capability, no Reader/Verifier tier certification**.
@@ -448,3 +453,350 @@ and source bytes are unchanged. No original expectation is regenerated or
 unrelated baseline altered. Final exact-head and post-merge exact-main CI are
 recorded on PR376 and the existing Issue354 amendment; no prior green run is
 substituted for either gate.
+
+### 2026-10-17 — Nine native refusals and draft RFC0091
+
+[RFC0091](../rfcs/0091-required-metadata-booleans.md) isolates the two missing
+required-boolean allocations without extending accepted RFC0090. Its table
+identifies all nine exact native source cases and separates three REC owning
+conditions and three rejected containers from three nested-valid documents
+missing six boolean members. The local inspector evidence is preserved even
+when an existing owning error makes that condition handled; independent
+findings cannot be suppressed by an unrelated or actor-only META-01.
+
+The [exhaustive evidence](./2026-10-17-validation-diagnostic-gap-354.evidence.json)
+preserves the original nine dcc5bd0a actual CLI responses, unchanged source
+hashes, rebuilt current-main TypeScript findings, all734 source hashes and the
+independently equal Python/Node two-boolean inventory. It is a sensitivity
+experiment, not an activated validator. The separate prior27-schema audit is
+preserved [losslessly](./2026-10-17-validation-diagnostic-gap-354.formal-audit.json.gz)
+(raw SHA256 c39c817afb2cb13f6b75da7f66ec47bc72074d1831e484e3711da5cabf9b482a).
+It establishes applicability observations, not126 newly allocated errors.
+
+Run the [read-only reproduction](./2026-10-17-validation-diagnostic-gap-354.repro.py)
+after `npm run build`, with `--out` pointing to a disposable report. It assesses
+725 admitted sources/9 parse refusals and captures reference results.205 source
+documents expose943 absent booleans (488 review/455 superseded), including two
+history instances; none of111 portable validate inputs is exposed. This is not
+zero overall consumer impact. The four standalone example sources are outside
+that734-source slice.
+
+The separate [in-memory counterfactual](./2026-10-17-validation-diagnostic-gap-354.counterfactual.mjs)
+loads the compiled validator with only the draft boolean pass inserted after
+actor admission. It changes no source/dist file or expectation; it is never a
+production/CI activation hook. Run its documented command on the pinned main
+build to reproduce1090 native passes/five differences/zero updated baselines.
+The RFC lists each affected check and distinguishes expected-error-set changes
+from zero-error standalone example assertions. Original sources, schemas,
+expectations, signatures, receipts and versions stay unchanged. Normal required
+CI runs without the research hook and must remain green.
+
+
+## RFC0091 implementation acceptance packet
+
+Owner direction authorizes the bounded implementation and independent verification,
+not final RFC acceptance or merge. RFC0091 remains draft. Candidate production
+changes implement only META-02/error and META-03/error for absent, null or
+nonboolean canonical review/superseded members, with both booleans valid.
+META-01, closed completeness suffixes, low-confidence info and unrelated typed
+admission remain unchanged. No coercion, inferred flags or source repair.
+
+TypeScript: 18 focused controls plus all25 accepted actor/shape controls pass;
+complete workspace4291 tests pass. Python's isolated source change630b03a2
+(e3807b0a in the integrator) adds eight controls; bounded main-based175 methods
+pass. Independent review of both implementations found no material predicate,
+parent precedence, physical/history, mutable-model or identity-order defect.
+Model-only section attribution follows existing traversal context, not invented
+annotation authority. The Python WIP separately consumes only exact matching
+field/block/error/predicate ownership; missing quality and unrelated local
+requirements remain visible. Its0a6cf833 checkpoint passes299 methods,
+111 actual validation CLI cases and Reader17 locally on Windows. Initial274e
+capital-stack expectation failure is preserved; the explicit union correction
+adds only02/03, retaining CC-03 iff financially mismatched. Discovery remains
+parse-only; this is not complete validation/Verifier or three-OS WIP proof.
+
+### Exact original-source impact and disposition
+
+[The read-only verification companion](./2026-10-17-validation-diagnostic-gap-354.implementation.py)
+checks the [manifest](./2026-10-17-validation-diagnostic-gap-354.implementation.json)
+and losslessly archived raw baseline/candidate observations. The original
+27-schema/734-source audit and original read-only counterfactual are preserved
+unchanged; actor-specific observer proposal fields are historical, not a new
+boolean oracle. Actual candidate findings independently match all943 proposed
+locations in205 unchanged uwx sources:488 review and455 superseded absences,
+including two historical findings. No source is repaired. The wider804-input
+direct API scan admits744/refuses60 unchanged;223 direct-assessment inputs gain
+961 findings. The extra18 are uwpart fragment inputs, not18 newly failing
+whole-document/native cases. There are96 direct-API validation-status changes;
+these are not96 portable expectation changes.
+
+Independent dispositions retain every205 source/943 field location,195 owning
+expectation identities and actual-consumer links.54 source identities have
+historical whole-validation calls;151 are reached by scoped APIs or lack such
+a call in that frozen journal. That historical graph is qualified; the new
+current-run consumer journal is the actual candidate evidence. Invalid fixture
+purpose, narrower financial/profile assertions and positive examples must not
+be conflated. No205-file baseline rewrite is justified.
+
+Actual13 additional baseline/candidate CLI subprocesses confirm all nine native
+inputs stay exit1, the three admitted missing-boolean cases gain exactly six
+findings, and all four positive kit examples flip0-to1 with six META-02 errors.
+Full error/warning/info partitions and original source bytes are checked.
+
+All111 actual portable validate subprocess responses, exits and source/case
+identities are exactly equal to baseline. All32 paired native issuance,
+receipt-verification and document-signature consumer events are exactly equal.
+The actual initial native runner confirms1090 pass/5 differences/0updates.
+One explicit candidate expectation change adds02/03 to the capital-stack
+agree/mismatch code unions on unchanged sources; CC-03 remains mismatch-only.
+Its exact original bytes and all2648 original corpus artifact identities are
+preserved. All other original corpus artifacts remain byte-identical. After
+that governed correction, native conformance is1091 pass/4 fail/0updates.
+
+The four remaining failures are `standalone/profiles/lease-abstract-v1`,
+`source-note-v1`, `inline-deal`, `externalized-deal`. Six top-level blocks omit
+human_review_required, while superseded is explicitlyfalse and actors are
+example-kit. Their original and introducing canonical revisions contain no
+review-boolean declaration; narrative review_status/flags cannot supply one.
+Accepted RFC0048's definition of done promises every example parses and
+validates. Keeping the existing zero-error assertions exposes that genuine
+joint-contract conflict rather than hiding it in expected diagnostics.
+
+The complete kit audit preserves17 disk source/copy files with20 omitted review
+members,12 historical-version checks, three identical embedded record copies,
+and the original ZIP's10entries/ninepayloads. Package/semantic identity tests
+continue passing with original bytes. `buildMeta` already defaults reviewfalse
+and supersededfalse for NEW metadata; this is not an author declaration for an
+omitted historical member. No original file, ZIP, signed subject or issued
+receipt was changed.
+
+**Smallest remaining owner disposition:** choose (a) genuinely author replacement
+positive kit examples with explicit review declarations and provenance, retaining
+originals as history, or (b) explicitly amend RFC0048's positive-validation promise
+and classify the originals as metadata-incomplete historical/focused examples.
+The integrator recommends (a) for a clean launch kit, with new authored identity
+and packaging verified, rather than inferring missing values. Neither option
+is activated by provisional diagnostic direction. The four failures are not
+permission to weaken validation or silently accept final RFC text.
+
+### Receipt and adopter boundaries
+
+[The executable receipt probe](./2026-10-17-validation-diagnostic-gap-354.receipts.mjs)
+uses original Parkview bytes plus disposable, JSON-validated in-memory omissions.
+Four vectors establish exact0/1/1/2 new policy errors; baseline/candidate subjects,
+computation/results and every other receipt member stay equal per same-byte
+vector. All16 issuer/verifier pairings preserve unsigned verified, real
+public-test Ed25519 verified, missing-backend unverifiable and tampered-policy
+signature failed (RCP-01). No historical artifact is authenticated or reissued.
+The initial harness removed finalsuperseded leaving a trailingcomma; two failed
+assumption runs were stopped, independently diagnosed, and the transformation
+now preserves validJSON and checks each fence before issuance. That malformed
+input was not evidence of a flag/receipt implementation defect. A baseline
+rebuild did not resolve the harness error and is not claimed as the fix.
+
+Same-byte diagnostics change no V9 payload hash, V11 block-signature bytes,
+document/Envelope or receipt subject. Actually inserting a boolean changes raw,
+package and complete document/Envelope/receipt subjects, but V9 excludes all_meta
+and V11 binds content_hash/section/actor/timestamp/kid/signed_at, so a boolean-only
+edit does not itself change V11 signing bytes. New author/timestamp can. New
+receipt policy counts change receipt signing bytes; verification semantics and
+precedence are unchanged. Validation status or a receipt's policy count is not
+a financial verification verdict. Existing CLI/tests transport errors normally;
+no producer/adopter interface, public type/export, schema, version or release
+is changed. RFC0085/0088/0089 remain separately draft;5.0 remains owner-reserved.
+
+### Integration gates
+
+The bounded validators, registry, Format/Protocol candidate text, tests and one
+attributed expectation are synchronized in draft#378. Existing schemas already
+require these booleans and remain byte-identical. Exact-final-head CI will be
+recorded in the PR and Issue354. Four positive-example contract failures block
+green integration/final acceptance; do not describe the earlier green draft-only
+run39066205003 as implementation evidence. Final owner acceptance and subsequent
+exact-main CI remain separate gates; no merge is authorized in this packet.
+
+Local portable reference conformance350/350 passes independently even though the
+native positive-example gate blocks the ordinary CI job before its portable step.
+Initial docs builds exposed a review link outside the docs-site copy set; the
+link must target its preserved GitHub artifact, not an uncopied local page.
+
+The additional13-CLI replay explicitly maps and traces each checkout's own
+core/verify runtime. An initial baseline invocation followed the numerical
+worktree's shared node_modules junction into candidate verify; that report is
+archived as negative harness evidence and is excluded from baseline claims.
+The corrected26-process report pins all resolved URLs, loaded files, raw streams
+and sources, confirming the0-to1 example exits. Direct verifier receipt API
+closures contain no @uwmd imports and are independently verified unaffected.
+All eight deterministic test signatures are preserved and independently verified
+with node:crypto against the included SPKI and exact canonical payloads.
+
+
+## RFC0091 owner option (a) — authored replacement positive kit
+
+Owner disposition2026-10-17 selects genuinely new positive examples, while all
+four originals, the original ZIP and signed/receipt evidence stay byte-identical
+as metadata-incomplete history. RFC0048's positive-validation promise remains
+as written. This direction does not accept RFC0091 or authorize readiness/merge.
+
+New kit: `examples/standalone/authored-2026-10-17/`, author
+`codex/standalone-kit-2026-10-17`, authored_at2026-10-17T21:34:15Z,
+source`system/standalone-kit`; package`pkg:standalone:authored:2026-10-17`.
+The lease abstract is`doc:standalone:2026-10-17:lease-abstract`, source note
+`note:standalone:2026-10-17:transcription`. Both deal carriers represent NEW
+logical deal`uw_standalone_authored_2026_10_17`; distinct physical members are
+`example:standalone:2026-10-17:inline-deal` and`...:externalized-deal`, with
+distinct byte digests. This preserves the full resolved canonical/digest equality
+required by RFC0048 without ignoring any frontmatter or metadata.
+
+| New top-level block | Review required | Superseded | Authored reason |
+|---|---|---|---|
+| lease abstract / deal_context | true | false | Review unresolved illustrative legal terms before use; this is a new revision-1 document head. |
+| source note / deal_context | true | false | Compare the illustrative transcription with an actual source before use; this is a new note head. |
+| inline / property | false | false | A deliberately authored fictional structural example needs no human fact-review for that purpose; this is the new record head. |
+| inline / rent_roll | true | false | Review illustrative tenant inputs before underwriting reliance; this is the new record head. |
+| externalized / property | false | false | The same fictional structural property and NEW logical record head in the externalized carrier. |
+| externalized / rent_roll | true | false | The same tenant-input review requirement and NEW record head, retained through externalization. |
+
+Exact one-line reasons are canonical provenance.notes and declarations.json;
+no boolean is derived from review_status or narrative flags. False for a fictional
+property is not evidence of a real property review. New fragments have explicit
+reviewtrue/supersededfalse and own part IDs; new source text is an explicit
+illustrative stand-in. No new financial amount, formula or result is computed.
+
+Original21 non-README standalone artifacts (including the original ZIP) and
+all original subject/signature/receipt/schema fixtures are pinned among2731
+unchanged artifacts in history.json. The original README is updated only for
+historical classification and directing adopters to the new kit. Original
+corpus-index/metrics expected bytes are separately preserved;11case/index rows
+and4new metric expectations are appended, with every old row unchanged/in order.
+Those new metric rows retain the same existing total_units-only observation
+on unchanged fictional numeric payloads, not a numerical rebaseline.
+
+The original four zero-error assertions keep their exact predicate while loading
+the replacement positives. All seven original auxiliary API/fragment/composition/
+package assertions continue on original bytes; the same seven also test the new
+kit. Eight additional node:test controls verify immutable history, additive-only
+expectations, six declarations/reasons, explicit missing-flag negative findings,
+old six META02 errors, four actual CLI exits/partitions/source preservation,
+new fragment validity/full canonical equivalence, and deterministic ZIP identity/
+semantic verification/source-context exclusion. No assertion is weakened.
+
+Authoring controls caught a double-prefixed new part reference and an old
+illustrative cash-flow `flows` member outside accepted Format4.26. Only the new
+copy now uses `series` with the same two rows; the old fragment is unchanged.
+Manual probe initially addressed UWPart.frontmatter instead of UWPart.part_id;
+the focused test then needed UWPart.blocks rather than treating variant maps
+as blocks. Those harness/data-authoring corrections do not change production
+selection, validation or arithmetic. Default crypto-light package verification
+without an injected semantic resolver reports unverifiable by design; the actual
+public CLI and explicit semantic-resolver controls verify all four semantic
+digests. No weaker verification status is claimed as VERIFIED.
+
+### Downstream writer inventory and activation consequences
+
+`2026-10-17-validation-diagnostic-gap-354.writers.json` preserves a bounded,
+independently audited source/probe summary. Full private auditSHA
+559d5a75da445999d66c4af3495ae1f5e686250868865e038671396dc2a2d0b0
+remains in the existing maintainer evidence; unrelated private guidance/status
+is deliberately excluded from this public inventory.
+
+| Writer/path | Observed current behavior | If RFC0091 activates |
+|---|---|---|
+| StackUW packages/underwriting-engine/src/export/meta-v2.ts: reshapeMetaV1toV2 | Old/direct helper preserves missing flat review/superseded values; its comments concern the historical Format2 path. | Not evidence of the current Format3 emission path. A bypassed output with admitted canonical parents can owe META02/03; existing Format2/wrapper refusals retain precedence. |
+| StackUW same file: toFormat3Meta; serialize.ts public Format3 branch; export-to-uwmd.ts default3.0 | Explicit canonical review and superseded booleans via flatvalue??false; Markdown, envelope, MCP/HTTP export routes call this adapter. | Well-typed emitted booleans do not gain META02/03. This is no proof of review truth, all conformance, or deployed version. Untyped nonbooleans still owe errors. |
+| StackUW backend/services/uwmd/marketDataDocument.ts | Emits false/false explicitly. | No missing-boolean finding on that emitted shape. |
+| StackUW internal watermark metadata | Sparse flat metadata is adapted at final Format3 serialization. | Do not confuse an internal sparse object with an emitted canonical block. |
+| UWMD buildMeta and its init/editor/host/Lite callers | Emit both booleans; sparse editor patches merge with full metadata. | Well-typed fresh helper output is unaffected; no generic safe-writer claim for untyped patches. |
+| UWMD low-level writeAgentBlock/restamp/renderer/Envelope codecs | Preserve caller-authored metadata and can retain omissions; they do not promise source repair. | Missing/invalid flags under admitted parents gain errors, including retained physical history; newly issued policy counts/validation exits can change. No source repair or automatic receipt-verdict rule follows. |
+
+At StackUW sourceheadfea704ee6a2b4d01057f216880678445347c76fe, the blanket claim
+that the current engine Format3 writer omits the booleans is **contradicted** by
+source and synthetic adapter/serializer probes. The narrower old-helper omission
+is **verified**. Four metadata-only controls cover absent/false/true/untyped values;
+this is not a financial engine run or live deployed-service audit. No downstream
+repository was edited. Adoption owners remain responsible for any bypassed old
+writer, explicit malformed flags or existing authored records; the validator
+must not default or rewrite those sources to suppress new errors.
+
+Final exact-head CI and independent checkpoint verification will be recorded
+in existing PR378/Issue354. RFC0091 stays draft/unmerged; all other RFCs retain
+their separate states. No package/specification version, tag or release.
+
+
+Bounded independent Python WIP0a6c replay of the four new and four historical
+records is preserved losslessly in authored-python.json.gz (rawSHA
+a6dd9fff9617fe22bce0e2deee93da73e9b1fef6988ed74fdd5921299fcc0226). The new abstract, source note and
+inline record are normal zero-error/exit0 results. The new externalized record
+has zero metadata errors but returns an honest typed COMP-UNRESOLVED/exit1:
+this implementation does not resolve package parts. It is not a four-of-four
+Python complete-validation claim. Historical cases keep META02 counts1/1/2/2;
+all source/runtime hashes are unchanged, and parse-only discovery remains.
+The reference CLI's separate four positives/zero-error/exit0 controls do not
+certify a Python resolver or a complete Verifier tier.
+
+The original Python8 audit JSON has CRLF outer formatting; its gzip archive
+preserves those exact bytes (compressedSHA b5e60b34ac175cacc87f8eea5c16e555a0ce6b3fc5f3049a3647388edb1a27f7).
+No Git text conversion of an evidence JSON display copy is used as raw identity.
+
+Independent replacement-kit checkpoint review at9c874bb0 is preserved losslessly
+in authored-review.json.gz (rawSHA
+29ae23a83bb9519ff441111fadd93f55aa67bb5ffc184e9449196e108046cd0f). Eight focused tests and the18 indexed
+standalone assertions pass; all21 original non-README standalone artifacts and
+all2731 protected Git subjects match the pinned c558 committed bytes exactly.
+Only11new index rows and4new metric rows are appended. The new ZIP hasSHA
+8cb9ce0d80784c367a9f545621a27189685c8efab0a82f10254cafd4dedb0679;
+its10members plusmanifest, all copies/digests and semantic-resolver checks pass.
+The actual public package CLI returns VERIFIED/exit0. The low-level no-provider
+API remains honestly unverifiable for semantic digests; it is not substituted
+for the explicit semantic/CLI proof. All original auxiliary predicates remain.
+
+Local integration at the committed kit checkpoint passes native1106/1106 and
+portable350/350 with zero updates/skips. Exact-final-head CI remains required
+before any readiness representation. Earlier c558 CI39070553296's14success/
+3failure/1skip is preserved as the old four-example contract failure, not
+retrospectively relabeled green. Draft status and final owner acceptance remain.
+
+
+The first authored-kit CI39072486033 atf8090509 exposed an overbroad new ZIP
+reproduction assertion: it compared native-host re-encoding with an archive
+created in a different timezone. Existing deal-package-zip.ts27–35 explicitly
+permits local DOS timestamp differences; schema/RFC0018 exclude those fields
+from member semantic identity. This is a test/fixture-parameter error, not an
+established production codec defect or a new portability contract. The failed
+run and its logs remain preserved; its passing steps are not a green run.
+
+The authored archive's timezone parameterEtc/GMT+7 is now explicit in declarations;
+its exact SHA8cb9ce0d...edb0679 and bytes remain unchanged. Exact-byte reproduction
+uses an isolated child with that declared environment parameter. Native-host
+repeat encoding, full decoded manifest/member equality, all raw member hashes,
+four semantic digests and original2731-artifact preservation remain checked.
+No assertion of source/member/subject integrity or positive validity is loosened;
+no archive normalized, no production codec/schema/numerical semantics changed.
+
+Independent timezone evidence is preserved losslessly in zip-timezone.json.gz
+(rawSHA9aabdea10939c72714f4b7fd332c7dc3fef081cb224f253ab9ad531d2c78d637). Both archives are9228bytes;
+only44 DOS timestamp bytes differ across11local/11central headers, while all
+member names/uncompressed bytes are identical. Etc/GMT+7 exactly reproduces
+frozenSHA8cb9...0679; UTC produces2c3c3767b3773b9e91d66898c1ee589eba44b935c79b1c6c00b04712b451419b.
+The corrected eight controls pass under UTC with both Node24.14.1 and the
+preserved official Node20.20.2 executable. No storedZIP or UWX byte changes.
+
+
+## RFC0091 owner acceptance — 2026-10-17
+
+The owner has now decided: "RFC 0091 goes to acceptance. I've reviewed the six
+review declarations in the authored-2026-10-17 kit and accept them as written."
+Earlier draft/pending language and raw candidate reports above remain historical
+evidence of their checkpoints, not the current RFC status. RFC/index/status and
+live example/Python guidance now record accepted, unreleased status.
+
+The owner requires final review and green exact-final-head CI before merging,
+with all2,731 protected artifacts byte-identical. Activation adds META-02/03
+errors on incomplete admitted canonical metadata, including retained history;
+validation exit codes and newly issued receipt policy counts may change. Sources
+and historical subjects are never repaired or rewritten. No receipt-verdict rule,
+schema, numerical procedure, version or release is changed by finalization.
+The exact final-head/main evidence is recorded in PR378 and Issue354's existing
+living comment. RFC0091 contains the breaking-impact recommendation and one
+writer migration note, explicitly distinguishing StackUW's false defaults from
+authorial review/lifecycle intent. RFC0085/0088/0089 remain separate drafts.

@@ -1,6 +1,12 @@
 # 13 — Build status (living document)
 
-**Owner launch policy, 2026-10-16.** [VERSIONS](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16) records 5.0 as the first official public compatibility baseline. Earlier published versions remain accurate prelaunch history, with no mandatory legacy readers/procedures/codecs/receipt regimes/APIs/shims. Independent surface versions, RFC discipline and separate explicit launch approval remain. RFCs 0085/0088/0089 remain drafts; their historical identity evidence is audit material, not a support obligation. No version or launch publication is selected.
+**Owner rule,2026-10-17.** AGENTS.md and CLAUDE.md carry the rule near the top:
+all @uwmd npm packages launch together at5.0.0; prelaunch releases use4.x.x from
+main as needed, including incompatible changes. Zero prelaunch compatibility:
+no migration/deprecation work, consumer-breakage analysis, bump recommendations,
+or prelaunch artifact preservation/repair. Earlier contrary work is retired.
+Current RFC/conformance/read-only verification and source-integrity requirements
+remain. No package numbers or release publication are changed here.
 
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
@@ -15,24 +21,33 @@ bare/nested shape and nonempty actor. Final integration requires exact-head CI
 and subsequent exact-main CI; no release version is allocated. Python discovery
 remains parse-only. RFCs0085/0088/0089 retain separate draft status.
 
-**Frozen numerical investigation baseline.** The study used `3eee0fbab3f5682dc345804782994dc22d321fae`
-(#372 merged); it is historical evidence, not current main. [Exact-main CI 38989037136](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38989037136)
-is green. Python's complete-validation lane continues independently with
-parse-only discovery; no complete Reader/Verifier claim follows.
+**Python diagnostic reconciliation — accepted RFC0091, unreleased.**
+[RFC0091](../rfcs/0091-required-metadata-booleans.md) records the owner's
+2026-10-17 acceptance of the bounded META-02/03 contract and six new-kit review
+declarations. It separates the nine native partial refusals into existing
+REC/container admissions and two required canonical boolean diagnostics.
+Independent evidence preserves943 absences in205 original conformance sources,
+unchanged111 portable responses, five historical native sensitivity differences
+and their governed dispositions. TS/Python predicates preserve META-01,
+container/actor precedence, physical/history scope, mutable-model authority and
+issue ordering. Incomplete admitted canonical metadata, including history, now
+receives errors; validation exits and newly issued receipt policy counts may
+change. Sources and historical subjects are never repaired or rewritten.
+The former2,731-artifact retention gate is retired by the owner rule above. Exact-head CI and
+subsequent exact-main CI are integration gates; no release/version is allocated.
+Complete Python validation remains separately gated, with parse-only discovery.
+RFC0085/0088/0089 retain their independent draft states.
 
-**RFC 0088 Astra follow-up — draft research only.** The existing review records
-independent classifications, genuine receipt RCP-03 success-to-refusal evidence,
-IRR branch/tolerance and NPV exceptional-value controls. A complete isolated A
-raw candidate, constant/word/resource maps, 178 mathematical controls and exact
-indexed/targeted impact artifacts are now reviewable. All 1,089 existing indexed
-assertions pass in the measured baseline/candidate runs, with explicit capture
-limits; targeted financial/receipt probes demonstrate real changes outside the
-old corpus. Frozen native/compiler and cross-runtime evidence is recorded in exact-head
-research CI38994434317 at a617fd26; policy-only reconciliation does not rerun it.
-No production arithmetic, schema, corpus expectation, receipt rule, package
-version, RFC acceptance or release state is changed. A is provisionally preferred
-for evaluation, B remains an alternative and C has not shown sufficient benefit.
-Envelope RFC 0089 and provenance RFC 0085 retain their existing ownership.
+**RFC0048 kit disposition — owner option(a), accepted declarations.** New positive
+examples under examples/standalone/authored-2026-10-17 carry explicit authored
+block declarations/reasons, new provenance/identities and a new package. Original
+records/ZIP remain metadata-incomplete historical examples with unchanged bytes;
+positive, composition and fidelity assertions are preserved. StackUW's audited
+Format3 adapter emits both flags but defaults each to false; writers must choose
+intentional review/lifecycle declarations, not infer missing historical values.
+RFC0091's prelaunch version recommendation, writer migration note and artifact
+retention obligations are withdrawn under the owner rule above; diagnostic
+predicates and current verification requirements are unchanged.
 
 **Python priority — minimum-complete capabilities.** The current implementation
 has no Reader/Verifier tier and advertises only parse. The completion matrix in
@@ -69,17 +84,6 @@ features still refuse. This extracts a reviewed prerequisite from the larger
 complete-validation WIP without advertising validate or a Reader/Verifier tier.
 The existing three-platform Python jobs exercise the correction and actual
 portable Reader cases. It does not load modules or activate a draft contract.
-
-**RFC0088 research checkpoint — still draft.** A bounded composed-receipt study records19 actual candidate controls,18 real public-test-key signature outcomes and19 independently checked receipt/payload/source bindings. The finite graph reuses the independently frozen Python reported result; finite-disagreement mutations are synthetic, while the preserved endpoint input still exercises RCP-03 before backend execution. Original sources/receipts and graph observations remain unchanged. Current accepted-main source maps and the exact Protocol-only trajectory identity transition are separate evidence. Accuracy, full consumer/procedure and authentication/refusal choices remain pre-acceptance gates; no production arithmetic, receipt rule or public version is activated.
-
-**RFC0088 composed accuracy evidence.** A new bounded36-case PMT/PV/FV study
-separates exact real closed forms, the candidate ordered graph and an ideal
-correctly rounded power of the already-rounded base. Primitive agreement does
-not establish whole-formula accuracy: preserved local evidence includes finite
-reporting differences and five refusals against finite reference results.
-This is no accuracy tolerance, stabilized graph, receipt or normative activation.
-Earlier kernel/native/4730-row evidence remains preserved; cancelled research
-runs are not successful evidence.
 
 ## Bounded parallel workstreams
 
@@ -1783,17 +1787,3 @@ invariants move to Representations, and five new validate-only Verifier checks
 (`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
 1,061 (Verifier 679 / 280 portable, Module 68 / 1). Release: published in
 core/CLI 3.0.0 with Stable Protocol 3.0.0.
-
-### 2026-10-17 — RFC0088 natural cancellation receipt evidence (draft)
-
-The bounded cancellation-receipt study connects two unchanged candidate inputs
-to12 actual issue/verify controls with new public-test-key signatures. Windows
-host PMT refuses while candidate reports0.25; host PV reports0 while candidate
-reports4, against the separate exact whole-real reference1. Successful
-recomputation reaches signature/different-engine precedence; recomputation
-refusal yields RCP-03 before the supplied backend. These are measured existing
-rules, not activation or whole-formula accuracy. The integrator independently
-replayed the two-input study and checked frozen payload/result/source bindings.
-CI adds local Linux observation and a separate replay of the preserved actually
-issued Windows PV receipt. No old4730-row matrix is regenerated; RFC0088 stays
-draft with production arithmetic, receipts, corpus and versions untouched.

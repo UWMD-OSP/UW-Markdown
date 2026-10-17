@@ -8,15 +8,26 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
-- Draft RFC0088 research: add actual composed-receipt issuance, real test-key signatures and independent signing-payload/source binding. Keep earlier graph artifacts immutable under an exact accepted-main identity transition; no financial or receipt semantics activate.
-
-
 ### Changed
 
-- Extend draft RFC0088 research with bounded exact-rational PMT/PV/FV cancellation
-  and actual refusal/reporting evidence, separating primitive reproducibility from
-  whole-formula accuracy. Preserve all prior observations and production procedures;
-  no accuracy objective, financial graph, receipt policy or version is accepted.
+- Apply the2026-10-17 owner rule in both agent entry points: all @uwmd npm
+  packages launch together at5.0.0; prelaunch releases use4.x.x from main,
+  with incompatible changes allowed. Retire prelaunch compatibility analysis,
+  migration/deprecation work, bump recommendations, artifact-retention gates and
+  the frozen4.0.x core-export superset gate.
+  Keep current RFC, deterministic verification, conformance and source integrity.
+
+
+- Accept RFC0091 under the owner's2026-10-17 decision: META-02/03 errors
+  apply to incomplete admitted canonical metadata, including retained history.
+  Validation exit codes and newly issued receipt policy counts may change;
+  sources and historical subjects are never repaired or rewritten. Preserve
+  META-01, completeness/shape precedence, financial and receipt-verdict rules,
+  current diagnostic predicates and ordering. The owner
+  accepts the six authored replacement-kit declarations; strict positive,
+  composition and package-fidelity assertions remain. No schema/version change,
+  release or Python capability promotion. The later owner rule withdraws the
+  prelaunch retention gate and migration/version appendix.
 
 - Enforce RFC0090's required nonempty-string provenance actor with narrow
   META-01/error across retained physical blocks. Preserve wrapper precedence,
@@ -27,8 +38,9 @@ protocol, and each package each carry an independent semver).
 
 - Record the owner's 5.0 launch compatibility policy: 5.0 is the first public
   baseline, prelaunch versions need no legacy support, and public surfaces keep
-  independent versions. Preserve historical artifacts and RFC/verification gates;
-  no automatic migration, numerical/design acceptance or launch publication.
+  separate Format/Protocol surfaces. The2026-10-17 rule aligns npm launch
+  packages and retires prelaunch artifact-retention/compatibility work; RFC and
+  verification gates remain, with no numerical/design acceptance or publication.
   Reconcile live contributor/version/roadmap and agent-retirement guidance.
 
 ### Fixed
@@ -74,30 +86,16 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
-- Extend unaccepted RFC0088 research with two natural cancellation receipt
-  cases, exact source/result/signature bindings and bounded independent replay.
-  Preserve refusal-before-backend behavior and distinguish authenticated replay
-  from whole-formula accuracy; activate no arithmetic or receipt rule.
-
-- Incorporate independently verified Astra review evidence into draft RFC 0088.
-  Add a complete isolated pinned-fdlibm candidate, exact constants/word/resource
-  contracts, independent mathematical/native research and a full indexed impact
-  manifest with explicit coverage limits. Reproduce actual changed reported
-  results and success-to-refusal receipt precedence; require research evidence
-  before owner acceptance while preserving production arithmetic, expectations,
-  receipt behavior, independent versions and release states.
+- Record RFC0091's accepted bounded diagnostic reconciliation, exact nine-case
+  owning-code analysis, independent source/consumer inventories and frozen
+  pre-activation sensitivity evidence. Preserve historical expectations without
+  advertising complete validation or allocating a release version.
 
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.
   Prioritize one complete validate surface, dictionary/stated-figure reproduction
   and receipt verification over further isolated inspectors; optional profiles
   and draft numerical/representation decisions remain separate.
-
-- Compare concrete unaccepted RFC0088 procedures: the pinned fdlibm closure,
-  an explicitly unverified MPFR binary64 adapter and a bounded full-word integer
-  hybrid. Freeze 24 new word controls and separate procedure choice, accuracy,
-  resource, receipt and clean-break activation questions. Add focused dependency-free
-  runtime evidence collection without changing production arithmetic or baselines.
 
 - Add independent Python standalone document-currency identity inspection under
   accepted CUR-01, preserving authored absent/null/value evidence without
@@ -109,14 +107,6 @@ protocol, and each package each carry an independent semver).
   separate local shape diagnostics. Preserve unknown payloads and source bytes,
   skip historical role reclassification and retain parse-only discovery without
   full validation or tier claims.
-
-- Extend draft RFC 0088 with isolated, testable integer-power procedure graphs,
-  exact-rational bounded fractional references and 40 frozen operand pairs.
-  Independent JS checks 120 result/trace records. Laboratory budgets, rounding,
-  downstream solver/quantization and receipt boundaries remain explicit and
-  unaccepted; production arithmetic and expectations are unchanged. Extend the
-  isolated evidence with ten synthetic ordered cash/IRR-endpoint controls and
-  ten reporting controls; no full solver or receipt issuance claim.
 
 - Add independent Python block-content hashing and bounded read-only chain
   assessment under accepted §V.9/§V.10, with complete physical block evidence,
@@ -173,16 +163,6 @@ protocol, and each package each carry an independent semver).
   evaluation or metric reproduction is claimed by these structural checks.
   Its manifest remains partial parse-only, without a Reader/Verifier tier
   or financial-verification claim. Three-OS CI retains portable result artifacts.
-
-- Draft RFC0088 records reproduced cross-runtime financial power, IRR and
-  quantized-result digest disagreement (#356), independent Python numeric
-  investigation and the narrower #355 assurance scope. No normative arithmetic,
-  conformance expectation, receipt identity or RFC acceptance changes. The
-  candidate feasibility study pins source-byte hashes, closes the power helper
-  inventory and records conditional resource bounds and bit-portability gaps;
-  it executes no candidate kernel and adds no runtime dependency. Isolated
-  JS/Python bit-adapter experiments test finite word encodings, explicit shifts
-  and carry/borrow against fixed integer vectors; no financial answers change.
 
 - Architecture cleanup reconciles RFCs 0078/0083 and Issue #355 with the
   current exports and source. Documents UWMD/StackUW ownership, inventories
