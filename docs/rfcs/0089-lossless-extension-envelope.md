@@ -548,6 +548,18 @@ blanket unsupported-label refusal for receipts. The RCP10 mixed-peer observation
 does not establish Envelope1 source completeness; Issue365 remains the separate
 representation defect. No candidate financial receipt was issued.
 
+Accepted RFC0090 changes the current production/Format/Protocol source closure,
+so the original b2-only replay remains historical and refuses an afcc build.
+The separate [fresh afcc checkpoint](https://github.com/UWMD-OSP/UW-Markdown/blob/6c79b10d8051028a4b6535f8bea23190933ebc3a/experiments/envelope-0089/decision-proof/CURRENT-AFCC.md)
+actually executes the same seven-model matrix and four Receipt5.5 controls
+against accepted main, separately pins all179 source and86 compiled identities,
+and compares every behavioral field to the preserved originals. All signatures,
+subjects, result digests, source evidence, refusal states and backend counts
+agree for these examples; only separately enforced production identity maps are
+excluded from that cross-head behavior comparison. Original artifacts/helpers
+remain byte-identical. This one-host fresh result is not a cross-platform or CI
+claim, broader V.13 admission, new receipt rule or acceptance of this RFC.
+
 ## Compatibility analysis
 
 The source Markdown of ordinary admitted named extension peers need not change.
