@@ -1,16 +1,15 @@
-"""Integrated Format 2.4-2.6 shape and incomplete-data policy obligations.
+"""Local metadata assessment and accepted incomplete-data policy selection.
 
-No new code names, provenance defaults, inference, mutation or integrity claim.
-META-01 owns malformed present nested shape; exactly five absent fields keep
-their separate completeness warnings in the orchestrator.
+Schema conditions do not allocate ordinary-validator diagnostics. Preserve
+unallocated metadata findings without inventing codes, severity or new states.
+Existing SRC/ROLE/META-01 and five completeness paths stay with their owners.
 """
+import copy
 import re
 
 from uwmd_binding_sources import finite
 from uwmd_numeric import calendar_date, _ordinal
 
-_COMPLETE = frozenset(("_meta.section", "_meta.lifecycle.revision",
-    "_meta.provenance.source", "_meta.provenance.timestamp", "_meta.quality.confidence"))
 _TIMESTAMP = re.compile(r"([0-9]{4}-[0-9]{2}-[0-9]{2})[Tt]([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\.[0-9]+)?([Zz]|[+-][0-9]{2}:[0-9]{2})\Z")
 _DIGEST = re.compile(r"sha256:[0-9a-f]{64}\Z")
 # Published incomplete-data declarations, including non-halt entries because
@@ -32,15 +31,6 @@ _DEFAULTS = (
     ("borrower_sponsor",None,"credit_approval","halt",None),
     ("compliance",None,"closing","halt",None),
 )
-
-
-def _present(body, path):
-    value = body
-    for key in path.split("."):
-        if not isinstance(value, dict) or key not in value:
-            return False, None
-        value = value[key]
-    return True, value
 
 
 def timestamp_shape(value):
@@ -76,69 +66,52 @@ def timestamp_shape(value):
                for y in (year-1,year,year+1) for m in range(1,13))
 
 
-def metadata_shape(ledger, source_inventory):
-    grouped = {}
-    for finding in source_inventory["shape_findings"]:
-        index, path = finding["context"]["block_index"], finding["field"]
-        body = ledger.document.source.blocks[index].parsed.value
-        exists = _present(body,path)[0]
-        if "_meta" not in body or path in _COMPLETE and not exists:
-            continue
-        if path == "_meta.provenance.actor" and not exists:
-            # Current frozen complete validate projections explicitly remain
-            # clean without actor, despite the Format/schema required field.
-            # No ACTOR completeness suffix is registered. Do not manufacture one
-            # or relabel missing provenance as malformed present META-01.
-            continue
-        # Actor grammar/resolution errors are already owned by SRC-01/02/03.
-        if path.endswith(".source") or path.endswith(".resolution"):
-            continue
-        grouped.setdefault(index,[]).append(dict(field=path,message=finding["message"]))
-    active = {b["block_index"] for b in source_inventory["blocks"]}
-    for index, block in enumerate(ledger.document.source.blocks):
-        # Source inventory determines active physical admission; history is not
-        # reclassified by new shape policies.
+def metadata_assessment(document, source_inventory):
+    """LOCAL sibling, not ValidationResult findings or full schema validation.
+
+    Retain all selected-shape inventory evidence, including required actor
+    absence, plus bounded timestamp/reference checks. No META-01 inference:
+    accepted wrapper/nested-object findings remain unchanged in the inventory.
+    Empty local findings alone do not prove full metadata/schema conformance.
+    """
+    findings = copy.deepcopy(source_inventory["shape_findings"])
+    active = {entry["block_index"] for entry in source_inventory["blocks"]}
+    for index, block in enumerate(document.source.blocks):
         if index not in active:
             continue
         meta = block.parsed.value.get("_meta")
-        provenance = meta.get("provenance") if isinstance(meta,dict) else None
-        if not isinstance(provenance,dict):
+        provenance = meta.get("provenance") if isinstance(meta, dict) else None
+        if not isinstance(provenance, dict):
             continue
+
         def malformed(path, message):
-            grouped.setdefault(index,[]).append(dict(field="_meta.provenance."+path,message=message))
-        if isinstance(provenance.get("timestamp"),str) and not timestamp_shape(provenance["timestamp"]):
-            malformed("timestamp","Timestamp must have the admitted calendar/date-time shape")
+            findings.append(dict(section=block.section,
+                field="_meta.provenance." + path, message=message,
+                context=dict(block_index=index, variant=dict(block.attributes).get("variant"),
+                             body_byte_start=block.body_span.start,
+                             body_byte_end=block.body_span.end)))
+
+        if isinstance(provenance.get("timestamp"), str) and not timestamp_shape(provenance["timestamp"]):
+            malformed("timestamp", "Timestamp must have the admitted calendar/date-time shape")
         for resolution, key, names in (
-                ("market_data_accepted","market_data_ref",("document_id","as_of","digest")),
-                ("inherited_assumption","inherited_from",("document_id","digest","distance"))):
+                ("market_data_accepted", "market_data_ref", ("document_id", "as_of", "digest")),
+                ("inherited_assumption", "inherited_from", ("document_id", "digest", "distance"))):
             if key not in provenance and provenance.get("resolution") != resolution:
                 continue
             reference = provenance.get(key)
-            valid = isinstance(reference,dict)
+            valid = isinstance(reference, dict)
             if valid:
                 for name in names:
                     value = reference.get(name)
                     if name == "distance":
                         valid = valid and finite(value) and value >= 1 and int(value) == value
                     else:
-                        valid = valid and isinstance(value,str)
-                valid = valid and isinstance(reference.get("digest"),str) and _DIGEST.fullmatch(reference["digest"]) is not None
+                        valid = valid and isinstance(value, str)
+                valid = (valid and isinstance(reference.get("digest"), str)
+                         and _DIGEST.fullmatch(reference["digest"]) is not None)
             if not valid:
-                malformed(key,"Conditional provenance reference must satisfy its required shape")
-    for index, findings in grouped.items():
-        if not findings:
-            continue
-        existing = next((i for i in ledger.issues if i["code"]=="META-01"
-                         and i.get("context",{}).get("block_index")==index),None)
-        if existing is None:
-            block = ledger.document.source.blocks[index]
-            ledger.issue("META-01","error",block.section,findings[0]["field"],
-                         "Present block metadata or leaf annotations violate the Format 3.0 shape",
-                         value={"shape_findings":findings},
-                         context={"block_index":index,"variant":dict(block.attributes).get("variant"),
-                                  "body_byte_start":block.body_span.start,"body_byte_end":block.body_span.end})
-        else:
-            existing["value"] = {"shape_findings":findings}
+                malformed(key, "Conditional provenance reference must satisfy its required shape")
+    return dict(shape_findings=findings)
 
 
 def incomplete_policy(section, field_path, stage, policies=()):

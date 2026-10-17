@@ -81,11 +81,12 @@ existing reserve/draw/replacement/snapshot/hash-failure/source-evidence coverage
 This is preservation evidence for the private API work; the actual 111-case
 validate CLI gate is still unrun because that command remains unsupported.
 
-The next accepted closure adds canonical-only FV field routing, malformed
-present metadata/leaf-annotation and conditional provenance-reference checks,
-field/stage/declaration policy specificity, and required terminal-tax assessment
-members. The 45 focused validation methods pass, including the unchanged 111
-API projections. Unreviewed private FV shortcut paths were removed; unknown
+The preceding field/policy checkpoint added canonical-only FV routing,
+metadata/leaf-annotation and conditional reference inspections, policy specificity,
+and required terminal-tax assessment members. Its 45 focused methods included
+the unchanged 111 API projections. Integration review subsequently withdrew its
+unallocated typed-metadata-to-META-01 promotion: those checks now remain explicit
+uncoded local assessments, not registered validation findings. Unreviewed private FV shortcut paths were removed; unknown
 payload at those paths is retained without selecting plausibility behavior.
 Normal G1 reassessment still admits a lone trigger. Terminal assessment fields
 use their own accepted schema and accurate diagnostic pointers.
@@ -103,7 +104,8 @@ scope missing-field test between the seven booleans and declared-stage rules.
 Scope reads the same eligible property selection as ordinary validation, so a
 later component/invalid-role peer cannot overwrite it and a selected external
 property cannot borrow an inline peer's fields. Eight new focused methods bring
-the integrated-validation total to 60. They exercise all seven stage tables
+the integrated-validation total to 60 before two metadata-routing regressions
+bring the current focused total to 62. They exercise all seven stage tables
 across all twelve builtin classes and an unknown-class base-list control, each
 required-section removal for the base/land/mixed-use/new builtin cases, role
 collisions, current/history, external presence and explicit zero/null values.
@@ -178,8 +180,8 @@ stage booleans report the accepted section-presence table, not whole-record
 completeness; `composition_assessment.status` must be consulted separately.
 
 The preceding 33 focused validation methods include eleven external-boundary
-methods and two FV audit methods; subsequent metadata and CC-03 closures bring
-that count to 52. External controls include the unchanged
+methods and two FV audit methods; subsequent field, readiness and metadata-routing
+controls bring the current focused count to 62. External controls include the unchanged
 frozen missing-part source's unresolved meaning, exact roles/history, malformed
 directives, source retention and V.12 consultation precedence. No fragment
 resolution, smaller partial collection, network fetch, composition-suite pass,
@@ -190,9 +192,10 @@ new receipt interpretation or CLI capability follows.
 [Format 2.4–2.5](../../spec/UW_FORMAT_SPEC.md),
 [Protocol III.6a](../../spec/UW_PROTOCOL.md), and the
 [block schema](../../spec/schemas/uwmd-block.schema.json) distinguish absent
-completeness fields from malformed present metadata. The integrated API retains
-published warning/info/error routing, adds no META suffix, and inspects all
-active physical blocks rather than only selected heads. Low leaf confidence
+completeness fields from the allocated wrapper/nested-object shape findings.
+The integrated API preserves the existing inspector's registered issues unchanged,
+adds no META suffix, and inspects all active physical blocks rather than only
+selected heads. Low leaf confidence
 does not mutate the orthogonal human-review flag. Unknown payload, historical
 provenance and `_notes` are retained; optional signature/integrity content is
 not promoted into ordinary validation.
@@ -201,18 +204,38 @@ The schema's date-time shape uses [RFC 3339 5.6–5.7](https://www.rfc-editor.or
 calendar-real dates, fractions, offsets, case-insensitive T/Z and structural
 UTC month-end leap-second slots. This checks syntax/calendar placement without
 asserting an actual IERS-announced leap second or authenticating an event.
-Conditional market-data/inheritance references are checked for required shape
-and digest spelling, without resolving or inventing their source facts.
+Conditional market-data/inheritance references are inspected for required shape
+and digest spelling, without resolving or inventing their source facts. These
+bounded timestamp/reference checks have no inferred registered diagnostic.
 Incomplete-data policy selection uses published field specificity, then stage
 specificity, then declaration order; adopter declarations precede equal-rank
 defaults. Validation reports applicable halts and never performs substitution.
+
+The **local** sibling `metadata_assessment` contains `shape_findings`:
+detached evidence with section, field, message and physical block index/variant/
+byte-span context. It retains the source inspector's entire selected-shape
+inventory plus bounded timestamp/reference findings. Actor absence, null, empty
+and wrong-type values, typed quality/lifecycle/leaf annotations and conditional
+references remain visible here without invented code, severity or normative
+status. The existing wrapper/nested-object META-01 findings, source/role issues,
+five completeness warnings and low-confidence info remain in their own registered
+partitions unchanged.
+
+This assessment is not a normative ValidationResult field or full schema
+validation. A `clean` registered-issue status with local metadata findings is
+**not** a complete validation success; even an empty local list does not prove
+all schema obligations. The generic validate CLI therefore remains unsupported.
+Correction controls preserve registered findings exactly, include unselected
+active physical blocks, retain actor absence and malformed values, skip historical
+reclassification, and prove detached evidence/source preservation.
 
 There is one concrete required-field/frozen-behavior gate: Format 2.5b and
 the block schema require `_meta.provenance.actor`, while unchanged frozen
 document assertions omit actor. This does **not** establish that missing actor
 must currently emit META-01: RFC 0081 section 3 pins that code to legacy wrapper and
 nested-object shape, and III.6a's closed five completeness names exclude actor.
-No absent-actor diagnostic allocation is settled here. The following assertions
+No ordinary actor diagnostic allocation (absent or malformed present value) is
+settled here. The following assertions
 would change under a hypothetical added required-actor error. In particular,
 [05-land-stage-overlay](../../conformance/documents/fixtures/05-land-stage-overlay.uwx.md)
 explicitly expects `overall_status: clean` and `issues: []`.
@@ -254,11 +277,11 @@ This inventory reuses that evidence; the twelve API/CLI/schema probes were not r
 A read-only audit compared a hypothetical required-actor META-01 result through
 the unchanged shared `project`/`json_subset` functions to identify these exact
 assertions; it was not an additional conformance pass. The partial API preserves
-the frozen absence behavior while refusing malformed **present** actors. That
-does not make actor optional under the Format, create an ACTOR completeness
-suffix, inject provenance, or establish complete validation. Contract/baseline
-disposition is required before the whole command claim; this implementation
-does not infer an absent-actor META-01 rule. Unlike this required-field/frozen-behavior gap, omitted metadata severity prose is settled by ordinary published
+the frozen registered-code behavior and retains absent/malformed actor findings
+in its explicit local assessment. That does not make actor optional under the
+Format, create an ACTOR completeness suffix, inject provenance, or establish
+complete validation. Contract/baseline disposition is required before the whole
+command claim; this implementation does not infer an actor META-01 rule. Unlike this required-field/frozen-behavior gap, omitted metadata severity prose is settled by ordinary published
 precedent and does not require an owner decision.
 
 ### CC coverage ledger
@@ -340,7 +363,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | Family | Implemented scope | Minimum remaining validation obligation |
 |---|---|---|
 | LOC / CUR / descriptive identity | Locale/currency vocabulary, builtin/custom class syntax, scenario and BTR agreement | Complete frontmatter presence/type/source applicability, preserving unknown fields; descriptive values never select models. |
-| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Present malformed provenance/quality/lifecycle/leaf shape now maps once per physical block to META-01; the five absent completeness fields retain their exact warnings. Conditional references and agent identity are checked without fetching or inferring provenance. Required-actor absence is the concrete frozen-contract conflict below; remaining metadata applicability must still be audited. |
+| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Only the existing inspector's allocated wrapper/nested-object META-01 and SRC/ROLE issues are integrated as registered findings. Unallocated typed/required metadata, actor and conditional-reference findings remain in the uncoded local metadata_assessment; the five completeness warnings stay exact. Diagnostic allocation and the twelve positive-corpus actor omissions remain a genuine contract gate, not optional metadata. |
 | DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | All seven presence lists, overlays and role-selected scope readiness now share tested inputs; scope completeness preserves non-null presence without claiming field-type validity. Field-specific institution matching and equal-specificity overrides have controls; finish exact gap/override consumption and remaining externalized-field applicability without executing substitution/default actions. |
 | MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Exhaustive closed-field shape/applicability and stated sizing declaration guards. Financial stack sizing reproduction is a separate mandatory Verifier obligation. |
 | LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Complete LU model/row/schema-field admission and declaration applicability; LU-01's pinned period trigger does not itself assign every remaining schema-field failure a registered code. Period inspection is not evaluation or stated-aggregate verification. |
@@ -421,8 +444,9 @@ not clean. Coverage does not change overall status.
 Integration must apply each helper's accepted conditions, not concatenate local
 inventories. For example, the frozen missing-meta source pins META_MISSING;
 an absent `_meta` must not be relabeled META-01 merely because a local shape
-check rejects it. Present malformed metadata and retired wrappers have their
-own META-01 contract (RFC 0081 section 3). The complete validator must preserve
+check rejects it. Retired wrappers and the allocated nested-object shape have
+their own META-01 contract (RFC 0081 section 3); a schema rule alone does not
+allocate every typed metadata/required-field failure to that code. The complete validator must preserve
 published META_MISSING and META_FIELD_MISSING_* warnings and the informational
 low-confidence finding; the developing API now integrates those published distinctions.
 
@@ -562,7 +586,7 @@ may be rewritten to make the Python report green.
 |---|---|
 | Appendix D scalar keys | Bare `12:`, `true:`, `null:` have YAML scalar meanings, but JSON frontmatter has string member names. Admission/coercion/collision behavior is not pinned by the frozen cases; Python refuses them. Resolve this narrow source contract before Reader certification; quoted string keys already work. |
 | Unlabelled versus literal `default` variants | Current parse projection uses `attributes.get("variant", "default")`, so admitted unlabelled and explicitly named `default` peers can collapse despite physical retention. Prove exact source identity, no silent peer loss and stable current/history selection at the Reader surface; coordinate the joint representation question with #365 instead of inventing a mapping or choosing a peer. Explicit local unsupported refusal is honest partial behavior while unresolved, not proof of complete Reader support for lawful admitted input. |
-| Metadata completeness prose omission | III.6a names the five missing-field paths and explicitly pins the low-confidence info finding, but omits the other severities. Preserve the accepted published validator precedent: META_MISSING and all five META_FIELD_MISSING_* findings are warning, META_LOW_CONFIDENCE_NO_REVIEW_FLAG is info, and present-malformed META-01 is error. This is an ordinary implementation decision, recorded under the repository's precedent rule, not an owner blocker or permission to alter severity. Independently implement the triggers and report the prose omission separately. |
+| Metadata completeness prose omission | III.6a names the five missing-field paths and explicitly pins the low-confidence info finding, but omits the other severities. Preserve the accepted published validator precedent: META_MISSING and all five META_FIELD_MISSING_* findings are warning, META_LOW_CONFIDENCE_NO_REVIEW_FLAG is info, and allocated wrapper/nested-shape META-01 is error. This is an ordinary implementation decision, recorded under the repository's precedent rule, not an owner blocker or permission to alter severity. Independently implement the triggers and report the prose omission separately. |
 | [#365](https://github.com/UWMD-OSP/UW-Markdown/issues/365), lawful role-opted extension variants versus Envelope 1.0 singleton extension slots | Source is retained and digest callers report unavailable rather than discard peers or invent a new shape. Whole-source reserve/draw and future receipt commitments need the accepted representation resolution for these documents. Structural validation, selected-cash replacement commitments, block hashes and ordinary dictionary arithmetic are independently implementable. Draft proposals are not an accepted codec contract. |
 | [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) / RFC 0088 numerical determinism | Full pow/log/exp/annuity/NPV/IRR/XNPV/XIRR paths need accepted cross-runtime procedures/order. Experiments do not select them. All 171 current dictionary formulas use arithmetic/conditionals and, as their only named function, round (six occurrences); their definitions do not themselves depend on those procedures. Complete general builtin support and numerical-dependent stated-figure branches still do. |
 | Historical role changes in chain grouping | Bounded chain reports explicitly mark unsupported identity classification. Do not invent a history/orphan policy or call this complete Integrity support; it is optional and does not block base validation/metrics. |

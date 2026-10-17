@@ -10,7 +10,7 @@ import re
 from uwmd_binding_sources import finite
 from uwmd_currency import inspect_document_currency
 from uwmd_source_validation import inspect_source_roles
-from uwmd_validation_provenance import metadata_shape, incomplete_policy
+from uwmd_validation_provenance import metadata_assessment, incomplete_policy
 from uwmd_validation_selection import active_blocks, select_section, field
 
 STAGES = ("scope", "screening", "term_sheet", "full_underwrite",
@@ -116,7 +116,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     document, fm = ledger.document, ledger.document.frontmatter.value
     source = inspect_source_roles(document)
     ledger.issues.extend(source["issues"])
-    metadata_shape(ledger, source)
+    metadata = metadata_assessment(document, source)
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
         ledger.issue("LOC-01", "error", "frontmatter", "locale", "Locale is outside the registered vocabulary", value=fm["locale"])
@@ -214,3 +214,4 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
             continue
         if stale:
             ledger.issue("DQ-05", "info", "gaps", "items[" + str(index) + "].last_checked", "Gap exceeds the disclosed freshness threshold")
+    return metadata
