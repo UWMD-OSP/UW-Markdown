@@ -37,7 +37,7 @@ fill defaults, host agents, or require starter rendering/editing workflows.
 | Obligation and accepted authority | Present Python scope | Required closure |
 |---|---|---|
 | Reader parsing: Format II, Appendix D; Protocol II.1, XII.1–2 | `uwmd_source`, `uwmd_frontmatter`, `uwmd_reader` retain bytes, number tokens, unknown data, physical blocks and the portable projection. Existing evidence: 17 portable parse cases and nine additional frozen Reader refusals. | Settle the bare scalar-key question below; audit source admission, all current registered/unknown sections and canonical lifecycle routing. Do not impose validation on otherwise parseable incomplete records. |
-| Reader current/history identity: Format 2.4, 2.7–2.8; Protocol II.6a.6 | Registered parallel sections, role opt-in and append collections are implemented. Verification uses `source_superseded`; Reader projection currently tests only JSON lifecycle metadata. | Align and test the two source-lifecycle paths and exact nullable versus named variant identities before certification. The existing `reserve-draw-bindings/superseded-source` source has fence-only `superseded=true`: verification treats it as history, while the parse projection currently exposes it as current. Preserve the authored metadata and physical history. |
+| Reader current/history identity: Format 2.4, 2.7–2.8; Protocol II.6a.6 | Registered parallel sections, role opt-in and append collections are implemented. Reader projection and verification share `source_superseded`, which recognizes the exact fence flag or JSON lifecycle true without altering authored metadata. | The documented fence-only history-routing defect is corrected under the accepted Format 2.4/2.7 contract. Exact nullable versus named variant identities and the remaining Reader gates still require independent evidence before certification. |
 | Full `validate`: Format II–V and 6.2; Protocol III.6a, V.12 | No `validate` command or `ValidationResult`. Reusable checks cover SRC-01/02/03, ROLE-01, bounded META-01, CUR-01, payload PS-01/02, reserve structure, and selected binding-source/hedge structure. Local shape findings are not registered validator verdicts; helper applicability must be reconciled before integration. | Implement all applicable registered rule families, role-aware selection, stage readiness, complete CC coverage and the exact result/exit integration below. Preserve published metadata warning/info/error distinctions rather than introducing new severities. |
 | Standard metrics: Protocol II.2.2, VIII.2, VIII.5.1, XIII; [dictionary](../../spec/metrics/README.md) | Source numeric precision, AST parsing, calendar and quantization foundations exist. No statement discovery, runtime resolution, comparison API or document metric report. | Reproduce all 171 class-scoped definitions and eleven raw primary-size selectors, with exact class/id lookup, lazy null branches, role/variant selection and retained source precision. Verified/failed/unverifiable remain distinct; absent inputs are never filled. |
 | General calculation method: Protocol II.2.6, VIII.1–6 | `uwmd_expressions` parses grammar and inventories references; `uwmd_periods` inspects already-selected payloads. `uwmd_numeric` provides a small seed. No execution, document lookup, overrides, prior-result evaluation, complete builtins or `calc` command. | If using expression evaluation, implement the full grammar, resolution, operator/null/lazy semantics and listed builtin signatures/refusals. Return schema-conforming quantized `CalcResult` objects; arrays preserve declaration order. AST admission or a few successful operations cannot justify `calc-evaluate`. |
@@ -675,3 +675,14 @@ explicit test-only projection uses the unchanged shared subset comparator;
 these are not portable validation, rendering or binding-verification passes.
 Other controls cover exact ASCII/type admission, missing versus null, unsupported
 locale independence, no financial-block prerequisites and retained source bytes.
+
+## Source lifecycle routing correction
+
+Reader projection and existing verification now use one source lifecycle helper.
+Exact fence `superseded=true` or JSON `lifecycle.superseded: true` routes a
+physical block to ordered history before role opt-in, singleton/variant lookup,
+extension routing or append-collection handling. A false flag in either location
+does not override true in the other. Authored metadata, payload, spans, raw bytes
+and historical evidence are preserved without injecting missing JSON members.
+This fixes the existing reserve-draw superseded-source parse discrepancy; it
+changes no Envelope shape, digest rule, receipt verdict, discovery or tier claim.

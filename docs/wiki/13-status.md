@@ -44,6 +44,12 @@ keeps absent metadata outside the registered present-malformed META-01 domain
 without adding completeness findings outside the partial inventory; twelve focused
 methods pass.
 
+The bounded Python Reader lifecycle correction shares source-history routing
+with existing verification: exact fence `superseded=true` or JSON lifecycle true
+excludes a block from current selection and role opt-in, retaining it in ordered
+history. It does not rewrite metadata, source bytes, digests or receipt rules,
+resolve RFC0089 identity questions, or promote discovery beyond parse.
+
 ## Bounded parallel workstreams
 
 One integrator owns sequencing, independent review, shared indexes/changelog/

@@ -8,6 +8,7 @@ import re
 
 from uwmd_frontmatter import FrontmatterSource, parse_frontmatter
 from uwmd_source import ScannedSource, SourceError, StructuredBlock, scan_source
+from uwmd_source_lifecycle import source_superseded as _superseded
 
 
 class ReaderError(SourceError):
@@ -19,12 +20,6 @@ class ReaderError(SourceError):
 PARALLEL = frozenset(("operating_statement", "stress_tests", "due_diligence",
                       "lease_up_schedule", "cash_flow_series", "distribution_waterfall", "reserve_accounts"))
 APPEND = frozenset(("pipeline_log", "custom_calculations", "custom_scenarios"))
-
-
-def _superseded(block: StructuredBlock) -> bool:
-    meta = block.parsed.value.get("_meta")
-    lifecycle = meta.get("lifecycle") if isinstance(meta, dict) else None
-    return isinstance(lifecycle, dict) and lifecycle.get("superseded") is True
 
 
 def _projection(block: StructuredBlock) -> dict:
