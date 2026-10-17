@@ -10,8 +10,9 @@ from pathlib import Path
 import re
 import unittest
 
-from test_reader import HEADER
+from test_reader import HEADER, block
 from test_validation import well_formed, validate
+from test_validation_external import external
 from uwmd_frontmatter import FrontmatterError
 from uwmd_reader import parse
 from uwmd_validation_builtins import builtin_rules
@@ -191,6 +192,93 @@ class ValidationFamilyTests(unittest.TestCase):
         parsed.frontmatter.value["asset_class"]={}
         ledger=Ledger(parsed);builtin_rules(ledger)
         self.assertEqual(ledger.issues,[])
+
+
+class CapitalStackAdmissionTests(unittest.TestCase):
+    """Format 4.24 / RFC0026 and0050 structure; no sizing recomputation."""
+
+    def tranche(self, **extra):
+        return dict(id="senior",position=1,amount=1000,rate=.05,
+                    **{"class":"senior_debt"},**extra)
+
+    def source(self, scope, stack):
+        if scope=="top_level":
+            return HEADER+well_formed("capital_stack",**stack)
+        header=HEADER.replace(b"asset_class: multifamily",b"asset_class: mixed_use")
+        return header+well_formed("components",
+            retail=dict(component_class="retail",net_operating_income=100,capital_stack=stack),
+            office=dict(component_class="office",net_operating_income=200))
+
+    def report(self, raw):
+        parsed=parse(raw);before=copy.deepcopy(parsed)
+        result=validate(parsed)
+        self.assertEqual(parsed,before)
+        self.assertEqual(parsed.source.raw,raw)
+        return result,[i for i in result["issues"] if i["code"].startswith("CS-")]
+
+    def test_authored_accrual_is_closed_but_omission_remains_optional_in_both_locations(self):
+        for scope in ("top_level","component"):
+            for mode in (None,"unknown","cash ",False,0,[],{}):
+                with self.subTest(scope=scope,mode=mode):
+                    result,issues=self.report(self.source(scope,dict(tranches=[self.tranche(accrual=mode)])))
+                    path="" if scope=="top_level" else "retail.capital_stack."
+                    self.assertEqual([(i["code"],i["severity"],i["field"]) for i in issues],
+                                     [("CS-01","error",path+"tranches[0]")])
+                    self.assertEqual(result["overall_status"],"errors")
+                    self.assertIn(issues[0],result["errors"])
+            for extra in ({},{"accrual":"cash"},{"accrual":"accrued"}):
+                with self.subTest(scope=scope,extra=extra):
+                    _,issues=self.report(self.source(scope,dict(tranches=[self.tranche(**extra)])))
+                    self.assertEqual(issues,[])
+
+    def test_split_admission_and_component_rate_presence_keep_existing_allocations(self):
+        for scope in ("top_level","component"):
+            pref=dict(id="pref",position=1,amount=1000,rate=.12,
+                      **{"class":"preferred_equity"},accrual="split",cash_rate=.08,accrued_rate=.04)
+            _,issues=self.report(self.source(scope,dict(tranches=[pref])))
+            self.assertEqual(issues,[])
+            for key in ("cash_rate","accrued_rate"):
+                invalid=copy.deepcopy(pref);del invalid[key]
+                _,issues=self.report(self.source(scope,dict(tranches=[invalid])))
+                self.assertTrue(issues)
+                self.assertTrue(all(i["code"]=="CS-02b" for i in issues))
+            ordinary=self.tranche(accrual="cash",cash_rate=0)
+            _,issues=self.report(self.source(scope,dict(tranches=[ordinary])))
+            self.assertEqual([i["code"] for i in issues],["CS-02b"])
+
+    def test_current_selection_history_and_external_payload_remain_separate_from_admission(self):
+        bad=dict(tranches=[self.tranche(accrual=None)])
+        good=dict(tranches=[self.tranche(accrual="cash")])
+        for scope in ("top_level","component"):
+            section="capital_stack" if scope=="top_level" else "components"
+            header=HEADER if scope=="top_level" else HEADER.replace(
+                b"asset_class: multifamily",b"asset_class: mixed_use")
+            bad_body=parse(self.source(scope,bad)).source.blocks[0].parsed.value
+            good_body=parse(self.source(scope,good)).source.blocks[0].parsed.value
+            historical=copy.deepcopy(bad_body)
+            historical["_meta"]["lifecycle"]["superseded"]=True
+            external_payload={k:v for k,v in bad_body.items() if k!="_meta"}
+            for raw in (
+                    header+block(section,historical)+block(section,good_body),
+                    header+block(section,bad_body)+block(section,good_body),
+                    header+external(section,**external_payload)):
+                result,issues=self.report(raw)
+                self.assertEqual(issues,[])
+                if b"external=true" in raw:
+                    self.assertEqual(result["composition_assessment"]["status"],"unresolved")
+            for raw in (
+                    header+block(section,good_body)+block(section,bad_body),
+                    header+block(section,historical)+block(section,bad_body)):
+                _,issues=self.report(raw)
+                self.assertEqual([i["code"] for i in issues],["CS-01"])
+
+    def test_malformed_stack_and_tranche_containers_preserve_existing_structural_refusal(self):
+        for scope in ("top_level","component"):
+            for stack in ({},{"tranches":None},{"tranches":{}},{"tranches":[]},
+                          {"tranches":[None]},{"tranches":[False]},{"tranches":[[]]}):
+                with self.subTest(scope=scope,stack=stack):
+                    _,issues=self.report(self.source(scope,stack))
+                    self.assertEqual([i["code"] for i in issues],["CS-01"])
 
 
 if __name__=="__main__":
