@@ -2,7 +2,9 @@
 
 These are newly authored fictional examples under the owner's RFC0048 disposition.
 They demonstrate accepted profiles, fragments, composition and packaging. They do
-not repair or reauthenticate the original kit. RFC0091 remains draft and unmerged.
+not repair or reauthenticate the original kit. The owner accepted RFC0091 and
+these six declarations on2026-10-17. Final integration remains gated by review
+and exact-head CI; no version, release or publication is authorized.
 
 ## Identities and provenance
 
@@ -76,7 +78,7 @@ fixtures, sources and schemas, plus exact prior index/metric expectation bytes.
 The latter receive only additive cases for these new records. All older
 expectations and original fidelity/composition assertions remain active.
 The four original profiles are metadata-incomplete historical examples and retain
-six META-02 errors under the draft candidate; there is no legacy exception.
+six META-02 errors under accepted RFC0091; there is no legacy exception.
 
 ### Exact archive reproduction parameter
 

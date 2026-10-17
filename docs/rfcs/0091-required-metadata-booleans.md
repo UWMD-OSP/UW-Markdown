@@ -1,7 +1,7 @@
 ---
 rfc: 0091
 title: Allocate the two required metadata boolean diagnostics
-status: draft
+status: accepted
 author: codex
 created: 2026-10-17
 affects:
@@ -14,26 +14,45 @@ affects:
 
 # RFC 0091: Allocate the two required metadata boolean diagnostics
 
-## Status and smallest owner decision
+## Acceptance and scope
 
-**Draft; no activation.** Issue #354's nine native partial refusals do not
-establish nine missing diagnostic allocations. Six cases have accepted owning
-errors or fail an existing container-admission precondition. The remaining three
-contain six missing required boolean members with no registered diagnostic.
+**Accepted by the owner, 2026-10-17; implementation unreleased.** The owner
+supplied this decision after reviewing the bounded implementation and six
+new-kit declarations:
 
-The owner has authorized preparing and independently verifying `META-02`/error for
-`_meta.quality.human_review_required` and `META-03`/error for
-`_meta.lifecycle.superseded`, with the precise applicability, precedence and
-operation boundaries below. Final RFC acceptance and merge remain unapproved. These are validation findings, category `validate`
-when represented as Protocol errors; ordinary `ValidationMessage` objects gain
-no `category` member. This proposal does not expand `META-01`, the five closed
-`META_FIELD_MISSING_<FIELD>` suffixes, or the low-confidence informational rule.
-It allocates no generic schema/fallback diagnostic and no release version.
+> Owner decision (2026-10-17): RFC 0091 goes to acceptance. I've reviewed the six review declarations in the authored-2026-10-17 kit and accept them as written.
 
-The owner-supported historical/physical applicability is explicit for
-these two fields, not an automatic extension of RFC0090's actor allocation.
-Accepting the final RFC would still require synchronized implementation,
-independent verification and governed conformance dispositions before activation.
+The owner also required:
+
+> Merge only after a green exact-head CI run on the final commit, keeping all 2,731 preserved artifacts byte-identical.
+
+Merging the synchronized implementation activates this contract on main; normal
+integration review, exact-final-head CI and subsequent exact-main verification
+remain required. Acceptance allocates no release version and authorizes no tag,
+npm publication or public launch.
+
+Issue #354's nine native partial refusals do not establish nine missing
+allocations. Six cases have accepted owning errors or fail an existing
+container-admission precondition. Three contain six missing required boolean
+members. This RFC allocates `META-02`/error for canonical
+`_meta.quality.human_review_required` and `META-03`/error for canonical
+`_meta.lifecycle.superseded`, with the applicability, precedence and operation
+boundaries below. These are category `validate` when represented as Protocol
+errors; ordinary `ValidationMessage` objects gain no `category` member.
+It does not expand `META-01`, the five closed `META_FIELD_MISSING_<FIELD>`
+suffixes or the low-confidence informational rule, and allocates no generic
+schema/fallback diagnostic.
+
+## Decisions
+
+| Decision | Accepted contract | Basis |
+|---|---|---|
+| D1 | META-02/error and META-03/error for the two already-required canonical boolean members; literal true/false only | Owner decision; existing Format/schema types |
+| D2 | Existing container/actor precedence, independent findings and exact field attribution; flags pass follows shape/actor and precedes role/period/source | Independently reviewed bounded implementation |
+| D3 | All retained physical blocks, including history, plus explicit mutable-model identity union | Owner-approved operation boundaries; no history-authority decision for RFC0085 |
+| D4 | Governed diagnostic expectation and new authored positives; all2,731 protected original artifacts unchanged | Owner RFC0048 option(a), six declarations accepted2026-10-17 |
+| D5 | Activation can change validation exits and newly issued receipt policy counts; no source or historical-subject repair | Explicit owner activation decision; existing receipt rules |
+| D6 | Version recommendation only; no version allocation, publication or launch approval | Independent surface versioning and first-public-baseline policy |
 
 ## Evidence and joint contract
 
@@ -89,7 +108,7 @@ the document is never sufficient. Otherwise well-shaped late metadata,
 section disagreement or missing quality object remains a distinct unallocated
 requirement, outside this two-boolean RFC.
 
-## Proposed diagnostic contract
+## Accepted diagnostic contract
 
 | Code | Exact predicate after container admission | Field | Severity |
 |---|---|---|---|
@@ -119,7 +138,7 @@ separate findings. Do not deduplicate by section/variant/value/digest.
 
 ### Applicability and source/model authority
 
-Proposed fresh-source validation includes **all retained physical blocks**:
+Fresh-source validation includes **all retained physical blocks**:
 current, historical, overwritten, append-only, variants and extensions. Being
 unselected does not make required boolean metadata lawful. This does not make
 historical financial values current or decide retained-history authority under
@@ -166,26 +185,27 @@ An isolated in-memory research hook on the unchanged native runner produces
   `externalized-deal`: existing `examples/standalone/*.uwx.md` sources omit
   required review flags; their zero-error admission assertions would fail.
 
-These are five affected **checks**, not a claim that five expected files should
-be rewritten. The standalone sources are outside the734 conformance-source
-inventory. Before activation, decide and measure their governed examples/source
-or assertion dispositions, including dependent identities/package evidence.
-Preserve original records. The draft implementation changes only the capital-stack diagnostic-code
-expectation on unchanged sources; its original expectation is archived. Four
-standalone zero-error assertions remain unchanged and currently fail, because
-accepted RFC0048 promises every kit example validates. Their six absent review
-flags have no authored canonical values in the original revisions. Neither
-`review_status`, narrative review flags nor `buildMeta` defaults for NEW blocks
-can establish those omitted historical declarations. The owner selected new authored positive examples while preserving originals
-on2026-10-17; the implementation of that disposition is specified below.
-RFC0048's positive-validation promise is not amended. No metadata
-is invented and no package, signature or original source is rewritten. The hook
-uses placeholder messages and no new registry copy, so it is not a final render
-baseline or complete consumer-impact measurement.
+These were five affected **checks**, not five automatically replaceable
+expected files. The standalone sources are outside the734 conformance-source
+inventory. The only existing expected.json change adds META-02/03 to the
+capital-stack diagnostic-code expectation on unchanged sources, retaining its
+original expectation and CC-03 mismatch-only distinction. The four zero-error
+profile predicates now exercise new authored positives under the owner's
+RFC0048 option(a); their original inputs remain unchanged and separately assert
+six META-02 errors. All original auxiliary fidelity/composition assertions remain.
+
+The original revisions have no authored values for their six absent review
+flags. Neither narrative review_status/flags nor buildMeta defaults for NEW
+blocks establish those historical declarations. The owner accepted the six new
+explicit declarations on2026-10-17; their disposition is below. RFC0048's
+positive-validation promise is unchanged. No original source, package, signature
+or receipt subject is rewritten. The historical research hook used placeholder
+messages and no new registry copy; its frozen observations remain evidence,
+not a regenerated render baseline.
 
 ## Activation gates and historical consequences
 
-Before owner acceptance and final integration: independently verify the two predicates,
+Final integration requires independent verification of the two predicates,
 full physical/model populations and ordering; run absent/null/every-type and
 container/actor/override/source-boundary controls in both implementations;
 measure the complete applicable native/portable/producer/receipt consumers;
@@ -210,15 +230,16 @@ does not solve every remaining typed admission obligation. RFC0085/0088/0089
 remain separate drafts. No Format/Protocol/package version is allocated, and no
 UWMD5.0 tag, release preparation or publication is authorized.
 
-## Implementation acceptance packet — owner review pending
+## Independently reviewed implementation and owner acceptance
 
-The bounded candidate implements exactly these predicates in TypeScript and
+The bounded implementation applies exactly these predicates in TypeScript and
 Python. [The existing review](https://github.com/UWMD-OSP/UW-Markdown/blob/c558a55656562f619154aa21e26ebd383173da13/docs/reviews/2026-10-15-python-reader-354.md#rfc0091-implementation-acceptance-packet)
 records independent review, exhaustive original-source/consumer dispositions,
 actual CLI and receipt boundaries, focused negative controls and exact CI.
 The archive retains before/after observations and original expectation evidence.
-Draft status is intentional; candidate spec wording in this unmerged PR is not
-accepted repository authority. No other RFC or release state changes.
+The owner accepted this contract and the authored-kit declarations on2026-10-17.
+The final integration gate applies to the exact final commit, not an earlier
+green checkpoint. No other RFC or release state changes.
 
 A model-only diagnostic's section follows the existing actor traversal context
 (collection key for keyed collections, block annotation for append entries).
@@ -229,8 +250,9 @@ remain canonical in both operations.
 ## Owner RFC0048 disposition — 2026-10-17
 
 The owner selected option (a): genuinely author new positive examples and retain
-the originals as metadata-incomplete history. This approves that kit disposition,
-not final RFC0091 acceptance, readiness, merge or release. RFC0048's promise and
+the originals as metadata-incomplete history. The subsequent2026-10-17 decision
+quoted above accepts RFC0091 and the six authored declarations, with final review
+and CI required before merge. It authorizes no release. RFC0048's promise and
 all zero-error positive-validation assertions remain unchanged.
 
 The four new records are under `examples/standalone/authored-2026-10-17/` with
@@ -270,3 +292,44 @@ Defaulted booleans do not prove underlying facts or authorization to repair an
 old source. Genuine Format2 refusals and wrapper precedence remain distinct.
 The writer inventory is source/synthetic-probe evidence, not deployed-service
 certification; no StackUW code is modified by this RFC.
+
+## Activation impact and version recommendation
+
+The owner's2026-10-17 activation direction is explicit:
+
+> META-02/03 errors on incomplete admitted canonical metadata, including history; validation exit codes and newly issued receipt policy counts may change; sources and historical subjects are never repaired or rewritten.
+
+This is breaking for validation consumers: some formerly successful operations
+now return errors/exit1, and consumers must handle the new registered codes and
+newly issued receipt policy counts. Valid explicit booleans retain admission.
+Parent-container and unrelated issue precedence remain unchanged. Reassessing
+unchanged bytes does not change their subject digest or retrospectively
+reissue/authenticate historical artifacts. Receipt verification rules, signature
+rules, financial calculations and engine/version labels are unchanged here.
+
+**Recommendation, not an allocation:** use major-level treatment for this
+breaking validation/Protocol contract and affected stable public implementation
+surfaces; incorporate it into the separately approved public-launch baseline
+rather than calling it a compatible patch or minor. Independently versioned
+pre-1.0 packages may use their own breaking minor increment when a release is
+approved. This does not make every surface5.0.0. No Format syntax/type version
+change is required solely for this RFC: both boolean fields and their required
+types already exist. Exact release numbers, dependency repins and receipt engine
+identity/conformance treatment belong to a separate approved release change.
+Major5 remains reserved for the public launch; no release is prepared here.
+
+### Writer migration note
+
+Writers must explicitly choose literal booleans for both fields on newly authored
+blocks according to intended review and lifecycle state, including blocks they
+retain as history; omission, null and nonboolean values under admitted canonical
+parents receive META-02/03. StackUW's toFormat3Meta currently defaults both to
+false: that satisfies type admission, but does not prove that review is unnecessary
+or that the lifecycle declaration is correct. Audit those defaults and pass
+intentional values rather than inferring them from narrative flags or inserting
+false merely to silence validation. Preserve incomplete historical records,
+bytes, signatures and receipts as history. If a corrected record is needed,
+author an attributable replacement with its own identity/provenance and any
+newly required signatures/receipts; never relabel or repair an issued historical
+subject. Revalidate new output and update consumer error/exit/policy handling;
+no legacy-admission shim or automatic consumer migration is introduced.

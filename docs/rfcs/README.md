@@ -124,7 +124,7 @@ its RFC was written, and records that process failure rather than hiding it. See
 its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
 
-| [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | draft | format, protocol, core, conformance, tooling |
+| [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
 
 ## Status values
 

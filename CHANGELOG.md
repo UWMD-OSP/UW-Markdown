@@ -10,13 +10,16 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- Prepare draft RFC0091's narrow META-02/03 required-boolean admission in both
-  validators, with retained physical/history and canonical mutable-model
-  controls. Preserve META-01, completeness rules, original subjects and prior
-  expectations; owner option (a) authors a new positive standalone kit while
-  preserving originals as metadata-incomplete history. Keep strict positive
-  validation, full composition and package-fidelity controls. Final RFC
-  acceptance remains open. No schema, release version or capability promotion.
+- Accept RFC0091 under the owner's2026-10-17 decision: META-02/03 errors
+  apply to incomplete admitted canonical metadata, including retained history.
+  Validation exit codes and newly issued receipt policy counts may change;
+  sources and historical subjects are never repaired or rewritten. Preserve
+  META-01, completeness/shape precedence, financial and receipt-verdict rules,
+  all2,731 protected artifacts and original expectation evidence. The owner
+  accepts the six authored replacement-kit declarations; strict positive,
+  composition and package-fidelity assertions remain. No schema/version change,
+  release or Python capability promotion. See RFC0091 for the breaking-impact
+  version recommendation and writer migration note.
 
 - Enforce RFC0090's required nonempty-string provenance actor with narrow
   META-01/error across retained physical blocks. Preserve wrapper precedence,
@@ -74,10 +77,10 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
-- Draft RFC0091's bounded diagnostic reconciliation for required metadata
-  booleans, with exact nine-case owning-code analysis, independent source
-  inventories and isolated conformance sensitivity. No new code is activated,
-  historical expectation rewritten, capability advertised or version allocated.
+- Record RFC0091's accepted bounded diagnostic reconciliation, exact nine-case
+  owning-code analysis, independent source/consumer inventories and frozen
+  pre-activation sensitivity evidence. Preserve historical expectations without
+  advertising complete validation or allocating a release version.
 
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.

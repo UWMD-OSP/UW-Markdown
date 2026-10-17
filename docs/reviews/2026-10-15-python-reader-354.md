@@ -775,3 +775,23 @@ member names/uncompressed bytes are identical. Etc/GMT+7 exactly reproduces
 frozenSHA8cb9...0679; UTC produces2c3c3767b3773b9e91d66898c1ee589eba44b935c79b1c6c00b04712b451419b.
 The corrected eight controls pass under UTC with both Node24.14.1 and the
 preserved official Node20.20.2 executable. No storedZIP or UWX byte changes.
+
+
+## RFC0091 owner acceptance — 2026-10-17
+
+The owner has now decided: "RFC 0091 goes to acceptance. I've reviewed the six
+review declarations in the authored-2026-10-17 kit and accept them as written."
+Earlier draft/pending language and raw candidate reports above remain historical
+evidence of their checkpoints, not the current RFC status. RFC/index/status and
+live example/Python guidance now record accepted, unreleased status.
+
+The owner requires final review and green exact-final-head CI before merging,
+with all2,731 protected artifacts byte-identical. Activation adds META-02/03
+errors on incomplete admitted canonical metadata, including retained history;
+validation exit codes and newly issued receipt policy counts may change. Sources
+and historical subjects are never repaired or rewritten. No receipt-verdict rule,
+schema, numerical procedure, version or release is changed by finalization.
+The exact final-head/main evidence is recorded in PR378 and Issue354's existing
+living comment. RFC0091 contains the breaking-impact recommendation and one
+writer migration note, explicitly distinguishing StackUW's false defaults from
+authorial review/lifecycle intent. RFC0085/0088/0089 remain separate drafts.

@@ -765,12 +765,15 @@ and historical evidence are preserved without injecting missing JSON members.
 This fixes the existing reserve-draw superseded-source parse discrepancy; it
 changes no Envelope shape, digest rule, receipt verdict, discovery or tier claim.
 
-## Draft RFC0091 source-inspection candidate
+## Accepted RFC0091 source-inspection contract
 
 The bounded source inspector reports META-02/error for an absent, null or
 nonboolean canonical `_meta.quality.human_review_required`, and META-03/error
 for the same condition at `_meta.lifecycle.superseded`. Both literal booleans
 pass. Parent-shape precedence, physical/history ordering, actor independence
-and canonical model authority follow the draft RFC; no coercion or source edit
-occurs. Eight focused controls cover these boundaries. Final RFC acceptance is
-pending; discovery stays parse-only, and this helper is not complete validate.
+and canonical model authority follow the accepted RFC; no coercion or source edit
+occurs. Eight focused controls cover these boundaries. The owner accepted the
+contract on2026-10-17; discovery stays parse-only, and this helper is not complete
+validate. Incomplete admitted canonical metadata, including history, gains errors;
+validation exits and newly issued receipt policy counts can change without
+repairing sources or rewriting historical subjects. No version is allocated.

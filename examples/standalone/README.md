@@ -3,8 +3,9 @@
 The current positive examples are the newly authored
 [2026-10-17 kit](authored-2026-10-17/README.md). It retains RFC0048's promise that
 positive examples parse and validate, with explicit metadata, full composition
-equivalence and a new package. RFC0091 remains draft; this authoring disposition
-is not final diagnostic-contract acceptance or permission to merge/publish.
+equivalence and a new package. The owner accepted RFC0091 and all six authored
+review declarations on2026-10-17. Integration requires exact-head CI; no version
+allocation, release or publication is authorized.
 
 The original `lease-abstract-v1`, `source-note-v1`, `inline-deal` and
 `externalized-deal` files below are **metadata-incomplete historical examples**.
