@@ -21,7 +21,8 @@ function integerMagnitude(value) {
   return significand % divisor === 0n ? significand / divisor : null;
 }
 export function classify(xBits, yBits) {
-  const x = word(xBits), y = word(yBits);
+  const x = word(xBits);
+  const y = word(yBits);
   if (!finite(x) || !finite(y)) return { kind: 'nonfinite_input' };
   if ((y & ~SIGN) === 0n) return { kind: 'zero_exponent' };
   const negative = (y & SIGN) !== 0n;
@@ -33,8 +34,10 @@ export function classify(xBits, yBits) {
     popcount, basic_operation_bound: text.length - 1 + popcount + Number(negative) };
 }
 export function graph(xBits, yBits) {
-  const xb = word(xBits), yb = word(yBits);
-  const x = number(xb), y = number(yb);
+  const xb = word(xBits);
+  const yb = word(yBits);
+  const x = number(xb);
+  const y = number(yb);
   const category = classify(xBits, yBits);
   const trace = [];
   const finish = (value) => ({ ...value, operations: trace.length,
@@ -49,7 +52,9 @@ export function graph(xBits, yBits) {
   if (x < 0 && category.kind === 'fractional') return finish({ status: 'negative_fractional_domain' });
   if ((xb & ~SIGN) === ONE) return finish({ status: 'finite', bits: bits(x < 0 && category.odd ? -1 : 1) });
   if (category.kind === 'fractional') return finish({ status: 'fdlibm_fractional_required' });
-  let n = integerMagnitude(yb), factor = x, accumulator = 1;
+  let n = integerMagnitude(yb);
+  let factor = x;
+  let accumulator = 1;
   let refused = false;
   const operation = (name, left, right) => {
     const answer = name === 'multiply' ? left * right : left / right;
