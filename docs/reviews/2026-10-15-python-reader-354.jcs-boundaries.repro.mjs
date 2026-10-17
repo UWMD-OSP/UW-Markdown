@@ -8,7 +8,7 @@ for(const [name,root] of Object.entries(roots))apis[name]=await import(pathToFil
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const copy=value=>JSON.parse(JSON.stringify(value));
 const observe=async fn=>{try{return {status:'returned',value:(await fn())??null};}catch(error){return {status:'threw',name:error.name,code:error.code??null,message:error.message};}};
-const source='---\nuw_version: "3.0"\ndeal_id: "jcs-final-audit"\ndeal_name: "Valid source metadata audit"\nasset_class: multifamily\n---\n\n```json uw:section=property\n'+JSON.stringify({_meta:{section:'property',provenance:{source:'manual',actor:'reviewer',timestamp:'2026-10-17T00:00:00Z'},lifecycle:{revision:1,superseded:false}},value:'valid'})+'\n```\n';
+const source=`---\nuw_version: "3.0"\ndeal_id: "jcs-final-audit"\ndeal_name: "Valid source metadata audit"\nasset_class: multifamily\n---\n\n\`\`\`json uw:section=property\n${JSON.stringify({_meta:{section:'property',provenance:{source:'manual',actor:'reviewer',timestamp:'2026-10-17T00:00:00Z'},lifecycle:{revision:1,superseded:false}},value:'valid'})}\n\`\`\`\n`;
 const pack={...apis.baseline.getPackForAssetClass('multifamily'),id:'research.jcs-final-audit',version:'0.0.0-research',calculations:[{id:'constant',label:'Nonfinancial source control',formula:'1',deterministic:true}]};
 const receipt=await apis.baseline.issueReceipt(source,{pack,filename:'audit.uwx.md',issued_at:'2026-10-17T00:00:00Z',issuer:'research-only'});
 const document={kind:'uwmd-document-signature',signature_version:'1',subject:await apis.baseline.resolveDocumentSigningSubject(source),alg:'ed25519',kid:'research-placeholder',signed_at:'2026-10-17T00:00:00Z',sig:'A'.repeat(86)};
@@ -89,9 +89,9 @@ for(const [mode,api] of Object.entries(apis))direct.push({mode,operation:'verify
 const runtimeHashes=Object.fromEntries(Object.entries(roots).map(([mode,root])=>[mode,{canonicalizer_sha256:hash(readFileSync(join(root,'packages/uwmd-verify/dist/integrity-canonical.js'))),source_sha256:hash(readFileSync(join(root,'packages/uwmd-verify/src/integrity-canonical.ts')))}]));
 const output={scope:'Read-only final compatibility audit, TEMP only. Stubs are operational controls and not cryptographic evidence. No new refusal policy selected.',node:process.version,roots:runtimeHashes,source,source_sha256:hash(source),base_receipt:receipt,document_artifact:document,receipts:receiptRows,documents:documentRows,direct,chains};
 if (!process.argv[4]) throw new Error('Pass a new output path; frozen observations are never overwritten.');
-writeFileSync(process.argv[4],JSON.stringify(output,null,2)+'\n',{flag:'wx'});
-for(const row of receiptRows)console.log('receipt',row.mode,row.id,'payload',row.direct_payload.status,row.runs.map(r=>r.backend+':'+(r.result.status==='threw'?'THROW-'+r.result.name:r.result.value.verdict+'-'+r.result.value.issues.map(i=>i.code).join(','))+'/calls'+r.calls).join(' '));
-for(const row of documentRows)console.log('document',row.mode,row.id,'payload',row.direct_payload.status,row.runs.map(r=>r.backend+':'+(r.result.status==='threw'?'THROW-'+r.result.name:r.result.value.state+'/'+r.result.value.reason+'-'+r.result.value.issues.map(i=>i.code).join(','))+'/calls'+r.calls).join(' '));
+writeFileSync(process.argv[4],`${JSON.stringify(output,null,2)}\n`,{flag:'wx'});
+for(const row of receiptRows)console.log('receipt',row.mode,row.id,'payload',row.direct_payload.status,row.runs.map(r=>`${r.backend}:${r.result.status==='threw'?`THROW-${r.result.name}`:`${r.result.value.verdict}-${r.result.value.issues.map(i=>i.code).join(',')}`}/calls${r.calls}`).join(' '));
+for(const row of documentRows)console.log('document',row.mode,row.id,'payload',row.direct_payload.status,row.runs.map(r=>`${r.backend}:${r.result.status==='threw'?`THROW-${r.result.name}`:`${r.result.value.state}/${r.result.value.reason}-${r.result.value.issues.map(i=>i.code).join(',')}`}/calls${r.calls}`).join(' '));
 for(const row of direct)console.log('direct',row.mode,row.operation,row.result.status,row.result.name??'');
 for(const row of chains)console.log('chain',row.mode,row.field,row.verification.status,row.verification.name??row.verification.value?.ok,'calls',row.calls);
 console.log('EVIDENCE',process.argv[4]);

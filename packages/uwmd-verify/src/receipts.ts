@@ -499,14 +499,6 @@ export async function issueReceipt(
   const resolved = await resolveReceiptSubject(content, options);
   const pack = resolvePack(resolved.parsed, options.pack);
   const results = computeReceiptResults(pack, resolved.parsed);
-  let resultsDigest: string;
-  try {
-    resultsDigest = await computeResultsDigest(results);
-  } catch (error) {
-    if (!(error instanceof InvalidUnicodeError)) throw error;
-    // Receipt §4: issuance returns a complete artifact or a typed refusal.
-    throw new ReceiptError('RCP_COMPUTATION_FAILED', `Results cannot be canonicalized: ${error.message}`);
-  }
   const validation = validateUWFile(resolved.parsed);
 
   return {
@@ -519,7 +511,11 @@ export async function issueReceipt(
       engine_version: options.engine_version ?? VERIFY_VERSION,
       protocol_version: options.protocol_version ?? PROTOCOL_VERSION,
       results,
-      results_digest: resultsDigest,
+      results_digest: await computeResultsDigest(results).catch(error => {
+        if (!(error instanceof InvalidUnicodeError)) throw error;
+        // Receipt §4; retain the original validation and option-read timing.
+        throw new ReceiptError('RCP_COMPUTATION_FAILED', `Results cannot be canonicalized: ${error.message}`);
+      }),
     },
     policy: {
       policy_set: options.policy_set ?? BUILTIN_POLICY_SET,
