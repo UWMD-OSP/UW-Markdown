@@ -40,9 +40,16 @@ Know which side a change is on before you start.
 UWMD stays vendor-neutral and verifier-focused. StackUW owns modeling, AI
 agents and workflow products; it is an adopter, not the required producer or
 runtime for this standard. The existing Bancroft suite, provider adapters,
-prompts and workflow skills are 4.x starter compatibility surfaces, not a
-direction to expand UWMD's product scope. Preserve their public imports and
-CLI behavior in 4.x. See the
+prompts and workflow skills are prelaunch starter-product history, not a
+direction to expand UWMD's product scope. UWMD 5.0 is the first official public
+compatibility baseline; no pre-5.0 reader, procedure, codec, receipt regime,
+deprecated API or shim is retained solely for compatibility. Follow the
+[explicit owner policy](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16).
+Specific contract changes and product removals still require their reviewed
+scope, applicable RFC discipline and independent evidence; this guidance
+approves no removal set or release. Preserve historical artifacts accurately
+and obtain separate explicit owner approval before any 5.0 tag/publication.
+See the
 [architecture inventory](docs/reviews/2026-10-15-architecture-boundary.md) and
 [separate 5.0 removal plan](docs/reviews/2026-10-15-agent-removal-5.0.md).
 

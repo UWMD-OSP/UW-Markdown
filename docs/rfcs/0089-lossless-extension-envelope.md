@@ -32,6 +32,15 @@ neither this representation design nor its implementation, RFC acceptance,
 version allocation or a 5.0 tag/publication. Independent versioning and coordinated
 normative/spec/schema/conformance review still apply.
 
+The separately reviewed JCS Unicode correction is complete: #373 merged as
+`765e2c4b6e2caf532f13d06c94234615932b47c7` after exact-head CI38995962876.
+Its strict rejection is owner-approved forward behavior, with no legacy fallback;
+historical preimage/signature limits remain in the linked review as evidence.
+This draft adds no further compatibility hold for that completed correction.
+Parser peer/history storage and the CSV block-extra carrier remain unresolved
+representation work. Earlier production probes are pinned to their stated
+pre-correction baseline; do not repeat them as claims about current JCS behavior.
+
 ## Motivation
 
 [Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365) records a joint

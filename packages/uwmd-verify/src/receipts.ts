@@ -24,7 +24,7 @@ import {
   toUWEnvelope,
   type UWDocumentEnvelope,
 } from './envelope.js';
-import { canonicalize } from './integrity-canonical.js';
+import { canonicalize, InvalidUnicodeError } from './integrity-canonical.js';
 import { sha256TextHex } from './integrity.js';
 import { canonicalizeUWLiteFinancial, parseUWLite } from './lite.js';
 import { compileUWLite } from './lite-bridge.js';
@@ -511,7 +511,11 @@ export async function issueReceipt(
       engine_version: options.engine_version ?? VERIFY_VERSION,
       protocol_version: options.protocol_version ?? PROTOCOL_VERSION,
       results,
-      results_digest: await computeResultsDigest(results),
+      results_digest: await computeResultsDigest(results).catch(error => {
+        if (!(error instanceof InvalidUnicodeError)) throw error;
+        // Receipt §4; retain the original validation and option-read timing.
+        throw new ReceiptError('RCP_COMPUTATION_FAILED', `Results cannot be canonicalized: ${error.message}`);
+      }),
     },
     policy: {
       policy_set: options.policy_set ?? BUILTIN_POLICY_SET,
@@ -789,7 +793,16 @@ export async function verifyReceipt(
     receipt.computation.engine_version === verifierEngineVersion;
 
   if (receipt.signature && options.signatureVerifier) {
-    const valid = await options.signatureVerifier.verify(receipt, receiptSigningPayload(receipt));
+    let payload: string;
+    try {
+      payload = receiptSigningPayload(receipt);
+    } catch (error) {
+      if (!(error instanceof InvalidUnicodeError)) throw error;
+      // Receipt §5.1 step 4: an unencodable signed input cannot validate.
+      return { verdict: 'failed', issues: [{ code: 'RCP-01', severity: 'failure',
+        message: `The receipt signature input cannot be canonicalized: ${error.message}` }], recomputed };
+    }
+    const valid = await options.signatureVerifier.verify(receipt, payload);
     if (!valid) {
       return {
         verdict: 'failed',
@@ -828,7 +841,15 @@ export async function verifyReceipt(
 
   // Corruption check, reported but not decisive on its own — recomputation
   // already agreed, so a stale digest here means the field, not the numbers.
-  const expectedResultsDigest = await computeResultsDigest(receipt.computation.results);
+  let expectedResultsDigest: string;
+  try {
+    expectedResultsDigest = await computeResultsDigest(receipt.computation.results);
+  } catch (error) {
+    if (!(error instanceof InvalidUnicodeError)) throw error;
+    // Receipt §5.1 step 6: the stated result digest cannot recompute.
+    return { verdict: 'failed', issues: [{ code: 'RCP-04', severity: 'failure',
+      message: `results_digest cannot recompute: ${error.message}` }], recomputed };
+  }
   if (expectedResultsDigest !== receipt.computation.results_digest) {
     return {
       verdict: 'failed',

@@ -542,3 +542,92 @@ changed. Host object prototypes are detached before comparing serialized JSON
 evidence; original volatile timestamps are explicit replay inputs for exact
 transport comparison. Successful replays supersede the failed harness checkpoint,
 without rewriting its original observation bytes.
+
+### 2026-10-16 — Bounded JCS correction: authenticated-input compatibility
+
+DraftPR373 separates existing RFC8785 string admission from RFC0089's proposed
+container/mappings. The initial minimal guard leaves valid subjects unchanged,
+but rejecting invalid Unicode affects more than source digests. The linked
+`2026-10-15-python-reader-354.jcs-boundaries.repro.mjs` and preserved
+`2026-10-15-python-reader-354.jcs-boundaries.initial.json` reproduce baseline
+versus initial guard behavior using synthetic constant/string packs and recording
+stubs. Stubs establish ordering, never cryptographic validity. Source and built
+canonicalizer hashes are recorded; these are research observations, not fixture
+expectations or newly selected normative outcomes.
+
+The initial guard made signed receipt metadata/payload canonicalization and late
+invalid-string results digest verification throw; invalid document key ids reached
+INT13/backend_error without a backend call. Invalid block-signing actor/kid inputs
+also threw. Unsigned receipt metadata and fields excluded from each committed
+input were unaffected. Direct digest/signing-input helpers appropriately retain
+a typed domain refusal. Do not globally reject excluded metadata to simplify
+handling, or label all these cases source RCP09.
+
+Independent accepted-contract review identifies bounded existing-code handling:
+Receipt5.1 step4/signature nonvalidation uses RCP01, step6/nonrecomputable results
+digest uses late RCP04; issuance requires the existing typed RCP_COMPUTATION_FAILED
+error. ProtocolV.13/RFC0084 malformed admitted signing input uses INT09 rather than
+a backend-outage label. Block six-field signing-input refusal uses existing INT07
+malformed-signature handling with present count retained and backend uncalled.
+These are routine implementation catches, not new receipt codes or separate
+owner-controlled conventions. Existing earlier subject/input/pack/key/backend
+and engine precedence must remain intact. Only the internal Unicode error is
+caught; arbitrary backend exceptions are not relabeled as invalid signatures.
+
+RequiredCI38995064642 at initial0af95aff failed one existing XML assertion: the
+earlier JCS rejection escaped instead of XML_CHARACTER_INVALID. The correction
+preserves that exact XML public boundary using a private typed Unicode subclass;
+it does not change XML1's domain, mappings or any existing assertion. Focused
+183 tests, build and test typecheck pass after that correction; broader boundary
+regressions remain an explicit follow-up checkpoint. The failed CI is retained,
+not described as green.
+
+The genuine owner hold remains activation and historical invalid-subject/verdict
+consequences. No source sanitization, old-artifact rewrite, receipt reissuance,
+version allocation, normative schema change or release is authorized. Full
+Envelope/CSV/XML interoperability remains a separate unaccepted RFC0089 decision.
+
+
+The final bounded correction implements those existing-code catches and preserves
+receipt issuance's original validation/option-read/await ordering. Its
+`2026-10-15-python-reader-354.jcs-boundaries.corrected.json` replay uses the exact
+same original source as the retained initial observations and records current
+source/built-module hashes. Signed receipt metadata now fails RCP01 with backend0;
+no backend still gives earlier RCP08, and unsigned metadata remains unchanged.
+Late unencodable results use RCP04; issuance throws typed RCP_COMPUTATION_FAILED.
+Document signing input preflight follows existing shape admission and precedes
+version/source/backend, so malformed encoding is INT09 even with an unknown
+version; an encoding-valid unknown subject is still INT14 before source checks.
+Block kid/actor inputs produce INT07 with present count retained/backend0.
+Direct helpers still refuse invalid domains, and actual backend exceptions retain
+their prior behavior. These mappings use accepted contracts, not owner choices
+about a new receipt rule.
+
+All234 focused actual Vitest tests across five files, package build, test typecheck
+and focused lint pass. The same-source independent boundary replay passes.
+Required final-head CI remains a separate checkpoint; neither the failed initial
+run nor these focused results are a claim of complete interoperability. Historical
+invalid-subject activation remains owner-held, with no fixture or version changes.
+
+### 2026-10-16 — Explicit launch policy and completed JCS disposition
+
+The [owner policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+makes 5.0 the first public compatibility baseline. Earlier review/hold language
+above records its dated investigation state; it does not require prelaunch
+readers, receipt regimes, migration shims or old malformed-input acceptance.
+Strict RFC8785 refusal is now approved forward behavior. #373 merged as
+`765e2c4b6e2caf532f13d06c94234615932b47c7` after exact reviewed-head
+CI38995962876; exact-main CI38999614992 is separate integration evidence.
+
+The [final real Ed25519 review](https://github.com/UWMD-OSP/UW-Markdown/pull/373#issuecomment-6229113331)
+retains original invalid-source artifacts and proves corrected source refusal.
+A separately supplied valid U+FFFD peer can still match an old subject/signature;
+this does not recover the historical preimage or authenticate malformed input.
+No retrospective revocation, silent normalization or new-semantic historical
+authentication is claimed. The completed JCS correction needs no additional
+legacy-support decision in RFC0089. Parser peer/history and CSV block-extra
+representation remain separate governed defects and draft design work. Their
+historical subjects/results remain audit evidence, not compatibility gates.
+The specific Envelope/projection/codec and RFC0085 history-authority choices,
+new-regime authentication evidence and independent version allocation remain
+unapproved. No experiment, frozen answer, schema or release is changed here.
