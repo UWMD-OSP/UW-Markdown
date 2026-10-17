@@ -187,7 +187,9 @@ retained physical source rather than changing any current parsed API or wire.
 Preserve complete annotations, complete fenced payloads (with `_meta` exactly
 once), `_role`, ordinary members named `content`, `_notes`, `_overrides`, exact
 per-block prose, scalar types, absent/null distinctions and unknown top-level
-Envelope members. No metadata defaults or financial facts are added. The role
+Envelope members. Preserve schema-admitted unknown members of each Envelope
+**block**, not only its annotation, payload or outer document. The closed tagged
+wrapper does not close the block it contains. No metadata defaults or financial facts are added. The role
 annotation belongs to content and keeps its existing integrity meaning.
 
 Do not put extension peers into `sections`, turn them into a financial aggregate,
@@ -199,7 +201,7 @@ no live implementation or schema allowance in this draft.
 
 | Representation | Proposed consequence |
 |---|---|
-| JSON | Serialize the new Envelope directly; validate the tagged union, identity agreement, uniqueness and canonical ordering before trusting a stamped digest. Unknown top-level/content members remain preserved. |
+| JSON | Serialize the new Envelope directly; validate the tagged union, identity agreement, uniqueness and canonical ordering before trusting a stamped digest. Unknown top-level, block, annotation and content members remain preserved. |
 | XML | Carry the same typed object/array tree and null identity. Update the mapping's Envelope admission/version relationship and semantic checks. The generic typed XML mechanism can carry it, but existing Envelope1 validation cannot be bypassed. A namespace or XML codec version change is assessed independently. |
 | CSV bundle | Update extension enumeration/reconstruction, not only the shared schema. Block pointers become `/extensions/<escaped-id>/block` for single mode and `/extensions/<escaped-id>/blocks/<ordinal>/block` for variants. `variant` on a current extension row is its exact JSON string or null and `ordinal` is the canonical variants-array index; a singleton has no ordinal. Historical rows retain their existing null non-selection descriptor and ordered history ordinal; the exact authored label remains in annotation rows. RFC6901 escaping applies to the section-id pointer segment. |
 
@@ -472,6 +474,156 @@ XML and CSV round trips; document-signature projection/version guards; receipt
 issue/verify; lease-up projection and assembly; reserve accounts/draw bindings;
 package/batch/lake/workbook stale identities. Existing expectations remain their
 historical regime; any approved new-regime fixture is separately identified.
+
+## Independent Astra review intake — 2026-10-16 (unaccepted)
+
+The attached independent review, **Recommendation keep RFC 0089 in dra.txt**,
+examined main `3eee0fbab3f5682dc345804782994dc22d321fae` and proposal
+`2ebe454a923072018e1af067285dd3140a10d40f`. Its recommendations are external
+research evidence, not owner approval, accepted contract text or automatically
+verified defects. The existing Reader review and isolated experiment carry the
+independent reproductions and dispositions; no parallel planning system or
+production correction is introduced by this draft.
+
+### Acceptance gates: three distinct kinds of accounting
+
+| Accounting | Required candidate meaning and evidence |
+|---|---|
+| Canonical current | Retain every admitted current named peer under the exact role opt-in and one approved nullable identity rule. Ordinary revision selection happens within that identity, never between different peers. A decoded tagged array cannot contain two current records with the same identity; reject rather than deduplicate. |
+| Explicit history | Preserve complete blocks explicitly marked superseded, in physical source order, separately from active peers. Neither a role in history nor its position activates current variant mode. An empty history slot and unknown block members need explicit model-domain fixtures; the current prototype refuses them. |
+| Physical source | Retain original bytes and account for every scanned block independently of current selection. Identify a block by source position and exact source-body evidence, not payload equality. An unmarked overwritten revision is not automatically equivalent to explicitly superseded history or authenticated retained history. |
+
+Format §2.7 says last non-superseded block; the current ordinary TypeScript
+router compares revision numbers and keeps the first on ties, while its early
+extension branch overwrites before either history or variant routing. Do not
+turn any of these observed implementation paths into a new specification.
+Acceptance requires exact same-identity duplicate/current-revision fixtures,
+including order/revision disagreement, equal revisions, explicit history and
+history-only roles, with a reasoned disposition against the accepted contracts.
+The prototype currently refuses unmarked overwritten revisions; that is a lab
+limit, not a newly adopted source rejection. V.13's stricter every-physical-block
+and duplicate-selection guards remain unchanged regardless of ordinary parsing.
+
+**Concrete portable projection candidate, not accepted:** preserve existing
+`{meta, content}` minimum block projections, but replace only each affected
+`extensions[id]` projection by a tagged `single` block or ordered `variants`
+records as in D1, where each record has exact nullable `variant` and a projected
+`block`. Annotation echoes, source positions and prose remain outside the
+Protocol §II.6a.6 minimum. A singleton example is
+`{"mode":"single","block":{"meta":{},"content":{}}}`; a mixed example has
+`{"mode":"variants","blocks":[{"variant":null,"block":{"meta":{},"content":{}}},
+{"variant":"default","block":{"meta":{},"content":{}}}]}`.
+The empty objects illustrate shape only, not valid required metadata. Freeze
+independently authored complete expected projections before acceptance; reconcile
+Protocol wording, public API types, builtin map behavior and independent version
+accounting. No implementation-specific `ParsedUWFile` type is imposed on other
+readers, and no old projection is silently rebaselined.
+
+### Complete block members and a concrete new CSV carrier
+
+Envelope1 `$defs.block` has `additionalProperties: true`. Its legal extra
+members are part of the semantic subject. D1 carries that entire block unchanged;
+a closed wrapper or a complete payload is insufficient if the outer block loses
+members. JSON must retain all of them. The prototype explicitly refuses extras;
+it has not demonstrated this full-domain obligation.
+
+**Candidate for the new bundle mapping only:** add a fourth typed-value scope,
+`block-extra`, whose root is an object containing exactly the block's own members
+other than `annotation`, `content` and `prose`. Use existing typed JSON Pointer
+rows, including an explicit empty root object, preserving nested values, unknown
+keys, empty containers and absent/null distinctions. Reconstruct the extra object
+first, refuse any reserved-member overlap, then attach exactly the separately
+reconstructed annotation/content/optional prose. Reject duplicate decoded paths,
+conflicting node types and aliases; verify the complete reconstructed semantic
+subject after inventory validation. This applies to **every** block collection,
+including builtin and superseded blocks, not only extensions. It is a concrete
+proposal requiring mapping/version approval, not a fourth scope silently added
+to CSV1's closed `annotation|meta|content` vocabulary. Never remove extras from
+schema admission or the digest to make a round-trip pass.
+
+CSV conformance must exercise the actual ZIP artifact, not only its directory
+form: deterministic bytes/timestamps/path ordering, fresh independent decode,
+manifest inventory, exact UTF-8 and received subject, plus the existing path,
+duplicate, symlink/encryption, size/ratio and unsupported ZIP refusals. The frozen
+candidate directories establish none of those ZIP execution claims.
+
+### XML representability: exact alternatives for owner review
+
+Current XML1 uses XML character data for strings and attributes for escaped
+member names. Legal JCS strings such as NUL, U+FFFE and U+FFFF cannot be put there,
+even as XML character references. The current universal fidelity wording and
+that admitted JSON domain need a governed disposition. Two bounded alternatives:
+
+1. **Total escaped lexical mapping (candidate preference for evaluation).** In a
+   separately versioned codec/namespace, carry every JSON string as one ASCII
+   JSON-string lexical token: surrounding quotes; `\"` and `\\` escapes; all
+   controls and all non-ASCII UTF-16 units as lowercase `\uhhhh`; other printable
+   ASCII unchanged. Valid supplementary characters use paired escapes; lone
+   surrogates remain rejected by JCS admission. XML escaping is then applied to
+   the lexical token as transport text. Carry every object member name using the
+   same lexical rule in an explicit `name-json` attribute on a generic member
+   element, rather than guessing whether a raw name needs escaping. For example,
+   a NUL-bearing name/value is represented by ASCII `"a\u0000b"`, not an XML
+   numeric character reference. This rule covers annotations, prose, frontmatter,
+   block extras and unknown outer members too. Decode one JSON string, require
+   canonical lexical re-encoding equality, reject duplicate **decoded** names,
+   and retain exact valid Unicode without normalization. Attribute entity
+   escaping is separate from this lexical encoding. The markers, allowed
+   attributes and namespace must be approved; old decoders must refuse them.
+2. **Explicit partial XML domain.** Keep XML1's scalar/name mechanism, specify
+   the exact XML-representable subset and a deterministic representation refusal
+   for every unsupported string/name. JSON/CSV retain the wider JCS domain.
+   This requires revising the common full-fidelity promise and capability/media
+   description coherently; it is not a codec author's implementation choice.
+
+A base64-of-strict-UTF8 lexical carrier is another reversible implementation
+alternative, but would need equally exact alphabet/padding, strict UTF-8,
+canonical lexical form, duplicate-after-decoding and namespace rules. It is not
+implicitly authorized by either option above. No normalization, replacement
+character, invented label restriction or raw XML numeric-reference workaround
+solves the full-domain problem.
+
+The current TypeScript canonicalizer's treatment of lone UTF-16 surrogates is a
+separate existing JCS issue. RFC8785 §3.2.2.2 requires an error for those strings,
+including member names; valid pairs and U+FFFD must remain unchanged. Fixing that
+admission defect cannot recover omitted peers or establish a new XML regime.
+Its historical digest/receipt consequences require a separate bounded review;
+this RFC changes neither canonicalizer nor receipt verdicts.
+
+### Commitments, provenance and the evidence still missing
+
+D5 and the migration tables apply even to extension-free subjects: the container
+stamp participates in semantic identity. Preserving JCS/SHA256 does not preserve
+the old subject. Preserve every old source/artifact byte, subject and verdict
+scope as historical evidence. A new signature covers a newly issued subject;
+a new receipt requires its own accepted verification/recomputation. A new label,
+unchanged financial result or retained block signature cannot transfer old
+snapshot authentication. Unsupported-version and malformed/source/digest refusal
+precedence must be tested with real new-regime implementations before acceptance
+of the corresponding commitment rules; the plans do not execute those protocols.
+
+RFC0085 remains draft. Its proposed retained-history authority is compatible
+with lossless storage, but it is not an accepted requirement of this RFC. Never
+replace the original archive with a clean projection, infer completeness from
+retained hashes, turn a failed source into an authenticated one by compaction,
+or describe reissuance as recovery of historical attribution. History preservation
+and proof of history completeness are different claims.
+
+**Established bounded evidence:** five frozen candidate models, their exact
+subjects, JSON/XML/CSV-directory examples, source accounting and local negative
+controls; independent Node subject/artifact checks. **Not established:** a second
+independent XML/CSV decoder, complete schema-admitted blocks/builtin composition,
+the total XML alternative, actual ZIP interoperability, complete source/portable
+projection semantics, real new-regime receipt/signature execution or production
+migration. A shared encoder/decoder round-trip cannot substitute for independent
+expected models and implementations.
+
+Pre-acceptance must settle the precise domain/projections, block-extra and XML
+mapping text, commitment/version consequences and disposition of verified existing
+defects. Freeze positive, negative and cross-version expected models/preimages
+for those decisions before approval; production implementation and separately
+authorized activation follow. Public versions, RFC acceptance, conformance
+expectations and the reserved UWMD5.0 launch remain unchanged.
 
 ## Reference implementation
 
