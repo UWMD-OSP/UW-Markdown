@@ -1,0 +1,1251 @@
+{
+  "scope": "UNACCEPTED frozen observed compiler/runtime evidence; finite corpus only, no universal accuracy or conformance guarantee",
+  "run": {
+    "id": 38993665625,
+    "url": "https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38993665625",
+    "event": "pull_request",
+    "head_sha": "0c2f01cd8bc37746d66d7c52a7bc80a225ee000e",
+    "conclusion": "success"
+  },
+  "checkout_association": {
+    "observed_by_all_six_node_reports": "a6d05240e80325019a87bac6a5426a6b61fccc8d",
+    "tree": "d570ddede60e939ea89fb9227fe28d71d2aeb399",
+    "merge_parents": [
+      "3eee0fbab3f5682dc345804782994dc22d321fae",
+      "0c2f01cd8bc37746d66d7c52a7bc80a225ee000e"
+    ],
+    "limitation": "These jobs used default PR test-merge checkout, not exact head checkout. Native reports do not contain checkout/node/binary identity fields; their run association is the artifact identity, with source/input digests checked separately. Do not fabricate missing fields."
+  },
+  "inputs": {
+    "repository_path": "experiments/numerical-0088/native-reference/inputs.json",
+    "revision": "0c2f01cd8bc37746d66d7c52a7bc80a225ee000e",
+    "sha256": "8af9d8851e4ac9857844250ebaa8c7bd083556f6e53d2184a24c7fdd1b027703",
+    "cases": 4204,
+    "op_counts": {
+      "pow": 948,
+      "log": 595,
+      "exp": 620,
+      "sqrt": 614,
+      "fabs": 531,
+      "scalbn": 858,
+      "copysign": 38
+    }
+  },
+  "comparison": {
+    "nan": "class only; original collectors deliberately normalize arithmetic NaN payload/sign to null",
+    "all_other_values": "exact 16-digit words, including signed zero and infinity sign"
+  },
+  "artifacts": [
+    {
+      "name": "native-research-macos-latest-clang-false",
+      "artifact_id": 12086236916,
+      "archive_file": "native-research-macos-latest-clang-false.zip",
+      "github_digest": "sha256:031507ed7677bd6a133dc499f3a59d067aba24c67df278ee2315140804194b24",
+      "archive_bytes": 45043,
+      "api_size_in_bytes": 45043,
+      "archive_members_sha256": {
+        "compiler.stderr.log": "9e2868b3198434caef249255ca8c007872298829b0b5750463ab3b8dde289415",
+        "compiler.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "provenance.json": "41ac8871317f7286d149f6d50cb2185d5c5d582bbf515760d9dd22d9c4676a17",
+        "results.json": "dbc897e94b4dadee936f34644473670c7c783d018026ac783c27ba5a3769c594"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "python": "3.12.10 (v3.12.10:0cc81280367, Apr  8 2025, 08:46:59) [Clang 13.0.0 (clang-1300.0.29.30)]",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+      "sanitize": false,
+      "compile_exit": 0,
+      "compiler_warning_bytes": 4629,
+      "native_stderr_bytes": 0,
+      "js_stderr_bytes": 0,
+      "missing_original_report_fields": [
+        "checkout_commit",
+        "checkout_tree",
+        "node",
+        "compiled_binary_sha256",
+        "driver_sources",
+        "candidate_sources",
+        "compile_command"
+      ],
+      "results_sha256_sorted_serialization": "ab58fcbf708bb4da9717608bbcea636863f74dccfe48b0e8e4df595400946ebf"
+    },
+    {
+      "name": "native-research-ubuntu-latest-clang-true",
+      "artifact_id": 12086351205,
+      "archive_file": "native-research-ubuntu-latest-clang-true.zip",
+      "github_digest": "sha256:b24b47854eb34723b850fb56ca57f95201abfce2f018c7aff9381df714632141",
+      "archive_bytes": 44892,
+      "api_size_in_bytes": 44892,
+      "archive_members_sha256": {
+        "compiler.stderr.log": "bdbb93f345ebca9afe68f06ae1ebddff3e7ff273ff2a661277f9974a7ce7ffc4",
+        "compiler.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "provenance.json": "5c92486c7f2a178bc68f2bb241b4850b416d80d60b66eb8e31b961ec40aaa5c6",
+        "results.json": "dbc897e94b4dadee936f34644473670c7c783d018026ac783c27ba5a3769c594"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "compiler": "Ubuntu clang version 18.1.3 (1ubuntu1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /usr/bin",
+      "sanitize": true,
+      "compile_exit": 0,
+      "compiler_warning_bytes": 3106,
+      "native_stderr_bytes": 0,
+      "js_stderr_bytes": 0,
+      "missing_original_report_fields": [
+        "checkout_commit",
+        "checkout_tree",
+        "node",
+        "compiled_binary_sha256",
+        "driver_sources",
+        "candidate_sources",
+        "compile_command"
+      ],
+      "results_sha256_sorted_serialization": "ab58fcbf708bb4da9717608bbcea636863f74dccfe48b0e8e4df595400946ebf"
+    },
+    {
+      "name": "native-research-ubuntu-latest-gcc-false",
+      "artifact_id": 12086605604,
+      "archive_file": "native-research-ubuntu-latest-gcc-false.zip",
+      "github_digest": "sha256:c12240d0bad3b554d3a1ccc2f7e6f25cf7588b8ecc5e8d0b7dfb0a81ff5016e6",
+      "archive_bytes": 44952,
+      "api_size_in_bytes": 44952,
+      "archive_members_sha256": {
+        "compiler.stderr.log": "aa94819190f68edc3f96ac8cab537269533719400e254745134ae07782b4563d",
+        "compiler.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "provenance.json": "ef9d65a92eb8cee858f28d6710718ff1649ddaa92016d1e2adba6882b8696be7",
+        "results.json": "dbc897e94b4dadee936f34644473670c7c783d018026ac783c27ba5a3769c594"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "compiler": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "sanitize": false,
+      "compile_exit": 0,
+      "compiler_warning_bytes": 5225,
+      "native_stderr_bytes": 0,
+      "js_stderr_bytes": 0,
+      "missing_original_report_fields": [
+        "checkout_commit",
+        "checkout_tree",
+        "node",
+        "compiled_binary_sha256",
+        "driver_sources",
+        "candidate_sources",
+        "compile_command"
+      ],
+      "results_sha256_sorted_serialization": "ab58fcbf708bb4da9717608bbcea636863f74dccfe48b0e8e4df595400946ebf"
+    },
+    {
+      "name": "numerical-research-macos-latest-node-24",
+      "artifact_id": 12086351247,
+      "archive_file": "numerical-research-macos-latest-node-24.zip",
+      "github_digest": "sha256:c81fbd55ca51e819c6e36cb8bcfe2d1c4f21bb8ea33309f48d17b44f9062ccd4",
+      "archive_bytes": 51116,
+      "api_size_in_bytes": 51116,
+      "archive_members_sha256": {
+        "candidate-results.json": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361",
+        "cash-graphs-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cash-graphs-freeze.stdout.log": "33fdb0dc6725e5c1764b52fac3e925c2b935c4d0cb70cd9422bbe171603b677b",
+        "cash-graphs-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cash-graphs-js.stdout.log": "1f08712b362d2aada1d7f2acfbdfb650561ed9a6d03d3846ab5bd4f75e4d2af6",
+        "cash-graphs-python.stderr.log": "6cf8ef4ff5d5e81849880618db25ce44e968ab28f656f121db1cb5aa610d47d9",
+        "cash-graphs-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-freeze.stdout.log": "72544b6793275f6f81b50fb49ee5b029b3d60dea8c79d564b196e9a8e07e2c63",
+        "integer-dispatch-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-js.stdout.log": "863be85d79bcf175a0ea8f70b6fa97bbd927afb912d9e207e03173cf22599b6c",
+        "integer-dispatch-python.stderr.log": "601e39b9d433afa406c6e7888fd24c2b1c77d4083736660e5b6d7b76fba5e64c",
+        "integer-dispatch-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native-frozen-inputs.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native-frozen-inputs.stdout.log": "3fdaa324d8c3cf582c6150ead39ccc0fca023e10c79b017bdbd1b7c5fc6efd05",
+        "pinned-accuracy.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-accuracy.stdout.log": "c68d3ac986df1a2c3ed347c149e88ddc97d9d0ac430614b7c2ba3daf4cea48df",
+        "pinned-candidate-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-candidate-js.stdout.log": "c408ab85bf707030899383fa0e08bbb8e7d94bcb2f1e1801b9c892a8186fbe8c",
+        "pinned-complete-input-stream.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-complete-input-stream.stdout.log": "dad2f45eb935633cd39786c6bf63586cb700d6aa7ee2263065614e6c4ecade56",
+        "pinned-constants.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-constants.stdout.log": "689da111294f1770c89c5c6e1d1afb26884dd70b0e3a13078f06d50d0494bb75",
+        "pinned-independent-math.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-independent-math.stdout.log": "164355bf1e366369aa50e9de2d68ab0fb349d76cc2e43d286ea2e388bb548788",
+        "pinned-math-methods.stderr.log": "819a86a7c5420a1e521b295da609f436a00d9a5eb7aabcc05e095ccff7ac05ae",
+        "pinned-math-methods.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-freeze.stdout.log": "9994409556ba3228c72fde3a6030ac51a40be52533c0595800bef87108682946",
+        "power-procedures-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-js.stdout.log": "f5095890012f24ac61f2f53726569f9e8acefb17ec31fc24fab2bb591b66a074",
+        "power-procedures-python.stderr.log": "4faacee97fd477da912c0f667bace8b3a572b80f7a34e6bee4bb899835f7390b",
+        "power-procedures-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "provenance.json": "cd755f0ef0ea5c2ae01c038dc3eb3c43bb7b2683d4b4aff9c025eb483754a5be"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "python": "3.12.10 (v3.12.10:0cc81280367, Apr  8 2025, 08:46:59) [Clang 13.0.0 (clang-1300.0.29.30)]",
+      "node": {
+        "node": "v24.21.0",
+        "v8": "13.6.233.17-node.53",
+        "platform": "darwin",
+        "arch": "arm64"
+      },
+      "runner_image": {
+        "ImageOS": "macos26",
+        "ImageVersion": "20261013.0424.1",
+        "RUNNER_OS": "macOS",
+        "RUNNER_ARCH": "ARM64"
+      },
+      "checkout_commit": "a6d05240e80325019a87bac6a5426a6b61fccc8d",
+      "checkout_tree": "d570ddede60e939ea89fb9227fe28d71d2aeb399",
+      "commands": [
+        {
+          "id": "power-procedures-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "power-procedures-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "power-procedures-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 6
+          }
+        },
+        {
+          "id": "cash-graphs-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "cash-graphs-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "cash-graphs-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 5
+          }
+        },
+        {
+          "id": "integer-dispatch-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "frozen_cases": 24,
+            "classification_comparisons": 24,
+            "result_trace_comparisons": 24
+          }
+        },
+        {
+          "id": "integer-dispatch-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "integer-dispatch-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 6
+          }
+        },
+        {
+          "id": "pinned-candidate-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 7,
+            "pass": 7,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "pinned-accuracy",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "certified_cases": 178,
+            "exact_words": 173,
+            "retained_differences": 5
+          }
+        },
+        {
+          "id": "pinned-complete-input-stream",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "scope": "raw candidate observations, not oracle answers",
+            "cases": 4204,
+            "counts": {
+              "pow": 948,
+              "log": 595,
+              "exp": 620,
+              "sqrt": 614,
+              "scalbn": 858,
+              "fabs": 531,
+              "copysign": 38
+            },
+            "sha256": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361"
+          }
+        },
+        {
+          "id": "pinned-constants",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "pinned-independent-math",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "pinned-math-methods",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 5
+          }
+        },
+        {
+          "id": "native-frozen-inputs",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "name": "numerical-research-ubuntu-latest-node-18.0.0",
+      "artifact_id": 12086460357,
+      "archive_file": "numerical-research-ubuntu-latest-node-18.0.0.zip",
+      "github_digest": "sha256:48a363cfdf34a2b93a64ebf798e2009d3e75396ab289cfcdb922876ca5ee683a",
+      "archive_bytes": 46550,
+      "api_size_in_bytes": 46550,
+      "archive_members_sha256": {
+        "candidate-results.json": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361",
+        "cash-graphs-js.stderr.log": "eb5c4488189209183c0b7cc2f2369859fb0210c062be9bcc334fa602e16687f3",
+        "cash-graphs-js.stdout.log": "d747cdb680fe7edd725958771706c3dfea6c1b96a5b9702790d9df0d2f2e7158",
+        "integer-dispatch-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-js.stdout.log": "863be85d79bcf175a0ea8f70b6fa97bbd927afb912d9e207e03173cf22599b6c",
+        "pinned-accuracy.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-accuracy.stdout.log": "c68d3ac986df1a2c3ed347c149e88ddc97d9d0ac430614b7c2ba3daf4cea48df",
+        "pinned-candidate-js.stderr.log": "318e222630fec81f90918633eeccd3166ac62da1d068b0ce7c62d101da9a61fa",
+        "pinned-candidate-js.stdout.log": "a312c4d7a047597a376a96ee9e33d602cb67490cc42622f92deea9e5d81dff08",
+        "pinned-complete-input-stream.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-complete-input-stream.stdout.log": "dad2f45eb935633cd39786c6bf63586cb700d6aa7ee2263065614e6c4ecade56",
+        "power-procedures-js.stderr.log": "63979066481cc0534aaa4af9af75f5747b7b670ea3f7404344bc10d62369f87f",
+        "power-procedures-js.stdout.log": "8260659e6dc96100886b98ad83aed0dc679754ba8ea457d2b1610819a6d89f58",
+        "provenance.json": "60a407d5533442e681347faac8c339e6409d40c61a53897cca035a84a1cc2080"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "node": {
+        "node": "v18.0.0",
+        "v8": "10.1.124.8-node.13",
+        "platform": "linux",
+        "arch": "x64"
+      },
+      "runner_image": {
+        "ImageOS": "ubuntu24",
+        "ImageVersion": "20261012.334.1",
+        "RUNNER_OS": "Linux",
+        "RUNNER_ARCH": "X64"
+      },
+      "checkout_commit": "a6d05240e80325019a87bac6a5426a6b61fccc8d",
+      "checkout_tree": "d570ddede60e939ea89fb9227fe28d71d2aeb399",
+      "commands": [
+        {
+          "id": "power-procedures-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "cash-graphs-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "integer-dispatch-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "frozen_cases": 24,
+            "classification_comparisons": 24,
+            "result_trace_comparisons": 24
+          }
+        },
+        {
+          "id": "pinned-candidate-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 7,
+            "pass": 7,
+            "fail": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "pinned-accuracy",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "certified_cases": 178,
+            "exact_words": 173,
+            "retained_differences": 5
+          }
+        },
+        {
+          "id": "pinned-complete-input-stream",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "scope": "raw candidate observations, not oracle answers",
+            "cases": 4204,
+            "counts": {
+              "pow": 948,
+              "log": 595,
+              "exp": 620,
+              "sqrt": 614,
+              "scalbn": 858,
+              "fabs": 531,
+              "copysign": 38
+            },
+            "sha256": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361"
+          }
+        }
+      ]
+    },
+    {
+      "name": "numerical-research-ubuntu-latest-node-20",
+      "artifact_id": 12086261476,
+      "archive_file": "numerical-research-ubuntu-latest-node-20.zip",
+      "github_digest": "sha256:bd40e540ed4169ce0cf12d4c803b9f8778cd0a98bfdec1387ba14265236e387b",
+      "archive_bytes": 46293,
+      "api_size_in_bytes": 46293,
+      "archive_members_sha256": {
+        "candidate-results.json": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361",
+        "cash-graphs-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cash-graphs-js.stdout.log": "a5d208187563472e72ec369072a314836787f9eb6efc676a884d5931c89da6f4",
+        "integer-dispatch-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-js.stdout.log": "863be85d79bcf175a0ea8f70b6fa97bbd927afb912d9e207e03173cf22599b6c",
+        "pinned-accuracy.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-accuracy.stdout.log": "c68d3ac986df1a2c3ed347c149e88ddc97d9d0ac430614b7c2ba3daf4cea48df",
+        "pinned-candidate-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-candidate-js.stdout.log": "11651b2b83e5a6a995919e2b40088a9dc2583fc7e64898ba47e306f117887f42",
+        "pinned-complete-input-stream.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-complete-input-stream.stdout.log": "dad2f45eb935633cd39786c6bf63586cb700d6aa7ee2263065614e6c4ecade56",
+        "power-procedures-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-js.stdout.log": "87dea7eedad55c7501d30910b2a221a08ce0c857b09fece958fd630447a394df",
+        "provenance.json": "c09e67149381b40537ba438ebd042664ee38d79f8c9fd1688d1ce00b119233f2"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "node": {
+        "node": "v20.20.2",
+        "v8": "11.3.244.8-node.38",
+        "platform": "linux",
+        "arch": "x64"
+      },
+      "runner_image": {
+        "ImageOS": "ubuntu24",
+        "ImageVersion": "20261012.334.1",
+        "RUNNER_OS": "Linux",
+        "RUNNER_ARCH": "X64"
+      },
+      "checkout_commit": "a6d05240e80325019a87bac6a5426a6b61fccc8d",
+      "checkout_tree": "d570ddede60e939ea89fb9227fe28d71d2aeb399",
+      "commands": [
+        {
+          "id": "power-procedures-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "cash-graphs-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "integer-dispatch-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "frozen_cases": 24,
+            "classification_comparisons": 24,
+            "result_trace_comparisons": 24
+          }
+        },
+        {
+          "id": "pinned-candidate-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 7,
+            "pass": 7,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "pinned-accuracy",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "certified_cases": 178,
+            "exact_words": 173,
+            "retained_differences": 5
+          }
+        },
+        {
+          "id": "pinned-complete-input-stream",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "scope": "raw candidate observations, not oracle answers",
+            "cases": 4204,
+            "counts": {
+              "pow": 948,
+              "log": 595,
+              "exp": 620,
+              "sqrt": 614,
+              "scalbn": 858,
+              "fabs": 531,
+              "copysign": 38
+            },
+            "sha256": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361"
+          }
+        }
+      ]
+    },
+    {
+      "name": "numerical-research-ubuntu-latest-node-22",
+      "artifact_id": 12086510747,
+      "archive_file": "numerical-research-ubuntu-latest-node-22.zip",
+      "github_digest": "sha256:41da6ace0927ae54499c6c8373a127347c9011a1c9aba0793b292fe6749a4454",
+      "archive_bytes": 46326,
+      "api_size_in_bytes": 46326,
+      "archive_members_sha256": {
+        "candidate-results.json": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361",
+        "cash-graphs-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cash-graphs-js.stdout.log": "c694e555516f4b4be2af63165c797c73721c6d56b687dbafbc2ffe8cb67b9f84",
+        "integer-dispatch-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-js.stdout.log": "863be85d79bcf175a0ea8f70b6fa97bbd927afb912d9e207e03173cf22599b6c",
+        "pinned-accuracy.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-accuracy.stdout.log": "c68d3ac986df1a2c3ed347c149e88ddc97d9d0ac430614b7c2ba3daf4cea48df",
+        "pinned-candidate-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-candidate-js.stdout.log": "6b43e74980951e680f6d87cb5602b694080719dffe6c830028d43e9d9f4207ef",
+        "pinned-complete-input-stream.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-complete-input-stream.stdout.log": "dad2f45eb935633cd39786c6bf63586cb700d6aa7ee2263065614e6c4ecade56",
+        "power-procedures-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-js.stdout.log": "773fbee1aeb9b7584ba9ba52da392da3d55ed18fa330c6ef4630c4c1d5bf4e90",
+        "provenance.json": "1c139d6b9547d2c4dbfbf9c5e3ab5c0918339f1cc99a2623b83f23e6cb0ee6d8"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "node": {
+        "node": "v22.23.3",
+        "v8": "12.4.254.21-node.57",
+        "platform": "linux",
+        "arch": "x64"
+      },
+      "runner_image": {
+        "ImageOS": "ubuntu24",
+        "ImageVersion": "20261012.334.1",
+        "RUNNER_OS": "Linux",
+        "RUNNER_ARCH": "X64"
+      },
+      "checkout_commit": "a6d05240e80325019a87bac6a5426a6b61fccc8d",
+      "checkout_tree": "d570ddede60e939ea89fb9227fe28d71d2aeb399",
+      "commands": [
+        {
+          "id": "power-procedures-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "cash-graphs-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "integer-dispatch-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "frozen_cases": 24,
+            "classification_comparisons": 24,
+            "result_trace_comparisons": 24
+          }
+        },
+        {
+          "id": "pinned-candidate-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 7,
+            "pass": 7,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "pinned-accuracy",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "certified_cases": 178,
+            "exact_words": 173,
+            "retained_differences": 5
+          }
+        },
+        {
+          "id": "pinned-complete-input-stream",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "scope": "raw candidate observations, not oracle answers",
+            "cases": 4204,
+            "counts": {
+              "pow": 948,
+              "log": 595,
+              "exp": 620,
+              "sqrt": 614,
+              "scalbn": 858,
+              "fabs": 531,
+              "copysign": 38
+            },
+            "sha256": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361"
+          }
+        }
+      ]
+    },
+    {
+      "name": "numerical-research-ubuntu-latest-node-24",
+      "artifact_id": 12085907227,
+      "archive_file": "numerical-research-ubuntu-latest-node-24.zip",
+      "github_digest": "sha256:4a6dcdda383511e7f58282952dcb33281dbdccf0fe4e20400be0ee7c1f686f96",
+      "archive_bytes": 51130,
+      "api_size_in_bytes": 51130,
+      "archive_members_sha256": {
+        "candidate-results.json": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361",
+        "cash-graphs-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cash-graphs-freeze.stdout.log": "33fdb0dc6725e5c1764b52fac3e925c2b935c4d0cb70cd9422bbe171603b677b",
+        "cash-graphs-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cash-graphs-js.stdout.log": "4d1423c1be6aa83aea825555a530f828a3ac56492cc012130e02644d5236d58e",
+        "cash-graphs-python.stderr.log": "e63d7716b432b3af15782a3f09ead937db1a41878c2a8605135c963517d20f45",
+        "cash-graphs-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-freeze.stdout.log": "72544b6793275f6f81b50fb49ee5b029b3d60dea8c79d564b196e9a8e07e2c63",
+        "integer-dispatch-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-js.stdout.log": "863be85d79bcf175a0ea8f70b6fa97bbd927afb912d9e207e03173cf22599b6c",
+        "integer-dispatch-python.stderr.log": "c5572a9b43131ade2fc8b7483922a6cd3e4507af9bf0ee691613b7f55ae517e5",
+        "integer-dispatch-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native-frozen-inputs.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native-frozen-inputs.stdout.log": "3fdaa324d8c3cf582c6150ead39ccc0fca023e10c79b017bdbd1b7c5fc6efd05",
+        "pinned-accuracy.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-accuracy.stdout.log": "c68d3ac986df1a2c3ed347c149e88ddc97d9d0ac430614b7c2ba3daf4cea48df",
+        "pinned-candidate-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-candidate-js.stdout.log": "db05e0b385b6041740c8d8322c768d0d8d0ad6d54c9e7a24920bf3ef6a729d38",
+        "pinned-complete-input-stream.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-complete-input-stream.stdout.log": "dad2f45eb935633cd39786c6bf63586cb700d6aa7ee2263065614e6c4ecade56",
+        "pinned-constants.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-constants.stdout.log": "689da111294f1770c89c5c6e1d1afb26884dd70b0e3a13078f06d50d0494bb75",
+        "pinned-independent-math.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-independent-math.stdout.log": "164355bf1e366369aa50e9de2d68ab0fb349d76cc2e43d286ea2e388bb548788",
+        "pinned-math-methods.stderr.log": "b37031568d6f4af592205901ba7ac39bbb2920e077ac5d8c2319ed9f03eb4a29",
+        "pinned-math-methods.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-freeze.stdout.log": "9994409556ba3228c72fde3a6030ac51a40be52533c0595800bef87108682946",
+        "power-procedures-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-js.stdout.log": "5639bda52e14cb6d2ef2d5345c7b896f9aa7543c388ebacd7c31bbeb37df1511",
+        "power-procedures-python.stderr.log": "1956c698814ee03073b982f2d89df58b3a21531e406c97e68564243284d81812",
+        "power-procedures-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "provenance.json": "65c968713b1ed306fc76511175e7cfce82fea344224b788b38fbc2f489f7bad4"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+      "machine": "x86_64",
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "node": {
+        "node": "v24.21.0",
+        "v8": "13.6.233.17-node.53",
+        "platform": "linux",
+        "arch": "x64"
+      },
+      "runner_image": {
+        "ImageOS": "ubuntu24",
+        "ImageVersion": "20261012.334.1",
+        "RUNNER_OS": "Linux",
+        "RUNNER_ARCH": "X64"
+      },
+      "checkout_commit": "a6d05240e80325019a87bac6a5426a6b61fccc8d",
+      "checkout_tree": "d570ddede60e939ea89fb9227fe28d71d2aeb399",
+      "commands": [
+        {
+          "id": "power-procedures-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "power-procedures-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "power-procedures-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 6
+          }
+        },
+        {
+          "id": "cash-graphs-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "cash-graphs-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "cash-graphs-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 5
+          }
+        },
+        {
+          "id": "integer-dispatch-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "frozen_cases": 24,
+            "classification_comparisons": 24,
+            "result_trace_comparisons": 24
+          }
+        },
+        {
+          "id": "integer-dispatch-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "integer-dispatch-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 6
+          }
+        },
+        {
+          "id": "pinned-candidate-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 7,
+            "pass": 7,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "pinned-accuracy",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "certified_cases": 178,
+            "exact_words": 173,
+            "retained_differences": 5
+          }
+        },
+        {
+          "id": "pinned-complete-input-stream",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "scope": "raw candidate observations, not oracle answers",
+            "cases": 4204,
+            "counts": {
+              "pow": 948,
+              "log": 595,
+              "exp": 620,
+              "sqrt": 614,
+              "scalbn": 858,
+              "fabs": 531,
+              "copysign": 38
+            },
+            "sha256": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361"
+          }
+        },
+        {
+          "id": "pinned-constants",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "pinned-independent-math",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "pinned-math-methods",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 5
+          }
+        },
+        {
+          "id": "native-frozen-inputs",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        }
+      ]
+    },
+    {
+      "name": "numerical-research-windows-latest-node-24",
+      "artifact_id": 12086067042,
+      "archive_file": "numerical-research-windows-latest-node-24.zip",
+      "github_digest": "sha256:21e0923dc3217a225d6dd80bf5928d6d7cfdefd6c44d9db0213192e25b454aa6",
+      "archive_bytes": 51187,
+      "api_size_in_bytes": 51187,
+      "archive_members_sha256": {
+        "candidate-results.json": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361",
+        "cash-graphs-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cash-graphs-freeze.stdout.log": "5dd1d00e5587c7a768765604d243815ae86a1e5e9fb8becfc14c3f330183bbd4",
+        "cash-graphs-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cash-graphs-js.stdout.log": "f70756ffc224898de14bc240d2d02df95f79e933e5f7abcfec528859b4ac3730",
+        "cash-graphs-python.stderr.log": "5c6fb9bab56a1b5cd02e05075867fabe5ceeab7557762d07c50d6284c0deb584",
+        "cash-graphs-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-freeze.stdout.log": "a060d782224f5dd1cb14ad8977e9554e3303fbc298f77612669423a773e18c5f",
+        "integer-dispatch-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "integer-dispatch-js.stdout.log": "51d6791c5ee73e24d89343c846f30b5ccc511b817900bb43ea6f605c0444258d",
+        "integer-dispatch-python.stderr.log": "a5e81a594cdda250c852c1a7c78bf42f555a9e5bce3b4e4310c098a89e203139",
+        "integer-dispatch-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native-frozen-inputs.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "native-frozen-inputs.stdout.log": "3235a01444ece23a52d77c2654ecde67ef54a9666210cc04debe0b8ea2807f09",
+        "pinned-accuracy.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-accuracy.stdout.log": "1aa1b83dfa526dc0f46e5636bdf80aec063e76ba03bf2e211b322f9e7c6281ec",
+        "pinned-candidate-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-candidate-js.stdout.log": "b277aeee72777943a305379312a1bc89a962157d518b5b9d1df90bd0d05b7f02",
+        "pinned-complete-input-stream.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-complete-input-stream.stdout.log": "da0b5b0a2e888573d3cc4ad631badd336b3535df1a155d9935e963471e29ea5a",
+        "pinned-constants.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-constants.stdout.log": "26e0b9ac3fb4cae4d289b76591a19a5c1acd214f5fd8371a1d464e8292c2c658",
+        "pinned-independent-math.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "pinned-independent-math.stdout.log": "4005bc3e20388f0b5ff0539320b490d596ad04703f29b430a5a6452d6f0904a8",
+        "pinned-math-methods.stderr.log": "aa5659665f2e3fd133078fe738976067a11471c416a4b8409e7c0fa0525c123a",
+        "pinned-math-methods.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-freeze.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-freeze.stdout.log": "7f6ee57aee2a09d1b3323ba4be25aad0c266ddd2b7391017ad673a8e336f0af0",
+        "power-procedures-js.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "power-procedures-js.stdout.log": "b7dca3547150549bc940b48ca11eeb2d3840c6f9e3a90a0a4369829f698b1a8b",
+        "power-procedures-python.stderr.log": "dc1a2a5f7de9ea18a0b87d143ea799ea94b30bb658f1f1ad6e5085b78f702760",
+        "power-procedures-python.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "provenance.json": "7f8f3f02732f9f1b13ed467efd5e2f85cef6dd96e6889c82d7e2eee745ee7145"
+      },
+      "cases": 4204,
+      "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "machine": "AMD64",
+      "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "node": {
+        "node": "v24.21.0",
+        "v8": "13.6.233.17-node.53",
+        "platform": "win32",
+        "arch": "x64"
+      },
+      "runner_image": {
+        "ImageOS": "win25-vs2026",
+        "ImageVersion": "20261007.264.1",
+        "RUNNER_OS": "Windows",
+        "RUNNER_ARCH": "X64"
+      },
+      "checkout_commit": "a6d05240e80325019a87bac6a5426a6b61fccc8d",
+      "checkout_tree": "d570ddede60e939ea89fb9227fe28d71d2aeb399",
+      "commands": [
+        {
+          "id": "power-procedures-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "power-procedures-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "power-procedures-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 6
+          }
+        },
+        {
+          "id": "cash-graphs-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 2,
+            "pass": 2,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "cash-graphs-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "cash-graphs-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 5
+          }
+        },
+        {
+          "id": "integer-dispatch-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "frozen_cases": 24,
+            "classification_comparisons": 24,
+            "result_trace_comparisons": 24
+          }
+        },
+        {
+          "id": "integer-dispatch-freeze",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "integer-dispatch-python",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 6
+          }
+        },
+        {
+          "id": "pinned-candidate-js",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "tests": 7,
+            "pass": 7,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        },
+        {
+          "id": "pinned-accuracy",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "certified_cases": 178,
+            "exact_words": 173,
+            "retained_differences": 5
+          }
+        },
+        {
+          "id": "pinned-complete-input-stream",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "scope": "raw candidate observations, not oracle answers",
+            "cases": 4204,
+            "counts": {
+              "pow": 948,
+              "log": 595,
+              "exp": 620,
+              "sqrt": 614,
+              "scalbn": 858,
+              "fabs": 531,
+              "copysign": 38
+            },
+            "sha256": "921546073edfeb0af858b5f8ca72a0c2096e14923ecfd6d2d5ebcbb4a8737361"
+          }
+        },
+        {
+          "id": "pinned-constants",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "pinned-independent-math",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        },
+        {
+          "id": "pinned-math-methods",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {
+            "methods": 5
+          }
+        },
+        {
+          "id": "native-frozen-inputs",
+          "exit_code": 0,
+          "complete": true,
+          "counts": {}
+        }
+      ]
+    }
+  ],
+  "normalized_sha256": "08c1ecb9d6e8c0ef4281c496386a80d21eca9ba01829cc4f5a3d9e0c287cc3ac",
+  "class_counts": {
+    "finite_nonzero": 2389,
+    "positive_zero": 468,
+    "infinity": 498,
+    "nan": 769,
+    "negative_zero": 80
+  },
+  "upstream_sha256": {
+    "e_pow.c": "763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122",
+    "e_log.c": "a2b1bd1b367026a35f36da53425cd618386c3bf69d23ac224a40791aa9855ac9",
+    "e_exp.c": "04c96195b7ced914d659b5fd204724c182f091af8631fe42016ad6e27cb302ef",
+    "e_sqrt.c": "2a6e784d1089eb6351df7e59037de4240d11a5c61967611732f81ad96fe869ce",
+    "s_scalbn.c": "9ad1bb374fc2951ec086474c82373b45bccfdecd34d631974dccf8633f40d99e",
+    "s_copysign.c": "459c18858c944a4e7062d38ab4dfb596edbe76706d24029c2dac766dcd2be3fd",
+    "s_fabs.c": "c6389f3e0472ec0157d648b3e4e80b405038acfaf3e85b961363ea483e3259f1",
+    "fdlibm.h": "64113c472c2676499288bc35a821b0867916552930bc52c7445d2c50dddf0e71"
+  },
+  "candidate_sha256": {
+    "kernel.mjs": "9cea03d62c453d2c6428f076aab1203c04920585f90dcb9815a98967f28fb5be",
+    "words.mjs": "c3bb33ff8b2124bc048a0bb9b7b10d3de318b33e20308091abd079459b434914",
+    "constants.mjs": "6479a8f04cc3e990cd1316d22cdfa164f83bd0acc56905a60c7a7dbc0c65cc25",
+    "run.mjs": "0c34bdb2f8e6fa9b9a1d5d8532e991b985f7bbe32296950c9a3d7996b6eb1571"
+  },
+  "historical_driver_sha256_from_published_git_tree_not_original_report": {
+    "compare.py": "f37cb36af26d1b677aae63b792621b3869150bdefd577834c87927d9949f7433",
+    "reference.c": "495cb936f359e12b3d4038f96746ae57d5dea7ec96656153b887afbd02eacaaf",
+    "word-adapter.h": "135edc201bd2f34aafb7691d277af49d60ab38d7214e9835a2498d0872db1dec"
+  },
+  "mathematical_countercases": [
+    {
+      "math_id": "exp-word-3fd62e41ffffffff",
+      "input": {
+        "id": "04109-independent-math-exp-word-3fd62e41ffffffff",
+        "op": "exp",
+        "x": "3fd62e41ffffffff",
+        "y": "0000000000000000",
+        "n": 0
+      },
+      "native_and_all_node_word": "3ff6a09e0c594ff2",
+      "independent_mathematical_word": "3ff6a09e0c594ff3",
+      "signed_ordered_word_distance": "-1",
+      "scope": "All three native builds and all six Node streams reproduce this candidate procedure result; not a universal error bound."
+    },
+    {
+      "math_id": "exp-word-3ff0000000000000",
+      "input": {
+        "id": "04114-independent-math-exp-word-3ff0000000000000",
+        "op": "exp",
+        "x": "3ff0000000000000",
+        "y": "0000000000000000",
+        "n": 0
+      },
+      "native_and_all_node_word": "4005bf0a8b14576a",
+      "independent_mathematical_word": "4005bf0a8b145769",
+      "signed_ordered_word_distance": "1",
+      "scope": "All three native builds and all six Node streams reproduce this candidate procedure result; not a universal error bound."
+    },
+    {
+      "math_id": "bounded-math-power-2",
+      "input": {
+        "id": "04198-independent-math-bounded-math-power-2",
+        "op": "pow",
+        "x": "4000000000000000",
+        "y": "bfe0000000000000",
+        "n": 0
+      },
+      "native_and_all_node_word": "3fe6a09e667f3bcc",
+      "independent_mathematical_word": "3fe6a09e667f3bcd",
+      "signed_ordered_word_distance": "-1",
+      "scope": "All three native builds and all six Node streams reproduce this candidate procedure result; not a universal error bound."
+    },
+    {
+      "math_id": "bounded-math-power-4",
+      "input": {
+        "id": "04200-independent-math-bounded-math-power-4",
+        "op": "pow",
+        "x": "3ff3333333333333",
+        "y": "403f000000000000",
+        "n": 0
+      },
+      "native_and_all_node_word": "4071cda00ebe20d6",
+      "independent_mathematical_word": "4071cda00ebe20d7",
+      "signed_ordered_word_distance": "-1",
+      "scope": "All three native builds and all six Node streams reproduce this candidate procedure result; not a universal error bound."
+    },
+    {
+      "math_id": "bounded-math-power-7",
+      "input": {
+        "id": "04203-independent-math-bounded-math-power-7",
+        "op": "pow",
+        "x": "4000000000000000",
+        "y": "3ff8000000000000",
+        "n": 0
+      },
+      "native_and_all_node_word": "4006a09e667f3bcc",
+      "independent_mathematical_word": "4006a09e667f3bcd",
+      "signed_ordered_word_distance": "-1",
+      "scope": "All three native builds and all six Node streams reproduce this candidate procedure result; not a universal error bound."
+    }
+  ]
+}
