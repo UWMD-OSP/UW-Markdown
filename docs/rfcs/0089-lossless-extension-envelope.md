@@ -155,6 +155,33 @@ not infer it from the existing `default` map key. V.13's stricter collision
 refusal remains a separate admission step. Equal payload values in distinct
 identities are legal peers, never a reason to deduplicate them.
 
+### D2a — Physical source, public parsed APIs and portable projection
+
+The candidate Envelope does not by itself repair every Reader surface. The
+current independent Python scanner retains physical blocks while its ordinary
+parse projection uses absent-to-`default` variant keys; the reference TypeScript
+`ParsedUWFile.extensions` public type is also a singleton map. The new concrete
+mixed-source example observes that physical retention can coexist with a
+colliding projected key. Because mixed admission remains unaccepted, this is
+not a retrospective declaration of an independently settled Reader defect.
+
+If D2 admits an unlabelled peer beside literal `default`, carry that exact
+identity through each affected surface:
+
+| Surface | Required accounting before implementation |
+|---|---|
+| Format §2.8/source routing | Decide mixed nullable admission/current-revision grouping explicitly; no label inference or reserved `default` sentinel. |
+| Reference public parsed APIs | Reconcile extension collection types and adapters without coercing null into a string key. Breaking public type changes need independent package accounting. |
+| Protocol §II.6a.6 portable parse projection | Specify how both identities are surfaced and freeze approved projections. This is a normative **subset/minimum** projection, not a requirement that every implementation adopt `ParsedUWFile` internally. An Envelope version alone does not specify its nullable identity encoding. |
+| Envelope/codecs/whole-source consumers | Apply the approved container and commitment regime after lossless routing, with exactly the admitted blocks retained. Do not derive it from an already overwritten projection. |
+
+A future implementation may use any internal representation that satisfies the
+contracts. The RFC must coordinate the portable/public projection decisions,
+Format/Protocol version assessment and new fixture expectations; it must not
+silently revise the existing baseline or claim full Reader conformance from an
+experimental Envelope round-trip. The isolated source example below reads
+retained physical source rather than changing any current parsed API or wire.
+
 ### D3 — Payload and model fidelity
 
 Preserve complete annotations, complete fenced payloads (with `_meta` exactly
@@ -174,7 +201,7 @@ no live implementation or schema allowance in this draft.
 |---|---|
 | JSON | Serialize the new Envelope directly; validate the tagged union, identity agreement, uniqueness and canonical ordering before trusting a stamped digest. Unknown top-level/content members remain preserved. |
 | XML | Carry the same typed object/array tree and null identity. Update the mapping's Envelope admission/version relationship and semantic checks. The generic typed XML mechanism can carry it, but existing Envelope1 validation cannot be bypassed. A namespace or XML codec version change is assessed independently. |
-| CSV bundle | Update extension enumeration/reconstruction, not only the shared schema. Block pointers become `/extensions/<escaped-id>/block` for single mode and `/extensions/<escaped-id>/blocks/<ordinal>/block` for variants. `variant` is an exact JSON string or null and `ordinal` is the canonical variants-array index; a singleton has no ordinal. RFC6901 escaping applies to the section-id pointer segment. |
+| CSV bundle | Update extension enumeration/reconstruction, not only the shared schema. Block pointers become `/extensions/<escaped-id>/block` for single mode and `/extensions/<escaped-id>/blocks/<ordinal>/block` for variants. `variant` on a current extension row is its exact JSON string or null and `ordinal` is the canonical variants-array index; a singleton has no ordinal. Historical rows retain their existing null non-selection descriptor and ordered history ordinal; the exact authored label remains in annotation rows. RFC6901 escaping applies to the section-id pointer segment. |
 
 CSV must carry mode explicitly, including when variants mode has only one
 current peer. Candidate mapping: a new `extension_mode` column in `blocks.csv`
@@ -195,70 +222,75 @@ Envelope versions would require a separately specified capability/binding
 contract; this draft introduces neither. MCP conversion still decodes once
 through the shared model rather than selecting a peer per consumer.
 
-#### Candidate wire examples (not admitted representations)
+#### Complete candidate codec examples (unaccepted)
 
-The full synthetic JSON semantic values are frozen in
-[`candidate-preimages.json`](https://github.com/UWMD-OSP/UW-Markdown/blob/d2fdd8f3a9da0abb8f60c487141c839d9601e53e/experiments/envelope-0089/candidate-preimages.json).
-`candidate-mixed` contains this entry spine; `A` and `B` below denote the complete
-unchanged block values in that file, not literal JSON members or wire aliases:
+The [isolated candidate lab](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/README.md#complete-candidate-codec-artifacts-and-explicit-reissuance-examples)
+provides executable JSON/XML/normalized-CSV encode/decode and a
+[frozen artifact matrix](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/matrix.json): five complete examples,60 files. These
+are candidate codecs and precise illustrative payloads, not approved production
+bindings or merely a low-level hash demonstration. Each directory contains full
+frontmatter, complete blocks/annotations/prose, exact canonical subject bytes,
+received digest and all six normalized CSV directory files. Numeric values retain
+the existing finite binary64/JCS semantic domain, not arbitrary host integers
+or raw number spelling. The existing
+Envelope1/codecs/schema and all conformance expectations remain unchanged.
 
-```text
-extensions.x_review = {
-  mode: "variants",
-  blocks: [ { variant: null, block: A },
-            { variant: "default", block: B } ]
-}
-A.annotation = { section: "x_review" }
-B.annotation = { section: "x_review", variant: "default" }
-```
+| Case | Complete JSON | Complete XML | CSV manifest/directory | Original source / proposed new-issuance plan |
+|---|---|---|---|---|
+| Single | [JSON](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/single/document.uw.json) | [XML](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/single/document.uw.xml) | [manifest](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/single/csv/manifest.json) | [source](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/single/original.uwx.md), [plan](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/single/reissuance-plan.json) |
+| One-peer variants | [JSON](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/one-peer/document.uw.json) | [XML](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/one-peer/document.uw.xml) | [manifest](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/one-peer/csv/manifest.json) | [source](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/one-peer/original.uwx.md), [plan](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/one-peer/reissuance-plan.json) |
+| Mixed null/default | [JSON](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/mixed-null-default/document.uw.json) | [XML](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/mixed-null-default/document.uw.xml) | [manifest](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/mixed-null-default/csv/manifest.json) | [source](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/mixed-null-default/original.uwx.md), [plan](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/mixed-null-default/reissuance-plan.json) |
+| Ordered history | [JSON](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/ordered-history/document.uw.json) | [XML](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/ordered-history/document.uw.xml) | [manifest](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/ordered-history/csv/manifest.json) | [source](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/ordered-history/original.uwx.md), [plan](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/ordered-history/reissuance-plan.json) |
+| Direct model / unknown members | [JSON](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/direct-model-unknown/document.uw.json) | [XML](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/direct-model-unknown/document.uw.xml) | [manifest](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/direct-model-unknown/csv/manifest.json) | [model origin/refusal](https://github.com/UWMD-OSP/UW-Markdown/blob/5a023edc7c0f12e4908e968a67495a912502f654/experiments/envelope-0089/codec-examples/direct-model-unknown/origin.json) |
 
-The proposed XML subtree carries the same tag, ordered records and exact null.
-The comment stands for the complete typed block subtree, not an omitted value
-permitted in an exchange artifact:
+Null and literal `default` are distinct identities; one-peer variants keeps its
+mode, ordered history keeps its complete blocks, and all three codecs decode
+to the same complete frozen model. Cases retain nested unknown metadata and
+payload, an ordinary `content` member, null/absence, empty containers, CR/LF/tab,
+quotes, `<&>`, supplementary/BMP Unicode and escaped JSON Pointer keys. The direct
+model also retains unknown top-level/annotation members; Markdown emission
+refuses where this prototype lacks a carrier rather than fabricating one.
 
-```xml
-<uw:extensions uw:type="object">
-  <uw:x_review uw:type="object">
-    <uw:blocks uw:type="array">
-      <uw:item uw:type="object">
-        <uw:block uw:type="object"><!-- complete block A --></uw:block>
-        <uw:variant uw:type="null"/>
-      </uw:item>
-      <uw:item uw:type="object">
-        <uw:block uw:type="object"><!-- complete block B --></uw:block>
-        <uw:variant uw:type="string">default</uw:variant>
-      </uw:item>
-    </uw:blocks>
-    <uw:mode uw:type="string">variants</uw:mode>
-  </uw:x_review>
-</uw:extensions>
-```
+The executable rules are precise for this lab: validate the candidate tag and
+identity/order/accounting first; verify the received semantic digest after
+reconstruction; never sort/deduplicate a received array to make it verify. XML
+uses the typed tree with escaped member names and CR references. CSV uses the
+new mode column, exact nullable variant, canonical ordinals/pointers, explicit
+container rows, split annotation/meta/content, exact prose, inventory hashes and
+reconstructed digest. The lab namespace and E_NEXT/C_NEXT/B_NEXT tokens are
+unassigned experimental values, not a namespace/version allocation.
+The lab manifest explicitly names a proposed canonicalization-version field
+beside the bundle/container labels; that is candidate encoding metadata requiring
+bundle/version approval, not a field silently added to CSV Bundle1 today.
+Historical CSV descriptors retain a null non-selection placeholder and ordered
+history ordinal; exact authored historical variant remains in annotation rows.
+Current-extension descriptor/annotation equality does not reinterpret that
+history placeholder as source identity.
 
-This is a subtree sketch using the accepted typed-tree mechanism, not a claim
-that existing XML1 accepts E_NEXT. The full document requires the independently
-approved root version/namespace relationship and every required model member.
-A nested annotation member named `variant` is separate from the record identity;
-null identity leaves that annotation member absent.
+Twenty focused Python methods exercise actual round-trip, source accounting,
+duplicate/type/order/version/pointer/manifest/digest refusal and explicit migration
+boundaries. Two independent Node tests reconstruct all five JCS subjects from
+frozen JSON and check all59 case artifact hashes. This is independent subject
+verification, not a second independently implemented XML/CSV codec.
 
-Candidate `blocks.csv` rows for the same two blocks are below. Append the proposed
-mode column to the existing six columns; preserve JSON-cell lexical rules. Every
-record ends CRLF, all cells are quoted, and no extra space is part of a cell:
+The test-only validator covers extension-only models and empty builtin collections;
+unimplemented collection/block-extra/source domains refuse explicitly. These
+are **prototype limits, not proposed normative bans**. A complete accepted
+implementation must retain every legal member within its advertised mapping or
+refuse explicitly; it must never discard a value and label the result lossless.
+No ZIP transport, general candidate schema, discovery, financial verification,
+receipt or signature engine is activated by these examples.
 
-```csv
-"block_ref","collection","section_json","variant_json","ordinal","state","extension_mode"
-"/extensions/x_review/blocks/0/block","extensions","""x_review""","null","0","current","variants"
-"/extensions/x_review/blocks/1/block","extensions","""x_review""","""default""","1","current","variants"
-```
-
-For `single`, use `/extensions/x_review/block`, empty ordinal and `single` mode.
-Proposed `variant_json` on a current extension row is its exact annotation variant
-or null, including single mode; this explicitly changes Envelope1's extension
-row rule, which always uses null. Rows for `superseded` retain their existing
-state, historical ordinal, pointer and null variant descriptor; their exact
-annotation lives in `block_values.csv`. `extension_mode` is empty on those rows
-and all non-extension rows. Do not conflate history order with variants order.
-The remaining required typed rows, prose, document members and manifest inventory
-must still be complete. These three descriptor rows are not a standalone bundle.
+**XML representability needs an explicit design boundary.** Legal JSON strings
+and member names can contain NUL, which XML1 cannot directly encode. The lab
+retains those values through JSON/CSV and demonstrates an XML refusal, without
+contracting the legal JSON domain. An owner option is a separately versioned
+escaped JSON-string lexical form for both string values and member names, with
+an explicit encoding marker (and a member-name lexical field). Decoding must
+restore exact strings before JCS/digest comparison. Current XML1 secure decoders
+would reject new marker attributes; codec/namespace/version rules and positive/
+negative escaping fixtures must be governed. No option is accepted here, and
+sanitizing/dropping characters or silently changing the subject is excluded.
 
 ### D5 — Canonicalization, commitments and authentication
 
@@ -319,7 +351,7 @@ required to construct or verify the representation.
 |---|---|
 | Envelope | A new container version is required for D1; do not widen Envelope1 in place. |
 | Format | Named-peer legality is already accepted. Assess D2's explicit mixed-identity clarification separately; if it changes admitted document meaning/routing, revise/version Format with Protocol accounting. A container stamp alone does not automatically bump Format. |
-| Protocol | Projection/verification and commitment regime references must change coherently, with the appropriate Protocol version; package semver alone is insufficient. |
+| Protocol | Projection/verification, the portable nullable identity projection if D2 is accepted, and commitment regime references must change coherently, with the appropriate Protocol version; package semver alone is insufficient. |
 | Receipt/signature | Select the canonical subject regime and supported-version schema/constants explicitly; independent wire-artifact version changes depend on the chosen fields, not copied Envelope numbering. |
 | Codec/bundle/package | Independently version breaking mapping/type changes and exact dependent package pins. Assess XML namespace separately from its model admission. |
 | Release placement | Preserve the existing public5.0 launch reservation. A breaking interim change cannot be mislabeled as a compatible4.x minor. Owner must choose approved release placement or defer implementation. No version is selected in this draft. |
@@ -334,6 +366,29 @@ of the old signature and does not rewrite its historical subject. Never turn
 an already lossy old Envelope into supposedly recovered peers; return to the
 original source or a complete attributable archive. No automatic historical
 receipt or fixture regeneration is authorized.
+
+### Concrete clean-break reissuance and blocking conditions
+
+The linked source/plan examples retain original raw SHA256 and exact physical
+block accounting before proposing a new subject. They create **no** receipt,
+signature or binding artifact, and no old-version reader/migration shim.
+
+| Evidence available | Proposed action / genuine blocker |
+|---|---|
+| Complete attributable original structured source | After design/version approval, freshly parse using approved routing, account for all admitted current/history blocks and retained values, and issue a new representation under the selected container/subject regime. Archive original bytes/identity separately. |
+| Original mixed null/default source | Requires the mixed-admission and portable/public projection decision first. Never migrate through a projection that already overwrote a peer. |
+| Demonstrably complete attributable archive | A reviewed reconstruction can support **new issuance** only if it accounts for every relevant identity, mode, annotation, payload, metadata, prose and history. The prototype does not implement/archive-certify this route. |
+| Only a lossy Envelope1 snapshot, missing peer/history, incomplete archive, or old digest/receipt/signature without complete content | Migration is **blocked** until original source or a complete attributable archive is available. No hash/version rewrite can recover absent facts; never infer or select a peer to fill the gap. |
+| Complete source outside retained V.13 repeated/superseded-extension guards | Ordinary candidate representation may be possible, but document authentication remains refused. Retaining old block signatures does not make a new assembly authenticatable. |
+| Old receipt/signature/whole-source binding plan | Retain exact old artifacts as evidence. Separately authorize any new signature, recompute required receipt assertions before issuing a new receipt, and independently review/rebind a new plan under its new subject. Stale plans are not refreshed into verified status automatically. |
+
+The prototype's missing-original call explicitly refuses with a local diagnostic;
+it does not implement a historical reader or pretend an old digest proves source
+completeness. The container/subject change does not automatically change V.9
+block subjects, V.11 signing inputs, V.12 row commitments or financial result
+digests. Their independent rules remain intact. Reissuance does not verify,
+relabel or replace old evidence, and no dual-hash fallback is proposed. Release
+placement and the reserved public5.0 launch remain owner-controlled.
 
 ## Conformance impact
 
@@ -423,7 +478,9 @@ historical regime; any approved new-regime fixture is separately identified.
 Implementation is blocked on owner design/version approval. The later bounded
 implementation must update `packages/uwmd-verify/src/{types,parser,envelope,
 uwjson,uwxml,uwcsv,codec,integrity,receipts,protocol}.ts` as applicable, the shared
-schema and mapping specs, consumer adapters and the independent Python projection.
+schema and mapping specs, consumer adapters, the portable parse projection and the
+independent Python projection. An Envelope-only change cannot fix a colliding
+public/default-key projection.
 Verify actual file names at implementation time. Public exports flow through
 verify's index/browser entries and core's re-exports; extension-entry type changes
 are breaking public API changes. No engine, AI workflow or new dependency is
@@ -455,7 +512,8 @@ Do not merge an experimental recovery snapshot or implement a private shape firs
 | Owner decision | Proposed answer; not accepted |
 |---|---|
 | Exact minimal extension shape | D1 tagged single/variants entries with identity-bearing records; no unrelated collection rewrite. |
-| Mixed unlabelled/named admission | D2 preserves the opted-in unlabelled peer as exact null, distinct from literal `default`; assess Format implications explicitly. |
+| Mixed unlabelled/named admission and affected projections | D2 preserves the opted-in unlabelled peer as exact null, distinct from literal `default`; coordinate Format, Protocol portable subset projection and reference public API implications explicitly. |
+| XML1-inexpressible legal strings/member names | Do not ban legal JSON values. Choose an explicitly versioned escaped lexical mapping or a clearly governed representability refusal; the lab implements the latter as an experimental limit only. |
 | Version/regime labels and release placement | Select independent Envelope/Protocol/Format-if-needed/codec/canonicalization/package accounting after design approval; retain5.0 launch reservation. |
 
 No expansion of V.13 authentication admission is proposed. RFC0085 compaction
