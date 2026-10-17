@@ -1,0 +1,6 @@
+{
+  "node_exe_sha256": "56c1520ee33b801e8bdb92fb321cf2e98529735b6d12bd4a2a6dec0ac0bab937",
+  "scope": "Official isolated reference runtime, not installed or a project dependency",
+  "url": "https://nodejs.org/dist/v20.20.2/node-v20.20.2-win-x64.zip",
+  "zip_sha256": "dc3700fdd57a63eedb8fd7e3c7baaa32e6a740a1b904167ff4204bc68ed8bf77"
+}

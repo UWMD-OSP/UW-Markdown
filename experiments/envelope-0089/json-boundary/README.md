@@ -85,14 +85,22 @@ Current Envelope1, CSV1, signatures and receipt input/error contracts stay intac
 ## Reproduce without rewriting evidence
 
 ```sh
-python -B experiments/envelope-0089/json-boundary/capture.py
+python -B experiments/envelope-0089/json-boundary/cross_runtime.py
+python -B -m unittest discover -s experiments/envelope-0089/json-boundary -p test_cross_runtime.py -v
 ```
 
-Default replay compares every historical and strict behavior field, artifact,
-source/dependency identity, raw stdin/stdout/stderr hash and preserved raw bytes.
-Only informational runtime metadata is reported separately. `--create` refuses
-existing evidence. Raw UTF8 stdin is retained as deterministic gzip mtime0;
-stdout/stderr remain exact. No install/build or full suite runs in this harness.
+The cross-runtime replay compares every historical and strict behavior field,
+artifact, source/dependency identity and raw bytes under the exact two measured
+profiles below. It retains every actual run in a new TEMP directory, including
+observer stdin/stdout/stderr, process status, execution binary hash, result and
+failure diagnostics. `--out` selects another **new** disposable directory; an
+existing directory refuses. Runtime/OpenSSL metadata remains recorded separately.
+No install/build, production activation or full suite runs in this harness.
+
+The original `capture.py` remains byte-identical: its default replay is the
+stronger exact Node24 same-runtime check, and `--create` refuses existing evidence.
+Original raw UTF8 stdin is retained as deterministic gzip mtime0; original
+stdout/stderr and all original observation/source hashes remain unchanged.
 
 The executed checkpoint is `13bc90fa`; Windows Python3.12.3 and Node24.14.1 are
 recorded alongside their OpenSSL versions. `evidence/observations.json` SHA256 is
@@ -109,3 +117,45 @@ case study does not prove all JSON grammar/resource/security behavior, complete
 schema/domain admission, cross-platform parity, a whole source projector or
 accepted new-regime issuance. Those implementation and synchronization gates
 remain open; RFC0089 remains draft with unallocated labels and no release.
+
+## Exact runtime diagnostic correction
+
+The first required Linux Node20.20.2 replay failed its behavior comparison.
+A separately downloaded official Node20.20.2 Windows runtime reproduced exactly
+two differences versus the frozen Node24.14.1 run. The integrator independently
+reproduced the same Node20 stdout SHA. Both differences are the **native JSON
+parser's historical syntax-only `error_message`**, not strict-profile errors:
+
+| Vector / original row | Node24.14.1 | Node20.20.2 |
+|---|---|---|
+| `syntax-only/json-data/trailing-input` /32 | `Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)` | `Unexpected non-whitespace character after JSON at position 2` |
+| `syntax-only/json-data/trailing-comma` /33 | `Expected double-quoted property name in JSON at position 7 (line 1 column 8)` | `Expected double-quoted property name in JSON at position 7` |
+
+`cross_runtime.py` permits only these exact pairs at the pinned case/carrier/
+vector/input SHA256 and `SyntaxError`, false acceptance, crypto-call0 events.
+All other fields and errors remain exact. Unknown runtime versions, other error
+text, changed acceptance, class, calls, values, subjects, signatures, cases,
+source/dependency maps, stdin or stderr fail closed. The Node20 expected stdout
+is derived from the original bytes with exactly these two unique byte-string
+replacements; every other stdout byte must match. There is no general
+`error_message` exclusion, wildcard source waiver or overwritten expectation.
+
+The new `node20-reference/actual.json` retains the complete executed original
+collector output at source checkpoint944eaa86, SHA256
+`d4ea6feb037ba421b78497781f1227de53517d3dd8eb77139741f3009a46b83e`.
+Its stdout SHA256 is
+`58f53a3aeb0b9f03c53372aaf0a1a81cd1dd670a8517e0f9818902b2a18d281e`;
+stderr and stdin match the original. Source/dependency hashes and every other
+behavior field are byte-equivalent. Its reference binary is official Windows
+Node20.20.2/OpenSSL3.0.19; the URL/archive/executable hashes are preserved in
+`runtime-provenance.json`. This binary was isolated in TEMP, not installed or
+added as a dependency. The first tool-isolated TEMP comparison did not persist;
+the focused run was repeated once into host TEMP to preserve this reference,
+with the same stdout hash. No source/algorithm/observed answer changed.
+
+Four focused control methods cover both measured profiles, the actual reference,
+and refusal of material, arbitrary-message, source, dependency, raw-stream,
+wrong-profile and unknown-runtime mutants. Actual36-vector cross-runtime runs
+passed under both Windows Node24 and the verified isolated Node20, with complete
+streams retained. Linux final CI evidence is recorded by the integrator; these
+local runs alone make no additional Linux or general JSON conformance claim.
