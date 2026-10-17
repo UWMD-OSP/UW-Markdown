@@ -307,6 +307,87 @@ complete validation. Contract/baseline disposition is required before the whole
 command claim; this implementation does not infer an actor META-01 rule. Unlike this required-field/frozen-behavior gap, omitted metadata severity prose is settled by ordinary published
 precedent and does not require an owner decision.
 
+### Actor diagnostic decision packet — proposal only, 2026-10-17
+
+**No activation or approval.** The required actor contract is already settled:
+[Format 2.5b](../../spec/UW_FORMAT_SPEC.md),
+[Protocol V.3](../../spec/UW_PROTOCOL.md),
+[UWProvenance.actor](../../packages/uwmd-verify/src/types.ts) and the
+[block schema](../../spec/schemas/uwmd-block.schema.json) require the principal
+as a string; the schema adds `minLength: 1`. The gap is the ordinary diagnostic/
+admission allocation and synchronized corpus disposition. The twelve literal
+source/expected pairs and frozen 78-block / twelve-reference-CLI audit above are
+the existing evidence, not a new run. III.6a has exactly five completeness
+suffixes; [RFC 0081 section 3](../../docs/rfcs/0081-one-format-one-protocol.md)
+and `checkMetaShape` allocate META-01 to the existing wrapper/nested-object
+failures. Neither a generic ProtocolError envelope nor an optional signature
+check allocates an ordinary actor finding.
+
+| Candidate requiring approval | Effect | Assessment |
+|---|---|---|
+| Explicitly extend `META-01` / error to canonical actor admission | One bounded additional trigger; existing registered family/code/severity and issue partitions remain. Clarify remediation/field semantics and exception ordering. | **Recommended smallest repair.** This is an extension, not an interpretation already in force; do not generalize it to every metadata schema rule. |
+| Add `META-ACTOR-001` / error | Clearly separates actor failure from object shape, but adds normative code/remediation vocabulary and updated routing tests. | Reasonable alternative if diagnostic separation is preferred; larger wire change. The spelling itself is only a proposal. |
+| Add `META_FIELD_MISSING_ACTOR` / warning | Expands the closed five-name family and preserves the completeness-warning pattern; malformed present values still need explicit allocation. | Less suitable for a single required-value admission rule: warnings normally do not make the command refuse, and this alone does not resolve null/empty/wrong-type handling. |
+
+Proposed exact bounded META-01 treatment, subject to owner-reviewed RFC:
+
+- Apply to **every retained physical data block**, including explicit history,
+  unselected/overwritten peers, extensions and append collections. Format 2.5's
+  metadata requirement is not exempted by ROLE-01's historical-role rule.
+  Proposed history immunity would be a new Format exception and is not recommended.
+- Whole absent `_meta` keeps the existing META_MISSING path with no actor cascade.
+  Existing malformed wrapper/nested-object failures keep one existing META-01
+  and take precedence over the actor check. When those checks succeed, absent,
+  null, exact empty string or any non-string `_meta.provenance.actor` yields one
+  META-01/error for that block, field `_meta.provenance.actor`.
+- Accept any nonempty string at this actor-shape boundary: do not trim, case-fold,
+  enforce the separate `source` namespace grammar, infer identity from source,
+  or fabricate a principal. Whitespace-only is nonempty under the current schema;
+  changing that rule would be another explicit decision.
+- Emit actor findings in physical source order, at most one per block; retain
+  available section/variant/index/span evidence. Within each block, existing
+  shape refusal precedes actor admission; retain other families' relative order.
+  Pin this ordering, field and severity in both implementations' focused tests.
+- TypeScript must account before projection loss: the existing
+  `ParseOptions.onBlock` observer sees each block before routing. Use that
+  source-order inventory or an operation-local equivalent for source validation,
+  not only a walk of the already reduced ParsedUWFile collections. Keep the
+  public projection and Envelope unchanged. A hand-built/model-only input or
+  inconsistent `raw` must not silently acquire a full physical-source claim;
+  explicitly settle that API boundary in the synchronized repair. This is
+  source accounting, not an RFC 0089 identity/codec decision.
+
+Smallest synchronized change: a bounded RFC/Decisions entry; Format/Protocol
+diagnostic/applicability clarification; protocol/remediation registry copy;
+matching TypeScript and Python ordinary validation; precise original-source
+diagnostic expectations plus focused negatives and derived case/index updates.
+The required actor schema/type need not change; verify parity and document that
+explicitly rather than fabricate a schema edit. Other unallocated metadata
+conditions remain local evidence until their routing is accepted.
+
+Preserve all twelve original source bytes and original expected artifacts/
+audit identities in history. Prefer governed new diagnostic expectations on
+those unchanged sources (with original expectations identifiable), rather than
+injecting author names or rewriting old provenance. The owner must approve that
+corpus disposition: no silent rebaseline. New controls must separately cover
+absent/null/empty/non-string versus valid/whitespace actors; whole missing meta;
+bad provenance/lifecycle nesting and no duplicate cascade; every active peer;
+superseded historical actor failures; append and extension blocks; current/source
+order and read-only bytes. History controls are **additional** scope proof, not
+a claim that the twelve-document audit already demonstrated them.
+
+Changing only diagnostic expectations does not rewrite a cryptographic subject.
+Changing an actor value would leave the V.9 block content hash unchanged because
+that hash excludes `_meta`, but V.11's block-signature preimage explicitly includes
+actor. The full Envelope semantic value, V.13 document-signature subject and
+receipt document subject include metadata and **can change**. Therefore there is
+no global digest/signature/receipt invariance claim, automatic reauthentication,
+old-regime fallback or fabricated reissuance. Preserve original signed artifacts;
+any newly authored source/artifact must name its actual subject under separately
+approved issuance and launch contracts. Independent versions and launch approval
+remain separate. This packet changes neither normative behavior nor the current
+uncoded local assessment/unsupported validate CLI.
+
 ### CC coverage ledger
 
 The implementation records selection evidence only for role-bearing sources;
