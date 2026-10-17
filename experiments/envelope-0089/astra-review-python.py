@@ -23,6 +23,15 @@ for item in inputs["sources"]:
     rows.append({"id": item["id"], "source_sha256": hashlib.sha256(raw).hexdigest(),
                  "physical_block_count": len(document.source.blocks), "projection": projection,
                  "envelope_digest": digest})
+selection = []
+for item in inputs["selection"]:
+    document = parse(item["source"].encode("utf-8"))
+    projection = document.projection()
+    section = item["section"]
+    retained = projection["extensions" if section.startswith("x_") else "sections"].get(section)
+    selection.append({"id": item["id"], "retained": retained,
+                      "history": projection["superseded"].get(section, []),
+                      "physical_block_count": len(document.source.blocks)})
 unicode_rows = []
 for item in inputs["unicode"]:
     try:
@@ -31,4 +40,4 @@ for item in inputs["unicode"]:
     except Exception as error:
         result = {"refused": type(error).__name__, "message": str(error)}
     unicode_rows.append({"id": item["id"], "result": result})
-print(json.dumps({"python": sys.version, "sources": rows, "unicode": unicode_rows}, ensure_ascii=True))
+print(json.dumps({"python": sys.version, "sources": rows, "selection": selection, "unicode": unicode_rows}, ensure_ascii=True))
