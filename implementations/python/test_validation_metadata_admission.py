@@ -92,7 +92,17 @@ class MetadataAdmissionTests(unittest.TestCase):
             with self.subTest(group=group, key=key, value=value):
                 authored = body(); authored["_meta"][group][key] = value
                 result, findings = self.assess(authored)
-                self.assertIn("_meta." + group + "." + key, [f["field"] for f in findings])
+                field = "_meta." + group + "." + key
+                owner = {("quality", "human_review_required"): "META-02",
+                         ("lifecycle", "superseded"): "META-03"}.get((group, key))
+                if owner:
+                    self.assertNotIn(field, [f["field"] for f in findings])
+                    self.assertEqual([(i["code"], i["severity"], i["field"]) for i in result["errors"]],
+                                     [(owner, "error", field)])
+                    self.assertEqual([f["registered_code"] for f in
+                        result["metadata_assessment"]["handled_shape_findings"]], [owner])
+                else:
+                    self.assertIn(field, [f["field"] for f in findings])
                 self.assertFalse(any(i["code"] == "META-01" for i in result["issues"]))
         authored = body(); authored["_meta"]["section"] = 5
         self.assertIn("_meta.section", [f["field"] for f in self.assess(authored)[1]])

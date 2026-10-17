@@ -158,6 +158,24 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
         issue["context"]["block_index"] for issue in source_inventory["issues"]
         if issue["code"] == "META-01" and issue.get("field") == "_meta"
         and _metadata_routing(document.source.blocks[issue["context"]["block_index"]].parsed.value)}
+    flag_owners = {}
+    for issue in source_inventory["issues"]:
+        target = {"META-02": ("quality", "human_review_required"),
+                  "META-03": ("lifecycle", "superseded")}.get(issue["code"])
+        if target is None or issue.get("severity") != "error":
+            continue
+        index = issue.get("context", {}).get("block_index")
+        if (not isinstance(index, int) or isinstance(index, bool)
+                or not 0 <= index < len(document.source.blocks)):
+            continue
+        group, name = target
+        field = "_meta." + group + "." + name
+        body = document.source.blocks[index].parsed.value
+        meta = body.get("_meta")
+        parent = meta.get(group) if isinstance(meta, dict) else None
+        if (issue.get("field") == field and not _metadata_routing(body)
+                and isinstance(parent, dict) and not isinstance(parent.get(name), bool)):
+            flag_owners[index, field] = issue["code"]
     retained, handled = [], []
     for finding in findings:
         field = finding["field"]
@@ -165,6 +183,10 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
                 and (field == "_meta" or field.startswith("_meta."))):
             handled.append(dict(**finding, registered_code="META-01",
                                 disposition="blocked_by_registered_metadata_shape"))
+        elif (finding["context"]["block_index"], field) in flag_owners:
+            handled.append(dict(**finding,
+                registered_code=flag_owners[finding["context"]["block_index"], field],
+                disposition="represented_by_registered_metadata_flag"))
         else:
             retained.append(finding)
     result = dict(shape_findings=retained)
