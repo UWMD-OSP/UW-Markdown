@@ -1,0 +1,22 @@
+{
+  "status": "UNACCEPTED fixed existing evidence inputs; no expected answers regenerated",
+  "base_commit": "97a4e57cdbbf40e95de5f93140463c0c527d432c",
+  "files": {
+    "native-reference/evidence/run-38993665625/native-research-macos-latest-clang-false.zip": "031507ed7677bd6a133dc499f3a59d067aba24c67df278ee2315140804194b24",
+    "native-reference/evidence/run-38993665625/native-research-ubuntu-latest-clang-true.zip": "b24b47854eb34723b850fb56ca57f95201abfce2f018c7aff9381df714632141",
+    "native-reference/evidence/run-38993665625/native-research-ubuntu-latest-gcc-false.zip": "c12240d0bad3b554d3a1ccc2f7e6f25cf7588b8ecc5e8d0b7dfb0a81ff5016e6",
+    "native-reference/inputs.json": "8af9d8851e4ac9857844250ebaa8c7bd083556f6e53d2184a24c7fdd1b027703",
+    "pinned-fdlibm/constants.json": "e9793112e7a5d0e2c1ccb2f8d8dd9bbc35608598cf725cb8e5ee44117dad59d9",
+    "pinned-fdlibm/math-evidence.json": "4d388ee0be56d3f39ad20c13975fa0b283e0e410126235f5768a6411a987faca",
+    "pinned-fdlibm/math-inputs.json": "cb0079655db3c641bb4e7a04708dadc43be20ee34a9b04e16fccd3694e585911",
+    "pinned-fdlibm/sources.json": "48d0a1df2f503be981a7c507ebd68691bb949b7c622ed9f3f11727b7214fdb68",
+    "pinned-fdlibm/upstream/e_exp.c": "04c96195b7ced914d659b5fd204724c182f091af8631fe42016ad6e27cb302ef",
+    "pinned-fdlibm/upstream/e_log.c": "a2b1bd1b367026a35f36da53425cd618386c3bf69d23ac224a40791aa9855ac9",
+    "pinned-fdlibm/upstream/e_pow.c": "763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122",
+    "pinned-fdlibm/upstream/e_sqrt.c": "2a6e784d1089eb6351df7e59037de4240d11a5c61967611732f81ad96fe869ce",
+    "pinned-fdlibm/upstream/fdlibm.h": "64113c472c2676499288bc35a821b0867916552930bc52c7445d2c50dddf0e71",
+    "pinned-fdlibm/upstream/s_copysign.c": "459c18858c944a4e7062d38ab4dfb596edbe76706d24029c2dac766dcd2be3fd",
+    "pinned-fdlibm/upstream/s_fabs.c": "c6389f3e0472ec0157d648b3e4e80b405038acfaf3e85b961363ea483e3259f1",
+    "pinned-fdlibm/upstream/s_scalbn.c": "9ad1bb374fc2951ec086474c82373b45bccfdecd34d631974dccf8633f40d99e"
+  }
+}
