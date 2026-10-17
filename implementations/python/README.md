@@ -50,7 +50,12 @@ unverifiable V.12 return exit1; warning-only results return0. Frontmatter blocki
 flags retain `overall_status: blocking` but do not alone fail this operation:
 they halt a producer workflow (Format3.3), while the accepted CLI fails on actual
 structural errors or the separate binding refusal. Parse refusals preserve
-allocated codes; I/O/internal failures return2. Validation never writes input.
+allocated codes; the known UNSUPPORTED_FORMAT_VERSION,
+UNSUPPORTED_YAML_FEATURE and SOURCE_CONTENT_MISMATCH refusals reached through
+validate carry `category: parse`, `code` and `message` under Protocol XI's
+ProtocolError schema. Unallocated local source/selection failures do not gain
+a fallback code or a successful ValidationResult. I/O/internal failures return2.
+Validation never writes input.
 
 This is an implemented, **unadvertised developing command**, not a complete
 validation/Verifier claim. The manifest still claims only parse. Detected

@@ -1,6 +1,7 @@
 """Real validation command/transport evidence, not capability certification."""
 import copy
 import json
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -13,6 +14,8 @@ from test_validation import ROOT, well_formed, validate
 from test_validation_external import external
 from uwmd import main
 from uwmd_reader import parse
+from uwmd_source import SourceError
+from uwmd_validation_selection import ValidationUnavailable
 from uwmd_source_validation import inspect_source_roles
 from uwmd_validation_provenance import metadata_assessment
 
@@ -152,6 +155,56 @@ class ValidationCLITests(unittest.TestCase):
         binding=result["replacement_funding_verification"]
         self.assertEqual((binding["state"],binding["reason"]),("failed","stale_binding"))
         self.assertNotIn("HDG-09",[i["code"] for i in result["issues"]])
+
+    def test_known_parse_refusals_conform_to_actual_protocol_error_schema(self):
+        schema=json.loads((ROOT/"spec/schemas/protocol-error.schema.json").read_text(encoding="utf8"))
+        self.assertTrue(set(schema)<={"$schema","$id","title","description","type","required",
+                                     "additionalProperties","properties","examples"})
+        self.assertEqual(schema["type"],"object")
+        self.assertIs(schema["additionalProperties"],False)
+        for raw,filename,code in (
+            (property_source().replace(b'uw_version: "3.0"',b'uw_version: "2.0"'),
+                "version.uwx.md","UNSUPPORTED_FORMAT_VERSION"),
+            (property_source().replace(b"unknown_key: retained",b"unknown_key: &anchor value"),
+                "yaml.uwx.md","UNSUPPORTED_YAML_FEATURE"),
+            (property_source(),"carrier.uw.md","SOURCE_CONTENT_MISMATCH")):
+            with self.subTest(code=code):
+                self.path=Path(self.temporary.name)/filename
+                result,status=self.command(raw)
+                self.assertEqual(status,1)
+                self.assertEqual(set(result),{"error"})
+                error=result["error"]
+                self.assertEqual((error["category"],error["code"]),("parse",code))
+                # Execute every assertion keyword used by this exact schema,
+                # read from its unchanged source; this is no general validator.
+                self.assertTrue(set(schema["required"])<=set(error))
+                self.assertTrue(set(error)<=set(schema["properties"]))
+                for name,value in error.items():
+                    field=schema["properties"][name]
+                    self.assertTrue(set(field)<={"enum","description","type","pattern","minLength"})
+                    if "enum" in field:self.assertIn(value,field["enum"])
+                    if "type" in field:
+                        self.assertEqual(field["type"],"string")
+                        self.assertIsInstance(value,str)
+                    if "pattern" in field:self.assertIsNotNone(re.search(field["pattern"],value))
+                    if "minLength" in field:self.assertGreaterEqual(len(value),field["minLength"])
+
+    def test_unallocated_source_and_selection_refusals_get_no_default_protocol_error(self):
+        self.path.write_bytes(property_source())
+        with patch("uwmd.parse",side_effect=SourceError("Unallocated source refusal")):
+            result,status=main(["validate",str(self.path),"--json"])
+            self.assertEqual((result,status),({"error":{"message":"Unallocated source refusal"}},1))
+        with patch("uwmd.validate_document",side_effect=ValidationUnavailable("Unallocated selection refusal")):
+            result,status=main(["validate",str(self.path),"--json"])
+            self.assertEqual((result,status),({"error":{"message":"Unallocated selection refusal"}},1))
+        # A real duplicate JSON member likewise retains its local source refusal,
+        # rather than receiving an invented parse/default code or result state.
+        raw=property_source().replace(b'"address": "A"',b'"address": "A", "address": "B"')
+        self.assertNotEqual(raw,property_source())
+        result,status=self.command(raw)
+        self.assertEqual(status,1)
+        self.assertEqual(set(result),{"error"})
+        self.assertEqual(set(result["error"]),{"message"})
 
     def test_source_usage_io_and_internal_failures_are_not_validation_verdicts(self):
         result,status=self.command(property_source().replace(b'uw_version: "3.0"',b'uw_version: "2.0"'))
