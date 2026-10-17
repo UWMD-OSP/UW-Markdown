@@ -611,8 +611,10 @@ same actor/resolution checks apply to admitted top-level `_overrides` entries.
 Actor and resolution fields are never moved, normalized, inferred or repaired;
 `manual` is an actor and cannot be used as a resolution. Explicit null differs
 from an absent optional resolution. `_meta.role` and retired flat metadata are
-never interpreted as aliases. Pinned META-01 routing checks reject non-nested
-metadata, late `_meta`, mismatched section identity and `section_id` wrappers.
+never interpreted as aliases. Pinned RFC 0081 META-01 routing checks reject
+`section_id` wrappers, present nonobject `_meta`, and nonobject/missing nested
+provenance or lifecycle. Late `_meta` and mismatched section identity remain
+active-only uncoded local findings; they do not suppress actor admission.
 
 Registered findings are separate from `shape_findings`, which are explicitly
 local diagnostics with no invented registered code or severity. Other selected
@@ -667,6 +669,18 @@ unselected variants and overwritten physical peers receive actor checks. History
 roles and sources are not reclassified. The legacy `blocks_checked` and
 `history_blocks_skipped` counters describe only the active source/role pass.
 
+Routing correction against accepted RFC 0081 section 3: the original test
+blob above also allocated META-01 for (1) otherwise valid metadata with
+`_meta.section="wrong"` and (2) otherwise valid metadata appearing after a
+payload member. Both assertions are now explicitly corrected to no registered
+issue plus an uncoded local finding at `_meta.section` or `_meta` respectively;
+local `ok` remains false. Those requirements are retained in their active-only
+scope and are not widened to history or used as actor-suppression predicates.
+This removes a prior unsupported code allocation rather than preserving it for
+prelaunch compatibility. Combined controls prove missing actors still produce
+their own META-01 with either requirement, including history, without allocating
+an extra historical finding for member order or section identity.
+
 The current canonical inline parsed `_meta` is authoritative. The operation
 snapshots `Document.source.blocks`; it does not silently reparse immutable raw
 bytes or certify a caller-mutated model as the original source. Physical spans
@@ -688,8 +702,9 @@ or a complete affected-corpus inventory.
 | `11-role-collision.uwx.md` | `0231d5b466b733637f8fd062fbd515ba0bf82f82` |
 | `12-role-eligibility.uwx.md` | `6c2a00fc74c4305315a4af235abe4c889914b573` |
 
-Four additional focused methods cover actor value boundaries, all-physical
-coverage, shape/actor/role/source ordering and parsed-model authority. Existing
+Five additional focused methods cover actor value boundaries, all-physical
+coverage, shape/actor/role/source ordering, independent actor admission beside
+unallocated order/identity requirements, and parsed-model authority. Existing
 source, timestamp, quality, lifecycle and override diagnostics keep their
 registered-versus-local allocation. Changing an actor would leave the V.9
 content hash (which excludes `_meta`) unchanged but can change block signatures,
