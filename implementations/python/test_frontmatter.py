@@ -1,5 +1,12 @@
 """Known-answer Appendix D controls; no TypeScript or expected-output lookups."""
 import unittest
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+from test_reader import HEADER
 
 from uwmd_frontmatter import FrontmatterError, parse_frontmatter
 
@@ -83,6 +90,68 @@ class FrontmatterTests(unittest.TestCase):
                          {"a": "-", "b": "?", "c": ":", "d": "value:",
                           "url": "https://example.test:8443/a-b", "hyphen": "-item",
                           "question": "?item", "colon": ":item"})
+
+    def test_sequence_objects_follow_format_modules_example_without_name_special_case(self):
+        parsed = self.decode('asset_class: com.example.specialty_facility\n'
+            'modules:\n  - id: com.example.datacenters\n    version: ">=0.1.0 <1.0.0"\n'
+            '  - id: second\n    version: null\n'
+            'unknown:\n  - label: kept\n    amount: 1.2300\n  - scalar\n  - true\n  - text\n  -\n')
+        self.assertEqual(parsed.value["modules"], [
+            {"id":"com.example.datacenters", "version":">=0.1.0 <1.0.0"},
+            {"id":"second", "version":None}])
+        self.assertEqual(parsed.value["unknown"], [{"label":"kept", "amount":1.23}, "scalar", True, "text", None])
+        self.assertEqual(parsed.numbers[0].pointer, "/unknown/0/amount")
+        self.assertEqual(parsed.numbers[0].lexeme, "1.2300")
+        self.assertEqual(self.decode("x:\n  - # comment\n    id: kept\n").value,
+                         {"x":[{"id":"kept"}]})
+
+    def test_sequence_mapping_source_offsets_empty_item_and_quoted_keys(self):
+        raw = ('"é/~":\r\n  - "": -1.200e-2 # retained spelling\r\n'
+               "    'a/b~c': 0x10\r\n  -\r\n    id: kept\r\n    flags: []\r\n").encode()
+        parsed = parse_frontmatter(raw, byte_offset=11)
+        self.assertEqual(parsed.value, {"é/~":[{"":-.012, "a/b~c":16}, {"id":"kept", "flags":[]}]})
+        self.assertEqual([t.pointer for t in parsed.numbers], ["/é~1~0/0/", "/é~1~0/0/a~1b~0c"])
+        for token in parsed.numbers:
+            self.assertEqual(token.span.extract(b"12345678901" + raw).decode(), token.lexeme)
+
+    def test_sequence_mapping_addition_keeps_duplicates_depth_and_feature_refusals(self):
+        for text in [
+                "x:\n  - id: a\n    id: b\n",
+                "x:\n  - id: a\n    'id': b\n",
+                "x:\n  - '': a\n    \"\": b\n",
+                "x:\n  - id:\n      version: nested\n",
+                "x:\n  - id: a\n    child:\n      nested: b\n",
+                "x:\n  - scalar\n    id: a\n",
+                "x:\n  id: a\n    version: b\n",
+                "x:\n    id: a\n",
+                "x:\n  - id: a\n    - b\n",
+                "x:\n  - id: &anchor\n",
+                "x:\n  - id: *alias\n",
+                "x:\n  - id: !!str 3\n",
+                "x:\n  - id: {a: 1}\n",
+                "x:\n  - id: [1, 2]\n",
+                "x:\n  - id: |\n",
+                "x:\n  - id: a\n\tbad: b\n"]:
+            with self.subTest(text=text), self.assertRaises(FrontmatterError) as caught:
+                self.decode(text)
+            self.assertEqual(caught.exception.code, "UNSUPPORTED_YAML_FEATURE")
+
+    def test_sequence_mapping_actual_cli_preserves_complete_source(self):
+        raw = HEADER.replace(b"unknown_key: retained",
+            b'modules:\n  - id: com.example.specialty_facility\n    version: ">=0.1.0 <1.0.0"\n'
+            b'unknown_key:\n  - "a/b~c": 1.2300\n    label: "Caf\\u00e9"')
+        with tempfile.TemporaryDirectory(prefix="uwmd-yaml-sequence-cli-") as folder:
+            path = Path(folder) / "input.uwx.md"
+            for source in (raw, raw.replace(b"\n", b"\r\n")):
+                path.write_bytes(source)
+                command = subprocess.run([sys.executable, "-B", str(Path(__file__).with_name("uwmd.py")),
+                    "parse", str(path)], capture_output=True, encoding="utf-8", timeout=30)
+                self.assertEqual(command.returncode, 0, command.stderr)
+                value = json.loads(command.stdout)
+                self.assertEqual(value["frontmatter"]["modules"],
+                    [{"id": "com.example.specialty_facility", "version": ">=0.1.0 <1.0.0"}])
+                self.assertEqual(value["frontmatter"]["unknown_key"], [{"a/b~c": 1.23, "label": "Café"}])
+                self.assertEqual(path.read_bytes(), source)
 
     def test_unsupported_features_refuse_existing_code(self):
         for text in ["x: &anchor\n", "x: *alias\n", "x: !!str 3\n", "x: |\n", "x: >\n",
