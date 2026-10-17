@@ -8,7 +8,7 @@ import { verifyReplay } from './reproduce.mjs';
 
 const frozenUrl = new URL('observations.json', import.meta.url);
 const frozen = readFileSync(frozenUrl);
-const identities = JSON.parse(readFileSync(new URL('integration-identities.json', import.meta.url), 'utf8'));
+const identities = JSON.parse(readFileSync(new URL('integration-identities-afcc.json', import.meta.url), 'utf8'));
 const historical = JSON.parse(frozen.toString('utf8'));
 const clone = value => JSON.parse(JSON.stringify(value));
 const current = () => ({ ...clone(historical), production_hashes: clone(identities.approved_current.production_hashes) });
@@ -57,4 +57,10 @@ test('former write option is refused without overwriting frozen evidence', () =>
   assert.equal(result.status, 1);
   assert.match(result.stderr, /read-only replay accepts no arguments/);
   assert.equal(createHash('sha256').update(readFileSync(frozenUrl)).digest('hex'), before);
+});
+
+test('the previous reviewed identity map cannot be silently replaced', () => {
+  const changed = clone(identities);
+  changed.predecessor.sha256 = '0'.repeat(64);
+  assert.throws(() => verifyReplay(current(), frozen, changed), /preserved predecessor identity manifest/);
 });

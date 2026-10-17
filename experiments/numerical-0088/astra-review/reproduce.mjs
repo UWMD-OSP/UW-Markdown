@@ -133,6 +133,9 @@ export async function observe() {
 // Never derive an approved hash from the current checkout or rewrite observations.
 export function verifyReplay(current, frozenBytes, identities) {
   assert.equal(identities.format, 'rfc0088-astra-replay-identities-v1');
+  assert.equal(HASH(readFileSync(new URL(identities.predecessor.path, ROOT))), identities.predecessor.sha256, 'preserved predecessor identity manifest');
+  const predecessor = JSON.parse(readFileSync(new URL(identities.predecessor.path, ROOT), 'utf8'));
+  assert.deepStrictEqual(identities.historical, predecessor.historical, 'historical source identities (preserved original map)');
   assert.equal(HASH(frozenBytes), identities.historical.observations_sha256, 'frozen observations SHA-256');
   const historical = JSON.parse(frozenBytes.toString('utf8'));
   assert.deepStrictEqual(historical.production_hashes, identities.historical.production_hashes, 'historical source identities');
@@ -146,7 +149,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   assert.equal(process.argv.length, 2, 'read-only replay accepts no arguments; frozen observations cannot be overwritten');
   const destination = new URL('observations.json', import.meta.url);
   const frozenBytes = readFileSync(destination);
-  const identities = JSON.parse(readFileSync(new URL('integration-identities.json', import.meta.url), 'utf8'));
+  const identities = JSON.parse(readFileSync(new URL('integration-identities-afcc.json', import.meta.url), 'utf8'));
   // Refuse tampered evidence before collecting current behavioral observations.
   assert.equal(HASH(frozenBytes), identities.historical.observations_sha256, 'frozen observations SHA-256');
   const result = await observe();
