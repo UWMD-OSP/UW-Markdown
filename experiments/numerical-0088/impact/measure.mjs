@@ -38,7 +38,8 @@ for(const path of distPaths){
  function inspect(node){
   const at=()=>`${path}:${ast.getLineAndCharacterOfPosition(node.getStart(ast)).line+1}:${ast.getLineAndCharacterOfPosition(node.getStart(ast)).character+1}`;
   if(ts.isBinaryExpression(node)&&node.operatorToken.kind===ts.SyntaxKind.AsteriskAsteriskToken){
-   const text=node.getText(ast),bigint=/\bBigInt\s*\(|\b[0-9]+n\b/.test(text);
+   const text=node.getText(ast);
+   const bigint=/\bBigInt\s*\(|\b[0-9]+n\b/.test(text);
    staticSites.push({site:at(),path,op:'pow',excluded:bigint,text});
   }
   if(ts.isCallExpression(node)&&ts.isPropertyAccessExpression(node.expression)&&node.expression.expression.getText(ast)==='Math'&&['log','exp'].includes(node.expression.name.text))staticSites.push({site:at(),path,op:node.expression.name.text,excluded:false,text:node.getText(ast)});
@@ -98,8 +99,11 @@ function differences(a,b,path='',found=[]){
  return found;
 }
 const cases=corpus.map(c=>{
- const id=key(c),b=runs.baseline.cases.get(id),a=runs.candidate.cases.get(id);
- const before=observations(b.snapshot),after=observations(a.snapshot);
+ const id=key(c);
+ const b=runs.baseline.cases.get(id);
+ const a=runs.candidate.cases.get(id);
+ const before=observations(b.snapshot);
+ const after=observations(a.snapshot);
  const changes=differences(before,after);
  const complete=Object.keys(before).length>0&&Object.keys(after).length>0;
  const subjectChanges=changes.filter(x=>/subject.*digest|canonicalization|inputs_provenance/.test(x.path));
@@ -110,7 +114,8 @@ const cases=corpus.map(c=>{
   baseline_capture_site:b.site,candidate_capture_site:a.site,observed_changes:changes,
   historical_subject_observation:subjectChanges.length?'changed_observation_requires_review':Object.keys(before).some(k=>/receipt|again/.test(k))?'no_observed_subject_change':'not_measured_in_this_case'};
 });
-const bPr=runs.baseline.primitives,aPr=runs.candidate.primitives;
+const bPr=runs.baseline.primitives;
+const aPr=runs.candidate.primitives;
 const primitiveAlignment=bPr.length===aPr.length&&bPr.every((v,i)=>v.op===aPr[i].op&&v.site===aPr[i].site&&JSON.stringify(v.args)===JSON.stringify(aPr[i].args));
 const primitiveDifferences=primitiveAlignment?bPr.flatMap((v,i)=>JSON.stringify(v.result??v.error)===JSON.stringify(aPr[i].result??aPr[i].error)?[]:[{ordinal:i,op:v.op,site:v.site,args:v.args,baseline:v.result??v.error,candidate:aPr[i].result??aPr[i].error}]):[];
 const perSite=run=>Object.fromEntries([...new Set(run.primitives.map(e=>e.site))].sort().map(site=>[site,run.primitives.filter(e=>e.site===site).length]));
@@ -129,5 +134,5 @@ const manifest={schema_version:'research-impact-1',scope:'Unaccepted isolated ca
   cases_with_observed_state_or_refusal_changes:cases.filter(c=>c.observed_changes.some(d=>d.kind==='state_or_refusal')).length,
   incomplete_visible_observations:cases.filter(c=>c.observation_coverage.startsWith('incomplete')).length,
   whole_result_proof_claim:false},scratch_evidence:scratch};
-mkdirSync(dirname(output),{recursive:true});writeFileSync(output,JSON.stringify(manifest,null,2)+'\n');
+mkdirSync(dirname(output),{recursive:true});writeFileSync(output,`${JSON.stringify(manifest,null,2)}\n`);
 console.log(JSON.stringify({output,summary:manifest.summary,scratch},null,2));

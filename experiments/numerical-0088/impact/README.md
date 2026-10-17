@@ -37,3 +37,59 @@ identity, all indexed cases, observed numeric/state changes, receipt subject
 observation limits and hashes of complete scratch logs. It preserves those logs
 in the reported system temporary directory. Keep that evidence alongside any
 frozen manifest; the JSON summary alone is not all raw measurement evidence.
+
+## Frozen local observation
+
+[observed-impact.json](observed-impact.json) records one completed baseline and
+candidate measurement on Node 24.14.1 / V8 13.6.233.17-node.44, Windows x64,
+against the fresh existing build identified in the manifest. The candidate's
+complete closure and all protected source/build inputs are hashed there.
+
+- Both runs: 1,089 indexed assertions passed, none failed or updated; one
+  captured record event per case.
+- 14,145 raw primitive observations in each run, aligned by site and input words.
+  There were 671 raw-word changes: one periodic IRR power, 668 dated IRR powers
+  and two dated NPV powers. No captured reported numeric or result-state change
+  was observed. The frozen fixture expectations were not rewritten.
+- Six source-string differences are preserved in full and explicitly classified
+  as timestamp-only: five starter editor cases and one capability-token editor
+  case. Exact full-string equality follows removal of only `last_modified`,
+  annotation `ts` and metadata `timestamp`; no numeric or integrity-hash field
+  was removed to obtain that classification.
+- 108 cases have no visible actual binding at the record callsite. The other
+  captures also do not claim every internal value. Zero status changes is
+  therefore not a proof of exact universal compatibility.
+- Sixteen of the 18 receipt cases captured complete receipt fields (directly or
+  through the helper's serialized receipt). Their observed subject/results
+  digests and stated results were equal across runs. The two refusal cases
+  produced no receipt. This does not authenticate a new signature, cover every
+  historical receipt, or resolve the success-to-refusal compatibility question.
+
+Complete events, transformation inventories, stdout and stderr are preserved as
+mtime-zero, filename-free gzip archives under [evidence/](evidence/). The manifest
+records compressed and uncompressed hashes. The first attempt stopped at module
+parsing before executing any case because an injected import displaced the
+runner hashbang; that failure's streams are retained separately. The corrected
+attempt is the completed measurement, not an additional conformance baseline.
+
+To freeze a newly generated measurement without executing it again:
+
+```powershell
+python experiments/numerical-0088/impact/freeze-evidence.py <manifest-path>
+```
+
+The freezer is a postprocessing step; retain its initial manifest until freezing
+finishes. It factors identical transformations once, attaches relative archive
+references and classifies the strictly limited timestamp differences. It does
+not change expectations or computed evidence.
+
+After measurement, lint-only fixes split variable declarations and changed string
+concatenations to equivalent templates. The frozen manifest retains the exact
+pre-style harness commit and file hashes that actually executed. Those style
+changes did not trigger another full measurement.
+
+Verify all archived streams and the frozen case/primitive inventories:
+
+```powershell
+python experiments/numerical-0088/impact/verify-evidence.py
+```
