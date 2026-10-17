@@ -345,6 +345,18 @@ comparison. NUL, U+FFFE/U+FFFF, CR/LF/TAB and valid supplementary values/names
 round-trip without normalization. The namespace and all E_NEXT/C_NEXT/B_NEXT
 labels remain unallocated research tokens. This alternative is not accepted.
 
+Independent review exposed a transport-byte defect in the initial experimental
+ZIP decoder: its UTF-8 decoder stripped BOM before inventory hashing. A valid
+CRC/size archive with three BOM bytes added to `document.csv` could retain the
+old inventory and decoded subject. The original observation is preserved, not
+presented as proof of that refusal. The corrected reader hashes actual ZIP
+payload bytes before strict UTF-8 decoding and preserves BOM for syntax refusal;
+a sixth Node test creates the valid-CRC BOM mutation independently with Python.
+The separately frozen [correction evidence](../../experiments/envelope-0089/codec-study/evidence/bom-correction/observations.json)
+pins complete historical/current helper identities and six passing Node tests;
+all21 candidate fixtures/artifacts remain unchanged. This fixes the experiment,
+not a production codec or normative contract.
+
 The new evidence closes the earlier absence of an independent CSV/XML reader
 and actual ZIP execution for these models only. It does not establish the full
 schema/builtin domain, empty history/map representation, a complete independent
