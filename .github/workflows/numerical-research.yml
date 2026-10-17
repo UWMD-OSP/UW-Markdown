@@ -51,3 +51,35 @@ jobs:
           path: numerical-research-artifacts/
           if-no-files-found: error
           retention-days: 14
+
+  native-corroboration:
+    name: Native candidate (${{ matrix.os }}, ${{ matrix.cc }}, sanitize=${{ matrix.sanitize }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - { os: ubuntu-latest, cc: gcc, sanitize: false }
+          - { os: ubuntu-latest, cc: clang, sanitize: true }
+          - { os: macos-latest, cc: clang, sanitize: false }
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compare independent native source with raw JavaScript candidate
+        run: python -B experiments/numerical-0088/native-reference/compare.py --cc ${{ matrix.cc }} --output native-research-artifacts ${{ matrix.sanitize && '--sanitize' || '' }}
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: native-research-${{ matrix.os }}-${{ matrix.cc }}-${{ matrix.sanitize }}
+          path: native-research-artifacts/
+          if-no-files-found: error
+          retention-days: 14

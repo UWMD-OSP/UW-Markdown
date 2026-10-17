@@ -33,7 +33,7 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     report = {
-        "scope": "UNACCEPTED PROCEDURE RESEARCH; frozen cases only; no tier or full-kernel claim",
+        "scope": "UNACCEPTED PROCEDURE RESEARCH; isolated candidate and frozen controls; no normative or tier guarantee",
         "python_controls_requested": args.python_controls,
         "python": sys.version,
         "platform": platform.platform(),
@@ -69,6 +69,20 @@ def main():
                     (name + "-freeze", [sys.executable, "-B", str(folder / freeze), "--check"], "freeze"),
                     (name + "-python", [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(folder), "-p", "test_*.py", "-v"], "python"),
                 ])
+        candidate = Path("experiments/numerical-0088/pinned-fdlibm")
+        native = Path("experiments/numerical-0088/native-reference")
+        commands.extend([
+            ("pinned-candidate-js", node_runner + [str(candidate / "candidate.test.mjs")], "js"),
+            ("pinned-accuracy", ["node", str(candidate / "accuracy.mjs"), "--check"], "candidate-accuracy"),
+            ("pinned-complete-input-stream", ["node", str(native / "run-inputs.mjs"), "--output", str(output / "candidate-results.json")], "candidate-records"),
+        ])
+        if args.python_controls:
+            commands.extend([
+                ("pinned-constants", [sys.executable, "-B", str(candidate / "generate-constants.py"), "--check"], "freeze"),
+                ("pinned-independent-math", [sys.executable, "-B", str(candidate / "freeze-math.py"), "--check"], "freeze"),
+                ("pinned-math-methods", [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(candidate), "-p", "test_*.py", "-v"], "python"),
+                ("native-frozen-inputs", [sys.executable, "-B", str(native / "freeze-inputs.py"), "--check"], "freeze"),
+            ])
         for name, command, kind in commands:
             started = time.monotonic()
             try:
@@ -96,6 +110,18 @@ def main():
                 complete = complete and match is not None and int(match[1]) == expected and expected > 0
                 counts = {"frozen_cases": int(match[1]), "classification_comparisons": int(match[1]),
                           "result_trace_comparisons": int(match[1])} if match else {}
+            elif kind == "candidate-records":
+                try:
+                    counts = json.loads(stdout)
+                    expected = len(json.loads((ROOT / "experiments/numerical-0088/native-reference/inputs.json").read_text())["cases"])
+                    complete = complete and counts.get("cases") == expected and expected > 0
+                    complete = complete and re.fullmatch(r"[0-9a-f]{64}", counts.get("sha256", "")) is not None
+                except (ValueError, TypeError):
+                    complete = False
+            elif kind == "candidate-accuracy":
+                match = re.fullmatch(r"Candidate observations match: (\d+)/(\d+) exact mathematical words; (\d+) retained disagreements\s*", stdout)
+                complete = complete and match is not None and int(match[1]) + int(match[3]) == int(match[2]) and int(match[2]) > 0
+                counts = {"certified_cases": int(match[2]), "exact_words": int(match[1]), "retained_differences": int(match[3])} if match else {}
             elif kind == "python":
                 match = re.search(r"Ran (\d+) tests? in", stderr)
                 counts = {"methods": int(match[1])} if match else {}
