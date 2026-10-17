@@ -83,6 +83,24 @@ def inspect_source_roles(document):
                 message="Block _meta.provenance.actor must be a nonempty string.",
                 remediation="State the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor.",
                 context=copy.deepcopy(context)))
+    # Owner-authorized RFC0091 candidate: all admitted physical references,
+    # after every actor and before active role/source checks. Canonical JSON
+    # flags are never inferred from fence attributes or projected routing.
+    checked_flags = set()
+    for block, context in eligible:
+        if id(block) in checked_flags:
+            continue
+        checked_flags.add(id(block))
+        meta = block.parsed.value["_meta"]
+        for code, group, field in (("META-02", "quality", "human_review_required"),
+                                   ("META-03", "lifecycle", "superseded")):
+            parent = meta.get(group)
+            if isinstance(parent, dict) and not isinstance(parent.get(field), bool):
+                path = "_meta." + group + "." + field
+                result["issues"].append(dict(code=code, severity="error", section=block.section,
+                    field=path, message="Block " + path + " must be a boolean.",
+                    remediation="State " + path + " explicitly as true or false; do not infer a flag.",
+                    context=copy.deepcopy(context)))
     for index, block in enumerate(snapshot.source.blocks):
         if source_superseded(block):
             result["history_blocks_skipped"] += 1
