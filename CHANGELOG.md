@@ -14,6 +14,9 @@ protocol, and each package each carry an independent semver).
   digest conversion, as required by the existing RFC8785 contract. Preserve all
   valid Unicode and frozen subjects; cover receipt/source refusal and document
   signature precedence without rewriting historical artifacts or versions.
+  Preserve XML character errors and use existing receipt/document/block refusal
+  handling for unencodable committed inputs; leave excluded metadata and backend
+  exceptions unchanged.
 
 - Keep absent Python metadata outside the present-malformed META-01 domain.
   Keep completeness outside this partial inventory as an uncoded local diagnostic;

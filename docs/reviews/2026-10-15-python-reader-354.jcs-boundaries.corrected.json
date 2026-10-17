@@ -1,0 +1,2912 @@
+{
+  "scope": "Read-only final compatibility audit, TEMP only. Stubs are operational controls and not cryptographic evidence. No new refusal policy selected.",
+  "node": "v24.14.1",
+  "roots": {
+    "baseline": {
+      "canonicalizer_sha256": "6004aba57fb797df20162b895ac069799bc5e8efd1003016da73c72119cc5738",
+      "source_sha256": "93f3a8b8f57e7135030bf551780fc3d9862a83d8b19d981fe3086e035c1994d3"
+    },
+    "proposed": {
+      "canonicalizer_sha256": "3b4ea8f34e83ce31c207e0329001eed97ff50283c912e3314b493a649601ac97",
+      "source_sha256": "0f80b01027c4f38d33753c29e702d2fe1b72c57307ca18314cbf893afbc801bc"
+    }
+  },
+  "source": "---\nuw_version: \"3.0\"\ndeal_id: \"jcs-final-audit\"\ndeal_name: \"Valid source metadata audit\"\nasset_class: multifamily\n---\n\n```json uw:section=property\n{\"_meta\":{\"section\":\"property\",\"provenance\":{\"source\":\"manual\",\"actor\":\"reviewer\",\"timestamp\":\"2026-10-17T00:00:00Z\"},\"lifecycle\":{\"revision\":1,\"superseded\":false}},\"value\":\"valid\"}\n```\n",
+  "source_sha256": "6548dad77d185db6adc6ef0ee5434ecc0f00616bd7adc06b47ab9c2691ee2766",
+  "base_receipt": {
+    "receipt_version": "1.1",
+    "subject": {
+      "representation": "uwx-markdown",
+      "representation_version": "1.0",
+      "canonicalization": "uw-envelope-semantic",
+      "canonicalization_version": "1.0",
+      "digest": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f"
+    },
+    "computation": {
+      "pack": "research.jcs-final-audit",
+      "pack_version": "0.0.0-research",
+      "engine": "@uwmd/verify",
+      "engine_version": "0.2.1",
+      "protocol_version": "4.1.0",
+      "results": [
+        {
+          "calc_id": "constant",
+          "value": 1,
+          "computed": true
+        }
+      ],
+      "results_digest": "sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff"
+    },
+    "policy": {
+      "policy_set": "builtin",
+      "policy_set_version": "1.0",
+      "validation": {
+        "errors": 0,
+        "warnings": 2
+      }
+    },
+    "issued_at": "2026-10-17T00:00:00Z",
+    "issuer": "research-only",
+    "signature": null
+  },
+  "document_artifact": {
+    "kind": "uwmd-document-signature",
+    "signature_version": "1",
+    "subject": {
+      "representation": "uwx-markdown",
+      "representation_version": "1.0",
+      "canonicalization": "uw-envelope-semantic",
+      "canonicalization_version": "1.0",
+      "digest": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f"
+    },
+    "alg": "ed25519",
+    "kid": "research-placeholder",
+    "signed_at": "2026-10-17T00:00:00Z",
+    "sig": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "receipts": [
+    {
+      "id": "valid",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "valid",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "valid-replacement",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"metadata-�\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "valid-replacement",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"metadata-�\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "issuer",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"metadata-\ud800\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "issuer",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The receipt signature input cannot be canonicalized: canonicalize: cannot serialize an unpaired high surrogate"
+                }
+              ],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "issued_at",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"metadata-\ud800\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "issued_at",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The receipt signature input cannot be canonicalized: canonicalize: cannot serialize an unpaired high surrogate"
+                }
+              ],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pack",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"metadata-\ud800\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pack",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The receipt signature input cannot be canonicalized: canonicalize: cannot serialize an unpaired high surrogate"
+                }
+              ],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pack_version",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"metadata-\ud800\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pack_version",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The receipt signature input cannot be canonicalized: canonicalize: cannot serialize an unpaired high surrogate"
+                }
+              ],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"metadata-\ud800\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The receipt signature input cannot be canonicalized: canonicalize: cannot serialize an unpaired high surrogate"
+                }
+              ],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "engine_version",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"metadata-\ud800\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "engine_version",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The receipt signature input cannot be canonicalized: canonicalize: cannot serialize an unpaired high surrogate"
+                }
+              ],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "policy_set",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"metadata-\ud800\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "policy_set",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The receipt signature input cannot be canonicalized: canonicalize: cannot serialize an unpaired high surrogate"
+                }
+              ],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_key_id",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_key_id",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_algorithm",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_algorithm",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_value",
+      "mode": "baseline",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_value",
+      "mode": "proposed",
+      "shape": {
+        "status": "returned",
+        "value": null
+      },
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.jcs-final-audit\",\"pack_version\":\"0.0.0-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"constant\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:98aa8ea72d8f350cef20e030efec8d235b534b44aa2e0e588a7b01dc74741dff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-only\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":2}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "unsigned",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "constant",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-08",
+                  "severity": "indeterminate",
+                  "message": "The receipt is signed and this verifier has no signature backend; the signature was not ignored, it was not checked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "id": "valid",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"research-placeholder\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "verified",
+              "kid": "research-placeholder",
+              "digest": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f",
+              "issues": []
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "no_backend",
+              "issues": [
+                {
+                  "code": "INT-13",
+                  "message": "Document signature is present but unchecked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "valid",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"research-placeholder\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "verified",
+              "kid": "research-placeholder",
+              "digest": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f",
+              "issues": []
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "no_backend",
+              "issues": [
+                {
+                  "code": "INT-13",
+                  "message": "Document signature is present but unchecked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "valid-replacement",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"metadata-�\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "verified",
+              "kid": "metadata-�",
+              "digest": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f",
+              "issues": []
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "no_backend",
+              "issues": [
+                {
+                  "code": "INT-13",
+                  "message": "Document signature is present but unchecked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "valid-replacement",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"metadata-�\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "verified",
+              "kid": "metadata-�",
+              "digest": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f",
+              "issues": []
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "no_backend",
+              "issues": [
+                {
+                  "code": "INT-13",
+                  "message": "Document signature is present but unchecked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "kid",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"metadata-\ud800\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 1,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "verified",
+              "kid": "metadata-\ud800",
+              "digest": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f",
+              "issues": []
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "no_backend",
+              "issues": [
+                {
+                  "code": "INT-13",
+                  "message": "Document signature is present but unchecked."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "kid",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Document-signature input contains invalid Unicode."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Document-signature input contains invalid Unicode."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signed_at",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "threw",
+        "name": "DocumentSigningError",
+        "code": "INT-15",
+        "message": "Invalid document signing instant."
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signed_at",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "threw",
+        "name": "DocumentSigningError",
+        "code": "INT-15",
+        "message": "Invalid document signing instant."
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_version",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"research-placeholder\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"metadata-\ud800\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_version",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Document-signature input contains invalid Unicode."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Document-signature input contains invalid Unicode."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "subject_representation",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"research-placeholder\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"metadata-\ud800\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "subject_representation",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Document-signature input contains invalid Unicode."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Document-signature input contains invalid Unicode."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "subject_version",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"research-placeholder\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"metadata-\ud800\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "subject_version",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Document-signature input contains invalid Unicode."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Document-signature input contains invalid Unicode."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "algorithm",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"metadata-\ud800\",\"kid\":\"research-placeholder\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "algorithm",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_bytes",
+      "mode": "baseline",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"research-placeholder\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "signature_bytes",
+      "mode": "proposed",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"alg\":\"ed25519\",\"kid\":\"research-placeholder\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"1.0\",\"digest\":\"sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}"
+      },
+      "runs": [
+        {
+          "backend": "available",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        },
+        {
+          "backend": "absent",
+          "calls": 0,
+          "result": {
+            "status": "returned",
+            "value": {
+              "state": "failed",
+              "reason": "malformed",
+              "issues": [
+                {
+                  "code": "INT-09",
+                  "message": "Malformed document-signature artifact."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "direct": [
+    {
+      "mode": "baseline",
+      "operation": "computeBlockHash-valid",
+      "result": {
+        "status": "returned",
+        "value": "c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "computeBlockHash-invalid-value",
+      "result": {
+        "status": "returned",
+        "value": "cb279ec2847fb35109e4cb002dee55d303ca4c3384056a19a25b548395f38bda"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "computeBlockHash-invalid-key",
+      "result": {
+        "status": "returned",
+        "value": "ea23a0d6a81c69a9a956b8243574d7dc89fe1d59ae9a6a3a85c41435b0ec1fcd"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "computeBlockHash-excluded-invalid-meta",
+      "result": {
+        "status": "returned",
+        "value": "c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "computeEnvelopeDigest-valid",
+      "result": {
+        "status": "returned",
+        "value": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "computeEnvelopeDigest-invalid",
+      "result": {
+        "status": "returned",
+        "value": "sha256:15470db2019ad0af74eea01257d990c47785ce4b22e58af38f98b1aa91a77a66"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "computeEnvelopeDigest-excluded-generator",
+      "result": {
+        "status": "returned",
+        "value": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "computeResultsDigest-invalid-string",
+      "result": {
+        "status": "returned",
+        "value": "sha256:40767a979e1f0b55bae3c2b6be049e3cd22889eef38571992eba5494d32e118a"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "canonicalBlockSigningInput-invalid-kid",
+      "result": {
+        "status": "returned",
+        "value": "{\"actor\":\"reviewer\",\"content_hash\":\"c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504\",\"kid\":\"metadata-\ud800\",\"section\":\"property\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"timestamp\":\"2026-10-17T00:00:00Z\"}"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "issueReceipt-invalid-string-result-from-pack",
+      "result": {
+        "status": "returned",
+        "value": {
+          "receipt_version": "1.1",
+          "subject": {
+            "representation": "uwx-markdown",
+            "representation_version": "1.0",
+            "canonicalization": "uw-envelope-semantic",
+            "canonicalization_version": "1.0",
+            "digest": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f"
+          },
+          "computation": {
+            "pack": "research.jcs-string-result",
+            "pack_version": "0.0.0-research",
+            "engine": "@uwmd/verify",
+            "engine_version": "0.2.1",
+            "protocol_version": "4.1.0",
+            "results": [
+              {
+                "calc_id": "text",
+                "value": "metadata-\ud800",
+                "computed": true
+              }
+            ],
+            "results_digest": "sha256:f41a8a182eaef1b8493e8a0a7ac895a26cc31ff294beb9f81b5f419105c0940c"
+          },
+          "policy": {
+            "policy_set": "builtin",
+            "policy_set_version": "1.0",
+            "validation": {
+              "errors": 0,
+              "warnings": 2
+            }
+          },
+          "issued_at": "2026-10-17T00:00:00Z",
+          "issuer": "@uwmd/verify@0.2.1",
+          "signature": null
+        }
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "computeBlockHash-valid",
+      "result": {
+        "status": "returned",
+        "value": "c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "computeBlockHash-invalid-value",
+      "result": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "computeBlockHash-invalid-key",
+      "result": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "computeBlockHash-excluded-invalid-meta",
+      "result": {
+        "status": "returned",
+        "value": "c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "computeEnvelopeDigest-valid",
+      "result": {
+        "status": "returned",
+        "value": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "computeEnvelopeDigest-invalid",
+      "result": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "computeEnvelopeDigest-excluded-generator",
+      "result": {
+        "status": "returned",
+        "value": "sha256:32761c4cf52fa4102ca946c8dce324541138e29762d3210cc63af8bddf18197f"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "computeResultsDigest-invalid-string",
+      "result": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "canonicalBlockSigningInput-invalid-kid",
+      "result": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "issueReceipt-invalid-string-result-from-pack",
+      "result": {
+        "status": "threw",
+        "name": "ReceiptError",
+        "code": "RCP_COMPUTATION_FAILED",
+        "message": "[RCP_COMPUTATION_FAILED] Results cannot be canonicalized: canonicalize: cannot serialize an unpaired high surrogate"
+      }
+    },
+    {
+      "mode": "baseline",
+      "operation": "verifyReceipt-invalid-stated-and-recomputed-string-result",
+      "result": {
+        "status": "returned",
+        "value": {
+          "verdict": "verified",
+          "issues": [],
+          "recomputed": [
+            {
+              "calc_id": "text",
+              "value": "metadata-\ud800",
+              "computed": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "mode": "proposed",
+      "operation": "verifyReceipt-invalid-stated-and-recomputed-string-result",
+      "result": {
+        "status": "returned",
+        "value": {
+          "verdict": "failed",
+          "issues": [
+            {
+              "code": "RCP-04",
+              "severity": "failure",
+              "message": "results_digest cannot recompute: canonicalize: cannot serialize an unpaired high surrogate"
+            }
+          ],
+          "recomputed": [
+            {
+              "calc_id": "text",
+              "value": "metadata-\ud800",
+              "computed": true
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "chains": [
+    {
+      "mode": "baseline",
+      "field": "valid",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"actor\":\"reviewer\",\"content_hash\":\"c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504\",\"kid\":\"research-placeholder\",\"section\":\"property\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"timestamp\":\"2026-10-17T00:00:00Z\"}"
+      },
+      "verification": {
+        "status": "returned",
+        "value": {
+          "ok": true,
+          "issues": [],
+          "chains_verified": 1,
+          "chains_with_hashes": 1,
+          "signatures_present": 1,
+          "signatures_verified": 1
+        }
+      },
+      "calls": 1
+    },
+    {
+      "mode": "baseline",
+      "field": "kid",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"actor\":\"reviewer\",\"content_hash\":\"c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504\",\"kid\":\"metadata-\ud800\",\"section\":\"property\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"timestamp\":\"2026-10-17T00:00:00Z\"}"
+      },
+      "verification": {
+        "status": "returned",
+        "value": {
+          "ok": true,
+          "issues": [],
+          "chains_verified": 1,
+          "chains_with_hashes": 1,
+          "signatures_present": 1,
+          "signatures_verified": 1
+        }
+      },
+      "calls": 1
+    },
+    {
+      "mode": "baseline",
+      "field": "actor",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"actor\":\"metadata-\ud800\",\"content_hash\":\"c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504\",\"kid\":\"research-placeholder\",\"section\":\"property\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"timestamp\":\"2026-10-17T00:00:00Z\"}"
+      },
+      "verification": {
+        "status": "returned",
+        "value": {
+          "ok": true,
+          "issues": [],
+          "chains_verified": 1,
+          "chains_with_hashes": 1,
+          "signatures_present": 1,
+          "signatures_verified": 1
+        }
+      },
+      "calls": 1
+    },
+    {
+      "mode": "proposed",
+      "field": "valid",
+      "direct_payload": {
+        "status": "returned",
+        "value": "{\"actor\":\"reviewer\",\"content_hash\":\"c5622ce548bdd72b267e83f0674ef941b4de869cbb9b44b50511a8cc73e5c504\",\"kid\":\"research-placeholder\",\"section\":\"property\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"timestamp\":\"2026-10-17T00:00:00Z\"}"
+      },
+      "verification": {
+        "status": "returned",
+        "value": {
+          "ok": true,
+          "issues": [],
+          "chains_verified": 1,
+          "chains_with_hashes": 1,
+          "signatures_present": 1,
+          "signatures_verified": 1
+        }
+      },
+      "calls": 1
+    },
+    {
+      "mode": "proposed",
+      "field": "kid",
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "verification": {
+        "status": "returned",
+        "value": {
+          "ok": false,
+          "issues": [
+            {
+              "code": "INT-07",
+              "severity": "error",
+              "section": "property",
+              "message": "Block v1 of 'property' signature input contains invalid Unicode."
+            }
+          ],
+          "chains_verified": 1,
+          "chains_with_hashes": 1,
+          "signatures_present": 1,
+          "signatures_verified": 0
+        }
+      },
+      "calls": 0
+    },
+    {
+      "mode": "proposed",
+      "field": "actor",
+      "direct_payload": {
+        "status": "threw",
+        "name": "TypeError",
+        "code": null,
+        "message": "canonicalize: cannot serialize an unpaired high surrogate"
+      },
+      "verification": {
+        "status": "returned",
+        "value": {
+          "ok": false,
+          "issues": [
+            {
+              "code": "INT-07",
+              "severity": "error",
+              "section": "property",
+              "message": "Block v1 of 'property' signature input contains invalid Unicode."
+            }
+          ],
+          "chains_verified": 1,
+          "chains_with_hashes": 1,
+          "signatures_present": 1,
+          "signatures_verified": 0
+        }
+      },
+      "calls": 0
+    }
+  ]
+}

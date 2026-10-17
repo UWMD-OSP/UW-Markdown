@@ -326,3 +326,25 @@ The genuine owner hold remains activation and historical invalid-subject/verdict
 consequences. No source sanitization, old-artifact rewrite, receipt reissuance,
 version allocation, normative schema change or release is authorized. Full
 Envelope/CSV/XML interoperability remains a separate unaccepted RFC0089 decision.
+
+
+The final bounded correction implements those existing-code catches and preserves
+receipt issuance's original validation/option-read/await ordering. Its
+`2026-10-15-python-reader-354.jcs-boundaries.corrected.json` replay uses the exact
+same original source as the retained initial observations and records current
+source/built-module hashes. Signed receipt metadata now fails RCP01 with backend0;
+no backend still gives earlier RCP08, and unsigned metadata remains unchanged.
+Late unencodable results use RCP04; issuance throws typed RCP_COMPUTATION_FAILED.
+Document signing input preflight follows existing shape admission and precedes
+version/source/backend, so malformed encoding is INT09 even with an unknown
+version; an encoding-valid unknown subject is still INT14 before source checks.
+Block kid/actor inputs produce INT07 with present count retained/backend0.
+Direct helpers still refuse invalid domains, and actual backend exceptions retain
+their prior behavior. These mappings use accepted contracts, not owner choices
+about a new receipt rule.
+
+All234 focused actual Vitest tests across five files, package build, test typecheck
+and focused lint pass. The same-source independent boundary replay passes.
+Required final-head CI remains a separate checkpoint; neither the failed initial
+run nor these focused results are a claim of complete interoperability. Historical
+invalid-subject activation remains owner-held, with no fixture or version changes.

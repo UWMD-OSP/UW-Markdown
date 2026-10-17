@@ -280,9 +280,16 @@ including object member names, before conversion to UTF-8. Valid surrogate pairs
 U+FFFD, control escaping and UTF-16 key ordering are preserved exactly; Unicode
 is never normalized. This enforces the already adopted RFC8785 string domain.
 Invalid strings formerly accepted through replacement UTF-8 cannot retain a
-verified subject by sanitization: receipt verification reports RCP-09 and document
-authentication reports INT-15 before a backend is invoked. Unsupported signature
-subjects retain INT-14 precedence. Historical source/artifact bytes and existing
+verified subject by sanitization. For invalid **source** Unicode, receipt
+verification reports RCP-09 and document authentication reports INT-15 before a
+backend is invoked. Unencodable signed receipt inputs use existing RCP-01;
+unencodable stated-result digests use late RCP-04, and issuance uses the typed
+RCP_COMPUTATION_FAILED refusal. Document artifact input uses malformed/INT-09
+before version/source/backend checks; malformed block signing input uses INT-07.
+Direct helpers retain typed refusal. Unsigned/excluded metadata is not globally
+reclassified. Encoding-valid unsupported signature subjects retain INT-14, and
+XML1 keeps its existing XML_CHARACTER_INVALID boundary. Backend exceptions are
+not relabeled by the narrow Unicode catches. Historical source/artifact bytes and existing
 valid conformance subjects are not rewritten. The bounded correction's activation
 and historical invalid-subject consequences require explicit integration review;
 it neither implements RFC0089 nor changes Envelope1, schemas or public versions.
