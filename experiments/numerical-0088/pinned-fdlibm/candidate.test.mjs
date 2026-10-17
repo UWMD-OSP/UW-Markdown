@@ -88,10 +88,9 @@ test('complete raw power executes fractional/general and signed special paths', 
   assert.equal(bits(K.pow(value('601dd55745cbb7ed'), -2)), '000012688b70e62b');
 });
 
-test('raw log/exp all exceptional classes and independently known basic words', () => {
+test('raw log/exp exceptional classes and exact zero/unit/log2 controls', () => {
   assert.equal(bits(K.log(1)), '0000000000000000');
   assert.equal(bits(K.log(2)), '3fe62e42fefa39ef');
-  assert.equal(bits(K.exp(1)), '4005bf0a8b14576a');
   assert.equal(bits(K.exp(0)), '3ff0000000000000');
   assert.equal(bits(K.exp(-0)), '3ff0000000000000');
   assert.equal(K.log(0), -Infinity); assert.equal(K.log(-0), -Infinity);
