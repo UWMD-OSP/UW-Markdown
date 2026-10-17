@@ -93,7 +93,7 @@ refuses them with detached local field/source evidence. The bounded checker
 explicitly refuses unsupported schema validation keywords, including in
 conditional/union branches, rather than treating an unchecked condition as valid.
 Unknown unrelated payload is preserved, externalized payload stays unresolved,
-and history is not financially reclassified. Existing registered REC/CS/WF
+and history is not financially reclassified. Other registered REC/CS/WF
 semantic checks and arithmetic are unchanged.
 
 After the optional-shape and accepted clawback-floor corrections, all
