@@ -176,9 +176,11 @@ def waterfall_rules(ledger):
                 issue("WF-10", "clawback", "Clawback must state an admitted basis")
                 continue
             basis, rate, multiple = clawback.get("basis"), clawback.get("floor_rate"), clawback.get("floor_multiple")
+            # RFC0059: clawback floor_multiple >1 is distinct from the
+            # positive until_lp_em tier hurdle. No quantization is applied here.
             if (basis not in ("lp_preferred_shortfall", "lp_irr_floor", "lp_em_floor")
                     or basis == "lp_irr_floor" and (not finite(rate) or not 0 < rate < 1)
-                    or basis == "lp_em_floor" and (not finite(multiple) or multiple <= 0)):
+                    or basis == "lp_em_floor" and (not finite(multiple) or multiple <= 1)):
                 issue("WF-10", "clawback", "Clawback basis requires its stated floor input")
             if basis == "lp_preferred_shortfall" and not any(isinstance(t, dict) and t.get("type") == "preferred_return" for t in tiers):
                 issue("WF-11", "clawback.basis", "Preferred shortfall requires a preferred-return tier")
