@@ -1132,7 +1132,7 @@ parent/content failures, nullable/current/history identities, unsupported groupi
 hash-provider/JCS failures, unchanged roots and snapshots before the first await.
 
 
-## Active source and role inventory
+## Metadata, active source and role inventory
 
 `python -B implementations/python/uwmd.py inspect-source-roles <file> --json`
 performs a bounded independent Format §2.5/§2.6/§2.8 inventory. The report is a
@@ -1140,8 +1140,9 @@ performs a bounded independent Format §2.5/§2.6/§2.8 inventory. The report is
 validation or a Reader/Verifier tier claim. Discovery stays parse-only;
 validate, calc and generic verify remain unsupported.
 
-`inspect_source_roles` snapshots the document and inspects every active physical
-block, including earlier active blocks hidden by canonical singleton selection,
+`inspect_source_roles` snapshots the current parsed-value model. Its source/role
+checks inspect every active physical block, including earlier active blocks
+hidden by canonical singleton selection,
 all parallel variants, extension sections and unselected role peers. It reports
 exact SRC-01 actor-grammar failures, SRC-02 resolution tags in actor fields,
 SRC-03 unknown resolution values and ROLE-01 invalid active scalar roles. The
@@ -1149,11 +1150,13 @@ same actor/resolution checks apply to admitted top-level `_overrides` entries.
 Actor and resolution fields are never moved, normalized, inferred or repaired;
 `manual` is an actor and cannot be used as a resolution. Explicit null differs
 from an absent optional resolution. `_meta.role` and retired flat metadata are
-never interpreted as aliases. Pinned META-01 routing checks reject non-nested
-metadata, late `_meta`, mismatched section identity and `section_id` wrappers.
+never interpreted as aliases. Pinned RFC 0081 META-01 routing checks reject
+`section_id` wrappers, present nonobject `_meta`, and nonobject/missing nested
+provenance or lifecycle. Late `_meta` and mismatched section identity remain
+active-only uncoded local findings; they do not suppress actor admission.
 
 Registered findings are separate from `shape_findings`, which are explicitly
-local diagnostics with no invented registered code or severity. Selected
+local diagnostics with no invented registered code or severity. Other selected
 provenance/quality/lifecycle member types and override path/confidence/reason/note
 shapes are checked against the accepted block schema. These checks do not invent
 an override path grammar, traverse a target, require its existence, reject unknown
@@ -1161,8 +1164,9 @@ payload/annotation members, or apply override precedence to underwriting values.
 An agent source requires the `agent_id` member; admitted null remains unchanged.
 JSON integer semantics admit revision `1.0` and reject booleans.
 
-Historical blocks are explicitly counted as skipped by this active-source scope;
-their payloads remain retained and roles are not reclassified. Source byte spans,
+Historical blocks are counted as skipped by the active source/role checks;
+their metadata shape and actor are inspected, and their roles are not
+reclassified. Source byte spans,
 physical ordinals and exact authored variants distinguish findings on repeated
 active blocks. Returned evidence is detached and the original source/Reader
 projection remains unchanged. The wrapper's local `ok` requires both finding
@@ -1174,15 +1178,76 @@ edit authority, role selection for calculations and signatures remain separate
 obligations. This inventory does not add defaults, financial behavior or a full
 validation capability.
 
-Evidence: twelve focused Python methods include **nine actual standalone scoped
-fixture comparisons**, using unchanged frozen expectations and the shared subset
-comparator through an explicit test-only projection. Source vocabulary fixtures,
+Evidence: the original twelve focused methods include **nine actual standalone scoped
+fixture comparisons**, using the shared subset comparator through an explicit
+test-only projection. The accepted actor rule below adds its governed diagnostic
+expectations alongside the frozen prelaunch assertions; it does not claim those
+old assertions pass unchanged. Source vocabulary fixtures,
 bare metadata negatives and declared/invalid role fixtures are checked only for
 the implemented finding families; these are not portable validate passes.
 Additional controls cover all actor namespaces, exact ASCII spelling, every
 resolution tag, malformed leaf values, active physical peers, superseded flags,
-unknown payload retention and no mutation. Existing controls and discovery flags
-are unchanged.
+unknown payload retention and no mutation. Discovery flags remain unchanged.
+
+
+### Required actor admission — RFC0090
+
+Accepted RFC0090 defines the bounded actor contract implemented here. It adds
+META-01/error at `_meta.provenance.actor` for absent, null, exact empty string
+or non-string values. Every nonempty string is retained, including whitespace;
+there is no trimming, actor namespace rule, inferred principal or alias fallback.
+Other typed metadata findings remain uncoded local assessments.
+
+The existing wrapper/nested-object checks run first across all retained physical
+blocks, followed by the actor pass in physical source order, then the existing
+active ROLE/SRC checks. Whole-missing metadata remains a completeness matter
+(local in this partial command); malformed wrappers/nested objects receive their
+existing single META-01 and no actor cascade. History, append/extension blocks,
+unselected variants and overwritten physical peers receive actor checks. History
+roles and sources are not reclassified. The legacy `blocks_checked` and
+`history_blocks_skipped` counters describe only the active source/role pass.
+
+Routing correction against accepted RFC 0081 section 3: the original test
+blob above also allocated META-01 for (1) otherwise valid metadata with
+`_meta.section="wrong"` and (2) otherwise valid metadata appearing after a
+payload member. Both assertions are now explicitly corrected to no registered
+issue plus an uncoded local finding at `_meta.section` or `_meta` respectively;
+local `ok` remains false. Those requirements are retained in their active-only
+scope and are not widened to history or used as actor-suppression predicates.
+This removes a prior unsupported code allocation rather than preserving it for
+prelaunch compatibility. Combined controls prove missing actors still produce
+their own META-01 with either requirement, including history, without allocating
+an extra historical finding for member order or section identity.
+
+The current canonical inline parsed `_meta` is authoritative. The operation
+snapshots `Document.source.blocks`; it does not silently reparse immutable raw
+bytes or certify a caller-mutated model as the original source. Physical spans
+remain origin evidence, not a source/model consistency verdict. Inputs and source
+bytes are unchanged. No new command, capability, full validation or tier claim
+is introduced.
+
+Governed test delta: the previous source-test blob
+`0333e25bd130d024b25e8c53784f3394aa162894` asserted malformed actor `0` only
+as a local finding and compared three actor-absent role documents without actor
+codes. The governed tests now explicitly expect META-01/error instead of the actor
+local finding, and 11/8/8 actor findings on the unchanged documents below.
+These are governed diagnostic assertions, not rewritten frozen validate results
+or a complete affected-corpus inventory.
+
+| Unchanged source fixture | Git blob |
+| --- | --- |
+| `10-declared-roles.uwx.md` | `cf59916f6d05e96ba2d34cff2405453b25945279` |
+| `11-role-collision.uwx.md` | `0231d5b466b733637f8fd062fbd515ba0bf82f82` |
+| `12-role-eligibility.uwx.md` | `6c2a00fc74c4305315a4af235abe4c889914b573` |
+
+Five additional focused methods cover actor value boundaries, all-physical
+coverage, shape/actor/role/source ordering, independent actor admission beside
+unallocated order/identity requirements, and parsed-model authority. Existing
+source, timestamp, quality, lifecycle and override diagnostics keep their
+registered-versus-local allocation. Changing an actor would leave the V.9
+content hash (which excludes `_meta`) unchanged but can change block signatures,
+Envelope/document signatures and receipt subjects; this implementation changes
+diagnostics only and never repairs actors or reissues historical evidence.
 
 
 ## Document currency assertion
