@@ -36,7 +36,7 @@ assert.notEqual(changed,source);
 const keyChanged=source.replace('"note": "synthetic"','"\\ud801": "key-control", "note": "synthetic"');
 assert.notEqual(keyChanged,source);
 const inputs=[{id:'invalid-value',source:changed},{id:'invalid-key',source:keyChanged}];
-const baseline=mode==='proposed'?JSON.parse(readFileSync(baselinePath,'utf8')):null;
+const baseline=JSON.parse(readFileSync(baselinePath,'utf8'));
 const pack={...api.getPackForAssetClass('multifamily'),id:'research.rfc0089.unicode-control',version:'0.0.0-research',calculations:[{id:'constant',label:'Nonfinancial source control',formula:'1',deterministic:true}]};
 const options={filename:'unicode.uwx.md',pack,issuer:'research-only',issued_at:'2026-10-17T00:00:00Z',engine:'research-only.unicode-control',engine_version:'0.0.0-research'};
 const publicControls=[];
@@ -58,7 +58,8 @@ for(const input of inputs){
  const signed=await signatures.verifyDocumentSignature(input.source,artifact,{signatureVerifier:verifier});
  const unsupported=await signatures.verifyDocumentSignature(input.source,{...artifact,subject:{...artifact.subject,canonicalization_version:'UNACCEPTED'}},{signatureVerifier:verifier});
  const jsonEnvelope=await observe(async()=>{
-  const e=api.toUWEnvelope(api.parseUWFile(input.source));
+  const replayTimestamp=baseline.public_controls.find(c=>c.id===input.id).verified_json_boundary.returned.generated_at;
+  const e=api.toUWEnvelope(api.parseUWFile(input.source),{generatedAt:replayTimestamp});
   const stamped=await api.stampEnvelopeDigest(e);
   return api.parseUWJsonVerified(JSON.stringify(stamped));
  });

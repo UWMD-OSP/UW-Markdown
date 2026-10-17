@@ -8,7 +8,11 @@
     "architecture": "x64",
     "ajv": "8.20.0"
   },
-  "external_review": null,
+  "external_review": {
+    "name": "astra-review-external.txt",
+    "sha256": "60c4469f95d1317d469362b159dd9be7f1ca37740dad89aaaac6fd5b04d9614d",
+    "authority": "external unverified claims until independently reproduced"
+  },
   "source_hashes": {
     "packages/uwmd-verify/src/parser.ts": "9dbdb7f3f5b3135e59dec5a59e034238ec78ae8be284870ae97bf80969e6f62c",
     "packages/uwmd-verify/src/envelope.ts": "3c2d79f29163cfcbe3a4f2f53aa711e39e8ad5fdd6e42269ddec731df7f4fe9c",
@@ -5967,7 +5971,7 @@
     "sources": [
       {
         "id": "original",
-        "source_sha256": "5e012816b776aec0087a54b8f01fb14aceba1c31ad91196974a997cdd7f8ca67",
+        "source_sha256": "531eeb3d977bd0d73d0ead87635bbc88ba31b272b96cf7c3d417455a217472fb",
         "physical_block_count": 4,
         "projection": {
           "frontmatter": {
@@ -5994,8 +5998,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6053,8 +6057,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6119,8 +6123,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6177,8 +6181,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6231,7 +6235,7 @@
       },
       {
         "id": "discarded-active-base-changed",
-        "source_sha256": "d519c08e21944649d388e414d67418f44aae04118db5df22dbeb388973474ad4",
+        "source_sha256": "55421ea640cb7cec6025934e7957476222af2bf05e4ff1fbf84016d8354393e7",
         "physical_block_count": 4,
         "projection": {
           "frontmatter": {
@@ -6258,8 +6262,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6317,8 +6321,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6383,8 +6387,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6441,8 +6445,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6495,7 +6499,7 @@
       },
       {
         "id": "discarded-history-changed",
-        "source_sha256": "d21c43853a2983d9fa164859780e1259446fd3fcf061bc339884eb4cb4d8cf19",
+        "source_sha256": "d4f0f87b2a51d90412d38637bbc55419aff995fb1da3122c2a92b2655ee958c4",
         "physical_block_count": 4,
         "projection": {
           "frontmatter": {
@@ -6522,8 +6526,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6581,8 +6585,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6647,8 +6651,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -6705,8 +6709,8 @@
                       ],
                       "member": "<&> \"quoted\"",
                       "item": "CR\rLF\nTAB\t",
-                      "emoji": "ðŸ˜€",
-                      "bmp": "î€€"
+                      "emoji": "😀",
+                      "bmp": ""
                     }
                   },
                   "_overrides": [
@@ -7081,15 +7085,15 @@
       {
         "id": "value-replacement",
         "result": {
-          "returned": "{\"value\":\"ï¿½\"}",
-          "utf8_hex": "7b2276616c7565223a22c3afc2bfc2bd227d"
+          "returned": "{\"value\":\"�\"}",
+          "utf8_hex": "7b2276616c7565223a22efbfbd227d"
         }
       },
       {
         "id": "value-valid-pair",
         "result": {
-          "returned": "{\"value\":\"ðŸ˜€\"}",
-          "utf8_hex": "7b2276616c7565223a22c3b0c5b8cb9ce282ac227d"
+          "returned": "{\"value\":\"😀\"}",
+          "utf8_hex": "7b2276616c7565223a22f09f9880227d"
         }
       },
       {
@@ -7116,15 +7120,15 @@
       {
         "id": "key-replacement",
         "result": {
-          "returned": "{\"ï¿½\":\"same\"}",
-          "utf8_hex": "7b22c3afc2bfc2bd223a2273616d65227d"
+          "returned": "{\"�\":\"same\"}",
+          "utf8_hex": "7b22efbfbd223a2273616d65227d"
         }
       },
       {
         "id": "key-valid-pair",
         "result": {
-          "returned": "{\"ðŸ˜€\":\"same\"}",
-          "utf8_hex": "7b22c3b0c5b8cb9ce282ac223a2273616d65227d"
+          "returned": "{\"😀\":\"same\"}",
+          "utf8_hex": "7b22f09f9880223a2273616d65227d"
         }
       },
       {

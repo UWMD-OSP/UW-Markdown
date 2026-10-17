@@ -529,3 +529,16 @@ independent XML/CSV decoder, actual candidate ZIP/security evidence, new-regime
 receipt/signature execution and unsupported-version/migration/refusal controls.
 Resolve existing defect dispositions explicitly. Production deployment and any
 release remain separately controlled; green research CI does not accept a draft.
+
+
+Integrator replay caught and corrected evidence harness defects before publishing
+this intake: an unwired read-only output option, fresh volatile timestamp
+comparison, and Windows Python stdin decoding UTF8 through cp1252. The original
+worker observations remain archived and are not treated as valid same-source
+Python/valid-Unicode evidence. Corrected strict UTF8 transport checks exact source
+SHA equality and valid Unicode canonical bytes. All three production findings
+remain independently reproduced; no conformance expectation or production source
+changed. Host object prototypes are detached before comparing serialized JSON
+evidence; original volatile timestamps are explicit replay inputs for exact
+transport comparison. Successful replays supersede the failed harness checkpoint,
+without rewriting its original observation bytes.

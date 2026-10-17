@@ -387,3 +387,31 @@ The loader changes only one returned module string in an isolated process; it
 never edits source or dist. Root owns RFC/review integration, actual PRs,
 acceptance, versions and release decisions. Existing Envelope 1.0, receipt rules,
 conformance fixtures and the 5.0 launch reservation remain unchanged.
+
+
+### Integrator replay corrections: initial evidence remains archived
+
+Independent integration replay found two harness defects before publication:
+the main probe still wrote its default output despite declaring an unused
+output option, and the baseline guard compared fresh volatile generated_at values.
+The initial source/Unicode transport also let Python's Windows stdin code page
+decode UTF-8 as cp1252. Lone-surrogate ASCII escapes still refused, but valid
+Unicode and source bytes were altered before reaching Python; those original
+same-source/valid-Unicode observations are not valid cross-implementation proof.
+
+The original worker evidence bytes remain in
+[astra-review-evidence-initial-transport.json](astra-review-evidence-initial-transport.json),
+explicitly superseded for the Python transport observations. The corrected probe
+strictly decodes UTF-8, checks every Python source SHA against the exact original
+and compares valid replacement/supplementary canonical bytes independently.
+Corrected observations retain all three reported defect outcomes. The initial
+integrator replay output is retained separately in the integration record; it
+was never a green checkpoint. No live fixture or expected contract changed.
+
+Default replays now compare detached JSON data against the frozen observations;
+host null prototypes are not serialized evidence. Only runtime/provenance metadata
+is excluded from that comparison. Original volatile timestamps are explicit replay
+inputs, preserving exact CSV transport files, inventories and ZIP bytes; no semantic
+value is masked or regenerated to excuse a mismatch. --output writes only a new
+path and refuses overwriting. The integrator reran production probes, baseline and
+isolated proposal controls, and unit adapters successfully after these repairs.

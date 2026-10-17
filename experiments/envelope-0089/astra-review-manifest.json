@@ -41,13 +41,13 @@
   "artifacts": [
     {
       "path": "astra-review-check.mjs",
-      "bytes": 14134,
-      "sha256": "3c65517b46a2cb6bb4e2eac580199d67abb65b31766b4f8e66c71317d9f3fff4"
+      "bytes": 15137,
+      "sha256": "2e43c106ec85ee10d745a31855466fc395c5ca1ba30b29287f675fb2ceb15dc0"
     },
     {
       "path": "astra-review-python.py",
-      "bytes": 1883,
-      "sha256": "d9fbb3c24ef60ea2ef895ed1848bb2a4424ffdf1d8810ad89574377ae220220b"
+      "bytes": 2002,
+      "sha256": "40a0a77b90bdc7c6e02d934d90e42678f66802ebc57b339c1ec38bb748964ac5"
     },
     {
       "path": "astra-jcs-loader.mjs",
@@ -56,8 +56,8 @@
     },
     {
       "path": "astra-jcs-guard-check.mjs",
-      "bytes": 6893,
-      "sha256": "399253c475186b6e0aee1d3a478ca9e8fe2d7cda8e29af0aaf4101ac77f74922"
+      "bytes": 7020,
+      "sha256": "d39f202516ccc6f30aa7b716ba014290ff6151cbb3991989157e88a48a24dd69"
     },
     {
       "path": "astra-jcs-unit-check.mjs",
@@ -66,13 +66,13 @@
     },
     {
       "path": "verify-astra-evidence.py",
-      "bytes": 2221,
-      "sha256": "e190ba2a0892b827bbf6108b1190d7d570a2db136e8b26102b83c2f900fd84a2"
+      "bytes": 2649,
+      "sha256": "7b04e66d9b70ed202a4d64b5052e93686298ed53bc81a4bfbd588302ab21780b"
     },
     {
       "path": "astra-review-evidence.json",
-      "bytes": 226987,
-      "sha256": "62bea093f05d04012f9cef828cc94e1b3a476b6f1b91f353b7d37d8ba5052b0e"
+      "bytes": 227020,
+      "sha256": "ff8e530ef123589383e203c2abb22872014f208e42a0278d5e8e1cfd83dceca0"
     },
     {
       "path": "astra-existing-controls.json",
@@ -113,6 +113,11 @@
       "path": "astra-review-external.txt",
       "bytes": 17559,
       "sha256": "60c4469f95d1317d469362b159dd9be7f1ca37740dad89aaaac6fd5b04d9614d"
+    },
+    {
+      "path": "astra-review-evidence-initial-transport.json",
+      "bytes": 226987,
+      "sha256": "62bea093f05d04012f9cef828cc94e1b3a476b6f1b91f353b7d37d8ba5052b0e"
     }
   ],
   "counts": {
@@ -140,5 +145,10 @@
   },
   "proposal_applied_to_production": false,
   "prepared_test_execution": "Exact proposed test text transpiled in memory and executed with a Node assert matcher adapter; not a Vitest runner invocation",
-  "activation_gate": "Invalid-Unicode historical subjects currently accepted would change to receipt RCP-09 and document INT-15; acceptance/version/refusal compatibility remains owner-controlled"
+  "activation_gate": "Invalid-Unicode historical subjects currently accepted would change to receipt RCP-09 and document INT-15; acceptance/version/refusal compatibility remains owner-controlled",
+  "integrator_correction": {
+    "initial_observations": "astra-review-evidence-initial-transport.json",
+    "current_observations": "astra-review-evidence.json",
+    "disposition": "Initial Python valid-Unicode/same-source observations are invalid because of stdin code-page decoding; strict UTF8 source SHA/valid-byte checks now pass. Original bytes are retained. Read-only replay and volatile timestamp inputs corrected; no production/baseline change."
+  }
 }

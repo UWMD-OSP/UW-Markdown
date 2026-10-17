@@ -10,7 +10,8 @@ from uwmd_reader import parse
 from uwmd_envelope import source_digest
 from uwmd_jcs import canonicalize
 
-inputs = json.load(sys.stdin)
+# The parent writes UTF-8 regardless of the Windows console code page.
+inputs = json.loads(sys.stdin.buffer.read().decode("utf-8", errors="strict"))
 rows = []
 for item in inputs["sources"]:
     raw = item["source"].encode("utf-8")

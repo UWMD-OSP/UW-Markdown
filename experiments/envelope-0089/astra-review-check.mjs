@@ -9,7 +9,8 @@ import { fileURLToPath,pathToFileURL } from 'node:url';
 const here=dirname(fileURLToPath(import.meta.url));
 const runtime=resolve(process.argv[2]);
 const outputIndex=process.argv.indexOf('--output');
-const _outputPath=outputIndex>=0?resolve(process.argv[outputIndex+1]):null;
+const outputPath=outputIndex>=0?resolve(process.argv[outputIndex+1]):null;
+const frozen=JSON.parse(readFileSync(join(here,'astra-review-evidence.json'),'utf8'));
 const reportPath=process.argv[3]&&!process.argv[3].startsWith('--')?process.argv[3]:null;
 const pin='3eee0fbab3f5682dc345804782994dc22d321fae';
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -119,7 +120,7 @@ for(const location of ['value','key']){
  assert.ok(group.every(v=>v.schema.accepted&&v.verified_json.returned));
 }
 const singletonSource=readFileSync(join(here,'codec-examples/single/original.uwx.md'),'utf8');
-const singleton=modules.envelope.toUWEnvelope(modules.parser.parseUWFile(singletonSource),{generator:'research-only',generated_at:'2026-10-17T00:00:00Z'});
+const singleton=modules.envelope.toUWEnvelope(modules.parser.parseUWFile(singletonSource),{generator:'research-only',generatedAt:frozen.csv_block_extras.observations[0].input.generated_at});
 singleton.extra_top={retained:'top-level-control'};
 singleton.extensions.x_review.content.extra_payload={retained:'payload-control'};
 const withExtra=copy(singleton);withExtra.extensions.x_review.extra={witness:'schema-admitted block member'};
@@ -142,6 +143,11 @@ for(const [id,value] of [['without-block-extra',singleton],['with-block-extra',w
 }
 const python=JSON.parse(execFileSync('python',[join(here,'astra-review-python.py'),runtime],{input:JSON.stringify({sources:inputs,selection:selectionInputs,unicode:unicodeInputs}),encoding:'utf8'}));
 assert.ok(python.sources.every(r=>r.physical_block_count===4&&r.envelope_digest.refused==='EnvelopeError'));
+assert.ok(python.sources.every((r,i)=>r.source_sha256===hash(inputs[i].source)),'Python must receive the exact original UTF-8 source');
+for(const row of python.unicode.filter(r=>r.id.endsWith('replacement')||r.id.endsWith('valid-pair'))){
+ const observed=unicode.find(r=>r.id===row.id);
+ assert.equal(row.result.utf8_hex,observed.low_level_utf8_hex,'Valid Unicode must be identical across implementations');
+}
 assert.ok(python.sources.every(r=>Object.keys(r.projection.extensions.x_review).join(',')==='base,detail/~'&&r.projection.superseded.x_review.length===2));
 assert.ok(python.unicode.filter(r=>!r.id.endsWith('replacement')&&!r.id.endsWith('valid-pair')).every(r=>r.result.refused==='CanonicalizationError'));
 for(const path of sourcePaths)assert.equal(hash(readFileSync(join(runtime,path))),sourceHashes[path],`Changed protected input ${path}`);
@@ -153,5 +159,16 @@ const result={scope:'UNACCEPTED EXTERNAL REVIEW REPRODUCTION; no normative/sourc
  extension_projection:{classification:'Verified',receipt,observations:extension},selection_controls:selection,unicode_admission:{classification:'Verified',observations:unicode},
  csv_block_extras:{classification:'Verified',observations:csv},independent_python:python,
  limitations:['One Node/Windows runtime and one Python runtime, not cross-platform conformance','A valid-schema JSON string is not necessarily valid JCS/I-JSON','The unchanged receipt uses a synthetic constant pack to isolate subject projection, not financial verification coverage','The controlled invalid-Unicode equal digest is caused by replacement before hashing, not a SHA256 collision','No extension/Envelope/domain or historical subject correction is activated']};
-writeFileSync(join(here,'astra-review-evidence.json'),`${JSON.stringify(result,null,2)}\n`);
-console.log(JSON.stringify({extension_sources:extension.length,unicode_probes:unicode.length,csv_controls:csv.length,python_source_probes:python.sources.length,selection_controls:selection.length,output:'experiments/envelope-0089/astra-review-evidence.json'}));
+if(outputPath){
+ if(existsSync(outputPath))throw new Error('Refusing to overwrite frozen evidence');
+ writeFileSync(outputPath,`${JSON.stringify(result,null,2)}\n`);
+}else{
+ const material=value=>{
+  const {runtime:_runtime,built_module_hashes:_built,external_review:_external,independent_python,...observations}=value;
+  const {python:_python,...pythonObservations}=independent_python;
+  return {...observations,independent_python:pythonObservations};
+ };
+ assert.deepEqual(copy(material(result)),copy(material(frozen)),'Material observations differ from frozen evidence');
+}
+
+console.log(JSON.stringify({extension_sources:extension.length,unicode_probes:unicode.length,csv_controls:csv.length,python_source_probes:python.sources.length,selection_controls:selection.length,output:outputPath??'read-only frozen comparison'}));

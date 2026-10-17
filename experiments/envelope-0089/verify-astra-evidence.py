@@ -16,6 +16,11 @@ rows = evidence["extension_projection"]["observations"]
 assert len(rows) == 3 and len({r["source_sha256"] for r in rows}) == 3
 assert len({r["receipt_subject"]["digest"] for r in rows}) == 1
 assert all(r["receipt_verification"]["verdict"] == "verified" for r in rows)
+assert all(p["source_sha256"] == r["source_sha256"] for p, r in zip(evidence["independent_python"]["sources"], rows, strict=True))
+for item in evidence["independent_python"]["unicode"]:
+    if item["id"].endswith(("replacement", "valid-pair")):
+        expected = next(r for r in evidence["unicode_admission"]["observations"] if r["id"] == item["id"])
+        assert item["result"]["utf8_hex"] == expected["low_level_utf8_hex"]
 assert len(evidence["selection_controls"]) == 8
 assert len(evidence["unicode_admission"]["observations"]) == 11
 assert evidence["csv_block_extras"]["observations"][1]["directory_decode"]["code"] == "CSV_DIGEST_MISMATCH"
