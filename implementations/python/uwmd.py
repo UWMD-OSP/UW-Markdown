@@ -67,6 +67,12 @@ def main(arguments):
             diagnostic = {"message": str(error)}
             if hasattr(error, "code"):
                 diagnostic["code"] = error.code
+                # Protocol XI: these existing allocated source refusals are
+                # parse errors even when reached through validate. Uncoded
+                # local failures do not acquire a fabricated fallback code.
+                if error.code in ("UNSUPPORTED_FORMAT_VERSION", "UNSUPPORTED_YAML_FEATURE",
+                                  "SOURCE_CONTENT_MISMATCH"):
+                    diagnostic["category"] = "parse"
             return {"error": diagnostic}, 1
         except ValidationUnavailable as error:
             return {"error": {"message": str(error)}}, 1
