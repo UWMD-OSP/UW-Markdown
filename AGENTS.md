@@ -1,8 +1,29 @@
 # AGENTS.md — UW Markdown
 
+<!-- owner-rule:start -->
+## Owner rule — 2026-10-17
+
+5.0.0 is the official public launch release only. Every @uwmd npm package goes
+to 5.0.0 together at that launch. All prelaunch releases use 4.x.x and may ship
+from main as needed; breaking changes within 4.x are allowed.
+
+Before 5.0 there is zero backward compatibility. Do not write migration notes,
+deprecation paths, "breaking for consumers" analyses or version-bump
+recommendations. Do not preserve or repair pre-5.0 documents, signatures,
+receipts or historical artifacts. Jared is the only prelaunch consumer; no
+prelaunch document is intended for anyone else. Drop work whose only purpose
+is prelaunch compatibility or artifact preservation. This restates PROCESS
+principle 5 and supersedes earlier compatibility/preservation instructions.
+
+Normative changes still follow RFC discipline, synchronized current contracts
+and conformance, deterministic tests and review. Current read-only verification
+and source-integrity requirements remain; they do not create a legacy retention
+obligation. A 5.0.0 launch still requires separate explicit owner approval.
+<!-- owner-rule:end -->
+
 The single source of guidance for every coding agent in this repo (Claude Code,
-Codex, or anything else). `CLAUDE.md` only points here; CI fails if it grows
-content of its own. The deep reference is the **developer wiki** in
+Codex, or anything else). `CLAUDE.md` imports this file and repeats only the
+owner-rule block above; CI requires that block to match exactly. The deep reference is the **developer wiki** in
 [`docs/wiki/`](docs/wiki/README.md) — read it for any non-trivial task.
 
 ## What this is
@@ -42,13 +63,11 @@ agents and workflow products; it is an adopter, not the required producer or
 runtime for this standard. The existing Bancroft suite, provider adapters,
 prompts and workflow skills are prelaunch starter-product history, not a
 direction to expand UWMD's product scope. UWMD 5.0 is the first official public
-compatibility baseline; no pre-5.0 reader, procedure, codec, receipt regime,
-deprecated API or shim is retained solely for compatibility. Follow the
-[explicit owner policy](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16).
-Specific contract changes and product removals still require their reviewed
-scope, applicable RFC discipline and independent evidence; this guidance
-approves no removal set or release. Preserve historical artifacts accurately
-and obtain separate explicit owner approval before any 5.0 tag/publication.
+compatibility baseline. Apply the owner rule above: all @uwmd npm packages
+launch together at 5.0.0, prelaunch releases use4.x.x, and no prelaunch
+compatibility or artifact-retention work is required. Specific normative
+changes and product removals still follow their reviewed scope and applicable
+RFC discipline; no release is authorized by this guidance.
 See the
 [architecture inventory](docs/reviews/2026-10-15-architecture-boundary.md) and
 [separate 5.0 removal plan](docs/reviews/2026-10-15-agent-removal-5.0.md).
@@ -119,7 +138,9 @@ the standard; every rule here still blocks a PR.
    sides quantize once at the same `round_to`, half-away-from-zero (protocol
    §VIII.5, which *is* normative).
 5. **Append-only provenance:** supersede, don't destroy; the host owns `_meta`.
-6. **Semver-per-surface:** format, protocol, and each package version independently.
+6. **Versioning:** Format and Protocol remain separate surfaces. All @uwmd npm
+   packages launch together at5.0.0; prelaunch releases use4.x.x under the owner
+   rule above. No prelaunch compatibility classification or bump recommendation.
 7. **Spec/schema/protocol stay in lockstep:** `protocol.ts`, `spec/schemas/` and
    `spec/UW_PROTOCOL.md` change in the same PR or not at all.
 8. **Workspace isolation:** `@uwmd/*` always resolves through local workspace
@@ -174,8 +195,9 @@ CI runs all of them; a red check is yours to fix before asking for review.
   question, decision, and the precedent behind it.
 - **Never guess at numerics.** A formula, day count, rounding rule or tolerance
   that no accepted RFC or the spec pins is a question for the maintainers, not
-  a judgment call (invariant 1). The same goes for a breaking format change or
-  a new external dependency.
+  a judgment call (invariant 1). The same goes for an unresolved normative
+  format decision or a new external dependency. Prelaunch incompatibility alone
+  is not an approval gate.
 - **Releases** follow the procedure in `docs/wiki/11` exactly; `verify-release`
   enforces it.
 - **Parallel work:** use separate checkouts or worktrees, branch from current

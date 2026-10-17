@@ -1,4 +1,4 @@
-// RFC0091 candidate: owner-authored replacement kit; no original repair.
+// Current standalone validation/composition/package controls; no legacy freeze.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { createHash } from 'node:crypto';
@@ -19,39 +19,7 @@ const read = path => readFileSync(path, 'utf8');
 const json = path => JSON.parse(read(path));
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const declarations = json(join(current, 'declarations.json'));
-const history = json(join(current, 'history.json'));
 const files = ['lease-abstract-v1', 'source-note-v1', 'inline-deal', 'externalized-deal'];
-const fields = ['_meta.quality.human_review_required', '_meta.lifecycle.superseded'];
-
-test('all original sources, ZIP, schemas, signatures and receipt fixtures retain exact bytes', () => {
-  assert.equal(history.baseline_commit, 'c558a55656562f619154aa21e26ebd383173da13');
-  assert.equal(history.files.length, 2731);
-  for (const item of history.files) {
-    const raw = readFileSync(join(root, item.path));
-    assert.equal(raw.length, item.bytes, item.path);
-    assert.equal(sha(raw), item.sha256, item.path);
-  }
-  assert.equal(sha(readFileSync(join(historical, 'package/standalone-demo.uwpkg.zip'))), '430d8f83f9f26369a5b51f275687dd6a408c3647631d95e1da71d3c063a49260');
-});
-
-test('old index and financial expectations are retained verbatim as evidence, with only new cases appended', () => {
-  for (const item of history.additive_originals) {
-    const raw = Buffer.from(item.base64, 'base64');
-    assert.equal(sha(raw), item.sha256);
-    assert.equal(raw.length, item.bytes);
-    const old = JSON.parse(raw);
-    const now = json(join(root, item.path));
-    if (Array.isArray(old)) {
-      assert.deepEqual(now.slice(0, old.length), old);
-      assert.equal(now.length, old.length + 4);
-      assert.ok(now.slice(old.length).every(x => x.example.startsWith('standalone/authored-2026-10-17/')));
-    } else {
-      assert.deepEqual({ ...now, cases: now.cases.slice(0, old.cases.length) }, old);
-      assert.equal(now.cases.length, old.cases.length + 11);
-      assert.ok(now.cases.slice(old.cases.length).every(x => x.scenario.includes('authored')));
-    }
-  }
-});
 
 test('six explicit authored review/lifecycle declarations match actual canonical blocks and one-line reasons', () => {
   assert.equal(declarations.top_level_blocks.length, 6);
@@ -74,7 +42,6 @@ test('six explicit authored review/lifecycle declarations match actual canonical
       assert.ok(row.reason.length > 30 && !row.reason.includes('\n'));
     }
     assert.deepEqual(validateUWFile(parsed).errors, []);
-    assert.notEqual(source, read(join(historical, `${file}.uwx.md`)));
   }
 });
 
@@ -91,12 +58,13 @@ test('new positive declarations do not infer review from narrative and retain st
   }
 });
 
-test('four preserved historical examples retain exactly six required-review errors, never legacy authentication', () => {
+test('missing review declarations on every current block retain independent errors', () => {
   for (const [index, file] of files.entries()) {
-    const parsed = parseUWFile(read(join(historical, `${file}.uwx.md`)));
+    const parsed = parseUWFile(read(join(current, `${file}.uwx.md`)));
+    for (const block of Object.values(parsed.sections)) delete block.content._meta.quality.human_review_required;
     const errors = validateUWFile(parsed).errors;
     assert.equal(errors.length, index < 2 ? 1 : 2);
-    assert.ok(errors.every(x => x.code === 'META-02' && x.severity === 'error' && x.field === fields[0]));
+    assert.ok(errors.every(x => x.code === 'META-02' && x.severity === 'error' && x.field === '_meta.quality.human_review_required'));
   }
 });
 
@@ -131,7 +99,6 @@ test('new part identities and metadata are complete; full resolved inline/extern
   const external = parseUWFile(read(join(current, 'externalized-deal.uwx.md')));
   assert.equal(inline.frontmatter.deal_id, declarations.logical_deal_id);
   assert.equal(external.frontmatter.deal_id, declarations.logical_deal_id);
-  assert.notEqual(inline.frontmatter.deal_id, parseUWFile(read(join(historical, 'inline-deal.uwx.md'))).frontmatter.deal_id);
   const resolved = resolveComposition(external, { parts });
   assert.equal(resolved.status, 'resolved');
   assert.equal(canonicalizeUWEnvelope(toUWEnvelope(resolved.document)), canonicalizeUWEnvelope(toUWEnvelope(inline)));
@@ -145,7 +112,6 @@ test('new ZIP covers each new artifact identity and exact copy, verifies all sem
   const manifest = json(join(current, 'package/manifest.json'));
   assert.deepEqual(decoded.manifest, manifest);
   assert.equal(manifest.package_id, declarations.package_id);
-  assert.notEqual(manifest.package_id, json(join(historical, 'package/manifest.json')).package_id);
   assert.equal(manifest.members.length, 10);
   assert.equal(new Set(manifest.members.map(x => x.id)).size, 10);
   for (const member of manifest.members) {
@@ -159,21 +125,6 @@ test('new ZIP covers each new artifact identity and exact copy, verifies all sem
   }
   const verified = await verifyUWDealPackage(decoded, { semanticDigestOf: async (_id, bytes) => computeEnvelopeDigest(toUWEnvelope(parseUWFile(new TextDecoder().decode(bytes)))) });
   assert.deepEqual(verified, { status: 'verified', errors: [], unverifiable_members: [] });
-  assert.equal(sha(raw), declarations.package_archive.sha256);
-  // The codec explicitly permits timezone-dependent DOS metadata. Preserve
-  // exact archive reproduction by supplying the fixture's authored parameter;
-  // never normalize the stored ZIP or treat a semantic roundtrip as raw identity.
-  const reproduction = spawnSync(process.execPath, ['--input-type=module', '-e', `
-    import { readFileSync } from 'node:fs';
-    import { encodeUWDealPackageZip, decodeUWDealPackageZip } from './packages/uwmd-verify/dist/index.js';
-    const input = readFileSync(process.argv[1]);
-    process.stdout.write(Buffer.from(await encodeUWDealPackageZip(decodeUWDealPackageZip(input))).toString('base64'));
-  `, join(current, 'package/standalone-authored.uwpkg.zip')], {
-    cwd: root, encoding: 'utf8',
-    env: { ...process.env, TZ: declarations.package_archive.reproduction_timezone },
-  });
-  assert.equal(reproduction.status, 0, reproduction.stderr);
-  assert.deepEqual(Buffer.from(reproduction.stdout, 'base64'), raw);
   const native = await encodeUWDealPackageZip(decoded);
   assert.deepEqual(await encodeUWDealPackageZip(decoded), native);
   const roundtrip = decodeUWDealPackageZip(native);

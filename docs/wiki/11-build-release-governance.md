@@ -85,19 +85,15 @@ Independent versions, tracked in [`VERSIONS.md`](../../VERSIONS.md):
   republished `0.2.0` carrying a different pin is not something npm allows, so
   leaving one behind means its repin never ships.
 
-**Major 5 is reserved** for the coordinated public launch. The explicit
-[owner compatibility decision, 2026-10-16](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
-makes it the first official public compatibility baseline: all earlier releases
-are prelaunch history, with no mandatory legacy readers, procedures, codecs,
-receipt regimes, deprecated APIs or shims. Independent surface versioning is
-retained; not every component must be 5.0.0. Older interim compatibility guidance
-is not a launch-design veto. A breaking normative proposal still needs its RFC,
-spec/schema/conformance synchronization, independent evidence and applicable
-owner decisions. Release preparation records the actual changes and versions
-honestly; it does not tag/publish 5.0 without separate explicit launch approval.
-Historical releases and issued/signing evidence remain unchanged and do not
-become authenticated under new semantics. Existing npm consumers do not migrate
-automatically. No release preparation is performed by recording this policy.
+**Owner release rule,2026-10-17:** every @uwmd npm package goes to5.0.0
+at the official public launch, together. Every prelaunch release uses4.x.x,
+from main as needed, including incompatible changes. Do not produce migration
+notes, deprecation paths, consumer-breakage analyses, bump recommendations or
+preservation/repair work for prelaunch documents, signatures, receipts or
+artifacts. See the rule at the top of AGENTS.md/CLAUDE.md and [VERSIONS](../../VERSIONS.md).
+Format/Protocol remain separate contracts. Current RFC, deterministic verification,
+conformance and source-integrity gates remain. No release is prepared here;
+5.0.0 publication still requires separate explicit owner launch approval.
 
 **Cutting a `@uwmd/core` release** touches seven things beyond `package.json`,
 each with a guard that fails loudly if you miss it:
