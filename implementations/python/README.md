@@ -319,8 +319,8 @@ admission allocation and synchronized corpus disposition. The twelve literal
 source/expected pairs and frozen 78-block / twelve-reference-CLI audit above are
 the existing evidence, not a new run. III.6a has exactly five completeness
 suffixes; [RFC 0081 section 3](../../docs/rfcs/0081-one-format-one-protocol.md)
-and `checkMetaShape` allocate META-01 to the existing wrapper/nested-object
-failures. Neither a generic ProtocolError envelope nor an optional signature
+and [checkMetaShape](../../packages/uwmd-verify/src/validator.ts) allocate META-01
+to the existing wrapper/nested-object failures. Neither a generic ProtocolError envelope nor an optional signature
 check allocates an ordinary actor finding.
 
 | Candidate requiring approval | Effect | Assessment |
@@ -344,18 +344,22 @@ Proposed exact bounded META-01 treatment, subject to owner-reviewed RFC:
   enforce the separate `source` namespace grammar, infer identity from source,
   or fabricate a principal. Whitespace-only is nonempty under the current schema;
   changing that rule would be another explicit decision.
-- Emit actor findings in physical source order, at most one per block; retain
-  available section/variant/index/span evidence. Within each block, existing
-  shape refusal precedes actor admission; retain other families' relative order.
-  Pin this ordering, field and severity in both implementations' focused tests.
+- Add the actor pass after the existing whole checkMetaShape checkpoint,
+  preserving the order of its current issues and the relative order of other
+  families. Actor findings then follow physical source order, at most one per
+  block, skipping blocks already refused by that shape pass. Use the existing
+  normative section/field/message members; retain index/variant/span accounting
+  locally without requiring a new normative issue member. Pin code, order,
+  field and severity in both implementations' focused tests.
 - TypeScript must account before projection loss: the existing
   `ParseOptions.onBlock` observer sees each block before routing. Use that
   source-order inventory or an operation-local equivalent for source validation,
   not only a walk of the already reduced ParsedUWFile collections. Keep the
   public projection and Envelope unchanged. A hand-built/model-only input or
   inconsistent `raw` must not silently acquire a full physical-source claim;
-  explicitly settle that API boundary in the synchronized repair. This is
-  source accounting, not an RFC 0089 identity/codec decision.
+  explicitly settle that API boundary in the synchronized repair. The observer
+  alone does not close stale/raw-versus-decoded API admission. This is source
+  accounting, not an RFC 0089 identity/codec decision.
 
 Smallest synchronized change: a bounded RFC/Decisions entry; Format/Protocol
 diagnostic/applicability clarification; protocol/remediation registry copy;
@@ -364,6 +368,18 @@ diagnostic expectations plus focused negatives and derived case/index updates.
 The required actor schema/type need not change; verify parity and document that
 explicitly rather than fabricate a schema edit. Other unallocated metadata
 conditions remain local evidence until their routing is accepted.
+
+The exact known twelve portable document fixtures contain 78 absent-actor
+blocks. Projecting the proposed actor error onto the retained audit rows would
+add 78 errors there and flip eight existing CLI exit-0 cases to exit 1; four
+already-error cases remain exit 1. This is a counterfactual projection of frozen
+evidence, not new execution. It is **not** an all-corpus/negative-unit impact
+manifest for the broader all-physical/history proposal. Before acceptance,
+inventory every newly affected category, including signed/unsigned history,
+negative and hand-built API fixtures, append/extension blocks, validator
+block-shape/completeness tests, source-order accounting tests, the twelve
+document validation projections and generated validate cases/ownership entries.
+No change to source ownership/case counts is presumed.
 
 Preserve all twelve original source bytes and original expected artifacts/
 audit identities in history. Prefer governed new diagnostic expectations on
@@ -376,7 +392,11 @@ superseded historical actor failures; append and extension blocks; current/sourc
 order and read-only bytes. History controls are **additional** scope proof, not
 a claim that the twelve-document audit already demonstrated them.
 
-Changing only diagnostic expectations does not rewrite a cryptographic subject.
+Changing only diagnostic expectations does not rewrite a cryptographic subject,
+but new ordinary-validation admission can still affect a receipt/signature
+consumer before hashing or cryptographic checks. Govern and test that admission
+impact; unchanged subject bytes alone do not guarantee an unchanged receipt
+verdict, issuance success or acceptance of a historical artifact.
 Changing an actor value would leave the V.9 block content hash unchanged because
 that hash excludes `_meta`, but V.11's block-signature preimage explicitly includes
 actor. The full Envelope semantic value, V.13 document-signature subject and
@@ -387,6 +407,39 @@ any newly authored source/artifact must name its actual subject under separately
 approved issuance and launch contracts. Independent versions and launch approval
 remain separate. This packet changes neither normative behavior nor the current
 uncoded local assessment/unsupported validate CLI.
+
+### Lease-up field/applicability closure — 2026-10-17
+
+The private family integrates [Format 4.25](../../spec/UW_FORMAT_SPEC.md) and
+the [lease-up schema](../../spec/schemas/section-lease-up-schedule.schema.json).
+Existing current-source LU-01–04 checks retain their code, severity, ordering and
+applicability. The new **local** `section_assessment.lease_up_schedule` contains
+uncoded `shape_findings` plus physical `blocks_checked` and
+`external_blocks_skipped` evidence. It is not a normative ValidationResult
+member, registered diagnostic, complete schema capability or financial verdict.
+
+| Schema field/condition | Allocated ordinary finding | Additional local payload admission evidence |
+|---|---|---|
+| `model_type` required, natural_turnover / absorption_curve only | LU-04 warning only for natural_turnover with no rent_roll | Missing/null/unknown/wrong-type model remains uncoded; neither model changes required assumptions or row fields. |
+| `period_granularity`; every row `period` matches calendar cadence | LU-01 error | Required/enum/string/grammar shape evidence; no new code or period policy. |
+| Strictly increasing gap-free periods | LU-02 error | Existing comparison remains unchanged; no inferred/interpolated rows. |
+| Required nonempty `schedule`; target not before first period | LU-03 error; cadence/target grammar uses LU-01 | Nonarray/nonobject rows, missing period and nullable target shape remain visible. |
+| Six `assumptions` members | No generic allocated LU shape finding | All optional/nullable; three fraction fields in [0,1], other amounts nonnegative; finite numeric types only, no bool/string coercion, defaults or model-based requirement. |
+| Nine optional numeric schedule fields | No generic allocated LU shape finding | All nullable; occupied/leased SF and two rent-PSF members nonnegative; vacancy [0,1]; four cash members finite without invented numerical/sign bounds. |
+| `stabilized_summary` occupied SF/occupancy/annualized EGI/NOI | CC-15 separately checks the eligible base NOI seam | Nullable shape; occupied SF nonnegative, occupancy [0,1], EGI/NOI finite. Endpoint/occupancy equations are not recomputed. |
+| Closed top/row/assumption/summary member sets | No generic allocated LU shape finding | Unknown data retained with uncoded local evidence. Universal `_notes` is never validated; `_meta`/`_role`/`_overrides` retain their own contracts. |
+| Physical identity, history and external directives | Current LU diagnostics unchanged; Composition owns unresolved external references | Payload shape covers all retained inline physical lease blocks, with current/superseded context; history is not reclassified or refused by local evidence. Actual external markers skip unavailable payload checks; an ordinary payload member called external is not a marker. |
+
+Twelve new methods exercise every numeric member's type/null/boundary domain,
+all containers/closed member sets, both model vocabularies, optional/universal
+fields, source/variant/current/history/external accounting, detachment and seven
+unchanged frozen lease-up **document diagnostic** assertions. The two bare
+lease-up financial cases and the positive documents' verified outcome are
+separate obligations. No trajectory, rent/occupancy model, net-cash-flow
+recomputation or stabilized aggregate verification follows from this evidence.
+An uncoded finding cannot silently become a registered failure or a complete
+successful validate response; CLI/discovery stay unchanged pending the whole
+applicable diagnostic/admission/result/refusal boundary.
 
 ### CC coverage ledger
 
@@ -470,7 +523,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Only the existing inspector's allocated wrapper/nested-object META-01 and SRC/ROLE issues are integrated as registered findings. Unallocated typed/required metadata, actor and conditional-reference findings remain in the uncoded local metadata_assessment; the five completeness warnings stay exact. Diagnostic allocation and the twelve positive-corpus actor omissions remain a genuine contract gate, not optional metadata. |
 | DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | All seven presence lists, overlays and role-selected scope readiness now share tested inputs; scope completeness treats absent/null/exact empty strings as missing without trimming, coercion or claiming field-type validity. Field-specific institution matching and equal-specificity overrides have controls; finish exact gap/override consumption and remaining externalized-field applicability without executing substitution/default actions. |
 | MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Exhaustive closed-field shape/applicability and stated sizing declaration guards. Financial stack sizing reproduction is a separate mandatory Verifier obligation. |
-| LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Complete LU model/row/schema-field admission and declaration applicability; LU-01's pinned period trigger does not itself assign every remaining schema-field failure a registered code. Period inspection is not evaluation or stated-aggregate verification. |
+| LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Fixed LU model/assumption/row/summary field shape is now integrated as local section_assessment where no LU diagnostic is allocated; existing LU-01–04 remain unchanged. Diagnostic/admission allocation for those schema conditions is still a complete-command gate. Period/shape inspection is not evaluation or stated-aggregate verification. |
 | TAX / CAPX | Frozen diagnostic arrays, same-quantum tax equations, abatement/draw/target/payback rules | Terminal required assessment versus optional normal G1 group is now controlled. Finish closed-object/stated-member/null/conditional applicability; no savings applied. |
 | LSE / REC | Frozen arrays, lease dates/steps/options/remedies/balances and settled recovery arithmetic | Complete optional administrative-fee/gross-up/cap/true-up shape/conditions and exact source-reference admission. Schema bounds alone do not assign those conditions to REC-01 (explicit share/cap pct) or REC-02 (method/companions/accumulation); do not invent that routing. No cap history or pool allocation is generated. |
 | HDG / ESC / V.12 | Existing selected-source structure and exact separate binding union; external consulted-source gating is local only | Preserve all scalar/date/group/source/refusal conditions, debt-only evidence and no false result from unresolved content; complete future command transport must exclude local null as a normative result. |

@@ -1,9 +1,10 @@
 """Independent accepted period-series, lease-up, cash-flow and bed checks."""
-from uwmd_binding_sources import finite, calendar_period, cash_source_issues
+from uwmd_binding_sources import finite, cash_source_issues
 from uwmd_expressions import ExpressionError, parse_expression, expression_references
 from uwmd_numeric import calendar_date
 from uwmd_periods import PERIOD_SERIES, inspect_period_series, parse_period_selector, PeriodError
 from uwmd_reserves import reserve_structure
+from uwmd_validation_lease_up import lease_up_rules
 from uwmd_validation_selection import active_blocks, current_blocks, select_section, field, is_externalized
 
 
@@ -65,38 +66,11 @@ def series_rules(ledger):
                 code = "CF-01"
             ledger.issue(code, "error", "cash_flow_series", message.split(":", 1)[0], message,
                          value={"variant": dict(block.attributes).get("variant")})
-    for block in current_blocks(document, "lease_up_schedule"):
-        payload = block.parsed.value
-        cadence, rows = payload.get("period_granularity"), payload.get("schedule")
-        first, previous = None, None
-        if cadence not in ("monthly", "quarterly"):
-            ledger.issue("LU-01", "error", "lease_up_schedule", "period_granularity", "Schedule cadence is invalid")
-        if not isinstance(rows, list) or not rows:
-            ledger.issue("LU-03", "error", "lease_up_schedule", "schedule", "A nonempty schedule is required")
-        else:
-            for index, row in enumerate(rows):
-                identity = calendar_period(row.get("period"), cadence) if isinstance(row, dict) else None
-                path = "schedule[" + str(index) + "].period"
-                if identity is None:
-                    ledger.issue("LU-01", "error", "lease_up_schedule", path, "Period does not match the declared cadence")
-                    continue
-                if first is None:
-                    first = identity
-                if previous is not None and identity != previous + 1:
-                    ledger.issue("LU-02", "error", "lease_up_schedule", path, "Periods must be strictly increasing and gap-free")
-                previous = identity
-        target = payload.get("stabilization_target")
-        if target is not None:
-            identity = calendar_period(target, cadence)
-            if identity is None:
-                ledger.issue("LU-01", "error", "lease_up_schedule", "stabilization_target", "Target period does not match cadence")
-            elif first is not None and identity < first:
-                ledger.issue("LU-03", "error", "lease_up_schedule", "stabilization_target", "Target precedes the schedule")
-        if payload.get("model_type") == "natural_turnover" and not active_blocks(document, "rent_roll"):
-            ledger.issue("LU-04", "warning", "lease_up_schedule", "model_type", "Turnover has no stated rent roll")
+    lease_up = lease_up_rules(ledger)
     for block in current_blocks(document, "reserve_accounts"):
         ledger.issues.extend(reserve_structure(block.parsed.value, document.frontmatter.value.get("currency_code"),
                                               dict(block.attributes).get("variant")))
+    return lease_up
 
 
 def bed_rules(ledger):
