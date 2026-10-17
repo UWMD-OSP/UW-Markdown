@@ -66,6 +66,19 @@ function serializeString(s: string): string {
   let out = '"';
   for (let i = 0; i < s.length; i++) {
     const code = s.charCodeAt(i);
+    // RFC 8785 §3.2.2.2: reject invalid Unicode; never sanitize before hashing.
+    if (code >= 0xd800 && code <= 0xdbff) {
+      const next = s.charCodeAt(i + 1);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) {
+        throw new TypeError('canonicalize: cannot serialize an unpaired high surrogate');
+      }
+      out += s[i] + s[i + 1];
+      i++;
+      continue;
+    }
+    if (code >= 0xdc00 && code <= 0xdfff) {
+      throw new TypeError('canonicalize: cannot serialize an unpaired low surrogate');
+    }
     const escaped = ESCAPE_MAP[code];
     if (escaped !== undefined) {
       out += escaped;

@@ -882,3 +882,43 @@ describe('receiptSigningPayload', () => {
     expect(receiptSigningPayload(signed)).toBe(unsigned);
   });
 });
+
+
+describe('JCS Unicode admission at receipt boundaries', () => {
+  const pack = { ...MULTIFAMILY_PACK, id: 'research.unicode-regression', calculations: [
+    { id: 'constant', label: 'Source commitment control', formula: '1', deterministic: true },
+  ] };
+  const source = (text: string, key: boolean): string => `---\nuw_version: "3.0"\ndeal_id: "unicode-control"\ndeal_name: "Unicode control"\n---\n\n\`\`\`json uw:section=x_unicode\n${JSON.stringify({
+    _meta: { section: 'x_unicode', lifecycle: { revision: 1, superseded: false } },
+    ...(key ? { [text]: 'kept' } : { value: text }),
+  })}\n\`\`\`\n`;
+
+  it.each([
+    { text: '\ud800', key: false }, { text: '\ud801', key: false }, { text: '\udc00', key: false },
+    { text: '\ud800', key: true }, { text: '\ud801', key: true }, { text: '\udc00', key: true },
+  ])('refuses invalid Unicode before receipt identity or signature checks (%#)', async ({ text, key }) => {
+    const invalid = source(text, key);
+    const receipt = await issueReceipt(source('\ufffd', key), { pack, filename: 'unicode.uwx.md', issued_at: ISSUED_AT });
+    // The former serializer gave these invalid strings the replacement character's
+    // digest. Keep the existing receipt immutable; never repair its old subject.
+    const before = JSON.stringify(receipt);
+    let calls = 0;
+    const result = await verifyReceipt({ ...receipt, signature: { algorithm: 'ed25519', key_id: 'stub', value: 'AAAA' } }, invalid, {
+      filename: 'unicode.uwx.md', packs: [pack],
+      signatureVerifier: { verify: async () => { calls++; return true; } },
+    });
+    expect(result.verdict).toBe('unverifiable');
+    expect(result.issues.map(issue => issue.code)).toEqual(['RCP-09']);
+    expect(calls).toBe(0);
+    expect(JSON.stringify(receipt)).toBe(before);
+    await expect(resolveReceiptSubject(invalid, { filename: 'unicode.uwx.md' })).rejects.toBeInstanceOf(TypeError);
+  });
+
+  it('preserves the existing valid receipt subject and results without rebaselining', async () => {
+    const fixture = resolve(__dirname, '../../../conformance/receipts/issue/01-uwx-multifamily');
+    const raw = await readFile(resolve(fixture, 'deal.uwx.md'), 'utf8');
+    const expected = JSON.parse(await readFile(resolve(fixture, 'expected-receipt.json'), 'utf8')) as UWReceipt;
+    expect((await resolveReceiptSubject(raw, { filename: 'control.uwx.md' })).subject).toEqual(expected.subject);
+    expect((await verifyReceipt(expected, raw, { filename: 'control.uwx.md' })).verdict).toBe('verified');
+  });
+});
