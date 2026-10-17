@@ -8,6 +8,9 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Draft RFC0089 research: add independently decoded empty-collection CSV/ZIP examples and separately pinned accepted-main authentication replays. Preserve historical observations and Envelope1/schema/receipt semantics; no representation or version is approved.
+
+
 ### Changed
 
 - Enforce RFC0090's required nonempty-string provenance actor with narrow

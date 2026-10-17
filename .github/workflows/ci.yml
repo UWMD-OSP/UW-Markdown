@@ -303,6 +303,10 @@ jobs:
           python3 -B experiments/envelope-0089/codec-study/freeze.py --check
           python3 -B -m unittest discover -s experiments/envelope-0089/codec-study -p test_codec.py -v
           node --test experiments/envelope-0089/codec-study/independent.test.mjs
+          python3 -B experiments/envelope-0089/empty-collections/check.py
+          python3 -B experiments/envelope-0089/empty-collections/freeze.py --check
+          python3 -B -m unittest discover -s experiments/envelope-0089/empty-collections -p test_empty.py -v
+          node --test experiments/envelope-0089/empty-collections/independent.test.mjs
 
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added
@@ -323,9 +327,10 @@ jobs:
         # pins every production source/compiled module and preserves Receipt 5.5.
         run: |
           git fetch --no-tags --depth=1 origin b2ac5d8f068308fd690de824b963135974ec5fb8
+          git fetch --no-tags --depth=1 origin afcc615897aca301c7b5ec070bba7c0bd253e4ef
           node -p "JSON.stringify({node:process.version,openssl:process.versions.openssl,platform:process.platform,arch:process.arch})"
-          node experiments/envelope-0089/decision-proof/check.mjs --verify-root . --check
-          node experiments/envelope-0089/decision-proof/receipt-version.mjs --verify-root . --check
+          node experiments/envelope-0089/decision-proof/check-current.mjs --verify-root . --check
+          node experiments/envelope-0089/decision-proof/receipt-current.mjs --verify-root . --check
 
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures

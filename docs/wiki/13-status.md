@@ -81,6 +81,8 @@ models/artifacts remain untouched. Full schema/source/numeric domains, empty
 history/maps, broader ZIP/XML admission and new-regime authentication remain
 unproved. No schema, V.13 admission, digest/receipt rule or version is activated.
 
+**RFC0089 research checkpoint — still draft.** Explicit empty builtin/history slots now have three isolated models and28 frozen JSON/CSV/actual-ZIP artifacts, independently reconstructed in Python and Node. Fresh accepted-main replay against `afcc6158` verifies the prior seven-model/42-mutation/14-label and four Receipt5.5 controls with all behavioral fields unchanged. Original b2 helpers, source maps and observations remain immutable; current source/compiled maps and raw streams are separate evidence. Full schema/domain, namespace/platform and candidate financial-receipt gates remain open. See the RFC's empty-carrier and current-main research links; no Envelope1, schema, subject, receipt or public version activates.
+
 ## Bounded parallel workstreams
 
 One integrator owns sequencing, independent review, shared indexes/changelog/
