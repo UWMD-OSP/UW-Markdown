@@ -180,7 +180,7 @@ boolean positives, container and actor precedence, all physical populations,
 exact identity/evidence order, mutable models, read-only/detached evidence and
 unrelated local requirements. The original17 source methods are unchanged.
 The separate WIP ownership test covers missing/wrong field/index/severity owners,
-stale current predicates and missing-quality independence. The following four
+stale current predicates and missing-quality independence. The following five
 existing WIP assertions change explicitly under the candidate direction; no
 source or frozen expectation is repaired or weakened:
 
@@ -190,10 +190,17 @@ source or frozen expectation is repaired or weakened:
 | metadata admission `test_all_base_typed_fields_refuse_without_invented_registered_routing` | Review0/supersedednull appear in local findings | Exact allocated candidate errors and retained handled evidence; no unrelated typed-field allocation or generic META-01. |
 | refusal reconciliation `test_valid_nested_shape_late_section_quality_and_actor_only_errors_remain_local` (renamed `test_valid_nested_shape_keeps_unallocated_requirements_separate_from_actor_and_flags`) | Actor plus two absent flags has uncoded partial refusal | Actor META-01 plus META-02/03 gives normal invalid; late/section/missing-quality cases still have exact local refusals. |
 | frozen-nine CLI control (renamed `test_exact_nine_sources_with_candidate_flags_return_normal_invalid`) | Six normal invalid, three partial refusals | Nine normal invalid, exact02/03 pair on each of the formerthree; all other registered/native subset assertions remain. |
+| cross-check `test_current_governed_senior_reconciliation_document_code_unions` | Frozen agree META-01 / mismatch CC-03+META-01 unique code sets | Explicit candidate union adds META-02/03; every actual code remains compared. Exact new findings are on property block0; agree still has no CC-03 and mismatch retains it. Original sources/expected.json are unchanged. |
 
 The sensitivity packet and six-normal/three-partial checkpoint below are retained
 as **pre-implementation evidence**, not a claim that the RFC is already accepted.
-Independent final-head full Python, actual111 and Reader17 checks remain required
+The first candidate full run at274e executed299 methods and had two failing
+agree/mismatch subcases in that single capital-stack control because it still
+required the old unique code sets. The failed log is preserved (SHA256
+`5da7b6adfded8127b3c70fe0e77aee739dacda78829d6320222de215942bb040`).
+This known, explicitly predicted candidate impact changes only the WIP assertion
+above, not production or frozen expectations. Focused verification and one
+justified exact-final-head full Python/actual111/Reader17 retry are required
 before publication; this focused candidate still advertises only parse. Wider
 admission, negative-wire, applicable nonportable and cross-platform capability
 gates are unchanged. No release, version or acceptance state is changed here.
