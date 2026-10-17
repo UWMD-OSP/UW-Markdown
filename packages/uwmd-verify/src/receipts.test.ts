@@ -1010,7 +1010,7 @@ describe('JCS receipt artifact error boundaries', () => {
     const verifyOptions = { filename: options.filename, packs: [pack],
       signatureVerifier: { verify: async () => { calls++; return true; } } };
     receipt.subject.digest = `sha256:${'0'.repeat(64)}`;
-    expect((await verifyReceipt(receipt, source, verifyOptions)).issues[0]!.message).toContain('digest');
+    expect((await verifyReceipt(receipt, source, verifyOptions)).issues[0]).toMatchObject({ code: 'RCP-01', expected: receipt.subject.digest });
     receipt.subject.digest = (await resolveReceiptSubject(source, { filename: options.filename })).subject.digest;
     expect((await verifyReceipt(receipt, source, { ...verifyOptions, packs: [] })).issues.map(issue => issue.code)).toEqual(['RCP-05']);
     expect(calls).toBe(0);
