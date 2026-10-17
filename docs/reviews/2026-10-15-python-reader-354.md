@@ -416,10 +416,13 @@ The [isolated candidate lab](../../experiments/envelope-0089/README.md#complete-
 now freezes five complete JSON/XML/normalized-CSV models, four original structured
 sources with physical accounting/reissuance plans, exact canonical subjects and
 artifact inventories. The examples cover single, one-peer variants, mixed null/
-literal-default, ordered history and direct-model unknown members. Seventeen
+literal-default, ordered history and direct-model unknown members. Twenty
 focused Python methods and two independent Node subject/artifact tests pass.
 The lab is a validation/codec subset, not a complete normative validator or new
 Reader/Verifier capability; unsupported prototype domains refuse explicitly.
+Controls also pin finite binary64 token decoding, exact XML structural whitespace
+and existing ECMAScript prose trimming; these are accepted value/whitespace
+semantics, not new numeric or source contracts.
 Legal JSON strings/member names that XML1 cannot express remain legal JSON/CSV
 and trigger an explicit XML refusal; a versioned escaped-string/name mapping is
 an unapproved design option. Source reprojection uses retained physical blocks,

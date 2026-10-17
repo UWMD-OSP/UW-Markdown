@@ -4,6 +4,7 @@ import csv
 import hashlib
 import io
 import json
+import struct
 from pathlib import Path
 import unittest
 import xml.etree.ElementTree as ET
@@ -92,6 +93,17 @@ class CandidateCodecTests(unittest.TestCase):
         candidate, _ = project_source(raw)
         self.assertEqual(len(candidate["extensions"]["x_review"]["blocks"]), 2)
         self.assertEqual(document.source.raw, raw)
+
+    def test_source_prose_uses_existing_ecmascript_trim_not_python_unicode_trim(self):
+        original = (CASES / "single/original.uwx.md").read_bytes()
+        nel = original.replace(b"## Synthetic", "\u0085## Synthetic".encode("utf-8"), 1)
+        projected, _ = project_source(nel)
+        self.assertTrue(projected["extensions"]["x_review"]["block"]["prose"].startswith("\u0085"))
+        self.assertNotEqual(projected["semantic_digest"], examples()["single"]["semantic_digest"])
+        nbsp = original.replace(b"## Synthetic", "\u00a0## Synthetic".encode("utf-8"), 1)
+        self.assertEqual(project_source(nbsp)[0], examples()["single"])
+        with self.assertRaisesRegex(Refusal, "trailing prose unavailable"):
+            project_source(original + "\u0085".encode("utf-8"))
 
     def test_direct_one_peer_intent_preserved_and_markdown_refuses(self):
         model = examples()["one-peer"]
@@ -186,6 +198,33 @@ class CandidateCodecTests(unittest.TestCase):
             self.assertEqual(decode_json(encode_json(model)), model)
             self.assertEqual(decode_csv(encode_csv(model)), model)
             with self.assertRaisesRegex(Refusal, "XML1 character unavailable"): encode_xml(model)
+
+    def test_binary64_integer_lexemes_roundtrip_without_host_integer_reinterpretation(self):
+        value = struct.unpack(">d", bytes.fromhex("4430000000000000"))[0]
+        model = examples()["single"]
+        model["extensions"]["x_review"]["block"]["content"]["large_binary64"] = value
+        model = stamp(model)
+        for decoded in (decode_json(encode_json(model)), decode_xml(encode_xml(model)), decode_csv(encode_csv(model))):
+            actual = decoded["extensions"]["x_review"]["block"]["content"]["large_binary64"]
+            self.assertEqual(struct.pack(">d", actual).hex(), "4430000000000000")
+            self.assertEqual(decoded, model)
+        foreign = examples()["single"]
+        foreign["extensions"]["x_review"]["block"]["content"]["inexact_host_integer"] = 295147905179352830000
+        with self.assertRaisesRegex(ValueError, "not exactly representable"): stamp(foreign)
+
+    def test_xml_structural_whitespace_is_not_unicode_trim(self):
+        text = (CASES / "single/document.uw.xml").read_text(encoding="utf-8")
+        for location, inserted in (("root", "\u0085"), ("object", "\u00a0"), ("tail", "\u0085")):
+            root = ET.fromstring(text)
+            if location == "root": root.text = inserted
+            elif location == "object":
+                target = next(element for element in root.iter() if element.get(tag("type")) == "object")
+                target.text = inserted
+            else: root[-1].tail = inserted
+            with self.subTest(location=location), self.assertRaises(Refusal):
+                decode_xml(ET.tostring(root, encoding="unicode"))
+        root = ET.fromstring(text); root.text = " \t\r\n"; root[-1].tail = " \t\r\n"
+        self.assertEqual(decode_xml(ET.tostring(root, encoding="unicode").replace("\r", "&#13;")), examples()["single"])
 
     def test_prototype_limits_refuse_without_silently_discarding_members(self):
         for change in (lambda m: m["extensions"]["x_review"]["block"].update(unknown_block_member={"retained": True}),

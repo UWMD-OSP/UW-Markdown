@@ -13,6 +13,7 @@ from candidate_codec import E, EMPTY, REQUIRED, VOLATILE, Refusal, identity, ord
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "implementations/python"))
 from uwmd_reader import parse
+from uwmd_text import trim
 
 
 def project_source(raw):
@@ -34,7 +35,7 @@ def project_source(raw):
             annotation["superseded"] = attrs["superseded"] == "true"
             require(annotation["superseded"] is historical, "source lifecycle disagreement")
         block = {"annotation": annotation, "content": body}
-        prose = raw[previous:scanned.fence_span.start].decode("utf-8").strip()
+        prose = trim(raw[previous:scanned.fence_span.start].decode("utf-8").replace("\r\n", "\n").replace("\r", "\n"))
         if prose: block["prose"] = prose
         previous = scanned.fence_span.end
         if historical: model["superseded"].setdefault(scanned.section, []).append(block)
@@ -42,7 +43,7 @@ def project_source(raw):
         accounting.append({"source_ordinal": ordinal, "section": scanned.section,
             "variant": identity(block), "state": "superseded" if historical else "current",
             "source_body_sha256": hashlib.sha256(scanned.body_span.extract(raw)).hexdigest()})
-    require(not raw[previous:].strip(), "lab trailing prose unavailable in model")
+    require(not trim(raw[previous:].decode("utf-8")), "lab trailing prose unavailable in model")
     for section, blocks in active.items():
         opted = any("_role" in b["content"] for b in blocks) and any("variant" in b["annotation"] for b in blocks)
         if opted:

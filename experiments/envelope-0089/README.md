@@ -180,24 +180,37 @@ is checked; checking a raw hash alone would not establish fidelity.
   does not sort, deduplicate, normalize or select a peer while decoding a received
   model. It verifies the received subject after those candidate structural checks.
   All other legal payload and unknown top-level values in its domain are retained.
+  Numeric tokens in JSON/XML/CSV decode as finite binary64, consistently with
+  the existing JSON/JCS model; arbitrary-precision caller integers that are not
+  exactly binary64-representable refuse rather than being silently rounded.
+  A focused `4430000000000000` word control pins the case where JCS fixed-form
+  decimal text differs from the exact integer represented by that word. This
+  retains semantic number identity, not original number spelling (the original
+  source bytes remain archived). It changes no financial procedure/quantizer.
 - JSON rejects duplicate decoded members. XML uses typed object/array/scalar
   elements and escaped member names, retains array order, rejects duplicates,
-  undeclared types/attributes, DTD/entities and mixed scalar children; literal CR
+  undeclared types/attributes, DTD/entities and mixed scalar children. Structural
+  whitespace is exactly XML S (TAB/LF/CR/SPACE), never a broad Unicode trim; literal CR
   is emitted as a numeric reference to avoid XML line-ending normalization. The
   XML namespace token is deliberately experimental, not a proposed allocation.
 - CSV flattens complete frontmatter and each annotation/meta/content scope, with
   strict RFC6901 escaping, explicit container rows and typed scalar JSON. It
   restores `_meta` exactly once, preserves prose separately, reconstructs explicit
   modes and canonical ordinals, and checks the received descriptors against exact
-  reconstructed pointers/identities. Inventory hash/size/file-set checks precede
-  typed reconstruction; received semantic digest is checked last. Tests that
+  reconstructed pointers/identities. Current extension descriptors carry exact nullable identity. Historical
+  descriptors retain CSV1's null **non-selection placeholder** and history ordinal;
+  the authored historical label remains in the complete annotation rows. No
+  equality rule treats that placeholder as a replacement for history identity.
+  Inventory hash/size/file-set checks precede typed reconstruction; received semantic digest is checked last. Tests that
   exercise inner refusals recompute only disposable transport inventories, so a
   trivial outer checksum error does not hide the intended control.
 - [`source_examples.py`](source_examples.py) uses the unchanged retained Reader
   scanner, **not its default-key parse projection**, for a narrow proposed D2
   projection. Four complete `original.uwx.md` files reproduce their frozen models;
   source accounting binds every physical example block to an exact source-body
-  hash, nullable identity and current/history state. It does not guess a peer.
+  hash, nullable identity and current/history state. Existing ECMAScript trim and
+  CRLF/CR normalization retain U+0085 prose; Python-wide Unicode strip is not used.
+  It does not guess a peer.
   Reversing both mixed-source peers preserves the same candidate model/subject.
 - Directly authored one-peer variants without a role round-trip through all three
   model codecs; Markdown emission refuses when reprojection would change mode.
@@ -270,7 +283,7 @@ using UTF16 key ordering and ECMAScript primitive serialization from all five
 frozen models, checks their exact subject bytes/digests and all59 artifact hashes.
 This is independent subject verification, not a second independent XML/CSV codec.
 
-Measured on Python3.12.3 / Node24.14.1, Windows AMD64: seventeen focused Python
+Measured on Python3.12.3 / Node24.14.1, Windows AMD64: twenty focused Python
 methods and two Node tests pass, covering all five complete cross-codec cases,
 identity/mode/history/unknown values, immutable source accounting, descriptor/
 manifest/digest corruption, duplicate/order/type/version refusals, Unicode/
