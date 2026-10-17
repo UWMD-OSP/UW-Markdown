@@ -3,7 +3,7 @@
   "retrieved": "2026-10-16",
   "transport": "curl.exe HTTPS with platform certificate verification; no TLS bypass",
   "signature_verification": "Not performed; these are independently recorded content hashes, not an upstream-signature assertion",
-  "fdlibm_identity": "../../../../docs/reviews/2026-10-15-fdlibm-closure-356.sources.json (existing eight-file identity; unchanged)",
+  "fdlibm_identity": "../../../docs/reviews/2026-10-15-fdlibm-closure-356.sources.json (existing eight-file identity; unchanged)",
   "archives": [
     {
       "archive": "mpfr-4.2.2.tar.xz",
