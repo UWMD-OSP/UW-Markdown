@@ -32,7 +32,7 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
                 incomplete_policies=incomplete_policies)
     cross_checks(ledger)
     financial_thresholds(ledger, thresholds)
-    series_rules(ledger)
+    lease_up = series_rules(ledger)
     bed_rules(ledger)
     tax_rules(ledger)
     capex_rules(ledger)
@@ -60,4 +60,5 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
                 info=partitions["info"], coverage=copy.deepcopy(ledger.coverage),
                 replacement_funding_verification=copy.deepcopy(binding),
                 composition_assessment=copy.deepcopy(composition),
-                metadata_assessment=copy.deepcopy(metadata))
+                metadata_assessment=copy.deepcopy(metadata),
+                section_assessment={"lease_up_schedule": copy.deepcopy(lease_up)})
