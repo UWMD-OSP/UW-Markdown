@@ -28,6 +28,12 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Compare concrete unaccepted RFC0088 procedures: the pinned fdlibm closure,
+  an explicitly unverified MPFR binary64 adapter and a bounded full-word integer
+  hybrid. Freeze 24 new word controls and separate procedure choice, accuracy,
+  resource, receipt and clean-break activation questions. Add focused dependency-free
+  runtime evidence collection without changing production arithmetic or baselines.
+
 - Add independent Python standalone document-currency identity inspection under
   accepted CUR-01, preserving authored absent/null/value evidence without
   normalization, locale inference, ISO allocation lookup or financial math. Keep
