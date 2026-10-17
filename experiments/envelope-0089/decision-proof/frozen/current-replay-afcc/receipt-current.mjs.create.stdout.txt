@@ -1,0 +1,1 @@
+PASS fresh afcc 4 real-backend Receipt 5.5 controls; all behavior matches original; no new canonicalizer or receipt rules

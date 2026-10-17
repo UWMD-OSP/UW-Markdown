@@ -1,0 +1,304 @@
+{
+  "identities": {
+    "current_auth_observations_sha256": "0a3b6c45b2b66a43eb3dfc6a270e04f4482e91cdfb47dd0b6a8b7e6c7140d9a2",
+    "helper_and_contract_hashes": {
+      "experiments/envelope-0089/decision-proof/receipt-current.mjs": "f2e7568cf34d30c1ca1dabe9de8dbadb0c8a1ec7f10cf195e24eea416da2d54e",
+      "spec/UW_RECEIPT.md": "f6d7e68226195a5b0015f4e8403b1f93872ab6064575c1cf0131a947a295cf23"
+    },
+    "production_hash_maps": "frozen/current-main-afcc.json#/material/production (all entries checked, no omissions)",
+    "production_source_equivalent_to": "afcc615897aca301c7b5ec070bba7c0bd253e4ef"
+  },
+  "source_commit": "e15b357127d5b2039570e0177315cc2abc92e41d",
+  "runtime": {
+    "node": "v24.14.1",
+    "openssl": "3.5.5",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "material": {
+    "status": "ACCEPTED RECEIPT 5.5 OBSERVATION; NOT A NEW REGIME OR HISTORICAL ARTIFACT MIGRATION",
+    "cases": [
+      {
+        "case": "single",
+        "changed_field": "subject.canonicalization_version only",
+        "original_subject": {
+          "representation": "uwx-markdown",
+          "representation_version": "1.0",
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "1.0",
+          "digest": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+        },
+        "source_sha256": "95a5b6ce2bb81478f39197f01be78f258e6f1b1e4281eadbcd70542feec8c217",
+        "test_signature": "original signature retained",
+        "artifact": {
+          "receipt_version": "1.1",
+          "subject": {
+            "representation": "uwx-markdown",
+            "representation_version": "1.0",
+            "canonicalization": "uw-envelope-semantic",
+            "canonicalization_version": "C_UNSUPPORTED",
+            "digest": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+          },
+          "computation": {
+            "pack": "research.current-receipt-control",
+            "pack_version": "research-only",
+            "engine": "@uwmd/verify",
+            "engine_version": "0.2.1",
+            "protocol_version": "4.1.0",
+            "results": [
+              {
+                "calc_id": "synthetic_control",
+                "value": 1,
+                "computed": true
+              }
+            ],
+            "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+          },
+          "policy": {
+            "policy_set": "builtin",
+            "policy_set_version": "1.0",
+            "validation": {
+              "errors": 0,
+              "warnings": 1
+            }
+          },
+          "issued_at": "2026-10-17T00:00:00Z",
+          "issuer": "@uwmd/verify@0.2.1",
+          "signature": {
+            "algorithm": "ed25519",
+            "key_id": "rfc0089-public-test-seed-only",
+            "value": "aCz0Ne0hNSl1vxZwhEnSkjcVXKZ01uUHhgSaRuCyP5BGGWeRGE3B1-2WMXqyCwIaie_BlfCE9qmBUYJPKvTjAA"
+          }
+        },
+        "signing_payload": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.current-receipt-control\",\"pack_version\":\"research-only\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"@uwmd/verify@0.2.1\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":1}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_UNSUPPORTED\",\"digest\":\"sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}",
+        "signing_payload_sha256": "5c8c9f656f2866d6713fa105c145f3ea5aea1f5597afd80a9c62ca38ed36f83f",
+        "result": {
+          "verdict": "failed",
+          "issues": [
+            {
+              "code": "RCP-01",
+              "severity": "failure",
+              "message": "The receipt signature did not validate."
+            }
+          ],
+          "recomputed": [
+            {
+              "calc_id": "synthetic_control",
+              "value": 1,
+              "computed": true
+            }
+          ]
+        },
+        "backend_calls": 1
+      },
+      {
+        "case": "single",
+        "changed_field": "subject.canonicalization_version only",
+        "original_subject": {
+          "representation": "uwx-markdown",
+          "representation_version": "1.0",
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "1.0",
+          "digest": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+        },
+        "source_sha256": "95a5b6ce2bb81478f39197f01be78f258e6f1b1e4281eadbcd70542feec8c217",
+        "test_signature": "new disposable test signature",
+        "artifact": {
+          "receipt_version": "1.1",
+          "subject": {
+            "representation": "uwx-markdown",
+            "representation_version": "1.0",
+            "canonicalization": "uw-envelope-semantic",
+            "canonicalization_version": "C_UNSUPPORTED",
+            "digest": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+          },
+          "computation": {
+            "pack": "research.current-receipt-control",
+            "pack_version": "research-only",
+            "engine": "@uwmd/verify",
+            "engine_version": "0.2.1",
+            "protocol_version": "4.1.0",
+            "results": [
+              {
+                "calc_id": "synthetic_control",
+                "value": 1,
+                "computed": true
+              }
+            ],
+            "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+          },
+          "policy": {
+            "policy_set": "builtin",
+            "policy_set_version": "1.0",
+            "validation": {
+              "errors": 0,
+              "warnings": 1
+            }
+          },
+          "issued_at": "2026-10-17T00:00:00Z",
+          "issuer": "@uwmd/verify@0.2.1",
+          "signature": {
+            "algorithm": "ed25519",
+            "key_id": "rfc0089-public-test-seed-only",
+            "value": "D5-bHP0CJwC3dlLwcznmzePb1qINeEQR2kk2FrnpidSVdFFYectjAz4VBZfzDn5W0G3tBkrG1munn-lq3oKqAg"
+          }
+        },
+        "signing_payload": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.current-receipt-control\",\"pack_version\":\"research-only\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"@uwmd/verify@0.2.1\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":1}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_UNSUPPORTED\",\"digest\":\"sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}",
+        "signing_payload_sha256": "5c8c9f656f2866d6713fa105c145f3ea5aea1f5597afd80a9c62ca38ed36f83f",
+        "result": {
+          "verdict": "verified",
+          "issues": [],
+          "recomputed": [
+            {
+              "calc_id": "synthetic_control",
+              "value": 1,
+              "computed": true
+            }
+          ]
+        },
+        "backend_calls": 1
+      },
+      {
+        "case": "one-peer",
+        "changed_field": "subject.canonicalization_version only",
+        "original_subject": {
+          "representation": "uwx-markdown",
+          "representation_version": "1.0",
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "1.0",
+          "digest": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+        },
+        "source_sha256": "69d47c257f090d7bd9f6b37b360acf39668db156269174adc56dc21db4f6d06a",
+        "test_signature": "original signature retained",
+        "artifact": {
+          "receipt_version": "1.1",
+          "subject": {
+            "representation": "uwx-markdown",
+            "representation_version": "1.0",
+            "canonicalization": "uw-envelope-semantic",
+            "canonicalization_version": "C_UNSUPPORTED",
+            "digest": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+          },
+          "computation": {
+            "pack": "research.current-receipt-control",
+            "pack_version": "research-only",
+            "engine": "@uwmd/verify",
+            "engine_version": "0.2.1",
+            "protocol_version": "4.1.0",
+            "results": [
+              {
+                "calc_id": "synthetic_control",
+                "value": 1,
+                "computed": true
+              }
+            ],
+            "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+          },
+          "policy": {
+            "policy_set": "builtin",
+            "policy_set_version": "1.0",
+            "validation": {
+              "errors": 0,
+              "warnings": 1
+            }
+          },
+          "issued_at": "2026-10-17T00:00:00Z",
+          "issuer": "@uwmd/verify@0.2.1",
+          "signature": {
+            "algorithm": "ed25519",
+            "key_id": "rfc0089-public-test-seed-only",
+            "value": "qfggW5toPqm5zMQP7PqMfw3PfVe475tjbwegW0clNf1xzPriNvROAIp8HxtBc1M6An_UfSOVFoaJF7kulKAOCg"
+          }
+        },
+        "signing_payload": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.current-receipt-control\",\"pack_version\":\"research-only\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"@uwmd/verify@0.2.1\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":1}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_UNSUPPORTED\",\"digest\":\"sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}",
+        "signing_payload_sha256": "88647400380f3b47352715f4acfb596c4ad93465c0b8d171c0d7bae301eb8d13",
+        "result": {
+          "verdict": "failed",
+          "issues": [
+            {
+              "code": "RCP-01",
+              "severity": "failure",
+              "message": "The receipt signature did not validate."
+            }
+          ],
+          "recomputed": [
+            {
+              "calc_id": "synthetic_control",
+              "value": 1,
+              "computed": true
+            }
+          ]
+        },
+        "backend_calls": 1
+      },
+      {
+        "case": "one-peer",
+        "changed_field": "subject.canonicalization_version only",
+        "original_subject": {
+          "representation": "uwx-markdown",
+          "representation_version": "1.0",
+          "canonicalization": "uw-envelope-semantic",
+          "canonicalization_version": "1.0",
+          "digest": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+        },
+        "source_sha256": "69d47c257f090d7bd9f6b37b360acf39668db156269174adc56dc21db4f6d06a",
+        "test_signature": "new disposable test signature",
+        "artifact": {
+          "receipt_version": "1.1",
+          "subject": {
+            "representation": "uwx-markdown",
+            "representation_version": "1.0",
+            "canonicalization": "uw-envelope-semantic",
+            "canonicalization_version": "C_UNSUPPORTED",
+            "digest": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+          },
+          "computation": {
+            "pack": "research.current-receipt-control",
+            "pack_version": "research-only",
+            "engine": "@uwmd/verify",
+            "engine_version": "0.2.1",
+            "protocol_version": "4.1.0",
+            "results": [
+              {
+                "calc_id": "synthetic_control",
+                "value": 1,
+                "computed": true
+              }
+            ],
+            "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+          },
+          "policy": {
+            "policy_set": "builtin",
+            "policy_set_version": "1.0",
+            "validation": {
+              "errors": 0,
+              "warnings": 1
+            }
+          },
+          "issued_at": "2026-10-17T00:00:00Z",
+          "issuer": "@uwmd/verify@0.2.1",
+          "signature": {
+            "algorithm": "ed25519",
+            "key_id": "rfc0089-public-test-seed-only",
+            "value": "Ve-ozLI0hI-rbYCSyhFh7ZURWcn3iPIx-LUOzJdRoRhBzaK1v-oIB2p2HZPUQOlljmVuVS6RwZtEw-rhZx1QAg"
+          }
+        },
+        "signing_payload": "{\"computation\":{\"engine\":\"@uwmd/verify\",\"engine_version\":\"0.2.1\",\"pack\":\"research.current-receipt-control\",\"pack_version\":\"research-only\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"@uwmd/verify@0.2.1\",\"policy\":{\"policy_set\":\"builtin\",\"policy_set_version\":\"1.0\",\"validation\":{\"errors\":0,\"warnings\":1}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_UNSUPPORTED\",\"digest\":\"sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e\",\"representation\":\"uwx-markdown\",\"representation_version\":\"1.0\"}}",
+        "signing_payload_sha256": "88647400380f3b47352715f4acfb596c4ad93465c0b8d171c0d7bae301eb8d13",
+        "result": {
+          "verdict": "verified",
+          "issues": [],
+          "recomputed": [
+            {
+              "calc_id": "synthetic_control",
+              "value": 1,
+              "computed": true
+            }
+          ]
+        },
+        "backend_calls": 1
+      }
+    ],
+    "conclusion": "Equal digests plus differing canonicalization-version metadata proceed normally. Signature mutation fails with RCP-01; a valid disposable research signature verifies. No C_UNSUPPORTED canonicalizer is implemented or exercised."
+  }
+}

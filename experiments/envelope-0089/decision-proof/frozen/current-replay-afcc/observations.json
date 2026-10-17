@@ -1,0 +1,93 @@
+{
+  "status": "FRESH AFCC REPLAYS; OLD B2 OBSERVATIONS UNCHANGED",
+  "executed_commit": "e15b357127d5b2039570e0177315cc2abc92e41d",
+  "executed_tree": "5d3584202ccee8b1390d225c7553501352d8fa80",
+  "observations": {
+    "observations.json": "a231af9b4f46f40a25c3c1527752c50d70da65997118d8944a040cdfd361dc2b",
+    "receipt-version.json": "b33a2975bdac1b790da63689c276237ee5a96aa7ba815fc9bc75ec8da550e554",
+    "current-main-afcc.json": "0a3b6c45b2b66a43eb3dfc6a270e04f4482e91cdfb47dd0b6a8b7e6c7140d9a2",
+    "current-receipt-afcc.json": "c0fc1d00347affee8b9663248a411b1fdb0320d2ea5abc68b648c24426fc0abf"
+  },
+  "executions": [
+    {
+      "command": [
+        "node",
+        "experiments\\envelope-0089\\decision-proof\\check-current.mjs",
+        "--verify-root",
+        "<explicit fresh source-pinned verifier checkout>",
+        "--create"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "check-current.mjs.create.stdout.txt",
+        "bytes": 141,
+        "sha256": "f571fb2a8c3196c5dc6cc723693e643e421ec87c35a2c4db081800d7e6e28683"
+      },
+      "stderr": {
+        "path": "check-current.mjs.create.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "node",
+        "experiments\\envelope-0089\\decision-proof\\check-current.mjs",
+        "--verify-root",
+        "<explicit fresh source-pinned verifier checkout>",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "check-current.mjs.check.stdout.txt",
+        "bytes": 141,
+        "sha256": "f571fb2a8c3196c5dc6cc723693e643e421ec87c35a2c4db081800d7e6e28683"
+      },
+      "stderr": {
+        "path": "check-current.mjs.check.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "node",
+        "experiments\\envelope-0089\\decision-proof\\receipt-current.mjs",
+        "--verify-root",
+        "<explicit fresh source-pinned verifier checkout>",
+        "--create"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "receipt-current.mjs.create.stdout.txt",
+        "bytes": 122,
+        "sha256": "89740166848dd6e5ca0523083cfffa75dff42f25fce67339211cfed97c531045"
+      },
+      "stderr": {
+        "path": "receipt-current.mjs.create.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "node",
+        "experiments\\envelope-0089\\decision-proof\\receipt-current.mjs",
+        "--verify-root",
+        "<explicit fresh source-pinned verifier checkout>",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "receipt-current.mjs.check.stdout.txt",
+        "bytes": 122,
+        "sha256": "89740166848dd6e5ca0523083cfffa75dff42f25fce67339211cfed97c531045"
+      },
+      "stderr": {
+        "path": "receipt-current.mjs.check.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+PASS fresh afcc 7-model/42-mutation/14-label source+real-Ed25519 matrix; all behavior matches original; exact identities separately retained
