@@ -51,7 +51,7 @@ def run():
     paths = ["namespace-proof/capture.py", "namespace-proof/vectors.py", "namespace-proof/reader.mjs", "namespace-proof/observe.mjs", "codec-study/codec.py", "codec-study/independent.mjs", "candidate_codec.py"]
     paths += [f"codec-study/fixtures/{case}/{name}" for case in ("all-block-extras", "xml-lexical-domain") for name in ("model.json", "document.xml")]
     identities = {str((HERE.parent / path).relative_to(ROOT)).replace("\\", "/"): sha((HERE.parent/path).read_bytes()) for path in paths}
-    for path in ("implementations/python/uwmd_jcs.py", "package-lock.json", "spec/UW_XML_MAPPING.md", "spec/UW_ENVELOPE.md", "spec/UW_FORMAT_SPEC.md", "spec/UW_PROTOCOL.md"):
+    for path in ("implementations/python/uwmd_jcs.py", "package-lock.json", "spec/UW_XML_MAPPING.md", "spec/schemas/uw-document-envelope.schema.json", "docs/rfcs/0014-multi-format-interchange.md", "spec/UW_FORMAT_SPEC.md", "spec/UW_PROTOCOL.md"):
         identities[path] = sha((ROOT / path).read_bytes())
     behavior = dict(rows=[dict(python=py, node=js) for py, js in zip(python_rows, node_rows)], accepted=sum(row["accepted"] for row in python_rows), refused=sum(not row["accepted"] for row in python_rows))
     result = dict(scope="UNAPPROVED candidate lexical XML; two frozen models, bounded ASCII carriers and QName grammar; not general XML/domain/source/auth conformance", behavior=behavior, source_sha256=identities, node_dependency_sha256=node_value["dependencies"], raw=dict(node_stdin_sha256=sha(stdin), node_stdout_sha256=sha(node.stdout), node_stderr_sha256=sha(node.stderr)), runtime=dict(python=platform.python_version(), expat=xml.parsers.expat.EXPAT_VERSION, node=subprocess.check_output(["node", "--version"]).decode("ascii").strip()))
