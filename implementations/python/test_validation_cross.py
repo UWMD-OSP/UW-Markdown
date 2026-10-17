@@ -108,7 +108,7 @@ class ValidationCrossTests(unittest.TestCase):
         self.assertEqual(result["coverage"]["CC-03"]["status"], "evaluated")
         self.assertEqual(result["composition_assessment"]["status"], "unresolved")
 
-    def test_frozen_senior_reconciliation_document_assertions_unchanged(self):
+    def test_current_governed_senior_reconciliation_document_code_unions(self):
         root = ROOT / "conformance/capital-stack/senior-reconciles-debt-structure"
         expected = json.loads((root / "expected.json").read_text(encoding="utf8"))
         for name in ("agree", "mismatch"):
@@ -116,7 +116,9 @@ class ValidationCrossTests(unittest.TestCase):
                 path = root / (name + ".uwx.md")
                 raw = path.read_bytes()
                 result, _ = report(raw)
-                actual = [i["code"] for i in result["issues"] if i["code"].startswith(("CS-", "CC-03"))]
+                # The governed baseline is a unique code union, including
+                # RFC0090 actor findings; no actual issue family is excluded.
+                actual = sorted({i["code"] for i in result["issues"]})
                 self.assertEqual(actual, expected[name + "_codes"])
                 self.assertEqual(path.read_bytes(), raw)
         # These are only the frozen document diagnostic assertions, not stack
