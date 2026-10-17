@@ -1,0 +1,3 @@
+Example source-evidence stand-in newly authored for the 2026-10-17 standalone kit.
+Identity: source:standalone:2026-10-17:anchor-lease
+This fictional fixture illustrates a source handle and byte fidelity; it is not an executed lease or evidence that the old source was reviewed.

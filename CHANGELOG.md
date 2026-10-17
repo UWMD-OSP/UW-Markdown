@@ -10,6 +10,25 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Apply the2026-10-17 owner rule in both agent entry points: all @uwmd npm
+  packages launch together at5.0.0; prelaunch releases use4.x.x from main,
+  with incompatible changes allowed. Retire prelaunch compatibility analysis,
+  migration/deprecation work, bump recommendations, artifact-retention gates and
+  the frozen4.0.x core-export superset gate.
+  Keep current RFC, deterministic verification, conformance and source integrity.
+
+
+- Accept RFC0091 under the owner's2026-10-17 decision: META-02/03 errors
+  apply to incomplete admitted canonical metadata, including retained history.
+  Validation exit codes and newly issued receipt policy counts may change;
+  sources and historical subjects are never repaired or rewritten. Preserve
+  META-01, completeness/shape precedence, financial and receipt-verdict rules,
+  current diagnostic predicates and ordering. The owner
+  accepts the six authored replacement-kit declarations; strict positive,
+  composition and package-fidelity assertions remain. No schema/version change,
+  release or Python capability promotion. The later owner rule withdraws the
+  prelaunch retention gate and migration/version appendix.
+
 - Enforce RFC0090's required nonempty-string provenance actor with narrow
   META-01/error across retained physical blocks. Preserve wrapper precedence,
   mutable-model authority and historical source/expectation identities; govern
@@ -19,8 +38,9 @@ protocol, and each package each carry an independent semver).
 
 - Record the owner's 5.0 launch compatibility policy: 5.0 is the first public
   baseline, prelaunch versions need no legacy support, and public surfaces keep
-  independent versions. Preserve historical artifacts and RFC/verification gates;
-  no automatic migration, numerical/design acceptance or launch publication.
+  separate Format/Protocol surfaces. The2026-10-17 rule aligns npm launch
+  packages and retires prelaunch artifact-retention/compatibility work; RFC and
+  verification gates remain, with no numerical/design acceptance or publication.
   Reconcile live contributor/version/roadmap and agent-retirement guidance.
 
 ### Fixed
@@ -65,6 +85,11 @@ protocol, and each package each carry an independent semver).
   calculation changes.
 
 ### Added
+
+- Record RFC0091's accepted bounded diagnostic reconciliation, exact nine-case
+  owning-code analysis, independent source/consumer inventories and frozen
+  pre-activation sensitivity evidence. Preserve historical expectations without
+  advertising complete validation or allocating a release version.
 
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.

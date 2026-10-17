@@ -614,7 +614,7 @@ capability is unconditional: every implementation owes it.
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
-| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor (`META-01`, RFCs 0081/0090). | `validate` | `error` |
+| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor (`META-01`, RFCs 0081/0090), and required canonical boolean members (`META-02`/`META-03`, RFC0091). | `validate` | `error` |
 | `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
 | `CLS-NN` | Official builtin field contracts (RFC 0080, RFC 0081). | `validate` | error |
@@ -694,6 +694,25 @@ its `raw` string does not certify complete source coverage and MUST NOT be
 silently reparsed to override current values. Fresh-source conclusions require
 a fresh parse of the exact operation input. This does not redirect other
 validation checks to historical blocks or import V.13 signing restrictions.
+
+**Required metadata booleans (RFC0091).** After all shape and actor
+findings, emit `META-02`/error for an absent, null or nonboolean canonical
+`_meta.quality.human_review_required`, and `META-03`/error for an absent,
+null or nonboolean canonical `_meta.lifecycle.superseded`. Attribute each
+finding to that exact field and block section. Both literal booleans pass;
+MUST NOT coerce, infer or insert either value. Whole missing metadata or an
+existing wrapper/nested-object shape failure suppresses both child findings.
+A missing or nonobject quality container suppresses only META-02, without
+allocating its separate container failure. An actor-only META-01 suppresses
+neither flag. Existing completeness/low-confidence rules remain unchanged.
+
+Use the retained-physical plus model-only identity union and canonical inline
+metadata authority defined above for actors, including history and otherwise
+unselected peers; no stale raw reparse or selection change. Traverse physical
+blocks first, then model-only collections in the stated order; within each
+block emit META-02 before META-03. This pass precedes role, period-series and
+source-vocabulary checks and preserves unrelated findings' relative order.
+No other required metadata field or malformed parent gains an allocation.
 
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
