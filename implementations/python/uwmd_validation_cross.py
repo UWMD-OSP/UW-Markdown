@@ -141,14 +141,14 @@ def financial_thresholds(ledger, thresholds=None):
     document = ledger.document
     specs = (
         ("valuation", ("going_in_cap_rate",), "cap_rate", .03, .15, None, None, "FV-01", "FV-02"),
-        ("debt_structure", ("sizing_metrics.debt_yield", "debt_yield"), "debt_yield", .07, None, None, None, "FV-03", None),
-        ("debt_structure", ("sizing_metrics.dscr_underwritten", "dscr"), "dscr", 1.2, None, 1.0, None, "FV-04", None),
-        ("debt_structure", ("sizing_metrics.ltv", "ltv"), "ltv", None, .75, None, .85, None, "FV-09"),
+        ("debt_structure", ("sizing_metrics.debt_yield",), "debt_yield", .07, None, None, None, "FV-03", None),
+        ("debt_structure", ("sizing_metrics.dscr_underwritten",), "dscr", 1.2, None, 1.0, None, "FV-04", None),
+        ("debt_structure", ("sizing_metrics.ltv",), "ltv", None, .75, None, .85, None, "FV-09"),
         ("dcf", ("returns.equity_multiple",), "equity_multiple", 1, 5, None, None, "FV-05", "FV-06"),
         ("dcf", ("returns.levered_irr",), "irr", .05, .4, None, None, "FV-07", "FV-08"),
-        ("noi_model", ("expense_ratio",), "opex_ratio", .2, .7, None, None, "FV-10", "FV-11"),
-        ("noi_model", ("revenue_growth_rate", "projections.year_1.revenue_growth_rate"), "annual_rent_growth", None, .08, None, None, None, "FV-12"),
-        ("noi_model", ("vacancy_rate", "income.vacancy_rate", "income.vacancy_pct"), "vacancy_rate", .02, .4, None, None, "FV-13", "FV-14"),
+        ("noi_model", ("expenses.expense_ratio",), "opex_ratio", .2, .7, None, None, "FV-10", "FV-11"),
+        ("dcf", ("assumptions.revenue_growth_rate",), "annual_rent_growth", None, .08, None, None, None, "FV-12"),
+        ("noi_model", ("income.vacancy_credit_loss.rate_applied",), "vacancy_rate", .02, .4, None, None, "FV-13", "FV-14"),
     )
     from uwmd_validation_selection import select_section
     for section, paths, key, low, high, error_low, error_high, low_code, high_code in specs:

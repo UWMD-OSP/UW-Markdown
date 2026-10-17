@@ -141,18 +141,18 @@ class ValidationTests(unittest.TestCase):
             ("dcf", {"returns":{"levered_irr":.01}}, "FV-07", "warning"),
             ("dcf", {"returns":{"levered_irr":.5}}, "FV-08", "warning"),
             ("debt_structure", {"sizing_metrics":{"ltv":.9}}, "FV-09", "error"),
-            ("noi_model", {"expense_ratio":.1}, "FV-10", "warning"),
-            ("noi_model", {"expense_ratio":.8}, "FV-11", "warning"),
-            ("noi_model", {"revenue_growth_rate":.1}, "FV-12", "warning"),
-            ("noi_model", {"vacancy_rate":.01}, "FV-13", "warning"),
-            ("noi_model", {"vacancy_rate":.5}, "FV-14", "warning"))
+            ("noi_model", {"expenses":{"expense_ratio":.1}}, "FV-10", "warning"),
+            ("noi_model", {"expenses":{"expense_ratio":.8}}, "FV-11", "warning"),
+            ("dcf", {"assumptions":{"revenue_growth_rate":.1}}, "FV-12", "warning"),
+            ("noi_model", {"income":{"vacancy_credit_loss":{"rate_applied":.01}}}, "FV-13", "warning"),
+            ("noi_model", {"income":{"vacancy_credit_loss":{"rate_applied":.5}}}, "FV-14", "warning"))
         for section,payload,code,severity in cases:
             with self.subTest(code=code):
                 parsed=parse(HEADER+well_formed(section,**payload));before=copy.deepcopy(parsed)
                 self.assertIn((code,severity),codes(validate(parsed)))
                 self.assertEqual(parsed,before)
-        # These enumerate implemented code/threshold reachability. Canonical
-        # additional field locations remain an explicit audit gate, not parity.
+        # These exercise accepted canonical paths and thresholds; no financial
+        # metric or model is recomputed to perform plausibility validation.
 
     def test_fv_warning_error_boundaries_institution_override_and_unknown_values(self):
         for value,expected in ((1.0,("FV-04","warning")),(1.2,None),(.99,("FV-04","error")),
