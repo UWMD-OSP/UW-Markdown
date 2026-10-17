@@ -6,7 +6,8 @@ import { run } from './run.mjs';
 const file = (name) => new URL(name, import.meta.url);
 const digest = (name) => createHash('sha256').update(readFileSync(file(name))).digest('hex');
 const ordered = (text) => {
-  const word = BigInt(`0x${text}`), sign = 1n << 63n;
+  const word = BigInt(`0x${text}`);
+  const sign = 1n << 63n;
   return (word & sign) !== 0n ? (~word & ((1n << 64n) - 1n)) : word | sign;
 };
 export function document() {

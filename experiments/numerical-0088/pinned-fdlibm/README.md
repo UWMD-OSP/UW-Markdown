@@ -145,3 +145,26 @@ rehash, conformance expected answer, baseline, dependency, compatibility fallbac
 version or release preparation. Architecture direction and final RFC acceptance
 remain separate. Provisional A preference does not convert these observations
 into normative arithmetic or authorize the 5.0 launch.
+
+
+## Style-only source identity update
+
+After checkpoint `cf5277fc8d6738d4e8f30566c385b13654d1451f`, cached Biome1.9.4
+applied only useSingleVarDeclarator/useNumberNamespace/useTemplate style rules.
+Declarations were split in evaluation order and global Infinity/NaN constants
+qualified; no floating operation, association, branch, constant word or wrapper
+policy changed. The accuracy record refreshed **only kernel.mjs/run.mjs source
+hash metadata**. All178 candidate/result/reference/distance records and following
+summary bytes are byte-identical to that checkpoint; the mathematics and input
+files are unchanged. Re-execution matches that unchanged record including all five
+discrepancies. This is a style identity update, not rebaselining numerical answers.
+
+| Artifact | Prior SHA-256 | Style-only SHA-256 |
+|---|---|---|
+| kernel.mjs | `2009293e956b55769393f21bbe9bb740bf28f6c561f16612dfc9e07eb6878f66` | `9cea03d62c453d2c6428f076aab1203c04920585f90dcb9815a98967f28fb5be` |
+| run.mjs | `02c1f1c9861490d5a9316c17b5510612d1b3d8ef09efabf33f06980df93cd624` | `0c34bdb2f8e6fa9b9a1d5d8532e991b985f7bbe32296950c9a3d7996b6eb1571` |
+| accuracy.mjs | `d98347f9a940ca75a29348b71c365389e3fd8a5950dcb81eb0ea0370d31f7a77` | `fb21f5966b269a2a06879650596468613d8558b38caaeabc23939d4c11956ee7` |
+| candidate.test.mjs | `e4013ec98a0fe7a6c16a2b112c829c21f02527f1961304c6f1d257296ba404ba` | `e16f86abb47379602ae687a7adf24b79aa623099350df95d37bb87c9d00d4762` |
+| accuracy-observations.json | `7e58ff691945950977bd2409cdbb6d53277601b10c91021d440f0b7ac40f58e8` | `98a440d23efea717de7a37758d2c5aad901f60f7c7a1fc34a644b240c3829300` |
+
+Unchanged raw case/summary byte-slice SHA-256: `66650c1295ae31ef5957ac59482a11c456d5cd265578b7be4a84f71dfb06a498`.

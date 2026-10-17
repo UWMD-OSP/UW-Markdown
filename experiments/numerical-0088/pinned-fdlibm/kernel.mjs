@@ -90,9 +90,13 @@ export function sqrt(x) {
   m = sar(m, 1);
   ix0 = add32(ix0, add32(ix0, shr(ix1, 31)));
   ix1 = uadd32(ix1, ix1);
-  let q = 0, q1 = 0, s0 = 0, s1 = 0;
+  let q = 0;
+  let q1 = 0;
+  let s0 = 0;
+  let s1 = 0;
   let r = 0x00200000;
-  let t, t1;
+  let t;
+  let t1;
   while (r !== 0) {
     t = s32(s0 + r);
     if (t <= ix0) {
@@ -218,7 +222,9 @@ export function exp(x) {
     if (x > EXP.o_threshold) return HUGE * HUGE;
     if (x < EXP.u_threshold) return twom1000 * twom1000;
   }
-  let hiPart, loPart, k;
+  let hiPart;
+  let loPart;
+  let k;
   if (hx > 0x3fd62e42) {
     if (hx < 0x3ff0a2b2) {
       hiPart = x - ln2HI[xsb]; loPart = ln2LO[xsb]; k = 1 - xsb - xsb;
@@ -259,13 +265,20 @@ const POW = Object.freeze({
 export function pow(x, y) {
   const { bp, dp_h, dp_l, two53, L1, L2, L3, L4, L5, L6, P1, P2, P3, P4, P5,
     lg2, lg2_h, lg2_l, ovt, cp, cp_h, cp_l, ivln2, ivln2_h, ivln2_l } = POW;
-  const hx = hi(x), lx = lo(x), hy = hi(y), ly = lo(y);
+  const hx = hi(x);
+  const lx = lo(x);
+  const hy = hi(y);
+  const ly = lo(y);
   let ix = hx & 0x7fffffff;
   const iy = hy & 0x7fffffff;
   if ((iy | ly) === 0) return ONE;
   if (ix > 0x7ff00000 || (ix === 0x7ff00000 && lx !== 0)
     || iy > 0x7ff00000 || (iy === 0x7ff00000 && ly !== 0)) return x + y;
-  let yisint = 0, k, j, i, n;
+  let yisint = 0;
+  let k;
+  let j;
+  let i;
+  let n;
   if (hx < 0) {
     if (iy >= 0x43400000) yisint = 2;
     else if (iy >= 0x3ff00000) {
@@ -307,7 +320,12 @@ export function pow(x, y) {
   if ((n | yisint) === 0) return (x - x) / (x - x);
   let s = ONE;
   if ((n | sub32(yisint, 1)) === 0) s = -ONE;
-  let t, w, u, v, t1, t2;
+  let t;
+  let w;
+  let u;
+  let v;
+  let t1;
+  let t2;
   if (iy > 0x41e00000) {
     if (iy > 0x43f00000) {
       if (ix <= 0x3fefffff) return hy < 0 ? HUGE * HUGE : TINY * TINY;

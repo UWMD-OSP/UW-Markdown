@@ -48,7 +48,7 @@ test('whole-word access, shifts, wrap, carry/borrow and exception bit transforms
   for (const n of [-1, 33, 1.5]) assert.throws(() => W.shr(1, n), RangeError);
   assert.equal(bits(K.fabs(-0)), '0000000000000000');
   assert.equal(bits(K.copysign(0, -1)), '8000000000000000');
-  assert.equal(bits(K.copysign(Infinity, -1)), 'fff0000000000000');
+  assert.equal(bits(K.copysign(Number.POSITIVE_INFINITY, -1)), 'fff0000000000000');
 });
 
 test('software sqrt and scalbn exact known answers including count32 subnormals', () => {
@@ -62,13 +62,13 @@ test('software sqrt and scalbn exact known answers including count32 subnormals'
     ['0000000000000000', '0000000000000000'],
   ];
   for (const [x, answer] of roots) assert.equal(bits(K.sqrt(value(x))), answer, x);
-  assert(Number.isNaN(K.sqrt(-1))); assert.equal(K.sqrt(Infinity), Infinity);
-  assert(Number.isNaN(K.sqrt(-Infinity)));
+  assert(Number.isNaN(K.sqrt(-1))); assert.equal(K.sqrt(Number.POSITIVE_INFINITY), Number.POSITIVE_INFINITY);
+  assert(Number.isNaN(K.sqrt(Number.NEGATIVE_INFINITY)));
   for (const [x, n, answer] of [[1, -1074, '0000000000000001'], [1, -1075, '0000000000000000'],
     [3, -1075, '0000000000000002'], [-3, -1075, '8000000000000002'],
     [-0, 2147483647, '8000000000000000'], [1, 2147483647, '7ff0000000000000'],
     [-1, -2147483648, '8000000000000000']]) assert.equal(bits(K.scalbn(x, n)), answer);
-  for (const n of [2147483648, -2147483649, .5, NaN]) assert.throws(() => K.scalbn(1, n), RangeError);
+  for (const n of [2147483648, -2147483649, .5, Number.NaN]) assert.throws(() => K.scalbn(1, n), RangeError);
 });
 
 test('complete raw power executes fractional/general and signed special paths', () => {
@@ -76,15 +76,15 @@ test('complete raw power executes fractional/general and signed special paths', 
     [8, 1 / 3, '4000000000000000'], [-2, -3, 'bfc0000000000000'],
     [-0, 3, '8000000000000000'], [-0, 2, '0000000000000000'],
     [-0, -3, 'fff0000000000000'], [0, 0, '3ff0000000000000'],
-    [NaN, 0, '3ff0000000000000'], [Infinity, 0, '3ff0000000000000']]) {
+    [Number.NaN, 0, '3ff0000000000000'], [Number.POSITIVE_INFINITY, 0, '3ff0000000000000']]) {
     assert.equal(bits(K.pow(x, y)), answer, `${x}/${y}`);
   }
   assert(Number.isNaN(K.pow(-2, .5)));
-  assert(Number.isNaN(K.pow(-1, Infinity)));
+  assert(Number.isNaN(K.pow(-1, Number.POSITIVE_INFINITY)));
   assert.equal(K.pow(-1, 9007199254740991), -1);
   assert.equal(K.pow(-1, 9007199254740992), 1);
   assert.equal(K.pow(.5, Number.MAX_VALUE), 0);
-  assert.equal(K.pow(2, Number.MAX_VALUE), Infinity);
+  assert.equal(K.pow(2, Number.MAX_VALUE), Number.POSITIVE_INFINITY);
   assert.equal(bits(K.pow(value('601dd55745cbb7ed'), -2)), '000012688b70e62b');
 });
 
@@ -93,12 +93,12 @@ test('raw log/exp exceptional classes and exact zero/unit/log2 controls', () => 
   assert.equal(bits(K.log(2)), '3fe62e42fefa39ef');
   assert.equal(bits(K.exp(0)), '3ff0000000000000');
   assert.equal(bits(K.exp(-0)), '3ff0000000000000');
-  assert.equal(K.log(0), -Infinity); assert.equal(K.log(-0), -Infinity);
-  assert(Number.isNaN(K.log(-1))); assert.equal(K.log(Infinity), Infinity);
-  assert(Number.isNaN(K.log(-Infinity))); assert(Number.isNaN(K.log(NaN)));
-  assert.equal(K.exp(Infinity), Infinity); assert.equal(K.exp(-Infinity), 0);
-  assert.equal(K.exp(1000), Infinity); assert.equal(K.exp(-1000), 0);
-  assert(Number.isNaN(K.exp(NaN)));
+  assert.equal(K.log(0), Number.NEGATIVE_INFINITY); assert.equal(K.log(-0), Number.NEGATIVE_INFINITY);
+  assert(Number.isNaN(K.log(-1))); assert.equal(K.log(Number.POSITIVE_INFINITY), Number.POSITIVE_INFINITY);
+  assert(Number.isNaN(K.log(Number.NEGATIVE_INFINITY))); assert(Number.isNaN(K.log(Number.NaN)));
+  assert.equal(K.exp(Number.POSITIVE_INFINITY), Number.POSITIVE_INFINITY); assert.equal(K.exp(Number.NEGATIVE_INFINITY), 0);
+  assert.equal(K.exp(1000), Number.POSITIVE_INFINITY); assert.equal(K.exp(-1000), 0);
+  assert(Number.isNaN(K.exp(Number.NaN)));
 });
 
 test('observed public wrapper policy stays separate from raw internal exceptions', () => {
@@ -107,17 +107,17 @@ test('observed public wrapper policy stays separate from raw internal exceptions
   assert.equal(currentPolicy('pow', [2]).reason, 'arity');
   assert.equal(currentPolicy('sqrt', [-1]).reason, 'domain');
   assert.equal(currentPolicy('log', [0]).reason, 'domain');
-  assert.deepEqual(currentPolicy('pow', [Infinity, 0]), { status: 'returned', value: 1 });
-  assert.deepEqual(currentPolicy('exp', [-Infinity]), { status: 'returned', value: 0 });
-  assert.equal(currentPolicy('exp', [Infinity]).reason, 'nonfinite_result');
-  assert.equal(currentPolicy('pow', [NaN, 0]).value, 1);
+  assert.deepEqual(currentPolicy('pow', [Number.POSITIVE_INFINITY, 0]), { status: 'returned', value: 1 });
+  assert.deepEqual(currentPolicy('exp', [Number.NEGATIVE_INFINITY]), { status: 'returned', value: 0 });
+  assert.equal(currentPolicy('exp', [Number.POSITIVE_INFINITY]).reason, 'nonfinite_result');
+  assert.equal(currentPolicy('pow', [Number.NaN, 0]).value, 1);
   assert.equal(currentPolicy('pow', [-2, .5]).reason, 'nonfinite_result');
-  assert.equal(currentPolicy('log', [Infinity]).value, Infinity);
-  assert(Number.isNaN(currentPolicy('log', [NaN]).value));
-  assert.equal(currentPolicy('sqrt', [Infinity]).value, Infinity);
-  assert(Number.isNaN(currentPolicy('sqrt', [NaN]).value));
+  assert.equal(currentPolicy('log', [Number.POSITIVE_INFINITY]).value, Number.POSITIVE_INFINITY);
+  assert(Number.isNaN(currentPolicy('log', [Number.NaN]).value));
+  assert.equal(currentPolicy('sqrt', [Number.POSITIVE_INFINITY]).value, Number.POSITIVE_INFINITY);
+  assert(Number.isNaN(currentPolicy('sqrt', [Number.NaN]).value));
   const discount = K.pow(value('601dd55745cbb7ed'), 2);
-  assert.equal(discount, Infinity); assert.equal(1 / discount, 0);
+  assert.equal(discount, Number.POSITIVE_INFINITY); assert.equal(1 / discount, 0);
   assert.equal(currentPolicy('pow', [value('601dd55745cbb7ed'), 2]).reason, 'nonfinite_result');
   assert.equal(run({ op: 'pow', x: '4000000000000000', y: '3fe0000000000000' }).bits, '3ff6a09e667f3bcd');
 });

@@ -14,7 +14,7 @@ export function run(record) {
   return { id: record.id, op, kind, bits: toBits(value) };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const lines = createInterface({ input: process.stdin, crlfDelay: Infinity });
+  const lines = createInterface({ input: process.stdin, crlfDelay: Number.POSITIVE_INFINITY });
   for await (const line of lines) {
     if (!line.trim()) continue;
     console.log(JSON.stringify(run(JSON.parse(line))));
