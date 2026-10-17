@@ -247,6 +247,104 @@ exhaustive required types or authorize new failure diagnostics. Preserve those
 observations and pin each actual rule/condition before adding admission behavior.
 This proposal authorizes no broad implementation or new conformance claim.
 
+### Formal-domain applicability audit — 2026-10-17
+
+A read-only audit at `046640b5` harvested the 734 existing corpus `.uwx.md`
+sources once: 725 parsed and nine retained their existing source refusals.
+It extracted 1,149 **current inline candidate subjects** for the 27 artifacts
+below, separately tagging 30 overwritten, historical or externalized blocks.
+Test-only AJV2020 with formats read the unchanged normative schemas; it did not
+invoke the TypeScript validator, run financial models, activate a Python schema
+loop or change any fixture/expectation. All 734 source and 27 schema hashes were
+verified unchanged after the audit. The complete retained report SHA-256 is
+`c39c817afb2cb13f6b75da7f66ec47bc72074d1831e484e3711da5cabf9b482a`.
+
+`N / R` below means extracted subjects / schema-rejected payload views, **not**
+validation failures, complete cases or newly allocated diagnostics. For section
+roots, the test-only payload view separates `_meta`, `_role`, `_overrides` and
+`_notes` for their owning universal contracts; original source/model values stay
+unchanged. Missing optional subjects produce no candidate. Malformed/missing
+parent containers are not endorsed by failing to descend into them: their
+owning admission must be checked first. Every extracted subject was non-null;
+this is no proof of all authored-null parent boundaries. Scalar null fields do
+occur and retain the individual schema types and conditional rules.
+
+All rows require an exact source/current identity, not a financial role fallback.
+The root section rows use every canonical current variant after Format2.7/2.8
+routing; ordinary historical payloads are not newly reclassified, and an actual
+external=true directive is unresolved payload rather than a malformed inline
+object. Metadata/source/actor checks keep their separate physical scopes.
+Builtin class applicability is the exact frontmatter class; schema existence
+alone does not select a model or impose foreign-class requirements. Component
+presence/class restrictions and admitted slot keys still belong to MU/CC rules.
+
+| Artifact (filename without .schema.json) | Section / nested authored source | Exact condition / null and class boundary | N / R |
+|---|---|---|---:|
+| section-capital-stack | capital_stack; components.<admitted class>.capital_stack | Optional stack; nonempty tranches when stated. Component stack uses the same CS rules, without top-level senior reconciliation. Individual nullable rates/months do not override class/conditional CS semantics. | 5 / 2 |
+| section-cash-flow-series | cash_flow_series, each current variant | Required nonempty series; nullable label/stated_metrics and nullable row companions stay distinct from required date/amount. No cash metric recomputation here. | 245 / 7 |
+| section-components | components | Mixed-use allowed income-class slots; at least two/NOI/allocation restrictions are additional MU rules. Omitted slots are absent, not zero; malformed/null slots are not silently dropped. | 19 / 4 |
+| section-dc-capacity | dc_capacity | data_center; required named capacity fields and redundancy, optional measured/design detail by exact schema types. | 8 / 1 |
+| section-dc-power | dc_power | data_center; required utility_rate_per_kwh/billing; optional declared companions only. | 9 / 0 |
+| section-dc-revenue | dc_revenue | data_center; required lease_type/rent_per_kw_month; no financial defaults or inferred revenues. | 9 / 0 |
+| section-distribution-waterfall | distribution_waterfall, each current variant | Required reference/split/tiers; nullable declared outcomes/schedule/clawback and nullable hurdles remain conditional, with registered WF grammar separate. | 28 / 16 |
+| section-gaps | gaps | Required items; each item requires section/reason; optional stage/date-time/owner fields keep their actual schema constraints. Empty items is not a missing section. | 2 / 0 |
+| section-hotel-brand | hotel_brand | hospitality, optional section; nullable flag/term_years, stated fee fractions by actual bounds. | 5 / 0 |
+| section-hotel-food-beverage | hotel_food_beverage | hospitality, optional section; authored monetary companions are numbers, not inferred from absence. | 5 / 0 |
+| section-hotel-metrics | hotel_metrics | hospitality, optional section; only optional nullable market_revpar is payload. Universal annotations need their own admission route. | 4 / 1 |
+| section-lease-up-schedule | lease_up_schedule, each current variant | Required model_type/cadence/schedule; nullable target/assumptions/stabilized_summary preserve owning LU conditions. No projected trajectory or aggregate proof. | 176 / 9 |
+| section-mhc-sites | mhc_sites | manufactured_housing; required named sizes/rent/date member, POH conditional rent; as_of_date is presence-only, not an inferred calendar/type assertion. | 49 / 32 |
+| section-reserve-accounts | reserve_accounts, each current variant | Required account/period/movement structures; RSV01–05 structural ownership separate from RSV06–08 balance verification. | 73 / 10 |
+| rent-roll-hospitality | rent_roll | hospitality; its declared room inputs/occupancy shape, rather than generic tenant fields or hotel_metrics aliases. | 5 / 2 |
+| tax-reassessment | noi_model.expenses.real_estate_taxes.reassessment | Optional object; trigger required; G1 all-or-none assessment group plus separately typed optional/null companions. | 11 / 3 |
+| tax-abatement | noi_model.expenses.real_estate_taxes.abatement | Optional object; schema kind/schedule and conditional stabilized period; owning TAX period/order/arithmetic rules remain separate. | 7 / 0 |
+| tax-terminal | dcf.exit_analysis.terminal_tax | Optional object; complete stated assessment/in_exit_noi required when present; normal reassessment's lone-trigger permission does not apply. | 4 / 1 |
+| sources-uses-escrow | sources_uses.uses.escrows[i] | Each authored array entry; closed name, nullable stated amounts/disclosures, existing ESC ties independent. | 323 / 1 |
+| renovation-draw | sources_uses.uses.renovation | Optional object; at least budget or contingency; G1 draw group/remaining conditions and field nullability separately applied. | 18 / 6 |
+| expense-targeted-capex | sources_uses.uses.renovation.expense_targeted[i] | Every authored entry; required label/amount/target/savings/start/in_noi_model; nullable optional payback. Empty parent-array admissibility must follow its own constraint, not item validation alone. | 8 / 2 |
+| lease-escalation-schedule | rent_roll.tenants[i].escalation_schedule | Every stated tenant clause, without a class-based financial projection; array/item shape plus separate LSE date/order/term rules. | 6 / 0 |
+| lease-termination-option | rent_roll.tenants[i].termination_option | Required date/notice in a stated object; nullable penalty/conditions; optional penalty_includes has its own nonempty/unique rules. | 6 / 3 |
+| lease-co-tenancy | rent_roll.tenants[i].co_tenancy_details | Stated object trigger/remedy plus owning flag/companion conditions; missing optional clause does not create a lease remedy. | 7 / 1 |
+| lease-recovery-terms | rent_roll.tenants[i].recovery_terms | G1 cap-alone permission and non-null method/accumulation conditions; nullable share/fee/cap fields preserve explicit schema admission. | 15 / 3 |
+| lease-recovery-true-up | rent_roll.tenants[i].recovery_true_up | Stated rows require dates, nullable stated amounts/ref/settlement; signed true_up_amount allowed; exact source REC09 and arithmetic remain owned separately. | 8 / 0 |
+| debt-rate-hedge | debt_structure.rate_hedge | Optional object; instrument/strike plus G1 terms-group applicability and exact V.12 source selection. Nullable premium/counterparty/funding do not normalize non-nullable group fields. | 94 / 22 |
+
+The raw whole-object comparisons rejected 129 subjects; the separate payload
+views rejected 126. The difference is three hospitality `hotel_metrics` blocks
+whose lawful `_meta` is absent from that closed payload schema. This is why a
+blanket whole-fence schema loop is not the admission composition. Eight candidate
+subjects were outside their named class; those observations must be routed by
+the actual class/CC rules, not treated as eight new failures.
+
+Twenty-two existing portable validate inputs hit these schema constraints, all
+with expected exit1; no matched expected-exit0 input was rejected. Many already
+have a precise HDG/ESC owning finding, such as `conformance/hedge/0070-bad-kind`
+and `0070-unknown-member`. Turning every schema rejection into a new local
+partial response would still break their accepted top-level issue/V.12 wire.
+The implementation therefore needs exact condition/source identity consumption
+where a registered finding actually covers it; one error in a block cannot
+consume unrelated shape failures. None of the reused native empty-prefix
+expectations had a schema rejection. Most rejected subjects are intentional
+negative fixtures, not joint-contract conflicts.
+
+Two other contrasts must not be mislabeled: the toy LU/WF payloads under
+`conformance/calc/fixtures/period-*` serve calculation/selector assertions,
+not positive full-validation assertions. The retail `gross_leasable_area` in
+`conformance/size-intensive/cc-13-silent-for-mixed-use/deal.uwx.md` is rejected
+by the closed component schema, but its expectation pins only no CC13 and no
+synthesized deal size; it does not assert clean MU/schema admission. Neither
+contrast authorizes rewriting expected data or declaring an owner conflict.
+
+Null semantics have an explicit accepted answer, not a new convention: RFC0081's
+Decision on G1 null members says null neither triggers nor satisfies a group,
+**while a non-nullable member stated as null stays a type error**. Apply field
+type and group statedness separately. Do not strip all nulls to force schema
+agreement, replace optional omissions with null, or conflate a standalone
+object/array schema with the enclosing optional carrier's admission. The lack of
+null-root corpus subjects is a remaining negative-evidence coverage gap, not a
+contradictory contract by itself. Exact negative-wire disposition for unallocated
+conditions remains the separately recorded command gate; no new diagnostic,
+capability, schema activation or general validator is introduced by this audit.
+
 ### Prior checkpoint — accepted RFC0090 integration and CS admission
 
 The validation WIP now includes exact accepted main
