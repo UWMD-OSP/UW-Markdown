@@ -1,0 +1,7 @@
+{
+  "description": "Historical, overwritten extension and append actors remain in physical scope.",
+  "expected_codes": [
+    "META-01"
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; RFC0090"
+}

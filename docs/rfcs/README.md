@@ -117,6 +117,8 @@ and how it gets accepted.
 | [0087](./0087-hospitality-revenue-reconciliation.md) | Define the basis for hospitality revenue reconciliation | draft | format, protocol, core, conformance, tooling |
 | [0088](./0088-pin-financial-numerical-procedures.md) | Resolve financial power and transcendental reproducibility | draft | protocol, core, conformance |
 
+| [0090](./0090-provenance-actor-admission.md) | Admit required provenance actors with an explicit diagnostic | accepted | format, protocol, core, conformance, tooling |
+
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
 its RFC was written, and records that process failure rather than hiding it. See

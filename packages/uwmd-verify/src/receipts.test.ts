@@ -112,6 +112,28 @@ describe('issueReceipt', () => {
     expect(ids).toEqual((MULTIFAMILY_PACK.calculations ?? []).map((c) => c.id).sort());
   });
 
+  it('records RFC0090 actor errors without inventing a receipt refusal', async () => {
+    const original = await parkview();
+    // Disposable input only: the authored fixture and historical receipts stay intact.
+    const actorAbsent = original.replace('      "actor": "jared",\n', '');
+    expect(actorAbsent).not.toBe(original);
+    const options = { filename: PARKVIEW, issued_at: ISSUED_AT };
+    const before = await issueReceipt(original, options);
+    const after = await issueReceipt(actorAbsent, options);
+    expect(after.policy.validation).toEqual({
+      errors: before.policy.validation.errors + 1,
+      warnings: before.policy.validation.warnings,
+    });
+    expect(after.computation).toEqual(before.computation);
+    // Editing actor content changes the semantic subject; diagnostic allocation alone
+    // never rewrites an existing subject or historical signed receipt.
+    expect(after.subject.digest).not.toBe(before.subject.digest);
+    expect(receiptSigningPayload(after)).not.toBe(receiptSigningPayload(before));
+    const verified = await verifyReceipt(after, actorAbsent, { filename: PARKVIEW });
+    expect(verified.verdict).toBe('verified');
+    expect(verified.issues).toEqual([]);
+  });
+
   it('records every declared output and no others', async () => {
     const receipt = await issueReceipt(await liteDeal(), {
       filename: LITE_DEAL,

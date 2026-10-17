@@ -348,3 +348,103 @@ and focused lint pass. The same-source independent boundary replay passes.
 Required final-head CI remains a separate checkpoint; neither the failed initial
 run nor these focused results are a claim of complete interoperability. Historical
 invalid-subject activation remains owner-held, with no fixture or version changes.
+
+### 2026-10-17 — Governed actor reconciliation candidate
+
+The owner explicitly approved the Issue354 diagnostic direction: required
+nonempty actor, narrow META-01/error, all retained physical blocks, no inferred
+attribution and existing wrapper/missing-metadata precedence.
+[RFC0090](../rfcs/0090-provenance-actor-admission.md) remains draft for final
+text acceptance. Its synchronized implementation, Format/Protocol prose and
+proposed expectations do not activate the contract on main. Schema and public
+types already require actor and remain unchanged. No public version, receipt
+rule, arithmetic or release state is selected.
+
+The independent actor-inventory companions preserve the original main
+`b2ac5d8f068308fd690de824b963135974ec5fb8`, source/old expectation identities,
+actual candidate findings, negative controls and operation-specific consequences.
+The original798 source files yield738 validations and60 parse refusals;162
+API inputs gain574 actor errors, with no other issue-object/order changes.
+This broad API observation is distinct from actual consumers. All111 original
+portable validate calls execute:12 changed responses/78 actor errors, eight
+0-to1 exits, four1-to1 and99 byte-equivalent responses/exits. The known12
+paths are listed in RFC0090 and the original Issue354 packet.
+
+The original native indexed replay is1089/1089 before and1052/1089 after
+against untouched old expectations. Exactly37 assertions differ:12 validation
+projections,24 displays for those same documents, and
+`conformance/capital-stack/senior-reconciles-debt-structure/expected.json`.
+Only those measured expected files are prepared explicitly. Display changes
+are actor lines/derived overall status/token counts; capital-stack CC-03
+financial agreement/disagreement is retained beside the new actor finding.
+Original sources and old expectations stay pinned in Git; no automatic update
+or fabricated principal repairs them. Six new disposable malformed fixtures
+24–29 yield1095/1095 under the proposed expectations. The first root checkpoint
+reported1070pass/25fail after the12 validation changes but before the25
+remaining governed display/reconciliation dispositions; that failure is retained.
+
+Independent review caught and corrected two material scope gaps: the Python
+partial inspector's unsupported META-01 allocation for late metadata/section
+disagreement could suppress actor admission, and new synthetic `x:` fixtures
+did not use the real `x_` extension route. The Python requirements remain uncoded
+local findings with unsuccessful local assessment; no required actor is hidden.
+The corrected extension control exercises actual overwritten physical evidence.
+
+The parser keeps an internal operation-local inventory of mutable block
+references; no public DTO or Envelope shape changes. Validation observes model
+edits and never reparses stale `raw`; copied models cannot claim omitted-source
+coverage. Physical-shape precedence is explicitly governed rather than silently
+letting overwritten malformed wrappers escape both checks. Other historical
+financial/source/role checks retain their applicability.
+
+Receipt/signature consequences are measured separately in the
+[complete inventory](./2026-10-15-python-reader-354.actor-inventory.json), using
+the [read-only observer](./2026-10-15-python-reader-354.actor-inventory.mjs).
+The32 paired native consumer events (four issueReceipt returns, two issuance
+refusals,11 verifyReceipt and15 verifyDocumentSignature) have identical inputs
+and results/refusals. A separate same-byte actor-absent probe preserves subject
+`sha256:a9f6e8470143980521ec443b378ca42722805f435a3deaf7731a13dfae5d7d37`
+and results, while policy errors change0-to1 and the signing payload changes
+only by that count. Both engines' own/cross unsigned verification stays verified;
+this is no cryptographic signature/backend claim. A new focused receipt control
+removes an actor only from a disposable Parkview copy. Issuance records one additional validation error while calculations remain
+identical, and existing verifyReceipt still verifies that newly issued receipt.
+Actually removing actor content changes its semantic subject; changing diagnostic
+allocation on identical source bytes does not. New policy counts can change a
+new receipt's signing payload. No old receipt is rewritten, reissued or declared
+authenticated under a new rule.
+
+The separate Python complete-validation checkpoint306c136f has242 local tests
+and actual Reader17/17; it preserves actor RFC work separately and still
+advertises parse only. These are distinct from the actor candidate's163 Python
+methods. RFC0085/0088/0089 remain separately draft; final RFC0090 text acceptance
+and exact-head integration review are still required.
+
+### 2026-10-17 — Accepted RFC0090 integration corrections
+
+The owner accepted the substantive contract and governed expectation disposition
+reviewed at `c870dbd63e6972ae849faf31a2be68ec43855377`, authorizing integration
+after the final corrections and exact-head CI. RFC0090/index and current
+Format/Protocol/status prose now record acceptance. Package/specification release
+versions remain unallocated; no publication or launch is authorized. The dated
+candidate section and frozen inventory above remain historical evidence.
+
+The final registry remediation retains the bare-payload/inline nested metadata
+and matching-section instructions and explicitly adds the required nonempty
+`_meta.provenance.actor`, with no inferred attribution. Existing shape issues
+receive that guidance through enrichment. Accordingly, the frozen c870 proof of
+unchanged nonactor issue objects is scoped to that head: final codes, severities,
+fields, shape messages, applicability and unrelated ordering are unchanged, while
+the requested remediation copy is intentionally different. A consumer-level
+shape regression pins both guidance paths; actor-specific guidance remains
+unchanged. No diagnostic trigger or result precedence changes in this correction.
+
+Final independent review rechecks the37 measured expected-file dispositions
+and eight derived exits against the original main and reviewed head, all original
+source/authenticated artifacts, physical/model identity and historical controls,
+and measured receipt effects. The six new negative fixtures merely replace
+their draft citation labels with the accepted RFC name; their asserted codes
+and source bytes are unchanged. No original expectation is regenerated or
+unrelated baseline altered. Final exact-head and post-merge exact-main CI are
+recorded on PR376 and the existing Issue354 amendment; no prior green run is
+substituted for either gate.
