@@ -1176,3 +1176,15 @@ current-source selection and registered CLS-04 attribution. Arbitrary unknown
 members and universal annotations receive no invented allocation. Three focused
 methods cover exact presence/type boundaries, ownership, order and no mutation.
 This helper adds no command or capability; discovery remains parse-only.
+
+### Integrated Reader/current-main checkpoint
+
+After history-preserving reconciliation with #375/main `b2ac5d8f`, the combined
+implementation passes **223 Python methods** (52.039s) and genuine shared Reader
+**17/17**, zero failed/skipped/unverifiable. All158 main test-method ASTs are
+unchanged, including the original151 and seven lifecycle regressions. The
+validation implementation remains the independently reviewed `9508de10` code;
+main adds the accepted shared source-lifecycle correction. CLI/discovery is
+byte-identical to main; actual111 validate subprocess cases remain unsupported
+and unrun. The local metadata/composition assessments and earlier111 API subset
+comparisons cannot be promoted into complete validation or Verifier evidence.
