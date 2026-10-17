@@ -1,22 +1,23 @@
 # 13 — Build status (living document)
 
-**Python integration checkpoint — source/role checks merged.**
-PR #370 merged as `6782c0ebcdc8eccb436f2a381770af46728666f8`, tree-identical
-to reviewed `4623002b`. Exact-head
-[CI38983144489](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38983144489)
-passes all17 ordinary jobs; publication-only verification is skipped. Ubuntu,
-Windows and macOS each demonstrate144 Python methods and genuine Reader17/17.
-The [exact-main run](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38984025694)
-is tracked separately. Source/role, override and pinned routing findings retain
-original physical source evidence; selected shape diagnostics remain local.
+**Python priority — minimum-complete capabilities.** The current implementation
+has no Reader/Verifier tier and advertises only parse. The completion matrix in
+the Python README now maps accepted obligations, implemented scope, exact corpus
+ownership, dependencies and whole-capability exit gates. Next engineering is one
+complete `validate` surface, followed by metric/calculation-method closure,
+remaining stated-figure verification and receipt verification. More isolated
+inspectors do not close those obligations. Current dictionary arithmetic can
+advance independently of RFC0088; source identity/lifecycle, key admission and
+missing metadata severities are explicit boundaries rather than guessed rules.
 
-The next bounded continuation inspects document-level currency identity under
-accepted CUR-01, independent of financial bindings or locale/display behavior.
-Seven focused methods include four explicitly scoped standalone comparisons.
-Metadata-completeness code severities remain unassigned in accepted prose; no
-new registered severity, suffix or timestamp policy is inferred. Full structural
-validation and complete Verifier capability remain unclaimed; discovery stays
-parse-only. RFC0088/#357 and RFC0089/#368 remain independent unaccepted drafts.
+The prior currency checkpoint #371 merged as
+`fbf8f66aa00fa2ca50dbf4dd7d006d3b3a3b53b1`, identical to reviewedf3b3ee47.
+Exact-head [CI38984264689](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38984264689)
+passes17 ordinary jobs; Ubuntu/Windows/macOS each demonstrate151methods and
+Reader17/17. [Exact-main CI38985670740](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38985670740)
+is tracked separately. No complete-tier claim follows. A focused correction
+keeps absent metadata outside the registered present-malformed META-01 domain
+without inventing the missing completeness severity; twelve focused methods pass.
 
 ## Bounded parallel workstreams
 
@@ -27,7 +28,7 @@ Focused local checks precede full exact-head CI at integration checkpoints.
 
 | Lane | Remote branch | Scope and gate |
 |---|---|---|
-| A Python verification | `codex/python-document-currency` | Accepted read-only verification; Python code/tests/CLI and README. Parse-only until full capability obligations are demonstrated. |
+| A Python verification | `codex/python-capability-completion` | Minimum-complete capability gates; completevalidate next, then dictionary/stated figures and receipts. Parse-only until complete obligations are demonstrated. |
 | B numerical determinism | `codex/numerical-determinism-356` / #357 | DraftRFC0088, existing numerical study and isolated experiments; no production arithmetic, expected-result or acceptance changes. |
 | C Envelope | `codex/rfc-0089-extension-envelope` / #368 | DraftRFC0089, the existing365review section and illustrative evidence; no Envelope1/schema/digest/receipt change before owner approval. |
 
