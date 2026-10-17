@@ -129,7 +129,7 @@ def _mapping_entry(text: str) -> tuple[str, str, int]:
 
 
 def parse_frontmatter(raw: bytes, *, byte_offset: int = 0) -> FrontmatterSource:
-    """Decode exactly one top-level mapping and its admitted one-level children."""
+    """Decode top-level entries and one mapping layer, including sequence items."""
     try:
         text = raw.decode("utf-8", errors="strict")
     except UnicodeDecodeError as error:
@@ -146,8 +146,8 @@ def parse_frontmatter(raw: bytes, *, byte_offset: int = 0) -> FrontmatterSource:
         line = raw_line.rstrip("\r\n")
         if line.strip(" \t") and not line.lstrip(" ").startswith("#"):
             indent = len(line) - len(line.lstrip(" "))
-            if indent not in (0, 2) or line[indent:].startswith("\t"):
-                raise FrontmatterError("only one two-space nested YAML level is admitted")
+            if indent not in (0, 2, 4) or line[indent:].startswith("\t"):
+                raise FrontmatterError("only one mapping layer and two-space sequence indentation are admitted")
             rows.append((indent, line[indent:], offset + indent))
         offset += len(raw_line.encode("utf-8"))
     values, tokens, index = {}, [], 0
@@ -179,6 +179,13 @@ def parse_frontmatter(raw: bytes, *, byte_offset: int = 0) -> FrontmatterSource:
             raise FrontmatterError("scalar entry cannot also contain nested entries")
         sequence = rows[index][1] == "-" or rows[index][1].startswith("- ")
         nested = [] if sequence else {}
+        def map_entry(target, entry, entry_start, parent):
+            item_key, item, item_offset = _mapping_entry(entry)
+            if item_key in target:
+                raise FrontmatterError("duplicate decoded nested YAML key")
+            target[item_key] = assign(item, entry_start + len(entry[:item_offset].encode("utf-8")),
+                                      child_pointer(parent, item_key))
+
         while index < len(rows) and rows[index][0] == 2:
             _, child, child_start = rows[index]
             is_item = child == "-" or child.startswith("- ")
@@ -187,14 +194,42 @@ def parse_frontmatter(raw: bytes, *, byte_offset: int = 0) -> FrontmatterSource:
             if sequence:
                 item = child[1:].lstrip(" \t")
                 item_offset = len(child) - len(item)
-                nested.append(assign(item, child_start + len(child[:item_offset].encode("utf-8")),
-                                     child_pointer(pointer, str(len(nested)))))
+                item_start = child_start + len(child[:item_offset].encode("utf-8"))
+                item_pointer = child_pointer(pointer, str(len(nested)))
+                # Format 2.2a's modules example combines Appendix D's sequence
+                # with one mapping layer. Continuations align after "- ".
+                # A scalar item still cannot acquire a nested value.
+                mapping = None
+                if item and not item.startswith("#"):
+                    try:
+                        _mapping_entry(item)
+                        mapping = {}
+                    except FrontmatterError:
+                        pass
+                    if mapping is not None and item_offset != 2:
+                        raise FrontmatterError("sequence mapping keys must align at four spaces")
+                elif index + 1 < len(rows) and rows[index + 1][0] == 4:
+                    mapping = {}
+                if mapping is None:
+                    nested.append(assign(item, item_start, item_pointer))
+                    index += 1
+                    if index < len(rows) and rows[index][0] == 4:
+                        raise FrontmatterError("scalar sequence item cannot contain nested entries")
+                else:
+                    if item and not item.startswith("#"):
+                        map_entry(mapping, item, item_start, item_pointer)
+                    index += 1
+                    while index < len(rows) and rows[index][0] == 4:
+                        _, continuation, continuation_start = rows[index]
+                        map_entry(mapping, continuation, continuation_start, item_pointer)
+                        index += 1
+                    nested.append(mapping)
             else:
-                item_key, item, item_offset = _mapping_entry(child)
-                if item_key in nested:
-                    raise FrontmatterError("duplicate decoded nested YAML key")
-                nested[item_key] = assign(item, child_start + len(child[:item_offset].encode("utf-8")),
-                                          child_pointer(pointer, item_key))
-            index += 1
+                map_entry(nested, child, child_start, pointer)
+                index += 1
+                if index < len(rows) and rows[index][0] == 4:
+                    raise FrontmatterError("nested mapping cannot contain another mapping layer")
+        if index < len(rows) and rows[index][0] != 0:
+            raise FrontmatterError("unexpected YAML continuation indentation")
         values[key] = nested
     return FrontmatterSource(values, tuple(tokens))
