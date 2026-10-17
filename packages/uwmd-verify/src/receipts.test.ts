@@ -33,6 +33,7 @@ import { MULTIFAMILY_PACK } from './builtin-packs/multifamily.js';
 import { OFFICE_PACK } from './builtin-packs/office.js';
 import { VERIFY_PACKAGE_NAME, VERIFY_VERSION } from './version.js';
 import { parseUWFile } from './parser.js';
+import { InvalidUnicodeError } from './integrity-canonical.js';
 
 const PARKVIEW = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
 
@@ -920,5 +921,106 @@ describe('JCS Unicode admission at receipt boundaries', () => {
     const expected = JSON.parse(await readFile(resolve(fixture, 'expected-receipt.json'), 'utf8')) as UWReceipt;
     expect((await resolveReceiptSubject(raw, { filename: 'control.uwx.md' })).subject).toEqual(expected.subject);
     expect((await verifyReceipt(expected, raw, { filename: 'control.uwx.md' })).verdict).toBe('verified');
+  });
+});
+
+
+describe('JCS receipt artifact error boundaries', () => {
+  const source = '---\nuw_version: "3.0"\ndeal_id: "jcs-boundary"\n---\n';
+  const pack = { ...MULTIFAMILY_PACK, id: 'test.jcs-boundary', calculations: [
+    { id: 'constant', label: 'Boundary control', formula: '1', deterministic: true },
+  ] };
+  const options = { pack, filename: 'boundary.uwx.md', issued_at: ISSUED_AT };
+  const signature = { algorithm: 'ed25519', key_id: 'stub', value: 'AAAA' };
+
+  it.each([
+    ['issuer', (receipt: UWReceipt) => { receipt.issuer = '\ud800'; }],
+    ['issued_at', (receipt: UWReceipt) => { receipt.issued_at = '\ud800'; }],
+    ['engine', (receipt: UWReceipt) => { receipt.computation.engine = '\ud800'; }],
+    ['engine_version', (receipt: UWReceipt) => { receipt.computation.engine_version = '\ud800'; }],
+    ['policy_set', (receipt: UWReceipt) => { receipt.policy.policy_set = '\ud800'; }],
+  ] as const)('maps unencodable signed %s to RCP-01 without changing unsigned admission', async (_field, mutate) => {
+    const receipt = await issueReceipt(source, options);
+    mutate(receipt);
+    let calls = 0;
+    const verifyOptions = { filename: options.filename, packs: [pack],
+      signatureVerifier: { verify: async () => { calls++; return true; } } };
+    expect((await verifyReceipt(receipt, source, verifyOptions)).verdict).toBe('verified');
+    receipt.signature = signature;
+    const before = JSON.stringify(receipt);
+    expect((await verifyReceipt(receipt, source, verifyOptions)).issues.map(issue => issue.code)).toEqual(['RCP-01']);
+    expect(calls).toBe(0);
+    expect(JSON.stringify(receipt)).toBe(before);
+    expect((await verifyReceipt(receipt, source, { filename: options.filename, packs: [pack] })).issues.map(issue => issue.code)).toEqual(['RCP-08']);
+    expect(() => receiptSigningPayload(receipt)).toThrow(InvalidUnicodeError);
+  });
+
+  it.each(['id', 'version'] as const)('maps matching unencodable pack %s to signature refusal rather than pack absence', async field => {
+    const receipt = await issueReceipt(source, options);
+    const namedPack = { ...pack, [field]: '\ud800' };
+    if (field === 'id') receipt.computation.pack = namedPack.id;
+    else receipt.computation.pack_version = namedPack.version;
+    receipt.signature = signature;
+    let calls = 0;
+    const result = await verifyReceipt(receipt, source, { filename: options.filename, packs: [namedPack],
+      signatureVerifier: { verify: async () => { calls++; return true; } } });
+    expect(result.issues.map(issue => issue.code)).toEqual(['RCP-01']);
+    expect(calls).toBe(0);
+  });
+
+  it.each(['key_id', 'algorithm', 'value'] as const)('leaves excluded signature %s to the backend', async field => {
+    const receipt = await issueReceipt(source, options);
+    const payload = receiptSigningPayload(receipt);
+    receipt.signature = { ...signature, [field]: '\ud800' };
+    expect(receiptSigningPayload(receipt)).toBe(payload);
+    let calls = 0;
+    expect((await verifyReceipt(receipt, source, { filename: options.filename, packs: [pack],
+      signatureVerifier: { verify: async () => { calls++; return true; } } })).verdict).toBe('verified');
+    expect(calls).toBe(1); // Control flow only: this stub makes no cryptographic claim.
+  });
+
+  it('returns a typed issuance refusal when computed results cannot be canonicalized', async () => {
+    const invalidPack = { ...pack, calculations: [{ ...pack.calculations[0]!, formula: "'\ud800'" }] };
+    await expect(issueReceipt(source, { ...options, pack: invalidPack })).rejects.toMatchObject({
+      name: 'ReceiptError', code: 'RCP_COMPUTATION_FAILED',
+    });
+  });
+
+  it('maps an agreed but unencodable stated result to late RCP-04, preserving engine disagreement precedence', async () => {
+    const receipt = await issueReceipt(source, options);
+    const invalidPack = { ...pack, calculations: [{ ...pack.calculations[0]!, formula: "'\ud800'" }] };
+    receipt.computation.results[0]!.value = '\ud800';
+    const before = JSON.stringify(receipt);
+    const result = await verifyReceipt(receipt, source, { filename: options.filename, packs: [invalidPack] });
+    expect(result).toMatchObject({ verdict: 'failed', issues: [{ code: 'RCP-04' }], recomputed: [{ value: '\ud800' }] });
+    expect(result.issues[0]!.expected).toBeUndefined();
+    expect(JSON.stringify(receipt)).toBe(before);
+    await expect(computeResultsDigest(receipt.computation.results)).rejects.toBeInstanceOf(InvalidUnicodeError);
+    receipt.computation.engine = 'another-engine';
+    expect((await verifyReceipt(receipt, source, { filename: options.filename, packs: [pack] })).issues[0]!.code).toBe('RCP-07');
+    receipt.computation.engine = VERIFY_PACKAGE_NAME;
+    expect((await verifyReceipt(receipt, source, { filename: options.filename, packs: [pack] })).issues[0]!.code).toBe('RCP-03');
+  });
+
+  it('preserves earlier subject mismatch and pack absence ahead of signing-input refusal', async () => {
+    const receipt = await issueReceipt(source, options);
+    receipt.issuer = '\ud800';
+    receipt.signature = signature;
+    let calls = 0;
+    const verifyOptions = { filename: options.filename, packs: [pack],
+      signatureVerifier: { verify: async () => { calls++; return true; } } };
+    receipt.subject.digest = `sha256:${'0'.repeat(64)}`;
+    expect((await verifyReceipt(receipt, source, verifyOptions)).issues[0]!.message).toContain('digest');
+    receipt.subject.digest = (await resolveReceiptSubject(source, { filename: options.filename })).subject.digest;
+    expect((await verifyReceipt(receipt, source, { ...verifyOptions, packs: [] })).issues.map(issue => issue.code)).toEqual(['RCP-05']);
+    expect(calls).toBe(0);
+  });
+
+  it('does not relabel arbitrary backend exceptions as malformed input', async () => {
+    const receipt = await issueReceipt(source, options);
+    receipt.signature = signature;
+    const error = new TypeError('backend failure');
+    await expect(verifyReceipt(receipt, source, { filename: options.filename, packs: [pack],
+      signatureVerifier: { verify: async () => { throw error; } } })).rejects.toBe(error);
   });
 });
