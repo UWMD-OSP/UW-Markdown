@@ -36,7 +36,7 @@ def run():
             result = dict(accepted=False, error_name=type(error).__name__, error_message=str(error))
         assert result["accepted"] == row["expected_accepted"], (row["case"], row["vector"], result)
         python_rows.append(dict(case=row["case"], vector=row["vector"], input_sha256=row["input_sha256"], **result))
-    stdin = encoded(inputs)
+    stdin = json.dumps(inputs, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf8")
     node = subprocess.run(["node", str(HERE / "observe.mjs")], input=stdin, capture_output=True, check=False)
     assert node.returncode == 0, node.stderr.decode("utf8")
     node_value = json.loads(node.stdout.decode("utf8"))
