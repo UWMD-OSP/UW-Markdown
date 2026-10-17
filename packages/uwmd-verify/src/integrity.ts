@@ -13,7 +13,7 @@
 
 import { verifyDocumentSignature, type DocumentSignatureResult, type DocumentSignatureVerifier } from './document-signatures.js';
 import { computeEnvelopeDigest, toUWEnvelope } from './envelope.js';
-import { canonicalize } from './integrity-canonical.js';
+import { canonicalize, InvalidUnicodeError } from './integrity-canonical.js';
 import type { ParsedUWFile, UWBlock, UWBlockSignature } from './types.js';
 import { UW_SIGNATURE_ALGORITHMS } from './types.js';
 import type { EditPolicy } from './protocol.js';
@@ -387,7 +387,16 @@ async function verifySignatures(
 
     // INT-05 needs no key material: a signature over an absent content_hash is
     // structurally void, so it is reported whether or not a verifier exists.
-    const payload = blockSigningPayload(block);
+    let payload: string | null;
+    try {
+      payload = blockSigningPayload(block);
+    } catch (error) {
+      if (!(error instanceof InvalidUnicodeError)) throw error;
+      // §V.11: malformed signing input uses the existing signature refusal.
+      issues.push({ code: 'INT-07', severity: 'error', section: sectionId,
+        message: `${where} signature input contains invalid Unicode.` });
+      continue;
+    }
     if (payload === null) {
       issues.push({
         code: 'INT-05',

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { parseUWFile } from './parser.js';
+import { InvalidUnicodeError } from './integrity-canonical.js';
 import { verifyChain } from './integrity.js';
 import {
   DocumentSigningError, documentSigningPayload, resolveDocumentSigningSubject, verifyDocumentSignature,
@@ -161,5 +164,72 @@ describe('document authentication states', () => {
     parsed.frontmatter.extra = 1n as unknown as string;
     expect(await verifyChain(parsed, { documentSignature: await artifact(), documentSignatureVerifier: backend }))
       .toMatchObject({ ok: false, document_signature: { state: 'failed', reason: 'malformed_source' } });
+  });
+});
+
+
+describe('JCS Unicode admission at document authentication boundaries', () => {
+  it.each([
+    { text: '\ud800', key: false }, { text: '\ud801', key: false }, { text: '\udc00', key: false },
+    { text: '\ud800', key: true }, { text: '\ud801', key: true }, { text: '\udc00', key: true },
+  ])('refuses invalid Unicode before signature backend execution (%#)', async ({ text, key }) => {
+    const field = (value: string): string => JSON.stringify(key ? { [value]: 'kept' } : { value }).slice(1, -1);
+    const invalid = SOURCE.replace('"value":100', field(text));
+    const signed = await artifact(SOURCE.replace('"value":100', field('\ufffd')));
+    const before = JSON.stringify(signed);
+    let calls = 0;
+    const recording: DocumentSignatureVerifier = { verify: async () => { calls++; return { ok: true }; } };
+    await expect(resolveDocumentSigningSubject(invalid)).rejects.toBeInstanceOf(DocumentSigningError);
+    const result = await verifyDocumentSignature(invalid, signed, { signatureVerifier: recording });
+    expect(result).toMatchObject({ state: 'failed', reason: 'malformed_source' });
+    expect(result.issues.map(issue => issue.code)).toEqual(['INT-15']);
+    expect(calls).toBe(0);
+    // Existing unsupported-version precedence stays ahead of source admission.
+    const unsupported = { ...signed, subject: { ...signed.subject, canonicalization_version: 'unsupported' } };
+    expect((await verifyDocumentSignature(invalid, unsupported, { signatureVerifier: recording })).issues.map(issue => issue.code)).toEqual(['INT-14']);
+    expect(calls).toBe(0);
+    expect(JSON.stringify(signed)).toBe(before);
+  });
+
+  it('preserves the frozen valid document-signature subject', async () => {
+    const fixture = resolve(__dirname, '../../../conformance/document-signatures/01-valid');
+    const raw = await readFile(resolve(fixture, 'deal.uwx.md'), 'utf8');
+    const expected = JSON.parse(await readFile(resolve(fixture, 'signature.json'), 'utf8')) as UWDocumentSignature;
+    expect(await resolveDocumentSigningSubject(raw)).toEqual(expected.subject);
+  });
+});
+
+
+describe('JCS document artifact error boundaries', () => {
+  it.each(['\ud800', '\udc00'])('refuses malformed committed key encoding before versions, source and backend (%#)', async kid => {
+    const signed = { ...await artifact(), kid };
+    const before = JSON.stringify(signed);
+    let calls = 0;
+    const recording: DocumentSignatureVerifier = { verify: async () => { calls++; return { ok: true }; } };
+    for (const options of [{}, { signatureVerifier: recording }]) {
+      const result = await verifyDocumentSignature(SOURCE, signed, options);
+      expect(result).toMatchObject({ state: 'failed', reason: 'malformed' });
+      expect(result.issues.map(issue => issue.code)).toEqual(['INT-09']);
+    }
+    const unsupported = { ...signed, subject: { ...signed.subject, canonicalization_version: 'unknown' } };
+    expect((await verifyDocumentSignature('invalid source', unsupported, { signatureVerifier: recording })).issues.map(issue => issue.code)).toEqual(['INT-09']);
+    expect(calls).toBe(0);
+    expect(JSON.stringify(signed)).toBe(before);
+    expect(() => documentSigningPayload(signed)).toThrow(InvalidUnicodeError);
+  });
+
+  it('retains unsupported-subject INT-14 ahead of invalid source when artifact encoding is well formed', async () => {
+    const signed = await artifact();
+    const unsupported = { ...signed, subject: { ...signed.subject, canonicalization_version: 'unknown' } };
+    expect((await verifyDocumentSignature('invalid source', unsupported)).issues.map(issue => issue.code)).toEqual(['INT-14']);
+  });
+
+  it.each(['key', '\ufffd', '\ud83d\ude00'])('preserves valid key encoding and existing backend failures (%#)', async kid => {
+    const signed = { ...await artifact(), kid };
+    let calls = 0;
+    expect((await verifyDocumentSignature(SOURCE, signed, { signatureVerifier: { verify: async () => { calls++; return { ok: true }; } } })).state).toBe('verified');
+    expect(calls).toBe(1);
+    expect(await verifyDocumentSignature(SOURCE, signed, { signatureVerifier: { verify: async () => { throw new TypeError('offline'); } } }))
+      .toMatchObject({ state: 'unverifiable', reason: 'backend_error', issues: [{ code: 'INT-13' }] });
   });
 });

@@ -42,4 +42,24 @@ describe('canonicalize — RFC 8785 (JCS)', () => {
     expect(out).toContain('"signature":"sig..."');
     expect(out).toContain('"payload":{"content_hash":"abc"}');
   });
+
+  it.each(['\ud800', '\ud801', '\udbff', '\udc00', '\udfff', 'x\ud800y'])(
+    'rejects unpaired surrogate strings in values and member names: %j', (value) => {
+      expect(() => canonicalize(value)).toThrow(/unpaired/);
+      expect(() => canonicalize({ value })).toThrow(/unpaired/);
+      expect(() => canonicalize({ [value]: 1 })).toThrow(/unpaired/);
+      expect(() => canonicalize([{ nested: value }])).toThrow(/unpaired/);
+    },
+  );
+
+  it('preserves paired surrogates, replacement characters and NUL escaping', () => {
+    expect(canonicalize({ pair: '\ud83d\ude00', replacement: '\ufffd', nul: '\u0000' }))
+      .toBe('{"nul":"\\u0000","pair":"\ud83d\ude00","replacement":"\ufffd"}');
+  });
+
+  it('retains UTF-16 ordering and does not normalize valid Unicode', () => {
+    expect(canonicalize({ '\ue000': 2, '\ud83d\ude00': 1 }))
+      .toBe('{"\ud83d\ude00":1,"\ue000":2}');
+    expect(canonicalize('\u00e9')).not.toBe(canonicalize('e\u0301'));
+  });
 });

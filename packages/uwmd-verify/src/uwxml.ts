@@ -1,5 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import type { UWCodec } from './codec.js';
+import { InvalidUnicodeError } from './integrity-canonical.js';
 import {
   assertUWEnvelope,
   stampEnvelopeDigest,
@@ -44,7 +45,16 @@ const DEFAULT_MAX_DEPTH = 64;
 const SAFE_ELEMENT_NAME = /^[A-Za-z_][A-Za-z0-9._-]*$/;
 
 export async function stringifyUWXml(envelope: UWDocumentEnvelope): Promise<string> {
-  const stamped = await stampEnvelopeDigest(envelope);
+  let stamped: UWDocumentEnvelope;
+  try {
+    stamped = await stampEnvelopeDigest(envelope);
+  } catch (error) {
+    // Preserve XML1's existing public character refusal when JCS rejects first.
+    if (error instanceof InvalidUnicodeError) {
+      throw new UWXmlError('XML_CHARACTER_INVALID', error.message);
+    }
+    throw error;
+  }
   const keys = new Set(Object.keys(stamped));
   keys.delete('envelope_version');
   keys.delete('format_version');

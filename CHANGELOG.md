@@ -10,6 +10,14 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Reject unpaired UTF-16 surrogates in JCS values and member names before UTF-8
+  digest conversion, as required by the existing RFC8785 contract. Preserve all
+  valid Unicode and frozen subjects; cover receipt/source refusal and document
+  signature precedence without rewriting historical artifacts or versions.
+  Preserve XML character errors and use existing receipt/document/block refusal
+  handling for unencodable committed inputs; leave excluded metadata and backend
+  exceptions unchanged.
+
 - Keep absent Python metadata outside the present-malformed META-01 domain.
   Keep completeness outside this partial inventory as an uncoded local diagnostic;
   preserve the full validator's published warning/info/error precedence and the
