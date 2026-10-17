@@ -782,3 +782,27 @@ standalone fixture comparisons scoped to currency findings. They do not claim
 complete frontmatter validation, rendering, portable validate or Verifier conformance.
 Prior source/role, binding, integrity and Reader controls remain unchanged; discovery
 stays parse-only.
+
+
+### Python minimum-complete capability gates
+
+The [current completion matrix](https://github.com/UWMD-OSP/UW-Markdown/blob/22372265039ec5748b9eff22ad623cbf2537a407/implementations/python/README.md#minimum-complete-capability-path--2026-10-16)
+separates Reader proof, complete Format validation, dictionary reproduction,
+all stated-figure verifiers and receipt verification from optional profiles.
+The next cohesive implementation milestone is one real `validate` command with
+complete result partitions, seven stage-readiness values, every registered CC
+coverage entry and separate invoked V.12 verification. Its gate includes all111
+unchanged portable validate cases and applicable nonportable assertions. Partial
+inspectors and adapted comparisons cannot justify the flag.
+
+The current index has1089 checks, including26Reader/688Verifier; the portable
+catalogue has350 cases, including298Reader+Verifier. Those inventories are not
+new Python pass counts. All171 current builtin dictionary formulas use arithmetic
+and only six named `round` calls, so that work can advance independently of
+RFC0088's power/return procedures. Reader key/identity/lifecycle boundaries and
+metadata-family prose omission remain explicit. Preserve published missing-meta/
+missing-field warnings, low-confidence info and malformed-shape META-01 error;
+this ordinary implementation decision needs no owner approval. Missing `_meta`
+is locally diagnosed without manufacturing META-01; the partial inventory does
+not implement the full completeness family. Discovery remains
+parse-only until the whole claimed capability is demonstrated.
