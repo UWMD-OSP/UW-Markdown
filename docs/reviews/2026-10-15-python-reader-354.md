@@ -448,3 +448,40 @@ and source bytes are unchanged. No original expectation is regenerated or
 unrelated baseline altered. Final exact-head and post-merge exact-main CI are
 recorded on PR376 and the existing Issue354 amendment; no prior green run is
 substituted for either gate.
+
+### 2026-10-17 — Nine native refusals and draft RFC0091
+
+[RFC0091](../rfcs/0091-required-metadata-booleans.md) isolates the two missing
+required-boolean allocations without extending accepted RFC0090. Its table
+identifies all nine exact native source cases and separates three REC owning
+conditions and three rejected containers from three nested-valid documents
+missing six boolean members. The local inspector evidence is preserved even
+when an existing owning error makes that condition handled; independent
+findings cannot be suppressed by an unrelated or actor-only META-01.
+
+The [exhaustive evidence](./2026-10-17-validation-diagnostic-gap-354.evidence.json)
+preserves the original nine dcc5bd0a actual CLI responses, unchanged source
+hashes, rebuilt current-main TypeScript findings, all734 source hashes and the
+independently equal Python/Node two-boolean inventory. It is a sensitivity
+experiment, not an activated validator. The separate prior27-schema audit is
+preserved [losslessly](./2026-10-17-validation-diagnostic-gap-354.formal-audit.json.gz)
+(raw SHA256 c39c817afb2cb13f6b75da7f66ec47bc72074d1831e484e3711da5cabf9b482a).
+It establishes applicability observations, not126 newly allocated errors.
+
+Run the [read-only reproduction](./2026-10-17-validation-diagnostic-gap-354.repro.py)
+after `npm run build`, with `--out` pointing to a disposable report. It assesses
+725 admitted sources/9 parse refusals and captures reference results.205 source
+documents expose943 absent booleans (488 review/455 superseded), including two
+history instances; none of111 portable validate inputs is exposed. This is not
+zero overall consumer impact. The four standalone example sources are outside
+that734-source slice.
+
+The separate [in-memory counterfactual](./2026-10-17-validation-diagnostic-gap-354.counterfactual.mjs)
+loads the compiled validator with only the draft boolean pass inserted after
+actor admission. It changes no source/dist file or expectation; it is never a
+production/CI activation hook. Run its documented command on the pinned main
+build to reproduce1090 native passes/five differences/zero updated baselines.
+The RFC lists each affected check and distinguishes expected-error-set changes
+from zero-error standalone example assertions. Original sources, schemas,
+expectations, signatures, receipts and versions stay unchanged. Normal required
+CI runs without the research hook and must remain green.

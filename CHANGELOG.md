@@ -66,6 +66,11 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Draft RFC0091's bounded diagnostic reconciliation for required metadata
+  booleans, with exact nine-case owning-code analysis, independent source
+  inventories and isolated conformance sensitivity. No new code is activated,
+  historical expectation rewritten, capability advertised or version allocated.
+
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.
   Prioritize one complete validate surface, dictionary/stated-figure reproduction

@@ -15,6 +15,17 @@ bare/nested shape and nonempty actor. Final integration requires exact-head CI
 and subsequent exact-main CI; no release version is allocated. Python discovery
 remains parse-only. RFCs0085/0088/0089 retain separate draft status.
 
+**Python diagnostic reconciliation — draft only.**
+[RFC0091](../rfcs/0091-required-metadata-booleans.md) separates the nine native
+partial refusals into existing REC/container admissions and two genuinely
+unallocated required boolean conditions. Independent two-runtime evidence
+measures943 absent fields in205 unchanged conformance sources, no affected
+portable validate inputs, and five native counterfactual check differences.
+No schema, frozen expectation or runtime diagnostic is activated. META-01 stays
+narrow; complete Python validation and its nonportable/three-platform gates
+remain open, with parse-only discovery. The existing Reader review preserves
+all cases and the27-schema audit; RFC0085/0088/0089 remain draft.
+
 **Python priority — minimum-complete capabilities.** The current implementation
 has no Reader/Verifier tier and advertises only parse. The completion matrix in
 the Python README now maps accepted obligations, implemented scope, exact corpus
