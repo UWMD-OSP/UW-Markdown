@@ -10,7 +10,7 @@ const {deriveDebt}=await import(pathToFileURL(join(root,'packages/uwmd-core/dist
 const mode=process.env.RESEARCH_MODE;
 const sha=value=>createHash('sha256').update(value).digest('hex');
 const attempt=fn=>{try{return {returned:typed(fn())};}catch(error){return {threw:typed(error)};}};
-const fixture='conformance/calc/fixtures/irr-04-endpoint-root/deal.uwx.md';
+const fixture='conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md';
 const fixtureSource=readFileSync(join(root,fixture),'utf8');
 const source=fixtureSource.replace(/\r?\n---\r?\n/,'\nlast_flow: 6.727499949325601e20\n---\n');
 if(source===fixtureSource)throw new Error('Could not add explicit research input before frontmatter close');
@@ -66,6 +66,7 @@ for(let i=0;i<receiptCases.length;i++){
  let issuanceError=null;
  try{receipt=await api.issueReceipt(source,{pack,filename:'research.uwx.md',issued_at:'2026-10-17T00:00:00Z',issuer:'research-only',engine,engine_version:mode==='baseline'?oldVersion:newVersion});}
  catch(error){issuanceError=typed(error);}
+ if(mode==='baseline'&&!receipt)throw new Error(`Baseline research receipt ${test.id} did not issue: ${JSON.stringify(issuanceError)}`);
  const old=mode==='baseline'?receipt:prior.receipts.find(row=>row.id===test.id).issued_receipt;
  const historical=[];
  if(old){
