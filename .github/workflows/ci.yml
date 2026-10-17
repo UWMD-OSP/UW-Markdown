@@ -293,6 +293,16 @@ jobs:
         # exits 0 only when the verifier reports its documented verdicts.
         run: npm run examples:verification
 
+      - name: Check isolated Envelope codec evidence (unapproved)
+        if: matrix.node == 20 && hashFiles('experiments/envelope-0089/codec-study/capture.py') != ''
+        run: |
+          python3 --version
+          node --version
+          python3 -B experiments/envelope-0089/codec-study/capture.py --check
+          python3 -B experiments/envelope-0089/codec-study/freeze.py --check
+          python3 -B -m unittest discover -s experiments/envelope-0089/codec-study -p test_codec.py -v
+          node --test experiments/envelope-0089/codec-study/independent.test.mjs
+
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added
         # without regenerating them would silently drop out of the v2 driver's

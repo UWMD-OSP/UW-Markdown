@@ -315,7 +315,7 @@ sanitizing/dropping characters or silently changing the subject is excluded.
 
 #### Independent block-extra, lexical XML and actual ZIP checkpoint
 
-The later [codec study](../../experiments/envelope-0089/codec-study/README.md)
+The later [codec study](https://github.com/UWMD-OSP/UW-Markdown/blob/d892e94b/experiments/envelope-0089/codec-study/README.md)
 adds two complete synthetic models and21 frozen artifacts without changing the
 original prototype or expectations. Each model includes ten blocks across all
 six block collections, complete outer block extras, unknown members, empty
