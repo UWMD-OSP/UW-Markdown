@@ -627,3 +627,54 @@ No iteration-cap exhaustion was observed. Owner acceptance of the complete
 procedure/accuracy/refusal contract and separate production activation remain
 required; no arithmetic, schema, fixture, receipt, package version or launch state
 changes in this study.
+
+### Composed receipt and real-signature closure (unaccepted)
+
+The [isolated composed-receipt study](https://github.com/UWMD-OSP/UW-Markdown/blob/3e968cdf/experiments/numerical-0088/composed-receipts/README.md)
+adds actual issuance and verification under the pinned numerical candidate after
+accepted main `afcc615897aca301c7b5ec070bba7c0bd253e4ef` / RFC 0090. It reuses
+one frozen independent Python multi-period IRR result without rerunning the
+4730-row study. Newly issued unmodified, baseline-loader and candidate receipts
+agree exactly; the reported word is `3fb6c64e16bf6113`. The same existing engine
+name and explicitly synthetic experiment versions exercise finite agreement and
+engine-metadata distinctions without allocating a production identity.
+
+The original capture records checkout `f29258a2` / tree `b8a2bda3`, Windows
+AMD64, CPython 3.12.3, Node 24.14.1 / V8 13.6.233.17-node.44 and OpenSSL 3.5.5.
+Thirteen compressed raw artifacts retain 19 actual candidate controls, complete
+receipts/signing payloads, backend calls, 1886 candidate primitive events and
+85 loader transformations, plus separate unmodified/baseline observations.
+The 105 source/reference and 86 compiled-JS identities are unchanged before and
+after execution. Every edited or re-signed receipt is a new synthetic artifact
+using a deliberately public disposable Ed25519 test key; none authenticates a
+historical original or establishes issuer trust.
+
+Separate post-capture verification binds all 19 receipt objects to their exact
+accepted `canonicalize({...receipt, signature: null})` signing payloads and their
+source bytes, independently of the observed `receiptSigningPayload` call. It
+checks 18 real signature outcomes (14 valid, four invalid; one other control is
+unsigned), and three in-memory detached-payload negatives. A finite synthetic
+wrong-value control with a newly valid signature preserves same-engine RCP-03
+versus other-version RCP-07/RCP-03; a retained invalid signature gives RCP-01.
+This is an explicit result-tampering control, not a newly observed natural
+host/candidate finite disagreement.
+
+The exact old endpoint source/receipt is reused solely as input to newly signed
+clones. Candidate recomputation refusal produces RCP-03 before backend invocation
+for both byte-valid and invalid signatures; no original signature is claimed.
+Earlier unavailable-backend, subject, reference and pack exits retain their
+accepted behavior. The experiment preserves existing precedence, including this
+refusal-before-backend behavior; it proposes no authentication workaround.
+
+The [separate integration accounting](https://github.com/UWMD-OSP/UW-Markdown/blob/3e968cdf/experiments/numerical-0088/integration/README.md)
+keeps the original Astra identity file and historical trajectory manifest/raw
+artifacts byte-exact. A successor Astra map pins accepted-afcc Protocol/index
+identities, with all numerical/receipt implementation hashes unchanged; the
+actual API replay still matches every frozen behavioral field. A separate
+trajectory verifier admits only the exact historical-to-afcc Protocol identity
+transition and requires every other source/helper/input/reference to match. No
+old capture is relabeled as an afcc execution or rebaselined. This one-host
+closure does not supply full cross-platform financial/receipt proof, universal
+accuracy, all graph/day-count/stated-figure coverage, issuer trust or RFC
+acceptance. Owner procedure/accuracy/refusal choices and production activation
+remain open under the major-5 launch policy.
