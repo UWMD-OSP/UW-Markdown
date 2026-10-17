@@ -1,0 +1,364 @@
+{
+  "envelope_version": "E_NEXT",
+  "format_version": "3.0",
+  "frontmatter": {
+    "uw_version": "3.0",
+    "deal_id": "independent-codec-research"
+  },
+  "sections": {
+    "property": {
+      "annotation": {
+        "section": "property"
+      },
+      "content": {
+        "_meta": {
+          "section": "property",
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
+        },
+        "content": {
+          "literal": true
+        },
+        "empty": {},
+        "null": null
+      },
+      "prose": "exact CR\rLF\nTAB\t <&>",
+      "x_extra": {
+        "null": null,
+        "empty_object": {},
+        "empty_array": [],
+        "a/~b": [
+          false,
+          1.5,
+          ""
+        ]
+      },
+      "x_absent_control": null
+    },
+    "operating_statement": {
+      "t12": {
+        "annotation": {
+          "section": "operating_statement",
+          "variant": "t12"
+        },
+        "content": {
+          "_meta": {
+            "section": "operating_statement",
+            "lifecycle": {
+              "revision": 1,
+              "superseded": false
+            }
+          },
+          "content": {
+            "literal": true
+          },
+          "empty": {},
+          "null": null
+        },
+        "prose": "exact CR\rLF\nTAB\t <&>",
+        "x_extra": {
+          "null": null,
+          "empty_object": {},
+          "empty_array": [],
+          "a/~b": [
+            false,
+            1.5,
+            ""
+          ]
+        },
+        "x_absent_control": null
+      }
+    },
+    "valuation": {},
+    "literal/~slot": {}
+  },
+  "pipeline_log": [
+    {
+      "annotation": {
+        "section": "pipeline_log"
+      },
+      "content": {
+        "_meta": {
+          "section": "pipeline_log",
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
+        },
+        "content": {
+          "literal": true
+        },
+        "empty": {},
+        "null": null
+      },
+      "prose": "exact CR\rLF\nTAB\t <&>",
+      "x_extra": {
+        "null": null,
+        "empty_object": {},
+        "empty_array": [],
+        "a/~b": [
+          false,
+          1.5,
+          ""
+        ]
+      },
+      "x_absent_control": null
+    }
+  ],
+  "custom_calculations": [
+    {
+      "annotation": {
+        "section": "custom_calculations"
+      },
+      "content": {
+        "_meta": {
+          "section": "custom_calculations",
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
+        },
+        "content": {
+          "literal": true
+        },
+        "empty": {},
+        "null": null
+      },
+      "prose": "exact CR\rLF\nTAB\t <&>",
+      "x_extra": {
+        "null": null,
+        "empty_object": {},
+        "empty_array": [],
+        "a/~b": [
+          false,
+          1.5,
+          ""
+        ]
+      },
+      "x_absent_control": null
+    }
+  ],
+  "custom_scenarios": [
+    {
+      "annotation": {
+        "section": "custom_scenarios"
+      },
+      "content": {
+        "_meta": {
+          "section": "custom_scenarios",
+          "lifecycle": {
+            "revision": 1,
+            "superseded": false
+          }
+        },
+        "content": {
+          "literal": true
+        },
+        "empty": {},
+        "null": null
+      },
+      "prose": "exact CR\rLF\nTAB\t <&>",
+      "x_extra": {
+        "null": null,
+        "empty_object": {},
+        "empty_array": [],
+        "a/~b": [
+          false,
+          1.5,
+          ""
+        ]
+      },
+      "x_absent_control": null
+    }
+  ],
+  "extensions": {
+    "x_review": {
+      "mode": "variants",
+      "blocks": [
+        {
+          "variant": null,
+          "block": {
+            "annotation": {
+              "section": "x_review"
+            },
+            "content": {
+              "_meta": {
+                "section": "x_review",
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "content": {
+                "literal": true
+              },
+              "empty": {},
+              "null": null,
+              "_role": "primary"
+            },
+            "prose": "exact CR\rLF\nTAB\t <&>",
+            "x_extra": {
+              "null": null,
+              "empty_object": {},
+              "empty_array": [],
+              "a/~b": [
+                false,
+                1.5,
+                ""
+              ]
+            },
+            "x_absent_control": null
+          }
+        },
+        {
+          "variant": "default",
+          "block": {
+            "annotation": {
+              "section": "x_review",
+              "variant": "default"
+            },
+            "content": {
+              "_meta": {
+                "section": "x_review",
+                "lifecycle": {
+                  "revision": 1,
+                  "superseded": false
+                }
+              },
+              "content": {
+                "literal": true
+              },
+              "empty": {},
+              "null": null
+            },
+            "prose": "exact CR\rLF\nTAB\t <&>",
+            "x_extra": {
+              "null": null,
+              "empty_object": {},
+              "empty_array": [],
+              "a/~b": [
+                false,
+                1.5,
+                ""
+              ]
+            },
+            "x_absent_control": null
+          }
+        }
+      ]
+    },
+    "x_single": {
+      "mode": "single",
+      "block": {
+        "annotation": {
+          "section": "x_single"
+        },
+        "content": {
+          "_meta": {
+            "section": "x_single",
+            "lifecycle": {
+              "revision": 1,
+              "superseded": false
+            }
+          },
+          "content": {
+            "literal": true
+          },
+          "empty": {},
+          "null": null
+        },
+        "prose": "exact CR\rLF\nTAB\t <&>",
+        "x_extra": {
+          "null": null,
+          "empty_object": {},
+          "empty_array": [],
+          "a/~b": [
+            false,
+            1.5,
+            ""
+          ]
+        },
+        "x_absent_control": null
+      }
+    }
+  },
+  "superseded": {
+    "x_review": [
+      {
+        "annotation": {
+          "section": "x_review",
+          "superseded": true
+        },
+        "content": {
+          "_meta": {
+            "section": "x_review",
+            "lifecycle": {
+              "revision": 1,
+              "superseded": true
+            }
+          },
+          "content": {
+            "literal": true
+          },
+          "empty": {},
+          "null": null
+        },
+        "prose": "exact CR\rLF\nTAB\t <&>",
+        "x_extra": {
+          "null": null,
+          "empty_object": {},
+          "empty_array": [],
+          "a/~b": [
+            false,
+            1.5,
+            ""
+          ]
+        },
+        "x_absent_control": null
+      },
+      {
+        "annotation": {
+          "section": "x_review",
+          "variant": "default",
+          "superseded": true
+        },
+        "content": {
+          "_meta": {
+            "section": "x_review",
+            "lifecycle": {
+              "revision": 1,
+              "superseded": true
+            }
+          },
+          "content": {
+            "literal": true
+          },
+          "empty": {},
+          "null": null
+        },
+        "prose": "exact CR\rLF\nTAB\t <&>",
+        "x_extra": {
+          "null": null,
+          "empty_object": {},
+          "empty_array": [],
+          "a/~b": [
+            false,
+            1.5,
+            ""
+          ]
+        },
+        "x_absent_control": null
+      }
+    ],
+    "valuation": [],
+    "literal/~slot": []
+  },
+  "x_outer": {
+    "empty": [],
+    "null": null,
+    "content": "not a block"
+  },
+  "semantic_digest": "sha256:898ce3bd2d1b9072d97e40d7dd62cffd6d50ad3421d594ba0c98936c097b5566"
+}

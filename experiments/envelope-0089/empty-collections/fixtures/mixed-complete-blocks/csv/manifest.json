@@ -1,0 +1,35 @@
+{
+  "status": "UNAPPROVED RFC0089 CODEC STUDY",
+  "bundle_version": "B_NEXT",
+  "envelope_version": "E_NEXT",
+  "canonicalization_version": "C_NEXT",
+  "format_version": "3.0",
+  "semantic_digest": "sha256:898ce3bd2d1b9072d97e40d7dd62cffd6d50ad3421d594ba0c98936c097b5566",
+  "inventory": [
+    {
+      "path": "block_values.csv",
+      "bytes": 15696,
+      "sha256": "e2cf2e9ab3231c932f7fed2fa12b24cdd3cd440497a0086467ee0503a294a8b0"
+    },
+    {
+      "path": "blocks.csv",
+      "bytes": 980,
+      "sha256": "a2ec4001b4140af884d54edaa640847fdf40eb979e8074b8a70a426d21ac3e5e"
+    },
+    {
+      "path": "document.csv",
+      "bytes": 617,
+      "sha256": "7c4dfa167e88788a1d90e33184915bf88ebbe233e9d50afabc8cedf7a0056fc5"
+    },
+    {
+      "path": "frontmatter.csv",
+      "bytes": 140,
+      "sha256": "cd86bfac9d0bf038473054624cc4f7864f55694d8e33b7e7057fe06867f3b537"
+    },
+    {
+      "path": "prose.csv",
+      "bytes": 1050,
+      "sha256": "60205fd89896bb2a4ada79f8075ef40797345b40512c449102fff6df0259bdff"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "envelope_version": "E_NEXT",
+  "format_version": "3.0",
+  "frontmatter": {
+    "uw_version": "3.0",
+    "deal_id": "empty-carrier"
+  },
+  "sections": {
+    "valuation": {},
+    "literal/~slot": {}
+  },
+  "superseded": {
+    "x_history": [],
+    "literal/~slot": []
+  },
+  "extensions": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "semantic_digest": "sha256:03a7a5207e5b506d929ea6de9fa6ad849a29271c105453fdad1777eef3b60ff8"
+}
