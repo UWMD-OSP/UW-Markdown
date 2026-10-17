@@ -579,3 +579,17 @@ The earlier nine-platform kernel run remains evidence for its recorded source
 commit. Its executable candidate/input/collector/workflow closure is unchanged;
 new replay accounting is tested by ordinary CI and does not create a new claim
 of cross-platform kernel execution.
+
+### Independent Python raw-kernel evidence
+
+The isolated `python-fdlibm` lab adds a separately structured adaptation of the
+pinned C and explicit Python word/IEEE-operation semantics. Its original local
+observation remains frozen with actual commit/tree and source/input hashes.
+All4204 inputs agree with three archived C streams; the178 mathematical checks
+retain exactly the five known one-ULP discrepancies. Eleven boundary/resource/
+refusal controls pass locally. Constant words are common evidence, not an
+independent constant derivation. This closes a raw implementation gap, not a
+complete Python financial evaluator, solver/quantizer/receipt proof or RFC
+acceptance. Ordinary CI adds conditional tests and separately labeled evidence
+in the existing three Python jobs, pinned to the actual reviewed head; no extra
+platform jobs or production activation. Original numerical evidence stays intact.

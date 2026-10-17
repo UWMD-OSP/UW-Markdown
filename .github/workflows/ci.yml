@@ -31,6 +31,8 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -39,6 +41,19 @@ jobs:
       # claims full Verifier coverage or resolves RFC 0088 numerical semantics.
       - name: Independent unit controls
         run: python -m unittest discover -s implementations/python -v
+      # Isolated unaccepted research, separately labeled from Reader evidence.
+      # Reuse these three Python runtimes; no additional job or dependency install.
+      - name: Independent Python numerical procedure research (unaccepted)
+        if: hashFiles('experiments/numerical-0088/python-fdlibm/test_kernel.py') != ''
+        run: |
+          python -B -m unittest discover -s experiments/numerical-0088/python-fdlibm -p "test_*.py" -v
+          python -B experiments/numerical-0088/python-fdlibm/check_evidence.py --output "${{ runner.temp }}/python-fdlibm-observations.json"
+      - uses: actions/upload-artifact@v6
+        if: always() && hashFiles('experiments/numerical-0088/python-fdlibm/test_kernel.py') != ''
+        with:
+          name: isolated-python-fdlibm-${{ matrix.os }}
+          path: ${{ runner.temp }}/python-fdlibm-observations.json
+          if-no-files-found: error
       - name: Portable Reader projections (no capability skips)
         run: python conformance/runner/runner.py --impl "python implementations/python/uwmd.py" --tier reader --no-skip --manifest-out python-reader-conformance.json
       - uses: actions/upload-artifact@v6

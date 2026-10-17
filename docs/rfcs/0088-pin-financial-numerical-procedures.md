@@ -528,7 +528,9 @@ It has no host-transcendental fallback. Independent mathematical certificates
 retain five one-ULP discrepancies among 178 controls; neither a universal
 correct-rounding claim nor a global one-ULP bound follows. Native/compiler and
 cross-runtime results are separately recorded by exact run/artifact identity.
-A complete independent Python kernel and whole-domain accuracy remain gates.
+The independent raw Python kernel checkpoint below closes the missing source
+implementation; whole-domain accuracy and independent composed-financial,
+quantization and receipt evidence remain separate gates.
 
 The exact existing-corpus manifest retains all 1,089 case identities and protected
 input hashes. Both measured modes pass all assertions, with 671 aligned primitive
@@ -748,3 +750,33 @@ matching0c2f; future research runs explicitly check out their reviewed head and
 record additional actual executable provenance. Missing historical fields are
 not invented. The same source graphs, exact-rational expectations, conformance
 and receipt rules remain unchanged.
+
+### Independent raw Python procedure checkpoint (unaccepted)
+
+The [new isolated Python implementation](../../experiments/numerical-0088/python-fdlibm/README.md)
+implements the same seven raw helpers directly from the frozen C, independently
+structured from the JS candidate, including all integer/fractional powers. It
+uses explicit binary64 words, signed32/unsigned32 operations, IEEE zero division
+and bounded scalar control flow; there is no host-transcendental fallback.
+The exact constant-word table is shared rational-derived evidence data, not a
+second independent derivation of constants. Nothing imports it into production.
+
+At the committed one-host observation, CPython3.12.3 Windows AMD64 independently
+matches all4204 operands against each of three frozen native-C streams:3435
+exact non-NaN words and769 NaN classes. The178 mathematical controls retain173
+agreements and the same five adjacent-word counterexamples. Eleven focused
+controls include arithmetic prerequisites, word/count32 behavior, independent
+negative-unit parity, sqrt loop bounds, raw/public separation, evidence tamper
+refusal and JSONL input refusal. Original expected evidence is never regenerated.
+The record pins actual observer commit/tree, all implementation/input/source/
+archive hashes and every bounded mathematical discrepancy.
+
+Ordinary CI conditionally checks out the reviewed PR head and reuses its three
+existing Python jobs for this research, retaining separately named observation
+artifacts. A workflow definition is not an execution result: record actual run,
+head, runtime, architecture and hashes before claiming those platforms. Earlier
+nine-platform JS/native evidence keeps its original source scope. Independent
+complete financial graphs/IRR trajectories, final decimal-string quantization,
+reported assertions and receipt authentication/error precedence are not supplied
+by this raw kernel. Universal correct rounding/global accuracy, applicable
+spreadsheet evidence and owner acceptance/activation remain unresolved gates.
