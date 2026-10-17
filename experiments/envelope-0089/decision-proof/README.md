@@ -132,8 +132,8 @@ control in the preserved
 It first created one disposable actor-absent input (SHA256
 `9db0770e88101e42a5d3c843c855bd5e2b1ff9194b644d17371542a0837c5acb`),
 then assessed those identical bytes under the before/candidate contracts.
-The recorded subject and results_digest remain equal; policy errors change0to1
-and signing-payload SHA changes4905dc87…tod88274d6…. Unsigned same/cross receipt
+The recorded subject and results_digest remain equal; policy errors change from0 to1
+and signing-payload SHA changes from `4905dc87…` to `d88274d6…`. Unsigned same/cross receipt
 verification returns verified. This was **not** an actual cryptographic receipt
 signature proof; it does not replace the separately frozen Ed25519 controls or
 claim that the original source was never edited to prepare the disposable input.

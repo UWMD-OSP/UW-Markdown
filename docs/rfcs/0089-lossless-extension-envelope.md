@@ -618,6 +618,32 @@ excluded from that cross-head behavior comparison. Original artifacts/helpers
 remain byte-identical. This one-host fresh result is not a cross-platform or CI
 claim, broader V.13 admission, new receipt rule or acceptance of this RFC.
 
+### D5b — Representation identity is not validation-policy attestation
+
+The [operation/commitment matrix](https://github.com/UWMD-OSP/UW-Markdown/blob/dcb842ed112782336ea3a0f14168b135dc1af586/experiments/envelope-0089/decision-proof/README.md#subject-identity-assessment-and-issuance-are-separate-commitments)
+separates four changes using existing frozen evidence: equivalent carrier
+spelling, validation of the same exact source, actual metadata authoring, and
+the proposed new Envelope stamp. These are not interchangeable migrations.
+
+Assessing unchanged source under a validation rule does not itself change its
+payload or Envelope subject. Newly issued receipt policy counts and signing
+bytes may differ even when source and results digests do not. The accepted
+RFC0090 investigation records exactly that difference on one identical
+actor-absent disposable input; its same/cross receipt checks were unsigned,
+not a cryptographic financial-receipt proof. The raw-JSON and Ed25519 studies
+supply their own separate, precisely bounded evidence.
+
+Actually inserting a metadata boolean changes raw source and the complete
+Envelope subject. It does not by itself change V.9's metadata-excluding hash
+or V.11's six signing fields; a new actor/timestamp would have separate effects.
+Neither a valid block signature nor a producer's default for NEW metadata can
+supply an omitted historical declaration. Receipt recomputation/issuance and
+V.13 source admission retain their own accepted obligations; no new receipt
+refusal, source repair or grandfathered authentication follows from this table.
+The owner decision remains the exact represented value/projection and new
+commitment regime, not permission to fabricate validation inputs. Draft
+RFC0091 and retained-history RFC0085 are not accepted or expanded here.
+
 ## Compatibility analysis
 
 The source Markdown of ordinary admitted named extension peers need not change.
