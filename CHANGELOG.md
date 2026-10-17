@@ -32,6 +32,12 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Parse admitted Python YAML sequence mappings, including the Format modules
+  declaration and unknown frontmatter data, instead of refusing continuation
+  members or treating an object entry as a scalar. Retain numeric source spans,
+  duplicate/depth refusals and parse-only discovery; no module loading or
+  complete validation/tier claim is added.
+
 - Route Python Reader fence-only `superseded=true` blocks to ordered history
   before role/variant selection, consistently with existing source verification.
   Preserve original metadata and bytes; keep discovery parse-only.
