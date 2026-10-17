@@ -11,6 +11,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import math
 from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
@@ -37,6 +38,16 @@ def require(test, reason):
         raise Refusal(reason)
 
 
+def binary64_token(text):
+    value = float(text)
+    require(math.isfinite(value), "JSON number outside finite binary64")
+    return value
+
+
+def xml_space(text):
+    return all(character in " \t\r\n" for character in (text or ""))
+
+
 def load_json(text):
     def pairs(items):
         result = {}
@@ -45,7 +56,7 @@ def load_json(text):
             result[key] = value
         return result
     try:
-        return json.loads(text, object_pairs_hook=pairs, parse_constant=lambda _: (_ for _ in ()).throw(Refusal("nonfinite JSON")))
+        return json.loads(text, object_pairs_hook=pairs, parse_int=binary64_token, parse_float=binary64_token, parse_constant=lambda _: (_ for _ in ()).throw(Refusal("nonfinite JSON")))
     except (ValueError, RecursionError) as error:
         raise Refusal("invalid JSON: " + str(error)) from error
 
@@ -198,7 +209,7 @@ def decode_xml(text):
         kind = element.get(tag("type"))
         children, text_value = list(element), element.text or ""
         if kind == "object":
-            require(not text_value.strip() and all(not (c.tail or "").strip() for c in children), "XML object text")
+            require(xml_space(text_value) and all(xml_space(c.tail) for c in children), "XML object text")
             out = {}
             for child in children:
                 key = member_name(child)
@@ -207,7 +218,7 @@ def decode_xml(text):
                 out[key] = value(child, depth + 1)
             return out
         if kind == "array":
-            require(not text_value.strip() and all(c.tag == tag("item") and not (c.tail or "").strip() for c in children), "XML array shape")
+            require(xml_space(text_value) and all(c.tag == tag("item") and xml_space(c.tail) for c in children), "XML array shape")
             return [value(c, depth + 1) for c in children]
         require(not children, "XML scalar children")
         if kind == "string": return text_value
@@ -219,10 +230,11 @@ def decode_xml(text):
         canonical(number)
         return number
     model = {"envelope_version": root.get("envelope-version"), "format_version": root.get("format-version")}
-    require(not (root.text or "").strip(), "XML root text")
+    require(xml_space(root.text), "XML root text")
     for child in root:
         key = member_name(child)
-        require(key not in model and not (child.tail or "").strip(), "duplicate XML root member")
+        require(key not in model, "duplicate XML root member")
+        require(xml_space(child.tail), "XML root mixed text")
         model[key] = value(child)
     return validate(model)
 
