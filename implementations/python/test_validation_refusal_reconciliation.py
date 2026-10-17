@@ -65,9 +65,9 @@ class RefusalReconciliationTests(unittest.TestCase):
         # A future schema bound must not be consumed by the present REC-01 rule.
         with tempfile.TemporaryDirectory(prefix="uwmd-rec-constraint-") as folder:
             provider = Path(folder)
-            schema = json.loads((ROOT/"spec/schemas/lease-recovery-terms.schema.json").read_text())
+            schema = json.loads((ROOT/"spec/schemas/lease-recovery-terms.schema.json").read_text(encoding="utf-8"))
             schema["properties"]["pro_rata_share"]["maximum"] = .5
-            (provider/"lease-recovery-terms.schema.json").write_text(json.dumps(schema))
+            (provider/"lease-recovery-terms.schema.json").write_text(json.dumps(schema), encoding="utf-8")
             with patch("uwmd_validation_optional_shapes._SCHEMAS", provider):
                 _, result = self.assess(self.recoveries([dict(recovery_terms=dict(method="net", pro_rata_share=2))]))
             findings = result["section_assessment"]["lease_recoveries"]["shape_findings"]
@@ -147,10 +147,10 @@ class FrozenRefusalReconciliationCLI(unittest.TestCase):
             with self.subTest(directory=directory):
                 if directory.startswith("recoveries/"):
                     source = ROOT/"conformance"/directory/"deal.uwx.md"
-                    expected = json.loads((source.parent/"expected.json").read_text())
+                    expected = json.loads((source.parent/"expected.json").read_text(encoding="utf-8"))
                 else:
                     source = ROOT/"conformance"/(directory + ".uwx.md")
-                    expected = json.loads(source.with_name(source.name.removesuffix(".uwx.md") + ".expected.json").read_text())
+                    expected = json.loads(source.with_name(source.name.removesuffix(".uwx.md") + ".expected.json").read_text(encoding="utf-8"))
                 raw = source.read_bytes()
                 document = parse(raw)
                 result = validate(document)
