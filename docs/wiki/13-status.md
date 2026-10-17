@@ -1,18 +1,22 @@
 # 13 — Build status (living document)
 
-**Python integration checkpoint — block hashes merged; active source checks.**
-PR #369 merged as `022b01240ce88cec6f803d03e45033c4c0a6c113`, tree-identical
-to reviewed `ecf5a64e`. Exact-head CI38981952556 passes17 ordinary jobs; its
-[exact-main run](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38982753992)
-is the durable post-merge result. The bounded implementation retains132Python
-controls, Reader17/17 and explicitly hash-only evidence. Signature checking,
-ambiguous chain identity policy and complete Verifier conformance remain unclaimed.
+**Python integration checkpoint — source/role checks merged.**
+PR #370 merged as `6782c0ebcdc8eccb436f2a381770af46728666f8`, tree-identical
+to reviewed `4623002b`. Exact-head
+[CI38983144489](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38983144489)
+passes all17 ordinary jobs; publication-only verification is skipped. Ubuntu,
+Windows and macOS each demonstrate144 Python methods and genuine Reader17/17.
+The [exact-main run](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38984025694)
+is tracked separately. Source/role, override and pinned routing findings retain
+original physical source evidence; selected shape diagnostics remain local.
 
-The accepted source/role continuation adds SRC-01/02/03 and ROLE-01 inventory,
-leaf override checks and pinned META-01 routing across all active physical
-blocks. Twelve focused methods include nine scoped standalone comparisons;
-selected shape diagnostics are local. Original source/history evidence and
-parse-only discovery remain intact; no full validate capability is implied.
+The next bounded continuation inspects document-level currency identity under
+accepted CUR-01, independent of financial bindings or locale/display behavior.
+Seven focused methods include four explicitly scoped standalone comparisons.
+Metadata-completeness code severities remain unassigned in accepted prose; no
+new registered severity, suffix or timestamp policy is inferred. Full structural
+validation and complete Verifier capability remain unclaimed; discovery stays
+parse-only. RFC0088/#357 and RFC0089/#368 remain independent unaccepted drafts.
 
 ## Bounded parallel workstreams
 
@@ -23,7 +27,7 @@ Focused local checks precede full exact-head CI at integration checkpoints.
 
 | Lane | Remote branch | Scope and gate |
 |---|---|---|
-| A Python verification | `codex/python-source-role-validation` | Accepted read-only verification; Python code/tests/CLI and README. Parse-only until full capability obligations are demonstrated. |
+| A Python verification | `codex/python-document-currency` | Accepted read-only verification; Python code/tests/CLI and README. Parse-only until full capability obligations are demonstrated. |
 | B numerical determinism | `codex/numerical-determinism-356` / #357 | DraftRFC0088, existing numerical study and isolated experiments; no production arithmetic, expected-result or acceptance changes. |
 | C Envelope | `codex/rfc-0089-extension-envelope` / #368 | DraftRFC0089, the existing365review section and illustrative evidence; no Envelope1/schema/digest/receipt change before owner approval. |
 

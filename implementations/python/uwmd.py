@@ -11,6 +11,7 @@ from uwmd_reserve_draws import verify_reserve_draw_bindings
 from uwmd_replacement_funding import replacement_funding_report
 from uwmd_block_integrity import BlockIntegrityError, verify_block_integrity
 from uwmd_source_validation import inspect_source_roles
+from uwmd_currency import inspect_document_currency
 
 
 def main(arguments):
@@ -24,6 +25,15 @@ def main(arguments):
             result = asyncio.run(verify_block_integrity(parse(path.read_bytes(), filename=path.name)))
             return result, 0 if result["ok"] else 1
         except (SourceError, BlockIntegrityError) as error:
+            return {"error": {"message": str(error)}}, 1
+        except OSError as error:
+            return {"error": {"message": str(error)}}, 2
+    if len(arguments) in (2, 3) and arguments[0] == "inspect-document-currency" and (len(arguments) == 2 or arguments[2] == "--json"):
+        try:
+            path = Path(arguments[1])
+            result = inspect_document_currency(parse(path.read_bytes(), filename=path.name))
+            return result, 0 if result["ok"] else 1
+        except SourceError as error:
             return {"error": {"message": str(error)}}, 1
         except OSError as error:
             return {"error": {"message": str(error)}}, 2
@@ -87,7 +97,7 @@ def main(arguments):
             return {"error": diagnostic}, 1
         except OSError as error:
             return {"error": {"message": str(error)}}, 2
-    return {"error": {"message": "implemented commands: manifest, parse <file>, verify-reserve-accounts <file> [--json], verify-reserve-draws <file> [plan.json] [--json], verify-replacement-funding <file> [--json], verify-block-integrity <file> [--json], inspect-source-roles <file> [--json]"}}, 1
+    return {"error": {"message": "implemented commands: manifest, parse <file>, verify-reserve-accounts <file> [--json], verify-reserve-draws <file> [plan.json] [--json], verify-replacement-funding <file> [--json], verify-block-integrity <file> [--json], inspect-source-roles <file> [--json], inspect-document-currency <file> [--json]"}}, 1
 
 
 if __name__ == "__main__":
