@@ -1,7 +1,7 @@
 // External-review claims reproduced through unchanged production APIs.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { BUILTINS } from '../../../packages/uwmd-verify/dist/calc/builtins.js';
 import { evaluateCalc } from '../../../packages/uwmd-verify/dist/calc/index.js';
@@ -129,14 +129,28 @@ export async function observe() {
   return result;
 }
 
+// Reviewed source identity changes are separate from frozen behavioral evidence.
+// Never derive an approved hash from the current checkout or rewrite observations.
+export function verifyReplay(current, frozenBytes, identities) {
+  assert.equal(identities.format, 'rfc0088-astra-replay-identities-v1');
+  assert.equal(HASH(frozenBytes), identities.historical.observations_sha256, 'frozen observations SHA-256');
+  const historical = JSON.parse(frozenBytes.toString('utf8'));
+  assert.deepStrictEqual(historical.production_hashes, identities.historical.production_hashes, 'historical source identities');
+  assert.deepStrictEqual(current.production_hashes, identities.approved_current.production_hashes, 'approved current source identities');
+  const { production_hashes: historicalHashes, ...historicalBehavior } = historical;
+  const { production_hashes: currentHashes, ...currentBehavior } = current;
+  assert.deepStrictEqual(currentBehavior, historicalBehavior, 'all frozen behavioral observations');
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const result = await observe();
+  assert.equal(process.argv.length, 2, 'read-only replay accepts no arguments; frozen observations cannot be overwritten');
   const destination = new URL('observations.json', import.meta.url);
-  if (process.argv.includes('--write')) {
-    writeFileSync(destination, `${JSON.stringify(result, null, 2)}\n`);
-    console.log('WROTE isolated current-behavior evidence; no conformance baseline changed');
-  } else {
-    assert.deepEqual(result, JSON.parse(readFileSync(destination, 'utf8')));
-    console.log(`PASS current production: 2 IRR branch traces, 9 exceptional-value controls, ${result.receipts.cases.length} receipt precedence controls and identity evidence`);
-  }
+  const frozenBytes = readFileSync(destination);
+  const identities = JSON.parse(readFileSync(new URL('integration-identities.json', import.meta.url), 'utf8'));
+  // Refuse tampered evidence before invoking production APIs.
+  assert.equal(HASH(frozenBytes), identities.historical.observations_sha256, 'frozen observations SHA-256');
+  const result = await observe();
+  verifyReplay(result, frozenBytes, identities);
+  assert.deepStrictEqual(readFileSync(destination), frozenBytes, 'frozen evidence remains immutable during replay');
+  console.log(`PASS approved current identities and frozen behavior: 2 IRR branch traces, 9 exceptional-value controls, ${result.receipts.cases.length} receipt precedence controls and identity evidence`);
 }
