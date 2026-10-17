@@ -1,4 +1,4 @@
-"""CC-03 canonical senior-rate and independent-leg controls; no CLI claim."""
+"""Accepted CC operand/selection controls; no CLI or complete tier claim."""
 import copy
 import json
 import math
@@ -121,6 +121,101 @@ class ValidationCrossTests(unittest.TestCase):
                 self.assertEqual(path.read_bytes(), raw)
         # These are only the frozen document diagnostic assertions, not stack
         # sizing recomputation, a portable case execution or a capability pass.
+
+
+class ValidationLTVOperandTests(unittest.TestCase):
+    """RFC 0079 D2 / Protocol XIII.2 denominator evidence, not new ratio policy."""
+
+    def inspect(self, debt, valuation, *, prefix=b""):
+        document=parse(HEADER+prefix+block("debt_structure",debt)+block("valuation",valuation))
+        before=copy.deepcopy(document)
+        result=validate(document)
+        self.assertEqual(document,before)
+        issues=[i for i in result["issues"] if i["code"]=="CC-02"]
+        return result,issues
+
+    def test_stated_underwritten_value_is_used_instead_of_purchase_price(self):
+        result,issues=self.inspect(dict(loan_amount=50,ltv=.5),
+                                   dict(underwritten_value=100,purchase_price=200))
+        self.assertEqual(issues,[])
+        self.assertEqual(result["coverage"]["CC-02"]["status"],"evaluated")
+        result,issues=self.inspect(dict(loan_amount=50,ltv=.25),
+                                   dict(underwritten_value=100,purchase_price=200))
+        self.assertEqual(len(issues),1)
+        self.assertEqual((issues[0]["code"],issues[0]["severity"]),("CC-02","warning"))
+        self.assertEqual(issues[0]["value"],dict(stated=.25,comparison=.5))
+
+    def test_only_absent_or_null_underwritten_value_uses_purchase_price(self):
+        for valuation in (dict(purchase_price=200),
+                          dict(underwritten_value=None,purchase_price=200)):
+            with self.subTest(valuation=valuation):
+                result,issues=self.inspect(dict(loan_amount=50,ltv=.25),valuation)
+                self.assertEqual(issues,[])
+                self.assertEqual(result["coverage"]["CC-02"]["status"],"evaluated")
+
+    def test_stated_zero_or_invalid_underwritten_value_never_uses_price(self):
+        for value in (0,False,"100",[],{}):
+            with self.subTest(underwritten_value=value):
+                result,issues=self.inspect(dict(loan_amount=50,ltv=.25),
+                    dict(underwritten_value=value,purchase_price=200))
+                self.assertEqual(issues,[])
+                self.assertEqual(result["coverage"]["CC-02"]["reason"],"field_absent")
+
+    def test_missing_null_or_nonnumber_operands_do_not_infer_values(self):
+        cases=[({},dict(underwritten_value=100)),
+               (dict(loan_amount=None,ltv=.5),dict(underwritten_value=100)),
+               (dict(loan_amount=True,ltv=.5),dict(underwritten_value=100)),
+               (dict(loan_amount=50),dict(underwritten_value=100)),
+               (dict(loan_amount=50,ltv=None),dict(underwritten_value=100)),
+               (dict(loan_amount=50,ltv=".5"),dict(underwritten_value=100)),
+               (dict(loan_amount=50,ltv=.5),{}),
+               (dict(loan_amount=50,ltv=.5),dict(purchase_price=False))]
+        for debt,valuation in cases:
+            with self.subTest(debt=debt,valuation=valuation):
+                result,issues=self.inspect(debt,valuation)
+                self.assertEqual(issues,[])
+                self.assertEqual(result["coverage"]["CC-02"]["reason"],"field_absent")
+
+    def test_zero_loan_is_stated_and_existing_half_percent_threshold_is_exact(self):
+        # Zero numerator makes the published .005 boundary directly representable
+        # as the authored float; no hand-derived financial model is introduced.
+        for stated,mismatch in ((0,False),(.005,False),(math.nextafter(.005,math.inf),True)):
+            result,issues=self.inspect(dict(loan_amount=0,ltv=stated),dict(underwritten_value=100))
+            self.assertEqual(len(issues),int(mismatch))
+            self.assertEqual(result["coverage"]["CC-02"]["status"],"evaluated")
+
+    def test_selected_senior_ignores_unselected_and_superseded_operands(self):
+        raw=HEADER+block("debt_structure",dict(loan_amount=99,ltv=.99),
+                         variant="irrelevant",role="component")
+        raw+=block("debt_structure",dict(loan_amount=99,ltv=.99),variant="old",
+                   role="senior",superseded=True)
+        raw+=block("debt_structure",dict(loan_amount=50,ltv=.5),variant="senior",role="senior")
+        raw+=block("valuation",dict(underwritten_value=100))
+        document=parse(raw);before=copy.deepcopy(document);result=validate(document)
+        self.assertEqual(document,before)
+        self.assertFalse(any(i["code"]=="CC-02" for i in result["issues"]))
+        self.assertEqual(result["coverage"]["CC-02"],
+            dict(status="evaluated",resolutions={"debt_structure":dict(variant="senior",via="role")}))
+        raw+=block("debt_structure",dict(loan_amount=1,ltv=.01),variant="collision",role="senior")
+        result=validate(parse(raw))
+        self.assertEqual(result["coverage"]["CC-02"]["reason"],"variant_unresolvable")
+        self.assertTrue(any(i["code"]=="CC-16" and i["section"]=="debt_structure"
+                            for i in result["issues"]))
+        self.assertFalse(any(i["code"]=="CC-02" for i in result["issues"]))
+
+    def test_unresolved_external_selected_operand_never_uses_local_peer_or_marker(self):
+        for section in ("debt_structure","valuation"):
+            raw=HEADER
+            if section=="debt_structure":
+                raw+=external(section,loan_amount=50,ltv=.9)
+                raw+=block("valuation",dict(underwritten_value=100))
+            else:
+                raw+=block("debt_structure",dict(loan_amount=50,ltv=.9))
+                raw+=external(section,underwritten_value=100)
+            document=parse(raw);before=copy.deepcopy(document);result=validate(document)
+            self.assertEqual(document,before)
+            self.assertEqual(result["coverage"]["CC-02"]["reason"],"field_absent")
+            self.assertFalse(any(i["code"]=="CC-02" for i in result["issues"]))
 
 
 if __name__ == "__main__":

@@ -437,7 +437,7 @@ implemented ledger, with remaining proof limits named explicitly.
 | Check | Implemented condition / source selection | Remaining audit gate |
 |---|---|---|
 | CC-01 | Detail rent roll versus preferred t12 operating statement GPR, 3% | Complete canonical field-location and zero/malformed operand controls. |
-| CC-02 | Senior debt stated LTV versus selected valuation, 0.005 | Undefined ratio and full canonical valuation/input applicability. |
+| CC-02 | Senior debt stated LTV versus selected valuation, 0.005 | Accepted underwritten-value/lazy-price fallback, missing/null/invalid/zero operand behavior, threshold and source-selection proof added below. Alternate stated-LTV carrier priority and nonpositive-denominator applicability are not newly settled. |
 | CC-03 | Senior loan amount against sources.loan_amount and one senior stack tranche ($100 tolerance); exact tranche.rate against debt_structure.interest_rate | Canonical rate, missing/null/type/zero, role/history/external and independent-leg controls now pass. Multiple senior tranches are not aggregated; full source bucket applicability remains audited. |
 | CC-04 | Stated total_sources versus total_uses, tolerance 1 | Accepted derived uses are a separate calculation rule; no invented stated-versus-derived discrepancy finding. |
 | CC-05 | Senior debt underwriting NOI versus selected NOI, 1% | Audit all admitted source locations, not inferred NOI. |
@@ -452,6 +452,23 @@ implemented ledger, with remaining proof limits named explicitly.
 | CC-14 | Unconditional deal-record property presence, including unresolved external reference | Non-deal profile and Lite/source discrimination must remain exact. |
 | CC-15 | Eligible base/default/sole lease-up scenario versus NOI, 2% | Complete variant/canonical field controls; role cannot select another scenario. |
 | CC-16 | One info finding per unresolvable section, affected checks sorted | Reporting only; not one of the fifteen coverage entries and not a financial failure. |
+
+The CC-02 operand proof follows accepted RFC 0079 D2 and its Decisions table,
+plus Protocol XIII.2: stated underwritten value is the denominator; purchase
+price is used only when that value is absent/null, never for a stated zero or
+invalid value. Seven integrated API methods cover that boundary, missing/null/
+typed operands, a stated zero loan, the existing 0.005 comparison threshold,
+senior-role selection/refusal, superseded/component peers, unresolved external
+operands and no mutation. These are structural reconciliation tests, not a new
+LTV metric procedure or a portable validate command run. The already implemented
+accepted behavior required no production change.
+
+The broader field audit did not establish a defect authorizing a blanket ratio
+guard or removal of every alternate carrier. Format 4.7's block example places
+LTV in `sizing_metrics.ltv`, while published reconciliation/remediation precedent
+also reads top-level `ltv`. Preserve current behavior until that applicability is
+reconciled; no claim is made that either carrier priority or negative-denominator
+domain was newly settled. Other CC carrier audits remain in the table above.
 
 The CC-03 canonical rate closure follows [Format 4.7 / 4.24 / 5.3](../../spec/UW_FORMAT_SPEC.md)
 and [RFC 0026 section A](../../docs/rfcs/0026-capital-stack.md): the selected senior loan
