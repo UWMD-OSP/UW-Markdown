@@ -719,7 +719,7 @@ their separate states. No package/specification version, tag or release.
 
 
 Bounded independent Python WIP0a6c replay of the four new and four historical
-records is preserved in authored-python.json (rawSHA
+records is preserved losslessly in authored-python.json.gz (rawSHA
 a6dd9fff9617fe22bce0e2deee93da73e9b1fef6988ed74fdd5921299fcc0226). The new abstract, source note and
 inline record are normal zero-error/exit0 results. The new externalized record
 has zero metadata errors but returns an honest typed COMP-UNRESOLVED/exit1:
@@ -728,3 +728,7 @@ Python complete-validation claim. Historical cases keep META02 counts1/1/2/2;
 all source/runtime hashes are unchanged, and parse-only discovery remains.
 The reference CLI's separate four positives/zero-error/exit0 controls do not
 certify a Python resolver or a complete Verifier tier.
+
+The original Python8 audit JSON has CRLF outer formatting; its gzip archive
+preserves those exact bytes (compressedSHA b5e60b34ac175cacc87f8eea5c16e555a0ce6b3fc5f3049a3647388edb1a27f7).
+No Git text conversion of an evidence JSON display copy is used as raw identity.
