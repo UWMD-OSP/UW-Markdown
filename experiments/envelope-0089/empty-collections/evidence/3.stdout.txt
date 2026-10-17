@@ -1,0 +1,12 @@
+✔ all 28 frozen artifacts and 3 complete JSON/CSV/ZIP reconstructions (20.7616ms)
+✔ exact empty carrier paths, no absent/empty collapse (1.9896ms)
+✔ closed carrier kind/location/duplicate/order/escape/overlap refusals after renewed inventory (23.9549ms)
+✔ omitting an empty declaration cannot retain the original semantic subject (1.0418ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 131.2931

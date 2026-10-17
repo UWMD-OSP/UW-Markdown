@@ -1,0 +1,10 @@
+test_absence_and_empty_members_have_distinct_subjects_and_exact_carrier (test_empty.EmptyCarrierTests.test_absence_and_empty_members_have_distinct_subjects_and_exact_carrier) ... ok
+test_closed_identity_kind_order_alias_and_overlap_refusals_after_inventory (test_empty.EmptyCarrierTests.test_closed_identity_kind_order_alias_and_overlap_refusals_after_inventory) ... ok
+test_full_csv_zip_models_and_subjects_round_trip (test_empty.EmptyCarrierTests.test_full_csv_zip_models_and_subjects_round_trip) ... ok
+test_missing_carrier_entry_cannot_silently_erase_empty_subject_content (test_empty.EmptyCarrierTests.test_missing_carrier_entry_cannot_silently_erase_empty_subject_content) ... ok
+test_zip_bom_with_valid_crc_and_sizes_still_refuses_original_inventory (test_empty.EmptyCarrierTests.test_zip_bom_with_valid_crc_and_sizes_still_refuses_original_inventory) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.136s
+
+OK

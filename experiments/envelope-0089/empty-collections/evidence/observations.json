@@ -1,0 +1,104 @@
+{
+  "status": "UNAPPROVED RFC0089 EMPTY-COLLECTION RESEARCH; NOT AUTHENTICATION OR FULL SCHEMA PROOF",
+  "executed_commit": "dba214f6f6028fd499c29ed81a795de57e4246c2",
+  "executed_tree": "38943f03e5845ff84963a1bff51a6b3ee22d6b2e",
+  "accepted_main_ancestor": "afcc615897aca301c7b5ec070bba7c0bd253e4ef",
+  "runtime": {
+    "python": "3.12.3 (tags/v3.12.3:f6650f9, Apr  9 2024, 14:05:25) [MSC v.1938 64 bit (AMD64)]",
+    "node": "v24.14.1",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "closure_sha256": {
+    "experiments/envelope-0089/candidate_codec.py": "1bfce515104c4ed545277ca078689d24a201fae800bc479b28530dc4c19a79a3",
+    "experiments/envelope-0089/codec-study/codec.py": "3914ed411b7948ce4c5d2c7646044d037311263e3770610e818e21fc42e9876d",
+    "experiments/envelope-0089/codec-study/fixtures/all-block-extras/model.json": "2f6679693a708ef207c4f1cd1c59ce42457b7817a2090cefbc044cc2dea5c23d",
+    "experiments/envelope-0089/codec-study/independent.mjs": "675a1c082e5bbfe003204a088e4b127556a74a1b3e98f86f0f61c3e159268453",
+    "experiments/envelope-0089/empty-collections/codec.py": "8a844af6dc222adead4a6b4a47c59751b1ecba5e377236f20e63e973d5d71202",
+    "experiments/envelope-0089/empty-collections/freeze.py": "edd6e9aaaf4eb8216568435cec4a4820f5b8eb8148a89d64f5930c4340ca1a59",
+    "experiments/envelope-0089/empty-collections/independent.mjs": "041a0fe9cbdda696b3bd6d8d8fa5e3cd3db7419ec9b48f8bf7bafb7a60d4bef8",
+    "experiments/envelope-0089/empty-collections/independent.test.mjs": "8a2998c2652a6c6eb56256d8d74eaafd49b26cecc334986d92c186d4376cb904",
+    "experiments/envelope-0089/empty-collections/test_empty.py": "c32b1ff609396cffb8d46b3d2242cbf7e94c3b0ab3d37aaeb63f068687b2910a",
+    "implementations/python/uwmd_jcs.py": "cc97f545f5b343aa4396bacc25f349f6a55193b0f3365042e279c65b885e4bfc",
+    "spec/UW_FORMAT_SPEC.md": "dd5be6e14f3a147c8c99320d5ba329c1ba90babe8d5b370b5638fb747de126d7",
+    "spec/UW_PROTOCOL.md": "80a59032f436ccf85ad1476d35a1251234955354f99f5e9da89ee701d6946a86",
+    "spec/UW_RECEIPT.md": "f6d7e68226195a5b0015f4e8403b1f93872ab6064575c1cf0131a947a295cf23",
+    "spec/schemas/uw-document-envelope.schema.json": "6d95e014fa1941c3d270b797a0543870ac5d477ce7a179efe698bd02e206a7ef",
+    "spec/UW_CSV_BUNDLE.md": "5410c1c399a88b38e5db47c98340d4cd919024a5c559e9253f1df03537477a77",
+    "experiments/envelope-0089/empty-collections/check.py": "4e2b02d584ad53e6f2499ab73e4b0de13c0ece2630cde17aff0a3d7106b29ee6"
+  },
+  "fixture_manifest_sha256": "72092e6aab87b9df093d2dcb3299917aa7864142ae59bc426d0715f08e57d32a",
+  "executions": [
+    {
+      "command": [
+        "python",
+        "-B",
+        "experiments\\envelope-0089\\empty-collections\\freeze.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "1.stdout.txt",
+        "bytes": 63,
+        "sha256": "1fce8ccb9219ffed58d9c5831012c409222bc01072eedf0018224173e230c1c1"
+      },
+      "stderr": {
+        "path": "1.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments\\envelope-0089\\empty-collections",
+        "-p",
+        "test_empty.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "2.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "2.stderr.txt",
+        "bytes": 974,
+        "sha256": "ac56475c4267539263b80b9eae3f102a4f0f6d5ec0de8f98ca91886631641102"
+      }
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "experiments\\envelope-0089\\empty-collections\\independent.test.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "3.stdout.txt",
+        "bytes": 462,
+        "sha256": "0f34efd44075279a22b320d707f3613a5469cbe243f0d2730f6d85b7f6528461"
+      },
+      "stderr": {
+        "path": "3.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope": {
+    "models": 3,
+    "artifacts": 28,
+    "python_methods": 5,
+    "node_tests": 4,
+    "negative_carrier_mutations_per_decoder": 12,
+    "production_imports": false,
+    "authentication": false
+  },
+  "prior_failure": "Initial Node negative assertion required TypeError, but preserved equality refusal used AssertionError for order. Fixed only assertion to exact per-mutation inner refusal messages, then all four Node tests passed; no fixture/model/codec answer was changed."
+}
