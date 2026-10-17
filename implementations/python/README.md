@@ -37,8 +37,16 @@ projections; and decoded-API class, type, quantum, partition, coverage, readines
 read-only, role, metadata and async-separation controls. These are **not CLI
 executions, complete financial-case passes or portable capability passes**.
 Frozen expected calculations and bare waterfall outcome cases are separate
-obligations and were not asserted here. No old control or corpus file changed;
-the original 151 methods were not rerun at this checkpoint.
+obligations and were not asserted here. No corpus file or original test assertion
+changed. Three new YAML methods exercise legal sequence mappings and strict
+refusal/span controls.
+
+After committing the source changes, the full Python suite passed **174 methods**
+(151 original controls plus 23 new validation/YAML methods). The actual shared
+portable Reader subprocess passed **17/17**, with zero failed, skipped or
+unverifiable cases. These checks include the existing standalone reserve/draw/
+replacement controls; they do not enable the still-unsupported `validate` CLI.
+No full JavaScript suite was run for this worker checkpoint.
 
 The CLI still refuses `validate` and discovery remains parse-only. Completion
 still needs the accepted external-section applicability rules, derived
@@ -68,8 +76,8 @@ shape retains CLS-04, as the frozen missing/null/home-rent controls distinguish.
 
 This assessment uses main `fbf8f66a` (through #371). It inventories code and
 accepted contracts; it is **not a new conformance run**. Earlier run counts below
-are historical evidence. The current tree contains 151 unit methods, counted
-from their definitions, not 151 newly executed tests.
+are historical evidence. That assessment baseline contained 151 unit methods, counted
+from their definitions. The newer execution evidence appears above.
 
 The next engineering milestone is **complete structural validation**, integrating
 the existing checks behind one `validate <file> --json` result. Further isolated
@@ -89,14 +97,14 @@ fill defaults, host agents, or require starter rendering/editing workflows.
 
 | Obligation and accepted authority | Present Python scope | Required closure |
 |---|---|---|
-| Reader parsing: Format II, Appendix D; Protocol II.1, XII.1–2 | `uwmd_source`, `uwmd_frontmatter`, `uwmd_reader` retain bytes, number tokens, unknown data, physical blocks and the portable projection. Existing evidence: 17 portable parse cases and nine additional frozen Reader refusals. | Settle the bare scalar-key question below; audit source admission, all current registered/unknown sections and canonical lifecycle routing. Do not impose validation on otherwise parseable incomplete records. |
+| Reader parsing: Format II, Appendix D; Protocol II.1, XII.1–2 | `uwmd_source`, `uwmd_frontmatter`, `uwmd_reader` retain bytes, number tokens, unknown data, physical blocks and the portable projection. Existing evidence: 17 portable parse cases and nine additional frozen Reader refusals. Legal one-layer sequence-object source support now also admits all 61 builtin-class documents unchanged. | Settle the bare scalar-key question below; audit source admission, all current registered/unknown sections and canonical lifecycle routing. Do not impose validation on otherwise parseable incomplete records. |
 | Reader current/history identity: Format 2.4, 2.7–2.8; Protocol II.6a.6 | Registered parallel sections, role opt-in and append collections are implemented. Verification uses `source_superseded`; Reader projection currently tests only JSON lifecycle metadata. | Align and test the two source-lifecycle paths and exact nullable versus named variant identities before certification. The existing `reserve-draw-bindings/superseded-source` source has fence-only `superseded=true`: verification treats it as history, while the parse projection currently exposes it as current. Preserve the authored metadata and physical history. |
-| Full `validate`: Format II–V and 6.2; Protocol III.6a, V.12 | No `validate` command or `ValidationResult`. Reusable checks cover SRC-01/02/03, ROLE-01, bounded META-01, CUR-01, payload PS-01/02, reserve structure, and selected binding-source/hedge structure. Local shape findings are not registered validator verdicts; helper applicability must be reconciled before integration. | Implement all applicable registered rule families, role-aware selection, stage readiness, complete CC coverage and the exact result/exit integration below. Preserve published metadata warning/info/error distinctions rather than introducing new severities. |
-| Standard metrics: Protocol II.2.2, VIII.2, VIII.5.1, XIII; [dictionary](../../spec/metrics/README.md) | Source numeric precision, AST parsing, calendar and quantization foundations exist. No statement discovery, runtime resolution, comparison API or document metric report. | Reproduce all 171 class-scoped definitions and eleven raw primary-size selectors, with exact class/id lookup, lazy null branches, role/variant selection and retained source precision. Verified/failed/unverifiable remain distinct; absent inputs are never filled. |
+| Full `validate`: Format II–V and 6.2; Protocol III.6a, V.12 | The developing `validate_document` API integrates one result, all fifteen CC coverage entries, stage readiness, metadata/source/role, registered structural families and separate V.12. All 111 portable API projections and focused nonportable projections pass; no `validate` CLI or complete capability is claimed. Remaining condition/field applicability must be audited before promotion. | Implement all applicable registered rule families, role-aware selection, stage readiness, complete CC coverage and the exact result/exit integration below. Preserve published metadata warning/info/error distinctions rather than introducing new severities. |
+| Standard metrics: Protocol II.2.2, VIII.2, VIII.5.1, XIII; [dictionary](../../spec/metrics/README.md) | Source numeric precision, AST parsing, calendar and quantization foundations exist. A private allowlisted executor supplies accepted class-validation prerequisites only. No complete statement discovery, comparison API or document metric report. | Reproduce all 171 class-scoped definitions and eleven raw primary-size selectors, with exact class/id lookup, lazy null branches, role/variant selection and retained source precision. Verified/failed/unverifiable remain distinct; absent inputs are never filled. |
 | General calculation method: Protocol II.2.6, VIII.1–6 | `uwmd_expressions` parses grammar and inventories references; `uwmd_periods` inspects already-selected payloads. `uwmd_numeric` provides a small seed. No execution, document lookup, overrides, prior-result evaluation, complete builtins or `calc` command. | If using expression evaluation, implement the full grammar, resolution, operator/null/lazy semantics and listed builtin signatures/refusals. Return schema-conforming quantized `CalcResult` objects; arrays preserve declaration order. AST admission or a few successful operations cannot justify `calc-evaluate`. |
 | Calendar cash flows: Protocol VIII.9; Format 4.26 | Integer Gregorian dates, three day counts, ordered totals/MOIC and selected-source structural prerequisites only. | Complete declared/stated metric verification, source/variant/override refusal, quantized results and xnpv/xirr procedure. `calc-cash-flow` has a separate declaration/refusal contract; these functions are not expression-callable. |
 | Property cash-flow assembly: Protocol VIII.9.5–9.6 | Closed lease-up/CF source checks used by bindings; no assembly or complete stated-result verifier. | Independently reproduce every accepted stated assembly/projection claim, coverage/source admission and explicit refusal. Reproducing a producer's stated model is verification; generating missing models remains outside this implementation's purpose. |
-| Distribution waterfalls: Protocol VIII.10; Format 4.27 | Not implemented. | Full applicable structure, allocation/stated outcomes, hurdle/clawback procedures and finite ordered evidence; do not equate structural WF checks with outcome verification. |
+| Distribution waterfalls: Protocol VIII.10; Format 4.27 | Structural WF checks now participate in the developing validation API; allocation and stated-outcome verification are absent. | Full applicable structure, allocation/stated outcomes, hurdle/clawback procedures and finite ordered evidence; do not equate structural WF checks with outcome verification. |
 | Reserve accounts: Protocol VIII.11; Format 4.28 | `uwmd_reserves`: complete standalone structure/balance/continuity verification with ordered binary64 arithmetic, 2dp comparison, source digest and required states. Existing evidence: all 28 unchanged cases through shared `run_case`. | Retain this implementation and evidence, integrate structural findings into validation, and close the lawful-source Envelope boundary below. This is not general calculation support. |
 | Reserve draw bindings: Protocol VIII.12 | `uwmd_reserve_draws`, `uwmd_binding_sources`: complete standalone selected-source/allocation checks; selected reserve variants verify in full, original whole-document digest retained. Existing evidence: all 46 unchanged cases through shared `run_case`. | Retain exact nullable variants, plan/source/digest/arithmetic precedence and evidence; close the same Envelope boundary. Omitted plan is not a selected/verified plan. |
 | Replacement funding: Protocol V.12; RFCs 0070/0075/0076/0081 | `uwmd_replacement_funding`: exact selected-cash commitment and structural prerequisites, snapshots and accepted result union. Existing evidence: 71 explicitly adapted standalone comparisons, **not** portable `validate` passes. | Integrate the existing async verifier beside, never inside, structural errors. Complete validation must invoke it for applicable outright funding and refuse incomplete/failed verification. Its selected-cash digest is independent of #365. |
@@ -127,7 +135,7 @@ an absent `_meta` must not be relabeled META-01 merely because a local shape
 check rejects it. Present malformed metadata and retired wrappers have their
 own META-01 contract (RFC 0081 section 3). The complete validator must preserve
 published META_MISSING and META_FIELD_MISSING_* warnings and the informational
-low-confidence finding; this inventory does not yet emit that family.
+low-confidence finding; the developing API now integrates those published distinctions.
 
 Complete validation includes the applicable CC, FV, DQ, MU, CS, LU, RT, PS,
 ROLE, LOC, CUR, TAX, LSE, HDG/ESC, WF, REC, RSV structure, CAPX, BED, META,
