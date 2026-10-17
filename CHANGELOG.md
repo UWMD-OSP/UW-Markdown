@@ -38,6 +38,11 @@ protocol, and each package each carry an independent semver).
   Prioritize one complete validate surface, dictionary/stated-figure reproduction
   and receipt verification over further isolated inspectors; optional profiles
   and draft numerical/representation decisions remain separate.
+- Extend draft RFC0089 with five complete candidate JSON/XML/CSV examples,
+  explicit physical-source accounting and proposed new-issuance/refusal behavior.
+  Preserve all60 frozen artifacts while correcting prototype binary64 decoding,
+  XML whitespace and retained prose fidelity; leave current Envelope1, schemas,
+  historical subjects, receipts and version decisions unchanged.
 
 - Add independent Python standalone document-currency identity inspection under
   accepted CUR-01, preserving authored absent/null/value evidence without
