@@ -194,6 +194,16 @@ a portable numerical refusal. A narrower deterministic resource contract would
 need a justified precision/work bound or explicit new domain/refusal; neither is
 selected. Out-of-memory/host failure must not become a valid numerical answer.
 
+The pinned archive's `BUGS` file records generic overflow/underflow and reduced-
+exponent-range caveats. The API guarantee is not a proof that this unexecuted
+build/adapter has no implementation defect. The [official version page](https://www.mpfr.org/mpfr-4.2.2/)
+currently reports patch level2; the archive frozen here is explicitly the
+unpatched4.2.2 identity, not a tested patch-level2 distribution. Before any oracle
+or shipping claim, reconcile actual patch bytes/known-bug applicability and run
+the selected primitive's reduced-range/subnormal adversarial tests. Any changed
+source revision requires new provenance; no silent patched-library substitution
+is authorized by these hashes.
+
 MPFR is a C/GMP dependency. A browser port needs a separately reproducible Wasm
 build, exact bindings/context/flags, memory policy, notices and independent test
 coverage. A Python package wrapping an arbitrary installed MPFR version is not
@@ -376,4 +386,4 @@ MPFR/fdlibm kernel execution or cross-runtime/OS observation is implied.
 | evidence.json | `ab23318bb0f6be44c021132f738e54a19598492a68814e5012cd0374377c545d` |
 | hybrid_reference.py | `87b04c8f44d5407382fc237dd79a7fd0ff9b1fe7f7e8523106311c575af98682` |
 | hybrid.mjs | `b9e867766cf04c6dd9f82d18411af23c0080deefee1ddb31effc8d49aa656347` |
-| sources.json | `def53756d54ab6112ba2c8554cc702f78cbec6d81f2febc07c039c27fd38ac22` |
+| sources.json | `5032aa4587ce916ae30ca88e91131b7afb394eed94cd221c95a0fd8290074a60` |
