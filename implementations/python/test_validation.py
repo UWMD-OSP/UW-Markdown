@@ -130,6 +130,42 @@ class ValidationTests(unittest.TestCase):
         self.assertIn(("PS-03","warning"),codes(result))
         self.assertFalse(any(i["code"].startswith("CALC-") for i in result["issues"]))
 
+    def test_all_fourteen_fv_codes_thresholds_and_no_recalculation(self):
+        cases = (
+            ("valuation", {"going_in_cap_rate":.01}, "FV-01", "warning"),
+            ("valuation", {"going_in_cap_rate":.16}, "FV-02", "warning"),
+            ("debt_structure", {"sizing_metrics":{"debt_yield":.01}}, "FV-03", "warning"),
+            ("debt_structure", {"sizing_metrics":{"dscr_underwritten":.9}}, "FV-04", "error"),
+            ("dcf", {"returns":{"equity_multiple":.8}}, "FV-05", "warning"),
+            ("dcf", {"returns":{"equity_multiple":6}}, "FV-06", "warning"),
+            ("dcf", {"returns":{"levered_irr":.01}}, "FV-07", "warning"),
+            ("dcf", {"returns":{"levered_irr":.5}}, "FV-08", "warning"),
+            ("debt_structure", {"sizing_metrics":{"ltv":.9}}, "FV-09", "error"),
+            ("noi_model", {"expense_ratio":.1}, "FV-10", "warning"),
+            ("noi_model", {"expense_ratio":.8}, "FV-11", "warning"),
+            ("noi_model", {"revenue_growth_rate":.1}, "FV-12", "warning"),
+            ("noi_model", {"vacancy_rate":.01}, "FV-13", "warning"),
+            ("noi_model", {"vacancy_rate":.5}, "FV-14", "warning"))
+        for section,payload,code,severity in cases:
+            with self.subTest(code=code):
+                parsed=parse(HEADER+well_formed(section,**payload));before=copy.deepcopy(parsed)
+                self.assertIn((code,severity),codes(validate(parsed)))
+                self.assertEqual(parsed,before)
+        # These enumerate implemented code/threshold reachability. Canonical
+        # additional field locations remain an explicit audit gate, not parity.
+
+    def test_fv_warning_error_boundaries_institution_override_and_unknown_values(self):
+        for value,expected in ((1.0,("FV-04","warning")),(1.2,None),(.99,("FV-04","error")),
+                               (None,None),(False,None),("0.1",None)):
+            with self.subTest(value=value):
+                parsed=parse(HEADER+well_formed("debt_structure",sizing_metrics={"dscr_underwritten":value}))
+                emitted=[c for c in codes(validate(parsed)) if c[0].startswith("FV-")]
+                self.assertEqual(emitted,[expected] if expected else [])
+        parsed=parse(HEADER+well_formed("debt_structure",sizing_metrics={"dscr_underwritten":1.2}))
+        result=validate(parsed,thresholds={"dscr":{"warning_below":1.3,"error_below":1.1}})
+        self.assertIn(("FV-04","warning"),codes(result))
+        self.assertEqual(parsed.source.blocks[0].parsed.value["sizing_metrics"]["dscr_underwritten"],1.2)
+
     def test_separate_async_v12_mismatch_never_becomes_structural_hdg09(self):
         path=ROOT/"conformance/hedge/0070-stale-amount/deal.uwx.md"
         result=validate(parse(path.read_bytes()))
