@@ -1,0 +1,14 @@
+✔ all frozen bytes, independent JCS subjects and complete crosscodec values agree (84.3388ms)
+✔ CSV duplicate/ref/mode/scope/overlap/digest mutations refuse after valid disposable inventories (11.9738ms)
+✔ XML lexical controls carry NUL/noncharacters/paired Unicode and reject sanitization/aliases/DTD (27.8894ms)
+✔ actual ZIP local/central security and bounded STORE profile refuse mutations (1.084ms)
+✔ independent source scanner preserves every physical current/history identity and exact body bytes (3.0074ms)
+✔ ZIP raw inventory refuses a BOM-bearing payload with independently valid CRC and sizes (117.3253ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 339.4467

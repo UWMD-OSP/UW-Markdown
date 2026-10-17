@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { test } from 'node:test';
+import { spawnSync } from 'node:child_process';
 import { decodeCsv, decodeXml, decodeZip, descriptors, jcs, sha, sourceAccounting, subject } from './independent.mjs';
 const here = new URL('./', import.meta.url);
 const read = name => readFileSync(new URL(name, here));
@@ -82,4 +83,29 @@ test('independent source scanner preserves every physical current/history identi
     assert.equal(sha(raw), expected.original_sha256);
     assert.deepEqual(sourceAccounting(raw), expected.source_accounting);
   }
+});
+
+
+test('ZIP raw inventory refuses a BOM-bearing payload with independently valid CRC and sizes', () => {
+  const original = read('fixtures/all-block-extras/bundle.zip');
+  // Python's independent ZIP writer recalculates local/central CRC and sizes.
+  // Keep every file and manifest byte unchanged except document.csv's new BOM.
+  const program = `import io,sys,zipfile
+source=zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read()))
+out=io.BytesIO()
+with zipfile.ZipFile(out,'w',compression=zipfile.ZIP_STORED) as target:
+ for info in source.infolist():
+  data=source.read(info)
+  if info.filename=='document.csv': data=bytes([239,187,191])+data
+  target.writestr(info,data)
+assert zipfile.ZipFile(io.BytesIO(out.getvalue())).testzip() is None
+sys.stdout.buffer.write(out.getvalue())
+`;
+  const produced = spawnSync('python', ['-B', '-c', program], { input: original });
+  assert.equal(produced.status, 0, produced.stderr?.toString());
+  assert(produced.stdout.length === original.length + 3);
+  assert.throws(() => decodeZip(produced.stdout), /ZIP raw inventory hash\/size/);
+  const files = filesFor('all-block-extras');
+  files['document.csv'] = `\ufeff${files['document.csv']}`;
+  assert.throws(() => decodeCsv(files), /inventory hash/);
 });

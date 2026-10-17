@@ -1,0 +1,81 @@
+{
+  "format": "rfc0089-bom-byte-correction-v1",
+  "status": "UNAPPROVED RESEARCH CORRECTION; ORIGINAL OBSERVATIONS RETAINED, NOT GENERAL ZIP CONFORMANCE",
+  "historical_observations_sha256": "7cb1732d1ffd87ea561ae472334c32c2f7c83bea70d278fd07fc891b7af33c23",
+  "historical_source_commit": "a3570c3c72633c0abd564a66d863c26a62a14604",
+  "historical_hashes": {
+    "experiments/envelope-0089/codec-study/capture.py": "e2e468fc8b8bccb0fe090bc8291bc03f70c6a615044a07f137be3e45ec3f50e9",
+    "experiments/envelope-0089/codec-study/codec.py": "3914ed411b7948ce4c5d2c7646044d037311263e3770610e818e21fc42e9876d",
+    "experiments/envelope-0089/codec-study/freeze.py": "d5dfa9948707327740da3e1f8253fb13d35c7a6a153af27dfc24b3fbccc968d1",
+    "experiments/envelope-0089/codec-study/independent.mjs": "9fd742c8aeb62566dc993c23bbf3ed9d5c3c606236e1a90aba10c38a71d029fa",
+    "experiments/envelope-0089/codec-study/independent.test.mjs": "5dc75939d097a50dad4a4b1c1f2b792993b0fb361fe81303efe592861449c729",
+    "experiments/envelope-0089/codec-study/inputs.py": "e909092261e7479f96005d27d3e2fa5cf7ad593935516c076e1e5efec31b33c6",
+    "experiments/envelope-0089/codec-study/test_codec.py": "828af2f8e5057fcfa2bf65a24eaa35a6d0e24aa7e3c80ca243e597cd90d6e912",
+    "implementations/python/uwmd_jcs.py": "cc97f545f5b343aa4396bacc25f349f6a55193b0f3365042e279c65b885e4bfc",
+    "experiments/envelope-0089/candidate_codec.py": "1bfce515104c4ed545277ca078689d24a201fae800bc479b28530dc4c19a79a3",
+    "experiments/envelope-0089/codec-examples/matrix.json": "6ea8f4b7d6431e82d6fd023e98d19c3b9bc80d8557cb08f8ccb56274f547f2f4",
+    "experiments/envelope-0089/codec-study/fixtures/manifest.json": "eb8347441437a27eea7303b37bef0b208271f77a0ce48889b59219535233185e"
+  },
+  "source_commit": "30f3d8545e701fe37cefc2b7e3eaf4ad7f112a49",
+  "source_tree": "4526f985f5816abe45fddee4696ce07674062eb7",
+  "current_hashes": {
+    "experiments/envelope-0089/codec-study/capture.py": "4da914264f1185ce4e678735602f6d1e256ca4d650d5b8906a5a8b9a5ca65bc2",
+    "experiments/envelope-0089/codec-study/codec.py": "3914ed411b7948ce4c5d2c7646044d037311263e3770610e818e21fc42e9876d",
+    "experiments/envelope-0089/codec-study/freeze.py": "d5dfa9948707327740da3e1f8253fb13d35c7a6a153af27dfc24b3fbccc968d1",
+    "experiments/envelope-0089/codec-study/independent.mjs": "675a1c082e5bbfe003204a088e4b127556a74a1b3e98f86f0f61c3e159268453",
+    "experiments/envelope-0089/codec-study/independent.test.mjs": "7e82a8fe3b33d7b5e326e305cbcf35239c63dc467e8fd3b3a7047edd93996cba",
+    "experiments/envelope-0089/codec-study/inputs.py": "e909092261e7479f96005d27d3e2fa5cf7ad593935516c076e1e5efec31b33c6",
+    "experiments/envelope-0089/codec-study/test_codec.py": "828af2f8e5057fcfa2bf65a24eaa35a6d0e24aa7e3c80ca243e597cd90d6e912",
+    "implementations/python/uwmd_jcs.py": "cc97f545f5b343aa4396bacc25f349f6a55193b0f3365042e279c65b885e4bfc",
+    "experiments/envelope-0089/candidate_codec.py": "1bfce515104c4ed545277ca078689d24a201fae800bc479b28530dc4c19a79a3",
+    "experiments/envelope-0089/codec-examples/matrix.json": "6ea8f4b7d6431e82d6fd023e98d19c3b9bc80d8557cb08f8ccb56274f547f2f4",
+    "experiments/envelope-0089/codec-study/fixtures/manifest.json": "eb8347441437a27eea7303b37bef0b208271f77a0ce48889b59219535233185e"
+  },
+  "reason": "TextDecoder stripped BOM before inventory comparison. Preserve BOM and check actual raw ZIP payload sizes/SHA before decoding; original model/ZIP/XML/CSV fixture bytes unchanged.",
+  "runtime": {
+    "python": "3.12.3",
+    "node": "v24.14.1",
+    "platform": "Windows"
+  },
+  "commands": [
+    {
+      "command": [
+        "node",
+        "--test",
+        "experiments/envelope-0089/codec-study/independent.test.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "command-0.stdout.txt",
+        "sha256": "91d6a009a22a5e395f479cc085a5f4891450f32bb3290d13a1620957cf6edf8d"
+      },
+      "stderr": {
+        "path": "command-0.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "experiments/envelope-0089/codec-study/freeze.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "command-1.stdout.txt",
+        "sha256": "43ea266ac484e78aa730be264f7dc77b26f0293c7e5be91f90f5764473df185e"
+      },
+      "stderr": {
+        "path": "command-1.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "observed": {
+    "node_tests": 6,
+    "fixture_artifacts": 21,
+    "bom_mutation": "Python zipfile creates valid CRC/size archive with only document.csv BOM added; untouched inventory now refuses. Directory carrier also refuses.",
+    "python_codec": "unchanged; no redundant Python unit rerun"
+  }
+}

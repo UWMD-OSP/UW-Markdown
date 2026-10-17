@@ -9,7 +9,7 @@ const check = (condition, reason) => { if (!condition) throw new TypeError(reaso
 const same = (a, b, reason) => assert.deepStrictEqual(a, b, reason);
 const object = () => Object.create(null);
 const has = (value, key) => Object.hasOwn(value, key);
-const decodeUtf8 = bytes => new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+const decodeUtf8 = bytes => new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
 const utf16 = text => {
   for (let i = 0; i < text.length; i++) {
     const unit = text.charCodeAt(i);
@@ -259,7 +259,7 @@ export function decodeZip(bytes) {
   let central = bytes.readUInt32LE(end + 16);
   check(central + bytes.readUInt32LE(end + 12) === end, 'ZIP central size');
   let local = 0;
-  const files = object();
+  const rawFiles = object();
   for (const expectedName of names) {
     check(bytes.readUInt32LE(central) === 0x02014b50 && bytes.readUInt16LE(central + 4) === 788 && bytes.readUInt16LE(central + 6) === 20 && bytes.readUInt16LE(central + 36) === 0, 'ZIP central/version');
     check(bytes.readUInt16LE(central + 8) === 0 && bytes.readUInt16LE(central + 10) === 0, 'ZIP flags/method');
@@ -274,9 +274,18 @@ export function decodeZip(bytes) {
     const start = local + 30 + n;
     const payload = bytes.subarray(start, start + size);
     check(payload.length === size && bytes.readUInt32LE(local + 18) === size && bytes.readUInt32LE(local + 22) === size && bytes.readUInt32LE(local + 14) === bytes.readUInt32LE(central + 16) && crc32(payload) === bytes.readUInt32LE(central + 16), 'ZIP CRC/size');
-    files[name] = decodeUtf8(payload); local = start + size; central += 46 + n;
+    rawFiles[name] = payload; local = start + size; central += 46 + n;
   }
   check(central === end && local === bytes.readUInt32LE(end + 16), 'ZIP gap/trailing payload');
+  // Inventory identity is over the actual ZIP bytes, before any text decoding.
+  const manifest = JSON.parse(decodeUtf8(rawFiles['manifest.json']));
+  check(Array.isArray(manifest.inventory), 'ZIP raw inventory');
+  same(manifest.inventory.map(item => item.path).sort(), names.filter(name => name !== 'manifest.json'), 'ZIP raw inventory set');
+  for (const item of manifest.inventory) {
+    const payload = rawFiles[item.path];
+    check(item.bytes === payload.length && item.sha256 === sha(payload), 'ZIP raw inventory hash/size');
+  }
+  const files = Object.fromEntries(Object.entries(rawFiles).map(([name, payload]) => [name, decodeUtf8(payload)]));
   return decodeCsv(files);
 }
 export function sourceAccounting(raw) {

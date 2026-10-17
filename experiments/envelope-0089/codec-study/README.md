@@ -97,6 +97,38 @@ mutations cover changed values, noncanonical escape aliases, invalid surrogate,
 unknown type/namespace and DTD. ZIP mutations cover encryption, method, path,
 symlink mode, version/size sentinel, local/central CRC and trailing bytes.
 
+## Independent review correction: actual ZIP bytes before UTF-8 decoding
+
+Independent integration review found a material experimental-reader bug: the
+original fatal UTF-8 TextDecoder still stripped an initial BOM by default.
+`decodeZip` then hashed re-encoded text rather than the original ZIP payload.
+A Python-generated archive with valid CRC/size metadata and a BOM prepended to
+`document.csv` passed despite retaining the original byte-size/SHA inventory.
+Its unchanged decoded model/subject did not establish transport-byte integrity.
+The original five-test observations remain preserved as that earlier result;
+they do not prove this previously untested refusal.
+
+The correction preserves BOM code points (`ignoreBOM: true`) and verifies every
+manifest inventory size/SHA against **raw ZIP payload bytes before decoding**.
+Strict UTF-8 remains fatal; no malformed-text replacement or sanitization occurs.
+A sixth Node control independently uses Python zipfile to create the valid-CRC,
+valid-size BOM archive with the original manifest, then requires raw inventory
+refusal. The corresponding directory-string carrier also refuses its changed
+inventory. All original21 fixture/artifact bytes remain untouched.
+
+[evidence/bom-correction/observations.json](evidence/bom-correction/observations.json)
+records six passing Node tests and the21-artifact byte check, exact raw logs,
+executed correction commit/tree, and complete old/current helper identity maps.
+Only `independent.mjs`, its tests and the evidence verifier change identity.
+The original observation bytes remain pinned at SHA-256
+`7cb1732d1ffd87ea561ae472334c32c2f7c83bea70d278fd07fc891b7af33c23`.
+Default `capture.py --check` verifies historical helpers from their exact Git
+blobs and the current helpers against the explicit correction map, with no hash
+wildcards or rewritten expectations. It requires the recorded history to be
+available; it never executes the historical decoder or treats old acceptance
+as current proof. The unchanged Python codec unit tests were not rerun.
+The first-creation correction option refuses existing outputs.
+
 ## What remains unproved and unapproved
 
 These are two synthetic models with a bounded validator, not exhaustive schema
