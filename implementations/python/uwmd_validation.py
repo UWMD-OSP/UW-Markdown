@@ -10,6 +10,10 @@ from uwmd_replacement_funding import replacement_funding_report
 from uwmd_validation_core import Ledger, basic_rules, stage_readiness
 from uwmd_validation_cross import cross_checks, financial_thresholds
 from uwmd_validation_series import series_rules, bed_rules
+from uwmd_validation_tax_capex import tax_rules, capex_rules
+from uwmd_validation_lease import lease_rules
+from uwmd_validation_structure import composition_rules, waterfall_rules
+from uwmd_validation_builtins import builtin_rules
 
 
 async def validate_document(document, *, now=None, gap_staleness_days=14,
@@ -28,6 +32,12 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
     financial_thresholds(ledger, thresholds)
     series_rules(ledger)
     bed_rules(ledger)
+    tax_rules(ledger)
+    capex_rules(ledger)
+    lease_rules(ledger)
+    composition_rules(ledger)
+    waterfall_rules(ledger)
+    builtin_rules(ledger)
     binding = await replacement_funding_report(snapshot)
     # Currency and each current cash series are already checked globally;
     # V.12 still retains its exact source prerequisites in its separate union.
