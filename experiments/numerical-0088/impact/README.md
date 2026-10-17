@@ -102,3 +102,51 @@ python experiments/numerical-0088/impact/verify-evidence.py
 The frozen JSON header references compact JSON Lines shards to keep each JSON
 artifact below the repository lint size limit. Reconstructing the two arrays
 from those shards preserves every original row and typed value exactly.
+
+## Focused financial and historical receipt study
+
+[financial-evidence/manifest.json](financial-evidence/manifest.json) complements
+the indexed corpus measurement with 48 builtin/public calculation cases, five
+starter debt derivations and 24 candidate verifications of receipts issued by
+the baseline process. It reaches all ten numerical sites absent from the corpus
+trace. These observations are not new normative expectations.
+
+```powershell
+python experiments/numerical-0088/impact/financial-measure.py --repo-root "C:\path\to\built-repo" --candidate "C:\path\to\pinned-fdlibm\kernel.mjs" --output-dir "C:\path\to\financial-evidence"
+python experiments/numerical-0088/impact/verify-financial-evidence.py
+```
+
+The ordinary, zero, tiny, negative and fractional-period cases use the unchanged
+production builtins and `evaluateCalc`, with independent default-six and
+explicit-twelve reporting boundaries. Internal infinities are retained and
+examined through the existing public refusal rules. The periodic IRR cases use
+the unchanged solver, including the all-zero and tiny-positive flows. The source
+frontmatter carries the large final cash flow explicitly because the expression
+grammar does not admit scientific-notation literals.
+
+Two real compatibility counterexamples are preserved:
+
+| Control | Baseline | Candidate | Receipt consequence |
+| --- | --- | --- | --- |
+| `pow(1.2,31)`, `round_to:12` | `284.851576559724` | `284.851576559723` | Same-engine disagreement fails with RCP-03; differing engine with an available accepting stub yields RCP-07 plus the disagreement. |
+| Same power, default six places | `284.851577` | `284.851577` | Verified when unsigned or the supplied stub accepts, even with a different engine marker. |
+| `irr(-1, 19 zero flows, last_flow)`, `last_flow=6.727499949325601e20` | `10` | `CALC-IRR-DIVERGE` | New issuance refuses `RCP_COMPUTATION_FAILED`. Existing receipt verification returns failed/RCP-03 before supplied signature-backend execution or engine attribution. |
+
+For the endpoint refusal, both accepting and rejecting signature stubs remain
+uncalled. A missing backend still returns RCP-08 first. For the finite power
+case an invoked rejecting stub returns RCP-01 before result disagreement. Full
+old/new receipt fields, original source, subject/results digests, complete
+signing payloads, hashes and backend-call evidence are retained. Research engine
+markers change no package version, and the placeholder signature/stub provides
+no cryptographic authentication. Original receipt/source inputs are unchanged.
+
+The first focused attempt used a calculation fixture containing no structured
+UWX fence; receipt issuance correctly refused SOURCE_CONTENT_MISMATCH. Its
+complete evidence remains under `initial-source-refusal/` and is explicitly not
+a successful historical-receipt study. The corrected study uses an existing
+valid receipt fixture plus the explicit research frontmatter input.
+
+A green existing corpus did not cover these selected counterexamples. The
+focused results demonstrate changed reported values and changed refusals; they
+do not authorize rewriting historical subjects, results, signatures or receipt
+verdict rules. The compatibility decision remains separate from this evidence.
