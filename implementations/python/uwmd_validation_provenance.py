@@ -66,7 +66,7 @@ def timestamp_shape(value):
                for y in (year-1,year,year+1) for m in range(1,13))
 
 
-def metadata_assessment(document, source_inventory):
+def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
     """LOCAL sibling, not ValidationResult findings or full schema validation.
 
     Retain unallocated selected-shape inventory evidence plus bounded timestamp/
@@ -74,7 +74,17 @@ def metadata_assessment(document, source_inventory):
     inventory issues, never duplicate local evidence or broader META-01 routing.
     Empty local findings alone do not prove full metadata/schema conformance.
     """
-    findings = copy.deepcopy(source_inventory["shape_findings"])
+    # Consume only helper evidence already represented by the completeness
+    # warning for this exact physical input. The same field path on a present
+    # (for example late) _meta is still an unallocated requirement.
+    covered_absence = {index for index in missing_meta_blocks
+                       if isinstance(index, int) and not isinstance(index, bool)
+                       and 0 <= index < len(document.source.blocks)
+                       and "_meta" not in document.source.blocks[index].parsed.value}
+    findings = copy.deepcopy([
+        finding for finding in source_inventory["shape_findings"]
+        if not (finding.get("field") == "_meta"
+                and finding.get("context", {}).get("block_index") in covered_absence)])
     active = {entry["block_index"] for entry in source_inventory["blocks"]}
     for index, block in enumerate(document.source.blocks):
         if index not in active:

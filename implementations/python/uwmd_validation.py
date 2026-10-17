@@ -1,4 +1,4 @@
-"""Developing independent complete-validation API; CLI/discovery remain gated.
+"""Developing structural-validation API; the complete capability remains gated.
 
 This module composes one ValidationResult and the separate Protocol V.12 union.
 It is not a claimed complete validator while remaining owning families are
