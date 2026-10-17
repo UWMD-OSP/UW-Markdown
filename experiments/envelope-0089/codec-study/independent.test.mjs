@@ -17,6 +17,9 @@ function refresh(files) {
 }
 test('all frozen bytes, independent JCS subjects and complete crosscodec values agree', () => {
   assert.equal(sha(read('../codec-examples/matrix.json')), matrix.preserved_original_matrix_sha256);
+  for (const row of json('../codec-examples/matrix.json').cases) for (const item of row.artifacts) {
+    const raw = read(`../codec-examples/${row.case}/${item.path}`); assert.equal(raw.length, item.bytes); assert.equal(sha(raw), item.sha256);
+  }
   for (const row of matrix.cases) {
     for (const item of row.artifacts) { const raw = read(`fixtures/${row.case}/${item.path}`); assert.equal(raw.length, item.bytes); assert.equal(sha(raw), item.sha256); }
     const model = json(`fixtures/${row.case}/model.json`);
@@ -59,7 +62,16 @@ test('XML lexical controls carry NUL/noncharacters/paired Unicode and reject san
 });
 test('actual ZIP local/central security and bounded STORE profile refuse mutations', () => {
   const raw = read('fixtures/all-block-extras/bundle.zip');
-  const changes = [bytes => { bytes[6] |= 1; }, bytes => { bytes[8] = 8; }, bytes => { bytes[45] ^= 1; }, bytes => { bytes[14] ^= 1; }];
+  const central = raw.readUInt32LE(raw.length - 6);
+  const changes = [
+    bytes => { bytes[6] |= 1; }, bytes => { bytes[8] = 8; },
+    bytes => { bytes[45] ^= 1; }, bytes => { bytes[14] ^= 1; },
+    bytes => { bytes[central + 46] = 47; }, // Absolute/traversal-like path cannot match the exact inventory.
+    bytes => { bytes.writeUInt32LE((0o120777 * 65536) >>> 0, central + 38); },
+    bytes => { bytes.writeUInt16LE(1, central + 8); },
+    bytes => { bytes.writeUInt32LE(0xffffffff, central + 20); }, // ZIP64/expansion sentinel.
+    bytes => { bytes.writeUInt16LE(45, central + 6); },
+  ];
   for (const mutate of changes) { const bytes = Buffer.from(raw); mutate(bytes); assert.throws(() => decodeZip(bytes)); }
   assert.throws(() => decodeZip(Buffer.concat([raw, Buffer.from('X')])));
 });

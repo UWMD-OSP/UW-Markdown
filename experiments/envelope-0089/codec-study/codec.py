@@ -9,7 +9,6 @@ import hashlib
 import io
 import json
 from pathlib import Path
-import struct
 import sys
 import xml.etree.ElementTree as ET
 import zipfile

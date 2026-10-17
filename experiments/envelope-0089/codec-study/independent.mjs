@@ -261,7 +261,7 @@ export function decodeZip(bytes) {
   let local = 0;
   const files = object();
   for (const expectedName of names) {
-    check(bytes.readUInt32LE(central) === 0x02014b50, 'ZIP central');
+    check(bytes.readUInt32LE(central) === 0x02014b50 && bytes.readUInt16LE(central + 4) === 788 && bytes.readUInt16LE(central + 6) === 20 && bytes.readUInt16LE(central + 36) === 0, 'ZIP central/version');
     check(bytes.readUInt16LE(central + 8) === 0 && bytes.readUInt16LE(central + 10) === 0, 'ZIP flags/method');
     const size = bytes.readUInt32LE(central + 24);
     check(size === bytes.readUInt32LE(central + 20) && size <= 1048576, 'ZIP expansion');
@@ -269,7 +269,7 @@ export function decodeZip(bytes) {
     check(bytes.readUInt16LE(central + 30) === 0 && bytes.readUInt16LE(central + 32) === 0 && bytes.readUInt16LE(central + 34) === 0 && bytes.readUInt32LE(central + 42) === local, 'ZIP extra/comment/disk/offset');
     check(bytes.readUInt16LE(central + 12) === 0 && bytes.readUInt16LE(central + 14) === 33 && bytes.readUInt32LE(central + 38) >>> 16 === 0o100644, 'ZIP metadata/symlink');
     const name = decodeUtf8(bytes.subarray(central + 46, central + 46 + n)); check(name === expectedName, 'ZIP names/order/path');
-    check(bytes.readUInt32LE(local) === 0x04034b50 && bytes.readUInt16LE(local + 6) === 0 && bytes.readUInt16LE(local + 8) === 0 && bytes.readUInt16LE(local + 10) === 0 && bytes.readUInt16LE(local + 12) === 33 && bytes.readUInt16LE(local + 26) === n && bytes.readUInt16LE(local + 28) === 0, 'ZIP local metadata');
+    check(bytes.readUInt32LE(local) === 0x04034b50 && bytes.readUInt16LE(local + 4) === 20 && bytes.readUInt16LE(local + 6) === 0 && bytes.readUInt16LE(local + 8) === 0 && bytes.readUInt16LE(local + 10) === 0 && bytes.readUInt16LE(local + 12) === 33 && bytes.readUInt16LE(local + 26) === n && bytes.readUInt16LE(local + 28) === 0, 'ZIP local metadata');
     check(decodeUtf8(bytes.subarray(local + 30, local + 30 + n)) === name, 'ZIP local name');
     const start = local + 30 + n;
     const payload = bytes.subarray(start, start + size);

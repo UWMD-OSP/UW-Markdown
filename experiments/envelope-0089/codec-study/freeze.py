@@ -3,7 +3,6 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-import subprocess
 from codec import canonical, digest, encode_csv, encode_xml, encode_zip, stamped
 from inputs import models
 
