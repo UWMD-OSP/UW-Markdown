@@ -1,0 +1,26 @@
+{
+  "status": "UNACCEPTED new synthetic actual receipts for two exact frozen cancellation inputs; no original authentication or numerical activation",
+  "case_ids": [
+    "pmt_negative_above_half_gap_one_n1",
+    "pv_negative_above_half_gap_one_n1"
+  ],
+  "fixture": "conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md",
+  "fixture_sha256": "7988e4679a0a21e156ce5ae88eb0cb05abbcd9427a6adf449df1b754598d573e",
+  "issued_at": "2026-10-17T00:00:00.000Z",
+  "synthetic_version": "0.0.0-research-cancellation",
+  "synthetic_other_version": "0.0.0-research-cancellation-other",
+  "references": {
+    "cancellation-accuracy/inputs.json": "f471e657670450d4c2d27e736120c56a55eacd7d11b88db7f21d62815d48a122",
+    "cancellation-accuracy/evidence/manifest.json": "e09b52ac510542ad77830bc36e33d9cabbfd99e595660f4cb02bbb02c0b54352",
+    "cancellation-accuracy/evidence/python.json.gz": "71cab2a06cb78d8b06a3d18068f663866b1725f4be77d8566381e8217e2f8a47",
+    "cancellation-accuracy/evidence/unmodified.json.gz": "dd0a9057d05d3811d4fcb0b60fc3d4ac89491ea26fbb6a13dbbeb54cebcb6f99",
+    "cancellation-accuracy/evidence/candidate.json.gz": "1f65827dc1afa9cdea0de2f65710da0a2eb9e3b0e67e0311d74b473501403f60",
+    "composed-receipts/inputs.json": "71278e3f32c791193ecd6b53c03be972db9edf9c99aa6fc3ea078b5a5ed8f3b9",
+    "pinned-fdlibm/kernel.mjs": "9cea03d62c453d2c6428f076aab1203c04920585f90dcb9815a98967f28fb5be",
+    "pinned-fdlibm/words.mjs": "c3bb33ff8b2124bc048a0bb9b7b10d3de318b33e20308091abd079459b434914",
+    "pinned-fdlibm/constants.mjs": "6479a8f04cc3e990cd1316d22cdfa164f83bd0acc56905a60c7a7dbc0c65cc25",
+    "pinned-fdlibm/constants.json": "e9793112e7a5d0e2c1ccb2f8d8dd9bbc35608598cf725cb8e5ee44117dad59d9",
+    "impact/hook.mjs": "dfce317208322858842951fbf3a1b52f8650f7c8060c9e2203290eb65fca6682",
+    "impact/runtime.mjs": "d3e91c127dd27380603d225dde16b5b83069bdc0cb4ec430b71adf83475dfe5e"
+  }
+}
