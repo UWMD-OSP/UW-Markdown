@@ -4,6 +4,17 @@
 
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
+**Actor reconciliation — accepted RFC0090.**
+[RFC0090](../rfcs/0090-provenance-actor-admission.md) records the owner's
+accepted Issue354 contract: required nonempty-string actors, narrow META-01/error,
+all retained physical blocks, existing shape precedence and explicit mutable-model
+authority. Its synchronized validators and governed expectations preserve original
+sources, historical expectations and authenticated artifacts. The schema/type
+already require actor and remain unchanged. META-01 remediation covers both the
+bare/nested shape and nonempty actor. Final integration requires exact-head CI
+and subsequent exact-main CI; no release version is allocated. Python discovery
+remains parse-only. RFCs0085/0088/0089 retain separate draft status.
+
 **Python priority — minimum-complete capabilities.** The current implementation
 has no Reader/Verifier tier and advertises only parse. The completion matrix in
 the Python README now maps accepted obligations, implemented scope, exact corpus

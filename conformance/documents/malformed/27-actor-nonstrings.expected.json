@@ -1,0 +1,7 @@
+{
+  "description": "Number, boolean, array and object actors each require their own finding.",
+  "expected_codes": [
+    "META-01"
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; RFC0090"
+}

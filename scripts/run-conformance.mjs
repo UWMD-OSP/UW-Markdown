@@ -2711,7 +2711,7 @@ async function runCapitalStack() {
         record('capital-stack', id, 'fail', `mismatch document emitted [${mismatch.join(', ')}], missing ${missing.join(', ')}`);
         continue;
       }
-      record('capital-stack', id, 'pass', `agree clean, mismatch ${expected.mismatch_codes.join(', ')}`);
+      record('capital-stack', id, 'pass', `agree ${expected.agree_codes.join(', ') || 'clean'}, mismatch ${expected.mismatch_codes.join(', ')}`);
       continue;
     }
 

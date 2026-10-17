@@ -441,7 +441,7 @@ organized into four named sub-objects by concern:
 |---|---|---|---|
 | `source` | string | yes | The actor (§2.6 grammar, RFC 0031): `manual` or `<namespace>/<id>` with a registered namespace. The grammar is enforced (§2.6). |
 | `resolution` | string | no | How the value was resolved — one member of the closed resolution vocabulary (§2.6). Orthogonal to `source`. |
-| `actor` | string | yes | The principal that initiated the write. Distinct from `source`: `source` is the policy-vocabulary identity of the writer, `actor` is who asked for the write. |
+| `actor` | nonempty string | yes | The principal that initiated the write. Distinct from `source`: `source` is the policy-vocabulary identity of the writer, `actor` is who asked for the write. No trimming, source grammar or attribution inference applies (RFC 0090). |
 | `agent_id` | string\|null | no | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"`. REQUIRED when `source` matches `agent/*`. |
 | `agent_version` | string\|null | no | Version (semver) of the agent or tool that produced this block. |
 | `timestamp` | ISO 8601 | yes | When this block was written. |
@@ -521,6 +521,30 @@ digest, including every stated override.
 ---
 
 A `_meta` without nested `provenance` and `lifecycle` is `META-01`. The provenance-completeness codes remain `META_MISSING`, `META_FIELD_MISSING_<FIELD>` and `META_LOW_CONFIDENCE_NO_REVIEW_FLAG`.
+
+**Required actor admission (RFC 0090).** After existing
+wrapper/nested-shape precedence, an absent, null, exact-empty or non-string
+canonical `_meta.provenance.actor` produces one `META-01`/error with field
+`_meta.provenance.actor`. Any nonempty string passes; validators MUST NOT trim,
+apply `source` grammar, infer or insert a principal. A whole missing `_meta`,
+a retired `section_id` wrapper, or malformed `_meta`/nested `provenance` or
+`lifecycle` retains its existing handling without an additional actor error.
+Apply the exact existing wrapper/nested-object predicate also to previously
+unseen retained physical blocks; newly exposed shape findings precede actor
+findings. This explicit source-accounting correction does not allocate other
+metadata-schema failures to `META-01`.
+
+Source validation MUST account for every retained physical structured block
+before routing/reduction, including superseded, overwritten, append-only,
+variant and extension blocks. This does not change current selection or grant
+history authority. Mutable-model assessment instead uses retained parser block
+references plus current model-only blocks, deduplicated by exact identity;
+models without that inventory assess only supplied collections and cannot claim
+complete physical-source coverage. `raw` MUST NOT be silently reparsed as an
+alternative authority. Canonical inline `_meta` supplies the actor predicate;
+a divergent convenience meta alias cannot repair it. Fresh-source conclusions
+require a fresh parse of the exact operation input. Protocol §III.6a defines
+ordering; RFC 0090 defines the precise model boundary.
 
 ### 2.6 Source Identifiers
 

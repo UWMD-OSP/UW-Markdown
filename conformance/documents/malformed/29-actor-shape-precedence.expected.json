@@ -1,0 +1,7 @@
+{
+  "description": "Malformed wrapper owes shape finding only; independent valid wrapper owes actor finding.",
+  "expected_codes": [
+    "META-01"
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; RFC0090"
+}

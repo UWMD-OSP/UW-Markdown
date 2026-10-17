@@ -1,4 +1,9 @@
 {
-  "overall_status": "clean",
-  "issues": []
+  "overall_status": "errors",
+  "issues": [
+    {
+      "code": "META-01",
+      "severity": "error"
+    }
+  ]
 }
