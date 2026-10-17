@@ -1,0 +1,125 @@
+{
+  "status": "UNACCEPTED fixed synthetic word inputs; no host power generation",
+  "cases": [
+    {
+      "id": "maximum-positive-underflow",
+      "x": "3fe0000000000000",
+      "y": "7fefffffffffffff"
+    },
+    {
+      "id": "maximum-negative-underflow",
+      "x": "4000000000000000",
+      "y": "ffefffffffffffff"
+    },
+    {
+      "id": "maximum-even-negative-base",
+      "x": "bfe0000000000000",
+      "y": "7fefffffffffffff"
+    },
+    {
+      "id": "last-odd-negative-underflow",
+      "x": "bfe0000000000000",
+      "y": "433fffffffffffff"
+    },
+    {
+      "id": "beyond-safe-integer-near-one",
+      "x": "3ff0000000000001",
+      "y": "4340000000000000"
+    },
+    {
+      "id": "beyond-old-lab-budget",
+      "x": "3ff0000000000001",
+      "y": "4070100000000000"
+    },
+    {
+      "id": "negative-two-subnormal",
+      "x": "601dd55745cbb7ed",
+      "y": "c000000000000000"
+    },
+    {
+      "id": "unused-square-not-executed",
+      "x": "601dd55745cbb7ed",
+      "y": "3ff0000000000000"
+    },
+    {
+      "id": "positive-two-overflow",
+      "x": "601dd55745cbb7ed",
+      "y": "4000000000000000"
+    },
+    {
+      "id": "reciprocal-first-overflow",
+      "x": "0000000000000001",
+      "y": "bff0000000000000"
+    },
+    {
+      "id": "fractional-positive-unimplemented",
+      "x": "4000000000000000",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "negative-fractional-domain",
+      "x": "c000000000000000",
+      "y": "3fe0000000000000"
+    },
+    {
+      "id": "negative-zero-last-odd",
+      "x": "8000000000000000",
+      "y": "433fffffffffffff"
+    },
+    {
+      "id": "negative-zero-first-even",
+      "x": "8000000000000000",
+      "y": "4340000000000000"
+    },
+    {
+      "id": "zero-negative-exponent",
+      "x": "0000000000000000",
+      "y": "bff0000000000000"
+    },
+    {
+      "id": "zero-negative-zero-exponent",
+      "x": "0000000000000000",
+      "y": "8000000000000000"
+    },
+    {
+      "id": "finite-admission-before-zero",
+      "x": "7ff8000000000001",
+      "y": "0000000000000000"
+    },
+    {
+      "id": "negative-unit-last-odd",
+      "x": "bff0000000000000",
+      "y": "433fffffffffffff"
+    },
+    {
+      "id": "negative-unit-first-even",
+      "x": "bff0000000000000",
+      "y": "4340000000000000"
+    },
+    {
+      "id": "unit-subnormal-fractional",
+      "x": "3ff0000000000000",
+      "y": "0000000000000001"
+    },
+    {
+      "id": "smallest-positive-fractional",
+      "x": "4000000000000000",
+      "y": "0000000000000001"
+    },
+    {
+      "id": "closest-fractional-below-one",
+      "x": "4000000000000000",
+      "y": "3fefffffffffffff"
+    },
+    {
+      "id": "negative-odd-three",
+      "x": "c000000000000000",
+      "y": "c008000000000000"
+    },
+    {
+      "id": "one-rounded-power-difference",
+      "x": "3ff199999999999a",
+      "y": "c03f000000000000"
+    }
+  ]
+}
