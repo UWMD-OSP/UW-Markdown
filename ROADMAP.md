@@ -1,50 +1,34 @@
 # Roadmap
 
-Reconciled **2026-10-14** (America/Phoenix) for published and independently
-verified **4.2.0**, pairing core/CLI 4.2.0 and `@uwmd/verify` 0.2.0 with
-Stable Protocol **4.1.0** and Format **3.0**. No accepted RFC is waiting for a
-release.
-UW Markdown has completed its foundational standard and reference-engine work.
-The forward work is narrower modeling workflows, tool integration and adopter-led
-extensions. This roadmap is directional; a candidate is not a release commitment.
+Reconciled **2026-10-16** (America/Phoenix) for published and independently
+verified **4.3.0**, pairing core/CLI 4.3.0 and verifier 0.2.1 with Protocol 4.1.0
+and Format 3.0. The forward priorities are complete independent verification,
+deterministic procedures and lossless exchange. StackUW owns model generation,
+agents and workflows. This roadmap is directional, not release approval.
 
 ## Reserved milestone: 5.0, the coordinated public launch
 
-Owner direction, 2026-10-15:
+The [explicit owner decision, 2026-10-16](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+makes UWMD 5.0 the first official public compatibility baseline. All earlier
+versions, including published 4.x, are prelaunch history. The launch need not
+carry their readers, numerical procedures, Envelope/receipt regimes or obsolete
+APIs solely for compatibility. Major 5 preserves the existing npm naming and
+publication continuity, not a legacy-support promise. No automatic migration,
+erasure of published npm artifacts or new-semantic authentication of historical
+artifacts is implied.
 
-- **5.0 is reserved for the coordinated public launch.** No routine release
-  uses it, even one with CLI breaking changes.
-- **The launch also sets the versioning strategy.** It establishes a
-  coordinated, durable release strategy across the npm packages, the Format,
-  the Protocol, the documentation, the website and every other public
-  version surface, to be maintained from then on.
-- **Development and interim releases continue.** Interim 4.x releases ship as
-  needed while financial audits, debugging and technical hardening finish.
-  There is no freeze.
-- **The current policy applies honestly until then.** Semver applies per
-  surface (`VERSIONS.md`, wiki 11). If an interim release contains changes
-  that would ordinarily need a major, the preparation flags the compatibility
-  issue and proposes alternatives rather than mislabeling it.
+Independent versions remain the policy for Format, Protocol, packages, modules
+and other surfaces; aligning every component to 5.0.0 is not required. Exact
+launch numbers and post-launch release/support details remain review work.
+Prelaunch breaks still require applicable RFC decisions, synchronized normative
+contracts/conformance and independent verification. There is no mandatory 4.x
+maintenance line, migration shim or deprecation window imposed by this policy.
+Historical commits/tags/source/signatures/release evidence stay accurate.
 
-**The post-launch version-coordination policy is not decided.** It is
-presented for owner review, not inferred. The open questions are:
-
-1. **Package majors at launch.** Do all `@uwmd/*` packages align to 5.0.0,
-   or do they keep independent semver? Do the 0.x packages (verify, signing,
-   batch, lake, Excel, report) graduate, and to which number?
-2. **Format and Protocol numbering.** Today Format 3.0 and Protocol 4.1.0
-   version independently of the packages. Do they stay separate streams,
-   align with the package major, or carry a launch label?
-3. **Which public surfaces carry a version.** Candidates: npm packages, the
-   Format and Protocol specs, JSON Schema identifiers, the conformance
-   corpus, the receipt engine identity, the docs site, the website, the VS
-   Code extension and the web editor.
-4. **Release channels and support.** npm dist-tags (`latest`, `next`),
-   pre-releases, and whether a 4.x maintenance line continues after launch.
-5. **Breaking changes and deprecation.** For example, warn for one minor
-   before refusing, with a documented support window.
-6. **Runtime support.** How declared Node floors track the Node release
-   schedule.
+Development may continue; no routine release consumes the reserved launch
+milestone. **A 5.0 tag or publication requires separate explicit owner launch
+approval.** Recording this policy accepts no draft RFC, exact retirement set,
+release candidate or publication action.
 
 **Interim4.3.0 published and independently checked (2026-10-15):** #351
 merged preparation as `80c68c3d`; annotated `v4.3.0` targets that exact commit.
@@ -53,8 +37,8 @@ provenance. Verification38822782450 checks registry identities, tarball hashes,
 signatures/provenance, fresh consumers and the published CLI350/350. See the
 [publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
 The #346 compatibility behavior and #347/#348 financial correctness repairs ship;
-#350's audit/regressions remain the basis for further work. Format3.0 and
-Protocol4.1.0 are unchanged. No5.0 action or production deployment is included.
+#350's audit/regressions remain the basis for further work. Format 3.0 and
+Protocol 4.1.0 are unchanged. No5.0 action or production deployment is included.
 
 The [post-publication decision packet](https://github.com/UWMD-OSP/UW-Markdown/pull/353)
 includes an unapplied exact #349 golden proposal and concrete recommendations

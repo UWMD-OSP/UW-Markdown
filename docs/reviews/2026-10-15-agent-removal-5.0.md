@@ -2,11 +2,27 @@
 
 Status: proposed package breaking-change plan; not implemented by the 4.x
 cleanup. See the [inventory and authority reconciliation](2026-10-15-architecture-boundary.md).
-This is a proposed coordinated-launch breaking migration, not authorization to
+This is a proposed coordinated-launch product retirement, not authorization to
 prepare a release or a predetermined package-version assignment. Independent
 versioning remains applicable. No release base, activation date, Format/Protocol
 change or draft RFC acceptance is selected here. Obtain explicit owner approval
 before deleting public contracts or beginning coordinated-launch preparation.
+
+## Owner launch-policy reconciliation (2026-10-16)
+
+The [explicit compatibility policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+makes 5.0 the first public compatibility baseline. The 4.x inventory records
+published prelaunch behavior; it is not a requirement to retain exports,
+commands, legacy flag parsers, aliases, tombstones, URLs or support windows at
+launch. No shim, migration example, adopter destination or old-receipt success
+is a prerequisite solely for backward compatibility. Retain historical snapshots
+and signed artifacts as evidence, without claiming they pass a new contract.
+
+The exact removal set, coherent launch command/asset contract and governed
+Format/Protocol boundary still need their scoped review/owner decisions. Generic
+writers, provenance and verification remain retained for their current functions,
+not merely legacy compatibility. This policy approves no deletion, normative
+rewrite or release. Independent numbering and separate launch approval apply.
 
 ## Target and compatibility matrix
 
@@ -14,19 +30,19 @@ UWMD remains vendor-neutral and verifier-heavy. StackUW owns modeling, agents
 and workflows. External producers need no StackUW account, package or model
 architecture to create records that UWMD can verify.
 
-| Current public surface | 4.x | Proposed 5.0 disposition and migration |
+| Current public surface | Published prelaunch inventory | Proposed launch disposition |
 |---|---|---|
-| Root `runBancroftAgent`, `runBancroftAgentStreaming`, run/result/progress types | Preserve behavior | Remove from UWMD; product host owns execution, retries and streaming. No replacement package name or StackUW API is promised by this plan. |
-| Root and browser `BANCROFT_LAYERS`, context/prompt/readiness/dependency builders and `AgentContext`, `BancroftPrompt`, `LayerDefinition` | Preserve | Remove product layer registry and prompt builders; callers own prompts, readiness and workflow structure. |
-| Root tool constants, `MULTI_SECTION_LAYERS`, `ToolOutput` | Preserve | Retire host tool definitions after approval; adopters may define their own. No automatic transfer or replacement package is authorized. |
-| Root `AgentProviderError`, provider/request/completion/message/tool types; `createAnthropicProvider`, options | Preserve | Remove execution/provider integration from core. Product installs its own vendor SDK or uses its own provider interface. |
-| Root replay/recording factories, cassette parser/fingerprint/version and related types | Preserve | Retire with approved host execution removal; any adopter migration is a separate decision. Model cassettes are not financial conformance evidence. |
-| Root/browser `writeAgentBlock`, `writeErrorEntry`, `AgentOutput`, `RunOptions`, `RunResult` | Preserve | Preserve these generic provenance-aware writer APIs and `buildMeta` by default. Any later removal requires an independent use-case audit, exact compatibility proposal and owner approval; host retirement alone is insufficient. |
-| Root `buildContext`, profile/options/result types | Preserve | Preserve generic `buildContext` and its profile/options/result types by default. Any later removal requires an independent use-case audit and owner approval. Context packaging is not a financial verification profile. |
-| Root/browser `AgentHostCapability`; core manifest `agent-host` claim | Preserve | Remove core's execution type/claim after removal; preserve accepted manifest vocabulary and external module declarations unless separately governed. |
-| `uwmd run`, `uwmd layers` and their command-specific flags/help/tests | Preserve all modes, including JSON-input/dry context/prompt modes | After approval, refuse retired commands explicitly before I/O; do not fall through to successful help. Preserve generic `uwmd edit`, its attribution flags and shared options for other commands. |
-| Anthropic optional peer/dev dependency and root lockfile entries | Preserve | Remove core SDK declarations/imports after no remaining product user; regenerate lockfile and verify peer-free consumers and browser closure. Never delete another package's transitive dependency by name alone. |
-| Five `.codex/skills/uwmd-*` workflow directories and companion `agents/openai.yaml` | Preserve | Retire UWMD workflow assets only after owner approval of asset/URL support policy. No automatic copying, required StackUW destination or replacement package is authorized. Any adopter migration is a separate decision, not a retirement prerequisite. Generic format-use/download instructions remain. |
+| Root `runBancroftAgent`, `runBancroftAgentStreaming`, run/result/progress types | Historical behavior | Remove from UWMD; product host owns execution, retries and streaming. No replacement package name or StackUW API is promised by this plan. |
+| Root and browser `BANCROFT_LAYERS`, context/prompt/readiness/dependency builders and `AgentContext`, `BancroftPrompt`, `LayerDefinition` | Historical behavior | Remove product layer registry and prompt builders; callers own prompts, readiness and workflow structure. |
+| Root tool constants, `MULTI_SECTION_LAYERS`, `ToolOutput` | Historical behavior | Retire host tool definitions after approval; adopters may define their own. No automatic transfer or replacement package is authorized. |
+| Root `AgentProviderError`, provider/request/completion/message/tool types; `createAnthropicProvider`, options | Historical behavior | Remove execution/provider integration from core. Product installs its own vendor SDK or uses its own provider interface. |
+| Root replay/recording factories, cassette parser/fingerprint/version and related types | Historical behavior | Retire with approved host execution removal; any adopter migration is a separate decision. Model cassettes are not financial conformance evidence. |
+| Root/browser `writeAgentBlock`, `writeErrorEntry`, `AgentOutput`, `RunOptions`, `RunResult` | Historical behavior | Preserve these generic provenance-aware writer APIs and `buildMeta` by default. Any later removal requires an independent use-case audit, exact compatibility proposal and owner approval; host retirement alone is insufficient. |
+| Root `buildContext`, profile/options/result types | Historical behavior | Preserve generic `buildContext` and its profile/options/result types by default. Any later removal requires an independent use-case audit and owner approval. Context packaging is not a financial verification profile. |
+| Root/browser `AgentHostCapability`; core manifest `agent-host` claim | Historical behavior | Remove core's execution type/claim after removal; preserve accepted manifest vocabulary and external module declarations unless separately governed. |
+| `uwmd run`, `uwmd layers` and their command-specific flags/help/tests | Historical modes include JSON-input/dry context/prompt | After approval, refuse retired commands explicitly before I/O; do not fall through to successful help. Preserve generic `uwmd edit`, its attribution flags and shared options for other commands. |
+| Anthropic optional peer/dev dependency and root lockfile entries | Historical behavior | Remove core SDK declarations/imports after no remaining product user; regenerate lockfile and verify peer-free consumers and browser closure. Never delete another package's transitive dependency by name alone. |
+| Five `.codex/skills/uwmd-*` workflow directories and companion `agents/openai.yaml` | Historical behavior | Retire UWMD workflow assets only after owner approval of asset/URL support policy. No automatic copying, required StackUW destination or replacement package is authorized. Any adopter migration is a separate decision, not a retirement prerequisite. Generic format-use/download instructions remain. |
 
 The actual release must enumerate all value **and type** removals from the then
 current barrels and declarations. The matrix is a family-level inventory, not
@@ -37,7 +53,8 @@ permission to drop unrelated exports from mixed modules.
 1. After approval, capture exact root/browser/CLI/declaration baselines at the
    explicitly reviewed implementation base; no release base is selected here.
    Audit consumers, including CLI, editor/initializer, bindings, render/report,
-   signing capability types and tests. Publish migration examples before deletion.
+   signing capability types and tests. Document the approved launch surface and
+   exact intentional removals; old syntax need not be supported.
    Do not add an empty compatibility shim that silently discards writes.
 2. Preserve `writeAgentBlock`, `writeErrorEntry`, `AgentOutput`, `RunOptions`,
    `RunResult`, `buildMeta` and generic `buildContext` with its public types. The
@@ -48,10 +65,10 @@ permission to drop unrelated exports from mixed modules.
    host-specific context/prompt builders and their approved public exports. Keep
    generic writers/context APIs by default. Keep verify dependency
    direction and core's remaining verify re-exports.
-4. After approval, replace `run`/`layers` dispatch with explicit retired-command
-   refusals, proposed usage exit 2, before file reads/writes or provider/network
-   requests. Cover live, JSON-input, context and prompt modes. Merely deleting
-   dispatch reaches the current successful unknown-command/help fallback.
+4. After approval, remove product dispatch and make unsupported commands fail
+   clearly before file/provider side effects under the reviewed launch command
+   contract. Dedicated tombstones or legacy flag parsing are not prerequisites.
+   Do not let removed operations fall through to successful help.
    Remove only the reference implementation's obsolete `agent-host` claim;
    retain verify, edit attribution flags, bindings and manifest inspection.
 5. Retire only tests/fixtures/tooling exclusively exercising approved removed
@@ -62,8 +79,8 @@ permission to drop unrelated exports from mixed modules.
 6. Remove the SDK peer/dev declarations, regenerate the workspace lockfile,
    update package descriptions and all affected docs/site/download discovery.
    Keep historical RFCs and publication records as evidence. Replace live
-   Bancroft recipes with migration notes; keep contributor instructions.
-7. Prepare a bounded implementation proposal with migration evidence for owner
+   Bancroft recipes with the approved launch documentation; keep contributor instructions.
+7. Prepare a bounded implementation proposal with launch-surface evidence for owner
    approval. Release preparation, package-version selection and publication
    require their own authorization. This 4.x PR removes no public contracts.
 
@@ -73,7 +90,8 @@ Retain `_meta` agent provenance, namespace/authority parsing, source identities,
 append-only history, roles, integrity/signatures and receipts. Retain normative
 `agent_layers`/`prompt_template` validation and externally advertised capability
 vocabulary. Retain module, HTTP/MCP and generic edit contracts. Retain verifier
-math, dictionary and builtin pack data needed to check existing receipts.
+math, dictionary and builtin data required by the accepted launch contracts;
+old receipt success is not a backward-compatibility requirement.
 
 Current Format §6.3 still describes `uwmd run`; §6.8 imposes MUST requirements
 on Bancroft writers. RFC 0078's retired Agent Host tier does not erase these
@@ -90,13 +108,15 @@ removal plan neither changes those contracts nor creates a projection engine.
 
 ## Acceptance evidence
 
-- Snapshot and review the exact intentional export/command removals; update the
-  4.x superset guard only for the 5.0 baseline, never to green a 4.x deletion.
+- Snapshot and review the exact intentional export/command removals against an
+  explicitly reviewed launch API baseline. Preserve the old superset snapshot
+  as historical evidence; it is not a veto on an approved prelaunch removal.
 - Run build, all tests, test typecheck, full conformance, schema validation and
   applicable package/lockfile/version/index/code/release guards plus site build.
 - Pack and install verify alone and core without optional vendor peers. Check
-  both entries and strict TypeScript declarations. Verify an existing core-issued
-  receipt and agent-authored record without any model execution dependency.
+  both entries and strict TypeScript declarations. Verify accepted-launch-regime
+  receipts and externally authored records without any model execution dependency;
+  retain old receipt bytes/results separately as historical evidence.
 - Exercise generic edit/MCP/HTTP source-edit paths with provenance, stale-parent
   rejection and integrity maintenance; show retained generic writers preserve
   intended log/frontmatter updates. No adopter-product migration is assumed.
@@ -130,7 +150,7 @@ Browser subset: `buildAgentContext`, `buildAgentPrompt`, `isContextReady`,
 verify exports and normative module declarations are excluded.
 
 Remaining owner decisions: approve the exact host export/command retirement set,
-the proposed refusal behavior and asset/URL support policy; resolve the governed
+the intended launch command behavior and asset/URL set; resolve the governed
 Format §6.3/§6.8 boundary. An adopter migration destination/version is not a
 prerequisite. Independent package versions and launch preparation remain separate
 decisions. No 5.0 release preparation is authorized by this plan.
@@ -170,7 +190,7 @@ no accepted replacement text, changed severity or new conformance obligation.
 
 | Current consumer or distribution path | Smallest future change after approval |
 |---|---|
-| `core/cli.ts` invokes layer/prompt helpers and dynamically loads `runBancroftAgent`; `cli-args.ts` accepts host flags | Tombstone `run` and `layers` before file, JSON-input, output or provider handling. Retain `edit --agent-id/--agent-version`; do not map host JSON-input writes to `edit` silently |
+| `core/cli.ts` invokes layer/prompt helpers and dynamically loads `runBancroftAgent`; `cli-args.ts` accepts host flags | Remove approved host dispatch and fail unsupported commands before side effects; no dedicated legacy parser is required. Retain `edit --agent-id/--agent-version`; do not map removed host writes to `edit` silently |
 | `core/agents/bancroft.ts` consumes context, tool schemas, provider interface and optional Anthropic factory | Retire the execution closure together; no orphan provider or retry layer in verify |
 | `scripts/rerecord-cassettes.mjs` and agent dispatch in `scripts/run-conformance.mjs` | Retire only the removed host's recording/dispatch branches, with explicit corpus ownership/count review; preserve runner infrastructure for standard cases |
 | `core/runner.test.ts` mixes layer-context and generic writer cases | Separate/remove host-specific context tests while keeping writer metadata, byte/supersede, error-log and frontmatter cases; do not delete the whole file |
@@ -198,13 +218,11 @@ or weaken dispatch/coverage guards to accommodate the removal. Historical run
 reports and cassette evidence remain historical evidence, not new financial
 verification. Current fixtures remain unchanged by this proposal.
 
-For command refusals, test bare commands, valid old flags, missing/nonexistent
-input, malformed JSON-input, attempted output, all offline modes and live mode
-with/without a configured API key. The proposed refusal must occur before I/O,
-not merely before the hosted API call. Unknown flags must still fail strictly;
-a retired-command diagnostic may take precedence for recognized legacy host
-syntax, with no successful help fallback. No key is required or transmitted to
-test these refusals. The exact diagnostic contract and exit 2 remain proposals.
+For unsupported-command handling, test clear failure and absence of file,
+provider or network side effects. Retained commands and flags must continue to
+follow their accepted launch contract. No old flag grammar, host mode, API key
+or specialized tombstone is required solely to accommodate prelaunch callers.
+The exact launch diagnostic/exit behavior belongs to the reviewed removal scope.
 
 SDK removal means deleting the core optional peer, its optional-peer metadata,
 dev dependency and dynamic loader only when no retained code references them.
@@ -229,9 +247,10 @@ Keep producer-neutral Format instruction downloads and machine-readable
 `UWMD-AI-GUIDE.md`, `CLAUDE.md`, `GEMINI.md`,
 `chatgpt-project-instructions.txt` and `uwmd-skill/SKILL.md` to existing public
 URLs; those are not the five workflow directories. The default proposal is to
-retain these neutral instruction paths. Decide separately whether `/ai/`,
-`/ai/skills`, `/starter/ai-host` and host-specific anchors retain compatibility
-notes, redirect or retire after a documented support window. Do not silently
+retain these neutral instruction paths. Select the intended launch paths for `/ai/`,
+`/ai/skills`, `/starter/ai-host` and host-specific anchors in the approved asset
+contract. No compatibility note, redirect or support window is required solely
+for prelaunch users. Do not silently
 change download bytes, erase historical records or assume an available redirect
 facility. No deployment or public URL change is made here.
 
@@ -244,18 +263,19 @@ facility. No deployment or public URL change is made here.
    Format §1.2/§1.3/§6.3/§6.8 and dependent references, retaining producer/source
    obligations. Determine any Format/Protocol compatibility/version consequence
    through normal RFC review; do not infer acceptance from this report.
-3. **Command compatibility:** approve explicit pre-I/O retired-command behavior,
-   proposed exit 2 and diagnostic precedence rather than successful fallback.
-4. **Asset/support policy:** approve workflow/prompt retirement and compatibility
-   documentation/URL support window. No mandatory adopter migration destination.
-5. **Activation:** authorize the eventual breaking implementation and support
-   window separately. Package version selection, release preparation and public
-   launch remain later independent approvals.
+3. **Launch command contract:** decide clear error/exit behavior for unsupported
+   commands. No dedicated legacy parser or tombstone is required solely for old
+   syntax; retained operations must not silently perform removed work.
+4. **Launch assets:** approve workflow/prompt retirement and intended documentation
+   paths. No legacy support window or mandatory adopter migration destination.
+5. **Activation:** authorize the scoped breaking implementation separately.
+   Package version selection, release preparation and public launch remain
+   later independent approvals.
 
-Smallest future sequence: settle the governed boundary and exact compatibility
-scope first; then prepare one bounded host/CLI/SDK retirement with its necessary
+Smallest future sequence: settle the governed boundary and exact launch surface
+first; then prepare one bounded host/CLI/SDK retirement with its necessary
 consumer and starter-only test updates; then retire approved workflow assets
-and documentation discovery under the chosen support policy. Keep generic
+and documentation discovery under the approved launch asset contract. Keep generic
 writers/context, deterministic verification, source records and HTTP/MCP
 throughout. Re-run retained provenance/receipt and independent-consumer evidence.
 Do not combine optional financial assurance, numerical procedure revisions or
