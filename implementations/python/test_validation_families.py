@@ -71,30 +71,22 @@ class ValidationFamilyTests(unittest.TestCase):
             for code in expected["expected_codes"]:
                 self.assertGreaterEqual(selected_codes(result,("CS-",)).count(code),expected["min_occurrences"])
 
-    def test_twelve_builtin_source_projections_and_49_explicit_admission_gates(self):
+    def test_61_unchanged_builtin_source_validation_projections_not_financial_cases(self):
         paths=sorted((ROOT/"conformance/builtin-classes").glob("*/expected.json"))
-        admitted,refused=[],[]
+        self.assertEqual(len(paths),61)
         for path in paths:
-            raw=(path.parent/"deal.uwx.md").read_bytes()
-            try:parsed=parse(raw)
-            except FrontmatterError as error:
-                self.assertEqual(error.code,"UNSUPPORTED_YAML_FEATURE")
-                # Current Reader cannot admit this sequence-of-object spelling.
-                # Do not adapt the source to manufacture a validation pass.
-                self.assertIn(b"  - id:",raw)
-                self.assertIn(b"    version:",raw)
-                refused.append(path.parent.name)
-                continue
-            expected=json.loads(path.read_text(encoding="utf8"))
-            result=validate(parsed)
-            actual=sorted({i["code"] for i in result["issues"] if re.match(
-                r"^(CC-(DC|HOSP|MH)-|CLS-(03|04)$|MOD-(RULE|CALC)-ERROR$)",i["code"])})
-            self.assertEqual(actual,sorted(set(expected["expected_codes"])),path.parent.name)
-            self.assertEqual(parsed.source.raw,raw)
-            admitted.append(path.parent.name)
-        self.assertEqual((len(admitted),len(refused)),(12,49))
+            with self.subTest(case=path.parent.name):
+                source=path.parent/"deal.uwx.md"; raw=source.read_bytes()
+                parsed=parse(raw); before=copy.deepcopy(parsed)
+                expected=json.loads(path.read_text(encoding="utf8"))
+                result=validate(parsed)
+                actual=sorted({i["code"] for i in result["issues"] if re.match(
+                    r"^(CC-(DC|HOSP|MH)-|CLS-(03|04)$|MOD-(RULE|CALC)-ERROR$)",i["code"])})
+                self.assertEqual(actual,sorted(set(expected["expected_codes"])))
+                self.assertEqual(parsed,before)
+                self.assertEqual(source.read_bytes(),raw)
         # expected_calcs are intentionally NOT asserted here. This is only the
-        # validator projection, not 12 complete builtin financial-case passes.
+        # validator projection, not 61 complete builtin financial-case passes.
 
     def test_decoded_api_mhc_rules_use_missing_null_zero_and_stated_types(self):
         body=dict(total_sites=2,occupied_sites=1,park_owned_homes=0,
@@ -103,7 +95,7 @@ class ValidationFamilyTests(unittest.TestCase):
         before=copy.deepcopy(parsed);ledger=Ledger(parsed);builtin_rules(ledger)
         self.assertEqual(ledger.issues,[])
         self.assertEqual(parsed,before)
-        # Direct decoded-API inputs do not establish admission of the 49 files.
+        # These decoded-API controls separately probe absent/null/type semantics.
         for key, value, present, required in (
                 ("total_sites",None,False,"CC-MH-01"),
                 ("occupied_sites",None,True,"CC-MH-02"),
@@ -117,7 +109,8 @@ class ValidationFamilyTests(unittest.TestCase):
                 ledger=Ledger(document("manufactured_housing",mhc_sites=payload))
                 builtin_rules(ledger)
                 self.assertIn(required,[i["code"] for i in ledger.issues])
-                self.assertIn("CLS-04",[i["code"] for i in ledger.issues])
+                if key != "poh_home_rent_monthly":
+                    self.assertIn("CLS-04",[i["code"] for i in ledger.issues])
 
     def test_private_builtin_executor_does_not_execute_document_custom_expressions(self):
         payload=dict(total_sites=2,occupied_sites=1,park_owned_homes=0,

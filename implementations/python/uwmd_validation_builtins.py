@@ -21,6 +21,19 @@ _SCHEMAS = {
                     "hotel_brand":"section-hotel-brand.schema.json", "hotel_food_beverage":"section-hotel-food-beverage.schema.json"},
     "manufactured_housing": {"mhc_sites":"section-mhc-sites.schema.json"},
 }
+# RFC 0080 folds these class-specific calculation inventories into core.
+# Generic income/debt dictionary reproduction is a separate verifier surface,
+# not an invitation to report unrelated metric errors during class validation.
+_CALCULATIONS = {
+    "data_center": frozenset(("utilization", "commissioned_share", "facility_load_kw",
+        "annual_facility_kwh_at_contract", "annual_power_cost", "power_cost_per_kw_month",
+        "annual_rent_revenue", "blended_revenue_per_kw_month", "rent_index",
+        "price_per_commissioned_kw", "noi_per_commissioned_kw")),
+    "hospitality": frozenset(("revpar", "total_room_revenue", "room_revenue_per_key",
+        "revpar_index", "fb_gross_margin")),
+    "manufactured_housing": frozenset(("physical_occupancy", "annual_pad_rent_potential",
+        "poh_share", "annual_poh_home_rent_potential", "price_per_site", "noi_per_site")),
+}
 _RULES = {
     "data_center": (
         ("CC-DC-01","error","dc_capacity.design_pue >= 1"),
@@ -190,14 +203,13 @@ def builtin_rules(ledger):
                     ledger.issue("CLS-04", "error", section, key, "Stated official field violates its fixed contract")
             if asset == "hospitality" and section == "rent_roll" and "keys" in body:
                 ledger.issue("CLS-04", "error", section, "keys", "Hospitality keys belong only in property")
-            if asset == "manufactured_housing":
-                homes, rent = body.get("park_owned_homes"), body.get("poh_home_rent_monthly")
-                if finite(homes) and ((homes == 0 and rent is not None) or homes > 0 and (not finite(rent) or rent < 0)):
-                    ledger.issue("CLS-04", "error", section, "poh_home_rent_monthly", "Home rent must agree with stated park ownership")
+            # MHC conditional ownership/rent agreement is reported by the
+            # explicit CC-MH-06/07 assertions. Individual stated field types
+            # and unconditional required fields retain CLS-04 above.
     dictionary = json.loads((_ROOT/"spec/metrics/builtin.json").read_text(encoding="utf-8"))
     prior = {}
     for definition in dictionary["calculations"]:
-        if asset not in definition["asset_classes"]:continue
+        if asset not in definition["asset_classes"] or definition["id"] not in _CALCULATIONS[asset]:continue
         try:
             value = _evaluate(parse_expression(definition["formula"]), _resolver(document, prior, definition["section_roles"]))
             if value is not None:
