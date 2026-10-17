@@ -2,7 +2,8 @@
 
 This development evidence intentionally does not claim the advertised capability:
 manifest remains parse-only. The shared run_case performs every subprocess and
-comparison unchanged; a transparent observer retains exact process evidence.
+comparison unchanged; an observer retains the runner's decoded process evidence.
+Captured stream hashes include text-mode newline normalization, not raw bytes.
 """
 import argparse
 import hashlib
