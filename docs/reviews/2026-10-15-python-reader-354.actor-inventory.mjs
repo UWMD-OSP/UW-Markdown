@@ -223,7 +223,7 @@ async function apiControls(root) {
   const bad = () => { const value = meta(); delete value.provenance.actor; return { _meta: value }; };
   const good = () => ({ _meta: meta() });
   const tests = [];
-  for (const [label, value] of [['absent', undefined], ['null', null], ['empty', ''], ['number', 3], ['false', false], ['array', []], ['object', {}], ['space', ' '], ['unicode', 'ä½œè€…'], ['principal-not-source-tag', 'manual']]) {
+  for (const [label, value] of [['absent', undefined], ['null', null], ['empty', ''], ['number', 3], ['false', false], ['array', []], ['object', {}], ['space', ' '], ['unicode', 'Ã¤Â½Å“Ã¨â‚¬â€¦'], ['principal-not-source-tag', 'manual']]) {
     const payload = good();
     if (value === undefined) delete payload._meta.provenance.actor; else payload._meta.provenance.actor = value;
     tests.push({ id: `actor-${label}`, parsed: parse(source([fence('property', payload)])) });
@@ -236,7 +236,7 @@ async function apiControls(root) {
   tests.push({ id: 'superseded-lifecycle-invalid', parsed: parse(source([fence('property', history), fence('property', good())])) });
   tests.push({ id: 'unselected-role-peer-invalid', parsed: parse(source([fence('property', { ...bad(), _role: { kind: 'component', component_id: 'other' } }, 'variant=unselected'), fence('property', { ...good(), _role: { kind: 'property' } }, 'variant=selected')])) });
   tests.push({ id: 'all-six-model-collections-and-history', parsed: parse(source([fence('property', bad()), fence('x_extension', bad()), fence('pipeline_log', bad()), fence('custom_calculations', bad()), fence('custom_scenarios', bad()), fence('property', bad(), 'superseded=true')])) });
-  tests.push({ id: 'newly-exposed-wrapper-before-actor', parsed: parse(source([fence('property', { section_id: 'property', ...bad() }), fence('property', good()), fence('x_tail', bad())])) });
+  tests.push({ id: 'newly-exposed-wrapper-before-actor', parsed: parse(source([fence('x_hidden', { section_id: 'x_hidden', ...bad() }), fence('x_hidden', good()), fence('x_tail', bad())])) });
   const stale = parse(source([fence('property', bad())])); stale.raw = source([fence('property', good())]);
   tests.push({ id: 'stale-raw-does-not-repair-content', parsed: stale });
   const rawBad = parse(source([fence('property', good())])); rawBad.raw = source([fence('property', bad())]);
@@ -284,15 +284,34 @@ async function unitObserve(root, output) {
   const journal = `${output}.journal.jsonl`;
   assert(!existsSync(journal));
   process.env.UWMD_ACTOR_JOURNAL = journal;
-  const ctx = await startVitest('test', selected, { root, config: false, watch: false, pool: 'forks', maxWorkers: 2, fileParallelism: true, passWithNoTests: false }, {
-    resolve: { alias },
-    plugins: [{ name: 'actor-inventory-read-only-observer', enforce: 'pre', transform(source, id) { return instrument(source.replaceAll('\r\n', '\n'), id, true); } }],
-  });
-  const failed = ctx?.state.getFiles().filter(file => file.result?.state === 'fail').map(file => ({ name: file.name, errors: file.result?.errors }));
-  const tests = ctx?.state.getFiles().map(file => ({ path: slash(relative(root, file.filepath)), state: file.result?.state, tests: file.tasks.length }));
-  await ctx?.close();
+  const originalDirectory = process.cwd();
+  const originalNodeOptions = process.env.NODE_OPTIONS;
+  process.env.NODE_OPTIONS = `${originalNodeOptions ?? ''} --import=${bootstrap(root)}`.trim();
+  const failed = [];
+  const tests = [];
+  const flatten = tasks => tasks.flatMap(task => task.type === 'test' ? [{ name: task.name, state: task.result?.state, errors: task.result?.errors ?? [] }] : flatten(task.tasks ?? []));
+  try {
+    for (const pkg of ['uwmd-verify', 'uwmd-core']) {
+      const packageRoot = join(root, 'packages', pkg);
+      const packageSelection = selected.filter(path => path.startsWith(`packages/${pkg}/`)).map(path => join(root, path));
+      process.chdir(packageRoot);
+      const ctx = await startVitest('test', packageSelection, { root: packageRoot, config: false, watch: false, pool: 'forks', maxWorkers: 2, fileParallelism: true, passWithNoTests: false }, {
+        resolve: { alias },
+        plugins: [{ name: 'actor-inventory-read-only-observer', enforce: 'pre', transform(source, id) { return instrument(source.replaceAll('\r\n', '\n'), id, true); } }],
+      });
+      for (const file of ctx?.state.getFiles() ?? []) {
+        const path = slash(relative(root, file.filepath));
+        tests.push({ path, state: file.result?.state, tests: flatten(file.tasks) });
+        if (file.result?.state === 'fail') failed.push({ name: path, errors: file.result?.errors });
+      }
+      await ctx?.close();
+    }
+  } finally {
+    process.chdir(originalDirectory);
+    if (originalNodeOptions === undefined) delete process.env.NODE_OPTIONS; else process.env.NODE_OPTIONS = originalNodeOptions;
+  }
   return { kind: 'dynamic-validator-reaching-unit-observation', identity: identity(root),
-    selection: { rule: 'tracked verify/core .test.ts with statically resolvable transitive import path to validator.ts; catalog-only files explicitly listed', selected, catalog_only: allTestSources.filter(path => !selected.includes(path)) },
+    selection: { rule: 'tracked verify/core .test.ts with statically resolvable transitive import path to validator.ts; package cwd retained; explicit own-dist loader in subprocesses; catalog-only files explicitly listed', selected, catalog_only: allTestSources.filter(path => !selected.includes(path)) },
     failed, files: tests, journal: readJournal(journal) };
 }
 async function cliObserve(root, output) {
