@@ -1,0 +1,126 @@
+{
+  "status": "UNAPPROVED RFC0089 CODEC STUDY / NOT CONFORMANCE OR AUTHENTICATION",
+  "base_commit": "0a6e0489025f072f3fde6bab02de76296783fe3e",
+  "tokens": {
+    "envelope": "E_NEXT",
+    "subject": "C_NEXT",
+    "bundle": "B_NEXT",
+    "xml": "urn:uwmd:unaccepted:rfc0089:json-lexical"
+  },
+  "zip_profile": "research-only canonical STORE; fixed1980 metadata; 6 payload files; 1MiB cap; no deflate/ZIP64",
+  "preserved_original_matrix_sha256": "6ea8f4b7d6431e82d6fd023e98d19c3b9bc80d8557cb08f8ccb56274f547f2f4",
+  "cases": [
+    {
+      "case": "all-block-extras",
+      "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+      "artifacts": [
+        {
+          "path": "bundle.zip",
+          "bytes": 19878,
+          "sha256": "ca4446d961a8268f4b300d1154724cba4246e16cf01f75e23162eaa9387340ea"
+        },
+        {
+          "path": "csv/block_values.csv",
+          "bytes": 15696,
+          "sha256": "e2cf2e9ab3231c932f7fed2fa12b24cdd3cd440497a0086467ee0503a294a8b0"
+        },
+        {
+          "path": "csv/blocks.csv",
+          "bytes": 980,
+          "sha256": "a2ec4001b4140af884d54edaa640847fdf40eb979e8074b8a70a426d21ac3e5e"
+        },
+        {
+          "path": "csv/document.csv",
+          "bytes": 354,
+          "sha256": "5e6a98322a3a902b8eff7e230ef9f300ff946b6d9304c40e4d204abf2775bcf8"
+        },
+        {
+          "path": "csv/frontmatter.csv",
+          "bytes": 140,
+          "sha256": "cd86bfac9d0bf038473054624cc4f7864f55694d8e33b7e7057fe06867f3b537"
+        },
+        {
+          "path": "csv/manifest.json",
+          "bytes": 1030,
+          "sha256": "2c23e1358ce68eadd77fc9edc7fe3506186ec2c1479e71d2e30cd1d7fe6138ee"
+        },
+        {
+          "path": "csv/prose.csv",
+          "bytes": 1050,
+          "sha256": "60205fd89896bb2a4ada79f8075ef40797345b40512c449102fff6df0259bdff"
+        },
+        {
+          "path": "document.xml",
+          "bytes": 17973,
+          "sha256": "e96d1cadcd8c51de571665c679caa1034d653ab25e5331afc5f057a6eaec92a9"
+        },
+        {
+          "path": "model.json",
+          "bytes": 7806,
+          "sha256": "2f6679693a708ef207c4f1cd1c59ce42457b7817a2090cefbc044cc2dea5c23d"
+        },
+        {
+          "path": "subject.jcs",
+          "bytes": 3814,
+          "sha256": "d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+        }
+      ]
+    },
+    {
+      "case": "xml-lexical-domain",
+      "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+      "artifacts": [
+        {
+          "path": "bundle.zip",
+          "bytes": 20120,
+          "sha256": "2c66726dc7565b9f9c652d0d212dc118a06fd9480c5c8b0d9b20a0a18816a56e"
+        },
+        {
+          "path": "csv/block_values.csv",
+          "bytes": 15790,
+          "sha256": "0ff2607062a67dc1082cc107aa2fb2316ab2f07efe4a4cb669306dd26b1588c5"
+        },
+        {
+          "path": "csv/blocks.csv",
+          "bytes": 980,
+          "sha256": "a2ec4001b4140af884d54edaa640847fdf40eb979e8074b8a70a426d21ac3e5e"
+        },
+        {
+          "path": "csv/document.csv",
+          "bytes": 509,
+          "sha256": "1303a950f9657584121859b65dea9d1118ebdbc670ef8bfdc2014c6517816f64"
+        },
+        {
+          "path": "csv/frontmatter.csv",
+          "bytes": 133,
+          "sha256": "07466e996022345973baab55c6a5ceca1feec768edeed3528de04d8b12b2a4f0"
+        },
+        {
+          "path": "csv/manifest.json",
+          "bytes": 1030,
+          "sha256": "f09931b290b76ad9ac2912f8e5a6fb3a40f5eebbb3c8f14bf93b0473b6d0ca41"
+        },
+        {
+          "path": "csv/prose.csv",
+          "bytes": 1050,
+          "sha256": "60205fd89896bb2a4ada79f8075ef40797345b40512c449102fff6df0259bdff"
+        },
+        {
+          "path": "document.xml",
+          "bytes": 18523,
+          "sha256": "55af0df51b65411db2f3d7303bbf51c17ee90e6d7b72dbbefaf7fff1fc4d810c"
+        },
+        {
+          "path": "model.json",
+          "bytes": 8050,
+          "sha256": "383d658c524e5b4d10ceb4f2bf233be5e2840925532e09be98047fcad06264c0"
+        },
+        {
+          "path": "subject.jcs",
+          "bytes": 3981,
+          "sha256": "a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+        }
+      ]
+    }
+  ]
+}
