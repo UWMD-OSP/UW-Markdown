@@ -1,0 +1,1158 @@
+{
+  "status": "UNACCEPTED independent Python source-reproduction and bounded accuracy observations",
+  "python": "3.12.3 (tags/v3.12.3:f6650f9, Apr  9 2024, 14:05:25) [MSC v.1938 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "machine": "AMD64",
+  "checkout_commit": "461de70e8bc6911799f3cfa7083b1d85d3b7c86d",
+  "checkout_tree": "e63e11db44efd9f176c2d3d072763848f33fcc91",
+  "input_hashes": {
+    "native-reference/evidence/run-38993665625/native-research-macos-latest-clang-false.zip": "031507ed7677bd6a133dc499f3a59d067aba24c67df278ee2315140804194b24",
+    "native-reference/evidence/run-38993665625/native-research-ubuntu-latest-clang-true.zip": "b24b47854eb34723b850fb56ca57f95201abfce2f018c7aff9381df714632141",
+    "native-reference/evidence/run-38993665625/native-research-ubuntu-latest-gcc-false.zip": "c12240d0bad3b554d3a1ccc2f7e6f25cf7588b8ecc5e8d0b7dfb0a81ff5016e6",
+    "native-reference/inputs.json": "8af9d8851e4ac9857844250ebaa8c7bd083556f6e53d2184a24c7fdd1b027703",
+    "pinned-fdlibm/constants.json": "e9793112e7a5d0e2c1ccb2f8d8dd9bbc35608598cf725cb8e5ee44117dad59d9",
+    "pinned-fdlibm/math-evidence.json": "4d388ee0be56d3f39ad20c13975fa0b283e0e410126235f5768a6411a987faca",
+    "pinned-fdlibm/math-inputs.json": "cb0079655db3c641bb4e7a04708dadc43be20ee34a9b04e16fccd3694e585911",
+    "pinned-fdlibm/sources.json": "48d0a1df2f503be981a7c507ebd68691bb949b7c622ed9f3f11727b7214fdb68",
+    "pinned-fdlibm/upstream/e_exp.c": "04c96195b7ced914d659b5fd204724c182f091af8631fe42016ad6e27cb302ef",
+    "pinned-fdlibm/upstream/e_log.c": "a2b1bd1b367026a35f36da53425cd618386c3bf69d23ac224a40791aa9855ac9",
+    "pinned-fdlibm/upstream/e_pow.c": "763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122",
+    "pinned-fdlibm/upstream/e_sqrt.c": "2a6e784d1089eb6351df7e59037de4240d11a5c61967611732f81ad96fe869ce",
+    "pinned-fdlibm/upstream/fdlibm.h": "64113c472c2676499288bc35a821b0867916552930bc52c7445d2c50dddf0e71",
+    "pinned-fdlibm/upstream/s_copysign.c": "459c18858c944a4e7062d38ab4dfb596edbe76706d24029c2dac766dcd2be3fd",
+    "pinned-fdlibm/upstream/s_fabs.c": "c6389f3e0472ec0157d648b3e4e80b405038acfaf3e85b961363ea483e3259f1",
+    "pinned-fdlibm/upstream/s_scalbn.c": "9ad1bb374fc2951ec086474c82373b45bccfdecd34d631974dccf8633f40d99e"
+  },
+  "implementation_hashes": {
+    "check_evidence.py": "be65347fee35779009080839946759c2fdeb03bce65bc100ac3f3816539ce93a",
+    "kernel.py": "2f66b40ad7bd1bf5f1cc965574a82239a9ccde2816af4aa4cd5825fda648aa69",
+    "run.py": "284d38f04160c84817d19c8ad698d8f9ca47d713cc721c1cdc215dfaaee30bfc",
+    "test_kernel.py": "b95add13e3cf7ddeeb39c63f9caf7ad49388204e8858ebffc10e71d7d810e396",
+    "wrappers.py": "77d1c4da77cd8a8db8aa7975420dcd1bca4fd5d83b76fdca02ea1a8324a7322c"
+  },
+  "native_comparisons": [
+    {
+      "archive": "native-reference/evidence/run-38993665625/native-research-macos-latest-clang-false.zip",
+      "cases": 4204,
+      "exact_non_nan_words": 3435,
+      "nan_classes": 769
+    },
+    {
+      "archive": "native-reference/evidence/run-38993665625/native-research-ubuntu-latest-clang-true.zip",
+      "cases": 4204,
+      "exact_non_nan_words": 3435,
+      "nan_classes": 769
+    },
+    {
+      "archive": "native-reference/evidence/run-38993665625/native-research-ubuntu-latest-gcc-false.zip",
+      "cases": 4204,
+      "exact_non_nan_words": 3435,
+      "nan_classes": 769
+    }
+  ],
+  "math_cases": 178,
+  "mathematical_word_agreements": 173,
+  "mathematical_disagreements": [
+    {
+      "id": "exp-word-3fd62e41ffffffff",
+      "candidate_word": "3ff6a09e0c594ff2",
+      "mathematical_word": "3ff6a09e0c594ff3",
+      "distance": "-1"
+    },
+    {
+      "id": "exp-word-3ff0000000000000",
+      "candidate_word": "4005bf0a8b14576a",
+      "mathematical_word": "4005bf0a8b145769",
+      "distance": "1"
+    },
+    {
+      "id": "bounded-math-power-2",
+      "candidate_word": "3fe6a09e667f3bcc",
+      "mathematical_word": "3fe6a09e667f3bcd",
+      "distance": "-1"
+    },
+    {
+      "id": "bounded-math-power-4",
+      "candidate_word": "4071cda00ebe20d6",
+      "mathematical_word": "4071cda00ebe20d7",
+      "distance": "-1"
+    },
+    {
+      "id": "bounded-math-power-7",
+      "candidate_word": "4006a09e667f3bcc",
+      "mathematical_word": "4006a09e667f3bcd",
+      "distance": "-1"
+    }
+  ],
+  "raw_results_sha256": "575047aff75a52c8b9720a600e07cd4b776234431c80bff5dcf58aed312f6b9d",
+  "accuracy": [
+    {
+      "id": "sqrt-subnormal-bit-0",
+      "candidate_word": "1e60000000000000",
+      "mathematical_word": "1e60000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-1",
+      "candidate_word": "1e66a09e667f3bcd",
+      "mathematical_word": "1e66a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-2",
+      "candidate_word": "1e70000000000000",
+      "mathematical_word": "1e70000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-3",
+      "candidate_word": "1e76a09e667f3bcd",
+      "mathematical_word": "1e76a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-4",
+      "candidate_word": "1e80000000000000",
+      "mathematical_word": "1e80000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-5",
+      "candidate_word": "1e86a09e667f3bcd",
+      "mathematical_word": "1e86a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-6",
+      "candidate_word": "1e90000000000000",
+      "mathematical_word": "1e90000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-7",
+      "candidate_word": "1e96a09e667f3bcd",
+      "mathematical_word": "1e96a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-8",
+      "candidate_word": "1ea0000000000000",
+      "mathematical_word": "1ea0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-9",
+      "candidate_word": "1ea6a09e667f3bcd",
+      "mathematical_word": "1ea6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-10",
+      "candidate_word": "1eb0000000000000",
+      "mathematical_word": "1eb0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-11",
+      "candidate_word": "1eb6a09e667f3bcd",
+      "mathematical_word": "1eb6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-12",
+      "candidate_word": "1ec0000000000000",
+      "mathematical_word": "1ec0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-13",
+      "candidate_word": "1ec6a09e667f3bcd",
+      "mathematical_word": "1ec6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-14",
+      "candidate_word": "1ed0000000000000",
+      "mathematical_word": "1ed0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-15",
+      "candidate_word": "1ed6a09e667f3bcd",
+      "mathematical_word": "1ed6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-16",
+      "candidate_word": "1ee0000000000000",
+      "mathematical_word": "1ee0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-17",
+      "candidate_word": "1ee6a09e667f3bcd",
+      "mathematical_word": "1ee6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-18",
+      "candidate_word": "1ef0000000000000",
+      "mathematical_word": "1ef0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-19",
+      "candidate_word": "1ef6a09e667f3bcd",
+      "mathematical_word": "1ef6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-20",
+      "candidate_word": "1f00000000000000",
+      "mathematical_word": "1f00000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-21",
+      "candidate_word": "1f06a09e667f3bcd",
+      "mathematical_word": "1f06a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-22",
+      "candidate_word": "1f10000000000000",
+      "mathematical_word": "1f10000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-23",
+      "candidate_word": "1f16a09e667f3bcd",
+      "mathematical_word": "1f16a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-24",
+      "candidate_word": "1f20000000000000",
+      "mathematical_word": "1f20000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-25",
+      "candidate_word": "1f26a09e667f3bcd",
+      "mathematical_word": "1f26a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-26",
+      "candidate_word": "1f30000000000000",
+      "mathematical_word": "1f30000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-27",
+      "candidate_word": "1f36a09e667f3bcd",
+      "mathematical_word": "1f36a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-28",
+      "candidate_word": "1f40000000000000",
+      "mathematical_word": "1f40000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-29",
+      "candidate_word": "1f46a09e667f3bcd",
+      "mathematical_word": "1f46a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-30",
+      "candidate_word": "1f50000000000000",
+      "mathematical_word": "1f50000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-31",
+      "candidate_word": "1f56a09e667f3bcd",
+      "mathematical_word": "1f56a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-32",
+      "candidate_word": "1f60000000000000",
+      "mathematical_word": "1f60000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-33",
+      "candidate_word": "1f66a09e667f3bcd",
+      "mathematical_word": "1f66a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-34",
+      "candidate_word": "1f70000000000000",
+      "mathematical_word": "1f70000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-35",
+      "candidate_word": "1f76a09e667f3bcd",
+      "mathematical_word": "1f76a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-36",
+      "candidate_word": "1f80000000000000",
+      "mathematical_word": "1f80000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-37",
+      "candidate_word": "1f86a09e667f3bcd",
+      "mathematical_word": "1f86a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-38",
+      "candidate_word": "1f90000000000000",
+      "mathematical_word": "1f90000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-39",
+      "candidate_word": "1f96a09e667f3bcd",
+      "mathematical_word": "1f96a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-40",
+      "candidate_word": "1fa0000000000000",
+      "mathematical_word": "1fa0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-41",
+      "candidate_word": "1fa6a09e667f3bcd",
+      "mathematical_word": "1fa6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-42",
+      "candidate_word": "1fb0000000000000",
+      "mathematical_word": "1fb0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-43",
+      "candidate_word": "1fb6a09e667f3bcd",
+      "mathematical_word": "1fb6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-44",
+      "candidate_word": "1fc0000000000000",
+      "mathematical_word": "1fc0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-45",
+      "candidate_word": "1fc6a09e667f3bcd",
+      "mathematical_word": "1fc6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-46",
+      "candidate_word": "1fd0000000000000",
+      "mathematical_word": "1fd0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-47",
+      "candidate_word": "1fd6a09e667f3bcd",
+      "mathematical_word": "1fd6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-48",
+      "candidate_word": "1fe0000000000000",
+      "mathematical_word": "1fe0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-49",
+      "candidate_word": "1fe6a09e667f3bcd",
+      "mathematical_word": "1fe6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-50",
+      "candidate_word": "1ff0000000000000",
+      "mathematical_word": "1ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-subnormal-bit-51",
+      "candidate_word": "1ff6a09e667f3bcd",
+      "mathematical_word": "1ff6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-000fffffffffffff",
+      "candidate_word": "1fffffffffffffff",
+      "mathematical_word": "1fffffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-0010000000000000",
+      "candidate_word": "2000000000000000",
+      "mathematical_word": "2000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-0010000000000001",
+      "candidate_word": "2000000000000000",
+      "mathematical_word": "2000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3fefffffffffffff",
+      "candidate_word": "3fefffffffffffff",
+      "mathematical_word": "3fefffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3ff0000000000000",
+      "candidate_word": "3ff0000000000000",
+      "mathematical_word": "3ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3ff0000000000001",
+      "candidate_word": "3ff0000000000000",
+      "mathematical_word": "3ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3ff3988dffffffff",
+      "candidate_word": "3ff1b4f810b5a6f2",
+      "mathematical_word": "3ff1b4f810b5a6f2",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3ff3988e00000000",
+      "candidate_word": "3ff1b4f810b5a6f2",
+      "mathematical_word": "3ff1b4f810b5a6f2",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3ff3988e00000001",
+      "candidate_word": "3ff1b4f810b5a6f3",
+      "mathematical_word": "3ff1b4f810b5a6f3",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3ffbb679ffffffff",
+      "candidate_word": "3ff50ea347865025",
+      "mathematical_word": "3ff50ea347865025",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3ffbb67a00000000",
+      "candidate_word": "3ff50ea347865026",
+      "mathematical_word": "3ff50ea347865026",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-3ffbb67a00000001",
+      "candidate_word": "3ff50ea347865026",
+      "mathematical_word": "3ff50ea347865026",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-4000000000000000",
+      "candidate_word": "3ff6a09e667f3bcd",
+      "mathematical_word": "3ff6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "sqrt-word-7fefffffffffffff",
+      "candidate_word": "5fefffffffffffff",
+      "mathematical_word": "5fefffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-0000000000000001",
+      "candidate_word": "c0874385446d71c3",
+      "mathematical_word": "c0874385446d71c3",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-000fffffffffffff",
+      "candidate_word": "c086232bdd7abcd2",
+      "mathematical_word": "c086232bdd7abcd2",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-0010000000000000",
+      "candidate_word": "c086232bdd7abcd2",
+      "mathematical_word": "c086232bdd7abcd2",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-3fe0000000000000",
+      "candidate_word": "bfe62e42fefa39ef",
+      "mathematical_word": "bfe62e42fefa39ef",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-3fefffffffffffff",
+      "candidate_word": "bca0000000000000",
+      "mathematical_word": "bca0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-3ff0000000000000",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-3ff0000000000001",
+      "candidate_word": "3cafffffffffffff",
+      "mathematical_word": "3cafffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-3ff0000000000002",
+      "candidate_word": "3cbffffffffffffe",
+      "mathematical_word": "3cbffffffffffffe",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-3ff61479ffffffff",
+      "candidate_word": "3fd49d018ee476f7",
+      "mathematical_word": "3fd49d018ee476f7",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-3ff6147a00000000",
+      "candidate_word": "3fd49d018ee476fa",
+      "mathematical_word": "3fd49d018ee476fa",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-3ff6b85100000000",
+      "candidate_word": "3fd67126ed7cbb58",
+      "mathematical_word": "3fd67126ed7cbb58",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-4000000000000000",
+      "candidate_word": "3fe62e42fefa39ef",
+      "mathematical_word": "3fe62e42fefa39ef",
+      "distance": "0"
+    },
+    {
+      "id": "log-word-7fefffffffffffff",
+      "candidate_word": "40862e42fefa39ef",
+      "mathematical_word": "40862e42fefa39ef",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-0000000000000000",
+      "candidate_word": "3ff0000000000000",
+      "mathematical_word": "3ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-8000000000000000",
+      "candidate_word": "3ff0000000000000",
+      "mathematical_word": "3ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-3e10000000000000",
+      "candidate_word": "3ff0000000400000",
+      "mathematical_word": "3ff0000000400000",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-be10000000000000",
+      "candidate_word": "3fefffffff800000",
+      "mathematical_word": "3fefffffff800000",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-3fd62e41ffffffff",
+      "candidate_word": "3ff6a09e0c594ff2",
+      "mathematical_word": "3ff6a09e0c594ff3",
+      "distance": "-1"
+    },
+    {
+      "id": "exp-word-3fd62e4200000000",
+      "candidate_word": "3ff6a09e0c594ff3",
+      "mathematical_word": "3ff6a09e0c594ff3",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-3fd62e4200000001",
+      "candidate_word": "3ff6a09e0c594ff3",
+      "mathematical_word": "3ff6a09e0c594ff3",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-3fe0000000000000",
+      "candidate_word": "3ffa61298e1e069c",
+      "mathematical_word": "3ffa61298e1e069c",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-bfe0000000000000",
+      "candidate_word": "3fe368b2fc6f960a",
+      "mathematical_word": "3fe368b2fc6f960a",
+      "distance": "0"
+    },
+    {
+      "id": "exp-word-3ff0000000000000",
+      "candidate_word": "4005bf0a8b14576a",
+      "mathematical_word": "4005bf0a8b145769",
+      "distance": "1"
+    },
+    {
+      "id": "exp-word-bff0000000000000",
+      "candidate_word": "3fd78b56362cef38",
+      "mathematical_word": "3fd78b56362cef38",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000--2147483648",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000--1075",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000--1074",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000--54",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000--1",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000-0",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000-1",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000-53",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000-1024",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000000-2147483647",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000--2147483648",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000--1075",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000--1074",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000--54",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000--1",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000-0",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000-1",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000-53",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000-1024",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-8000000000000000-2147483647",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001--2147483648",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001--1075",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001--1074",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001--54",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001--1",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001-0",
+      "candidate_word": "0000000000000001",
+      "mathematical_word": "0000000000000001",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001-1",
+      "candidate_word": "0000000000000002",
+      "mathematical_word": "0000000000000002",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001-53",
+      "candidate_word": "0020000000000000",
+      "mathematical_word": "0020000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001-1024",
+      "candidate_word": "3cd0000000000000",
+      "mathematical_word": "3cd0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0000000000000001-2147483647",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff--2147483648",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1075",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1074",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff--54",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1",
+      "candidate_word": "0008000000000000",
+      "mathematical_word": "0008000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff-0",
+      "candidate_word": "000fffffffffffff",
+      "mathematical_word": "000fffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff-1",
+      "candidate_word": "001ffffffffffffe",
+      "mathematical_word": "001ffffffffffffe",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff-53",
+      "candidate_word": "035ffffffffffffe",
+      "mathematical_word": "035ffffffffffffe",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff-1024",
+      "candidate_word": "400ffffffffffffe",
+      "mathematical_word": "400ffffffffffffe",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-000fffffffffffff-2147483647",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000--2147483648",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000--1075",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000--1074",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000--54",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000--1",
+      "candidate_word": "0008000000000000",
+      "mathematical_word": "0008000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000-0",
+      "candidate_word": "0010000000000000",
+      "mathematical_word": "0010000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000-1",
+      "candidate_word": "0020000000000000",
+      "mathematical_word": "0020000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000-53",
+      "candidate_word": "0360000000000000",
+      "mathematical_word": "0360000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000-1024",
+      "candidate_word": "4010000000000000",
+      "mathematical_word": "4010000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-0010000000000000-2147483647",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000--2147483648",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1075",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1074",
+      "candidate_word": "0000000000000001",
+      "mathematical_word": "0000000000000001",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000--54",
+      "candidate_word": "3c90000000000000",
+      "mathematical_word": "3c90000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1",
+      "candidate_word": "3fe0000000000000",
+      "mathematical_word": "3fe0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000-0",
+      "candidate_word": "3ff0000000000000",
+      "mathematical_word": "3ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000-1",
+      "candidate_word": "4000000000000000",
+      "mathematical_word": "4000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000-53",
+      "candidate_word": "4340000000000000",
+      "mathematical_word": "4340000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000-1024",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-3ff0000000000000-2147483647",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000--2147483648",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000--1075",
+      "candidate_word": "8000000000000000",
+      "mathematical_word": "8000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000--1074",
+      "candidate_word": "8000000000000001",
+      "mathematical_word": "8000000000000001",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000--54",
+      "candidate_word": "bc90000000000000",
+      "mathematical_word": "bc90000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000--1",
+      "candidate_word": "bfe0000000000000",
+      "mathematical_word": "bfe0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000-0",
+      "candidate_word": "bff0000000000000",
+      "mathematical_word": "bff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000-1",
+      "candidate_word": "c000000000000000",
+      "mathematical_word": "c000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000-53",
+      "candidate_word": "c340000000000000",
+      "mathematical_word": "c340000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000-1024",
+      "candidate_word": "fff0000000000000",
+      "mathematical_word": "fff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-bff0000000000000-2147483647",
+      "candidate_word": "fff0000000000000",
+      "mathematical_word": "fff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--2147483648",
+      "candidate_word": "0000000000000000",
+      "mathematical_word": "0000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1075",
+      "candidate_word": "3cbfffffffffffff",
+      "mathematical_word": "3cbfffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1074",
+      "candidate_word": "3ccfffffffffffff",
+      "mathematical_word": "3ccfffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--54",
+      "candidate_word": "7c8fffffffffffff",
+      "mathematical_word": "7c8fffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1",
+      "candidate_word": "7fdfffffffffffff",
+      "mathematical_word": "7fdfffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-0",
+      "candidate_word": "7fefffffffffffff",
+      "mathematical_word": "7fefffffffffffff",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-1",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-53",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-1024",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-2147483647",
+      "candidate_word": "7ff0000000000000",
+      "mathematical_word": "7ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "bounded-math-power-0",
+      "candidate_word": "3ff6a09e667f3bcd",
+      "mathematical_word": "3ff6a09e667f3bcd",
+      "distance": "0"
+    },
+    {
+      "id": "bounded-math-power-1",
+      "candidate_word": "4000000000000000",
+      "mathematical_word": "4000000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "bounded-math-power-2",
+      "candidate_word": "3fe6a09e667f3bcc",
+      "mathematical_word": "3fe6a09e667f3bcd",
+      "distance": "-1"
+    },
+    {
+      "id": "bounded-math-power-3",
+      "candidate_word": "3ff0000000000000",
+      "mathematical_word": "3ff0000000000000",
+      "distance": "0"
+    },
+    {
+      "id": "bounded-math-power-4",
+      "candidate_word": "4071cda00ebe20d6",
+      "mathematical_word": "4071cda00ebe20d7",
+      "distance": "-1"
+    },
+    {
+      "id": "bounded-math-power-5",
+      "candidate_word": "3faaacadc6ed30ca",
+      "mathematical_word": "3faaacadc6ed30ca",
+      "distance": "0"
+    },
+    {
+      "id": "bounded-math-power-6",
+      "candidate_word": "000012688b70e62b",
+      "mathematical_word": "000012688b70e62b",
+      "distance": "0"
+    },
+    {
+      "id": "bounded-math-power-7",
+      "candidate_word": "4006a09e667f3bcc",
+      "mathematical_word": "4006a09e667f3bcd",
+      "distance": "-1"
+    }
+  ]
+}
