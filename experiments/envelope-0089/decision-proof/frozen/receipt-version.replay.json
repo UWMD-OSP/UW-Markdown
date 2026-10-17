@@ -1,0 +1,45 @@
+{
+  "status": "ACCEPTED RECEIPT 5.5 CONTROL; NOT NORMATIVE CHANGE",
+  "source_commit": "e5a2e0a7de51d4385047ed4c83ec2edd5605467c",
+  "observations_sha256": "b33a2975bdac1b790da63689c276237ee5a96aa7ba815fc9bc75ec8da550e554",
+  "executions": [
+    {
+      "mode": "create",
+      "command": [
+        "node",
+        "experiments/envelope-0089/decision-proof/receipt-version.mjs",
+        "--verify-root",
+        "<explicit fresh source-pinned verifier checkout>",
+        "--create"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "receipt-version.create.stdout.txt",
+        "sha256": "21348e4408af885be781383966fb0cdea6f51ac44d8f0c69b09f8e691052e332"
+      },
+      "stderr": {
+        "path": "receipt-version.create.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "mode": "check",
+      "command": [
+        "node",
+        "experiments/envelope-0089/decision-proof/receipt-version.mjs",
+        "--verify-root",
+        "<explicit fresh source-pinned verifier checkout>",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "receipt-version.check.stdout.txt",
+        "sha256": "21348e4408af885be781383966fb0cdea6f51ac44d8f0c69b09f8e691052e332"
+      },
+      "stderr": {
+        "path": "receipt-version.check.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

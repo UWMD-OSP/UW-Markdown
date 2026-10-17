@@ -56,10 +56,31 @@ constant-pack receipts verify with real crypto backends. The pack computes only
 literal1 as a synthetic control. Changing source `_notes` returns INT11/RCP01,
 backend0, while retaining the original signatures. Duplicating an active source
 selection refuses INT15. Candidate artifacts with valid bytes still return
-actual INT14/RCP10 and backend0 in current verifiers. Relabelled current versions
+actual INT14/RCP10 and backend0 in current verifiers. RCP10 here requires the
+changed subject digest as well as differing canonicalization metadata; it is
+not a blanket refusal of unknown receipt canonicalization-version strings. Relabelled current versions
 return the existing source/subject refusal. This is observed current behavior,
 not a future candidate state-machine implementation or backward-support path.
 
+The separate `receipt-version.mjs` control retains accepted Receipt §5.5:
+version-only canonicalization metadata changes with matching source digests
+proceed normally. Four actual public-API controls use the two admitted frozen
+current-regime receipts and real Ed25519: retaining the old signature after
+changing only that metadata returns failed/RCP01 with backend1; a new disposable
+research signature verifies with backend1. This does not implement the named
+`C_UNSUPPORTED` canonicalizer or migrate a historical artifact. It demonstrates
+why strict unsupported Envelope/codec and V.13 subject refusal cannot silently
+become a new blanket receipt rule. `frozen/receipt-version.json` preserves every
+artifact, payload, result and backend count, the original auth evidence hash,
+and exact helper/contract identities. Every production source and compiled hash
+from the original auth record is checked again. Its default replay is read-only:
+
+```powershell
+node experiments/envelope-0089/decision-proof/receipt-version.mjs --verify-root "C:\path\to\fresh-source-pinned-verifier" --check
+```
+
+The mixed-peer current receipt RCP10 observation does not prove Envelope1.0 has
+a complete source projection; its known representation problem is Issue365.
 No candidate financial receipt is issued. V.13 is not made a prerequisite for
 ordinary receipt issuance: receipts must retain their own accepted canonical
 subject, parse and pack-recomputation obligations. Ordinary model fidelity does
