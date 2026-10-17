@@ -1,0 +1,121 @@
+{
+  "package_version": "1.0",
+  "package_id": "pkg:standalone:authored:2026-10-17",
+  "members": [
+    {
+      "id": "example:standalone:2026-10-17:lease-abstract-v1",
+      "path": "records/lease-abstract-v1.uwx.md",
+      "role": "lease_abstract",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:3caa385d98d20b0b0976cf78c53342b26d391cf88994328314b69b1b9bf7a55e",
+      "document_profile": "lease-abstract-v1",
+      "semantic_digest": "sha256:34dea7fa90e16a6b1bb7556f32e5f343ab047d137e4bee2e7ce40fe660bc6183"
+    },
+    {
+      "id": "example:standalone:2026-10-17:source-note-v1",
+      "path": "records/source-note-v1.uwx.md",
+      "role": "source_note",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:32dc4d2fc11ab579cce33cd1622bb7acf79fe5d6a106267ccb49526a9d6e3884",
+      "document_profile": "source-note-v1",
+      "semantic_digest": "sha256:2e1836881b4b6b8bc254e886755ce04491f859ec7babec729f0b19a7eaf60bc2"
+    },
+    {
+      "id": "example:standalone:2026-10-17:inline-deal",
+      "path": "records/inline-deal.uwx.md",
+      "role": "underwriting",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:1040625ee351ab98f6f30388c9429707c9767d634464db56a2c71b5a7ab1e430",
+      "document_profile": "deal-underwriting-v1",
+      "semantic_digest": "sha256:3abd753b1414328323509b3090fcbef664fc1b56fa520a94bf727969d13233b3"
+    },
+    {
+      "id": "example:standalone:2026-10-17:externalized-deal",
+      "path": "records/externalized-deal.uwx.md",
+      "role": "underwriting",
+      "media_type": "text/vnd.uwmd.extended+markdown",
+      "sha256": "sha256:b02358ac3b6c033b297ffbfffd827d976dfb01616f6bd3c10caec39e63b7a0e3",
+      "document_profile": "deal-underwriting-v1",
+      "semantic_digest": "sha256:69f12072baf63edac0e2c7c33aa0653a231bdb6906c743fe6639963e52901ca7"
+    },
+    {
+      "id": "part:authored-2026-10-17-cash-flow-series-dated",
+      "path": "parts/cash-flow-series-dated.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:6d52ce7dfcef9bf91f3577d6c91457169879b73433f9dcf7c23e74d5ed0770cf"
+    },
+    {
+      "id": "part:authored-2026-10-17-operating-statement-t12",
+      "path": "parts/operating-statement-t12.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:026e3668703cefe922eac091747dd9db9957831ba47f816e91b739c2538ff86b"
+    },
+    {
+      "id": "part:authored-2026-10-17-rent-roll-210",
+      "path": "parts/rent-roll-210.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:903e8cba082a870197fb2bfdfa7a1e589a579dc02a868ce4e4fbe733bbb1543c"
+    },
+    {
+      "id": "part:authored-2026-10-17-rent-roll-215",
+      "path": "parts/rent-roll-215.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:3aa5d47e654dadf70eb35cfbb50c52a1dea1224d7a552045a2bc512ae3dcca19"
+    },
+    {
+      "id": "part:authored-2026-10-17-rent-roll-220",
+      "path": "parts/rent-roll-220.uwpart.md",
+      "role": "model_encoding",
+      "media_type": "text/vnd.uwmd.part+markdown",
+      "sha256": "sha256:6666e65c6b00bf4de5bc4b624b24270787f057d97a9b48a16f69e07339509691"
+    },
+    {
+      "id": "source:standalone:2026-10-17:anchor-lease",
+      "path": "sources/anchor-lease.txt",
+      "role": "source_evidence",
+      "media_type": "text/plain",
+      "sha256": "sha256:f41da4cd46a6d738e37ccb2687d19e0f77a6f90fe33c7f7db88e5e4b6738ef8b"
+    }
+  ],
+  "links": [
+    {
+      "type": "abstracts",
+      "from": "example:standalone:2026-10-17:lease-abstract-v1",
+      "to": "source:standalone:2026-10-17:anchor-lease"
+    },
+    {
+      "type": "supports",
+      "from": "example:standalone:2026-10-17:source-note-v1",
+      "to": "example:standalone:2026-10-17:lease-abstract-v1"
+    },
+    {
+      "type": "contributes_to",
+      "from": "example:standalone:2026-10-17:lease-abstract-v1",
+      "to": "example:standalone:2026-10-17:inline-deal"
+    },
+    {
+      "type": "contributes_to",
+      "from": "example:standalone:2026-10-17:lease-abstract-v1",
+      "to": "example:standalone:2026-10-17:externalized-deal"
+    },
+    {
+      "type": "contributes_to",
+      "from": "part:authored-2026-10-17-rent-roll-210",
+      "to": "example:standalone:2026-10-17:externalized-deal"
+    },
+    {
+      "type": "contributes_to",
+      "from": "part:authored-2026-10-17-rent-roll-215",
+      "to": "example:standalone:2026-10-17:externalized-deal"
+    },
+    {
+      "type": "contributes_to",
+      "from": "part:authored-2026-10-17-rent-roll-220",
+      "to": "example:standalone:2026-10-17:externalized-deal"
+    }
+  ]
+}

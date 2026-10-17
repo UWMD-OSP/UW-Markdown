@@ -10,6 +10,17 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept RFC0091 under the owner's2026-10-17 decision: META-02/03 errors
+  apply to incomplete admitted canonical metadata, including retained history.
+  Validation exit codes and newly issued receipt policy counts may change;
+  sources and historical subjects are never repaired or rewritten. Preserve
+  META-01, completeness/shape precedence, financial and receipt-verdict rules,
+  all2,731 protected artifacts and original expectation evidence. The owner
+  accepts the six authored replacement-kit declarations; strict positive,
+  composition and package-fidelity assertions remain. No schema/version change,
+  release or Python capability promotion. See RFC0091 for the breaking-impact
+  version recommendation and writer migration note.
+
 - Enforce RFC0090's required nonempty-string provenance actor with narrow
   META-01/error across retained physical blocks. Preserve wrapper precedence,
   mutable-model authority and historical source/expectation identities; govern
@@ -65,6 +76,11 @@ protocol, and each package each carry an independent semver).
   calculation changes.
 
 ### Added
+
+- Record RFC0091's accepted bounded diagnostic reconciliation, exact nine-case
+  owning-code analysis, independent source/consumer inventories and frozen
+  pre-activation sensitivity evidence. Preserve historical expectations without
+  advertising complete validation or allocating a release version.
 
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.

@@ -1,5 +1,27 @@
 # Standalone UW document kit
 
+The current positive examples are the newly authored
+[2026-10-17 kit](authored-2026-10-17/README.md). It retains RFC0048's promise that
+positive examples parse and validate, with explicit metadata, full composition
+equivalence and a new package. The owner accepted RFC0091 and all six authored
+review declarations on2026-10-17. Integration requires exact-head CI; no version
+allocation, release or publication is authorized.
+
+The original `lease-abstract-v1`, `source-note-v1`, `inline-deal` and
+`externalized-deal` files below are **metadata-incomplete historical examples**.
+Their six absent canonical review booleans are not inferred from narrative data.
+Their original ZIP, embedded copies, subject/signature/receipt evidence and source
+bytes remain unchanged. Do not regenerate the historical ZIP. Its member-digest
+verification does not imply current whole-document validity or new-semantic
+authentication. Original fidelity and composition checks remain active; the
+zero-error positive profile assertions now exercise the newly authored examples.
+
+## Historical kit documentation
+
+The following records the original example surfaces. Its package manifest and
+members remain an immutable historical fixture; use the new kit for authoring.
+
+
 This worked-example kit implements the adoption scope in [RFC 0048](../../docs/rfcs/0048-standalone-document-kit.md).
 It demonstrates the existing profile, fragment, composition, and deal-package
 surfaces without adding a new profile or financial calculation.
@@ -16,12 +38,11 @@ surfaces without adding a new profile or financial calculation.
 | [`package/standalone-demo.uwpkg.zip`](package/standalone-demo.uwpkg.zip) | A package containing the externalized deal, profile documents, fragments, and source evidence. | The ZIP is the fidelity boundary; source evidence is never inlined into context. |
 
 The package input manifest is [`package/manifest.json`](package/manifest.json).
-Member paths are relative to that manifest, so the package can be regenerated
-with the CLI after a source edit:
+Member paths are relative to that manifest, for historical identity verification. Do not overwrite the historical archive;
+use the new kit's manifest when authoring a package:
 
 ```text
 npm run build
-node packages/uwmd-cli/bin/uwmd.mjs package create examples/standalone/package/manifest.json --output examples/standalone/package/standalone-demo.uwpkg.zip
 node packages/uwmd-cli/bin/uwmd.mjs package verify examples/standalone/package/standalone-demo.uwpkg.zip
 ```
 

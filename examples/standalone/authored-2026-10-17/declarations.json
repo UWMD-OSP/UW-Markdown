@@ -1,0 +1,100 @@
+{
+  "authored_at": "2026-10-17T21:34:15Z",
+  "author": "codex/standalone-kit-2026-10-17",
+  "owner_direction_date": "2026-10-17",
+  "package_id": "pkg:standalone:authored:2026-10-17",
+  "logical_deal_id": "uw_standalone_authored_2026_10_17",
+  "identity_boundary": "Inline and externalized forms share one NEW logical record identity and canonical metadata; separate member IDs and byte digests identify the two carriers.",
+  "top_level_blocks": [
+    {
+      "file": "lease-abstract-v1.uwx.md",
+      "section": "deal_context",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required before using this illustrative abstract with unresolved legal terms; revision 1 is the current block of a new document.",
+      "member_id": "example:standalone:2026-10-17:lease-abstract-v1"
+    },
+    {
+      "file": "source-note-v1.uwx.md",
+      "section": "deal_context",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required to compare this illustrative transcription with an actual source; revision 1 is the current block of a new note.",
+      "member_id": "example:standalone:2026-10-17:source-note-v1"
+    },
+    {
+      "file": "inline-deal.uwx.md",
+      "section": "property",
+      "human_review_required": false,
+      "superseded": false,
+      "reason": "This deliberately authored fictional property only demonstrates structure and requires no human fact-review for that purpose; revision 1 is the new record head.",
+      "member_id": "example:standalone:2026-10-17:inline-deal"
+    },
+    {
+      "file": "inline-deal.uwx.md",
+      "section": "rent_roll",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required before relying on these illustrative tenant rows as underwriting inputs; revision 1 is the new record head.",
+      "member_id": "example:standalone:2026-10-17:inline-deal"
+    },
+    {
+      "file": "externalized-deal.uwx.md",
+      "section": "property",
+      "human_review_required": false,
+      "superseded": false,
+      "reason": "This deliberately authored fictional property only demonstrates structure and requires no human fact-review for that purpose; revision 1 is the new record head.",
+      "member_id": "example:standalone:2026-10-17:externalized-deal"
+    },
+    {
+      "file": "externalized-deal.uwx.md",
+      "section": "rent_roll",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required before relying on these illustrative tenant rows as underwriting inputs; revision 1 is the new record head.",
+      "member_id": "example:standalone:2026-10-17:externalized-deal"
+    }
+  ],
+  "fragment_blocks": [
+    {
+      "file": "parts/cash-flow-series-dated.uwpart.md",
+      "section": "cash_flow_series",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required before reusing this illustrative stated-data fragment; revision 1 is the current block of its new part identity."
+    },
+    {
+      "file": "parts/operating-statement-t12.uwpart.md",
+      "section": "operating_statement",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required before reusing this illustrative stated-data fragment; revision 1 is the current block of its new part identity."
+    },
+    {
+      "file": "parts/rent-roll-210.uwpart.md",
+      "section": "rent_roll",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required before reusing this illustrative stated-data fragment; revision 1 is the current block of its new part identity."
+    },
+    {
+      "file": "parts/rent-roll-215.uwpart.md",
+      "section": "rent_roll",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required before reusing this illustrative stated-data fragment; revision 1 is the current block of its new part identity."
+    },
+    {
+      "file": "parts/rent-roll-220.uwpart.md",
+      "section": "rent_roll",
+      "human_review_required": true,
+      "superseded": false,
+      "reason": "Human review is required before reusing this illustrative stated-data fragment; revision 1 is the current block of its new part identity."
+    }
+  ],
+  "package_archive": {
+    "sha256": "8cb9ce0d80784c367a9f545621a27189685c8efab0a82f10254cafd4dedb0679",
+    "reproduction_timezone": "Etc/GMT+7",
+    "clock_boundary": "Existing codec converts its fixed instant to local DOS timestamp fields. This names the authored archive build environment; timestamps remain nonsemantic."
+  }
+}

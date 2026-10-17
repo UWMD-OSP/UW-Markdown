@@ -15,6 +15,33 @@ bare/nested shape and nonempty actor. Final integration requires exact-head CI
 and subsequent exact-main CI; no release version is allocated. Python discovery
 remains parse-only. RFCs0085/0088/0089 retain separate draft status.
 
+**Python diagnostic reconciliation — accepted RFC0091, unreleased.**
+[RFC0091](../rfcs/0091-required-metadata-booleans.md) records the owner's
+2026-10-17 acceptance of the bounded META-02/03 contract and six new-kit review
+declarations. It separates the nine native partial refusals into existing
+REC/container admissions and two required canonical boolean diagnostics.
+Independent evidence preserves943 absences in205 original conformance sources,
+unchanged111 portable responses, five historical native sensitivity differences
+and their governed dispositions. TS/Python predicates preserve META-01,
+container/actor precedence, physical/history scope, mutable-model authority and
+issue ordering. Incomplete admitted canonical metadata, including history, now
+receives errors; validation exits and newly issued receipt policy counts may
+change. Sources and historical subjects are never repaired or rewritten.
+All2,731 protected artifacts remain byte-identical. Exact-final-head CI and
+subsequent exact-main CI are integration gates; no release/version is allocated.
+Complete Python validation remains separately gated, with parse-only discovery.
+RFC0085/0088/0089 retain their independent draft states.
+
+**RFC0048 kit disposition — owner option(a), accepted declarations.** New positive
+examples under examples/standalone/authored-2026-10-17 carry explicit authored
+block declarations/reasons, new provenance/identities and a new package. Original
+records/ZIP remain metadata-incomplete historical examples with unchanged bytes;
+positive, composition and fidelity assertions are preserved. StackUW's audited
+Format3 adapter emits both flags but defaults each to false; writers must choose
+intentional review/lifecycle declarations, not infer missing historical values.
+RFC0091 records a major-level consumer-impact recommendation and writer guidance;
+no version allocation, legacy shim, release or public launch is authorized.
+
 **Python priority — minimum-complete capabilities.** The current implementation
 has no Reader/Verifier tier and advertises only parse. The completion matrix in
 the Python README now maps accepted obligations, implemented scope, exact corpus
