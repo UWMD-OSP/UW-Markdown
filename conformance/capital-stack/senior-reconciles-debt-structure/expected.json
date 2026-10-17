@@ -1,5 +1,10 @@
 {
-  "why": "Stack senior_debt present alongside debt_structure: equal is accepted (no CC-03, and no other issue), mismatched fires the generalized CC-03.",
-  "agree_codes": [],
-  "mismatch_codes": ["CC-03"]
+  "why": "RFC0090 candidate: both unchanged sources lack required actors and owe META-01; equal senior debt still owes no CC-03, while mismatched senior debt owes CC-03 as well. Original expectations remain pinned at main b2ac5d8.",
+  "agree_codes": [
+    "META-01"
+  ],
+  "mismatch_codes": [
+    "CC-03",
+    "META-01"
+  ]
 }

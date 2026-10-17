@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Prepare draft RFC0090 and synchronized actor-admission candidate: allocate
+  META-01/error narrowly to required nonempty-string actors across retained
+  physical blocks, preserve wrapper precedence and mutable-model authority,
+  and preserve historical source/expectation identities. Final RFC acceptance
+  and normative activation remain pending owner review; no version is selected.
+
 - Record the owner's 5.0 launch compatibility policy: 5.0 is the first public
   baseline, prelaunch versions need no legacy support, and public surfaces keep
   independent versions. Preserve historical artifacts and RFC/verification gates;

@@ -668,6 +668,33 @@ The separate hyphenated `META-01` rejects a block that is not in the Format
 fences under `.uw.md`; `UNSUPPORTED_FORMAT_VERSION` rejects absent or non-3.0
 frontmatter.
 
+**Proposed actor admission (RFC 0090, draft; not activated).** Extend only
+`META-01`/error to absent, null, exact-empty or non-string canonical
+`_meta.provenance.actor`, one finding per assessed block, field
+`_meta.provenance.actor`. Existing wrapper/nested-object shape failures and
+whole-missing-meta handling take precedence and suppress the additional actor
+finding for that block. Preserve completeness codes, severities, applicability
+and relative order. Preserve all existing visible-model shape findings first;
+then apply the exact existing wrapper/nested-object predicate/message to
+previously unseen retained physical block references in source order. This
+explicit proposed source-accounting correction precedes the actor pass and
+adds no other metadata-schema requirement. The actor pass precedes role,
+period-series and source-vocabulary checks.
+
+Source validation MUST include every retained physical block before reduction,
+including history, overwritten selections, variants, append-only entries and
+extensions, in physical source order. Model assessment MUST use parser-retained
+actual block references plus provided model-only blocks, deduplicating exact
+object identity, then traversing model-only blocks in `sections`, `superseded`,
+`pipeline_log`, `custom_calculations`, `custom_scenarios`, `extensions` order
+(entry/array order within each). In-place edits are observed; replacement or
+removal from a projection does not erase retained physical evidence. A model
+without that parser-object inventory assesses only its supplied collections;
+its `raw` string does not certify complete source coverage and MUST NOT be
+silently reparsed to override current values. Fresh-source conclusions require
+a fresh parse of the exact operation input. This does not redirect other
+validation checks to historical blocks or import V.13 signing restrictions.
+
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
 RFC 0072 extends the existing data-quality sequence with `DQ-07`
@@ -820,7 +847,9 @@ On every write, the host MUST set:
   cascade, [§V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)), when the
   host knows it.
 - `_meta.provenance.timestamp` — current ISO-8601 UTC timestamp.
-- `_meta.provenance.actor` — human or system identifier of the writer.
+- `_meta.provenance.actor` — REQUIRED nonempty string naming the initiating
+  human or system principal. The draft RFC 0090 diagnostic proposal performs no
+  trimming, source-namespace grammar or principal inference.
 - `_meta.provenance.agent_id`, `_meta.provenance.agent_version` —
   populated for agent writes; null otherwise.
 

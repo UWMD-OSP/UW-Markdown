@@ -39,25 +39,26 @@ def codes(result):
 
 
 class SourceValidationTests(unittest.TestCase):
-    def test_nine_actual_standalone_frozen_scoped_comparisons(self):
+    def test_nine_actual_standalone_scoped_comparisons_with_candidate_actor_delta(self):
         spec=importlib.util.spec_from_file_location("source_shared",ROOT/"conformance/runner/runner.py")
         driver=importlib.util.module_from_spec(spec);spec.loader.exec_module(driver)
         fixtures=[]
         for name in ("01-actor-and-resolution","02-legacy-tag-in-source","04-colon-form-rejected"):
             folder=ROOT/"conformance/source"/name
             expected=json.loads((folder/"expected.json").read_text())
-            fixtures.append((folder/"deal.uwx.md",expected["src_codes"]))
+            fixtures.append((folder/"deal.uwx.md",expected["src_codes"],0))
         for name in ("20-flat-meta","21-section-id-wrapper","22-resolution-outside-vocabulary"):
             folder=ROOT/"conformance/documents/malformed"
             expected=json.loads((folder/(name+".expected.json")).read_text())
-            fixtures.append((folder/(name+".uwx.md"),expected["expected_codes"]))
+            fixtures.append((folder/(name+".uwx.md"),expected["expected_codes"],0))
         for name in ("10-declared-roles","11-role-collision","12-role-eligibility"):
             folder=ROOT/"conformance/documents"
             expected=json.loads((folder/"expected"/(name+".validation.json")).read_text())
             fixtures.append((folder/"fixtures"/(name+".uwx.md"),
-                sorted({i["code"] for i in expected["issues"] if i["code"].startswith("ROLE-")})))
+                sorted({i["code"] for i in expected["issues"] if i["code"].startswith("ROLE-")}),
+                {"10-declared-roles":11,"11-role-collision":8,"12-role-eligibility":8}[name]))
         self.assertEqual(len(fixtures),9)
-        for path,want in fixtures:
+        for path,want,actor_delta in fixtures:
             with self.subTest(fixture=path):
                 raw=path.read_bytes()
                 process=subprocess.run([sys.executable,"-B",str(ROOT/"implementations/python/uwmd.py"),
@@ -65,6 +66,12 @@ class SourceValidationTests(unittest.TestCase):
                 actual=json.loads(process.stdout)
                 # Explicit test-only scoped projection. Frozen validate outputs
                 # contain unrelated findings; no portable case/flag is changed.
+                actor_issues=[i for i in actual["issues"] if i["field"]=="_meta.provenance.actor"]
+                self.assertEqual(len(actor_issues),actor_delta)
+                if actor_delta:
+                    want=sorted(set(want)|{"META-01"})
+                # This explicit owner-approved candidate delta does not rewrite
+                # the frozen prelaunch assertions or claim unchanged conformance.
                 projected=dict(codes=sorted(set(codes(actual))))
                 self.assertEqual(driver.json_subset(dict(codes=sorted(want)),projected),[])
                 self.assertEqual(process.returncode,0 if actual["ok"] else 1)
@@ -179,19 +186,29 @@ class SourceValidationTests(unittest.TestCase):
             self.assertIn("META-01",codes(inspect(value)))
             self.assertNotIn("SRC-02",codes(inspect(value)))
         value=payload();value["_meta"]["section"]="wrong"
-        self.assertEqual(codes(inspect(value)),["META-01"])
+        result=inspect(value)
+        self.assertEqual(codes(result),[])
+        self.assertFalse(result["ok"])
+        self.assertEqual([(f["field"],f["message"]) for f in result["shape_findings"]],
+            [("_meta.section","_meta.section must match the exact fence section.")])
         proper=payload();late={"value":1,"_meta":proper["_meta"]}
-        self.assertEqual(codes(inspect(late)),["META-01"])
+        result=inspect(late)
+        self.assertEqual(codes(result),[])
+        self.assertFalse(result["ok"])
+        self.assertEqual([(f["field"],f["message"]) for f in result["shape_findings"]],
+            [("_meta","_meta must be the first block member.")])
 
     def test_selected_provenance_shape_stays_local_and_has_no_legacy_fallback(self):
         value=payload();value["_meta"]["provenance"]={"source":"agent/A","actor":0,"timestamp":False}
         value["_meta"]["quality"].update(field_overrides=[{"source":"market_data"}],confidence="unknown")
         value["_meta"]["lifecycle"].update(revision=True)
         result=inspect(value)
-        self.assertEqual(result["issues"],[])
+        self.assertEqual([(i["code"],i["field"]) for i in result["issues"]],
+                         [("META-01","_meta.provenance.actor")])
         paths={f["field"] for f in result["shape_findings"]}
-        self.assertTrue({"_meta.provenance.agent_id","_meta.provenance.actor","_meta.provenance.timestamp",
+        self.assertTrue({"_meta.provenance.agent_id","_meta.provenance.timestamp",
                          "_meta.quality.field_overrides","_meta.quality.confidence","_meta.lifecycle.revision"}<=paths)
+        self.assertNotIn("_meta.provenance.actor",paths)
         self.assertFalse(any("code" in f or "severity" in f for f in result["shape_findings"]))
         value=payload();value["_meta"]["provenance"]["source"]="agent/A";value["_meta"]["provenance"]["agent_id"]=None
         value["_meta"]["lifecycle"]["revision"]=1.0
@@ -209,5 +226,104 @@ class SourceValidationTests(unittest.TestCase):
         self.assertEqual(document.source.raw,before.source.raw)
         self.assertEqual(document.projection(),before.projection())
 
+
+    def test_candidate_actor_exact_value_domain_and_no_aliases(self):
+        for actor in (OMITTED,None,"",False,0,1.0,[],{}):
+            with self.subTest(actor=actor):
+                value=payload()
+                if actor is OMITTED:del value["_meta"]["provenance"]["actor"]
+                else:value["_meta"]["provenance"]["actor"]=actor
+                value["_meta"]["actor"]="not-an-alias"
+                result=inspect(value)
+                self.assertEqual([(i["code"],i["severity"],i["field"]) for i in result["issues"]],
+                    [("META-01","error","_meta.provenance.actor")])
+                self.assertFalse(result["ok"])
+                self.assertEqual(result["issues"][0]["message"],
+                    "Block _meta.provenance.actor must be a nonempty string.")
+                self.assertEqual(result["issues"][0]["remediation"],
+                    "State the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor.")
+                self.assertFalse(any(f["field"]=="_meta.provenance.actor" for f in result["shape_findings"]))
+        for actor in (" ","\t\n","manual","someone:anywhere","é","\u0000"):
+            value=payload();value["_meta"]["provenance"]["actor"]=actor
+            document=parse(HEADER+fence(value));before=copy.deepcopy(document)
+            self.assertTrue(inspect_source_roles(document)["ok"])
+            self.assertEqual(document,before)
+
+    def test_candidate_all_physical_actor_coverage_including_history_and_hidden_peers(self):
+        raw=HEADER
+        for index,(section,variant,meta_old,fence_old) in enumerate((
+                ("property",None,False,False),("property",None,False,False),
+                ("property","default",False,False),("property","other",False,False),
+                ("x_private","peer",False,False),("history",None,False,False),
+                ("property",None,True,False),("x_private","old",False,True))):
+            value=payload();value["_meta"]["section"]=section
+            del value["_meta"]["provenance"]["actor"]
+            value["_meta"]["lifecycle"]["superseded"]=meta_old
+            raw+=fence(value,section=section,variant=variant,superseded=fence_old)
+        document=parse(raw);before=copy.deepcopy(document)
+        result=inspect_source_roles(document)
+        self.assertEqual([i["context"]["block_index"] for i in result["issues"]],list(range(8)))
+        self.assertTrue(all(i["field"]=="_meta.provenance.actor" for i in result["issues"]))
+        self.assertEqual(result["history_blocks_skipped"],2)
+        self.assertEqual(document,before)
+        self.assertEqual(document.source.raw,raw)
+
+    def test_candidate_metadata_precedence_then_actor_then_active_role_source(self):
+        actor=payload(_role=None);actor["_meta"]["provenance"].update(actor=None,source="invalid")
+        malformed=payload();malformed["_meta"]["provenance"]=None
+        history=payload();history["_meta"]["lifecycle"]=None
+        document=parse(HEADER+fence(actor)+fence(malformed)+fence(history,superseded=True)
+                       +fence({"value":1}))
+        result=inspect_source_roles(document)
+        self.assertEqual([(i["code"],i["field"],i["context"]["block_index"]) for i in result["issues"]],
+            [("META-01","_meta",1),("META-01","_meta",2),
+             ("META-01","_meta.provenance.actor",0),("ROLE-01","_role",0),
+             ("SRC-01","_meta.provenance.source",0)])
+        self.assertEqual([f["field"] for f in result["shape_findings"]],["_meta"])
+        for body in ({"_meta":None},{"_meta":[]},{"_meta":{"section":"property"}},
+                     {"section_id":"property","value":1}):
+            self.assertEqual([(i["code"],i["field"]) for i in inspect(body)["issues"]],
+                             [("META-01","_meta")])
+
+    def test_candidate_unallocated_order_identity_checks_never_suppress_actor(self):
+        for kind in ("late_meta","wrong_section","both"):
+            for historical in (False,True):
+                with self.subTest(kind=kind,historical=historical):
+                    value=payload()
+                    del value["_meta"]["provenance"]["actor"]
+                    if kind in ("wrong_section","both"):
+                        value["_meta"]["section"]="other"
+                    if kind in ("late_meta","both"):
+                        value={"value":1,"_meta":value["_meta"]}
+                    document=parse(HEADER+fence(value,superseded=historical))
+                    before=copy.deepcopy(document)
+                    result=inspect_source_roles(document)
+                    self.assertEqual([(i["code"],i["field"]) for i in result["issues"]],
+                        [("META-01","_meta.provenance.actor")])
+                    self.assertFalse(result["ok"])
+                    fields=[] if historical else (
+                        ["_meta","_meta.section"] if kind=="both" else
+                        ["_meta"] if kind=="late_meta" else ["_meta.section"])
+                    self.assertEqual([f["field"] for f in result["shape_findings"]],fields)
+                    self.assertTrue(all("code" not in f and "severity" not in f
+                                        for f in result["shape_findings"]))
+                    self.assertEqual(document,before)
+                    # Restoring the actor does not turn other requirements into
+                    # historical META-01 allocation or active clean success.
+                    document.source.blocks[0].parsed.value["_meta"]["provenance"]["actor"]="author"
+                    result=inspect_source_roles(document)
+                    self.assertEqual(result["issues"],[])
+                    self.assertEqual(result["ok"],historical)
+                    self.assertEqual([f["field"] for f in result["shape_findings"]],fields)
+
+    def test_candidate_parsed_model_authority_does_not_reparse_or_certify_raw(self):
+        document=parse(HEADER+fence(payload()))
+        raw=document.source.raw
+        document.source.blocks[0].parsed.value["_meta"]["provenance"]["actor"]=None
+        result=inspect_source_roles(document)
+        self.assertEqual(codes(result),["META-01"])
+        self.assertEqual(document.source.raw,raw)
+        result["issues"][0]["context"]["block_index"]=99
+        self.assertEqual(inspect_source_roles(document)["issues"][0]["context"]["block_index"],0)
 
 if __name__=="__main__":unittest.main()

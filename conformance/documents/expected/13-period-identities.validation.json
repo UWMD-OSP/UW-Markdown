@@ -6,6 +6,10 @@
       "severity": "info"
     },
     {
+      "code": "META-01",
+      "severity": "error"
+    },
+    {
       "code": "PS-01",
       "severity": "warning"
     },

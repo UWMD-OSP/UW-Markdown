@@ -1,0 +1,7 @@
+{
+  "description": "Exact-empty actor is META-01/error.",
+  "expected_codes": [
+    "META-01"
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; draft RFC0090"
+}

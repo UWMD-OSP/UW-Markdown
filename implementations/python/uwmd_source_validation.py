@@ -1,4 +1,4 @@
-"""Independent active-block source/role inventory, not full Format validation.
+"""Independent bounded metadata/source/role inventory, not full Format validation.
 
 Registered SRC/ROLE findings and pinned META-01 routing checks are separate from
 local selected-shape diagnostics. No source resolution, inference or rewriting.
@@ -36,16 +36,53 @@ def _integer(value):
             and math.isfinite(value) and value >= 1 and int(value) == value)
 
 
-def inspect_source_roles(document):
-    """Inspect every active physical block without canonical-selection loss.
+def _metadata_routing(body):
+    routing = []
+    meta = body.get("_meta")
+    if "_meta" not in body:
+        pass  # Whole-missing metadata belongs to completeness, not actor admission.
+    elif not isinstance(meta, dict):
+        routing.append("A nested _meta object is required.")
+    else:
+        if not isinstance(meta.get("provenance"), dict) or not isinstance(meta.get("lifecycle"), dict):
+            routing.append("Nested provenance and lifecycle objects are required.")
+    if "section_id" in body:
+        routing.append("A top-level section_id wrapper is not admitted.")
+    return routing
 
-    Historical blocks are retained in the caller's Document and explicitly
-    skipped by this bounded current-source inventory. No role is reclassified.
-    The wrapper/shape diagnostics are local, not ValidationResult or new codes.
+
+def inspect_source_roles(document):
+    """Inspect physical metadata/actors and active source/role vocabulary.
+
+    The current parsed-value model is authoritative; source spans identify its
+    origins, not a certificate that mutable values still equal original bytes.
+    History is actor/shape-checked but its roles/sources are not reclassified.
+    This candidate wrapper remains separate from complete ValidationResult.
     """
     snapshot = copy.deepcopy(document)
-    result = dict(scope="active_source_provenance_and_roles", ok=True, issues=[],
+    result = dict(scope="physical_metadata_and_active_source_provenance_and_roles", ok=True, issues=[],
                   shape_findings=[], blocks=[], history_blocks_skipped=0, blocks_checked=0)
+    # Candidate actor reconciliation: complete the existing metadata-shape pass
+    # before actor admission, then retain active ROLE/SRC ordering below.
+    eligible = []
+    for index, block in enumerate(snapshot.source.blocks):
+        body = block.parsed.value
+        context = dict(block_index=index, variant=dict(block.attributes).get("variant"),
+                       body_byte_start=block.body_span.start, body_byte_end=block.body_span.end)
+        routing = _metadata_routing(body)
+        if routing:
+            result["issues"].append(dict(code="META-01", severity="error", section=block.section,
+                field="_meta", message=" ".join(routing), context=context))
+        elif "_meta" in body:
+            eligible.append((block, context))
+    for block, context in eligible:
+        actor = block.parsed.value["_meta"]["provenance"].get("actor")
+        if not isinstance(actor, str) or actor == "":
+            result["issues"].append(dict(code="META-01", severity="error", section=block.section,
+                field="_meta.provenance.actor",
+                message="Block _meta.provenance.actor must be a nonempty string.",
+                remediation="State the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor.",
+                context=copy.deepcopy(context)))
     for index, block in enumerate(snapshot.source.blocks):
         if source_superseded(block):
             result["history_blocks_skipped"] += 1
@@ -73,39 +110,27 @@ def inspect_source_roles(document):
             evidence["role"] = copy.deepcopy(body["_role"])
             if body["_role"] not in BLOCK_ROLES:
                 issue("ROLE-01", "_role", "An active block role must be one admitted scalar role.")
-        routing = []
         meta = body.get("_meta")
         if "_meta" not in body:
-            # Absence belongs to the distinct provenance-completeness family.
-            # Completeness findings belong to the full validator, not this inventory.
             shape("_meta", "Metadata is absent; provenance completeness is outside this partial command.")
-        elif not isinstance(meta, dict):
-            routing.append("A nested _meta object is required.")
-        else:
-            if next(iter(body), None) != "_meta":
-                routing.append("_meta must be the first block member.")
-            if meta.get("section") != block.section:
-                routing.append("_meta.section must match the exact fence section.")
-            if not isinstance(meta.get("provenance"), dict) or not isinstance(meta.get("lifecycle"), dict):
-                routing.append("Nested provenance and lifecycle objects are required.")
-        if "section_id" in body:
-            routing.append("A top-level section_id wrapper is not admitted.")
-        if routing:
-            issue("META-01", "_meta", " ".join(routing))
         if isinstance(meta, dict):
+            # These requirements have no META-01 allocation in RFC 0081.
+            # Retain them locally in the existing active-only assessment.
+            if next(iter(body), None) != "_meta":
+                shape("_meta", "_meta must be the first block member.")
+            if meta.get("section") != block.section:
+                shape("_meta.section", "_meta.section must match the exact fence section.")
             provenance = meta.get("provenance")
             if isinstance(provenance, dict):
                 vocabulary(provenance, "_meta.provenance")
                 for field in ("source", "resolution"):
                     if field in provenance:
                         evidence[field] = copy.deepcopy(provenance[field])
-                for field in ("source", "actor", "timestamp"):
+                for field in ("source", "timestamp"):
                     if field not in provenance:
                         shape("_meta.provenance." + field, "Required provenance member is absent.")
                     elif not isinstance(provenance[field], str):
                         shape("_meta.provenance." + field, "A string is required.")
-                if isinstance(provenance.get("actor"), str) and not provenance["actor"]:
-                    shape("_meta.provenance.actor", "Actor must have at least one character.")
                 if (source_code(provenance.get("source")) is None
                         and provenance["source"].startswith("agent/") and "agent_id" not in provenance):
                     shape("_meta.provenance.agent_id", "Agent sources require the agent_id member; null remains admitted.")

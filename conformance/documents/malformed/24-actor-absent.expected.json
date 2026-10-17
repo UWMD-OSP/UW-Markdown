@@ -1,0 +1,7 @@
+{
+  "description": "Absent required actor; no inference or META_FIELD_MISSING_ACTOR.",
+  "expected_codes": [
+    "META-01"
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; draft RFC0090"
+}
