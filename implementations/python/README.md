@@ -11,6 +11,19 @@ full-validation, expression-calculation, signature, receipt or optional-profile 
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
 reserve accounts, explicit reserve-draw plans and replacement-funding commitments. It does not certify every Reader or Verifier requirement.
 
+## Structured YAML sequence mappings
+
+The Reader admits the object entries shown in Format §2.2a's `modules` list,
+including continuation members, and preserves the same shape in unknown
+frontmatter keys. This combines Appendix D's sequences with its one mapping
+layer; it does not load modules or select a calculation. Scalar list entries
+retain their authored meanings. Duplicate decoded keys, deeper mappings and
+features outside Appendix D still refuse with `UNSUPPORTED_YAML_FEATURE`.
+Numeric spellings, JSON pointers and UTF-8 byte spans remain attributable to
+the unchanged source, including CRLF and quoted keys. Real parse subprocess
+controls check the object shape and input bytes. Discovery remains parse-only;
+complete validation and Reader/Verifier tier gates remain separate.
+
 ## Minimum-complete capability path — 2026-10-16
 
 This assessment uses main `fbf8f66a` (through #371). It inventories code and

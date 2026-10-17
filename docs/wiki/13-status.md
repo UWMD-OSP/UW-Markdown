@@ -61,6 +61,15 @@ excludes a block from current selection and role opt-in, retaining it in ordered
 history. It does not rewrite metadata, source bytes, digests or receipt rules,
 resolve RFC0089 identity questions, or promote discovery beyond parse.
 
+**Bounded Python source-admission correction.** The Reader admits sequence
+mapping entries such as Format §2.2a's `modules` objects, including continuation
+members and unknown-key lists. Numeric spellings/pointers/byte spans and input
+bytes remain unchanged; duplicate keys, deeper mappings and unsupported YAML
+features still refuse. This extracts a reviewed prerequisite from the larger
+complete-validation WIP without advertising validate or a Reader/Verifier tier.
+The existing three-platform Python jobs exercise the correction and actual
+portable Reader cases. It does not load modules or activate a draft contract.
+
 **RFC0088 research checkpoint — still draft.** A bounded composed-receipt study records19 actual candidate controls,18 real public-test-key signature outcomes and19 independently checked receipt/payload/source bindings. The finite graph reuses the independently frozen Python reported result; finite-disagreement mutations are synthetic, while the preserved endpoint input still exercises RCP-03 before backend execution. Original sources/receipts and graph observations remain unchanged. Current accepted-main source maps and the exact Protocol-only trajectory identity transition are separate evidence. Accuracy, full consumer/procedure and authentication/refusal choices remain pre-acceptance gates; no production arithmetic, receipt rule or public version is activated.
 
 **RFC0088 composed accuracy evidence.** A new bounded36-case PMT/PV/FV study
