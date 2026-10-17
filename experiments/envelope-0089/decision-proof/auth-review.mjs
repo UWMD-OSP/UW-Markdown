@@ -1,7 +1,7 @@
 // Real Ed25519 controls over unapproved candidate signing inputs, not production acceptance.
 import assert from 'node:assert/strict';
 import { createPrivateKey, createPublicKey, sign, verify } from 'node:crypto';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -53,16 +53,10 @@ function pinnedBuild(verifyRoot) {
     source[path] = sha(actual);
   }
   const compiled = {};
-  const directory = resolve(verifyRoot, 'packages/uwmd-verify/dist');
-  function walk(folder, prefix = '') {
-    for (const entry of readdirSync(folder, { withFileTypes: true })) {
-      const path = resolve(folder, entry.name);
-      const relative = `${prefix}${entry.name}`;
-      if (entry.isDirectory()) walk(path, `${relative}/`);
-      else if (entry.name.endsWith('.js')) compiled[`packages/uwmd-verify/dist/${relative}`] = sha(readFileSync(path));
-    }
+  for (const path of paths.filter(path => path.endsWith('.ts') && !path.endsWith('.d.ts') && !path.includes('.test.') && !path.includes('.property.test.'))) {
+    const built = path.replace('/src/', '/dist/').replace(/\.ts$/, '.js');
+    compiled[built] = sha(readFileSync(resolve(verifyRoot, built)));
   }
-  walk(directory);
   return { source_equivalent_to: execFileSync('git', ['rev-parse', HISTORICAL_BASE], { cwd: relativeRoot, encoding: 'utf8' }).trim(), source, compiled };
 }
 export async function observe(verifyRoot) {
@@ -111,22 +105,26 @@ export async function observe(verifyRoot) {
       assert.equal(checked(api.receiptSigningPayload(changedReceipt), receiptInput.signature.value), false);
       labelMutations.push({ change, document_signature_valid: false, receipt_signature_valid: false });
     }
-    let source = { supplied: false, research_document_issuance: 'refused-no-attributable-source', candidate_receipt_issuance: 'not-implemented-or-approved' };
+    let source = { supplied: false, gated_candidate_signing_calls: 0, research_document_issuance: 'refused-no-attributable-source', candidate_receipt_issuance: 'not-implemented-or-approved' };
     if (entry.source) {
       const raw = input(`${entry.base}/original.uwx.md`);
       const text = raw.toString('utf8');
       const plan = json(`${entry.base}/reissuance-plan.json`);
       assert.equal(sha(raw), plan.original_sha256);
-      source = { supplied: true, raw_sha256: sha(raw), candidate_receipt_issuance: 'not-implemented-or-approved' };
+      source = { supplied: true, raw_sha256: sha(raw), gated_candidate_signing_calls: 0, candidate_receipt_issuance: 'not-implemented-or-approved' };
       try {
         const currentSubject = await api.resolveDocumentSigningSubject(text);
         const projected = currentSourceProjection(api, text);
         assert.equal(jcs(projected), jcs(semantic(model)), 'complete candidate model matches supplied source after unchanged V13 guard');
         source.admission = { allowed: true, current_subject: currentSubject, exact_candidate_projection_equal: true };
+        source.gated_candidate_signing_calls++;
+        const gated = document(subjectOf(model));
+        assert(checked(docInput(gated), gated.sig));
         source.research_document_issuance = 'signed-test-artifact-only-current-guard-and-complete-model-agree';
+        source.gated_candidate_artifact = gated;
         const currentDocument = document(currentSubject);
         let calls = 0;
-        const result = await api.verifyDocumentSignature(text, currentDocument, { signatureVerifier: { verify: async (bytes, named) => { calls++; return { ok: checked(bytes, named.sig) }; } } });
+        const result = await api.verifyDocumentSignature(text, currentDocument, { signatureVerifier: { verify: async (bytes, named) => { calls++; return checked(bytes, named.sig) ? { ok: true } : { ok: false, reason: 'bad_signature' };  } } });
         assert.equal(result.state, 'verified'); assert.equal(calls, 1);
         source.current_document_control = { artifact: currentDocument, result, backend_calls: calls };
         const currentReceipt = await api.issueReceipt(text, { filename: 'research.uwx.md', pack: currentPack, issued_at: NOW });
@@ -135,19 +133,43 @@ export async function observe(verifyRoot) {
         const receiptResult = await api.verifyReceipt(currentReceipt, text, { filename: 'research.uwx.md', packs: [currentPack], signatureVerifier: { verify: async (named, bytes) => { calls++; return checked(bytes, named.signature.value); } } });
         assert.equal(receiptResult.verdict, 'verified'); assert.equal(calls, 1);
         source.current_receipt_control = { receipt: currentReceipt, result: receiptResult, backend_calls: calls };
+        const changedSource = text.replace('"_notes": null', '"_notes": "research source mutation"');
+        assert.notEqual(changedSource, text);
+        calls = 0;
+        const changedDocument = await api.verifyDocumentSignature(changedSource, currentDocument, { signatureVerifier: { verify: async (bytes, named) => { calls++; return checked(bytes, named.sig) ? { ok: true } : { ok: false, reason: 'bad_signature' }; } } });
+        assert.deepEqual(changedDocument.issues.map(issue => issue.code), ['INT-11']); assert.equal(calls, 0);
+        const changedReceipt = await api.verifyReceipt(currentReceipt, changedSource, { filename: 'research.uwx.md', packs: [currentPack], signatureVerifier: { verify: async (named, bytes) => { calls++; return checked(bytes, named.signature.value); } } });
+        assert.deepEqual(changedReceipt.issues.map(issue => issue.code), ['RCP-01']); assert.equal(calls, 0);
+        source.changed_source_control = { source: changedSource, source_sha256: sha(changedSource), document: changedDocument, receipt: changedReceipt, backend_calls: calls };
+        const fence = text.match(/```json[^\n]*\n[\s\S]*?\n```/)[0];
+        const duplicateSource = `${text}\n${fence}\n`;
+        let refusal;
+        try { await api.resolveDocumentSigningSubject(duplicateSource); } catch (error) { refusal = { name: error.name, code: error.code, message: error.message }; }
+        assert.equal(refusal?.code, 'INT-15');
+        source.duplicate_selection_control = { source: duplicateSource, source_sha256: sha(duplicateSource), refusal, candidate_signing_calls: 0 };
+
       } catch (error) {
         if (error.name !== 'DocumentSigningError') throw error;
         source.admission = { allowed: false, code: error.code, error: error.message };
         source.research_document_issuance = 'refused-existing-V13-source-guard-before-signing';
       }
       let calls = 0;
-      const rejectedDocument = await api.verifyDocumentSignature(text, artifact, { signatureVerifier: { verify: async (bytes, named) => { calls++; return { ok: checked(bytes, named.sig) }; } } });
+      const rejectedDocument = await api.verifyDocumentSignature(text, artifact, { signatureVerifier: { verify: async (bytes, named) => { calls++; return checked(bytes, named.sig) ? { ok: true } : { ok: false, reason: 'bad_signature' };  } } });
       assert.deepEqual(rejectedDocument.issues.map(issue => issue.code), ['INT-14']); assert.equal(calls, 0);
       source.current_verifier_candidate_document = { result: rejectedDocument, backend_calls: calls };
       calls = 0;
       const rejectedReceipt = await api.verifyReceipt(receiptInput, text, { filename: 'research.uwx.md', packs: [currentPack], signatureVerifier: { verify: async (named, bytes) => { calls++; return checked(bytes, named.signature.value); } } });
       assert.deepEqual(rejectedReceipt.issues.map(issue => issue.code), ['RCP-10']); assert.equal(calls, 0);
       source.current_verifier_candidate_receipt = { result: rejectedReceipt, backend_calls: calls };
+      const relabeledDocument = { ...artifact, subject: { ...artifact.subject, representation_version: '1.0', canonicalization_version: '1.0' } };
+      const relabeledReceipt = { ...receiptInput, subject: { ...receiptInput.subject, representation_version: '1.0', canonicalization_version: '1.0' } };
+      calls = 0;
+      const docRelabel = await api.verifyDocumentSignature(text, relabeledDocument, { signatureVerifier: { verify: async (bytes, named) => { calls++; return checked(bytes, named.sig) ? { ok: true } : { ok: false, reason: 'bad_signature' }; } } });
+      assert.deepEqual(docRelabel.issues.map(issue => issue.code), [source.admission.allowed ? 'INT-11' : 'INT-15']); assert.equal(calls, 0);
+      const receiptRelabel = await api.verifyReceipt(relabeledReceipt, text, { filename: 'research.uwx.md', packs: [currentPack], signatureVerifier: { verify: async (named, bytes) => { calls++; return checked(bytes, named.signature.value); } } });
+      assert.deepEqual(receiptRelabel.issues.map(issue => issue.code), ['RCP-01']); assert.equal(calls, 0);
+      source.current_verifier_relabel_control = { document: docRelabel, receipt: receiptRelabel, backend_calls: calls };
+
     }
     cases.push({ case: entry.name, complete_model_sha256: sha(input(`${entry.base}/${entry.file}`)), semantic_digest: model.semantic_digest, extension_minimum: minimum, extension_minimum_sha256: sha(jcs(minimum)), research_document: { artifact, signing_payload: docInput(artifact), signing_payload_sha256: sha(docInput(artifact)), cryptographic_validity: true }, research_receipt_signing_control: { artifact: receiptInput, signing_payload: payload, signing_payload_sha256: sha(payload), cryptographic_validity: true, scope: 'scratch-built receipt-shaped byte-binding input, never issued as a candidate financial receipt' }, mutations, label_mutations: labelMutations, source });
   }
