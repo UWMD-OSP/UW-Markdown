@@ -1,3 +1,4 @@
 *.mjs text eol=lf
 *.py text eol=lf
 evidence/** -text
+node20-reference/** -text
