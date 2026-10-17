@@ -1,0 +1,13 @@
+Isolated research adaptation of pinned Netlib fdlibm bodies.
+
+Copyright (C) 1993, 2004 by Sun Microsystems, Inc. All rights reserved.
+Developed at SunSoft, a Sun Microsystems, Inc. business.
+Permission to use, copy, modify, and distribute this software is freely granted,
+provided that this notice is preserved.
+
+Every original individual notice is retained verbatim in upstream/. The kernel
+translation retains the applicable notice in its source. The appended Kahan/Ng
+historical paper in upstream/e_sqrt.c is retained as source history; the candidate
+implements the preceding digit-by-digit body, not those alternative algorithms.
+New adapter/tests/documentation are research additions, not an MIT-only relabeling
+of the adapted Sun bodies. No library or normative arithmetic is accepted here.
