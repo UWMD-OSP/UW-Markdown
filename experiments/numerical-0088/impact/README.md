@@ -56,6 +56,9 @@ complete closure and all protected source/build inputs are hashed there.
   case. Exact full-string equality follows removal of only `last_modified`,
   annotation `ts` and metadata `timestamp`; no numeric or integrity-hash field
   was removed to obtain that classification.
+- Only 10 of the 20 eligible floating numerical sites were exercised by this
+  corpus run, despite every eligible numerical module loading. The unexercised
+  sites are listed explicitly; independent consumer vectors remain required.
 - 108 cases have no visible actual binding at the record callsite. The other
   captures also do not claim every internal value. Zero status changes is
   therefore not a proof of exact universal compatibility.
