@@ -8,7 +8,23 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+### Changed
+
+- Record the owner's 5.0 launch compatibility policy: 5.0 is the first public
+  baseline, prelaunch versions need no legacy support, and public surfaces keep
+  independent versions. Preserve historical artifacts and RFC/verification gates;
+  no automatic migration, numerical/design acceptance or launch publication.
+  Reconcile live contributor/version/roadmap and agent-retirement guidance.
+
 ### Fixed
+
+- Reject unpaired UTF-16 surrogates in JCS values and member names before UTF-8
+  digest conversion, as required by the existing RFC8785 contract. Preserve all
+  valid Unicode and frozen subjects; cover receipt/source refusal and document
+  signature precedence without rewriting historical artifacts or versions.
+  Preserve XML character errors and use existing receipt/document/block refusal
+  handling for unencodable committed inputs; leave excluded metadata and backend
+  exceptions unchanged.
 
 - Keep absent Python metadata outside the present-malformed META-01 domain.
   Keep completeness outside this partial inventory as an uncoded local diagnostic;
@@ -165,9 +181,9 @@ Independent registry, integrity, signature/provenance and fresh downstream
 consumer checks pass, including the published CLI350/350 portable cases. See
 [publication evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
 
-Core/CLI 4.3.0 pair with Format3.0 and Protocol4.1.0. Verifier0.2.1,
+Core/CLI 4.3.0 pair with Format 3.0 and Protocol 4.1.0. Verifier0.2.1,
 signing0.6.0, batch0.9.2, Excel0.9.19, report0.9.0 and lake0.3.2
-carry exact dependency pins for this generation. Receipts use verifier0.2.1
+carry exact dependency pins for this generation. Receipts use verifier 0.2.1
 as engine identity; receipt schemas, metric/pack definitions and Protocol rules
 are unchanged. See the [release preparation](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md).
 

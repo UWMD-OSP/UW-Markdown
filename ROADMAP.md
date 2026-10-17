@@ -1,49 +1,36 @@
 # Roadmap
 
-Reconciled **2026-10-15** for published and independently verified **4.3.0**,
-Format **3.0**, Protocol **4.1.0** and `@uwmd/verify` **0.2.1**. See `VERSIONS.md`
-for the independent package matrix. Reference coverage alone does not establish
-independent interoperability or complete financial reproducibility. Foundational
-verification, financial reconciliation and provenance work remains proposed or
-in progress; draft RFCs are not accepted contracts.
+Reconciled **2026-10-16** (America/Phoenix) for published and independently
+verified **4.3.0**, pairing core/CLI 4.3.0 and verifier 0.2.1 with Protocol 4.1.0
+and Format 3.0. The forward priorities are complete independent verification,
+deterministic procedures and lossless exchange. StackUW owns model generation,
+agents and workflows. This roadmap is directional, not release approval.
+Reference coverage alone does not establish independent interoperability or
+complete financial reproducibility. Draft RFCs are not accepted contracts.
 
 ## Reserved milestone: 5.0, the coordinated public launch
 
-Owner direction, 2026-10-15:
+The [explicit owner decision, 2026-10-16](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+makes UWMD 5.0 the first official public compatibility baseline. All earlier
+versions, including published 4.x, are prelaunch history. The launch need not
+carry their readers, numerical procedures, Envelope/receipt regimes or obsolete
+APIs solely for compatibility. Major 5 preserves the existing npm naming and
+publication continuity, not a legacy-support promise. No automatic migration,
+erasure of published npm artifacts or new-semantic authentication of historical
+artifacts is implied.
 
-- **5.0 is reserved for the coordinated public launch.** No routine release
-  uses it, even one with CLI breaking changes.
-- **The launch also sets the versioning strategy.** It establishes a
-  coordinated, durable release strategy across the npm packages, the Format,
-  the Protocol, the documentation, the website and every other public
-  version surface, to be maintained from then on.
-- **Development and interim releases continue.** Interim 4.x releases ship as
-  needed while financial audits, debugging and technical hardening finish.
-  There is no freeze.
-- **The current policy applies honestly until then.** Semver applies per
-  surface (`VERSIONS.md`, wiki 11). If an interim release contains changes
-  that would ordinarily need a major, the preparation flags the compatibility
-  issue and proposes alternatives rather than mislabeling it.
+Independent versions remain the policy for Format, Protocol, packages, modules
+and other surfaces; aligning every component to 5.0.0 is not required. Exact
+launch numbers and post-launch release/support details remain review work.
+Prelaunch breaks still require applicable RFC decisions, synchronized normative
+contracts/conformance and independent verification. There is no mandatory 4.x
+maintenance line, migration shim or deprecation window imposed by this policy.
+Historical commits/tags/source/signatures/release evidence stay accurate.
 
-**The post-launch version-coordination policy is not decided.** It is
-presented for owner review, not inferred. The open questions are:
-
-1. **Package majors at launch.** Do all `@uwmd/*` packages align to 5.0.0,
-   or do they keep independent semver? Do the 0.x packages (verify, signing,
-   batch, lake, Excel, report) graduate, and to which number?
-2. **Format and Protocol numbering.** Today Format 3.0 and Protocol 4.1.0
-   version independently of the packages. Do they stay separate streams,
-   align with the package major, or carry a launch label?
-3. **Which public surfaces carry a version.** Candidates: npm packages, the
-   Format and Protocol specs, JSON Schema identifiers, the conformance
-   corpus, the receipt engine identity, the docs site, the website, the VS
-   Code extension and the web editor.
-4. **Release channels and support.** npm dist-tags (`latest`, `next`),
-   pre-releases, and whether a 4.x maintenance line continues after launch.
-5. **Breaking changes and deprecation.** For example, warn for one minor
-   before refusing, with a documented support window.
-6. **Runtime support.** How declared Node floors track the Node release
-   schedule.
+Development may continue; no routine release consumes the reserved launch
+milestone. **A 5.0 tag or publication requires separate explicit owner launch
+approval.** Recording this policy accepts no draft RFC, exact retirement set,
+release candidate or publication action.
 
 **Interim4.3.0 published and independently checked (2026-10-15):** #351
 merged preparation as `80c68c3d`; annotated `v4.3.0` targets that exact commit.
@@ -52,8 +39,8 @@ provenance. Verification38822782450 checks registry identities, tarball hashes,
 signatures/provenance, fresh consumers and the published CLI350/350. See the
 [publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
 The #346 compatibility behavior and #347/#348 financial correctness repairs ship;
-#350's audit/regressions remain the basis for further work. Format3.0 and
-Protocol4.1.0 are unchanged. No5.0 action or production deployment is included.
+#350's audit/regressions remain the basis for further work. Format 3.0 and
+Protocol 4.1.0 are unchanged. No5.0 action or production deployment is included.
 
 The [post-publication decision packet](https://github.com/UWMD-OSP/UW-Markdown/pull/353)
 records RFC0085–0087 alternatives. They remain drafts. #349's exact paired renderer
@@ -70,10 +57,10 @@ release preparation is authorized by this plan.
 
 | Order / workstream | Deliverable / decision | Actual dependency and evidence |
 |---|---|---|
-| High priority: [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356), [draft0088](docs/rfcs/0088-pin-financial-numerical-procedures.md) | Resolve demonstrated power/IRR/quantized-digest disagreement; pin domains/order/range and fractional/log behavior | Independent TS/Python vectors, runtime/platform evidence, precision and receipt migration. Current formulas/expectations remain unchanged pending acceptance |
+| High priority: [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356), [draft0088](docs/rfcs/0088-pin-financial-numerical-procedures.md) | Resolve demonstrated power/IRR/quantized-digest disagreement; pin domains/order/range and fractional/log behavior | Independent TS/Python vectors, runtime/platform evidence, precision and historical receipt-identity consequences. Current formulas/expectations remain unchanged pending acceptance |
 | Parallel: [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354) | Independent Python Reader/Verifier from the specification; initial numeric kernel is incomplete | Reader, source tokens, validation/resolution, ordinary arithmetic, dictionary and exact ledger checks can progress now; affected powers/returns/annuities need #356. Full base inventory, portable cases and independent manifests; Node wrappers are not a second implementation |
 | Bounded optional assurance: [#355](https://github.com/UWMD-OSP/UW-Markdown/issues/355) | First bind headline returns to exact streams/methods/periods/variants/source identities; optional declared acquisition-ledger coverage; additional named identities require their own justified contracts | Define applicability and assertion-counting before coverage reports. Verify scoped claims, not the entire producer model. Financially verified/stated-only/failed/unverifiable remain distinct. Numerical methods depend on #356; profile-specific evidence follows acceptance |
-| Provenance: [draft0085](https://github.com/UWMD-OSP/UW-Markdown/pull/335) | Complete retained source as authority; distinct history projections; scoped authentication/continuity evidence | Owner architectural preference is design direction, not RFC acceptance. Resolve legacy-reader safety, missing predecessors, archive evidence and compatibility before implementation |
+| Provenance: [draft0085](https://github.com/UWMD-OSP/UW-Markdown/pull/335) | Complete retained source as authority; distinct history projections; scoped authentication/continuity evidence | Owner architectural preference is design direction, not RFC acceptance. Resolve launch-Reader projection safety, missing predecessors and archive/authentication contracts before implementation; prelaunch support is not required |
 | Financial reconciliation: draft0086 / draft0087 | Data-center purchase-price authority and hospitality comparable revenue bases | Separate owner decisions on source/variant/scenario/period/scope/precision; no universal equality or revised metric formulas inferred |
 | Cross-implementation / spreadsheet assurance | Independently verified scoped results and actual recalculation for supported spreadsheet claims | Accepted contracts and explicit source/method scope. Emitted literals/caches and the Node-backed portable driver are not independent recalculation/implementation evidence |
 

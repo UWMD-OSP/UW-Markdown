@@ -1,7 +1,11 @@
 # 13 — Build status (living document)
 
-**Current reconciliation.** Main is `3eee0fbab3f5682dc345804782994dc22d321fae`
-(#372 merged). [Exact-main CI 38989037136](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38989037136)
+**Owner launch policy, 2026-10-16.** [VERSIONS](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16) records 5.0 as the first official public compatibility baseline. Earlier published versions remain accurate prelaunch history, with no mandatory legacy readers/procedures/codecs/receipt regimes/APIs/shims. Independent surface versions, RFC discipline and separate explicit launch approval remain. RFCs 0085/0088/0089 remain drafts; their historical identity evidence is audit material, not a support obligation. No version or launch publication is selected.
+
+Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
+
+**Frozen numerical investigation baseline.** The study used `3eee0fbab3f5682dc345804782994dc22d321fae`
+(#372 merged); it is historical evidence, not current main. [Exact-main CI 38989037136](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38989037136)
 is green. Python's complete-validation lane continues independently with
 parse-only discovery; no complete Reader/Verifier claim follows.
 
@@ -12,7 +16,8 @@ raw candidate, constant/word/resource maps, 178 mathematical controls and exact
 indexed/targeted impact artifacts are now reviewable. All 1,089 existing indexed
 assertions pass in the measured baseline/candidate runs, with explicit capture
 limits; targeted financial/receipt probes demonstrate real changes outside the
-old corpus. Native/compiler and cross-runtime results require exact CI evidence.
+old corpus. Frozen native/compiler and cross-runtime evidence is recorded in exact-head
+research CI38994434317 at a617fd26; policy-only reconciliation does not rerun it.
 No production arithmetic, schema, corpus expectation, receipt rule, package
 version, RFC acceptance or release state is changed. A is provisionally preferred
 for evaluation, B remains an alternative and C has not shown sufficient benefit.
@@ -48,7 +53,7 @@ Focused local checks precede full exact-head CI at integration checkpoints.
 
 | Lane | Remote branch | Scope and gate |
 |---|---|---|
-| A Python verification | `codex/python-capability-completion` | Minimum-complete capability gates; completevalidate next, then dictionary/stated figures and receipts. Parse-only until complete obligations are demonstrated. |
+| A Python verification | `codex/python-complete-validation` | Minimum-complete capability gates; completevalidate next, then dictionary/stated figures and receipts. Parse-only until complete obligations are demonstrated. |
 | B numerical determinism | `codex/numerical-determinism-356` / #357 | DraftRFC0088, existing numerical study and isolated experiments; no production arithmetic, expected-result or acceptance changes. |
 | C Envelope | `codex/rfc-0089-extension-envelope` / #368 | DraftRFC0089, the existing365review section and illustrative evidence; no Envelope1/schema/digest/receipt change before owner approval. |
 
@@ -375,7 +380,7 @@ preparation is authorized by this handoff.
 **2026-10-15 — interim4.3.0 published and independently checked.**
 Annotated `v4.3.0` (object `1aba40faeff4553fa957355c5c0bd205f55be40f`) targets
 #351 merge `80c68c3d0950948c85a1d3a90c02cd05f3a650a4`. Release38821844153
-published all8 packages: core/CLI4.3.0, verify0.2.1, signing0.6.0, batch0.9.2,
+published all8 packages: core/CLI 4.3.0, verify0.2.1, signing0.6.0, batch0.9.2,
 Excel0.9.19, report0.9.0 and lake0.3.2, with independent semver/exact pins.
 Verification38822782450 checks registry/latest/gitHead, all tarball hashes,
 signatures/provenance, fresh consumers, strict types/public APIs and the actual
@@ -384,7 +389,7 @@ failures remain recorded; the later probe passes. See the
 [publication record](../releases/4.3.0-publication.md).
 
 Financial corrections #347 and #348, Phase2 evidence/regressions #350 and the
-#346 CLI compatibility behavior ship. Format3.0, Protocol4.1.0, receipt1.1,
+#346 CLI compatibility behavior ship. Format 3.0, Protocol 4.1.0, receipt1.1,
 metric formulas, schemas and numerical conformance expectations are unchanged.
 Local full-suite3993/180 and subprocess failures remain separate from successful
 remote CI; no independent spreadsheet recalculation is claimed.
