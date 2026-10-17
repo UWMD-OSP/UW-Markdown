@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Enforce RFC0090's required nonempty-string provenance actor with narrow
+  META-01/error across retained physical blocks. Preserve wrapper precedence,
+  mutable-model authority and historical source/expectation identities; govern
+  only measured validation/status/display consequences. Include actor guidance
+  alongside existing bare-payload/nested-metadata remediation. No release version
+  or Python complete-capability claim is allocated.
+
 - Record the owner's 5.0 launch compatibility policy: 5.0 is the first public
   baseline, prelaunch versions need no legacy support, and public surfaces keep
   independent versions. Preserve historical artifacts and RFC/verification gates;

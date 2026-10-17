@@ -10,6 +10,10 @@
       "severity": "info"
     },
     {
+      "code": "META-01",
+      "severity": "error"
+    },
+    {
       "code": "ROLE-01",
       "severity": "error"
     }

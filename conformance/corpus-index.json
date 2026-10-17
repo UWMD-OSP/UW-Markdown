@@ -5445,6 +5445,36 @@
       "suite": "document-signatures",
       "scenario": "15-retained-prose",
       "target": "integrity"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/24-actor-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/25-actor-null",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/26-actor-empty",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/27-actor-nonstrings",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/28-actor-physical-evidence",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/29-actor-shape-precedence",
+      "target": "verifier"
     }
   ]
 }

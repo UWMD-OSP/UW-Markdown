@@ -16,7 +16,7 @@ import type {
   CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
-import { blockPayload, getSection, getSectionVariant, deepGet } from './parser.js';
+import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
 } from './protocol.js';
@@ -127,6 +127,7 @@ export function validateUWFile(
   checkScenarioIdentity(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
+  checkProvenanceActors(parsed, issues);
   checkBlockRoles(parsed, issues);
   checkPeriodSeries(parsed, issues);
   checkSourceVocabulary(parsed, issues);
@@ -3124,19 +3125,70 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
 // `section_id` member (the retired wrapper) or a `_meta` without the nested
 // `provenance` and `lifecycle` objects (the retired flat shape) is META-01.
 // A block without `_meta` at all is META_MISSING territory, not META-01.
+// RFC 0090 adds only the required nonempty provenance.actor admission below.
+
+/** Existing projected-model traversal, kept in its historical order. */
+function metaModelBlocks(parsed: ParsedUWFile): [string, UWBlock][] {
+  const entries: [string, UWBlock][] = [];
+  for (const [id, entry] of Object.entries(parsed.sections)) for (const block of isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock]) entries.push([id, block]);
+  for (const [id, blocks] of Object.entries(parsed.superseded)) for (const block of blocks) entries.push([id, block]);
+  for (const block of [...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios]) entries.push([block.annotation.section, block]);
+  for (const [id, block] of Object.entries(parsed.extensions)) entries.push([id, block]);
+  return entries;
+}
+
+function metaObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+/** The unchanged RFC 0081 wrapper/nested-object predicate; no scalar expansion. */
+function malformedMetaShape(block: UWBlock): boolean {
+  const meta = block.content['_meta'];
+  return Object.hasOwn(block.content, 'section_id') || (meta !== undefined
+    && (!metaObject(meta) || !metaObject(meta.provenance) || !metaObject(meta.lifecycle)));
+}
 
 function checkMetaShape(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const model = metaModelBlocks(parsed);
   const walk = (sectionId: string, block: UWBlock): void => {
-    const meta = block.content['_meta'];
-    const object = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
-    if (Object.hasOwn(block.content, 'section_id') || (meta !== undefined && (!object(meta) || !object(meta.provenance) || !object(meta.lifecycle)))) {
+    if (malformedMetaShape(block)) {
       issues.push({ code: 'META-01', severity: 'error', section: sectionId, message: 'Block is not in the Format 3.0 shape.' });
     }
   };
-  for (const [id, entry] of Object.entries(parsed.sections)) for (const block of isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock]) walk(id, block);
-  for (const [id, blocks] of Object.entries(parsed.superseded)) for (const block of blocks) walk(id, block);
-  for (const block of [...parsed.pipeline_log, ...parsed.custom_calculations, ...parsed.custom_scenarios]) walk(block.annotation.section, block);
-  for (const [id, block] of Object.entries(parsed.extensions)) walk(id, block);
+  // Preserve all old visible shape findings and their relative order first.
+  for (const [id, block] of model) walk(id, block);
+  const visible = new Set(model.map(([, block]) => block));
+  // A lost physical wrapper cannot suppress actor admission without its own
+  // existing META-01 refusal. These additional shape findings precede actors.
+  for (const block of parsedPhysicalBlocks(parsed)) {
+    if (!visible.has(block)) walk(block.annotation.section, block);
+  }
+}
+
+function checkProvenanceActors(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const visited = new Set<UWBlock>();
+  const walk = (sectionId: string, block: UWBlock): void => {
+    if (visited.has(block)) return;
+    visited.add(block);
+    const meta = block.content['_meta'];
+    // Whole missing metadata and an already-refused wrapper/nesting keep their
+    // own precedence. Never fall back to a divergent convenience block.meta.
+    if (meta === undefined || malformedMetaShape(block)) return;
+    const actor = (meta as { provenance: Record<string, unknown> }).provenance.actor;
+    if (typeof actor !== 'string' || actor.length === 0) {
+      issues.push({
+        code: 'META-01', severity: 'error', section: sectionId,
+        field: '_meta.provenance.actor',
+        message: 'Block _meta.provenance.actor must be a nonempty string.',
+        remediation: 'State the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor.',
+      });
+    }
+  };
+  // Physical order, then model-only additions in the existing collection order.
+  // A hand-built/spread/serialized model has model-only evidence. Its raw text
+  // does not certify source coverage or replace the model being assessed.
+  for (const block of parsedPhysicalBlocks(parsed)) walk(block.annotation.section, block);
+  for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
 }
 
 // ─── Stage readiness ──────────────────────────────────────────────────────────
