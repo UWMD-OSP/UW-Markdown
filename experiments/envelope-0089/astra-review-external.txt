@@ -1,0 +1,123 @@
+**Recommendation: keep RFC 0089 in draft.** Its tagged extension-entry design is a sound, narrow foundation, but the admitted domain, portable projection, XML coverage, and commitment migration are not yet sufficiently settled for acceptance. An Envelope version change alone cannot resolve this.
+
+I reviewed [PR #368](https://github.com/UWMD-OSP/UW-Markdown/pull/368) at `2ebe454a923072018e1af067285dd3140a10d40f`, [Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365), and current main at `3eee0fbab3f5682dc345804782994dc22d321fae`. I examined the specifications, schemas, production implementations, experimental codecs and frozen artifacts directly. The PR remains draft with no submitted reviews; agent-authored recommendations are not owner approvals.
+
+**The material findings follow.**
+
+1. **Verified — the representation gap is real, and production behavior already disagrees across implementations.**
+
+   Format §2.8 admits role-opted named peers outside the builtin registry; §4.21 places extensions under `parsed.extensions`. Envelope 1.0 nevertheless requires a single block at each extension ID. The Format statement that envelopes support variant maps “on every section” is therefore too broad. [Format](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/spec/UW_FORMAT_SPEC.md#28-multi-variant-sections), [Envelope schema](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/spec/schemas/uw-document-envelope.schema.json).
+
+   The TypeScript parser routes `x_*` blocks **before** superseded-history and variant handling, overwriting earlier blocks. In the frozen four-block history example, I reproduced one retained extension, no retained extension history, and an unchanged receipt subject digest after changing the discarded active `base` peer. This is a projection failure, not a cryptographic hash collision.
+
+   The Python reader instead retains named peers and refuses an unavailable Envelope digest. Document signing also refuses repeated or historical extensions. Ordinary TypeScript receipt subject construction lacks that source-accounting guard. [Parser](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/packages/uwmd-verify/src/parser.ts#L430), [receipt subject construction](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/packages/uwmd-verify/src/receipts.ts#L316).
+
+   **Consequence:** a historical receipt digest cannot establish that an omitted peer was committed to. New migration must start from retained source, not that digest or a lossy export.
+
+2. **Partially verified — the tagged representation solves the structural ambiguity; mixed identity semantics remain an owner decision.**
+
+   The proposed `single` versus `variants` wrappers avoid guessing whether keys such as `annotation` or `content` identify a block or a variant. Identity-bearing records can distinguish an absent annotation (`null` identity) from literal `"default"` without reserving a user label.
+
+   The candidate correctly requires identity/annotation agreement, rejects duplicate identities, preserves one-peer variant mode, and specifies null-first UTF-16 ordering without Unicode normalization. These properties are exercised in the experiments. [RFC D1–D2](https://github.com/UWMD-OSP/UW-Markdown/blob/2ebe454a923072018e1af067285dd3140a10d40f/docs/rfcs/0089-lossless-extension-envelope.md#d1--minimal-tagged-extension-entries).
+
+   **Needs owner decision:** whether an unlabelled peer and literal `default` coexist under source opt-in. Accepted wording clearly protects named peers but does not conclusively settle that mixed case. The draft appropriately acknowledges this.
+
+   Acceptance also needs an exact portable parse projection. “Preserve both” is insufficient when the existing projection uses string-keyed maps and aliases absence to `default`. Protocol §II.6a.6 is a normative minimum-output contract, distinct from implementation-specific `ParsedUWFile`. [Protocol projection](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/spec/UW_PROTOCOL.md#ii6a6-the-parse-conformance-projection).
+
+3. **Partially verified — preservation is demonstrated for the experimental domain, not every lawful source or Envelope value.**
+
+   The examples preserve annotations, complete `_meta`, payload—including an ordinary member named `content`—roles, notes, overrides, absent/null distinctions, per-block prose and ordered explicit history.
+
+   Important boundaries remain:
+
+   - The prototype excludes nonempty builtin collections, unknown Envelope-block members, empty history slots and unmarked overwritten revisions.
+   - The source adapter supports only a restricted annotation/frontmatter domain and refuses trailing prose.
+   - Direct models can express mode intent that Markdown cannot reproduce. Refusing such conversion is correct; inventing a role would change semantics.
+   - Model fidelity does not preserve original Markdown bytes, numeric spelling, all whitespace or trailing narrative. RFC 0014 expressly separates source fidelity from Envelope fidelity.
+
+   The normative contract must distinguish **canonical current blocks**, **explicit historical blocks**, and **all physical source blocks**. Ordinary last-current selection and V.13’s stricter every-block accounting are different promises. [Prototype boundaries](https://github.com/UWMD-OSP/UW-Markdown/blob/2ebe454a923072018e1af067285dd3140a10d40f/experiments/envelope-0089/README.md#exact-experimental-algorithm-and-boundaries), [RFC 0014](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/docs/rfcs/0014-multi-format-interchange.md).
+
+4. **Contradicted — the current XML mapping is not total over the admitted JSON value domain.**
+
+   Legal JSON strings and member names can contain NUL and other characters forbidden in XML 1.0. XML character references do not make forbidden characters legal. The prototype correctly refuses these cases; that is safe refusal, but it does not prove universal JSON/XML interchange. [UW XML scope and mapping](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/spec/UW_XML_MAPPING.md), [XML character rules](https://www.w3.org/TR/xml/#charsets).
+
+   **Needs owner decision:** specify a reversible escaped-string mapping for **both values and member names**, or explicitly make XML representability partial and revise the fidelity contract accordingly. Leaving this as an implementation choice permits incompatible codecs.
+
+   For the requested full-domain, three-format guarantee, I recommend the escaped lexical mapping. Its markers, escaping, duplicate detection after decoding, and codec/namespace compatibility must be defined before acceptance.
+
+5. **Verified — CSV has an additional preservation obligation beyond extension pointers.**
+
+   The candidate’s pointer escaping, explicit container rows, scalar JSON cells, nullable descriptors, mode column and dense ordinals are coherent. Its duplicate, inventory and digest checks pass the bounded tests.
+
+   However, the current Envelope schema allows additional block members. I added a harmless `extra` member to a schema-valid singleton Envelope: production CSV encoding followed by decoding failed with `CSV_DIGEST_MISMATCH`, because reconstruction omitted that member. The candidate explicitly refuses block extras instead of preserving them.
+
+   This is an existing schema/codec disagreement, not a new RFC defect. But a new full-fidelity promise must specify a carrier for those members; preserving unknown **top-level** Envelope members does not solve it. The frozen directory examples also do not exercise the normative ZIP exchange artifact or its security rules. [CSV implementation](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/packages/uwmd-verify/src/uwcsv.ts), [CSV specification](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/spec/UW_CSV_BUNDLE.md).
+
+6. **Contradicted — current cross-runtime Unicode admission is not consistently JCS-conformant.**
+
+   In independent probes, production TypeScript accepted strings containing lone `U+D800` and `U+D801` surrogates through the verified JSON boundary. Their semantic digests equalled the digest of a string containing `U+FFFD`, because UTF-8 conversion replaced the invalid characters. The Python candidate rejected both surrogates.
+
+   This is an encoding collision caused by accepting invalid input, not a SHA-256 weakness. JCS requires lone surrogates to cause an error. [Current canonicalizer](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/packages/uwmd-verify/src/integrity-canonical.ts#L65), [RFC 8785 §3.2.2.2](https://www.rfc-editor.org/rfc/rfc8785#section-3.2.2.2).
+
+   The new contract should explicitly inherit JCS-compatible numeric and Unicode admission. It must distinguish valid JSON syntax from a supported canonical semantic value. Preserve valid Unicode exactly; reject invalid Unicode rather than sanitizing it. This existing defect needs resolution before claiming production interoperability under the new regime.
+
+7. **Verified — commitment changes extend well beyond Envelope decoding.**
+
+   `envelope_version` participates in the semantic subject. Consequently, changing it changes canonical bytes even for an extension-free document. Wrapping singletons and representing previously omitted peers introduce further changes. Keeping JCS and SHA-256 does not preserve subject identity.
+
+   The required effects are:
+
+   | Commitment | Required treatment |
+   |---|---|
+   | Envelope semantic digest | New governed subject regime; never silently reuse the old label for changed projection rules. |
+   | Receipt subject | Update subject construction and canonicalization identification together. |
+   | Receipt signature | Relabelling a subject changes the signed receipt payload; it requires new issuance. |
+   | Document signature | Update V.13’s explicit projection, supported subject constants and schema together. |
+   | Block hash/signature | Unchanged if payload and the six signing fields remain unchanged; these do not authenticate collection membership or lifecycle history. |
+   | V.12 selected-vector commitment | Its independently specified subject remains unchanged by an outer Envelope change. |
+   | Whole-source plans, caches and stored identities | Old bindings become stale; no automatic “refresh” into verified status. |
+   | Raw source hash | Unchanged when archived source bytes remain unchanged; it remains a different commitment. |
+
+   Receipt precedence must remain: uncanonicalizable source → `RCP-09`; digest disagreement with differing canonicalization version → `RCP-10`; same-regime disagreement → `RCP-01`. `RCP-07` concerns later result/engine disagreement. A version difference alone does not trigger `RCP-10`. [Receipt contract](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/spec/UW_RECEIPT.md#55-canonicalization-version-mismatch), [signing implementation](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/packages/uwmd-signing/src/sign.ts).
+
+   I also reproduced signature precedence: unsupported subject version → `INT-14` before source inspection; supported-version historical-extension source → `INT-15`; eligible source with a wrong digest → `INT-11`. The new regime has not yet been exercised end to end. [V.13 implementation](https://github.com/UWMD-OSP/UW-Markdown/blob/3eee0fbab3f5682dc345804782994dc22d321fae/packages/uwmd-verify/src/document-signatures.ts).
+
+8. **Verified, with a deliberate limitation — preservation does not expand authentication eligibility.**
+
+   Retaining V.13’s repeated/superseded-extension guards is a coherent scope boundary. It means the new codecs could preserve a multi-peer record while document signing still refuses that source.
+
+   That limitation must remain visible. Block signatures do not substitute for snapshot authentication. If the owner requires newly representable multi-peer records to be document-authenticatable, that requires an explicit additional guarded-projection decision and evidence; it cannot follow automatically from codec acceptance.
+
+9. **Partially verified — the migration direction is safe; actual reissuance remains unproven.**
+
+   Old consumers should reject unsupported new representations. They should not infer a peer, relabel the container, or silently downgrade. Conversion requires an explicit new issuance from complete retained source or a demonstrably complete attributable archive.
+
+   Historical receipts and signatures must retain their original bytes, subject and verification scope. A new signature attests the new issuer’s subject; it does not recover missing historical attribution. A new receipt requires the applicable verification/recomputation, even when results happen to remain unchanged.
+
+   The frozen `reissuance-plan.json` files are accounting demonstrations, not receipts, signatures, authenticated archives or completed migrations. A clean break is consistent with accepted RFC 0081 precedent, but that precedent does not approve RFC 0089’s specific transition. [Migration proposal](https://github.com/UWMD-OSP/UW-Markdown/blob/2ebe454a923072018e1af067285dd3140a10d40f/docs/rfcs/0089-lossless-extension-envelope.md#independent-versioning-and-migration).
+
+10. **Verified as architectural compatibility — RFC 0089 need not conflict with RFC 0085.**
+
+    Preserving complete payloads and ordered history supports RFC 0085’s proposed direction: retained records remain the authority; stripped outputs are projections.
+
+    Conflict would arise if “reissuance” replaced the original archive, converted retained hashes into claims of recovered history, transferred old snapshot authentication, or treated a clean projection as curing a failed source. RFC 0089 should explicitly exclude those outcomes.
+
+    RFC 0085 itself remains draft; its recorded provisional direction and agent-authored C+D assessment are not accepted requirements. Neither RFC establishes that retained metadata alone proves historical completeness. [RFC 0085 assessment](https://github.com/UWMD-OSP/UW-Markdown/blob/ab62136b9181dcd98b4dde5529f142a9f5cde64f/docs/rfcs/0085-compaction-provenance-evidence.md#11-concrete-cd-assessment-for-owner-review--2026-10-15).
+
+**The experimental evidence is useful, but bounded.** I independently reproduced five frozen codec examples/60 artifacts, all 20 Python tests, both Node tests, and the ten current-contract controls plus five low-level hash comparisons. Additional string/key probes preserved 21 cases through JSON/CSV; XML preserved 15 and explicitly refused six.
+
+That verifies the examples and their stated negative controls. **Complete interoperability conformance remains Unverified:** Node independently checks subjects and artifact hashes, but does not implement a second XML/CSV decoder. The experiments do not demonstrate complete schema admission, nonempty builtin composition, ZIP interoperability, new-regime receipt/signature execution or production migration. The draft generally discloses these limits accurately. [Frozen evidence and tests](https://github.com/UWMD-OSP/UW-Markdown/tree/2ebe454a923072018e1af067285dd3140a10d40f/experiments/envelope-0089).
+
+**The smallest coherent design is the extension-only tagged container, coupled to exact projection and commitment rules.** Keep unrelated collections unchanged. Preserve absent identity distinctly from literal labels, subject to the owner’s mixed-source decision. Carry complete blocks and explicit history; separate ordinary revision selection from authenticated-source accounting. Specify total JSON/CSV reconstruction, including legal block extras, and a reversible XML escape mapping if all three encodings are to cover the same domain. Retain current authentication guards and explicit unsupported-version refusal.
+
+**Before acceptance, I would require these blockers to be resolved:**
+
+- Exact source routing and portable projection, including mixed identities, one-peer mode, duplicate current revisions and historical placement.
+- A precise preservation domain and proposed schema/mapping text covering block extras, Unicode/numbers, prose boundaries and XML-inexpressible values.
+- A complete commitment and compatibility matrix, including historical evidence, unsupported versions, refusal precedence and unchanged block/vector subjects.
+- Independent expected models and focused cross-implementation evidence for the unresolved boundaries—not merely shared encoder/decoder round trips.
+- An explicit disposition for the existing parser loss, CSV-extra mismatch and Unicode admission defect, with no full-fidelity claim while those paths remain inconsistent.
+
+Production parser/API changes, codecs, signing/receipt integration, ZIP handling, downstream adapters, package/version allocation and full conformance/release gates can follow acceptance in separately authorized implementation work. **The normative choices and expected behavior cannot be deferred to that implementation.**
+
+No repository files were modified, no RFC was approved, no version numbers were selected, and no implementation was authorized.

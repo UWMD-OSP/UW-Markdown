@@ -1,0 +1,2547 @@
+{
+  "status": "UNAPPROVED RFC0089 DECISION EVIDENCE; NOT PRODUCTION ACCEPTANCE OR COMPLETE VERIFIER CLAIM",
+  "source_commit": "88d10c9c5f36d55777d83dd036828ca83d3b4ef7",
+  "source_tree": "bd53890f9b27bc6a80d831dc05dabc91e8187f3e",
+  "runtime": {
+    "node": "v24.14.1",
+    "openssl": "3.5.5",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "explicit_file_url_production_import": true,
+  "helper_and_contract_hashes": {
+    "experiments/envelope-0089/decision-proof/auth-review.mjs": "2db31ba673facf8a92a5f2ad35d15a93994f9c34ff854448813c194d63aeef94",
+    "experiments/envelope-0089/decision-proof/projection.mjs": "b4e9ae661bb6978e57556d2cc314ad0b19d1cc7e99e4690fbd16fef627cd40bd",
+    "experiments/envelope-0089/decision-proof/check.mjs": "811251404e0e0307620583d61b7e71e6c3d041f61fd194cc741f4b9f60cbb2db",
+    "experiments/envelope-0089/codec-study/independent.mjs": "675a1c082e5bbfe003204a088e4b127556a74a1b3e98f86f0f61c3e159268453",
+    "spec/UW_FORMAT_SPEC.md": "2222d4c06accc6d0fb34d5960746dac67ca03cfcc472fca403098710559d98b7",
+    "spec/UW_PROTOCOL.md": "a3de7d6053865aa8a1c7e42ca694fcefe02bf392a960cf4b0d2ef98cc9bcb61b",
+    "spec/UW_RECEIPT.md": "f6d7e68226195a5b0015f4e8403b1f93872ab6064575c1cf0131a947a295cf23",
+    "spec/schemas/uw-document-envelope.schema.json": "6d95e014fa1941c3d270b797a0543870ac5d477ce7a179efe698bd02e206a7ef",
+    "spec/schemas/uw-document-signature.schema.json": "fdcae62facb55abbaf2c8bf2eb75b02c34fc531465a2ce466aa770a9f1bd80b5",
+    "spec/schemas/uw-receipt.schema.json": "bd59893536957a3e20aa08e3f0b5a307dbd48d2c8a796084c35649fec804eb7a"
+  },
+  "command": [
+    "node",
+    "experiments/envelope-0089/decision-proof/check.mjs",
+    "--verify-root",
+    "<explicit fresh source-pinned verifier checkout>",
+    "--create"
+  ],
+  "summary": {
+    "candidate_models": 7,
+    "real_ed25519_mutation_pairs": 42,
+    "real_ed25519_label_pairs": 14,
+    "supplied_sources": 4,
+    "admitted_source_controls": 2,
+    "refused_source_controls": 2,
+    "missing_source_controls": 3
+  },
+  "material": {
+    "status": "UNAPPROVED RESEARCH; REAL ED25519 BYTE BINDING IS NOT SOURCE AUTHENTICATION OR FINANCIAL VERIFICATION",
+    "production": {
+      "source_equivalent_to": "b2ac5d8f068308fd690de824b963135974ec5fb8",
+      "source": {
+        "packages/uwmd-verify/src/asset-class.test.ts": "b0785183d7f2ccd5a0e831a823d20653d5c98a247bf52cf1552cae1895114e3e",
+        "packages/uwmd-verify/src/asset-class.ts": "1b01e8b20902782e033ef17e6b894aae30bc7b797288af16700b45dd7da0eabe",
+        "packages/uwmd-verify/src/bindings.test.ts": "0c663ada9856447a6256555d647b83ff094e45399fa0d8aa431099efa24ecc32",
+        "packages/uwmd-verify/src/bindings.ts": "10693dc96d4df0af3e0be4f67726e0f0f0c07cfae8895f662ba17b8df1f04098",
+        "packages/uwmd-verify/src/block-roles.test.ts": "7541f4198da3549859ed18b066f82e85985750cfcf8f7ac603e5f9e0b27c8d82",
+        "packages/uwmd-verify/src/block-roles.ts": "a5e39a863b44e758518982552c78e7cba542d8ba401a01f868be628e9c915fe3",
+        "packages/uwmd-verify/src/browser.test.ts": "ec7cc236d4f6fda7e442a5076804f0c1672bb6bff830b96e99e28ac262c79233",
+        "packages/uwmd-verify/src/browser.ts": "3d9d2092891c869f44fbae22783b1f8781905f7ba7c5a9671f51175d2bfa90ec",
+        "packages/uwmd-verify/src/builtin-class-content.ts": "e6e6b235ba6bf060af09ebdde7121d578783bde3c17066f3c20c6d4fd1deebbd",
+        "packages/uwmd-verify/src/builtin-class-validation.test.ts": "26121668b2f2e1cb7a060e18684d2b5e8ee1531745a95a162b5419d63694ed82",
+        "packages/uwmd-verify/src/builtin-class-validation.ts": "63efdb9ef31d9e7ccc1edf107f9fe85d5711f36499614b5da54f016dcce4f769",
+        "packages/uwmd-verify/src/builtin-packs/data-center.ts": "89c372de1a0dd6715c5c4b3a40fb383440c6bc69e0f4a8fe7eaae148ca82e1d4",
+        "packages/uwmd-verify/src/builtin-packs/hospitality.ts": "810993446c4e5f2f33dbd18bc0eba998ed46787ab239dc3ad8202ce1917b987a",
+        "packages/uwmd-verify/src/builtin-packs/index.test.ts": "aa288ad3fd1020f70490f9a111a0bcef0d525901aabbafff802d6bd88f7fa4db",
+        "packages/uwmd-verify/src/builtin-packs/index.ts": "817683da7944f29c9a2de2efcf403475046fd501044a95ece5a95e79bd1db59c",
+        "packages/uwmd-verify/src/builtin-packs/industrial.ts": "7f2351b54150cc6ae8612141cbf880d1e23e33adb9142188c34d3c47cce60df3",
+        "packages/uwmd-verify/src/builtin-packs/land.ts": "03d63b3056c47b535cf46d31f8f16df493d7df529d92b84e05c8ff0148023cba",
+        "packages/uwmd-verify/src/builtin-packs/manufactured-housing.ts": "f0c932929fe7dc0a08429e3f4cc0088ef4774d0c0b278b14beb8ac02d7230207",
+        "packages/uwmd-verify/src/builtin-packs/metric-dictionary.test.ts": "3f6c2498388dd6b78a5dbabe78f8244272da098b317d8d81c2c6d9ec2360f023",
+        "packages/uwmd-verify/src/builtin-packs/mixed-use.ts": "3a1c9cc5a24220806a947b8a26eeb534680f97aaa6fb641d9d22b727c087334b",
+        "packages/uwmd-verify/src/builtin-packs/multifamily.test.ts": "2a9beb0a3aff129c80af76589ade3bce25995a3478ab2be60300416889562add",
+        "packages/uwmd-verify/src/builtin-packs/multifamily.ts": "7f12bdab9b21cfb1ed156c2be8dffd9e237730ee825c766e075d9151221c5adf",
+        "packages/uwmd-verify/src/builtin-packs/office.ts": "5d87332b3cfe8da34c87c831edeca95499080268fbf3242d108844a0b25bcb33",
+        "packages/uwmd-verify/src/builtin-packs/retail.ts": "711895087dcb8f7431b4600e7b9c1c9cca6ba19df0af82d0ac41ce165af8b134",
+        "packages/uwmd-verify/src/builtin-packs/self-storage.ts": "93a4b37ad1b0d4bcafb3769607c8d1d3d022915b3c44d7ac4199be0b2181dd2a",
+        "packages/uwmd-verify/src/builtin-packs/senior-housing.ts": "50586f4c8281436582d2095707600e48126287c12629f5583cf612073e81f6b4",
+        "packages/uwmd-verify/src/builtin-packs/student-housing.ts": "4179aa6cb5bce858420684f24bb3824937b828bd1390c2d91ebb59b9f74a0a6e",
+        "packages/uwmd-verify/src/calc/builtins.ts": "a10ece89e9de48f819fff281827cd2b882c69b5587d23b7b90819c275eea3d0d",
+        "packages/uwmd-verify/src/calc/calc.property.test.ts": "7cf1fda56db1dd41043d5abab2674f9c9ea745227c3eefc67c6715e95975fda6",
+        "packages/uwmd-verify/src/calc/calc.test.ts": "954eedbb5587abd3335ebd3f7ec6c2c726914c33f58f5c65cd0575b96af2b70a",
+        "packages/uwmd-verify/src/calc/dated-flows.test.ts": "ce9ae223c8519ad33b61117a1315d79d9683f6cccc1179d919a3bee2aefc827f",
+        "packages/uwmd-verify/src/calc/dated-flows.ts": "39cd45d5227ab109e0851cf74fb75fbdfd50d616bb04fb29ed66f16c98b94632",
+        "packages/uwmd-verify/src/calc/day-count.test.ts": "d877343ea8b4ec091ef2aa02a039e2c4117fa971be0adf00b270ef536a8e38ea",
+        "packages/uwmd-verify/src/calc/day-count.ts": "023689e2769ca5d90eaddb1da80261424ada88cfeb1e01f2aa10f9fca9f75e93",
+        "packages/uwmd-verify/src/calc/dependencies.test.ts": "08ea35a76799343fbfaeefb37d32fbe64fd52b54437629cab1fced9be563bf9d",
+        "packages/uwmd-verify/src/calc/dependencies.ts": "da5e960a97614062ce293dae495d89a2fced549915dc9f03dba1a514306b207c",
+        "packages/uwmd-verify/src/calc/errors.ts": "b1b8c2c87b0844a6f8bbafed560098c01f6a5d771f23d147547cd26fb091b889",
+        "packages/uwmd-verify/src/calc/evaluator.ts": "e45d88a1155c2548b13bfae701d618d8e68661f424aef08dc5e90e6efb1dfc24",
+        "packages/uwmd-verify/src/calc/fixtures/pcg64-reference.json": "3c6eeaa8b3d8c2dc4857d5aa549b73322f5259fe8e4c456e793d49d534446576",
+        "packages/uwmd-verify/src/calc/index.ts": "aebc0a9bd6ba6200b3576a939865c1146a9bf674ae745f39a917f0909a2075a9",
+        "packages/uwmd-verify/src/calc/parser.ts": "92571196579ad6a03b25c5de77a5e80034cf3eb3300230d9ce7a65da05eafbd1",
+        "packages/uwmd-verify/src/calc/prng.test.ts": "ff34f859991dd770d69aefc971199a8ea79405c4a12bb0b1248a599f1786407f",
+        "packages/uwmd-verify/src/calc/prng.ts": "9663237194df37381b847be45d539832ff4bd1b15bacce531d60a78f41f02ed2",
+        "packages/uwmd-verify/src/calc/quantize.test.ts": "fb64436faf49f011c54b71f894902e4cdbcccd72570a81bd1340a6cdc33bc9fe",
+        "packages/uwmd-verify/src/calc/quantize.ts": "e55950721064527ef25dabad1f476f43f3c6e5708478ca184b3802c7071dac05",
+        "packages/uwmd-verify/src/calc/sensitivity.test.ts": "061f4db025775545992d8a0d944eb5e45fd907ca9016edfb2d4adf2cb7250bdb",
+        "packages/uwmd-verify/src/calc/sensitivity.ts": "a75c2ba1294920cc322983981a7660df9561d22b25dad941574a7fff7deefda8",
+        "packages/uwmd-verify/src/calc/stated-precision.test.ts": "92de47e34320182fe49ffecd885c21544cf9b9ee667f736a85d6c4d876a6fab8",
+        "packages/uwmd-verify/src/calc/stated-precision.ts": "338fc1a7a66e433a9127318686ae28f646b5f86ac3666fbf09e4b6ec4c2977e6",
+        "packages/uwmd-verify/src/calc/stochastic.test.ts": "4af1aaa63e83096e22bda809906d1a5591687be3e450e55c74ee89d8f800055a",
+        "packages/uwmd-verify/src/calc/stochastic.ts": "90ed18c2cae3bad2ce8db418a5271440e574434cec6bea8b55397ab10bcee020",
+        "packages/uwmd-verify/src/capital-stack.test.ts": "b18bde003ec04d4c4c24c8c2bd5f87f86c6ed414e9ae3f1ac70f4a58a851c2e7",
+        "packages/uwmd-verify/src/capital-stack.ts": "c8d9adbbd26837269c616288a0cb2e5d83deb51c177b761606056a48a33d6e72",
+        "packages/uwmd-verify/src/cash-flow-series.test.ts": "0a8e2eeb247e247c13f030e10676ecf69c2c60ff9d103413a3a2aa055fe787e4",
+        "packages/uwmd-verify/src/cash-flow-series.ts": "8e44d13e49568a309454bb19429ea44cd9d5529a94c611a4e0ee242290a430a7",
+        "packages/uwmd-verify/src/codec.test.ts": "e215e0aff355f6b34d88e8a2fb554ca82e769b4d17c05f1fcbfecd4caf199d2e",
+        "packages/uwmd-verify/src/codec.ts": "e6778bf5ca7f0fae36064ac2ba0f101ac649578e1642b9abb3681010470c502e",
+        "packages/uwmd-verify/src/codecs.test.ts": "ae5b7db07d495a5cad2f706456445969ed3e4f86bfa8a2102a63c1fb06dd7046",
+        "packages/uwmd-verify/src/codecs.ts": "87f78f4cd4bd9828596405309433235eaffeaa801d8c80e497ba021709e61f60",
+        "packages/uwmd-verify/src/composition.test.ts": "7aa95f211eb1123148c37dca3c9bcd790fae5be29fb0b97a0b1d9d7d95a5d1f7",
+        "packages/uwmd-verify/src/composition.ts": "7134a72e982a40aa6bbca8f38e72799fd0c665faf39bfd53933be4c26497f78d",
+        "packages/uwmd-verify/src/deal-package-context.ts": "f09100a553c529b0ac700508df36316521e891727acf5643f4fbacfa55dbdfdd",
+        "packages/uwmd-verify/src/deal-package-zip.ts": "cd710c77c0fa2ffa5071e6a3821d9e502c1797101ef58538beaacb138542fe8a",
+        "packages/uwmd-verify/src/deal-package.test.ts": "89942bf4c037f398309412953818312f60d02decdd64db5b6691f3b04f6a7f4b",
+        "packages/uwmd-verify/src/deal-package.ts": "ed5453e41aee420e257908ef019f79283768ee8e9607cc416789822e66806d91",
+        "packages/uwmd-verify/src/document-signatures.test.ts": "aff7eb38bff776f318fc7732c2398d07fead059da9ab2b364701282948c5680f",
+        "packages/uwmd-verify/src/document-signatures.ts": "50b29324516b413eb26c89640a584f63c92a7b0beff2c7fe0f8a80c315e3e7f3",
+        "packages/uwmd-verify/src/envelope.test.ts": "5858f6a68235f5a8b908f283d37a82791399ab07fa4fecc3b711ebcadb90caa3",
+        "packages/uwmd-verify/src/envelope.ts": "3c2d79f29163cfcbe3a4f2f53aa711e39e8ad5fdd6e42269ddec731df7f4fe9c",
+        "packages/uwmd-verify/src/gaps-content.test.ts": "e633aea0db4935d1777a6fc48388748e80b258984b3bfbe0b0064f105c80cf12",
+        "packages/uwmd-verify/src/gaps-content.ts": "f13f528be3b320fb61c376193126b73e1e045b54ea7094242a11e162dcc8d755",
+        "packages/uwmd-verify/src/index.ts": "04f234e95e7db89c4e12dce84a16455685b082b897c6c7c37645db1c7f59b9e5",
+        "packages/uwmd-verify/src/integrity-canonical.test.ts": "7222b8d84f5598703eddfd43ef53387ecb633f6f9234abb9bccd88a594168b1c",
+        "packages/uwmd-verify/src/integrity-canonical.ts": "4f6532ea34ecb1e98ab919d26683b1638297c11cec70534538c0395ccbdb4b66",
+        "packages/uwmd-verify/src/integrity.test.ts": "a1f5f1e8204585dbf722f2ad7d5d0d274c58f37395ddea7de033eb6ce498dc7d",
+        "packages/uwmd-verify/src/integrity.ts": "48a69e922b6c7e83d87a277dab3c214e6782f990fa4e4f8069993fca52363239",
+        "packages/uwmd-verify/src/lease-abstract.test.ts": "fce400b8b59ba9cf9dfac32ec527e00eed33a6bdb36b80e45bf665170827fc4f",
+        "packages/uwmd-verify/src/lease-abstract.ts": "1ae7898786b38a52ef4dc93b5bbbd098757c1f156c609cfa2594cc22eb3a8fe8",
+        "packages/uwmd-verify/src/lease-up-cash-flows.test.ts": "bbacf3753e4524984fcccdb83a7c13baf9daa22c815305700843d39c5acbbccb",
+        "packages/uwmd-verify/src/lease-up-cash-flows.ts": "1cc5299877610367e2db7faa359c2ca3fb0c70302c45eb0eb224a401ddb650a6",
+        "packages/uwmd-verify/src/lease-up-structure.ts": "f955011cf74a4291cafc0dd1cad67076dcf82ecdefc45925e173472fd6a56ad9",
+        "packages/uwmd-verify/src/lease-up.test.ts": "afc099e56431d0e4f5a6bf9e97d3456a7faab7131b86e7b4e96f92a54559618e",
+        "packages/uwmd-verify/src/lease-up.ts": "0644784c714d2e73648fe38ace37160ef411c41be18da87a81a43efde6fc3d1d",
+        "packages/uwmd-verify/src/lite-bridge.test.ts": "f2d303e23dd1db8130b99821cef692af87169b0ca11a9ef61b2d9f5854f41569",
+        "packages/uwmd-verify/src/lite-bridge.ts": "111a771681c529bd5dec4e19eaba83a569b3ef3e407dd380bf5d88dddba0ca3e",
+        "packages/uwmd-verify/src/lite.test.ts": "036c374caf3ba1e29a0dc87ee7b8991d586a60adaa9983495ee57824da7d36a1",
+        "packages/uwmd-verify/src/lite.ts": "01c545b8c904a242189065a9a3a688f6f508ada42851a0d73e5c998b2b93f274",
+        "packages/uwmd-verify/src/market-data.test.ts": "2ef92dcd940d0964a59b94f5cb426fd453f37c36fc2d60cd59719c9fd668c0d2",
+        "packages/uwmd-verify/src/market-data.ts": "38b34b584a71a6fad4b767c8f89ea80230c9261984a8b353bf24170beba98c07",
+        "packages/uwmd-verify/src/metadata.test.ts": "923cf62c6e8043991d0727b9268d4ede3129bf8e995fedbb73382dca4015b01f",
+        "packages/uwmd-verify/src/metadata.ts": "b3b67f23a5df6b72d9dae42067fcc6ceefe478b227eaefda8fff118efa0c4aa5",
+        "packages/uwmd-verify/src/metric-dictionary.test.ts": "5e4b7c1132cdf4d8e9e98e98af6f88556a227a1029cc33c70993d3ba00832f08",
+        "packages/uwmd-verify/src/metric-dictionary.ts": "3e26460276e492c2e21a118fe024144d103a6bf5bdfdb4484692a49a35cc7aa8",
+        "packages/uwmd-verify/src/metric-verification.test.ts": "353987b91e4f52e59afa33e05ca356825457105974d0e3a33e0b7dfd2265efdb",
+        "packages/uwmd-verify/src/metric-verification.ts": "c9b943fcd7dec9133b4e3cc1f125a0d22624d98195c968f893d90718c03c6f76",
+        "packages/uwmd-verify/src/module-runtime.test.ts": "bf8156fd1d596e6e87407514ec1adb16fdaa6333e5edc9d21e8f5339c11cb495",
+        "packages/uwmd-verify/src/module-runtime.ts": "fac04507760e39fff5243da0af398a3e54d9f2bcf893a9a5342640b3584f371a",
+        "packages/uwmd-verify/src/module-signing.test.ts": "6c386a757de8a1d3a0f8b2ed83b7baa597492fff97ddebac7cff57610ab73bd2",
+        "packages/uwmd-verify/src/module-signing.ts": "93f98904276edf84ea96cd0977e53469315fd88999af2af4785e17b62845e954",
+        "packages/uwmd-verify/src/modules.test.ts": "2c9733e6e0fa7008599d40dd9f95b55a450bb92c5a237a6b16465b473c0c9f1d",
+        "packages/uwmd-verify/src/modules.ts": "fe2d25b2250af6459d804b6956e4156c3d09fda1b08f1633345c176052aa3029",
+        "packages/uwmd-verify/src/negotiation.test.ts": "d41c340e561b635d85b09a8fb0c723ee6bcf7c58532a228b3e955b649d00990b",
+        "packages/uwmd-verify/src/negotiation.ts": "a90092b3c4e658c1d0632a803588f9d8a1cf64fd6af3c87a0cd3a4b9051efaa7",
+        "packages/uwmd-verify/src/parser.test.ts": "fd287320595b16f198879c2b1490db3cbddc59893c88f173369e87666b0dc37b",
+        "packages/uwmd-verify/src/parser.ts": "9dbdb7f3f5b3135e59dec5a59e034238ec78ae8be284870ae97bf80969e6f62c",
+        "packages/uwmd-verify/src/period-path.test.ts": "8ac67f25ac87baf8591d5d536e17aba79f2e80f50146b0d9e79ba01e4ab15bfb",
+        "packages/uwmd-verify/src/period-path.ts": "96877f29d30e6a280c38c6ad1a554165257abf9109efa0327c7315f416257ac2",
+        "packages/uwmd-verify/src/period-validation.test.ts": "e8af3560303e68ea109d85059ea82dc98fa18d83bc90cf25c68871ac531fbf89",
+        "packages/uwmd-verify/src/period-validation.ts": "72acbddf0b0b51aaf706f4ff74d2971fd66a2bfaf10a8a17c03a210a3a04545b",
+        "packages/uwmd-verify/src/periods.test.ts": "03f8e7256c7a836334cfd70cf77df226bf40b37309f50b7e46f89f5a927ae163",
+        "packages/uwmd-verify/src/periods.ts": "ff0c2deb42e5d63d6771e1b8bc9a2337430cfa7061ba8b0e9ea9db6e3826690b",
+        "packages/uwmd-verify/src/portfolio.test.ts": "924bbdf6bd1a792d99547adaa133456f1ec4d29da83bef98e59cfad6265e0bce",
+        "packages/uwmd-verify/src/portfolio.ts": "136e7bf29cc51fa3d66719302fded33383324ad5e0919e8f117e97e5d1acd440",
+        "packages/uwmd-verify/src/property-cash-flow-inputs.test.ts": "bfbbade5ea995eeb3cac9b1f1f72307df2e17152e781e837fb016d2b5a0ee4ab",
+        "packages/uwmd-verify/src/property-cash-flow-inputs.ts": "e456280cf8b6c359bb09e3202a10530fbb1a08d5b929a56ddda534848d64a631",
+        "packages/uwmd-verify/src/property-cash-flows.test.ts": "c5a68ebafbef973254af7bc90f7aec182c8dbd3ddcd368d8cf549f60b808947c",
+        "packages/uwmd-verify/src/property-cash-flows.ts": "bb2a5d1152fd1a207df9c2f3845a52b63a7c7501622fca7bdb5b99e02669412c",
+        "packages/uwmd-verify/src/protocol.test.ts": "25a6eb51365f49a2e8db0e6b6e5a26e9d95d2d74412c0a184f66eaec2f0038aa",
+        "packages/uwmd-verify/src/protocol.ts": "8cdea70a3e5e9991d76f5d3e7042c3f131e7e6835973324abce85f65315154f3",
+        "packages/uwmd-verify/src/receipts.test.ts": "73b6bafb5eb5bbfe8dd6569be467d0d946b88c5c32f20cd5024e1c7eca1f6a81",
+        "packages/uwmd-verify/src/receipts.ts": "330888cf68e5e3b76ceefd2b798cfd40b244fc6d71ea528bacf945682152b54a",
+        "packages/uwmd-verify/src/replacement-funding-structure.test.ts": "ed7971800b1054cc2089e4d7fbbb950154f6cfe30725042bec4927b0d0cb6c39",
+        "packages/uwmd-verify/src/replacement-funding-structure.ts": "4cde51c6b17dc8cce214282b1542a2f7b92642d86925dd0b9689755beb4d53ba",
+        "packages/uwmd-verify/src/replacement-funding.test.ts": "8690afbbb00a580d456ce47e67e757ce5cdeba08cb62966d447e325487c2001a",
+        "packages/uwmd-verify/src/replacement-funding.ts": "8b988c8c7a23edf03aeeca9d5c28c229e25240b218c9d5768cb076232c320ebf",
+        "packages/uwmd-verify/src/reserve-accounts-structure.test.ts": "a2d1b1e2dc82d47834dccf419719959633d89d6e37bbd85b0d625ad6a5575a52",
+        "packages/uwmd-verify/src/reserve-accounts-structure.ts": "cbe2354e10f7df0a03bd33389b271b324a708d12338118ddeb1ae1f87fa73d8f",
+        "packages/uwmd-verify/src/reserve-accounts.test.ts": "301a6f77d3ce3173a72b54eb8d91d4391e534dad1f8c3ac62db2f59d79f5fd9d",
+        "packages/uwmd-verify/src/reserve-accounts.ts": "481b750f49dd5e87c2cbf156f9612c196e9ccd2600b7d341c5081adcd0bf4431",
+        "packages/uwmd-verify/src/reserve-draw-bindings.test.ts": "0e6961040b35d5c987036045353bdeba06126e524898d0ec95f0ac562a1b02fc",
+        "packages/uwmd-verify/src/reserve-draw-bindings.ts": "5fc54378349b154420b96b8c7fc06dacd05e11d5a75b556385516337701015c2",
+        "packages/uwmd-verify/src/scenario.test.ts": "24307c8293cec9ab4a5a203ae0c1e9f8d556832521535ab5f9c0eddc0f52817c",
+        "packages/uwmd-verify/src/scenario.ts": "93a08dfc758f5b0373ba3a7df2ed9f388745df5bc242a42601cdb38f7b51648b",
+        "packages/uwmd-verify/src/section-resolution.test.ts": "736cf873558c700d6a2f07d90f5b18cfaf01e28f26234b523e9ac011a4e80bfe",
+        "packages/uwmd-verify/src/section-resolution.ts": "0e8accdd414243b9a15892e7db8fce8b86c32cc28335ff521dde799c1e8c77df",
+        "packages/uwmd-verify/src/size-intensive.test.ts": "14a486f155205ce95d74775ba14d9ab095af28d592d51dccdf3f39168fca518e",
+        "packages/uwmd-verify/src/source-representation.test.ts": "b1359731d8436d19e2a6c7cc3f0fb3136bc15b4da2a6a6958934b9b386d82469",
+        "packages/uwmd-verify/src/source-representation.ts": "482a82afdcd6a4604ed4560b25b2eb22badf8a6a1fc5aa428c10aad7d53f55e3",
+        "packages/uwmd-verify/src/stage-contract.test.ts": "cac57a32b9c218bf9740778fab0184b7598da3a00350076b85c5d0395f1259ba",
+        "packages/uwmd-verify/src/standard-closure.test.ts": "6e6c6262d12ae201bd2abd577c3a9721d3401b6ca3d87a709c2144f497a973e4",
+        "packages/uwmd-verify/src/types.test.ts": "e09dd7705a9271200ef5da02530ce0f87147f2e358b55011c640aabd36f72369",
+        "packages/uwmd-verify/src/types.ts": "21d6669cddd077ef42ae762d496af891b02d4dafc9b1c15dbc9905a029f9c511",
+        "packages/uwmd-verify/src/uwcsv.test.ts": "0dfbdf96cd537374a9d851d123f850197a2e0c7c2ea221fd7646f2f7169291db",
+        "packages/uwmd-verify/src/uwcsv.ts": "4bd4962ba84949deb5baba13cb477576e773a90454c630e587e717602b77bece",
+        "packages/uwmd-verify/src/uwjson.test.ts": "ce1dcd93a008e0cb8639bf9144bf3787c20b62fd1062d22abf8525c5d6ba4089",
+        "packages/uwmd-verify/src/uwjson.ts": "589ada8ab1aa3fd9867bfeb558a348bfea7a5b7965adf21b7de4e1c8658ff97e",
+        "packages/uwmd-verify/src/uwxml.test.ts": "742ec9987d719051c183348a7619543b552216731c6c22eaa238cdfe76e60567",
+        "packages/uwmd-verify/src/uwxml.ts": "7831f3a18202090b302f7c6e17645f65ada75c8aefdcb93c70c2e02548f89287",
+        "packages/uwmd-verify/src/validator.asset-class.test.ts": "320c594390d68c18e6e72ee113fc98730d0eb2e15dc2a8de5160a8d46a947fe1",
+        "packages/uwmd-verify/src/validator.bed-counts.test.ts": "908403567543e6a59f00917104d4f15d9136c12bd41c476616a99a8350e342ba",
+        "packages/uwmd-verify/src/validator.block-shape.test.ts": "b481f863004df64ee1f083d6edcfdaf89089a13fe6172acb847701474c39c436",
+        "packages/uwmd-verify/src/validator.capital-stack.test.ts": "a4d314461cf579be62a45d5d166af9783b8619cfc9a3c84a84b443331250b703",
+        "packages/uwmd-verify/src/validator.capx.test.ts": "3b355a4dea6b1ed1a7cfd59c4593772e73e3b8cdda63485f5ce73aae2e0264e3",
+        "packages/uwmd-verify/src/validator.cash-flow.test.ts": "bba195c5b9417a84d0b8b8eed21141e2b7c9ee49165959d0c79980b5e4190cbe",
+        "packages/uwmd-verify/src/validator.cc.test.ts": "c0f51d95a0449c278ed2d5f0388a3dc1b9d460aad131bdb8a69a1db952d9309a",
+        "packages/uwmd-verify/src/validator.components.test.ts": "3f16e6f57bff9424a2416222fed34d3baa7e121239701610c6fe66beed6a39a0",
+        "packages/uwmd-verify/src/validator.consistency.test.ts": "545e8ba6530476e0fc97ad65669cf206ddaa1d0096b6a936ab6c9e96a9bf1aaf",
+        "packages/uwmd-verify/src/validator.coverage.test.ts": "5b4318e9ceacc75c867b4b601257c0fcb78402cba62315e99bbac2204395b5f1",
+        "packages/uwmd-verify/src/validator.dq.test.ts": "1752543beeedc6b3fac84157537a5acce51cd68df8b5bbe2b442e78ad60a518a",
+        "packages/uwmd-verify/src/validator.fv.test.ts": "17969b3e06733f57cd332440bd1d4c0c824fcd39ff335ba87a947905abeaaad0",
+        "packages/uwmd-verify/src/validator.hedge.test.ts": "9b57edd12b018c9697ad5d9103f4190fde341cb016a5c4f8c10171f21743edbf",
+        "packages/uwmd-verify/src/validator.lease-up.test.ts": "68c81c5799abb69ea22edd9321de869f9cd685e6db13c71735cf6a9198bf6e21",
+        "packages/uwmd-verify/src/validator.lease.test.ts": "0386d59f7f85e3879a472d49065e0de19081aadb9f07c16242170cfffde51cf8",
+        "packages/uwmd-verify/src/validator.locale.test.ts": "0aabbd4f72608bc20f7b169cb876c715b54a33f9f062a7e2e80de69db953cca6",
+        "packages/uwmd-verify/src/validator.recoveries.test.ts": "7a342b82e465b12610014a623ae8ab5819a17a885b9e9a9ecba4c18e43ea7146",
+        "packages/uwmd-verify/src/validator.returns.test.ts": "5357b189299712e2e0bfeaa3a9a13969a9e2e7305786a2189c113b3d4334b326",
+        "packages/uwmd-verify/src/validator.section-readiness.test.ts": "439bbbbe3e4320ffb27aa728488f63e660c0a9e1932e780cbbe42a84cd3a97bd",
+        "packages/uwmd-verify/src/validator.size-intensive.test.ts": "a43e6dbb944fbcec6843c31c9a155022df775a8604969cf122a2a93c3bef8567",
+        "packages/uwmd-verify/src/validator.src.test.ts": "32580df0d4a41fb295c3967a4cc9b692c1447559ee3349fc02dd0254e99d3f13",
+        "packages/uwmd-verify/src/validator.tax.test.ts": "0c837d424448775db2bfe8ffef5a0da177860b83621e846a26ac8c4833459edb",
+        "packages/uwmd-verify/src/validator.ts": "876bca008280c05cc905ee2e455a7adf5f69ec5cc3ae8c3f49c53090cc7e734f",
+        "packages/uwmd-verify/src/validator.waterfall.test.ts": "8344492aaf5bd4fd401c91debe255018f2d2ab00f4e30e15036caec78015612e",
+        "packages/uwmd-verify/src/version.test.ts": "41fc3722c153a3316464687a375f391c12c0d737c9ed249f92743e947889a153",
+        "packages/uwmd-verify/src/version.ts": "d6970404ccfb4ce105f2ef96582d46dae630184416bea7a14a63dc0221ff50a9",
+        "packages/uwmd-verify/src/waterfall.test.ts": "433c76a7a438365d3d1ecf192f0ec8a6fea6fc0f3250dd2dd30104301f32c556",
+        "packages/uwmd-verify/src/waterfall.ts": "fa15ee7a89dbdeb6c6c4d0215024c98dacd4784b50e5deb8a57a66586928f08c",
+        "packages/uwmd-verify/src/yaml-scalar.test.ts": "6e2f3d8f90a0c01dbf2f0ee87b4e1916aeea5e885cfc4c87fd3215586f43e05f",
+        "packages/uwmd-verify/src/yaml-scalar.ts": "7cc1f269c7fcbdbe6d0c2a75a1e45e77f1a9f7b22be8d1f8463cb1cc2755eb03",
+        "packages/uwmd-verify/src/zip-safety.ts": "09f6d74394dd218dbe9b1a061efb2acac7667baf61a92c91dcd8f2b8f9bd2d44"
+      },
+      "compiled": {
+        "packages/uwmd-verify/dist/asset-class.js": "9b64d4ec1ce313315c2faab4a960809d13c79fadbcd066f625494406832a778d",
+        "packages/uwmd-verify/dist/bindings.js": "f5cf9a09d39af509eb396091d27c640bab22a97547cfe619d19e22d7c9ef4c4a",
+        "packages/uwmd-verify/dist/block-roles.js": "3494b9406cb1553b132e6c4b9100db5523411a8239827f644d403fdbf1094f15",
+        "packages/uwmd-verify/dist/browser.js": "ead01e1ca25c85fd2e538fed03264dc237b988dd6222c7066870a84ac4cc5212",
+        "packages/uwmd-verify/dist/builtin-class-content.js": "955041bf35180bd577459bb3c014ba2f65d86a32c8885404b30f9284874b799c",
+        "packages/uwmd-verify/dist/builtin-class-validation.js": "eda161c44e131d2b009097bd807a746f3763d85dab7749133b17e96423eb2d00",
+        "packages/uwmd-verify/dist/builtin-packs/data-center.js": "31384fd42c4739f01a1994263ec7470df0655dfe2bc040d57493cc171d949a0b",
+        "packages/uwmd-verify/dist/builtin-packs/hospitality.js": "33c69399cd08638728b1d6730c2d02a6a0c4bc73b9fe597f55da56ad32eff81c",
+        "packages/uwmd-verify/dist/builtin-packs/index.js": "f57a11cc9cca748608bc24b738ad838817966ad30aa65c9ecf46536abe24db96",
+        "packages/uwmd-verify/dist/builtin-packs/industrial.js": "1f35fb92cc0d1a1fe24ddbb82419cec37f5fd09ff78db9e010d6f58beac92261",
+        "packages/uwmd-verify/dist/builtin-packs/land.js": "02ffb2076d945c89bd40a1619975a1a34785c336aa30306ec44c675dd5f1046d",
+        "packages/uwmd-verify/dist/builtin-packs/manufactured-housing.js": "db467160470acdcc587d8ec17ad52b40f145a50270a19d515e3e5f177fc3c6a6",
+        "packages/uwmd-verify/dist/builtin-packs/mixed-use.js": "d719547861a0976aeab9d41eac586464c014d9db53d2dff61404dc1061addae9",
+        "packages/uwmd-verify/dist/builtin-packs/multifamily.js": "08566ac62d2203860d3b080388302f3ff29c12d3fdf8be2436f92258dd40d91d",
+        "packages/uwmd-verify/dist/builtin-packs/office.js": "9c2cb8fe2c814964187a50c0867bcede3be2cdcfa96fb06ce99b5cabdc6cd470",
+        "packages/uwmd-verify/dist/builtin-packs/retail.js": "4ee41ebc5d53e7b4d2b6390f19cbf3149014c6b90ff61490e8f49224a515320a",
+        "packages/uwmd-verify/dist/builtin-packs/self-storage.js": "4a470cdf1c32d3cbb06de8c9243669da2aa74efd4d74ead500957427cad43079",
+        "packages/uwmd-verify/dist/builtin-packs/senior-housing.js": "4ce8db87d3aa375515b65fdcd99da67d6a9db3008723a6024119437766bbff09",
+        "packages/uwmd-verify/dist/builtin-packs/student-housing.js": "65a73317dde4a24541b63039531e70842d044c9b05514440fdaa2db2c605bc20",
+        "packages/uwmd-verify/dist/calc/builtins.js": "a1a21b3f342cb5a08c61cd5051ac7b8715670a33a045a8dbaca77e9773c2d764",
+        "packages/uwmd-verify/dist/calc/dated-flows.js": "252f1176566cdf1ed5652cbaa671ce238075b864d5cacb350359a07f3df0d7d7",
+        "packages/uwmd-verify/dist/calc/day-count.js": "0ababeaa0740ba664ab55573cdb391e4e583f2179d727ff047787a7af1af74f7",
+        "packages/uwmd-verify/dist/calc/dependencies.js": "1c5281a8f3c428b2bb0ee872678e18c6be01d11020a2e72d9e028437165caf27",
+        "packages/uwmd-verify/dist/calc/errors.js": "15266fe1dba3912fcba92bcbd9d21a9ce00e6ebe6368f479173ff771c98100d1",
+        "packages/uwmd-verify/dist/calc/evaluator.js": "501b08f434c13290a1958005ac38f5f2ddf2e11852af6c6053020f3c78ea9bd4",
+        "packages/uwmd-verify/dist/calc/index.js": "46dae354b576a42cc346d245d7eea03759089d161df9ae072941f425d19a662f",
+        "packages/uwmd-verify/dist/calc/parser.js": "2331eb3bb6704b49a813c500594ea55dd651f39e0d73882ec7880b9263d34316",
+        "packages/uwmd-verify/dist/calc/prng.js": "a8b60c4d1ffa583b507f12a5777938157df90ad870cd564264dbd46437d047e8",
+        "packages/uwmd-verify/dist/calc/quantize.js": "fc9c8c5900c2941c8f2a8d3fb426e4c4876ac1efa10edcecdc4b4c2f94c73dfd",
+        "packages/uwmd-verify/dist/calc/sensitivity.js": "d4592377397140927b3d16017e44722203feb251b00317412506f210949532e3",
+        "packages/uwmd-verify/dist/calc/stated-precision.js": "a6fcad1d0b82dcb54d982aad385662979a82d367831b261f6054f0e80b9dee86",
+        "packages/uwmd-verify/dist/calc/stochastic.js": "8af1acddc021bd05805af4707dbdf93acc4b8eebf653fda009ee3f286f675308",
+        "packages/uwmd-verify/dist/capital-stack.js": "7279ca733cbff3fb85275a8b3135270dd5846f4b0ebef5dbfd5975dbca671c24",
+        "packages/uwmd-verify/dist/cash-flow-series.js": "b19600a95b6eaa96db693c2316f78af9731b0d5f0a4ae370e4ca043232127d2b",
+        "packages/uwmd-verify/dist/codec.js": "df8bd0c2604f8b2872aa8ed00ba16f728e1e372cf758ca911347280ed9c29d1c",
+        "packages/uwmd-verify/dist/codecs.js": "91e48a9fc27192a93bbd5063eb9d61993872a4979e07b14fc299265cc7afda23",
+        "packages/uwmd-verify/dist/composition.js": "748efaca395623ed086b32303a31e04383cbfd05bf4cfe2c11f0c6f05833450b",
+        "packages/uwmd-verify/dist/deal-package-context.js": "49c059591ca931377568938523dc6a89ec70969d6652689887ccbb0ef4ead8db",
+        "packages/uwmd-verify/dist/deal-package-zip.js": "f99a0b52533d9e3282dfe352f134362d95b8dc2995b5b0870008140200b1d4fd",
+        "packages/uwmd-verify/dist/deal-package.js": "a46d382023362fc9f29a3cb4d03ca4ab61b1fba7dc019cd1fb8da6b28ebb9006",
+        "packages/uwmd-verify/dist/document-signatures.js": "b3f1364c3f1b9324715cb457d5847cda3bf8f2d52541dce299a8f44d18179300",
+        "packages/uwmd-verify/dist/envelope.js": "69797738a915e76b319b2715ab5d2f5d82892dc1bddb43e15903110e70d7e97c",
+        "packages/uwmd-verify/dist/gaps-content.js": "586d14b06255368cda96e5fee967b92d57893e49eedcbc207bb0e1691106a95d",
+        "packages/uwmd-verify/dist/index.js": "cc9b16c32c19eee44df10901d9e3232634d426fc4c49e3de10368bde45f0c41f",
+        "packages/uwmd-verify/dist/integrity-canonical.js": "3b4ea8f34e83ce31c207e0329001eed97ff50283c912e3314b493a649601ac97",
+        "packages/uwmd-verify/dist/integrity.js": "189d4f09549b002dba4425ade55556b6894d39fa5ca8c05e6b4d593cd749511d",
+        "packages/uwmd-verify/dist/lease-abstract.js": "4173b1f751e8ef214d9ecc451b61be2b1b076d4bcfb8b0f953f5b292e868359e",
+        "packages/uwmd-verify/dist/lease-up-cash-flows.js": "3741c46a6af2ec823535d19d190366a810845dc2022eef9d80aa5ffb357d9484",
+        "packages/uwmd-verify/dist/lease-up-structure.js": "e6314cf33d23e06f0056c6d967ed197f7adba13ad9ebc1a5c4a0daa91c527c9e",
+        "packages/uwmd-verify/dist/lease-up.js": "34572b25b4a51a6a8f556b799f3a748c54cc2e2152d66d67e763990250881ff5",
+        "packages/uwmd-verify/dist/lite-bridge.js": "93c70b25dd66a94caf05abae56b537bdef444eb03c3e44aa7036063e913c2279",
+        "packages/uwmd-verify/dist/lite.js": "58bc42cc2c44a02354a08f1196a23c8c6168974727cfe64c557287cc9a1a0292",
+        "packages/uwmd-verify/dist/market-data.js": "802ebfad8f09e31fb0b208cbb8e0db35039c448f551c63cc689e73002948c831",
+        "packages/uwmd-verify/dist/metadata.js": "addbf8ac9bfea2db0393cfc4427f8942db09ebafc5eb525b963d117f96530657",
+        "packages/uwmd-verify/dist/metric-dictionary.js": "7e004d7fa8856ec74c26899a63e7871060b6c09544a71ec8e51960a462dc9ce7",
+        "packages/uwmd-verify/dist/metric-verification.js": "2853b7bcccfdaa9c078df956a08d8ef67b9f52ed90a4ae57c021c76601884ca8",
+        "packages/uwmd-verify/dist/module-runtime.js": "38b363e4d361ffa63427e9fd3cd583e0255d6928b49c318cc41facb2cb6f9a71",
+        "packages/uwmd-verify/dist/module-signing.js": "2f85691ed32a0c03d326d2c848055dadbb7c2128a20b91c8ee62335c56efec44",
+        "packages/uwmd-verify/dist/modules.js": "0635b5f0eefee6ecd916aac1bdd27b8fdca75254a00c666e67bba53fcec23115",
+        "packages/uwmd-verify/dist/negotiation.js": "c580de756f0b6c7fa9bc22b594926911f73c9784c1ca19080a9bf901347b6b3f",
+        "packages/uwmd-verify/dist/parser.js": "d216d7f02c5d0e9589dc860e029525d01edcc2cbabf415f56887fcf9f7e33fd8",
+        "packages/uwmd-verify/dist/period-path.js": "5d9ce1cb67719c6f85d0c75d1aa1085b2703ceaf37837f954bfa33434e63fd8d",
+        "packages/uwmd-verify/dist/period-validation.js": "bbf181d23209aee88471ceca45c54d94f11f173db494039049bdaeca3dbac5d9",
+        "packages/uwmd-verify/dist/periods.js": "bec1d3cda3a784186be1eddac5ee91a9d9e0b8f73c2fa9665673d53a2c01dbef",
+        "packages/uwmd-verify/dist/portfolio.js": "a9cbb748c155f95ecb3e74050adb716bd1a2fad3d93183d7b970c4280f404078",
+        "packages/uwmd-verify/dist/property-cash-flow-inputs.js": "367d41f0e37e01c7b14428011594e0dc35c103821165b50e67cca4f9239c0bbf",
+        "packages/uwmd-verify/dist/property-cash-flows.js": "1eaecae206ea26b7a8b0202655fa0f12fb372701f17273f1ee21360105e3328b",
+        "packages/uwmd-verify/dist/protocol.js": "7b11f26bff052e478d688098fbdd15c17c0d944d6bfcabbb6498306976c7dfb8",
+        "packages/uwmd-verify/dist/receipts.js": "f4236fce7deae96207ab49f934e7a024363bfdc7146e3106b39a013411bd7cba",
+        "packages/uwmd-verify/dist/replacement-funding-structure.js": "f257182219329bc0241da86f2db0920446ace6a7a22162f778a7d8c1a297cdf1",
+        "packages/uwmd-verify/dist/replacement-funding.js": "2f8a1f333a7de30fc1b9620fd8bb09ea301780ffeff810f0b1dcac9d0a4f20dc",
+        "packages/uwmd-verify/dist/reserve-accounts-structure.js": "a2e58afffe206ef71264ac18624a563e036428ffd371adb6342de91c2775bf75",
+        "packages/uwmd-verify/dist/reserve-accounts.js": "4d60a78fafd95a8358f072f801bb7d81466072bce257ca42b0e02c756fb6aac6",
+        "packages/uwmd-verify/dist/reserve-draw-bindings.js": "7f1de6d72c6b27adb8376d8a1c77d0d7c54750dc99d9ab3b565ba3f5da1ecb62",
+        "packages/uwmd-verify/dist/scenario.js": "fca890e1e27fd14949a33b1b7bcc9e61eaa2861d8ba24f170b89f140df97b993",
+        "packages/uwmd-verify/dist/section-resolution.js": "6a4ea13697ceef26272a4247e39c1662f4d17db5a29eaf3959a05eb93a0edbfc",
+        "packages/uwmd-verify/dist/source-representation.js": "717bbc36b69f94f9b02a217dcc14526aa5011e3be0f4350478428ffd251d2fa9",
+        "packages/uwmd-verify/dist/types.js": "e3179a49e80c2fc89274c7ca285932dc743ca99e3789ca7a61cf48a6f3dc8abb",
+        "packages/uwmd-verify/dist/uwcsv.js": "d6962fce542edf564ad26605511fd9a776a24053f9e359133a893125b9b68c13",
+        "packages/uwmd-verify/dist/uwjson.js": "b2dc779a521244d04a8307812f6499f4cd8aecd8cde28f6fe34b18dd572760e0",
+        "packages/uwmd-verify/dist/uwxml.js": "45a86c2e2ca5e913f3350be1732263cb70ee34d810524e7524528ede7f45ef72",
+        "packages/uwmd-verify/dist/validator.js": "f258cab44a5d768e2a744ccac7549e03b324bb33411f1ff0cadd4f36f1382afc",
+        "packages/uwmd-verify/dist/version.js": "0ccbf2b63b23eb44da371e10d149511e6d168552b7d394ab8eaef92c918d88d1",
+        "packages/uwmd-verify/dist/waterfall.js": "1228277fd4f1e9a57cfa84b506f4d56cb4f9239f518408964fd6b2cd3537d1ea",
+        "packages/uwmd-verify/dist/yaml-scalar.js": "c7d5a8ae0d2d1bef15e68aa39f76397228df22e03fbc75d7c3c3c32f3e47055a",
+        "packages/uwmd-verify/dist/zip-safety.js": "b07304b36176a7a1796346752bc64e897ac6b2003084e9d253c23ea8410dbc0a"
+      }
+    },
+    "test_key": {
+      "status": "public known research seed, never a credential or trust anchor",
+      "algorithm": "Ed25519",
+      "public_key_spki_der_base64": "MCowBQYDK2VwAyEAA6EHv/POEL4dcN0Y50vAmWfk1jCbpQ1fHdyGZBJVMbg="
+    },
+    "cases": [
+      {
+        "case": "single",
+        "complete_model_sha256": "6b4c3c34526bf39d4e16526a460a6a321446b8569f50e9cc4e0fbecee0696a85",
+        "semantic_digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2",
+        "extension_minimum": {
+          "extensions": {
+            "x_review": {
+              "mode": "single",
+              "block": {
+                "content": {
+                  "note": "synthetic",
+                  "content": {
+                    "unknown": {
+                      "a/~b": [
+                        null,
+                        {},
+                        [],
+                        "",
+                        1.5
+                      ],
+                      "member": "<&> \"quoted\"",
+                      "item": "CR\rLF\nTAB\t",
+                      "emoji": "😀",
+                      "bmp": ""
+                    }
+                  },
+                  "_overrides": [
+                    {
+                      "path": "not_a_target",
+                      "note": "retained only; no inference"
+                    }
+                  ]
+                },
+                "meta": {
+                  "section": "x_review",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "reviewer",
+                    "timestamp": "2026-10-16T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  },
+                  "x_unknown_metadata": {
+                    "retained": [
+                      null,
+                      "",
+                      {
+                        "a/~b": true
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "superseded": {}
+        },
+        "extension_minimum_sha256": "8aa8b34e7f96e9d6fb0a48933260ac66083b23ef37f46047f1931d55a70278e9",
+        "research_document": {
+          "artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "ARGhXMV6v6rA5cnZwZCrxjcgdonj2NUiar2G25uG4VnW9Jh0ENJhd-ZlT0BirG5qbf9prW2L93ZsFgbMApXhAQ"
+          },
+          "signing_payload": "{\"alg\":\"ed25519\",\"kid\":\"rfc0089-public-test-seed-only\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "d3acd5edfed7b4f4f92ddfe6dcfc909570ded9e7a6216969b6da16c348db8bb5",
+          "cryptographic_validity": true
+        },
+        "research_receipt_signing_control": {
+          "artifact": {
+            "receipt_version": "1.1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2"
+            },
+            "computation": {
+              "pack": "research.byte-binding-only",
+              "pack_version": "unallocated-research",
+              "engine": "research.byte-binding-only",
+              "engine_version": "not-an-implementation-version",
+              "protocol_version": "4.1.0",
+              "results": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ],
+              "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+            },
+            "policy": {
+              "policy_set": "research-not-validation",
+              "policy_set_version": "unallocated",
+              "validation": {
+                "errors": 0,
+                "warnings": 0
+              }
+            },
+            "issued_at": "2026-10-17T00:00:00Z",
+            "issuer": "research-not-a-financial-issuer",
+            "signature": {
+              "algorithm": "ed25519",
+              "key_id": "rfc0089-public-test-seed-only",
+              "value": "5hzzDUuPZETs6lplIZsuVJsBaK_gdEXQ_wNY9Q_gdFxeHD1W95_nofUVP5xS_WvgTpjHidjNIMVY4pGd3lDgCw"
+            }
+          },
+          "signing_payload": "{\"computation\":{\"engine\":\"research.byte-binding-only\",\"engine_version\":\"not-an-implementation-version\",\"pack\":\"research.byte-binding-only\",\"pack_version\":\"unallocated-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-not-a-financial-issuer\",\"policy\":{\"policy_set\":\"research-not-validation\",\"policy_set_version\":\"unallocated\",\"validation\":{\"errors\":0,\"warnings\":0}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "3b6e3fb66471bee3eee9bcdc4fea9fb47f233b2a157cfd73f9214ec4c775f4ce",
+          "cryptographic_validity": true,
+          "scope": "scratch-built receipt-shaped byte-binding input, never issued as a candidate financial receipt"
+        },
+        "mutations": [
+          {
+            "kind": "payload",
+            "subject_digest": "sha256:aeaafc34a69762f5b37c67a59a3c9d44e3fd638dbac9dea8ac13467f90df033c",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "prose",
+            "subject_digest": "sha256:807c78bb1deeca5839a694b496fa8803faebaa2fced696bc1c5348fe090634c7",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "notes",
+            "subject_digest": "sha256:0d702a6a2d3bc1a208ab737ba69d125fe9d42fea53b4728df93578e073c58dbf",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "metadata",
+            "subject_digest": "sha256:b85986393cdd247c74a2a5f6b1ff4e5f0c5191f5ad3dc08b3b6019e7272a75c4",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "volatile",
+            "subject_digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          },
+          {
+            "kind": "key-order",
+            "subject_digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          }
+        ],
+        "label_mutations": [
+          {
+            "change": {
+              "representation_version": "1.0",
+              "canonicalization_version": "1.0"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "change": {
+              "representation_version": "E_UNSUPPORTED",
+              "canonicalization_version": "C_UNSUPPORTED"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          }
+        ],
+        "source": {
+          "supplied": true,
+          "raw_sha256": "95a5b6ce2bb81478f39197f01be78f258e6f1b1e4281eadbcd70542feec8c217",
+          "gated_candidate_signing_calls": 1,
+          "candidate_receipt_issuance": "not-implemented-or-approved",
+          "admission": {
+            "allowed": true,
+            "current_subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "1.0",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "1.0",
+              "digest": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+            },
+            "exact_candidate_projection_equal": true
+          },
+          "research_document_issuance": "signed-test-artifact-only-current-guard-and-complete-model-agree",
+          "gated_candidate_artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "ARGhXMV6v6rA5cnZwZCrxjcgdonj2NUiar2G25uG4VnW9Jh0ENJhd-ZlT0BirG5qbf9prW2L93ZsFgbMApXhAQ"
+          },
+          "current_document_control": {
+            "artifact": {
+              "kind": "uwmd-document-signature",
+              "signature_version": "1",
+              "subject": {
+                "representation": "uwx-markdown",
+                "representation_version": "1.0",
+                "canonicalization": "uw-envelope-semantic",
+                "canonicalization_version": "1.0",
+                "digest": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+              },
+              "alg": "ed25519",
+              "kid": "rfc0089-public-test-seed-only",
+              "signed_at": "2026-10-17T00:00:00Z",
+              "sig": "lbmergxZe4hGcAIEPLysePoYhnkskRhSlN45qf9VAHpWy4jMUcSU6O-jtzGYW5LEuPVrefqAoeUSaZFjoVihDg"
+            },
+            "result": {
+              "state": "verified",
+              "kid": "rfc0089-public-test-seed-only",
+              "digest": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0",
+              "issues": []
+            },
+            "backend_calls": 1
+          },
+          "current_receipt_control": {
+            "receipt": {
+              "receipt_version": "1.1",
+              "subject": {
+                "representation": "uwx-markdown",
+                "representation_version": "1.0",
+                "canonicalization": "uw-envelope-semantic",
+                "canonicalization_version": "1.0",
+                "digest": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+              },
+              "computation": {
+                "pack": "research.current-receipt-control",
+                "pack_version": "research-only",
+                "engine": "@uwmd/verify",
+                "engine_version": "0.2.1",
+                "protocol_version": "4.1.0",
+                "results": [
+                  {
+                    "calc_id": "synthetic_control",
+                    "value": 1,
+                    "computed": true
+                  }
+                ],
+                "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+              },
+              "policy": {
+                "policy_set": "builtin",
+                "policy_set_version": "1.0",
+                "validation": {
+                  "errors": 0,
+                  "warnings": 1
+                }
+              },
+              "issued_at": "2026-10-17T00:00:00Z",
+              "issuer": "@uwmd/verify@0.2.1",
+              "signature": {
+                "algorithm": "ed25519",
+                "key_id": "rfc0089-public-test-seed-only",
+                "value": "aCz0Ne0hNSl1vxZwhEnSkjcVXKZ01uUHhgSaRuCyP5BGGWeRGE3B1-2WMXqyCwIaie_BlfCE9qmBUYJPKvTjAA"
+              }
+            },
+            "result": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            },
+            "backend_calls": 1
+          },
+          "changed_source_control": {
+            "source": "---\nuw_version: \"3.0\"\ndeal_id: \"rfc0089-single\"\ndeal_name: \"Extension representation evidence\"\nx_absent_vs_null: null\n---\n\n## Synthetic single / block 0\n\nExact prose <&> with \"quotes\".\n\n```json uw:section=x_review variant=default\n{\n  \"_meta\": {\n    \"section\": \"x_review\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"actor\": \"reviewer\",\n      \"timestamp\": \"2026-10-16T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    },\n    \"x_unknown_metadata\": {\n      \"retained\": [\n        null,\n        \"\",\n        {\n          \"a/~b\": true\n        }\n      ]\n    }\n  },\n  \"note\": \"synthetic\",\n  \"content\": {\n    \"unknown\": {\n      \"a/~b\": [\n        null,\n        {},\n        [],\n        \"\",\n        1.5\n      ],\n      \"member\": \"<&> \\\"quoted\\\"\",\n      \"item\": \"CR\\rLF\\nTAB\\t\",\n      \"emoji\": \"😀\",\n      \"bmp\": \"\"\n    }\n  },\n  \"_notes\": \"research source mutation\",\n  \"_overrides\": [\n    {\n      \"path\": \"not_a_target\",\n      \"note\": \"retained only; no inference\"\n    }\n  ]\n}\n```\n",
+            "source_sha256": "e02f076a0fbd6710c63ae5fbfe22b0ea52224c247703b82d9c048f33f6a43c3c",
+            "document": {
+              "state": "failed",
+              "reason": "subject_mismatch",
+              "issues": [
+                {
+                  "code": "INT-11",
+                  "message": "Document signature describes a different semantic snapshot."
+                }
+              ]
+            },
+            "receipt": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The record's canonical financial content has changed since the receipt was issued.",
+                  "expected": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0",
+                  "actual": "sha256:ca0a66dbd52b14c977646d70a6c85cb89cb58fb8726abf2d7a4566df3e07b6bc"
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "duplicate_selection_control": {
+            "source": "---\nuw_version: \"3.0\"\ndeal_id: \"rfc0089-single\"\ndeal_name: \"Extension representation evidence\"\nx_absent_vs_null: null\n---\n\n## Synthetic single / block 0\n\nExact prose <&> with \"quotes\".\n\n```json uw:section=x_review variant=default\n{\n  \"_meta\": {\n    \"section\": \"x_review\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"actor\": \"reviewer\",\n      \"timestamp\": \"2026-10-16T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    },\n    \"x_unknown_metadata\": {\n      \"retained\": [\n        null,\n        \"\",\n        {\n          \"a/~b\": true\n        }\n      ]\n    }\n  },\n  \"note\": \"synthetic\",\n  \"content\": {\n    \"unknown\": {\n      \"a/~b\": [\n        null,\n        {},\n        [],\n        \"\",\n        1.5\n      ],\n      \"member\": \"<&> \\\"quoted\\\"\",\n      \"item\": \"CR\\rLF\\nTAB\\t\",\n      \"emoji\": \"😀\",\n      \"bmp\": \"\"\n    }\n  },\n  \"_notes\": null,\n  \"_overrides\": [\n    {\n      \"path\": \"not_a_target\",\n      \"note\": \"retained only; no inference\"\n    }\n  ]\n}\n```\n\n```json uw:section=x_review variant=default\n{\n  \"_meta\": {\n    \"section\": \"x_review\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"actor\": \"reviewer\",\n      \"timestamp\": \"2026-10-16T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    },\n    \"x_unknown_metadata\": {\n      \"retained\": [\n        null,\n        \"\",\n        {\n          \"a/~b\": true\n        }\n      ]\n    }\n  },\n  \"note\": \"synthetic\",\n  \"content\": {\n    \"unknown\": {\n      \"a/~b\": [\n        null,\n        {},\n        [],\n        \"\",\n        1.5\n      ],\n      \"member\": \"<&> \\\"quoted\\\"\",\n      \"item\": \"CR\\rLF\\nTAB\\t\",\n      \"emoji\": \"😀\",\n      \"bmp\": \"\"\n    }\n  },\n  \"_notes\": null,\n  \"_overrides\": [\n    {\n      \"path\": \"not_a_target\",\n      \"note\": \"retained only; no inference\"\n    }\n  ]\n}\n```\n",
+            "source_sha256": "29e5749466c23d2c5fac90701cd53e64605226e840fefbcafb4366ab1480e5b6",
+            "refusal": {
+              "name": "DocumentSigningError",
+              "code": "INT-15",
+              "message": "Repeated extension 'x_review'."
+            },
+            "candidate_signing_calls": 0
+          },
+          "current_verifier_candidate_document": {
+            "result": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "current_verifier_candidate_receipt": {
+            "result": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-10",
+                  "severity": "indeterminate",
+                  "message": "The receipt was canonicalized under 'uw-envelope-semantic' version C_NEXT; this verifier applies version 1.0. The digests are not comparable, so this is not evidence the record changed.",
+                  "expected": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2",
+                  "actual": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "current_verifier_relabel_control": {
+            "document": {
+              "state": "failed",
+              "reason": "subject_mismatch",
+              "issues": [
+                {
+                  "code": "INT-11",
+                  "message": "Document signature describes a different semantic snapshot."
+                }
+              ]
+            },
+            "receipt": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The record's canonical financial content has changed since the receipt was issued.",
+                  "expected": "sha256:5e2ea549efc213c24bdb2e418ca5a6831aecd0931bc0466e56d63c82fbbbdef2",
+                  "actual": "sha256:177c9ecd27bc2a2555f627e6916d903b14d5f5a71f464890d88cc04677738ba0"
+                }
+              ]
+            },
+            "backend_calls": 0
+          }
+        }
+      },
+      {
+        "case": "one-peer",
+        "complete_model_sha256": "528eaa9c024c4c47ba7611daf53d5e1a9637149eba967dbfeceac03599ec739d",
+        "semantic_digest": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15",
+        "extension_minimum": {
+          "extensions": {
+            "x_review": {
+              "mode": "variants",
+              "blocks": [
+                {
+                  "variant": "default",
+                  "block": {
+                    "content": {
+                      "note": "synthetic",
+                      "_role": "primary",
+                      "content": {
+                        "unknown": {
+                          "a/~b": [
+                            null,
+                            {},
+                            [],
+                            "",
+                            1.5
+                          ],
+                          "member": "<&> \"quoted\"",
+                          "item": "CR\rLF\nTAB\t",
+                          "emoji": "😀",
+                          "bmp": ""
+                        }
+                      },
+                      "_overrides": [
+                        {
+                          "path": "not_a_target",
+                          "note": "retained only; no inference"
+                        }
+                      ]
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "reviewer",
+                        "timestamp": "2026-10-16T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      },
+                      "x_unknown_metadata": {
+                        "retained": [
+                          null,
+                          "",
+                          {
+                            "a/~b": true
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "superseded": {}
+        },
+        "extension_minimum_sha256": "0c1d2d11213d9778f2ce1a63bc912e86ff436908017691f226dc16e46e20e945",
+        "research_document": {
+          "artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "QXqgRCSDQR5-ccNA4ZxUeaRhs2-WVIZWAnR-suPgLTqCPhsRZnePS57LCMrwtHyARdT4SbPqRfY5PBNyXCOeCQ"
+          },
+          "signing_payload": "{\"alg\":\"ed25519\",\"kid\":\"rfc0089-public-test-seed-only\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "5badf4da8ab5a455305aec2b727f28c5e28f3d5d014c48f60bac9728067599ce",
+          "cryptographic_validity": true
+        },
+        "research_receipt_signing_control": {
+          "artifact": {
+            "receipt_version": "1.1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15"
+            },
+            "computation": {
+              "pack": "research.byte-binding-only",
+              "pack_version": "unallocated-research",
+              "engine": "research.byte-binding-only",
+              "engine_version": "not-an-implementation-version",
+              "protocol_version": "4.1.0",
+              "results": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ],
+              "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+            },
+            "policy": {
+              "policy_set": "research-not-validation",
+              "policy_set_version": "unallocated",
+              "validation": {
+                "errors": 0,
+                "warnings": 0
+              }
+            },
+            "issued_at": "2026-10-17T00:00:00Z",
+            "issuer": "research-not-a-financial-issuer",
+            "signature": {
+              "algorithm": "ed25519",
+              "key_id": "rfc0089-public-test-seed-only",
+              "value": "zQ8m9lgq_yJcMd81np5d-tfli77R3zLbr4yiHMeduNhWEatXY4IdGs5bnz3zKbbrH3JDpV4MOK6EfFTqympGBg"
+            }
+          },
+          "signing_payload": "{\"computation\":{\"engine\":\"research.byte-binding-only\",\"engine_version\":\"not-an-implementation-version\",\"pack\":\"research.byte-binding-only\",\"pack_version\":\"unallocated-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-not-a-financial-issuer\",\"policy\":{\"policy_set\":\"research-not-validation\",\"policy_set_version\":\"unallocated\",\"validation\":{\"errors\":0,\"warnings\":0}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "c56e6f5b545e162baf304dbf1b755b5f8d72d5a39d928bf9d29612695811462b",
+          "cryptographic_validity": true,
+          "scope": "scratch-built receipt-shaped byte-binding input, never issued as a candidate financial receipt"
+        },
+        "mutations": [
+          {
+            "kind": "payload",
+            "subject_digest": "sha256:9dee4eb83225500e821fb904d10b60252a71028f0304ce289fe2121eef619340",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "prose",
+            "subject_digest": "sha256:c0a528fe944b359f4974330b15716353f01ab013066e8daaea915aecc90b19bc",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "notes",
+            "subject_digest": "sha256:2ce05d1785e2e6ca0c9e41a1d401028b2b3793636fbc503395b478231b52aaf8",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "metadata",
+            "subject_digest": "sha256:3cc71841e1e11fc1c3f92513cffa854f229cc5204067f494528a5988f8373df8",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "volatile",
+            "subject_digest": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          },
+          {
+            "kind": "key-order",
+            "subject_digest": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          }
+        ],
+        "label_mutations": [
+          {
+            "change": {
+              "representation_version": "1.0",
+              "canonicalization_version": "1.0"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "change": {
+              "representation_version": "E_UNSUPPORTED",
+              "canonicalization_version": "C_UNSUPPORTED"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          }
+        ],
+        "source": {
+          "supplied": true,
+          "raw_sha256": "69d47c257f090d7bd9f6b37b360acf39668db156269174adc56dc21db4f6d06a",
+          "gated_candidate_signing_calls": 1,
+          "candidate_receipt_issuance": "not-implemented-or-approved",
+          "admission": {
+            "allowed": true,
+            "current_subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "1.0",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "1.0",
+              "digest": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+            },
+            "exact_candidate_projection_equal": true
+          },
+          "research_document_issuance": "signed-test-artifact-only-current-guard-and-complete-model-agree",
+          "gated_candidate_artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "QXqgRCSDQR5-ccNA4ZxUeaRhs2-WVIZWAnR-suPgLTqCPhsRZnePS57LCMrwtHyARdT4SbPqRfY5PBNyXCOeCQ"
+          },
+          "current_document_control": {
+            "artifact": {
+              "kind": "uwmd-document-signature",
+              "signature_version": "1",
+              "subject": {
+                "representation": "uwx-markdown",
+                "representation_version": "1.0",
+                "canonicalization": "uw-envelope-semantic",
+                "canonicalization_version": "1.0",
+                "digest": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+              },
+              "alg": "ed25519",
+              "kid": "rfc0089-public-test-seed-only",
+              "signed_at": "2026-10-17T00:00:00Z",
+              "sig": "cmrRh-PqHnUrF4voTow-gAhmNujkJ_G2w1KnLX0m9LFvAIALpy8wPzNT0axMPAtL9VNjufB20P8twDaficyOCg"
+            },
+            "result": {
+              "state": "verified",
+              "kid": "rfc0089-public-test-seed-only",
+              "digest": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e",
+              "issues": []
+            },
+            "backend_calls": 1
+          },
+          "current_receipt_control": {
+            "receipt": {
+              "receipt_version": "1.1",
+              "subject": {
+                "representation": "uwx-markdown",
+                "representation_version": "1.0",
+                "canonicalization": "uw-envelope-semantic",
+                "canonicalization_version": "1.0",
+                "digest": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+              },
+              "computation": {
+                "pack": "research.current-receipt-control",
+                "pack_version": "research-only",
+                "engine": "@uwmd/verify",
+                "engine_version": "0.2.1",
+                "protocol_version": "4.1.0",
+                "results": [
+                  {
+                    "calc_id": "synthetic_control",
+                    "value": 1,
+                    "computed": true
+                  }
+                ],
+                "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+              },
+              "policy": {
+                "policy_set": "builtin",
+                "policy_set_version": "1.0",
+                "validation": {
+                  "errors": 0,
+                  "warnings": 1
+                }
+              },
+              "issued_at": "2026-10-17T00:00:00Z",
+              "issuer": "@uwmd/verify@0.2.1",
+              "signature": {
+                "algorithm": "ed25519",
+                "key_id": "rfc0089-public-test-seed-only",
+                "value": "qfggW5toPqm5zMQP7PqMfw3PfVe475tjbwegW0clNf1xzPriNvROAIp8HxtBc1M6An_UfSOVFoaJF7kulKAOCg"
+              }
+            },
+            "result": {
+              "verdict": "verified",
+              "issues": [],
+              "recomputed": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ]
+            },
+            "backend_calls": 1
+          },
+          "changed_source_control": {
+            "source": "---\nuw_version: \"3.0\"\ndeal_id: \"rfc0089-one-peer\"\ndeal_name: \"Extension representation evidence\"\nx_absent_vs_null: null\n---\n\n## Synthetic one-peer / block 0\n\nExact prose <&> with \"quotes\".\n\n```json uw:section=x_review variant=default\n{\n  \"_meta\": {\n    \"section\": \"x_review\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"actor\": \"reviewer\",\n      \"timestamp\": \"2026-10-16T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    },\n    \"x_unknown_metadata\": {\n      \"retained\": [\n        null,\n        \"\",\n        {\n          \"a/~b\": true\n        }\n      ]\n    }\n  },\n  \"note\": \"synthetic\",\n  \"_role\": \"primary\",\n  \"content\": {\n    \"unknown\": {\n      \"a/~b\": [\n        null,\n        {},\n        [],\n        \"\",\n        1.5\n      ],\n      \"member\": \"<&> \\\"quoted\\\"\",\n      \"item\": \"CR\\rLF\\nTAB\\t\",\n      \"emoji\": \"😀\",\n      \"bmp\": \"\"\n    }\n  },\n  \"_notes\": \"research source mutation\",\n  \"_overrides\": [\n    {\n      \"path\": \"not_a_target\",\n      \"note\": \"retained only; no inference\"\n    }\n  ]\n}\n```\n",
+            "source_sha256": "f50c32eb5c4da942ba6c28e66ab4f942544d0227621735b07949aac472ae8284",
+            "document": {
+              "state": "failed",
+              "reason": "subject_mismatch",
+              "issues": [
+                {
+                  "code": "INT-11",
+                  "message": "Document signature describes a different semantic snapshot."
+                }
+              ]
+            },
+            "receipt": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The record's canonical financial content has changed since the receipt was issued.",
+                  "expected": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e",
+                  "actual": "sha256:2165e13d8866c26f3b6b3ae98b0f4cce69f8ca4c84fb5793d8df85b01253cf9e"
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "duplicate_selection_control": {
+            "source": "---\nuw_version: \"3.0\"\ndeal_id: \"rfc0089-one-peer\"\ndeal_name: \"Extension representation evidence\"\nx_absent_vs_null: null\n---\n\n## Synthetic one-peer / block 0\n\nExact prose <&> with \"quotes\".\n\n```json uw:section=x_review variant=default\n{\n  \"_meta\": {\n    \"section\": \"x_review\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"actor\": \"reviewer\",\n      \"timestamp\": \"2026-10-16T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    },\n    \"x_unknown_metadata\": {\n      \"retained\": [\n        null,\n        \"\",\n        {\n          \"a/~b\": true\n        }\n      ]\n    }\n  },\n  \"note\": \"synthetic\",\n  \"_role\": \"primary\",\n  \"content\": {\n    \"unknown\": {\n      \"a/~b\": [\n        null,\n        {},\n        [],\n        \"\",\n        1.5\n      ],\n      \"member\": \"<&> \\\"quoted\\\"\",\n      \"item\": \"CR\\rLF\\nTAB\\t\",\n      \"emoji\": \"😀\",\n      \"bmp\": \"\"\n    }\n  },\n  \"_notes\": null,\n  \"_overrides\": [\n    {\n      \"path\": \"not_a_target\",\n      \"note\": \"retained only; no inference\"\n    }\n  ]\n}\n```\n\n```json uw:section=x_review variant=default\n{\n  \"_meta\": {\n    \"section\": \"x_review\",\n    \"provenance\": {\n      \"source\": \"manual\",\n      \"actor\": \"reviewer\",\n      \"timestamp\": \"2026-10-16T00:00:00Z\"\n    },\n    \"quality\": {\n      \"confidence\": \"high\",\n      \"human_review_required\": false\n    },\n    \"lifecycle\": {\n      \"revision\": 1,\n      \"superseded\": false\n    },\n    \"x_unknown_metadata\": {\n      \"retained\": [\n        null,\n        \"\",\n        {\n          \"a/~b\": true\n        }\n      ]\n    }\n  },\n  \"note\": \"synthetic\",\n  \"_role\": \"primary\",\n  \"content\": {\n    \"unknown\": {\n      \"a/~b\": [\n        null,\n        {},\n        [],\n        \"\",\n        1.5\n      ],\n      \"member\": \"<&> \\\"quoted\\\"\",\n      \"item\": \"CR\\rLF\\nTAB\\t\",\n      \"emoji\": \"😀\",\n      \"bmp\": \"\"\n    }\n  },\n  \"_notes\": null,\n  \"_overrides\": [\n    {\n      \"path\": \"not_a_target\",\n      \"note\": \"retained only; no inference\"\n    }\n  ]\n}\n```\n",
+            "source_sha256": "3bec3b6db6a930cc1681448cbdf34f13f0234d985d63757b8339311abb9f61c1",
+            "refusal": {
+              "name": "DocumentSigningError",
+              "code": "INT-15",
+              "message": "Repeated extension 'x_review'."
+            },
+            "candidate_signing_calls": 0
+          },
+          "current_verifier_candidate_document": {
+            "result": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "current_verifier_candidate_receipt": {
+            "result": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-10",
+                  "severity": "indeterminate",
+                  "message": "The receipt was canonicalized under 'uw-envelope-semantic' version C_NEXT; this verifier applies version 1.0. The digests are not comparable, so this is not evidence the record changed.",
+                  "expected": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15",
+                  "actual": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "current_verifier_relabel_control": {
+            "document": {
+              "state": "failed",
+              "reason": "subject_mismatch",
+              "issues": [
+                {
+                  "code": "INT-11",
+                  "message": "Document signature describes a different semantic snapshot."
+                }
+              ]
+            },
+            "receipt": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The record's canonical financial content has changed since the receipt was issued.",
+                  "expected": "sha256:3c47f29bd1de6f6cd43d1644c3696678f0e878ca57111d04c4923d2f6772ac15",
+                  "actual": "sha256:79a26e5ff7c1370e06abea2125c57206b5c778dc8a532d29fee274f0564e6c8e"
+                }
+              ]
+            },
+            "backend_calls": 0
+          }
+        }
+      },
+      {
+        "case": "mixed-null-default",
+        "complete_model_sha256": "8dcb834e839d40c6929f064c63410e6959c4372b1fcd68988b62e9209ff72fa4",
+        "semantic_digest": "sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd",
+        "extension_minimum": {
+          "extensions": {
+            "x_review": {
+              "mode": "variants",
+              "blocks": [
+                {
+                  "variant": null,
+                  "block": {
+                    "content": {
+                      "note": "synthetic",
+                      "_role": "primary",
+                      "content": {
+                        "unknown": {
+                          "a/~b": [
+                            null,
+                            {},
+                            [],
+                            "",
+                            1.5
+                          ],
+                          "member": "<&> \"quoted\"",
+                          "item": "CR\rLF\nTAB\t",
+                          "emoji": "😀",
+                          "bmp": ""
+                        }
+                      },
+                      "_overrides": [
+                        {
+                          "path": "not_a_target",
+                          "note": "retained only; no inference"
+                        }
+                      ]
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "reviewer",
+                        "timestamp": "2026-10-16T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      },
+                      "x_unknown_metadata": {
+                        "retained": [
+                          null,
+                          "",
+                          {
+                            "a/~b": true
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "variant": "default",
+                  "block": {
+                    "content": {
+                      "note": "synthetic",
+                      "content": {
+                        "unknown": {
+                          "a/~b": [
+                            null,
+                            {},
+                            [],
+                            "",
+                            1.5
+                          ],
+                          "member": "<&> \"quoted\"",
+                          "item": "CR\rLF\nTAB\t",
+                          "emoji": "😀",
+                          "bmp": ""
+                        }
+                      },
+                      "_overrides": [
+                        {
+                          "path": "not_a_target",
+                          "note": "retained only; no inference"
+                        }
+                      ]
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "reviewer",
+                        "timestamp": "2026-10-16T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      },
+                      "x_unknown_metadata": {
+                        "retained": [
+                          null,
+                          "",
+                          {
+                            "a/~b": true
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "superseded": {}
+        },
+        "extension_minimum_sha256": "b55b334a57ad0aae1055a951cf149706b67e984a0e83af7d89ce03178dc3e3eb",
+        "research_document": {
+          "artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "fXtymp9kM8EDwMPCiuFJECuKCD0KKe9zjWa9BG6R6gXIg1qk31T5loSu8-Dn5TYGle2smPLQV7t_-y1m3aXNAA"
+          },
+          "signing_payload": "{\"alg\":\"ed25519\",\"kid\":\"rfc0089-public-test-seed-only\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "b1a24b5aaaf698a32807ca170760fda3c987f92d5333cd30a64d6a913bb57cc5",
+          "cryptographic_validity": true
+        },
+        "research_receipt_signing_control": {
+          "artifact": {
+            "receipt_version": "1.1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd"
+            },
+            "computation": {
+              "pack": "research.byte-binding-only",
+              "pack_version": "unallocated-research",
+              "engine": "research.byte-binding-only",
+              "engine_version": "not-an-implementation-version",
+              "protocol_version": "4.1.0",
+              "results": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ],
+              "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+            },
+            "policy": {
+              "policy_set": "research-not-validation",
+              "policy_set_version": "unallocated",
+              "validation": {
+                "errors": 0,
+                "warnings": 0
+              }
+            },
+            "issued_at": "2026-10-17T00:00:00Z",
+            "issuer": "research-not-a-financial-issuer",
+            "signature": {
+              "algorithm": "ed25519",
+              "key_id": "rfc0089-public-test-seed-only",
+              "value": "ii6TIBGfhzg-Lw1CAYI5bAKG9xrH6G83XeJCK-mCw25MQ0tT1ywHdVCOIU_XVhhbLiW6ExKhzzG-9Xhqv4mmCg"
+            }
+          },
+          "signing_payload": "{\"computation\":{\"engine\":\"research.byte-binding-only\",\"engine_version\":\"not-an-implementation-version\",\"pack\":\"research.byte-binding-only\",\"pack_version\":\"unallocated-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-not-a-financial-issuer\",\"policy\":{\"policy_set\":\"research-not-validation\",\"policy_set_version\":\"unallocated\",\"validation\":{\"errors\":0,\"warnings\":0}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "af6cc94ae905196b6cafe1c9154e970826a5a80503b67831ea59287f38755486",
+          "cryptographic_validity": true,
+          "scope": "scratch-built receipt-shaped byte-binding input, never issued as a candidate financial receipt"
+        },
+        "mutations": [
+          {
+            "kind": "payload",
+            "subject_digest": "sha256:34843044ac515dc93b694f482281fff555649693a4e9e1b9eb02b4904c880eec",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "prose",
+            "subject_digest": "sha256:0df5bac56d2322355f87da276db5463bbaa55262c9be716f9325f1252364ed15",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "notes",
+            "subject_digest": "sha256:0d1cb15b3efe0280876e1d5bb974a667e9ce1a4ccaa7bd6d236e4eacab96323e",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "metadata",
+            "subject_digest": "sha256:cd2ebb907ad96c1dc5e7544c8424e2cf1ef985990327dbd6420673dd70b4cb95",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "volatile",
+            "subject_digest": "sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          },
+          {
+            "kind": "key-order",
+            "subject_digest": "sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          }
+        ],
+        "label_mutations": [
+          {
+            "change": {
+              "representation_version": "1.0",
+              "canonicalization_version": "1.0"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "change": {
+              "representation_version": "E_UNSUPPORTED",
+              "canonicalization_version": "C_UNSUPPORTED"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          }
+        ],
+        "source": {
+          "supplied": true,
+          "raw_sha256": "4fe5cb2134982df21269bc58b83f29d6542036ddfda2b631d1b668410baa904c",
+          "gated_candidate_signing_calls": 0,
+          "candidate_receipt_issuance": "not-implemented-or-approved",
+          "admission": {
+            "allowed": false,
+            "code": "INT-15",
+            "error": "Repeated extension 'x_review'."
+          },
+          "research_document_issuance": "refused-existing-V13-source-guard-before-signing",
+          "current_verifier_candidate_document": {
+            "result": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "current_verifier_candidate_receipt": {
+            "result": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-10",
+                  "severity": "indeterminate",
+                  "message": "The receipt was canonicalized under 'uw-envelope-semantic' version C_NEXT; this verifier applies version 1.0. The digests are not comparable, so this is not evidence the record changed.",
+                  "expected": "sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd",
+                  "actual": "sha256:bf543099df39eb9dd12b597a1d15889e119878540da5d96419b27500c94c9419"
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "current_verifier_relabel_control": {
+            "document": {
+              "state": "failed",
+              "reason": "malformed_source",
+              "issues": [
+                {
+                  "code": "INT-15",
+                  "message": "Repeated extension 'x_review'."
+                }
+              ]
+            },
+            "receipt": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The record's canonical financial content has changed since the receipt was issued.",
+                  "expected": "sha256:5252ae6d5486ef9f3e0f524777722eda456599efe93c561ca380b73cb52761bd",
+                  "actual": "sha256:bf543099df39eb9dd12b597a1d15889e119878540da5d96419b27500c94c9419"
+                }
+              ]
+            },
+            "backend_calls": 0
+          }
+        }
+      },
+      {
+        "case": "ordered-history",
+        "complete_model_sha256": "f89bf04c09a62b999e351d00c5ef5b806617fa821468f0c12822d76625408cd4",
+        "semantic_digest": "sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2",
+        "extension_minimum": {
+          "extensions": {
+            "x_review": {
+              "mode": "variants",
+              "blocks": [
+                {
+                  "variant": "base",
+                  "block": {
+                    "content": {
+                      "note": "synthetic",
+                      "_role": "primary",
+                      "content": {
+                        "unknown": {
+                          "a/~b": [
+                            null,
+                            {},
+                            [],
+                            "",
+                            1.5
+                          ],
+                          "member": "<&> \"quoted\"",
+                          "item": "CR\rLF\nTAB\t",
+                          "emoji": "😀",
+                          "bmp": ""
+                        }
+                      },
+                      "_overrides": [
+                        {
+                          "path": "not_a_target",
+                          "note": "retained only; no inference"
+                        }
+                      ]
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "reviewer",
+                        "timestamp": "2026-10-16T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 3,
+                        "superseded": false
+                      },
+                      "x_unknown_metadata": {
+                        "retained": [
+                          null,
+                          "",
+                          {
+                            "a/~b": true
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "variant": "detail/~",
+                  "block": {
+                    "content": {
+                      "note": "synthetic",
+                      "content": {
+                        "unknown": {
+                          "a/~b": [
+                            null,
+                            {},
+                            [],
+                            "",
+                            1.5
+                          ],
+                          "member": "<&> \"quoted\"",
+                          "item": "CR\rLF\nTAB\t",
+                          "emoji": "😀",
+                          "bmp": ""
+                        }
+                      },
+                      "_overrides": [
+                        {
+                          "path": "not_a_target",
+                          "note": "retained only; no inference"
+                        }
+                      ]
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "provenance": {
+                        "source": "manual",
+                        "actor": "reviewer",
+                        "timestamp": "2026-10-16T00:00:00Z"
+                      },
+                      "quality": {
+                        "confidence": "high",
+                        "human_review_required": false
+                      },
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      },
+                      "x_unknown_metadata": {
+                        "retained": [
+                          null,
+                          "",
+                          {
+                            "a/~b": true
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "superseded": {
+            "x_review": [
+              {
+                "content": {
+                  "note": "retained historical revision 1",
+                  "_role": "primary",
+                  "content": {
+                    "unknown": {
+                      "a/~b": [
+                        null,
+                        {},
+                        [],
+                        "",
+                        1.5
+                      ],
+                      "member": "<&> \"quoted\"",
+                      "item": "CR\rLF\nTAB\t",
+                      "emoji": "😀",
+                      "bmp": ""
+                    }
+                  },
+                  "_overrides": [
+                    {
+                      "path": "not_a_target",
+                      "note": "retained only; no inference"
+                    }
+                  ]
+                },
+                "meta": {
+                  "section": "x_review",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "reviewer",
+                    "timestamp": "2026-10-16T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  },
+                  "x_unknown_metadata": {
+                    "retained": [
+                      null,
+                      "",
+                      {
+                        "a/~b": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "content": {
+                  "note": "retained historical revision 2",
+                  "_role": "primary",
+                  "content": {
+                    "unknown": {
+                      "a/~b": [
+                        null,
+                        {},
+                        [],
+                        "",
+                        1.5
+                      ],
+                      "member": "<&> \"quoted\"",
+                      "item": "CR\rLF\nTAB\t",
+                      "emoji": "😀",
+                      "bmp": ""
+                    }
+                  },
+                  "_overrides": [
+                    {
+                      "path": "not_a_target",
+                      "note": "retained only; no inference"
+                    }
+                  ]
+                },
+                "meta": {
+                  "section": "x_review",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "reviewer",
+                    "timestamp": "2026-10-16T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 2,
+                    "superseded": true
+                  },
+                  "x_unknown_metadata": {
+                    "retained": [
+                      null,
+                      "",
+                      {
+                        "a/~b": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "extension_minimum_sha256": "469a05eb0a97ba083a2c432b16f57da188c893700eb553022ac325be73974410",
+        "research_document": {
+          "artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "VvPoJmozJeDbzGyAr7C1kUt1b1dMBpW3o0A73r9F4-QznRS0crwN0WW1KzNczseeNIzmf8Wd9TAVS5lwlkQgBg"
+          },
+          "signing_payload": "{\"alg\":\"ed25519\",\"kid\":\"rfc0089-public-test-seed-only\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "45f9784b129bec363fa8754319b615b2f8f7c8051f92e7c4cc689f15653b1d05",
+          "cryptographic_validity": true
+        },
+        "research_receipt_signing_control": {
+          "artifact": {
+            "receipt_version": "1.1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2"
+            },
+            "computation": {
+              "pack": "research.byte-binding-only",
+              "pack_version": "unallocated-research",
+              "engine": "research.byte-binding-only",
+              "engine_version": "not-an-implementation-version",
+              "protocol_version": "4.1.0",
+              "results": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ],
+              "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+            },
+            "policy": {
+              "policy_set": "research-not-validation",
+              "policy_set_version": "unallocated",
+              "validation": {
+                "errors": 0,
+                "warnings": 0
+              }
+            },
+            "issued_at": "2026-10-17T00:00:00Z",
+            "issuer": "research-not-a-financial-issuer",
+            "signature": {
+              "algorithm": "ed25519",
+              "key_id": "rfc0089-public-test-seed-only",
+              "value": "NfhWB6FEe6B8SfNeGL4EYcsTi8mBWcMwbQjT7xsE7BkxUKt2XsgD5AaSqXEsneJZAxzFxtnvJVjtXFdo2QsbAg"
+            }
+          },
+          "signing_payload": "{\"computation\":{\"engine\":\"research.byte-binding-only\",\"engine_version\":\"not-an-implementation-version\",\"pack\":\"research.byte-binding-only\",\"pack_version\":\"unallocated-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-not-a-financial-issuer\",\"policy\":{\"policy_set\":\"research-not-validation\",\"policy_set_version\":\"unallocated\",\"validation\":{\"errors\":0,\"warnings\":0}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "f0116727ce50f32f6c79058682d2418ef52c44d3a667b836531ae8f688e346e7",
+          "cryptographic_validity": true,
+          "scope": "scratch-built receipt-shaped byte-binding input, never issued as a candidate financial receipt"
+        },
+        "mutations": [
+          {
+            "kind": "payload",
+            "subject_digest": "sha256:444f220dca9ca45170e08326b7259e20a5114a7ad44ab346c5f8762947e87b05",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "prose",
+            "subject_digest": "sha256:e693edba4d4382313bfae94d493e8fa030798b691b9edd9a9fcfe378c9fe3ba2",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "notes",
+            "subject_digest": "sha256:272411980fed18061cf79ad934c7ae2f2a3c6cea9c6b218449378a84863f1972",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "metadata",
+            "subject_digest": "sha256:3ce9280a66122fa7c49f1df6a3bc63892d1772a9584ebbd9c7d58adde3bbf6e7",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "volatile",
+            "subject_digest": "sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          },
+          {
+            "kind": "key-order",
+            "subject_digest": "sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          }
+        ],
+        "label_mutations": [
+          {
+            "change": {
+              "representation_version": "1.0",
+              "canonicalization_version": "1.0"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "change": {
+              "representation_version": "E_UNSUPPORTED",
+              "canonicalization_version": "C_UNSUPPORTED"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          }
+        ],
+        "source": {
+          "supplied": true,
+          "raw_sha256": "531eeb3d977bd0d73d0ead87635bbc88ba31b272b96cf7c3d417455a217472fb",
+          "gated_candidate_signing_calls": 0,
+          "candidate_receipt_issuance": "not-implemented-or-approved",
+          "admission": {
+            "allowed": false,
+            "code": "INT-15",
+            "error": "Historical extension blocks are not representable in the current envelope."
+          },
+          "research_document_issuance": "refused-existing-V13-source-guard-before-signing",
+          "current_verifier_candidate_document": {
+            "result": {
+              "state": "unverifiable",
+              "reason": "unsupported_version",
+              "issues": [
+                {
+                  "code": "INT-14",
+                  "message": "Unsupported document-signature version or subject."
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "current_verifier_candidate_receipt": {
+            "result": {
+              "verdict": "unverifiable",
+              "issues": [
+                {
+                  "code": "RCP-10",
+                  "severity": "indeterminate",
+                  "message": "The receipt was canonicalized under 'uw-envelope-semantic' version C_NEXT; this verifier applies version 1.0. The digests are not comparable, so this is not evidence the record changed.",
+                  "expected": "sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2",
+                  "actual": "sha256:c61aab6e0e01847675479c2cd20ac203fca6eac63ef4b8bf43891992de13cfec"
+                }
+              ]
+            },
+            "backend_calls": 0
+          },
+          "current_verifier_relabel_control": {
+            "document": {
+              "state": "failed",
+              "reason": "malformed_source",
+              "issues": [
+                {
+                  "code": "INT-15",
+                  "message": "Historical extension blocks are not representable in the current envelope."
+                }
+              ]
+            },
+            "receipt": {
+              "verdict": "failed",
+              "issues": [
+                {
+                  "code": "RCP-01",
+                  "severity": "failure",
+                  "message": "The record's canonical financial content has changed since the receipt was issued.",
+                  "expected": "sha256:05c19cf17638966def4f4b7df0bc11732e7816dbe8b91b5e8b3c555989c075a2",
+                  "actual": "sha256:c61aab6e0e01847675479c2cd20ac203fca6eac63ef4b8bf43891992de13cfec"
+                }
+              ]
+            },
+            "backend_calls": 0
+          }
+        }
+      },
+      {
+        "case": "direct-model-unknown",
+        "complete_model_sha256": "36c4568bdf19161f01fa25a4aa39a416d28fbf7b69697f6ef85cb5ab8273365d",
+        "semantic_digest": "sha256:ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87",
+        "extension_minimum": {
+          "extensions": {
+            "x_review": {
+              "mode": "single",
+              "block": {
+                "content": {
+                  "note": "synthetic",
+                  "content": {
+                    "unknown": {
+                      "a/~b": [
+                        null,
+                        {},
+                        [],
+                        "",
+                        1.5
+                      ],
+                      "member": "<&> \"quoted\"",
+                      "item": "CR\rLF\nTAB\t",
+                      "emoji": "😀",
+                      "bmp": ""
+                    }
+                  },
+                  "_overrides": [
+                    {
+                      "path": "not_a_target",
+                      "note": "retained only; no inference"
+                    }
+                  ]
+                },
+                "meta": {
+                  "section": "x_review",
+                  "provenance": {
+                    "source": "manual",
+                    "actor": "reviewer",
+                    "timestamp": "2026-10-16T00:00:00Z"
+                  },
+                  "quality": {
+                    "confidence": "high",
+                    "human_review_required": false
+                  },
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  },
+                  "x_unknown_metadata": {
+                    "retained": [
+                      null,
+                      "",
+                      {
+                        "a/~b": true
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "superseded": {}
+        },
+        "extension_minimum_sha256": "8aa8b34e7f96e9d6fb0a48933260ac66083b23ef37f46047f1931d55a70278e9",
+        "research_document": {
+          "artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "8R5JzycuhQ3EkMNNaaB5-p3ujFynOQTJgGZgsdDswQXw0IfADoivPegCZJJF2KgqDMb_kKtkwYoA4ivB2qNtCA"
+          },
+          "signing_payload": "{\"alg\":\"ed25519\",\"kid\":\"rfc0089-public-test-seed-only\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "aa4f55b095cc2781ade6aa30d38438da82e22f2853f6f04c8b26a00c1502b17c",
+          "cryptographic_validity": true
+        },
+        "research_receipt_signing_control": {
+          "artifact": {
+            "receipt_version": "1.1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87"
+            },
+            "computation": {
+              "pack": "research.byte-binding-only",
+              "pack_version": "unallocated-research",
+              "engine": "research.byte-binding-only",
+              "engine_version": "not-an-implementation-version",
+              "protocol_version": "4.1.0",
+              "results": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ],
+              "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+            },
+            "policy": {
+              "policy_set": "research-not-validation",
+              "policy_set_version": "unallocated",
+              "validation": {
+                "errors": 0,
+                "warnings": 0
+              }
+            },
+            "issued_at": "2026-10-17T00:00:00Z",
+            "issuer": "research-not-a-financial-issuer",
+            "signature": {
+              "algorithm": "ed25519",
+              "key_id": "rfc0089-public-test-seed-only",
+              "value": "CM5WvLu5kSVsjuawTNFtZUyeMtntLrY1ieO-QvIHpoO3xEtj1YVepxkb4J8WJJWmmAg8FqZyscOB8MZoK1GAAQ"
+            }
+          },
+          "signing_payload": "{\"computation\":{\"engine\":\"research.byte-binding-only\",\"engine_version\":\"not-an-implementation-version\",\"pack\":\"research.byte-binding-only\",\"pack_version\":\"unallocated-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-not-a-financial-issuer\",\"policy\":{\"policy_set\":\"research-not-validation\",\"policy_set_version\":\"unallocated\",\"validation\":{\"errors\":0,\"warnings\":0}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "5069702cea6007334d443248e1b5d04f41480fc53c62850e7810a06c9a328a92",
+          "cryptographic_validity": true,
+          "scope": "scratch-built receipt-shaped byte-binding input, never issued as a candidate financial receipt"
+        },
+        "mutations": [
+          {
+            "kind": "payload",
+            "subject_digest": "sha256:69fc8c1af98e2b006a8024e90f5630e8bb6319cbd3ad03a798e4b8e831779976",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "prose",
+            "subject_digest": "sha256:e8011a73ab122d53e19a8083e14881e1059be17408df7b46b70414115a6e9603",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "notes",
+            "subject_digest": "sha256:b4e45e5b1ffeef08d7af5fcd805b3f94091e3118b4c6f78942a28f4fbc920a9a",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "metadata",
+            "subject_digest": "sha256:b594e9ca7af37f62aac3fb67c58d83d14a85f8da7c9eb554d0e4188c03c11752",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "volatile",
+            "subject_digest": "sha256:ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          },
+          {
+            "kind": "key-order",
+            "subject_digest": "sha256:ef696af8d2c6b46e6b7340ae7c786dab79d0a75f0ba1a23ef665579e0e055f87",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          }
+        ],
+        "label_mutations": [
+          {
+            "change": {
+              "representation_version": "1.0",
+              "canonicalization_version": "1.0"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "change": {
+              "representation_version": "E_UNSUPPORTED",
+              "canonicalization_version": "C_UNSUPPORTED"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          }
+        ],
+        "source": {
+          "supplied": false,
+          "gated_candidate_signing_calls": 0,
+          "research_document_issuance": "refused-no-attributable-source",
+          "candidate_receipt_issuance": "not-implemented-or-approved"
+        }
+      },
+      {
+        "case": "all-block-extras",
+        "complete_model_sha256": "2f6679693a708ef207c4f1cd1c59ce42457b7817a2090cefbc044cc2dea5c23d",
+        "semantic_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+        "extension_minimum": {
+          "extensions": {
+            "x_review": {
+              "mode": "variants",
+              "blocks": [
+                {
+                  "variant": null,
+                  "block": {
+                    "content": {
+                      "content": {
+                        "literal": true
+                      },
+                      "empty": {},
+                      "null": null,
+                      "_role": "primary"
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    }
+                  }
+                },
+                {
+                  "variant": "default",
+                  "block": {
+                    "content": {
+                      "content": {
+                        "literal": true
+                      },
+                      "empty": {},
+                      "null": null
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "x_single": {
+              "mode": "single",
+              "block": {
+                "content": {
+                  "content": {
+                    "literal": true
+                  },
+                  "empty": {},
+                  "null": null
+                },
+                "meta": {
+                  "section": "x_single",
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                }
+              }
+            }
+          },
+          "superseded": {
+            "x_review": [
+              {
+                "content": {
+                  "content": {
+                    "literal": true
+                  },
+                  "empty": {},
+                  "null": null
+                },
+                "meta": {
+                  "section": "x_review",
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                }
+              },
+              {
+                "content": {
+                  "content": {
+                    "literal": true
+                  },
+                  "empty": {},
+                  "null": null
+                },
+                "meta": {
+                  "section": "x_review",
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "extension_minimum_sha256": "c275b98ac959cffe6bf31c97156345af296c20d1d3cc409940efca6849c174cc",
+        "research_document": {
+          "artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "vmg9uQskMT6R5QAGlKZHK6Znuz5jWOrD7zUKRB_8uqORD9uRZwxF5lebTHGGOPjov9vDtq1V8Dk68zUKQ7TZDQ"
+          },
+          "signing_payload": "{\"alg\":\"ed25519\",\"kid\":\"rfc0089-public-test-seed-only\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "320b6d7228dd2daf1081dd27e0f37a9fff1f48ab50bd7a2e16f76582f9255d4c",
+          "cryptographic_validity": true
+        },
+        "research_receipt_signing_control": {
+          "artifact": {
+            "receipt_version": "1.1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38"
+            },
+            "computation": {
+              "pack": "research.byte-binding-only",
+              "pack_version": "unallocated-research",
+              "engine": "research.byte-binding-only",
+              "engine_version": "not-an-implementation-version",
+              "protocol_version": "4.1.0",
+              "results": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ],
+              "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+            },
+            "policy": {
+              "policy_set": "research-not-validation",
+              "policy_set_version": "unallocated",
+              "validation": {
+                "errors": 0,
+                "warnings": 0
+              }
+            },
+            "issued_at": "2026-10-17T00:00:00Z",
+            "issuer": "research-not-a-financial-issuer",
+            "signature": {
+              "algorithm": "ed25519",
+              "key_id": "rfc0089-public-test-seed-only",
+              "value": "FmE9PjbKWPQW-fvFLLTES0CXLJZjpPKV1w0bEdZvIPvVw_B_KW3Q-O4v1HAIwWwsBaLFXwF5fg-74CB-sFYZBw"
+            }
+          },
+          "signing_payload": "{\"computation\":{\"engine\":\"research.byte-binding-only\",\"engine_version\":\"not-an-implementation-version\",\"pack\":\"research.byte-binding-only\",\"pack_version\":\"unallocated-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-not-a-financial-issuer\",\"policy\":{\"policy_set\":\"research-not-validation\",\"policy_set_version\":\"unallocated\",\"validation\":{\"errors\":0,\"warnings\":0}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "8e0c6d9dfa42ec9d3be085469b29946179302ee88ec9748d12c7eea47c80c7cc",
+          "cryptographic_validity": true,
+          "scope": "scratch-built receipt-shaped byte-binding input, never issued as a candidate financial receipt"
+        },
+        "mutations": [
+          {
+            "kind": "payload",
+            "subject_digest": "sha256:37c262f621d0c862025c09997f1fe7257e4872f0925dea56b4dff46a76ce7cb4",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "prose",
+            "subject_digest": "sha256:584c80a83a888f1240e2f064cedcfb415f77a37bbe58e3afbf335e9de1cf18b9",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "notes",
+            "subject_digest": "sha256:0d2a196839ceea92417821ce53113df853ec89aa4e3397ec4b41073299aa6b75",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "metadata",
+            "subject_digest": "sha256:039633a8ec76cb5c0314349ec7f5d4aa5d967c36f2851143bdb0722722c71cf8",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "volatile",
+            "subject_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          },
+          {
+            "kind": "key-order",
+            "subject_digest": "sha256:d77b72bf479c05c152fef9f475e5b88b1c50a0968629eaa8987d9e05b4f28f38",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          }
+        ],
+        "label_mutations": [
+          {
+            "change": {
+              "representation_version": "1.0",
+              "canonicalization_version": "1.0"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "change": {
+              "representation_version": "E_UNSUPPORTED",
+              "canonicalization_version": "C_UNSUPPORTED"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          }
+        ],
+        "source": {
+          "supplied": false,
+          "gated_candidate_signing_calls": 0,
+          "research_document_issuance": "refused-no-attributable-source",
+          "candidate_receipt_issuance": "not-implemented-or-approved"
+        }
+      },
+      {
+        "case": "xml-lexical-domain",
+        "complete_model_sha256": "383d658c524e5b4d10ceb4f2bf233be5e2840925532e09be98047fcad06264c0",
+        "semantic_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+        "extension_minimum": {
+          "extensions": {
+            "x_review": {
+              "mode": "variants",
+              "blocks": [
+                {
+                  "variant": null,
+                  "block": {
+                    "content": {
+                      "content": {
+                        "literal": true
+                      },
+                      "empty": {},
+                      "null": null,
+                      "_role": "primary"
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    }
+                  }
+                },
+                {
+                  "variant": "default",
+                  "block": {
+                    "content": {
+                      "content": {
+                        "literal": true
+                      },
+                      "empty": {},
+                      "null": null
+                    },
+                    "meta": {
+                      "section": "x_review",
+                      "lifecycle": {
+                        "revision": 1,
+                        "superseded": false
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "x_single": {
+              "mode": "single",
+              "block": {
+                "content": {
+                  "content": {
+                    "literal": true
+                  },
+                  "empty": {},
+                  "null": null
+                },
+                "meta": {
+                  "section": "x_single",
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": false
+                  }
+                }
+              }
+            }
+          },
+          "superseded": {
+            "x_review": [
+              {
+                "content": {
+                  "content": {
+                    "literal": true
+                  },
+                  "empty": {},
+                  "null": null
+                },
+                "meta": {
+                  "section": "x_review",
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                }
+              },
+              {
+                "content": {
+                  "content": {
+                    "literal": true
+                  },
+                  "empty": {},
+                  "null": null
+                },
+                "meta": {
+                  "section": "x_review",
+                  "lifecycle": {
+                    "revision": 1,
+                    "superseded": true
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "extension_minimum_sha256": "c275b98ac959cffe6bf31c97156345af296c20d1d3cc409940efca6849c174cc",
+        "research_document": {
+          "artifact": {
+            "kind": "uwmd-document-signature",
+            "signature_version": "1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+            },
+            "alg": "ed25519",
+            "kid": "rfc0089-public-test-seed-only",
+            "signed_at": "2026-10-17T00:00:00Z",
+            "sig": "uCbYtp6DTZlonfofoJp_aBDussOl2OALwz7IfwAWBnyDKhKQMAyr5ci9egGjp6lK9Ylurtr9Gi_BCoQBz6wXBQ"
+          },
+          "signing_payload": "{\"alg\":\"ed25519\",\"kid\":\"rfc0089-public-test-seed-only\",\"kind\":\"uwmd-document-signature\",\"signature_version\":\"1\",\"signed_at\":\"2026-10-17T00:00:00Z\",\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "33d9daa39c725303a82184d4e630790e054733671a79caeb0cae7fb4cace4463",
+          "cryptographic_validity": true
+        },
+        "research_receipt_signing_control": {
+          "artifact": {
+            "receipt_version": "1.1",
+            "subject": {
+              "representation": "uwx-markdown",
+              "representation_version": "E_NEXT",
+              "canonicalization": "uw-envelope-semantic",
+              "canonicalization_version": "C_NEXT",
+              "digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c"
+            },
+            "computation": {
+              "pack": "research.byte-binding-only",
+              "pack_version": "unallocated-research",
+              "engine": "research.byte-binding-only",
+              "engine_version": "not-an-implementation-version",
+              "protocol_version": "4.1.0",
+              "results": [
+                {
+                  "calc_id": "synthetic_control",
+                  "value": 1,
+                  "computed": true
+                }
+              ],
+              "results_digest": "sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff"
+            },
+            "policy": {
+              "policy_set": "research-not-validation",
+              "policy_set_version": "unallocated",
+              "validation": {
+                "errors": 0,
+                "warnings": 0
+              }
+            },
+            "issued_at": "2026-10-17T00:00:00Z",
+            "issuer": "research-not-a-financial-issuer",
+            "signature": {
+              "algorithm": "ed25519",
+              "key_id": "rfc0089-public-test-seed-only",
+              "value": "wHiCkCx8c_7289aVxxS14XUkz9e2NLsVkzV997aWVw-PCPm3TeMP9zbKpHFITToZDKvukrYDgXnH-xm4fYHcAw"
+            }
+          },
+          "signing_payload": "{\"computation\":{\"engine\":\"research.byte-binding-only\",\"engine_version\":\"not-an-implementation-version\",\"pack\":\"research.byte-binding-only\",\"pack_version\":\"unallocated-research\",\"protocol_version\":\"4.1.0\",\"results\":[{\"calc_id\":\"synthetic_control\",\"computed\":true,\"value\":1}],\"results_digest\":\"sha256:81c4592ef478c1ffc932814d3cd90a00697a2d947be00a91f439f73904766fff\"},\"issued_at\":\"2026-10-17T00:00:00Z\",\"issuer\":\"research-not-a-financial-issuer\",\"policy\":{\"policy_set\":\"research-not-validation\",\"policy_set_version\":\"unallocated\",\"validation\":{\"errors\":0,\"warnings\":0}},\"receipt_version\":\"1.1\",\"signature\":null,\"subject\":{\"canonicalization\":\"uw-envelope-semantic\",\"canonicalization_version\":\"C_NEXT\",\"digest\":\"sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c\",\"representation\":\"uwx-markdown\",\"representation_version\":\"E_NEXT\"}}",
+          "signing_payload_sha256": "a672badaa2c341ff3608b016aea277c2ea4940982470749832184d7759dce5bc",
+          "cryptographic_validity": true,
+          "scope": "scratch-built receipt-shaped byte-binding input, never issued as a candidate financial receipt"
+        },
+        "mutations": [
+          {
+            "kind": "payload",
+            "subject_digest": "sha256:45e3d192e984b9c74a433c4bb8b9c6e3cf32a315c8a6f853e6c715c99dcf8e5e",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "prose",
+            "subject_digest": "sha256:2bc009c6bb99489f3cad21f601aac75ec15db8412ead6332b3a58e055f422c0f",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "notes",
+            "subject_digest": "sha256:68b4a7ad10e857cc2843688d4683e6ec37792b207dc7b7032916208273e88ac1",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "metadata",
+            "subject_digest": "sha256:f6034440923d75ab44bcfe7a6d25b44da7e0aff80f17d00559f06c10b04b38b1",
+            "portable_minimum_unchanged": false,
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "kind": "volatile",
+            "subject_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          },
+          {
+            "kind": "key-order",
+            "subject_digest": "sha256:a20ef619eea407f53706a92578863cd4c7152c94191bbe85602f6e219830777c",
+            "portable_minimum_unchanged": true,
+            "document_signature_valid": true,
+            "receipt_signature_valid": true
+          }
+        ],
+        "label_mutations": [
+          {
+            "change": {
+              "representation_version": "1.0",
+              "canonicalization_version": "1.0"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          },
+          {
+            "change": {
+              "representation_version": "E_UNSUPPORTED",
+              "canonicalization_version": "C_UNSUPPORTED"
+            },
+            "document_signature_valid": false,
+            "receipt_signature_valid": false
+          }
+        ],
+        "source": {
+          "supplied": false,
+          "gated_candidate_signing_calls": 0,
+          "research_document_issuance": "refused-no-attributable-source",
+          "candidate_receipt_issuance": "not-implemented-or-approved"
+        }
+      }
+    ],
+    "duplicate_identity_projection": "refused",
+    "candidate_receipt_verification": "not implemented; current API refusal observations only",
+    "normative_scope": "no V13 admission expansion, no RFC0085 history authority, no production labels allocated"
+  }
+}

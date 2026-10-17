@@ -1,0 +1,237 @@
+---
+uw_version: "3.0"
+deal_id: "rfc0089-ordered-history"
+deal_name: "Extension representation evidence"
+x_absent_vs_null: null
+---
+
+## Synthetic ordered-history / block 2
+
+Exact prose <&> with "quotes".
+
+```json uw:section=x_review variant=base superseded=true
+{
+  "_meta": {
+    "section": "x_review",
+    "provenance": {
+      "source": "manual",
+      "actor": "reviewer",
+      "timestamp": "2026-10-16T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": true
+    },
+    "x_unknown_metadata": {
+      "retained": [
+        null,
+        "",
+        {
+          "a/~b": true
+        }
+      ]
+    }
+  },
+  "note": "retained historical revision 1",
+  "_role": "primary",
+  "content": {
+    "unknown": {
+      "a/~b": [
+        null,
+        {},
+        [],
+        "",
+        1.5
+      ],
+      "member": "<&> \"quoted\"",
+      "item": "CR\rLF\nTAB\t",
+      "emoji": "😀",
+      "bmp": ""
+    }
+  },
+  "_notes": null,
+  "_overrides": [
+    {
+      "path": "not_a_target",
+      "note": "retained only; no inference"
+    }
+  ]
+}
+```
+
+## Synthetic ordered-history / block 3
+
+Exact prose <&> with "quotes".
+
+```json uw:section=x_review variant=base superseded=true
+{
+  "_meta": {
+    "section": "x_review",
+    "provenance": {
+      "source": "manual",
+      "actor": "reviewer",
+      "timestamp": "2026-10-16T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 2,
+      "superseded": true
+    },
+    "x_unknown_metadata": {
+      "retained": [
+        null,
+        "",
+        {
+          "a/~b": true
+        }
+      ]
+    }
+  },
+  "note": "retained historical revision 2",
+  "_role": "primary",
+  "content": {
+    "unknown": {
+      "a/~b": [
+        null,
+        {},
+        [],
+        "",
+        1.5
+      ],
+      "member": "<&> \"quoted\"",
+      "item": "CR\rLF\nTAB\t",
+      "emoji": "😀",
+      "bmp": ""
+    }
+  },
+  "_notes": null,
+  "_overrides": [
+    {
+      "path": "not_a_target",
+      "note": "retained only; no inference"
+    }
+  ]
+}
+```
+
+## Synthetic ordered-history / block 0
+
+Exact prose <&> with "quotes".
+
+```json uw:section=x_review variant=base
+{
+  "_meta": {
+    "section": "x_review",
+    "provenance": {
+      "source": "manual",
+      "actor": "reviewer",
+      "timestamp": "2026-10-16T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 3,
+      "superseded": false
+    },
+    "x_unknown_metadata": {
+      "retained": [
+        null,
+        "",
+        {
+          "a/~b": true
+        }
+      ]
+    }
+  },
+  "note": "synthetic",
+  "_role": "primary",
+  "content": {
+    "unknown": {
+      "a/~b": [
+        null,
+        {},
+        [],
+        "",
+        1.5
+      ],
+      "member": "<&> \"quoted\"",
+      "item": "CR\rLF\nTAB\t",
+      "emoji": "😀",
+      "bmp": ""
+    }
+  },
+  "_notes": null,
+  "_overrides": [
+    {
+      "path": "not_a_target",
+      "note": "retained only; no inference"
+    }
+  ]
+}
+```
+
+## Synthetic ordered-history / block 1
+
+Exact prose <&> with "quotes".
+
+```json uw:section=x_review variant=detail/~
+{
+  "_meta": {
+    "section": "x_review",
+    "provenance": {
+      "source": "manual",
+      "actor": "reviewer",
+      "timestamp": "2026-10-16T00:00:00Z"
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    },
+    "x_unknown_metadata": {
+      "retained": [
+        null,
+        "",
+        {
+          "a/~b": true
+        }
+      ]
+    }
+  },
+  "note": "synthetic",
+  "content": {
+    "unknown": {
+      "a/~b": [
+        null,
+        {},
+        [],
+        "",
+        1.5
+      ],
+      "member": "<&> \"quoted\"",
+      "item": "CR\rLF\nTAB\t",
+      "emoji": "😀",
+      "bmp": ""
+    }
+  },
+  "_notes": null,
+  "_overrides": [
+    {
+      "path": "not_a_target",
+      "note": "retained only; no inference"
+    }
+  ]
+}
+```

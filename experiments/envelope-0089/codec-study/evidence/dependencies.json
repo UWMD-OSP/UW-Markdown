@@ -1,0 +1,10 @@
+{
+  "status": "Cached parser dependency identity, not independent financial or full package-integrity proof",
+  "package": "fast-xml-parser",
+  "version": "5.10.1",
+  "main": "/lib/fxp.cjs",
+  "main_sha256": "d046ec315b87b0eca2ef1927617a857b4107e586e6bf6f2ed6ef43dec095684c",
+  "package_json_sha256": "53e4b3e13a35b737af8b966853e7abb83113f9590ee1cc6a0f2a49f6d011e761",
+  "package_lock_sha256": "d6c8ac690a48a38597b347d61ab7ab0b9a1ed2bcbbccd73f3cbb344c5b9cefbf",
+  "node": "v24.14.1"
+}

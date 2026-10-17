@@ -1,0 +1,1 @@
+PASS 4 real-backend Receipt 5.5 controls; equal digests preserve normal verification; no new canonicalizer or receipt rules

@@ -293,6 +293,17 @@ jobs:
         # exits 0 only when the verifier reports its documented verdicts.
         run: npm run examples:verification
 
+      - name: Check isolated Envelope codec evidence (unapproved)
+        if: matrix.node == 20 && hashFiles('experiments/envelope-0089/codec-study/capture.py') != ''
+        run: |
+          python3 --version
+          node --version
+          git fetch --no-tags --depth=1 origin a3570c3c72633c0abd564a66d863c26a62a14604
+          python3 -B experiments/envelope-0089/codec-study/capture.py --check
+          python3 -B experiments/envelope-0089/codec-study/freeze.py --check
+          python3 -B -m unittest discover -s experiments/envelope-0089/codec-study -p test_codec.py -v
+          node --test experiments/envelope-0089/codec-study/independent.test.mjs
+
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added
         # without regenerating them would silently drop out of the v2 driver's
@@ -305,6 +316,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Check exact projection and real authentication boundaries (unapproved)
+        if: matrix.node == 20 && hashFiles('experiments/envelope-0089/decision-proof/check.mjs') != ''
+        # Both probes are read-only. Reuse the ordinary build; the frozen material
+        # pins every production source/compiled module and preserves Receipt 5.5.
+        run: |
+          git fetch --no-tags --depth=1 origin b2ac5d8f068308fd690de824b963135974ec5fb8
+          node -p "JSON.stringify({node:process.version,openssl:process.versions.openssl,platform:process.platform,arch:process.arch})"
+          node experiments/envelope-0089/decision-proof/check.mjs --verify-root . --check
+          node experiments/envelope-0089/decision-proof/receipt-version.mjs --verify-root . --check
 
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures

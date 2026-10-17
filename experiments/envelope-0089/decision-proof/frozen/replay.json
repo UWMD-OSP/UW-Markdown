@@ -1,0 +1,21 @@
+{
+  "status": "READ-ONLY AUTHENTICATION DECISION REPLAY; NOT NORMATIVE CONFORMANCE",
+  "replay_commit": "abb8b77c3c03bf51cc2bb6273f1eb3b004c031b9",
+  "command": [
+    "node",
+    "experiments/envelope-0089/decision-proof/check.mjs",
+    "--verify-root",
+    "<explicit fresh source-pinned verifier checkout>",
+    "--check"
+  ],
+  "exit_code": 0,
+  "observations_sha256": "a231af9b4f46f40a25c3c1527752c50d70da65997118d8944a040cdfd361dc2b",
+  "stdout": {
+    "path": "replay.stdout.txt",
+    "sha256": "b5156942426fa1b96ce9ea4bcd98b7cc87230e2b13241324007dc445eb7c84a3"
+  },
+  "stderr": {
+    "path": "replay.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

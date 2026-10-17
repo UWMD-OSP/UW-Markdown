@@ -1,0 +1,6 @@
+# Frozen transport/source subjects are hashed as bytes. Do not convert EOLs.
+codec-examples/** -text
+codec-examples/**/*.csv whitespace=cr-at-eol
+
+# Preserve the external review exactly as received; it is unapproved evidence.
+astra-review-external.txt -text

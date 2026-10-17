@@ -121,6 +121,7 @@ meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
 its RFC was written, and records that process failure rather than hiding it. See
 its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
+| [0089](./0089-lossless-extension-envelope.md) | Preserve extension variants in a versioned Envelope | draft | format, protocol, core, conformance, tooling |
 
 ## Status values
 

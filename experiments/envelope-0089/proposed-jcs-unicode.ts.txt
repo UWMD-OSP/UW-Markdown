@@ -1,0 +1,94 @@
+// RFC 8785 (JCS) canonical JSON serialization — the one serializer behind
+// every digest: block `content_hash` (Protocol §V.9, over the block minus
+// `_meta`), receipts, signing inputs and envelopes. Nothing is stripped.
+//
+// Pure, dependency-free, deterministic across Node and modern browsers.
+
+/**
+ * Serialize `value` per RFC 8785: object keys sorted by UTF-16 code unit,
+ * strings escaped per §3.2.2, numbers per ECMAScript ToString (`-0` as `0`).
+ * `undefined` object members are dropped; non-finite numbers throw.
+ */
+export function canonicalize(value: unknown): string { return serialize(value); }
+
+function serialize(value: unknown): string {
+  if (value === null) return 'null';
+  if (value === undefined) return 'null'; // JSON has no undefined; treat as null
+  switch (typeof value) {
+    case 'boolean':
+      return value ? 'true' : 'false';
+    case 'number':
+      return serializeNumber(value);
+    case 'string':
+      return serializeString(value);
+    case 'object':
+      if (Array.isArray(value)) {
+        return `[${value.map(serialize).join(',')}]`;
+      }
+      return serializeObject(value as Record<string, unknown>);
+    default:
+      throw new Error(`canonicalize: cannot serialize value of type ${typeof value}`);
+  }
+}
+
+function serializeObject(obj: Record<string, unknown>): string {
+  const keys = Object.keys(obj).sort();
+  const parts: string[] = [];
+  for (const k of keys) {
+    const v = obj[k];
+    if (v === undefined) continue;
+    parts.push(`${serializeString(k)}:${serialize(v)}`);
+  }
+  return `{${parts.join(',')}}`;
+}
+
+function serializeNumber(n: number): string {
+  if (!Number.isFinite(n)) {
+    throw new Error(`canonicalize: cannot serialize non-finite number ${n}`);
+  }
+  // ECMAScript ToString already produces RFC 8785-compatible output for
+  // finite numbers, except that we want -0 to render as "0".
+  if (Object.is(n, -0)) return '0';
+  return String(n);
+}
+
+const ESCAPE_MAP: Record<number, string> = {
+  8: '\\b',
+  9: '\\t',
+  10: '\\n',
+  12: '\\f',
+  13: '\\r',
+  34: '\\"',
+  92: '\\\\',
+};
+
+function serializeString(s: string): string {
+  let out = '"';
+  for (let i = 0; i < s.length; i++) {
+    const code = s.charCodeAt(i);
+    // RFC 8785 §3.2.2.2: reject invalid Unicode; never sanitize before hashing.
+    if (code >= 0xd800 && code <= 0xdbff) {
+      const next = s.charCodeAt(i + 1);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) {
+        throw new TypeError('canonicalize: cannot serialize an unpaired high surrogate');
+      }
+      out += s[i] + s[i + 1];
+      i++;
+      continue;
+    }
+    if (code >= 0xdc00 && code <= 0xdfff) {
+      throw new TypeError('canonicalize: cannot serialize an unpaired low surrogate');
+    }
+    const escaped = ESCAPE_MAP[code];
+    if (escaped !== undefined) {
+      out += escaped;
+      continue;
+    }
+    if (code < 0x20) {
+      out += `\\u${code.toString(16).padStart(4, '0')}`;
+      continue;
+    }
+    out += s[i];
+  }
+  return `${out}"`;
+}

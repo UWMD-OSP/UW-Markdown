@@ -25,11 +25,50 @@ keeps absent metadata outside the registered present-malformed META-01 domain
 without adding completeness findings outside the partial inventory; twelve focused
 methods pass.
 
+**Issue365 — concrete candidate codecs and new issuance.** DraftRFC0089/#368
+now includes five complete JSON/XML/normalized-CSV examples with original source
+or direct-model origin, exact canonical subjects and explicit reissuance plans.
+Sixty frozen files retain exact null/literaldefault identities, one-peer mode,
+ordered history, annotations, unknown members and prose. Twenty focused Python
+methods, two independent Node subject/artifact checks and independent peer review
+pass; three prototype fidelity defects were corrected without changing frozen
+artifacts. These are isolated experimental codecs, not production capabilities.
+
+Migration from missing/lossy content refuses; new representations/attestations
+require separately approved subject rules and issuance, never old evidence
+rewriting. Mixed identity affects Format/Protocol portable and public parsed
+projections as well as Envelope. XML1-inexpressible JSON strings/member names
+need an explicit governed escaping or refusal boundary. Container design,
+identity/version/regime/release decisions remain unaccepted; current Envelope1,
+source digests, receipt rules, schemas and public versions are unchanged.
+
+**Independent Astra0089 review.** Existing TypeScript extension routing loses
+named peers/history before receipt subject construction; shared JCS admits lone
+surrogates with replacement UTF8 digest inputs; CSV loses schema-admitted outer
+block members and then refuses its own reconstructed digest. Focused evidence and
+compatibility dispositions live in the existing Reader review/Envelope experiment.
+The original experiment records the historical JCS defect; #373 has since
+merged the bounded strict-refusal correction, with reviewed receipt/source
+boundaries and green exact-main CI38999614992. No malformed-input fallback.
+Lossless peer representation, complete CSV carriers and total-versus-partial XML
+remain governed RFC0089 design decisions. The draft now separates canonical current,
+explicit history and all physical blocks, with concrete portable/XML/CSV proposals
+and pre-acceptance independent authentication/ZIP/migration gates. RFC0085 and0088
+remain separate drafts; public versions and reserved5.0 are unchanged.
 The bounded Python Reader lifecycle correction shares source-history routing
 with existing verification: exact fence `superseded=true` or JSON lifecycle true
 excludes a block from current selection and role opt-in, retaining it in ordered
 history. It does not rewrite metadata, source bytes, digests or receipt rules,
 resolve RFC0089 identity questions, or promote discovery beyond parse.
+
+**RFC0089 codec continuation (draft only).** A separate frozen study now has
+two complete models/21 artifacts, ten blocks across six collections, full block
+extras, real deterministic STORE ZIP and reversible ASCII JSON-lexical XML.
+Python and separately authored Node decoders compare complete values and
+canonical subjects; five Python and five Node controls pass locally. Original
+models/artifacts remain untouched. Full schema/source/numeric domains, empty
+history/maps, broader ZIP/XML admission and new-regime authentication remain
+unproved. No schema, V.13 admission, digest/receipt rule or version is activated.
 
 ## Bounded parallel workstreams
 

@@ -1,0 +1,10 @@
+test_complete_crosscodec_values (test_codec.CodecStudy.test_complete_crosscodec_values) ... ok
+test_missing_and_reserved_extra_scope (test_codec.CodecStudy.test_missing_and_reserved_extra_scope) ... ok
+test_nullable_identity_distinct_and_duplicate_refusal (test_codec.CodecStudy.test_nullable_identity_distinct_and_duplicate_refusal) ... ok
+test_xml_no_sanitization_or_noncanonical_lexical (test_codec.CodecStudy.test_xml_no_sanitization_or_noncanonical_lexical) ... ok
+test_zip_security_profile (test_codec.CodecStudy.test_zip_security_profile) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.054s
+
+OK

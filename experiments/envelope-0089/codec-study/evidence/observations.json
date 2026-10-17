@@ -1,0 +1,128 @@
+{
+  "status": "UNAPPROVED RFC0089 BOUNDED RESEARCH / NOT CONFORMANCE OR AUTHENTICATION",
+  "source_commit": "a3570c3c72633c0abd564a66d863c26a62a14604",
+  "source_tree": "acbaf5cd1e83ae9a2166ab7eebeef8bec2b464d8",
+  "base_commit": "0a6e0489025f072f3fde6bab02de76296783fe3e",
+  "runtime": {
+    "python": "3.12.3",
+    "node": "v24.14.1",
+    "platform": "Windows",
+    "architecture": "AMD64"
+  },
+  "closure": [
+    {
+      "path": "experiments/envelope-0089/codec-study/capture.py",
+      "sha256": "e2e468fc8b8bccb0fe090bc8291bc03f70c6a615044a07f137be3e45ec3f50e9"
+    },
+    {
+      "path": "experiments/envelope-0089/codec-study/codec.py",
+      "sha256": "3914ed411b7948ce4c5d2c7646044d037311263e3770610e818e21fc42e9876d"
+    },
+    {
+      "path": "experiments/envelope-0089/codec-study/freeze.py",
+      "sha256": "d5dfa9948707327740da3e1f8253fb13d35c7a6a153af27dfc24b3fbccc968d1"
+    },
+    {
+      "path": "experiments/envelope-0089/codec-study/independent.mjs",
+      "sha256": "9fd742c8aeb62566dc993c23bbf3ed9d5c3c606236e1a90aba10c38a71d029fa"
+    },
+    {
+      "path": "experiments/envelope-0089/codec-study/independent.test.mjs",
+      "sha256": "5dc75939d097a50dad4a4b1c1f2b792993b0fb361fe81303efe592861449c729"
+    },
+    {
+      "path": "experiments/envelope-0089/codec-study/inputs.py",
+      "sha256": "e909092261e7479f96005d27d3e2fa5cf7ad593935516c076e1e5efec31b33c6"
+    },
+    {
+      "path": "experiments/envelope-0089/codec-study/test_codec.py",
+      "sha256": "828af2f8e5057fcfa2bf65a24eaa35a6d0e24aa7e3c80ca243e597cd90d6e912"
+    },
+    {
+      "path": "implementations/python/uwmd_jcs.py",
+      "sha256": "cc97f545f5b343aa4396bacc25f349f6a55193b0f3365042e279c65b885e4bfc"
+    },
+    {
+      "path": "experiments/envelope-0089/candidate_codec.py",
+      "sha256": "1bfce515104c4ed545277ca078689d24a201fae800bc479b28530dc4c19a79a3"
+    },
+    {
+      "path": "experiments/envelope-0089/codec-examples/matrix.json",
+      "sha256": "6ea8f4b7d6431e82d6fd023e98d19c3b9bc80d8557cb08f8ccb56274f547f2f4"
+    },
+    {
+      "path": "experiments/envelope-0089/codec-study/fixtures/manifest.json",
+      "sha256": "eb8347441437a27eea7303b37bef0b208271f77a0ce48889b59219535233185e"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments/envelope-0089/codec-study",
+        "-p",
+        "test_codec.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "command-0.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "command-0.stderr.txt",
+        "sha256": "ecce6c427b88c6392c10d8d079c557f1194e68d5a73e7f3a9ce478034632fce3"
+      }
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "experiments/envelope-0089/codec-study/independent.test.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "command-1.stdout.txt",
+        "sha256": "e12dcc1f94aaa6465a74d5fa646aca2ac6301576d471728835e27f7ca10242a0"
+      },
+      "stderr": {
+        "path": "command-1.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "python",
+        "-B",
+        "experiments/envelope-0089/codec-study/freeze.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "command-2.stdout.txt",
+        "sha256": "43ea266ac484e78aa730be264f7dc77b26f0293c7e5be91f90f5764473df185e"
+      },
+      "stderr": {
+        "path": "command-2.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "scope": {
+    "frozen_cases": 2,
+    "frozen_artifacts": 21,
+    "blocks_per_model": 10,
+    "python_methods": 5,
+    "node_tests": 5,
+    "extras": "every block collection; exact empty root and complete extra members",
+    "source": "independent accounting of preserved mixed-null-default and ordered-history physical source/body hashes",
+    "authentication": "no signatures/receipts issued; no V13 admission expansion",
+    "zip": "canonical STORE bounded research profile; not universal ZIP/CSV support"
+  },
+  "collector_note": "Initial temporary collector failed displaying successful Node Unicode output through cp1252; no proof file was written. This collector retains raw streams without encoding-dependent display. Frozen answers were unchanged."
+}

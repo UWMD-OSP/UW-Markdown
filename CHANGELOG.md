@@ -53,11 +53,20 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Independently classify the Astra Envelope review in the existing RFC0089/365
+  artifacts; propose exact source accounting, portable identity, complete block
+  member carriers and XML alternatives while preserving all current contracts.
+
 - Define the Python implementation's minimum-complete Reader and Verifier
   obligations, exact corpus boundaries and ordered capability exit gates.
   Prioritize one complete validate surface, dictionary/stated-figure reproduction
   and receipt verification over further isolated inspectors; optional profiles
   and draft numerical/representation decisions remain separate.
+- Extend draft RFC0089 with five complete candidate JSON/XML/CSV examples,
+  explicit physical-source accounting and proposed new-issuance/refusal behavior.
+  Preserve all60 frozen artifacts while correcting prototype binary64 decoding,
+  XML whitespace and retained prose fidelity; leave current Envelope1, schemas,
+  historical subjects, receipts and version decisions unchanged.
 
 - Add independent Python standalone document-currency identity inspection under
   accepted CUR-01, preserving authored absent/null/value evidence without
@@ -78,6 +87,14 @@ protocol, and each package each carry an independent semver).
   actual hash-only standalone comparisons; preserve parse-only discovery and
   explicitly unchecked signatures. No full integrity-profile, normative, signing,
   history-retention, dependency or version changes.
+
+- Publish the requested Issue #365 representation intake in the existing Reader
+  review and add draft RFC 0089 for a minimal versioned lossless extension entry.
+  Candidate identity, codec, commitment and release decisions remain unapproved;
+  no Envelope 1.0, schema, digest, receipt, version or fixture changes.
+  Refine exact source/model mode and codec descriptors, with five independently
+  reconstructed synthetic candidate subjects and proposed fixture procedures;
+  design tokens and hash observations remain explicitly unaccepted.
 
 - Add independent Python standalone replacement-funding binding verification
   under accepted §V.12: scoped hedge/escrow prerequisites, property role selection,
