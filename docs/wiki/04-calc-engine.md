@@ -531,3 +531,13 @@ a general fractional runner still requires a chosen kernel. These are unaccepted
 research artifacts, not production behavior or financial/conformance answers.
 VIII.5 quantization, IRR/NPV graph consequences, receipt identity and release
 placement remain separately governed. See the draft's pinned laboratory link.
+
+
+The same unaccepted research lab now composes ten synthetic cash vectors with
+those power graphs, retaining source-order financial operations, endpoint-only
+IRR decisions, separate VIII.5 reporting and exact result-array research digests.
+Five new Python and two JS checks compare thirty financial traces and ten decimal
+boundary controls. Missing fractional kernels and bisection-required cases have
+no invented result or digest. These are one-host evidence, not cross-platform
+financial conformance, a full solver or an issued receipt. Normative arithmetic,
+legacy subjects, conformance expectations and RFC acceptance remain unchanged.
