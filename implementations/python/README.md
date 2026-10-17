@@ -11,6 +11,31 @@ full-validation, expression-calculation, signature, receipt or optional-profile 
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
 reserve accounts, explicit reserve-draw plans and replacement-funding commitments. It does not certify every Reader or Verifier requirement.
 
+## Public-launch compatibility target
+
+The [owner's public-launch compatibility policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+makes 5.0 the first public compatibility baseline; pre-5 releases and their
+results are historical evidence. Python targets one coherent set of **accepted
+launch contracts**, not indefinite reproduction of every prelaunch behavior.
+Do not add or retain legacy CLI modes, old-version readers, aliases, numerical
+procedures or receipt-verification fallbacks solely for pre-5 compatibility.
+
+Preserve original sources, historical artifacts and their original verification
+results. Preservation does not authenticate them under a new semantic regime,
+transfer an old signature/receipt to a new subject, or make a frozen prelaunch
+pass new conformance evidence automatically. Current frozen tests remain
+unchanged in this checkpoint; any launch-contract/corpus revision needs its
+governed RFC, synchronized specification/schema/protocol/tests and required
+owner decisions. This compatibility policy does not allocate a missing-actor
+diagnostic or resolve the actor gate below.
+
+The policy accepts no draft RFC or numerical procedure and authorizes no
+release, version selection, tag or publication. Format, Protocol and package
+versions remain independent. The capability gates and counts below describe the
+current accepted-contract snapshot; a later governed launch revision must
+identify its own applicable corpus and proof, preserving earlier evidence
+without carrying a compatibility implementation merely to keep it passing.
+
 ## Complete validation implementation — in progress
 
 The developing `uwmd_validation.validate_document` API composes one structural
@@ -424,7 +449,10 @@ The other mandatory result boundaries also remain explicit:
   subject hashes alone cannot pass this sequence. The existing reference CLI
   is `receipt verify <file> <receipt.json>`; the portable six-command table
   has no receipt operation, so a genuine API/CLI adapter is needed for its
-  nonportable assertions.
+  nonportable assertions. For the launch implementation, support the
+  accepted launch receipt/version/procedure registry; historical pre-5 receipt
+  success is not a reason to add a legacy decoder, alternate numerical
+  backend or acceptance fallback.
 
 ### Optional scope does not enlarge the minimum
 
