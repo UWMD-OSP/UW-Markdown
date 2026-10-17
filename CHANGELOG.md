@@ -43,7 +43,9 @@ protocol, and each package each carry an independent semver).
   exact-rational bounded fractional references and 40 frozen operand pairs.
   Independent JS checks 120 result/trace records. Laboratory budgets, rounding,
   downstream solver/quantization and receipt boundaries remain explicit and
-  unaccepted; production arithmetic and expectations are unchanged.
+  unaccepted; production arithmetic and expectations are unchanged. Extend the
+  isolated evidence with ten synthetic ordered cash/IRR-endpoint controls and
+  ten reporting controls; no full solver or receipt issuance claim.
 
 - Add independent Python block-content hashing and bounded read-only chain
   assessment under accepted §V.9/§V.10, with complete physical block evidence,

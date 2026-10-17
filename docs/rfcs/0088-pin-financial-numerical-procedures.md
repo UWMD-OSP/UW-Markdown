@@ -313,7 +313,7 @@ same ordered expression.
 
 #### Executable dispatch and graph alternatives — still unaccepted
 
-The isolated [power procedure lab](https://github.com/UWMD-OSP/UW-Markdown/blob/c45539d768f85126691c748ab3a8d704399d3a19/experiments/numerical-0088/power-procedures/README.md)
+The isolated [power procedure lab](https://github.com/UWMD-OSP/UW-Markdown/blob/eaf4cf675a79cb9fa5e741c791976fad9f987a11/experiments/numerical-0088/power-procedures/README.md)
 now freezes 40 binary64 operand pairs and compares three fully ordered integer
 graphs: sequential products with reciprocal last, binary squaring with reciprocal
 last, and binary squaring with reciprocal first. All round each basic operation
@@ -350,7 +350,7 @@ any row as an acceptance-ready whole-domain guarantee.
 
 #### Composed endpoint and reporting controls — not a complete solver
 
-The [cash-graph follow-up](https://github.com/UWMD-OSP/UW-Markdown/blob/4a76baa72c1e14ea16e3cddfca5676e8767dde5c/experiments/numerical-0088/cash-graphs/README.md)
+The [cash-graph follow-up](https://github.com/UWMD-OSP/UW-Markdown/blob/eaf4cf675a79cb9fa5e741c791976fad9f987a11/experiments/numerical-0088/cash-graphs/README.md)
 freezes ten synthetic cash vectors and ten reporting controls independently from
 exact rational arithmetic. Three candidate power graphs feed source-ordered
 periodic division and the existing IRR bracket/product/endpoint checks. Complete
