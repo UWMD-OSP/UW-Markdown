@@ -33,6 +33,23 @@ affects:
 > stay the verifiable authority and history-stripped outputs are projections.
 > It is recorded as a preference, not a decision; the RFC stays a draft.
 
+## Owner launch compatibility decision (2026-10-16)
+
+The [explicit owner policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+sets UWMD 5.0 as the first public compatibility baseline. Published pre-5.0
+readers, compaction outputs, receipt regimes and deprecated commands impose no
+legacy-support or migration-shim requirement on this design. Independent surface
+versions, normative RFC/spec/schema/conformance discipline and separate launch
+approval remain. This decision does not select C, D or a projection shape.
+
+P6 and the older-reader observations below are frozen prelaunch evidence, not
+launch acceptance vetoes. A projection must be unambiguous to the accepted launch
+Reader and authentication contract; it need not be understood by old Format 3.0
+tools. Preserve original records, issued artifacts, signatures and verdicts
+without rewriting them or implying authentication under a new launch regime.
+No old-regime verifier, automatic migration, grandfathering or hash retry is
+required. A new artifact must identify its actual source and approved contract.
+
 ## Summary
 
 Format §2.7 and §6.5 say `uwmd compact` strips superseded blocks. Protocol §V
@@ -134,7 +151,7 @@ Each layer protects something different:
 | P3 | **Payload verification against the commitment** | Can a verifier recompute the removed revision's `content_hash` from its payload? (`INT-04`, and `INT-07` for a signed block) |
 | P4 | **Parent-hash chain continuity** | Does every `parent_hash` in the record resolve to a visible predecessor's `content_hash` (`INT-01`)? |
 | P5 | **Document-level signatures after compaction** | Does an RFC 0084 snapshot signature taken before compaction still verify, and what is needed to authenticate the compacted record? |
-| P6 | **Older Format 3.0 readers and verifiers** | What do today's readers and verifiers report for the compacted output? |
+| P6 | **Historical prelaunch readers and verifiers** | What did the investigated readers report? Audit evidence only, not required launch support |
 
 P2 and P3 are different properties. A signature authenticates a commitment
 (P2). Only the payload proves that the commitment describes the content that
@@ -185,7 +202,7 @@ integrity rules are untouched.
 | **P3 payload vs commitment** | None | None in the compacted record | None, unless the archive is also kept | **Yes**, against the archive | **Yes** |
 | **P4 chain continuity** | **Broken**: dangling `parent_hash` passes silently (§1.2) | Restored in-document (stub supplies the predecessor hash) | Restored only for a verifier holding the manifest | Restored only for a verifier holding the archive | Unaffected |
 | **P5 document signature** | A pre-compaction RFC 0084 signature fails (`INT-11`); the compacted record needs a new one | Same: stubs change the semantic snapshot (§V.13 covers history), so the compactor must re-sign | Pre-compaction signature verifies against the archived snapshot if kept; the manifest can carry it and bind the snapshot digest | Pre-compaction signature verifies against the archive | Unchanged |
-| **P6 older readers/verifiers** | Read it. `POL-02` error for `supersede_on_edit` sources; dangling parent passes | Read it silently and ignore `compacted`. Unhashed: `✓ OK` (stub treated as full history, **an overclaim**). Hashed unsigned: `INT-04` warning. Hashed signed: `INT-07` error (fails closed) | Unchanged from today; the manifest is invisible to them (`POL-02` still fires; dangling parent still passes) | Unchanged from today for the compacted copy | Unchanged |
+| **P6 historical prelaunch behavior** | Read it. `POL-02` error for `supersede_on_edit` sources; dangling parent passes | Read it silently and ignore `compacted`. Unhashed: `✓ OK` (stub treated as full history, **an overclaim**). Hashed unsigned: `INT-04` warning. Hashed signed: `INT-07` error (fails closed) | Unchanged from today; the manifest is invisible to them (`POL-02` still fires; dangling parent still passes) | Unchanged from today for the compacted copy | Unchanged |
 | **Weakens a current guarantee?** | — | **Yes**, unless stubs are reported as a distinct non-verified state (`INT-07` would otherwise stop catching removed signed payloads) | No for old verifiers; for aware verifiers it moves trust to the compactor's key | No | No |
 | **Normative surface** | — | Format (stub shape), Protocol §V.10/§V.11 (stub semantics, new vocabulary), schema | Protocol (manifest artifact, verification rules), schema; possibly an RFC 0018 link type | RFC 0018 link type or digest reference; Format §2.7/§6.5 wording | Format §2.7/§6.5 wording only |
 
@@ -193,10 +210,10 @@ integrity rules are untouched.
 
 - **No candidate preserves P3 inside a compacted record.** Only C and D keep
   the payload anywhere, and only D keeps it in the record itself.
-- **A is the only in-document option, and its P6 behavior is the riskiest.**
-  Older verifiers would report an unhashed stubbed record as `✓ OK` with full
-  history. That is an overclaim the new vocabulary cannot reach, because old
-  verifiers do not know it.
+- **A is the only in-document option.** The investigated older verifiers
+  reported an unhashed stub as `✓ OK` with full history. Preserve that historical
+  overclaim as evidence. The accepted launch contract must distinguish stubs
+  from verified payloads; old readers need not implement the new vocabulary.
 - **B shifts trust rather than preserving it.** An aware verifier accepts
   the gap on the compactor's signature. That is a policy choice about who may
   destroy history, not evidence the history existed.
@@ -347,10 +364,10 @@ If it is later confirmed, it bears on the analysis as follows:
   its own. They stay in §4 as analysed alternatives and are not withdrawn.
 - **Question 1** stays open between C, D, and C with D. The open part is
   whether a projection may travel beside the record, and how it is marked
-  so that a reader cannot mistake it for a complete record. A marking that
-  only a new member carries would be invisible to Format 3.0 readers (the
-  same P6 risk as A). Not writing projections as `.uwx.md` records avoids
-  that risk.
+  so that the accepted launch Reader cannot mistake it for a complete record.
+  The old Format 3.0 unknown-member behavior remains historical P6 evidence,
+  not a requirement to support that reader. Select the projection/record
+  distinction coherently in the launch contract.
 - **Questions 3–6 stay open.** The dangling-`parent_hash` reporting (§5)
   and the `section_replace` stamping are independent of compaction (§4.3).
   The verify result for a projection still has to be defined.
@@ -393,12 +410,12 @@ an invalid source pass.
 ### 11.2 Candidate obligations and their exact layers
 
 If the owner selects C+D, the acceptance-ready revision should express the
-following obligations in the indicated contracts, with compatibility reviewed:
+following obligations in the indicated contracts, with launch-contract and historical-identity effects reviewed:
 
 | Candidate requirement | Contract consequence and layer |
 |---|---|
-| A stripped projection must not stand in for the complete verification subject | Format2.7 must distinguish retained-record recoverability from projection; Format6.5 must withdraw the implication that stripped output is an equivalent authoritative record. Starter command/output migration is a separate package concern |
-| A projection must identify its source snapshot and omitted scope before any archive-backed claim | Decide a separately typed artifact/manifest and an authenticated source binding; a new optional lifecycle flag alone is insufficient because Format3 readers ignore it. A filename or banner alone cannot authenticate a claim |
+| A stripped projection must not stand in for the complete verification subject | Format2.7 must distinguish retained-record recoverability from projection; Format6.5 must withdraw the implication that stripped output is an equivalent authoritative record. The launch command/output contract is a separate package concern |
+| A projection must identify its source snapshot and omitted scope before any archive-backed claim | Decide a separately typed artifact/manifest and an authenticated source binding; define admission and refusal in the accepted launch Reader; behavior of older Format3 readers is historical evidence only. A filename or banner alone cannot authenticate a claim |
 | Historical verification must use the supplied full record and state its scope | ProtocolV.10/V.11/V.13 must distinguish visible chain checks, block signatures and snapshot authentication from a new claim of historical completeness. Decide result vocabulary, counters, applicability and severities explicitly |
 | Missing archive material must not be represented as verified historical evidence | Define the new capability's unavailable/unsupported result, not success or a silently fetched substitute. Existing receipt RCP codes do not automatically become archive/integrity codes |
 | A failed authoritative source must remain failed when a convenience view is emitted | No clean projection verdict may erase the source failure. Any proposed export precondition/refusal or accompanying evidence is a governed decision, not a new current validator rule |
@@ -407,9 +424,10 @@ following obligations in the indicated contracts, with compatibility reviewed:
 These are proposed requirements for an accepted revision, not normative text
 adopted by merging this draft. Field names, schemas, codes, severities and profile
 requiredness are deliberately not assigned here. A projection container/extension
-must be selected before spelling a Format migration. Prefer an artifact that old
-UWMD readers cannot mistake for a normal authoritative record; merely adding an
-unknown member to a parseable `.uwx.md` leaves the current overclaim possible.
+must be selected before specifying the launch Format contract. The accepted
+launch Reader must distinguish projections from authoritative records. Old
+reader refusal or continued acceptance is not a launch compatibility gate;
+historical P6 overclaims remain documented rather than erased.
 
 ### 11.3 Missing predecessors: separate the cases before choosing a verdict
 
@@ -417,7 +435,7 @@ unknown member to a parseable `.uwx.md` leaves the current overclaim possible.
 |---|---|---|
 | Two visible hashed revisions with mismatched link | V.10 / INT-01 already rejects the link | Preserve existing failure; stripping the earlier row cannot prove repair |
 | First visible block names an absent predecessor after stripping | Current verifyChain does not compare that first parent | Decide unavailable-history versus invalid-chain semantics and result/counter scope; current `chains_verified` must not be silently reinterpreted |
-| Permitted manual `section_replace` discards a hashed predecessor | V.2/V.10 and editor.integrity.test.ts permit/stamp this shape | Retain the existing behavior or govern a new chain-root/boundary representation and migration. Do not classify every absent parent as corruption |
+| Permitted manual `section_replace` discards a hashed predecessor | V.2/V.10 and editor.integrity.test.ts permit/stamp this shape | Retain the existing behavior or govern a new launch chain-root/boundary representation. Do not classify every absent parent as corruption |
 | Authenticated archive supplies the exact missing source | Proposed C capability only | Verify the archive under its own digest, chains, policy and signatures, then report which subject was checked; do not splice blocks into the projection and call it the original source |
 | No parent hash or no hashes anywhere | Current integrity opt-in/no-op behavior | Absence of an integrity error cannot establish complete history or authenticated origin; stronger history claims need their own applicability rules |
 
@@ -429,6 +447,12 @@ that binding and verification-key distribution remain separate inputs. This
 avoids inventing a new network dependency for ordinary verification.
 
 ### 11.4 Signed history, snapshots and receipts
+
+The current-regime observations in this section do not require the launch to
+implement a pre-5.0 verification regime. Preserve old signed artifacts and their
+actual subjects; only separately approved launch contracts determine which
+regimes a launch verifier accepts. Archival possession is not authentication
+under new semantics and never authorizes relabeling an old receipt.
 
 Retain every historical signed payload, its signature and the key identifier in
 the authority. With no signing backend/key store, preserve present-but-unchecked
@@ -452,12 +476,13 @@ receipt contract and identify its actual subject/engine; it still does not certi
 historical completeness. No receipt version, engine identity, digest, result
 status or signature interpretation changes are authorized by this draft.
 
-### 11.5 Compaction and migration choices still requiring approval
+### 11.5 Launch compaction choices still requiring approval
 
 Recommend a separate projection output that does not overwrite the retained
-record. Decide whether `uwmd compact` is deprecated/refused, renamed, or retained
-as an explicit projection exporter. Altering its existing output/exit behavior
-needs starter compatibility treatment, not a hidden patch. Keep source bytes,
+record. Decide whether the launch removes/refuses `uwmd compact`, renames it,
+or retains it as an explicit projection exporter. Define and test that launch
+command/output contract; no deprecated alias, compatibility parser or transition
+period is required solely for prelaunch callers. Keep source bytes,
 row ordering, current values, variants and original diagnostics intact in the
 retained authority. Do not synthesize prior payloads or reset links/signatures.
 
@@ -472,13 +497,13 @@ should preserve these distinctions and be reviewed separately from a new contrac
 Before acceptance, propose exact Format2.7/6.5 wording, Protocol result scope and
 any schema/capability additions together. Add explicit new conformance cases for
 supplied/missing/wrong archives, signed/unchecked/invalid history, retained source
-failure, legitimate manual replacement, projection/record distinction and older
-reader refusal. Preserve existing baselines until those decisions are approved.
+failure, legitimate manual replacement, projection/record distinction and launch-Reader
+refusal. Retain older-reader results separately as historical evidence. Preserve existing baselines until those decisions are approved.
 No changed expectation is included in this investigation PR.
 
 Owner decisions remain: C/D selection and projection artifact; authenticated
 source binding and availability; manual-replace/root treatment; missing-history
-result/severity/counters; command compatibility and log destination. These are
+result/severity/counters; launch command contract and log destination. These are
 separable from RFC0086's purchase-price comparison and RFC0087's revenue basis.
 Keep all three RFCs draft. Resolve this contract before advertising stripped
 outputs as fully verified historical records for public launch; it is not a
