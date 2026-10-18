@@ -73,7 +73,11 @@ class CompletenessOwnershipTests(unittest.TestCase):
                     parent[path.split(".")[-1]] = value
                     result = self.assess(authored)
                     fields = [f["field"] for f in result["metadata_assessment"]["shape_findings"]]
-                    if path == "provenance.source":
+                    if path == "section":
+                        self.assertNotIn("_meta.section", fields)
+                        self.assertEqual([(i["code"],i["field"]) for i in result["errors"]],
+                                         [("META-01","_meta.section")])
+                    elif path == "provenance.source":
                         # Format2.6 already assigns these authored type failures
                         # to SRC-01; this is not a completeness absence warning.
                         self.assertNotIn("_meta." + path, fields)
@@ -98,20 +102,24 @@ class CompletenessOwnershipTests(unittest.TestCase):
         self.assertEqual([(f["context"]["block_index"], f["registered_code"]) for f in
                          result["metadata_assessment"]["handled_shape_findings"]], [(0, code)])
 
-    def test_parent_and_independent_shape_failures_stay_unallocated(self):
+    def test_accepted_parent_and_independent_unallocated_shape_remain_separate(self):
         authored = body(); authored["_meta"]["quality"] = None
         result = self.assess(authored)
-        self.assertEqual([f["field"] for f in result["metadata_assessment"]["shape_findings"]], ["_meta.quality"])
-        self.assertNotIn("handled_shape_findings", result["metadata_assessment"])
+        self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
+        self.assertEqual([(i["code"],i["field"]) for i in result["errors"]],
+                         [("META-01","_meta.quality")])
         authored = body(); change(authored, "section")
         result = self.assess({"payload_first": 1, **authored})
-        self.assertEqual([f["field"] for f in result["metadata_assessment"]["shape_findings"]], ["_meta"])
+        self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
+        self.assertEqual([(i["code"],i["field"]) for i in result["errors"]], [("META-01","_meta")])
         authored = body(); change(authored, "lifecycle.revision")
         authored["_meta"]["section"] = "wrong"
         authored["_overrides"] = [{"path": "units", "confidence": "invalid"}]
         result = self.assess(authored)
         self.assertEqual([f["field"] for f in result["metadata_assessment"]["shape_findings"]],
-                         ["_meta.section", "_overrides[0].confidence"])
+                         ["_overrides[0].confidence"])
+        self.assertEqual([(i["code"],i["field"]) for i in result["errors"]],
+                         [("META-01","_meta.section")])
 
     def test_history_and_low_level_inventory_scope_are_unchanged(self):
         authored = body(); change(authored, "lifecycle.revision")
@@ -139,10 +147,11 @@ class CompletenessOwnershipTests(unittest.TestCase):
                         self.assertEqual(process.stderr, "")
                         self.assertEqual(path.read_bytes(), raw)
                         self.assertEqual(process.returncode, int(null))
-                        if null and field == "provenance.source":
+                        if null and field in ("section", "provenance.source"):
                             self.assertNotIn("error", result)
                             self.assertEqual(result["overall_status"], "errors")
-                            self.assertEqual([i["code"] for i in result["errors"]], ["SRC-01"])
+                            self.assertEqual([i["code"] for i in result["errors"]],
+                                             ["META-01" if field == "section" else "SRC-01"])
                         elif null:
                             self.assertNotIn("code", result["error"])
                             self.assertIn("partial_validation_result", result)

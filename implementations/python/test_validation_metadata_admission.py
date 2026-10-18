@@ -105,7 +105,10 @@ class MetadataAdmissionTests(unittest.TestCase):
                     self.assertIn(field, [f["field"] for f in findings])
                 self.assertFalse(any(i["code"] == "META-01" for i in result["issues"]))
         authored = body(); authored["_meta"]["section"] = 5
-        self.assertIn("_meta.section", [f["field"] for f in self.assess(authored)[1]])
+        result, findings = self.assess(authored)
+        self.assertEqual(findings, [])
+        self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
+                         [("META-01", "_meta.section")])
         authored = body(); authored["_meta"]["quality"]["field_overrides"] = []
         self.assertIn("_meta.quality.field_overrides", [f["field"] for f in self.assess(authored)[1]])
 

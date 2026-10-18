@@ -85,10 +85,11 @@ class ValidationCLITests(unittest.TestCase):
         self.assertEqual([(f["context"]["block_index"],f["field"]) for f in local],[(1,"_meta")])
         integrated=validate(source)
         self.assertEqual(sum(i["code"]=="META_MISSING" for i in integrated["issues"]),1)
-        self.assertEqual([f["context"]["block_index"] for f in
-                          integrated["metadata_assessment"]["shape_findings"]],[1])
+        self.assertEqual(integrated["metadata_assessment"]["shape_findings"], [])
+        self.assertEqual([(i["code"],i["context"]["block_index"],i["field"]) for i in
+                          integrated["errors"]], [("META-01",1,"_meta")])
 
-    def test_late_typed_and_section_shape_requirements_have_uncoded_local_refusal(self):
+    def test_accepted_0093_and_unallocated_typed_requirements_have_distinct_transport(self):
         body=parse(property_source()).source.blocks[0].parsed.value
         typed=copy.deepcopy(body);typed["_meta"]["quality"]["confidence"]=False
         section=copy.deepcopy(body);section["_meta"]["section"]="wrong"
@@ -97,10 +98,15 @@ class ValidationCLITests(unittest.TestCase):
             with self.subTest(value=value):
                 result,status=self.command(HEADER+fence(value))
                 self.assertEqual(status,1)
-                self.assertNotIn("code",result["error"])
-                self.assertNotIn("overall_status",result)
-                self.assertTrue(result["metadata_assessment"]["shape_findings"])
-                self.assertIn("partial_validation_result",result)
+                if value is typed:
+                    self.assertNotIn("code",result["error"])
+                    self.assertNotIn("overall_status",result)
+                    self.assertTrue(result["metadata_assessment"]["shape_findings"])
+                    self.assertIn("partial_validation_result",result)
+                else:
+                    self.assertNotIn("error",result)
+                    self.assertEqual(result["overall_status"],"errors")
+                    self.assertEqual([i["code"] for i in result["errors"]],["META-01"])
         # A declared fixed lease-up payload has separate unallocated shape evidence.
         raw=property_source()+well_formed("lease_up_schedule",model="not_registered",
             period_granularity="monthly",stabilization_target="2026-01",
@@ -243,10 +249,10 @@ class ValidationCLITests(unittest.TestCase):
 
     def test_unallocated_source_and_selection_refusals_get_no_default_protocol_error(self):
         self.path.write_bytes(property_source())
-        with patch("uwmd.parse",side_effect=SourceError("Unallocated source refusal")):
+        with patch("uwmd_reader.parse",side_effect=SourceError("Unallocated source refusal")):
             result,status=main(["validate",str(self.path),"--json"])
             self.assertEqual((result,status),({"error":{"message":"Unallocated source refusal"}},1))
-        with patch("uwmd.validate_document",side_effect=ValidationUnavailable("Unallocated selection refusal")):
+        with patch("uwmd._validate_source",side_effect=ValidationUnavailable("Unallocated selection refusal")):
             result,status=main(["validate",str(self.path),"--json"])
             self.assertEqual((result,status),({"error":{"message":"Unallocated selection refusal"}},1))
         # A real duplicate JSON member likewise retains its local source refusal,
@@ -267,7 +273,7 @@ class ValidationCLITests(unittest.TestCase):
         self.assertEqual(main(["validate",str(self.path),"--wrong"])[1],1)
         self.assertEqual(main(["validate",str(self.path.parent/"absent")])[1],2)
         self.path.write_bytes(property_source())
-        with patch("uwmd.validate_document",side_effect=RuntimeError("test failure")):
+        with patch("uwmd._validate_source",side_effect=RuntimeError("test failure")):
             result,status=main(["validate",str(self.path),"--json"])
         self.assertEqual(status,2)
         self.assertNotIn("overall_status",result)

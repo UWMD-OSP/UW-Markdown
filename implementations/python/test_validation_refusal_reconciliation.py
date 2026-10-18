@@ -93,7 +93,7 @@ class RefusalReconciliationTests(unittest.TestCase):
         self.assertNotEqual(validate(source)["metadata_assessment"]["handled_shape_findings"][0]["message"],
                             "consumer edit")
 
-    def test_valid_nested_shape_keeps_unallocated_requirements_separate_from_actor_and_flags(self):
+    def test_accepted_0093_shape_keeps_independent_actor_and_flag_contracts(self):
         good = parse(property_source()).source.blocks[0].parsed.value
         late = dict(value=1, **good)
         wrong = copy.deepcopy(good); wrong["_meta"]["section"] = "wrong"
@@ -107,7 +107,7 @@ class RefusalReconciliationTests(unittest.TestCase):
                              (actor, [])):
             _, result = self.assess(HEADER + fence(body))
             assessment = result["metadata_assessment"]
-            self.assertEqual([f["field"] for f in assessment["shape_findings"]], fields)
+            self.assertEqual(assessment["shape_findings"], [])
             response, status = _validation_response(result)
             self.assertEqual(status, 1)
             if body is actor:
@@ -117,9 +117,10 @@ class RefusalReconciliationTests(unittest.TestCase):
                 self.assertEqual(response["overall_status"], "errors")
                 self.assertNotIn("error", response)
             else:
-                self.assertNotIn("handled_shape_findings", assessment)
-                self.assertNotIn("code", response["error"])
-                self.assertNotIn("overall_status", response)
+                self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
+                                 [("META-01", field) for field in fields])
+                self.assertEqual(response["overall_status"], "errors")
+                self.assertNotIn("error", response)
 
     def test_flag_consumption_requires_exact_owner_current_predicate_and_field(self):
         body = parse(property_source()).source.blocks[0].parsed.value
@@ -141,15 +142,15 @@ class RefusalReconciliationTests(unittest.TestCase):
                 local = metadata_assessment(current, changed)
                 self.assertIn("_meta.quality.human_review_required", [f["field"] for f in local["shape_findings"]])
                 self.assertEqual([f["registered_code"] for f in local["handled_shape_findings"]], ["META-03"])
-        # A missing quality container stays an independent local requirement,
-        # even though the admitted lifecycle flag has a registered owner.
+        # Accepted RFC0093 adds the independent quality-container owner;
+        # lifecycle admission and META-03 remain unchanged.
         del source.source.blocks[0].parsed.value["_meta"]["quality"]
         result = validate(source)
-        self.assertEqual([i["code"] for i in result["errors"]], ["META-03"])
-        self.assertEqual([f["field"] for f in result["metadata_assessment"]["shape_findings"]], ["_meta.quality"])
+        self.assertEqual([i["code"] for i in result["errors"]], ["META-01", "META-03"])
+        self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
         response, status = _validation_response(result)
         self.assertEqual(status, 1)
-        self.assertNotIn("code", response["error"])
+        self.assertNotIn("error", response)
 
     def test_history_container_does_not_expand_active_local_checks_or_hide_other_actor(self):
         good = parse(property_source()).source.blocks[0].parsed.value
