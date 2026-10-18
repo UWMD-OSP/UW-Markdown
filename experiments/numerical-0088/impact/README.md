@@ -173,3 +173,11 @@ six came from a status-only standalone forwarding closure declared before actual
 locals. The collector now captures those six emit callsites in their caller
 scope and forwards once, rather than counting the pass status as an actual result.
 That first run is not the final complete-observation checkpoint.
+
+Final current capture:1106/1106 assertions per mode; zero missing observations;
+14145 primitive records/mode and671 raw primitive word changes. No captured
+numeric/refusal changes; six source differences are strictly timestamp-only.
+Current evidence is in current-evidence/observed-impact.json and hash-bound
+shards/streams. `node experiments/numerical-0088/impact/verify-current.mjs` checks
+those original bytes and all observed-value hashes without reexecuting cases.
+No whole-result proof is inferred from aggregate/control capture.

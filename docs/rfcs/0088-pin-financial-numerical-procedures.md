@@ -802,6 +802,54 @@ continues independently; the numerical oracle here is not an accepted solver.
 - **Generate a full underwriting engine:** unrelated to closing this numeric
   contract gap and inconsistent with the agreed scope of #355.
 
+## Current priority and bounded evidence closure — 2026-10-17
+
+The owner prioritizes this RFC ahead of RFC0092, Python Issue354 implementation
+and RFC0089. StackUW's single numerical route will consume the shared public
+pinned functions when the accepted integration lands; this is not permission
+for a separate StackUW-only procedure. RFC0092 U8 remains blocked on acceptance.
+No pending metric decision, dictionary repair or public cleanup is included.
+
+The seven-consumer study now closes the identified **bounded independent final
+result/refusal/reporting** gap:44 cases and64 seeded normal samples compare
+24,139 independently structured Python operation/reporting records with actual
+public-kernel-injected consumer results. Capital-stack1, waterfall3, normal-tail2
+and recovery1 all execute. The integrator independently ran all6 focused methods
+and a fresh integrated44-case capture. Unmodified and instrumented baseline
+results agree. This does not promise universal accuracy or change normal-profile
+tolerance. See the current consumer-composition study linked in the review.
+
+A fresh **1106-case** current-corpus capture passes both modes, with14145
+primitive events each,671 aligned primitive word differences, zero captured
+numeric/refusal changes and six strictly timestamp-only source differences.
+The earlier108 unrecognized binding cells are resolved by explicit initialized
+output/control selection and caller-scope standalone capture. All1106 now have
+visible observations, with exact original case identities and no expectation
+updates. Control/aggregate visibility still is not every internal value. The
+read-only verify-current checker independently reconstructs observation hashes,
+raw stream identities and the complete primitive-difference list.
+
+Actual headless Chrome155 on Windows executes **2163** frozen pow/log/exp inputs
+through the actual public browser exports, with host pow/log/exp/sqrt disabled.
+Every finite/zero/infinity word and NaN class agrees with the independent pinned
+native procedure. This is bounded Chrome evidence, not universal browser or
+whole-financial-formula proof. Exact bundle, source graph, DOM and runtime
+streams are in the browser-probe study.
+
+**Still open:** actual scoped spreadsheet recalculation. A dedicated Excel
+instance opened a synthetic ten-control workbook, but CalculateFullRebuild
+remained xlPending(2), including the explicit completion-wait retry. Neither
+attempt counts as executed spreadsheet evidence; generated caches are not an
+oracle. Diagnose this execution boundary or obtain an independently recalculated
+supported workbook before closing the spreadsheet claim gate. No financial
+convention or stability rearrangement is selected by the failure.
+
+Final material-claim review and exact-final-head CI must confirm the new evidence.
+Existing CI jobs now read-check the corpus/browser artifacts and freshly execute
+the44-case consumer proof on Linux Node20/22 and Windows Node20. Merely adding the
+step is not evidence that those platforms passed; record their actual results.
+RFC0088 stays draft and production graphs, receipts and conformance remain unchanged.
+
 ## Remaining acceptance work
 
 Architecture A, unchanged financial associations/quantizer/solver and
@@ -819,8 +867,8 @@ those choices for repeated approval or implement B. The remaining gates are:
    the kernel used by every activated financial consumer. Cover number-type
    boundaries, signed zero, subnormals, negative/fractional/huge exponents and
    log/exp special/range paths without claiming universal correct rounding.
-3. Close independent final-result/refusal/reporting proof for seven verifier
-   sites already reached by the corpus: capital-stack amortized ADS(1), waterfall
+3. Review the new bounded independent final-result/refusal/reporting proof for
+   seven verifier sites already reached by the corpus: capital-stack amortized ADS(1), waterfall
    scale/hurdle/compound preference(3), normal-tail logs(2), recovery reporting(1).
    All20 eligible numerical sites have been reached by the corpus plus focused
    financial study; reach is not independent whole-consumer proof. Existing eight
@@ -832,9 +880,9 @@ those choices for repeated approval or implement B. The remaining gates are:
    only after final RFC acceptance. No supplied invalid signature may be hidden by
    financial refusal. Keep malformed source/subject, unavailable dependencies,
    finite disagreement, engine attribution and digest precedence explicit.
-5. Produce the exact current affected conformance manifest, closing108 old
-   capture cells without visible actual bindings and covering current corpus
-   additions, with exact output/refusal/code attribution. Complete independent
+5. Review the new1106-case current affected-conformance manifest with zero
+   missing visible captures and exact output/refusal/code observations. Do not
+   confuse aggregate/control snapshots with full internal trajectories. Complete independent
    material-claim review and required exact-final-head CI. Disclose current
    composed accuracy/refusal limitations without selecting stable new graphs or
    inferring a whole-formula accuracy promise. RFC acceptance and activation stay

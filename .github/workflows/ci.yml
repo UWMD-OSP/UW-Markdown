@@ -301,6 +301,25 @@ jobs:
         if: hashFiles('experiments/numerical-0088/authenticate-first/proposal.test.mjs') != ''
         run: node --experimental-loader ./experiments/numerical-0088/authenticate-first/loader.mjs --test ./experiments/numerical-0088/authenticate-first/proposal.test.mjs
 
+      - uses: actions/setup-python@v5
+        if: hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+        with:
+          python-version: '3.12'
+      - name: Check bounded final numerical consumers (unaccepted)
+        if: hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+        run: |
+          node experiments/numerical-0088/impact/verify-current.mjs
+          python -B experiments/numerical-0088/browser-probe/verify.py
+          python -B -m unittest discover -s experiments/numerical-0088/consumer-composition -p "test_*.py" -v
+          python -B experiments/numerical-0088/consumer-composition/capture.py --output "${{ runner.temp }}/final-consumer-proof"
+      - uses: actions/upload-artifact@v6
+        if: always() && hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+        with:
+          name: final-numerical-consumers-${{ runner.os }}-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/final-consumer-proof/
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Run conformance suite (every default suite)
         # Deliberately not a pinned --tier list. The pinned list silently
         # excluded the agent replay suite after it landed, so a suite could be
@@ -580,6 +599,25 @@ jobs:
       - name: Check owner-directed receipt authentication order (unaccepted)
         if: hashFiles('experiments/numerical-0088/authenticate-first/proposal.test.mjs') != ''
         run: node --experimental-loader ./experiments/numerical-0088/authenticate-first/loader.mjs --test ./experiments/numerical-0088/authenticate-first/proposal.test.mjs
+
+      - uses: actions/setup-python@v5
+        if: hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+        with:
+          python-version: '3.12'
+      - name: Check bounded final numerical consumers (unaccepted)
+        if: hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+        run: |
+          node experiments/numerical-0088/impact/verify-current.mjs
+          python -B experiments/numerical-0088/browser-probe/verify.py
+          python -B -m unittest discover -s experiments/numerical-0088/consumer-composition -p "test_*.py" -v
+          python -B experiments/numerical-0088/consumer-composition/capture.py --output "${{ runner.temp }}/final-consumer-proof"
+      - uses: actions/upload-artifact@v6
+        if: always() && hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+        with:
+          name: final-numerical-consumers-${{ runner.os }}-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/final-consumer-proof/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Run conformance suite (every default suite)
         # Deliberately not a pinned --tier list. The pinned list silently

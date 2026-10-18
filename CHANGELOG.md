@@ -17,7 +17,10 @@ protocol, and each package each carry an independent semver).
   quantization, solver and receipt behavior remain unchanged while RFC evidence
   and final acceptance are pending. Reconcile the exact pinned word/resource
   procedure and raw/internal/public admission boundaries in draft governed text;
-  no new domain cutoff or intermediate finite guard is introduced. No numerical conformance rebaseline,
+  no new domain cutoff or intermediate finite guard is introduced. Add bounded
+  independent final-consumer proofs, a current1106-case impact capture and actual
+  Chrome public-primitive evidence; scoped Excel recalculation remains open.
+  No numerical conformance rebaseline,
   package version or publication is allocated.
 
 - Apply the2026-10-17 owner rule in both agent entry points: all @uwmd npm

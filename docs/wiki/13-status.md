@@ -21,7 +21,12 @@ backend, malformed subject, signature, refusal, value/engine and digest ordering
 The draft now specifies the complete primitive/word/resource and three-layer
 admission contract, preserving raw/internal/public refusal boundaries and the
 existing76-loop scalar bound. Independent contract/consumer/conformance review,
-actual scoped platform/spreadsheet proof and final acceptance still gate activation.
+a final exact-head CI run and final acceptance still gate activation. New local
+evidence covers44 independent consumer cases/64 samples, all1106 current corpus
+cases with zero missing observation cells, and2163 actual Chrome public primitive
+cases. Actual Excel recalculation remains unproven (xlPending2); no cached result
+is counted as native evidence. The owner prioritizes0088, then0092 U1/U9, then
+Python implementation;0089 follows. Pending metric decisions/cleanup are parked.
 No prelaunch compatibility work, version allocation or release is authorized.
 
 **Actor reconciliation — accepted RFC0090.**
