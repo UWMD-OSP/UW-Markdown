@@ -244,11 +244,11 @@ The source/word/constants artifacts below define one procedure; matching a host
 libm name or merely agreeing after reporting quantization is insufficient.
 
 **Procedure identity and arithmetic.** Use the exact eight-file closure in
-[`sources.json`](../../experiments/numerical-0088/pinned-fdlibm/sources.json),
+[`sources.json`](https://github.com/UWMD-OSP/UW-Markdown/blob/03872a5f03a9c6d0238e464b1ee423182bef2455/experiments/numerical-0088/pinned-fdlibm/sources.json),
 with all constants decoded from the certified binary64 words in
-[`constants.json`](../../experiments/numerical-0088/pinned-fdlibm/constants.json)
+[`constants.json`](https://github.com/UWMD-OSP/UW-Markdown/blob/03872a5f03a9c6d0238e464b1ee423182bef2455/experiments/numerical-0088/pinned-fdlibm/constants.json)
 and the complete
-[`WORD-SITES`](../../experiments/numerical-0088/pinned-fdlibm/WORD-SITES.md)
+[`WORD-SITES`](https://github.com/UWMD-OSP/UW-Markdown/blob/03872a5f03a9c6d0238e464b1ee423182bef2455/experiments/numerical-0088/pinned-fdlibm/WORD-SITES.md)
 map. The map resolves historical C aliasing, signed overflow, signedness,
 carry/borrow and whole-word shifts; unspecified C behavior is not inherited.
 Each floating basic operation rounds to binary64 nearest/ties-even with gradual
@@ -294,7 +294,7 @@ same source reduction/range/scaling procedure. Raw log maps signed zero to
 Raw exp maps signed zero to1, +Infinity to +Infinity, -Infinity to+0 and NaN to
 NaN; finite overflow and gradual underflow follow its exact source body. The
 complete helper/special-case table is
-[`DOMAIN-RESOURCE`](../../experiments/numerical-0088/pinned-fdlibm/DOMAIN-RESOURCE.md).
+[`DOMAIN-RESOURCE`](https://github.com/UWMD-OSP/UW-Markdown/blob/03872a5f03a9c6d0238e464b1ee423182bef2455/experiments/numerical-0088/pinned-fdlibm/DOMAIN-RESOURCE.md).
 
 For example an overflowing internal power can be a valid intermediate in NPV:
 finite_amount/Infinity may become finite0. The public pow builtin would refuse
