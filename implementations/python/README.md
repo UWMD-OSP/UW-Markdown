@@ -733,7 +733,7 @@ or older README totals:
 | Verifier | 698 | 281 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
-| Representations | 135 | 0 |
+| Representations | 142 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
