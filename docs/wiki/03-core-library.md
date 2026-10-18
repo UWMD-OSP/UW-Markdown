@@ -10,6 +10,13 @@ product. Release 4.0.0 carries it, labelled Format 3.0 and Protocol 4.0.0;
 3.0.0 is the last release that reads older formats.
 
 
+Accepted RFC0081's hospitality field homes are enforced by CLS-04 on the selected
+current statement: `property.keys` is the only key count; `rent_roll` holds ADR,
+occupancy and available room nights; `hotel_metrics` holds only the market RevPAR
+fact. Explicit presence of removed `rent_roll.keys` or `hotel_metrics.adr`,
+`occupancy`, `available_room_nights` or `key_count` is refused, including null.
+This bounded rule does not allocate a diagnostic for arbitrary unknown fields or
+change historical-block applicability, role selection or financial calculations.
 The reference library is two packages since RFC 0083 Phase 2, and everything
 else in the repo depends on one or both:
 
