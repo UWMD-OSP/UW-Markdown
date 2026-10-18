@@ -1943,3 +1943,19 @@ main adds the accepted shared source-lifecycle correction. CLI/discovery is
 byte-identical to main; actual111 validate subprocess cases remain unsupported
 and unrun. The local metadata/composition assessments and earlier111 API subset
 comparisons cannot be promoted into complete validation or Verifier evidence.
+
+
+### Independent capital-tranche findings
+
+The developing `validate` command now retains independent CS-01 member errors
+in id, class, position, amount order and uses the reference id-or-index field
+attribution, including component stack prefixes. RFC0050 CS-02b independently
+reports split-class, cash-rate and accrued-rate failures before an assessable
+total-rate disagreement. An absent total rate remains CS-02, without a duplicate
+CS-02b aggregate failure. Existing type/value guards, current-source selection,
+metadata checks and the separate sizing assessment remain unchanged.
+Focused controls exercise ordinary and component stacks, nullable authored terms,
+literal booleans, duplicates, split rates, history/current peers, mutable model
+authority, result partitions and real CLI exits. This closes a loss of registered
+finding multiplicity and attribution; it does not claim exhaustive capital-stack
+admission, sizing verification or complete validation. Discovery stays parse-only.

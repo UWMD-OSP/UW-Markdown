@@ -29,13 +29,25 @@ def _stack(ledger, payload, section, root):
             issue("CS-01", path, "Tranche must be an object")
             continue
         identity, position, kind, amount = (tranche.get(k) for k in ("id", "position", "class", "amount"))
-        valid = isinstance(identity, str) and bool(identity) and identity not in ids
-        valid = valid and _integer(position, 1) and position not in positions
-        valid = valid and kind in classes and finite(amount) and amount >= 0
-        if not valid:
-            issue("CS-01", path, "Tranche identity, class, unique position or amount is invalid")
-        if isinstance(identity, str):ids.add(identity)
-        if finite(position):positions.add(position)
+        # Format 4.24 / RFC0026: independent malformed/duplicate members
+        # retain reference field attribution and order, not one tranche flag.
+        path = identity if isinstance(identity, str) and identity else path
+        if not isinstance(identity, str) or not identity:
+            issue("CS-01", path + ".id", "Tranche must state a nonempty string id")
+        elif identity in ids:
+            issue("CS-01", path + ".id", "Tranche id must be unique within its stack")
+        else:
+            ids.add(identity)
+        if kind not in classes:
+            issue("CS-01", path + ".class", "Tranche class is not admitted")
+        if not _integer(position, 1):
+            issue("CS-01", path + ".position", "Tranche position must be a positive integer")
+        elif position in positions:
+            issue("CS-01", path + ".position", "Tranche position must be unique within its stack")
+        else:
+            positions.add(position)
+        if not finite(amount) or amount < 0:
+            issue("CS-01", path + ".amount", "Tranche amount must be finite and nonnegative")
         if any(key in tranche for key in ("promote", "hurdles", "tiers", "catch_up", "waterfall")):
             issue("CS-WATERFALL-UNSUPPORTED", path, "Partnership terms do not belong in a capital tranche")
         rate, mode = tranche.get("rate"), tranche.get("accrual")
@@ -46,13 +58,17 @@ def _stack(ledger, payload, section, root):
         split = mode == "split"
         if split:
             if kind != "preferred_equity":
-                issue("CS-02b", path + ".class", "Only preferred equity admits a split coupon")
-            if not all(finite(v) for v in (rate, cash, accrued)):
-                issue("CS-02b", path, "A split coupon requires all three finite rate members")
-            elif rate != cash + accrued:
+                issue("CS-02b", path + ".accrual", "Only preferred equity admits a split coupon")
+            if not finite(cash):
+                issue("CS-02b", path + ".cash_rate", "A split coupon requires a finite cash_rate")
+            if not finite(accrued):
+                issue("CS-02b", path + ".accrued_rate", "A split coupon requires a finite accrued_rate")
+            # CS-02 owns an absent/invalid total rate independently. A total
+            # disagreement is assessed only with all three finite operands.
+            if all(finite(v) for v in (rate, cash, accrued)) and rate != cash + accrued:
                 issue("CS-02b", path + ".rate", "Split rates must reconcile to the stated total")
         elif "cash_rate" in tranche or "accrued_rate" in tranche:
-            issue("CS-02b", path, "Component rates must not appear outside a split coupon")
+            issue("CS-02b", path + ".accrual", "Component rates must not appear outside a split coupon")
         # Format 4.24 / tranche schema: omission is optional, authored null
         # is outside the closed enum. No default/payment mode is inferred.
         if ("accrual" in tranche and mode not in ("cash", "accrued", "split")
