@@ -31,6 +31,7 @@ def _stack(ledger, payload, section, root):
         identity, position, kind, amount = (tranche.get(k) for k in ("id", "position", "class", "amount"))
         # Format 4.24 / RFC0026: independent malformed/duplicate members
         # retain reference field attribution and order, not one tranche flag.
+        physical_path = path
         path = identity if isinstance(identity, str) and identity else path
         if not isinstance(identity, str) or not identity:
             issue("CS-01", path + ".id", "Tranche must state a nonempty string id")
@@ -49,7 +50,7 @@ def _stack(ledger, payload, section, root):
         if not finite(amount) or amount < 0:
             issue("CS-01", path + ".amount", "Tranche amount must be finite and nonnegative")
         if any(key in tranche for key in ("promote", "hurdles", "tiers", "catch_up", "waterfall")):
-            issue("CS-WATERFALL-UNSUPPORTED", path, "Partnership terms do not belong in a capital tranche")
+            issue("CS-WATERFALL-UNSUPPORTED", physical_path, "Partnership terms do not belong in a capital tranche")
         rate, mode = tranche.get("rate"), tranche.get("accrual")
         if ((kind == "common_equity" and "rate" in tranche)
                 or kind in classes and kind != "common_equity" and not finite(rate)):
@@ -74,7 +75,7 @@ def _stack(ledger, payload, section, root):
         if ("accrual" in tranche and mode not in ("cash", "accrued", "split")
                 or any(tranche.get(k) is not None and not _integer(tranche[k])
                        for k in ("amortization_months", "io_months", "term_months"))):
-            issue("CS-01", path, "Stated accrual and debt month terms violate the tranche contract")
+            issue("CS-01", physical_path, "Stated accrual and debt month terms violate the tranche contract")
 
 
 def composition_rules(ledger):
