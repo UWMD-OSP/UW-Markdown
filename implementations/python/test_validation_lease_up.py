@@ -106,7 +106,12 @@ class ValidationLeaseUpTests(unittest.TestCase):
     def test_required_fields_containers_closed_members_and_no_unregistered_lu_codes(self):
         for key in ("model_type","period_granularity","schedule"):
             body=payload();del body[key]
-            self.assertIn(key,fields(validate(parsed(body))))
+            result=validate(parsed(body))
+            if key == "model_type":
+                self.assertIn(key, fields(result))
+            else:
+                self.assertNotIn(key, fields(result))
+                self.assertIn("LU-01" if key == "period_granularity" else "LU-03", lu_codes(result))
         for group in ("assumptions","stabilized_summary"):
             for value in (False,"x",[]):
                 body=payload();body[group]=value
@@ -121,7 +126,12 @@ class ValidationLeaseUpTests(unittest.TestCase):
         self.assertEqual(source,before)
         for row in (None,[],{},dict(period=0),dict(period="2026-99")):
             body=payload();body["schedule"]=[row]
-            self.assertTrue(fields(validate(parsed(body))))
+            result=validate(parsed(body))
+            if isinstance(row, dict):
+                self.assertEqual(fields(result), [])
+                self.assertIn("LU-01", lu_codes(result))
+            else:
+                self.assertEqual(fields(result), ["schedule[0]"])
         # Registered period diagnostics still own period/cadence failure;
         # none of these schema fields silently acquires LU-05 or META-01.
 

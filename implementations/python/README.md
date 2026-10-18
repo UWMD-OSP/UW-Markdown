@@ -1347,3 +1347,15 @@ constraint. An unrelated code, sibling field, peer, missing owner or changed
 constraint cannot provide coverage. Unknown members and other unallocated
 conditions stay explicit local refusals. No recovery amount, cash source,
 default, standalone command, conformance expectation or discovery claim changes.
+
+
+### Lease-up registered-condition ownership
+
+The developing validator consumes duplicate local evidence only for an actual
+LU-03 nonempty-schedule error or LU-01 cadence/period/target grammar error on the
+same current physical block and exact field. Predicate tags are private;
+ordinary result states and registered issue ordering remain unchanged.
+Unallocated model, numeric, row-container and unknown-member requirements remain
+local even beside a registered LU error. This corrects partial-refusal transport
+for the unchanged native empty-schedule negative without computing a trajectory,
+changing a frozen expectation or claiming complete validation.
