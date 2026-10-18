@@ -79,8 +79,11 @@ source subjects; (2) optionally account for a declared acquisition-ledger
 universe; (3) add only individually justified normative identities. These are
 assurance scopes, not new conformance tiers or numerical convention options.
 The brief requests the complete candidate inventory below; U1 decides the initial
-subset, and U2 its required assertions. Neither this draft nor row counts certify
-undisclosed real-world completeness or a producer's forecast assumptions.
+subset. U2 is resolved by the owner on 2026-10-17: the profile verifies whatever
+the document states and reports coverage; no minimum L1 row set is required to
+claim it. A thin document receives a thin coverage report, not a refusal for
+omitted rows. Neither this draft nor row counts certify undisclosed real-world
+completeness or a producer's forecast assumptions.
 
 Checking identities over a *stated* pro forma is internally consistent
 verification under [RFC 0078](0078-protocol-is-verification.md) D1.
@@ -100,7 +103,9 @@ Full implementations would add `pro-forma` to `ImplementationManifest.profiles`
 (Protocol I.4/II.3), plus proposed capability `pro-forma-verify`. The current six
 optional profiles become seven. Partial implementations MUST NOT claim the
 profile; an unsupported receiver reports its checks unverifiable, never passed.
-The profile does not substitute for unimplemented base Verifier obligations.
+That implementation-completeness requirement does not impose a minimum row set
+on documents claiming the profile. The profile does not substitute for
+unimplemented base Verifier obligations.
 No module manifest, projection package or new conformance tier carries it.
 
 Future synchronized changes cover Protocol counts/lists, `ConformanceProfile`,
@@ -145,8 +150,9 @@ Propose only these new field groups, with final schemas gated:
 4. Direct `debt_structure.ltv_basis` per loan, beside `loan_amount`, below.
 
 Document dictionary-owned `valuation.underwritten_value` consistently in the
-Format at synchronization; do not create another value home. U1/U2 retain the
-L1 scope/minimum-row decision rather than implying complete-model verification.
+Format at synchronization; do not create another value home. U1 retains the
+initial identity scope decision; resolved U2 imposes no minimum document row set
+and does not imply complete-model verification.
 
 ### 3. Closed convention registry
 
@@ -316,7 +322,9 @@ source/variant/period/method/target bindings, applicable assurance scope,
 conventions, precision, verdict and reason/typed evidence. A row may expose
 multiple named relationships, but their dependent operations do not multiply the
 number of verified figures. Report relationship results separately from terminal
-assertion counts, and group assertion counts by verdict and row family.
+assertion counts, and group assertion counts by verdict and row family, including
+rows stated with no defined identity. Those rows remain visible as unverifiable;
+they cannot disappear from coverage because no identity can be evaluated.
 
 Inventory the declared universe independently of the checks the implementation
 supports. Inapplicable relationships are excluded with reasons, never counted
@@ -326,12 +334,16 @@ claimed is also unverifiable but has a distinct `relationship_not_claimed` reaso
 Do not add a fourth `stated-only` verdict: retain that distinction in reasons and
 claim status under the brief's required three-state vocabulary.
 
-Missing required assertions/ledger components are coverage gaps even when no
-numeric cell exists. Report gaps and exclusions separately; do not manufacture
-values or inflate the denominator with operations. Empty claim sets establish
-no assurance. The denominator is the declared applicable assertion universe,
-not a document-wide percentage or a guarantee about undisclosed facts. U1/U2/U9
-must freeze its enumeration, duplicate handling and final counting rules.
+Missing inputs required by a stated assertion remain unverifiable. Missing
+components of an explicitly declared ledger universe are coverage gaps even when
+no numeric cell exists; U1 still determines that optional universe. These are not
+a mandatory L1 row inventory or a basis to refuse a thin document. Report gaps
+and exclusions separately; do not manufacture values or inflate the denominator
+with operations. Empty claim sets establish no assurance and report zero
+assertions, without a minimum-row refusal. The denominator is the declared
+applicable assertion universe, not a document-wide percentage or a guarantee
+about undisclosed facts. U1/U9 must freeze its enumeration, duplicate handling
+and final counting rules within the owner's resolved U2 rule.
 
 Local arithmetic agreement is not a clean financial-verification claim when a
 required prerequisite failed or is unverifiable. Retain local relationship
@@ -366,7 +378,9 @@ support. Proposed case groups, not files created here:
 - **Claim/coverage:** claimed, unclaimed and unsupported profile; every verdict;
   unknown identities; distinct assertion/relationship/family totals; duplicates,
   applicability exclusions, empty claims, blocked dependencies and required gaps
-  without cells; partial documents and the selected minimum-row rule.
+  without cells; thin/partial documents admitted without a minimum-row refusal,
+  zero-assertion coverage, and rows stated with no defined identity counted by
+  verdict and row family.
   Capability skips are not passing evidence.
 - **Selection/source:** exact period/loan/variant, duplicate/missing periods,
   ambiguous peers, independently changed selected/unselected inputs, read-only
@@ -401,9 +415,10 @@ in this corpus. This is a plan, not a claim that a spreadsheet was executed.
 Plan only, inside `@uwmd/verify` under the optional profile (RFC0083). No code,
 projection package, model-generation function, AI agent or module manifest.
 
-1. Resolve U1–U9 and final acceptance; synchronize Format/Protocol, class-scoped
-   LTV dictionary entries, schemas, executable protocol mirror, profile/capability/
-   target tables and conformance through reviewed implementation work.
+1. Resolve the remaining U1/U3–U9 gates and final acceptance; synchronize
+   Format/Protocol, class-scoped LTV dictionary entries, schemas, executable
+   protocol mirror, profile/capability/target tables and conformance through
+   reviewed implementation work.
 2. Proposed pure export `verifyProForma`, with row/convention/coverage types,
    in verify and browser, re-exported by core. It can compute a comparison value
    but cannot produce schedules or mutate source/model/_meta.
@@ -431,6 +446,15 @@ projection package, model-generation function, AI agent or module manifest.
 - **Generate missing rows then compare headlines.** Replaces missing evidence
   with UWMD's model; missing rows must remain visible instead.
 
+## Resolved owner decision
+
+**U2 — resolved, owner decision 2026-10-17.** The pro forma profile verifies
+whatever the document states and reports coverage, with no minimum L1 row set
+required to claim it. Counts by verdict and row family include rows stated with
+no defined identity. A thin document gets a thin coverage report, not a refusal.
+This follows Format 4.24's "stated and verified, never trusted" and the #355
+reframe. Only U2 is resolved by this decision; all other U items remain open.
+
 ## Unresolved questions
 
 These are acceptance gates, not choices for an implementer to guess. Reference
@@ -439,7 +463,6 @@ code or spreadsheet practice alone does not decide a new financial convention.
 | ID | Kind | Required decision/evidence |
 |---|---|---|
 | U1 | Scope | Reconcile the requested broad L1 candidate inventory with the current bounded-assurance direction: select initial return/method bindings, the optional ledger universe and individually justified additional identities, with exact income/cash/equity boundaries. No universal row expansion is accepted. |
-| U2 | Scope | Require a minimum complete L1 row set, or check whatever is stated with exhaustive coverage? Left open per #355; a high verified count does not resolve it. |
 | U3 | **Numeric** | Pin calendar/anniversary anchors, stub proration/quantity-rate scaling, occupancy-to-loss arithmetic and discount exponents. `beginning`/`mid` with CF0 fixed at t0 cannot silently use integer-spaced `irr`: decide admitted combinations or govern the timed identity without changing the solver implicitly. |
 | U4 | **Numeric** | Pin nominal annual-to-payment rate, full/remaining amortization counts, IO boundary, payment/accrual interaction and unsigned PMT semantics; pre/post-payment balances for debt yield, balloon and exit. Current stabilized stack service/starter code is not a normative periodic schedule. |
 | U5 | **Numeric** | Reconcile above-NOI reserves with literal `NCF=NOI-reserves-TI/LC-capex`: subtract only reserves not already deducted, or intentionally define another measure? Also bind accrual versus owner cash under VIII.9.6/11. Do not choose or double count silently. |

@@ -44,7 +44,10 @@ owner. No model-generation expansion, metric fix, version, tag or publication.
 checks authored period identities under a closed convention registry, including
 per-loan ltv_basis, while RFC0078 D1/D7 preserve producer-owned modeling. It adds
 no implementation, profile claim, dictionary rule, schema or receipt behavior.
-Numeric/scope questions and accepted RFC0088 remain explicit gates.
+Owner-resolved U2 requires no minimum L1 row set: verify stated assertions and
+report coverage by verdict and row family, including rows without defined
+identities. Thin documents receive thin coverage, not a minimum-row refusal.
+Other numeric/scope questions and accepted RFC0088 remain explicit gates.
 See [RFC0092](../rfcs/0092-pro-forma-verification-profile.md).
 
 **Actor reconciliation — accepted RFC0090.**

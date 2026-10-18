@@ -111,7 +111,9 @@ protocol, and each package each carry an independent semver).
 
 - Draft RFC0092 proposes optional pro-forma identity verification, the approved
   convention registry plus per-loan ltv_basis, coverage and explicit numerical
-  gates. RFC0078's producer/verifier boundary is unchanged. Documentation only;
+  gates. Owner-resolved U2 checks whatever is stated with coverage by verdict
+  and row family, including rows with no defined identity; no minimum L1 row set
+  is required. RFC0078's producer/verifier boundary is unchanged. Documentation only;
   no profile, dictionary, schema, receipt or version change.
 
 
