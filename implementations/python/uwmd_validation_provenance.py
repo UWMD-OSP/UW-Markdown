@@ -191,6 +191,8 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             continue
         block = document.source.blocks[index]
         body = block.parsed.value
+        if not isinstance(body, dict):
+            continue  # Ownership proof cannot admit a nonobject mutable payload.
         meta = body.get("_meta")
         parent = meta.get("provenance") if isinstance(meta, dict) else None
         if (issue.get("section") == block.section and not _metadata_routing(body)

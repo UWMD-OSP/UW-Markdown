@@ -1,5 +1,6 @@
 """Existing Format2.6 SRC-01 ownership, not a new admission vocabulary."""
 import copy
+from dataclasses import replace
 import json
 from pathlib import Path
 import subprocess
@@ -66,6 +67,21 @@ class SourceOwnershipTests(unittest.TestCase):
             self.assertEqual([f["field"] for f in metadata_assessment(parsed, changed)["shape_findings"]], [FIELD])
         changed = copy.deepcopy(inventory); changed["issues"] = []
         self.assertEqual(metadata_assessment(parsed, changed)["shape_findings"], inventory["shape_findings"])
+
+    def test_source_owner_proof_never_admits_a_nonobject_constructed_payload(self):
+        parsed = document(None)
+        inventory = inspect_source_roles(parsed)
+        # Proof-only forged inventory bypasses earlier object-domain traversal.
+        # This does not assert that general validation admits malformed models.
+        inventory["blocks"] = []
+        for value in (None, False, 0, "payload", []):
+            with self.subTest(value=value):
+                original = parsed.source.blocks[0]
+                changed_block = replace(original, parsed=replace(original.parsed, value=value))
+                changed = replace(parsed, source=replace(parsed.source, blocks=(changed_block,)))
+                result = metadata_assessment(changed, inventory)
+                self.assertEqual(result["shape_findings"], inventory["shape_findings"])
+                self.assertNotIn("handled_shape_findings", result)
 
     def test_independent_unallocated_conditions_survive_the_registered_owner(self):
         authored = body(); authored["_meta"]["provenance"].update(source=0, timestamp="invalid")
