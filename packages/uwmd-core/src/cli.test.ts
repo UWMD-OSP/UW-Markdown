@@ -148,12 +148,10 @@ describe('RFC0093 actual source validation transport', () => {
   it.each(['validate', 'verify'])('%s preserves numeric lexical placement in JSON and exit semantics', async command => {
     const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-meta0093-'));
     const file = resolve(dir, 'deal.uwx.md');
-    const source = '---\nuw_version: "3.0"\nasset_class: multifamily\ndeal_id: shape-cli\n---\n'
-      + '\`\`\`json uw:section=property\n'
-      + JSON.stringify({ '0': 1, _meta: {
+    const source = `---\nuw_version: "3.0"\nasset_class: multifamily\ndeal_id: shape-cli\n---\n\`\`\`json uw:section=property\n${JSON.stringify({ '0': 1, _meta: {
         section: 'property', provenance: { source: 'manual', actor: 'test', timestamp: '2026-10-18T00:00:00Z' },
         lifecycle: { revision: 1, superseded: false }, quality: { confidence: 'high', human_review_required: false },
-      }, total_units: 10 }) + '\n\`\`\`\n';
+      }, total_units: 10 })}\n\`\`\`\n`;
     writeFileSync(file, source);
     try {
       const result = await spawnCli(process.execPath, [cli, command, file, ...(command === 'verify' ? ['--validate'] : []), '--json'], { encoding: 'utf8' });
