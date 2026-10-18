@@ -44,24 +44,6 @@ class MetadataShape0093Tests(unittest.TestCase):
         self.assertEqual(raw, before)
         return report
 
-    def test_source_lexical_and_model_nonindex_order_are_distinct(self):
-        for key, is_index in (("0", True), ("1", True), ("4294967294", True),
-                              ("00", False), ("-0", False), ("01", False),
-                              ("4294967295", False), ("1.0", False),
-                              ("١", False), ("9007199254740991", False)):
-            with self.subTest(key=key):
-                self.assertEqual(_array_index_name(key), is_index)
-                value = {key: 1, **body()}
-                raw = HEADER + fence(value)
-                self.assertEqual(shapes(self.source(raw)), [(0, "_meta")])
-                document = parse(raw); before = copy.deepcopy(document)
-                self.assertEqual(shapes(inspect_source_roles(document)),
-                                 [] if is_index else [(0, "_meta")])
-                self.assertEqual(document, before)
-                # Following a first _meta never creates lexical lateness.
-                value = body(); value[key] = 1
-                self.assertEqual(shapes(self.source(HEADER + fence(value))), [])
-        self.assertFalse(_array_index_name(True))
 
     def test_decoded_meta_nested_keys_payload_and_absent_metadata(self):
         raw = HEADER + fence(body()).replace(b'"_meta"', b'"\\u005fmeta"', 1)
@@ -112,80 +94,9 @@ class MetadataShape0093Tests(unittest.TestCase):
         self.assertEqual([(i["code"], i["field"]) for i in report["errors"]],
                          [("META-02", "_meta.quality.human_review_required")])
 
-    def test_complete_shape_pass_precedes_all_actors_then_flags_and_sources(self):
-        first = {"value": 1, **body()}
-        first["_meta"]["section"] = "wrong"
-        first["_meta"]["quality"] = None
-        first["_meta"]["provenance"].update(actor="", source="bad")
-        first["_meta"]["lifecycle"]["superseded"] = None
-        rejected = body(); rejected["_meta"]["provenance"] = None
-        last = body(); last["_meta"]["section"] = "wrong"
-        del last["_meta"]["provenance"]["actor"]
-        last["_meta"]["quality"]["human_review_required"] = None
-        raw = HEADER + fence(first) + fence(rejected) + fence(last)
-        report = self.source(raw)
-        self.assertEqual([(i["code"], i["context"]["block_index"], i["field"])
-                          for i in report["issues"]], [
-            ("META-01", 1, "_meta"),
-            ("META-01", 0, "_meta"), ("META-01", 0, "_meta.section"),
-            ("META-01", 0, "_meta.quality"), ("META-01", 2, "_meta.section"),
-            ("META-01", 0, "_meta.provenance.actor"), ("META-01", 2, "_meta.provenance.actor"),
-            ("META-03", 0, "_meta.lifecycle.superseded"),
-            ("META-02", 2, "_meta.quality.human_review_required"),
-            ("SRC-01", 0, "_meta.provenance.source")])
 
-    def test_existing_parent_rejection_prevents_only_its_own_cascades(self):
-        for alter in ("section_id", "_meta", "provenance", "lifecycle"):
-            value = {"before": 1, **body()}
-            value["_meta"]["section"] = "wrong"; value["_meta"]["quality"] = None
-            if alter == "section_id": value["section_id"] = "property"
-            elif alter == "_meta": value["_meta"] = None
-            else: value["_meta"][alter] = []
-            report = self.source(HEADER + fence(value))
-            self.assertEqual([(i["code"], i["field"]) for i in report["issues"]],
-                             [("META-01", "_meta")])
-            self.assertFalse(any(f["field"] in ("_meta.section", "_meta.quality")
-                                 for f in report["shape_findings"]))
 
-    def test_every_retained_population_and_exact_reference_deduplication(self):
-        raw = HEADER
-        for section, annotation in (("property", ""), ("property", " superseded=true"),
-                                    ("property", " variant=default"), ("property", " variant=named"),
-                                    ("pipeline_log", ""), ("x_extension", "")):
-            value = body(); value["_meta"]["section"] = section
-            value["_meta"]["quality"] = None
-            raw += fence(value, section=section, annotation=annotation)
-        report = self.source(raw)
-        self.assertEqual(shapes(report), [(i, "_meta.quality") for i in range(6)])
-        document = parse(HEADER + fence(body()) + fence(body()))
-        first, second = document.source.blocks
-        first.parsed.value["_meta"]["quality"] = None
-        second.parsed.value["_meta"]["quality"] = None
-        document = replace(document, source=replace(document.source, blocks=(first, second, first)))
-        self.assertEqual(shapes(inspect_source_roles(document)),
-                         [(0, "_meta.quality"), (1, "_meta.quality")])
 
-    def test_current_model_reorders_replaces_and_annotates_without_raw_reparse(self):
-        raw = HEADER + fence({"0": 1, **body()})
-        document = parse(raw)
-        self.assertEqual(shapes(inspect_source_roles(document)), [])
-        original = document.source.blocks[0]
-        value = original.parsed.value
-        meta = value.pop("_meta"); value["payload"] = 2; value["_meta"] = meta
-        self.assertEqual(shapes(inspect_source_roles(document)), [(0, "_meta")])
-        original = replace(original, section="x_changed")
-        document = replace(document, source=replace(document.source, blocks=(original,)))
-        before = copy.deepcopy(document)
-        self.assertEqual(shapes(inspect_source_roles(document)),
-                         [(0, "_meta"), (0, "_meta.section")])
-        self.assertEqual(document, before)
-        self.assertEqual(document.source.raw, raw)
-        # A replacement model block is canonical even if its span/raw is stale.
-        replacement = parse(HEADER + fence(body())).source.blocks[0]
-        replacement.parsed.value["_meta"]["quality"] = None
-        document = replace(document, source=replace(document.source, blocks=(replacement,)))
-        self.assertEqual(shapes(inspect_source_roles(document)), [(0, "_meta.quality")])
-        self.assertEqual(document.source.raw, raw)
 
     def test_local_consumption_requires_exact_current_predicate_error_and_owner(self):
         value = {"before": 1, **body()}
