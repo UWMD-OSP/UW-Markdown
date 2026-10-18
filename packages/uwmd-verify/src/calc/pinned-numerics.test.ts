@@ -34,6 +34,10 @@ describe('public pinned primitive boundary', () => {
     try {
       expect(pinnedPow(4, .5)).toBe(2); expect(pinnedPow(2, -3)).toBe(.125);
       expect(pinnedExp(0)).toBe(1); expect(pinnedLog(1)).toBe(0);
+      expect(Number.isFinite(pinnedPow(1.123, 2.345))).toBe(true);
+      expect(Number.isFinite(pinnedPow(1.123, -2.345))).toBe(true);
+      expect(Number.isFinite(pinnedExp(.345))).toBe(true);
+      expect(Number.isFinite(pinnedLog(1.345))).toBe(true);
     } finally { spies.forEach(spy => spy.mockRestore()); }
   });
   it('rejects nonnumbers without invoking coercion', () => {
@@ -46,6 +50,8 @@ describe('public pinned primitive boundary', () => {
       expect(() => pinnedExp(bad)).toThrow(CalcError);
       expect(() => pinnedLog(bad)).toThrow(CalcError);
     }
+    try { pinnedPow('2' as unknown as number, 2); }
+    catch (error) { expect((error as CalcError).proto.code).toBe('CALC-TYPE-001'); }
     expect(coerced).toBe(false);
   });
 });
