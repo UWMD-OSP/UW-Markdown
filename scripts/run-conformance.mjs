@@ -512,7 +512,7 @@ async function runMalformedDocuments() {
     // Authored expected rows are reviewed independently, never generated here.
     if (Array.isArray(expected.metadata_issues)) {
       const actual = validation.issues.filter(i => ['META-01', 'META-02', 'META-03'].includes(i.code))
-        .map(({ code, severity, section, field }) => ({ code, severity, section, field }));
+        .map(({ code, severity, section, field }) => ({ code, severity, section, ...(field === undefined ? {} : { field }) }));
       if (!isDeepStrictEqual(actual, expected.metadata_issues)) {
         record('documents', `malformed/${id}`, 'fail', `metadata findings/order differ: ${JSON.stringify(actual)}`);
         continue;
