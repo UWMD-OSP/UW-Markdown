@@ -614,12 +614,13 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
  *   3. Otherwise, anything this verifier cannot decide (unknown pack, pack
  *      version it does not hold, a signature with no backend, or a referenced
  *      input it does not hold — RCP-11) → `unverifiable`.
- *   4. Otherwise, recomputation disagreement → `failed`, unless the issuing
+ *   4. Authenticate a supplied signature; invalid signed input fails before any computation.
+ *   5. Otherwise, recomputation refusal is RCP-03 with no engine carve-out. Finite disagreement → `failed`, unless the issuing
  *      engine identity (name *and* version) differs from this verifier's, in
  *      which case the disagreement is attributable to the engine and the
  *      verdict is `unverifiable` (RFC 0016 open question, resolved in
  *      `spec/UW_RECEIPT.md` §5).
- *   5. Otherwise `verified`.
+ *   6. Result digest is checked only after agreement; otherwise `verified`.
  *
  * The verifier always recomputes; `results_digest` is checked only as a cheap
  * corruption signal and never authorizes skipping the recomputation.
@@ -760,7 +761,33 @@ export async function verifyReceipt(
     return { verdict: 'unverifiable', issues };
   }
 
-  // 4 — recompute. `pack` is non-null here: a null pack produced RCP-05 above.
+  // 4 — authenticate before financial recomputation or any refusal (RFC 0088).
+  if (receipt.signature && options.signatureVerifier) {
+    let payload: string;
+    try {
+      payload = receiptSigningPayload(receipt);
+    } catch (error) {
+      if (!(error instanceof InvalidUnicodeError)) throw error;
+      // Receipt §5.1 step 4: an unencodable signed input cannot validate.
+      return { verdict: 'failed', issues: [{ code: 'RCP-01', severity: 'failure',
+        message: `The receipt signature input cannot be canonicalized: ${error.message}` }] };
+    }
+    const valid = await options.signatureVerifier.verify(receipt, payload);
+    if (!valid) {
+      return {
+        verdict: 'failed',
+        issues: [
+          {
+            code: 'RCP-01',
+            severity: 'failure',
+            message: 'The receipt signature did not validate.',
+          },
+        ],
+      };
+    }
+  }
+
+  // 5 — recompute. `pack` is non-null here: a null pack produced RCP-05 above.
   const resolvedPack = pack as ModuleManifest;
   let recomputed: UWReceiptResult[];
   try {
@@ -791,32 +818,6 @@ export async function verifyReceipt(
   const engineMatches =
     receipt.computation.engine === verifierEngine &&
     receipt.computation.engine_version === verifierEngineVersion;
-
-  if (receipt.signature && options.signatureVerifier) {
-    let payload: string;
-    try {
-      payload = receiptSigningPayload(receipt);
-    } catch (error) {
-      if (!(error instanceof InvalidUnicodeError)) throw error;
-      // Receipt §5.1 step 4: an unencodable signed input cannot validate.
-      return { verdict: 'failed', issues: [{ code: 'RCP-01', severity: 'failure',
-        message: `The receipt signature input cannot be canonicalized: ${error.message}` }], recomputed };
-    }
-    const valid = await options.signatureVerifier.verify(receipt, payload);
-    if (!valid) {
-      return {
-        verdict: 'failed',
-        issues: [
-          {
-            code: 'RCP-01',
-            severity: 'failure',
-            message: 'The receipt signature did not validate.',
-          },
-        ],
-        recomputed,
-      };
-    }
-  }
 
   const disagreements = compareResults(receipt.computation.results, recomputed);
   if (disagreements.length > 0) {

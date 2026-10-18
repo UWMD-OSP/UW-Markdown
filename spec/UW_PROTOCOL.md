@@ -1889,9 +1889,9 @@ years or dates to clear them.
 | `floor(num)` | `(number\|null) → number\|null` | Round toward `-∞`; null propagates. |
 | `ceil(num)` | `(number\|null) → number\|null` | Round toward `+∞`; null propagates. |
 | `sqrt(num)` | `(number\|null) → number\|null` | Negative input raises `CALC-TYPE-001`. |
-| `pow(base, exp)` | `(number\|null, number\|null) → number\|null` | `base ** exp`. Non-finite result raises `CALC-TYPE-001`. |
+| `pow(base, exp)` | `(number\|null, number\|null) → number\|null` | Pinned power (§VIII.5.2). Non-finite result raises `CALC-TYPE-001`. |
 | `log(num)` | `(number\|null) → number\|null` | Natural log. Non-positive input raises `CALC-TYPE-001`. |
-| `exp(num)` | `(number\|null) → number\|null` | `e^num`. Non-finite result raises `CALC-TYPE-001`. |
+| `exp(num)` | `(number\|null) → number\|null` | Pinned exponential (§VIII.5.2). Non-finite result raises `CALC-TYPE-001`. |
 | `pmt(rate, n, pv)` | Standard mortgage payment formula. |
 | `fv(rate, n, pmt[, pv])` | Future value of a series of equal payments + initial pv. |
 | `pv(rate, n, pmt[, fv])` | Present value of a series of equal payments + future value. |
@@ -2052,8 +2052,8 @@ precision the representation cannot hold.
 
 **Quantization is not display.** A host's `display` string is a
 presentation concern and MAY apply its own locale, symbol, and
-precision (§ `DEFAULT_NUMBER_FORMAT`). Digests, equality checks, and
-Excel parity are defined over `value`, never over `display`.
+precision (§ `DEFAULT_NUMBER_FORMAT`). Digests and equality checks are defined over `value`, never over `display`.
+Native spreadsheet recalculation is subject to the export limits in §VIII.5.2.
 
 **Digests.** Any digest taken over calc outputs — a receipt's
 `results_digest` in particular — MUST be taken over quantized values.
@@ -2120,6 +2120,50 @@ state an aggregate equal to a single, sole non-debt source and document that
 identity; ambiguous mezz/preferred/common stacks require an explicit equity
 statement. Missing total equity yields null. No debt role, tranche summation
 or projected cash flow is implied. Land gains no income metric in this RFC.
+
+### VIII.5.2 Pinned power, exponential and logarithm (RFC 0088)
+
+Every power, exponential and natural-logarithm operation used by a conforming
+financial procedure MUST follow the single exact pinned fdlibm procedure in
+[accepted RFC 0088](../docs/rfcs/0088-pin-financial-numerical-procedures.md#primitive-admission-and-resource-contract).
+The exact eight-file source closure, binary64 constant words and signed/unsigned
+word-site map referenced there define the procedure; an arbitrary host pow/exp/log
+or approximate equivalent is insufficient. This applies to every exponent class,
+including integral, fractional and negative exponents. Source fast paths are part
+of that one procedure, not an alternative dispatch policy.
+
+Basic operations round individually to binary64 nearest/ties-even with gradual
+underflow. Word operations use the mapped signed32/unsigned32 modulo2^32 semantics,
+including count32 shifts. Implementations MUST NOT use host transcendental/sqrt
+substitutes inside the primitive, FMA/reassociation, extra precision, reciprocal
+replacement for negative powers, or exp(log(x)*y) substitution. Generated NaN
+payload/sign and exception flags are excluded; finite words, signed zeros and
+signed infinities are exact. The procedure has fixed scalar state and a conservative
+76 software-sqrt loop-body bound; it introduces no exponent-sized loop or arbitrary
+input cutoff. Document, AST and solver limits remain separate.
+
+Raw pinnedPow(base, exponent), pinnedExp(value) and pinnedLog(value) accept only
+primitive binary64 numbers, including signed zero, NaN and infinities; a nonnumber
+raises CALC-TYPE-001 without coercion (pow checks base before exponent). Raw results
+are not quantized. Internal financial procedures use these same primitives, with
+the existing associations and consumer guards. Public calc pow/exp retain their
+nonfinite-result refusals; log retains null propagation and its input<=0 refusal,
+without adding a local finite-result guard. Public sqrt is unchanged; the pinned
+power's software sqrt is a closed internal helper.
+
+The [accepted ordered financial graphs](../docs/rfcs/0088-pin-financial-numerical-procedures.md#ordered-financial-graphs),
+including periodic/dated NPV, annuities and IRR/XIRR, are normative. Do not change
+association, accumulation order, final quantization, null/default/type handling,
+solver bracket/tolerances or refusal precedence. An internal Infinity may produce
+a finite final zero; it MUST NOT be confused with a public primitive refusal.
+Stability rearrangements using log1p/expm1 are not part of this procedure.
+
+Native spreadsheet recalculation of exported formulas may differ beyond about
+eleven significant digits and may return errors on IEEE edge cases, including
+subnormals and overflow. These accepted export limits do not alter verification:
+UWMD verifies the stated record, never the spreadsheet's recomputation. Eleven
+digits is not a universal accuracy guarantee. Full receipt outputs/digests and
+stated metric comparisons retain their distinct §VIII.5/§VIII.5.1 boundaries.
 
 ### VIII.6 CalcError taxonomy
 
