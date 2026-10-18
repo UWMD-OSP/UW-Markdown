@@ -162,6 +162,40 @@ describe('Every class follows the same rules (RFC 0081 §5)', () => {
     expect(classIssues(saguaro).map(i => i.code)).not.toContain('CC-HOSP-04');
   });
 
+  it.each([
+    ['rent_roll', 'keys'],
+    ['hotel_metrics', 'adr'],
+    ['hotel_metrics', 'occupancy'],
+    ['hotel_metrics', 'available_room_nights'],
+    ['hotel_metrics', 'key_count'],
+  ])('rejects the removed official home %s.%s without repairing it', (section, field) => {
+    for (const value of [null, 0, false, '', 250, {}, []]) {
+      const parsed = parseUWFile(hotel);
+      const block = parsed.sections[section!] as UWBlock;
+      (block.content as Record<string, unknown>)[field!] = value;
+      const before = JSON.stringify(parsed);
+      const expected = { code: 'CLS-04', severity: 'error', section, field };
+      expect(checkBuiltinClassContent(parsed).filter(i => i.code === 'CLS-04')).toMatchObject([expected]);
+      expect(validateUWFile(parsed).errors.filter(i => i.code === 'CLS-04')).toMatchObject([expected]);
+      expect(JSON.stringify(parsed)).toBe(before);
+    }
+  });
+
+  it('checks only the selected current hospitality statement and preserves other field owners', () => {
+    const parsed = parseUWFile(hotel);
+    const current = parsed.sections.hotel_metrics as UWBlock;
+    const invalid = { ...current, role: 'component' as const, content: { ...current.content as Record<string, unknown>, adr: 250 } };
+    parsed.sections.hotel_metrics = { detail: invalid, base: current };
+    parsed.superseded.hotel_metrics = [invalid];
+    expect(checkBuiltinClassContent(parsed).filter(i => i.code === 'CLS-04')).toEqual([]);
+    // Unknown-field diagnostic allocation and universal annotations are separate.
+    (current.content as Record<string, unknown>)['custom_note'] = 'retained';
+    (current.content as Record<string, unknown>)['_notes'] = 'annotated';
+    expect(checkBuiltinClassContent(parsed).filter(i => i.code === 'CLS-04')).toEqual([]);
+    parsed.frontmatter.asset_class = 'office';
+    parsed.sections.hotel_metrics = invalid;
+    expect(checkBuiltinClassContent(parsed).filter(i => i.code === 'CLS-04')).toEqual([]);
+  });
   it('reports field-contract defects as errors', () => {
     const mesa = readFileSync(resolve(root, 'examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md'), 'utf8');
     const fractional = mutate(mesa, '"raised_floor_sf": 60000', '"raised_floor_sf": 60000.5');

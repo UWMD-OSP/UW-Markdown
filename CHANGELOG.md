@@ -45,6 +45,11 @@ protocol, and each package each carry an independent semver).
 
 ### Fixed
 
+- Enforce accepted RFC0081's single hospitality field homes with CLS-04:
+  reject rent_roll.keys and hotel_metrics.adr/occupancy/available_room_nights/
+  key_count when present, including null, on the selected current hospitality
+  statement. Do not repair payloads or allocate a generic unknown-field code.
+
 - Parse admitted Python YAML sequence mappings, including the Format modules
   declaration and unknown frontmatter data, instead of refusing continuation
   members or treating an object entry as a scalar. Retain numeric source spans,
