@@ -75,7 +75,7 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
         for terms in ({"method":"net","admin_fee_pct":True},{"method":"net","admin_fee_pct":1},
                       {"method":"net","admin_fee_pct":-.01},{"method":"net","gross_up_pct":0},
                       {"method":"net","gross_up_pct":1.01},{"method":"net","share_basis":"unknown"},
-                      {"method":"net","cap":[]},{"method":"net","cap":{"unallocated":0}}):
+                      {"method":"net","cap":{"unallocated":0}}):
             _,findings,_,_=self.report(self.recoveries(recovery_terms=terms),"lease_recoveries")
             self.assertTrue(findings)
         # Conditional method/accumulation semantics keep their existing REC-02;

@@ -57,12 +57,18 @@ class RefusalReconciliationTests(unittest.TestCase):
             (dict(method="net", cap=dict(pct=.05, accumulation="unknown")), "cap.accumulation")):
             _, result = self.assess(self.recoveries([dict(recovery_terms=terms)]))
             assessment = result["section_assessment"]["lease_recoveries"]
-            self.assertIn("tenants[0].recovery_terms." + field,
-                          [f["field"] for f in assessment["shape_findings"]])
+            if field == "cap":
+                self.assertEqual(assessment["shape_findings"], [])
+                self.assertTrue(any(i["code"] == "REC-02" and i["field"] ==
+                                    "tenants[0].recovery_terms.cap" for i in result["errors"]))
+            else:
+                self.assertIn("tenants[0].recovery_terms." + field,
+                              [f["field"] for f in assessment["shape_findings"]])
             self.assertTrue(any(i["code"].startswith("REC-") for i in result["errors"]))
             response, status = _validation_response(result)
             self.assertEqual(status, 1)
-            self.assertNotIn("code", response["error"])
+            if field == "cap": self.assertNotIn("error", response)
+            else: self.assertNotIn("code", response["error"])
         # A future schema bound must not be consumed by the present REC-01 rule.
         with tempfile.TemporaryDirectory(prefix="uwmd-rec-constraint-") as folder:
             provider = Path(folder)

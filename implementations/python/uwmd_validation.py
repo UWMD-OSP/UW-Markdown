@@ -77,4 +77,5 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
                 metadata_assessment=copy.deepcopy(metadata),
                 section_assessment={"lease_up_schedule": copy.deepcopy(lease_up),
                                     **copy.deepcopy(optional_shape_assessments(
-                                        snapshot, registered_recovery_shapes=recovery_shapes))})
+                                        snapshot, registered_recovery_shapes=recovery_shapes,
+                                        registered_recovery_issues=ledger.issues))})

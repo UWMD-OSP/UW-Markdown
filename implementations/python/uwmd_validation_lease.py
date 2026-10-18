@@ -39,8 +39,8 @@ def lease_rules(ledger):
             if not isinstance(tenant, dict):
                 continue
             root = "tenants[" + str(ordinal) + "]"
-            def issue(code, suffix, message):
-                ledger.issue(code, "error", "rent_roll", root + ("." + suffix if suffix else ""), message)
+            def issue(code, suffix, message, **evidence):
+                ledger.issue(code, "error", "rent_roll", root + ("." + suffix if suffix else ""), message, **evidence)
             def represented_shape(suffix, constraint, code):
                 represented[(physical[id(block)], root + "." + suffix, constraint)] = code
             start, end = tenant.get("lease_commencement"), tenant.get("lease_expiration")
@@ -112,12 +112,16 @@ def lease_rules(ledger):
                     issue("LSE-09", outstanding, "Outstanding TI/LC must be nonnegative and not exceed its stated original")
             terms = tenant.get("recovery_terms")
             if terms is not None and not isinstance(terms, dict):
-                issue("REC-02", "recovery_terms", "Recovery terms must be an object")
+                issue("REC-02", "recovery_terms", "Recovery terms must be an object",
+                      context=dict(block_index=physical[id(block)],
+                                   variant=dict(block.attributes).get("variant")))
+                represented_shape("recovery_terms", ("type", ("object",)), "REC-02")
                 terms = {}
             terms = terms or {}
             share, cap = terms.get("pro_rata_share"), terms.get("cap")
             cap = cap if isinstance(cap, dict) else {}
             pct, method = cap.get("pct"), terms.get("method")
+            invalid_cap = terms.get("cap") is not None and not isinstance(terms.get("cap"), dict)
             if ((share is not None and (not finite(share) or not 0 < share <= 1))
                     or pct is not None and (not finite(pct) or not 0 < pct < 1)):
                 issue("REC-01", "recovery_terms", "Recovery shares and cap rates must be fractions in their admitted ranges")
@@ -155,6 +159,13 @@ def lease_rules(ledger):
             pool = terms.get("recoverable_pool")
             if pool is not None and (not isinstance(pool, list) or not pool or any(k not in _POOL for k in pool)):
                 issue("REC-03", "recovery_terms.recoverable_pool", "Pool must name registered operating-expense keys, never totals/ratios/capital")
+            # Accepted RFC0058 / Format4.3 / REC-02 admits only an object
+            # when cap is non-null; this is independent of its method.
+            if invalid_cap:
+                issue("REC-02", "recovery_terms.cap", "Recovery cap must be an object when stated",
+                      context=dict(block_index=physical[id(block)],
+                                   variant=dict(block.attributes).get("variant")))
+                represented_shape("recovery_terms.cap", ("type", ("object", "null")), "REC-02")
             true_up = tenant.get("recovery_true_up")
             if true_up is None:
                 continue

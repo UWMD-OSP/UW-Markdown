@@ -1334,3 +1334,16 @@ Neither path reparses stale raw bytes to override a mutated model. Exact emitted
 owners consume only the identical local requirement; unrelated typed/conditional
 requirements still produce explicit incomplete-operation evidence.
 Discovery remains parse-only; this is not a complete validation capability claim.
+
+
+### Recovery parent admission
+
+The developing validator reports the existing REC-02 for non-null, nonobject
+recovery terms and caps under Format4.3/RFC0058. The cap predicate applies
+independently of method; absence, null, empty objects and G1's lone cap retain
+their prior admission. Duplicate local type evidence is consumed only with the
+actual REC-02/error on the same physical block, tenant field and fixed type
+constraint. An unrelated code, sibling field, peer, missing owner or changed
+constraint cannot provide coverage. Unknown members and other unallocated
+conditions stay explicit local refusals. No recovery amount, cash source,
+default, standalone command, conformance expectation or discovery claim changes.

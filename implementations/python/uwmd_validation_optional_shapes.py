@@ -136,7 +136,8 @@ def _violations(value,schema,root,path=""):
     return out
 
 
-def optional_shape_assessments(document, *, registered_recovery_shapes=None):
+def optional_shape_assessments(document, *, registered_recovery_shapes=None,
+                               registered_recovery_issues=()):
     """Current inline payload admission; history is not financially reclassified."""
     represented = registered_recovery_shapes or {}
     result={name:dict(shape_findings=[]) for name in
@@ -159,6 +160,23 @@ def optional_shape_assessments(document, *, registered_recovery_shapes=None):
             evidence = dict(section=block.section, **finding, context=dict(context))
             code = (represented.get((physical[id(block)], finding["field"], constraint))
                     if family == "lease_recoveries" else None)
+            # Only these two accepted REC-02 parent predicates gain new
+            # consumption. An actual emitted error must own the same physical
+            # row, section and field; another REC-02 cannot cover its sibling.
+            parent = re.fullmatch(r"tenants\[(?:0|[1-9][0-9]*)\]\.recovery_terms(?:\.cap)?",
+                                  finding["field"]) if family == "lease_recoveries" else None
+            if parent and constraint and constraint[0] == "type":
+                kinds = ("object", "null") if finding["field"].endswith(".cap") else ("object",)
+                owned = (code == "REC-02" and constraint == ("type", kinds)
+                         and any(owner.get("code") == "REC-02"
+                             and owner.get("severity") == "error"
+                             and owner.get("section") == block.section
+                             and owner.get("field") == finding["field"]
+                             and type(owner.get("context", {}).get("block_index")) is int
+                             and owner["context"]["block_index"] == physical[id(block)]
+                             for owner in registered_recovery_issues))
+                if not owned:
+                    code = None
             if code:
                 # Exact physical row, authored field and schema constraint only.
                 # Retain evidence; never infer ownership from a generic REC code.
