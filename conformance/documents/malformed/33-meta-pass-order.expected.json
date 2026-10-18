@@ -1,0 +1,47 @@
+{
+  "description": "Authored RFC0093 synthetic controls; exact metadata findings and order, never repaired input.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-01",
+    "META-03"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_meta_oldshape",
+      "field": "_meta"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_meta_combined",
+      "field": "_meta"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_meta_combined",
+      "field": "_meta.section"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_meta_combined",
+      "field": "_meta.quality"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_meta_combined",
+      "field": "_meta.provenance.actor"
+    },
+    {
+      "code": "META-03",
+      "severity": "error",
+      "section": "x_meta_combined",
+      "field": "_meta.lifecycle.superseded"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md \u00a7III.6a; RFC0093"
+}

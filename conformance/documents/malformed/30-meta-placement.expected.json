@@ -1,0 +1,22 @@
+{
+  "description": "Authored RFC0093 synthetic controls; exact metadata findings and order, never repaired input.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-01"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_meta_order",
+      "field": "_meta"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_meta_order",
+      "field": "_meta"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md \u00a7III.6a; RFC0093"
+}
