@@ -8,6 +8,17 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Accepted RFC0093 — owner decision2026-10-18 at0306d126.**
+[RFC0093](../rfcs/0093-metadata-shape-diagnostics.md) accepts exactly the three
+META-01 additions: late/misplaced canonical `_meta`, present invalid/mismatched
+canonical `_meta.section`, and absent/nonobject required `_meta.quality`.
+All-retained-physical applicability, separate shape pass before actors/booleans,
+exact source/model order boundaries and Lite's existing compilation path are
+accepted unchanged. Already allocated absences and META-02/03 remain unchanged.
+PR384 records docs-only acceptance; synchronized TS/Python implementation and
+normative/conformance updates follow on Issue354. Python discovery remains
+parse-only. Exact-final-head and subsequent exact-main CI are separate gates.
+
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
 **Accepted RFC0088 — owner decision2026-10-18.** Architecture A is accepted:

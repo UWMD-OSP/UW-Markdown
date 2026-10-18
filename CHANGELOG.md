@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept RFC0093 for Issue354 under the owner's2026-10-18 decision at0306d126:
+  exactly late canonical metadata, present invalid/mismatched canonical section
+  and absent/nonobject required quality extend the META-01 closed list. Retain
+  all-physical applicability and the accepted shape/actor/boolean ordering.
+  This is docs-only acceptance; synchronized TS/Python implementation follows.
+
 - Accept and activate RFC0088 under the owner's2026-10-18 decision: every
   numerical pow/exp/log consumer uses one exact pinned fdlibm procedure across
   all exponent classes, shared through public pinnedPow/pinnedExp/pinnedLog.
