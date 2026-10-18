@@ -12,7 +12,7 @@ def main(destination):
     identity=lambda:{p.relative_to(ROOT).as_posix():sha(p.read_bytes()) for p in sorted(paths)}
     before=identity();scratch=Path(tempfile.mkdtemp(prefix='uwmd-authenticate-first-'))
     env={**os.environ,'AUTH_FIRST_OBSERVATIONS':str(scratch/'observations.json'),'AUTH_FIRST_TRANSFORMS':str(scratch/'transforms.jsonl')}
-    command=['node','--experimental-loader',str(HERE/'loader.mjs'),'--test-reporter=tap','--test',str(HERE/'proposal.test.mjs')]
+    command=['node','--experimental-loader',(HERE/'loader.mjs').as_uri(),'--test-reporter=tap','--test',str(HERE/'proposal.test.mjs')]
     result=subprocess.run(command,cwd=ROOT,env=env,capture_output=True,timeout=180)
     (scratch/'stdout').write_bytes(result.stdout);(scratch/'stderr').write_bytes(result.stderr)
     if result.returncode:raise RuntimeError(result.stdout.decode('utf8',errors='replace')+result.stderr.decode('utf8',errors='replace'))
