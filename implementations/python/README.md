@@ -385,8 +385,8 @@ required/type/nullable/conditional controls, both reference objects, exact
 presence semantics, schema-admitted empty/zero values, all leaf members,
 registered precedence, detached evidence, active physical/history distinctions
 and four real CLI subprocess inputs. A retained frozen promoted-source control
-preserves its existing unrelated metadata refusals and tests a model-only
-rationale mutation; it does not claim a promotion or full validation case pass.
+retains its registered metadata findings and handled absent-field evidence,
+then tests a model-only rationale mutation; it does not claim a promotion or full validation case pass.
 Source bytes and current parsed models
 remain unchanged. They supplement existing source/actor/timestamp controls;
 field inventory alone is not a schema conformance claim.
