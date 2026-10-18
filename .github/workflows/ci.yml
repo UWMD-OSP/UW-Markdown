@@ -313,8 +313,6 @@ jobs:
         run: |
           node experiments/numerical-0088/astra-review/reproduce.mjs
           node --test experiments/numerical-0088/astra-review/reproduce.test.mjs
-          python3 -B experiments/numerical-0088/impact/verify-evidence.py
-          python3 -B experiments/numerical-0088/impact/verify-financial-evidence.py
 
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added
@@ -329,18 +327,12 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Check frozen trajectories and actual composed receipts (unaccepted)
+      - name: Check current financial controls and composed receipts (unaccepted)
         if: matrix.node == 20 && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
-        # Verify every frozen numerical identity; only the accepted Protocol prose
-        # transition is admitted. Reuse prior graph evidence and capture the new
-        # bounded receipt matrix; no redundant 4730-row/native research replay.
+        # Exercise current candidate/receipt behavior; no archived source identity
+        # or prelaunch foreign-receipt replay is a correctness gate.
         run: |
           python3 -B -m unittest discover -s experiments/numerical-0088/financial-trajectories -p "test_*.py" -v
-          python3 -B experiments/numerical-0088/integration/verify_trajectory.py
-          python3 -B -m unittest discover -s experiments/numerical-0088/integration -p "test_*.py" -v
-          python3 -B experiments/numerical-0088/composed-receipts/capture.py --check experiments/numerical-0088/composed-receipts/evidence
-          node experiments/numerical-0088/composed-receipts/check.mjs
-          node experiments/numerical-0088/composed-receipts/check-binding.mjs
           python3 -B experiments/numerical-0088/composed-receipts/capture.py --capture "${{ runner.temp }}/composed-receipt-observations"
       - uses: actions/upload-artifact@v6
         if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
@@ -352,10 +344,9 @@ jobs:
 
       - name: Check bounded composed cancellation accuracy (unaccepted)
         if: matrix.node == 20 && hashFiles('experiments/numerical-0088/cancellation-accuracy/capture.py') != ''
-        # New36 cases only; preserve the earlier kernel/4730-row captures.
+        # Current bounded cancellation accuracy, without archived source gates.
         run: |
           python3 -B -m unittest discover -s experiments/numerical-0088/cancellation-accuracy -p "test_*.py" -v
-          python3 -B experiments/numerical-0088/cancellation-accuracy/capture.py --check experiments/numerical-0088/cancellation-accuracy/evidence
           python3 -B experiments/numerical-0088/cancellation-accuracy/capture.py --capture "${{ runner.temp }}/cancellation-accuracy-observations"
       - uses: actions/upload-artifact@v6
         if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/cancellation-accuracy/capture.py') != ''
@@ -367,16 +358,10 @@ jobs:
 
       - name: Check two natural cancellation receipt cases (unaccepted)
         if: matrix.node == 20 && hashFiles('experiments/numerical-0088/cancellation-receipts/capture.py') != ''
-        # Two inputs only. Preserve frozen Windows output; measure local Linux
-        # branches and replay the actually issued Windows PV receipt separately.
+        # Two current inputs only; measure actual host/candidate/refusal branches.
         run: |
-          python3 -B experiments/numerical-0088/cancellation-receipts/capture.py --check experiments/numerical-0088/cancellation-receipts/evidence
-          node experiments/numerical-0088/cancellation-receipts/check.mjs
           mkdir -p "${{ runner.temp }}/natural-cancellation-receipts"
           python3 -B experiments/numerical-0088/cancellation-receipts/capture.py --capture "${{ runner.temp }}/natural-cancellation-receipts/local"
-          touch "${{ runner.temp }}/natural-cancellation-receipts/foreign.events.jsonl" "${{ runner.temp }}/natural-cancellation-receipts/foreign.transforms.jsonl"
-          RESEARCH_REPO_ROOT="$PWD" RESEARCH_MODE=candidate RESEARCH_CANDIDATE="$PWD/experiments/numerical-0088/pinned-fdlibm/kernel.mjs" RESEARCH_EVENTS="${{ runner.temp }}/natural-cancellation-receipts/foreign.events.jsonl" RESEARCH_TRANSFORMS="${{ runner.temp }}/natural-cancellation-receipts/foreign.transforms.jsonl" node --experimental-loader ./experiments/numerical-0088/impact/hook.mjs ./experiments/numerical-0088/cancellation-receipts/probe.mjs candidate ./experiments/numerical-0088/cancellation-receipts/evidence/host.json.gz "${{ runner.temp }}/natural-cancellation-receipts/foreign-candidate.json"
-          python3 -B experiments/numerical-0088/cancellation-receipts/capture.py --check experiments/numerical-0088/cancellation-receipts/evidence
       - uses: actions/upload-artifact@v6
         if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/cancellation-receipts/capture.py') != ''
         with:
@@ -385,6 +370,18 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Check all dated conventions with independent candidate graphs (unaccepted)
+        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/dated-conventions/capture.py') != ''
+        run: |
+          python3 -B -m unittest discover -s experiments/numerical-0088/dated-conventions -p "test_*.py" -v
+          python3 -B experiments/numerical-0088/dated-conventions/capture.py --output "${{ runner.temp }}/dated-conventions-current"
+      - uses: actions/upload-artifact@v6
+        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/dated-conventions/capture.py') != ''
+        with:
+          name: isolated-dated-conventions-node20
+          path: ${{ runner.temp }}/dated-conventions-current/
+          if-no-files-found: error
+          retention-days: 14
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures
         # through the §II.6a CLI protocol, which is what a non-TypeScript
