@@ -1,5 +1,12 @@
 # RFC 0089 candidate preimages (unaccepted)
 
+**Owner-selected direction,2026-10-17:** D1/D2/D2b, total ASCII JSON-lexical
+XML, complete CSV carriers and complete supported subject under unchanged V.13/
+Receipt5.5 are selected for further work; RFC0089 stays draft pending evidence
+and synchronized contracts. The new [model-admission checkpoint](model-admission/README.md)
+checks complete schema/semantic boundaries without activating a runtime. Existing
+codec/projection/crypto studies remain bounded evidence, not final acceptance.
+
 **Current work scope, owner rule2026-10-17:** prelaunch compatibility,
 reissuance/migration plans and artifact-retention inventories are retired.
 Do not run or maintain those portions of the original prototype. Existing files

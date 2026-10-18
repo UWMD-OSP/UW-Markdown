@@ -19,8 +19,8 @@ affects:
 Propose a minimal, versioned extension-entry representation that can preserve
 legal Format §2.8 peers without changing unrelated Envelope collections. This
 RFC is **draft, documentation only, and not accepted**. Its concrete tagged
-candidate, mixed-identity rule and commitment regime require owner approval
-before implementation. Envelope 1.0, normative schemas,
+candidate, mixed-identity rule and commitment regime now have owner direction
+for further work; final RFC acceptance and production activation remain gated. Envelope 1.0, normative schemas,
 source digests, receipts, signatures, frozen expectations and public versions
 remain unchanged by this PR. UWMD 5.0 remains reserved for public launch.
 
@@ -129,14 +129,14 @@ NOT invent a role, change an annotation or discard a peer to make conversion
 succeed. Thus a direct model and a Markdown-projected model may intentionally
 have distinct semantic subjects, but the same source has one canonical mode.
 
-**Proposed clarification requiring owner approval:** in that opted-in extension,
+**Owner-selected clarification, not yet activated:** in that opted-in extension,
 an unlabelled current peer is a distinct null identity, including alongside a
 peer explicitly named `default`. Preserve both; do not collapse them through an
 absent-to-`default` lookup key. The accepted wording explicitly promises named
 peers and does not settle every mixed unlabelled/named case. This paragraph
-chooses a candidate for review, not a retrospective claim that every such source
-was already parallel. It requires corresponding Format wording and version
-assessment if accepted. It does not change ordinary builtin section containers
+records the selected direction, not a retrospective claim that every such source
+was already parallel. It still requires corresponding governed Format wording and evidence before
+final acceptance. It does not change ordinary builtin section containers
 or retrospectively reinterpret their stored maps.
 
 A source that does not meet role opt-in retains the existing singleton behavior;
@@ -161,14 +161,14 @@ These examples pin the candidate boundary; they do not amend current routing:
 | One current block explicitly named `default`, role absent | `single`; the authored annotation remains `default`. |
 | That one named current block with a role | `variants`, one record with identity `"default"`; no singleton collapse. |
 | Named peers `base` (primary) and `detail` (no role), in either source order | `variants`, both exact records; collect before any property-level selection. |
-| An unlabelled primary peer and named `default` peer | Under the proposed clarification only, `variants` with null first then `"default"`; current-contract admission remains an owner question. |
+| An unlabelled primary peer and named `default` peer | Under the owner-selected clarification, `variants` with null first then `"default"`; governed source/projection activation remains pending. |
 | Role on superseded history only; current peer has no role | No opt-in from history; current singleton routing and ordered history remain distinct. |
 | Directly authored one-peer `variants` model with no role | Preserve its mode through model codecs; refuse Markdown conversion if source reprojection would be `single`. |
 
 Repeated current revisions of the same declared identity follow the accepted
-ordinary current-revision rule, not the new array order. The owner must approve
-the exact nullable identity grouping for mixed opt-in sources; this draft does
-not infer it from the existing `default` map key. V.13's stricter collision
+ordinary current-revision rule, not the new array order. The owner selected
+exact nullable identity grouping for mixed opt-in sources; this draft does
+not infer that decision from the existing `default` map key or activate it. V.13's stricter collision
 refusal remains a separate admission step. Equal payload values in distinct
 identities are legal peers, never a reason to deduplicate them.
 
@@ -309,7 +309,13 @@ containers inside block scopes, extras and frontmatter use existing typed root
 rows, not this field. Sort these records by exact RFC6901 path in UTF16 order;
 reject duplicate/aliased paths, noncanonical order, wrong kind/location and any
 overlap with a nonempty block descriptor. Reconstruct the declared empty slot
-before final complete-model/digest validation. For example,
+before final complete-model/digest validation. Carrier capacity does not widen
+model admission: unchanged `$defs.variantMap.minProperties:1` rejects an empty
+`sections[id]:{}` even if the experimental carrier reconstructs it. Such a value
+is a negative admission control, not a lawful positive. Empty `sections:{}` and
+`superseded[id]:[]` remain admitted. The selected unchanged-builtin-shape rule
+requires this distinction; no new owner choice or schema weakening follows.
+For example,
 `[{"path":"/superseded/x_review","kind":"array"}]` preserves an authored empty
 history slot. This is a concrete mapping proposal, not a ban on the legal empty
 model domain or a field admitted under CSV1. The original frozen codec-study
@@ -832,7 +838,7 @@ member names. Legal JCS strings such as NUL, U+FFFE and U+FFFF cannot be put the
 even as XML character references. The current universal fidelity wording and
 that admitted JSON domain need a governed disposition. Two bounded alternatives:
 
-1. **Total escaped lexical mapping (candidate preference for evaluation).** In a
+1. **Total escaped lexical mapping (owner-selected direction).** In a
    separately versioned codec/namespace, carry every JSON string as one ASCII
    JSON-string lexical token: surrounding quotes; `\"` and `\\` escapes; all
    controls and all non-ASCII UTF-16 units as lowercase `\uhhhh`; other printable
@@ -849,7 +855,7 @@ that admitted JSON domain need a governed disposition. Two bounded alternatives:
    escaping is separate from this lexical encoding. The markers, allowed
    attributes and supported namespace must be approved; unsupported mappings
    refuse at their stated current boundary.
-2. **Explicit partial XML domain.** Keep XML1's scalar/name mechanism, specify
+2. **Explicit partial XML domain (unselected alternative).** Keep XML1's scalar/name mechanism, specify
    the exact XML-representable subset and a deterministic representation refusal
    for every unsupported string/name. JSON/CSV retain the wider JCS domain.
    This requires revising the common full-fidelity promise and capability/media
@@ -944,12 +950,12 @@ Do not merge an experimental recovery snapshot or implement a private shape firs
    rehashing:** excluded by the owner's public-launch compatibility policy.
    No historical recovery or preservation gate is required.
 
-## Owner decision package (recommended, not accepted)
+## Owner-selected design direction — 2026-10-17 (RFC remains draft)
 
-The smallest coherent design decision is approval or revision of the three
-linked choices below. The recommended package is one new tagged lossless
-representation with an exact portable subset, total lexical XML and complete
-CSV carriers, and a governed complete-model subject. This remains a proposal.
+The owner approved the exact package below as the research/implementation
+direction on2026-10-17. This is direction only: the RFC remains draft until
+its remaining evidence and synchronized contract gates pass. It accepts no
+production schema, codec, subject, capability or version label.
 
 Several constraints are already settled rather than additional owner choices:
 Format2.8 named-peer legality and role opt-in; Format2.7 last-current selection
@@ -962,11 +968,11 @@ Receipt5.5's equal-source-digest metadata path remains unchanged. Pre-5.0
 backward support is already excluded; no legacy reader or automatic rehashing
 is an option needed for this design.
 
-| Owner choice | Recommended coherent answer | Scope/evidence still required before acceptance |
+| Owner-selected component | Directed design | Scope/evidence still required before acceptance |
 |---|---|---|
-| Tagged identity and portable projection | Approve D1 single/variants wrappers and D2's exact opted-in null identity distinct from literal `default`; use the D2b extension/history minimum. Keep ordinary current selection, explicit history and physical source accounting separate. | Coordinate Format mixed-admission wording, portable subset text, reference public API shapes and exact duplicate/current-order fixtures. No unrelated builtin collection redesign. |
-| Complete exchange mapping | Choose total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Approve exact mapping/domain and raw duplicate-name admission text, then synchronize schemas and complete domain fixtures. Bounded empty-map/history, independent namespace and actual ZIP evidence now exists; general parser/domain/transport and cross-platform proof remains open. The BOM defect/correction stays preserved. |
-| New commitment regime | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported Envelope/codec and V.13 subject refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance and §5.5 matching-digest rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Coordinate the independently identified Envelope, Protocol, Format if its meaning changes, mappings and signature schema/constants. Exact current wire labels require coordinated contract edits; npm packages follow the explicit4.x/launch5.0.0 owner rule. No5.0 tag/publication without separate launch approval. |
+| Tagged identity and portable projection | Use D1 single/variants wrappers and D2's exact opted-in null identity distinct from literal `default`; use the D2b extension/history minimum. Keep ordinary current selection, explicit history and physical source accounting separate. | Coordinate Format mixed-admission wording, portable subset text, reference public API shapes and exact duplicate/current-order fixtures. No unrelated builtin collection redesign. |
+| Complete exchange mapping | Use total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Approve exact mapping/domain and raw duplicate-name admission text, then synchronize schemas and complete domain fixtures. Bounded empty-map/history, independent namespace and actual ZIP evidence now exists; general parser/domain/transport and cross-platform proof remains open. The BOM defect/correction stays preserved. |
+| New commitment regime | Develop the new E_NEXT/C_NEXT subject contract with strict unsupported Envelope/codec and V.13 subject refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance and §5.5 matching-digest rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Coordinate the independently identified Envelope, Protocol, Format if its meaning changes, mappings and signature schema/constants. Exact current wire labels require coordinated contract edits; npm packages follow the explicit4.x/launch5.0.0 owner rule. No5.0 tag/publication without separate launch approval. |
 
 Approving a direction does not complete the acceptance gates above. RFC0085
 retained-history authority and RFC0088 numerical procedures are not accepted by
@@ -978,15 +984,18 @@ No expansion of V.13 authentication admission is proposed. RFC0085 compaction
 and RFC0088 numerical determinism remain separate drafts; this RFC accepts neither
 and requires neither a financial kernel nor a new receipt arithmetic rule.
 
-### Exact decision text for owner review
+### Exact owner-approved direction
 
-The proposed narrow approval is: **adopt D1's tagged single/variants entry and
+Owner direction,2026-10-17: **adopt D1's tagged single/variants entry and
 D2's role-opted exact nullable identity distinct from literal `default`; adopt
 D2b's portable minimum; choose total ASCII JSON-lexical XML and the complete
 CSV block-extra/empty-collection carriers; bind the complete supported Envelope
 subject under unchanged V.13 source admission and Receipt5.5 precedence.**
-This is proposal text, not an owner decision. No choice of old-regime support,
-artifact retention, migration or npm version recommendation remains open.
+The owner approved this direction, not final RFC acceptance or production
+activation. No selected design choice above remains an open owner question.
+Old-regime support, artifact retention, migration and npm version recommendations
+remain excluded. Exact schema/domain wording, independent evidence and governed
+acceptance still precede activation.
 
 The complete lawful domain remains the acceptance test: source routing must
 cover last-current order/revision disagreement and history without loss;
@@ -1003,6 +1012,17 @@ Literal expectations pin absent/null/authored metadata, exact payload members,
 null/default/UTF16 identity and ordered/empty history. This is bounded projection
 evidence, not complete source admission, authenticated-model validation or a
 capability claim. No old authentication/codec matrix is rerun for compatibility.
+
+The new [model-admission checkpoint](../../experiments/envelope-0089/model-admission/README.md)
+executes six focused schema/semantic tests on a newly authored ten-block model:
+80 accepted-metadata shape negatives,10 layer-attributed candidate refusals,
+Unicode/finite-number controls and explicit admission limits. The in-memory
+candidate schema changes only stamp/extensions and leaves the normative schema
+untouched. Existing codec capacity for empty builtin slots is not authority to
+admit them. Conditional provenance rules described but not encoded in the current
+block schema remain accepted Format obligations beyond schema success. This is
+model admission evidence, not physical-source, public authentication or complete
+validation proof.
 
 The remaining implementation evidence is full current-domain schema/projection
 and transport coverage, independent platform execution, and actual supported-
