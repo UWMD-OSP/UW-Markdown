@@ -10,6 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Propose draft RFC0093 for Issue354: extend META-01 by exactly late canonical
+  metadata, present invalid/mismatched canonical section and absent/nonobject
+  required quality. Record all-retained-physical applicability, bounded shape
+  precedence and synchronized TS/Python follow-up. Docs only; no activation.
+
 - Accept and activate RFC0088 under the owner's2026-10-18 decision: every
   numerical pow/exp/log consumer uses one exact pinned fdlibm procedure across
   all exponent classes, shared through public pinnedPow/pinnedExp/pinnedLog.

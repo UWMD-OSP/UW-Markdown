@@ -8,6 +8,17 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Draft RFC0093 — metadata-shape allocation, Issue354.** The owner authorizes
+exactly three additions to META-01: late/misplaced canonical `_meta`, present
+invalid/mismatched canonical `_meta.section`, and absent/nonobject required
+`_meta.quality`. [RFC0093](../rfcs/0093-metadata-shape-diagnostics.md) selects
+all-retained-physical applicability and a separate pass after existing wrapper/
+nested-shape checks, before actors/booleans. Already allocated absences and
+META-02/03 stay unchanged. This is docs-only, pending final acceptance; implement
+TypeScript/Python together afterward. Python remains parse-only, with current
+published WIPa3993a82/111portable validation and17Reader cases passing locally.
+Member-order/source-model evidence, exact impact and full capability gates remain.
+
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
 **Accepted RFC0088 — owner decision2026-10-18.** Architecture A is accepted:
