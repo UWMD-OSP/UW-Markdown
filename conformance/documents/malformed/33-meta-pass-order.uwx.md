@@ -29,8 +29,8 @@ created_by: "rfc0093-synthetic-author"
 
 # RFC0093 synthetic 33-meta-pass-order
 
-This is the smallest possible conformant file at the screening stage —
-property and quick_metrics only.
+The initial property block is a positive screening control. The appended
+blocks deliberately violate only the diagnostic conditions stated below.
 
 ```json uw:section=property source=manual ts=2026-01-15T10:00:00Z v=1 confidence=medium
 {

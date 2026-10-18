@@ -236,8 +236,10 @@ Independent pre-activation inspection of the original corpus at main
 The documents subset contains52 source files and171 decoded structured blocks;
 existing `20-flat-meta`, `21-section-id-wrapper` and
 `29-actor-shape-precedence` remain rejected-container controls, not new findings.
-The all-corpus inventory and exact counts are recorded with the implementation
-PR. A separate runtime comparison of739 parseable `.uwx.md` records (9 parser
+The pinned all-corpus inspection covered818 original sources:748 `.uwx.md`,
+18 `.uwpart.md` and52 `.uw.md`;1,926 decoded JSON-object blocks contained1,519
+admitted canonical metadata objects,403 whole-missing metadata objects and4
+existing rejected shapes. No new predicate failed and no JSON decoding failed. A separate runtime comparison of739 parseable `.uwx.md` records (9 parser
 refusals) found zero changed validation issue sequences or overall statuses.
 No original source or expectation is changed.
 
