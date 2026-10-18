@@ -10,9 +10,9 @@ from uwmd_reserves import verify_reserve_accounts
 from uwmd_reserve_draws import verify_reserve_draw_bindings
 from uwmd_replacement_funding import replacement_funding_report
 from uwmd_block_integrity import BlockIntegrityError, verify_block_integrity
-from uwmd_source_validation import inspect_source_roles
+from uwmd_source_validation import _inspect_source_roles_source
 from uwmd_currency import inspect_document_currency
-from uwmd_validation import validate_document
+from uwmd_validation import _validate_source
 from uwmd_validation_selection import ValidationUnavailable
 
 
@@ -66,8 +66,8 @@ def main(arguments):
             return {"error": {"message": "validate <file> [--json]"}}, 1
         try:
             path = Path(arguments[1])
-            document = parse(path.read_bytes(), filename=path.name)
-            return _validation_response(asyncio.run(validate_document(document)))
+            return _validation_response(asyncio.run(
+                _validate_source(path.read_bytes(), filename=path.name)))
         except SourceError as error:
             diagnostic = {"message": str(error)}
             if hasattr(error, "code"):
@@ -107,7 +107,7 @@ def main(arguments):
     if len(arguments) in (2, 3) and arguments[0] == "inspect-source-roles" and (len(arguments) == 2 or arguments[2] == "--json"):
         try:
             path = Path(arguments[1])
-            result = inspect_source_roles(parse(path.read_bytes(), filename=path.name))
+            result = _inspect_source_roles_source(path.read_bytes(), filename=path.name)
             return result, 0 if result["ok"] else 1
         except SourceError as error:
             return {"error": {"message": str(error)}}, 1

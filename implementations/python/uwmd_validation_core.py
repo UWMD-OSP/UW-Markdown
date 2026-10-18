@@ -10,7 +10,7 @@ import re
 from uwmd_binding_sources import finite
 from uwmd_currency import inspect_document_currency
 from uwmd_reader import APPEND
-from uwmd_source_validation import inspect_source_roles
+from uwmd_source_validation import _inspect_source_roles
 from uwmd_validation_provenance import (metadata_assessment, incomplete_policy,
                                         market_data_accepted, missing_market_reference)
 from uwmd_validation_selection import active_blocks, current_blocks, select_section, field
@@ -112,14 +112,15 @@ def stage_readiness(document):
     return result
 
 
-def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=()):
+def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=(),
+                _source_order=False):
     """Metadata/scenario/stage/source rules, independently applied to source.
 
     Warning/info defaults and 14-day freshness are published implementation
     precedent; no new severity or financial convention is chosen.
     """
     document, fm = ledger.document, ledger.document.frontmatter.value
-    source = inspect_source_roles(document)
+    source = _inspect_source_roles(document, _source_order=_source_order)
     ledger.issues.extend(source["issues"])
     missing_meta_blocks = set()
     missing_field_owners = []
@@ -239,4 +240,5 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
             ledger.issue("DQ-05", "info", "gaps", "items[" + str(index) + "].last_checked", "Gap exceeds the disclosed freshness threshold")
     return metadata_assessment(document, source, missing_meta_blocks=missing_meta_blocks,
                                missing_field_owners=missing_field_owners,
-                               missing_market_reference_owners=missing_market_reference_owners)
+                               missing_market_reference_owners=missing_market_reference_owners,
+                               _source_order=_source_order)

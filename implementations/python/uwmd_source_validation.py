@@ -51,7 +51,44 @@ def _metadata_routing(body):
     return routing
 
 
+
+def _array_index_name(name):
+    # RFC0093 D7 shares ECMAScript's exact array-index spelling domain.
+    return (isinstance(name, str) and len(name) <= 10
+            and re.fullmatch(r"(?:0|[1-9][0-9]*)", name) is not None
+            and int(name) <= 4294967294)
+
+
+def _metadata_shape_predicates(body, section, *, _source_order=False):
+    """Only RFC0093 P1/P2/P3; never a parent-admission suppression rule."""
+    if _metadata_routing(body) or "_meta" not in body:
+        return ()
+    meta = body["_meta"]
+    names = list(body) if _source_order else [
+        name for name in body if isinstance(name, str) and not _array_index_name(name)]
+    failed = []
+    if names and names[0] != "_meta":
+        failed.append(("_meta", "Block _meta must be the first block member."))
+    if ("section" in meta and (not isinstance(meta["section"], str)
+            or not meta["section"] or meta["section"] != section)):
+        failed.append(("_meta.section", "Block _meta.section must exactly match the annotated section."))
+    if not isinstance(meta.get("quality"), dict):
+        failed.append(("_meta.quality", "Block _meta.quality must be the required object."))
+    return tuple(failed)
+
+
 def inspect_source_roles(document):
+    """Assess the current canonical Document model; raw bytes are not authority."""
+    return _inspect_source_roles(document)
+
+
+def _inspect_source_roles_source(raw, *, filename=None):
+    """Private fresh-source operation: decoded lexical JSON order is authoritative."""
+    from uwmd_reader import parse
+    return _inspect_source_roles(parse(raw, filename=filename), _source_order=True)
+
+
+def _inspect_source_roles(document, *, _source_order=False):
     """Inspect physical metadata/actors and active source/role vocabulary.
 
     The current parsed-value model is authoritative; source spans identify its
@@ -65,7 +102,11 @@ def inspect_source_roles(document):
     # RFC0090 actor admission: complete the existing metadata-shape pass
     # before actor admission, then retain active ROLE/SRC ordering below.
     eligible = []
+    seen_metadata = set()
     for index, block in enumerate(snapshot.source.blocks):
+        if id(block) in seen_metadata:
+            continue
+        seen_metadata.add(id(block))
         body = block.parsed.value
         context = dict(block_index=index, variant=dict(block.attributes).get("variant"),
                        body_byte_start=block.body_span.start, body_byte_end=block.body_span.end)
@@ -75,6 +116,18 @@ def inspect_source_roles(document):
                 field="_meta", message=" ".join(routing), context=context))
         elif "_meta" in body:
             eligible.append((block, context))
+    # RFC0093 is a separate complete pass. Placement/section do not reject
+    # admitted actors or flags; missing quality suppresses only its child flag.
+    checked_shapes = set()
+    for block, context in eligible:
+        if id(block) in checked_shapes:
+            continue
+        checked_shapes.add(id(block))
+        for field, message in _metadata_shape_predicates(
+                block.parsed.value, block.section, _source_order=_source_order):
+            result["issues"].append(dict(code="META-01", severity="error",
+                section=block.section, field=field, message=message,
+                context=copy.deepcopy(context)))
     for block, context in eligible:
         actor = block.parsed.value["_meta"]["provenance"].get("actor")
         if not isinstance(actor, str) or actor == "":
@@ -132,11 +185,12 @@ def inspect_source_roles(document):
         if "_meta" not in body:
             shape("_meta", "Metadata is absent; provenance completeness is outside this partial command.")
         if isinstance(meta, dict):
-            # These requirements have no META-01 allocation in RFC 0081.
-            # Retain them locally in the existing active-only assessment.
-            if next(iter(body), None) != "_meta":
-                shape("_meta", "_meta must be the first block member.")
-            if meta.get("section") != block.section:
+            # Retain exact local evidence for the integrated owner's
+            # same-predicate consumption. Absent section keeps completeness.
+            for field, message in _metadata_shape_predicates(
+                    body, block.section, _source_order=_source_order):
+                shape(field, message)
+            if "section" not in meta:
                 shape("_meta.section", "_meta.section must match the exact fence section.")
             provenance = meta.get("provenance")
             if isinstance(provenance, dict):
@@ -156,9 +210,7 @@ def inspect_source_roles(document):
                     if field in provenance and provenance[field] is not None and not isinstance(provenance[field], str):
                         shape("_meta.provenance." + field, "A string or null is required.")
             quality = meta.get("quality")
-            if not isinstance(quality, dict):
-                shape("_meta.quality", "A quality object is required.")
-            else:
+            if isinstance(quality, dict):
                 if quality.get("confidence") not in CONFIDENCE:
                     shape("_meta.quality.confidence", "An admitted confidence is required.")
                 for field in ("human_review_required", "partial", "provisional"):

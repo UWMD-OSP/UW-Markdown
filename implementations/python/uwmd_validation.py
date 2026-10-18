@@ -21,6 +21,19 @@ from uwmd_validation_optional_shapes import optional_shape_assessments
 
 async def validate_document(document, *, now=None, gap_staleness_days=14,
                             incomplete_policies=(), thresholds=None):
+    """Assess the current canonical Document model, never stale source bytes."""
+    return await _validate_document(document, now=now, gap_staleness_days=gap_staleness_days,
+        incomplete_policies=incomplete_policies, thresholds=thresholds)
+
+
+async def _validate_source(raw, *, filename=None, **options):
+    """Private source-taking operation; only a fresh parse selects lexical P1."""
+    from uwmd_reader import parse
+    return await _validate_document(parse(raw, filename=filename), _source_order=True, **options)
+
+
+async def _validate_document(document, *, now=None, gap_staleness_days=14,
+                             incomplete_policies=(), thresholds=None, _source_order=False):
     """Snapshot once before any await; return detached structural/binding results.
 
     Existing standalone reports retain their own scopes. Integration selects
@@ -30,7 +43,7 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
     snapshot = copy.deepcopy(document)
     ledger = Ledger(snapshot)
     metadata = basic_rules(ledger, now=now, gap_staleness_days=gap_staleness_days,
-                incomplete_policies=incomplete_policies)
+                incomplete_policies=incomplete_policies, _source_order=_source_order)
     cross_checks(ledger)
     financial_thresholds(ledger, thresholds)
     lease_up = series_rules(ledger)

@@ -1959,3 +1959,24 @@ literal booleans, duplicates, split rates, history/current peers, mutable model
 authority, result partitions and real CLI exits. This closes a loss of registered
 finding multiplicity and attribution; it does not claim exhaustive capital-stack
 admission, sizing verification or complete validation. Discovery stays parse-only.
+
+
+### Accepted RFC0093 metadata shape
+
+The integrated validator and bounded source inventory allocate only the accepted
+P1/P2/P3 META-01 errors: late canonical metadata, present invalid/mismatched
+canonical section, and required missing/nonobject quality. A complete retained
+physical shape pass follows prior wrapper admission and precedes all actors,
+then the existing flags. P1/P2 never suppress independent actors or flags; P3
+suppresses only the already unadmitted quality child. Missing metadata/section
+and missing-confidence warning behavior remain unchanged.
+
+The current Document API is a mutable-model operation: non-index string-member
+order and canonical current block values/annotations are authoritative.
+Private fresh-source entrypoints parse the supplied bytes and preserve decoded
+lexical JSON order, including numeric keys and escaped metadata spelling.
+The real validate and source-inventory commands use those source entrypoints.
+Neither path reparses stale raw bytes to override a mutated model. Exact emitted
+owners consume only the identical local requirement; unrelated typed/conditional
+requirements still produce explicit incomplete-operation evidence.
+Discovery remains parse-only; this is not a complete validation capability claim.

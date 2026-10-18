@@ -9,7 +9,7 @@ import re
 
 from uwmd_binding_sources import finite
 from uwmd_numeric import calendar_date, _ordinal
-from uwmd_source_validation import _metadata_routing
+from uwmd_source_validation import _metadata_routing, _metadata_shape_predicates
 from uwmd_reader import APPEND
 from uwmd_validation_selection import current_blocks
 
@@ -93,7 +93,8 @@ def missing_market_reference(body):
 
 
 def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
-                        missing_field_owners=(), missing_market_reference_owners=()):
+                        missing_field_owners=(), missing_market_reference_owners=(),
+                        _source_order=False):
     """LOCAL sibling, not ValidationResult findings or full schema validation.
 
     Retain unallocated selected-shape inventory evidence plus bounded timestamp/
@@ -161,6 +162,23 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
         issue["context"]["block_index"] for issue in source_inventory["issues"]
         if issue["code"] == "META-01" and issue.get("field") == "_meta"
         and _metadata_routing(document.source.blocks[issue["context"]["block_index"]].parsed.value)}
+    # RFC0093 owns only its exact current predicate on this physical input.
+    # A META-01 actor/other block/container or stale model cannot consume it.
+    shape_owners = set()
+    for issue in source_inventory["issues"]:
+        if issue.get("code") != "META-01" or issue.get("severity") != "error":
+            continue
+        index = issue.get("context", {}).get("block_index")
+        if (not isinstance(index, int) or isinstance(index, bool)
+                or not 0 <= index < len(document.source.blocks)):
+            continue
+        block = document.source.blocks[index]
+        if issue.get("section") != block.section:
+            continue
+        fields = {path for path, _ in _metadata_shape_predicates(
+            block.parsed.value, block.section, _source_order=_source_order)}
+        if issue.get("field") in fields:
+            shape_owners.add((index, issue["field"]))
     flag_owners = {}
     for issue in source_inventory["issues"]:
         target = {"META-02": ("quality", "human_review_required"),
@@ -254,6 +272,11 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
                 and (field == "_meta" or field.startswith("_meta."))):
             handled.append(dict(**finding, registered_code="META-01",
                                 disposition="blocked_by_registered_metadata_shape"))
+        elif ((finding["context"]["block_index"], field) in shape_owners
+                and finding["section"] == document.source.blocks[
+                    finding["context"]["block_index"]].section):
+            handled.append(dict(**finding, registered_code="META-01",
+                disposition="represented_by_registered_metadata_shape"))
         elif ((finding["context"]["block_index"], field) in absent_owners
                 and finding["section"] == document.source.blocks[
                     finding["context"]["block_index"]].section):
