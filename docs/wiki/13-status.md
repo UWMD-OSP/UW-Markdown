@@ -24,7 +24,7 @@ existing76-loop scalar bound. Independent contract/consumer/conformance review,
 a final exact-head CI run and final acceptance still gate activation. New local
 evidence covers44 independent consumer cases/64 samples, all1106 current corpus
 cases with zero missing observation cells, and2163 actual Chrome public primitive
-cases. Actual Excel recalculation remains unproven (xlPending2); no cached result
+cases. The owner clarified2026-10-18 that a named engine/version satisfies the spreadsheet gate; a committed ten-control workbook and LibreOffice headless hard-recalculation workflow now capture precision comparisons and export findings. Excel xlPending2 is an execution-boundary failure; an optional interactive save/capture replaces COM. No authored cached result
 is counted as native evidence. The owner prioritizes0088, then0092 U1/U9, then
 Python implementation;0089 follows. Pending metric decisions/cleanup are parked.
 No prelaunch compatibility work, version allocation or release is authorized.

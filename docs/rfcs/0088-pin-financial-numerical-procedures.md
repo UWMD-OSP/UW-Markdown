@@ -1287,3 +1287,25 @@ no production verifier, spec, schema, corpus, version or RFC state changes.
 Independent review, final normative/conformance synchronization and exact-final-
 head CI remain required. This proves the bounded selected authentication direction,
 not final RFC acceptance, issuer trust, financial accuracy or platform universality.
+
+### Named spreadsheet gate — owner clarification, 2026-10-18
+
+The owner clarified that this gate requires recalculation by a **named engine
+and version**, rather than Excel specifically. The ten-control workbook, builder,
+LibreOffice/Excel capture and comparison controls are committed in
+[spreadsheet-parity](https://github.com/UWMD-OSP/UW-Markdown/tree/codex/numerical-determinism-356/experiments/numerical-0088/spreadsheet-parity).
+The numerical-research workflow installs LibreOffice Calc, forces hard
+recalculation with a fresh profile and cleared input caches, and records actual
+version, conversion streams, change/restore proof and saved-cell comparisons at
+RFC0079 precision. Native POWER/LN/EXP differences are export-contract findings,
+not authorization to change UWMD arithmetic. Successful execution and actual
+agreement are reported separately. This bounded experiment does not certify
+all emitted formulas or replace the remaining independent acceptance review.
+
+The earlier Excel xlPending result is an execution-boundary limitation and
+provides no numerical evidence. No further hidden COM calculation is attempted.
+If a second engine is needed, the owner can open the committed workbook in
+Excel, press Ctrl+Alt+Shift+F9, save under a new name and return its path. The
+read-only capture freezes that saved file and its Excel version metadata without
+opening or recalculating it. This clarification accepts no RFC and authorizes
+no merge, numerical activation, version or publication.

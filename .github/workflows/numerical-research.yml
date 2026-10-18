@@ -85,3 +85,41 @@ jobs:
           path: native-research-artifacts/
           if-no-files-found: error
           retention-days: 14
+
+  spreadsheet-parity:
+    name: Named spreadsheet recalculation (LibreOffice Calc)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install named spreadsheet engine
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libreoffice-calc
+          libreoffice --version
+      - name: Build actual draft public primitives
+        run: |
+          npm ci
+          npm run build --workspace=@uwmd/verify
+      - name: Check spreadsheet evidence boundaries
+        run: |
+          python -B -m unittest discover -s experiments/numerical-0088/spreadsheet-parity -p "test_*.py" -v
+          node --test experiments/numerical-0088/spreadsheet-parity/compare.test.mjs
+      - name: Force named headless recalculation and record export findings
+        run: python -B experiments/numerical-0088/spreadsheet-parity/capture.py --engine libreoffice --output spreadsheet-research-artifacts
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: spreadsheet-research-libreoffice-calc
+          path: spreadsheet-research-artifacts/
+          if-no-files-found: error
+          retention-days: 14

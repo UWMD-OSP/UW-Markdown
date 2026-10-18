@@ -19,7 +19,7 @@ protocol, and each package each carry an independent semver).
   procedure and raw/internal/public admission boundaries in draft governed text;
   no new domain cutoff or intermediate finite guard is introduced. Add bounded
   independent final-consumer proofs, a current1106-case impact capture and actual
-  Chrome public-primitive evidence; scoped Excel recalculation remains open.
+  Chrome public-primitive evidence. Commit the ten spreadsheet controls and add named LibreOffice hard-recalculation/version capture, RFC0079 comparisons and explicit native-formula export findings; optional Excel evidence uses an interactive saved file, with no hidden COM calculation.
   No numerical conformance rebaseline,
   package version or publication is allocated.
 
