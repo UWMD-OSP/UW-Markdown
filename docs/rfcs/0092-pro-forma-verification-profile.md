@@ -60,7 +60,7 @@ Sources:
   candidate table while leaving its initial membership/assurance scope open.
 - Owner direction, 2026-10-17: next free RFC number, no compatibility/bump
   proposal, and the three-option per-loan `ltv_basis` addition.
-- [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) and draft RFC 0088
+- [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) and accepted RFC 0088
   [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357) own numerical procedures.
   RFC 0089 remains draft in [#368](https://github.com/UWMD-OSP/UW-Markdown/pull/368).
 - [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354) owns independent
@@ -265,7 +265,7 @@ that verifier is reused.
 
 | Identity | Inputs / convention dependencies | Formal check, unit/precision and authority/gate |
 |---|---|---|
-| Growth | Prior line A, stated g, explicit application count; growth/start and timeline | Single step `A_t = A_previous*(1+g)`; general `A_t = A_base*P(1+g,k)`; monthly increment `P(1+g,1/12)-1`. M/R; algebra, timing U3 and primitive U8. Never author missing intervening rows. |
+| Growth | Prior line A, stated g, explicit application count; growth/start and timeline | Single step `A_t = A_previous*(1+g)`; general `A_t = A_base*P(1+g,k)`; monthly increment `P(1+g,1/12)-1`. M/R; algebra, timing U3 and accepted RFC0088 primitives. Never author missing intervening rows. |
 | Vacancy, credit loss, EGI | GPR, other income, loss amounts/rates; selected vacancy/credit bases, occupancy | `GPRV = GPR+other_income`; `loss = rate*selected_base`; `EGI = GPRV-vacancy-credit_loss-concessions-loss_to_lease`. M; additive identity. Each deduction needs explicit binding/zero and no-double-count evidence. Occupancy-to-loss conversion U3. |
 | Expenses | Stated amount/rate and units/occupied units/SF, EGI/reimbursements; line class and fee base | Fixed reads authored amount; quantity line `expense = rate*quantity`; percentage `expense = rate*selected_EGI`; sum exact bound lines. M; algebra, scaling/growth U3. No fixed-label default amount. |
 | NOI | EGI, opex excluding reserves, reserve allocation; placement | `NOI = EGI-opex_excluding_reserves-R_above`, with explicit above-NOI allocation. M; additive identity, U5. |
@@ -279,17 +279,16 @@ that verifier is reused.
 | Exit value/costs | Selected forward/trailing NOI/NCF, cap, gross sale, cost rate | `gross_sale = selected_income/cap`; `sale_cost = gross_sale*cost_rate`; `net_sale = gross_sale-sale_cost`. M; algebra. Forward input must be authored beyond the hold. No unapproved stated-price convention is introduced. |
 | Equity sale proceeds | Net sale, stated outstanding debt payoff | `net_proceeds_to_equity = net_sale-debt_payoff` under Format4.9/RFC0077's aggregate-equity/junior-debt boundary. Common-only proceeds keep separate fields. M; payoff timing U4. |
 | Unlevered/levered flows | Stated signed property cash, debt draws and positive interest/principal/fee magnitudes | `U_t = sum(bound property cash amounts)`; `E_t = U_t+debt_draws_t-interest_t-principal_t-financing_costs_t`. M; algebra with each acquisition/exit component once. Financing costs at t0 enter equity. Retain VIII.9.6 reserve/cash exclusions and explicit coverage; NCF is not automatically complete owner cash. |
-| IRR | Signed flows, exact timing/dates, frequency, existing series day count | Annual `irr(CF0,...,CFn)` via VIII.3/RFC0024; monthly `m=irr(monthly_flows)`, annual report `P(1+m,12)-1`; dated VIII.9.3 `xirr`. R; unchanged solver/refusals, timing U3, primitive U8. No Newton polish/new tolerance. |
+| IRR | Signed flows, exact timing/dates, frequency, existing series day count | Annual `irr(CF0,...,CFn)` via VIII.3/RFC0024; monthly `m=irr(monthly_flows)`, annual report `P(1+m,12)-1`; dated VIII.9.3 `xirr`. R; unchanged solver/refusals, timing U3, accepted RFC0088 primitives. No Newton polish/new tolerance. |
 | Equity multiple | Separate distributions D_t and contribution magnitudes C_t | `EM = sum(D_t)/sum(C_t)`. X; approved fixed rule/VIII.9 precedent. Do not net a same-period contribution/distribution or infer gross flows from a net row. Retain reused verifier's domain/refusal contract. |
 | CoC by year | Stated selected numerator components, explicit equity binding; numerator option | `CoC_t = selected_cash_numerator_t/stated_equity_denominator_t`. R, existing CoC precision; numerator bridge and annual denominator U6. No inferred cumulative-equity policy. |
-| NPV | CF0, later signed flows, discount rate, explicit timing exponents | `NPV = CF0+sum(t>0,CF_t/P(1+r,tau_t))`. M; CF0 undiscounted, unlike spreadsheet NPV's first supplied argument. End/full integer timing reuses VIII.3; other mappings U3/U8. |
+| NPV | CF0, later signed flows, discount rate, explicit timing exponents | `NPV = CF0+sum(t>0,CF_t/P(1+r,tau_t))`. M; CF0 undiscounted, unlike spreadsheet NPV's first supplied argument. End/full integer timing reuses VIII.3; other timing mappings U3. |
 
 A supplied assumption or fixed line with no independent identity remains an
 input-only, unverifiable row. Reading/copying it cannot earn a verified count;
 a growth or build-up identity can verify its stated consequence.
 
-`P` means the exact power procedure finally accepted through RFC0088, not a
-convenient host pow. New composed identities need governed operation order,
+`P` means RFC0088's accepted `pinnedPow`, not a convenient host pow. New composed identities need governed operation order,
 domains/refusals and independent evidence before acceptance.
 
 ### 4a. U1 disposition — bounded initial identity scope
@@ -321,26 +320,33 @@ Periodic headline IRR/NPV without an exact accepted comparison binding, monthly
 annualization, new income/expense bridges, loan schedules, exit derivations,
 reserve/NCF placement and annual CoC remain candidate entries. Their additional
 contracts await U3-U7 and the owner's forthcoming StackUW alignment evidence.
-Those gates do not authorize omitting such stated rows from coverage. U8 remains
-open until RFC0088 is accepted. This U1 disposition neither resolves those
-numerical questions nor accepts another RFC.
+Those gates do not authorize omitting such stated rows from coverage. U8 is
+resolved by accepted RFC0088 as recorded below; this does not resolve U3-U7 or
+accept this profile.
 
-### 5. Determinism dependency
+### 5. Determinism dependency — U8 resolved
 
-[#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) proposed integer powers
-as `d0=1; dt=dt-1*(1+r)` and reciprocals for negatives. The older profile brief
-carried this running-product proposal. The owner's later 2026-10-17 RFC0088
-direction selects A: one exact pinned fdlibm pow/exp/log procedure for **all**
-exponent classes, including negative powers, with financial associations,
-quantizer and solvers unchanged. Those procedures are not binary64 substitutes.
+RFC0088 is accepted and merged in [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357)
+at `8a646aa219620c143bb8439aa67cf010d9896a79`, with
+[green exact-main CI](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39113501954).
+The owner's 2026-10-18 direction closes U8 against that accepted contract.
+Use the public `pinnedPow`, `pinnedExp` and `pinnedLog` implementation: one exact
+pinned fdlibm procedure across every exponent class, including negative powers.
+The historical #356 running-product proposal is not the selected procedure.
 
-**Final accepted RFC0088 is an explicit dependency (U8).** The issue's
-running-product proposal is not assumed adopted. This RFC does not reopen A,
-accept RFC0088 or introduce a competing profile integer-power routine.
-Monthly compounding, annualization and integer/fractional discounting all require
-the one accepted procedure and composed evidence. Log1p/expm1 rearrangements are
-not authorized here. Retain accepted solver endpoint/iteration/refusal behavior;
-no silent correction of IRR edge cases.
+Accepted financial associations, reporting quantizer and solver behavior remain
+authoritative, including endpoint, iteration and refusal rules. RFC0088's
+accepted authenticate-first receipt precedence also remains authoritative; this
+profile adds no receipt rule. Monthly compounding, annualization and integer or
+fractional discounting use the accepted primitives whenever their identity is
+admitted. No host-power fallback, competing integer-power procedure or
+log1p/expm1 stability rearrangement is authorized here.
+
+Closing the primitive dependency does not accept new composed profile identities.
+Their precise association, domains, refusal tables, comparison minima and
+independent financial evidence remain U3-U7 gates where applicable, especially
+U7. Do not treat RFC0088's primitive evidence as proof of an unaccepted profile
+procedure or change the initial U1 scope or U9 reporting contract.
 
 ### 6. Verdicts, coverage, receipts
 
@@ -574,7 +580,7 @@ in this corpus. This is a plan, not a claim that a spreadsheet was executed.
 Plan only, inside `@uwmd/verify` under the optional profile (RFC0083). No code,
 projection package, model-generation function, AI agent or module manifest.
 
-1. Resolve numerical U3–U8, review U1/U9 and obtain final acceptance; synchronize
+1. Resolve numerical U3–U7, review U1/U9 and obtain final acceptance; synchronize
    Format/Protocol, class-scoped LTV dictionary entries, schemas, executable
    protocol mirror, profile/capability/target tables and conformance through
    reviewed implementation work.
@@ -613,14 +619,20 @@ required to claim it. Counts by verdict and row family include rows stated with
 no defined identity. A thin document gets a thin coverage report, not a refusal.
 This follows Format 4.24's "stated and verified, never trusted" and the #355
 reframe. Only U2 is resolved by that owner decision; U1/U9 now have separate
-precedent-derived draft dispositions above, and U3-U8 remain open.
+precedent-derived draft dispositions above. U3-U7 remain open; U8 is separately
+resolved below.
+
+**U8 — resolved, owner direction 2026-10-18.** RFC0088 is accepted on main at
+`8a646aa219620c143bb8439aa67cf010d9896a79`; section5 records the exact procedure,
+public exports and CI evidence. This closes only the numerical-primitive
+dependency. U1/U9 remain draft dispositions, and no U3-U7 convention is decided.
 
 ## Unresolved questions
 
 U1/U9 are addressed by the draft dispositions above, subject to review. The
 remaining numerical questions below are acceptance gates, not choices for an
 implementer to guess. The owner will supply U3-U7 StackUW alignment evidence;
-this update does not decide them, and U8 waits for accepted RFC0088. Reference
+this update does not decide them. U8 is resolved against accepted RFC0088. Reference
 code or spreadsheet practice alone does not decide a new financial convention.
 
 | ID | Kind | Required decision/evidence |
@@ -630,7 +642,6 @@ code or spreadsheet practice alone does not decide a new financial convention.
 | U5 | **Numeric** | Reconcile above-NOI reserves with literal `NCF=NOI-reserves-TI/LC-capex`: subtract only reserves not already deducted, or intentionally define another measure? Also bind accrual versus owner cash under VIII.9.6/11. Do not choose or double count silently. |
 | U6 | **Numeric** | Pin before/after-capex CoC components and equity denominator across periods/later contributions. Existing Y1 fallback or cumulative-equity field does not define every year. No new registry option without approval. |
 | U7 | **Numeric** | Allocate new-identity comparison minima and freeze composed binary64 association/domain/refusal tables. Existing dictionary and reused series contracts stay authoritative; no guessed floor or blanket epsilon. |
-| U8 | **Numeric dependency** | Final accepted RFC0088 and composed evidence. A/all exponent classes is selected direction; the historical #356 running product is not accepted arithmetic. Use one accepted primitive contract. No repeated A/B decision requested. |
 
 The launch question is closed: this optional profile ships at 5.0.0 with
 everything else. RFC0085 provenance and RFC0089 subject work remain separately

@@ -47,7 +47,8 @@ no implementation, profile claim, dictionary rule, schema or receipt behavior.
 Owner-resolved U2 requires no minimum L1 row set: verify stated assertions and
 report coverage by verdict and row family, including rows without defined
 identities. Thin documents receive thin coverage, not a minimum-row refusal.
-Other numeric/scope questions and accepted RFC0088 remain explicit gates.
+U8 is resolved against accepted RFC0088 on main; U1/U9 remain draft
+dispositions and numeric U3-U7 await owner-supplied StackUW alignment evidence.
 See [RFC0092](../rfcs/0092-pro-forma-verification-profile.md).
 
 **Actor reconciliation — accepted RFC0090.**
