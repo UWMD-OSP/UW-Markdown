@@ -256,14 +256,24 @@ class MetadataAdmissionTests(unittest.TestCase):
 
     def test_frozen_promoted_source_reference_and_typed_mutation_without_promotion_claim(self):
         # This source is a frozen promotion result, not a validate expected pair.
-        # Its missing unrelated metadata remains local; no promotion/profile pass.
+        # Its absent timestamp/confidence retain their exact completeness owners;
+        # registered errors remain, without a promotion/profile claim.
         path = ROOT / "conformance/market-data/promote/explicit/deal-after-promotion.uwx.md"
         raw = path.read_bytes(); document = parse(raw); before = copy.deepcopy(document)
         original = validate(document)
         self.assertFalse(any(i["code"] == "DQ-06" and i["severity"] == "error"
                              for i in original["issues"]))
         prior = original["metadata_assessment"]["shape_findings"]
-        self.assertTrue(prior)  # Do not hide incomplete timestamp/quality fields.
+        self.assertEqual(prior, [])
+        self.assertEqual([(f["field"], f["registered_code"]) for f in
+            original["metadata_assessment"]["handled_shape_findings"]], [
+                ("_meta.provenance.timestamp", "META_FIELD_MISSING_TIMESTAMP"),
+                ("_meta.quality.confidence", "META_FIELD_MISSING_CONFIDENCE"),
+                ("_meta.quality.human_review_required", "META-02")])
+        self.assertEqual([(i["code"], i["field"]) for i in original["issues"]], [
+            ("META-02", "_meta.quality.human_review_required"),
+            ("META_FIELD_MISSING_TIMESTAMP", "_meta.provenance.timestamp"),
+            ("META_FIELD_MISSING_CONFIDENCE", "_meta.quality.confidence"), ("CC-14", "")])
         self.assertFalse(any(f["field"].startswith("_meta.provenance.market_data_ref") for f in prior))
         changed = copy.deepcopy(document)
         changed.source.blocks[0].parsed.value["_meta"]["provenance"]["market_data_ref"]["rationale"] = False
