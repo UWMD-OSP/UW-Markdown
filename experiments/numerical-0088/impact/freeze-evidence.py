@@ -93,8 +93,9 @@ manifest["evidence_artifacts"] = artifacts
 manifest.pop("scratch_evidence")
 manifest["measurement_harness"] = {
     "commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=base, text=True).strip(),
-    "files": {name: sha((base / name).read_bytes()) for name in ("measure.mjs", "hook.mjs", "runtime.mjs")},
-    "failed_attempt": "Initial injected import displaced the runner hashbang; parsing stopped before any case. The committed loader fix removes the executable hashbang from the in-memory module body."}
+    "files": {name: sha((pathlib.Path(__file__).resolve().parent / name).read_bytes())
+              for name in ("measure.mjs", "hook.mjs", "runtime.mjs")},
+    "failed_attempt_included": bool(args.failed_attempt)}
 # Baseline and candidate load identical transformed text; factor it once.
 old = manifest["runs"]["baseline"].pop("transformations")
 new = manifest["runs"]["candidate"].pop("transformations")

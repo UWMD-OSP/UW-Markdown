@@ -10,7 +10,7 @@ Run with an existing fresh workspace build (no dependency installation):
 node experiments/numerical-0088/impact/measure.mjs --repo-root "C:\path\to\built-repo" --candidate "C:\path\to\pinned-fdlibm\kernel.mjs" --output "C:\path\to\impact-manifest.json"
 ```
 
-The collector requires the reviewed 1,089-case inventory, runs baseline then
+The current collector requires the reviewed 1,106-case inventory, runs baseline then
 candidate without selection or update flags, and requires a green instrumented
 baseline, every indexed result and exactly one observation event per case.
 Captured getters are lexically visible local bindings at the existing `record`
@@ -150,3 +150,19 @@ A green existing corpus did not cover these selected counterexamples. The
 focused results demonstrate changed reported values and changed refusals; they
 do not authorize rewriting historical subjects, results, signatures or receipt
 verdict rules. The compatibility decision remains separate from this evidence.
+
+## Current-corpus capture revision (2026-10-17)
+
+The previous108 missing cells were a prefix-filter limitation, not evidence that
+those cases computed nothing. Existing raw events already contain parsed/rendered
+views, resolver results, schema/loader booleans and aggregate test controls under
+other names. The current selector explicitly names those outputs, excludes TDZ
+and function handles, records every selected binding name, and retains false,0
+and null as actual results. Inputs/expected fixtures alone do not qualify. A
+boolean/aggregate observation still is not a complete internal numerical result.
+
+A fresh1106-case run against the current built tree is required; do not reuse the
+1089-case pass count as current proof. Output goes to current-evidence/ rather
+than replacing the earlier measured checkpoint. This is current numerical-impact
+evidence, not prelaunch compatibility or artifact-preservation work. No assertion,
+fixture expectation or production behavior changes.

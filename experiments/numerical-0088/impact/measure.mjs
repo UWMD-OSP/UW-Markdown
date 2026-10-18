@@ -18,7 +18,7 @@ const corpusPath=join(repo,'conformance/corpus-index.json');
 const corpus=JSON.parse(readFileSync(corpusPath,'utf8')).cases;
 const key=c=>JSON.stringify([String(c.suite),c.scenario]);
 const indexed=new Map(corpus.map(c=>[key(c),c]));
-if(indexed.size!==corpus.length || corpus.length!==1089)throw new Error('Unexpected or duplicate corpus inventory; review measurement before running');
+if(indexed.size!==corpus.length || corpus.length!==1106)throw new Error('Unexpected or duplicate corpus inventory; review measurement before running');
 const tracked=git('ls-files','-z').split('\0').filter(Boolean);
 const protectedPaths=tracked.filter(p=>/^(spec\/|conformance\/|packages\/|implementations\/|package(?:-lock)?\.json$|VERSIONS\.md$|CHANGELOG\.md$|releases\/)/.test(p));
 const hashes=paths=>Object.fromEntries(paths.map(p=>[p,sha(readFileSync(join(repo,p)))]));
@@ -87,7 +87,16 @@ const protectedAfter=hashes(protectedPaths);
 if(JSON.stringify(protectedBefore)!==JSON.stringify(protectedAfter))throw new Error('Protected source/schema/corpus/version inputs changed during measurement');
 const candidateAfter=Object.fromEntries(candidates.sort().map(p=>[relative(dirname(candidate),p).replaceAll('\\','/'),sha(readFileSync(p))]));
 if(JSON.stringify(candidateBefore)!==JSON.stringify(candidateAfter))throw new Error('Candidate closure changed during measurement');
-const observations=snapshot=>Object.fromEntries(Object.entries(snapshot).filter(([name])=>/^(actual|got|result|projected|receipt|again|computed|codes|issues|verification|verified|value|verdict|validation|refusal|refused|report|summary|sizing|outcomes|outputs|e$|r$)/.test(name)));
+// Explicit observed outputs/control results missed by the earlier prefix-only selector.
+// Null/false/zero are real observed results; TDZ and function handles are not.
+const observedNames = new Set(['parsed','reparsed','projection','rendered','canonical','parseErrors','reErrors',
+  'broken','digests','resolved','selected','promoted','ok','loaderOk','schemaOk','divergence','problems',
+  'identical','errors','emitted','missing','abstract','parts','partsError','canonicalMatches','inlineDigest',
+  'resolvedDigest','bad','extras','agrees','a','b','without','withBackend','mine','theirs','same','summaries',
+  'content','partial','shape']);
+const observations=snapshot=>Object.fromEntries(Object.entries(snapshot).filter(([name,value])=>
+  (/^(actual|got|result|projected|receipt|again|computed|codes|issues|verification|verified|value|verdict|validation|refusal|refused|report|summary|sizing|outcomes|outputs|e$|r$)/.test(name) || observedNames.has(name))
+  && !(value && typeof value==='object' && ['not-initialized','function'].includes(value.type))));
 function differences(a,b,path='',found=[]){
  if(JSON.stringify(a)===JSON.stringify(b))return found;
  if(a&&b&&typeof a==='object'&&typeof b==='object'&&!Array.isArray(a)&&!Array.isArray(b)){
@@ -110,7 +119,7 @@ const cases=corpus.map(c=>{
  return {id,target:c.target,suite:c.suite,scenario:c.scenario,
   baseline_status:runs.baseline.rows.get(id).status,candidate_status:runs.candidate.rows.get(id).status,
   observation_coverage:complete?'captured_visible_observations_not_all_internal_values':'incomplete_no_visible_actual_binding',
-  exact_whole_result_proof:false,baseline_observation_sha256:sha(JSON.stringify(before)),candidate_observation_sha256:sha(JSON.stringify(after)),
+  exact_whole_result_proof:false,observed_binding_names:Object.keys(before),baseline_observation_sha256:sha(JSON.stringify(before)),candidate_observation_sha256:sha(JSON.stringify(after)),
   baseline_capture_site:b.site,candidate_capture_site:a.site,observed_changes:changes,
   historical_subject_observation:subjectChanges.length?'changed_observation_requires_review':Object.keys(before).some(k=>/receipt|again/.test(k))?'no_observed_subject_change':'not_measured_in_this_case'};
 });
@@ -125,7 +134,7 @@ const manifest={schema_version:'research-impact-1',scope:'Unaccepted isolated ca
  built_input_hashes:distBefore,built_inputs_unchanged:true,numeric_site_inventory:staticSites,numeric_sites_not_loaded:staticSites.filter(s=>!s.excluded&&!runs.candidate.transformed.some(t=>t.path===s.path)),numeric_sites_not_exercised:staticSites.filter(s=>!s.excluded&&!runs.candidate.primitives.some(p=>p.site===s.site)),
  corpus_sha256:sha(readFileSync(corpusPath)),indexed_case_count:corpus.length,protected_input_hashes:protectedBefore,protected_inputs_unchanged:true,
  preserved_semantics:['Financial operation order, solver branches/tolerances and quantization unchanged','Math.sqrt unchanged in consumers','Raw pow/log/exp only; existing public refusal guards retained'],
- limits:['All indexed assertion outcomes measured; visible result captures do not prove every internal or unasserted value unchanged','Primitive traces are global and not attributed to cases','Metric assertion closures may have no visible complete actual result','Changed results/refusals outside this corpus remain unknown','Observed receipt equality does not authorize rewriting historical identities or signatures'],
+ limits:['All indexed assertion outcomes measured; visible result captures do not prove every internal or unasserted value unchanged','Primitive traces are global and not attributed to cases','Explicit observed control/aggregate values are not complete internal numerical trajectories','Metric assertion closures may have no visible complete actual result','Changed results/refusals outside this corpus remain unknown','Observed receipt equality does not authorize rewriting historical identities or signatures'],
  runs:Object.fromEntries(Object.entries(runs).map(([mode,r])=>[mode,{started:r.started,finished:r.finished,exit_code:r.exit_code,summary:r.report.summary,by_target:r.report.by_target,events_sha256:r.events_sha256,transforms_sha256:r.transforms_sha256,primitive_count:r.primitives.length,primitive_site_counts:perSite(r),transformations:r.transformed}])),
  primitive_trace_alignment:primitiveAlignment,primitive_changes_when_aligned:primitiveDifferences,
  cases,
