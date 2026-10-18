@@ -9,8 +9,7 @@
     {
       "code": "META-01",
       "severity": "error",
-      "section": "x_meta_oldshape",
-      "field": "_meta"
+      "section": "x_meta_oldshape"
     },
     {
       "code": "META-01",
