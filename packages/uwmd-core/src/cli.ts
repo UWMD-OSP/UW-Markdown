@@ -413,7 +413,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   let hadError = false;
 
   if (runAll || onlyValidate) {
-    const v = validateUWFile(content, undefined, partSources === undefined ? undefined : { parts: partSources });
+    const v = validateUWFile(content, undefined, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
     sections['validation'] = v;
     const funding = await verifyReplacementFundingBindings(parsed);
     sections['replacement_funding_verification'] = funding;
@@ -1268,17 +1268,17 @@ const positional = extractPositionals(args);
 
 // ─── Composition (RFC 0021) ──────────────────────────────────────────────────
 
-/** Load every `.uwpart.md` in a directory, keyed by `part_id`. */
-function loadPartSourcesDir(dir: string): string[] {
+/** Read each actual part once; retain its filename for existing parse diagnostics. */
+function loadPartSourcesDir(dir: string): { filename: string; source: string }[] {
   if (!existsSync(dir)) return [];
   return readdirSync(dir).filter((f) => f.endsWith(UWPART_EXTENSION)).sort()
-    .map(file => readFileSync(resolve(dir, file), 'utf-8'));
+    .map(filename => ({ filename, source: readFileSync(resolve(dir, filename), 'utf-8') }));
 }
 
 function loadPartsDir(dir: string, sources = loadPartSourcesDir(dir)): Map<string, UWPart> {
   const parts = new Map<string, UWPart>();
-  for (const source of sources) {
-    const part = parseUWPart(parseUWFile(source));
+  for (const { filename, source } of sources) {
+    const part = parseUWPart(parseUWFile(source), { filename });
     if (parts.has(part.part_id)) {
       console.error(`Duplicate part_id '${part.part_id}' in ${dir}`);
       process.exit(1);
@@ -1406,7 +1406,7 @@ function withResolved(
   parsed: ParsedUWFile,
   file: string,
   flags: Record<string, string | boolean>,
-  partSources?: string[],
+  partSources?: { filename: string; source: string }[],
 ): ParsedUWFile {
   if (!flags['resolved']) return parsed;
   const partsDir = flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file);

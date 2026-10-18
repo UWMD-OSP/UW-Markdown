@@ -450,6 +450,17 @@ describe('RFC0093 composed SOURCE and derived MODEL accounting', () => {
     expect(Object.keys(parsed)).not.toContain('physical');
   });
 
+  it('retains supplied part model references without inventing source history or lexical order', () => {
+    const root = parseUWFile(externalSource('property', ['whole']));
+    const source = partSource('whole', 'property', JSON.stringify({ _meta: { ...canonicalMeta(), quality: null } }));
+    const copied = JSON.parse(JSON.stringify(parseUWFile(source))) as ParsedUWFile;
+    copied.raw = 'stale copied part source must not be parsed';
+    const part = parseUWPart(copied);
+    const resolved = resolveComposition(root, { parts: new Map([['whole', part]]) });
+    expect(parsedPhysicalBlocks(resolved.document)).toContain(part.blocks[0]);
+    expect(validateUWFile(resolved.document).errors.filter(i => i.field === '_meta.quality')).toHaveLength(2);
+  });
+
   it('refuses unavailable composition and duplicate ids with existing typed boundaries', () => {
     const root = externalSource('property', ['missing']);
     expect(() => validateUWFile(root, undefined, { parts: [] })).toThrowError(CompositionError);
