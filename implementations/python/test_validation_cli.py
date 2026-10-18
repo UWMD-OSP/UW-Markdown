@@ -80,9 +80,11 @@ class ValidationCLITests(unittest.TestCase):
         self.assertEqual([f["context"]["block_index"] for f in inventory["shape_findings"]],[0,1])
         for covered in ((),(1,),(2,)):
             local=metadata_assessment(source,inventory,missing_meta_blocks=covered)["shape_findings"]
-            self.assertEqual([f["context"]["block_index"] for f in local],[0,1])
+            # RFC0093's actual P1 owner independently consumes block 1;
+            # an unrelated/missing completeness owner cannot consume block 0.
+            self.assertEqual([f["context"]["block_index"] for f in local],[0])
         local=metadata_assessment(source,inventory,missing_meta_blocks=(0,1,2))["shape_findings"]
-        self.assertEqual([(f["context"]["block_index"],f["field"]) for f in local],[(1,"_meta")])
+        self.assertEqual(local,[])
         integrated=validate(source)
         self.assertEqual(sum(i["code"]=="META_MISSING" for i in integrated["issues"]),1)
         self.assertEqual(integrated["metadata_assessment"]["shape_findings"], [])
