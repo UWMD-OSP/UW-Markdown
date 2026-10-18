@@ -1,0 +1,9 @@
+{
+  "calc_id": "rfc0088_negative_fraction_refusal",
+  "ok": false,
+  "value": null,
+  "error": {
+    "code": "CALC-TYPE-001",
+    "category": "calc"
+  }
+}

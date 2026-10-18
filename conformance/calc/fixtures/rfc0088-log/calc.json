@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_log",
+  "label": "RFC0088 pinned procedure rfc0088-log",
+  "formula": "log(2)",
+  "deterministic": true,
+  "round_to": 12
+}

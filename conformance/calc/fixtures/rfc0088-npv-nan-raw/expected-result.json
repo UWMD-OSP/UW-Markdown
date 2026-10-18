@@ -1,0 +1,9 @@
+{
+  "calc_id": "rfc0088_npv_nan_raw",
+  "ok": false,
+  "value": null,
+  "error": {
+    "code": "CALC-TYPE-001",
+    "category": "calc"
+  }
+}

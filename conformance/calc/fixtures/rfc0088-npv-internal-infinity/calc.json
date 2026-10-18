@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_npv_internal_infinity",
+  "label": "RFC0088 pinned procedure rfc0088-npv-internal-infinity",
+  "formula": "npv(1e+155,0.0,0.0,1.0)",
+  "deterministic": true,
+  "round_to": 12
+}

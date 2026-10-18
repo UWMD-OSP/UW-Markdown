@@ -132,6 +132,7 @@ def capture(destination):
                     else: assert got["quantization_refusal"] == "CALC-TYPE-001"
             independent[family] = fresh
         observations[family] = observed
+    run("receipt-precedence", ["node", "--test", str(HERE / "receipts.test.mjs")], {"ACTIVATION_RECEIPT_OUTPUT": str(destination / "receipt-precedence.json")})
     (destination / "independent-graphs.json").write_text(json.dumps(independent, separators=(",", ":")) + "\n", encoding="utf8")
     assert identities() == before, "Source/input/reference/dist mutation during proof"
     artifacts = [{"path": path.name, "sha256": sha(path.read_bytes()), "bytes": path.stat().st_size} for path in sorted(destination.iterdir())]

@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_npv_nan_raw",
+  "label": "RFC0088 pinned procedure rfc0088-npv-nan-raw",
+  "formula": "npv(-1.0,0.0,0.0,1.0)",
+  "deterministic": true,
+  "round_to": 12
+}

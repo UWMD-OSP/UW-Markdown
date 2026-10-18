@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_irr_primitive_transition",
+  "label": "RFC0088 pinned procedure rfc0088-irr-primitive-transition",
+  "formula": "irr(-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.727499949325601e+20)",
+  "deterministic": true,
+  "round_to": 12
+}

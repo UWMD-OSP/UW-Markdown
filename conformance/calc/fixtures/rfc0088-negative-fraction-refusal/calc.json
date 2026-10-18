@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_negative_fraction_refusal",
+  "label": "RFC0088 pinned procedure rfc0088-negative-fraction-refusal",
+  "formula": "pow(-2,0.5)",
+  "deterministic": true,
+  "round_to": 12
+}

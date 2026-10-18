@@ -1,0 +1,9 @@
+{
+  "calc_id": "rfc0088_irr_even_roots_no_bracket",
+  "ok": false,
+  "value": null,
+  "error": {
+    "code": "CALC-IRR-DIVERGE",
+    "category": "calc"
+  }
+}
