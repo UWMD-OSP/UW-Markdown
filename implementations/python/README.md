@@ -64,7 +64,8 @@ source keeps its exact completeness owner; invalid strings/SRC-02, resolution
 SRC-03 and leaf source findings retain their existing behavior. History is not
 reclassified. Independent timestamp, quality-parent, member-order, routing and
 annotation failures still require their own existing or unallocated handling.
-Six focused methods cover the registered owner/proof boundaries, every JSON
+Seven focused methods cover the registered owner/proof boundaries, a defensive
+nonobject constructed-payload proof refusal, every JSON
 nonstring type, source strings and resolution tags, physical/leaf/history scope,
 read-only inputs and four real CLI comparisons. No diagnostic or capability is
 added; discovery remains parse-only.
