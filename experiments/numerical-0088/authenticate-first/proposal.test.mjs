@@ -31,11 +31,13 @@ async function run(id,{receipt=signed(issued),content=source,packs=[pack],inputs
   if(backend!=='missing')options.signatureVerifier={verify:async(actual,payload)=>{
     calls.push({payload_sha256:sha(payload),receipt_sha256:sha(JSON.stringify(actual))});
     if(backend==='throws')throw new Error('research-backend-transport');
-    return verify(null,Buffer.from(payload),publicKey,Buffer.from(actual.signature.value,'base64'));
+    assert.equal(payload,api.canonicalize({...actual,signature:null}),'independent current receipt-to-signing-payload binding');
+    const valid=verify(null,Buffer.from(payload),publicKey,Buffer.from(actual.signature.value,'base64'));calls[calls.length-1].cryptographic_valid=valid;return valid;
   }};
   clear();let result;let thrown;
   try{result=await (baseline?api.verifyReceipt:proposal)(receipt,content,options);}catch(error){thrown={name:error.name,message:error.message};}
   const row={id,mode:baseline?'current':'proposal',result:result?projected(result):null,thrown:thrown??null,phases:[...phases],backend_calls:calls.length,receipt_unchanged:JSON.stringify(receipt)===beforeReceipt,source_unchanged:sha(content)===beforeSource};
+  row.receipt=structuredClone(receipt);row.full_result=result??null;row.backend_checks=calls;row.supplied_pack_mode=packs[0]===refusingPack?'controlled-refusal':packs.length?'current-test-pack':'missing';
   rows.push(row);assert.equal(row.receipt_unchanged,true,id);assert.equal(row.source_unchanged,true,id);
   assert.deepEqual(row.result,expected??null,id);assert.deepEqual(row.phases,expectedPhases??[],id);assert.equal(calls.length,expectedBackend,id);return row;
 }
