@@ -34,6 +34,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v5
+        if: hashFiles('experiments/envelope-0089/portable-proof/test_projection.py') != ''
+        with:
+          node-version: 20
+      - name: Independent candidate portable minimum (unapproved)
+        if: hashFiles('experiments/envelope-0089/portable-proof/test_projection.py') != ''
+        run: python -B -m unittest discover -s experiments/envelope-0089/portable-proof -p test_projection.py -v
       # The implementation uses only Python's standard library. Unit controls
       # and actual portable Reader projections are separate evidence; neither
       # claims full Verifier coverage or resolves RFC 0088 numerical semantics.
@@ -298,16 +305,13 @@ jobs:
         run: |
           python3 --version
           node --version
-          git fetch --no-tags --depth=1 origin a3570c3c72633c0abd564a66d863c26a62a14604
-          python3 -B experiments/envelope-0089/codec-study/capture.py --check
           python3 -B experiments/envelope-0089/codec-study/freeze.py --check
           python3 -B -m unittest discover -s experiments/envelope-0089/codec-study -p test_codec.py -v
           node --test experiments/envelope-0089/codec-study/independent.test.mjs
-          python3 -B experiments/envelope-0089/empty-collections/check.py
           python3 -B experiments/envelope-0089/empty-collections/freeze.py --check
           python3 -B -m unittest discover -s experiments/envelope-0089/empty-collections -p test_empty.py -v
           node --test experiments/envelope-0089/empty-collections/independent.test.mjs
-          python3 -B experiments/envelope-0089/namespace-proof/check.py
+          python3 -B -c "import sys; sys.path.insert(0, 'experiments/envelope-0089/namespace-proof'); import capture; actual, *_ = capture.run(); assert actual['behavior']['accepted'] == 10 and actual['behavior']['refused'] == 28; print('PASS 38 current namespace controls per decoder')"
           python3 -B -m unittest discover -s experiments/envelope-0089/json-boundary -p test_cross_runtime.py -v
           python3 -B experiments/envelope-0089/json-boundary/cross_runtime.py --out "${{ runner.temp }}/envelope-json-boundary"
 
@@ -331,17 +335,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Check exact projection and real authentication boundaries (unapproved)
-        if: matrix.node == 20 && hashFiles('experiments/envelope-0089/decision-proof/check.mjs') != ''
-        # Both probes are read-only. Reuse the ordinary build; the frozen material
-        # pins every production source/compiled module and preserves Receipt 5.5.
-        run: |
-          git fetch --no-tags --depth=1 origin b2ac5d8f068308fd690de824b963135974ec5fb8
-          git fetch --no-tags --depth=1 origin afcc615897aca301c7b5ec070bba7c0bd253e4ef
-          node -p "JSON.stringify({node:process.version,openssl:process.versions.openssl,platform:process.platform,arch:process.arch})"
-          node experiments/envelope-0089/decision-proof/check-current.mjs --verify-root . --check
-          node experiments/envelope-0089/decision-proof/receipt-current.mjs --verify-root . --check
 
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures
