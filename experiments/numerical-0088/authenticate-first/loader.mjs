@@ -13,6 +13,9 @@ export async function load(url,context,nextLoad){
   const loaded=await nextLoad(url,context);
   if(url!==`${target}?research-authenticate-first`)return loaded;
   const source=typeof loaded.source==='string'?loaded.source:Buffer.from(loaded.source).toString('utf8');
+  // Node test-worker loaders may delegate through the same explicit loader twice.
+  // Only our exact injected marker is idempotent; ordinary topology must match.
+  if(source.startsWith(`import {phase as __authResearchPhase} from ${JSON.stringify(runtime)};`))return loaded;
   const ast=ts.createSourceFile(fileURLToPath(url),source,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS);
   const fn=ast.statements.find(s=>ts.isFunctionDeclaration(s)&&s.name?.text==='verifyReceipt');
   assert(fn?.body,'exact current exported verification function required');
