@@ -26,7 +26,7 @@ describe('pinned binary64 and word operations', () => {
     expect(W.sar(-8, 1)).toBe(-4); expect(W.shl(1, 31)).toBe(-2147483648);
   });
   it('refuses invalid internal word APIs rather than coerce or mask them', () => {
-    for (const count of [-1, 33, 1.5, NaN]) {
+    for (const count of [-1, 33, 1.5, Number.NaN]) {
       expect(() => W.shl(1, count)).toThrow(RangeError);
       expect(() => W.sar(1, count)).toThrow(RangeError);
       expect(() => W.shr(1, count)).toThrow(RangeError);
@@ -35,7 +35,7 @@ describe('pinned binary64 and word operations', () => {
       expect(() => W.fromBits(bad)).toThrow(RangeError);
     }
     expect(() => W.toBits(null as unknown as number)).toThrow(TypeError);
-    for (const bad of [-2147483649, 2147483648, 1.5, NaN]) expect(() => W.signedInt(bad)).toThrow(RangeError);
+    for (const bad of [-2147483649, 2147483648, 1.5, Number.NaN]) expect(() => W.signedInt(bad)).toThrow(RangeError);
     expect(W.signedInt(-2147483648)).toBe(-2147483648);
     expect(W.signedInt(2147483647)).toBe(2147483647);
   });

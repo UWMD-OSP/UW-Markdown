@@ -17,15 +17,15 @@ describe('public pinned primitive boundary', () => {
     expect(pinnedPow(4, .5)).toBe(2);
     expect(pinnedPow(2, -1074)).toBe(Number.MIN_VALUE);
     expect(Object.is(pinnedPow(-0, 3), -0)).toBe(true);
-    expect(pinnedPow(NaN, 0)).toBe(1);
+    expect(pinnedPow(Number.NaN, 0)).toBe(1);
     expect(pinnedPow(-4, .5)).toBeNaN();
   });
   it('preserves raw IEEE outcomes without quantization or intermediate refusal', () => {
-    expect(pinnedExp(0)).toBe(1); expect(pinnedExp(-Infinity)).toBe(0);
-    expect(pinnedExp(1000)).toBe(Infinity); expect(pinnedExp(NaN)).toBeNaN();
-    expect(pinnedLog(1)).toBe(0); expect(pinnedLog(0)).toBe(-Infinity);
-    expect(pinnedLog(-1)).toBeNaN(); expect(pinnedLog(Infinity)).toBe(Infinity);
-    expect(pinnedPow(-0, -3)).toBe(-Infinity);
+    expect(pinnedExp(0)).toBe(1); expect(pinnedExp(Number.NEGATIVE_INFINITY)).toBe(0);
+    expect(pinnedExp(1000)).toBe(Number.POSITIVE_INFINITY); expect(pinnedExp(Number.NaN)).toBeNaN();
+    expect(pinnedLog(1)).toBe(0); expect(pinnedLog(0)).toBe(Number.NEGATIVE_INFINITY);
+    expect(pinnedLog(-1)).toBeNaN(); expect(pinnedLog(Number.POSITIVE_INFINITY)).toBe(Number.POSITIVE_INFINITY);
+    expect(pinnedPow(-0, -3)).toBe(Number.NEGATIVE_INFINITY);
     expect(1 / pinnedPow(1e155, 2)).toBe(0);
   });
   it('never delegates to a host transcendental', () => {

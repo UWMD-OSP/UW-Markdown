@@ -68,7 +68,7 @@ export function sqrt(x: number): number {
     if (ix0 < 0) return (x - x) / (x - x);
   }
   let m = sar(ix0, 20);
-  let i;
+  let i!: number;
   if (m === 0) {
     while (ix0 === 0) {
       m = sub32(m, 21);
@@ -95,8 +95,8 @@ export function sqrt(x: number): number {
   let s0 = 0;
   let s1 = 0;
   let r = 0x00200000;
-  let t;
-  let t1;
+  let t!: number;
+  let t1!: number;
   while (r !== 0) {
     t = s32(s0 + r);
     if (t <= ix0) {
@@ -170,7 +170,7 @@ export function log(x: number): number {
   x = withHi(x, hx | (i ^ 0x3ff00000));
   k = add32(k, sar(i, 20));
   const f = x - ONE;
-  let R;
+  let R!: number;
   if ((0x000fffff & add32(2, hx)) < 3) {
     if (f === ZERO) {
       if (k === 0) return ZERO;
@@ -276,9 +276,9 @@ export function pow(x: number, y: number): number {
     || iy > 0x7ff00000 || (iy === 0x7ff00000 && ly !== 0)) return x + y;
   let yisint = 0;
   let k!: number;
-  let j;
-  let i;
-  let n;
+  let j!: number;
+  let i!: number;
+  let n!: number;
   if (hx < 0) {
     if (iy >= 0x43400000) yisint = 2;
     else if (iy >= 0x3ff00000) {
@@ -304,7 +304,7 @@ export function pow(x: number, y: number): number {
     if (hy === 0x3fe00000 && hx >= 0) return sqrt(x);
   }
   let ax = fabs(x);
-  let z;
+  let z!: number;
   if (lx === 0) {
     if (ix === 0x7ff00000 || ix === 0 || ix === 0x3ff00000) {
       z = ax;
@@ -320,12 +320,12 @@ export function pow(x: number, y: number): number {
   if ((n | yisint) === 0) return (x - x) / (x - x);
   let s = ONE;
   if ((n | sub32(yisint, 1)) === 0) s = -ONE;
-  let t;
-  let w;
-  let u;
-  let v;
-  let t1;
-  let t2;
+  let t!: number;
+  let w!: number;
+  let u!: number;
+  let v!: number;
+  let t1!: number;
+  let t2!: number;
   if (iy > 0x41e00000) {
     if (iy > 0x43f00000) {
       if (ix <= 0x3fefffff) return hy < 0 ? HUGE * HUGE : TINY * TINY;
