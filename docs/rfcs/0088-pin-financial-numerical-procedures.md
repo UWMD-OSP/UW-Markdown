@@ -572,6 +572,9 @@ word differences and no captured reported-number/refusal differences. This is
 not a complete impact assessment: 108 cases lack visible actual bindings and only
 10 of 20 eligible numeric sites are exercised. Targeted public financial/receipt
 controls and explicit unknown cells remain separate from unchanged expectations.
+The later focused financial study reached the other ten sites:20/20 have now
+been exercised in the union. The108 uncaptured bindings and independent final
+consumer proof remain distinct gaps; neither is filled by site reach alone.
 
 Fresh current-behavior probes reproduce irr(0,0)=-0.999 through lower-endpoint
 precedence, and irr of two positive 1e-200 flows=4.5005 through sign-product
@@ -717,26 +720,33 @@ Architecture A, unchanged financial associations/quantizer/solver and
 authenticate-first direction are resolved owner instructions. Do not return
 those choices for repeated approval or implement B. The remaining gates are:
 
-1. Complete the exact selected kernel/domain/error/resource table, including raw
-   IEEE specials versus typed public arguments, internal financial intermediates,
-   final public refusals and fixed-work bounds. No unspecified host-math escape,
-   dynamic timeout, new cutoff or hidden finite guard may remain.
+1. Reconcile the existing complete DOMAIN-RESOURCE and WORD-SITES procedure into
+   final governed text, including the new public raw number/CALC-TYPE-001 boundary,
+   internal financial intermediates and current final-result guards. The seven
+   raw helpers, exact constants/words and conservative76-loop bound already exist;
+   missing implementation or a new raw-kernel study is not the gate. No host-math
+   escape, dynamic timeout, new cutoff or hidden finite guard may be introduced.
 2. Independently verify the public primitive entry points and their identity with
    the kernel used by every activated financial consumer. Cover number-type
    boundaries, signed zero, subnormals, negative/fractional/huge exponents and
    log/exp special/range paths without claiming universal correct rounding.
-3. Close final consumer coverage: amortization/debt/capital-stack/waterfall and
-   stochastic/reporting/dated paths, complete null/default/conditional argument
-   behavior, independent platform/browser runs and actual recalculation for any
-   advertised spreadsheet parity. Reuse completed proofs; do not rerun matrices
-   solely for artifact retention.
+3. Close independent final-result/refusal/reporting proof for seven verifier
+   sites already reached by the corpus: capital-stack amortized ADS(1), waterfall
+   scale/hurdle/compound preference(3), normal-tail logs(2), recovery reporting(1).
+   All20 eligible numerical sites have been reached by the corpus plus focused
+   financial study; reach is not independent whole-consumer proof. Existing eight
+   financial families and quantizer evidence are reusable. Preserve exact null,
+   default and conditional behavior; independently execute current platform/browser
+   paths and actual scoped recalculation for advertised spreadsheet parity.
 4. Review the joint receipt proposal above and its real-crypto state controls;
    synchronize accepted normative receipt wording, implementation and conformance
    only after final RFC acceptance. No supplied invalid signature may be hidden by
    financial refusal. Keep malformed source/subject, unavailable dependencies,
    finite disagreement, engine attribution and digest precedence explicit.
-5. Produce the exact current affected conformance manifest and independent
-   material-claim review, then required exact-final-head CI. Disclose current
+5. Produce the exact current affected conformance manifest, closing108 old
+   capture cells without visible actual bindings and covering current corpus
+   additions, with exact output/refusal/code attribution. Complete independent
+   material-claim review and required exact-final-head CI. Disclose current
    composed accuracy/refusal limitations without selecting stable new graphs or
    inferring a whole-formula accuracy promise. RFC acceptance and activation stay
    separate; no version allocation, publication or launch is authorized.

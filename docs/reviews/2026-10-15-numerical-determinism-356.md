@@ -787,3 +787,30 @@ coverage, scoped independent platform/browser/spreadsheet results, and independe
 review/final-head CI. No B implementation, new stable graph, old numerical regime,
 migration or prelaunch artifact-retention work is required. Earlier provisional
 recommendations remain dated observations and are superseded as open choices.
+
+
+## 2026-10-17 — integrator public-procedure and remaining-gate review
+
+The typed verify candidate exports pinnedPow/pinnedExp/pinnedLog through verify,
+verify/browser and both core entries. Independent review found no ordered-graph
+or API defect. Raw IEEE outcomes remain separate from existing financial guards;
+nonnumbers refuse with CALC-TYPE-001 without coercion. No financial consumer or
+production receipt procedure is switched by these draft exports.
+
+Focused verification:33 verify tests, including4204 independent native C cases
+and type-erased graph equality;8 core runtime/declaration/binding tests; successful
+verify build/test typing and focused lint. Nontrivial public paths execute with
+host pow/exp/log/sqrt disabled. An independent integrator execution also passes
+all six authenticate-first groups/26 states using actual Ed25519 and current API
+issuance, with production compute-before-signature retained as the counterexample.
+Exact-head CI is recorded separately in PR357; local results are not its substitute.
+
+Existing raw domain/word/resource,4204/178,4730, cancellation, NPER and dated
+proofs need no repeat investigation. Corpus plus focused observations reached
+all20 sites. Remaining independent final-result proof is seven verifier sites:
+capital-stack ADS1, waterfall3, normal-tail logs2 and recovery reporting1.
+The old conformance capture has108 cells without visible actual binding; an exact
+current output/refusal/code manifest must close them. Actual scoped spreadsheet
+recalculation, governed wording and independent final review remain. A and
+unchanged associations/quantizer/solver/authenticate-first are owner directions;
+final RFC acceptance and production activation remain separately controlled.
