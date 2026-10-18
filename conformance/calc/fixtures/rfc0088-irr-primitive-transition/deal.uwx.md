@@ -2,6 +2,7 @@
 uw_version: "3.0"
 deal_id: RFC0088-PINNED-PROCEDURE
 asset_class: multifamily
+scalar0: 6.727499949325601e+20
 ---
 
 # Accepted pinned-procedure scalar conformance

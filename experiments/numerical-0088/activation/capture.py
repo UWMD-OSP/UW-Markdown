@@ -69,6 +69,9 @@ def identities():
             paths.extend((ROOT / "packages" / package / folder).rglob(suffix))
     for suffix in ("*.py", "*.mjs", "*.json"):
         paths.extend(LAB.rglob(suffix))
+    consumer = json.loads((LAB / "consumer-composition/inputs.json").read_bytes())
+    paths.extend(ROOT / name for name in consumer["origins"])
+    paths.append(ROOT / "conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md")
     return {path.relative_to(ROOT).as_posix(): sha(path.read_bytes()) for path in sorted(set(paths))}
 
 def capture(destination):

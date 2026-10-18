@@ -1,7 +1,7 @@
 {
   "id": "rfc0088_pow_overflow",
   "label": "RFC0088 pinned procedure rfc0088-pow-overflow",
-  "formula": "pow(1e155,2)",
+  "formula": "pow(scalar0,2)",
   "deterministic": true,
   "round_to": 12
 }

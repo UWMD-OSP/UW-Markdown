@@ -10,7 +10,12 @@
       "words": [
         "3ff3333333333333",
         "403f000000000000"
-      ]
+      ],
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "887cbb6e52ec0c3a97a1969c22184abb3093cd669777d55ff0d0c786912bd5d1",
+        "expected-result.json": "3d07d7f06eafa36a5f6f2ad18a8b75992edeb754588744d46627871198fec057"
+      }
     },
     {
       "name": "rfc0088-pow-fractional",
@@ -21,18 +26,32 @@
       "words": [
         "4000000000000000",
         "3fe0000000000000"
-      ]
+      ],
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "60a69653fd0bced7352045a6780d3087144ab9665ec13002fd089d038663d7c6",
+        "expected-result.json": "e65080a14a78e3298e9f64283f031b07eb1ab52dcf1ff70ad81bf3dff1320f12"
+      }
     },
     {
       "name": "rfc0088-negative-power-subnormal",
-      "formula": "pow(1e155,-2)*1e155*1e155",
+      "formula": "pow(scalar0,-2)*scalar0*scalar0",
       "value": 1.0,
       "error": null,
       "origin": "python-fdlibm/kernel.py pow then ordered multiplications",
       "words": [
         "601dd55745cbb7ed",
         "c000000000000000"
-      ]
+      ],
+      "scalar_formula": "pow(1e155,-2)*1e155*1e155",
+      "numeric_frontmatter": {
+        "scalar0": "1e155"
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "664179a50970b9c36d019e0e67961899662e25c7898419f94f35154bc943264e",
+        "calc.json": "f0e8b14c5723e90749646f733c03b2434f0dd52c3e71c0520c8214e58dcbcb0d",
+        "expected-result.json": "6cdc8d05ddd1450bfc8e9774a8e5286eb0224bf45ea95e38957896cef118db87"
+      }
     },
     {
       "name": "rfc0088-exp",
@@ -42,7 +61,12 @@
       "origin": "python-fdlibm/kernel.py exp",
       "words": [
         "3ff0000000000000"
-      ]
+      ],
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "0ca913f79bae55a26b279d8bf2a5a486642e7acce7d9c411c9437169432c0849",
+        "expected-result.json": "39de64d9c304fdaef5b5f18df9bc87c054f74d0384cc63d1acf7d47ff197fa2e"
+      }
     },
     {
       "name": "rfc0088-log",
@@ -52,15 +76,29 @@
       "origin": "python-fdlibm/kernel.py log",
       "words": [
         "4000000000000000"
-      ]
+      ],
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "d5478d0c92c68c924b0363ae92b5f4234f681a6e443c42d3d9a9780c108121d5",
+        "expected-result.json": "d74d6e5fef4a9369c465606beae5c3d4eb2142a06285f75709e5a674134b1938"
+      }
     },
     {
       "name": "rfc0088-pow-overflow",
-      "formula": "pow(1e155,2)",
+      "formula": "pow(scalar0,2)",
       "value": null,
       "error": "CALC-TYPE-001",
       "origin": "Public builtin finite-result refusal; raw pinned pow overflows",
-      "words": null
+      "words": null,
+      "scalar_formula": "pow(1e155,2)",
+      "numeric_frontmatter": {
+        "scalar0": "1e155"
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "664179a50970b9c36d019e0e67961899662e25c7898419f94f35154bc943264e",
+        "calc.json": "74046397d44b347f5f7d7458083729f6b5ede7b6152ee4475ef111e459b65840",
+        "expected-result.json": "2b382b0f4c3feb0e0e08010c90f620dbc0ce8a013b6cc5121be9eb9e1c5a47ff"
+      }
     },
     {
       "name": "rfc0088-negative-fraction-refusal",
@@ -68,7 +106,12 @@
       "value": null,
       "error": "CALC-TYPE-001",
       "origin": "Public builtin finite-result refusal; raw pinned pow NaN",
-      "words": null
+      "words": null,
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "86ecec97269fbee077575ebab1cd1294e6dd8fb50c23b4e74ff231433123448c",
+        "expected-result.json": "13bc4e9cb94d4d52efa28a65763f386f42eb7f40b2353c22769443c888f8e119"
+      }
     },
     {
       "name": "rfc0088-irr-all-zero",
@@ -84,11 +127,16 @@
           "0000000000000000",
           "0000000000000000"
         ]
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "51770f8b2aa2caf4fb7fc136945ed097f37357f4fbeec6e59f5ba15d4be70d9f",
+        "expected-result.json": "136a85860c195cacf4a052db5a61ff62e87d925506c9f454ebb7018405721df1"
       }
     },
     {
       "name": "rfc0088-irr-tiny-positive",
-      "formula": "irr(1e-200,1e-200)",
+      "formula": "irr(scalar0,scalar0)",
       "value": 4.5005,
       "error": null,
       "origin": "financial-trajectories/evidence/python.json.gz:irr_tiny_positive",
@@ -100,6 +148,15 @@
           "16687e92154ef7ac",
           "16687e92154ef7ac"
         ]
+      },
+      "scalar_formula": "irr(1e-200,1e-200)",
+      "numeric_frontmatter": {
+        "scalar0": "1e-200"
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "b58ede66b8e920a51c5fd7c8ea9f56b9dfe311397c28363a5733a5cb48aeb32e",
+        "calc.json": "db1166b841072d4500d7fae4dfe92c9aced627959c1a1f4a5eb0f21d10ce1127",
+        "expected-result.json": "4b56786fd67035ed48c0d704c8f76d69bb44a1e40a5eb4e949474706e2da392d"
       }
     },
     {
@@ -116,11 +173,16 @@
           "bff0000000000000",
           "4026000000000000"
         ]
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "6688a5a8c6acc3a3bd81568343dbd98b4cacf797278d07f709fea7b4f066334c",
+        "expected-result.json": "52fba4acc9531586efba2304945e6696f0173328247e7887c5f8521e0e87e845"
       }
     },
     {
       "name": "rfc0088-irr-primitive-transition",
-      "formula": "irr(-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.727499949325601e+20)",
+      "formula": "irr(-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,scalar0)",
       "value": null,
       "error": "CALC-IRR-DIVERGE",
       "origin": "financial-trajectories/evidence/python.json.gz:irr_primitive_transition",
@@ -151,6 +213,15 @@
           "0000000000000000",
           "44423c240e01248b"
         ]
+      },
+      "scalar_formula": "irr(-1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,6.727499949325601e+20)",
+      "numeric_frontmatter": {
+        "scalar0": "6.727499949325601e+20"
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "069651085adeabd0ad91ef145ba2e3b4fda2e23ee56b0e4271f8e5fc6d0077e3",
+        "calc.json": "f4497c9f736c01e7c2d494e8ec53490f62805e68af13a42b27309e8634b1dbbb",
+        "expected-result.json": "0381294c85beea283fd0592e2f0d2c263ed59918ab460bf6ec1dd901847772bf"
       }
     },
     {
@@ -168,11 +239,16 @@
           "406cc00000000000",
           "c060800000000000"
         ]
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "b29c4c823c5a47d6bb219aee629786a132b674502d325a912c4f71c874114b80",
+        "expected-result.json": "04ce80a1c20c59f71a5a5fafd177371ebe57707c3d71ac507d06f04fb182810a"
       }
     },
     {
       "name": "rfc0088-npv-internal-infinity",
-      "formula": "npv(1e+155,0.0,0.0,1.0)",
+      "formula": "npv(scalar0,0.0,0.0,1.0)",
       "value": 0.0,
       "error": null,
       "origin": "financial-trajectories/evidence/python.json.gz:npv_internal_infinity",
@@ -186,6 +262,15 @@
           "3ff0000000000000"
         ],
         "rate": "601dd55745cbb7ed"
+      },
+      "scalar_formula": "npv(1e+155,0.0,0.0,1.0)",
+      "numeric_frontmatter": {
+        "scalar0": "1e+155"
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "c3fd450a3989126e9a9bd3095c02a90196cdc7e1b2ac583cbcee29dd2351a39a",
+        "calc.json": "3146a4da20a65d75fe8364843f557380486fdff50db3eabf4b0122f7b2f02fd8",
+        "expected-result.json": "8ca7ab06748662237f6cae428899e2f47872372ab531a48cf90532c5aa115195"
       }
     },
     {
@@ -204,6 +289,11 @@
           "3ff0000000000000"
         ],
         "rate": "bff0000000000000"
+      },
+      "fixture_sha256": {
+        "deal.uwx.md": "1f1fdfd344e9bd314d507f165528e49e307a6400876d285bf65d24c5985a0cf0",
+        "calc.json": "9b5884f3e60b16d29418ce620a17d1d2150cb9f20576e7d313a27bf50884dd17",
+        "expected-result.json": "793f9176a381a7f7a31239d27e130b2cda741d47fe25c5e89933cf998025f247"
       }
     }
   ],
