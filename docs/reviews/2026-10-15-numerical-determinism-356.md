@@ -736,3 +736,26 @@ primitive accuracy, all financial graphs/day counts, a global composed error
 bound, spreadsheet recalculation or owner acceptance. Optional research
 39061421580 was cancelled, never passed. Frozen historical cross-platform
 artifacts retain their original source/runtime scopes.
+
+
+## Current owner-rule continuation (2026-10-17)
+
+The owner removes all prelaunch compatibility, migration, artifact-retention and
+version-recommendation work. Earlier such obligations are superseded; no old
+receipt/artifact replay is a required acceptance gate. Current read-only source
+integrity, deterministic numerical correctness and launch authentication/refusal
+precedence remain necessary. RFC0088 staysdraft;A staysprovisional.
+
+The existingNPER14 evidence is reused without reexecution. The new
+[all-three-day-count study](https://github.com/UWMD-OSP/UW-Markdown/blob/c2176e368a0c333b9c5930bd8351b65493010b1f/experiments/numerical-0088/dated-conventions/README.md)
+adds48 cases/21,969 complete rows, actual production year-fraction and XNPV/XIRR
+boundaries, independently derived calendars, full solver exits and VIII.5 reports.
+All three accepted conventions and early/maximal four-digit years are covered.
+One natural finite reporting difference is observed locally; no receipt proof is
+claimed for it. See its manifest for exact committed head/source/runtime scope.
+
+The decision packet is now theRFC's current table: (1) financial accuracy/domain/
+refusal objective beyond primitive determinism, (2) current launch signature-
+authentication versus recomputation-refusal precedence, and (3) completing claimed
+consumer/platform/spreadsheet evidence before acceptance. No compatibility regime,
+package recommendation or old-artifact retention choice remains.

@@ -38,7 +38,7 @@ new accuracy certificate or receipt issuance/authentication claim.
 The capture executed committed source63fc5a5d45d00d10b698dd95df95bf8d65f32e60,
 tree1623b6d47c364d5a1c10eb83a21836b0e7386ac5, Windows11AMD64,
 CPython3.12.3 and Node24.14.1/V813.6.233.17-node.44. All five child commands
-exit0. Manifest SHA256 is`5b1ac516e379ee7d65515ea755c11df060d7060a4dc8842bbda76cfef44afb55`;20 compressed execution outputs total
+exit0. Manifest SHA256 is`b511f6f9a6c0987c325aadf16166dd29a79efd182a8fceb1b2cfeddefe5ac1a8`;20 compressed execution outputs total
 16,843,228 raw bytes. The131 executed source/helper/dist identities are equal
 before/after. No production source/dist or conformance expectation is changed.
 The first successful trial differed only by later splitting three declarations
