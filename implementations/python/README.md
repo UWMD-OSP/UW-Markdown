@@ -77,6 +77,26 @@ Six focused methods cover all five fields, exact physical ownership, retained
 local evidence, null/type/parent/independent failures, history and ten real CLI
 subprocess comparisons. Discovery remains parse-only.
 
+### Registered source-type ownership in validate transport
+
+Format 2.6 already assigns an authored nonstring canonical provenance `source`
+to SRC-01/error. The source inventory previously emitted that registered error
+and a duplicate local string-type finding, unnecessarily forcing partial
+transport. The integrated assessor now retains that local evidence as handled
+only with an actual SRC-01/error at the same physical block, section and exact
+`_meta.provenance.source` path, whose canonical authored value is nonstring.
+The ordinary ValidationResult keeps the original error and exit1.
+
+This does not classify another metadata requirement as a source error. Missing
+source keeps its exact completeness owner; invalid strings/SRC-02, resolution
+SRC-03 and leaf source findings retain their existing behavior. History is not
+reclassified. Independent timestamp, quality-parent, member-order, routing and
+annotation failures still require their own existing or unallocated handling.
+Six focused methods cover the registered owner/proof boundaries, every JSON
+nonstring type, source strings and resolution tags, physical/leaf/history scope,
+read-only inputs and four real CLI comparisons. No diagnostic or capability is
+added; discovery remains parse-only.
+
 ### Accepted hospitality field-home admission
 
 The current accepted-main integration includes RFC0081 section 5 G3: in
@@ -370,7 +390,7 @@ rationale must be a string; omission and the exact empty string remain admitted.
 | Retired `section_id`, nonobject `_meta`, malformed provenance/lifecycle object | Existing META-01/error | All retained physical blocks; exact wrapper predicate precedes actor, with no expanded allocation. |
 | Required nonempty canonical actor | Existing META-01/error; no local duplicate | All physical blocks including history/overwritten/append/extensions; absent/null/empty/non-string refuse, whitespace remains authored. |
 | First `_meta` member and matching `_meta.section` | Uncoded local shape findings | Active physical blocks, including overwritten peers; no silent correction or history reclassification. |
-| Source/resolution vocabulary at block or leaf | Existing SRC-01/02/03 errors | Exact authored values on active physical blocks; no alias or movement between fields. |
+| Source/resolution vocabulary at block or leaf | Existing SRC-01/02/03 errors | Exact authored values on active physical blocks. The canonical block source type condition is handled only by its exact actual SRC-01/error owner; no alias, field substitution or history expansion. |
 | Agent source requires agent_id; nullable agent_id/agent_version/notes types | Uncoded local shape findings | Agent_id may explicitly be null; no agent identity inferred. Unknown provenance members remain informative. |
 | Timestamp string/date-time | Completeness warning when absent; uncoded local shape finding for typed/date-time refusal | Existing RFC3339 calendar/offset/fraction/leap-slot controls; no event-authentication assertion. |
 | Promoted block/leaf missing market_data_ref | Existing DQ-06/error plus retained local required-reference evidence | Registered finding: current section entries/all current variants, independent of quality shape or financial role selection. Local reference evidence: every active physical block, including overwritten/append/extension peers. History keeps its separate shape/actor-only scope. |

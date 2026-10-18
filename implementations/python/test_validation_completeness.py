@@ -72,8 +72,15 @@ class CompletenessOwnershipTests(unittest.TestCase):
                     for name in path.split(".")[:-1]: parent = parent[name]
                     parent[path.split(".")[-1]] = value
                     result = self.assess(authored)
-                    self.assertIn("_meta." + path,
-                                  [f["field"] for f in result["metadata_assessment"]["shape_findings"]])
+                    fields = [f["field"] for f in result["metadata_assessment"]["shape_findings"]]
+                    if path == "provenance.source":
+                        # Format2.6 already assigns these authored type failures
+                        # to SRC-01; this is not a completeness absence warning.
+                        self.assertNotIn("_meta." + path, fields)
+                        self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
+                                         [("SRC-01", "_meta.provenance.source")])
+                    else:
+                        self.assertIn("_meta." + path, fields)
                     self.assertNotIn("META_FIELD_MISSING_" + suffix, [i["code"] for i in result["issues"]])
 
     def test_exact_physical_owner_does_not_consume_same_path_on_another_block(self):
@@ -118,7 +125,7 @@ class CompletenessOwnershipTests(unittest.TestCase):
         self.assertFalse(any(i["code"].startswith("META_FIELD_MISSING_") for i in result["issues"]))
         self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
 
-    def test_real_cli_all_five_warning_results_versus_explicit_null_refusals(self):
+    def test_real_cli_all_five_warning_results_versus_invalid_authored_null(self):
         with tempfile.TemporaryDirectory(prefix="uwmd-completeness-cli-") as folder:
             path = Path(folder) / "input.uwx.md"
             for field, suffix in FIELDS:
@@ -132,7 +139,11 @@ class CompletenessOwnershipTests(unittest.TestCase):
                         self.assertEqual(process.stderr, "")
                         self.assertEqual(path.read_bytes(), raw)
                         self.assertEqual(process.returncode, int(null))
-                        if null:
+                        if null and field == "provenance.source":
+                            self.assertNotIn("error", result)
+                            self.assertEqual(result["overall_status"], "errors")
+                            self.assertEqual([i["code"] for i in result["errors"]], ["SRC-01"])
+                        elif null:
                             self.assertNotIn("code", result["error"])
                             self.assertIn("partial_validation_result", result)
                             self.assertIn("_meta." + field, [f["field"] for f in result["metadata_assessment"]["shape_findings"]])
