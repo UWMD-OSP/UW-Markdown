@@ -127,7 +127,7 @@ section.
 
 | [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
 
-| [0093](./0093-metadata-shape-diagnostics.md) | Close three metadata-shape diagnostic gaps | draft | format, protocol, core, conformance, tooling |
+| [0093](./0093-metadata-shape-diagnostics.md) | Close three metadata-shape diagnostic gaps | accepted | format, protocol, core, conformance, tooling |
 
 ## Status values
 

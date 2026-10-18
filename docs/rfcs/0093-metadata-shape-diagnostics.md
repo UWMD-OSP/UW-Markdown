@@ -1,7 +1,7 @@
 ---
 rfc: 0093
 title: Close three metadata-shape diagnostic gaps
-status: draft
+status: accepted
 author: codex
 created: 2026-10-18
 affects:
@@ -24,10 +24,14 @@ Assess every retained physical block, followed by model-only additions, using
 RFC0090/0091's operation boundaries. Place a separate bounded shape pass after
 existing wrapper/nested-shape findings and before actors and required booleans.
 
-**Draft, docs only.** The owner authorized this diagnostic direction and RFC
-preparation on2026-10-18. Final text is not accepted and no implementation,
-normative specification, schema, diagnostic registry or frozen expectation is
-changed by this PR. TypeScript and Python implementation follows acceptance.
+**Accepted by the owner,2026-10-18, at reviewed head `0306d126`.** This PR
+records the accepted design. Synchronized TypeScript/Python implementation,
+normative specification/registry/schema annotations and governed conformance
+changes follow on the existing Issue354 lane; none is activated by this docs-only
+acceptance. The predicates and operation boundaries below are unchanged from
+the reviewed text.
+
+> Owner, 2026-10-18: RFC 0093 (#384) is accepted as drafted at 0306d126: the three META-01 predicates exactly as listed, no generic fallback, META-02/03 unchanged.
 
 > Owner decision (2026-10-18), #354 metadata shape: yes, allocate it. Open a bounded, docs-only RFC that amends the META-01 closed list with exactly three predicates: a late or misplaced _meta, a present but invalid or mismatched canonical _meta.section, and a required _meta.quality that is absent or not an object.
 
@@ -63,7 +67,7 @@ Joint authority:
 
 ## Decisions
 
-| Call | Proposed decision | Accepted precedent |
+| Call | Accepted decision | Accepted precedent |
 |---|---|---|
 | D1: allocation | Extend META-01/error by only P1/P2/P3 below; category `validate` only when transported as a ProtocolError | Owner direction; existing ProtocolIII.6a/XI diagnostic and DTO boundary |
 | D2: population | All retained physical blocks, including history and unselected peers; then exact-identity model-only union | Format2.4–2.5 say every block; RFC0090 D3 and RFC0091 applicability |
@@ -73,9 +77,9 @@ Joint authority:
 | D6: already allocated absences | Whole missing metadata and absent section retain their existing warning rules and populations | ProtocolIII.6a; RFC0091 expressly preserves completeness |
 | D7: member order | Source operations use decoded lexical order; model operations assess current non-array-index string-member order, without an authored numeric-order claim | Format2.4 first-member rule; RFC0090 distinguishes model input from exact-source assessment; integer-index enumeration cannot recover JSON lexical order |
 
-## Proposed change
+## Accepted change
 
-The following is proposed normative text for Format2.4–2.5 and
+The following owner-accepted text is to be synchronized into Format2.4–2.5 and
 ProtocolIII.6a/V.3. The implementation must synchronize the ProtocolXI registry
 and remediation descriptions without adding a diagnostic code or new result
 state. Existing META-01 wrapper/nested-object and actor meanings remain.
@@ -227,8 +231,9 @@ construction nor accepted authentication/verdict precedence.
 
 ## Conformance impact
 
-This docs-only RFC changes no fixture or expected output. An exhaustive affected
-case count is an implementation gate, not an established result of this draft.
+This docs-only acceptance changes no fixture or expected output. An exhaustive
+affected-case count is an implementation gate, not an established result of this
+acceptance.
 Existing evidence identifies a required-quality gap, not all corpus effects.
 
 After acceptance, independently inventory each P1/P2/P3 effect, keeping newly
@@ -266,7 +271,8 @@ required before Python can advertise `validate`; this RFC does not close them al
 
 ## Reference implementation
 
-Implementation is a synchronized TypeScript/Python follow-up **after acceptance**:
+Implementation is the synchronized TypeScript/Python follow-up authorized by
+this acceptance:
 
 - `packages/uwmd-verify/src/validator.ts` and tests: retain existing shape pass;
   add the bounded reference-union pass before actors/booleans. Parser-local
@@ -302,8 +308,8 @@ remains parse-only until the independent complete-validation gate is met.
 ## Unresolved questions
 
 No additional owner selection is requested for applicability or pass placement:
-D2/D3 are derived from the accepted precedent above. Final RFC acceptance remains
-with the owner. Implementation must establish complete affected-case counts and
+D2/D3 follow the accepted precedent above and the owner accepted the complete
+text on2026-10-18. Implementation must establish complete affected-case counts and
 independent member-order/source-model evidence before activation. Other typed
 metadata allocations and complete Python capability proof remain separate work.
 RFC0085's retained-history authority and RFC0089's representation remain separate.
