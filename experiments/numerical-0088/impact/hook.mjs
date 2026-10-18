@@ -45,6 +45,15 @@ export async function load(url, context, nextLoad) {
   const f=ts.factory;
   const ident=name=>f.createIdentifier(name);
   const site=node=>`${rel}:${ast.getLineAndCharacterOfPosition(node.getStart(ast)).line+1}:${ast.getLineAndCharacterOfPosition(node.getStart(ast)).character+1}`;
+  function standalone(node) {
+    for (let p=node.parent;p;p=p.parent) if(ts.isFunctionDeclaration(p) && p.name?.text==='runStandaloneKit') return true;
+    return false;
+  }
+  function emitWrapper(node) {
+    for (let p=node.parent;p;p=p.parent) if(ts.isVariableDeclaration(p) && ts.isIdentifier(p.name) && p.name.text==='emit') return standalone(p);
+    return false;
+  }
+
   const transformed=ts.transform(ast,[ctx=>{
     const visit=node=>{
       if(production && ts.isBinaryExpression(node) && node.operatorToken.kind===ts.SyntaxKind.AsteriskAsteriskToken) {
@@ -60,13 +69,17 @@ export async function load(url, context, nextLoad) {
         replacements.push({site:site(node),op,text:node.getText(ast)});
         return f.createCallExpression(ident(op==='log'?'__researchLog':'__researchExp'),undefined,[ts.visitNode(node.arguments[0],visit),f.createStringLiteral(site(node))]);
       }
-      if(runner && ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text==='record') {
+      const standaloneEmit = runner && ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text==='emit' && standalone(node);
+      if(runner && ts.isCallExpression(node) && ts.isIdentifier(node.expression)
+          && ((node.expression.text==='record' && !emitWrapper(node)) || standaloneEmit)) {
         const visible=new Set(); let ancestor=node.parent;
         while(ancestor) { for(const name of bindings.get(ancestor) ?? []) visible.add(name); ancestor=ancestor.parent; }
         const properties=[...visible].sort().filter(name=>!name.startsWith('__research')).map(name=>
           f.createPropertyAssignment(f.createStringLiteral(name),f.createArrowFunction(undefined,undefined,[],undefined,f.createToken(ts.SyntaxKind.EqualsGreaterThanToken),ident(name))));
         snapshots.push({site:site(node),bindings:[...visible].sort()});
-        return f.createCallExpression(ident('__researchCapture'),undefined,[ident('record'),f.createObjectLiteralExpression(properties),f.createStringLiteral(site(node)),...node.arguments.map(a=>ts.visitNode(a,visit))]);
+        return f.createCallExpression(ident(standaloneEmit?'__researchStandalone':'__researchCapture'),undefined,
+          [ident(standaloneEmit?'emit':'record'),f.createObjectLiteralExpression(properties),f.createStringLiteral(site(node)),
+            ...(standaloneEmit?[ident('prefix')]:[]),...node.arguments.map(a=>ts.visitNode(a,visit))]);
       }
       return ts.visitEachChild(node,visit,ctx);
     };
@@ -76,7 +89,7 @@ export async function load(url, context, nextLoad) {
   // A prepended import must not move the executable hashbang to line two.
   output=output.replace(/^#![^\n]*\n/, '');
   transformed.dispose();
-  if(replacements.length || snapshots.length) output=`import {pow as __researchPow,log as __researchLog,exp as __researchExp,capture as __researchCapture} from ${JSON.stringify(runtime)};\n${output}`;
+  if(replacements.length || snapshots.length) output=`import {pow as __researchPow,log as __researchLog,exp as __researchExp,capture as __researchCapture,captureStandalone as __researchStandalone} from ${JSON.stringify(runtime)};\n${output}`;
   appendFileSync(process.env.RESEARCH_TRANSFORMS,`${JSON.stringify({path:rel,source_sha256:sha(source),transformed_sha256:sha(output),replacements,snapshots,excluded})}\n`);
   return {...loaded,source:output};
 }

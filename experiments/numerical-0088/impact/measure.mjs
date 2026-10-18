@@ -93,7 +93,7 @@ const observedNames = new Set(['parsed','reparsed','projection','rendered','cano
   'broken','digests','resolved','selected','promoted','ok','loaderOk','schemaOk','divergence','problems',
   'identical','errors','emitted','missing','abstract','parts','partsError','canonicalMatches','inlineDigest',
   'resolvedDigest','bad','extras','agrees','a','b','without','withBackend','mine','theirs','same','summaries',
-  'content','partial','shape']);
+  'content','partial','shape','resolution','cash','accrued','blendedCash','blendedAccrued','dyCash','dyAccrued']);
 const observations=snapshot=>Object.fromEntries(Object.entries(snapshot).filter(([name,value])=>
   (/^(actual|got|result|projected|receipt|again|computed|codes|issues|verification|verified|value|verdict|validation|refusal|refused|report|summary|sizing|outcomes|outputs|e$|r$)/.test(name) || observedNames.has(name))
   && !(value && typeof value==='object' && ['not-initialized','function'].includes(value.type))));

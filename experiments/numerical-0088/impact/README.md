@@ -166,3 +166,10 @@ A fresh1106-case run against the current built tree is required; do not reuse th
 than replacing the earlier measured checkpoint. This is current numerical-impact
 evidence, not prelaunch compatibility or artifact-preservation work. No assertion,
 fixture expectation or production behavior changes.
+
+The first current capture had1106/1106 passing assertions in each mode but still
+11 missing result views. Five were additional initialized resolver/stack aliases;
+six came from a status-only standalone forwarding closure declared before actual
+locals. The collector now captures those six emit callsites in their caller
+scope and forwards once, rather than counting the pass status as an actual result.
+That first run is not the final complete-observation checkpoint.

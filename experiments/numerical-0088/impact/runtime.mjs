@@ -59,3 +59,10 @@ export function capture(record, getters, site, ...args) {
     site, snapshot, capture_errors: errors });
   return record(...args);
 }
+
+// Standalone emit is a status-only forwarding closure declared before the actual
+// values exist. Capture at the caller, then execute the original emit once.
+export function captureStandalone(emitCase, getters, site, prefix, ...args) {
+  return capture((_suite,_scenario,status,message)=>emitCase(args[0],status,message),
+    getters,site,'standalone',`${prefix}${args[0]}`,args[1],args[2]);
+}
