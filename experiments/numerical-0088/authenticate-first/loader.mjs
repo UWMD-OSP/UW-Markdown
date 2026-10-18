@@ -11,7 +11,7 @@ const target=new URL('packages/uwmd-verify/dist/receipts.js',root).href;
 const runtime=new URL('./runtime.mjs',import.meta.url).href;
 export async function load(url,context,nextLoad){
   const loaded=await nextLoad(url,context);
-  if(url!==target+'?research-authenticate-first')return loaded;
+  if(url!==`${target}?research-authenticate-first`)return loaded;
   const source=typeof loaded.source==='string'?loaded.source:Buffer.from(loaded.source).toString('utf8');
   const ast=ts.createSourceFile(fileURLToPath(url),source,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS);
   const fn=ast.statements.find(s=>ts.isFunctionDeclaration(s)&&s.name?.text==='verifyReceipt');
@@ -49,6 +49,6 @@ export async function load(url,context,nextLoad){
     return ts.visitEachChild(child,visit,ctx);
   },ctx)]);
   const output=`import {phase as __authResearchPhase} from ${JSON.stringify(runtime)};\n${ts.createPrinter().printFile(transformed.transformed[0])}`;
-  if(process.env.AUTH_FIRST_TRANSFORMS)appendFileSync(process.env.AUTH_FIRST_TRANSFORMS,JSON.stringify({source_sha256:createHash('sha256').update(source).digest('hex'),proposal_sha256:createHash('sha256').update(output).digest('hex'),signature_stage_moved_before_compute:true,authentication_recomputed_members_removed:removed,production_written:false})+'\n');
+  if(process.env.AUTH_FIRST_TRANSFORMS)appendFileSync(process.env.AUTH_FIRST_TRANSFORMS,`${JSON.stringify({source_sha256:createHash('sha256').update(source).digest('hex'),proposal_sha256:createHash('sha256').update(output).digest('hex'),signature_stage_moved_before_compute:true,authentication_recomputed_members_removed:removed,production_written:false})}\n`);
   authResult.dispose();transformed.dispose();return {...loaded,source:output};
 }

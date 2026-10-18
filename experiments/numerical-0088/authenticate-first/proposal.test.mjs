@@ -40,7 +40,7 @@ async function run(id,{receipt=signed(issued),content=source,packs=[pack],inputs
   assert.deepEqual(row.result,expected??null,id);assert.deepEqual(row.phases,expectedPhases??[],id);assert.equal(calls.length,expectedBackend,id);return row;
 }
 before(async()=>{issued=await api.issueReceipt(source,{pack,...identity,issued_at:'2026-10-17T00:00:00.000Z',issuer:'public-research-key-no-trust',filename:'research.uwx.md'});assert.equal(issued.computation.results[0].value,2);});
-after(()=>{if(process.env.AUTH_FIRST_OBSERVATIONS)writeFileSync(process.env.AUTH_FIRST_OBSERVATIONS,JSON.stringify({scope:'UNACCEPTED owner-directed authenticate-first procedure; no runtime activation',node:process.version,v8:process.versions.v8,openssl:process.versions.openssl,source_sha256:sha(source),source_fixture:'conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md',public_key_spki_hex:publicKey.export({format:'der',type:'spki'}).toString('hex'),rows},null,2)+'\n');});
+after(()=>{if(process.env.AUTH_FIRST_OBSERVATIONS)writeFileSync(process.env.AUTH_FIRST_OBSERVATIONS,`${JSON.stringify({scope:'UNACCEPTED owner-directed authenticate-first procedure; no runtime activation',node:process.version,v8:process.versions.v8,openssl:process.versions.openssl,source_sha256:sha(source),source_fixture:'conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md',public_key_spki_hex:publicKey.export({format:'der',type:'spki'}).toString('hex'),rows},null,2)}\n`);});
 const expected=(verdict,codes,has_recomputed)=>({verdict,codes,has_recomputed});
 test('supplied invalid signature precedes actual typed recomputation refusal',async()=>{
   const receipt=invalid(issued);
@@ -63,14 +63,14 @@ test('finite agreement, signature failure and transport have explicit computatio
 });
 test('wire, source, subject and held-input checks keep their current precedence',async()=>{
   await run('source-not-canonicalizable',{content:'not an admitted record',receipt:invalid(issued),expected:expected('unverifiable',['RCP-09'],false)});
-  const changed=structuredClone(issued);changed.subject.digest='sha256:'+'0'.repeat(64);
+  const changed=structuredClone(issued);changed.subject.digest=`sha256:${'0'.repeat(64)}`;
   await run('subject-mismatch-before-signature',{receipt:invalid(changed),expected:expected('failed',['RCP-01'],false)});
   changed.subject.canonicalization_version='research-other-canonicalization';
   await run('noncomparable-subject',{receipt:invalid(changed),expected:expected('unverifiable',['RCP-10'],false)});
   const malformed=structuredClone(issued);delete malformed.computation.results;
   const wire=await run('malformed-wire',{receipt:malformed});assert(wire.thrown,'wire refusal must throw through current typed boundary');
-  const referenced=structuredClone(issued);referenced.inputs_provenance=[{source:'market_data',document_id:'research-input',digest:'sha256:'+'1'.repeat(64)}];
-  await run('held-input-mismatch-before-unknown-pack',{receipt:invalid(referenced),inputs:{'research-input':'sha256:'+'2'.repeat(64)},packs:[],expected:expected('failed',['RCP-12'],false)});
+  const referenced=structuredClone(issued);referenced.inputs_provenance=[{source:'market_data',document_id:'research-input',digest:`sha256:${'1'.repeat(64)}`}];
+  await run('held-input-mismatch-before-unknown-pack',{receipt:invalid(referenced),inputs:{'research-input':`sha256:${'2'.repeat(64)}`},packs:[],expected:expected('failed',['RCP-12'],false)});
   await run('missing-input-before-signature',{receipt:invalid(referenced),expected:expected('unverifiable',['RCP-11'],false)});
   await run('indeterminate-order',{receipt:invalid(referenced),packs:[],backend:'missing',expected:expected('unverifiable',['RCP-11','RCP-05','RCP-08'],false)});
 });
@@ -79,13 +79,13 @@ test('unavailable pack and pack version stay distinct from structural or signatu
   await run('pack-version-unavailable',{receipt:invalid(issued),packs:[{...pack,version:'research-other-version'}],expected:expected('unverifiable',['RCP-06'],false)});
 });
 test('authenticated finite result coverage/value/engine precedes results digest',async()=>{
-  let changed=structuredClone(issued);changed.computation.results[0].value=3;changed.computation.results_digest='sha256:'+'0'.repeat(64);
+  let changed=structuredClone(issued);changed.computation.results[0].value=3;changed.computation.results_digest=`sha256:${'0'.repeat(64)}`;
   await run('same-engine-value-before-digest',{receipt:signed(changed),expected:expected('failed',['RCP-03'],true),expectedPhases:['authentication','recompute'],expectedBackend:1});
   changed.computation.engine_version='research-other-engine';
   await run('other-engine-value-before-digest',{receipt:signed(changed),expected:expected('unverifiable',['RCP-07','RCP-03'],true),expectedPhases:['authentication','recompute'],expectedBackend:1});
   changed=structuredClone(issued);changed.computation.results=[];
   await run('coverage-before-digest',{receipt:signed(changed),expected:expected('failed',['RCP-02'],true),expectedPhases:['authentication','recompute'],expectedBackend:1});
-  changed=structuredClone(issued);changed.computation.results_digest='sha256:'+'0'.repeat(64);
+  changed=structuredClone(issued);changed.computation.results_digest=`sha256:${'0'.repeat(64)}`;
   await run('digest-corruption-after-authentication',{receipt:signed(changed),expected:expected('failed',['RCP-04'],true),expectedPhases:['authentication','recompute'],expectedBackend:1});
   await run('bad-signature-before-bad-digest',{receipt:invalid(changed),expected:expected('failed',['RCP-01'],false),expectedPhases:['authentication'],expectedBackend:1});
 });
