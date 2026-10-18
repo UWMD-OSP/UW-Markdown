@@ -499,7 +499,7 @@ export async function issueReceipt(
   const resolved = await resolveReceiptSubject(content, options);
   const pack = resolvePack(resolved.parsed, options.pack);
   const results = computeReceiptResults(pack, resolved.parsed);
-  const validation = validateUWFile(resolved.parsed);
+  const validation = validateUWFile(resolved.subject.representation === UWX_REPRESENTATION_ID ? content : resolved.parsed);
 
   return {
     receipt_version: UW_RECEIPT_VERSION,
