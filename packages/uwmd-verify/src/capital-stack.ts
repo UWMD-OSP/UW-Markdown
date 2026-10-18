@@ -21,6 +21,7 @@
 
 import type { ParsedUWFile } from './types.js';
 import { quantizeDecimal } from './calc/quantize.js';
+import { pinnedPow } from './calc/pinned-numerics.js';
 import { getSection, deepGet } from './parser.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -160,7 +161,7 @@ export function trancheAnnualDebtService(t: Tranche): number | null {
   const amort = t.amortization_months ?? 0;
   if (amort <= 0) return t.amount * t.rate; // interest-only / non-amortizing
   const mr = t.rate / 12;
-  const monthly = mr === 0 ? t.amount / amort : (t.amount * mr) / (1 - (1 + mr) ** -amort);
+  const monthly = mr === 0 ? t.amount / amort : (t.amount * mr) / (1 - pinnedPow(1 + mr, -amort));
   return monthly * 12;
 }
 

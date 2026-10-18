@@ -20,6 +20,7 @@
 //    IO is detected from amortization === "interest_only" or a missing/zero
 //    amortization term.
 
+import { pinnedPow } from '@uwmd/verify';
 import { collector, numOrNull, type DerivedField } from './derived.js';
 
 type Row = Record<string, unknown>;
@@ -53,7 +54,7 @@ function firstNum(row: Row, keys: string[]): number | null {
 function pmt(rate: number, n: number, pv: number): number {
   if (n === 0) return 0;
   if (rate === 0) return pv / n;
-  return (pv * rate) / (1 - (1 + rate) ** -n);
+  return (pv * rate) / (1 - pinnedPow(1 + rate, -n));
 }
 
 /** Is this an interest-only loan (no amortizing payment)? */

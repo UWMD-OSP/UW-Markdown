@@ -21,6 +21,8 @@
 // it with scripts/verify-pcg64-reference.py. See docs/reviews/2026-09-12-pcg64-reference.md
 // for upstream provenance, stream selection and the scope of this verification.
 
+import { pinnedLog } from './pinned-numerics.js';
+
 const MASK_128 = (1n << 128n) - 1n;
 const MASK_64 = (1n << 64n) - 1n;
 
@@ -83,16 +85,12 @@ export class Pcg64 {
 // Every distribution is sampled by inverting its CDF at a uniform draw, and
 // that choice is about cross-implementation determinism rather than elegance.
 //
-// IEEE 754 exactly specifies `+ - * /` and `sqrt`. It does NOT specify `log`,
-// `exp`, `sin`, or `cos` — those are libm functions whose last-place results
-// differ between platforms and versions. So the textbook normal samplers are
-// unusable: Box-Muller needs `log` and `cos`, Marsaglia polar needs `log`.
-// Either produces samples that agree to about fifteen digits across hosts and
-// disagree in the sixteenth, which is how "reproducible" becomes "reproducible
-// on my machine".
+// IEEE 754 exactly specifies `+ - * /` and `sqrt`. The normal inverse CDF
+// additionally uses the shared RFC 0088 pinned logarithm. Its established
+// approximation and profile comparison tolerance are unchanged.
 //
-// This buys exactness for two of the three distributions, and the third is
-// honest about not having it — see `inverseNormalCdf`.
+// See `inverseNormalCdf` for the distinction between procedure determinism
+// and mathematical approximation accuracy.
 
 /** A uniform draw on `[min, max)`. Arithmetic only, so bit-exact everywhere. */
 export function sampleUniform(u: number, min: number, max: number): number {
@@ -119,17 +117,12 @@ export function sampleTriangular(u: number, min: number, mode: number, max: numb
 /**
  * Inverse standard-normal CDF — Acklam's rational approximation.
  *
- * **This one is not bit-exact across platforms, and the spec says so.** The
- * central region (0.02425 ≤ p ≤ 0.97575, about 95% of draws) is arithmetic
- * only and therefore exact. Both tails need `log`, which no standard requires
- * to be correctly rounded, so two hosts can disagree in the last place there.
- *
- * The alternative was to reject the normal distribution outright, and that is
- * worse: it is the distribution adopters actually reach for. So it ships, the
- * limitation is normative (§VIII.8.4), and conformance compares normal-derived
- * summaries at a stated tolerance while `uniform` and `triangular` are pinned
- * exactly. Naming which distributions are exact is more useful than a blanket
- * tolerance that hides the difference.
+ * The central region (0.02425 <= p <= 0.97575, about 95% of draws) uses
+ * binary64 arithmetic. Both tails use the same RFC 0088 pinned logarithm as
+ * other financial consumers, so no host libm choice selects their words.
+ * Coefficients, associations and the existing normal-profile comparison
+ * tolerance remain unchanged; pinning a primitive does not make Acklam's
+ * approximation a correctly rounded mathematical inverse CDF.
  *
  * Relative error of the approximation itself is about 1.15e-9.
  */
@@ -167,14 +160,14 @@ export function inverseNormalCdf(p: number): number {
   const P_HIGH = 1 - P_LOW;
 
   if (p < P_LOW) {
-    const q = Math.sqrt(-2 * Math.log(p));
+    const q = Math.sqrt(-2 * pinnedLog(p));
     return (
       (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
       ((((d1 * q + d2) * q + d3) * q + d4) * q + 1)
     );
   }
   if (p > P_HIGH) {
-    const q = Math.sqrt(-2 * Math.log(1 - p));
+    const q = Math.sqrt(-2 * pinnedLog(1 - p));
     return -(
       (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
       ((((d1 * q + d2) * q + d3) * q + d4) * q + 1)

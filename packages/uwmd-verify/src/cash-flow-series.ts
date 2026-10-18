@@ -16,6 +16,7 @@
 // Browser-safe; performs no I/O.
 
 import { CalcError } from './calc/errors.js';
+import { pinnedPow } from './calc/pinned-numerics.js';
 import { quantizeDecimalAtStatedPrecision } from './calc/quantize.js';
 import {
   DEFAULT_DAY_COUNT,
@@ -176,7 +177,7 @@ export function xnpvOf(flows: readonly DatedFlow[], rate: number): number {
     throw new CalcError('CALC-TYPE-001', `xnpv: rate must be a finite fraction greater than -1, got ${String(rate)}.`);
   }
   let acc = 0;
-  for (const f of flows) acc += f.amount * (1 + rate) ** -f.t;
+  for (const f of flows) acc += f.amount * pinnedPow(1 + rate, -f.t);
   return acc;
 }
 
@@ -189,7 +190,7 @@ export function xnpvOf(flows: readonly DatedFlow[], rate: number): number {
 export function xirrOf(flows: readonly DatedFlow[]): number {
   const f = (r: number) => {
     let acc = 0;
-    for (const fl of flows) acc += fl.amount * (1 + r) ** -fl.t;
+    for (const fl of flows) acc += fl.amount * pinnedPow(1 + r, -fl.t);
     return acc;
   };
 
