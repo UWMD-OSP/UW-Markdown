@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync, readFileSync, unlinkSync, rmdirSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, rmdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { resolve } from 'node:path';
@@ -162,5 +162,36 @@ describe('RFC0093 actual source validation transport', () => {
       expect(result.stderr).toBe('');
       expect(readFileSync(file, 'utf8')).toBe(source);
     } finally { unlinkSync(file); rmdirSync(dir); }
+  });
+});
+
+
+describe('RFC0093 composed-source CLI transport', () => {
+  it('checks part lexical order without replacing assembled financial content or source bytes', async () => {
+    const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-composed-meta0093-'));
+    const file = resolve(dir, 'deal.uwx.md');
+    const partsDir = resolve(dir, 'parts');
+    const partFile = resolve(partsDir, 'whole.uwpart.md');
+    mkdirSync(partsDir);
+    const m = {
+      section: 'property', provenance: { source: 'manual', actor: 'test', timestamp: '2026-10-18T00:00:00Z' },
+      lifecycle: { revision: 1, superseded: false }, quality: { confidence: 'high', human_review_required: false },
+    };
+    const root = `---\nuw_version: "3.0"\nasset_class: multifamily\ndeal_id: composed-shape-cli\n---\n\`\`\`json uw:section=property\n${JSON.stringify({
+      _meta: m, external: { parts: ['whole'], part_count: 1 },
+    })}\n\`\`\`\n`;
+    const part = `---\nuw_version: "3.0"\nuwpart_version: "1.0"\npart_id: whole\nsection: property\n---\n\`\`\`json uw:section=property\n{"0":1,"_meta":${JSON.stringify(m)},"total_units":17}\n\`\`\`\n`;
+    writeFileSync(file, root);
+    writeFileSync(partFile, part);
+    try {
+      const result = await spawnCli(process.execPath, [cli, 'verify', file, '--resolved', '--parts', partsDir, '--validate', '--json'], { encoding: 'utf8' });
+      expect(result.status).toBe(1);
+      const data = JSON.parse(result.stdout);
+      expect(data.validation.errors.filter((i: { code: string; field?: string }) => i.code === 'META-01' && i.field === '_meta')).toHaveLength(1);
+      expect(data.validation.issues.some((i: { code: string }) => i.code.startsWith('COMP-'))).toBe(false);
+      expect(result.stderr).toBe('');
+      expect(readFileSync(file, 'utf8')).toBe(root);
+      expect(readFileSync(partFile, 'utf8')).toBe(part);
+    } finally { unlinkSync(partFile); rmdirSync(partsDir); unlinkSync(file); rmdirSync(dir); }
   });
 });
