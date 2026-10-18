@@ -814,3 +814,43 @@ current output/refusal/code manifest must close them. Actual scoped spreadsheet
 recalculation, governed wording and independent final review remain. A and
 unchanged associations/quantizer/solver/authenticate-first are owner directions;
 final RFC acceptance and production activation remain separately controlled.
+
+
+## Seven final-consumer proof checkpoint (2026-10-17, unaccepted)
+
+The [bounded consumer-composition study](https://github.com/UWMD-OSP/UW-Markdown/blob/4718e9edc348e4c6f8f7e4fee98742cd02ab9d21/experiments/numerical-0088/consumer-composition/README.md)
+closes a local independent final-result/refusal/reporting proof gap at the seven
+already-reached capital-stack1/waterfall3/normal-tail2/recovery1 sites. It does
+not revise20/20 static reach into an unsupported whole-domain claim.
+
+A separately structured Python reference reuses the existing independent raw
+kernel, calendar, IRR/XIRR solver and final-reporting evidence. Actual candidate
+consumer calls use the draft **public** pinnedPow/pinnedExp/pinnedLog bindings
+through a re-export-only adapter and the explicit memory-only loader. Full final
+allocation/schedule/sizing words, nulls, verdicts, affected issue codes/severities/
+fields and64 seeded normal samples/all nine statistics agree. Actual unmodified
+and baseline-loader results agree separately. No metric or financial graph is fixed.
+
+There are44 bounded cases:9 capital-stack,11 waterfall,15 direct normal,8 recovery,
+and one64-sample pipeline. They retain24,139 instrumented reference records and
+exercise all seven actual sites. The normal controls have nine returns and six
+current RangeError refusals. Recovery retains precise REC-06/07/08 field/order
+checks and full unrelated validator findings separately. Capital and waterfall
+cover verified/failed/unverifiable outcomes, including unavailable inputs and
+current typed-procedure/null behavior. No host/A final difference is observed
+in this bounded set; no prevalence, universal accuracy or new tolerance follows.
+
+Capture0309c775/tree5c8bb24e records WindowsAMD64/CPython3.12.3/
+Node24.14.1/V813.6.233.17-node.44. All four commands exit0;306 source/helper/input/
+dist identities match before and after. Six focused methods, verifier build,
+new-evidence verification and focused Biome pass. No raw kernel/4204/178/76-loop,
+old financial or old receipt matrix is rerun; no original source, expected output,
+production consumer, schema, version or RFC state is changed.
+
+This is one local bounded proof, not actual Excel/browser execution or independent
+CI. Current affected-conformance accounting, final governed reconciliation of
+existing domain/word/resource proofs, independent review and exact-final-head CI
+remain integrator work. Advertised spreadsheet parity requires actual scoped
+recalculation of emitted formulas with a named engine/version; native formulas
+are not assumed equivalent. A, unchanged associations and authenticate-first are
+settled direction; final RFC acceptance and activation remain separately controlled.
