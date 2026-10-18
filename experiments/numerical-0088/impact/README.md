@@ -181,3 +181,10 @@ Current evidence is in current-evidence/observed-impact.json and hash-bound
 shards/streams. `node experiments/numerical-0088/impact/verify-current.mjs` checks
 those original bytes and all observed-value hashes without reexecuting cases.
 No whole-result proof is inferred from aggregate/control capture.
+
+CI39104668633 at0549fa03 correctly rejected old current-tool reference pins in
+three dependent research input descriptors after the observation-only loader
+changed. Update only hook/runtime hashes for new captures; exact numeric cases
+and all other reference pins remain unchanged. Prior measured manifests keep
+what actually executed. No numerical answer, assertion or frozen expectation
+is rewritten. Fresh affected captures must pass before the next CI checkpoint.

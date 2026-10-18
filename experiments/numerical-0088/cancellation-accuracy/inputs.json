@@ -18,8 +18,8 @@
     "pinned-fdlibm/words.mjs": "c3bb33ff8b2124bc048a0bb9b7b10d3de318b33e20308091abd079459b434914",
     "pinned-fdlibm/constants.mjs": "6479a8f04cc3e990cd1316d22cdfa164f83bd0acc56905a60c7a7dbc0c65cc25",
     "pinned-fdlibm/constants.json": "e9793112e7a5d0e2c1ccb2f8d8dd9bbc35608598cf725cb8e5ee44117dad59d9",
-    "impact/hook.mjs": "dfce317208322858842951fbf3a1b52f8650f7c8060c9e2203290eb65fca6682",
-    "impact/runtime.mjs": "d3e91c127dd27380603d225dde16b5b83069bdc0cb4ec430b71adf83475dfe5e"
+    "impact/hook.mjs": "db509a112745d01773d14c4935a1aa984d431191713064e2dd7c736dac09fc16",
+    "impact/runtime.mjs": "d1488e8d44b40ba3bba502dcf97c897f189877f51f9dc5800a325d3195c785c0"
   },
   "cases": [
     {
