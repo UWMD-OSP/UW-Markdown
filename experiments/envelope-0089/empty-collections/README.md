@@ -68,11 +68,13 @@ scripts remain pinned to their original b2 source closure and correctly refuse
 a fresh afcc verifier; those frozen bytes were not relabeled as current evidence.
 Current-main authentication reconciliation is a separate research checkpoint.
 
-The owner still chooses the complete tagged representation/minimum, total
-JSON-lexical XML mapping, and new full semantic authentication subject under
-unchanged V.13 and Receipt5.5. This experiment makes the already-proposed empty
-CSV carrier executable rather than choosing those contracts. Full schema/domain,
-namespace/transport/platform evidence and candidate receipt implementation remain
-unproved. The alternatives are another exact lossless carrier or an explicit
-revision of the proposed model domain; silently dropping empties is not lossless.
+The owner selected the tagged representation/minimum, total JSON-lexical XML
+mapping and complete semantic subject under unchanged V.13/Receipt5.5 on2026-10-17.
+This experiment makes carrier capacity executable; it does not establish model
+admission. Under the unchanged builtin shape, empty `sections[id]:{}` is a
+negative admission control despite its successful carrier round-trip; empty
+outer collections and explicit history arrays remain admitted. The subsequent
+[model-admission checkpoint](../model-admission/README.md) pins that distinction.
+Complete current domain/source/transport/platform and actual supported-subject
+receipt evidence remain gates before final RFC acceptance or activation.
 No public launch or UWMD5.0 publication is authorized here.

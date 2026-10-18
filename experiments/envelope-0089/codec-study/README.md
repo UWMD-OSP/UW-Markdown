@@ -141,8 +141,10 @@ bindings are not established. The Node XML reader uses the emitted fixed `uw`
 prefix profile; general namespace-prefix alias admission is not demonstrated. No real cryptographic, financial or provenance
 completeness evidence is inferred from a codec round-trip.
 
-The exact D1 wrapper, mixed nullable identity/public portable projection, XML
-choice, full CSV shape/domain and version/subject labels still require owner
-approval and synchronized normative text/schema/fixtures. This study makes the
-block-extra and total lexical XML options concrete; it accepts neither design.
-The reserved UWMD5.0 tag/publication needs separate owner launch approval.
+The owner selected D1's tagged wrapper, D2's mixed nullable identity, D2b's
+portable minimum, total lexical XML, complete CSV carriers and the complete
+subject direction on2026-10-17. This earlier study remains bounded evidence;
+its codec limits do not override model admission or activate that selection.
+Remaining evidence and synchronized normative text/schema/fixtures precede final
+RFC acceptance. No wire label or package version is allocated here; the reserved
+UWMD5.0.0 launch/publication needs separate explicit approval.

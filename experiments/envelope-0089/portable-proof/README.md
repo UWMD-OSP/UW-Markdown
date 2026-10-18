@@ -29,8 +29,9 @@ Run the focused check from the repository root:
 python -B -m unittest discover -s experiments/envelope-0089/portable-proof -p test_projection.py -v
 ```
 
-The owner still decides the tagged/null-identity contract, complete XML/CSV
-mapping and complete authentication subject under unchanged V.13/Receipt5.5
-admission. Tests are evidence for that choice, not acceptance. Current read-only
+The owner selected the tagged/null-identity contract, complete XML/CSV mapping
+and complete authentication subject under unchanged V.13/Receipt5.5 admission
+on2026-10-17. Tests support that direction; final evidence and synchronized
+contract gates remain before RFC acceptance or activation. Current read-only
 source accounting, accepted RFC0090/0091 diagnostics and independent RFC0088/0085
 ownership remain unchanged. No package or specification version is allocated.

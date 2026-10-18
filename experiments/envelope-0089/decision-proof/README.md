@@ -140,12 +140,12 @@ claim that the original source was never edited to prepare the disposable input.
 The later actor acceptance does not relabel these historical observations as a
 new execution.
 
-Accordingly, the proposed E_NEXT/C_NEXT decision concerns exact represented
-values and their declared commitment, not permission to repair source validity.
-Keep parse projection, model/schema admission, document-source signing admission,
-validation findings, receipt policy and raw transport inventories explicit.
-A producer's existing buildMeta default for a NEW block is not authorization to
-backfill historical metadata, select an arbitrary peer or infer retained-history
-authority. RFC0085/0088/0089 remain separate; draft RFC0091 is neither accepted
-nor needed to define this distinction. Historical source/artifact bytes and
-subjects remain preserved; no legacy runtime path or launch is introduced.
+The owner selected the exact represented value/projection and complete E_NEXT/
+C_NEXT subject direction on2026-10-17, under unchanged V.13/Receipt5.5. This does
+not make the earlier raw crypto/receipt-shaped examples a supported-subject
+public verifier state machine. Keep parse projection, model/schema admission,
+source signing admission, validation policy and transport inventories explicit.
+Accepted RFC0090/0091 diagnostic contracts do not decide representation identity
+or establish attribution from producer defaults. RFC0085/0088 remain separate
+drafts; final RFC0089 evidence and synchronized contract gates remain open.
+No source repair, archival replay, version allocation or launch is introduced.

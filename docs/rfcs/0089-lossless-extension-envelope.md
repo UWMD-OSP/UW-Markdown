@@ -724,7 +724,7 @@ helpers do not perform version/shape admission. Hash agreement is not codec
 support. This proof adds no candidate validator or live fixture and exercises
 no signature/receipt state machine or XML/CSV decoder.
 
-Once the owner approves a design, each proposed positive fixture must specify
+Under the owner-selected direction, each proposed positive fixture must specify
 (1) original synthetic source(s), (2) the independently authored complete model,
 (3) exact canonical UTF-8 and digest, (4) expected JSON/XML/CSV decoding, and
 (5) required source accounting and round-trip outcome. Test two source orders
@@ -917,8 +917,9 @@ expectations and the reserved UWMD5.0 launch remain unchanged.
 
 ## Reference implementation
 
-Implementation is blocked on owner design/version approval. The later bounded
-implementation must update `packages/uwmd-verify/src/{types,parser,envelope,
+The selected direction permits bounded implementation/evidence work while
+final acceptance and normative activation remain gated. That implementation
+must update `packages/uwmd-verify/src/{types,parser,envelope,
 uwjson,uwxml,uwcsv,codec,integrity,receipts,protocol}.ts` as applicable, the shared
 schema and mapping specs, consumer adapters, the portable parse projection and the
 independent Python projection. An Envelope-only change cannot fix a colliding
