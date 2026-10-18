@@ -10,24 +10,24 @@ remain. No package numbers or release publication are changed here.
 
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
-**Owner-selected RFC0088 direction — still draft.** Architecture A is selected:
-one exact pinned fdlibm procedure for pow/exp/log across every exponent class;
-B is not selected. Financial associations, quantizer and solver remain unchanged;
-log1p/expm1 rearrangements remain a separate decision. The draft now prepares
-public raw primitives for shared StackUW use, without switching current consumers.
-The supplied signature must authenticate before any recomputation refusal.
-A new isolated real-Ed25519 study covers26 states and jointly states preflight,
-backend, malformed subject, signature, refusal, value/engine and digest ordering.
-The draft now specifies the complete primitive/word/resource and three-layer
-admission contract, preserving raw/internal/public refusal boundaries and the
-existing76-loop scalar bound. Independent contract/consumer/conformance review,
-a final exact-head CI run and final acceptance still gate activation. New local
-evidence covers44 independent consumer cases/64 samples, all1106 current corpus
-cases with zero missing observation cells, and2163 actual Chrome public primitive
-cases. The owner clarified2026-10-18 that a named engine/version satisfies the spreadsheet gate; a committed ten-control workbook and LibreOffice headless hard-recalculation workflow now capture precision comparisons and export findings. Excel xlPending2 is an execution-boundary failure; an optional interactive save/capture replaces COM. No authored cached result
-is counted as native evidence. The owner prioritizes0088, then0092 U1/U9, then
-Python implementation;0089 follows. Pending metric decisions/cleanup are parked.
-No prelaunch compatibility work, version allocation or release is authorized.
+**Accepted RFC0088 — owner decision2026-10-18.** Architecture A is accepted:
+one exact pinned fdlibm pow/exp/log procedure for all exponent classes. All20
+production numerical sites use the same public pinnedPow/pinnedExp/pinnedLog
+bindings; financial graphs, quantizer and IRR/XIRR solver remain unchanged.
+Supplied receipt signatures authenticate before computation and refusal, after
+existing source/subject/dependency preflights. Normative Protocol/Receipt text,
+schema annotations and current conformance synchronize in #357. Final-head and
+exact-main integration CI remain separate gates; no release is authorized.
+
+The owner accepts the spreadsheet study's findings as export-contract limits.
+Native recalculation may differ beyond about eleven significant digits and may
+error on subnormals/overflow. UWMD verifies the stated record, never spreadsheet
+recomputation. LibreOffice24.2.7.2 completed all10 controls/change-restore;
+13cells agree at comparison precision,1differs and6are #NUM!. Browser/raw kernel,
+independent Python/composed and current-corpus evidence remain scoped proofs.
+Python #354 implementation resumes after integration. RFC0089/#368 and RFC0085/
+#335 remain separate drafts;0092 U3-U7 and pending metric decisions stay with the
+owner. No model-generation expansion, metric fix, version, tag or publication.
 
 **Actor reconciliation — accepted RFC0090.**
 [RFC0090](../rfcs/0090-provenance-actor-admission.md) records the owner's
@@ -38,7 +38,7 @@ sources, historical expectations and authenticated artifacts. The schema/type
 already require actor and remain unchanged. META-01 remediation covers both the
 bare/nested shape and nonempty actor. Final integration requires exact-head CI
 and subsequent exact-main CI; no release version is allocated. Python discovery
-remains parse-only. RFCs0085/0088/0089 retain separate draft status.
+remains parse-only. RFCs0085/0089 remain separately draft;0088 is accepted.
 
 **Python diagnostic reconciliation — accepted RFC0091, unreleased.**
 [RFC0091](../rfcs/0091-required-metadata-booleans.md) records the owner's
@@ -55,7 +55,7 @@ change. Sources and historical subjects are never repaired or rewritten.
 The former2,731-artifact retention gate is retired by the owner rule above. Exact-head CI and
 subsequent exact-main CI are integration gates; no release/version is allocated.
 Complete Python validation remains separately gated, with parse-only discovery.
-RFC0085/0088/0089 retain their independent draft states.
+RFC0085/0089 remain draft;0088 is accepted under the2026-10-18 owner decision.
 
 **RFC0048 kit disposition — owner option(a), accepted declarations.** New positive
 examples under examples/standalone/authored-2026-10-17 carry explicit authored

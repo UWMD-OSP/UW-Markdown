@@ -327,6 +327,15 @@ map to Excel (else `EXCEL-EMIT-FN`).
 > because it only checked formula *text*. Adding a new class's example deal must
 > keep its operating statement footing.)
 
+**Accepted RFC0088 export limit.** Native spreadsheet POWER/LN/EXP may differ
+from the pinned verification procedure beyond about eleven significant digits
+and may error on subnormals/overflow. The representative exact-comparison tests
+above do not certify universal native recalculation parity. UWMD verifies the
+stated record, never the spreadsheet's recomputation; neither financial graphs
+nor quantizer are changed to match a spreadsheet. The package's
+[export contract](../../packages/uwmd-excel/README.md#native-recalculation-limits-accepted-rfc-0088)
+records the named-engine evidence and these accepted limits.
+
 ### The `UW MCP` sheet — machine-readable identity and contract
 
 Every workbook carries a fourth sheet, `UW MCP` (`mcpSheet.ts`). An `.xlsx` is a

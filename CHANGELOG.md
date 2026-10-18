@@ -10,18 +10,17 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- Prepare the owner-selected RFC0088 pinned fdlibm `pinnedPow`, `pinnedExp`
-  and `pinnedLog` public functions in verify and both core entries. Preserve one
-  exact raw IEEE procedure for every exponent class, with typed nonnumeric
-  refusals and no host transcendental fallback. Current financial consumers,
-  quantization, solver and receipt behavior remain unchanged while RFC evidence
-  and final acceptance are pending. Reconcile the exact pinned word/resource
-  procedure and raw/internal/public admission boundaries in draft governed text;
-  no new domain cutoff or intermediate finite guard is introduced. Add bounded
-  independent final-consumer proofs, a current1106-case impact capture and actual
-  Chrome public-primitive evidence. Commit the ten spreadsheet controls and add named LibreOffice hard-recalculation/version capture, RFC0079 comparisons and explicit native-formula export findings; optional Excel evidence uses an interactive saved file, with no hidden COM calculation.
-  No numerical conformance rebaseline,
-  package version or publication is allocated.
+- Accept and activate RFC0088 under the owner's2026-10-18 decision: every
+  numerical pow/exp/log consumer uses one exact pinned fdlibm procedure across
+  all exponent classes, shared through public pinnedPow/pinnedExp/pinnedLog.
+  Financial graphs, solver and quantizer remain unchanged. Supplied receipt
+  signatures authenticate before recomputation/refusal, preserving preflight,
+  finite-disagreement/engine and later result-digest precedence. Synchronize the
+  Protocol, Receipt text, schema annotations and conformance. Record native
+  spreadsheet differences beyond about eleven significant digits and IEEE-edge
+  errors as accepted export limits: UWMD verifies the stated record, never the
+  spreadsheet's recomputation. No package/specification version, tag or
+  publication is allocated.
 
 - Apply the2026-10-17 owner rule in both agent entry points: all @uwmd npm
   packages launch together at5.0.0; prelaunch releases use4.x.x from main,
