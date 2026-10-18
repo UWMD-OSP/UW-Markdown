@@ -90,7 +90,8 @@ def missing_market_reference(body):
             or finite(reference) and reference == 0)
 
 
-def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
+def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
+                        missing_field_owners=()):
     """LOCAL sibling, not ValidationResult findings or full schema validation.
 
     Retain unallocated selected-shape inventory evidence plus bounded timestamp/
@@ -176,6 +177,29 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
         if (issue.get("field") == field and not _metadata_routing(body)
                 and isinstance(parent, dict) and not isinstance(parent.get(name), bool)):
             flag_owners[index, field] = issue["code"]
+    # Protocol III.6a owns these exact absent leaves with completeness warnings.
+    # Ownership is supplied only when basic_rules actually emitted that warning
+    # for this physical block. A null leaf or missing/nonobject parent is not the
+    # same condition; neither can consume a local typed/container requirement.
+    completeness_paths = {
+        "_meta.section": "META_FIELD_MISSING_SECTION",
+        "_meta.lifecycle.revision": "META_FIELD_MISSING_VERSION",
+        "_meta.provenance.source": "META_FIELD_MISSING_SOURCE",
+        "_meta.provenance.timestamp": "META_FIELD_MISSING_TIMESTAMP",
+        "_meta.quality.confidence": "META_FIELD_MISSING_CONFIDENCE",
+    }
+    absent_owners = {}
+    for index, path, code in missing_field_owners:
+        if (not isinstance(index, int) or isinstance(index, bool)
+                or not 0 <= index < len(document.source.blocks)
+                or completeness_paths.get(path) != code):
+            continue
+        parent = document.source.blocks[index].parsed.value
+        names = path.split(".")
+        for name in names[:-1]:
+            parent = parent.get(name) if isinstance(parent, dict) else None
+        if isinstance(parent, dict) and names[-1] not in parent:
+            absent_owners[index, path] = code
     retained, handled = [], []
     for finding in findings:
         field = finding["field"]
@@ -183,6 +207,12 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=()):
                 and (field == "_meta" or field.startswith("_meta."))):
             handled.append(dict(**finding, registered_code="META-01",
                                 disposition="blocked_by_registered_metadata_shape"))
+        elif ((finding["context"]["block_index"], field) in absent_owners
+                and finding["section"] == document.source.blocks[
+                    finding["context"]["block_index"]].section):
+            handled.append(dict(**finding,
+                registered_code=absent_owners[finding["context"]["block_index"], field],
+                disposition="represented_by_registered_completeness_warning"))
         elif (finding["context"]["block_index"], field) in flag_owners:
             handled.append(dict(**finding,
                 registered_code=flag_owners[finding["context"]["block_index"], field],

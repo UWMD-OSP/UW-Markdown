@@ -52,6 +52,31 @@ without carrying a compatibility implementation merely to keep it passing.
 ## Complete validation implementation — in progress
 
 
+### Registered completeness ownership in validate transport
+
+Protocol III.6a already assigns the five absent canonical leaves to
+`META_FIELD_MISSING_SECTION`, `VERSION`, `SOURCE`, `TIMESTAMP` and `CONFIDENCE`
+(warnings). RFC0091 explicitly retains the missing-revision warning. The
+validator now reconciles duplicate local evidence only when that exact warning
+was actually emitted for the same physical block index and canonical path,
+and the owning parent objects exist with the leaf genuinely absent. It retains
+the original local evidence privately as handled; registered issue values,
+order, partitions and readiness are unchanged.
+
+Before this correction, an absent revision emitted its registered warning but
+still caused an uncoded local refusal. The complete five-field boundary now
+returns the ordinary warning-only ValidationResult/exit0 for that absence.
+Explicit null or invalid authored values, bad/missing parents, late metadata,
+section disagreement and unrelated override conditions retain their separate
+registered or unallocated handling. No parent failure is consumed through a
+child completeness warning. Active/history populations and the low-level
+source inventory are unchanged. This closes duplicate transport, not the
+remaining metadata diagnostic-allocation or complete validate capability gate.
+
+Six focused methods cover all five fields, exact physical ownership, retained
+local evidence, null/type/parent/independent failures, history and ten real CLI
+subprocess comparisons. Discovery remains parse-only.
+
 ### Accepted hospitality field-home admission
 
 The current accepted-main integration includes RFC0081 section 5 G3: in
@@ -341,7 +366,7 @@ rationale must be a string; omission and the exact empty string remain admitted.
 
 | Field / accepted condition | Registered finding or local assessment | Applicable evidence boundary |
 |---|---|---|
-| Whole absent `_meta`; five absent completeness fields | Existing META_MISSING / META_FIELD_MISSING_* warnings | Exact active physical block; duplicate local whole-absence is consumed only at the actual completeness index. |
+| Whole absent `_meta`; five absent completeness fields | Existing META_MISSING / META_FIELD_MISSING_* warnings | Exact active physical block. Duplicate local evidence is handled only at the actual completeness index/path with authored absence and admitted parents; null, parent and independent failures remain distinct. |
 | Retired `section_id`, nonobject `_meta`, malformed provenance/lifecycle object | Existing META-01/error | All retained physical blocks; exact wrapper predicate precedes actor, with no expanded allocation. |
 | Required nonempty canonical actor | Existing META-01/error; no local duplicate | All physical blocks including history/overwritten/append/extensions; absent/null/empty/non-string refuse, whitespace remains authored. |
 | First `_meta` member and matching `_meta.section` | Uncoded local shape findings | Active physical blocks, including overwritten peers; no silent correction or history reclassification. |
