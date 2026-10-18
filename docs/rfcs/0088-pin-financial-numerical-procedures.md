@@ -189,7 +189,8 @@ The owner has selected A and unchanged financial associations. The table now
 records that direction and the work required to complete its proposal. It is not
 RFC acceptance, and comparison-only alternatives do not authorize B research or
 new stability procedures.
-| Decision | Concrete alternatives | Recommendation and consequence |
+
+| Decision | Selected direction / remaining scope | Consequence |
 |---|---|---|
 | D1: Guarantee | One exact result/refusal for each admitted input and ordered procedure; or allow multiple answers within an explicit error envelope | Retain one exact result/refusal. Reported-value equality alone is insufficient at quantization ties, and an error envelope would require new comparison/digest semantics. Do not promise that every financial formula is a correctly rounded evaluation of its entire real-valued expression. |
 | D2: Positive integer powers | **A selected.** | Use the exact pinned fdlibm power, including its existing integer fast paths; sequential multiplication, a new squaring graph and B are not selected. |
@@ -254,11 +255,11 @@ This supports using it as a research accuracy oracle, not assuming a lean
 browser/runtime dependency or a fixed work bound. Licensing and distribution
 also need review before any dependency decision.
 
-The source identities are now frozen in the source-only closure study and the
-concrete comparison below. The next implementation study must complete independent
-isolated TS/Python ports of the selected proposal, reproduce exact procedure
-outputs and compare mathematical accuracy separately. A correctly configured
-MPFR adapter is a candidate accuracy reference, not an already executed oracle.
+The source-only closure study and comparison below are earlier bounded evidence.
+Complete isolated JS/Python A kernels now exist and are recorded below. Remaining
+implementation work concerns the actual public entry points, exact consumer/domain
+contracts and independently measured final compositions. Mathematical certificates
+remain separate accuracy evidence; no B implementation is selected or required.
 Keep input hashes, hard rounding/range cases, complete financial graphs and
 runtime/browser/package costs distinct from receipt-result impact. The earlier source-only comparison did not implement a complete kernel. Current
 A JS/Python implementations are recorded below; A is now selected. This does not
@@ -286,21 +287,23 @@ limits, cost/license feasibility, old frozen counterexamples and acceptance test
 
 | Candidate | Exact procedure and integer/negative convention | Status and consequence |
 |---|---|---|
-| **A — recommended proposal direction** | The exact eight-file Netlib closure, including `e_pow.c` SHA-256 `763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122`, with explicit binary64 constants, basic-operation boundaries and defined word-site mapping. Call `__ieee754_pow` for integral and fractional exponents, including its pinned +1/-1/+2/+0.5 fast paths, split log2/general exponential graph, huge-exponent branches and scaling; log/exp use their separate pinned bodies. No running-product or universal reciprocal substitution. | The full isolated JavaScript raw closure now exists, including fractional powers, exact constants and software helpers. Independent mathematical/native/corpus evidence is separately scoped below; a full independent Python kernel and whole-domain accuracy/consumer proof remain incomplete. Guarantee is exact procedure output, **not** universal mathematical correct rounding. |
-| **B — if primitive correct rounding is required** | MPFR **4.2.2** / GMP **6.3.0**, exact binary64-word loading, destination precision 53, exponent range emin=-1073/emax=1024 set before operations, named `mpfr_pow`/`mpfr_log`/`mpfr_exp` with MPFR_RNDN, **actual operation ternary** passed to `mpfr_subnormalize`, then exact word encoding. No integer-width cast, powr, host libm or exp(y*log(x)) substitute. | Correct-rounding API contract, not a verified implementation: unpatched4.2.2 and the reduced-range adapter are unexecuted, with upstream BUGS and exact patch applicability unresolved. Actual range/subnormal/counterexample tests are required; precision 53 alone cannot establish this guarantee. Internal Ziv precision growth/allocation has no demonstrated universal hostile-input bound. Native/Wasm packaging, license and independent adapter tests remain required. |
-| **C — explicit hybrid, not recommended without measured benefit** | For every exactly integral finite binary64 y, decode its full exact integer magnitude, form f=B(1/x) first for negative y, then binary squaring with ordered accumulator multiplies and no unused final square; immediately refuse any nonfinite basic result. Fractional powers and log/exp use exactly A. | Only C's integer branch is wired in its lab; the separate new A prototype does not establish a complete tested hybrid. At most1024 loop iterations /1077 basic operations, without a 256 cap or safe-integer restriction. Distinct rounding/refusal semantics; no measured bundle or speed saving justifies a separate contract. |
+| **A — selected architecture; RFC still draft** | The exact eight-file Netlib closure, including `e_pow.c` SHA-256 `763b86baa63eb3518b43f7f3e44e5ed10992b62650f4a45c3a2ea6015e6d5122`, with explicit binary64 constants, basic-operation boundaries and defined word-site mapping. Call `__ieee754_pow` for integral and fractional exponents, including its pinned +1/-1/+2/+0.5 fast paths, split log2/general exponential graph, huge-exponent branches and scaling; log/exp use their separate pinned bodies. No running-product or universal reciprocal substitution. | The full isolated JavaScript raw closure now exists, including fractional powers, exact constants and software helpers. Independent mathematical/native/corpus evidence is separately scoped below; the independent raw Python kernel is complete in its scoped checkpoint. Whole-domain accuracy and final consumer proof remain distinct incomplete gates. Guarantee is exact procedure output, **not** universal mathematical correct rounding. |
+| **B — not selected; earlier comparison only** | MPFR **4.2.2** / GMP **6.3.0**, exact binary64-word loading, destination precision 53, exponent range emin=-1073/emax=1024 set before operations, named `mpfr_pow`/`mpfr_log`/`mpfr_exp` with MPFR_RNDN, **actual operation ternary** passed to `mpfr_subnormalize`, then exact word encoding. No integer-width cast, powr, host libm or exp(y*log(x)) substitute. | Correct-rounding API contract, not a verified implementation: unpatched4.2.2 and the reduced-range adapter are unexecuted, with upstream BUGS and exact patch applicability unresolved. Actual range/subnormal/counterexample tests are required; precision 53 alone cannot establish this guarantee. Internal Ziv precision growth/allocation has no demonstrated universal hostile-input bound. No further B implementation, packaging or adapter testing is required by the selected-A workstream. |
+| **C — not selected; earlier hybrid comparison** | For every exactly integral finite binary64 y, decode its full exact integer magnitude, form f=B(1/x) first for negative y, then binary squaring with ordered accumulator multiplies and no unused final square; immediately refuse any nonfinite basic result. Fractional powers and log/exp use exactly A. | Only C's integer branch is wired in its lab; the separate new A prototype does not establish a complete tested hybrid. At most1024 loop iterations /1077 basic operations, without a 256 cap or safe-integer restriction. Distinct rounding/refusal semantics; no measured bundle or speed saving justifies a separate contract. |
 
-Recommend **A across all exponent classes**, rather than adding C merely because
-its integer implementation is shorter. A's general fractional power already
+The owner selected **A across all exponent classes**. The prior evidence against adding C merely because
+its integer implementation is shorter remains relevant: A's general fractional power already
 needs the same helper closure; C does not remove that dependency and introduces
 a different graph at integer exponents. Frozen reciprocal-first versus one-rounded
 power controls disagree (1.1^-31 gives words `3faaacadc6ed30d0` versus
 `3faaacadc6ed30ca`). Earlier money/IRR controls already prove that changing an
 integer graph can change reported values and endpoint/refusal branches. Those
 are comparisons of existing experimental graphs, **not measured A-versus-B
-outputs**. No source comment or host vote is a substitute for that pending test.
+outputs**. B comparison is not an active pending test under the selected direction.
 
-For B, source provenance pins MPFR archive SHA-256
+The following retained B-adapter description is earlier comparison evidence,
+not a current implementation or acceptance work item. Its source provenance pins
+MPFR archive SHA-256
 `b67ba0383ef7e8a8563734e2e889ef5ec3c3b898a01d00fa0a6869ad81c6ce01`
 and GMP archive SHA-256
 `a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898`,
@@ -320,7 +323,8 @@ exact v=1.5u-2^-1128 rounds to u; precision 53 then naïve double conversion rou
 to 2u. The new rational control proves that hazard without claiming MPFR execution
 or a pow/log/exp input producing v. Final finite MPFR output is encoded through
 exact `mpfr_get_z_2exp` integer shifts (no nonzero discarded bits), with zero sign
-preserved. Actual primitive boundary vectors must still test the adapter.
+preserved. Such adapter tests would be necessary only if a later separate decision
+selected B; they are not selected-A gates.
 
 All three designs preserve the explicit financial operation table in this RFC:
 periodic amount/divisor remains distinct from dated amount*negative-power;
@@ -333,9 +337,9 @@ nor historical receipts. Apply the launch policy without a legacy evaluator,
 pre-5 procedure selector or compatibility shell. This comparison does not require
 a new runtime field or authorize old artifacts under new numerical semantics.
 
-Acceptance tests must cover complete independent word/constant/site maps, each
-kernel's real special/range branches and hard mathematical rounding certificates;
-The old B-adapter mutant is not a selected-A acceptance gate. Add full financial
+Selected-A acceptance tests must cover independent word/constant/site maps, its
+real special/range branches and hard mathematical rounding certificates. The old
+B-adapter mutant is not an acceptance gate. Add full financial
 trajectories, final quantizer neighbors, affected current-corpus manifests,
 public assertion/result-array/receipt cases and actual supported spreadsheet
 recalculation. Measure the selected implementation on supported runtimes/OS and
@@ -923,14 +927,13 @@ periods1/360 and12-place reporting; midpoint search is at most63 iterations.
 Its38,169-bit maximum exact certificate is a research resource observation,
 not a proposed production domain/work limit or a universal accuracy proof.
 
-**D1/D5 recommendation:** keep A as the lean provisional procedure direction,
-but do not equate primitive accuracy with an end-to-end financial accuracy
-promise. Before accepting that promise, choose whether known large composed
-errors/refusals are acceptable under an explicitly limited exact-procedure
-contract, or require a separately stated financial accuracy objective plus
-evidenced graph/domain changes. Choosing B alone cannot resolve these examples.
-No zero-rate cutoff, stable formula, tolerance or new refusal rule is selected.
-Existing financial graph/solver conventions remain unchanged in this draft.
+**Earlier D1/D5 recommendation, superseded as an open direction choice:**
+this capture demonstrated that primitive accuracy alone cannot imply whole-formula
+accuracy. The later2026-10-17 owner direction selects A and keeps the existing
+financial associations, quantizer and solver. These measured large errors and
+refusals remain disclosed limits of those graphs; no stable rearrangement, new
+zero-rate cutoff, tolerance or B implementation is selected. Final RFC acceptance
+still requires the exact domain/error/resource contract and honest accuracy claims.
 
 Published9c0322a7 ordinaryCI39061421563 has17 successful jobs and one skipped
 publication observation: production Node20/22 and WindowsNode20 gates, three
@@ -1060,10 +1063,11 @@ This closes one log-consumer evidence gap for14 fixed four-argument word inputs.
 It does not establish a global accuracy/resource bound, null/nonfinite/defaulted
 argument semantics, other financial consumers/day counts, spreadsheet parity or
 new receipt consequences. Existing cancellation/receipt/native/platform artifacts
-remain unchanged. A remains provisional; choosing stronger primitive rounding
-alone does not resolve composed accuracy or financial-domain/refusal policy.
-The owner must select that complete contract before accepting new numerical
-semantics. RFC0088 remains draft; no production/schema/corpus/version changes.
+remain unchanged. The later owner direction selects A and unchanged financial
+associations; stronger primitive rounding alone does not resolve these observed
+composed accuracy limitations. Complete the exact financial-domain/refusal contract
+and independent evidence before final RFC acceptance. No new stability graph or
+production/schema/corpus/version change follows from this observation.
 
 
 ### All-three-day-count financial checkpoint (unaccepted)
@@ -1107,3 +1111,32 @@ platform only, not an unmeasured macOS financial run or universal accuracy proof
 Old source/archive retention guards and foreign prelaunch-receipt replay are
 retired under the owner rule; current focused financial/refusal/authentication
 controls remain. No final-head CI success or owner acceptance is claimed here.
+
+
+### Selected-direction authentication procedure checkpoint (unaccepted)
+
+The owner direction above is now exercised by the
+[authenticate-first proposal](https://github.com/UWMD-OSP/UW-Markdown/blob/5e5c1b0967a151fa9e47f758e8bd41418024dc66/experiments/numerical-0088/authenticate-first/README.md).
+Capture20aae888/tree048dc8ca executes six groups with26 state rows: one actual
+current counterexample and25 proposed states, using current public model APIs
+and real disposable Ed25519 signatures. Eleven backend invocations include seven
+valid cryptographic checks, three invalid checks and one intentional transport
+throw. The invalid-signature/typed-compute-refusal counterexample changes from
+current RCP-03 with backend0 to proposed RCP-01 with backend1 and no compute.
+Valid-signature refusal authenticates first, then keeps RCP-03/recomputed:[].
+
+The joint matrix preserves existing wire/source/subject/held-input/pack/missing-
+backend preflights, finite result coverage/value/engine attribution and later
+results_digest corruption. It separately tests malformed Unicode signature
+payload rejection and backend-throw transport. Authentication failures omit
+unevaluated recomputed output. Current canonical payloads are independently bound
+to the actual backend inputs, and complete synthetic receipts/signatures/results
+are in the execution output for independent inspection.
+
+This is one WindowsAMD64/Node24.14.1/V813.6.233.17-node.44/OpenSSL3.5.5 run.
+All six methods pass with0 failures/skips/cancellations;271 current source/dist/
+fixture identities match before and after. No numerical matrix is repeated and
+no production verifier, spec, schema, corpus, version or RFC state changes.
+Independent review, final normative/conformance synchronization and exact-final-
+head CI remain required. This proves the bounded selected authentication direction,
+not final RFC acceptance, issuer trust, financial accuracy or platform universality.

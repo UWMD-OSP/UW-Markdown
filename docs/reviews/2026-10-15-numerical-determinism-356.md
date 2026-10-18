@@ -759,3 +759,31 @@ refusal objective beyond primitive determinism, (2) current launch signature-
 authentication versus recomputation-refusal precedence, and (3) completing claimed
 consumer/platform/spreadsheet evidence before acceptance. No compatibility regime,
 package recommendation or old-artifact retention choice remains.
+
+
+## Owner-selected A and authenticate-first continuation (2026-10-17)
+
+The owner has selected the exact pinned fdlibm pow/exp/log procedure for all
+exponent classes, including negative powers. B is not selected. Existing financial
+associations, quantizer and solver stay unchanged; stability changes are separate
+future governed work. Eventual public primitive functions must use the same kernel
+as internal financial consumers. These are directions, not final RFC acceptance,
+production activation, version allocation or release authority.
+
+The owner also selected authentication before assigning recomputation refusal.
+Draft RFC0088 now supplies the joint ordered wire/source/subject/referenced-input/
+pack/missing-backend/authentication/compute/value-engine/digest table. The
+[isolated proposal](https://github.com/UWMD-OSP/UW-Markdown/blob/5e5c1b0967a151fa9e47f758e8bd41418024dc66/experiments/numerical-0088/authenticate-first/README.md)
+uses current actual model APIs and real Ed25519 for26 state rows in six passing
+groups. Its current invalid-signature + typed-refusal counterexample reaches
+RCP-03/backend0; the proposal reaches RCP-01/backend1 with no compute. Existing
+preflight and later successful-value/digest precedence remain covered separately.
+This is a controlled declaration-refusal context, not an assertion that a trusted
+pack can change in place, and it changes no production file or arithmetic.
+
+Remaining evidence gates are the selected-A domain/error/resource table, public
+function/kernel identity, final financial-consumer and current affected-conformance
+coverage, scoped independent platform/browser/spreadsheet results, and independent
+review/final-head CI. No B implementation, new stable graph, old numerical regime,
+migration or prelaunch artifact-retention work is required. Earlier provisional
+recommendations remain dated observations and are superseded as open choices.
