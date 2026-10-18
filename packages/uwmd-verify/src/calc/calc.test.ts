@@ -3,8 +3,11 @@
 
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import ts from 'typescript';
 import { describe, it, expect } from 'vitest';
 import { parseUWFile } from '../parser.js';
+import { pinnedPow } from './pinned-numerics.js';
+import { toBits } from './pinned-fdlibm/words.js';
 import {
   evaluateCalc,
   evaluate,
@@ -99,7 +102,7 @@ function decl(id: string, formula: string, unit?: string): ModuleCalcDecl {
 /** `npv(r) = Σ flows[t] / (1 + r)^t`, per protocol §VIII.3. */
 function npvOf(flows: number[], r: number): number {
   let acc = 0;
-  for (let t = 0; t < flows.length; t++) acc += flows[t]! / (1 + r) ** t;
+  for (let t = 0; t < flows.length; t++) acc += flows[t]! / pinnedPow(1 + r, t);
   return acc;
 }
 
@@ -1181,5 +1184,67 @@ probe_bool: true
       const { display: _display, ...standard } = browserEvaluateCalc(decl('d', formula), browserCtx);
       expect(standard, formula).toEqual(run(formula));
     }
+  });
+});
+
+
+describe('RFC 0088 production activation', () => {
+  it('routes all inventoried production sites through the shared public primitives', () => {
+    const root = resolve(__dirname, '../../../..');
+    const files: Array<[string, number]> = [
+      ['packages/uwmd-verify/src/calc/builtins.ts', 10],
+      ['packages/uwmd-verify/src/calc/prng.ts', 2],
+      ['packages/uwmd-verify/src/capital-stack.ts', 1],
+      ['packages/uwmd-verify/src/cash-flow-series.ts', 2],
+      ['packages/uwmd-verify/src/waterfall.ts', 3],
+      ['packages/uwmd-verify/src/validator.ts', 1],
+      ['packages/uwmd-core/src/debt.ts', 1],
+    ];
+    for (const [path, expected] of files) {
+      const ast = ts.createSourceFile(path, readFileSync(resolve(root, path), 'utf8'),
+        ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+      const routed: string[] = [];
+      const forbidden: string[] = [];
+      const visit = (node: ts.Node): void => {
+        if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.AsteriskAsteriskToken) {
+          forbidden.push(node.getText(ast));
+        }
+        if (ts.isCallExpression(node)) {
+          if (ts.isIdentifier(node.expression) && ['pinnedPow', 'pinnedExp', 'pinnedLog'].includes(node.expression.text)) {
+            routed.push(node.expression.text);
+          }
+          if (ts.isPropertyAccessExpression(node.expression) && node.expression.expression.getText(ast) === 'Math' &&
+            ['pow', 'exp', 'log'].includes(node.expression.name.text)) forbidden.push(node.getText(ast));
+        }
+        ts.forEachChild(node, visit);
+      };
+      visit(ast);
+      expect(forbidden, path).toEqual([]);
+      expect(routed, path).toHaveLength(expected);
+    }
+  });
+
+  it('reports the independently demonstrated pinned power word and twelve-place value', () => {
+    // Native reference and independently executed Python procedure, RFC 0088.
+    expect(toBits(BUILTINS.pow!([1.2, 31]) as number)).toBe('4071cda00ebe20d6');
+    expect(evaluateCalc({ ...decl('pinned', 'pow(1.2, 31)'), round_to: 12 }, makeCtx()).value)
+      .toBe(284.851576559723);
+    expect(BUILTINS.pow!([-2, -3])).toBe(-0.125);
+    expect(BUILTINS.pow!([4, 0.5])).toBe(2);
+  });
+
+  it('keeps internal exceptional values separate from public primitive refusal', () => {
+    expect(BUILTINS.npv!([1e200, 0, 0, 1])).toBe(0);
+    expect(() => BUILTINS.pow!([1e200, 2])).toThrow(/CALC-TYPE-001/);
+    expect(BUILTINS.pmt!([2 ** -53, 1, 1])).toBe(Number.POSITIVE_INFINITY);
+    expect(Object.is(BUILTINS.nper!([-1, 1, 1, 0]), 0)).toBe(true);
+    expect(() => BUILTINS.pow!([null, 'wrong type'])).toThrow(/CALC-TYPE-001/);
+  });
+
+  it('preserves solver branches and the accepted procedure-induced refusal', () => {
+    expect(BUILTINS.irr!([0, 0])).toBe(-0.999);
+    expect(BUILTINS.irr!([1e-200, 1e-200])).toBe(4.5005);
+    expect(() => BUILTINS.irr!([-1, ...Array.from({ length: 19 }, () => 0), 6.727499949325601e20]))
+      .toThrow(/CALC-IRR-DIVERGE/);
   });
 });

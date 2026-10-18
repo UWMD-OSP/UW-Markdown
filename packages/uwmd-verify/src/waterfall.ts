@@ -16,6 +16,7 @@
 // are validator errors (validator.ts); arithmetic is verification here.
 // Browser-safe; performs no I/O.
 
+import { pinnedPow } from './calc/pinned-numerics.js';
 import {
   type CashFlowSeries,
   datedFlowsOf,
@@ -208,7 +209,7 @@ export const WATERFALL_VERIFY_DECIMALS = Object.freeze({
 } as const);
 
 function roundTo(value: number, decimals: number): number {
-  const f = 10 ** decimals;
+  const f = pinnedPow(10, decimals);
   const scaled = value * f;
   return (scaled < 0 ? -Math.round(-scaled) : Math.round(scaled)) / f;
 }
@@ -234,7 +235,7 @@ function isNum(v: unknown): v is number {
  * NOT determine a tier boundary by iterating on `xirr`.
  */
 function hurdleBalance(flows: readonly DatedFlow[], hurdle: number, tRow: number): number {
-  const balance = -xnpvOf(flows, hurdle) * (1 + hurdle) ** tRow;
+  const balance = -xnpvOf(flows, hurdle) * pinnedPow(1 + hurdle, tRow);
   return balance > 0 ? balance : 0;
 }
 
@@ -305,7 +306,7 @@ export function computeWaterfall(
           if (pref.accrual === 'simple') {
             p.accrued_pref += p.unreturned * pref.rate * dt;
           } else {
-            p.accrued_pref += (p.accrued_pref + p.unreturned) * ((1 + pref.rate) ** dt - 1);
+            p.accrued_pref += (p.accrued_pref + p.unreturned) * (pinnedPow(1 + pref.rate, dt) - 1);
           }
         }
       }
