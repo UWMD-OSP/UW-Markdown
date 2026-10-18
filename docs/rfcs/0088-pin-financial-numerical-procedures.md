@@ -30,22 +30,36 @@ recommendation gate. Current numerical correctness, source-integrity and receipt
 authentication rules still require explicit contracts and independent evidence.
 This draft neither accepts arithmetic nor authorizes a release or publication.
 
-### Current decision packet — owner rule applied
+### Owner direction — 2026-10-17 (binding direction; RFC remains draft)
 
-CandidateA remains the provisional research direction. Its complete raw JS and
-independent Python implementations and prior primitive/solver/receipt evidence
-are reused; they are not new investigations or universal accuracy guarantees.
-The next substantive choice is financial, not prelaunch compatibility:
+The owner selected **architecture A**: the exact pinned fdlibm procedure for
+`pow`, `exp` and `log`, with the same power procedure for every exponent class,
+including negative powers. B is not selected. Keep the existing financial
+associations, final quantizer and solver unchanged. Stability changes using
+`log1p`, `expm1` or rearranged financial graphs are separate future work.
 
-| Choice | Measured consequence and exact decision required |
-|---|---|
-| Exact ordered procedure versus financial accuracy objective | The36 PMT/PV/FV controls retain five finite-real/public-refusal cases and21 finite reporting differences; the14 NPER controls retain two nonfinite refusals and one signed-zero reporting0 versus exact-real reporting1. A and ideal correctly-rounded primitives agree in these cases. Decide whether an explicitly limited exact-procedure contract admits these outcomes, or require a stated financial accuracy/domain/refusal objective and separately evidenced graph changes. No new cutoff, tolerance or stable formula is inferred. |
-| Current receipt authentication/refusal precedence | Actual recomputation refusal reaches RCP-03 before supplied signature-backend execution and engine attribution; missing backend reaches RCP-08 earlier. Decide the launch contract's authentication-versus-refusal order and exact verdict behavior together. Existing repeated evidence is sufficient to establish the conflict; no old-receipt support is needed. |
-| Evidence required before final acceptance | Finish current consumer/domain/resource coverage and advertised spreadsheet recalculation. The new48-case/21969-row dated study closes all-three-day-count trajectories locally, not independent Linux/macOS financial evidence or full amortization/waterfall/stochastic graphs. No acceptance follows from finite agreement. |
+The owner also directed **AUTHENTICATE FIRST**: verify a supplied signature before
+assigning a recomputation-refusal verdict. Missing backend, malformed source/
+subject, value disagreement and result-digest precedence must be specified and
+tested together. The bounded proposal below preserves existing preflight checks
+and moves supplied-signature validation before any financial recomputation.
+That preservation follows current Receipt §5.1 precedent; it is not an additional
+owner decision about a new ordering before subject or pack admission.
 
-There is no version-bump recommendation, prelaunch transition plan, old reader,
-old numerical procedure or artifact-preservation decision to schedule. All
-existing production behavior stays unchanged while this RFC is draft.
+The eventual public `@uwmd/verify` (or its core re-export) must expose the **same
+primitive functions** that internal financial calculations use, so StackUW can
+call that procedure directly. Raw primitive results, public calc domain guards,
+final refusal and quantization remain distinct boundaries. No model generation
+feature, alternate kernel, runtime selector or compatibility implementation is
+part of this direction.
+
+These instructions select the architecture and authentication direction, not
+final RFC acceptance, production activation, version numbers or publication.
+Remaining work is an exact domain/error/resource contract, independent final
+consumer and public-API evidence, governed receipt text/tests and an accurate
+current conformance-impact assessment. Known composed cancellation and solver
+edge behavior stays disclosed; no stronger financial accuracy guarantee is
+inferred from the selected primitive or approval to keep the current graphs.
 
 ## Motivation
 
@@ -89,11 +103,12 @@ answer is a governed contract change, not a routine bug fix.
 | `sqrt`, stochastic profiles, expression powers | Related numeric consumers | Inventory downstream reach; do not claim integer discounting resolves every function/profile |
 | Quantization | VIII.5 once, VIII.5.1 source precision | Preserve the quantizer and defaults; test adjacent ties, negative ties, overflow and token precision; do not add tolerance |
 
-### 2. Candidate normative language — deliberately not accepted
+### 2. Prior sequential-product alternative — not selected
 
-The final accepted revision must replace symbolic powers with an exact operation
-graph for every admitted domain. The following is a **candidate for bounded
-nonnegative integer discounting**, not approved replacement specification:
+The selected A procedure replaces symbolic powers through its complete pinned
+word/operation contract. The following previously studied sequential-product
+alternative is **not selected**. It remains a counterexample to treating numeric
+procedures as interchangeable, not a proposal for current activation:
 
 > For a nonnegative integer exponent n in the admitted finite domain, compute
 > b = binary64(1 + rate), d = 1. For k = 1 through n, set d = binary64(d * b).
@@ -143,7 +158,8 @@ Evaluate dependency footprint, licensing, browser/Python availability, special
 cases, decimal-to-binary conversion and subnormals before selecting a kernel.
 `exp(y*log(x))` is not equivalent to correctly rounded pow without its own ordered
 definition. Merely naming libm or a runtime version is insufficient for a
-language-neutral standard. The owner provisionally prefers A for further isolated evaluation; no procedure is accepted for production.
+language-neutral standard. The owner has selected A as the architecture; final
+RFC acceptance and production activation remain separate gates.
 
 Reject a blanket promise that equality after quantization is automatic. Adjacent
 values can straddle an admitted tie. Permitting two quantized answers requires
@@ -167,46 +183,43 @@ the accepted procedure, not whichever host generated the stress input. The
 concrete candidate above is intentionally narrower than a complete replacement
 numeric contract.
 
-### 6. Concrete owner decision proposal
+### 6. Selected direction and engineering completion
 
-This section is a **decision-ready recommendation**, not an accepted numerical
-revision. The choices below narrow the remaining work; choosing a direction does
-not fill an unspecified kernel or authorize implementation. No option is selected
-by merging investigation evidence while the RFC remains `draft`.
-
+The owner has selected A and unchanged financial associations. The table now
+records that direction and the work required to complete its proposal. It is not
+RFC acceptance, and comparison-only alternatives do not authorize B research or
+new stability procedures.
 | Decision | Concrete alternatives | Recommendation and consequence |
 |---|---|---|
 | D1: Guarantee | One exact result/refusal for each admitted input and ordered procedure; or allow multiple answers within an explicit error envelope | Retain one exact result/refusal. Reported-value equality alone is insufficient at quantization ties, and an error envelope would require new comparison/digest semantics. Do not promise that every financial formula is a correctly rounded evaluation of its entire real-valued expression. |
-| D2: Positive integer powers | Sequential multiplication; fixed exponentiation-by-squaring graph; or a correctly-rounded power primitive | Develop candidate A below: one exact pinned fdlibm procedure for all exponent classes, with measured accuracy. Candidate B is the concrete correctly-rounded alternative if that stronger objective is required. Sequential discount factors remain a distinct alternative, not an interchangeable optimization. |
-| D3: Negative powers | Reciprocal of positive product; product of reciprocals; scaled integer procedure; or the same range-safe correctly-rounded primitive | Use the same selected A/B primitive for negative powers; reject universal reciprocal-of-positive-product because of the demonstrated lost subnormal. C pins reciprocal-first squaring but changes rounding and still needs A for fractional powers. |
-| D4: Transcendentals | Fully specified portable approximation algorithm/version; or correctly-rounded mathematical contract with demonstrated implementations | Compare the exact eight-file fdlibm closure (A) against the MPFR4.2.2/GMP6.3.0 adapter (B) below. Recommend A proposal completion; universal correct rounding would select a distinct B guarantee. Neither is accepted. |
-| D5: Financial graphs | Preserve current closed-form associations and zero branches; or adopt stability-oriented `log1p`/`expm1`/rearranged formulas | First pin the existing graphs below, replacing only primitive dependencies if approved. Consider stability changes separately after measuring cancellation. Do not silently widen solver domains or call tiny rates zero. |
+| D2: Positive integer powers | **A selected.** | Use the exact pinned fdlibm power, including its existing integer fast paths; sequential multiplication, a new squaring graph and B are not selected. |
+| D3: Negative and fractional powers | **A selected for all exponent classes.** | No universal reciprocal-of-positive-product rule, exp/log substitute or alternate integer kernel. Reproduce the selected procedure and its subnormal/overflow/special-case behavior. |
+| D4: Transcendentals | **A pow/exp/log selected; B not selected.** | Pin the eight-file fdlibm closure, constant words and exact operation/word semantics. Correct-rounding comparisons remain accuracy evidence, not a requirement to implement B. |
+| D5: Financial graphs | **Keep existing associations, quantizer and solver.** | Measure and disclose cancellation, exceptional values and current refusals. log1p/expm1, rate cutoffs, new tolerances, stable rearrangements or solver changes require separate governed work. |
 | D6: Range and resources | Admit the present finite input domain with bounded kernel implementation; or specify narrower admitted domains and exact refusals | Prefer preserving the presently admitted domain where practicable. Any necessary restriction needs an explicit affected-input table and owner approval; the experimental 10,000-step cap is not a limit proposal. Do not mistake the existing AST-node budget for a bound on work inside one builtin. |
 | D7: Production activation | Accept the numerical and receipt contract after independent evidence; activate production separately. | No prelaunch support, migration, artifact-retention or version-recommendation work. All @uwmd packages launch together at5.0.0; prelaunch releases use4.x.x under the owner rule. This draft assigns no versions and grants no publication authority. |
 | D8: Evidence | TS-only or host-power agreement; or frozen vectors plus genuinely independent implementations and platform coverage | Require frozen independent TS/Python evidence, corpus impact and actual scoped spreadsheet recalculation before claiming the corresponding guarantees. A runtime-pinned reference release alone does not close #356. |
 
-#### Immediate owner direction versus engineering completion
+#### Selected architecture versus engineering completion
 
-The eight rows above separate consequences; they are not eight requests to
-approve unspecified algorithms. The smallest architectural choice is now concrete:
-**develop A's exact pinned fdlibm procedure, or require B's correctly-rounded
-primitives through the specified MPFR binary64 adapter**. Recommend A, conditional
-on complete independent ports, accuracy and domain/resource evidence. C's integer
-hybrid is executable but not recommended as a distinct contract without measured
-benefit; it still requires A's fractional/log/exp closure. Choosing an architecture
-authorizes completing the proposal, not activating it or accepting this RFC.
+The architecture choice is resolved: A supplies every pow/exp/log invocation.
+Do not continue implementation research for B or treat the old integer hybrid
+as an activation alternative. Complete the chosen proposal and its independent
+proofs; raw primitive agreement does not establish whole-financial-formula RN.
 
-Keep financial associations, the quantizer and solver unchanged in either path.
-Stability-oriented log1p/expm1 rearrangements remain a separate explicit decision.
-Recommend retaining the current receipt wire format where the selected launch
-contract needs no wire change. Authentication/refusal precedence still needs an
-explicit decision because it changes the meaning of verification, independently
-of any old artifact. No prelaunch numerical regime, migration, retention or
-version-bump recommendation is required. Production activation and publication
-remain separate from research and RFC acceptance.
+The current financial graph, quantizer and solver associations remain unchanged.
+The owner-selected authentication direction is a separate bounded verification
+procedure correction, governed with the full precedence table below. Its
+isolated proposal is executable without activating production behavior.
 
-Kernel selection, complete domains/refusal points, resource evidence and frozen
-independent vectors are engineering completion work. Return a concrete restriction
+The public primitive entry points must call the same pinned kernel used by
+future activated financial paths. A second public implementation, host-math
+fallback or StackUW-only numerical procedure would defeat that requirement.
+Raw IEEE special values do not authorize public calc wrappers to accept inputs
+that their existing domains refuse, or early refusal of internal intermediates.
+
+Complete domains/refusal points, resource evidence, public function boundaries
+and independent vectors are engineering completion work for selected A. Return a concrete restriction
 for approval only if preserving today's admitted domain proves impractical; do
 not ask the owner to approve an unspecified cap. The established request for
 independent evidence is not permission to choose an algorithm from whichever
@@ -247,9 +260,9 @@ isolated TS/Python ports of the selected proposal, reproduce exact procedure
 outputs and compare mathematical accuracy separately. A correctly configured
 MPFR adapter is a candidate accuracy reference, not an already executed oracle.
 Keep input hashes, hard rounding/range cases, complete financial graphs and
-runtime/browser/package costs distinct from receipt-result impact. No complete
-A/B kernel is implemented or selected here, and the prototypes change no current
-evaluator or conformance expectation.
+runtime/browser/package costs distinct from receipt-result impact. The earlier source-only comparison did not implement a complete kernel. Current
+A JS/Python implementations are recorded below; A is now selected. This does not
+activate a current evaluator or conformance expectation, or select B.
 
 The [candidate-source closure study](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-fdlibm-closure-356.md)
 now freezes eight exact Netlib source hashes and identifies the power helper
@@ -263,7 +276,7 @@ experiments and fixed bit-pattern tests for extraction/insertion, signed words,
 whole-word shifts and carry/borrow. These are prerequisite research only; no
 complete numerical kernel or financial expected answer is supplied.
 
-#### Actual procedure alternatives — owner recommendation, not acceptance
+#### Earlier procedure comparison — A now selected; no B implementation gate
 
 The [concrete procedure comparison and new integer lab](https://github.com/UWMD-OSP/UW-Markdown/blob/0be37dd2e13491e6840ed81f1de3da8a49efbee8/experiments/numerical-0088/integer-dispatch/README.md)
 specify the following concrete design alternatives. Their **implementation/evidence
@@ -322,7 +335,7 @@ a new runtime field or authorize old artifacts under new numerical semantics.
 
 Acceptance tests must cover complete independent word/constant/site maps, each
 kernel's real special/range branches and hard mathematical rounding certificates;
-B must fail a ternary-discarding subnormal-adapter mutant. Add full financial
+The old B-adapter mutant is not a selected-A acceptance gate. Add full financial
 trajectories, final quantizer neighbors, affected current-corpus manifests,
 public assertion/result-array/receipt cases and actual supported spreadsheet
 recalculation. Measure the selected implementation on supported runtimes/OS and
@@ -477,10 +490,11 @@ remain distinct acceptance work.
 
 ### 7. Research, acceptance and production are separate gates
 
-1. **Provisional direction:** the owner prefers A for further isolated evaluation.
-   B remains an alternative if correctly rounded primitives prove necessary; C
-   has not demonstrated sufficient benefit. This is not RFC acceptance or
-   authorization for production integration or activation.
+1. **Owner direction:** A is selected for pow/exp/log and all exponent classes;
+   B is not selected. Keep financial associations, quantizer and solver unchanged.
+   Authenticate a supplied signature before financial recomputation/refusal, with
+   the joint preflight/result precedence specified below. This is not final RFC
+   acceptance or production activation.
 2. **Independent pre-acceptance research:** complete an isolated executable
    procedure, exact constants/word maps, domains, exception/public-refusal rules
    and deterministic resource analysis. Independently exercise it against
@@ -527,7 +541,8 @@ does not hide an untested branch or refusal.
 
 ### 8. Astra review and complete isolated A research
 
-The owner's provisional preference is A for evaluation, not acceptance. The
+The owner has selected architecture A, without accepting the final RFC or
+activating production. Earlier provisional comparisons remain scoped evidence. The
 external Astra report is independently classified in the existing
 [Issue #356 review](https://github.com/UWMD-OSP/UW-Markdown/blob/55b1b1ccfa7c52346f40d57f760f29214bd4fa78/docs/reviews/2026-10-15-numerical-determinism-356.md#astra-review-intake-and-independent-verification).
 It is not automatically authoritative. That intake records the report hash,
@@ -575,9 +590,9 @@ policy does not require cross-regime verification of those pre-5 receipts.
 Current receipt recomputation refusal returns failed/RCP-03 before engine
 attribution and execution of a supplied signature backend. Missing-backend
 RCP-08 is earlier, and results_digest corruption is later than successful value
-agreement. RCP-07 does not cover every success-to-refusal transition. The joint
-authentication/error-precedence decision for the launch contract must be resolved
-before acceptance, independently of any pre-5 support obligation. Production
+agreement. RCP-07 does not cover every success-to-refusal transition. The owner has now selected authentication before recomputation. The exact joint
+preflight/authentication/refusal/value/digest procedure and tests below must be
+reviewed before acceptance, independently of any prelaunch support obligation. Production
 behavior and historical subjects/signatures remain unchanged now.
 
 ## Launch numerical and receipt contract
@@ -593,26 +608,39 @@ receipt recomputation behavior. Receipt identity is an authenticated current
 contract, not a reason to support an earlier numerical regime. No new engine
 name, runtime field, signature domain or receipt wire shape is presumed.
 
-### Current receipt precedence requiring an explicit launch decision
+### Owner-directed authenticate-first receipt proposal
 
-Existing executions already establish the following behavior; do not rerun them
-solely to maintain prelaunch coverage:
+The existing implementation computes before checking a supplied signature. The
+owner-selected direction moves authentication before any financial computation,
+while retaining the existing earlier source/subject and decidability checks.
+The following is the **draft complete ordered procedure**, not activated text:
 
-| Current case | Existing rule or observed conflict |
-|---|---|
-| Malformed receipt, subject or held-input digest | Wire rejection and decisive early subject/held-input checks are separate from later result-digest checks. |
-| Signature backend missing | RCP-08 occurs before recomputation. |
-| Supplied signature backend and recomputation throws | failed/RCP-03 with an empty recomputed list occurs before engine attribution and before invoking even a backend that would reject the signature. The joint authentication/error-precedence contract needs explicit resolution. |
-| Successful finite recomputation disagrees | Supplied signature verification occurs first; same-engine failure differs from different-engine RCP-07. |
-| Engine versions differ, values agree | Version difference alone does not establish unverifiability under the current rules. |
-| Only results_digest is corrupt | RCP-04 is reached after successful recomputation and value agreement. |
-| New issuance | Issued engine metadata and reported values are part of the current signed/digest contract. Test those bindings independently; do not infer authentication from numeric agreement. |
+| Order | Condition | Draft result / work boundary |
+|---|---|---|
+| 0 | Receipt wire assertion fails | Preserve the existing typed parse/assertion transport refusal. No invented verdict or generic code. |
+| 1 | Record cannot canonicalize | unverifiable/RCP-09; no signature backend or recomputation. |
+| 2 | Subject digest differs | failed/RCP-01, or unverifiable/RCP-10 for noncomparable canonicalization versions; no backend or recomputation. |
+| 2a | A held referenced input digest differs | failed/RCP-12 before the indeterminate group; no backend or recomputation. |
+| 3 | Missing input, unknown/different pack, missing signature backend | unverifiable; keep existing issue order: missing-input RCP-11 entries, then RCP-05/06, then RCP-08. No backend or recomputation. |
+| 4 | Signature present and backend supplied | Construct the exact current receiptSigningPayload. Invalid Unicode in that payload or invalid signature => failed/RCP-01, with no recomputed member because computation did not run. Invoke the backend once. Unsigned receipts skip this stage and acquire no signature-authentication claim. |
+| 4 transport | Backend throws | Preserve its existing transport exception; do not invent a validation code or continue to computation. |
+| 5 | Authenticated (or unsigned) recomputation throws | failed/RCP-03 with recomputed:[] as currently. Engine metadata does not turn this exception into a finite disagreement. |
+| 6 | Successful recomputation lacks outputs or values differ | Existing RCP-02/03 comparison; different engine name/version => unverifiable with leading RCP-07. Supplied signature has already validated. |
+| 7 | Values agree but stated results_digest does not recompute | failed/RCP-04. This cheap corruption check never skips computation or outranks signature/value failure. |
+| 8 | All applicable stages succeed | verified; source correctness, numeric agreement and actual signature authentication remain separate assertions. |
 
-The smallest receipt choice is whether the launch contract retains the observed
-refusal-before-supplied-signature path or authenticates before assigning a
-recomputation refusal. Missing-backend, malformed-subject, value-disagreement
-and result-digest precedence must be stated together. This is a current-contract
-choice requiring governed text and tests, with no prelaunch migration obligation.
+This proposal allocates no new code, receipt shape, engine name, package version
+or numeric comparison tolerance. Omitting unevaluated recomputed output on an
+authentication failure uses the existing optional result member; it does not
+fabricate empty financial results. Current production behavior is unchanged.
+
+The isolated authenticate-first lab relocates the actual compiled signature AST
+stage ahead of the actual compute try-block only in an explicit queried research
+module. It leaves production source/dist bytes untouched. Real disposable
+Ed25519 controls bind current issued receipts to independently canonicalized
+signing payloads. The synthetic refusal context deliberately supplies a changed
+pack declaration to force a typed compute failure; it does not claim that a
+trusted published pack may change in place or prove financial accuracy.
 
 The module/profile/browser and spreadsheet consumer inventory remains relevant
 because these consumers must implement the selected current procedure. A
@@ -679,22 +707,37 @@ continues independently; the numerical oracle here is not an accepted solver.
 - **Generate a full underwriting engine:** unrelated to closing this numeric
   contract gap and inconsistent with the agreed scope of #355.
 
-## Unresolved questions
+## Remaining acceptance work
 
-1. Resolve D1–D8 at the owner direction checkpoint (§6), including the accuracy objective for a pinned portable procedure versus
-   correctly-rounded primitives; sequential discounting is a separate option.
-   This chooses proposal development, not RFC acceptance.
-2. At the separate acceptance checkpoint (§7), approve a complete kernel,
-   special-case/domain/resource/error table and financial graphs. The recommended
-   primitive contract is not complete until these details and evidence exist.
-3. Approve the current launch receipt authentication/refusal precedence and
-   separately authorize production activation. There is no prelaunch compatibility,
-   migration, artifact-preservation or version-recommendation decision. Tags and
-   publication require separate authorization.
-4. Approve independent-platform and spreadsheet evidence required for advertised
-   guarantees before the coordinated launch; no artificial release deadline.
+Architecture A, unchanged financial associations/quantizer/solver and
+authenticate-first direction are resolved owner instructions. Do not return
+those choices for repeated approval or implement B. The remaining gates are:
 
-The owner has authorized this investigation, **not accepted these choices**.
+1. Complete the exact selected kernel/domain/error/resource table, including raw
+   IEEE specials versus typed public arguments, internal financial intermediates,
+   final public refusals and fixed-work bounds. No unspecified host-math escape,
+   dynamic timeout, new cutoff or hidden finite guard may remain.
+2. Independently verify the public primitive entry points and their identity with
+   the kernel used by every activated financial consumer. Cover number-type
+   boundaries, signed zero, subnormals, negative/fractional/huge exponents and
+   log/exp special/range paths without claiming universal correct rounding.
+3. Close final consumer coverage: amortization/debt/capital-stack/waterfall and
+   stochastic/reporting/dated paths, complete null/default/conditional argument
+   behavior, independent platform/browser runs and actual recalculation for any
+   advertised spreadsheet parity. Reuse completed proofs; do not rerun matrices
+   solely for artifact retention.
+4. Review the joint receipt proposal above and its real-crypto state controls;
+   synchronize accepted normative receipt wording, implementation and conformance
+   only after final RFC acceptance. No supplied invalid signature may be hidden by
+   financial refusal. Keep malformed source/subject, unavailable dependencies,
+   finite disagreement, engine attribution and digest precedence explicit.
+5. Produce the exact current affected conformance manifest and independent
+   material-claim review, then required exact-final-head CI. Disclose current
+   composed accuracy/refusal limitations without selecting stable new graphs or
+   inferring a whole-formula accuracy promise. RFC acceptance and activation stay
+   separate; no version allocation, publication or launch is authorized.
+
+The owner has selected the directions above, **not accepted the final RFC**.
 RFC0085 provenance and RFC0086/0087 financial reconciliation remain separate
 draft workstreams. Narrow #355 assertion/ledger assurance uses the chosen kernel
 only after acceptance and does not reopen RFC0078.
