@@ -259,7 +259,7 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content);
   const instCfg = loadInstitutionConfig(flags['institution'] as string | undefined);
-  const structural = validateUWFile(parsed, instCfg?.thresholds);
+  const structural = validateUWFile(content, instCfg?.thresholds);
   const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
   const result = { ...structural, replacement_funding_verification };
   const fundingRefuses = replacement_funding_verification.state !== 'verified'
@@ -410,7 +410,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   let hadError = false;
 
   if (runAll || onlyValidate) {
-    const v = validateUWFile(parsed);
+    const v = validateUWFile(flags['resolved'] ? parsed : content);
     sections['validation'] = v;
     const funding = await verifyReplacementFundingBindings(parsed);
     sections['replacement_funding_verification'] = funding;
