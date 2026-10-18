@@ -1,4 +1,4 @@
-"""Owner-authorized RFC0091 candidate controls; independent of WIP validate."""
+"""Accepted RFC0091 controls; independent of WIP validate."""
 import copy
 from dataclasses import replace
 import unittest

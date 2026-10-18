@@ -24,6 +24,26 @@ No capability promotion or release is implied.
 ## Complete validation implementation — in progress
 
 
+### Accepted hospitality field-home admission
+
+The current accepted-main integration includes RFC0081 section 5 G3: in
+hospitality, `rent_roll.keys` and `hotel_metrics.adr`, `occupancy`,
+`available_room_nights` and `key_count` receive existing CLS-04/error when
+stated, including null. The five exact predicates share a small pure helper;
+the validator applies them only to the existing property-level selected source.
+Historical, unselected component and unresolved external payloads do not acquire
+this check. The previous WIP all-peer `rent_roll.keys` shortcut is removed.
+
+Format 4.3/4.32 and G3 explicitly remove these official field homes. This does
+not allocate CLS-04 to arbitrary unknown members merely because a schema is
+closed. Generic field admission, broader class-field source applicability and
+unallocated negative-wire conditions remain separate gates. Unknown data is
+retained; no aliases, source edits, model generation or new diagnostic are added.
+Focused evidence: three helper methods and six integration methods, including
+five real validation subprocesses, selected/default/current-revision controls,
+role collision, history, component, external and foreign-class inputs, detached
+findings and parse-only discovery. No whole validate capability is claimed.
+
 ### Current checkpoint — real validate command, capability unclaimed
 
 `python -B implementations/python/uwmd.py validate <file> --json` now invokes
@@ -65,7 +85,7 @@ only for the exact physical block index where completeness actually emitted that
 warning, after confirming authored absence. A late/present metadata object,
 another block or uncovered history cannot match by field name alone. Existing
 META-01 container rejection and exact REC ownership are reconciled below; other
-unallocated conditions remain visible. The source inspector is unchanged.
+unallocated conditions remain visible. The accepted source inspector emits actor and boolean findings once; no candidate pass is layered over it.
 
 `run_validation_cases.py` executes each unchanged portable validate case through
 the actual command and unchanged shared `run_case` comparison. A transparent
@@ -532,7 +552,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 | HDG / ESC / V.12 | Existing selected-source structure and exact separate binding union; external consulted-source gating is local only | Preserve all scalar/date/group/source/refusal conditions, debt-only evidence and no false result from unresolved content; complete future command transport must exclude local null as a normative result. |
 | WF | Tier/split/hurdle/clawback structure and current exact cash identity; optional clawback/outcome/schedule schema-fragment admission | Complete remaining top-level/source applicability; actual outcomes, IRR hurdles and clawback arithmetic remain separate stated-figure verification. |
 | RSV / BED | Existing reserve structure and student bed/date rules | Complete per-source/class/optional-member application and malformed-input evidence; RSV balance verification remains separate and unchanged. |
-| CLS / class rules / MOD | Fixed fields and accepted class-specific definitions/rules; all 61 unchanged builtin validation code projections | Exhaustive role/type/conditional/input applicability, retaining separate class checks versus generic 171-metric reproduction and raw size lookup. |
+| CLS / class rules / MOD | Fixed fields, accepted class-specific definitions/rules and the five G3 removed hospitality field homes on selected sources; all 61 builtin validation code projections | Exhaustive role/type/conditional/input applicability remains open. The generic scalar field loop still needs its own selected-source audit; arbitrary closed-schema extras have no blanket CLS-04 allocation. Keep class checks separate from generic 171-metric reproduction and raw size lookup. |
 | External composition | Local unresolved/directive assessment, exact presence and dependent-field gating | UW_COMPOSITION section 8 permits unresolved reporting without a part resolver. The command now preserves the first existing composition issue, including earlier COMP-UNRESOLVED, with full assessments retained; no cross-section directive priority is invented. Focused actual CLI controls include frozen count-mismatch/missing-part assertions; no complete-record, part-resolution or composition-suite claim. Remaining full negative-wire/applicability proof is distinct from implementing an optional resolver. |
 | General command and result | Real unadvertised command, exact result partitions, seven stage keys, fifteen coverage keys, separate V.12 and explicit unsupported-input refusal | All111 unchanged actual portable cases passed at the prior source checkpoint. Preserve that proof on each new production checkpoint and close the specific admission/refusal, ordering and nonportable gates above, with independent three-OS evidence before promotion. Parse-only discovery remains unchanged until whole-capability proof passes. |
 
@@ -702,7 +722,7 @@ recomputation attest different things and must not substitute for one another.
 
 ### Actual corpus obligations and evidence
 
-Current accepted-main `afcc6158` counts below were read from the existing
+Current accepted-main `e2761157` counts below were read from the existing
 [ownership index](../../conformance/corpus-index.json) and generated
 [portable cases](../../conformance/runner/cases), not inferred from suite names
 or older README totals:
@@ -710,7 +730,7 @@ or older README totals:
 | Owner | Indexed reference checks | Portable cases |
 |---|---:|---:|
 | Reader | 26 | 17 |
-| Verifier | 694 | 281 |
+| Verifier | 698 | 281 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 135 | 0 |
@@ -718,7 +738,7 @@ or older README totals:
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products, reported separately | 106 | 37 |
-| Total | 1,095 | 350 |
+| Total | 1,106 | 350 |
 
 A separate integrator audit at prior checkpoint `0a2cbd9d` executed 99 native
 structural comparison projections through the real Python CLI: 21 tax, 21 lease,
@@ -814,7 +834,7 @@ may be rewritten to make the Python report green.
    read-only receipt contract and its 12 indexed verification assertions,
    including recomputation, reference-input and identity/precedence controls;
    do not require issuance or optional signing success. Gate: audit all
-   26 Reader + 694 Verifier indexed assertions against their actual required
+   26 Reader + 698 Verifier indexed assertions against their actual required
    capabilities and accepted contexts; pass every applicable base assertion,
    with optional requirements separately identified. Run the real 298-case portable
    Reader+Verifier selection without capability skips, explicit exclusions/

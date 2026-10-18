@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 from uwmd_binding_sources import finite
+from uwmd_builtin_field_homes import removed_hospitality_fields
 from uwmd_expressions import parse_expression
 from uwmd_numeric import quantize
 from uwmd_periods import select_period_row, PeriodError
@@ -203,11 +204,18 @@ def builtin_rules(ledger):
             for key, definition in schema.get("properties",{}).items():
                 if key in body and not _field_valid(body[key], definition) or key not in body and key in schema.get("required",()):
                     ledger.issue("CLS-04", "error", section, key, "Stated official field violates its fixed contract")
-            if asset == "hospitality" and section == "rent_roll" and "keys" in body:
-                ledger.issue("CLS-04", "error", section, "keys", "Hospitality keys belong only in property")
             # MHC conditional ownership/rent agreement is reported by the
             # explicit CC-MH-06/07 assertions. Individual stated field types
             # and unconditional required fields retain CLS-04 above.
+    if asset == "hospitality":
+        # RFC0081G3's five explicit field homes, on the existing property-level
+        # selection. Do not widen CLS-04 to every unknown schema member or peer.
+        for section in ("rent_roll", "hotel_metrics"):
+            selected = select_section(document, section)
+            if selected.block is not None:
+                for key in removed_hospitality_fields(section, selected.block.parsed.value):
+                    ledger.issue("CLS-04", "error", section, key,
+                                 "Hospitality field is stated outside its canonical home")
     dictionary = json.loads((_ROOT/"spec/metrics/builtin.json").read_text(encoding="utf-8"))
     prior = {}
     for definition in dictionary["calculations"]:
