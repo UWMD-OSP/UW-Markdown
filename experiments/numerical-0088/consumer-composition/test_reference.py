@@ -15,7 +15,7 @@ class ConsumerControls(unittest.TestCase):
         self.assertEqual(annual_service({**base,'accrual':'accrued'},prior.Trace()),0)
         self.assertTrue(math.isinf(annual_service({**base,'rate':2**-53},prior.Trace())))
         outcomes={c['id']:capital(c)['verification']['verdict'] for c in INPUTS['capital']}
-        self.assertEqual(outcomes['capital/accepted'],'verified');self.assertEqual(outcomes['capital/claim-disagrees'],'failed');self.assertEqual(outcomes['capital/missing-rate'],'unverifiable')
+        self.assertEqual(outcomes['capital/accepted'],'verified');self.assertEqual(outcomes['capital/claim-disagrees'],'failed');self.assertEqual(outcomes['capital/missing-rate'],'failed');self.assertEqual(outcomes['capital/missing-noi-only'],'unverifiable')
     def test_waterfall_calendar_pairwise_and_closed_form_boundaries(self):
         a,b,c='2026-02-28','2026-03-31','2026-04-30';t=prior.Trace()
         self.assertNotEqual(yearfrac(b,c,'30/360us',t),yearfrac(a,c,'30/360us',t)-yearfrac(a,b,'30/360us',t))
