@@ -82,6 +82,8 @@ def read_book(path, require_results=True):
             if expected is None:
                 if observed not in (None, ""):
                     raise ValueError(f"Unexpected input at {col}{row}")
+            elif cells[f"{col}{row}"].get("t") not in (None, "n"):
+                raise ValueError(f"Input type changed at {col}{row}")
             elif observed is None or bits(float(observed)) != bits(float(expected)):
                 raise ValueError(f"Input changed at {col}{row}")
         record = {"id": control[0], "row": row}
@@ -197,7 +199,27 @@ def libreoffice(output, executable):
                                           "restored_all20_cells": True}}
 
 
+def source_identities():
+    identities = {}
+    for path in sorted(HERE.glob("*")):
+        if path.is_file():
+            identities[str(path.relative_to(ROOT)).replace(os.sep, "/")] = sha(path)
+    for path in sorted((ROOT / "packages/uwmd-verify/src/calc").rglob("*.ts")):
+        if path.is_file():
+            identities[str(path.relative_to(ROOT)).replace(os.sep, "/")] = sha(path)
+    for name in ("pinned-numerics.js", "quantize.js", "stated-precision.js", "errors.js"):
+        path = ROOT / "packages/uwmd-verify/dist/calc" / name
+        identities[str(path.relative_to(ROOT)).replace(os.sep, "/")] = sha(path)
+    candidate_dir = ROOT / "packages/uwmd-verify/dist/calc/pinned-fdlibm"
+    if candidate_dir.exists():
+        for path in sorted(candidate_dir.glob("*.js")):
+            identities[str(path.relative_to(ROOT)).replace(os.sep, "/")] = sha(path)
+    return identities
+
+
 def capture(args):
+    identity_before = source_identities()
+    head_before = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     original = HERE / "controls.xlsx"
     read_book(original, require_results=False)
     before = sha(original)
@@ -224,27 +246,18 @@ def capture(args):
     dump(output / "comparison.json", parsed)
     if sha(original) != before:
         raise ValueError("Committed research input changed")
-    identities = {}
-    for path in sorted(HERE.glob("*")):
-        if path.is_file():
-            identities[str(path.relative_to(ROOT)).replace(os.sep, "/")] = sha(path)
-    for path in sorted((ROOT / "packages/uwmd-verify/src/calc").rglob("*.ts")):
-        if path.is_file():
-            identities[str(path.relative_to(ROOT)).replace(os.sep, "/")] = sha(path)
-    for name in ("pinned-numerics.js", "quantize.js", "stated-precision.js", "errors.js"):
-        path = ROOT / "packages/uwmd-verify/dist/calc" / name
-        identities[str(path.relative_to(ROOT)).replace(os.sep, "/")] = sha(path)
-    candidate_dir = ROOT / "packages/uwmd-verify/dist/calc/pinned-fdlibm"
-    if candidate_dir.exists():
-        for path in sorted(candidate_dir.glob("*.js")):
-            identities[str(path.relative_to(ROOT)).replace(os.sep, "/")] = sha(path)
+    identity_after = source_identities()
+    if identity_before != identity_after:
+        raise ValueError("Source/tool/compiled closure changed during capture")
+    if head_before != subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip():
+        raise ValueError("Research head changed during capture")
     manifest = {
         "scope": "UNACCEPTED ten-control named-engine recalculation; native mismatch is an export-contract finding, not arithmetic authorization",
-        "head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+        "head": head_before,
         "captured_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "platform": platform.platform(), "python": platform.python_version(),
         "engine": engine, "node": parsed["node"], "v8": parsed["v8"],
-        "committed_input_sha256": before, "source_identities": identities,
+        "committed_input_sha256": before, "source_identities": identity_before, "source_identities_after": identity_after,
         "summary": {key: parsed[key] for key in ("controls", "cells", "precision_agreements", "precision_disagreements", "nonnumeric_boundaries", "export_contract_findings")},
         "files": {str(path.relative_to(output)).replace(os.sep, "/"): sha(path)
                   for path in sorted(output.rglob("*")) if path.is_file() and "profile" not in path.relative_to(output).parts},

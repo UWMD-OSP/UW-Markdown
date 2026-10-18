@@ -3,6 +3,8 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
+from types import SimpleNamespace
 import xml.etree.ElementTree as ET
 import zipfile
 
@@ -43,6 +45,40 @@ class EvidenceBoundary(unittest.TestCase):
             capture.prepare(HERE / "controls.xlsx", target, changed=True)
             with self.assertRaisesRegex(ValueError, "Input changed at B4"):
                 capture.read_book(target, require_results=False)
+
+    def test_numeric_spelling_with_changed_input_type_is_refused(self):
+        for kind in ("inlineStr", "b", "str"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as temporary:
+                target = Path(temporary) / "changed.xlsx"
+                def change(sheet):
+                    cell = sheet.find(".//s:c[@r='B4']", capture.NS)
+                    cell.set("t", kind)
+                    if kind == "inlineStr":
+                        cell.remove(cell.find("s:v", capture.NS))
+                        inline = ET.SubElement(cell, capture.S + "is")
+                        ET.SubElement(inline, capture.S + "t").text = "1.2"
+                self.write_modified(target, change)
+                with self.assertRaisesRegex(ValueError, "Input type changed at B4"):
+                    capture.read_book(target, require_results=False)
+
+    def test_changed_execution_closure_cannot_be_frozen(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            options = SimpleNamespace(output=str(Path(temporary) / "capture"),
+                                      engine="libreoffice", executable="unused", node="unused")
+            with mock.patch.object(capture, "source_identities", side_effect=[{"tool": "before"}, {"tool": "after"}]), \
+                 mock.patch.object(capture, "libreoffice", return_value=(HERE / "controls.xlsx", {"name": "unit-test"})), \
+                 mock.patch.object(capture, "run", return_value={"stdout": '{"node":"unit-test","v8":"unit-test"}'}):
+                with self.assertRaisesRegex(ValueError, "closure changed during capture"):
+                    capture.capture(options)
+            self.assertFalse((Path(options.output) / "manifest.json").exists())
+
+    def test_untouched_authored_workbook_is_not_excel_evidence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            options = SimpleNamespace(output=str(Path(temporary) / "capture"),
+                                      engine="excel", saved=str(HERE / "controls.xlsx"))
+            with self.assertRaisesRegex(ValueError, "newly saved Excel file"):
+                capture.capture(options)
+            self.assertFalse((Path(options.output) / "manifest.json").exists())
 
     def test_changed_formula_is_refused(self):
         with tempfile.TemporaryDirectory() as temporary:
