@@ -8,6 +8,7 @@
 // paper, not against the walk itself.
 
 import { describe, expect, it } from 'vitest';
+import { toBits } from './calc/pinned-fdlibm/words.js';
 import {
   computeWaterfall,
   verifyWaterfall,
@@ -580,5 +581,25 @@ describe('verifyWaterfall — clawback claims', () => {
       stated_outcomes: { clawback_amount: 0 },
     };
     expect(verifyWaterfall(wf, SERIES).verdict).toBe('verified');
+  });
+});
+
+
+describe('RFC 0088 waterfall-power activation', () => {
+  it('retains independently demonstrated compound-pref and IRR-hurdle allocation words', () => {
+    const waterfall: DistributionWaterfall = { ...WATERFALL, tiers: [
+      { type: 'return_of_capital' },
+      { type: 'preferred_return', rate: 0.08, accrual: 'compound_annual' },
+      { type: 'catch_up', gp_share: 1, target_promote: 0.2 },
+      { type: 'split', lp_share: 0.8, gp_share: 0.2, until_lp_irr: 0.12 },
+      { type: 'split', lp_share: 0.6, gp_share: 0.4 },
+    ] };
+    const allocation = computeWaterfall(waterfall, { series: [
+      { date: '2026-01-01', amount: -1_000_000 },
+      { date: '2029-01-01', amount: 3_000_000 },
+    ] })!;
+    expect(toBits(allocation.lp.distributions)).toBe('4140b7b37b5b169c');
+    expect(toBits(allocation.gp.distributions)).toBe('4128aeb21293a590');
+    expect(toBits(allocation.promote_total)).toBe('4124d6568b5b6616');
   });
 });

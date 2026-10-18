@@ -3,6 +3,7 @@
 
 import { parseISODate } from './day-count.js';
 import { CalcError } from './errors.js';
+import { pinnedPow, pinnedExp, pinnedLog } from './pinned-numerics.js';
 import { quantizeDecimal } from './quantize.js';
 
 export type CalcValue = number | string | boolean | null;
@@ -127,7 +128,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
       throw new CalcError('CALC-TYPE-001', 'pmt: n must be > 0.');
     }
     if (rate === 0) return pv / n;
-    return (pv * rate) / (1 - (1 + rate) ** -n);
+    return (pv * rate) / (1 - pinnedPow(1 + rate, -n));
   },
 
   // npv(rate, ...flows) — flow at index 0 is at t=0 (undiscounted).
@@ -139,7 +140,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     let acc = 0;
     for (let t = 0; t < args.length - 1; t++) {
       const flow = asNumber(args[t + 1]!, 'npv');
-      acc += flow / (1 + rate) ** t;
+      acc += flow / pinnedPow(1 + rate, t);
     }
     return acc;
   },
@@ -194,7 +195,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     const base = asNumberOrNull(args[0]!, 'pow');
     const exp = asNumberOrNull(args[1]!, 'pow');
     if (base === null || exp === null) return null;
-    const r = base ** exp;
+    const r = pinnedPow(base, exp);
     if (!Number.isFinite(r)) {
       throw new CalcError('CALC-TYPE-001', `pow: result is not finite (${base}^${exp}).`);
     }
@@ -211,7 +212,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     if (n <= 0) {
       throw new CalcError('CALC-TYPE-001', `log: input must be positive, got ${n}.`);
     }
-    return Math.log(n);
+    return pinnedLog(n);
   },
 
   // exp(num) — null propagates.
@@ -221,7 +222,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     }
     const n = asNumberOrNull(args[0]!, 'exp');
     if (n === null) return null;
-    const r = Math.exp(n);
+    const r = pinnedExp(n);
     if (!Number.isFinite(r)) {
       throw new CalcError('CALC-TYPE-001', `exp: result is not finite (exp(${n})).`);
     }
@@ -243,7 +244,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     const pmt = asNumber(args[2]!, 'fv');
     const pv = args[3] === undefined ? 0 : asNumber(args[3]!, 'fv');
     if (rate === 0) return pv + pmt * n;
-    const growth = (1 + rate) ** n;
+    const growth = pinnedPow(1 + rate, n);
     return pv * growth + pmt * (growth - 1) / rate;
   },
 
@@ -259,7 +260,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     const pmt = asNumber(args[2]!, 'pv');
     const fv = args[3] === undefined ? 0 : asNumber(args[3]!, 'pv');
     if (rate === 0) return pmt * n + fv;
-    const discount = (1 + rate) ** -n;
+    const discount = pinnedPow(1 + rate, -n);
     return pmt * (1 - discount) / rate + fv * discount;
   },
 
@@ -288,7 +289,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
     if (den === 0 || num / den <= 0) {
       throw new CalcError('CALC-TYPE-001', 'nper: no real solution for the given inputs.');
     }
-    return Math.log(num / den) / Math.log(1 + rate);
+    return pinnedLog(num / den) / pinnedLog(1 + rate);
   },
 
   // irr(...flows) — bracket, then bisect. Protocol §VIII.3 (RFC 0024).
@@ -313,7 +314,7 @@ export const BUILTINS: Readonly<Record<string, Builtin>> = Object.freeze({
 
     const npvAt = (r: number): number => {
       let acc = 0;
-      for (let t = 0; t < flows.length; t++) acc += flows[t]! / (1 + r) ** t;
+      for (let t = 0; t < flows.length; t++) acc += flows[t]! / pinnedPow(1 + r, t);
       return acc;
     };
 
