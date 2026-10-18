@@ -1897,7 +1897,7 @@ years or dates to clear them.
 | `pv(rate, n, pmt[, fv])` | Present value of a series of equal payments + future value. |
 | `nper(rate, pmt, pv[, fv])` | Number of periods to pay down `pv` with `pmt` payments. Closed-form; see the note below. |
 | `npv(rate, ...flows)` | Net present value. |
-| `irr(...flows)` | Internal rate of return; null if no real root. See the convergence note below. |
+| `irr(...flows)` | Internal rate of return; CALC-IRR-DIVERGE on the specified bracket/iteration failure. See the convergence procedure below. |
 | `is_calendar_date(value)` | `(any) → boolean` | `true` only for a valid `YYYY-MM-DD` calendar-date string; see below. Never `null`. No argument value raises. |
 
 **Closed-form functions (normative).** `pmt`, `fv`, `pv`, and `nper` **MUST** be

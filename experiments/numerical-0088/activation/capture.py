@@ -67,6 +67,7 @@ def identities():
     for package in ("uwmd-verify", "uwmd-core"):
         for folder, suffix in (("src", "*.ts"), ("dist", "*.js")):
             paths.extend((ROOT / "packages" / package / folder).rglob(suffix))
+    paths.extend(path for path in (ROOT / "conformance").rglob("*") if path.is_file() and path.suffix in (".md", ".json", ".py", ".mjs"))
     for suffix in ("*.py", "*.mjs", "*.json"):
         paths.extend(LAB.rglob(suffix))
     consumer = json.loads((LAB / "consumer-composition/inputs.json").read_bytes())
@@ -82,6 +83,15 @@ def capture(destination):
     assert (ROOT / "packages/uwmd-verify/dist/index.js").is_file(), "Fresh own build required"
     destination.mkdir(parents=True)
     before = identities()
+    head_before = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    tree_before = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip()
+    origins = json.loads((HERE / "conformance-origins.json").read_bytes())
+    for record in origins["cases"]:
+        fixture = ROOT / "conformance/calc/fixtures" / record["name"]
+        for name, digest in record["fixture_sha256"].items():
+            assert sha((fixture / name).read_bytes()) == digest, record["name"] + "/" + name
+    for name, digest in origins["reference_sha256"].items():
+        assert sha((ROOT / name).read_bytes()) == digest, name
     commands = []
     def run(name, command, extra=None):
         env = {**os.environ, **(extra or {})}
@@ -138,9 +148,10 @@ def capture(destination):
     run("receipt-precedence", ["node", "--test", str(HERE / "receipts.test.mjs")], {"ACTIVATION_RECEIPT_OUTPUT": str(destination / "receipt-precedence.json")})
     (destination / "independent-graphs.json").write_text(json.dumps(independent, separators=(",", ":")) + "\n", encoding="utf8")
     assert identities() == before, "Source/input/reference/dist mutation during proof"
+    assert subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip() == head_before, "Checkout HEAD changed during proof"
     artifacts = [{"path": path.name, "sha256": sha(path.read_bytes()), "bytes": path.stat().st_size} for path in sorted(destination.iterdir())]
     counts = {"consumer_cases": 44, "seeded_samples": 64, "financial": len(independent["financial-trajectories"]["cases"]), "dated": len(independent["dated-conventions"]["cases"]), "nper": 14, "cancellation": 36}
-    manifest = dict(scope="Accepted RFC0088 direct production APIs versus independently structured frozen Python procedure references", checkout_commit=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(), checkout_tree=subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True).strip(), python=sys.version, platform=platform.platform(), architecture=platform.machine(), node={key: observations["consumer-composition"][key] for key in ("node", "v8")}, source_input_dist_before_and_after=before, commands=commands, counts=counts, artifacts=artifacts, limits=["No loader, source transformation or production function substitution.", "Raw production result words/refusals/reporting compared; production internal trajectories are not instrumented.", "Independent Python full graphs and rational certificates are retained separately; whole-formula correct rounding is not promised.", "Only NaN class is portable; original NaN words are retained in the raw outputs.", "Frozen preactivation identities describe historical runs only; no old-production source replay."])
+    manifest = dict(scope="Accepted RFC0088 direct production APIs versus independently structured frozen Python procedure references", checkout_commit=head_before, checkout_tree=tree_before, python=sys.version, platform=platform.platform(), architecture=platform.machine(), node={key: observations["consumer-composition"][key] for key in ("node", "v8")}, source_input_dist_before_and_after=before, commands=commands, counts=counts, artifacts=artifacts, limits=["No loader, source transformation or production function substitution.", "Raw production result words/refusals/reporting compared; production internal trajectories are not instrumented.", "Independent Python full graphs and rational certificates are retained separately; whole-formula correct rounding is not promised.", "Only NaN class is portable; original NaN words are retained in the raw outputs.", "Frozen preactivation identities describe historical runs only; no old-production source replay."])
     (destination / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf8")
     print(json.dumps({"output": str(destination), "counts": counts, "sha256": sha((destination / "manifest.json").read_bytes())}))
 

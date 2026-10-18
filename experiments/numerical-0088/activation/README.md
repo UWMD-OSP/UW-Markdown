@@ -39,7 +39,10 @@ the separate RCP-07 attribution behavior. Full signed receipts, signing payloads
 results, backend counts and public test SPKI are saved in the output.
 
 Every output/log is hashed; the manifest records checkout/tree, actual runtime,
-command exits and source/input/compiled identities before and after execution.
+command exits and source/input/compiled identities before and after execution,
+including the conformance sources actually read by boundary controls. It checks
+all14 new fixture-origin hashes and the independent reference identities, and
+refuses a checkout HEAD change during the proof.
 A pre-existing output directory or injected NODE_OPTIONS/RESEARCH_* environment
 is refused. No output or expectation is overwritten. Raw NaN bits are retained
 in artifacts; portable comparisons normalize only their payload/sign.

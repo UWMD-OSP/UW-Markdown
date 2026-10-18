@@ -63,7 +63,7 @@ export function compare(rows) {
               'native formula and unchanged pinned financial/quantizer graph' });
     }
   }
-  return { scope: 'UNACCEPTED bounded native-formula evidence; no UWMD arithmetic activation or universal export parity',
+  return { scope: 'Accepted RFC0088 bounded native-formula evidence; no UWMD arithmetic activation or universal export parity',
     controls: refs.length, cells: observations.length,
     precision_agreements: observations.filter(x => x.comparison.state === 'verified').length,
     precision_disagreements: observations.filter(x => x.comparison.state === 'failed').length,

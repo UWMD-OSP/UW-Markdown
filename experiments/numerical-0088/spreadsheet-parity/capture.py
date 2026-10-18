@@ -252,7 +252,7 @@ def capture(args):
     if head_before != subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip():
         raise ValueError("Research head changed during capture")
     manifest = {
-        "scope": "UNACCEPTED ten-control named-engine recalculation; native mismatch is an export-contract finding, not arithmetic authorization",
+        "scope": "Accepted RFC0088 ten-control named-engine recalculation; native mismatch is an export-contract finding, not arithmetic authorization",
         "head": head_before,
         "captured_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "platform": platform.platform(), "python": platform.python_version(),

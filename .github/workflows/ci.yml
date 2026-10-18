@@ -38,7 +38,7 @@ jobs:
           python-version: '3.12'
       # The implementation uses only Python's standard library. Unit controls
       # and actual portable Reader projections are separate evidence; neither
-      # claims full Verifier coverage or resolves RFC 0088 numerical semantics.
+      # claims full Python Verifier coverage or complete financial implementation.
       - name: Independent unit controls
         run: python -m unittest discover -s implementations/python -v
       # Independent pinned-procedure controls, separately labeled from Reader evidence.
