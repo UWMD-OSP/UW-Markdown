@@ -1,5 +1,13 @@
 # RFC 0089 candidate preimages (unaccepted)
 
+**Current work scope, owner rule2026-10-17:** prelaunch compatibility,
+reissuance/migration plans and artifact-retention inventories are retired.
+Do not run or maintain those portions of the original prototype. Existing files
+are unmaintained research, not acceptance gates. Current lawful-domain fidelity,
+portable projection, strict Unicode admission and complete-subject authentication
+remain in scope. The supported current contract does not gain a legacy fallback.
+
+
 **Later bounded codec evidence:** [codec-study/README.md](codec-study/README.md)
 adds independent Python/Node decoding of complete block-extra CSV, actual ZIP
 and total escaped-lexical XML. Its two frozen models/21 artifacts and measured
@@ -247,31 +255,12 @@ would refuse those new attributes; namespace/codec-version accounting and exact
 escaping/canonicalization rules need owner design approval. A fallback that drops
 the character, sanitizes a key or silently emits a different subject is excluded.
 
-### Migration behavior: new issuance, no historical rewrite
+### Retired prelaunch work
 
-The four `reissuance-plan.json` files are executable **proposed plans**, not
-receipts, signatures or proof of historical authentication. They retain the exact
-original raw SHA256, complete physical source accounting, new subject digest and
-unassigned canonicalization token. They issue no cryptographic or financial
-artifact. Original source/old issued artifact bytes remain untouched.
-
-| Available evidence | Proposed clean-break outcome |
-|---|---|
-| Complete attributable original source, named/singleton cases | After owner approval, parse the original source under the approved routing, retain all legal content/history, project E_NEXT once and issue a new representation under C_NEXT. Archive the original identity separately. |
-| Complete original mixed null/default source | Block implementation until the mixed-admission and ParsedUWFile/Protocol decisions are approved; do not use the current default-key projection to migrate. |
-| Only a demonstrably complete attributable archive | A reviewed reconstruction may be a source for **new issuance** if it proves every relevant value, identity, mode, prose and history. The prototype does not implement/archive-certify this route; it requires review, not trust in a digest alone. |
-| Only a lossy Envelope1 export missing a legal peer/history, incomplete archive, or only an old digest/signature/receipt | **Blocked:** missing values/attribution cannot be recovered by changing a version or recalculating a hash. Obtain original source or a complete attributable archive. Never select/merge/fabricate peers. |
-| Complete source whose repeated/superseded extensions remain outside V.13's guarded domain | Ordinary candidate encoding may succeed; document signing/authentication still refuses. A codec correction is not permission to issue a document signature over an ineligible source. |
-| Existing receipt/signature or whole-source binding plan | Retain its exact old bytes/subject as evidence. If a new artifact is required, separately authorize and issue it under the accepted new subject rules; recompute required receipt verification and independently review a new plan. Old whole-source plans are stale, never silently rehashed into verified plans. |
-
-`reissue_from_source(None)` explicitly refuses with the local prototype reason
-`ORIGINAL_SOURCE_OR_COMPLETE_ATTRIBUTABLE_ARCHIVE_REQUIRED`. It neither constructs
-an alleged recovered source nor uses an old receipt/signature to supply missing
-content. Existing block hashes/signatures and V.12 row commitments remain separate
-subjects; an outer-container change does not silently reinterpret them. No legacy
-reader shim, old/new dual hash, fallback evaluator, automatic receipt refresh or
-historical expected-value rewrite is introduced. Version/release placement and
-public5.0 remain owner-controlled; no actual version is chosen.
+The source reissuance plans, historical-subject inventories and old-regime replay
+instructions below are not current requirements. No migration or recovery work is
+scheduled. Use the focused current-domain studies for representation/portable and
+authentication questions; these experiments do not activate a contract.
 
 ### Focused reproduction and measured results
 

@@ -291,6 +291,22 @@ Verifier capability, financial convention or independent spreadsheet result.
 
 ## 2026-10-16 — Issue #365 joint representation RFC intake
 
+**Current Lane C disposition — 2026-10-17:** the latest owner rule retires this
+intake's prelaunch compatibility, migration, version-recommendation and artifact-
+preservation work. Do not schedule old-regime replays or retention inventories.
+RFC0089 remains draft. Its current owner packet is the tagged/null identity and
+portable minimum, total lexical XML/complete CSV carriers, and complete supported
+authentication subject with unchanged V.13/Receipt5.5 boundaries. Accepted
+RFC0090/0091 diagnostics remain current authority; they do not select Envelope
+identity. A focused independent Python/Node portable proof now passes five tests
+on seven existing complete models and seven explicit controls (actual subprocess
+UTF8 transport). Full lawful-domain/source admission, transport/platform coverage
+and actual candidate receipt state-machine evidence remain engineering gates.
+See [current draft decision text](../rfcs/0089-lossless-extension-envelope.md#exact-decision-text-for-owner-review)
+and [bounded proof](../../experiments/envelope-0089/portable-proof/README.md).
+Earlier intake observations below describe their stated checkpoints, not current
+compatibility obligations or permission to activate the proposed representation.
+
 Read-only intake published here at the owner's request on 2026-10-16. This is a joint normative representation question, not a Python-specific implementation defect. **Analysis and recommendation only; no RFC, version, compatibility, authentication-admission or implementation decision is accepted here.**
 
 Baseline: current main `64b9b109abd1d0851087f31c49f07409b5433142` ([merge #366](https://github.com/UWMD-OSP/UW-Markdown/pull/366)). The normative Format, Protocol, receipt, Envelope, RFC 0014/0040/0066 and representation sources cited below are unchanged from issue #365's baseline `b733127df50962469b7f08936ae2bd6de3e46747`. Source links are pinned to the merged main. [Issue #365](https://github.com/UWMD-OSP/UW-Markdown/issues/365) already records the gap; no duplicate issue is needed. The subsequent [draft RFC 0089](../rfcs/0089-lossless-extension-envelope.md) proposes a candidate; it does not accept this intake's recommendations. Earlier open/closed issue and RFC review found related Reader retention, interchange and snapshot-authentication work, but no accepted resolution of this exact joint contract.

@@ -24,19 +24,19 @@ require owner approval before implementation. Envelope 1.0, normative schemas,
 source digests, receipts, signatures, frozen expectations and public versions
 remain unchanged by this PR. UWMD 5.0 remains reserved for public launch.
 
-The owner's [public-launch compatibility policy](../../VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
-makes UWMD 5.0 the first public compatibility baseline. Earlier versions, including
-published 4.x, are historical; this proposal does not require legacy readers,
-codecs, receipt regimes or shims solely to support them. That policy approves
-neither this representation design nor its implementation, RFC acceptance,
-version allocation or a 5.0 tag/publication. Independent versioning and coordinated
-normative/spec/schema/conformance review still apply.
+The owner's 2026-10-17 rule governs this draft: all `@uwmd` npm packages
+launch together at 5.0.0, and prelaunch releases use 4.x.x from main. No
+prelaunch compatibility, migration, deprecation, version-recommendation or
+artifact-preservation work is an acceptance gate. Earlier migration/reissuance
+plans in the experiment are retired; do not execute or maintain them. This
+removes no current lossless-representation, source-integrity, canonicalization,
+receipt or signing requirement. Format, Protocol and wire contracts remain
+independently identified; no version is allocated or launch authorized here.
 
 The separately reviewed JCS Unicode correction is complete: #373 merged as
 `765e2c4b6e2caf532f13d06c94234615932b47c7` after exact-head CI38995962876.
-Its strict rejection is owner-approved forward behavior, with no legacy fallback;
-historical preimage/signature limits remain in the linked review as evidence.
-This draft adds no further compatibility hold for that completed correction.
+Its strict rejection is accepted current behavior. This completed correction
+is not an open RFC0089 acceptance gate.
 Parser peer/history storage and the CSV block-extra carrier remain unresolved
 representation work. Earlier production probes are pinned to their stated
 pre-correction baseline; do not repeat them as claims about current JCS behavior.
@@ -517,15 +517,15 @@ Container/codec versioning and the semantic canonicalization regime are distinct
 The candidate assigns a new governed `uw-envelope-semantic` regime C_NEXT rather
 than silently replacing 1.0 bytes. Exact version labels are unassigned.
 
-| Consumer/commitment | Compatibility consequence |
+| Current consumer/commitment | Required launch contract |
 |---|---|
-| JSON/XML/CSV semantic digests | Recompute only for a newly issued artifact under the accepted new regime; verify the received stamp under its declared supported regime. Never overwrite a historical stamp in place. |
+| JSON/XML/CSV semantic digests | Construct the complete approved subject and verify its received stamp. Do not treat a portable projection or raw signature success as model/source admission. |
 | Receipts | Coordinate `canonicalization_version` and source-subject generation; preserve existing RCP-10 canonicalization-mismatch versus RCP-07 engine-mismatch precedence. RCP-10 needs both a differing version and a disagreeing digest; a version difference alone is not an issue. No same-regime subject mismatch is excused by trying another hash. Financial `results_digest` remains a separate commitment and need not change for container-only changes. |
 | Document signatures V.13 | New source subject/version constants and schema accounting would be required. Preserve existing duplicate singleton, unsafe-source, repeated-extension-id and superseded-extension admission guards. Ordinary lossless conversion does not make those sources authenticatable. Expanding the authenticated source domain is outside this RFC. Unsupported subject versions stay unverifiable/INT-14; same-regime subject mismatch stays failed/INT-11. |
 | V.9 block hashes / V.11 block signatures | Unchanged inputs when payloads and six signing fields are unchanged. They do not authenticate peer assembly and cannot replace document authentication. |
 | V.12 replacement payment | Unchanged fixed selected ordered vector/currency/variant/index commitment; no Envelope version enters it. |
 | VIII.9–12 projection, assembly, reserves and draw plans | Audit each complete source-digest consumer. Existing digest-only plans may become stale; require an explicit reviewed new plan/rebind, never an automatic digest refresh or a new successful result-state interpretation. Retain finite evidence/refusal precedence. |
-| Package, batch, lake, workbook and HTTP consumers | Update semantic primary/cache identities, paths and stale checks deliberately. Raw-file hashes are distinct. Do not rewrite stored historical keys or authentication subjects as if their new identity had always existed. |
+| Package, batch, lake, workbook and HTTP consumers | Update semantic primary/cache identities, paths and stale checks deliberately. Raw-file hashes and complete semantic subjects are distinct commitments; stale current bindings must not become verified through an automatic digest refresh. |
 
 V.13 currently also spells the exact Envelope1 projection. A new signature regime
 must specify its guarded singleton-extension projection under D1 and retain the
@@ -623,7 +623,7 @@ claim, broader V.13 admission, new receipt rule or acceptance of this RFC.
 The [operation/commitment matrix](https://github.com/UWMD-OSP/UW-Markdown/blob/dcb842ed112782336ea3a0f14168b135dc1af586/experiments/envelope-0089/decision-proof/README.md#subject-identity-assessment-and-issuance-are-separate-commitments)
 separates four changes using existing frozen evidence: equivalent carrier
 spelling, validation of the same exact source, actual metadata authoring, and
-the proposed new Envelope stamp. These are not interchangeable migrations.
+the proposed new Envelope stamp. These are different current operations with different commitments.
 
 Assessing unchanged source under a validation rule does not itself change its
 payload or Envelope subject. Newly issued receipt policy counts and signing
@@ -641,82 +641,36 @@ supply an omitted historical declaration. Receipt recomputation/issuance and
 V.13 source admission retain their own accepted obligations; no new receipt
 refusal, source repair or grandfathered authentication follows from this table.
 The owner decision remains the exact represented value/projection and new
-commitment regime, not permission to fabricate validation inputs. Draft
-RFC0091 and retained-history RFC0085 are not accepted or expanded here.
+commitment regime, not permission to fabricate validation inputs. Accepted RFC0091 supplies the current META-02/03 validation contract; it
+does not choose representation identity. Retained-history RFC0085 remains
+draft and is not expanded here.
 
-## Compatibility analysis
+## Current-contract coordination and acceptance scope
 
-The source Markdown of ordinary admitted named extension peers need not change.
-D2's mixed-identity clarification is an explicit proposed semantic decision,
-not an unnoticed erratum. Existing Envelope1 values, public extension-entry
-Typescript types, JSON readers, CSV columns/pointers and consumers of semantic
-identity break under the proposed new regime. Model-fidelity Reader/Verifier
-implementations must update the relevant projection/codecs; unsupported versions
-refuse. There are no former Editor/CalcHost/AgentHost tier obligations here:
-current conformance is Reader and Verifier plus optional profiles.
+The owner has excluded prelaunch backward compatibility and artifact-preservation
+work. There is no migration service, legacy decoder, dual-hash fallback,
+retention inventory, reissuance plan or version-bump recommendation in the
+acceptance checklist. Experimental files that only implement those tasks are
+retired and are not required test gates. Do not spend another cycle replaying
+old regimes or comparing historical verdicts.
 
-Modules retain their existing declarations, metric definitions and validation
-semantics. Generic extension completeness is not a third-party module feature
-or a new financial profile. No default/model generator or StackUW workflow is
-required to construct or verify the representation.
+The implementation still needs one coherent current launch contract:
 
-### Independent versioning and pre-5.0 clean break
-
-| Surface | Required assessment before acceptance/release |
+| Surface | Required governed change, without allocating a version |
 |---|---|
-| Envelope | A new container version is required for D1; do not widen Envelope1 in place. |
-| Format | Named-peer legality is already accepted. Assess D2's explicit mixed-identity clarification separately; if it changes admitted document meaning/routing, revise/version Format with Protocol accounting. A container stamp alone does not automatically bump Format. |
-| Protocol | Projection/verification, the portable nullable identity projection if D2 is accepted, and commitment regime references must change coherently, with the appropriate Protocol version; package semver alone is insufficient. |
-| Receipt/signature | Select the canonical subject regime and supported-version schema/constants explicitly; independent wire-artifact version changes depend on the chosen fields, not copied Envelope numbering. |
-| Codec/bundle/package | Independently version breaking mapping/type changes and exact dependent package pins. Assess XML namespace separately from its model admission. |
-| Release placement | Apply the owner's public-launch compatibility policy: 5.0 is the first public compatibility baseline; all earlier versions, including published4.x, are historical. An approved pre-5.0 contract change does not require backward support. Assess independent normative/package versions without treating 5.0 as permission to launch; its tag/publication requires separate owner approval. No version is selected in this draft. |
+| Envelope | Define the new tagged container type/schema and supported stamp together. |
+| Format | Resolve exact mixed null/literal-default identity grouping and last-physical-current selection; named-peer legality is already accepted. |
+| Protocol/public Reader surfaces | Specify D2b's exact portable minimum and distinguish physical inventory, ordinary selection, validation and source-authentication admission. |
+| JSON/XML/CSV/ZIP | Carry the same complete lawful model, including unknown block members and empty collections; refuse malformed or unsupported input at a stated boundary. |
+| Signatures/receipts/current bindings | Define the complete supported subject, signing payloads and refusal precedence. Keep Receipt5.5 matching-digest behavior and V.13 admission unless separately approved. Test current stale binding refusal rather than historical repair. |
+| Packages/launch | Prelaunch packages use4.x.x; all @uwmd npm packages become5.0.0 together only at separately authorized public launch. Format, Protocol and wire labels are not inferred from npm numbering. |
 
-The owner has selected a pre-5.0 clean break; this is no longer a proposal to
-maintain compatibility with earlier published packages. Implement only the
-approved current regime, with clear refusal of unsupported containers and V.13
-subjects. Receipt canonicalization-version handling retains §5.5, including
-normal verification for matching digests; no new blanket metadata refusal is
-implied.
-Do not add an old-version reader, codec, receipt regime, dual-hash fallback,
-grandfathering period or migration shim solely for pre-5.0 compatibility. An archived
-old decoder may remain immutable research evidence without becoming a supported
-runtime path. Existing archived bytes, subjects and expected results remain
-historical evidence.
-
-Only after this RFC's specific design and contract changes are approved may
-complete attributable source support a newly issued artifact under the approved
-regime. Review its complete retained content and new identity; separately issue
-any new receipt, signature or binding plan under the applicable accepted rules.
-This is fresh issuance, not a migration service, verification of the old
-signature or a rewrite of its historical subject. Never turn an already lossy
-old Envelope into supposedly recovered peers; use the original source or a
-complete attributable archive. No automatic historical receipt, artifact or
-fixture regeneration is authorized.
-
-### New issuance prerequisites and historical evidence
-
-The linked source/plan examples retain original raw SHA256 and exact physical
-block accounting before proposing a new subject. They create **no** receipt,
-signature or binding artifact, and no old-version reader/migration shim.
-
-| Evidence available | Proposed action / genuine blocker |
-|---|---|
-| Complete attributable original structured source | After design/version approval, freshly parse using approved routing, account for all admitted current/history blocks and retained values, and issue a new representation under the selected container/subject regime. Archive original bytes/identity separately. |
-| Original mixed null/default source | Requires the mixed-admission and portable/public projection decision first. Never issue from a projection that already overwrote a peer. |
-| Demonstrably complete attributable archive | A reviewed reconstruction can support **new issuance** only if it accounts for every relevant identity, mode, annotation, payload, metadata, prose and history. The prototype does not implement/archive-certify this route. |
-| Only a lossy Envelope1 snapshot, missing peer/history, incomplete archive, or old digest/receipt/signature without complete content | Complete **new issuance** is blocked until original source or a complete attributable archive is available. No supported legacy reader or migration path is required; no hash/version rewrite can recover absent facts. Never infer or select a peer to fill the gap. |
-| Complete source outside retained V.13 repeated/superseded-extension guards | Ordinary candidate representation may be possible, but document authentication remains refused. Retaining old block signatures does not make a new assembly authenticatable. |
-| Old receipt/signature/whole-source binding plan | Retain exact old artifacts as evidence. Separately authorize any new signature, recompute required receipt assertions before issuing a new receipt, and independently review/rebind a new plan under its new subject. Stale plans are not refreshed into verified status automatically. |
-
-The prototype's missing-original call explicitly refuses with a local diagnostic;
-it does not implement a historical reader or pretend an old digest proves source
-completeness. The container/subject change does not automatically change V.9
-block subjects, V.11 signing inputs, V.12 row commitments or financial result
-digests. Their independent rules remain intact. Reissuance does not verify,
-relabel or replace old evidence, and no dual-hash fallback is proposed. Release
-placement and independent version allocation remain unapproved. The owner's
-pre-5.0 clean-break policy supplies no authority to tag or publish the reserved
-public 5.0 launch.
+Modules retain their accepted declarations, metric definitions and validation
+semantics. Generic extension completeness is not a third-party module feature,
+new financial profile, generator or StackUW workflow. A complete current subject
+must come from its admitted input; an omitted value cannot be invented from a
+digest, signature or selected view. This is current verification correctness,
+not a prelaunch-document recovery requirement.
 
 ## Conformance impact
 
@@ -737,8 +691,8 @@ outputs. The names below are a proposed fixture matrix, not new accepted cases.
 | Negative `extension-entry-invalid` | Wrong tag, unknown wrapper member, empty variants list, duplicate identity, identity/annotation disagreement, noncanonical order, superseded block in active slot, or duplicate source-identity placement refuses. Equal content under distinct lawful identities is retained. |
 | Negative `csv-extension-invalid` | Conflicting mode, duplicate/gapped ordinal, wrong variant or pointer, missing declared prose/value rows, inventory/hash mismatch or reconstructed digest mismatch refuses. |
 | Negative `authenticated-extension-domain` | Repeated/superseded extension source still refuses V.13 authentication even if ordinary conversion preserves it. Existing unsafe/duplicate source guards remain. |
-| Historical/unsupported-regime `envelope1-rejects-new` | The pinned archived Envelope1 evidence demonstrates rejection of the candidate stamp/shape; it does not require an old decoder in the new runtime. The approved current decoder refuses unsupported historical regimes with no fallback. |
-| Cross-version `subject-stamp-only` | A formerly representable singleton/no-extension document has new canonical bytes/digest from E_NEXT; retain both independently frozen historical and candidate subjects. |
+| Negative `unsupported-subject` | The current decoder/verifier refuses unsupported container/codec/document-subject labels at the specified boundary, with no fallback. Receipt5.5 matching-digest metadata behavior remains separate. |
+| Positive `complete-subject-stamp` | The approved current subject includes its exact declared container stamp even for extension-free inputs; independent expected bytes pin this rule. |
 | Cross-version `receipt-signature-states` | Unsupported signature subject→INT-14; same-regime subject mismatch→INT-11; differing receipt canonicalization with disagreeing source digests→RCP-10, separately from engine RCP-07. Never compare/relabel across regimes as an old verified artifact. |
 | Cross-version `other-commitments` | Unchanged block, block-signing and V.12 subjects; stale whole-source draw plan refused. Financial result commitments have independent controls and no regenerated expected arithmetic. |
 
@@ -784,25 +738,20 @@ changing only one record identity is an identity/annotation error. A metadata
 or payload mutation with a structurally valid model is instead a received-digest
 mismatch. Do not let an unrelated missing block hide the intended control.
 
-Historical comparison and unsupported-regime fixtures preserve original
-artifacts byte-for-byte. They do not require concurrent old/new decoders or
-receipt regimes: use frozen historical preimages/results to compare the proposed
-current subject, and test unsupported input refusal in the current runtime.
-Pair a frozen old and candidate no-extension subject to isolate the stamp effect.
-For receipts, test version-only difference
-with equal digests separately from version-plus-digest mismatch, and include an
-unknown-pack/result disagreement so earlier subject precedence is observable.
-For signatures, combine unknown version with bad source and malformed artifact
-with unknown version to pin the ordering above. For whole-source plans, retain
-the original plan digest, present the candidate source and require stale refusal;
-only a separately issued reviewed plan can bind the new identity. No fixture is
-permission for an old-version runtime path or rewriting historical expectations.
+Unsupported-label fixtures exercise only the supported current runtime and its
+specified refusal order. Receipt fixtures separate equal source digests with
+differing canonicalization metadata from actual subject disagreement, and include
+unknown-pack/result controls so earlier precedence remains observable. Signature
+fixtures combine unsupported subject with bad source and malformed artifact with
+unsupported subject. Current whole-source plans require stale refusal when their
+bound complete subject changes. No old-regime replay or artifact retention is an
+acceptance obligation.
 
 Inventory affected existing suites before implementation: representation JSON,
 XML and CSV round trips; document-signature projection/version guards; receipt
 issue/verify; lease-up projection and assembly; reserve accounts/draw bindings;
-package/batch/lake/workbook stale identities. Existing expectations remain their
-historical regime; any approved new-regime fixture is separately identified.
+package/batch/lake/workbook stale identities. Synchronize any approved current expectations with their precise normative
+change; do not use a codec experiment as authority to rebaseline them.
 
 ## Independent Astra review intake — 2026-10-16 (unaccepted)
 
@@ -924,9 +873,8 @@ changes neither canonicalizer nor receipt verdicts.
 
 D5 and the new-issuance prerequisites apply even to extension-free subjects: the
 container stamp participates in semantic identity. Preserving JCS/SHA256 does not preserve
-the old subject. Preserve every old source/artifact byte, subject and verdict
-scope as historical evidence. A new signature covers a newly issued subject;
-a new receipt requires its own accepted verification/recomputation. A new label,
+another subject. A signature covers exactly its declared supported subject;
+a receipt requires its own accepted verification/recomputation. A label,
 unchanged financial result or retained block signature cannot transfer old
 snapshot authentication. Unsupported-version and malformed/source/digest refusal
 precedence must be tested with real new-regime implementations before acceptance
@@ -956,7 +904,7 @@ models and implementations.
 
 Pre-acceptance must settle the precise domain/projections, block-extra and XML
 mapping text, commitment/version consequences and disposition of verified existing
-defects. Freeze positive, negative and cross-version expected models/preimages
+defects. Author independent positive, negative and supported-subject expected models/preimages
 for those decisions before approval; production implementation and separately
 authorized activation follow. Public versions, RFC acceptance, conformance
 expectations and the reserved UWMD5.0 launch remain unchanged.
@@ -994,7 +942,7 @@ Do not merge an experimental recovery snapshot or implement a private shape firs
    content and changes the complete document commitment; not model fidelity.
 5. **Dual pre-5.0 readers/codecs/receipt regimes or automatic receipt/plan
    rehashing:** excluded by the owner's public-launch compatibility policy.
-   Historical archives remain evidence; new issuance is not historical proof.
+   No historical recovery or preservation gate is required.
 
 ## Owner decision package (recommended, not accepted)
 
@@ -1010,7 +958,7 @@ accounting; preservation of every legal block/unknown member; and unchanged
 V.13 source admission. A parse minimum cannot substitute for a complete subject.
 RFC0090's accepted actor/source-inventory correction does not decide nullable
 extension routing, authenticate a lossy projection or accept RFC0085 authority.
-Receipt5.5's equal-results-digest metadata path remains unchanged. Pre-5.0
+Receipt5.5's equal-source-digest metadata path remains unchanged. Pre-5.0
 backward support is already excluded; no legacy reader or automatic rehashing
 is an option needed for this design.
 
@@ -1018,7 +966,7 @@ is an option needed for this design.
 |---|---|---|
 | Tagged identity and portable projection | Approve D1 single/variants wrappers and D2's exact opted-in null identity distinct from literal `default`; use the D2b extension/history minimum. Keep ordinary current selection, explicit history and physical source accounting separate. | Coordinate Format mixed-admission wording, portable subset text, reference public API shapes and exact duplicate/current-order fixtures. No unrelated builtin collection redesign. |
 | Complete exchange mapping | Choose total ASCII JSON-lexical XML with exact name/value decoding; choose the fourth CSV `block-extra` scope for every block plus the explicit empty-collection carrier above. Preserve all legal data rather than narrowing JSON admission. | Approve exact mapping/domain and raw duplicate-name admission text, then synchronize schemas and complete domain fixtures. Bounded empty-map/history, independent namespace and actual ZIP evidence now exists; general parser/domain/transport and cross-platform proof remains open. The BOM defect/correction stays preserved. |
-| New commitment regime | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported Envelope/codec and V.13 subject refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance and §5.5 matching-digest rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Independently version Envelope, Protocol, Format if its meaning changes, mappings, signature schema/constants and packages. Actual wire labels and release placement require a later coordinated decision; no5.0 tag/publication without separate launch approval. |
+| New commitment regime | Approve a new E_NEXT/C_NEXT subject contract with strict unsupported Envelope/codec and V.13 subject refusal; keep V.13 source admission unchanged and receipts under their own accepted compute/issuance and §5.5 matching-digest rules. Portable projections and raw cryptographic success cannot bypass source/whole-model accounting. | Coordinate the independently identified Envelope, Protocol, Format if its meaning changes, mappings and signature schema/constants. Exact current wire labels require coordinated contract edits; npm packages follow the explicit4.x/launch5.0.0 owner rule. No5.0 tag/publication without separate launch approval. |
 
 Approving a direction does not complete the acceptance gates above. RFC0085
 retained-history authority and RFC0088 numerical procedures are not accepted by
@@ -1029,6 +977,39 @@ implicit model generation is proposed.
 No expansion of V.13 authentication admission is proposed. RFC0085 compaction
 and RFC0088 numerical determinism remain separate drafts; this RFC accepts neither
 and requires neither a financial kernel nor a new receipt arithmetic rule.
+
+### Exact decision text for owner review
+
+The proposed narrow approval is: **adopt D1's tagged single/variants entry and
+D2's role-opted exact nullable identity distinct from literal `default`; adopt
+D2b's portable minimum; choose total ASCII JSON-lexical XML and the complete
+CSV block-extra/empty-collection carriers; bind the complete supported Envelope
+subject under unchanged V.13 source admission and Receipt5.5 precedence.**
+This is proposal text, not an owner decision. No choice of old-regime support,
+artifact retention, migration or npm version recommendation remains open.
+
+The complete lawful domain remains the acceptance test: source routing must
+cover last-current order/revision disagreement and history without loss;
+model admission must cover every builtin/append/extension/history collection,
+unknown outer and block members, absent/null/empty distinctions, finite binary64
+numbers and valid Unicode. Raw JSON duplicate decoded names and XML lexical/
+namespace/ZIP inventory/transport refusals need exact boundary text and independent
+controls. An approved wrapper alone does not prove those obligations.
+
+The new [independent portable proof](../../experiments/envelope-0089/portable-proof/README.md)
+closes one missing control: five actual Python/Node subprocess tests agree on
+seven existing complete examples and seven explicit minimum-value controls.
+Literal expectations pin absent/null/authored metadata, exact payload members,
+null/default/UTF16 identity and ordered/empty history. This is bounded projection
+evidence, not complete source admission, authenticated-model validation or a
+capability claim. No old authentication/codec matrix is rerun for compatibility.
+
+The remaining implementation evidence is full current-domain schema/projection
+and transport coverage, independent platform execution, and actual supported-
+subject signing/receipt state-machine tests. The existing crypto proof establishes
+byte binding only; candidate financial receipt issuance is still unimplemented.
+These are engineering gates following the specific design choice, not a request
+to preserve a prelaunch contract. RFC0085/0088 retain their separate ownership.
 
 ## Prior art
 
