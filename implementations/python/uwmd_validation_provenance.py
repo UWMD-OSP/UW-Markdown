@@ -10,6 +10,8 @@ import re
 from uwmd_binding_sources import finite
 from uwmd_numeric import calendar_date, _ordinal
 from uwmd_source_validation import _metadata_routing
+from uwmd_reader import APPEND
+from uwmd_validation_selection import current_blocks
 
 _TIMESTAMP = re.compile(r"([0-9]{4}-[0-9]{2}-[0-9]{2})[Tt]([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\.[0-9]+)?([Zz]|[+-][0-9]{2}:[0-9]{2})\Z")
 _DIGEST = re.compile(r"sha256:[0-9a-f]{64}\Z")
@@ -91,7 +93,7 @@ def missing_market_reference(body):
 
 
 def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
-                        missing_field_owners=()):
+                        missing_field_owners=(), missing_market_reference_owners=()):
     """LOCAL sibling, not ValidationResult findings or full schema validation.
 
     Retain unallocated selected-shape inventory evidence plus bounded timestamp/
@@ -222,6 +224,29 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             parent = parent.get(name) if isinstance(parent, dict) else None
         if isinstance(parent, dict) and names[-1] not in parent:
             absent_owners[index, path] = code
+    # RFC0022 already assigns the missing promoted-reference obligation to
+    # DQ-06/error. Only actual emitted owners for an absent member qualify.
+    # Authored null/falsy scalars or malformed objects have independent type/
+    # content requirements; this presence owner cannot consume those findings.
+    market_absence_owners = set()
+    for index, issue in missing_market_reference_owners:
+        if (not isinstance(index, int) or isinstance(index, bool)
+                or not 0 <= index < len(document.source.blocks)):
+            continue
+        block = document.source.blocks[index]
+        if (block.section in APPEND or block.section.startswith("x_")
+                or not any(current is block for current in current_blocks(
+                    document, block.section, include_external=True))):
+            continue
+        body = block.parsed.value
+        meta = body.get("_meta") if isinstance(body, dict) else None
+        parent = meta.get("provenance") if isinstance(meta, dict) else None
+        if (issue.get("code") == "DQ-06" and issue.get("severity") == "error"
+                and issue.get("field") == "_meta.provenance.market_data_ref"
+                and issue.get("section") == block.section
+                and isinstance(parent, dict) and "market_data_ref" not in parent
+                and not _metadata_routing(body) and market_data_accepted(body)):
+            market_absence_owners.add((index, "_meta.provenance.market_data_ref"))
     retained, handled = [], []
     for finding in findings:
         field = finding["field"]
@@ -240,6 +265,11 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
                     finding["context"]["block_index"]].section):
             handled.append(dict(**finding, registered_code="SRC-01",
                 disposition="represented_by_registered_source_type_error"))
+        elif ((finding["context"]["block_index"], field) in market_absence_owners
+                and finding["section"] == document.source.blocks[
+                    finding["context"]["block_index"]].section):
+            handled.append(dict(**finding, registered_code="DQ-06",
+                disposition="represented_by_registered_missing_market_reference"))
         elif (finding["context"]["block_index"], field) in flag_owners:
             handled.append(dict(**finding,
                 registered_code=flag_owners[finding["context"]["block_index"], field],

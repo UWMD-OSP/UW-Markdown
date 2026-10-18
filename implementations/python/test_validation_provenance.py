@@ -112,7 +112,12 @@ class ValidationProvenanceTests(unittest.TestCase):
             ("inherited_assumption","inherited_from",dict(document_id="parent",digest=digest,distance=1))):
             with self.subTest(resolution=resolution):
                 body=body_with_meta();body["_meta"]["provenance"]["resolution"]=resolution
-                self.assertIn("_meta.provenance."+key,local_fields(validate(document(body))))
+                absent = validate(document(body))
+                if key == "market_data_ref":
+                    self.assertNotIn("_meta.provenance."+key,local_fields(absent))
+                    self.assertIn(("DQ-06","error"),codes(absent))
+                else:
+                    self.assertIn("_meta.provenance."+key,local_fields(absent))
                 reference["unknown"]="retained"
                 body["_meta"]["provenance"][key]=reference
                 parsed=document(body);before=copy.deepcopy(parsed)

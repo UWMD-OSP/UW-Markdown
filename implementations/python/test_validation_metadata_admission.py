@@ -148,7 +148,8 @@ class MetadataAdmissionTests(unittest.TestCase):
                     result, findings = self.assess(authored)
                     errors = [i for i in result["issues"] if (i["code"], i["severity"]) == ("DQ-06", "error")]
                     self.assertEqual(len(errors), int(not isinstance(value, (list, dict))))
-                    self.assertIn("_meta.provenance.market_data_ref", [f["field"] for f in findings])
+                    self.assertEqual("_meta.provenance.market_data_ref" in [f["field"] for f in findings],
+                                     value is not OMITTED)
         authored = body()
         authored["_overrides"] = [dict(path="units", resolution="market_data_accepted")]
         authored["_meta"]["provenance"]["market_data_ref"] = reference("market_data_ref")
@@ -232,7 +233,7 @@ class MetadataAdmissionTests(unittest.TestCase):
             if (i["code"], i["severity"]) == ("DQ-06", "error")],
             ["property", "operating_statement", "operating_statement"])
         self.assertEqual([f["context"]["block_index"] for f in
-            result["metadata_assessment"]["shape_findings"]], [0, 1, 2, 3, 5, 6, 7])
+            result["metadata_assessment"]["shape_findings"]], [0, 2, 3, 5])
         actor = [i for i in result["issues"] if i["field"] == "_meta.provenance.actor"]
         self.assertEqual([i["context"]["block_index"] for i in actor], [4])
         self.assertEqual(document, before)
@@ -309,6 +310,10 @@ class MetadataAdmissionTests(unittest.TestCase):
                 self.assertEqual(path.read_bytes(), raw)
                 self.assertEqual(completed.returncode, int(kind != "valid"))
                 if kind == "valid": self.assertEqual(result["overall_status"], "clean")
+                elif kind in ("block_missing", "leaf_missing"):
+                    self.assertEqual(result["overall_status"], "errors")
+                    self.assertEqual([i["code"] for i in result["errors"]], ["DQ-06"])
+                    self.assertNotIn("partial_validation_result", result)
                 else:
                     self.assertNotIn("overall_status", result)
                     self.assertNotIn("code", result["error"])

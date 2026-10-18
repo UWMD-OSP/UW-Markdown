@@ -123,6 +123,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     ledger.issues.extend(source["issues"])
     missing_meta_blocks = set()
     missing_field_owners = []
+    missing_market_reference_owners = []
     physical = {id(block): index for index, block in enumerate(document.source.blocks)}
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
@@ -207,6 +208,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
             if market_data_accepted(block.parsed.value) and missing_market_reference(block.parsed.value):
                 ledger.issue("DQ-06", "error", section, "_meta.provenance.market_data_ref",
                              "A market_data_accepted value must identify its observation set, vintage and digest")
+                missing_market_reference_owners.append((physical[id(block)], ledger.issues[-1]))
     present = _section_presence(document)
     if stage in STAGES:
         for section in sections_required(stage, asset):
@@ -236,4 +238,5 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         if stale:
             ledger.issue("DQ-05", "info", "gaps", "items[" + str(index) + "].last_checked", "Gap exceeds the disclosed freshness threshold")
     return metadata_assessment(document, source, missing_meta_blocks=missing_meta_blocks,
-                               missing_field_owners=missing_field_owners)
+                               missing_field_owners=missing_field_owners,
+                               missing_market_reference_owners=missing_market_reference_owners)

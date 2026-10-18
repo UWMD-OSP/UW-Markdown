@@ -98,6 +98,27 @@ nonstring type, source strings and resolution tags, physical/leaf/history scope,
 read-only inputs and four real CLI comparisons. No diagnostic or capability is
 added; discovery remains parse-only.
 
+### Registered promoted-reference absence in validate transport
+
+[RFC0022's implementation record](../../docs/rfcs/0022-market-data-documents.md)
+already allocates
+DQ-06/error to a promoted block or leaf with no market-data reference. The
+integrated command now handles only the duplicate required-presence evidence
+for an actually emitted error at the same current physical block, section and
+canonical `_meta.provenance.market_data_ref` path. The original local finding
+remains in `handled_shape_findings`; ordinary issues, error partitions, coverage,
+readiness and source bytes are unchanged. A covered absence returns the ordinary
+error ValidationResult/exit1 instead of an uncoded partial refusal.
+
+Authored null, false, zero, empty string, arrays and incomplete objects retain
+their independent unallocated reference-type/member findings. Stage-gap DQ-06/info,
+wrong-owner fields/sections/indices, replaced peers, append/extensions and history
+cannot consume an absent-reference finding. Existing current-variant population
+is retained, including component-role peers; no financial role selection or
+new diagnostic population is introduced. Independent timestamp/quality/override
+requirements remain local. This is one integrated transport correction; complete
+validate remains unclaimed and discovery remains parse-only.
+
 ### Accepted hospitality field-home admission
 
 The current accepted-main integration includes RFC0081 section 5 G3: in
