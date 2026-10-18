@@ -287,6 +287,17 @@ describe('RFC0093 bounded metadata admission', () => {
     expect(admittedIssues(clone)).toEqual([]);
   });
 
+  it('attributes all eight predicate combinations without absorbing actor or lifecycle errors', () => {
+    for (let mask = 0; mask < 8; mask++) {
+      const m = canonicalMeta();
+      if (mask & 2) m.section = false;
+      if (mask & 4) m.quality = null;
+      const value = mask & 1 ? { payload: 1, _meta: m } : { _meta: m, payload: 1 };
+      const fields = admittedIssues(header + fence('property', value)).map(i => i.field);
+      expect(fields).toEqual(['_meta', '_meta.section', '_meta.quality'].filter((_, index) => mask & (1 << index)));
+    }
+  });
+
   it('keeps wrapper/nested-shape precedence and never cascades three predicates', () => {
     for (const value of [null, [], '', {}, { provenance: null, lifecycle: {} }, { provenance: {}, lifecycle: null }]) {
       const parsed = doc({ payload: 1, _meta: value });
@@ -298,12 +309,12 @@ describe('RFC0093 bounded metadata admission', () => {
   });
 
   it('finishes all old shapes, then all P1/P2/P3, then actors and booleans', () => {
-    const broken = (id: string) => ({ payload: 1, _meta: {
+    const broken = () => ({ payload: 1, _meta: {
       ...canonicalMeta(), section: 'mismatch', quality: null,
       provenance: { ...meta.provenance, actor: '' }, lifecycle: { ...meta.lifecycle, superseded: null },
     } });
-    const source = header + fence('x_first', broken('x_first'))
-      + fence('x_second', broken('x_second')) + fence('property', { _meta: {} });
+    const source = header + fence('x_first', broken())
+      + fence('x_second', broken()) + fence('property', { _meta: {} });
     const issues = validateUWFile(source).issues.filter(i => ['META-01', 'META-02', 'META-03'].includes(i.code));
     expect(issues.map(i => [i.section, i.field])).toEqual([
       ['property', undefined],
