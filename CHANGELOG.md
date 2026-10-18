@@ -109,6 +109,12 @@ protocol, and each package each carry an independent semver).
 
 ### Added
 
+- Draft RFC0092 proposes optional pro-forma identity verification, the approved
+  convention registry plus per-loan ltv_basis, coverage and explicit numerical
+  gates. RFC0078's producer/verifier boundary is unchanged. Documentation only;
+  no profile, dictionary, schema, receipt or version change.
+
+
 - Record RFC0091's accepted bounded diagnostic reconciliation, exact nine-case
   owning-code analysis, independent source/consumer inventories and frozen
   pre-activation sensitivity evidence. Preserve historical expectations without

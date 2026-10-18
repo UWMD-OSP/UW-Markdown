@@ -126,6 +126,7 @@ its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
 
 | [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
+| [0092](./0092-pro-forma-verification-profile.md) | Verify stated pro forma identities under declared conventions | draft | format, protocol, core, conformance |
 
 | [0093](./0093-metadata-shape-diagnostics.md) | Close three metadata-shape diagnostic gaps | accepted | format, protocol, core, conformance, tooling |
 

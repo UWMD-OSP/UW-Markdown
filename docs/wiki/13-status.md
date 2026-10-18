@@ -40,6 +40,13 @@ Python #354 implementation resumes after integration. RFC0089/#368 and RFC0085/
 #335 remain separate drafts;0092 U3-U7 and pending metric decisions stay with the
 owner. No model-generation expansion, metric fix, version, tag or publication.
 
+**Pro forma verification proposal — draft RFC0092.** The optional profile
+checks authored period identities under a closed convention registry, including
+per-loan ltv_basis, while RFC0078 D1/D7 preserve producer-owned modeling. It adds
+no implementation, profile claim, dictionary rule, schema or receipt behavior.
+Numeric/scope questions and accepted RFC0088 remain explicit gates.
+See [RFC0092](../rfcs/0092-pro-forma-verification-profile.md).
+
 **Actor reconciliation — accepted RFC0090.**
 [RFC0090](../rfcs/0090-provenance-actor-admission.md) records the owner's
 accepted Issue354 contract: required nonempty-string actors, narrow META-01/error,
