@@ -358,7 +358,11 @@ export function resolveComposition(
       resolvedParts.push(part);
     }
     if (missing) continue;
-    for (const part of resolvedParts) physical.push(...(partPhysicalBlocks.get(part) ?? part.blocks));
+    for (const part of resolvedParts) {
+      // Retain original source references plus current model-only part blocks.
+      // Exact-reference dedup happens when associating the assembled document.
+      physical.push(...(partPhysicalBlocks.get(part) ?? []), ...part.blocks);
+    }
 
     const collectionParts = resolvedParts.filter((p) => p.collection_member);
     const wholeParts = resolvedParts.filter((p) => !p.collection_member);
