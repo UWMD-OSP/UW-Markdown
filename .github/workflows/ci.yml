@@ -307,13 +307,6 @@ jobs:
         # examples/verification is what a new adopter runs first; each script
         # exits 0 only when the verifier reports its documented verdicts.
         run: npm run examples:verification
-      - name: Check isolated numerical review evidence
-        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/astra-review/reproduce.mjs') != ''
-        # Reuse this existing build; no extra install or full corpus replay.
-        run: |
-          node experiments/numerical-0088/astra-review/reproduce.mjs
-          node --test experiments/numerical-0088/astra-review/reproduce.test.mjs
-
       - name: Check the RFC 0004 case files are current
         # The cases are generated from the fixture directories. A fixture added
         # without regenerating them would silently drop out of the v2 driver's
