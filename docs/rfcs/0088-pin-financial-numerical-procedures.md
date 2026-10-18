@@ -1025,7 +1025,7 @@ semantics. RFC0088 remains draft; no production/schema/corpus/version changes.
 
 ### All-three-day-count financial checkpoint (unaccepted)
 
-The [dated-conventions study](https://github.com/UWMD-OSP/UW-Markdown/blob/c2176e368a0c333b9c5930bd8351b65493010b1f/experiments/numerical-0088/dated-conventions/README.md)
+The [dated-conventions study](https://github.com/UWMD-OSP/UW-Markdown/blob/1a52efd965a6acebbcac2f82108e2a2b618aafca/experiments/numerical-0088/dated-conventions/README.md)
 adds48 fixed word-input cases/21,969 complete candidate trace rows across
 actual/365f, actual/360 and30/360us. Separate JS civil-era and Python complete-year
 calendars agree with actual production yearfrac words; independent candidate
@@ -1045,3 +1045,22 @@ receipt matrices are reused unchanged, not rerun. Complete consumer/domain/
 resource evidence, independent financial platforms, current launch receipt
 precedence and advertised spreadsheet recalculation remain explicit acceptance
 work. No production, schema, conformance, version or RFC state is activated.
+
+
+### CI scope for the current continuation
+
+Published draft head090a4d97506dbbead091d0d64692528b49e132ae has completed
+successful ordinary CI39066289328 and numerical research CI39066289340. These
+are existing exact-head results, not execution evidence for the later NPER14 or
+all-convention48 studies. Their Windows local observations and focused controls
+are established separately above. Final integration-head CI is **pending**.
+
+The integration checkpoint will execute new current NPER14 and all-convention48
+captures on Linux/Node20 and retain their actual command/result scopes in the
+existing PR. Cancelled numerical jobs remain cancelled evidence; a green ordinary
+job or an archived matching manifest cannot be substituted for an executed
+financial study. A future successful Linux capture supplies that declared
+platform only, not an unmeasured macOS financial run or universal accuracy proof.
+Old source/archive retention guards and foreign prelaunch-receipt replay are
+retired under the owner rule; current focused financial/refusal/authentication
+controls remain. No final-head CI success or owner acceptance is claimed here.

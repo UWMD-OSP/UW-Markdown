@@ -747,7 +747,7 @@ integrity, deterministic numerical correctness and launch authentication/refusal
 precedence remain necessary. RFC0088 staysdraft;A staysprovisional.
 
 The existingNPER14 evidence is reused without reexecution. The new
-[all-three-day-count study](https://github.com/UWMD-OSP/UW-Markdown/blob/c2176e368a0c333b9c5930bd8351b65493010b1f/experiments/numerical-0088/dated-conventions/README.md)
+[all-three-day-count study](https://github.com/UWMD-OSP/UW-Markdown/blob/1a52efd965a6acebbcac2f82108e2a2b618aafca/experiments/numerical-0088/dated-conventions/README.md)
 adds48 cases/21,969 complete rows, actual production year-fraction and XNPV/XIRR
 boundaries, independently derived calendars, full solver exits and VIII.5 reports.
 All three accepted conventions and early/maximal four-digit years are covered.
