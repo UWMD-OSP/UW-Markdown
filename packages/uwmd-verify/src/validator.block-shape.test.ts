@@ -6,7 +6,8 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import * as publicAPI from './index.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
-import { parseUWFile } from './parser.js';
+import { parseUWFile, parsedPhysicalBlocks, retainParsedPhysicalBlocks } from './parser.js';
+import { CompositionError, parseUWPart, resolveComposition } from './composition.js';
 import { validateUWFile } from './validator.js';
 import { buildMeta } from './metadata.js';
 
@@ -361,5 +362,104 @@ describe('RFC0093 bounded metadata admission', () => {
     expect(JSON.stringify(parsed)).toBe(before);
     expect(parsed.raw).toBe(source);
     expect(publicAPI).not.toHaveProperty('parsedFirstSourceMember');
+  });
+});
+
+
+const partSource = (id: string, section: string, json: string, history = '') => `---
+uw_version: "3.0"
+uwpart_version: "1.0"
+part_id: ${id}
+section: ${section}
+---
+${history}\`\`\`json uw:section=${section}
+${json}
+\`\`\`
+`;
+const externalSource = (section: string, parts: string[], collection = false) => header + fence(section, {
+  _meta: { ...canonicalMeta(), section },
+  external: { parts, part_count: parts.length, ...(collection ? { collection_key: 'unit_id', collection_path: 'units' } : {}) },
+});
+
+describe('RFC0093 composed SOURCE and derived MODEL accounting', () => {
+  it('keeps whole-section financial content while assessing actual part lexical order', () => {
+    const root = externalSource('property', ['whole']);
+    const part = partSource('whole', 'property', `{"0":1,"_meta":${JSON.stringify(canonicalMeta())},"total_units":17}`);
+    const result = validateUWFile(root, undefined, { parts: [part] });
+    expect(result.errors.filter(i => i.code === 'META-01').map(i => i.field)).toEqual(['_meta']);
+    const parsed = parseUWFile(root);
+    const actualPart = parseUWPart(parseUWFile(part));
+    const resolved = resolveComposition(parsed, { parts: new Map([['whole', actualPart]]) });
+    expect(resolved.status).toBe('resolved');
+    expect((resolved.document.sections.property as UWBlock).content.total_units).toBe(17);
+    expect(validateUWFile(resolved.document).errors.filter(i => i.code === 'META-01')).toEqual([]);
+    expect(parsedPhysicalBlocks(resolved.document)).toEqual([...parsedPhysicalBlocks(parsed), ...actualPart.blocks]);
+    expect(root).toContain('"external"');
+    expect(part).toContain('"0":1,"_meta"');
+  });
+
+  it('retains every physical historical part block and excludes unused loaded parts', () => {
+    const oldMeta = { ...canonicalMeta(), quality: null };
+    const old = fence('property', { _meta: oldMeta }, 'superseded=true v=1');
+    const part = partSource('whole', 'property', JSON.stringify({ _meta: canonicalMeta(), total_units: 17 }), old);
+    const unused = partSource('unused', 'property', JSON.stringify({ _meta: oldMeta }));
+    const root = externalSource('property', ['whole']);
+    const result = validateUWFile(root, undefined, { parts: [unused, part] });
+    expect(result.errors.filter(i => i.code === 'META-01').map(i => i.field)).toEqual(['_meta.quality']);
+    expect(result.errors.some(i => i.code === 'META-02')).toBe(false);
+  });
+
+  it('assesses collection fragments before metadata is stripped from assembled rows', () => {
+    const root = externalSource('rent_roll', ['second', 'first'], true);
+    const make = (id: string, unit: string) => partSource(id, 'rent_roll', JSON.stringify({
+      _meta: { ...canonicalMeta(), section: 'rent_roll', quality: null }, unit_id: unit, monthly_rent: 1000,
+    })).replace('section: rent_roll\n', 'section: rent_roll\ncollection_member: true\n');
+    const first = make('first', 'A');
+    const second = make('second', 'B');
+    const result = validateUWFile(root, undefined, { parts: [first, second] });
+    expect(result.errors.filter(i => i.code === 'META-01').map(i => i.field)).toEqual(['_meta.quality', '_meta.quality']);
+    const parsed = parseUWFile(root);
+    const parts = new Map([first, second].map(source => { const part = parseUWPart(parseUWFile(source)); return [part.part_id, part] as const; }));
+    const resolved = resolveComposition(parsed, { parts });
+    const refs = parsedPhysicalBlocks(resolved.document);
+    expect(refs).toEqual([...parsedPhysicalBlocks(parsed), ...parts.get('second')!.blocks, ...parts.get('first')!.blocks]);
+    expect((resolved.document.sections.rent_roll as UWBlock).content.units).toEqual([
+      { unit_id: 'A', monthly_rent: 1000 }, { unit_id: 'B', monthly_rent: 1000 },
+    ]);
+  });
+
+  it('keeps complete shape, actor and boolean checkpoints on root then part population', () => {
+    const actorMissing = { ...canonicalMeta(), provenance: { ...meta.provenance, actor: '' } };
+    const root = externalSource('property', ['whole']);
+    const part = partSource('whole', 'property', JSON.stringify({ _meta: actorMissing, total_units: 17 }),
+      fence('property', { _meta: { ...canonicalMeta(), quality: null, lifecycle: { ...meta.lifecycle, superseded: null } } }, 'superseded=true'));
+    const issues = validateUWFile(root, undefined, { parts: [part] }).issues.filter(i => ['META-01', 'META-02', 'META-03'].includes(i.code));
+    expect(issues.map(i => i.field)).toEqual([
+      '_meta.quality', '_meta.provenance.actor', '_meta.provenance.actor', '_meta.lifecycle.superseded',
+    ]); // selected source and synthesized whole-section references are distinct
+  });
+
+  it('deduplicates exact references, never equal content, without public evidence fields', () => {
+    const parsed = doc({ _meta: canonicalMeta() });
+    const block = parsed.sections.property as UWBlock;
+    const equal = structuredClone(block);
+    retainParsedPhysicalBlocks(parsed, [block, block, equal]);
+    expect(parsedPhysicalBlocks(parsed)).toEqual([block, equal]);
+    expect(parsedPhysicalBlocks(parsed)[1]).not.toBe(block);
+    expect(publicAPI).not.toHaveProperty('retainParsedPhysicalBlocks');
+    expect(Object.keys(parsed)).not.toContain('physical');
+  });
+
+  it('refuses unavailable composition and duplicate ids with existing typed boundaries', () => {
+    const root = externalSource('property', ['missing']);
+    expect(() => validateUWFile(root, undefined, { parts: [] })).toThrowError(CompositionError);
+    try { validateUWFile(root, undefined, { parts: [] }); } catch (error) {
+      expect((error as CompositionError).code).toBe('COMP-UNRESOLVED');
+    }
+    const part = partSource('missing', 'property', JSON.stringify({ _meta: canonicalMeta() }));
+    try { validateUWFile(root, undefined, { parts: [part, part] }); } catch (error) {
+      expect((error as CompositionError).code).toBe('COMP-DUP-KEY');
+    }
+    expect(() => validateUWFile(parseUWFile(root), undefined, { parts: [part] })).toThrowError(CompositionError);
   });
 });

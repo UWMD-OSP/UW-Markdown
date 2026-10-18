@@ -21,7 +21,7 @@ import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlo
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
 } from './protocol.js';
-import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
+import { EXTERNAL_ANNOTATION_KEY, CompositionError, parseUWPart, resolveComposition } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
 import { readGapsContent } from './gaps-content.js';
@@ -99,11 +99,27 @@ function resolveSectionFieldPath(parsed: ParsedUWFile, path: string): unknown {
 export function validateUWFile(
   input: ParsedUWFile | string,
   thresholdOverrides?: Partial<FinancialThresholds>,
+  sourceOptions?: { parts: readonly string[] },
 ): ValidationResult {
   // String input is a fresh source operation. A supplied model stays a model,
   // even if it happens to retain parser evidence or stale raw source strings.
   const sourceOperation = typeof input === 'string';
-  const parsed = sourceOperation ? parseUWFile(input) : input;
+  let parsed = sourceOperation ? parseUWFile(input) : input;
+  if (sourceOptions !== undefined) {
+    if (!sourceOperation) throw new CompositionError('COMP-PART-MALFORMED', 'Source composition requires actual source input, not a mutable model.');
+    const parts = new Map<string, ReturnType<typeof parseUWPart>>();
+    for (const source of sourceOptions.parts) {
+      const part = parseUWPart(parseUWFile(source));
+      if (parts.has(part.part_id)) throw new CompositionError('COMP-DUP-KEY', `Duplicate part_id '${part.part_id}' in source input.`);
+      parts.set(part.part_id, part);
+    }
+    const resolved = resolveComposition(parsed, { parts });
+    if (resolved.status !== 'resolved') {
+      const issue = resolved.issues[0]!;
+      throw new CompositionError(issue.code as ConstructorParameters<typeof CompositionError>[0], issue.message);
+    }
+    parsed = resolved.document;
+  }
   const thresholds: FinancialThresholds = { ...DEFAULT_THRESHOLDS, ...thresholdOverrides };
   const issues: ValidationMessage[] = [];
 
@@ -3181,9 +3197,10 @@ function checkMetadataAdmission(parsed: ParsedUWFile, issues: ValidationMessage[
     const meta = block.content['_meta'];
     if (!Object.hasOwn(block.content, '_meta') || meta === undefined || malformedMetaShape(block)) return;
     const admitted = meta as Record<string, unknown>;
-    const first = sourceOperation
-      ? parsedFirstSourceMember(block)
-      : Object.keys(block.content).find(key => !isArrayIndexMember(key));
+    // Synthesized composition blocks have no authored JSON sequence. Assess
+    // those model-only references by MODEL order; physical refs retain SOURCE.
+    const lexicalFirst = sourceOperation ? parsedFirstSourceMember(block) : undefined;
+    const first = lexicalFirst ?? Object.keys(block.content).find(key => !isArrayIndexMember(key));
     const failures: [string, string][] = [];
     if (first !== '_meta') failures.push(['_meta', 'Block canonical _meta must be the first member.']);
     if (Object.hasOwn(admitted, 'section') && (typeof admitted.section !== 'string'

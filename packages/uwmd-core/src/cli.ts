@@ -396,7 +396,10 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   const content = readFile(file);
   // --resolved verifies the assembled record. Without it an externalized
   // section verifies as a directive, which is not the document anyone means.
-  const parsed = withResolved(parseUWFile(content), file, flags);
+  const partSources = flags['resolved']
+    ? loadPartSourcesDir(flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file))
+    : undefined;
+  const parsed = withResolved(parseUWFile(content), file, flags, partSources);
 
   // No flag set → run all three.
   const onlyValidate = flags['validate'] === true;
@@ -410,7 +413,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   let hadError = false;
 
   if (runAll || onlyValidate) {
-    const v = validateUWFile(flags['resolved'] ? parsed : content);
+    const v = validateUWFile(content, undefined, partSources === undefined ? undefined : { parts: partSources });
     sections['validation'] = v;
     const funding = await verifyReplacementFundingBindings(parsed);
     sections['replacement_funding_verification'] = funding;
@@ -1266,12 +1269,16 @@ const positional = extractPositionals(args);
 // ─── Composition (RFC 0021) ──────────────────────────────────────────────────
 
 /** Load every `.uwpart.md` in a directory, keyed by `part_id`. */
-function loadPartsDir(dir: string): Map<string, UWPart> {
+function loadPartSourcesDir(dir: string): string[] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir).filter((f) => f.endsWith(UWPART_EXTENSION)).sort()
+    .map(file => readFileSync(resolve(dir, file), 'utf-8'));
+}
+
+function loadPartsDir(dir: string, sources = loadPartSourcesDir(dir)): Map<string, UWPart> {
   const parts = new Map<string, UWPart>();
-  if (!existsSync(dir)) return parts;
-  for (const file of readdirSync(dir).filter((f) => f.endsWith(UWPART_EXTENSION)).sort()) {
-    const path = resolve(dir, file);
-    const part = parseUWPart(parseUWFile(readFileSync(path, 'utf-8')), { filename: file });
+  for (const source of sources) {
+    const part = parseUWPart(parseUWFile(source));
     if (parts.has(part.part_id)) {
       console.error(`Duplicate part_id '${part.part_id}' in ${dir}`);
       process.exit(1);
@@ -1399,10 +1406,11 @@ function withResolved(
   parsed: ParsedUWFile,
   file: string,
   flags: Record<string, string | boolean>,
+  partSources?: string[],
 ): ParsedUWFile {
   if (!flags['resolved']) return parsed;
   const partsDir = flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file);
-  const resolution = resolveComposition(parsed, { parts: loadPartsDir(partsDir) });
+  const resolution = resolveComposition(parsed, { parts: loadPartsDir(partsDir, partSources) });
   if (resolution.status !== 'resolved') {
     console.error(`Cannot resolve ${basename(file)} against ${basename(partsDir)}/:`);
     for (const issue of resolution.issues) console.error(`  [${issue.code}] ${issue.message}`);

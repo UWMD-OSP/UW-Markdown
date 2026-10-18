@@ -47,6 +47,11 @@ export function parsedPhysicalBlocks(parsed: ParsedUWFile): readonly UWBlock[] {
   return retainedPhysicalBlocks.get(parsed) ?? [];
 }
 
+/** Internal only: composition retains exact original references, never raw snapshots. */
+export function retainParsedPhysicalBlocks(parsed: ParsedUWFile, blocks: readonly UWBlock[]): void {
+  retainedPhysicalBlocks.set(parsed, Object.freeze([...new Set(blocks)]));
+}
+
 // ─── Regex patterns ───────────────────────────────────────────────────────────
 
 // Opening fence: ```json uw:section=<id> [key=value ...]
