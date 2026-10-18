@@ -235,6 +235,94 @@ that precise export impact for review; do not silently redefine the
 financial metric, substitute a cache for independent recalculation, or broaden a
 limited spreadsheet observation into a universal Excel guarantee.
 
+#### Proposed complete primitive, admission and resource contract
+
+The following makes the selected A direction explicit for final review. It is
+**draft governed text**, not a claim that Protocol VIII or production consumers
+already use it. It introduces no new financial convention or narrower input cap.
+The source/word/constants artifacts below define one procedure; matching a host
+libm name or merely agreeing after reporting quantization is insufficient.
+
+**Procedure identity and arithmetic.** Use the exact eight-file closure in
+[`sources.json`](../../experiments/numerical-0088/pinned-fdlibm/sources.json),
+with all constants decoded from the certified binary64 words in
+[`constants.json`](../../experiments/numerical-0088/pinned-fdlibm/constants.json)
+and the complete
+[`WORD-SITES`](../../experiments/numerical-0088/pinned-fdlibm/WORD-SITES.md)
+map. The map resolves historical C aliasing, signed overflow, signedness,
+carry/borrow and whole-word shifts; unspecified C behavior is not inherited.
+Each floating basic operation rounds to binary64 nearest/ties-even with gradual
+underflow in the source association. No FMA, reassociation, excess-precision
+retention, host pow/log/exp/sqrt, reciprocal-of-positive-pow replacement or
+exp(log(x)*y) substitute is permitted. Source +1/-1/+2/+0.5 fast paths remain
+part of the one pow procedure; they are not alternative dispatch policies.
+
+High/low words are endian-independent signed32/unsigned32 views. Word addition
+and subtraction wrap modulo2^32; signed comparisons and unsigned comparisons
+follow the site map. Right shifts distinguish arithmetic from logical; count32
+produces sign extension for arithmetic shift and zero for logical/left shift,
+not JavaScript's masked count0. Counts at every admitted site lie in0..32.
+Integer-to-float conversions are exact in their specified ranges; the guarded
+exp conversion truncates toward zero. Generated NaN payload/sign and floating
+exception flags are outside the portable result contract. All finite words,
+signed zeros and signed infinities are exact outputs; compare NaNs by class.
+
+**Three separate admission layers.** Preserve these boundaries and their order:
+
+| Layer | Admission and result/refusal rule |
+|---|---|
+| Shared raw public functions | `pinnedPow(base, exponent)`, `pinnedExp(value)` and `pinnedLog(value)` accept primitive binary64 numbers, including NaN/infinities and signed zero. Reject a nonnumber at the first checked parameter with typed `CALC-TYPE-001`; do not coerce, infer a default or propagate null. Pow checks base before exponent. Return raw IEEE outputs with no quantization or financial finite-result guard. Verify/browser/core expose the same function identities. |
+| Internal financial procedure | Call the same raw kernel at each existing pow/log/exp site. Retain the exact existing ordered financial graphs, optional-argument/default/null/type rules, solver checks and each consumer's own final-result policy. Do not call the public calc builtin as an internal primitive or add a blanket finite-intermediate guard. |
+| Public calc/evaluator and stated-result consumers | Keep current arity/type/null admission and domain/final checks at their existing boundaries. Apply VIII.5 and VIII.5.1 only where the current consumer requires them. A public calculation refusal, a raw exceptional value, a verification result and a receipt verdict remain distinct results. |
+
+The existing public calc guards are part of this proposal, not permission to
+replace them with finite-first admission:
+
+| Calc primitive | Retained policy around the raw primitive |
+|---|---|
+| `pow` | Two arguments, number-or-null type checks in argument order before null propagation; nonfinite final raw result refuses `CALC-TYPE-001`. |
+| `exp` | One number-or-null argument; null propagates; nonfinite final raw result refuses `CALC-TYPE-001`. |
+| `log` | One number-or-null argument; null propagates; input<=0 refuses `CALC-TYPE-001`. No new local finite-result guard: +Infinity and NaN follow the current wrapper, with downstream result policy still separate. |
+| `sqrt` | Its current public wrapper stays unchanged (one number-or-null argument, negative input refuses, signed zero preserved); A's internal software sqrt is a closed helper, not a newly selected public sqrt policy. |
+
+Raw pow returns+1 for either signed-zero exponent before checking NaN, NaN for
+negative finite base with nonintegral finite exponent, source-signed zero or
+infinity for signed-zero/infinite bases, and NaN for abs(base)=1 with infinite
+exponent. Other integral, fractional, negative and huge exponents follow the
+same source reduction/range/scaling procedure. Raw log maps signed zero to
+-Infinity, negative finite/-Infinity to NaN, +Infinity to +Infinity and1 to+0.
+Raw exp maps signed zero to1, +Infinity to +Infinity, -Infinity to+0 and NaN to
+NaN; finite overflow and gradual underflow follow its exact source body. The
+complete helper/special-case table is
+[`DOMAIN-RESOURCE`](../../experiments/numerical-0088/pinned-fdlibm/DOMAIN-RESOURCE.md).
+
+For example an overflowing internal power can be a valid intermediate in NPV:
+finite_amount/Infinity may become finite0. The public pow builtin would refuse
+that same power result. NPER's raw log intermediates must likewise not acquire
+public log admission. Keep the existing IRR bracket, endpoint precedence,
+sign-product underflow, absolute stopping tolerance and bisection unchanged,
+including the documented all-zero and tiny-positive edge outcomes. A stronger
+primitive or a spreadsheet's preferred answer does not authorize solver repair.
+
+**Resources.** All scalar pow/log/exp/scalbn/fabs/copysign bodies are loop-free
+and nonrecursive apart from the one possible software-sqrt call in pow's+0.5
+branch. Software sqrt has at most2 normalization transfers,20 normalization
+search iterations,22 high-digit and32 low-digit iterations: a conservative76
+loop-body bound per sqrt and hence per raw pow. There is no exponent-sized
+loop, dynamic precision, numeric timeout or arbitrary exponent cutoff. Scalar
+state is fixed; word construction has fixed64-bit size. Internal scalbn's
+exponent is signed32, shifts stay within the mapped ranges, and its source
++/-50000 branches are existing range logic, not newly chosen admission caps.
+
+This scalar bound does not bound document size, AST/call count, cash-flow length
+or total verifier work. Existing IRR/XIRR solver and input/AST budgets remain
+separate and unchanged. Platform throughput, browser packaging and actual
+spreadsheet recalculation must be measured for their advertised scope; a
+constant scalar bound is not proof of those guarantees. No new domain restriction
+has been found necessary by this reconciliation. Native/Python/TypeScript and
+consumer evidence must independently support the specified procedure before
+acceptance; no whole-formula RN or universal one-ULP guarantee is asserted.
+
 #### Feasibility evidence and next bounded study
 
 [Oracle's StrictMath specification](https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/StrictMath.html)
@@ -720,9 +808,10 @@ Architecture A, unchanged financial associations/quantizer/solver and
 authenticate-first direction are resolved owner instructions. Do not return
 those choices for repeated approval or implement B. The remaining gates are:
 
-1. Reconcile the existing complete DOMAIN-RESOURCE and WORD-SITES procedure into
-   final governed text, including the new public raw number/CALC-TYPE-001 boundary,
-   internal financial intermediates and current final-result guards. The seven
+1. Independently review the proposed complete primitive/admission/resource
+   contract above against DOMAIN-RESOURCE, WORD-SITES, constants and actual public
+   exports. Raw number/CALC-TYPE-001 boundaries, internal intermediates and current
+   final-result guards are now explicit draft text, not missing algorithms. The seven
    raw helpers, exact constants/words and conservative76-loop bound already exist;
    missing implementation or a new raw-kernel study is not the gate. No host-math
    escape, dynamic timeout, new cutoff or hidden finite guard may be introduced.

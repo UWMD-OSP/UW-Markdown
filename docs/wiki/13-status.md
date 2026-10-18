@@ -18,8 +18,10 @@ public raw primitives for shared StackUW use, without switching current consumer
 The supplied signature must authenticate before any recomputation refusal.
 A new isolated real-Ed25519 study covers26 states and jointly states preflight,
 backend, malformed subject, signature, refusal, value/engine and digest ordering.
-Final governed domain/resource wording, complete consumer/conformance evidence,
-independent platform proof and final RFC acceptance still gate activation.
+The draft now specifies the complete primitive/word/resource and three-layer
+admission contract, preserving raw/internal/public refusal boundaries and the
+existing76-loop scalar bound. Independent contract/consumer/conformance review,
+actual scoped platform/spreadsheet proof and final acceptance still gate activation.
 No prelaunch compatibility work, version allocation or release is authorized.
 
 **Actor reconciliation — accepted RFC0090.**

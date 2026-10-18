@@ -15,7 +15,9 @@ protocol, and each package each carry an independent semver).
   exact raw IEEE procedure for every exponent class, with typed nonnumeric
   refusals and no host transcendental fallback. Current financial consumers,
   quantization, solver and receipt behavior remain unchanged while RFC evidence
-  and final acceptance are pending. No numerical conformance rebaseline,
+  and final acceptance are pending. Reconcile the exact pinned word/resource
+  procedure and raw/internal/public admission boundaries in draft governed text;
+  no new domain cutoff or intermediate finite guard is introduced. No numerical conformance rebaseline,
   package version or publication is allocated.
 
 - Apply the2026-10-17 owner rule in both agent entry points: all @uwmd npm
