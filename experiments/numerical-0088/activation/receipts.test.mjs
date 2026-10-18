@@ -42,7 +42,9 @@ async function check(id, expected, { receipt = signed(issued), content = source,
   assert.equal(JSON.stringify(receipt), snapshot, id);
   assert.equal(actualCalls, calls, id);
   if (expected === 'throws') assert.equal(thrown?.message, 'test-backend-transport', id);
-  else { assert.equal(thrown, undefined, id); assert.deepEqual(projected(result), expected, id); }
+  else { assert.equal(thrown, undefined, id); assert.deepEqual(projected(result), expected, id);
+    if (packs[0] === refusingPack && expected.recomputed) assert.deepEqual(result.recomputed, [], id);
+  }
 }
 const expected = (verdict, codes, recomputed) => ({ verdict, codes, recomputed });
 before(async () => {
@@ -57,12 +59,12 @@ after(() => {
 });
 test('authentication precedes actual financial refusal and retains unsigned refusal', async () => {
   await check('invalid-refusal', expected('failed', ['RCP-01'], false), { receipt: signed(issued, true), packs: [refusingPack] });
-  await check('valid-refusal', expected('failed', ['RCP-03'], false), { packs: [refusingPack] });
-  await check('unsigned-refusal', expected('failed', ['RCP-03'], false), { receipt: issued, packs: [refusingPack], calls: 0 });
+  await check('valid-refusal', expected('failed', ['RCP-03'], true), { packs: [refusingPack] });
+  await check('unsigned-refusal', expected('failed', ['RCP-03'], true), { receipt: issued, packs: [refusingPack], calls: 0 });
   await check('missing-backend-refusal', expected('unverifiable', ['RCP-08'], false), { backend: 'missing', packs: [refusingPack], calls: 0 });
   await check('backend-throws-refusal', 'throws', { backend: 'throws', packs: [refusingPack] });
   const other = signed({ ...issued, computation: { ...issued.computation, engine_version: 'other-test-engine' } });
-  await check('other-engine-refusal', expected('failed', ['RCP-03'], false), { receipt: other, packs: [refusingPack] });
+  await check('other-engine-refusal', expected('failed', ['RCP-03'], true), { receipt: other, packs: [refusingPack] });
 });
 test('finite agreement and signature/backend failure have exact public boundaries', async () => {
   await check('signed-agreement', expected('verified', [], true));
