@@ -71,6 +71,7 @@ Joint authority:
 | D4: descendants | Existing whole-container refusal wins; P1/P2 do not reject admitted descendants; P3 suppresses only its quality-dependent boolean check | RFC0090 actor independence; RFC0091 per-parent suppression |
 | D5: authority | Exact operation input, canonical content and annotation, current model references; no stale-raw reparse or convenience-meta substitution | RFC0090 source/model contract |
 | D6: already allocated absences | Whole missing metadata and absent section retain their existing warning rules and populations | ProtocolIII.6a; RFC0091 expressly preserves completeness |
+| D7: member order | Source operations use decoded lexical order; model operations assess current non-array-index string-member order, without an authored numeric-order claim | Format2.4 first-member rule; RFC0090 distinguishes model input from exact-source assessment; integer-index enumeration cannot recover JSON lexical order |
 
 ## Proposed change
 
@@ -90,7 +91,7 @@ After the existing wrapper/nested-object admission succeeds and canonical
 
 | Predicate | META-01/error condition | Exact `field` | Remediation intent |
 |---|---|---|---|
-| P1: placement | The present top-level `_meta` is not the first member of the assessed block object | `_meta` | State the canonical metadata as the first member; validation never moves it. |
+| P1: placement | The present top-level `_meta` is not first under the operation-specific order defined in section3 | `_meta` | State the canonical metadata as the first member; validation never moves it. |
 | P2: section | `_meta.section` is present and is not a nonempty string exactly equal to the block's admitted annotation section | `_meta.section` | State the exact annotated section identity; do not infer it from a collection key. |
 | P3: quality container | `_meta.quality` is absent, null, an array or any scalar | `_meta.quality` | State the required quality object with its explicitly authored members; do not fabricate confidence or review flags. |
 
@@ -168,9 +169,29 @@ from the admitted input. Escaped spellings of `_meta` denote the same member.
 A payload key such as `"0"` following `_meta` does not make metadata late merely
 because a host's object enumeration moves integer-index keys first. Do not use
 canonical sorting, a regex search, nested keys or an unrelated source snapshot.
-Mutable-model order evidence must describe the currently assessed object;
-member-order controls and the exact observable-order boundary must be exercised
-alongside RFC0090's mutation/identity controls before activation.
+For the distinct mutable-model operation, P1 MUST assess `_meta` against the
+current object's own enumerable **non-array-index string members**, in their
+observable order. An array-index name is exactly a canonical unsigned decimal
+integer spelling from0 through4294967294 (`"0"` qualifies; `"00"`, `"-0"` and
+`"4294967295"` do not). Numeric-index members alone MUST NOT create a model P1
+error or fallback diagnostic: their authored placement is irrecoverable from an
+ordinary JavaScript object. This rule is shared by both implementations, not
+Python insertion order versus TypeScript numeric sorting.
+
+Thus fresh source `{"0":1,"_meta":{...}}` fails P1, while a model with only
+`"0"` and `_meta` has `_meta` first among its non-index members. A model whose
+non-index payload member precedes `_meta` fails P1. The model result makes no
+claim about the numeric members' original lexical position. This explicit
+operation distinction does not waive the lexical rule for any source operation.
+
+Source-taking validation, CLI validation and source-taking receipt operations
+MUST use fresh lexical order for their actual input, even if they delegate other
+checks to a model validator. Merely calling the model path and claiming full
+source validation is insufficient. Parser-private lexical evidence may support
+that operation; it MUST NOT override current model member order on a subsequent
+model operation, and stale `raw`/`rawJson` remains non-authoritative. Exercise
+both paths, integer boundaries, current key mutations and object identity before
+activation. No new public result member or unassessed-order state is introduced.
 
 Keep every existing wrapper/nested-shape finding at its current checkpoint and
 in its existing relative order. Then emit the complete P1/P2/P3 pass in the union
@@ -222,8 +243,8 @@ Required positive/negative controls:
   whole missing metadata, actor-only failure and independent annotation errors.
 - Physical history, overwritten/default/named peers, append/extension blocks;
   distinct equal-valued blocks versus exact-reference duplicates.
-- Current model mutations, added/replaced/removed projections, observable key
-  reordering, copied models without retained inventory and stale raw/convenience
+- Current model mutations, added/replaced/removed projections, observable non-index key
+  reordering, numeric-index boundaries/operation distinctions, copied models without retained inventory and stale raw/convenience
   values. Include nonportable member-order controls that schema cannot assert.
 - Stable issue order, error/warning/info partitions, all stage readiness and
   coverage values, actual CLI stdout/stderr and exit behavior, unchanged input
@@ -249,6 +270,9 @@ Implementation is a synchronized TypeScript/Python follow-up **after acceptance*
   conformance and developer capability documentation synchronize. Audit the
   existing block schema's required/object/string predicates; do not invent a
   schema property for source order or edit admitted values merely for symmetry.
+
+Private orchestration may distinguish exact-source and mutable-model operations;
+source callers must not accidentally select the model order rule.
 
 No new public export, diagnostic code, ValidationResult state or capability
 claim is proposed. Reuse the existing `META-01` error contract. Python discovery
