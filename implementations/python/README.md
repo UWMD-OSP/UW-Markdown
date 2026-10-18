@@ -1220,3 +1220,13 @@ validate. Incomplete admitted canonical metadata, including history, gains error
 validation exits and newly issued receipt policy counts can change without
 repairing sources or rewriting historical subjects. No version is allocated.
 
+## Accepted hospitality field-home predicates
+
+`uwmd_builtin_field_homes.py` supplies only the five removed official field-home
+predicates from accepted RFC0081 G3, for the developing complete validator.
+Presence is invalid even for null: `rent_roll.keys` and `hotel_metrics.adr`,
+`occupancy`, `available_room_nights`, `key_count`. The caller owns class and
+current-source selection and registered CLS-04 attribution. Arbitrary unknown
+members and universal annotations receive no invented allocation. Three focused
+methods cover exact presence/type boundaries, ownership, order and no mutation.
+This helper adds no command or capability; discovery remains parse-only.

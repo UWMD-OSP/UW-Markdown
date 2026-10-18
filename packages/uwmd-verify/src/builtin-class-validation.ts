@@ -21,11 +21,23 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
     const roll = resolveRoleBlock(parsed.sections.rent_roll, 'rent_roll', ['default', 'base']).block;
     if (roll) {
       const facts = blockPayload(roll) as Record<string, unknown>;
+      if (Object.prototype.hasOwnProperty.call(facts, 'keys')) issues.push({ code: 'CLS-04', severity: 'error', section: 'rent_roll', field: 'keys', message: 'Hospitality keys belong only in property.keys (RFC 0081 G3).' });
       const nights = facts['available_room_nights'];
       if (typeof nights !== 'number' || !Number.isInteger(nights) || nights < 0) issues.push({ code: 'CLS-04', severity: 'error', section: 'rent_roll', field: 'available_room_nights', message: 'Hospitality rent_roll.available_room_nights must be a stated nonnegative integer.' });
       for (const field of ['adr', 'occupancy', 'occupied_room_nights']) {
         const value = facts[field];
         if (value != null && (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || (field === 'occupancy' && value > 1) || (field === 'occupied_room_nights' && !Number.isInteger(value)))) issues.push({ code: 'CLS-04', severity: 'error', section: 'rent_roll', field, message: `rent_roll.${field} violates its standard field contract.` });
+      }
+    }
+  }
+  // G3 removes these official field homes; presence is invalid even when null.
+  // This is not a generic additionalProperties diagnostic for unknown fields.
+  if (assetClass === 'hospitality') {
+    const metrics = resolveRoleBlock(parsed.sections.hotel_metrics, 'hotel_metrics', ['default', 'base']).block;
+    if (metrics) {
+      const facts = blockPayload(metrics) as Record<string, unknown>;
+      for (const field of ['adr', 'occupancy', 'available_room_nights', 'key_count']) {
+        if (Object.prototype.hasOwnProperty.call(facts, field)) issues.push({ code: 'CLS-04', severity: 'error', section: 'hotel_metrics', field, message: `hotel_metrics.${field} is not an admitted field home (RFC 0081 G3).` });
       }
     }
   }
