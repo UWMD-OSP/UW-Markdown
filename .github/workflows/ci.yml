@@ -370,6 +370,18 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Check the complete NPER log quotient (unaccepted)
+        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/nper-log-quotient/capture.py') != ''
+        run: |
+          python3 -B -m unittest discover -s experiments/numerical-0088/nper-log-quotient -p "test_*.py" -v
+          python3 -B experiments/numerical-0088/nper-log-quotient/capture.py --capture "${{ runner.temp }}/nper-log-quotient-current"
+      - uses: actions/upload-artifact@v6
+        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/nper-log-quotient/capture.py') != ''
+        with:
+          name: isolated-nper-log-quotient-node20
+          path: ${{ runner.temp }}/nper-log-quotient-current/
+          if-no-files-found: error
+          retention-days: 14
       - name: Check all dated conventions with independent candidate graphs (unaccepted)
         if: matrix.node == 20 && hashFiles('experiments/numerical-0088/dated-conventions/capture.py') != ''
         run: |
