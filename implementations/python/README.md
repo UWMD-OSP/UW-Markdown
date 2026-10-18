@@ -24,6 +24,19 @@ the unchanged source, including CRLF and quoted keys. Real parse subprocess
 controls check the object shape and input bytes. Discovery remains parse-only;
 complete validation and Reader/Verifier tier gates remain separate.
 
+## Accepted RFC0093 metadata admission
+
+Source-role assessment implements the accepted three META-01/error predicates:
+misplaced canonical metadata, present invalid/mismatched section and required
+absent/nonobject quality. A separate complete pass precedes actors and META-02/03
+across retained physical references; the earlier container gate stays unchanged.
+Source-taking operations parse actual bytes and use decoded lexical order;
+`inspect_source_roles(document)` observes the current model's non-index member
+order. Private source operation helpers add no public capability. Focused tests
+cover numeric-key boundaries, source/model mutations, history and exact identity.
+The developing complete validator integrates the same admission rules separately;
+this main-safe change does not advertise `validate` or a Verifier tier.
+
 ## Minimum-complete capability path — 2026-10-16
 
 This assessment uses main `fbf8f66a` (through #371). It inventories code and

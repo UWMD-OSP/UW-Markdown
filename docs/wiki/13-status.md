@@ -15,9 +15,13 @@ canonical `_meta.section`, and absent/nonobject required `_meta.quality`.
 All-retained-physical applicability, separate shape pass before actors/booleans,
 exact source/model order boundaries and Lite's existing compilation path are
 accepted unchanged. Already allocated absences and META-02/03 remain unchanged.
-PR384 records docs-only acceptance; synchronized TS/Python implementation and
-normative/conformance updates follow on Issue354. Python discovery remains
-parse-only. Exact-final-head and subsequent exact-main CI are separate gates.
+PR384 records docs-only acceptance. The synchronized Issue354 implementation
+adds TypeScript/Python predicates and exact source/model admission, including
+composed root/part physical accounting; Format/Protocol, remediation and schema
+annotations agree. Four authored native controls pin exact metadata issue order;
+existing source fixtures and expectations are unchanged. Python discovery remains
+parse-only; complete validation and Verifier certification remain separate gates.
+Exact-final-head integration CI is required before this implementation merges.
 
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
