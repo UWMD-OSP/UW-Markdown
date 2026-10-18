@@ -1,7 +1,7 @@
 // Current-calendar research, independently derived March-based Gregorian ordinal.
 const calendar=text=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(text))throw new RangeError('date syntax');return text.split('-').map(Number);};
 function ordinal([year,month,day]){
-  const adjusted=year-(month<=2?1:0), era=Math.floor(adjusted/400), y=adjusted-era*400;
+  const adjusted=year-(month<=2?1:0); const era=Math.floor(adjusted/400); const y=adjusted-era*400;
   const m=month+(month>2?-3:9);
   return era*146097+y*365+Math.floor(y/4)-Math.floor(y/100)+Math.floor((153*m+2)/5)+day-1;
 }
@@ -30,8 +30,8 @@ export function evaluate(input,power) {
   const arithmetic={add:(a,b)=>a+b,subtract:(a,b)=>a-b,multiply:(a,b)=>a*b,divide:(a,b)=>a/b,negate:a=>-a,abs:a=>Math.abs(a),pow:power};
   const step=(context,op,...args)=>{const value=arithmetic[op](...args);emit('operation',{context,op,args:args.map(encoded),result:encoded(value)});return value;};
   const times=input.dates.map((date,row)=>{
-    const a=calendar(input.dates[0]), b=calendar(date);
-    let numerator, denominator;
+    const a=calendar(input.dates[0]); const b=calendar(date);
+    let numerator; let denominator;
     if(input.day_count==='30/360us'){
       const first=a[2]===31?30:a[2];
       const last=b[2]===31&&first===30?30:b[2];
