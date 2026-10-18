@@ -177,6 +177,26 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
         if (issue.get("field") == field and not _metadata_routing(body)
                 and isinstance(parent, dict) and not isinstance(parent.get(name), bool)):
             flag_owners[index, field] = issue["code"]
+    # Format 2.6 already assigns every authored nonstring source to SRC-01.
+    # Consume only the identical local string-type condition; a source error
+    # cannot stand in for another provenance field, parent or leaf annotation.
+    typed_source_owners = set()
+    for issue in source_inventory["issues"]:
+        if (issue.get("code") != "SRC-01" or issue.get("severity") != "error"
+                or issue.get("field") != "_meta.provenance.source"):
+            continue
+        index = issue.get("context", {}).get("block_index")
+        if (not isinstance(index, int) or isinstance(index, bool)
+                or not 0 <= index < len(document.source.blocks)):
+            continue
+        block = document.source.blocks[index]
+        body = block.parsed.value
+        meta = body.get("_meta")
+        parent = meta.get("provenance") if isinstance(meta, dict) else None
+        if (issue.get("section") == block.section and not _metadata_routing(body)
+                and isinstance(parent, dict) and "source" in parent
+                and not isinstance(parent["source"], str)):
+            typed_source_owners.add((index, "_meta.provenance.source"))
     # Protocol III.6a owns these exact absent leaves with completeness warnings.
     # Ownership is supplied only when basic_rules actually emitted that warning
     # for this physical block. A null leaf or missing/nonobject parent is not the
@@ -213,6 +233,11 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             handled.append(dict(**finding,
                 registered_code=absent_owners[finding["context"]["block_index"], field],
                 disposition="represented_by_registered_completeness_warning"))
+        elif ((finding["context"]["block_index"], field) in typed_source_owners
+                and finding["section"] == document.source.blocks[
+                    finding["context"]["block_index"]].section):
+            handled.append(dict(**finding, registered_code="SRC-01",
+                disposition="represented_by_registered_source_type_error"))
         elif (finding["context"]["block_index"], field) in flag_owners:
             handled.append(dict(**finding,
                 registered_code=flag_owners[finding["context"]["block_index"], field],
