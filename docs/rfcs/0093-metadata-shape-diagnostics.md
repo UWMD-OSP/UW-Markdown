@@ -164,7 +164,7 @@ It MUST NOT silently reparse `parsed.raw` or `block.rawJson`, substitute cached
 Hand-built/copied/deserialized models without the parser association have only
 their supplied model collections. No source-equality claim follows from them.
 
-For source P1, use the lexical sequence of decoded top-level JSON member names
+For structured fenced-JSON source P1, use the lexical sequence of decoded top-level JSON member names
 from the admitted input. Escaped spellings of `_meta` denote the same member.
 A payload key such as `"0"` following `_meta` does not make metadata late merely
 because a host's object enumeration moves integer-index keys first. Do not use
@@ -184,14 +184,22 @@ non-index payload member precedes `_meta` fails P1. The model result makes no
 claim about the numeric members' original lexical position. This explicit
 operation distinction does not waive the lexical rule for any source operation.
 
-Source-taking validation, CLI validation and source-taking receipt operations
-MUST use fresh lexical order for their actual input, even if they delegate other
-checks to a model validator. Merely calling the model path and claiming full
+Validation/CLI/receipt operations taking structured fenced-JSON source
+MUST use fresh lexical order for their actual JSON blocks, even if they delegate
+other checks to a model validator. Merely calling the model path and claiming full
 source validation is insufficient. Parser-private lexical evidence may support
 that operation; it MUST NOT override current model member order on a subsequent
 model operation, and stale `raw`/`rawJson` remains non-authoritative. Exercise
 both paths, integer boundaries, current key mutations and object identity before
 activation. No new public result member or unassessed-order state is introduced.
+
+Other accepted representations retain their existing codec/compilation path.
+In particular UW Lite has no authored fenced-JSON member sequence: its compiled
+block model is assessed under the model rule, without attributing generated JSON
+order to the Lite source. Do not reject Lite receipt operations for unavailable
+lexical evidence that their accepted representation never carries. This RFC adds
+no representation admission rule, and does not change Lite financial canonical
+form or its exclusion of authored field order (UW Lite Spec6/8).
 
 Keep every existing wrapper/nested-shape finding at its current checkpoint and
 in its existing relative order. Then emit the complete P1/P2/P3 pass in the union
