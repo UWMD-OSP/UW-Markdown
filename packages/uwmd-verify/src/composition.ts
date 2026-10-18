@@ -29,6 +29,7 @@
 import { isStandardSectionId, type ProtocolError } from './protocol.js';
 import type { ParsedUWFile, UWBlock, UWFenceAnnotation } from './types.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+import { parsedPhysicalBlocks, retainParsedPhysicalBlocks } from './parser.js';
 
 // ─── Representation ──────────────────────────────────────────────────────────
 
@@ -88,6 +89,10 @@ export interface UWPart {
   collection_member: boolean;
   blocks: UWBlock[];
 }
+
+// Actual fragment source inventory survives its projected UWPart view. Mutable
+// hand-built/copied parts have only supplied blocks, never a source certificate.
+const partPhysicalBlocks = new WeakMap<UWPart, readonly UWBlock[]>();
 
 export interface ParseUWPartOptions {
   filename?: string;
@@ -153,12 +158,14 @@ export function parseUWPart(parsed: ParsedUWFile, opts: ParseUWPartOptions = {})
     );
   }
 
-  return {
+  const part: UWPart = {
     part_id: fm['part_id'] as string,
     section,
     collection_member: fm['collection_member'] === true,
     blocks,
   };
+  partPhysicalBlocks.set(part, parsedPhysicalBlocks(parsed));
+  return part;
 }
 
 // ─── Externalization directive ───────────────────────────────────────────────
@@ -308,6 +315,7 @@ export function resolveComposition(
   const issues: ProtocolError[] = [];
   const externalized: string[] = [];
   const sections: Record<string, unknown> = { ...parsed.sections };
+  const physical = [...parsedPhysicalBlocks(parsed)];
 
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     const blocks = sectionBlocks(entry);
@@ -349,6 +357,7 @@ export function resolveComposition(
       resolvedParts.push(part);
     }
     if (missing) continue;
+    for (const part of resolvedParts) physical.push(...(partPhysicalBlocks.get(part) ?? part.blocks));
 
     const collectionParts = resolvedParts.filter((p) => p.collection_member);
     const wholeParts = resolvedParts.filter((p) => !p.collection_member);
@@ -437,9 +446,11 @@ export function resolveComposition(
     } satisfies UWBlock;
   }
 
+  const document = { ...parsed, sections: sections as ParsedUWFile['sections'] };
+  retainParsedPhysicalBlocks(document, physical);
   return {
     status: issues.length > 0 ? 'unresolved' : 'resolved',
-    document: { ...parsed, sections: sections as ParsedUWFile['sections'] },
+    document,
     issues,
     externalized,
   };
