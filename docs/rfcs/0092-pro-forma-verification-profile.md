@@ -474,13 +474,16 @@ Evaluate independently decidable relationships even when a peer cannot run.
 At the assertion boundary, any demonstrated failure takes precedence over an
 unverifiable relationship; otherwise any unavailable/blocked required relationship
 makes it unverifiable; only all applicable required relationships verified can
-make it verified. A failed/unverifiable prerequisite blocks a dependent
+make it verified. Required relationships/prerequisites come from the accepted
+identity definition, never a producer opt-out. A failed/unverifiable prerequisite blocks a dependent
 relationship's clean verification; preserve any already established disagreement
 and all local findings separately. This is an assertion result rule, not receipt
 precedence or permission to suppress base validation errors.
 
-**Ordering.** Emit assertions in retained source-target order (model operations:
-section/variant/target structured-address lexical order), relationships in their
+**Ordering.** Emit assertions in retained source-target order. For model
+operations compare section/variant/address key strings lexicographically by
+UTF-16 code units (RFC8785 sorting precedent), null before strings and address
+array indexes numerically. Emit relationships in their
 authored binding order and local findings in their owning verifier's existing
 order. Deduplication retains the first occurrence's report position, without
 selecting conflicting content. Preserve the registered validation issue array
