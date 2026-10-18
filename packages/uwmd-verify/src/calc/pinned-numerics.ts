@@ -5,8 +5,8 @@
  * They preserve IEEE infinities, signed zero and NaN classes; NaN payloads and
  * exception flags are not a portable contract. Financial consumers retain their
  * existing associations, null/domain/final-result checks and quantizer.
- * Draft implementation: exporting this module does not accept the RFC or switch
- * the existing financial evaluator. No correctly-rounded guarantee is implied.
+ * Accepted RFC 0088: these same bindings are used by the financial evaluator.
+ * No correctly-rounded or whole-financial-formula guarantee is implied.
  */
 import { CalcError } from './errors.js';
 import { pow, exp, log } from './pinned-fdlibm/kernel.js';

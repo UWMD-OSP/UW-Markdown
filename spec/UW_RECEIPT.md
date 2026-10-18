@@ -183,12 +183,26 @@ Verifiers **MUST** apply these in order:
    hold (`RCP-11`). A verifier without a signing backend **MUST NOT**
    silently ignore a signature, and one without a referenced input **MUST NOT**
    silently ignore the reference.
-4. **Signature present and invalid** → `failed`.
+4. **Authenticate first (RFC 0088).** If a signature is supplied, verify it
+   exactly once over the canonical signing payload **before any financial
+   recomputation or recomputation-refusal verdict**. Invalid signature or malformed
+   Unicode signing input → failed/RCP-01, with no recomputed output. Malformed
+   signing input does not reach the backend; backend exceptions retain their
+   transport behavior. Unsigned receipts gain no authentication claim.
+4a. **Recomputation refusal** → failed/RCP-03 with recomputed:[], after successful
+   authentication when signed. This remains a refusal even with a different
+   engine identity; the finite-disagreement carve-out below does not apply.
 5. **Recomputation disagreement** → `failed` (`RCP-02` coverage, `RCP-03` value),
    *unless* the issuing engine identity also differs, in which case →
    `unverifiable` (`RCP-07`); see §5.3.
 6. **`results_digest` does not recompute** → `failed` (`RCP-04`).
 7. Otherwise → `verified`.
+
+The earlier indeterminate group retains issue ordering: unavailable referenced
+inputs (RCP-11), pack availability/version (RCP-05/06), then absent signing backend
+(RCP-08). Malformed receipt wire values retain the typed transport refusal before
+these steps. Source/subject/held-input preflights remain earlier than supplied
+signature authentication. No wire/schema field or digest algorithm changes.
 
 ### 5.2 Tolerance
 

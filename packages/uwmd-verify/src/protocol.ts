@@ -1,5 +1,8 @@
 import { toBuiltinAssetClass } from './types.js';
 // UW Protocol — TypeScript contract surface for conforming implementers.
+// RFC 0088 / §VIII.5.2: financial pow/exp/log use the exact pinned procedure;
+// admission, solver associations and quantization remain separate boundaries.
+// Receipt §5.1 authenticates supplied signatures before recomputation/refusal.
 //
 // This module is the executable counterpart to spec/UW_PROTOCOL.md.
 // Where the prose document defines normative behavior, this module names the
