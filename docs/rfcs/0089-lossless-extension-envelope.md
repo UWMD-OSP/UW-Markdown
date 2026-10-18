@@ -19,8 +19,8 @@ affects:
 Propose a minimal, versioned extension-entry representation that can preserve
 legal Format §2.8 peers without changing unrelated Envelope collections. This
 RFC is **draft, documentation only, and not accepted**. Its concrete tagged
-candidate, mixed-identity rule, commitment regime and release placement all
-require owner approval before implementation. Envelope 1.0, normative schemas,
+candidate, mixed-identity rule and commitment regime require owner approval
+before implementation. Envelope 1.0, normative schemas,
 source digests, receipts, signatures, frozen expectations and public versions
 remain unchanged by this PR. UWMD 5.0 remains reserved for public launch.
 
@@ -847,7 +847,8 @@ that admitted JSON domain need a governed disposition. Two bounded alternatives:
    canonical lexical re-encoding equality, reject duplicate **decoded** names,
    and retain exact valid Unicode without normalization. Attribute entity
    escaping is separate from this lexical encoding. The markers, allowed
-   attributes and namespace must be approved; old decoders must refuse them.
+   attributes and supported namespace must be approved; unsupported mappings
+   refuse at their stated current boundary.
 2. **Explicit partial XML domain.** Keep XML1's scalar/name mechanism, specify
    the exact XML-representable subset and a deterministic representation refusal
    for every unsupported string/name. JSON/CSV retain the wider JCS domain.
@@ -871,9 +872,8 @@ changes neither canonicalizer nor receipt verdicts.
 
 ### Commitments, provenance and the evidence still missing
 
-D5 and the new-issuance prerequisites apply even to extension-free subjects: the
-container stamp participates in semantic identity. Preserving JCS/SHA256 does not preserve
-another subject. A signature covers exactly its declared supported subject;
+D5 applies even to extension-free subjects: the container stamp participates
+in semantic identity. Keeping JCS/SHA256 does not equate different subjects. A signature covers exactly its declared supported subject;
 a receipt requires its own accepted verification/recomputation. A label,
 unchanged financial result or retained block signature cannot transfer old
 snapshot authentication. Unsupported-version and malformed/source/digest refusal
@@ -881,11 +881,11 @@ precedence must be tested with real new-regime implementations before acceptance
 of the corresponding commitment rules; the plans do not execute those protocols.
 
 RFC0085 remains draft. Its proposed retained-history authority is compatible
-with lossless storage, but it is not an accepted requirement of this RFC. Never
-replace the original archive with a clean projection, infer completeness from
-retained hashes, turn a failed source into an authenticated one by compaction,
-or describe reissuance as recovery of historical attribution. History preservation
-and proof of history completeness are different claims.
+with lossless storage, but it is not an accepted requirement of this RFC.
+A current parse projection or stored hash does not prove source completeness;
+compaction cannot turn a refused source into an authenticated one. Storing
+explicit history and proving its completeness are different claims. No
+prelaunch archive preservation or reconstruction gate follows from either.
 
 **Established bounded evidence:** the original five frozen candidate models,
 subjects and60 artifacts remain unchanged. The later two-model/21-artifact codec
