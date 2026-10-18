@@ -122,6 +122,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     source = inspect_source_roles(document)
     ledger.issues.extend(source["issues"])
     missing_meta_blocks = set()
+    missing_field_owners = []
     physical = {id(block): index for index, block in enumerate(document.source.blocks)}
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
@@ -169,7 +170,9 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
                     break
                 cursor = cursor[part]
             if not exists:
-                ledger.issue("META_FIELD_MISSING_" + suffix, "warning", section, "_meta." + path, "Required provenance field is absent")
+                code, canonical = "META_FIELD_MISSING_" + suffix, "_meta." + path
+                ledger.issue(code, "warning", section, canonical, "Required provenance field is absent")
+                missing_field_owners.append((physical[id(block)], canonical, code))
         quality = meta.get("quality")
         if not isinstance(quality, dict):
             continue
@@ -232,4 +235,5 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
             continue
         if stale:
             ledger.issue("DQ-05", "info", "gaps", "items[" + str(index) + "].last_checked", "Gap exceeds the disclosed freshness threshold")
-    return metadata_assessment(document, source, missing_meta_blocks=missing_meta_blocks)
+    return metadata_assessment(document, source, missing_meta_blocks=missing_meta_blocks,
+                               missing_field_owners=missing_field_owners)
