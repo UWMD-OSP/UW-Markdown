@@ -199,7 +199,7 @@ describe('RFC 0090 actor admission', () => {
 // RFC0093: the three accepted predicates have their own checkpoint and authority.
 const admittedIssues = (input: ParsedUWFile | string) => validateUWFile(input).issues.filter(i =>
   i.code === 'META-01' && ['_meta', '_meta.section', '_meta.quality'].includes(i.field ?? ''));
-const shapeSource = (json: string, id = 'property') => header + `\`\`\`json uw:section=${id}\n${json}\n\`\`\`\n`;
+const shapeSource = (json: string, id = 'property') => `${header}\`\`\`json uw:section=${id}\n${json}\n\`\`\`\n`;
 const canonicalMeta = () => structuredClone(meta) as unknown as Record<string, unknown>;
 
 describe('RFC0093 bounded metadata admission', () => {
