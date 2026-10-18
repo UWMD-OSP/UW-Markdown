@@ -205,7 +205,7 @@ denominators. Undeclared/unknown basis MUST refuse LTV verification, reporting
 unverifiable. A missing/null selected denominator is unverifiable; another
 available denominator cannot rescue it. Existing typed arithmetic/zero-division
 refusals remain; no new negative-value convention is chosen. Preserve `%`
-(fraction), reporting `round_to: 6`, minimum stated decimals2 and RFC 0079's
+(fraction), reporting `round_to: 6`, `minimum_stated_decimals: 2` and RFC 0079's
 source-token comparison. There is no automatic price/value fallback.
 
 This governs the existing id in every class-scoped definition, even outside a
@@ -260,6 +260,10 @@ that verifier is reused.
 | Equity multiple | Separate distributions D_t and contribution magnitudes C_t | `EM = sum(D_t)/sum(C_t)`. X; approved fixed rule/VIII.9 precedent. Do not net a same-period contribution/distribution or infer gross flows from a net row. Retain reused verifier's domain/refusal contract. |
 | CoC by year | Stated selected numerator components, explicit equity binding; numerator option | `CoC_t = selected_cash_numerator_t/stated_equity_denominator_t`. R, existing CoC precision; numerator bridge and annual denominator U6. No inferred cumulative-equity policy. |
 | NPV | CF0, later signed flows, discount rate, explicit timing exponents | `NPV = CF0+sum(t>0,CF_t/P(1+r,tau_t))`. M; CF0 undiscounted, unlike spreadsheet NPV's first supplied argument. End/full integer timing reuses VIII.3; other mappings U3/U8. |
+
+A supplied assumption or fixed line with no independent identity remains an
+input-only, unverifiable row. Reading/copying it cannot earn a verified count;
+a growth or build-up identity can verify its stated consequence.
 
 `P` means the exact power procedure finally accepted through RFC0088, not a
 convenient host pow. New composed identities need governed operation order,
