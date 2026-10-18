@@ -78,8 +78,9 @@ Reconcile the issue's current bounded direction before choosing L1 membership:
 source subjects; (2) optionally account for a declared acquisition-ledger
 universe; (3) add only individually justified normative identities. These are
 assurance scopes, not new conformance tiers or numerical convention options.
-The brief requests the complete candidate inventory below; U1 decides the initial
-subset. U2 is resolved by the owner on 2026-10-17: the profile verifies whatever
+The brief requests the complete candidate inventory below. The U1 disposition
+selects the initial subset from accepted verification identities. U2 is resolved
+by the owner on 2026-10-17: the profile verifies whatever
 the document states and reports coverage; no minimum L1 row set is required to
 claim it. A thin document receives a thin coverage report, not a refusal for
 omitted rows. Neither this draft nor row counts certify undisclosed real-world
@@ -150,8 +151,8 @@ Propose only these new field groups, with final schemas gated:
 4. Direct `debt_structure.ltv_basis` per loan, beside `loan_amount`, below.
 
 Document dictionary-owned `valuation.underwritten_value` consistently in the
-Format at synchronization; do not create another value home. U1 retains the
-initial identity scope decision; resolved U2 imposes no minimum document row set
+Format at synchronization; do not create another value home. U1 below defines
+the bounded initial identity scope; resolved U2 imposes no minimum document row set
 and does not imply complete-model verification.
 
 ### 3. Closed convention registry
@@ -242,8 +243,8 @@ and actual adoption.
 ### 4. L1 identities and numerical admission
 
 L1 lists candidate stabilized-acquisition identities, initially fixed-rate debt.
-U1 must select the initial bounded return/method subset and any optional ledger
-scope; this is not universal period-by-period reproduction. L2/L3 remain future sets. Unknown/custom/vendor rows are retained and counted
+The U1 disposition selects the initial bounded return/method subset and optional
+ledger scope; this is not universal period-by-period reproduction. L2/L3 remain future sets. Unknown/custom/vendor rows are retained and counted
 unverifiable (`identity_not_defined`), never omitted or silently passed.
 
 Notation: `t` is an explicit period, `j` a line, `q` a payment. Revenue/expense
@@ -291,6 +292,39 @@ a growth or build-up identity can verify its stated consequence.
 convenient host pow. New composed identities need governed operation order,
 domains/refusals and independent evidence before acceptance.
 
+### 4a. U1 disposition — bounded initial identity scope
+
+U1 is developed here from accepted state-and-verify precedent, subject to final
+RFC review. The initial L1 scope is **return/method binding first**, plus optional
+declared-ledger coverage and individually enumerated identities below. It does
+not activate every candidate in section4. U2 imposes no minimum document row set.
+The implementation must support the entire accepted initial vocabulary even
+when one document states only a small subset.
+
+| Initial identity group | Exact existing authority and permitted binding | Boundary |
+|---|---|---|
+| Dated return/method binding | Format4.26 / Protocol VIII.9: `total_net`, `moic`, `xnpv`, `xirr` over one explicitly selected `cash_flow_series`, its ordered original rows, day count and (for XNPV) stated rate. | Bind a headline to that exact stream and metric; preserve the existing metric's complete domain, comparison quantum, solver/refusal and verdict rules. A levered/unlevered label alone selects no stream or financial behavior. |
+| Point-in-time stack figures | Format4.24 / RFCs0026 and0033: the closed `coverage`, `blended_coverage`, `debt_yield_through`, `ltc_through`, `ltv_through`, `weighted_cost` vocabulary and exact `over`/`through`/`*` selector. | Reuse accepted stabilized stack service and source dependencies. This does not construct an actual loan schedule, impose that service on IO cash flows, or reinterpret stack LTV as per-loan LTV. |
+| Stated lease-up identities | Format4.25's period `net_cash_flow`, final `occupied_sf` and final `occupancy_rate`, using its current size context and signed components. | Reuse the existing verifier's quantum and missing-input behavior; do not invent an occupancy-to-rent-loss conversion or a stabilized annual extrapolation. |
+| Explicit per-loan LTV | The owner's three-option `debt_structure.ltv_basis` direction in section3, with the current LTV dictionary comparison precision. | One explicitly selected loan and chosen denominator; no fallback or new precision minimum. Other dictionary definitions and pending metric decisions are outside this work. |
+| Optional declared acquisition-ledger coverage | Existing explicit-coverage precedent in Protocol VIII.9.6 / RFC0045: inventory the producer's declared source rows and their explicit bindings/exclusions. | Account for membership and duplicates, not inferred completeness of the real transaction. Ledger monetary reconciliation is not a new accepted sum/rounding identity here; any new financial identity still needs its own governed procedure and U7 precision. |
+
+A pro forma target is not verified merely because the referenced native section
+has a verified headline: evaluate the same accepted identity against the actual
+bound target, with the same exact inputs and comparison contract. Preserve its
+native findings as evidence. No self-copy or input assumption becomes an
+independent identity. If the selected method, target or timing is outside that
+accepted identity's domain, retain the statement as unverifiable; do not adapt
+it by new annualization, signs, cash assembly or model generation.
+
+Periodic headline IRR/NPV without an exact accepted comparison binding, monthly
+annualization, new income/expense bridges, loan schedules, exit derivations,
+reserve/NCF placement and annual CoC remain candidate entries. Their additional
+contracts await U3-U7 and the owner's forthcoming StackUW alignment evidence.
+Those gates do not authorize omitting such stated rows from coverage. U8 remains
+open until RFC0088 is accepted. This U1 disposition neither resolves those
+numerical questions nor accepts another RFC.
+
 ### 5. Determinism dependency
 
 [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) proposed integer powers
@@ -312,8 +346,10 @@ no silent correction of IRR edge cases.
 
 Reuse `verified` / `failed` / `unverifiable` from Format4.24 and metric verification.
 Finite comparable disagreement fails; missing usable input, unavailable accepted
-procedure or undefined identity is unverifiable. Structural/selection/arithmetic
-refusals retain their typed evidence; profile code allocation/ordering is U9.
+procedure or undefined identity is unverifiable. A reused identity retains its
+existing computation-refusal verdict (including dated XIRR failure), not a new
+blanket refusal state. Structural/selection/arithmetic refusals retain typed
+evidence; profile accounting/transport allocation follows section6a.
 Do not reuse capital-stack codes for unrelated rows or add a generic fallback.
 
 Count distinct **assertions**, not JSON cells, formula operations or repeated
@@ -336,20 +372,20 @@ claim status under the brief's required three-state vocabulary.
 
 Missing inputs required by a stated assertion remain unverifiable. Missing
 components of an explicitly declared ledger universe are coverage gaps even when
-no numeric cell exists; U1 still determines that optional universe. These are not
+no numeric cell exists; section4a bounds that optional universe. These are not
 a mandatory L1 row inventory or a basis to refuse a thin document. Report gaps
 and exclusions separately; do not manufacture values or inflate the denominator
 with operations. Empty claim sets establish no assurance and report zero
 assertions, without a minimum-row refusal. The denominator is the declared
 applicable assertion universe, not a document-wide percentage or a guarantee
-about undisclosed facts. U1/U9 must freeze its enumeration, duplicate handling
-and final counting rules within the owner's resolved U2 rule.
+about undisclosed facts. Sections4a/6a fix initial enumeration, duplicate handling
+and counting rules within the owner's resolved U2 rule.
 
 Local arithmetic agreement is not a clean financial-verification claim when a
 required prerequisite failed or is unverifiable. Retain local relationship
 findings separately and block terminal verified status through such dependencies.
-U9 must state the exact final precedence rather than borrowing an aggregate
-success rule or silently hiding demonstrated disagreement behind missing inputs.
+Section6a states assertion precedence without borrowing a receipt aggregate
+success rule or hiding demonstrated disagreement behind missing inputs.
 
 **Receipt disposition:** coverage is a separate verification result, not a new
 field in existing receipts. [RFC0016](0016-verification-receipts.md) and
@@ -360,13 +396,133 @@ An authenticated coverage report needs a separately governed subject/result
 contract; no such wire structure is invented here. RFC0088/0089 keep their
 separate receipt/subject ownership.
 
+### 6a. U9 disposition — assertion identity and coverage protocol
+
+This is proposed profile-specific text derived from Protocol II.6a/III/XI,
+Format4.24-4.26 and the existing stated-metric/verification CLI boundaries.
+U9's accounting/transport choices do not supply any U3-U7 numerical convention.
+
+**Inventory and identity.** First inventory the document's stated pro forma
+rows, including input-only and unknown/custom identities, independently of which
+checks can run. The exact selected source/model and target address are authority;
+labels, equal values and implementation object identity are not. For a source
+operation retain the admitted original source and its selected physical block;
+for a model operation use the supplied current model, without silently reparsing
+stale raw text. Neither operation fills fields or mutates source, model or meta.
+
+Inventory all rows of the explicitly claimed pro forma, plus external statement
+targets it binds, in the current selected blocks. Historical/superseded and
+unselected peers remain retained source/validation evidence, not additional
+current assertions merely because they are retained. A binding cannot silently
+select a historical or arbitrary peer; preserve the existing selection refusal.
+
+Within that source scope the assertion key is `(block_address, section_id,
+variant_or_null, target_pointer, period_key_or_null, loan_ref_or_null)`. For a
+source operation, block_address is the physical block ordinal in retained source
+order; for a model operation it is the full document-rooted structured address
+of the selected block, including map keys/array indexes. target_pointer is rooted
+at that block payload and includes every target array index. State the source
+or model address kind explicitly. Keys are stable for one admitted source/model
+snapshot, not an object-identity or cross-revision identity guarantee.
+Nullable unlabelled identity is not the literal string `default`; no conversion
+or arbitrary peer selection resolves an ambiguous source. Use the existing
+accepted role/variant/period selectors and preserve their typed refusals.
+This does not activate RFC0089's proposed exchange representation.
+
+Methods, conventions and ordered input/source bindings belong to separate
+**relationship** records keyed by the assertion key plus identity/method and
+exact bindings. Repeated declarations of the same target do not add assertions;
+repeated identical relationships do not add checks. Contradictory bindings are
+reported as ambiguous, not resolved by first/last-choice heuristics. Distinct
+physical target statements remain distinct assertions even if their values are
+equal; show those addresses rather than pretending they are one checked figure.
+No report key is a new cryptographic digest, receipt subject or authentication
+claim. Existing source digest descriptors, when reported, keep their exact
+regime; unavailable hashing never implies authentication.
+
+**Accounting.** Every inventoried assertion receives exactly one terminal
+`verified`, `failed` or `unverifiable` state and exactly one authored row family.
+An absent/unrecognized family is counted in explicit family `unclassified`, not
+dropped. Conflicting authored families for a deduplicated target also count once
+in `unclassified`, retain every declaration and add local reason
+`ambiguous_family`; no family is selected from first/last occurrence. Treat that
+ambiguity as unverifiable unless an independently demonstrated failure takes
+precedence under the state rule below. The row family is descriptive and never chooses financial behavior.
+Report `total`, three `by_verdict` counts and the same three counts plus total
+for every nonempty `by_row_family` entry. The sums must agree exactly, and empty
+reports contain explicit zeros. Rows without a defined identity or independent
+relationship are unverifiable with distinct reasons, never coverage exclusions.
+Relationship/check/operation counts, if supplied, are separate from assertions.
+
+Report inapplicable relationships as exclusions with reasons. A component missing
+from an explicitly declared optional ledger universe is a separate gap, not a
+fabricated numeric statement. An absent row outside that declared universe is
+not a missing minimum-profile requirement. Gaps and exclusions do not inflate
+assertion denominators or become passed checks. Zero rows means zero assurance;
+there is no minimum-row refusal or vacuous aggregate `verified` claim.
+
+**States and precedence.** Preserve each reused identity's existing numeric
+refusal/state rule: e.g. a stated dated XIRR refused by its accepted procedure is
+failed, whereas an undefined MOIC with no outflows is unverifiable. Do not
+flatten both into a new generic arithmetic policy. For new candidate identities
+whose contract is not yet accepted, report `identity_not_defined` rather than
+executing guessed arithmetic. A valid target with no relationship uses
+`relationship_not_claimed`; missing/null bound inputs use their existing
+missing-input reason, with original typed evidence retained where available.
+
+Evaluate independently decidable relationships even when a peer cannot run.
+At the assertion boundary, any demonstrated failure takes precedence over an
+unverifiable relationship; otherwise any unavailable/blocked required relationship
+makes it unverifiable; only all applicable required relationships verified can
+make it verified. A failed/unverifiable prerequisite blocks a dependent
+relationship's clean verification; preserve any already established disagreement
+and all local findings separately. This is an assertion result rule, not receipt
+precedence or permission to suppress base validation errors.
+
+**Ordering.** Emit assertions in retained source-target order (model operations:
+section/variant/target structured-address lexical order), relationships in their
+authored binding order and local findings in their owning verifier's existing
+order. Deduplication retains the first occurrence's report position, without
+selecting conflicting content. Preserve the registered validation issue array
+and its independent ordering in a separate `validation` result; do not interleave
+profile findings or turn every schema rejection into a new validator error.
+
+**Proposed CLI.** `uwmd verify-pro-forma <file> --json` is read-only and emits one
+UTF-8 JSON document on stdout; diagnostics go to stderr. It inventories the
+explicit `dcf.pro_forma` claim and its stated targets. Conventions/timeline are
+required only when the chosen check's accepted contract requires them; empty
+bindings are allowed by U2. Selection is expressed by the claim's explicit
+per-section bindings, not a global flag that picks one arbitrary peer everywhere.
+No command writes a document, cached result or receipt.
+
+| Outcome | JSON / exit contract |
+|---|---|
+| Completed assessment | `status: "completed"`, `profile: "pro-forma"`, `level: "L1"`, exact selection evidence, ordered `assertions` and `relationships`, `coverage`, `gaps`, `exclusions`, plus separate `validation`. Exit0 when no validation errors, failed assertions or unverifiable assertions exist, including a valid zero-row claim; zero coverage remains explicit and makes no financial assurance claim. Exit1 otherwise, without describing a thin row count as a refusal. |
+| Operation cannot admit/inventory the request | `status: "refused"` and `error` satisfying ProtocolError; exit1. Preserve an existing typed source/selection error. Propose narrowly scoped `CALC-PRO-FORMA` (category `calc`) for malformed CLI/profile-claim syntax, absent explicit profile claim or an unreadable requested file only; do not use it as a fallback for uncoded Format failures, unknown identities or missing arithmetic inputs. No fabricated zero-coverage success. |
+| Unrecoverable internal implementation failure | Exit2 under II.6a.2; stdout need not be a result. A missing/unreadable requested file is the typed request refusal above, not a financial disagreement. |
+
+Per-row unsupported/undefined checks produce unverifiable rows in a completed
+assessment, not an operation refusal. Registered base validation findings remain
+visible even if arithmetic can run; errors affect the CLI exit without changing
+unrelated per-row financial states. Source selection failures that affect only
+one fully inventoried assertion remain local typed unverifiable evidence; a
+failure preventing inventory of the claim itself is an operation refusal.
+
+The CLI does not adopt the standalone receipt verifier's exit3 convention:
+Protocol II.6a.2's 0/1/2 contract applies. Future synchronized protocol types,
+JSON Schemas, the capability/profile registry and portable/nonportable fixtures
+must pin these exact fields, counts, array ordering, failures and exits before
+advertising support. Keep result reasons distinct from registered validation
+codes. This proposal adds no new receipt field, issue family, comparison minimum,
+financial method or activation of the current validator.
+
 ## Launch scope
 
 The profile is optional and ships with everything else at the approved 5.0.0
 public launch. Before launch it may land on main in 4.x. No surface/release
-version is allocated, and no tag or publication authorized. The profile's initial
-accepted scope is U1; comprehensive underwriting generation is not a launch
-requirement.
+version is allocated, and no tag or publication authorized. The proposed initial
+scope is the U1 disposition above; comprehensive underwriting generation is not
+a launch requirement.
 
 ## Conformance impact
 
@@ -415,7 +571,7 @@ in this corpus. This is a plan, not a claim that a spreadsheet was executed.
 Plan only, inside `@uwmd/verify` under the optional profile (RFC0083). No code,
 projection package, model-generation function, AI agent or module manifest.
 
-1. Resolve the remaining U1/U3–U9 gates and final acceptance; synchronize
+1. Resolve numerical U3–U8, review U1/U9 and obtain final acceptance; synchronize
    Format/Protocol, class-scoped LTV dictionary entries, schemas, executable
    protocol mirror, profile/capability/target tables and conformance through
    reviewed implementation work.
@@ -453,23 +609,25 @@ whatever the document states and reports coverage, with no minimum L1 row set
 required to claim it. Counts by verdict and row family include rows stated with
 no defined identity. A thin document gets a thin coverage report, not a refusal.
 This follows Format 4.24's "stated and verified, never trusted" and the #355
-reframe. Only U2 is resolved by this decision; all other U items remain open.
+reframe. Only U2 is resolved by that owner decision; U1/U9 now have separate
+precedent-derived draft dispositions above, and U3-U8 remain open.
 
 ## Unresolved questions
 
-These are acceptance gates, not choices for an implementer to guess. Reference
+U1/U9 are addressed by the draft dispositions above, subject to review. The
+remaining numerical questions below are acceptance gates, not choices for an
+implementer to guess. The owner will supply U3-U7 StackUW alignment evidence;
+this update does not decide them, and U8 waits for accepted RFC0088. Reference
 code or spreadsheet practice alone does not decide a new financial convention.
 
 | ID | Kind | Required decision/evidence |
 |---|---|---|
-| U1 | Scope | Reconcile the requested broad L1 candidate inventory with the current bounded-assurance direction: select initial return/method bindings, the optional ledger universe and individually justified additional identities, with exact income/cash/equity boundaries. No universal row expansion is accepted. |
 | U3 | **Numeric** | Pin calendar/anniversary anchors, stub proration/quantity-rate scaling, occupancy-to-loss arithmetic and discount exponents. `beginning`/`mid` with CF0 fixed at t0 cannot silently use integer-spaced `irr`: decide admitted combinations or govern the timed identity without changing the solver implicitly. |
 | U4 | **Numeric** | Pin nominal annual-to-payment rate, full/remaining amortization counts, IO boundary, payment/accrual interaction and unsigned PMT semantics; pre/post-payment balances for debt yield, balloon and exit. Current stabilized stack service/starter code is not a normative periodic schedule. |
 | U5 | **Numeric** | Reconcile above-NOI reserves with literal `NCF=NOI-reserves-TI/LC-capex`: subtract only reserves not already deducted, or intentionally define another measure? Also bind accrual versus owner cash under VIII.9.6/11. Do not choose or double count silently. |
 | U6 | **Numeric** | Pin before/after-capex CoC components and equity denominator across periods/later contributions. Existing Y1 fallback or cumulative-equity field does not define every year. No new registry option without approval. |
 | U7 | **Numeric** | Allocate new-identity comparison minima and freeze composed binary64 association/domain/refusal tables. Existing dictionary and reused series contracts stay authoritative; no guessed floor or blanket epsilon. |
 | U8 | **Numeric dependency** | Final accepted RFC0088 and composed evidence. A/all exponent classes is selected direction; the historical #356 running product is not accepted arithmetic. Use one accepted primitive contract. No repeated A/B decision requested. |
-| U9 | Coverage/engineering | Freeze stable assertion identity/universe, applicability, exclusions/gaps, duplicate and dependency precedence, counts by verdict/row family, then necessary typed refusal/CLI/exit/schema details. Three verdicts are selected; no generic META/CS/RCP expansion. |
 
 The launch question is closed: this optional profile ships at 5.0.0 with
 everything else. RFC0085 provenance and RFC0089 subject work remain separately
