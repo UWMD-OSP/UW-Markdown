@@ -10,7 +10,7 @@
   "synthetic_version": "0.0.0-research-cancellation",
   "synthetic_other_version": "0.0.0-research-cancellation-other",
   "references": {
-    "cancellation-accuracy/inputs.json": "f471e657670450d4c2d27e736120c56a55eacd7d11b88db7f21d62815d48a122",
+    "cancellation-accuracy/inputs.json": "ec22a5312d5d8bab0517925443ad80416858cfa4b2d9253eb59734fcc48a08a7",
     "cancellation-accuracy/evidence/manifest.json": "e09b52ac510542ad77830bc36e33d9cabbfd99e595660f4cb02bbb02c0b54352",
     "cancellation-accuracy/evidence/python.json.gz": "71cab2a06cb78d8b06a3d18068f663866b1725f4be77d8566381e8217e2f8a47",
     "cancellation-accuracy/evidence/unmodified.json.gz": "dd0a9057d05d3811d4fcb0b60fc3d4ac89491ea26fbb6a13dbbeb54cebcb6f99",
