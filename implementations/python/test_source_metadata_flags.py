@@ -1,4 +1,4 @@
-"""Owner-authorized RFC0091 candidate controls; independent of WIP validate."""
+"""Accepted RFC0091 controls; independent of WIP validate."""
 import copy
 from dataclasses import replace
 import unittest
@@ -73,7 +73,7 @@ class SourceMetadataFlagTests(unittest.TestCase):
                 body["_meta"]["lifecycle"]["superseded"] = None
                 _, result = self.inspect(HEADER + fence(body))
                 self.assertEqual([(i["code"], i["field"]) for i in result["issues"]],
-                                 [("META-03", "_meta.lifecycle.superseded")])
+                                 [("META-01", "_meta.quality"), ("META-03", "_meta.lifecycle.superseded")])
                 self.assertIn("_meta.quality", [f["field"] for f in result["shape_findings"]])
 
     def test_shape_all_actors_then_each_blocks_02_03_then_prior_role_source_order(self):
@@ -156,7 +156,7 @@ class SourceMetadataFlagTests(unittest.TestCase):
         body["_overrides"] = [dict(path=False)]
         body = {"value": 1, **body}
         _, result = self.inspect(HEADER + fence(body))
-        self.assertEqual([i["code"] for i in result["issues"]], ["META-02"])
+        self.assertEqual([i["code"] for i in result["issues"]], ["META-01", "META-01", "META-02"])
         self.assertEqual([f["field"] for f in result["shape_findings"]],
             ["_meta", "_meta.section", "_meta.quality.confidence", "_meta.quality.human_review_required",
              "_meta.quality.partial", "_overrides[0].path"])

@@ -614,7 +614,7 @@ capability is unconditional: every implementation owes it.
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
-| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor (`META-01`, RFCs 0081/0090), and required canonical boolean members (`META-02`/`META-03`, RFC0091). | `validate` | `error` |
+| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), and required canonical boolean members (`META-02`/`META-03`, RFC0091). | `validate` | `error` |
 | `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
 | `CLS-NN` | Official builtin field contracts (RFC 0080, RFC 0081). | `validate` | error |
@@ -668,6 +668,49 @@ The separate hyphenated `META-01` rejects a block that is not in the Format
 fences under `.uw.md`; `UNSUPPORTED_FORMAT_VERSION` rejects absent or non-3.0
 frontmatter.
 
+**Bounded metadata admission (RFC0093).** After the complete existing
+wrapper/nested-object shape checkpoint, emit one `META-01`/error for each failed
+predicate below, on every retained physical block followed by model-only blocks
+in the exact-identity union order defined below. Within each block emit P1, P2,
+then P3. Complete this entire pass before the actor pass and META-02/03 pass;
+retain all unrelated issue ordering and existing completeness populations.
+
+| Predicate | Error condition | Exact field |
+|---|---|---|
+| P1 | Present canonical top-level `_meta` is not first under the operation-specific member order. | `_meta` |
+| P2 | Present canonical `_meta.section` is not a nonempty string exactly equal to the admitted fence annotation section. | `_meta.section` |
+| P3 | Required canonical `_meta.quality` is absent, null, an array or a scalar. | `_meta.quality` |
+
+Existing whole-missing-meta and rejected wrapper/provenance/lifecycle shape
+precedence suppress these additions, actor and child-boolean findings. Missing
+`section` keeps its existing warning without P2. P1/P2 do not suppress actors or
+admitted-parent boolean findings; P3 suppresses only quality-dependent META-02.
+An actor-only error does not suppress this pass. Empty quality objects pass P3;
+missing confidence keeps its existing warning and missing review flags retain
+META-02. Matching unknown nonempty section ids pass P2; no trimming, aliasing,
+coercion, inferred metadata or schema-wide fallback is permitted.
+
+For actual structured fenced-JSON source operations, P1 uses the lexical sequence
+of decoded top-level member names from a fresh parse of the supplied source.
+Escaped `_meta` is the same name; numeric-index enumeration and canonical sorting
+cannot recover authored order. Source-taking validation, CLI and receipt operations
+MUST use this source rule for actual JSON blocks. Mutable-model operations instead
+use the current own enumerable non-array-index string-member order. An array-index
+name is exactly the canonical unsigned decimal spelling from0 through4294967294;
+`00`, `-0` and `4294967295` are not array-index names. Numeric members alone cannot
+create a model P1 error. A source with `0` before `_meta` fails P1, while its model
+can have `_meta` first among non-index members; the model result certifies no
+authored numeric order. Current canonical content/annotation, not cached meta,
+`raw` or `rawJson`, supplies the predicate values. Ordinary ValidationMessage
+objects gain no category; ProtocolError transport uses category `validate`.
+
+Other representations keep their accepted codec/compilation path. UW Lite has
+no authored fenced-JSON order and uses its compiled model order without a new
+lexical-evidence refusal. Findings enter ordinary issues/error partitions,
+status and CLI exits. Receipt policy counts use actual validation findings;
+subject construction, digest and authentication/verdict precedence are unchanged.
+This amendment allocates no other metadata or payload requirement.
+
 **Required actor admission (RFC 0090).** Extend only
 `META-01`/error to absent, null, exact-empty or non-string canonical
 `_meta.provenance.actor`, one finding per assessed block, field
@@ -702,8 +745,8 @@ null or nonboolean canonical `_meta.lifecycle.superseded`. Attribute each
 finding to that exact field and block section. Both literal booleans pass;
 MUST NOT coerce, infer or insert either value. Whole missing metadata or an
 existing wrapper/nested-object shape failure suppresses both child findings.
-A missing or nonobject quality container suppresses only META-02, without
-allocating its separate container failure. An actor-only META-01 suppresses
+A missing or nonobject quality container suppresses only META-02; its separate
+container failure is P3 above. An actor-only META-01 suppresses
 neither flag. Existing completeness/low-confidence rules remain unchanged.
 
 Use the retained-physical plus model-only identity union and canonical inline
@@ -803,6 +846,10 @@ provenance is written only by a human writer.
 | `pipeline_log_append` | Append-only. Existing entries are immutable. |
 
 ### V.3 Source authority
+
+RFC0093 metadata admission uses the canonical source/model authority and exact
+retained-physical identity union in §III.6a. It changes no actor namespace or edit
+authority. Placement, section and quality failures do not authorize source repair.
 
 `_meta.provenance.source` is **actor-only** (RFC 0031): `manual`, or
 `<namespace>/<id>` where the namespace is one of the closed set
@@ -3641,7 +3688,9 @@ products (§II.4); no tier requires an implementation to emit them.
 Validator issue codes are part of this taxonomy. Their registered
 families, owning capabilities and remediation-entry schema are
 normative in §III.6a, which keeps its section number so existing
-references resolve (RFC 0078).
+references resolve (RFC 0078). RFC0093 adds only P1/P2/P3 to META-01;
+its fields, error severity, ordering and admitted-parent suppression are normative
+there. META-02/03 and ordinary issue/ProtocolError transport remain unchanged.
 
 ---
 
