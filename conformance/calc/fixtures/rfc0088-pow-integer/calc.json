@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_pow_integer",
+  "label": "RFC0088 pinned procedure rfc0088-pow-integer",
+  "formula": "pow(1.2,31)",
+  "deterministic": true,
+  "round_to": 12
+}

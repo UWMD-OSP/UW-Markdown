@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_negative_power_subnormal",
+  "label": "RFC0088 pinned procedure rfc0088-negative-power-subnormal",
+  "formula": "pow(1e155,-2)*1e155*1e155",
+  "deterministic": true,
+  "round_to": 12
+}

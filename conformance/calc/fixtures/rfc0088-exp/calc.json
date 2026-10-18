@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_exp",
+  "label": "RFC0088 pinned procedure rfc0088-exp",
+  "formula": "exp(1)",
+  "deterministic": true,
+  "round_to": 12
+}

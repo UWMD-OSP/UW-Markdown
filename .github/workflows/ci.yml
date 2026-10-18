@@ -41,9 +41,9 @@ jobs:
       # claims full Verifier coverage or resolves RFC 0088 numerical semantics.
       - name: Independent unit controls
         run: python -m unittest discover -s implementations/python -v
-      # Isolated unaccepted research, separately labeled from Reader evidence.
+      # Independent pinned-procedure controls, separately labeled from Reader evidence.
       # Reuse these three Python runtimes; no additional job or dependency install.
-      - name: Independent Python numerical procedure research (unaccepted)
+      - name: Independent Python pinned numerical procedure controls
         if: hashFiles('experiments/numerical-0088/python-fdlibm/test_kernel.py') != ''
         run: |
           python -B -m unittest discover -s experiments/numerical-0088/python-fdlibm -p "test_*.py" -v
@@ -297,26 +297,20 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Check owner-directed receipt authentication order (unaccepted)
-        if: hashFiles('experiments/numerical-0088/authenticate-first/proposal.test.mjs') != ''
-        run: node --experimental-loader ./experiments/numerical-0088/authenticate-first/loader.mjs --test ./experiments/numerical-0088/authenticate-first/proposal.test.mjs
-
       - uses: actions/setup-python@v5
-        if: hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
         with:
           python-version: '3.12'
-      - name: Check bounded final numerical consumers (unaccepted)
-        if: hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+      - name: Check activated numerical consumers and receipt precedence
+        # Actual production APIs; no ESM loader or source transformation. Fresh
+        # Python graphs must also match the immutable preactivation references.
         run: |
-          node experiments/numerical-0088/impact/verify-current.mjs
-          python -B experiments/numerical-0088/browser-probe/verify.py
-          python -B -m unittest discover -s experiments/numerical-0088/consumer-composition -p "test_*.py" -v
-          python -B experiments/numerical-0088/consumer-composition/capture.py --output "${{ runner.temp }}/final-consumer-proof"
+          python -B -m unittest discover -s experiments/numerical-0088/activation -p "test_*.py" -v
+          python -B experiments/numerical-0088/activation/capture.py --output "${{ runner.temp }}/numerical-activation-proof"
       - uses: actions/upload-artifact@v6
-        if: always() && hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+        if: always()
         with:
-          name: final-numerical-consumers-${{ runner.os }}-${{ strategy.job-index }}
-          path: ${{ runner.temp }}/final-consumer-proof/
+          name: numerical-activation-${{ runner.os }}-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/numerical-activation-proof/
           if-no-files-found: error
           retention-days: 14
 
@@ -343,73 +337,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Check current financial controls and composed receipts (unaccepted)
-        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
-        # Exercise current candidate/receipt behavior; no archived source identity
-        # or prelaunch foreign-receipt replay is a correctness gate.
-        run: |
-          python3 -B -m unittest discover -s experiments/numerical-0088/financial-trajectories -p "test_*.py" -v
-          python3 -B experiments/numerical-0088/composed-receipts/capture.py --capture "${{ runner.temp }}/composed-receipt-observations"
-      - uses: actions/upload-artifact@v6
-        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/financial-trajectories/capture.py') != ''
-        with:
-          name: isolated-composed-receipts-node20
-          path: ${{ runner.temp }}/composed-receipt-observations/
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Check bounded composed cancellation accuracy (unaccepted)
-        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/cancellation-accuracy/capture.py') != ''
-        # Current bounded cancellation accuracy, without archived source gates.
-        run: |
-          python3 -B -m unittest discover -s experiments/numerical-0088/cancellation-accuracy -p "test_*.py" -v
-          python3 -B experiments/numerical-0088/cancellation-accuracy/capture.py --capture "${{ runner.temp }}/cancellation-accuracy-observations"
-      - uses: actions/upload-artifact@v6
-        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/cancellation-accuracy/capture.py') != ''
-        with:
-          name: isolated-cancellation-accuracy-node20
-          path: ${{ runner.temp }}/cancellation-accuracy-observations/
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Check two natural cancellation receipt cases (unaccepted)
-        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/cancellation-receipts/capture.py') != ''
-        # Two current inputs only; measure actual host/candidate/refusal branches.
-        run: |
-          mkdir -p "${{ runner.temp }}/natural-cancellation-receipts"
-          python3 -B experiments/numerical-0088/cancellation-receipts/capture.py --capture "${{ runner.temp }}/natural-cancellation-receipts/local"
-      - uses: actions/upload-artifact@v6
-        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/cancellation-receipts/capture.py') != ''
-        with:
-          name: isolated-natural-cancellation-receipts-node20
-          path: ${{ runner.temp }}/natural-cancellation-receipts/
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Check the complete NPER log quotient (unaccepted)
-        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/nper-log-quotient/capture.py') != ''
-        run: |
-          python3 -B -m unittest discover -s experiments/numerical-0088/nper-log-quotient -p "test_*.py" -v
-          python3 -B experiments/numerical-0088/nper-log-quotient/capture.py --capture "${{ runner.temp }}/nper-log-quotient-current"
-      - uses: actions/upload-artifact@v6
-        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/nper-log-quotient/capture.py') != ''
-        with:
-          name: isolated-nper-log-quotient-node20
-          path: ${{ runner.temp }}/nper-log-quotient-current/
-          if-no-files-found: error
-          retention-days: 14
-      - name: Check all dated conventions with independent candidate graphs (unaccepted)
-        if: matrix.node == 20 && hashFiles('experiments/numerical-0088/dated-conventions/capture.py') != ''
-        run: |
-          python3 -B -m unittest discover -s experiments/numerical-0088/dated-conventions -p "test_*.py" -v
-          python3 -B experiments/numerical-0088/dated-conventions/capture.py --output "${{ runner.temp }}/dated-conventions-current"
-      - uses: actions/upload-artifact@v6
-        if: matrix.node == 20 && always() && hashFiles('experiments/numerical-0088/dated-conventions/capture.py') != ''
-        with:
-          name: isolated-dated-conventions-node20
-          path: ${{ runner.temp }}/dated-conventions-current/
-          if-no-files-found: error
-          retention-days: 14
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures
         # through the §II.6a CLI protocol, which is what a non-TypeScript
@@ -596,26 +523,20 @@ jobs:
         run: npm run build
       - name: Test
         run: npm test
-      - name: Check owner-directed receipt authentication order (unaccepted)
-        if: hashFiles('experiments/numerical-0088/authenticate-first/proposal.test.mjs') != ''
-        run: node --experimental-loader ./experiments/numerical-0088/authenticate-first/loader.mjs --test ./experiments/numerical-0088/authenticate-first/proposal.test.mjs
-
       - uses: actions/setup-python@v5
-        if: hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
         with:
           python-version: '3.12'
-      - name: Check bounded final numerical consumers (unaccepted)
-        if: hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+      - name: Check activated numerical consumers and receipt precedence
+        # Actual production APIs; no ESM loader or source transformation. Fresh
+        # Python graphs must also match the immutable preactivation references.
         run: |
-          node experiments/numerical-0088/impact/verify-current.mjs
-          python -B experiments/numerical-0088/browser-probe/verify.py
-          python -B -m unittest discover -s experiments/numerical-0088/consumer-composition -p "test_*.py" -v
-          python -B experiments/numerical-0088/consumer-composition/capture.py --output "${{ runner.temp }}/final-consumer-proof"
+          python -B -m unittest discover -s experiments/numerical-0088/activation -p "test_*.py" -v
+          python -B experiments/numerical-0088/activation/capture.py --output "${{ runner.temp }}/numerical-activation-proof"
       - uses: actions/upload-artifact@v6
-        if: always() && hashFiles('experiments/numerical-0088/consumer-composition/capture.py') != ''
+        if: always()
         with:
-          name: final-numerical-consumers-${{ runner.os }}-${{ strategy.job-index }}
-          path: ${{ runner.temp }}/final-consumer-proof/
+          name: numerical-activation-${{ runner.os }}-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/numerical-activation-proof/
           if-no-files-found: error
           retention-days: 14
 
