@@ -164,7 +164,8 @@ export function parseUWPart(parsed: ParsedUWFile, opts: ParseUWPartOptions = {})
     collection_member: fm['collection_member'] === true,
     blocks,
   };
-  partPhysicalBlocks.set(part, parsedPhysicalBlocks(parsed));
+  const physical = parsedPhysicalBlocks(parsed);
+  if (physical.length > 0) partPhysicalBlocks.set(part, physical);
   return part;
 }
 
