@@ -25,6 +25,7 @@ export {
 } from './builtins.js';
 export type { CalcValue, Builtin } from './builtins.js';
 export { CalcError, calcError } from './errors.js';
+export { pinnedPow, pinnedExp, pinnedLog } from './pinned-numerics.js';
 export type { CalcErrorCode } from './errors.js';
 export {
   quantizeDecimal,

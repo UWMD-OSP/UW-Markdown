@@ -180,6 +180,8 @@ export { parseExpression, evaluate, BUILTINS, CalcError, calcError } from './cal
 // The standard evaluator: its `CalcResult` carries no `display` string (RFC
 // 0083 §3). `@uwmd/core` exports a wrapper under the same name that adds it.
 export { evaluateCalc } from './calc/index.js';
+// RFC 0088 selected raw primitive surface; no evaluator activation.
+export { pinnedPow, pinnedExp, pinnedLog } from './calc/pinned-numerics.js';
 
 // RFC 0007 — sensitivity tables. A declaration, not a grammar extension: the
 // §VIII.1 sandbox is unchanged, and the grid never travels through

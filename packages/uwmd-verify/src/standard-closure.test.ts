@@ -41,7 +41,8 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   // Calculation
   'calc/index.ts', 'calc/parser.ts', 'calc/evaluator.ts', 'calc/builtins.ts', 'calc/errors.ts',
   'calc/quantize.ts', 'calc/day-count.ts', 'calc/dependencies.ts', 'calc/dated-flows.ts',
-  'calc/stated-precision.ts',
+  'calc/stated-precision.ts', 'calc/pinned-numerics.ts',
+  'calc/pinned-fdlibm/kernel.ts', 'calc/pinned-fdlibm/constants.ts', 'calc/pinned-fdlibm/words.ts',
   // Metric dictionary
   'metric-dictionary.ts', 'metric-verification.ts',
   // Receipts, integrity, modules
