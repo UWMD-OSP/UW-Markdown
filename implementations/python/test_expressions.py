@@ -142,7 +142,8 @@ class ExpressionTests(unittest.TestCase):
 
     def test_all_frozen_calc_formulas_parse_without_claiming_their_results(self):
         paths = sorted((ROOT / "conformance/calc/fixtures").glob("*/calc.json"))
-        self.assertEqual(len(paths), 97)
+        # The 14 accepted RFC0088 scalar/refusal fixtures extend the original 97.
+        self.assertEqual(len(paths), 111)
         for path in paths:
             with self.subTest(scenario=path.parent.name):
                 declaration = json.loads(path.read_text(encoding="utf-8"))
