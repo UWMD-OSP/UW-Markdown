@@ -4,12 +4,12 @@ on:
   push:
     branches: [main]
   # Deliberately unfiltered. A `branches:` filter here matches the *base* of the
-  # pull request, not its head, so `[main]` silently gave a stacked PR â€” one
-  # opened against another feature branch â€” no CI at all. It did not fail; it
+  # pull request, not its head, so `[main]` silently gave a stacked PR — one
+  # opened against another feature branch — no CI at all. It did not fail; it
   # reported nothing, which reads as green next to whatever external checks do
   # run. Every pull request gets the suite, whatever it targets.
   pull_request:
-  # Manual trigger, so CI can be re-run without inventing a commit â€” useful
+  # Manual trigger, so CI can be re-run without inventing a commit — useful
   # when a run failed for an infrastructure reason rather than a code one.
   workflow_dispatch:
     inputs:
@@ -129,7 +129,7 @@ jobs:
     name: Verify hand-maintained indexes
     runs-on: ubuntu-latest
     # Reads the schema README, the RFC index, the prebuild copy list and CLAUDE.md as
-    # data â€” no install, no build, same rationale as the two guards above.
+    # data — no install, no build, same rationale as the two guards above.
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -141,7 +141,7 @@ jobs:
     if: github.event_name != 'workflow_dispatch' || !inputs['verify-publication']
     name: Verify validation-code contracts
     runs-on: ubuntu-latest
-    # Reads verify's and core's sources, the two specs and the RFC frontmatter as text â€” no
+    # Reads verify's and core's sources, the two specs and the RFC frontmatter as text — no
     # install, no build, same rationale as the guards above. Exists because
     # RFC 0058 shipped nine of the ten codes it specified and nothing went red.
     steps:
@@ -176,7 +176,7 @@ jobs:
     # Compares every version the CHANGELOG calls released against the git tags,
     # because the tag is what triggers `release.yml` and 1.4.0 never got one.
     # `fetch-tags` is load-bearing: without it the checkout has no tags, the
-    # guard has nothing to compare against, and it would pass vacuously â€” which
+    # guard has nothing to compare against, and it would pass vacuously — which
     # is the failure it exists to prevent. It fails loudly on an empty tag list
     # rather than trusting the checkout.
     steps:
@@ -393,12 +393,12 @@ jobs:
           retention-days: 14
       - name: Run the language-agnostic driver against the reference CLI
         # Not a replacement for the suite above: this drives the tier fixtures
-        # through the Â§II.6a CLI protocol, which is what a non-TypeScript
+        # through the §II.6a CLI protocol, which is what a non-TypeScript
         # implementation would use to self-certify. It gates the protocol, not
         # the corpus.
         #
         # Invoked as `python3` rather than through `npm run conformance:v2`,
-        # whose script says `python` â€” the name that exists on a developer's
+        # whose script says `python` — the name that exists on a developer's
         # Windows box but is not guaranteed on a runner.
         if: matrix.node == 20
         run: python3 conformance/runner/runner.py --manifest-out conformance-report.json --no-skip
@@ -428,7 +428,7 @@ jobs:
     runs-on: ubuntu-latest
     # tools/* are intentionally NOT npm-workspace members, so the root `npm test`
     # above doesn't cover them. The web editor is the Tier-2/3 calc-integrity
-    # chokepoint and carries its own vitest suite â€” run it here. It consumes
+    # chokepoint and carries its own vitest suite — run it here. It consumes
     # @uwmd/core's built dist via a file: dependency (and, through core,
     # @uwmd/verify's), so both must be built first.
     steps:

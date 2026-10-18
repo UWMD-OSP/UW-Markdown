@@ -10,6 +10,18 @@ remain. No package numbers or release publication are changed here.
 
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
+**Owner-selected RFC0088 direction — still draft.** Architecture A is selected:
+one exact pinned fdlibm procedure for pow/exp/log across every exponent class;
+B is not selected. Financial associations, quantizer and solver remain unchanged;
+log1p/expm1 rearrangements remain a separate decision. The draft now prepares
+public raw primitives for shared StackUW use, without switching current consumers.
+The supplied signature must authenticate before any recomputation refusal.
+A new isolated real-Ed25519 study covers26 states and jointly states preflight,
+backend, malformed subject, signature, refusal, value/engine and digest ordering.
+Exact domain/resource contracts, complete consumer/conformance/financial evidence,
+independent platform proof and final RFC acceptance still gate activation.
+No prelaunch compatibility work, version allocation or release is authorized.
+
 **Actor reconciliation — accepted RFC0090.**
 [RFC0090](../rfcs/0090-provenance-actor-admission.md) records the owner's
 accepted Issue354 contract: required nonempty-string actors, narrow META-01/error,
