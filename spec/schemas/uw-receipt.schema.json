@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/uw-receipt.schema.json",
   "title": "UW Verification Receipt 1.1",
-  "description": "A detached JSON document binding a canonical digest of an underwriting record to the deterministic outputs a named calc pack produced from it. Normative definition: UW_RECEIPT.md (RFC 0016). A receipt attests that the stated outputs follow from the record's canonical financial content — it attests nothing about whether that content is true.",
+  "description": "A detached JSON document binding a canonical digest of an underwriting record to the deterministic outputs a named calc pack produced from it. Normative definition: UW_RECEIPT.md (RFCs 0016 and 0088). After source/subject/dependency preflights, supplied signatures authenticate before financial recomputation or refusal; the wire shape is unchanged. A receipt attests that the stated outputs follow from the record's canonical financial content — it attests nothing about whether that content is true.",
   "type": "object",
   "required": ["receipt_version", "subject", "computation", "policy", "issued_at", "issuer"],
   "additionalProperties": false,

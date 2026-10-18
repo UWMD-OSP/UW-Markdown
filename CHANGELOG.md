@@ -10,6 +10,18 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept and activate RFC0088 under the owner's2026-10-18 decision: every
+  numerical pow/exp/log consumer uses one exact pinned fdlibm procedure across
+  all exponent classes, shared through public pinnedPow/pinnedExp/pinnedLog.
+  Financial graphs, solver and quantizer remain unchanged. Supplied receipt
+  signatures authenticate before recomputation/refusal, preserving preflight,
+  finite-disagreement/engine and later result-digest precedence. Synchronize the
+  Protocol, Receipt text, schema annotations and conformance. Record native
+  spreadsheet differences beyond about eleven significant digits and IEEE-edge
+  errors as accepted export limits: UWMD verifies the stated record, never the
+  spreadsheet's recomputation. No package/specification version, tag or
+  publication is allocated.
+
 - Apply the2026-10-17 owner rule in both agent entry points: all @uwmd npm
   packages launch together at5.0.0; prelaunch releases use4.x.x from main,
   with incompatible changes allowed. Retire prelaunch compatibility analysis,

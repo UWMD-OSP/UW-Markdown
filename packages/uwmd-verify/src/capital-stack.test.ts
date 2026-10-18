@@ -2,6 +2,7 @@
 // vocabulary, and the three-state verdict. RFC 0026 §4.24.
 
 import { describe, expect, it } from 'vitest';
+import { toBits } from './calc/pinned-fdlibm/words.js';
 import {
   trancheAnnualDebtService,
   recomputeSizing,
@@ -227,4 +228,16 @@ it('keeps nonfinite capital-stack recomputations from verifying', () => {
   }, { noi: 1e300 });
   expect(result.verdict).toBe('failed');
   expect(result.issues[0]?.code).toBe('CS-SIZING-DISAGREES');
+});
+
+
+describe('RFC 0088 stabilized debt-service activation', () => {
+  it('retains the independently demonstrated annual association and internal overflow', () => {
+    const tranche: Tranche = { id: 'reference', class: 'senior_debt', position: 1,
+      amount: 26_000_000, rate: 0.0625, amortization_months: 360, accrual: 'cash' };
+    expect(toBits(trancheAnnualDebtService(tranche)!)).toBe('413d500daa531701');
+    const tiny = { ...tranche, rate: 2 ** -53 };
+    expect(trancheAnnualDebtService(tiny)).toBe(Number.POSITIVE_INFINITY);
+    expect(recomputeSizing({ id: 'coverage', fn: 'coverage', over: tiny.id, value: 1 }, [tiny], { noi: 1 })).toBe(0);
+  });
 });

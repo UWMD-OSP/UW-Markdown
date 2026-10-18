@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_irr_tiny_positive",
+  "label": "RFC0088 pinned procedure rfc0088-irr-tiny-positive",
+  "formula": "irr(scalar0,scalar0)",
+  "deterministic": true,
+  "round_to": 12
+}

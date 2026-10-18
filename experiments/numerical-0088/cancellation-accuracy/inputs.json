@@ -1,0 +1,350 @@
+{
+  "status": "UNACCEPTED exact synthetic scalar inputs; accuracy/refusal evidence, not underwriting model generation",
+  "domain": {
+    "rates": "exact finite words listed; rate > -1; signed zero retained",
+    "exponents": [
+      1,
+      360
+    ],
+    "amount": "exact unit scalar 1; other cash value exact0",
+    "quantizer": "accepted VIII.5 decimal-string procedure at12places; mathematical reference first RN-even to binary64, then separately quantized",
+    "reference_budget": "Only listed36cases; exponent magnitude<=360; Fraction integer powers and bounded64-step binary64 midpoint search, no transcendental oracle or general power domain claim"
+  },
+  "references": {
+    "power-procedures/reference.py": "87d3609c85876c4e2c41b5f71b5c8e0377a7c953ab5846ef1f6c09fb736b3808",
+    "cash-graphs/cash_reference.py": "fa53dd358bcbe35f65b11ee206cb6d0295f2a34e53ed1b286e405e586e9c4bf2",
+    "python-fdlibm/kernel.py": "2f66b40ad7bd1bf5f1cc965574a82239a9ccde2816af4aa4cd5825fda648aa69",
+    "pinned-fdlibm/kernel.mjs": "9cea03d62c453d2c6428f076aab1203c04920585f90dcb9815a98967f28fb5be",
+    "pinned-fdlibm/words.mjs": "c3bb33ff8b2124bc048a0bb9b7b10d3de318b33e20308091abd079459b434914",
+    "pinned-fdlibm/constants.mjs": "6479a8f04cc3e990cd1316d22cdfa164f83bd0acc56905a60c7a7dbc0c65cc25",
+    "pinned-fdlibm/constants.json": "e9793112e7a5d0e2c1ccb2f8d8dd9bbc35608598cf725cb8e5ee44117dad59d9",
+    "impact/hook.mjs": "db509a112745d01773d14c4935a1aa984d431191713064e2dd7c736dac09fc16",
+    "impact/runtime.mjs": "d1488e8d44b40ba3bba502dcf97c897f189877f51f9dc5800a325d3195c785c0"
+  },
+  "cases": [
+    {
+      "id": "pmt_zero_n1",
+      "op": "pmt",
+      "rate": "0000000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_zero_n1",
+      "op": "pv",
+      "rate": "0000000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_zero_n1",
+      "op": "fv",
+      "rate": "0000000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_negative_zero_n1",
+      "op": "pmt",
+      "rate": "8000000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_negative_zero_n1",
+      "op": "pv",
+      "rate": "8000000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_negative_zero_n1",
+      "op": "fv",
+      "rate": "8000000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_positive_below_half_ulp_one_n1",
+      "op": "pmt",
+      "rate": "3c9fffffffffffff",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_positive_below_half_ulp_one_n1",
+      "op": "pv",
+      "rate": "3c9fffffffffffff",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_positive_below_half_ulp_one_n1",
+      "op": "fv",
+      "rate": "3c9fffffffffffff",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_positive_half_ulp_one_n1",
+      "op": "pmt",
+      "rate": "3ca0000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_positive_half_ulp_one_n1",
+      "op": "pv",
+      "rate": "3ca0000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_positive_half_ulp_one_n1",
+      "op": "fv",
+      "rate": "3ca0000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_positive_above_half_ulp_one_n1",
+      "op": "pmt",
+      "rate": "3ca0000000000001",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_positive_above_half_ulp_one_n1",
+      "op": "pv",
+      "rate": "3ca0000000000001",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_positive_above_half_ulp_one_n1",
+      "op": "fv",
+      "rate": "3ca0000000000001",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_negative_below_half_gap_one_n1",
+      "op": "pmt",
+      "rate": "bc8fffffffffffff",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_negative_below_half_gap_one_n1",
+      "op": "pv",
+      "rate": "bc8fffffffffffff",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_negative_below_half_gap_one_n1",
+      "op": "fv",
+      "rate": "bc8fffffffffffff",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_negative_half_gap_one_n1",
+      "op": "pmt",
+      "rate": "bc90000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_negative_half_gap_one_n1",
+      "op": "pv",
+      "rate": "bc90000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_negative_half_gap_one_n1",
+      "op": "fv",
+      "rate": "bc90000000000000",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_negative_above_half_gap_one_n1",
+      "op": "pmt",
+      "rate": "bc90000000000001",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_negative_above_half_gap_one_n1",
+      "op": "pv",
+      "rate": "bc90000000000001",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_negative_above_half_gap_one_n1",
+      "op": "fv",
+      "rate": "bc90000000000001",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_ordinary_n1",
+      "op": "pmt",
+      "rate": "3f747ae147ae147b",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_ordinary_n1",
+      "op": "pv",
+      "rate": "3f747ae147ae147b",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_ordinary_n1",
+      "op": "fv",
+      "rate": "3f747ae147ae147b",
+      "n": 1,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_positive_tiny_n360",
+      "op": "pmt",
+      "rate": "3c90000000000000",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_positive_tiny_n360",
+      "op": "pv",
+      "rate": "3c90000000000000",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_positive_tiny_n360",
+      "op": "fv",
+      "rate": "3c90000000000000",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_negative_above_half_gap_one_n360",
+      "op": "pmt",
+      "rate": "bc90000000000001",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_negative_above_half_gap_one_n360",
+      "op": "pv",
+      "rate": "bc90000000000001",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_negative_above_half_gap_one_n360",
+      "op": "fv",
+      "rate": "bc90000000000001",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pmt_ordinary_n360",
+      "op": "pmt",
+      "rate": "3f747ae147ae147b",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "pv_ordinary_n360",
+      "op": "pv",
+      "rate": "3f747ae147ae147b",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    },
+    {
+      "id": "fv_ordinary_n360",
+      "op": "fv",
+      "rate": "3f747ae147ae147b",
+      "n": 360,
+      "amount": "3ff0000000000000",
+      "other": "0000000000000000",
+      "places": 12
+    }
+  ]
+}

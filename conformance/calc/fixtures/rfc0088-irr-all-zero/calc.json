@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_irr_all_zero",
+  "label": "RFC0088 pinned procedure rfc0088-irr-all-zero",
+  "formula": "irr(0.0,0.0)",
+  "deterministic": true,
+  "round_to": 12
+}

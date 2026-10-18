@@ -23,6 +23,7 @@ import { describe, expect, it } from 'vitest';
 import type { ParsedUWFile } from '../types.js';
 import { BUILTINS } from './builtins.js';
 import { CalcError } from './errors.js';
+import { pinnedPow } from './pinned-numerics.js';
 import { evaluate } from './evaluator.js';
 import { parseExpression, type Expr } from './parser.js';
 
@@ -206,7 +207,7 @@ describe('calc evaluator — null-safety', () => {
 describe('irr — the returned value is a root', () => {
   const npvAt = (flows: number[], r: number): number => {
     let acc = 0;
-    for (let t = 0; t < flows.length; t++) acc += flows[t]! / (1 + r) ** t;
+    for (let t = 0; t < flows.length; t++) acc += flows[t]! / pinnedPow(1 + r, t);
     return acc;
   };
 

@@ -3,6 +3,7 @@
 // this file covers the procedures and the verifier.
 
 import { describe, expect, it } from 'vitest';
+import { toBits } from './calc/pinned-fdlibm/words.js';
 import {
   type CashFlowSeries,
   datedFlowsOf,
@@ -345,5 +346,18 @@ describe('dated flows in years 0000-0099 (proleptic Gregorian)', () => {
         ],
       }),
     ).toBeNull();
+  });
+});
+
+
+describe('RFC 0088 dated-power activation', () => {
+  it('retains dated multiplication and the independently demonstrated fractional-power result', () => {
+    const flows = datedFlowsOf({ day_count: '30/360us', series: [
+      { date: '2024-02-28', amount: -100_000 },
+      { date: '2024-02-29', amount: 7_000 },
+      { date: '2024-02-29', amount: 7_000 },
+      { date: '2025-03-01', amount: 120_000 },
+    ] })!;
+    expect(toBits(xnpvOf(flows, 0.1))).toBe('40d67625e0fa93ac');
   });
 });

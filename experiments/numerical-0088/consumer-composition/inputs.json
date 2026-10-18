@@ -1,0 +1,1660 @@
+{
+  "scope": "UNACCEPTED seven-consumer composition proof; unchanged existing contracts; no new financial procedure",
+  "origins": {
+    "conformance/capital-stack/senior-mezz-pref-verified/case.json": "32fa261ee07833b16e098e0ae2c1a58fa061dafe75ecc2fd55012a85ac5a74b9",
+    "conformance/capital-stack/sizing-disagrees/case.json": "4b8d406400c895bcde8ac35d7ad9b7f272f3815c014d9ae1bce632159d4ff25f",
+    "conformance/waterfall/verify-compound-pref-then-irr/case.json": "ceb46ac86bb6ee3ab96971aed59ed4df0d2fa9ca73186da65c6e970755bb05b4",
+    "conformance/waterfall/verify-irr-hurdle-interleaved-call/case.json": "238f0e7ca4a7d5352d88def401c9558803ce83e6c9d797d35faf3fb2c27c9039",
+    "conformance/waterfall/verify-combined-hurdles-any-mode/case.json": "9f96cd9844c9b13a2cdc99c73814616077a261c579b484f4616cf09fae3b2600",
+    "conformance/waterfall/verify-irr-hurdle-already-met/case.json": "59df034482aadc81fd9713f7648ce71a3e4d77cce98173da60553aac01bf2237",
+    "conformance/waterfall/verify-clawback-net-of-tax/case.json": "57399eb5a44f2a59ed32d9f753fc345b1050461339eb1ac2f69ad1d4e1f9b01b",
+    "conformance/waterfall/verify-clawback-irr-floor-already-met/case.json": "7006f4094e560b572a49fed106f0729a7e9606d671c88266395fbe19d798302f",
+    "conformance/waterfall/verify-moic-no-contributions/case.json": "32feae963a63055af243dbd84489c9df2bbcac88de2600c58a34025c87f89317",
+    "conformance/waterfall/verify-promote-overstated/case.json": "8fca9f1d552dd8c0812f9de9dfab8107a2cbf5a28bf8085bda2a745d6bb1dbcf",
+    "conformance/waterfall/verify-unresolvable-series/case.json": "81a8914b12df77c6241e1f70c4a79043ce6c759e808545872889918148c9c288",
+    "conformance/waterfall/verify-compound-pref/case.json": "816ed12f846aebc1b45c3fce6220061ea0dbeb22b04a3201f9d069b0775fbdc1",
+    "conformance/waterfall/verify-classic-outcomes/case.json": "aa1bb939288fa9c7aa390d70d87105f88480fbcef3cf03558f89380847c2610d",
+    "conformance/recoveries/accept-recovery-true-up/deal.uwx.md": "b34690392789ebc91c21753b46822bb36fd11097a3c37506d1b9510837663b2c",
+    "conformance/stochastic/04-normal-is-not-bit-exact/deal.uwx.md": "7b7ce80168fd847f536edba45561d49e4a50fda7ce729538bc55523477dbc69a"
+  },
+  "capital": [
+    {
+      "id": "capital/accepted",
+      "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 26000000,
+            "rate": 0.0625,
+            "amortization_months": 360,
+            "accrual": "cash"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.05
+          },
+          {
+            "id": "debt_yield_thru_mezz",
+            "fn": "debt_yield_through",
+            "through": 2,
+            "value": 0.0969
+          },
+          {
+            "id": "ltc_thru_mezz",
+            "fn": "ltc_through",
+            "through": 2,
+            "value": 0.8
+          },
+          {
+            "id": "ltv_thru_mezz",
+            "fn": "ltv_through",
+            "through": 2,
+            "value": 0.7711
+          },
+          {
+            "id": "wacc",
+            "fn": "weighted_cost",
+            "over": "*",
+            "value": 0.0735
+          }
+        ]
+      },
+      "context": {
+        "noi": 3100000,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    },
+    {
+      "id": "capital/claim-disagrees",
+      "why": "The same stack as senior-mezz-pref-verified with one stated sizing value perturbed (blended coverage 1.25 where 1.05 recomputes). The verifier must return failed with CS-SIZING-DISAGREES, not a silent pass.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 26000000,
+            "rate": 0.0625,
+            "amortization_months": 360,
+            "accrual": "cash"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.25
+          }
+        ]
+      },
+      "context": {
+        "noi": 3100000,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    },
+    {
+      "id": "capital/missing-rate",
+      "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 26000000,
+            "rate": null,
+            "amortization_months": 360,
+            "accrual": "cash"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.05
+          },
+          {
+            "id": "debt_yield_thru_mezz",
+            "fn": "debt_yield_through",
+            "through": 2,
+            "value": 0.0969
+          },
+          {
+            "id": "ltc_thru_mezz",
+            "fn": "ltc_through",
+            "through": 2,
+            "value": 0.8
+          },
+          {
+            "id": "ltv_thru_mezz",
+            "fn": "ltv_through",
+            "through": 2,
+            "value": 0.7711
+          },
+          {
+            "id": "wacc",
+            "fn": "weighted_cost",
+            "over": "*",
+            "value": 0.0735
+          }
+        ]
+      },
+      "context": {
+        "noi": 3100000,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    },
+    {
+      "id": "capital/zero-rate",
+      "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 26000000,
+            "rate": 0,
+            "amortization_months": 360,
+            "accrual": "cash"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.05
+          },
+          {
+            "id": "debt_yield_thru_mezz",
+            "fn": "debt_yield_through",
+            "through": 2,
+            "value": 0.0969
+          },
+          {
+            "id": "ltc_thru_mezz",
+            "fn": "ltc_through",
+            "through": 2,
+            "value": 0.8
+          },
+          {
+            "id": "ltv_thru_mezz",
+            "fn": "ltv_through",
+            "through": 2,
+            "value": 0.7711
+          },
+          {
+            "id": "wacc",
+            "fn": "weighted_cost",
+            "over": "*",
+            "value": 0.0735
+          }
+        ]
+      },
+      "context": {
+        "noi": 3100000,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    },
+    {
+      "id": "capital/tiny-rate",
+      "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 26000000,
+            "rate": 1.1102230246251565e-16,
+            "amortization_months": 360,
+            "accrual": "cash"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.05
+          },
+          {
+            "id": "debt_yield_thru_mezz",
+            "fn": "debt_yield_through",
+            "through": 2,
+            "value": 0.0969
+          },
+          {
+            "id": "ltc_thru_mezz",
+            "fn": "ltc_through",
+            "through": 2,
+            "value": 0.8
+          },
+          {
+            "id": "ltv_thru_mezz",
+            "fn": "ltv_through",
+            "through": 2,
+            "value": 0.7711
+          },
+          {
+            "id": "wacc",
+            "fn": "weighted_cost",
+            "over": "*",
+            "value": 0.0735
+          }
+        ]
+      },
+      "context": {
+        "noi": 3100000,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    },
+    {
+      "id": "capital/interest-only",
+      "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 26000000,
+            "rate": 0.0625,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.05
+          },
+          {
+            "id": "debt_yield_thru_mezz",
+            "fn": "debt_yield_through",
+            "through": 2,
+            "value": 0.0969
+          },
+          {
+            "id": "ltc_thru_mezz",
+            "fn": "ltc_through",
+            "through": 2,
+            "value": 0.8
+          },
+          {
+            "id": "ltv_thru_mezz",
+            "fn": "ltv_through",
+            "through": 2,
+            "value": 0.7711
+          },
+          {
+            "id": "wacc",
+            "fn": "weighted_cost",
+            "over": "*",
+            "value": 0.0735
+          }
+        ]
+      },
+      "context": {
+        "noi": 3100000,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    },
+    {
+      "id": "capital/accrued-no-cash",
+      "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 26000000,
+            "rate": 0.0625,
+            "amortization_months": 360,
+            "accrual": "accrued"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.05
+          },
+          {
+            "id": "debt_yield_thru_mezz",
+            "fn": "debt_yield_through",
+            "through": 2,
+            "value": 0.0969
+          },
+          {
+            "id": "ltc_thru_mezz",
+            "fn": "ltc_through",
+            "through": 2,
+            "value": 0.8
+          },
+          {
+            "id": "ltv_thru_mezz",
+            "fn": "ltv_through",
+            "through": 2,
+            "value": 0.7711
+          },
+          {
+            "id": "wacc",
+            "fn": "weighted_cost",
+            "over": "*",
+            "value": 0.0735
+          }
+        ]
+      },
+      "context": {
+        "noi": 3100000,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    },
+    {
+      "id": "capital/zero-principal",
+      "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 0,
+            "rate": 0.0625,
+            "amortization_months": 360,
+            "accrual": "cash"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.05
+          },
+          {
+            "id": "debt_yield_thru_mezz",
+            "fn": "debt_yield_through",
+            "through": 2,
+            "value": 0.0969
+          },
+          {
+            "id": "ltc_thru_mezz",
+            "fn": "ltc_through",
+            "through": 2,
+            "value": 0.8
+          },
+          {
+            "id": "ltv_thru_mezz",
+            "fn": "ltv_through",
+            "through": 2,
+            "value": 0.7711
+          },
+          {
+            "id": "wacc",
+            "fn": "weighted_cost",
+            "over": "*",
+            "value": 0.0735
+          }
+        ]
+      },
+      "context": {
+        "noi": 3100000,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    },
+    {
+      "id": "capital/missing-noi-only",
+      "why": "A three-tranche stack (amortizing senior, IO mezz, cash-pay pref, common) whose stated coverage, blended coverage, attachment-point debt yield, LTC/LTV, and weighted cost all recompute equal at their quantum: verified.",
+      "stack": {
+        "tranches": [
+          {
+            "id": "senior",
+            "class": "senior_debt",
+            "position": 1,
+            "amount": 26000000,
+            "rate": 0.0625,
+            "amortization_months": 360,
+            "accrual": "cash"
+          },
+          {
+            "id": "mezz",
+            "class": "mezzanine_debt",
+            "position": 2,
+            "amount": 6000000,
+            "rate": 0.11,
+            "amortization_months": 0,
+            "accrual": "cash"
+          },
+          {
+            "id": "pref",
+            "class": "preferred_equity",
+            "position": 3,
+            "amount": 4000000,
+            "rate": 0.09,
+            "accrual": "cash"
+          },
+          {
+            "id": "common",
+            "class": "common_equity",
+            "position": 4,
+            "amount": 4000000
+          }
+        ],
+        "sizing": [
+          {
+            "id": "senior_dscr",
+            "fn": "coverage",
+            "over": "senior",
+            "value": 1.61
+          },
+          {
+            "id": "combined_dscr",
+            "fn": "blended_coverage",
+            "through": 3,
+            "value": 1.05
+          }
+        ]
+      },
+      "context": {
+        "noi": null,
+        "total_cost": 40000000,
+        "total_value": 41500000
+      }
+    }
+  ],
+  "waterfall": [
+    {
+      "id": "waterfall/verify-compound-pref-then-irr",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 0.9,
+          "gp": 0.1
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "preferred_return",
+            "rate": 0.08,
+            "accrual": "compound_annual"
+          },
+          {
+            "type": "catch_up",
+            "gp_share": 1,
+            "target_promote": 0.2
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2,
+            "until_lp_irr": 0.12
+          },
+          {
+            "type": "split",
+            "lp_share": 0.6,
+            "gp_share": 0.4
+          }
+        ],
+        "stated_outcomes": {
+          "lp": {
+            "contributions": 900000,
+            "distributions": 2191206.96,
+            "moic": 2.4347,
+            "xirr": 0.344919
+          },
+          "gp": {
+            "contributions": 100000,
+            "distributions": 808793.04,
+            "moic": 8.0879,
+            "xirr": 1.006025
+          },
+          "promote_total": 682795.27,
+          "profit_total": 2000000
+        },
+        "stated_schedule": [
+          {
+            "date": "2029-01-01",
+            "by_tier": [
+              {
+                "tier": 0,
+                "lp": 900000,
+                "gp": 100000
+              },
+              {
+                "tier": 1,
+                "lp": 233979.88,
+                "gp": 25997.76
+              },
+              {
+                "tier": 2,
+                "lp": 0,
+                "gp": 32497.21
+              },
+              {
+                "tier": 3,
+                "lp": 130847.98,
+                "gp": 32711.99
+              },
+              {
+                "tier": 4,
+                "lp": 926379.11,
+                "gp": 617586.07
+              }
+            ]
+          }
+        ]
+      },
+      "series": {
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000
+          },
+          {
+            "date": "2029-01-01",
+            "amount": 3000000
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/verify-irr-hurdle-interleaved-call",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 1,
+          "gp": 0
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2,
+            "until_lp_irr": 0.12
+          },
+          {
+            "type": "split",
+            "lp_share": 0.6,
+            "gp_share": 0.4
+          }
+        ],
+        "stated_outcomes": {
+          "lp": {
+            "contributions": 1200000,
+            "distributions": 1651524.29,
+            "moic": 1.3763,
+            "xirr": 0.144473
+          },
+          "gp": {
+            "contributions": 0,
+            "distributions": 148475.71
+          },
+          "promote_total": 148475.71,
+          "profit_total": 600000
+        },
+        "stated_schedule": [
+          {
+            "date": "2027-01-01",
+            "by_tier": [
+              {
+                "tier": 0,
+                "lp": 300000,
+                "gp": 0
+              }
+            ]
+          },
+          {
+            "date": "2029-01-01",
+            "by_tier": [
+              {
+                "tier": 0,
+                "lp": 900000,
+                "gp": 0
+              },
+              {
+                "tier": 1,
+                "lp": 366097.17,
+                "gp": 91524.29
+              },
+              {
+                "tier": 2,
+                "lp": 85427.12,
+                "gp": 56951.41
+              }
+            ]
+          }
+        ]
+      },
+      "series": {
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000
+          },
+          {
+            "date": "2027-01-01",
+            "amount": 300000
+          },
+          {
+            "date": "2027-07-02",
+            "amount": -200000
+          },
+          {
+            "date": "2029-01-01",
+            "amount": 1500000
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/verify-combined-hurdles-any-mode",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 1,
+          "gp": 0
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2,
+            "until_lp_em": 1.5,
+            "until_lp_irr": 0.12,
+            "hurdle_mode": "any"
+          },
+          {
+            "type": "split",
+            "lp_share": 0.6,
+            "gp_share": 0.4
+          }
+        ],
+        "stated_outcomes": {
+          "lp": {
+            "contributions": 1000000,
+            "distributions": 2230000,
+            "moic": 2.23,
+            "xirr": 1.23
+          },
+          "gp": {
+            "contributions": 0,
+            "distributions": 770000
+          },
+          "promote_total": 770000,
+          "profit_total": 2000000
+        },
+        "stated_schedule": [
+          {
+            "date": "2027-01-01",
+            "by_tier": [
+              {
+                "tier": 0,
+                "lp": 1000000,
+                "gp": 0
+              },
+              {
+                "tier": 1,
+                "lp": 120000,
+                "gp": 30000
+              },
+              {
+                "tier": 2,
+                "lp": 1110000,
+                "gp": 740000
+              }
+            ]
+          }
+        ]
+      },
+      "series": {
+        "variant": "base",
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000
+          },
+          {
+            "date": "2027-01-01",
+            "amount": 3000000
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/verify-irr-hurdle-already-met",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 1,
+          "gp": 0
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "preferred_return",
+            "rate": 0.2,
+            "accrual": "simple"
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2,
+            "until_lp_irr": 0.12
+          },
+          {
+            "type": "split",
+            "lp_share": 0.6,
+            "gp_share": 0.4
+          }
+        ],
+        "stated_outcomes": {
+          "lp": {
+            "contributions": 1000000,
+            "distributions": 1380000,
+            "moic": 1.38,
+            "xirr": 0.38
+          },
+          "gp": {
+            "contributions": 0,
+            "distributions": 120000
+          },
+          "promote_total": 120000,
+          "profit_total": 500000
+        },
+        "stated_schedule": [
+          {
+            "date": "2027-01-01",
+            "by_tier": [
+              {
+                "tier": 0,
+                "lp": 1000000,
+                "gp": 0
+              },
+              {
+                "tier": 1,
+                "lp": 200000,
+                "gp": 0
+              },
+              {
+                "tier": 3,
+                "lp": 180000,
+                "gp": 120000
+              }
+            ]
+          }
+        ]
+      },
+      "series": {
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000
+          },
+          {
+            "date": "2027-01-01",
+            "amount": 1500000
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/verify-clawback-net-of-tax",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 0.9,
+          "gp": 0.1
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "preferred_return",
+            "rate": 0.08,
+            "accrual": "simple"
+          },
+          {
+            "type": "catch_up",
+            "gp_share": 1,
+            "target_promote": 0.2
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2
+          }
+        ],
+        "stated_outcomes": {
+          "promote_total": 200640,
+          "clawback_amount": 22680
+        },
+        "clawback": {
+          "basis": "lp_em_floor",
+          "floor_multiple": 2.0,
+          "net_of_tax_rate": 0.37,
+          "cap": "promote_received"
+        }
+      },
+      "series": {
+        "day_count": "actual/365f",
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000,
+            "kind": "acquisition"
+          },
+          {
+            "date": "2027-01-01",
+            "amount": 80000,
+            "kind": "operating"
+          },
+          {
+            "date": "2028-01-01",
+            "amount": 2000000,
+            "kind": "disposition"
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/verify-clawback-irr-floor-already-met",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 0.9,
+          "gp": 0.1
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "preferred_return",
+            "rate": 0.08,
+            "accrual": "simple"
+          },
+          {
+            "type": "catch_up",
+            "gp_share": 1,
+            "target_promote": 0.2
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2
+          }
+        ],
+        "stated_outcomes": {
+          "promote_total": 200640,
+          "clawback_amount": 0
+        },
+        "clawback": {
+          "basis": "lp_irr_floor",
+          "floor_rate": 0.1,
+          "cap": "promote_received"
+        }
+      },
+      "series": {
+        "day_count": "actual/365f",
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000,
+            "kind": "acquisition"
+          },
+          {
+            "date": "2027-01-01",
+            "amount": 80000,
+            "kind": "operating"
+          },
+          {
+            "date": "2028-01-01",
+            "amount": 2000000,
+            "kind": "disposition"
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/verify-moic-no-contributions",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 1,
+          "gp": 0
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2
+          }
+        ],
+        "stated_outcomes": {
+          "gp": {
+            "moic": 10
+          }
+        }
+      },
+      "series": {
+        "day_count": "actual/365f",
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000,
+            "kind": "acquisition"
+          },
+          {
+            "date": "2027-01-01",
+            "amount": 80000,
+            "kind": "operating"
+          },
+          {
+            "date": "2028-01-01",
+            "amount": 2000000,
+            "kind": "disposition"
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/verify-promote-overstated",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 0.9,
+          "gp": 0.1
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "preferred_return",
+            "rate": 0.08,
+            "accrual": "simple"
+          },
+          {
+            "type": "catch_up",
+            "gp_share": 1,
+            "target_promote": 0.2
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2
+          }
+        ],
+        "stated_outcomes": {
+          "promote_total": 220000
+        }
+      },
+      "series": {
+        "day_count": "actual/365f",
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000,
+            "kind": "acquisition"
+          },
+          {
+            "date": "2027-01-01",
+            "amount": 80000,
+            "kind": "operating"
+          },
+          {
+            "date": "2028-01-01",
+            "amount": 2000000,
+            "kind": "disposition"
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/verify-unresolvable-series",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 0.9,
+          "gp": 0.1
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "preferred_return",
+            "rate": 0.08,
+            "accrual": "simple"
+          },
+          {
+            "type": "catch_up",
+            "gp_share": 1,
+            "target_promote": 0.2
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2
+          }
+        ],
+        "stated_outcomes": {
+          "promote_total": 200640
+        }
+      },
+      "series": null
+    },
+    {
+      "id": "waterfall/pairwise-30-360-not-anchor-difference",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 0.9,
+          "gp": 0.1
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "preferred_return",
+            "rate": 0.08,
+            "accrual": "compound_annual"
+          },
+          {
+            "type": "catch_up",
+            "gp_share": 1,
+            "target_promote": 0.2
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2
+          }
+        ],
+        "stated_outcomes": {
+          "promote_total": 200000
+        }
+      },
+      "series": {
+        "day_count": "30/360us",
+        "series": [
+          {
+            "date": "2026-02-28",
+            "amount": -1000000,
+            "kind": "acquisition"
+          },
+          {
+            "date": "2026-03-31",
+            "amount": 80000,
+            "kind": "operating"
+          },
+          {
+            "date": "2026-04-30",
+            "amount": 2000000,
+            "kind": "disposition"
+          }
+        ]
+      }
+    },
+    {
+      "id": "waterfall/negative-money-rounding",
+      "waterfall": {
+        "cash_flow_ref": {
+          "variant": "base"
+        },
+        "equity_split": {
+          "lp": 0.9,
+          "gp": 0.1
+        },
+        "tiers": [
+          {
+            "type": "return_of_capital"
+          },
+          {
+            "type": "preferred_return",
+            "rate": 0.08,
+            "accrual": "simple"
+          },
+          {
+            "type": "catch_up",
+            "gp_share": 1,
+            "target_promote": 0.2
+          },
+          {
+            "type": "split",
+            "lp_share": 0.8,
+            "gp_share": 0.2
+          }
+        ],
+        "stated_outcomes": {
+          "profit_total": -420000.005
+        }
+      },
+      "series": {
+        "day_count": "actual/365f",
+        "series": [
+          {
+            "date": "2026-01-01",
+            "amount": -1000000,
+            "kind": "acquisition"
+          },
+          {
+            "date": "2027-01-01",
+            "amount": 80000,
+            "kind": "operating"
+          },
+          {
+            "date": "2028-01-01",
+            "amount": 500000,
+            "kind": "disposition"
+          }
+        ]
+      }
+    }
+  ],
+  "normal": [
+    {
+      "id": "normal/lower-subnormal",
+      "p": "0000000000000001",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/lower-tail",
+      "p": "3f50624dd2f1a9fc",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/lower-neighbor",
+      "p": "3f98d4fdf3b645a1",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/lower-cutoff",
+      "p": "3f98d4fdf3b645a2",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/middle",
+      "p": "3fe0000000000000",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/upper-cutoff",
+      "p": "3fef395810624dd3",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/upper-neighbor",
+      "p": "3fef395810624dd4",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/upper-tail",
+      "p": "3feff7ced916872b",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/upper-last",
+      "p": "3fefffffffffffff",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/zero",
+      "p": "0000000000000000",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/negative-zero",
+      "p": "8000000000000000",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/one",
+      "p": "3ff0000000000000",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/negative",
+      "p": "bfb999999999999a",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/infinity",
+      "p": "7ff0000000000000",
+      "mean": 42.0,
+      "stddev": 3.0
+    },
+    {
+      "id": "normal/nan",
+      "p": "7ff8000000000000",
+      "mean": 42.0,
+      "stddev": 3.0
+    }
+  ],
+  "recovery": [
+    {
+      "id": "recovery/accepted",
+      "share": 0.25,
+      "row": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "pool_actual": 0.5,
+        "tenant_share_uncapped": 0.13,
+        "tenant_share_capped": 0.13,
+        "estimated_billed": 0,
+        "true_up_amount": 0.13,
+        "settlement": "disputed"
+      }
+    },
+    {
+      "id": "recovery/below-positive-tie",
+      "share": 0.25,
+      "row": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "pool_actual": 0.49999999999999994,
+        "tenant_share_uncapped": 0.12,
+        "tenant_share_capped": 0.12,
+        "estimated_billed": 0,
+        "true_up_amount": 0.12,
+        "settlement": "disputed"
+      }
+    },
+    {
+      "id": "recovery/negative-trueup",
+      "share": 0.25,
+      "row": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "pool_actual": 0.5,
+        "tenant_share_uncapped": 0.13,
+        "tenant_share_capped": 0.13,
+        "estimated_billed": 0.255,
+        "true_up_amount": -0.13,
+        "settlement": "disputed"
+      }
+    },
+    {
+      "id": "recovery/wrong-product",
+      "share": 0.25,
+      "row": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "pool_actual": 0.5,
+        "tenant_share_uncapped": 0.12,
+        "tenant_share_capped": 0.12,
+        "estimated_billed": 0,
+        "true_up_amount": 0.12,
+        "settlement": "disputed"
+      }
+    },
+    {
+      "id": "recovery/cap-increases",
+      "share": 0.25,
+      "row": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "pool_actual": 0.5,
+        "tenant_share_uncapped": 0.13,
+        "tenant_share_capped": 0.14,
+        "estimated_billed": 0,
+        "true_up_amount": 0.14,
+        "settlement": "disputed"
+      }
+    },
+    {
+      "id": "recovery/wrong-subtraction",
+      "share": 0.25,
+      "row": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "pool_actual": 0.5,
+        "tenant_share_uncapped": 0.13,
+        "tenant_share_capped": 0.13,
+        "estimated_billed": 0.25,
+        "true_up_amount": -0.11,
+        "settlement": "disputed"
+      }
+    },
+    {
+      "id": "recovery/negative-zero-credit",
+      "share": 0.25,
+      "row": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "pool_actual": 0.5,
+        "tenant_share_uncapped": 0.13,
+        "tenant_share_capped": 0.13,
+        "estimated_billed": 0.1301,
+        "true_up_amount": -0.0,
+        "settlement": "disputed"
+      }
+    },
+    {
+      "id": "recovery/multiple-errors",
+      "share": 0.25,
+      "row": {
+        "period_start": "2025-01-01",
+        "period_end": "2025-12-31",
+        "pool_actual": 0.5,
+        "tenant_share_uncapped": 0.12,
+        "tenant_share_capped": 0.14,
+        "estimated_billed": 0.25,
+        "true_up_amount": -0.1,
+        "settlement": "disputed"
+      }
+    }
+  ],
+  "stochastic": {
+    "id": "normal/seeded-summary",
+    "seed": 42,
+    "samples": 64,
+    "mean": 42.0,
+    "stddev": 3.0,
+    "places": 12
+  }
+}

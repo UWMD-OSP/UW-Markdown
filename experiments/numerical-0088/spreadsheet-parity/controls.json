@@ -1,0 +1,105 @@
+{
+  "scope": "UNACCEPTED scalar/ADS native Excel observation, not a pinned implementation",
+  "controls": [
+    [
+      "power-report12",
+      1.2,
+      31,
+      null,
+      null,
+      "pow/report12",
+      "=POWER(B4,C4)",
+      "=ROUND(G4,12)"
+    ],
+    [
+      "negative-power",
+      1.1,
+      -31,
+      null,
+      null,
+      "all exponent classes",
+      "=POWER(B5,C5)",
+      "=ROUND(G5,12)"
+    ],
+    [
+      "subnormal-power",
+      2,
+      -1074,
+      null,
+      null,
+      "raw subnormal boundary",
+      "=POWER(B6,C6)",
+      "=ROUND(G6,12)"
+    ],
+    [
+      "log",
+      1.345,
+      null,
+      null,
+      null,
+      "raw log",
+      "=LN(B7)",
+      "=ROUND(G7,12)"
+    ],
+    [
+      "exp",
+      0.345,
+      null,
+      null,
+      null,
+      "raw exp",
+      "=EXP(B8)",
+      "=ROUND(G8,12)"
+    ],
+    [
+      "overflow-exp",
+      1000,
+      null,
+      null,
+      null,
+      "deliberate exceptional value",
+      "=EXP(B9)",
+      "=G9"
+    ],
+    [
+      "internal-npv",
+      1e+155,
+      2,
+      null,
+      null,
+      "overflowing denominator",
+      "=1/POWER(1+B10,C10)",
+      "=ROUND(G10,6)"
+    ],
+    [
+      "quantizer-tie",
+      1.005,
+      2,
+      null,
+      null,
+      "decimal half-away",
+      "=ROUND(B11,C11)",
+      "=G11"
+    ],
+    [
+      "stack-ads",
+      26000000,
+      0.0625,
+      360,
+      3100000,
+      "ADS and coverage",
+      "=(B12*(C12/12))/(1-POWER(1+C12/12,-D12))*12",
+      "=ROUND(E12/G12,2)"
+    ],
+    [
+      "stack-ads-zero",
+      26000000,
+      0,
+      360,
+      3100000,
+      "zero-rate ADS and coverage",
+      "=(B13/D13)*12",
+      "=ROUND(E13/G13,2)"
+    ]
+  ]
+}

@@ -1,0 +1,1357 @@
+{
+  "status": "UNACCEPTED RESEARCH EVIDENCE",
+  "oracle": "exact dyadic rational / adjacent binary64 midpoint comparison",
+  "input_sha256": "ea798c32ade509e09ed556c1335197a528b7d883c3bc4c0cf43b331f2ebe8af5",
+  "reference_sha256": "87d3609c85876c4e2c41b5f71b5c8e0377a7c953ab5846ef1f6c09fb736b3808",
+  "oracle_limits": {
+    "absolute_exponent_numerator": 256,
+    "exponent_denominator": 16
+  },
+  "cases": [
+    {
+      "id": "zero-zero",
+      "classification": {
+        "kind": "zero_exponent"
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-zero-zero",
+      "classification": {
+        "kind": "zero_exponent"
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-zero-odd",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "8000000000000000"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "8000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "8000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "8000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-zero-even",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "0000000000000000"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-zero-half",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "0000000000000000"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "zero-negative",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": false,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "zero_negative_exponent"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "zero_negative_exponent",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "zero_negative_exponent",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "zero_negative_exponent",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-zero-negative",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "zero_negative_exponent"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "zero_negative_exponent",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "zero_negative_exponent",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "zero_negative_exponent",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-base-fractional",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "negative_fractional_domain"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "negative_fractional_domain",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "negative_fractional_domain",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "negative_fractional_domain",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-base-odd",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "c020000000000000",
+        "proof": {
+          "exact": true
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "c020000000000000",
+          "operations": 3,
+          "trace_sha256": "5dcfe595e1388cb42bcf88d12a0c19b3f89732e4e00c86aa5ea424d6dcdba7df"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "c020000000000000",
+          "operations": 3,
+          "trace_sha256": "e4d72a594b6359c6ae7f98851597b263e8806473d5733acb8f3baf4f92808f7c"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "c020000000000000",
+          "operations": 3,
+          "trace_sha256": "e4d72a594b6359c6ae7f98851597b263e8806473d5733acb8f3baf4f92808f7c"
+        }
+      }
+    },
+    {
+      "id": "negative-base-negative-odd",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "bfc0000000000000",
+        "proof": {
+          "exact": true
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "bfc0000000000000",
+          "operations": 4,
+          "trace_sha256": "5e8b992bbeec5d2fcdd24b67c0eff8f3c3b1575737a5d36da746e5ef2096266e"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "bfc0000000000000",
+          "operations": 4,
+          "trace_sha256": "c9a8375499264d3037a438cd73a2c87b9718c3079f01cc6b7e3f9e4537ea46b1"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "bfc0000000000000",
+          "operations": 4,
+          "trace_sha256": "3cbdb270ec81cbafde0a064dd0256f91b414c9ac691cc20ff50d7b8658646bf9"
+        }
+      }
+    },
+    {
+      "id": "negative-one-huge-odd",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "within_lab_budget": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "bff0000000000000"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "bff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "bff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "bff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-one-huge-even",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "within_lab_budget": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "3ff0000000000000",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "huge-integer-budget",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "within_lab_budget": false
+      },
+      "mathematical": {
+        "status": "outside_oracle_scope"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "lab_budget_refusal",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "lab_budget_refusal",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "lab_budget_refusal",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "boundary-below-integer",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "outside_oracle_scope"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "nan-before-zero",
+      "classification": {
+        "kind": "nonfinite_input"
+      },
+      "mathematical": {
+        "status": "nonfinite_input"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "infinity-input",
+      "classification": {
+        "kind": "nonfinite_input"
+      },
+      "mathematical": {
+        "status": "nonfinite_input"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "nonfinite-exponent",
+      "classification": {
+        "kind": "nonfinite_input"
+      },
+      "mathematical": {
+        "status": "nonfinite_input"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "nonfinite_input",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "order-1.1-31",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "403331c06e0793ba",
+        "proof": {
+          "exact": false,
+          "lower": "403331c06e0793b9",
+          "upper": "403331c06e0793ba",
+          "midpoint_relation": "above",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "403331c06e0793b8",
+          "operations": 31,
+          "trace_sha256": "9fdfeead60f40f61a29e3c690de2d48dca74db423f3f01a75dfc816b209ff648"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "403331c06e0793b8",
+          "operations": 9,
+          "trace_sha256": "18b97f87869aa5f254a5ed0188515e7c0e1b074401af84a0a8e2de9408dcade9"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "403331c06e0793b8",
+          "operations": 9,
+          "trace_sha256": "18b97f87869aa5f254a5ed0188515e7c0e1b074401af84a0a8e2de9408dcade9"
+        }
+      }
+    },
+    {
+      "id": "order-1.0001-127",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ff0345929946e2d",
+        "proof": {
+          "exact": false,
+          "lower": "3ff0345929946e2c",
+          "upper": "3ff0345929946e2d",
+          "midpoint_relation": "above",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "3ff0345929946e2d",
+          "operations": 127,
+          "trace_sha256": "8e1f0e06b40d4573b0a44608dad34229690e7cb8c6d46787052a1c0a3ec08c25"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "3ff0345929946e21",
+          "operations": 13,
+          "trace_sha256": "e596a0e40bca3bb2506dacd39625bc3562762030c04c382add4d6e4cae0203bb"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "3ff0345929946e21",
+          "operations": 13,
+          "trace_sha256": "e596a0e40bca3bb2506dacd39625bc3562762030c04c382add4d6e4cae0203bb"
+        }
+      }
+    },
+    {
+      "id": "order-1.0001-256",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ff06a34b78c8aa3",
+        "proof": {
+          "exact": false,
+          "lower": "3ff06a34b78c8aa2",
+          "upper": "3ff06a34b78c8aa3",
+          "midpoint_relation": "above",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "3ff06a34b78c8aa0",
+          "operations": 256,
+          "trace_sha256": "ebb97e94cce8b364cc6dffb30b28765181d5a727cc4b5b129f838b5fd805ffd2"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "3ff06a34b78c8a8a",
+          "operations": 9,
+          "trace_sha256": "11fdb618682f82c76e7853e98d7b066ca4a308d2cb4d86a2cd94fbf554309998"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "3ff06a34b78c8a8a",
+          "operations": 9,
+          "trace_sha256": "11fdb618682f82c76e7853e98d7b066ca4a308d2cb4d86a2cd94fbf554309998"
+        }
+      }
+    },
+    {
+      "id": "negative-order-1.1-31",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3faaacadc6ed30ca",
+        "proof": {
+          "exact": false,
+          "lower": "3faaacadc6ed30ca",
+          "upper": "3faaacadc6ed30cb",
+          "midpoint_relation": "below",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "3faaacadc6ed30cd",
+          "operations": 32,
+          "trace_sha256": "f557128df62768acc1ba6606d1ab63333bed555ac114f86049e1475db60ca03c"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "3faaacadc6ed30cd",
+          "operations": 10,
+          "trace_sha256": "19e5da5bfdaaadd401720d7eadb15e063173802c0bc5b9f5e1000824ad14d4e5"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "3faaacadc6ed30d0",
+          "operations": 10,
+          "trace_sha256": "346056f1310c692a57852df8dc9dbe91cfc1d8d96bb124caeb699128ba7bd98d"
+        }
+      }
+    },
+    {
+      "id": "large-base-negative-two",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": false,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "000012688b70e62b",
+        "proof": {
+          "exact": false,
+          "lower": "000012688b70e62b",
+          "upper": "000012688b70e62c",
+          "midpoint_relation": "below",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "intermediate_nonfinite",
+          "operations": 2,
+          "trace_sha256": "f1661be4769393ad7da86942435743ee86c37417238603c4752f294019a7f01d"
+        },
+        "binary-late": {
+          "status": "intermediate_nonfinite",
+          "operations": 1,
+          "trace_sha256": "d1fca7559e85315b4a26007eda59eefec1dd171044e890bff8f32e5094029ec2"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "000012688b70e62b",
+          "operations": 3,
+          "trace_sha256": "8d9614368d815b79d66f7fa4d5611ebb2f47d82f92c89538d47c92b126c793bd"
+        }
+      }
+    },
+    {
+      "id": "large-base-negative-three",
+      "classification": {
+        "kind": "integer",
+        "negative": true,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "8000000000000000",
+        "proof": {
+          "exact": false,
+          "lower": "0000000000000000",
+          "upper": "0000000000000001",
+          "midpoint_relation": "below",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "intermediate_nonfinite",
+          "operations": 2,
+          "trace_sha256": "4ca150c585654b2f94b81e65e2880935672a737e08a677d24077657b6a65a923"
+        },
+        "binary-late": {
+          "status": "intermediate_nonfinite",
+          "operations": 2,
+          "trace_sha256": "4ca150c585654b2f94b81e65e2880935672a737e08a677d24077657b6a65a923"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "8000000000000000",
+          "operations": 4,
+          "trace_sha256": "a94c63cfc833422afb134ba86b67f6f13906512dcaaaae200b4f5a3c59ff66c7"
+        }
+      }
+    },
+    {
+      "id": "unused-final-square",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "5ff0000000000000",
+        "proof": {
+          "exact": true
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "5ff0000000000000",
+          "operations": 1,
+          "trace_sha256": "9b9a22b0b2675b913f2c7e0574ca4ffbf3e4183b2867e505b90c52408df76baa"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "5ff0000000000000",
+          "operations": 1,
+          "trace_sha256": "9b9a22b0b2675b913f2c7e0574ca4ffbf3e4183b2867e505b90c52408df76baa"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "5ff0000000000000",
+          "operations": 1,
+          "trace_sha256": "9b9a22b0b2675b913f2c7e0574ca4ffbf3e4183b2867e505b90c52408df76baa"
+        }
+      }
+    },
+    {
+      "id": "overflow-final",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "rounded_overflow",
+        "bits": "7ff0000000000000"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "intermediate_nonfinite",
+          "operations": 2,
+          "trace_sha256": "3c9e0bbd6c273bdb3ebbff336d1ced09df02f9a4871a68840c62d39fc07aa96d"
+        },
+        "binary-late": {
+          "status": "intermediate_nonfinite",
+          "operations": 1,
+          "trace_sha256": "8665c57a78291e95712633f21002b3cb2f25950224c33ca0c75ceda30bc98a7b"
+        },
+        "binary-early": {
+          "status": "intermediate_nonfinite",
+          "operations": 1,
+          "trace_sha256": "8665c57a78291e95712633f21002b3cb2f25950224c33ca0c75ceda30bc98a7b"
+        }
+      }
+    },
+    {
+      "id": "minnormal-square",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "0000000000000000",
+        "proof": {
+          "exact": false,
+          "lower": "0000000000000000",
+          "upper": "0000000000000001",
+          "midpoint_relation": "below",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 2,
+          "trace_sha256": "61d687d34417d6041bdb2e47f5dd46ab3e55a00244c31b30918364c253b95b36"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 2,
+          "trace_sha256": "52101f5e85fa49a27dd3b14504e3c0fe00b9c2339875371710d178dd3ee37b4a"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 2,
+          "trace_sha256": "52101f5e85fa49a27dd3b14504e3c0fe00b9c2339875371710d178dd3ee37b4a"
+        }
+      }
+    },
+    {
+      "id": "minsubnormal-sqrt",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "1e60000000000000",
+        "proof": {
+          "exact": true
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "minsubnormal-fourth-root",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "2f26a09e667f3bcd",
+        "proof": {
+          "exact": false,
+          "lower": "2f26a09e667f3bcc",
+          "upper": "2f26a09e667f3bcd",
+          "midpoint_relation": "above",
+          "denominator": 4
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "max-sqrt",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "5fefffffffffffff",
+        "proof": {
+          "exact": false,
+          "lower": "5fefffffffffffff",
+          "upper": "5ff0000000000000",
+          "midpoint_relation": "below",
+          "denominator": 2
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "sqrt-two",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ff6a09e667f3bcd",
+        "proof": {
+          "exact": false,
+          "lower": "3ff6a09e667f3bcc",
+          "upper": "3ff6a09e667f3bcd",
+          "midpoint_relation": "above",
+          "denominator": 2
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "quarter-two",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ff306fe0a31b715",
+        "proof": {
+          "exact": false,
+          "lower": "3ff306fe0a31b715",
+          "upper": "3ff306fe0a31b716",
+          "midpoint_relation": "below",
+          "denominator": 4
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "three-quarters-two",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ffae89f995ad3ad",
+        "proof": {
+          "exact": false,
+          "lower": "3ffae89f995ad3ad",
+          "upper": "3ffae89f995ad3ae",
+          "midpoint_relation": "below",
+          "denominator": 4
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "negative-three-quarters-two",
+      "classification": {
+        "kind": "fractional",
+        "negative": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3fe306fe0a31b715",
+        "proof": {
+          "exact": false,
+          "lower": "3fe306fe0a31b715",
+          "upper": "3fe306fe0a31b716",
+          "midpoint_relation": "below",
+          "denominator": 4
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "fifteen-sixteenths-two",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ffea4afa2a490da",
+        "proof": {
+          "exact": false,
+          "lower": "3ffea4afa2a490d9",
+          "upper": "3ffea4afa2a490da",
+          "midpoint_relation": "above",
+          "denominator": 16
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "near-one-sqrt",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3ff0000000000000",
+        "proof": {
+          "exact": false,
+          "lower": "3ff0000000000000",
+          "upper": "3ff0000000000001",
+          "midpoint_relation": "below",
+          "denominator": 2
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "below-one-sqrt",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "3fefffffffffffff",
+        "proof": {
+          "exact": false,
+          "lower": "3fefffffffffffff",
+          "upper": "3ff0000000000000",
+          "midpoint_relation": "below",
+          "denominator": 2
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    },
+    {
+      "id": "half-minsubnormal-power",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "0000000000000000",
+        "proof": {
+          "exact": false,
+          "lower": "0000000000000000",
+          "upper": "0000000000000001",
+          "midpoint_relation": "tie",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 5,
+          "trace_sha256": "0fee12fe6618ffe0c722f271c6f14c4153cb138ce27a5917229bd9fcf91d117e"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 4,
+          "trace_sha256": "63d59222f0f3109ab48de9ec5e8522954f741de9cc3320c34b0ea22a947ce13e"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "0000000000000000",
+          "operations": 4,
+          "trace_sha256": "63d59222f0f3109ab48de9ec5e8522954f741de9cc3320c34b0ea22a947ce13e"
+        }
+      }
+    },
+    {
+      "id": "negative-half-minsubnormal-power",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": true,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "8000000000000000",
+        "proof": {
+          "exact": false,
+          "lower": "0000000000000000",
+          "upper": "0000000000000001",
+          "midpoint_relation": "tie",
+          "denominator": 1
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "8000000000000000",
+          "operations": 5,
+          "trace_sha256": "9757499aa1aedc80bd1042a0d237f4fa6301b1c833be33e09d7cd97cdf17ee12"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "8000000000000000",
+          "operations": 4,
+          "trace_sha256": "f77f7f4e66d94e968e5b3a75471a4ba169c0334001aa25d7bef592fb606aa501"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "8000000000000000",
+          "operations": 4,
+          "trace_sha256": "f77f7f4e66d94e968e5b3a75471a4ba169c0334001aa25d7bef592fb606aa501"
+        }
+      }
+    },
+    {
+      "id": "exact-minsubnormal-power",
+      "classification": {
+        "kind": "integer",
+        "negative": false,
+        "odd": false,
+        "within_lab_budget": true
+      },
+      "mathematical": {
+        "status": "finite",
+        "bits": "0000000000000001",
+        "proof": {
+          "exact": true
+        }
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "finite",
+          "bits": "0000000000000001",
+          "operations": 2,
+          "trace_sha256": "b4c5f84e2cced5ad7d1224fe8d5d2eab0f2be6617e1b8049d7609f22fbeb3b60"
+        },
+        "binary-late": {
+          "status": "finite",
+          "bits": "0000000000000001",
+          "operations": 2,
+          "trace_sha256": "e65d6c41a83f7427efbd265bcd4144f380b30b29fe8f9d9c8be851a0b9f71925"
+        },
+        "binary-early": {
+          "status": "finite",
+          "bits": "0000000000000001",
+          "operations": 2,
+          "trace_sha256": "e65d6c41a83f7427efbd265bcd4144f380b30b29fe8f9d9c8be851a0b9f71925"
+        }
+      }
+    },
+    {
+      "id": "general-fraction-outside-oracle",
+      "classification": {
+        "kind": "fractional",
+        "negative": false
+      },
+      "mathematical": {
+        "status": "outside_oracle_scope"
+      },
+      "graphs": {
+        "sequential-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-late": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "binary-early": {
+          "status": "fractional_kernel_required",
+          "operations": 0,
+          "trace_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      }
+    }
+  ]
+}

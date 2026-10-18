@@ -5530,6 +5530,76 @@
       "suite": "metrics",
       "scenario": "standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md",
       "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-pow-integer",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-pow-fractional",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-negative-power-subnormal",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-exp",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-log",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-pow-overflow",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-negative-fraction-refusal",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-irr-all-zero",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-irr-tiny-positive",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-irr-high-endpoint",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-irr-primitive-transition",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-irr-even-roots-no-bracket",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-npv-internal-infinity",
+      "target": "verifier"
+    },
+    {
+      "suite": "calc",
+      "scenario": "rfc0088-npv-nan-raw",
+      "target": "verifier"
     }
   ]
 }

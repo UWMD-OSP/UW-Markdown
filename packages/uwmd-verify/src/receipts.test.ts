@@ -5,6 +5,7 @@
 // and the verifier keeps `unverifiable` genuinely distinct from `failed`.
 
 import { describe, expect, it } from 'vitest';
+import {createPrivateKey, createPublicKey, sign, verify as verifyEd25519} from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import {
@@ -1044,5 +1045,70 @@ describe('JCS receipt artifact error boundaries', () => {
     const error = new TypeError('backend failure');
     await expect(verifyReceipt(receipt, source, { filename: options.filename, packs: [pack],
       signatureVerifier: { verify: async () => { throw error; } } })).rejects.toBe(error);
+  });
+});
+
+describe('RFC 0088 authenticate-first receipt precedence', () => {
+  it('authenticates real signatures before a typed refusal, including a different engine', async () => {
+    const content = await parkview();
+    const pack = { ...MULTIFAMILY_PACK, id: 'org.uwmd.test.authenticate-first', version: '1.0.0',
+      calculations: [{ id: 'scalar', label: 'Stage control', formula: '1+1', deterministic: true as const, round_to: 12 }] };
+    const refusing = { ...pack, calculations: [{ ...pack.calculations[0]!, formula: 'irr(1,1)' }] };
+    const key = createPrivateKey({ key: Buffer.concat([Buffer.from('302e020100300506032b657004220420','hex'),
+      Buffer.from('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f','hex')]), format: 'der', type: 'pkcs8' });
+    const publicKey = createPublicKey(key);
+    const issued = await issueReceipt(content, { pack, issued_at: ISSUED_AT, issuer: 'public-test-key' });
+    const signed = (otherEngine = false, invalid = false): UWReceipt => {
+      const receipt = structuredClone(issued);
+      if (otherEngine) receipt.computation.engine = 'other-engine';
+      receipt.signature = { algorithm: 'ed25519', key_id: 'public-test-key',
+        value: sign(null, Buffer.from(receiptSigningPayload(receipt)), key).toString('base64') };
+      if (invalid) {
+        const bytes = Buffer.from(receipt.signature.value, 'base64');
+        bytes[0] = bytes[0]! ^ 1;
+        receipt.signature.value = bytes.toString('base64');
+      }
+      return receipt;
+    };
+    for (const otherEngine of [false, true]) {
+      for (const invalid of [false, true]) {
+        const receipt = signed(otherEngine, invalid);
+        const original = JSON.stringify(receipt);
+        let calls = 0;
+        const result = await verifyReceipt(receipt, content, { packs: [refusing], signatureVerifier: {
+          verify: async (actual, payload) => {
+            calls++;
+            expect(payload).toBe(receiptSigningPayload(actual));
+            return verifyEd25519(null, Buffer.from(payload), publicKey, Buffer.from(actual.signature!.value, 'base64'));
+          },
+        } });
+        expect(calls).toBe(1);
+        expect(result.verdict).toBe('failed');
+        expect(result.issues.map(issue => issue.code)).toEqual([invalid ? 'RCP-01' : 'RCP-03']);
+        if (invalid) expect(Object.hasOwn(result, 'recomputed')).toBe(false);
+        else expect(result.recomputed).toEqual([]);
+        expect(JSON.stringify(receipt)).toBe(original);
+      }
+    }
+    const unavailable = await verifyReceipt(signed(), content, { packs: [refusing] });
+    expect(unavailable.issues.map(issue => issue.code)).toEqual(['RCP-08']);
+    expect(Object.hasOwn(unavailable, 'recomputed')).toBe(false);
+    const unsigned = await verifyReceipt(issued, content, { packs: [refusing] });
+    expect(unsigned.issues.map(issue => issue.code)).toEqual(['RCP-03']);
+    expect(unsigned.recomputed).toEqual([]);
+    const backendFailure = new Error('backend transport control');
+    await expect(verifyReceipt(signed(), content, { packs: [refusing], signatureVerifier: {
+      verify: async () => { throw backendFailure; },
+    } })).rejects.toBe(backendFailure);
+    const malformed = signed();
+    malformed.issuer = '\ud800';
+    let malformedCalls = 0;
+    const malformedResult = await verifyReceipt(malformed, content, { packs: [refusing], signatureVerifier: {
+      verify: async () => { malformedCalls++; return true; },
+    } });
+    expect(malformedCalls).toBe(0);
+    expect(malformedResult.issues.map(issue => issue.code)).toEqual(['RCP-01']);
+    expect(Object.hasOwn(malformedResult, 'recomputed')).toBe(false);
+    expect(await parkview()).toBe(content);
   });
 });

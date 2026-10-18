@@ -1,3 +1,4 @@
+import { pinnedPow } from './calc/pinned-numerics.js';
 import { checkBuiltinClassContent } from './builtin-class-validation.js';
 import { isScenarioId } from './scenario.js';
 import { checkReserveAccountsStructure } from './reserve-accounts-structure.js';
@@ -1306,7 +1307,7 @@ function recIssue(
 }
 
 function roundRec(value: number): number {
-  const f = 10 ** RECOVERY_DP;
+  const f = pinnedPow(10, RECOVERY_DP);
   const scaled = value * f;
   return (scaled < 0 ? -Math.round(-scaled) : Math.round(scaled)) / f;
 }

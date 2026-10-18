@@ -37,9 +37,31 @@ The eight derived metrics ship as **formulas**, not pre-computed numbers:
 | Loan / SqFt    | `=loan_amount/total_nra_sqft`                      |
 | Cash-on-Cash   | `=(noi-annual_debt_service)/equity_sponsor`        |
 
-These mirror `MULTIFAMILY_PACK` (exported by `@uwmd/verify` and `@uwmd/core`), so opening the
-workbook in Excel and running `uwmd calc` against the same `.uwx.md`
-produce identical numbers by construction.
+Exported expressions follow `MULTIFAMILY_PACK` (exported by `@uwmd/verify` and
+`@uwmd/core`) and retain the existing reporting quantum. Native spreadsheet
+recalculation is a separate numerical execution, subject to the limits below.
+
+### Native recalculation limits (accepted RFC 0088)
+
+UWMD financial verification uses the exact pinned fdlibm power, exponential and
+logarithm procedures. A spreadsheet's native recalculation of exported formulas
+may differ from that procedure beyond about **eleven significant digits** and
+may return errors on IEEE edge cases, including **subnormals and overflow**.
+These are accepted export-contract limits, not defects requiring UWMD arithmetic
+to change. Eleven digits is not a universal guarantee of native agreement.
+
+**UWMD verifies the stated record, never the spreadsheet's recomputation.**
+A workbook formula result is not a verification receipt or a replacement for
+the stated record's values and source evidence. The export keeps its existing
+financial expressions, associations and reporting quantization; no native
+POWER/LN/EXP answer changes the pinned procedure, solver or record verdict.
+
+The reproducible ten-control study uses named LibreOffice Calc24.2.7.2
+420(Build:2):13 comparison agreements, one12-place POWER/ROUND discrepancy and
+six #NUM! cells. A spreadsheet error is distinct from raw IEEE Infinity, an
+existing public-calc refusal, or an internal Infinity producing a finite final
+zero. See [accepted RFC0088](../../docs/rfcs/0088-pin-financial-numerical-procedures.md#spreadsheet-export-contract)
+and the [recalculation controls](https://github.com/UWMD-OSP/UW-Markdown/tree/86a20fe5f95f56bad5766f559817b6f7ef102b2c/experiments/numerical-0088/spreadsheet-parity).
 
 Editing a named-input cell updates its dependent formulas. When the statement
 uses live subtotals, editing its income or expense detail updates those subtotals,

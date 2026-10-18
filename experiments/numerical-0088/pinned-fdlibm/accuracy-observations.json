@@ -1,0 +1,2157 @@
+{
+  "status": "UNACCEPTED candidate observations, not independent expected answers or universal accuracy proof",
+  "inputs_sha256": "cb0079655db3c641bb4e7a04708dadc43be20ee34a9b04e16fccd3694e585911",
+  "mathematics_sha256": "4d388ee0be56d3f39ad20c13975fa0b283e0e410126235f5768a6411a987faca",
+  "candidate_sources": {
+    "kernel.mjs": "9cea03d62c453d2c6428f076aab1203c04920585f90dcb9815a98967f28fb5be",
+    "words.mjs": "c3bb33ff8b2124bc048a0bb9b7b10d3de318b33e20308091abd079459b434914",
+    "constants.mjs": "6479a8f04cc3e990cd1316d22cdfa164f83bd0acc56905a60c7a7dbc0c65cc25",
+    "run.mjs": "0c34bdb2f8e6fa9b9a1d5d8532e991b985f7bbe32296950c9a3d7996b6eb1571"
+  },
+  "cases": [
+    {
+      "id": "sqrt-subnormal-bit-0",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-0",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1e60000000000000"
+      },
+      "reference_word": "1e60000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-1",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-1",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1e66a09e667f3bcd"
+      },
+      "reference_word": "1e66a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-2",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-2",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1e70000000000000"
+      },
+      "reference_word": "1e70000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-3",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-3",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1e76a09e667f3bcd"
+      },
+      "reference_word": "1e76a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-4",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-4",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1e80000000000000"
+      },
+      "reference_word": "1e80000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-5",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-5",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1e86a09e667f3bcd"
+      },
+      "reference_word": "1e86a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-6",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-6",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1e90000000000000"
+      },
+      "reference_word": "1e90000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-7",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-7",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1e96a09e667f3bcd"
+      },
+      "reference_word": "1e96a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-8",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-8",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ea0000000000000"
+      },
+      "reference_word": "1ea0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-9",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-9",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ea6a09e667f3bcd"
+      },
+      "reference_word": "1ea6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-10",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-10",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1eb0000000000000"
+      },
+      "reference_word": "1eb0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-11",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-11",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1eb6a09e667f3bcd"
+      },
+      "reference_word": "1eb6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-12",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-12",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ec0000000000000"
+      },
+      "reference_word": "1ec0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-13",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-13",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ec6a09e667f3bcd"
+      },
+      "reference_word": "1ec6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-14",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-14",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ed0000000000000"
+      },
+      "reference_word": "1ed0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-15",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-15",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ed6a09e667f3bcd"
+      },
+      "reference_word": "1ed6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-16",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-16",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ee0000000000000"
+      },
+      "reference_word": "1ee0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-17",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-17",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ee6a09e667f3bcd"
+      },
+      "reference_word": "1ee6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-18",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-18",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ef0000000000000"
+      },
+      "reference_word": "1ef0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-19",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-19",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ef6a09e667f3bcd"
+      },
+      "reference_word": "1ef6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-20",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-20",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f00000000000000"
+      },
+      "reference_word": "1f00000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-21",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-21",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f06a09e667f3bcd"
+      },
+      "reference_word": "1f06a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-22",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-22",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f10000000000000"
+      },
+      "reference_word": "1f10000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-23",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-23",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f16a09e667f3bcd"
+      },
+      "reference_word": "1f16a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-24",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-24",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f20000000000000"
+      },
+      "reference_word": "1f20000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-25",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-25",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f26a09e667f3bcd"
+      },
+      "reference_word": "1f26a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-26",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-26",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f30000000000000"
+      },
+      "reference_word": "1f30000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-27",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-27",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f36a09e667f3bcd"
+      },
+      "reference_word": "1f36a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-28",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-28",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f40000000000000"
+      },
+      "reference_word": "1f40000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-29",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-29",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f46a09e667f3bcd"
+      },
+      "reference_word": "1f46a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-30",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-30",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f50000000000000"
+      },
+      "reference_word": "1f50000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-31",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-31",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f56a09e667f3bcd"
+      },
+      "reference_word": "1f56a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-32",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-32",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f60000000000000"
+      },
+      "reference_word": "1f60000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-33",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-33",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f66a09e667f3bcd"
+      },
+      "reference_word": "1f66a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-34",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-34",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f70000000000000"
+      },
+      "reference_word": "1f70000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-35",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-35",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f76a09e667f3bcd"
+      },
+      "reference_word": "1f76a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-36",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-36",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f80000000000000"
+      },
+      "reference_word": "1f80000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-37",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-37",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f86a09e667f3bcd"
+      },
+      "reference_word": "1f86a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-38",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-38",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f90000000000000"
+      },
+      "reference_word": "1f90000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-39",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-39",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1f96a09e667f3bcd"
+      },
+      "reference_word": "1f96a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-40",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-40",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fa0000000000000"
+      },
+      "reference_word": "1fa0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-41",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-41",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fa6a09e667f3bcd"
+      },
+      "reference_word": "1fa6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-42",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-42",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fb0000000000000"
+      },
+      "reference_word": "1fb0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-43",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-43",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fb6a09e667f3bcd"
+      },
+      "reference_word": "1fb6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-44",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-44",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fc0000000000000"
+      },
+      "reference_word": "1fc0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-45",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-45",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fc6a09e667f3bcd"
+      },
+      "reference_word": "1fc6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-46",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-46",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fd0000000000000"
+      },
+      "reference_word": "1fd0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-47",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-47",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fd6a09e667f3bcd"
+      },
+      "reference_word": "1fd6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-48",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-48",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fe0000000000000"
+      },
+      "reference_word": "1fe0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-49",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-49",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fe6a09e667f3bcd"
+      },
+      "reference_word": "1fe6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-50",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-50",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ff0000000000000"
+      },
+      "reference_word": "1ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-subnormal-bit-51",
+      "candidate": {
+        "id": "sqrt-subnormal-bit-51",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1ff6a09e667f3bcd"
+      },
+      "reference_word": "1ff6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-000fffffffffffff",
+      "candidate": {
+        "id": "sqrt-word-000fffffffffffff",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "1fffffffffffffff"
+      },
+      "reference_word": "1fffffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-0010000000000000",
+      "candidate": {
+        "id": "sqrt-word-0010000000000000",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "2000000000000000"
+      },
+      "reference_word": "2000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-0010000000000001",
+      "candidate": {
+        "id": "sqrt-word-0010000000000001",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "2000000000000000"
+      },
+      "reference_word": "2000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3fefffffffffffff",
+      "candidate": {
+        "id": "sqrt-word-3fefffffffffffff",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3fefffffffffffff"
+      },
+      "reference_word": "3fefffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3ff0000000000000",
+      "candidate": {
+        "id": "sqrt-word-3ff0000000000000",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "reference_word": "3ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3ff0000000000001",
+      "candidate": {
+        "id": "sqrt-word-3ff0000000000001",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "reference_word": "3ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3ff3988dffffffff",
+      "candidate": {
+        "id": "sqrt-word-3ff3988dffffffff",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff1b4f810b5a6f2"
+      },
+      "reference_word": "3ff1b4f810b5a6f2",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3ff3988e00000000",
+      "candidate": {
+        "id": "sqrt-word-3ff3988e00000000",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff1b4f810b5a6f2"
+      },
+      "reference_word": "3ff1b4f810b5a6f2",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3ff3988e00000001",
+      "candidate": {
+        "id": "sqrt-word-3ff3988e00000001",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff1b4f810b5a6f3"
+      },
+      "reference_word": "3ff1b4f810b5a6f3",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3ffbb679ffffffff",
+      "candidate": {
+        "id": "sqrt-word-3ffbb679ffffffff",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff50ea347865025"
+      },
+      "reference_word": "3ff50ea347865025",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3ffbb67a00000000",
+      "candidate": {
+        "id": "sqrt-word-3ffbb67a00000000",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff50ea347865026"
+      },
+      "reference_word": "3ff50ea347865026",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-3ffbb67a00000001",
+      "candidate": {
+        "id": "sqrt-word-3ffbb67a00000001",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff50ea347865026"
+      },
+      "reference_word": "3ff50ea347865026",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-4000000000000000",
+      "candidate": {
+        "id": "sqrt-word-4000000000000000",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "3ff6a09e667f3bcd"
+      },
+      "reference_word": "3ff6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "sqrt-word-7fefffffffffffff",
+      "candidate": {
+        "id": "sqrt-word-7fefffffffffffff",
+        "op": "sqrt",
+        "kind": "finite",
+        "bits": "5fefffffffffffff"
+      },
+      "reference_word": "5fefffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-0000000000000001",
+      "candidate": {
+        "id": "log-word-0000000000000001",
+        "op": "log",
+        "kind": "finite",
+        "bits": "c0874385446d71c3"
+      },
+      "reference_word": "c0874385446d71c3",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-000fffffffffffff",
+      "candidate": {
+        "id": "log-word-000fffffffffffff",
+        "op": "log",
+        "kind": "finite",
+        "bits": "c086232bdd7abcd2"
+      },
+      "reference_word": "c086232bdd7abcd2",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-0010000000000000",
+      "candidate": {
+        "id": "log-word-0010000000000000",
+        "op": "log",
+        "kind": "finite",
+        "bits": "c086232bdd7abcd2"
+      },
+      "reference_word": "c086232bdd7abcd2",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-3fe0000000000000",
+      "candidate": {
+        "id": "log-word-3fe0000000000000",
+        "op": "log",
+        "kind": "finite",
+        "bits": "bfe62e42fefa39ef"
+      },
+      "reference_word": "bfe62e42fefa39ef",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-3fefffffffffffff",
+      "candidate": {
+        "id": "log-word-3fefffffffffffff",
+        "op": "log",
+        "kind": "finite",
+        "bits": "bca0000000000000"
+      },
+      "reference_word": "bca0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-3ff0000000000000",
+      "candidate": {
+        "id": "log-word-3ff0000000000000",
+        "op": "log",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-3ff0000000000001",
+      "candidate": {
+        "id": "log-word-3ff0000000000001",
+        "op": "log",
+        "kind": "finite",
+        "bits": "3cafffffffffffff"
+      },
+      "reference_word": "3cafffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-3ff0000000000002",
+      "candidate": {
+        "id": "log-word-3ff0000000000002",
+        "op": "log",
+        "kind": "finite",
+        "bits": "3cbffffffffffffe"
+      },
+      "reference_word": "3cbffffffffffffe",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-3ff61479ffffffff",
+      "candidate": {
+        "id": "log-word-3ff61479ffffffff",
+        "op": "log",
+        "kind": "finite",
+        "bits": "3fd49d018ee476f7"
+      },
+      "reference_word": "3fd49d018ee476f7",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-3ff6147a00000000",
+      "candidate": {
+        "id": "log-word-3ff6147a00000000",
+        "op": "log",
+        "kind": "finite",
+        "bits": "3fd49d018ee476fa"
+      },
+      "reference_word": "3fd49d018ee476fa",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-3ff6b85100000000",
+      "candidate": {
+        "id": "log-word-3ff6b85100000000",
+        "op": "log",
+        "kind": "finite",
+        "bits": "3fd67126ed7cbb58"
+      },
+      "reference_word": "3fd67126ed7cbb58",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-4000000000000000",
+      "candidate": {
+        "id": "log-word-4000000000000000",
+        "op": "log",
+        "kind": "finite",
+        "bits": "3fe62e42fefa39ef"
+      },
+      "reference_word": "3fe62e42fefa39ef",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "log-word-7fefffffffffffff",
+      "candidate": {
+        "id": "log-word-7fefffffffffffff",
+        "op": "log",
+        "kind": "finite",
+        "bits": "40862e42fefa39ef"
+      },
+      "reference_word": "40862e42fefa39ef",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-0000000000000000",
+      "candidate": {
+        "id": "exp-word-0000000000000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "reference_word": "3ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-8000000000000000",
+      "candidate": {
+        "id": "exp-word-8000000000000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "reference_word": "3ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-3e10000000000000",
+      "candidate": {
+        "id": "exp-word-3e10000000000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3ff0000000400000"
+      },
+      "reference_word": "3ff0000000400000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-be10000000000000",
+      "candidate": {
+        "id": "exp-word-be10000000000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3fefffffff800000"
+      },
+      "reference_word": "3fefffffff800000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-3fd62e41ffffffff",
+      "candidate": {
+        "id": "exp-word-3fd62e41ffffffff",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3ff6a09e0c594ff2"
+      },
+      "reference_word": "3ff6a09e0c594ff3",
+      "signed_ordered_word_distance": "-1",
+      "matches_reference_word": false
+    },
+    {
+      "id": "exp-word-3fd62e4200000000",
+      "candidate": {
+        "id": "exp-word-3fd62e4200000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3ff6a09e0c594ff3"
+      },
+      "reference_word": "3ff6a09e0c594ff3",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-3fd62e4200000001",
+      "candidate": {
+        "id": "exp-word-3fd62e4200000001",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3ff6a09e0c594ff3"
+      },
+      "reference_word": "3ff6a09e0c594ff3",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-3fe0000000000000",
+      "candidate": {
+        "id": "exp-word-3fe0000000000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3ffa61298e1e069c"
+      },
+      "reference_word": "3ffa61298e1e069c",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-bfe0000000000000",
+      "candidate": {
+        "id": "exp-word-bfe0000000000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3fe368b2fc6f960a"
+      },
+      "reference_word": "3fe368b2fc6f960a",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "exp-word-3ff0000000000000",
+      "candidate": {
+        "id": "exp-word-3ff0000000000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "4005bf0a8b14576a"
+      },
+      "reference_word": "4005bf0a8b145769",
+      "signed_ordered_word_distance": "1",
+      "matches_reference_word": false
+    },
+    {
+      "id": "exp-word-bff0000000000000",
+      "candidate": {
+        "id": "exp-word-bff0000000000000",
+        "op": "exp",
+        "kind": "finite",
+        "bits": "3fd78b56362cef38"
+      },
+      "reference_word": "3fd78b56362cef38",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000--2147483648",
+      "candidate": {
+        "id": "scalbn-0000000000000000--2147483648",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000--1075",
+      "candidate": {
+        "id": "scalbn-0000000000000000--1075",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000--1074",
+      "candidate": {
+        "id": "scalbn-0000000000000000--1074",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000--54",
+      "candidate": {
+        "id": "scalbn-0000000000000000--54",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000--1",
+      "candidate": {
+        "id": "scalbn-0000000000000000--1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000-0",
+      "candidate": {
+        "id": "scalbn-0000000000000000-0",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000-1",
+      "candidate": {
+        "id": "scalbn-0000000000000000-1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000-53",
+      "candidate": {
+        "id": "scalbn-0000000000000000-53",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000-1024",
+      "candidate": {
+        "id": "scalbn-0000000000000000-1024",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000000-2147483647",
+      "candidate": {
+        "id": "scalbn-0000000000000000-2147483647",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000--2147483648",
+      "candidate": {
+        "id": "scalbn-8000000000000000--2147483648",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000--1075",
+      "candidate": {
+        "id": "scalbn-8000000000000000--1075",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000--1074",
+      "candidate": {
+        "id": "scalbn-8000000000000000--1074",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000--54",
+      "candidate": {
+        "id": "scalbn-8000000000000000--54",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000--1",
+      "candidate": {
+        "id": "scalbn-8000000000000000--1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000-0",
+      "candidate": {
+        "id": "scalbn-8000000000000000-0",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000-1",
+      "candidate": {
+        "id": "scalbn-8000000000000000-1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000-53",
+      "candidate": {
+        "id": "scalbn-8000000000000000-53",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000-1024",
+      "candidate": {
+        "id": "scalbn-8000000000000000-1024",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-8000000000000000-2147483647",
+      "candidate": {
+        "id": "scalbn-8000000000000000-2147483647",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001--2147483648",
+      "candidate": {
+        "id": "scalbn-0000000000000001--2147483648",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001--1075",
+      "candidate": {
+        "id": "scalbn-0000000000000001--1075",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001--1074",
+      "candidate": {
+        "id": "scalbn-0000000000000001--1074",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001--54",
+      "candidate": {
+        "id": "scalbn-0000000000000001--54",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001--1",
+      "candidate": {
+        "id": "scalbn-0000000000000001--1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001-0",
+      "candidate": {
+        "id": "scalbn-0000000000000001-0",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000001"
+      },
+      "reference_word": "0000000000000001",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001-1",
+      "candidate": {
+        "id": "scalbn-0000000000000001-1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000002"
+      },
+      "reference_word": "0000000000000002",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001-53",
+      "candidate": {
+        "id": "scalbn-0000000000000001-53",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0020000000000000"
+      },
+      "reference_word": "0020000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001-1024",
+      "candidate": {
+        "id": "scalbn-0000000000000001-1024",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "3cd0000000000000"
+      },
+      "reference_word": "3cd0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0000000000000001-2147483647",
+      "candidate": {
+        "id": "scalbn-0000000000000001-2147483647",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff--2147483648",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff--2147483648",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1075",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff--1075",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1074",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff--1074",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff--54",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff--54",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff--1",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff--1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0008000000000000"
+      },
+      "reference_word": "0008000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff-0",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff-0",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "000fffffffffffff"
+      },
+      "reference_word": "000fffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff-1",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff-1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "001ffffffffffffe"
+      },
+      "reference_word": "001ffffffffffffe",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff-53",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff-53",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "035ffffffffffffe"
+      },
+      "reference_word": "035ffffffffffffe",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff-1024",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff-1024",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "400ffffffffffffe"
+      },
+      "reference_word": "400ffffffffffffe",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-000fffffffffffff-2147483647",
+      "candidate": {
+        "id": "scalbn-000fffffffffffff-2147483647",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000--2147483648",
+      "candidate": {
+        "id": "scalbn-0010000000000000--2147483648",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000--1075",
+      "candidate": {
+        "id": "scalbn-0010000000000000--1075",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000--1074",
+      "candidate": {
+        "id": "scalbn-0010000000000000--1074",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000--54",
+      "candidate": {
+        "id": "scalbn-0010000000000000--54",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000--1",
+      "candidate": {
+        "id": "scalbn-0010000000000000--1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0008000000000000"
+      },
+      "reference_word": "0008000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000-0",
+      "candidate": {
+        "id": "scalbn-0010000000000000-0",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0010000000000000"
+      },
+      "reference_word": "0010000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000-1",
+      "candidate": {
+        "id": "scalbn-0010000000000000-1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0020000000000000"
+      },
+      "reference_word": "0020000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000-53",
+      "candidate": {
+        "id": "scalbn-0010000000000000-53",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0360000000000000"
+      },
+      "reference_word": "0360000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000-1024",
+      "candidate": {
+        "id": "scalbn-0010000000000000-1024",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "4010000000000000"
+      },
+      "reference_word": "4010000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-0010000000000000-2147483647",
+      "candidate": {
+        "id": "scalbn-0010000000000000-2147483647",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000--2147483648",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000--2147483648",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1075",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000--1075",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1074",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000--1074",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000001"
+      },
+      "reference_word": "0000000000000001",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000--54",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000--54",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "3c90000000000000"
+      },
+      "reference_word": "3c90000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000--1",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000--1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "3fe0000000000000"
+      },
+      "reference_word": "3fe0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000-0",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000-0",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "reference_word": "3ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000-1",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000-1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "4000000000000000"
+      },
+      "reference_word": "4000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000-53",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000-53",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "4340000000000000"
+      },
+      "reference_word": "4340000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000-1024",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000-1024",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-3ff0000000000000-2147483647",
+      "candidate": {
+        "id": "scalbn-3ff0000000000000-2147483647",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000--2147483648",
+      "candidate": {
+        "id": "scalbn-bff0000000000000--2147483648",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000--1075",
+      "candidate": {
+        "id": "scalbn-bff0000000000000--1075",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000000"
+      },
+      "reference_word": "8000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000--1074",
+      "candidate": {
+        "id": "scalbn-bff0000000000000--1074",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "8000000000000001"
+      },
+      "reference_word": "8000000000000001",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000--54",
+      "candidate": {
+        "id": "scalbn-bff0000000000000--54",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "bc90000000000000"
+      },
+      "reference_word": "bc90000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000--1",
+      "candidate": {
+        "id": "scalbn-bff0000000000000--1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "bfe0000000000000"
+      },
+      "reference_word": "bfe0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000-0",
+      "candidate": {
+        "id": "scalbn-bff0000000000000-0",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "bff0000000000000"
+      },
+      "reference_word": "bff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000-1",
+      "candidate": {
+        "id": "scalbn-bff0000000000000-1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "c000000000000000"
+      },
+      "reference_word": "c000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000-53",
+      "candidate": {
+        "id": "scalbn-bff0000000000000-53",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "c340000000000000"
+      },
+      "reference_word": "c340000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000-1024",
+      "candidate": {
+        "id": "scalbn-bff0000000000000-1024",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "fff0000000000000"
+      },
+      "reference_word": "fff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-bff0000000000000-2147483647",
+      "candidate": {
+        "id": "scalbn-bff0000000000000-2147483647",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "fff0000000000000"
+      },
+      "reference_word": "fff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--2147483648",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff--2147483648",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "0000000000000000"
+      },
+      "reference_word": "0000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1075",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff--1075",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "3cbfffffffffffff"
+      },
+      "reference_word": "3cbfffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1074",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff--1074",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "3ccfffffffffffff"
+      },
+      "reference_word": "3ccfffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--54",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff--54",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "7c8fffffffffffff"
+      },
+      "reference_word": "7c8fffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff--1",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff--1",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "7fdfffffffffffff"
+      },
+      "reference_word": "7fdfffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-0",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff-0",
+        "op": "scalbn",
+        "kind": "finite",
+        "bits": "7fefffffffffffff"
+      },
+      "reference_word": "7fefffffffffffff",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-1",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff-1",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-53",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff-53",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-1024",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff-1024",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "scalbn-7fefffffffffffff-2147483647",
+      "candidate": {
+        "id": "scalbn-7fefffffffffffff-2147483647",
+        "op": "scalbn",
+        "kind": "infinity",
+        "bits": "7ff0000000000000"
+      },
+      "reference_word": "7ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "bounded-math-power-0",
+      "candidate": {
+        "id": "bounded-math-power-0",
+        "op": "pow",
+        "kind": "finite",
+        "bits": "3ff6a09e667f3bcd"
+      },
+      "reference_word": "3ff6a09e667f3bcd",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "bounded-math-power-1",
+      "candidate": {
+        "id": "bounded-math-power-1",
+        "op": "pow",
+        "kind": "finite",
+        "bits": "4000000000000000"
+      },
+      "reference_word": "4000000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "bounded-math-power-2",
+      "candidate": {
+        "id": "bounded-math-power-2",
+        "op": "pow",
+        "kind": "finite",
+        "bits": "3fe6a09e667f3bcc"
+      },
+      "reference_word": "3fe6a09e667f3bcd",
+      "signed_ordered_word_distance": "-1",
+      "matches_reference_word": false
+    },
+    {
+      "id": "bounded-math-power-3",
+      "candidate": {
+        "id": "bounded-math-power-3",
+        "op": "pow",
+        "kind": "finite",
+        "bits": "3ff0000000000000"
+      },
+      "reference_word": "3ff0000000000000",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "bounded-math-power-4",
+      "candidate": {
+        "id": "bounded-math-power-4",
+        "op": "pow",
+        "kind": "finite",
+        "bits": "4071cda00ebe20d6"
+      },
+      "reference_word": "4071cda00ebe20d7",
+      "signed_ordered_word_distance": "-1",
+      "matches_reference_word": false
+    },
+    {
+      "id": "bounded-math-power-5",
+      "candidate": {
+        "id": "bounded-math-power-5",
+        "op": "pow",
+        "kind": "finite",
+        "bits": "3faaacadc6ed30ca"
+      },
+      "reference_word": "3faaacadc6ed30ca",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "bounded-math-power-6",
+      "candidate": {
+        "id": "bounded-math-power-6",
+        "op": "pow",
+        "kind": "finite",
+        "bits": "000012688b70e62b"
+      },
+      "reference_word": "000012688b70e62b",
+      "signed_ordered_word_distance": "0",
+      "matches_reference_word": true
+    },
+    {
+      "id": "bounded-math-power-7",
+      "candidate": {
+        "id": "bounded-math-power-7",
+        "op": "pow",
+        "kind": "finite",
+        "bits": "4006a09e667f3bcc"
+      },
+      "reference_word": "4006a09e667f3bcd",
+      "signed_ordered_word_distance": "-1",
+      "matches_reference_word": false
+    }
+  ],
+  "exact_word_agreements": 173,
+  "mathematical_word_disagreements": [
+    "exp-word-3fd62e41ffffffff",
+    "exp-word-3ff0000000000000",
+    "bounded-math-power-2",
+    "bounded-math-power-4",
+    "bounded-math-power-7"
+  ]
+}

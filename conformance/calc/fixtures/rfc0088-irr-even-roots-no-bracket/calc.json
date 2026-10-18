@@ -1,0 +1,7 @@
+{
+  "id": "rfc0088_irr_even_roots_no_bracket",
+  "label": "RFC0088 pinned procedure rfc0088-irr-even-roots-no-bracket",
+  "formula": "irr(-100.0,230.0,-132.0)",
+  "deterministic": true,
+  "round_to": 12
+}

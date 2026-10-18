@@ -15,28 +15,23 @@ describe content; they do not confer a tier claim.
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 26 | 17 |
-| Verifier | 686 | 281 |
+| Verifier | 712 | 295 |
 | Module | 76 | 1 |
-| Integrity | 14 | 0 |
-| Representations | 135 | 0 |
+| Integrity | 32 | 14 |
+| Representations | 142 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products | 106 | 37 |
-| **Total** | **1,069** | **336** |
+| **Total** | **1,120** | **364** |
 
-The before count was 1,053 default + three opt-in agent-shape checks; all 1,056
-now run by default, and five new Verifier checks (marked `added` in the index)
-brought the total to 1,061. RFC 0081 Phase 3 retires seven checks whose subject
-it removes (six conflict-only Verifier controls and the `meta-v2` digest
-shape-insensitivity check), leaving 1,054. RFC 0081 Phase 4 deletes the
-checks that exercised only a backward-compatibility path (the `meta-v2` and
-`migrate` suites, the retired-format projections and the module compatibility
-shells) and adds refusal cases for what those paths used to admit, leaving
-1,069. Portable cases project a subset of those same checks, so 336 is not an
-additional corpus. All expectations are preserved. The index
-and generated cases are checked for exact ownership, missing/duplicate results
-and generation drift.
+Current counts come from the runtime ownership index and generated CLI cases.
+Accepted RFC0088 adds14 Verifier calc cases to the prior1106 default checks,
+with unchanged original expectations. They pin the selected primitive procedure,
+public versus internal exceptional values and retained IRR behavior. All14 also
+run through actual CLI subprocesses. Portable cases project a subset of the same
+checks, so364 is not an additional corpus. The index and generated cases are
+checked for exact ownership, missing/duplicate results and generation drift.
 
 Starter-product checks belong to the [starter guide](../docs/starter/README.md)
 and remain blocking CI checks. A mixed check with product assertions stays a

@@ -1,0 +1,28 @@
+{
+  "format": "rfc0088-astra-replay-identities-v1",
+  "historical": {
+    "source_commit": "3eee0fbab3f5682dc345804782994dc22d321fae",
+    "observations_sha256": "60ea71d476eb290ba40af0fe59d4a3fc640ade24b8c5e9b84cf22f9ed79d21a5",
+    "production_hashes": {
+      "packages/uwmd-verify/src/calc/builtins.ts": "a10ece89e9de48f819fff281827cd2b882c69b5587d23b7b90819c275eea3d0d",
+      "packages/uwmd-verify/src/calc/quantize.ts": "e55950721064527ef25dabad1f476f43f3c6e5708478ca184b3802c7071dac05",
+      "packages/uwmd-verify/src/receipts.ts": "ce7aff69538025a271c98617858c079e2d6b527d3d095de42dcbf4b025d28fd6",
+      "spec/UW_PROTOCOL.md": "a3de7d6053865aa8a1c7e42ca694fcefe02bf392a960cf4b0d2ef98cc9bcb61b",
+      "spec/UW_RECEIPT.md": "f6d7e68226195a5b0015f4e8403b1f93872ab6064575c1cf0131a947a295cf23",
+      "conformance/corpus-index.json": "64bea633d3314abee0a05f356f06f90f5c453fb76a29222c27941d98d1e6a5bf"
+    }
+  },
+  "approved_current": {
+    "source_commit": "765e2c4b6e2caf532f13d06c94234615932b47c7",
+    "integrated_main_commit": "2ff0884466199f40ab9764e5969bd8dd89a66dad",
+    "reason": "PR #373 rejects invalid Unicode under RFC 8785. The receipt source change is an explicitly reviewed identity change, not a new numerical baseline; every behavioral observation must still agree exactly.",
+    "production_hashes": {
+      "packages/uwmd-verify/src/calc/builtins.ts": "a10ece89e9de48f819fff281827cd2b882c69b5587d23b7b90819c275eea3d0d",
+      "packages/uwmd-verify/src/calc/quantize.ts": "e55950721064527ef25dabad1f476f43f3c6e5708478ca184b3802c7071dac05",
+      "packages/uwmd-verify/src/receipts.ts": "330888cf68e5e3b76ceefd2b798cfd40b244fc6d71ea528bacf945682152b54a",
+      "spec/UW_PROTOCOL.md": "a3de7d6053865aa8a1c7e42ca694fcefe02bf392a960cf4b0d2ef98cc9bcb61b",
+      "spec/UW_RECEIPT.md": "f6d7e68226195a5b0015f4e8403b1f93872ab6064575c1cf0131a947a295cf23",
+      "conformance/corpus-index.json": "64bea633d3314abee0a05f356f06f90f5c453fb76a29222c27941d98d1e6a5bf"
+    }
+  }
+}
