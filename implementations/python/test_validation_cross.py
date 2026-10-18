@@ -116,12 +116,10 @@ class ValidationCrossTests(unittest.TestCase):
                 path = root / (name + ".uwx.md")
                 raw = path.read_bytes()
                 result, _ = report(raw)
-                # Explicit owner-authorized RFC0091 candidate delta against
-                # unchanged frozen sources/expectations. Preserve every actual
-                # code, including the agree/mismatch financial distinction.
+                # Compare every current governed code, retaining the financial
+                # agree/mismatch distinction without a candidate adapter.
                 actual = sorted({i["code"] for i in result["issues"]})
-                candidate = sorted(set(expected[name + "_codes"]) | {"META-02", "META-03"})
-                self.assertEqual(actual, candidate)
+                self.assertEqual(actual, expected[name + "_codes"])
                 self.assertEqual([(i["code"], i["context"]["block_index"]) for i in result["issues"]
                                   if i["code"] in ("META-02", "META-03")],
                                  [("META-02", 0), ("META-03", 0)])

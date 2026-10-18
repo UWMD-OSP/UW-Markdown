@@ -83,7 +83,7 @@ def inspect_source_roles(document):
                 message="Block _meta.provenance.actor must be a nonempty string.",
                 remediation="State the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor.",
                 context=copy.deepcopy(context)))
-    # Owner-authorized RFC0091 candidate: all admitted physical references,
+    # Accepted RFC0091: all admitted physical references,
     # after every actor and before active role/source checks. Canonical JSON
     # flags are never inferred from fence attributes or projected routing.
     checked_flags = set()
