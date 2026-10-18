@@ -1,4 +1,4 @@
-# Named spreadsheet recalculation â€” bounded RFC 0088 evidence
+# Named spreadsheet recalculation — bounded RFC 0088 evidence
 
 These are the original ten synthetic controls from the spreadsheet gate, now
 committed with their builder and capture tools. They are research observations,

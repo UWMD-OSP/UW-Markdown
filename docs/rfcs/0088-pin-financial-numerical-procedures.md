@@ -1309,3 +1309,14 @@ Excel, press Ctrl+Alt+Shift+F9, save under a new name and return its path. The
 read-only capture freezes that saved file and its Excel version metadata without
 opening or recalculating it. This clarification accepts no RFC and authorizes
 no merge, numerical activation, version or publication.
+
+Named-engine execution is now demonstrated by
+[run39108657829](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39108657829):
+LibreOffice24.2.7.2 420(Build:2), all three conversions and change/restore pass.
+The20 saved cells yield13 comparison agreements, one12-place POWER/ROUND export
+disagreement and six #NUM! cells; raw-word differences are retained separately.
+The experiment's README gives exact cells and distinguishes primitive Infinity,
+public refusal and finite final zero. These are export-contract findings, not
+conformance-answer changes or proof of universal spreadsheet parity. Independent
+review then required numeric-input-type guards and immutable complete source/tool
+closure before/after capture; the final-head CI reruns the strengthened procedure.
