@@ -311,6 +311,7 @@ jobs:
           python3 -B experiments/envelope-0089/empty-collections/freeze.py --check
           python3 -B -m unittest discover -s experiments/envelope-0089/empty-collections -p test_empty.py -v
           node --test experiments/envelope-0089/empty-collections/independent.test.mjs
+          node --test experiments/envelope-0089/model-admission/admission.test.mjs
           python3 -B -c "import sys; sys.path.insert(0, 'experiments/envelope-0089/namespace-proof'); import capture; actual, *_ = capture.run(); assert actual['behavior']['accepted'] == 10 and actual['behavior']['refused'] == 28; print('PASS 38 current namespace controls per decoder')"
           python3 -B -m unittest discover -s experiments/envelope-0089/json-boundary -p test_cross_runtime.py -v
           python3 -B experiments/envelope-0089/json-boundary/cross_runtime.py --out "${{ runner.temp }}/envelope-json-boundary"

@@ -10,6 +10,17 @@ remain. No package numbers or release publication are changed here.
 
 Strict invalid-Unicode rejection in #373 merged as `765e2c4b6e2caf532f13d06c94234615932b47c7`; [exact-main CI38999614992](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38999614992) is the integration evidence, separate from reviewed-head CI38995962876. Historical bytes and signing evidence remain preserved; no fallback or retrospective authentication claim.
 
+**Owner-selected RFC0089 direction — still draft.** D1 tagged entries, D2 exact
+role-opted nullable identity, D2b portable minimum, total ASCII JSON-lexical XML,
+complete CSV extra/empty carriers and the complete E_NEXT/C_NEXT subject are
+selected under unchanged V.13 admission and Receipt5.5. No selected design choice
+remains open. A new six-test checkpoint covers a complete authored ten-block
+model,80 metadata negatives and10 layer-attributed refusals without normative
+schema edits. Empty builtin variant slots stay invalid under unchanged admission.
+Complete conditional/source/physical accounting, exchange-domain coverage and
+actual public signing/receipt state machines remain acceptance gates. No schema,
+subject, version or release activation is authorized by direction alone.
+
 **Actor reconciliation — accepted RFC0090.**
 [RFC0090](../rfcs/0090-provenance-actor-admission.md) records the owner's
 accepted Issue354 contract: required nonempty-string actors, narrow META-01/error,
