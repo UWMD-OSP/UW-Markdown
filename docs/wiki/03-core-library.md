@@ -30,7 +30,7 @@ else in the repo depends on one or both:
   runner, renderer, report, defaults and cascade, refinement, display
   formatting, the Excel emitter, the agents and the CLI. It depends on
   `@uwmd/verify` at an exact version and **re-exports its whole surface**, so
-  every `@uwmd/core` import that worked in 4.0.x still works.
+  consumers use the current standard surface through either package.
   `@anthropic-ai/sdk` is an **optional peer dependency**: only the reference
   Anthropic provider needs it, it is loaded dynamically on the first request,
   and it is excluded from the browser entry. A host that brings its own
@@ -45,7 +45,7 @@ else in the repo depends on one or both:
   `evaluateCalc` and `evaluateModuleCalculations` (core adds the starter
   `display` string) and `issueReceipt` (core defaults the receipt's `issuer` to
   `@uwmd/core`; the engine stays `@uwmd/verify`). Core's `surface.test.ts` holds its
-  two entries to a superset of the 4.0.x surface and to every verify export.
+  two entries to every current verify export and the three intentional wrappers.
 - **Entry points (`package.json` `exports`):**
   - `@uwmd/verify` `.` and `./browser` → the same surface (verify has no
     Node-only export; `browser.test.ts` holds them equal)
@@ -57,6 +57,29 @@ else in the repo depends on one or both:
   order). **Test:** `vitest run`. Coverage: `vitest run --coverage`, each
   package with its own floor. Each `*.ts` has a sibling `*.test.ts`; a test
   that needs a starter module lives in core, named for it.
+
+## Pinned numerical primitives — draft RFC0088 candidate
+
+The owner selected one pinned fdlibm procedure for `pow`, `exp` and `log`.
+The draft implementation exports `pinnedPow(base, exponent)`, `pinnedExp(value)`
+and `pinnedLog(value)` from `@uwmd/verify` and its browser entry, with identical
+bindings through both core entries. StackUW can use that same implementation;
+there is no separate integer-power algorithm or host transcendental fallback.
+
+These are raw binary64 primitives: no quantization, financial reassociation,
+solver changes or final-result policy. Number inputs include infinities, signed
+zero and NaN; domain/overflow results retain their IEEE classes. NaN payloads,
+NaN signs and exception flags are not portable guarantees. Nonnumeric runtime
+arguments refuse with existing `CalcError`/`CALC-TYPE-001`, without coercion.
+Existing calc builtins retain their own null, domain and finite-result rules.
+
+The typed port retains the research kernel's ordered graph and exact constants,
+word operations and bounded loops. Tests compare4204 independent compiled-C
+procedure cases and the erased implementation graph. Procedure agreement does
+not imply universal correct rounding; measured mathematical accuracy and composed
+financial/refusal evidence remain RFC acceptance gates. This draft export does
+not switch current evaluator consumers or accept/activate RFC0088. See the
+[procedure study](../../experiments/numerical-0088/pinned-fdlibm/README.md).
 
 ## Module map
 

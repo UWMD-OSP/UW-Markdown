@@ -222,9 +222,9 @@ export function exp(x: number): number {
     if (x > EXP.o_threshold) return HUGE * HUGE;
     if (x < EXP.u_threshold) return twom1000 * twom1000;
   }
-  let hiPart;
-  let loPart;
-  let k;
+  let hiPart!: number;
+  let loPart!: number;
+  let k!: number;
   if (hx > 0x3fd62e42) {
     if (hx < 0x3ff0a2b2) {
       hiPart = x - ln2HI[xsb]; loPart = ln2LO[xsb]; k = 1 - xsb - xsb;
@@ -275,7 +275,7 @@ export function pow(x: number, y: number): number {
   if (ix > 0x7ff00000 || (ix === 0x7ff00000 && lx !== 0)
     || iy > 0x7ff00000 || (iy === 0x7ff00000 && ly !== 0)) return x + y;
   let yisint = 0;
-  let k;
+  let k!: number;
   let j;
   let i;
   let n;

@@ -10,6 +10,14 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Prepare the owner-selected RFC0088 pinned fdlibm `pinnedPow`, `pinnedExp`
+  and `pinnedLog` public functions in verify and both core entries. Preserve one
+  exact raw IEEE procedure for every exponent class, with typed nonnumeric
+  refusals and no host transcendental fallback. Current financial consumers,
+  quantization, solver and receipt behavior remain unchanged while RFC evidence
+  and final acceptance are pending. No numerical conformance rebaseline,
+  package version or publication is allocated.
+
 - Apply the2026-10-17 owner rule in both agent entry points: all @uwmd npm
   packages launch together at5.0.0; prelaunch releases use4.x.x from main,
   with incompatible changes allowed. Retire prelaunch compatibility analysis,
