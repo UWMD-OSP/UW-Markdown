@@ -257,7 +257,7 @@ class MetadataAdmissionTests(unittest.TestCase):
         self.assertEqual(result["overall_status"], "errors")
         malformed = body(); malformed["_meta"]["provenance"] = None
         result = validate(parse(HEADER + fence(malformed)))
-        self.assertEqual([(i["code"], i["field"]) for i in result["errors"]], [("META-01", "_meta")])
+        self.assertEqual([(i["code"], i.get("field")) for i in result["errors"]], [("META-01", None)])
         result = validate(parse(HEADER + fence({"units": 12, "total_units": 12})))
         self.assertEqual([i["code"] for i in result["issues"]], ["META_MISSING"])
 

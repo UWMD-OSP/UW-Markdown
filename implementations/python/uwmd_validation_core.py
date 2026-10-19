@@ -10,7 +10,7 @@ import re
 from uwmd_binding_sources import finite
 from uwmd_currency import inspect_document_currency
 from uwmd_reader import APPEND
-from uwmd_source_validation import _inspect_source_roles
+from uwmd_source_validation import _inspect_source_roles, _metadata_routing
 from uwmd_validation_provenance import (metadata_assessment, incomplete_policy,
                                         market_data_accepted, missing_market_reference)
 from uwmd_validation_selection import active_blocks, current_blocks, select_section, field
@@ -112,6 +112,24 @@ def stage_readiness(document):
     return result
 
 
+def _validation_source_issue(document, issue):
+    """Project the unchanged wrapper finding at the ValidationResult boundary.
+
+    The standalone source inventory retains its exact local-owner path. The
+    existing ordinary wrapper diagnostic has no field; later metadata passes
+    retain every canonical field, including P1's identically spelled _meta.
+    """
+    projected = copy.deepcopy(issue)
+    index = issue.get("context", {}).get("block_index")
+    if (issue.get("code") == "META-01" and issue.get("severity") == "error"
+            and issue.get("field") == "_meta" and type(index) is int
+            and 0 <= index < len(document.source.blocks)):
+        block = document.source.blocks[index]
+        if issue.get("section") == block.section and _metadata_routing(block.parsed.value):
+            projected.pop("field", None)
+    return projected
+
+
 def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=(),
                 _source_order=False):
     """Metadata/scenario/stage/source rules, independently applied to source.
@@ -121,7 +139,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     """
     document, fm = ledger.document, ledger.document.frontmatter.value
     source = _inspect_source_roles(document, _source_order=_source_order)
-    ledger.issues.extend(source["issues"])
+    ledger.issues.extend(_validation_source_issue(document, issue) for issue in source["issues"])
     missing_meta_blocks = set()
     missing_field_owners = []
     missing_market_reference_owners = []

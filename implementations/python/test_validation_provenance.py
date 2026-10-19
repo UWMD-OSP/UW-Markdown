@@ -220,7 +220,8 @@ class ValidationProvenanceTests(unittest.TestCase):
         parsed=parse(raw);before=copy.deepcopy(parsed)
         result=validate(parsed)
         source_issues=inspect_source_roles(parsed)["issues"]
-        self.assertEqual(result["issues"][:len(source_issues)],source_issues)
+        projected = copy.deepcopy(source_issues); projected[0].pop("field")
+        self.assertEqual(result["issues"][:len(source_issues)],projected)
         self.assertEqual([(i["code"],i["field"]) for i in source_issues],
             [("META-01","_meta"),("META-01","_meta"),("META-01","_meta.section"),
              ("META-01","_meta.provenance.actor"),("ROLE-01","_role"),
@@ -238,7 +239,10 @@ class ValidationProvenanceTests(unittest.TestCase):
         inventory=inspect_source_roles(parsed)
         result=validate(parsed)
         registered=[i for i in result["issues"] if i["code"]=="META-01"]
-        self.assertEqual(registered,[i for i in inventory["issues"] if i["code"]=="META-01"])
+        original = [i for i in inventory["issues"] if i["code"] == "META-01"]
+        self.assertEqual(original[0]["field"], "_meta")
+        projected = copy.deepcopy(original); projected[0].pop("field")
+        self.assertEqual(registered, projected)
         self.assertEqual(len(registered),1)
         self.assertNotIn("value",registered[0])
         self.assertIn("_overrides[0].path",local_fields(result))
