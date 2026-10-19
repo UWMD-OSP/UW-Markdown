@@ -10,6 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Draft RFC0095 for closed optional-metadata and provenance-reference diagnostics
+  on Issue354. Keep DQ-06 allocation, conditional-reference triggers and as_of
+  admission explicit owner choices. Documentation only; no code allocation,
+  runtime/schema/conformance activation or capability change.
+
 - Implement accepted RFC0093 in TypeScript and Python: exact META-01 placement,
   present section and required quality admission, ordered physical/model passes,
   fresh structured-source and composed root/part accounting. Synchronize Format,
