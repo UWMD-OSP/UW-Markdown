@@ -8,6 +8,15 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**uwmd.org refresh — owner direction C,2026-10-18.** The approved refresh
+leads with document versions, identifies normative versus guide/starter/project
+pages, keeps the current starter host described accurately and applies the
+approved public-identity/copy sweep. The contrast prerequisite merged as
+`fa9a9ea37d31b918f5993eae4276b159f31719f3`; its main CI is recorded separately.
+The remaining refresh belongs with the Cloudflare migration, not an independent
+site cutover. No normative text removal, accepted RFC change, package version,
+release, tag or publication is authorized by this presentation work.
+
 **Python expression execution — Issue354.** A coherent read-only `calc` CLI
 implements the accepted expression grammar, all21 builtins, exact source/variant/
 role/period selection, scalar/null overrides and quantized result/refusal transport.

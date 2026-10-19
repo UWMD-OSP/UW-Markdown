@@ -2,7 +2,7 @@
 rfc: 0041
 title: Explicit period addressing for the standard series
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-10
 accepted: 2026-09-12
 affects:

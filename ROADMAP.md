@@ -11,27 +11,15 @@ complete financial reproducibility. Draft RFCs are not accepted contracts.
 
 ## Reserved milestone: 5.0, the coordinated public launch
 
-The [explicit owner decision, 2026-10-16](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
-makes UWMD 5.0 the first official public compatibility baseline. All earlier
-versions, including published 4.x, are prelaunch history. The launch need not
-carry their readers, numerical procedures, Envelope/receipt regimes or obsolete
-APIs solely for compatibility. Major 5 preserves the existing npm naming and
-publication continuity, not a legacy-support promise. No automatic migration,
-erasure of published npm artifacts or new-semantic authentication of historical
-artifacts is implied.
+The [owner launch rule,2026-10-17](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+reserves5.0.0 for the official public launch. Every `@uwmd` npm package moves
+to5.0.0 together then. Before launch, releases use4.x.x from main as needed.
+Format, Protocol and other documents remain independently versioned surfaces.
 
-Independent versions remain the policy for Format, Protocol, packages, modules
-and other surfaces; aligning every component to 5.0.0 is not required. Exact
-launch numbers and post-launch release/support details remain review work.
-Prelaunch breaks still require applicable RFC decisions, synchronized normative
-contracts/conformance and independent verification. There is no mandatory 4.x
-maintenance line, migration shim or deprecation window imposed by this policy.
-Historical commits/tags/source/signatures/release evidence stay accurate.
-
-Development may continue; no routine release consumes the reserved launch
-milestone. **A 5.0 tag or publication requires separate explicit owner launch
-approval.** Recording this policy accepts no draft RFC, exact retirement set,
-release candidate or publication action.
+The launch still requires separate explicit owner approval. This roadmap
+allocates no version, release, tag or publication. Normative changes continue
+through their applicable RFC, synchronized contract/conformance and independent
+verification gates; the public refresh does not accept any draft RFC.
 
 **Interim 4.3.0 published and independently checked (2026-10-15):** #351
 merged preparation as `80c68c3d`; annotated `v4.3.0` targets that exact commit.
@@ -39,7 +27,7 @@ The established Release 38821844153 published all 8 independent versions with
 provenance. Verification 38822782450 checks registry identities, tarball hashes,
 signatures/provenance, fresh consumers and the published CLI 350/350. See the
 [publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
-The #346 compatibility behavior and #347/#348 financial correctness repairs ship;
+The #346 documented CLI behavior and #347/#348 financial correctness repairs ship;
 #350's audit/regressions remain the basis for further work. Format 3.0 and
 Protocol 4.1.0 are unchanged. No 5.0 action or production deployment is included.
 

@@ -2,7 +2,7 @@
 rfc: 0003
 title: Custom asset-class declarations from modules
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-26
 affects:
   - format-spec

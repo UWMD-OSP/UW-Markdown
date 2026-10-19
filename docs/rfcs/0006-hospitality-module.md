@@ -2,7 +2,7 @@
 rfc: 0006
 title: Hospitality reference module
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-26
 affects:
   - core-library

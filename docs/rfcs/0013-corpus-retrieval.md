@@ -2,7 +2,7 @@
 rfc: 0013
 title: Embedding-based corpus retrieval
 status: draft
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-27
 affects:
   - protocol-spec

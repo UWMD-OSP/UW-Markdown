@@ -2,7 +2,7 @@
 rfc: 0022
 title: Market data as an attributable UW document
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-13
 accepted: 2026-08-13
 implemented: 2026-08-16

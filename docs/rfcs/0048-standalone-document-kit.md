@@ -3,7 +3,7 @@ rfc: 0048
 title: Standalone UW document kit and package examples
 status: implemented
 accepted: 2026-09-15
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-13
 depends_on:
   - 0018

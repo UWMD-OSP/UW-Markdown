@@ -2,7 +2,7 @@
 rfc: 0004
 title: Conformance test runner v2 (language-agnostic)
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-26
 affects:
   - protocol-spec

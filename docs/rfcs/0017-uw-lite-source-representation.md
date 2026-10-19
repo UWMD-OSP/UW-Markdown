@@ -2,7 +2,7 @@
 rfc: 0017
 title: Split .uw.md Lite from .uwx.md Extended as distinct source representations
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-08
 accepted: 2026-08-09
 affects:

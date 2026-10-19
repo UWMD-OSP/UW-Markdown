@@ -2,7 +2,7 @@
 rfc: 0026
 title: A typed capital stack — tranches, preferred equity, and stack-aware sizing
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-18
 affects:
   - format-spec
