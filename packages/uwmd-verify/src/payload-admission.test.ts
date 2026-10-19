@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { parseUWFile } from './parser.js';
+import { parseUWFile, getSection, getSectionVariant } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { checkPayloadAdmission } from './payload-admission.js';
-import type { UWBlock, ValidationMessage } from './types.js';
+import type { ValidationMessage } from './types.js';
 
 const codes = new Set(['LU-05', 'REC-11', 'CS-03', 'WF-16']);
 const classes = new Set(['office', 'retail']);
@@ -10,12 +10,12 @@ const header = '---\nuw_version: "3.0"\nasset_class: mixed_use\ndeal_id: payload
 function doc(section: string, body: unknown, suffix = '') { return header + fence(section, body, suffix); }
 function fence(section: string, body: unknown, suffix = '') { return '```json uw:section=' + section + suffix + '\n' + JSON.stringify(body) + '\n```\n'; }
 function assess(section: string, body: Record<string, unknown>): ValidationMessage[] {
-  const parsed = parseUWFile(doc(section, {})); (parsed.sections[section] as UWBlock).content = body;
+  const parsed = parseUWFile(doc(section, {})); (getSectionVariant(parsed, section, 'default') ?? getSection(parsed, section))!.content = body;
   const issues: ValidationMessage[] = []; checkPayloadAdmission(parsed, issues, classes); return issues;
 }
 function fields(section: string, body: Record<string, unknown>) { return assess(section, body).map(i => i.field); }
 const lu = (extra = {}) => ({ model_type: 'absorption_curve', period_granularity: 'monthly', schedule: [{ period: '2026-01' }], ...extra });
-const rec = (terms: unknown, rows?: unknown) => ({ tenants: [{ recovery_terms: terms, ...(rows === undefined ? {} : { recovery_true_up: rows }) }] });
+const rec = (terms: unknown, rows?: unknown) => ({ _role: 'detail', tenants: [{ recovery_terms: terms, ...(rows === undefined ? {} : { recovery_true_up: rows }) }] });
 const figure = (extra = {}) => ({ id: 'size', fn: 'coverage', over: 'senior', value: 0, ...extra });
 const wf = (extra = {}) => ({ ...extra });
 
@@ -125,7 +125,7 @@ describe('RFC0096 current SOURCE/MODEL scope and full pass ordering', () => {
     expect(issues[0].message).toContain('\ue000'); expect(issues[1].message).toContain('😀');
   });
   it('uses current MODEL own members, not prototypes, convenience metadata or stale rawJson', () => {
-    const parsed = parseUWFile(doc('lease_up_schedule', lu())); const block = parsed.sections.lease_up_schedule as UWBlock;
+    const parsed = parseUWFile(doc('lease_up_schedule', lu())); const block = getSectionVariant(parsed, 'lease_up_schedule', 'default')!;
     block.content.model_type = false;
     expect(validateUWFile(parsed).issues.filter(i => codes.has(i.code)).map(i => i.field)).toEqual(['model_type']);
     expect(validateUWFile(doc('lease_up_schedule', lu())).issues.filter(i => codes.has(i.code))).toEqual([]);
