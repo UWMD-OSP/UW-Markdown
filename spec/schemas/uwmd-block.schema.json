@@ -45,7 +45,7 @@
           },
           "source": {
             "type": "string",
-            "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$",
+            "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)(?![\\s\\S])",
             "description": "Actor override for this field (RFC 0031 actor grammar)."
           },
           "resolution": {
@@ -100,7 +100,7 @@
           "properties": {
             "source": {
               "type": "string",
-              "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)$",
+              "pattern": "^(manual|(agent|document|system|institution)/[A-Za-z0-9][A-Za-z0-9._-]*)(?![\\s\\S])",
               "minLength": 1,
               "description": "Actor grammar (Format §2.6). Resolution tags here are SRC-02; other out-of-grammar values are SRC-01, always errors."
             },

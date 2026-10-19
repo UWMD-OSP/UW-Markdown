@@ -365,8 +365,9 @@ export const ACTOR_NAMESPACES = Object.freeze([
 export type ActorNamespace = (typeof ACTOR_NAMESPACES)[number];
 
 /** The RFC 0031 actor grammar, as one regex. Mirrored (as a JSON Schema
- *  `pattern`) in `spec/schemas/uwmd-block.schema.json`. */
-export const ACTOR_SOURCE_RE = /^(manual|(agent|document|system|institution)\/[A-Za-z0-9][A-Za-z0-9._-]*)$/;
+ *  `pattern`) in `spec/schemas/uwmd-block.schema.json`. The absolute end
+ *  assertion rejects final line terminators; JavaScript `$` also matches before them. */
+export const ACTOR_SOURCE_RE = /^(manual|(agent|document|system|institution)\/[A-Za-z0-9][A-Za-z0-9._-]*)(?![\s\S])/;
 
 /** A parsed `_meta.provenance.source` actor. `invalid` covers everything outside the
  *  grammar — legacy colon forms, bare words, and resolution tags alike. */
@@ -385,7 +386,7 @@ export type ParsedActorSource =
  */
 export function parseActorSource(source: string): ParsedActorSource {
   if (source === 'manual') return { kind: 'manual' };
-  const m = /^(agent|document|system|institution)\/([A-Za-z0-9][A-Za-z0-9._-]*)$/.exec(source);
+  const m = /^(agent|document|system|institution)\/([A-Za-z0-9][A-Za-z0-9._-]*)(?![\s\S])/.exec(source);
   if (m) return { kind: 'namespaced', namespace: m[1] as ActorNamespace, id: m[2]! };
   return { kind: 'invalid' };
 }
