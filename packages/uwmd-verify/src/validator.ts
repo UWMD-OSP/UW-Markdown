@@ -3344,7 +3344,7 @@ function checkMetadataLeaves(parsed: ParsedUWFile, issues: ValidationMessage[]):
 function isMetadataTimestamp(value: unknown): boolean {
   if (typeof value !== 'string') return false;
   const match = /^([0-9]{4}-[0-9]{2}-[0-9]{2})T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]+)?Z$/.exec(value);
-  // JavaScript $ also matches before a final newline: require exact consumption.
+  // Preserve the accepted T1B whole-value equality guard; unflagged $ is exact in ECMAScript.
   return match !== null && match[0] === value && parseISODate(match[1]!) !== null;
 }
 
@@ -3445,7 +3445,7 @@ function checkMetadataReferences(parsed: ParsedUWFile, issues: ValidationMessage
     };
     if (Object.hasOwn(provenance, 'source') && typeof provenance.source === 'string') {
       const source = parseActorSource(provenance.source);
-      // The existing parser's regex uses $, so also require exact consumption.
+      // Keep the explicit exact agent-identity comparison; the parser's unflagged $ is already whole-input.
       if (source.kind === 'namespaced' && source.namespace === 'agent'
         && provenance.source === `agent/${source.id}` && !Object.hasOwn(provenance, 'agent_id')) {
         fail('_meta.provenance.agent_id', 'be present for a canonical agent source (string or null)');
