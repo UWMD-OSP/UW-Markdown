@@ -131,6 +131,7 @@ section.
 | [0094](./0094-present-invalid-metadata-leaves.md) | Allocate three present-invalid metadata leaf diagnostics | accepted | format, protocol, core, conformance, tooling |
 
 | [0095](./0095-optional-metadata-and-provenance-references.md) | Allocate bounded optional metadata and provenance-reference diagnostics | accepted | format, protocol, core, conformance, tooling |
+| [0096](./0096-bounded-stated-payload-admission.md) | Allocate bounded stated-payload admission diagnostics | accepted | format, protocol, core, conformance, tooling |
 
 ## Status values
 
