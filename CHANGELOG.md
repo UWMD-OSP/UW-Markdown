@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Correct RFC0095's ECMAScript end-anchor explanation and validator comments;
+  unflagged `$` already requires input end. Add public parser/schema controls for
+  five valid actors and35 rejected suffixes. Accepted predicates, schemas,
+  frozen evidence and runtime behavior remain unchanged.
+
+
 - Implement accepted RFC0095 in TypeScript and independent Python source validation:
   ordered META-05/06, readiness-only DQ-06/info, symmetric stated-reference
   assertions and exact Gregorian as_of admission. Synchronize Format/Protocol,
