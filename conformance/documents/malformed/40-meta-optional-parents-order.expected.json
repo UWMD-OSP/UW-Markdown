@@ -1,0 +1,80 @@
+{
+  "description": "Authored accepted RFC0095 controls; exact manually derived closed metadata findings/order.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-01",
+    "META-02",
+    "META-03",
+    "META-04",
+    "META-05",
+    "META-06"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_parents"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_quality",
+      "field": "_meta.quality"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_order",
+      "field": "_meta.provenance.actor"
+    },
+    {
+      "code": "META-02",
+      "severity": "error",
+      "section": "x_order",
+      "field": "_meta.quality.human_review_required"
+    },
+    {
+      "code": "META-03",
+      "severity": "error",
+      "section": "x_order",
+      "field": "_meta.lifecycle.superseded"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_order",
+      "field": "_meta.quality.confidence"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_missing",
+      "field": "_overrides[0]"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_parents",
+      "field": "_overrides"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_quality",
+      "field": "_meta.provenance.notes"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_order",
+      "field": "_meta.quality.flags[0]"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_order",
+      "field": "_meta.provenance.inherited_from"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; RFC0095"
+}

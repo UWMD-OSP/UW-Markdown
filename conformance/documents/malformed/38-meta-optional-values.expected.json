@@ -1,0 +1,100 @@
+{
+  "description": "Authored accepted RFC0095 controls; exact manually derived closed metadata findings/order.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-05"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_meta.provenance.agent_id"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_meta.provenance.agent_version"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_meta.provenance.notes"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_meta.quality.flags"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_meta.quality.partial"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_meta.quality.provisional"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_meta.quality.field_overrides"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_overrides[0]"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_overrides[1].path"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_overrides[1].confidence"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_overrides[1].reason"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_optional",
+      "field": "_overrides[1].note"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_flags",
+      "field": "_meta.quality.flags[1]"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_flags",
+      "field": "_meta.quality.flags[2]"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_flags",
+      "field": "_overrides"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; RFC0095"
+}

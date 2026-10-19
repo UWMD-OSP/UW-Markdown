@@ -1,0 +1,46 @@
+{
+  "description": "Authored accepted RFC0095 controls; exact manually derived closed metadata findings/order.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-06"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_calendar_2",
+      "field": "_meta.provenance.market_data_ref.as_of"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_calendar_4",
+      "field": "_meta.provenance.market_data_ref.as_of"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_calendar_5",
+      "field": "_meta.provenance.market_data_ref.as_of"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_calendar_6",
+      "field": "_meta.provenance.market_data_ref.as_of"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_calendar_7",
+      "field": "_meta.provenance.market_data_ref.as_of"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_calendar_8",
+      "field": "_meta.provenance.market_data_ref.as_of"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; RFC0095"
+}
