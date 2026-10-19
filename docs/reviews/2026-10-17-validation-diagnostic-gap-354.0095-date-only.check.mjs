@@ -37,8 +37,10 @@ try {
   writeFileSync(join(temporary, 'package.json'), '{"type":"module"}');
   const { dateOnly } = await import(pathToFileURL(join(temporary, `${stem}.js`)));
   const python = process.env.PYTHON ?? (process.platform === 'win32' ? 'python' : 'python3');
+  const runtime = spawnSync(python, ['-c', 'import sys, platform; print(sys.version); print(platform.platform())'], { encoding: 'utf8' });
+  assert.equal(runtime.status, 0, runtime.stderr);
   const observed = join(temporary, 'python.json');
-  const run = spawnSync(python, [source('.py'), '--vectors', source('.vectors.json'), '--output', observed], { encoding: 'utf8' });
+  const run = spawnSync(python, ['-B', source('.py'), '--vectors', source('.vectors.json'), '--output', observed], { encoding: 'utf8' });
   assert.equal(run.status, 0, run.stderr);
   const independent = JSON.parse(readFileSync(observed, 'utf8'));
   const dates = vectors.date_cases.map(row => {
@@ -69,12 +71,13 @@ try {
   assert.equal(truth, independentCycle.oracle_truth_sha256);
   // Re-execute the independently authored Python integer-component oracle.
   const beforeCycle = readFileSync(source('.cycle.json'));
-  const cycleRun = spawnSync(python, [source('.cycle.py')], { encoding: 'utf8' });
+  const cycleRun = spawnSync(python, ['-B', source('.cycle.py')], { encoding: 'utf8' });
   assert.equal(cycleRun.status, 0, cycleRun.stderr);
   assert.deepEqual(readFileSync(source('.cycle.json')), beforeCycle);
   assert.deepEqual(readFileSync(source('.vectors.json')), vectorBytes);
   const report = { kind: 'Draft RFC0095 research only; no production activation',
     authority_main: 'fa9a9ea37d31b918f5993eae4276b159f31719f3', node: process.version, platform: process.platform,
+    python_runtime: runtime.stdout.trim(),
     typescript: ts.version, vectors_sha256: sha(vectorBytes),
     observers: Object.fromEntries(['.ts', '.py', '.cycle.py', '.schema.proposed.json', '.check.mjs'].map(suffix => [suffix, sha(readFileSync(source(suffix)))])),
     date_cases: dates.length, date_admitted: dates.filter(row => row.admitted).length,
