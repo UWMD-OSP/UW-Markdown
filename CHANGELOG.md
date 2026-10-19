@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Refresh uwmd.org with the owner-approved direction C: document-version card,
+  page classification and normative navigation markers, compact mobile landing,
+  complete guide sidebars, favicon and the approved public-copy sweep. Keep
+  the standard and current starter tools distinct. Coordinate go-live with the
+  Cloudflare hosting branch after the independent contrast fix lands on main.
+  No normative contract, package version or release change.
+
 - Implement accepted RFC0093 in TypeScript and Python: exact META-01 placement,
   present section and required quality admission, ordered physical/model passes,
   fresh structured-source and composed root/part accounting. Synchronize Format,
