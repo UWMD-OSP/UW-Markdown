@@ -26,8 +26,9 @@ and META-01/02/03 remain unchanged; conditional provenance references stay separ
 The independently verified main0450 inventory has174 candidate leaves in78 files:
 166 confidence=`verified` values in scoped reserve fixtures and8 timestamp markers
 in normalized editor AFTER templates. Those are not174 demonstrated live validation
-failures or automatic expectation edits. The exact timestamp reader profile remains
-T1 for owner review; schema-library permissiveness does not define the contract.
+failures or automatic expectation edits. The owner selected T1B, exact uppercase UTC-Z
+with Gregorian validity and second00–59, as draft direction; final RFC acceptance
+remains required. Schema-library permissiveness does not define this contract.
 This is a docs-only draft: no implementation, normative activation or capability
 promotion. Python discovery stays parse-only while complete-validation gates close.
 

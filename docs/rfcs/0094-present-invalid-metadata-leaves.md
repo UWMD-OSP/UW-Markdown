@@ -26,7 +26,8 @@ checks. Conditional provenance references remain separate.
 
 **Draft; direction only.** The owner's2026-10-18 direction authorizes this
 bounded proposal, not acceptance, implementation or diagnostic activation. The
-exact timestamp admission domain remains an explicit acceptance question below.
+owner selected the exact UTC-Z timestamp profile T1B for this draft; final RFC
+acceptance and activation remain separate.
 This PR changes documentation only: no specification, schema, implementation,
 fixture, expectation, capability declaration or release state is activated.
 
@@ -50,8 +51,8 @@ Existing authority already supplies the confidence vocabulary and positive
 integer revision predicate: Format2.5c/2.5d and the block schema. Timestamp
 requires joint reconciliation: Format2.5b says ISO8601, the schema requires a
 string with `format: date-time` while describing UTC, the TypeScript metadata
-type describes UTC, and ProtocolV.4 requires UTC writes. Those statements do
-not yet establish a single exhaustive reader grammar. Neither a permissive host
+type describes UTC, and ProtocolV.4 requires UTC writes. Those statements did
+not by themselves establish a single exhaustive reader grammar. Neither a permissive host
 date parser nor one schema library's extra accepted spellings defines it.
 
 ## Decisions proposed from precedent
@@ -63,7 +64,7 @@ date parser nor one schema library's extra accepted spellings defines it.
 | D3: placement | Complete old shape, RFC0093 P1/P2/P3, actor, META-02/03, then the complete META-04 pass; role/period/source remain later | Existing checkpoint order; no global issue sort |
 | D4: parent precedence | Existing rejected whole metadata shape suppresses META-04; nonobject/missing quality suppresses confidence only | RFC0090/0091 parent admission and RFC0093 D4 |
 | D5: presence | Own canonical leaf member, including null; no inherited member, convenience alias or inferred value | RFC0093 presence/authority; preserve existing absence allocations |
-| D6: timestamp | Reconcile one exact timestamp reader predicate before acceptance; no implementation-defined date parser | Format2.5b, schema date-time, ProtocolV.4 UTC writer requirement |
+| D6: timestamp | Owner-selected T1B exact UTC-Z profile below; no implementation-defined date parser | Owner2026-10-18 direction; reconcile Format2.5b/schema/ProtocolV.4 |
 
 ## Proposed change
 
@@ -81,7 +82,7 @@ assessed block, in this order:
 |---|---|---|---|
 | 1 | `_meta.quality.confidence` | Anything other than the exact strings `high`, `medium`, `low` | State the actual confidence using that closed vocabulary. |
 | 2 | `_meta.lifecycle.revision` | Anything outside JSON Schema's `integer` with `minimum: 1` | State the actual positive integer revision; do not infer chain history. |
-| 3 | `_meta.provenance.timestamp` | A non-string, or a string outside the exact date-time domain resolved under T1 | State the actual write timestamp in that admitted domain; do not insert the current time. |
+| 3 | `_meta.provenance.timestamp` | A non-string, or a string outside the exact UTC-Z profile T1B below | State the actual write timestamp in that admitted domain; do not insert the current time. |
 
 `null`, arrays, objects, booleans, exact-empty strings and wrong-case or padded
 confidence values are invalid present values. Revision strings are invalid;
@@ -92,10 +93,10 @@ financial numerical procedure under this allocation. Nonfinite mutable-model
 numbers are not valid revisions. Source number admission remains the existing
 Reader obligation.
 
-A timestamp that is only a calendar date, an unqualified local time, an exact
-empty string or arbitrary prose is not a schema date-time. T1 must settle the
-remaining grammar/offset/calendar edge domain before this RFC can be accepted.
-A host accepting a string is not sufficient evidence of lawful admission.
+The exact UTC-Z predicate below is the proposed timestamp admission rule.
+Calendar-only/local timestamps, offsets, lowercase separators, malformed dates,
+second60 and arbitrary prose fail it. Do not substitute a host parser's broader
+acceptance or normalize a spelling before validation.
 
 Each finding MUST identify the exact canonical `field`, block section and failed
 requirement. Available physical location/variant context SHOULD distinguish
@@ -174,49 +175,63 @@ New receipt policy counts follow the actual validation result. This proposal
 changes no source digest, signed subject, receipt wire contract, issuance rule,
 authentication order or verifier verdict precedence. Validation remains read-only.
 
-## Timestamp contract reconciliation — T1 remains open
+## Owner-selected timestamp draft direction — T1B
 
-The smallest remaining normative selection is **one exact reader timestamp
-acceptance domain**, synchronized across Format prose, schema assertions and
-both implementations. Confirm whether reader admission follows the RFC3339
-`date-time` domain referenced by JSON Schema, with numeric offsets, or a clearly
-specified UTC-only profile; then state the corresponding exact lexical/calendar
-boundaries. Protocol's UTC writer rule alone does not settle reader admission.
-This is an admission-contract question, not a new financial convention.
+Owner2026-10-18 selected T1B in response to this exact question:
 
-Two concrete alternatives for final owner review; neither is selected here:
+> Draft RFC0094 is now concrete in PR #387: https://github.com/UWMD-OSP/UW-Markdown/pull/387. Which timestamp reader profile should it specify? I recommend T1B: exact Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z, year0000–9999, uppercase T/Z, seconds00–59, no offsets or normalization. T1A instead admits RFC3339 offsets/lowercase and also needs a deterministic leap-second policy. Format’s ISO8601 wording, schema date-time and the UTC writer rule do not select one reader domain. This selects draft direction only; final RFC acceptance and activation remain separate.
 
-| Alternative | Timestamp predicate and exact META-04 consequence | Joint contract consequence |
-|---|---|---|
-| T1A: schema-led reader | A string must satisfy RFC3339 section5.6's date-time grammar and section5.7 restrictions. Valid coloned numeric offsets, lowercase t/z and fractions do not fail merely for their spelling; compact/hour-only offsets and space separation fail the ABNF predicate. Calendar/leap-second validation must follow the stated restrictions rather than a host parser. | Reconcile reader prose/descriptions to this date-time domain while retaining the separate UTC write rule; freeze an explicit deterministic leap-second policy before activation. |
-| T1B: explicit UTC-only reader | A string must be four-digit year0000–9999, two-digit Gregorian-valid month/day, uppercase T, hour00–23, minute00–59, second00–59, optional decimal point plus one or more ASCII digits, uppercase Z, with no other characters. Every numeric offset (including +00:00), lowercase separator, space, local time and second60 receives META-04; no normalization. | Add the exact narrower UTC assertion to the schema and synchronize Format/Protocol; this is an owner-selected restriction beyond the current date-time assertion, not an inferred existing rule. |
+> T1B: exact UTC-Z (Recommended)
 
-T1B's Gregorian validity includes the usual divisible-by4/100/400 leap-year
-rule, applied also to year0000. T1A's actual leap-second-date/announcement
-handling cannot be replaced with AJV's mere hour-position test. Selecting T1A
-must include its deterministic assertion/fixture policy; selecting T1B resolves
-that edge by excluding second60. Both retain the same three-field META-04 code,
-parent gates, absence handling and pass ordering.
+This selection resolves the draft's T1 direction. It does not accept this RFC
+or activate a validator/schema change.
 
-Required boundary dispositions include coloned offsets, `Z`/case, `+00:00` versus
-`-00:00`, whitespace separation, missing zones, fractional seconds, actual
-calendar validity, year0000 and leap-second handling. Do not choose a leap-second
-rule by copying a host date parser, a library's simple hour check or an unpinned
-external calendar oracle.
+### Exact proposed UTC-Z predicate
 
-Independently measured repository tooling uses `ajv-formats`3.0.1 full
-`date-time`. It accepts `2026-10-18T00:00:00-07:00`, lowercase `t/z`, a space
-separator, compact`+0000` and hour-only`+00`. RFC3339's ABNF numeric offset uses
-hours **and coloned minutes**; those library acceptances do not establish the
-normative domain. The same tool accepts a leap-second-shaped
-`2026-10-18T23:59:60Z` without establishing an announced leap second on that date.
-`Date.parse` rejects that string but accepts `2026-02-30T00:00:00Z` and an
-unqualified local date-time. Neither tool is the proposed validator algorithm.
+A timestamp MUST be a string consisting of exactly
+`YYYY-MM-DDTHH:mm:ss[.digits]Z`, with the following exhaustive rules:
 
-The frozen current-source inventory below contains no schema-valid non-Z
-timestamp. That absence does not decide T1 or prove cross-implementation grammar
-agreement. A docs-only draft can record this open question; acceptance and
-implementation require its resolution and independent positive/negative controls.
+1. All digits are ASCII0–9. Year is exactly four digits0000–9999; month and day
+   are each exactly two digits and form a valid proleptic Gregorian date.
+   Leap years are divisible by400, or divisible by4 but not100. This applies
+   to year0000, consistently with the accepted calendar predicate in ProtocolVIII.3.
+2. The literal date separators are `-`, the date/time separator is uppercase
+   `T`, and time separators are `:`. Hour is00–23, minute00–59 and second00–59.
+3. Fractional seconds are optional. If present, the literal `.` is followed by
+   one or more ASCII digits. No new fraction-length or precision limit is added;
+   existing host resource admission remains separate.
+4. The final character is uppercase `Z`. The predicate consumes the **entire**
+   string, with no leading/trailing whitespace, newline or other characters.
+
+Every numeric offset, including `+00:00` and `-00:00`, lowercase `t`/`z`, space
+separator, local/unqualified time, second60, empty fraction and invalid calendar
+value fails. No trimming, Unicode normalization, time-zone conversion, leap-second
+announcement lookup, clock lookup or inferred timestamp is performed. Do not
+rewrite the original value or introduce a fallback admission path.
+
+This code does not impose temporal ordering, current-time/age checks or revision-
+chain relationships. Preserve the exact stated string. The existing UTC writer
+obligation remains separate; writers must author lawful values themselves.
+
+### Why an explicit profile is needed
+
+Format2.5b says ISO8601; the schema assertion is string/date-time while descriptions
+and ProtocolV.4 specify UTC writes. These facts alone did not establish the exact
+reader domain. T1B explicitly chooses the narrower profile and therefore requires
+synchronized Format/Protocol prose and schema assertions at implementation time.
+It is an owner-selected contract direction, not an inferred existing restriction.
+
+The alternative T1A would follow RFC3339 section5.6 grammar and section5.7
+restrictions, admitting coloned numeric offsets and lowercase t/z with a frozen
+deterministic leap-second policy. The owner did not select it. There is no
+implementation-defined choice between the two profiles.
+
+Repository tooling observations remain evidence only: ajv-formats3.0.1 accepts
+nonzero offsets, lowercase t/z, space separators, compact/hour-only offsets and
+leap-second-shaped values without establishing an announced leap-second date.
+Date.parse accepts other invalid/local forms. Neither tool supplies T1B's predicate.
+The selected profile deliberately rejects second60 rather than consulting an
+external leap-second calendar. No financial numerical convention is changed.
 
 ## Conformance impact
 
@@ -278,8 +293,9 @@ reproduced the same2223 objects and exact174 candidate records as the initial
 literal-backtick scan; no extra candidate was silently omitted by that narrower
 first recognizer. Confidence uses exact enum membership; revision uses
 integer/minimum without Python boolean coercion. Timestamp candidate
-classification uses the installed schema tool's full date-time predicate only
-as measured tooling evidence; T1 remains unresolved. Source SHA256 plus physical
+classification in that initial inventory uses the installed schema tool's full
+date-time predicate only as measured tooling evidence; the selected T1B profile
+requires its separately verified timestamp classification. Source SHA256 plus physical
 block ordinal, opening line, annotation, field and value identify every candidate
 in AppendixA. Whole/nested-shape exclusions and absences are separate populations.
 
@@ -291,12 +307,41 @@ These are candidate evidence, not accepted expected outputs, platform results or
 production verification claims. The original Git source hashes in AppendixA
 remain the authority for reproduction, not a local mutable worktree.
 
+### Selected T1B evidence — direction, not activation
+
+After the owner selected T1B, a narrow timestamp-only Git-0450 capture retained
+all1509 present timestamp values and their source identities. Independent exact
+UTC-Z classification admits1501 and rejects exactly the same8 `<volatile>`
+comparison-template markers: no additional candidate delta. Combined with the
+unchanged166 confidence findings, the inventory remains174 leaves across78 files.
+The integrator separately matched every captured timestamp to unchanged source
+bytes and checked the exact profile using the existing integer calendar predicate
+and a separate full-string ASCII check. No production validator was modified.
+
+Two independently authored local Python/JavaScript predicates agree with all60
+manually specified boundary controls in AppendixB (11 positive,49 negative).
+The integrator independently rechecked those60 expected results. This is bounded
+read-only profile evidence, not production TS/Python integration or a platform
+certification run. Existing absence, parent, physical/composition and transport
+controls remain required for the future implementation.
+
+Evidence SHA256: full retained timestamps
+`0820b023b1f7ec194dd5d90254f93b0ef4c685891cd6a916e708edd68ca7695b`;
+independent reclassification
+`b6b6da021ccc389f622e4cc9a40d77ab6520a860b76599a4764069c2198dddb6`;
+independent60-case boundary report
+`e4aa843ebe32e87d2e491a9e63dabefcf92c454e82d3932dfbd083528db12f2f`;
+integrator value/source/boundary audit
+`94d0359d1edc94157e890ad1131b1408beeec7553e9bbb82da4df472ad83a217`.
+All captures refer to the immutable baseline and proposed profile, not accepted
+validation expectations or changed financial/source/receipt subjects.
+
 ### Required new controls before implementation integration
 
 - Every admitted literal and invalid JSON type for each leaf, null versus absent,
   exact case/whitespace, revision1/1.0/1e0/0/negative/fractional/string/boolean and
   numeric admission boundaries; no inferred chain checks.
-- T1's complete frozen timestamp positive/negative boundary set, independently
+- T1B's complete frozen timestamp positive/negative boundary set, independently
   checked in TypeScript/Python and schema tooling without host-parser authority.
 - Whole missing metadata, every existing rejected parent, quality-only refusal,
   P1/P2 errors, actor-only error and both boolean errors; independent coexistence
@@ -313,7 +358,7 @@ remain the authority for reproduction, not a local mutable worktree.
 No implementation is included or authorized by this draft. After final owner
 acceptance, implement the exact same closed predicate and pass in TypeScript and
 Python together, with synchronized Format/Protocol/registry/remediation and
-schema annotations or justified assertion changes for T1. Primary sites:
+schema assertions for the selected T1B profile. Primary sites:
 `packages/uwmd-verify/src/validator.ts`, `protocol.ts` and focused tests;
 `implementations/python/uwmd_source_validation.py` and the integrated #354
 validation modules/tests. Reuse existing DTO/result transport; no new public
@@ -332,13 +377,13 @@ function, generic fallback, manifest capability or complete Verifier claim.
 - Host-parser date acceptance or trim/default repair: produces runtime-dependent
   admission or alters the evidence instead of validating the stated record.
 
-## Unresolved questions and acceptance gates
+## Acceptance and implementation gates
 
-1. T1: approve the exact timestamp reader domain and settle its grammar/calendar
-   boundaries, jointly reconciling ISO8601/UTC/date-time authority. No choice is
-   inferred from current examples or `ajv-formats` extensions.
-2. Final owner acceptance of this complete draft remains required. The earlier
-   direction authorizes preparation only.
+1. T1B is the owner's selected draft direction. Verify its exact lexical/calendar
+   boundary evidence independently and synchronize it in the eventual contracts;
+   no installed format library defines additional accepted spellings.
+2. Final owner acceptance of this complete draft remains required. Both direction
+   decisions authorize preparation only, not production activation.
 3. Independently inventory actual validation/CLI/receipt impact on unchanged
    sources; synchronize both implementations/contracts and individually governed
    expectations only after acceptance. Preserve all unrelated issue order and
@@ -354,7 +399,7 @@ separate. RFC0085/0089/0092 and numerical semantics are untouched.
   [RFC0093](0093-metadata-shape-diagnostics.md): closed diagnostic ownership,
   parent precedence and physical/model authority.
 - [Format2.5](../../spec/UW_FORMAT_SPEC.md#25-the-_meta-object),
-  [block schema](../../spec/schemas/uwmd-block.schema.json), ProtocolIII.6a/V.3.
+  [block schema](../../spec/schemas/uwmd-block.schema.json), ProtocolIII.6a/V.3–V.4.
 - [JSON Schema2020-12 date/time formats](https://json-schema.org/draft/2020-12/json-schema-validation#section-7.3.1)
   references [RFC3339 section5.6](https://www.rfc-editor.org/rfc/rfc3339#section-5.6).
   Their specified domain must be distinguished from a particular library's
@@ -362,7 +407,7 @@ separate. RFC0085/0089/0092 and numerical semantics are untouched.
 
 ## AppendixA: Exact source candidates
 
-Each entry gives the unchanged Git source SHA256 and physical block ordinals
+Each entry gives the unchanged Git source SHA256 and one-based physical block ordinals
 (opening lines in parentheses). All listed confidence values are exactly
 `verified`; all listed timestamp values are exactly `<volatile>`. No revision
 candidate was found. Full per-block annotations and values are in the hashed
@@ -448,3 +493,75 @@ inventory report; source plus ordinal/line reconstruct them without routing.
 | `conformance/starter/editor/fixtures/parent-hash-stamp/after.uwx.md` | `66a776754ba2eec0b6f23a09d7e842e891f61629aa6b04914d6d97a36b968097` | `_meta.provenance.timestamp` | 1 (28), 2 (64) |
 | `conformance/starter/editor/fixtures/section-replace-property/after.uwx.md` | `fc757019caf68b41de323c5ca6c0de1352d209cc020ed318ab7f30faf248a9ef` | `_meta.provenance.timestamp` | 1 (23) |
 | `conformance/starter/editor/fixtures/section-supersede-risk-rating/after.uwx.md` | `0e27514ee30c3ed6a5eb95200848609c68f8ec088b3831a5b9948c209efb5f1b` | `_meta.provenance.timestamp` | 1 (23), 2 (58) |
+
+## AppendixB: Proposed T1B boundary controls
+
+These are proposed profile vectors, not activated conformance expectations.
+Each JSON value is a **present** canonical timestamp under admitted parents;
+absence and parent suppression are tested separately. Read the decoded JSON
+value exactly, including escaped whitespace/Unicode; do not normalize it.
+`admit` means this leaf passes the selected profile. `META-04` means this leaf
+would receive the proposed error after final acceptance and implementation.
+
+| Case | JSON value | Proposed leaf result |
+|---|---|---|
+| ordinary | `"2026-10-18T00:00:00Z"` | admit |
+| year-zero-leap | `"0000-02-29T23:59:59Z"` | admit |
+| min-year | `"0000-01-01T00:00:00Z"` | admit |
+| max-year | `"9999-12-31T23:59:59Z"` | admit |
+| leap-2000 | `"2000-02-29T00:00:00Z"` | admit |
+| leap-2400 | `"2400-02-29T00:00:00Z"` | admit |
+| leap-2024 | `"2024-02-29T00:00:00Z"` | admit |
+| nonleap-feb28 | `"1900-02-28T00:00:00Z"` | admit |
+| single-fraction | `"2026-10-18T01:02:03.0Z"` | admit |
+| leading-zero-fraction | `"2026-10-18T01:02:03.000000001Z"` | admit |
+| long-fraction | `"2026-10-18T01:02:03.1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111Z"` | admit |
+| nonleap-1900 | `"1900-02-29T00:00:00Z"` | META-04 |
+| nonleap-2100 | `"2100-02-29T00:00:00Z"` | META-04 |
+| nonleap-2026 | `"2026-02-29T00:00:00Z"` | META-04 |
+| feb30 | `"2000-02-30T00:00:00Z"` | META-04 |
+| april31 | `"2026-04-31T00:00:00Z"` | META-04 |
+| month00 | `"2026-00-01T00:00:00Z"` | META-04 |
+| month13 | `"2026-13-01T00:00:00Z"` | META-04 |
+| day00 | `"2026-10-00T00:00:00Z"` | META-04 |
+| day32 | `"2026-10-32T00:00:00Z"` | META-04 |
+| hour24 | `"2026-10-18T24:00:00Z"` | META-04 |
+| minute60 | `"2026-10-18T00:60:00Z"` | META-04 |
+| second60 | `"2026-10-18T23:59:60Z"` | META-04 |
+| announced-leap-second-still-forbidden | `"2016-12-31T23:59:60Z"` | META-04 |
+| lower-t | `"2026-10-18t00:00:00Z"` | META-04 |
+| lower-z | `"2026-10-18T00:00:00z"` | META-04 |
+| space-separator | `"2026-10-18 00:00:00Z"` | META-04 |
+| plus-zero-offset | `"2026-10-18T00:00:00+00:00"` | META-04 |
+| minus-zero-offset | `"2026-10-18T00:00:00-00:00"` | META-04 |
+| nonzero-offset | `"2026-10-18T00:00:00-07:00"` | META-04 |
+| missing-zone | `"2026-10-18T00:00:00"` | META-04 |
+| missing-time | `"2026-10-18"` | META-04 |
+| empty-fraction | `"2026-10-18T00:00:00.Z"` | META-04 |
+| comma-fraction | `"2026-10-18T00:00:00,1Z"` | META-04 |
+| fullwidth-fraction | `"2026-10-18T00:00:00.\uff11Z"` | META-04 |
+| arabic-year | `"\u0662\u0660\u0662\u0666-10-18T00:00:00Z"` | META-04 |
+| fullwidth-year | `"\uff12\uff10\uff12\uff16-10-18T00:00:00Z"` | META-04 |
+| unicode-minus | `"2026\u221210-18T00:00:00Z"` | META-04 |
+| leading-space | `" 2026-10-18T00:00:00Z"` | META-04 |
+| trailing-space | `"2026-10-18T00:00:00Z "` | META-04 |
+| trailing-newline | `"2026-10-18T00:00:00Z\n"` | META-04 |
+| trailing-crlf | `"2026-10-18T00:00:00Z\r\n"` | META-04 |
+| trailing-line-separator | `"2026-10-18T00:00:00Z\u2028"` | META-04 |
+| embedded-newline | `"2026-10-18T00:00:\n00Z"` | META-04 |
+| embedded-nul | `"2026-10-18T00:00:00Z\u0000"` | META-04 |
+| empty | `""` | META-04 |
+| volatile | `"<volatile>"` | META-04 |
+| signed-year | `"+2026-10-18T00:00:00Z"` | META-04 |
+| five-digit-year | `"10000-10-18T00:00:00Z"` | META-04 |
+| three-digit-year | `"026-10-18T00:00:00Z"` | META-04 |
+| one-digit-month | `"2026-1-18T00:00:00Z"` | META-04 |
+| one-digit-second | `"2026-10-18T00:00:0Z"` | META-04 |
+| null | `null` | META-04 |
+| bool-true | `true` | META-04 |
+| bool-false | `false` | META-04 |
+| integer | `20261018` | META-04 |
+| decimal | `1.5` | META-04 |
+| array | `[]` | META-04 |
+| object | `{}` | META-04 |
+| boxed | `{"value":"2026-10-18T00:00:00Z"}` | META-04 |

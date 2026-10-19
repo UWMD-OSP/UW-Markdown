@@ -28,7 +28,7 @@ protocol, and each package each carry an independent semver).
 - Draft RFC0094 under the owner's bounded diagnostic direction: META-04/error
   for present-invalid confidence, revision and timestamp, preserving existing
   absence warnings and META-01/02/03. Record independently attributed fixture
-  scope and the unresolved exact timestamp admission profile. Documentation
+  scope and the owner-selected exact UTC-Z timestamp draft direction. Documentation
   only; no implementation, schema, expectation, capability or release change.
 
 
