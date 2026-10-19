@@ -1,0 +1,96 @@
+{
+  "description": "Authored accepted RFC0094 controls; exact closed metadata findings/order on unchanged stated values.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-01",
+    "META-02",
+    "META-03",
+    "META-04"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_leaf_oldshape"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_leaf_quality",
+      "field": "_meta.quality"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_leaf_combined",
+      "field": "_meta"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_leaf_combined",
+      "field": "_meta.section"
+    },
+    {
+      "code": "META-01",
+      "severity": "error",
+      "section": "x_leaf_combined",
+      "field": "_meta.provenance.actor"
+    },
+    {
+      "code": "META-02",
+      "severity": "error",
+      "section": "x_leaf_combined",
+      "field": "_meta.quality.human_review_required"
+    },
+    {
+      "code": "META-03",
+      "severity": "error",
+      "section": "x_leaf_combined",
+      "field": "_meta.lifecycle.superseded"
+    },
+    {
+      "code": "META-02",
+      "severity": "error",
+      "section": "x_leaf_later",
+      "field": "_meta.quality.human_review_required"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_leaf_quality",
+      "field": "_meta.lifecycle.revision"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_leaf_quality",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_leaf_combined",
+      "field": "_meta.quality.confidence"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_leaf_combined",
+      "field": "_meta.lifecycle.revision"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_leaf_combined",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_leaf_later",
+      "field": "_meta.quality.confidence"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md \u00a7III.6a; RFC0094"
+}

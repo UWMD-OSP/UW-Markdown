@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC0094 in TypeScript and Python: META-04/error for exactly
+  present-invalid canonical confidence, revision and exact T1B UTC-Z timestamps.
+  Preserve absence warnings, META-01/02/03, physical/model source accounting and
+  issue ordering. Synchronize Format, Protocol, registry and schema assertions;
+  authored conformance controls preserve existing sources and expectations.
+  Python discovery remains parse-only pending complete capability certification.
+
 - Implement accepted RFC0093 in TypeScript and Python: exact META-01 placement,
   present section and required quality admission, ordered physical/model passes,
   fresh structured-source and composed root/part accounting. Synchronize Format,

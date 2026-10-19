@@ -28,8 +28,10 @@ The independently verified main0450 inventory has174 candidate leaves in78 files
 in normalized editor AFTER templates. Those are not174 demonstrated live validation
 failures or automatic expectation edits. The owner selected T1B, exact uppercase UTC-Z
 with Gregorian validity and second00–59. Schema-library permissiveness does not define this contract.
-This is docs-only acceptance; synchronized TS/Python implementation and contracts
-follow on Issue354. No runtime activation or capability promotion in this PR. Python discovery stays parse-only while complete-validation gates close.
+Synchronized TS/Python implementation applies the exact accepted closed predicates
+and ordered physical/model pass, with Format/Protocol/registry/schema and authored
+conformance controls. Existing absence warnings and subject/receipt precedence stay
+unchanged. Python discovery stays parse-only while complete-validation gates close.
 
 **Accepted RFC0093 — owner decision2026-10-18 at0306d126.**
 [RFC0093](../rfcs/0093-metadata-shape-diagnostics.md) accepts exactly the three
