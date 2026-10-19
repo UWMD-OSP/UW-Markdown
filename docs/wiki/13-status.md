@@ -8,14 +8,16 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
-**Draft RFC0097 — selected institution-config refusal.**
-[RFC0097](../rfcs/0097-institution-config-refusal.md) proposes two typed
+**Accepted RFC0097 — owner decision2026-10-19 at4a31eb3c.**
+[RFC0097](../rfcs/0097-institution-config-refusal.md) allocates two typed
 validate-operation errors for unreadable/malformed selected configuration,
-atomic admission of the three documented overrides and automatic-absence defaults.
-Exact selection, stricter JSON profile, opaque data, pointer authority and CLI
-transport are explicit proposed details. Owner authority is drafting only;
-no error allocation/runtime/schema/capability is activated. Pure API threshold
-maps and all receipt identity/count/authentication rules remain separate.
+error-only JSON/exit1, atomic admission of the three documented overrides and
+automatic-absence defaults. Exact lexical selection, strict JSON/Unicode profile,
+opaque data and config-relative pointer authority are accepted. The docs-only
+acceptance activates no runtime/schema/capability. Synchronized TS/Python,
+Format/Protocol/schema/type and actual CLI conformance follow on Issue354.
+Pure API threshold maps and receipt identity/count/authentication rules remain
+separate; no new financial threshold or comparison is introduced.
 
 **Accepted RFC0096 — owner decision2026-10-19 at1926efe4.**
 [RFC0096](../rfcs/0096-bounded-stated-payload-admission.md) allocates closed
@@ -25,10 +27,18 @@ model authority, no physical-history expansion, LU-05 target grammar only,
 unchanged recovery null qualification, existing lexical-only waterfall dates,
 and untouched financial selector/result rules. Thirty bounded observations
 and four actual CLI partial refusals remain evidence with their stated limits.
-This acceptance changes no live runtime/schema/frozen expectation. Synchronized
-TS/Python/spec/schema/registry implementation and attributed conformance follow
-on Issue354; Python discovery remains parse-only until complete capability
-certification. Dictionary/financial/receipt obligations remain separate.
+The synchronized implementation adds the four closed TypeScript predicates,
+independent private Python admission helper, Format/Protocol/schema/remediation
+and eight authored native conformance controls. The six document controls pin37
+ordered new-code findings, including lawful and current-peer cases; two recovery
+controls distinguish missing prototype-named references from actual own variants.
+The only prior expectation change is two REC-02 findings becoming one for a
+member without a method, as the accepted presence table requires; its source is
+unchanged. Structural recovery own-member corrections preserve financial
+expressions, selectors and result rules. Python's complete-validation integration
+remains on Issue354; the main helper adds no command, and discovery remains
+parse-only until complete capability certification. Dictionary/financial/receipt
+obligations remain separate.
 
 **Accepted RFC0095 — owner decision2026-10-18 atc551e956.**
 [RFC0095](../rfcs/0095-optional-metadata-and-provenance-references.md) accepts

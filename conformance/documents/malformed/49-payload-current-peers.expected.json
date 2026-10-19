@@ -1,0 +1,21 @@
+{
+  "description": "Authored accepted RFC0096 predicates; manually attributed ordered new-code projection only, not a whole-document positive-validation claim.",
+  "must_parse": true,
+  "expected_codes": [
+    "LU-05"
+  ],
+  "payload_issues": [
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "model_type"
+    },
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "assumptions"
+    }
+  ]
+}

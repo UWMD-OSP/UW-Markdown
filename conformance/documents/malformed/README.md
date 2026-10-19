@@ -58,3 +58,20 @@ The existing malformed-corpus contract asserts code presence; focused
 field paths, multiplicity, ordering, arbitrary nonempty strings, mutable-model
 authority and no duplicate actor cascade. These are the governed expectations accepted with RFC0090; historical sources
 and original expectation evidence remain unchanged.
+
+
+## RFC0096 payload controls
+
+Authored controls44–49 cover lease-up, recovery, capital-stack sizing, waterfall,
+lawful boundaries and current-peer authority. Their `payload_issues` arrays pin
+37 ordered rows of LU-05/REC-11/CS-03/WF-16, including exact severity, section and
+field. This projection does not assert whole-document financial validity; other
+registered findings remain visible. Empty arrays explicitly test absence of the
+four new codes. All examples declare their own canonical metadata.
+
+Two additional controls under `conformance/recoveries/` distinguish a missing
+cash-flow variant named `toString`, `valueOf` or `hasOwnProperty` (REC-09) from
+an actual own variant with such a name. The only existing expectation adjusted
+for RFC0096 is `reject-member-without-method`: its original source is unchanged,
+and the accepted M/P table requires one REC-02 rather than two. No portable case
+or unrelated expectation is changed.

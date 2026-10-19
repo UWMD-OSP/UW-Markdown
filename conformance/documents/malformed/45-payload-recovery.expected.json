@@ -1,0 +1,45 @@
+{
+  "description": "Authored accepted RFC0096 predicates; manually attributed ordered new-code projection only, not a whole-document positive-validation claim.",
+  "must_parse": true,
+  "expected_codes": [
+    "REC-11"
+  ],
+  "payload_issues": [
+    {
+      "code": "REC-11",
+      "severity": "error",
+      "section": "rent_roll",
+      "field": "tenants[0].recovery_terms.share_basis"
+    },
+    {
+      "code": "REC-11",
+      "severity": "error",
+      "section": "rent_roll",
+      "field": "tenants[0].recovery_terms.base_year"
+    },
+    {
+      "code": "REC-11",
+      "severity": "error",
+      "section": "rent_roll",
+      "field": "tenants[0].recovery_terms.admin_fee_pct"
+    },
+    {
+      "code": "REC-11",
+      "severity": "error",
+      "section": "rent_roll",
+      "field": "tenants[0].recovery_terms.cap.over"
+    },
+    {
+      "code": "REC-11",
+      "severity": "error",
+      "section": "rent_roll",
+      "field": "tenants[0].recovery_true_up[0].pool_actual"
+    },
+    {
+      "code": "REC-11",
+      "severity": "error",
+      "section": "rent_roll",
+      "field": "tenants[0].recovery_true_up[0].extra"
+    }
+  ]
+}

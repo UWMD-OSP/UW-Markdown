@@ -1,7 +1,7 @@
 ---
 rfc: 0097
 title: Refuse invalid selected institution configuration before validation
-status: draft
+status: accepted
 author: codex
 created: 2026-10-19
 affects:
@@ -16,17 +16,22 @@ affects:
 
 ## Summary
 
-Propose an operation-level refusal when a selected institution configuration
+Define an operation-level refusal when a selected institution configuration
 cannot be read or fails the bounded admission rules below. A genuinely missing
 automatic sidecar still leaves validation defaults in force. A selected invalid
 file never becomes successful validation under defaults or partially applied
 overrides. Define two typed errors, deterministic preflight/transport and an
 atomic three-key adapter. No new financial threshold, formula or comparison
-rule is proposed. **Drafting only: not accepted or activated.**
+rule is introduced. The owner accepted this contract on2026-10-19 at4a31eb3c;
+synchronized implementation follows on Issue354.
 
-Owner drafting authority,2026-10-19, quoted verbatim:
+Prior drafting authority,2026-10-19, quoted verbatim:
 
 > Proceed with the refusal-contract RFC draft I approved: validate refuses a selected unreadable or malformed institution config with exact typed transport; missing automatic sidecars still use defaults; no new financial thresholds; drafting only.
+
+Owner acceptance,2026-10-19, quoted verbatim:
+
+> RFC 0097 (#396 at 4a31eb3c) is accepted as drafted: VAL-INSTITUTION-CONFIG-UNREADABLE and -MALFORMED as operation errors with error-only JSON and exit 1, one explicitly selected path or the lexical sidecar with no merging or fallback, the strict JSON profile as written, atomic admission of the three flat overrides, missing automatic sidecars still default. Mark ready, merge on green, then implement in TS and Python together on the #354 lane.
 
 This RFC is separate from accepted payload admission RFC0096 and the Python
 complete-validation WIP. Discovery stays parse-only until its complete capability
@@ -77,10 +82,10 @@ Earlier authority/probe capture SHA256:
 These are limited research observations. Proposed vectors below are future
 conformance requirements, not claims of already executed refusals.
 
-## Proposed contract
+## Accepted contract
 
-All MUST statements in this section are proposed until final owner acceptance
-and synchronized implementation. This is a selected-config operation failure,
+The owner accepted all requirements in this section at4a31eb3c. Synchronized
+implementation remains required. This is a selected-config operation failure,
 not an additional document validation finding or generic schema-error code.
 
 ### Selection and operation boundary
@@ -100,11 +105,11 @@ A filesystem validation adapter selects exactly one file:
 For example, from `/work`, `records/link.uwx.md` selects
 `/work/records/.uw.institution.json` even if the document link targets
 `/archive/deal.uwx.md`. `records/../deal.uwx.md` selects
-`/work/.uw.institution.json`. This proposed directory rule is independent of
+`/work/.uw.institution.json`. This accepted directory rule is independent of
 existing document-read semantics; it does not change whether/how the OS follows
 a document link. Tests must distinguish invocation-path and physical-target
 sidecars. The unintegrated Python Path.resolve-based discovery must be aligned
-if this lexical directory choice is accepted.
+to this accepted lexical directory choice.
 
 A missing automatically selected path is the sole absence/default branch.
 Attempt the read; a genuine not-found outcome for that automatic path means no
@@ -139,12 +144,12 @@ well-formed Unicode scalar content: reject an escaped lone high/low surrogate;
 a correctly paired escaped surrogate sequence is admitted. Do not normalize
 strings or replace invalid code units. A Unicode-profile failure is malformed
 without a pointer, at the same pre-shape stage as whole JSON admission.
-The BOM, duplicate-name and decoded-Unicode rules are explicit proposed
+The BOM, duplicate-name and decoded-Unicode rules are explicit accepted
 profile choices, not inherited JSON MUSTs or reuse of document JCS admission.
 [RFC8259 section4](https://www.rfc-editor.org/rfc/rfc8259.html#section-4)
 recommends unique names; [section8.1](https://www.rfc-editor.org/rfc/rfc8259.html#section-8.1)
 permits parsers to ignore a BOM. They do not themselves select this stricter
-configuration profile. Final owner acceptance must cover these stated choices.
+configuration profile. The owner accepted these stated choices at4a31eb3c.
 The root MUST be an object, not null or an array.
 
 The recognized carrier is an own `validation_overrides` member. Absence means
@@ -276,9 +281,9 @@ extension of receipts to configured policy requires its own explicit governed
 scope. Config errors are not additional document findings or receipt error counts.
 The accepted authenticate-first receipt contract remains authority.
 
-## Future synchronized specification and type changes
+## Remaining synchronized specification and type changes
 
-After acceptance, synchronize Format Appendix C.6, Protocol VI.3, II.6a transport
+Synchronize Format Appendix C.6, Protocol VI.3, II.6a transport
 cross-references and XI operation-error documentation. Add a normative minimum
 institution-config schema encoding the object/carrier/three-number rules and
 forbidden root `thresholds`; whole-byte decoding, duplicate-name handling,
@@ -290,7 +295,7 @@ optional flat carrier and opaque extra members. It must no longer advertise a
 nested wire alias or confuse config data with pure `FinancialThresholds` API
 parameters. No new public function is required; a shared internal adapter may
 be used. Schema/index/protocol type changes ship together with implementation,
-not in this draft. No generic runtime schema engine or new dependency is needed.
+not in this docs-only acceptance. No generic runtime schema engine or new dependency is needed.
 
 ## Conformance impact and acceptance gates
 
@@ -301,7 +306,7 @@ source/config pair and exercise actual subprocesses on Windows/Linux/macOS.
 Proposed fixture family: `conformance/institution-config/`, with explicit-path
 portable cases and native filesystem/source/model assertions where needed.
 
-| Required controls | Expected proposed outcome |
+| Required controls | Required outcome |
 |---|---|
 | No automatic sidecar; unrelated cwd/parent sidecar | Existing defaults; no config error |
 | Explicit absent; selected directory; denied read; dangling sidecar link | UNREADABLE, exit1, no result |
@@ -325,13 +330,16 @@ portable cases and native filesystem/source/model assertions where needed.
 Permission/link/race controls must use real supported adapters or explicit read
 failure injection with independently checked boundaries. Do not claim portable
 permission behavior from an ineffective chmod on another platform. Tests never
-rewrite the source/config under assessment. Extra named vectors are proposed,
-not additions to the current expected corpus from this draft.
+rewrite the source/config under assessment. These named vectors are required implementation controls,
+not claims of executed fixtures in this docs-only acceptance.
 
-Before acceptance: independently review scope, closed predicates, code uniqueness,
-selection/absence and precedence, unknown-data and public-type boundaries, all-or-
-nothing behavior, receipt exclusion and testable transport. The owner must accept
-the final RFC text; drafting direction is insufficient. Before activation:
+The owner accepted the final text at4a31eb3c on2026-10-19 after independent
+semantic review. Scope, code uniqueness, selection/absence and precedence,
+unknown-data and public-type boundaries, atomic application, receipt exclusion
+and testable transport were reviewed. Reviewed-head CI39222835814 passed all17
+ordinary jobs: https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39222835814 .
+Final administrative acceptance-head review and CI are recorded in PR396;
+merge SHA and exact-main CI are recorded in NOW.md. Before runtime activation:
 synchronized TS/Python/spec/schema/type/operation-error documentation, attributed
 conformance controls, independent material-claim verification and green exact-head
 and exact-main CI. Validation capability promotion remains a separate full gate.
@@ -339,7 +347,7 @@ and exact-main CI. Validation capability promotion remains a separate full gate.
 ## Reference implementation
 
 Reconcile the held TS institution adapter/CLI tests and Python private helper
-with this final accepted contract only after acceptance. Candidate locations:
+with this accepted contract. Implementation locations include:
 `packages/uwmd-core/src/institution-config.ts`, `cli.ts`,
 `packages/uwmd-verify/src/types.ts`, and independent Python's
 `uwmd_institution.py` plus actual validation CLI wiring. The held TS partial
@@ -349,7 +357,7 @@ No model-generation, workflow, display or metric implementation work is included
 
 ## Alternatives considered
 
-- Warn and use defaults: rejected for the proposal because the selected policy
+- Warn and use defaults: rejected because the selected policy
   failed while the document appears successfully validated under another one.
 - Apply only valid known siblings: rejected; produces undocumented partial policy.
 - Fall back from explicit selection to adjacent discovery: rejected; changes
@@ -361,9 +369,9 @@ No model-generation, workflow, display or metric implementation work is included
 - Hidden API file loading or receipt policy rebinding: rejected from this scope;
   neither follows from configuring a filesystem validation operation.
 
-## Decisions proposed for owner review
+## Accepted decisions from owner review
 
-| Question | Recommended exact disposition |
+| Question | Accepted exact disposition |
 |---|---|
 | Failure allocation | Two closed validate-category operation errors above, no document issue family |
 | Selection/absence | One explicit path or adjacent lexical document path; only genuine automatic absence defaults |
@@ -372,10 +380,10 @@ No model-generation, workflow, display or metric implementation work is included
 | Application and order | Atomic whole-config admission; explicit fixed primary-error precedence |
 | APIs/receipts | Pure caller maps remain separate; no receipt config loading or identity/count changes |
 
-These are proposed details, not additional owner approvals. No numerical
-convention is unresolved or selected here. Final normative text/activation still
-requires review and owner acceptance. RFC0096 and RFCs0085/0089/0092 retain their
-own ownership and acceptance states.
+The owner accepted all six dispositions above at4a31eb3c. No numerical
+convention is unresolved or selected here. Synchronized implementation still
+requires independent review and green exact-head/main CI. RFC0096 and
+RFCs0085/0089/0092 retain their own ownership and acceptance states.
 
 ## Prior art
 

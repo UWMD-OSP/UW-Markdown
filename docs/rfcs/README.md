@@ -133,7 +133,7 @@ section.
 | [0095](./0095-optional-metadata-and-provenance-references.md) | Allocate bounded optional metadata and provenance-reference diagnostics | accepted | format, protocol, core, conformance, tooling |
 | [0096](./0096-bounded-stated-payload-admission.md) | Allocate bounded stated-payload admission diagnostics | accepted | format, protocol, core, conformance, tooling |
 
-| [0097](./0097-institution-config-refusal.md) | Refuse invalid selected institution configuration before validation | draft | format, protocol, core, conformance, tooling |
+| [0097](./0097-institution-config-refusal.md) | Refuse invalid selected institution configuration before validation | accepted | format, protocol, core, conformance, tooling |
 
 ## Status values
 
