@@ -105,7 +105,10 @@ def _load_institution_config(document_path,explicit_path=None):
     except FileNotFoundError:
         # A dangling selected link is not automatic absence. Classify the read
         # outcome, rather than avoiding it with an exists-only preflight.
-        if explicit_path is None and not os.path.lexists(path):return {}
+        if explicit_path is None:
+            try:os.lstat(path)
+            except FileNotFoundError:return {}
+            except OSError:pass  # Inability to inspect is not genuine absence.
         raise _InstitutionConfigError(_UNREADABLE) from None
     except OSError:
         raise _InstitutionConfigError(_UNREADABLE) from None

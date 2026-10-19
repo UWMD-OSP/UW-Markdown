@@ -106,9 +106,9 @@ class InstitutionConfigTests(unittest.TestCase):
     def test_read_first_absence_dangling_and_race_classification(self):
         observed=[]
         def missing(path):observed.append(("read",path));raise FileNotFoundError()
-        def no_entry(path):observed.append(("entry",path));return False
+        def no_entry(path):observed.append(("entry",path));raise FileNotFoundError()
         with patch("uwmd_institution_config.Path.read_bytes",missing),patch(
-                "uwmd_institution_config.os.path.lexists",no_entry):
+                "uwmd_institution_config.os.lstat",no_entry):
             self.assertEqual(_load_institution_config("deal.uwx.md"),{})
             self.assertEqual([kind for kind,_ in observed],["read","entry"])
             with self.assertRaises(_InstitutionConfigError) as caught:
@@ -117,13 +117,19 @@ class InstitutionConfigTests(unittest.TestCase):
             self.assertEqual([kind for kind,_ in observed],["read","entry","read"])
         # A sidecar directory entry that is a dangling link is not absence.
         with patch("uwmd_institution_config.Path.read_bytes",side_effect=FileNotFoundError()),patch(
-                "uwmd_institution_config.os.path.lexists",return_value=True):
+                "uwmd_institution_config.os.lstat",return_value=object()):
             with self.assertRaises(_InstitutionConfigError):_load_institution_config("deal.uwx.md")
+        # A failed lstat after read ENOENT cannot prove genuine absence.
+        for failure in (PermissionError("private"),OSError("unknown")):
+            with patch("uwmd_institution_config.Path.read_bytes",side_effect=FileNotFoundError()),patch(
+                    "uwmd_institution_config.os.lstat",side_effect=failure):
+                with self.assertRaises(_InstitutionConfigError) as caught:_load_institution_config("deal.uwx.md")
+                self.assertEqual(caught.exception.code,"VAL-INSTITUTION-CONFIG-UNREADABLE")
         # File disappearance/read failure is classified from the actual attempted
         # read, not an exists-only check followed by an assumed successful open.
         for error in (PermissionError("private path"),IsADirectoryError(),OSError("read failed")):
             with patch("uwmd_institution_config.Path.read_bytes",side_effect=error),patch(
-                    "uwmd_institution_config.os.path.lexists",side_effect=AssertionError("not absence")):
+                    "uwmd_institution_config.os.lstat",side_effect=AssertionError("not absence")):
                 with self.assertRaises(_InstitutionConfigError) as caught:_load_institution_config("deal.uwx.md")
                 self.assertEqual(caught.exception.projection(),dict(category="validate",
                     code="VAL-INSTITUTION-CONFIG-UNREADABLE",message="Selected institution config could not be read."))
