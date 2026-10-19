@@ -118,6 +118,15 @@ describe('RFC0096 WF16 claims and selected-floor exclusions', () => {
 });
 
 describe('RFC0096 current SOURCE/MODEL scope and full pass ordering', () => {
+  it('assesses assembled consumed content once and excludes unused sources', () => {
+    const root = doc('rent_roll', { external: { parts: ['p'], part_count: 1, collection_key: 'tenant_id', collection_path: 'tenants' } }, ' external=true');
+    const part = (id: string, fee: unknown) => `---\nuw_version: "3.0"\nuwpart_version: "1.0"\npart_id: ${id}\nsection: rent_roll\ncollection_member: true\n---\n${fence('rent_roll', { tenant_id: id, recovery_terms: { method: 'net', admin_fee_pct: fee } })}`;
+    const used = part('p', false); const unused = part('unused', false);
+    const result = validateUWFile(root, undefined, { parts: [used, unused] });
+    expect(result.issues.filter(i => codes.has(i.code)).map(i => [i.code, i.field])).toEqual([['REC-11','tenants[0].recovery_terms.admin_fee_pct']]);
+    expect(root).toContain('"parts":["p"]'); expect(used).toContain('"admin_fee_pct":false');
+    expect(() => validateUWFile(root, undefined, { parts: [] })).toThrowError(/p/);
+  });
   it('uses all current variants in code-point order and excludes overwritten/history/extension peers', () => {
     const source = header + fence('lease_up_schedule', lu({ model_type: 'bad' }), ' variant=z v=1') + fence('lease_up_schedule', lu(), ' variant=z v=2') + fence('lease_up_schedule', lu({ model_type: 'bad' }), ' variant=😀') + fence('lease_up_schedule', lu({ model_type: 'bad' }), ' variant=\ue000') + fence('x_private', lu({ model_type: 'bad' }));
     const issues = validateUWFile(source).issues.filter(i => codes.has(i.code));
