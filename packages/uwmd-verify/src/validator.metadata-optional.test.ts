@@ -125,6 +125,17 @@ describe('RFC0095 conditional agent and reference carriers', () => {
     m.provenance = Object.assign(Object.create({ agent_id: 'borrowed', market_data_ref: market() }), { source: 'agent/X', actor: 'test', resolution: 'market_data_accepted', inherited_from: Object.create(inherited()) });
     expect(fields(parsed, 'META-06')).toEqual(['_meta.provenance.agent_id', '_meta.provenance.inherited_from.document_id', '_meta.provenance.inherited_from.digest', '_meta.provenance.inherited_from.distance', '_meta.provenance.market_data_ref']);
   });
+  it('does not turn inherited array slots into stated assertions or valid flag items', () => {
+    const p = parseUWFile(reference({})); const b = p.sections.property as UWBlock;
+    const overrides = new Array(1);
+    Object.setPrototypeOf(overrides, Object.assign(Object.create(Array.prototype), { 0: { resolution: 'market_data_accepted' } }));
+    b.content._overrides = overrides;
+    const flags = new Array(1);
+    Object.setPrototypeOf(flags, Object.assign(Object.create(Array.prototype), { 0: 'inherited-string' }));
+    canonical(b).quality.flags = flags;
+    expect(fields(p, 'META-05')).toEqual(['_meta.quality.flags[0]', '_overrides[0]']);
+    expect(fields(p, 'META-06')).toEqual([]);
+  });
   it('preserves rejected-provenance precedence even under independent asserting overrides', () => {
     expect(fields(source({ _meta: { ...meta(), provenance: null }, _overrides: [{ resolution: 'market_data_accepted' }] }))).toEqual(['_overrides[0].path']);
   });

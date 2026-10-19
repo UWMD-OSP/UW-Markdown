@@ -3152,7 +3152,7 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
     if (!Object.hasOwn(block.content, '_overrides') || !Array.isArray(block.content['_overrides'])) continue;
     const overrides = block.content['_overrides'];
     for (let index = 0; index < overrides.length; index++) {
-      const override = overrides[index];
+      const override = Object.hasOwn(overrides, index) ? overrides[index] : undefined;
       if (!metaObject(override)) continue; // META-05 owns the entry shape.
       const path = `_overrides[${index}]`;
       if (Object.hasOwn(override, 'source')) {
@@ -3391,7 +3391,7 @@ function checkOptionalMetadata(parsed: ParsedUWFile, issues: ValidationMessage[]
         if (Object.hasOwn(quality, 'flags')) {
           if (!Array.isArray(quality.flags)) fail('_meta.quality.flags', 'be an array of strings');
           else for (let index = 0; index < quality.flags.length; index++) {
-            if (typeof quality.flags[index] !== 'string') fail(`_meta.quality.flags[${index}]`, 'be a string');
+            if (!Object.hasOwn(quality.flags, index) || typeof quality.flags[index] !== 'string') fail(`_meta.quality.flags[${index}]`, 'be a string');
           }
         }
         for (const key of ['partial', 'provisional']) {
@@ -3405,7 +3405,7 @@ function checkOptionalMetadata(parsed: ParsedUWFile, issues: ValidationMessage[]
     const overrides = block.content['_overrides'];
     if (!Array.isArray(overrides)) { fail('_overrides', 'be an array'); continue; }
     for (let index = 0; index < overrides.length; index++) {
-      const override = overrides[index];
+      const override = Object.hasOwn(overrides, index) ? overrides[index] : undefined;
       const path = `_overrides[${index}]`;
       if (!metaObject(override)) { fail(path, 'be an object'); continue; }
       if (!Object.hasOwn(override, 'path') || typeof override.path !== 'string') fail(`${path}.path`, 'be a required string');
@@ -3459,7 +3459,7 @@ function checkMetadataReferences(parsed: ParsedUWFile, issues: ValidationMessage
       // Assertions are not effective leaf selection: path validity, duplicates,
       // shadows and later tags cannot retract any own literal tag assertion.
       const required = (Object.hasOwn(provenance, 'resolution') && provenance.resolution === tag)
-        || overrides.some(value => metaObject(value) && Object.hasOwn(value, 'resolution') && value.resolution === tag);
+        || overrides.some((value, index) => Object.hasOwn(overrides, index) && metaObject(value) && Object.hasOwn(value, 'resolution') && value.resolution === tag);
       const field = `_meta.provenance.${carrier}`;
       if (!Object.hasOwn(provenance, carrier)) {
         if (required) fail(field, `be present for a stated ${tag} assertion`);
