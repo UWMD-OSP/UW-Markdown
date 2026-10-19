@@ -12,7 +12,7 @@ import {
 } from './replacement-funding.js';
 import { createUWMCPValidationResult } from './bindings.js';
 import { toUWEnvelope } from './envelope.js';
-import { buildMeta } from './metadata.js';
+import { buildMeta, stampMetaIntoBlockContent } from './metadata.js';
 import * as integrity from './integrity.js';
 import type { CashFlowRow } from './cash-flow-series.js';
 
@@ -148,7 +148,7 @@ describe('RFC 0070 separate verification', () => {
   it('MCP refuses unavailable binding verification independently of structural findings', async () => {
     const parsed = parseUWFile(source('outright-payment'));
     for (const entry of Object.values(parsed.sections))
-      for (const block of sectionBlocks(entry)) block.content._meta = block.meta;
+      for (const block of sectionBlocks(entry)) stampMetaIntoBlockContent(block.content, block.meta);
     const original = integrity.sha256TextHex;
     vi.spyOn(integrity, 'sha256TextHex')
       .mockImplementationOnce(original)
