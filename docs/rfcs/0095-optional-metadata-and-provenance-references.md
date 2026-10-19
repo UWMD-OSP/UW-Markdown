@@ -418,7 +418,8 @@ result is changed by this draft update.
 
 ## Conformance impact and evidence gates
 
-No fixture, expected result or original source changes in this draft. The read-only inventory below reports measured source populations, not a future
+No fixture, expected result or original source changes in this draft. The
+read-only inventory below reports measured source populations, not a future
 validation or conformance error total. Before activation, independently inventory
 every live requirement owner and source population at the final implementation
 base; distinguish intentionally invalid cases, positive documents, output
@@ -445,6 +446,76 @@ Freeze independent TypeScript/Python observations at exact heads and retain
 platform identity. A successful focused run does not establish a full capability.
 Required final-head CI follows ordinary integration gates. No rebaseline is
 authorized merely to make Python pass.
+
+### Read-only pre-activation attribution inventory
+
+Exact source/implementation authority is main
+`fa9a9ea37d31b918f5993eae4276b159f31719f3`. The independently authored
+[population review and all49 newly assessed source paths](https://github.com/UWMD-OSP/UW-Markdown/blob/2f0a8a53783ec323bb2940b68fd69c363cdc6a79/docs/reviews/2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.md)
+and its linked JSON/compressed trace identify every input hash, block origin,
+parent gate, canonical/override assertion and rejection. The observer compiles
+exact Git runtime sources and executes the actual old checkDataQuality function;
+it does not use stale dist or activate the candidate. A separately written
+integrator observer independently reproduces the standalone counts and new rows.
+
+| Measured standalone population | Count |
+|---|---:|
+| Tracked recognized `.uwx.md`, `.uwpart.md`, `.uw.md` sources | 880 |
+| Sources reaching the fenced parser | 816 |
+| Earlier typed parser refusals | 9 |
+| Lite sources outside authored fenced-block counting | 55 |
+| Retained-physical/current-model union | 2,238 |
+| Existing sections/current-variant attribution population | 2,149 |
+| Newly assessed references / source paths | 89 /49 |
+| New references with admitted canonical parents | 87 |
+| New references retaining earlier parent precedence | 2 |
+| Observed new reference-carrier findings | 0 |
+
+The89 references are22 history/superseded,15 pipeline-log,7 custom-calculation,
+6 custom-scenario,22 extension and17 physically retained references lost from
+projection. Current named variants already belong to the old pass and are not
+all newly assessed. Exact object identity, not content equality, deduplicates.
+The two earlier-parent cases remain
+`conformance/hedge/0070-superseded-source/deal.uwx.md:63` (whole metadata absent)
+and `conformance/documents/malformed/33-meta-pass-order.uwx.md:80` (retired wrapper).
+
+The new population comprises66 references in37 conformance files,17 in10 example
+files and6 in2 download templates. The review distinguishes33 references in
+explicit malformed/reject locations,33 other conformance references without an
+inferred metadata-validity promise,16 ordinary example references,1 path-inferred
+negative example and6 template references. Template presence is not observed
+writer output. No assertion is weakened or expectation inferred from these labels.
+
+Composition is a separate operation census, **not additive** to unique repository
+records:12 local-directory attempts give7 resolved operations,3 unresolved and
+2 part-load/admission refusals. The resolved operations retain12 root and21
+consumed-part physical references, plus7 synthesized current-model references
+(union40; old sections12; newly assessed28 original references). Unused loaded
+parts are excluded. Local parts-directory association is explicitly a packaging
+assumption rather than a corpus-wide resolver. Of38 standalone fragments,36 pass
+part admission and2 are separately refused; parsing a fence does not prove a
+usable composition input.
+
+The only tracked promoted-reference assertion is
+`conformance/market-data/promote/explicit/deal-after-promotion.uwx.md:9`; its
+market_data_ref is structurally valid and its `2026-06-30` date satisfies U3.
+No tracked block states an inheritance assertion/carrier. The old runtime emits
+zero attribution DQ-06/errors on these parsed sources; the new reference pass
+likewise observes zero carrier failures. Sparse positive coverage requires the
+new negative, duplicate/shadowed, history, MODEL and transport controls; it is
+not evidence of full implementation. Sixteen separately authored census controls
+pass, including the existing null-override TypeError as an observed current
+failure, not an approved refusal or a new expectation.
+
+This inventories **reference attribution**, not all META-05/06 optional-field or
+conditional-agent-id effects, all validation results, live producer emissions,
+ZIP members, generated Lite models or embedded unit-test source strings. The
+census checks as_of string shape; the independently tested U3 calendar domain
+and explicit check of the one observed carrier are separate evidence. Do not
+claim a zero total RFC0095 conformance impact from zero observed reference
+failures. Re-run the attribution inventory at the actual activation base,
+including separately pending RFC0094 implementation, and review any expectation
+delta before activation. No current source/fixture/expected result is changed.
 
 ### Executed independent date-only evidence (draft research)
 

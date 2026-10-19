@@ -1,4 +1,4 @@
-# RFC 0095 attribution population â€” independent read-only census
+# RFC 0095 attribution population — independent read-only census
 
 Evidence for Issue #354 / [draft PR #389](https://github.com/UWMD-OSP/UW-Markdown/pull/389), not acceptance or activation. The owner's U1 direction keeps `DQ-06`/info for stage readiness and prevents duplicate attribution errors. No production, schema, source, expectation or receipt changed.
 
@@ -53,7 +53,7 @@ The new population comprises 66 refs in 37 conformance files, 17 refs in ten exa
 
 The fenced parser produced no non-strict JSON placeholders. Of 38 part sources, 36 pass actual `parseUWPart` and two fail part-specific admission. Those two remain listed separately and are not claimed to be usable composition inputs merely because their JSON fences parsed. The 55 Lite paths are present in the full source manifest, explicitly excluded from authored fenced-block counting rather than treated as parser failures or empty successful documents.
 
-## Composed SOURCE accounting â€” separate, not additive
+## Composed SOURCE accounting — separate, not additive
 
 Twelve local-directory attempts use actual `parseUWPart`/`resolveComposition`: seven resolve, three remain unresolved and two stop at part load/admission. Only local `parts/`, or sibling `../parts/` for a `records/` directory, supplies candidates. This is an explicit **path-derived local packaging assumption**, not a corpus-wide resolver. Every association, issue and refusal is retained.
 
