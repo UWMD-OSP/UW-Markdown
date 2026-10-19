@@ -1,7 +1,6 @@
 {
   "codes": [
-    "REC-02",
     "REC-02"
   ],
-  "note": "A lone cap needs no method; any other member requires it (RFC 0081 \u00a77). REC-02 twice: the method is missing, and once a method is required a stated cap.pct requires cap.accumulation."
+  "note": "Accepted RFC0096 M/P: absent method gives REC-02.method when an independent non-null member requires it; M is false, so cap.pct does not require accumulation. Original source unchanged."
 }

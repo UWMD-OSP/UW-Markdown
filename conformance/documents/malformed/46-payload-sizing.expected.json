@@ -1,0 +1,51 @@
+{
+  "description": "Authored accepted RFC0096 predicates; manually attributed ordered new-code projection only, not a whole-document positive-validation claim.",
+  "must_parse": true,
+  "expected_codes": [
+    "CS-03"
+  ],
+  "payload_issues": [
+    {
+      "code": "CS-03",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "sizing[0].id"
+    },
+    {
+      "code": "CS-03",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "sizing[0].fn"
+    },
+    {
+      "code": "CS-03",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "sizing[0]"
+    },
+    {
+      "code": "CS-03",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "sizing[0].value"
+    },
+    {
+      "code": "CS-03",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "sizing[0].extra"
+    },
+    {
+      "code": "CS-03",
+      "severity": "error",
+      "section": "capital_stack",
+      "field": "sizing[1]"
+    },
+    {
+      "code": "CS-03",
+      "severity": "error",
+      "section": "components",
+      "field": "multifamily.capital_stack.sizing"
+    }
+  ]
+}

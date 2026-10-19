@@ -597,8 +597,8 @@ capability is unconditional: every implementation owes it.
 | `FV-NN` | Single-section financial validity — a value falls outside a registered plausibility threshold. | `validate` | typically `warning` |
 | `DQ-NN` | Data quality — a required value is missing, provisional, or below a stage threshold. | `validate` | `warning` or `error` |
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
-| `CS-*` | Capital stack (§XIII); RFC 0050 registers `CS-02b` for malformed split preferred-equity coupons. | `validate` | `warning` or `error` |
-| `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
+| `CS-*` | Capital stack (§XIII); RFC0096 adds CS-03 sizing-declaration admission; RFC 0050 registers `CS-02b` for malformed split preferred-equity coupons. | `validate` | `warning` or `error` |
+| `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence and closed LU-05 payload admission (format spec §4.25, RFCs0008/0096). | `validate` | `warning` or `error` |
 | `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
 | `PS-NN` | Period-series shape and identity (RFC 0041). | `validate` | PS-01/03 warning; PS-02 error |
 | `ROLE-NN` | Signed block role vocabulary (RFC 0040). | `validate` | `error` |
@@ -608,8 +608,8 @@ capability is unconditional: every implementation owes it.
 | `LSE-NN` | Commercial lease clauses — escalation steps, break options, co-tenancy, TI/LC balances (format §4.3, RFC 0055). | `validate` | `error` |
 | `HDG-NN` | RFC 0070 adds HDG-07/08/10 structural funding rules and HDG-09 solely for async digest mismatch. Interest-rate hedges — cap strike, notional, term and post-expiration assumption (format §4.7, RFC 0056). `rate_swap` and `rate_collar` are reserved and refused by `HDG-02`. | `validate` | `error` |
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
-| `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
-| `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC 0058). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `error` |
+| `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). RFC0096 adds WF-16 stated-claim admission. Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
+| `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC0058), with closed REC-11 admission (RFC0096). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `error` |
 | `RDB-NN` | Optional reserve draw binding plan/source/allocation verification (§VIII.12, RFC 0065); ordinary document validation and assembly unchanged. | `calc-evaluate` | `error` |
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
@@ -866,6 +866,92 @@ and CLI exits. ProtocolError category is validate; ordinary issues gain no
 category. Newly issued receipt policy counts reflect actual findings; subject,
 digest, issuance and authenticate-first verdict rules remain unchanged.
 Validation is read-only; no new result state, inferred value or source repair.
+
+#### Closed current-payload admission (RFC0096)
+
+The validation-only error allocations are LU-05 (Format §4.25 model/payload
+admission), REC-11 (Format §4.3 remaining recovery leaves/closed objects),
+CS-03 (Format §4.24 stated sizing declarations, including admitted components),
+and WF-16 (Format §4.27 stated claims and remaining clawback leaves).
+The corresponding Format tables define every closed predicate; no schema
+fallback or financial-result interpretation is allocated. Ordinary findings
+carry no category; ProtocolError transport uses category validate.
+
+A number means a finite binary64 numeric value; booleans are not numbers.
+An integer is a finite number with no fractional component; this RFC adds no
+safe-integer ceiling. A nullable optional field may be absent or exactly null.
+An own, present non-null value MUST satisfy its named predicate. Required
+members in the four Format allocations are required own members, without trimming, coercion, inferred
+defaults or filling absent values. String length means the actual nonempty
+string, so whitespace is not silently trimmed. Unknown members are rejected
+only in the exact closed objects enumerated here. `_notes` is never validated;
+`_meta`, `_role` and `_overrides` retain their existing universal owners.
+
+These payload allocations MUST visit the current canonical block or every
+current variant of each named standard section, independently of a financial
+role-selection fallback. A role collision or missing financial primary does
+not exempt other current peers from admission. This is the existing payload
+population of Format4 and the original formal audit, not metadata's
+all-retained-physical population. History, superseded/overwritten physical
+blocks and physical append inputs which no longer constitute a current payload
+MUST NOT independently gain these errors. Unknown/extension sections and
+nested opaque lookalikes are not these named payloads.
+
+SOURCE MUST freshly parse the actual source, perform accepted selection and
+composition, and assess the assembled current payload. A consumed part's
+payload is assessed where it becomes current assembled content, not again as
+an independent physical block. Unused loaded parts are not assessed. MODEL
+MUST assess current own model members, without stale raw/convenience metadata
+or reparsing away mutations. Existing unresolved, unavailable and unsupported
+composition refusals remain typed operation outcomes; this RFC neither invents
+missing payloads nor turns source availability into a structural error.
+Metadata's separate root/consumed-part/derived-model physical union remains
+unchanged under RFCs0090/0091/0093/0094/0095.
+
+Container precedence is local: emit one parent-carrier finding and stop that
+subtree when its listed container type fails; continue independent siblings.
+A required own member's absence and a present invalid value produce one finding
+at that exact member, not simultaneous missing/type findings. A leaf failing
+several predicates produces one finding. A condition already owned by an
+existing registered error in the four allocations MUST NOT be emitted again under a new code.
+Deduplication requires the same selected block, row, field and predicate; an
+unrelated REC/LU/WF finding never suppresses an unowned sibling.
+
+Run one complete payload-admission pass after existing data-quality checks,
+before CC-16 coverage-summary output, remediation enrichment and result
+partitioning. It MUST preserve all existing checks' relative order. Within
+this pass use LU-05, REC-11, CS-03, WF-16 family order. Visit an unlabelled entry
+as one current block; for maps visit every current variant in Unicode code-point
+key order. Admitted component-class keys use the same ordering, only under the existing
+mixed_use and declared component-class eligibility of Format4.23; an unknown
+component key or opaque nested object does not create a new traversal scope. Do not select only base or
+primary. This pass does not resort the preexisting issue array.
+
+Within LU use model_type, stabilization_target, assumptions, schedule,
+stabilized_summary; within REC visit tenant array order, terms before true-up,
+with terms field order as its closed list above, cap fields pct/over/accumulation,
+and true-up row fields as its closed list above. Within CS visit array order,
+then id, fn, selector union, value. Within WF visit clawback, stated_outcomes,
+stated_schedule; clawback floor_rate then floor_multiple; outcomes lp then gp
+(contributions, distributions, moic, xirr), then promote_total, profit_total,
+clawback_amount; schedule row date then by_tier; tier rows tier, lp, gp.
+In each object assess its listed fields first, then unknown own members in
+Unicode code-point order. Parent failure stops only its subtree.
+
+Existing code ownership is predicate-based, not an instruction to concatenate
+duplicate full validation arrays. Implementations may share admission helpers
+with existing validators, but MUST preserve the registered findings, exact
+fields, independent siblings and order. No schema-library error order defines
+the result. Errors enter ordinary errors/issues partitions and existing overall
+status and CLI exit semantics. Stage readiness remains independently derived;
+no profile or complete-Verifier claim follows from this allocation.
+
+Existing per-lease structural REC-01–04 and REC-09 admission applies to current
+rent_roll peers independently of property-level cross-check resolution. Keep
+existing selected-check order, assess remaining peers once without duplicate
+selected findings, and do not expand REC-05–08 arithmetic or unrelated LSE checks.
+Newly issued receipt policy counts use actual findings under existing issuance
+rules; no subject, digest, signature, result-state or verdict-precedence change.
 
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 

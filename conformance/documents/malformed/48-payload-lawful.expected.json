@@ -1,0 +1,6 @@
+{
+  "description": "Authored accepted RFC0096 predicates; manually attributed ordered new-code projection only, not a whole-document positive-validation claim.",
+  "must_parse": true,
+  "expected_codes": [],
+  "payload_issues": []
+}
