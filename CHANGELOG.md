@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept RFC0097 under the owner's2026-10-19 decision at4a31eb3c: two closed
+  institution-config operation errors, error-only JSON/exit1, exact lexical
+  selection, strict JSON admission and atomic three-key application. Genuine
+  automatic absence still defaults. Synchronized TS/Python/spec/schema/type and
+  conformance implementation follows on Issue354; this docs-only acceptance
+  changes no runtime, threshold procedure, receipt rule or capability.
+
 - Implement accepted RFC0096 in TypeScript and an independent private Python
   admission helper: closed LU-05/REC-11/CS-03/WF-16 errors on assembled current
   payloads, synchronized Format/Protocol/schema/remediation and eight authored
