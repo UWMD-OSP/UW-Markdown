@@ -90,7 +90,7 @@ def run(output):
               " # "+str(round(elapsed*1000))+"ms",flush=True)
         for problem in problems:
             print("# "+str(problem),flush=True)
-    report=dict(label="Actual unchanged portable base calc cases; no advertised validate capability",
+    report=dict(label="Actual unchanged portable base calc cases; no advertised calc-evaluate capability",
         head=head,tree=tree,implementation=implementation,discovery=manifest,
         discovery_exit_code=manifest_process.returncode,shared_driver_sha256=digest(ROOT/"conformance/runner/runner.py"),
         advertised_capability_gate_run=False,

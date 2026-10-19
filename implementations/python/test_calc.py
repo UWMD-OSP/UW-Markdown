@@ -205,6 +205,56 @@ class CalcExecutionTests(unittest.TestCase):
         self.assertEqual(evaluate_calc(declared("property['a.b']"), self.document,
                          context={"overrides": {"property.a.b": 40}})["value"], 9)
 
+    def test_ordinary_member_periods_keep_existing_first_match_and_own_key_priority(self):
+        document = parse(HEADER + block("dcf", {"annual_cash_flows": [
+            {"year": 1, "value": 11}, {"year": 1, "value": 99}, {"year": "2", "value": 22}]})
+            + block("noi_model", {"projections": {"year_2": {"value": 22}, "Y1": {"value": 10}, "year_1": {"value": 999}}})
+            + block("lease_up_schedule", {"schedule": [{"period": "2028-Q1", "value": 44}]})
+            + block("cash_flow_series", {"series": [{"date": "2028-02-29", "amount": 55}]}))
+        for formula, value in (("dcf.annual_cash_flows['Y1'].value", 11),
+                ("dcf.annual_cash_flows.Y2.value", 22), ("dcf.annual_cash_flows['Y3'].value", None),
+                ("noi_model.projections['Y2'].value", 22), ("noi_model.projections.Y1.value", 10),
+                ("lease_up_schedule.schedule['2028-Q1'].value", 44),
+                ("cash_flow_series.series['2028-02-29'].amount", 55)):
+            result = evaluate_calc(declared(formula), document)
+            self.assertEqual((result["ok"], result["value"]), (True, value), formula)
+        strict = evaluate_calc(declared("dcf.annual_cash_flows@Y1.value"), document)
+        self.assertEqual(strict["error"]["code"], "CALC-PERIOD-002")
+        wrong_kind = evaluate_calc(declared("dcf.annual_cash_flows['2028-02-29'].value"), document)
+        self.assertIsNone(wrong_kind["value"])
+
+    def test_member_selector_override_aliases_keep_exact_leaf_identity_and_precedence(self):
+        document = parse(HEADER + block("dcf", {"annual_cash_flows": [{"year": 1, "value": 11, "a.b": 12}]}))
+        controls = [
+            ("dcf.annual_cash_flows['Y1'].value", {"dcf.annual_cash_flows@Y1.value": 99}, 99),
+            ("dcf.annual_cash_flows['Y1'].value", {"dcf.annual_cash_flows@Y1.value": None}, None),
+            ("dcf.annual_cash_flows@Y1.value", {"dcf.annual_cash_flows.Y1.value": 88}, 88),
+            ("dcf.annual_cash_flows@Y1.value", {"dcf.annual_cash_flows.Y1.value": None}, None),
+            ("dcf.annual_cash_flows@Y1.value", {"dcf.annual_cash_flows@Y1.value": 1, "dcf.annual_cash_flows.Y1.value": 2}, 1),
+            ("dcf.annual_cash_flows['Y1'].value", {"dcf.annual_cash_flows@Y1.value": 1, "dcf.annual_cash_flows.Y1.value": 2}, 2),
+            ("dcf.annual_cash_flows@Y1['a.b']", {"dcf.annual_cash_flows.Y1['a.b']": 50}, 50),
+            ("dcf.annual_cash_flows['Y1']['a.b']", {"dcf.annual_cash_flows@Y1['a.b']": 60}, 60),
+            ("dcf.annual_cash_flows@Y1['a.b']", {"dcf.annual_cash_flows.Y1.a.b": 100}, 12),
+            ("dcf.annual_cash_flows['Y1']['a.b']", {"dcf.annual_cash_flows@Y1.a.b": 100}, 12),
+        ]
+        before = copy.deepcopy(document)
+        for formula, overrides, expected in controls:
+            with self.subTest(formula=formula, overrides=overrides):
+                result = evaluate_calc(declared(formula), document, context={"overrides": overrides})
+                self.assertEqual((result["ok"], result["value"]), (True, expected), result)
+        self.assertEqual(document, before)
+
+    def test_declaration_role_admission_excludes_component_without_blocking_explicit_components(self):
+        for role in ("primary", "senior", "junior", "summary", "detail"):
+            self.check("property.value", 7, section_roles={"property": role})
+        self.error("property.value", "CALC-TYPE-001", section_roles={"property": "component"})
+        self.error("property.value", "CALC-TYPE-001", section_roles={"property": "unknown"})
+        self.error("property.value", "CALC-TYPE-001", section_roles={"property": []})
+        document = parse(HEADER + block("property", {"value": 5}, variant="part", role="component")
+                         + block("property", {"value": 7}, variant="base", role="detail"))
+        result = evaluate_calc(declared("property.value"), document, context={"sectionVariants": {"property": "part"}})
+        self.assertEqual((result["ok"], result["value"]), (True, 5))
+
     def test_frontmatter_prior_terminal_shapes_context_and_limits(self):
         self.assertEqual(evaluate_calc(declared("deal_id"), self.document)["value"], "test")
         self.assertEqual(evaluate_calc(declared("prior"), self.document, prior_results={"prior": 12})["value"], 12)

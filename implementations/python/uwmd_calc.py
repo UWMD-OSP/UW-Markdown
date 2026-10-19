@@ -45,27 +45,73 @@ def parse_context(value):
     return value
 
 
+def _period_key(key):
+    # Ordinary members may have arbitrary string names. A malformed/non-period
+    # name remains an ordinary missing property, not an @ selector error.
+    try:
+        return parse_period_selector(key)
+    except PeriodError:
+        return None
+
+
 def _member(value, key):
     if key in _BLOCKED:
         raise CalcError("CALC-FORBIDDEN-PROP", "Forbidden property: " + key)
-    if isinstance(value, dict):
-        return value.get(key)
+    if isinstance(value, dict) and key in value:
+        return value[key]
     if isinstance(value, list):
         if key == "length":
             return float(len(value))
         if key == "0" or key.isascii() and key.isdecimal() and not key.startswith("0"):
             if len(key) <= len(str(len(value))) and int(key) < len(value):
                 return value[int(key)]
+    identity = _period_key(key)
+    if identity is None:
+        return None
+    if isinstance(value, dict):
+        return value.get("year_" + str(identity[1])) if identity[0] == "year" else None
+    if isinstance(value, list):
+        # VIII.2 ordinary member traversal is the existing first matching row
+        # access. It does not acquire VIII.2a @'s all-row/duplicate admission.
+        for row in value:
+            if not isinstance(row, dict):
+                continue
+            if identity[0] == "year":
+                year = row.get("year")
+                match = (type(year) in (int, float) and year == identity[1]
+                         or isinstance(year, str) and year == str(identity[1])
+                         or row.get("period") == key)
+            elif identity[0] == "date":
+                match = row.get("date") == identity[1] or row.get("period") == key
+            else:
+                match = row.get("period") == key
+            if match:
+                return row
     return None
 
 
-def _path(reference):
+def _spelling(key):
+    return "." + key if _IDENTIFIER.fullmatch(key) else "['" + key + "']"
+
+
+def _path(reference, *, dotted_selector=False):
     result = reference.head
     for index, key in enumerate(reference.members, 1):
-        result += "." + key if _IDENTIFIER.fullmatch(key) else "['" + key + "']"
+        result += _spelling(key)
         if reference.selector_after == index:
-            result += "@" + reference.selector
+            result += ("." if dotted_selector else "@") + reference.selector
     return result
+
+
+def _ordinary_period_alias(reference):
+    # One existing member-path period spelling may use a full @ override.
+    # Leaf members retain bracket spelling so literal dotted keys stay distinct.
+    prefix = reference.head
+    for index, key in enumerate(reference.members):
+        if _period_key(key) is not None:
+            return prefix + "@" + key + "".join(_spelling(leaf) for leaf in reference.members[index + 1:])
+        prefix += _spelling(key)
+    return None
 
 
 class _Inputs:
@@ -139,6 +185,9 @@ class _Inputs:
         overrides = self.context.get("overrides", {})
         if path in overrides:
             return overrides[path]
+        alternate = _path(reference, dotted_selector=True) if period else _ordinary_period_alias(reference)
+        if alternate is not None and alternate in overrides:
+            return overrides[alternate]
         if period:
             value = self.section(reference.head, period=True)
             if value is None:
@@ -283,7 +332,7 @@ def evaluate_calc(declaration, document, *, context=None, prior_results=None):
             _type("round_to requires an integer in [0,12]")
         result["round_to"] = int(places)
         roles = declaration.get("section_roles", {})
-        if not isinstance(roles, dict) or any(not isinstance(key, str) or not isinstance(role, str) or role not in _ROLES for key, role in roles.items()):
+        if not isinstance(roles, dict) or any(not isinstance(key, str) or not isinstance(role, str) or role not in _ROLES - {"component"} for key, role in roles.items()):
             _type("section_roles requires registered role values")
         value = evaluate_expression(declaration.get("formula"), document, context=context, roles=roles,
                                     prior_results=prior_results)
