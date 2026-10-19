@@ -3,11 +3,12 @@ import { tmpdir } from 'node:os';
 import { resolve, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { buildMeta } from '@uwmd/verify';
 import { runProcess } from '../../../test/cli.mjs';
 
 vi.setConfig({ testTimeout: 30_000 });
 const CLI = resolve(process.cwd(), 'dist/cli.js');
-const SOURCE = '---\nuw_version: "3.0"\nasset_class: multifamily\ndeal_id: institution0097\nquick_metrics:\n  dscr: 1.25\n  ltv: 0.7\n  debt_yield: 0.1\n---\n';
+const SOURCE = ['---', 'uw_version: "3.0"', 'asset_class: multifamily', 'deal_id: institution0097', 'quick_metrics:', '  dscr: 1.25', '  ltv: 0.7', '  debt_yield: 0.1', '---', '', '```json uw:section=property', JSON.stringify({ _meta: buildMeta('property', 1, { source: 'manual', actor: 'test', timestamp: '2026-10-19T00:00:00Z' }), total_units: 10 }), '```', ''].join('\n');
 const roots: string[] = [];
 afterEach(() => { for (const directory of roots.splice(0)) rmSync(directory, { recursive: true, force: true }); });
 function setup() {
@@ -66,7 +67,7 @@ describe('RFC0097 actual standalone CLI admission', () => {
   });
   it('accepts opaque overflow/paired Unicode and leaves unknown data unapplied', async () => {
     const { file, config } = setup();
-    const baseline = await run(['validate', file, '--json']);
+    const baseline = await run(['validate', file, '--json']); expect(baseline.status).toBe(0);
     writeFileSync(config, String.raw`{"opaque":1e309,"str":"\ud83d\ude00","validation_overrides":{"unallocated":null}}`);
     const configured = await run(['validate', file, '--json']);
     expect(configured).toEqual(baseline);
@@ -117,6 +118,12 @@ describe('RFC0097 actual standalone CLI admission', () => {
     expect(result.stderr).not.toContain('INSTITUTION');
     const argument = await run(['validate', file, '--institution', '--json']);
     expect(argument.status).toBe(1); expect(argument.stdout).toBe(''); expect(argument.stderr).toContain('--institution requires a path');
+  });
+  it('fatal source-representation mismatch still precedes config admission', async () => {
+    const { file, config } = setup(); writeFileSync(config, '{'); writeFileSync(file, SOURCE.slice(0, SOURCE.indexOf('```')));
+    const result = await run(['validate', file, '--json']);
+    expect(result.status).toBe(1); expect(result.stdout).toBe(''); expect(result.stderr).toContain('SOURCE_CONTENT_MISMATCH');
+    expect(result.stderr).not.toContain('INSTITUTION');
   });
   it('ordinary document findings do not bypass config preflight', async () => {
     const { file, config } = setup(); writeFileSync(config, '{');
