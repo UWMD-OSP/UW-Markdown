@@ -196,13 +196,16 @@ class SourceValidationTests(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertEqual([f["field"] for f in result["shape_findings"]], ["_meta"])
 
-    def test_selected_provenance_shape_stays_local_and_has_no_legacy_fallback(self):
+    def test_exact_registered_leaves_keep_unrelated_local_provenance_shapes(self):
         value=payload();value["_meta"]["provenance"]={"source":"agent/A","actor":0,"timestamp":False}
         value["_meta"]["quality"].update(field_overrides=[{"source":"market_data"}],confidence="unknown")
         value["_meta"]["lifecycle"].update(revision=True)
         result=inspect(value)
         self.assertEqual([(i["code"],i["field"]) for i in result["issues"]],
-                         [("META-01","_meta.provenance.actor")])
+                         [("META-01","_meta.provenance.actor"),
+                          ("META-04","_meta.quality.confidence"),
+                          ("META-04","_meta.lifecycle.revision"),
+                          ("META-04","_meta.provenance.timestamp")])
         paths={f["field"] for f in result["shape_findings"]}
         self.assertTrue({"_meta.provenance.agent_id","_meta.provenance.timestamp",
                          "_meta.quality.field_overrides","_meta.quality.confidence","_meta.lifecycle.revision"}<=paths)
