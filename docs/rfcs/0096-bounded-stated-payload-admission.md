@@ -56,8 +56,7 @@ registered issues, but refused to claim a complete validation result:
 All four returned empty stderr and `partial_validation_result.issues=[]`, and
 left source bytes unchanged. The [read-only reproducer](https://github.com/UWMD-OSP/UW-Markdown/blob/d8b3601ba7b0d951450503c974a6ce7181893098/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.repro.py)
 extracts the exact WIP from Git into a temporary directory, reuses its authored
-source factories and runs `python -B implementations/python/uwmd.py validate
-<source> --json`. Run it from a checkout containing that commit:
+source factories and runs `python -B implementations/python/uwmd.py validate <source> --json`. Run it from a checkout containing that commit:
 
 ```powershell
 python -B docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.repro.py
@@ -294,7 +293,7 @@ value, with required own id, fn and value:
 
 Apply the same declaration check to each admitted builtin component's own
 capital_stack.sizing, under Format4.23's existing component eligibility;
-qualify fields as <component>.capital_stack.sizing[i] and section=components.
+qualify fields as `<component>.capital_stack.sizing[i]` and `section=components`.
 Do not invent a new component kind or validate a component-like extension.
 CS-01 tranches/identities, CS-02 coupon/class, CS-02b split coupon and
 CS-WATERFALL-UNSUPPORTED retain their owners. This RFC does not resolve a
