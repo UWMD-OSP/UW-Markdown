@@ -614,7 +614,7 @@ capability is unconditional: every implementation owes it.
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
-| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), required canonical boolean members (`META-02`/`META-03`, RFC0091), and exactly three present-invalid canonical leaves (`META-04`, RFC0094). | `validate` | `error` |
+| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), required canonical boolean members (`META-02`/`META-03`, RFC0091), exactly three present-invalid canonical leaves (`META-04`, RFC0094), and closed optional/conditional metadata (`META-05`/`META-06`, RFC0095). | `validate` | `error` |
 | `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
 | `CLS-NN` | Official builtin field contracts (RFC 0080, RFC 0081). | `validate` | error |
@@ -792,6 +792,80 @@ follow actual validation findings; source digests, authenticated subjects,
 issuance rules and authenticate-first receipt verdict precedence are unchanged.
 Validation stays read-only. Optional/conditional metadata and all other shapes
 remain outside this closed list; no generic fallback is allocated.
+
+**Closed optional metadata and reference admission (RFC0095).** Complete all
+META-04 findings before the entire META-05 pass; complete META-05 across the
+physical/current MODEL identity union before the entire META-06 pass. Only then
+run existing role/period/source checkpoints and remaining checks in their
+existing relative order. Do not globally sort or interleave old per-block
+findings. Exact reference deduplication, current canonical own-member authority,
+SOURCE versus MODEL and resolved root/consumed-part accounting above apply.
+
+META-05/error has exactly these predicates, in this per-block order:
+
+| Field | Invalid present domain |
+|---|---|
+| `_meta.provenance.agent_id`, then `.agent_version`, then `.notes` | Neither string nor null. |
+| `_meta.quality.flags` | Not an array; otherwise each non-string item at its indexed field, in array order. |
+| `_meta.quality.partial`, then `.provisional` | Not a literal boolean. |
+| `_meta.quality.field_overrides` | Any present value; use block-level annotations. |
+| `_overrides` | Not an array; otherwise each entry in array order. |
+
+For each override entry: a nonobject/null/array receives one parent META-05 and
+no children. An object receives independent findings in path/confidence/reason/
+note order: path absent or non-string; present confidence outside high/medium/low;
+present reason outside illegible/missing/overridden/estimated/computed; present
+note non-string. Unknown members, empty strings, duplicate/unmatched paths gain
+no extra rejection. Source/resolution remain SRC-owned; no generic fallback.
+
+META-06/error uses agent_id, inherited_from, market_data_ref order per block:
+
+- A valid canonical agent/<id> source requires an own agent_id member. Absence
+  yields META-06; null/empty string satisfy presence. Wrong present types yield
+  META-05 only. An invalid source/override source creates no agent-id trigger.
+- An optional absent carrier passes. A required absent or any present invalid
+  carrier yields one parent finding; only non-null non-array objects are
+  admitted, with no duplicate absence or child findings beneath invalid parents.
+- inherited_from children are checked once in document_id/digest/distance order:
+  required string, exact sha256: plus64 lowercase ASCII hexadecimal digits,
+  finite JSON integral number at least1. No nonempty document id or safe-integer
+  ceiling is added; booleans are not numbers.
+- market_data_ref children are checked once in document_id/as_of/digest/rationale
+  order: required string, required exact Gregorian date-only below, required
+  exact digest above, then optional string rationale. Unknown children pass.
+
+The two carrier absence triggers are symmetric: own canonical resolution OR
+any own resolution of any stated object override entry equals the corresponding
+inherited_assumption or market_data_accepted tag. Missing, invalid, duplicate,
+unmatched and shadowed paths never remove an assertion; a later tag does not
+retract earlier tags. Collapse all assertions to one obligation per block/carrier,
+not per path. Inherited prototypes/nonobject entries do not trigger. Canonical
+inheritance plus an override market assertion requires both carriers. Fetching,
+hop inference and arbitrary peer/effective-leaf selection are forbidden here.
+
+market_data_ref.as_of is the entire ASCII string YYYY-MM-DD, years0001–9999,
+with valid proleptic Gregorian month/day and the400/4/100 leap rule. No whitespace,
+Unicode digits, year zero, reduced widths, timestamps, offsets, trimming or
+normalization. This is not T1B. Missing as_of in an admitted carrier produces
+one child finding; a missing required carrier produces only its parent finding.
+Reference digests require an absolute end, including rejection of line endings.
+
+Whole-missing/rejected canonical metadata/provenance/lifecycle suppresses these
+canonical descendants. Missing/nonobject quality suppresses only its own new
+quality predicates. Sibling _overrides remains independent even with rejected
+metadata. Actor or META-02/03/04 errors do not suppress otherwise admitted new
+predicates; invalid agent_id does not suppress references. Later DQ checks must
+tolerate invalid optional shapes and apply their accepted literal boolean
+predicates. Existing completeness warnings and META-01–04 remain unchanged.
+
+DQ-06/info means declared-stage readiness only. Remove promoted-reference
+DQ-06/error and duplicate emission; META-06 owns attribution under the rule
+above. Preserve readiness placement, CC-14 suppression and unrelated order.
+Issues keep exact field/section/severity and ordinary result partitions, status
+and CLI exits. ProtocolError category is validate; ordinary issues gain no
+category. Newly issued receipt policy counts reflect actual findings; subject,
+digest, issuance and authenticate-first verdict rules remain unchanged.
+Validation is read-only; no new result state, inferred value or source repair.
 
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 

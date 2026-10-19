@@ -384,7 +384,7 @@ export interface InheritedFrom {
  */
 export interface MarketDataRef {
   document_id: string;
-  /** ISO `YYYY-MM-DD`, copied from the observation set. */
+  /** Whole ASCII Gregorian YYYY-MM-DD, years0001–9999, no normalization (RFC0095). */
   as_of: string;
   /** `sha256:<64 lowercase hex>` over the observation set's canonical form. */
   digest: string;
