@@ -62,7 +62,7 @@ contracts. Under the [owner rule](../../AGENTS.md#owner-rule--2026-10-17), there
 is zero prelaunch compatibility or artifact-preservation work: no legacy modes,
 migration/deprecation paths, bump recommendations or historical replay gates.
 Read-only validation, current source/digest correctness and RFC discipline remain.
-RFCs 0090–0096 are accepted; their closed metadata and current-payload admission rules apply. RFC0088 supplies the production pinned numerical procedure.
+RFCs 0090–0097 are accepted; their closed metadata and current-payload admission rules apply. RFC0088 supplies the production pinned numerical procedure.
 No capability promotion or release is implied.
 
 ## Complete validation implementation — in progress
@@ -145,7 +145,7 @@ moves promoted-reference admission to META-06; **DQ-06 remains readiness info**,
 not a market-reference error collision. `_notes` remains informative/unvalidated;
 optional integrity/signature content retains its own profile.
 
-### Institution input: implemented known slice, unclosed malformed policy
+### Accepted institution preflight — RFC0097
 
 CLI validation discovers `.uw.institution.json` adjacent to the actual document;
 `--institution <path>` selects one file instead, relative to cwd. The accepted
@@ -154,12 +154,35 @@ ltv_warning_above→ltv.warning_above and debt_yield_warning_below→debt_yield.
 Affected full default bands are copied, preserving all other thresholds. The pure
 API retains caller-supplied nested maps and performs no filesystem I/O.
 
-Absent automatic sidecar uses defaults. Supplied malformed/unreadable/null/
-nonnumber or nested-wire-carrier inputs currently receive an uncoded local
-incomplete-operation refusal. No new code, numeric range, coercion, carrier alias
-or malformed-config default policy is activated. RFC0097 remains a separate
-pending governed decision; valid-known three-key threshold application is already
-implemented. It must not be confused with incomplete base metadata allocation.
+The private main-safe `uwmd_institution_config` helper admits strict UTF-8/whole
+JSON, decoded unique names and Unicode scalar strings/keys throughout the file.
+It rejects BOM, malformed JSON, duplicates and lone surrogates without a pointer;
+paired Unicode is admitted. Opaque overflow/huge integer spellings remain opaque
+lexical numbers, avoiding host integer limits. Only the three recognized leaves
+are converted to finite binary64. No new numeric ranges or depth limits apply.
+Resource/runtime failures remain internal errors, not invented malformed inputs.
+
+Selection is lexical abspath, not symlink realpath. Read first; automatic read
+ENOENT defaults only when lstat also establishes no entry. Explicit absence,
+directory, denied read, dangling link or inability to inspect is UNREADABLE.
+The whole config is admitted atomically before fresh default bands are built;
+unknown data is not claimed applied and a root thresholds carrier is forbidden.
+
+Fatal source/representation/parse admission precedes config preflight. After
+those prerequisites, preflight finishes before any validation/funding predicates.
+Failure returns only an outer `error` with category `validate`, exact code/message
+and optional config-relative pointer, exit1: VAL-INSTITUTION-CONFIG-UNREADABLE or
+VAL-INSTITUTION-CONFIG-MALFORMED. There is
+no ordinary/partial result, coverage, readiness or binding result. Non-JSON CLI
+refusal writes human diagnostics to stderr and no result claim to stdout. Pure
+SOURCE/MODEL APIs retain caller-provided maps and no hidden config I/O; receipts
+and other independent operations gain no sidecar dependency. Python has no
+aggregate verify command; this work adds none.
+
+The former local refusal policy is replaced by the accepted RFC0097 contract.
+Focused helper and actual CLI evidence precede the one synchronized portable
+checkpoint; the earlier7178f177 portable111 proof above does not claim this new runtime.
+Discovery remains parse-only pending the complete validation gate.
 
 ### Accepted current-payload admission — RFC0096
 
@@ -448,7 +471,7 @@ by itself register a new CC-04 stated-versus-derived disagreement.
 
 ### Minimum residual validation gates
 
-Accepted metadata 0090–95 and payload 0096 allocations are implemented. They are
+Accepted metadata 0090–95, payload 0096 and config0097 contracts are implemented. They are
 not open owner questions. A passing111-case subset still leaves these exact
 implementation/proof boundaries:
 
@@ -458,7 +481,7 @@ implementation/proof boundaries:
 | uwmd_validation_core / cross | Complete CC/FV/DQ carrier/operand/selection/coverage/readiness/incomplete-policy proof, including zero/null/invalid/role collision and skipped reasons. Existing keys/projections alone do not prove every condition. Completed CC-02 denominator and CC-03 independent amount/rate controls are evidence, not new numerical choices. |
 | uwmd_validation_builtins | Fixed scalar types/enum/min/max, MHC conditions, hospitality field homes and 61 builtin diagnostic projections exist. Complete class/current/role/external/foreign-class and nullable/top-level conditional proof; no generic CLS-04 for unknown lawful data. Pending metric definitions are not changed to clear this gate. |
 | uwmd_validation.py and CLI | Demonstrate all applicable ordering, partitions, seven readiness values, V.12 precedence and typed parse/error/exit/source-preservation assertions across SOURCE, mutable MODEL and resolved composition. Unperformed V.12 stays partial, not a fifth result state. |
-| uwmd_institution / proposed RFC0097 | Known flat overrides work. Malformed/unreadable/null/nonnumber/carrier policy is genuinely unaccepted; local incomplete refusal is not a normative verdict. Draft0097 is not activated. |
+| uwmd_institution / accepted RFC0097 | Strict main-safe admission and exact preflight/error-only transport are implemented. Complete synchronized new config-native/portable and cross-platform proof; do not treat earlier local refusals or partial application as current authority. |
 | Format 5.2 construction LTC | 80%/90% appear without a separately named FV-01–14 diagnostic. Reconcile routing; do not invent FV-15 or a numerical convention. |
 | Capability proof | Complete every applicable native assertion and final truthful portable/transport proof on Windows/Linux/macOS with explicit manifests/selectors/skips. Only then advertise validate; that does not establish a Verifier tier. |
 
