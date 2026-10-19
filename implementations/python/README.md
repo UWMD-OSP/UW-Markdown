@@ -81,6 +81,18 @@ cover numeric-key boundaries, source/model mutations, history and exact identity
 The developing complete validator integrates the same admission rules separately;
 this main-safe change does not advertise `validate` or a Verifier tier.
 
+## Accepted RFC0094 present-invalid leaves
+
+Source-role assessment applies META-04/error only to present-invalid canonical
+confidence, finite integral revision>=1 and exact T1B UTC-Z timestamp. The complete
+leaf pass follows all META-02/03 findings across retained physical references.
+Source/model authority, old parent precedence, absence warnings and independent
+findings retain their accepted scope. Focused controls exercise all60 timestamp
+vectors, types, history, identity, current model mutation and actual source CLI.
+Other optional and conditional metadata shapes remain explicitly local where no
+registered diagnostic owns them. This bounded admission implementation does not
+ship the developing complete `validate` CLI or advertise a validation capability.
+
 ## Minimum-complete capability path — 2026-10-16
 
 This assessment uses main `fbf8f66a` (through #371). It inventories code and
@@ -559,7 +571,8 @@ RFC0076 refused selections and RFC0081's optional terms group. Its two-member
 CLI wrapper is **nonnormative**: `structural_issues` contains only the relevant
 hedge, funding, escrow, cash-source and currency prerequisites;
 `replacement_funding_verification` has the exact §V.12.3 result union. There is
-no overall validation/readiness result. `validate` and `calc` remain unsupported.
+no overall validation/readiness result. Complete `validate` is still developing;
+the separate accepted `calc` CLI is described above.
 Exit status is nonzero for relevant structural refusal or failed/unverifiable
 binding. A lawful nonapplicable path returns `not_checked/not_applicable`.
 
@@ -683,8 +696,10 @@ Actor and resolution fields are never moved, normalized, inferred or repaired;
 from an absent optional resolution. `_meta.role` and retired flat metadata are
 never interpreted as aliases. Pinned RFC 0081 META-01 routing checks reject
 `section_id` wrappers, present nonobject `_meta`, and nonobject/missing nested
-provenance or lifecycle. Late `_meta` and mismatched section identity remain
-active-only uncoded local findings; they do not suppress actor admission.
+provenance or lifecycle. Accepted RFC0093 separately allocates misplaced `_meta`,
+present invalid/mismatched section and required absent/nonobject quality to
+META-01 across retained physical references; these do not suppress independent
+actor or admitted-parent findings.
 
 Registered findings are separate from `shape_findings`, which are explicitly
 local diagnostics with no invented registered code or severity. Other selected
@@ -696,15 +711,15 @@ An agent source requires the `agent_id` member; admitted null remains unchanged.
 JSON integer semantics admit revision `1.0` and reject booleans.
 
 Historical blocks are counted as skipped by the active source/role checks;
-their metadata shape and actor are inspected, and their roles are not
-reclassified. Source byte spans,
+their metadata shape, actor, required booleans and present-invalid RFC0094
+leaves are inspected, and their roles are not reclassified. Source byte spans,
 physical ordinals and exact authored variants distinguish findings on repeated
 active blocks. Returned evidence is detached and the original source/Reader
 projection remains unchanged. The wrapper's local `ok` requires both finding
 lists to be empty; CLI exit is nonzero when this bounded inventory refuses.
 
-The live underscore provenance-completeness family, full timestamp/metadata
-schema validation, conditional market-data/composition reference verification,
+The live underscore provenance-completeness family, other metadata-schema
+requirements and conditional market-data/composition reference verification,
 edit authority, role selection for calculations and signatures remain separate
 obligations. This inventory does not add defaults, financial behavior or a full
 validation capability.

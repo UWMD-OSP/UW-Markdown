@@ -8,6 +8,7 @@ import math
 import re
 
 from uwmd_source_lifecycle import source_superseded
+from uwmd_numeric import calendar_date
 
 
 SOURCE_NAMESPACES = ("agent", "document", "system", "institution")
@@ -74,6 +75,44 @@ def _metadata_shape_predicates(body, section, *, _source_order=False):
         failed.append(("_meta.section", "Block _meta.section must exactly match the annotated section."))
     if not isinstance(meta.get("quality"), dict):
         failed.append(("_meta.quality", "Block _meta.quality must be the required object."))
+    return tuple(failed)
+
+
+_TIMESTAMP_T1B = re.compile(
+    r"([0-9]{4}-[0-9]{2}-[0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\.[0-9]+)?Z\Z")
+
+
+def _timestamp_t1b(value):
+    """RFC0094 exact UTC-Z spelling/calendar, independent of host date parsing."""
+    if not isinstance(value, str):
+        return False
+    matched = _TIMESTAMP_T1B.fullmatch(value)
+    return (matched is not None and calendar_date(matched[1])
+            and int(matched[2]) <= 23 and int(matched[3]) <= 59
+            and int(matched[4]) <= 59)
+
+
+def _metadata_leaf_predicates(body):
+    """Only accepted RFC0094 present-invalid leaves, in their complete pass order."""
+    if "_meta" not in body or _metadata_routing(body):
+        return ()
+    meta = body["_meta"]
+    failed = []
+    quality = meta.get("quality")
+    if (isinstance(quality, dict) and "confidence" in quality
+            and (not isinstance(quality["confidence"], str) or quality["confidence"] not in CONFIDENCE)):
+        failed.append(("_meta.quality.confidence", "Present confidence must be exactly high, medium or low."))
+    lifecycle = meta["lifecycle"]
+    if "revision" in lifecycle:
+        try:
+            valid = _integer(lifecycle["revision"])
+        except OverflowError:
+            valid = False
+        if not valid:
+            failed.append(("_meta.lifecycle.revision", "Present revision must be a finite positive JSON integer."))
+    provenance = meta["provenance"]
+    if "timestamp" in provenance and not _timestamp_t1b(provenance["timestamp"]):
+        failed.append(("_meta.provenance.timestamp", "Present timestamp must use exact Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z."))
     return tuple(failed)
 
 
@@ -154,6 +193,14 @@ def _inspect_source_roles(document, *, _source_order=False):
                     field=path, message="Block " + path + " must be a boolean.",
                     remediation="State " + path + " explicitly as true or false; do not infer a flag.",
                     context=copy.deepcopy(context)))
+    # RFC0094 is a distinct complete pass after every required boolean.
+    # Existing shape-only/actor/flag errors do not suppress independent leaves.
+    for block, context in eligible:
+        for field, message in _metadata_leaf_predicates(block.parsed.value):
+            result["issues"].append(dict(code="META-04", severity="error", section=block.section,
+                field=field, message=message,
+                remediation="State the actual " + field + " using its admitted value; do not infer or repair it.",
+                context=copy.deepcopy(context)))
     for index, block in enumerate(snapshot.source.blocks):
         if source_superseded(block):
             result["history_blocks_skipped"] += 1

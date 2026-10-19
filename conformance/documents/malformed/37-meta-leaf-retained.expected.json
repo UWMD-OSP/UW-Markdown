@@ -1,0 +1,46 @@
+{
+  "description": "Authored accepted RFC0094 controls; exact closed metadata findings/order on unchanged stated values.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-04"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.quality.confidence"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.quality.confidence"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.quality.confidence"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.quality.confidence"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.quality.confidence"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "pipeline_log",
+      "field": "_meta.quality.confidence"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md \u00a7III.6a; RFC0094"
+}

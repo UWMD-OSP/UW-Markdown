@@ -151,6 +151,7 @@ export function validateUWFile(
   checkMetadataAdmission(parsed, issues, sourceOperation);
   checkProvenanceActors(parsed, issues);
   checkMetadataBooleans(parsed, issues);
+  checkMetadataLeaves(parsed, issues);
   checkBlockRoles(parsed, issues);
   checkPeriodSeries(parsed, issues);
   checkSourceVocabulary(parsed, issues);
@@ -3274,6 +3275,43 @@ function checkMetadataBooleans(parsed: ParsedUWFile, issues: ValidationMessage[]
   };
   for (const block of parsedPhysicalBlocks(parsed)) walk(block.annotation.section, block);
   for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
+}
+
+// RFC0094: only present-invalid canonical confidence, revision and timestamp.
+// Keep all absence/completeness predicates and earlier parent gates unchanged.
+function checkMetadataLeaves(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const visited = new Set<UWBlock>();
+  const walk = (sectionId: string, block: UWBlock): void => {
+    if (visited.has(block)) return;
+    visited.add(block);
+    const meta = block.content['_meta'];
+    if (!Object.hasOwn(block.content, '_meta') || meta === undefined || malformedMetaShape(block)) return;
+    const admitted = meta as Record<string, unknown>;
+    for (const [group, leaf, valid, requirement] of [
+      ['quality', 'confidence', (value: unknown) => typeof value === 'string'
+        && ['high', 'medium', 'low'].includes(value), 'one of the exact strings high, medium or low'],
+      ['lifecycle', 'revision', (value: unknown) => typeof value === 'number'
+        && Number.isFinite(value) && Number.isInteger(value) && value >= 1, 'an integer greater than or equal to 1'],
+      ['provenance', 'timestamp', isMetadataTimestamp, 'an exact Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z timestamp'],
+    ] as const) {
+      const parent = admitted[group];
+      if (!Object.hasOwn(admitted, group) || !metaObject(parent) || !Object.hasOwn(parent, leaf) || valid(parent[leaf])) continue;
+      const field = `_meta.${group}.${leaf}`;
+      issues.push({
+        code: 'META-04', severity: 'error', section: sectionId, field,
+        message: `Block ${field} must be ${requirement}.`,
+      });
+    }
+  };
+  for (const block of parsedPhysicalBlocks(parsed)) walk(block.annotation.section, block);
+  for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
+}
+
+function isMetadataTimestamp(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const match = /^([0-9]{4}-[0-9]{2}-[0-9]{2})T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]+)?Z$/.exec(value);
+  // JavaScript $ also matches before a final newline: require exact consumption.
+  return match !== null && match[0] === value && parseISODate(match[1]!) !== null;
 }
 
 // ─── Stage readiness ──────────────────────────────────────────────────────────

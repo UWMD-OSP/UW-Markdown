@@ -5620,6 +5620,26 @@
       "suite": "documents",
       "scenario": "malformed/33-meta-pass-order",
       "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/34-meta-t1b",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/35-meta-leaf-values",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/36-meta-leaf-parents-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/37-meta-leaf-retained",
+      "target": "verifier"
     }
   ]
 }

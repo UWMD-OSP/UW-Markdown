@@ -508,10 +508,10 @@ async function runMalformedDocuments() {
       continue;
     }
 
-    // RFC0093 controls pin exact closed predicates and cross-block pass order.
+    // RFC0093/0094 controls pin exact closed predicates and cross-block pass order.
     // Authored expected rows are reviewed independently, never generated here.
     if (Array.isArray(expected.metadata_issues)) {
-      const actual = validation.issues.filter(i => ['META-01', 'META-02', 'META-03'].includes(i.code))
+      const actual = validation.issues.filter(i => ['META-01', 'META-02', 'META-03', 'META-04'].includes(i.code))
         .map(({ code, severity, section, field }) => ({ code, severity, section, ...(field === undefined ? {} : { field }) }));
       if (!isDeepStrictEqual(actual, expected.metadata_issues)) {
         record('documents', `malformed/${id}`, 'fail', `metadata findings/order differ: ${JSON.stringify(actual)}`);
