@@ -52,7 +52,7 @@ Two bounded, unintegrated checkpoints implement the three documented valid
 keys: TS247d843458ccb4d34e94c551ffe5cc4db8614da5 and
 Python593c562d378464350bf20fccaee52befca96d920. Independent review passed13
 actual cross-runtime CLI controls: default behavior, nine strict below/equal/
-above comparisons, explicit selection, spaces and actual-record-directory
+above comparisons, explicit selection and actual-record-directory
 versus current working directory. Original sources/configs were unchanged;
 DSCR/LTV default error bands and caller maps were preserved.
 
@@ -97,6 +97,15 @@ A filesystem validation adapter selects exactly one file:
 3. An explicit path suppresses automatic discovery entirely. Do not merge two
    files or fall back to the adjacent file if the explicit one fails.
 
+For example, from `/work`, `records/link.uwx.md` selects
+`/work/records/.uw.institution.json` even if the document link targets
+`/archive/deal.uwx.md`. `records/../deal.uwx.md` selects
+`/work/.uw.institution.json`. This proposed directory rule is independent of
+existing document-read semantics; it does not change whether/how the OS follows
+a document link. Tests must distinguish invocation-path and physical-target
+sidecars. The unintegrated Python Path.resolve-based discovery must be aligned
+if this lexical directory choice is accepted.
+
 A missing automatically selected path is the sole absence/default branch.
 Attempt the read; a genuine not-found outcome for that automatic path means no
 configuration. Access denial, a directory in place of the file, a broken
@@ -125,6 +134,11 @@ The selected file MUST decode as strict UTF-8 and exactly one JSON value with
 only JSON whitespace around it. A leading BOM, trailing non-whitespace, invalid
 UTF-8, invalid JSON or duplicate object member names is malformed. Names are
 compared after JSON escape decoding, without trimming or Unicode normalization.
+Every decoded member name and string value, including opaque data, MUST have
+well-formed Unicode scalar content: reject an escaped lone high/low surrogate;
+a correctly paired escaped surrogate sequence is admitted. Do not normalize
+strings or replace invalid code units. A Unicode-profile failure is malformed
+without a pointer, at the same pre-shape stage as whole JSON admission.
 The root MUST be an object, not null or an array.
 
 The recognized carrier is an own `validation_overrides` member. Absence means
@@ -155,7 +169,14 @@ preferences or an exhaustive vocabulary for every Format5.2 threshold. Do not
 report an opaque member as applied. A similarly named nested lookalike is not
 the root canonical carrier. The duplicate-name JSON rule still applies to every
 object in the selected file. This scope is deliberately explicit; unknown-data
-handling is not a claim of complete institution-policy support.
+handling is not a claim of complete institution-policy support. In particular,
+a lexically valid overflow number in opaque data (for example an unknown
+`note_number:1e309`) does not trigger the recognized-leaf finite check and is
+never applied or reported as a threshold. An adapter need not coerce that opaque
+number into binary64 or reserialize the config. Original bytes stay unchanged.
+An escaped lone surrogate remains malformed even in opaque data under the whole
+Unicode rule above; paired scalars are valid. Neither rule authenticates a config
+or makes it an Envelope, signature or receipt subject.
 
 The adapter MUST admit the complete selected config before applying any
 recognized override. One invalid recognized member refuses the whole operation;
@@ -181,7 +202,7 @@ documentation/remediation without pretending they are document issue families.
 Return exactly one primary config error:
 
 1. Read failure wins before decode/profile checks.
-2. Decode, whole JSON syntax or duplicate-name failure: malformed; omit pointer.
+2. Decode, whole JSON syntax, duplicate-name or Unicode-profile failure: malformed; omit pointer.
 3. Nonobject root: malformed; omit pointer.
 4. Own root `thresholds`: malformed; pointer `thresholds`.
 5. Invalid canonical carrier: malformed; pointer `validation_overrides`.
@@ -274,11 +295,11 @@ portable cases and native filesystem/source/model assertions where needed.
 |---|---|
 | No automatic sidecar; unrelated cwd/parent sidecar | Existing defaults; no config error |
 | Explicit absent; selected directory; denied read; dangling sidecar link | UNREADABLE, exit1, no result |
-| Invalid UTF-8, BOM, bad JSON, trailing value, duplicate decoded name | MALFORMED, no pointer |
+| Invalid UTF-8, BOM, bad JSON, trailing value, duplicate decoded name or lone surrogate | MALFORMED, no pointer |
 | null/array/scalar root | MALFORMED, no pointer |
 | Root thresholds, alone or beside valid canonical carrier | MALFORMED at thresholds |
 | Canonical carrier null/array/scalar | MALFORMED at validation_overrides |
-| Absent/empty carrier, opaque unrelated data | Defaults; no invented metadata error |
+| Absent/empty carrier, opaque unrelated data including overflow spelling and paired Unicode | Defaults; no invented metadata error |
 | Each recognized leaf: absent/finite/null/bool/string/overflow | Valid map or exact MALFORMED leaf pointer |
 | Multiple invalid leaves, reversed JSON member order | Same fixed primary error, no partial application |
 | One valid leaf plus invalid sibling | Whole operation refused, no FV/default result |
@@ -336,7 +357,7 @@ No model-generation, workflow, display or metric implementation work is included
 |---|---|
 | Failure allocation | Two closed validate-category operation errors above, no document issue family |
 | Selection/absence | One explicit path or adjacent lexical document path; only genuine automatic absence defaults |
-| Malformed minimum | Strict UTF-8/whole JSON/unique names/object carrier/three finite leaves; forbidden root thresholds |
+| Malformed minimum | Strict UTF-8/whole JSON/Unicode scalars/unique names/object carrier/three finite leaves; forbidden root thresholds |
 | Unknown data | Opaque extras retained as data, never claimed applied; no exhaustive new threshold vocabulary |
 | Application and order | Atomic whole-config admission; explicit fixed primary-error precedence |
 | APIs/receipts | Pure caller maps remain separate; no receipt config loading or identity/count changes |
