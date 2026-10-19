@@ -451,7 +451,7 @@ authorized merely to make Python pass.
 
 Exact source/implementation authority is main
 `fa9a9ea37d31b918f5993eae4276b159f31719f3`. The independently authored
-[population review and all49 newly assessed source paths](https://github.com/UWMD-OSP/UW-Markdown/blob/11d7e020200857dda29ad0a14b50ec139693eec2/docs/reviews/2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.md)
+[population review and all49 newly assessed source paths](https://github.com/UWMD-OSP/UW-Markdown/blob/1580d3357c0ab1b958b8fcdd89d1ad49ba6be738/docs/reviews/2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.md)
 and its linked JSON/compressed trace identify every input hash, block origin,
 parent gate, canonical/override assertion and rejection. The observer compiles
 exact Git runtime sources and executes the actual old checkDataQuality function;
