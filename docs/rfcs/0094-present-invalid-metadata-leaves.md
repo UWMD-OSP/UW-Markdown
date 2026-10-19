@@ -1,7 +1,7 @@
 ---
 rfc: 0094
 title: Allocate three present-invalid metadata leaf diagnostics
-status: draft
+status: accepted
 author: codex
 created: 2026-10-18
 affects:
@@ -16,7 +16,7 @@ affects:
 
 ## Summary
 
-Propose `META-04`/error for exactly three **present but invalid** canonical
+Allocate `META-04`/error for exactly three **present but invalid** canonical
 metadata values: `_meta.quality.confidence`, `_meta.lifecycle.revision` and
 `_meta.provenance.timestamp`. Keep absent-member handling, existing completeness
 warnings and META-01/02/03 unchanged. Use the all-retained-physical plus current
@@ -24,12 +24,14 @@ model-reference operation already established by RFCs0090/0091/0093. Add a
 separate ordered pass after the required booleans and before role/period/source
 checks. Conditional provenance references remain separate.
 
-**Draft; direction only.** The owner's2026-10-18 direction authorizes this
-bounded proposal, not acceptance, implementation or diagnostic activation. The
-owner selected the exact UTC-Z timestamp profile T1B for this draft; final RFC
-acceptance and activation remain separate.
-This PR changes documentation only: no specification, schema, implementation,
-fixture, expectation, capability declaration or release state is activated.
+**Accepted by the owner,2026-10-18, as reviewed at47e6a547.**
+
+> RFC 0094 (#387) is accepted as drafted at 47e6a547: META-04/error only for present-invalid confidence, revision and timestamp (T1B), absence warnings and META-01/02/03 unchanged; mark it ready, merge on green, then implement it in TS and Python on the #354 lane.
+
+This docs-only acceptance records the approved contract and intent to implement.
+Synchronized specification, schema, registry, TypeScript/Python and conformance
+integration follows on Issue354; this PR itself activates no runtime behavior,
+capability declaration or release state. The earlier direction record follows.
 
 Owner direction,2026-10-18, recorded with its exact question context:
 
@@ -55,22 +57,22 @@ type describes UTC, and ProtocolV.4 requires UTC writes. Those statements did
 not by themselves establish a single exhaustive reader grammar. Neither a permissive host
 date parser nor one schema library's extra accepted spellings defines it.
 
-## Decisions proposed from precedent
+## Accepted decisions from precedent
 
-| Call | Proposed decision | Basis |
+| Call | Decision | Basis |
 |---|---|---|
 | D1: code | One new `META-04`, error, with exactly the three field predicates below | Owner-directed bounded allocation; ProtocolIII.6a/XI registered errors |
 | D2: applicability | All retained physical references, then current model-only references; exact identity deduplication | RFC0090 D3, RFC0091 applicability, RFC0093 D2/D5/D7 |
 | D3: placement | Complete old shape, RFC0093 P1/P2/P3, actor, META-02/03, then the complete META-04 pass; role/period/source remain later | Existing checkpoint order; no global issue sort |
 | D4: parent precedence | Existing rejected whole metadata shape suppresses META-04; nonobject/missing quality suppresses confidence only | RFC0090/0091 parent admission and RFC0093 D4 |
 | D5: presence | Own canonical leaf member, including null; no inherited member, convenience alias or inferred value | RFC0093 presence/authority; preserve existing absence allocations |
-| D6: timestamp | Owner-selected T1B exact UTC-Z profile below; no implementation-defined date parser | Owner2026-10-18 direction; reconcile Format2.5b/schema/ProtocolV.4 |
+| D6: timestamp | Owner-selected T1B exact UTC-Z profile below; no implementation-defined date parser | Owner2026-10-18 acceptance; reconcile Format2.5b/schema/ProtocolV.4 |
 
-## Proposed change
+## Accepted change
 
 Synchronize Format2.5b–2.5d, ProtocolIII.6a/V.3–V.4/XI, the executable registry and
-remediation in the eventual implementation. The current docs-only proposal
-changes none of them.
+remediation in the eventual implementation. This docs-only acceptance
+changes none of those implementation contracts.
 
 ### Exact leaf predicates
 
@@ -93,7 +95,7 @@ financial numerical procedure under this allocation. Nonfinite mutable-model
 numbers are not valid revisions. Source number admission remains the existing
 Reader obligation.
 
-The exact UTC-Z predicate below is the proposed timestamp admission rule.
+The exact UTC-Z predicate below is the accepted timestamp admission rule.
 Calendar-only/local timestamps, offsets, lowercase separators, malformed dates,
 second60 and arbitrary prose fail it. Do not substitute a host parser's broader
 acceptance or normalize a spelling before validation.
@@ -171,11 +173,11 @@ consume local evidence only when the emitted META-04 owns that exact predicate,
 block reference and path; an error elsewhere is insufficient. Preserve all
 unrelated unallocated evidence as an incomplete operation.
 
-New receipt policy counts follow the actual validation result. This proposal
+New receipt policy counts follow the actual validation result. This allocation
 changes no source digest, signed subject, receipt wire contract, issuance rule,
 authentication order or verifier verdict precedence. Validation remains read-only.
 
-## Owner-selected timestamp draft direction — T1B
+## Owner-selected timestamp profile — T1B
 
 Owner2026-10-18 selected T1B in response to this exact question:
 
@@ -183,10 +185,10 @@ Owner2026-10-18 selected T1B in response to this exact question:
 
 > T1B: exact UTC-Z (Recommended)
 
-This selection resolves the draft's T1 direction. It does not accept this RFC
-or activate a validator/schema change.
+That selection resolved the earlier T1 direction. The subsequent owner decision
+above accepts the complete RFC at47e6a547; synchronized implementation remains owed.
 
-### Exact proposed UTC-Z predicate
+### Exact accepted UTC-Z predicate
 
 A timestamp MUST be a string consisting of exactly
 `YYYY-MM-DDTHH:mm:ss[.digits]Z`, with the following exhaustive rules:
@@ -219,7 +221,7 @@ Format2.5b says ISO8601; the schema assertion is string/date-time while descript
 and ProtocolV.4 specify UTC writes. These facts alone did not establish the exact
 reader domain. T1B explicitly chooses the narrower profile and therefore requires
 synchronized Format/Protocol prose and schema assertions at implementation time.
-It is an owner-selected contract direction, not an inferred existing restriction.
+It is an owner-accepted profile, not an inferred existing restriction.
 
 The alternative T1A would follow RFC3339 section5.6 grammar and section5.7
 restrictions, admitting coloned numeric offsets and lowercase t/z with a frozen
@@ -276,7 +278,7 @@ before proposing any implementation fixture disposition.
 
 Do not convert this174-leaf inventory, the earlier27-schema audit or every schema
 rejection into new validator codes or blanket expectation changes. Current
-sources and expectations remain unchanged in this proposal. Implementation must
+sources and expectations remain unchanged in this docs-only acceptance. Implementation must
 inventory the actual invoked validation operations, independently attribute each
 changed finding and derived status/exit/display/receipt count, and identify which
 focused fixtures need separately authored valid validation controls. No existing
@@ -307,7 +309,7 @@ These are candidate evidence, not accepted expected outputs, platform results or
 production verification claims. The original Git source hashes in AppendixA
 remain the authority for reproduction, not a local mutable worktree.
 
-### Selected T1B evidence — direction, not activation
+### Selected T1B evidence — bounded preimplementation evidence
 
 After the owner selected T1B, a narrow timestamp-only Git-0450 capture retained
 all1509 present timestamp values and their source identities. Independent exact
@@ -333,7 +335,7 @@ independent60-case boundary report
 `e4aa843ebe32e87d2e491a9e63dabefcf92c454e82d3932dfbd083528db12f2f`;
 integrator value/source/boundary audit
 `94d0359d1edc94157e890ad1131b1408beeec7553e9bbb82da4df472ad83a217`.
-All captures refer to the immutable baseline and proposed profile, not accepted
+All captures refer to the immutable baseline and selected profile, not accepted
 validation expectations or changed financial/source/receipt subjects.
 
 ### Required new controls before implementation integration
@@ -355,9 +357,9 @@ validation expectations or changed financial/source/receipt subjects.
 
 ## Reference implementation
 
-No implementation is included or authorized by this draft. After final owner
-acceptance, implement the exact same closed predicate and pass in TypeScript and
-Python together, with synchronized Format/Protocol/registry/remediation and
+No implementation is included in this docs-only acceptance. The owner authorizes
+implementing the exact same closed predicate and pass in TypeScript and
+Python together on Issue354, with synchronized Format/Protocol/registry/remediation and
 schema assertions for the selected T1B profile. Primary sites:
 `packages/uwmd-verify/src/validator.ts`, `protocol.ts` and focused tests;
 `implementations/python/uwmd_source_validation.py` and the integrated #354
@@ -379,15 +381,16 @@ function, generic fallback, manifest capability or complete Verifier claim.
 
 ## Acceptance and implementation gates
 
-1. T1B is the owner's selected draft direction. Verify its exact lexical/calendar
-   boundary evidence independently and synchronize it in the eventual contracts;
-   no installed format library defines additional accepted spellings.
-2. Final owner acceptance of this complete draft remains required. Both direction
-   decisions authorize preparation only, not production activation.
-3. Independently inventory actual validation/CLI/receipt impact on unchanged
-   sources; synchronize both implementations/contracts and individually governed
-   expectations only after acceptance. Preserve all unrelated issue order and
-   assertion strength; run required exact-head integration CI.
+1. Owner acceptance is recorded above for the complete reviewed contract at47e6a547.
+   Independent profile evidence and the exact lexical/calendar boundaries remain
+   required implementation controls; no installed format library defines additional
+   accepted spellings.
+2. Merge this docs-only acceptance only after independent review and green
+   exact-final-head CI. Acceptance does not itself claim a shipped runtime change.
+3. Before implementation integration, independently inventory actual validation/
+   CLI/receipt impact on unchanged sources; synchronize both implementations,
+   contracts and individually governed expectations. Preserve unrelated issue
+   order and assertion strength; run required exact-head integration CI.
 
 Conditional references and remaining unallocated metadata requirements remain
 separate. RFC0085/0089/0092 and numerical semantics are untouched.
@@ -494,16 +497,16 @@ inventory report; source plus ordinal/line reconstruct them without routing.
 | `conformance/starter/editor/fixtures/section-replace-property/after.uwx.md` | `fc757019caf68b41de323c5ca6c0de1352d209cc020ed318ab7f30faf248a9ef` | `_meta.provenance.timestamp` | 1 (23) |
 | `conformance/starter/editor/fixtures/section-supersede-risk-rating/after.uwx.md` | `0e27514ee30c3ed6a5eb95200848609c68f8ec088b3831a5b9948c209efb5f1b` | `_meta.provenance.timestamp` | 1 (23), 2 (58) |
 
-## AppendixB: Proposed T1B boundary controls
+## AppendixB: Accepted T1B boundary controls
 
-These are proposed profile vectors, not activated conformance expectations.
+These are accepted profile controls, not yet activated conformance expectations.
 Each JSON value is a **present** canonical timestamp under admitted parents;
 absence and parent suppression are tested separately. Read the decoded JSON
 value exactly, including escaped whitespace/Unicode; do not normalize it.
 `admit` means this leaf passes the selected profile. `META-04` means this leaf
-would receive the proposed error after final acceptance and implementation.
+receives the accepted error after synchronized implementation.
 
-| Case | JSON value | Proposed leaf result |
+| Case | JSON value | Leaf result |
 |---|---|---|
 | ordinary | `"2026-10-18T00:00:00Z"` | admit |
 | year-zero-leap | `"0000-02-29T23:59:59Z"` | admit |

@@ -25,10 +25,10 @@ protocol, and each package each carry an independent semver).
   parse-only; full validation, other financial verifiers and receipts are
   separate gates. No normative, schema, frozen-expectation or version changes.
 
-- Draft RFC0094 under the owner's bounded diagnostic direction: META-04/error
+- Accept RFC0094 under the owner's2026-10-18 decision at47e6a547: META-04/error
   for present-invalid confidence, revision and timestamp, preserving existing
   absence warnings and META-01/02/03. Record independently attributed fixture
-  scope and the owner-selected exact UTC-Z timestamp draft direction. Documentation
+  scope and the accepted exact UTC-Z timestamp profile T1B. Documentation
   only; no implementation, schema, expectation, capability or release change.
 
 
