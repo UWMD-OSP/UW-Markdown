@@ -451,7 +451,7 @@ authorized merely to make Python pass.
 
 Exact source/implementation authority is main
 `fa9a9ea37d31b918f5993eae4276b159f31719f3`. The independently authored
-[population review and all49 newly assessed source paths](https://github.com/UWMD-OSP/UW-Markdown/blob/2f0a8a53783ec323bb2940b68fd69c363cdc6a79/docs/reviews/2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.md)
+[population review and all49 newly assessed source paths](https://github.com/UWMD-OSP/UW-Markdown/blob/11d7e020200857dda29ad0a14b50ec139693eec2/docs/reviews/2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.md)
 and its linked JSON/compressed trace identify every input hash, block origin,
 parent gate, canonical/override assertion and rejection. The observer compiles
 exact Git runtime sources and executes the actual old checkDataQuality function;
@@ -502,8 +502,8 @@ market_data_ref is structurally valid and its `2026-06-30` date satisfies U3.
 No tracked block states an inheritance assertion/carrier. The old runtime emits
 zero attribution DQ-06/errors on these parsed sources; the new reference pass
 likewise observes zero carrier failures. Sparse positive coverage requires the
-new negative, duplicate/shadowed, history, MODEL and transport controls; it is
-not evidence of full implementation. Sixteen separately authored census controls
+new negative, non-string-tag, duplicate/shadowed, history, MODEL and transport controls; it is
+not evidence of full implementation. Seventeen separately authored census controls
 pass, including the existing null-override TypeError as an observed current
 failure, not an approved refusal or a new expectation.
 
