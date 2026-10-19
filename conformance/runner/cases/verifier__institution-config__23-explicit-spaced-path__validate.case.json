@@ -1,0 +1,21 @@
+{
+  "id": "verifier__institution-config__23-explicit-spaced-path__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "policy with spaces.input",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/23-explicit-spaced-path",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/23-explicit-spaced-path/expected.json",
+    "exit_code": 0,
+    "project": "issue-code-severity-set"
+  }
+}

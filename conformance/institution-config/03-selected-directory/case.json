@@ -1,0 +1,14 @@
+{
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "conformance/institution-config/03-selected-directory",
+    "--json"
+  ],
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 1
+  },
+  "note": ""
+}

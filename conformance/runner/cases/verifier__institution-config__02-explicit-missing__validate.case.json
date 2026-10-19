@@ -1,0 +1,20 @@
+{
+  "id": "verifier__institution-config__02-explicit-missing__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "conformance/institution-config/02-explicit-missing/absent.input",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/02-explicit-missing",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/02-explicit-missing/expected.json",
+    "exit_code": 1
+  }
+}

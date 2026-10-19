@@ -1814,7 +1814,7 @@ For example, from `/work`, `records/link.uwx.md` selects
 `/work/.uw.institution.json`. This accepted directory rule is independent of
 existing document-read semantics; it does not change whether/how the OS follows
 a document link. Tests must distinguish invocation-path and physical-target
-sidecars. 
+sidecars.
 A missing automatically selected path is the sole absence/default branch.
 Attempt the read; a genuine not-found outcome for that automatic path means no
 configuration. Access denial, a directory in place of the file, a broken

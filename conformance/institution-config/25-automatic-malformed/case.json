@@ -1,0 +1,12 @@
+{
+  "args": [
+    "record.uwx.md",
+    "--json"
+  ],
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 1
+  },
+  "note": ""
+}
