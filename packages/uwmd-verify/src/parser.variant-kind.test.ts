@@ -6,6 +6,7 @@ import { resolveReceiptSubject } from './receipts.js';
 import { resolveDocumentSigningSubject, verifyDocumentSignature, DocumentSigningError, type UWDocumentSignature } from './document-signatures.js';
 import { resolveSectionBlock } from './section-resolution.js';
 import { validateUWFile } from './validator.js';
+import { parseUWPart } from './composition.js';
 import { verifyChain } from './integrity.js';
 import type { UWBlock } from './types.js';
 
@@ -63,13 +64,16 @@ describe('lawful variant labels and complete subject accounting', () => {
     expect(before.parsed.raw).toBe(original);
     expect(after.parsed.raw).toBe(changed);
   });
-  it('round-trips annotation/content peers including lawful block extras', async () => {
+  it('classifies annotation/content peers with lawful block extras', async () => {
     const parsed = parseUWFile(FRONT + section('annotation', 1) + section('content', 2));
     const envelope = toUWEnvelope(parsed);
     const peers = envelope.sections.operating_statement as unknown as Record<string, { [key: string]: unknown }>;
     peers.annotation!.section = 'spoof';
     peers.annotation!.meta = { lawfulExtra: true };
     expect(() => assertUWEnvelope(envelope)).not.toThrow();
+    const digest = await computeEnvelopeDigest(envelope);
+    peers.annotation!.meta = { lawfulExtra: false };
+    expect(await computeEnvelopeDigest(envelope)).not.toBe(digest);
     const restored = fromUWEnvelope(envelope);
     expect(getSectionVariant(restored, 'operating_statement', 'annotation')?.content.value).toBe(1);
     expect(getSectionVariant(restored, 'operating_statement', 'content')?.content.value).toBe(2);
@@ -81,6 +85,14 @@ describe('lawful variant labels and complete subject accounting', () => {
     expect(Object.keys(parsed.sections.property).sort()).toEqual(['annotation', 'z']);
     expect(resolveSectionBlock(parsed, 'property')?.content.value).toBe(1);
     expect(() => validateUWFile(parsed)).not.toThrow();
+  });
+  it('accounts for current peers when reading a part rather than interpreting annotation as wrapper', () => {
+    const raw = source().replace('asset_class: multifamily', 'uwpart_version: "1.0"\npart_id: statement-peers\nsection: operating_statement');
+    const parsed = parseUWFile(raw);
+    const part = parseUWPart(parsed);
+    expect(part.blocks.map(block => block.annotation.variant).sort()).toEqual(['annotation', 'z']);
+    expect(part.blocks.map(block => block.content.value)).toEqual([111, 222]);
+    expect(parsed.raw).toBe(raw);
   });
   it('continues to refuse malformed Envelope blocks through typed boundaries', () => {
     for (const annotation of [null, [], { section: 3 }, { section: 'property', malformed: {} }]) {
