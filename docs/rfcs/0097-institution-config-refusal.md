@@ -79,7 +79,7 @@ Independent observation report SHA256:
 `4983a3992d64f70ea10d6c0b42a6047964bd54fbede81e2fee7b13586edca0f6`.
 Earlier authority/probe capture SHA256:
 `b250c63c1338ae7578cc9cf79d50b270c9c2d7afa1cb27c8e6b44714b5f597a5`.
-These are limited research observations. Proposed vectors below are future
+These are limited research observations. Required vectors below are implementation
 conformance requirements, not claims of already executed refusals.
 
 ## Accepted contract
@@ -297,7 +297,7 @@ parameters. No new public function is required; a shared internal adapter may
 be used. Schema/index/protocol type changes ship together with implementation,
 not in this docs-only acceptance. No generic runtime schema engine or new dependency is needed.
 
-## Conformance impact and acceptance gates
+## Conformance impact and implementation gates
 
 No current fixture, frozen expectation, source, schema, runtime or manifest
 changes in this PR. The existing111 portable validation cases without a selected
