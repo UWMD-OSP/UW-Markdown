@@ -26,7 +26,7 @@ unit default. Refused calculations carry their registered `calc` error and a
 null value; any failed result makes the command exit1. The command reads source,
 declarations and optional context without writing them.
 
-`uwmd_calc` independently executes the accepted grammar and all21 expression
+`uwmd_calc` independently executes the accepted grammar and all 21 expression
 builtins, with own-property guards, frontmatter/section/prior-result precedence,
 exact selected variants, declaration roles, period identities and scalar/null
 overrides. Ordinary member-period lookup retains its specified first-match
@@ -41,7 +41,7 @@ retain the accepted associations, raw intermediate IEEE values and IRR procedure
 Public primitive domain/refusal checks and final finite-result reporting remain
 separate. Quantization uses the existing exact ECMAScript decimal formatter.
 
-The actual CLI is checked against all110 unchanged portable base calc cases via
+The actual CLI is checked against all 110 unchanged portable base calc cases via
 `run_calc_cases.py`, which calls the shared `run_case` and retains subprocess
 streams, exits and input hashes. Its report is explicitly development evidence:
 there is no manifest override or advertised-capability certification. CI reuses
@@ -62,281 +62,138 @@ contracts. Under the [owner rule](../../AGENTS.md#owner-rule--2026-10-17), there
 is zero prelaunch compatibility or artifact-preservation work: no legacy modes,
 migration/deprecation paths, bump recommendations or historical replay gates.
 Read-only validation, current source/digest correctness and RFC discipline remain.
-RFC0090 and RFC0091 are accepted; their actor and canonical boolean rules apply.
+RFCs 0090–0096 are accepted; their closed metadata and current-payload admission rules apply. RFC0088 supplies the production pinned numerical procedure.
 No capability promotion or release is implied.
 
 ## Complete validation implementation — in progress
 
 
-### Registered completeness ownership in validate transport
+### Current command and evidence
 
-Protocol III.6a already assigns the five absent canonical leaves to
-`META_FIELD_MISSING_SECTION`, `VERSION`, `SOURCE`, `TIMESTAMP` and `CONFIDENCE`
-(warnings). RFC0091 explicitly retains the missing-revision warning. The
-validator now reconciles duplicate local evidence only when that exact warning
-was actually emitted for the same physical block index and canonical path,
-and the owning parent objects exist with the leaf genuinely absent. It retains
-the original local evidence privately as handled; registered issue values,
-order, partitions and readiness are unchanged.
+`validate <file> --json` freshly parses the actual input and produces one
+ValidationResult, all seven stage-readiness booleans, all fifteen CC coverage
+entries and separate Protocol V.12 replacement-funding verification. Structural
+errors or failed/unverifiable V.12 return exit1; warning-only results return0.
+Workflow blocking flags retain overall_status:blocking but do not alone fail the
+operation. Known allocated source refusals retain their parse category/code;
+I/O/internal failures return2. Inputs are never rewritten.
 
-Before this correction, an absent revision emitted its registered warning but
-still caused an uncoded local refusal. The complete five-field boundary now
-returns the ordinary warning-only ValidationResult/exit0 for that absence.
-Explicit null or invalid authored values, bad/missing parents, late metadata,
-section disagreement and unrelated override conditions retain their separate
-registered or unallocated handling. No parent failure is consumed through a
-child completeness warning. Active/history populations and the low-level
-source inventory are unchanged. This closes duplicate transport, not the
-remaining metadata diagnostic-allocation or complete validate capability gate.
+The developing command remains unadvertised. Normal wire output excludes private
+metadata/section/composition assessments. Incomplete operations retain those
+assessments beside partial_validation_result with an explicit refusal. Unresolved
+composition exposes its first existing issue in source/rule order, including an
+earlier COMP-UNRESOLVED; no global directive-priority rule is invented. An
+unperformed V.12 result is omitted from partial wire output, never emitted as a
+new union member. Local incomplete conditions gain no generic diagnostic code.
 
-Six focused methods cover all five fields, exact physical ownership, retained
-local evidence, null/type/parent/independent failures, history and ten real CLI
-subprocess comparisons. Discovery remains parse-only.
+Production proof head: `7178f177745e0bb0ae95bb28887983b2f64eba8f`, tree
+`a61141c51ebff1aba0f026f1e03d4de8e278f867`.
 
-### Registered source-type ownership in validate transport
+- Actual unchanged portable validate: **111/111**, zero failures/skips,
+ 44 exit 0 / 67 exit 1, 47.164s. Shared run_case/comparisons are unchanged; discovery
+ remains parse-only. All 333 input hash entries and 222 stream hashes were
+ independently rechecked. Report SHA256:
+ `f0427cb738c9345c7baf6d764f1a07921cb33397dd260f234382d8f7b5eb10a4`.
+- All eight new native 0096 controls match actual CLI projections: ordered
+ code/severity/section/field arrays 44–49 and two REC exact-identity projections.
+ Seven exit 1, one exit 0. Report SHA256:
+ `6612464f094a41c625cb2dd5df9ae549874d4f67c377b885a6c3d97dad30008e`.
+ These captures are at 8632028b; production/schema/corpus is identical to 7178f177,
+ whose only following change updates the test inventory count.
+- Seventeen pure0096 methods and ten integrated methods cover predicates,
+ same-physical/field/current-owner consumption, M/P/null, source/model/composed
+ authority, external exemptions, ordering and actual CLI/source-byte controls.
+ The 63-method affected run matched all predicates/arrays; only its obsolete
+ recovery count 16 failed after two new fixtures. The count changed to 18 and all
+ seventeen family methods reran successfully. This is focused evidence, not a
+ newly executed full Python suite or certification.
 
-Format 2.6 already assigns an authored nonstring canonical provenance `source`
-to SRC-01/error. The source inventory previously emitted that registered error
-and a duplicate local string-type finding, unnecessarily forcing partial
-transport. The integrated assessor now retains that local evidence as handled
-only with an actual SRC-01/error at the same physical block, section and exact
-`_meta.provenance.source` path, whose canonical authored value is nonstring.
-The ordinary ValidationResult keeps the original error and exit1.
+The portable 111 are 17 document, 71 replacement-funding and 23 scenario cases. Their
+named projections do not establish every Format admission requirement or complete
+output. Portable stream hashes retain shared text-mode/newline normalization;
+they are not raw-byte stdout attestations. The interrupted b50976d0 run is
+cancelled/incomplete, not successful evidence. A docs-only change does not require
+a new111 run when runtime, schema and corpus remain identical.
 
-This does not classify another metadata requirement as a source error. Missing
-source keeps its exact completeness owner; invalid strings/SRC-02, resolution
-SRC-03 and leaf source findings retain their existing behavior. History is not
-reclassified. Independent timestamp, quality-parent, member-order, routing and
-annotation failures still require their own existing or unallocated handling.
-Seven focused methods cover the registered owner/proof boundaries, a defensive
-nonobject constructed-payload proof refusal, every JSON
-nonstring type, source strings and resolution tags, physical/leaf/history scope,
-read-only inputs and four real CLI comparisons. No diagnostic or capability is
-added; discovery remains parse-only.
+### Accepted metadata admission — RFCs 0090–0095
 
-### Registered promoted-reference absence in validate transport
+These diagnostic allocations are implemented, not remaining owner questions.
+All are closed predicates; none authorizes generic schema-to-code fallback.
 
-[RFC0022's implementation record](../../docs/rfcs/0022-market-data-documents.md)
-already allocates
-DQ-06/error to a promoted block or leaf with no market-data reference. The
-integrated command now handles only the duplicate required-presence evidence
-for an actually emitted error at the same current physical block, section and
-canonical `_meta.provenance.market_data_ref` path. The original local finding
-remains in `handled_shape_findings`; ordinary issues, error partitions, coverage,
-readiness and source bytes are unchanged. A covered absence returns the ordinary
-error ValidationResult/exit1 instead of an uncoded partial refusal.
+| Accepted authority | Current implementation |
+|---|---|
+| Completeness | Whole absent meta retains META_MISSING/warning; five absent section/revision/source/timestamp/confidence leaves retain exact META_FIELD_MISSING_* warnings. Null/invalid parent differs from absence. Low-confidence information remains separate. |
+| RFC0090 | META-01/error for absent/null/exact-empty/nonstring actor; every nonempty string remains untrimmed. Original wrapper/nested-container precedence remains. |
+| RFC0091 | META-02/error for missing/null/nonboolean human_review_required; META-03/error for missing/null/nonboolean superseded. No coercion or inferred defaults. |
+| RFC0093 | Additional META-01 predicates for late/misplaced meta, present invalid/mismatched section, required absent/nonobject quality. Independent actor/flag errors are not suppressed by P1/P2/P3. |
+| RFC0094 | META-04/error for present-invalid confidence, positive JSON-integer revision or strict T1B timestamp. Absent leaves retain completeness warnings. No safe-integer ceiling on revision. |
+| RFC0095 | Closed META-05 optional/annotation and META-06 reference/conditional predicates. Reference as_of uses whole ASCII Gregorian YYYY-MM-DD, years 0001–9999, not T1B. |
 
-Authored null, false, zero, empty string, arrays and incomplete objects retain
-their independent unallocated reference-type/member findings. Stage-gap DQ-06/info,
-wrong-owner fields/sections/indices, replaced peers, append/extensions and history
-cannot consume an absent-reference finding. Existing current-variant population
-is retained, including component-role peers; no financial role selection or
-new diagnostic population is introduced. Independent timestamp/quality/override
-requirements remain local. This is one integrated transport correction; complete
-validate remains unclaimed and discovery remains parse-only.
+Metadata applies to the retained physical/current-model identity union, including
+history, overwritten peers, append/extensions and consumed composition sources.
+Passes complete in shape→actor→META02/03→META04→META05→META06 order before active
+checks. SOURCE uses actual lexical JSON order; MODEL uses current non-array-index
+string order/current canonical values, never stale raw or convenience metadata.
+Absence warnings and duplicate local evidence are consumed only by the exact
+actual same-reference/field/current-predicate owner. Independent siblings remain.
 
-### Accepted hospitality field-home admission
+Ordinary SRC covers current standard sections/current variants. ROLE additionally
+covers current extensions and all active append entries. These populations do
+not expand to history/overwritten/original-only composition references. Broad
+standalone source inspectors retain their separate private population. RFC0095
+moves promoted-reference admission to META-06; **DQ-06 remains readiness info**,
+not a market-reference error collision. `_notes` remains informative/unvalidated;
+optional integrity/signature content retains its own profile.
 
-The current accepted-main integration includes RFC0081 section 5 G3: in
-hospitality, `rent_roll.keys` and `hotel_metrics.adr`, `occupancy`,
-`available_room_nights` and `key_count` receive existing CLS-04/error when
-stated, including null. The five exact predicates share a small pure helper;
-the validator applies them only to the existing property-level selected source.
-Historical, unselected component and unresolved external payloads do not acquire
-this check. The previous WIP all-peer `rent_roll.keys` shortcut is removed.
+### Institution input: implemented known slice, unclosed malformed policy
 
-Format 4.3/4.32 and G3 explicitly remove these official field homes. This does
-not allocate CLS-04 to arbitrary unknown members merely because a schema is
-closed. Generic field admission, broader class-field source applicability and
-unallocated negative-wire conditions remain separate gates. Unknown data is
-retained; no aliases, source edits, model generation or new diagnostic are added.
-Focused evidence: three helper methods and six integration methods, including
-five real validation subprocesses, selected/default/current-revision controls,
-role collision, history, component, external and foreign-class inputs, detached
-findings and parse-only discovery. No whole validate capability is claimed.
+CLI validation discovers `.uw.institution.json` adjacent to the actual document;
+`--institution <path>` selects one file instead, relative to cwd. The accepted
+flat validation_overrides mappings are dscr_warning_below→dscr.warning_below,
+ltv_warning_above→ltv.warning_above and debt_yield_warning_below→debt_yield.warning_below.
+Affected full default bands are copied, preserving all other thresholds. The pure
+API retains caller-supplied nested maps and performs no filesystem I/O.
 
-### Current checkpoint — real validate command, capability unclaimed
+Absent automatic sidecar uses defaults. Supplied malformed/unreadable/null/
+nonnumber or nested-wire-carrier inputs currently receive an uncoded local
+incomplete-operation refusal. No new code, numeric range, coercion, carrier alias
+or malformed-config default policy is activated. RFC0097 remains a separate
+pending governed decision; valid-known three-key threshold application is already
+implemented. It must not be confused with incomplete base metadata allocation.
 
-`python -B implementations/python/uwmd.py validate <file> --json` now invokes
-the independent orchestration on a fresh parse of the supplied bytes. Supported
-inline inputs return the structural ValidationResult fields, all seven stage
-booleans, all fifteen CC coverage entries and the separately checked V.12 result.
-Exactly one JSON document is written to stdout. Structural errors or failed/
-unverifiable V.12 return exit1; warning-only results return0. Frontmatter blocking
-flags retain `overall_status: blocking` but do not alone fail this operation:
-they halt a producer workflow (Format3.3), while the accepted CLI fails on actual
-structural errors or the separate binding refusal. Parse refusals preserve
-allocated codes; the known UNSUPPORTED_FORMAT_VERSION,
-UNSUPPORTED_YAML_FEATURE and SOURCE_CONTENT_MISMATCH refusals reached through
-validate carry `category: parse`, `code` and `message` under Protocol XI's
-ProtocolError schema. Unallocated local source/selection failures do not gain
-a fallback code or a successful ValidationResult. I/O/internal failures return2.
-Validation never writes input.
+### Accepted current-payload admission — RFC0096
 
-This is an implemented, **unadvertised developing command**, not a complete
-validation/Verifier claim. The manifest still claims only parse. Detected
-unsupported inputs refuse explicitly: Composition exposes its first existing
-assessment issue in source/rule order, including an earlier section's
-COMP-UNRESOLVED. An individual directive's malformed/duplicate/count error
-precedes lookup for that section; it does not override an earlier section's
-unresolved result. COMP-UNRESOLVED is a fallback only when an unresolved
-assessment supplies no issue. Every assessment issue remains retained; no global
-directive-priority rule or part resolver is introduced. Unallocated metadata,
-lease-up or the REC/CS/WF shapes below
-use an uncoded local error.
-Both refusal forms carry detached local assessments and an explicitly labeled
-`partial_validation_result`, not a new normative ValidationResult state.
-The private unperformed V.12 `None` is omitted from CLI partial output rather
-than serialized as a new union member. Normal CLI output excludes prototype
-assessment siblings.
+The pure `uwmd_payload_admission.py` helper accepts explicit current PayloadView
+inputs; the WIP adapter owns source selection/context and ledger integration.
+It imports no schema/research I/O or WIP validation module. No standalone command,
+model reproduction or complete-validation claim follows from this helper.
 
-Whole-absent metadata retains its registered META_MISSING warning and accepted
-warning-only exit. Its duplicated inspector-local absence finding is consumed
-only for the exact physical block index where completeness actually emitted that
-warning, after confirming authored absence. A late/present metadata object,
-another block or uncovered history cannot match by field name alone. Existing
-META-01 container rejection and exact REC ownership are reconciled below; other
-unallocated conditions remain visible. The accepted source inspector emits actor and boolean findings once; no candidate pass is layered over it.
+| New error | Implemented closed predicate; existing owners preserved |
+|---|---|
+| LU-05 | Required model vocabulary, nullable target type/cadence grammar, assumptions/row/summary numbers and closed members. LU-01 retains cadence/row period, LU-02 contiguity, LU-03 schedule presence/inversion. Target grammar is now LU-05; no projected trajectory is generated. |
+| REC-11 | Optional term/cap/true-up type/bounds/closed members. REC-01 fractions, REC-02 parent/method/required companions/M&P accumulation, REC-03 pool, REC-04 row/date/settlement and REC-09 exact source remain separate. M/P means own nonnull method/pct even if independently invalid. Null companions neither trigger nor satisfy a required group. |
+| CS-03 | Optional sizing array when present; required id/fn/value and exact own over/through union. Components require mixed_use, admitted key and matching component_class. No sizing function is recomputed. Tranche CS-01/02/02b retain independent findings. |
+| WF-16 | Unused floors, closed nullable stated outcomes/schedules/tier members. Dates are lexical whole ASCII YYYY-MM-DD, not Gregorian; year 0000/impossible calendar dates do not acquire new structural errors. Selected floor remains WF-10, tax WF-13. |
 
-`run_validation_cases.py` executes each unchanged portable validate case through
-the actual command and unchanged shared `run_case` comparison. A transparent
-subprocess observer retains exact argv/stdout/stderr/exits plus source/case/
-expected/result hashes; it neither alters case flags nor advertises validate.
-That direct case evidence is separate from an advertised-capability run, which
-would report missing-capability failures under `--no-skip`. The first actual run
-at `b254047c` passed111/111 with zero failed/skipped, but three additional
-malformed REC/CS/WF optional-shape probes still returned clean/exit0. That
-first result is preserved as narrower evidence, not a complete admission proof.
+The new pass runs on current canonical/current variants and assembled MODEL,
+excluding history, overwritten peers and unused parts. Order is LU→REC→CS→WF
+with Unicode code-point map/extra-member order, after old DQ and before CC-16.
+Existing unrelated findings are not resorted. The external payload exemption
+requires BOTH the fence marker and an own admitted Composition §3 directive;
+a malformed marker-only MODEL cannot hide independent payload findings. SOURCE
+composition refusals retain their existing owner.
 
-The integrated local optional-shape assessment now inspects current inline
-recovery terms/true-up rows, top-level and component stack sizing declarations,
-and WF clawback/stated outcomes/schedules against their exact normative schema
-fragments. Clawback `floor_multiple` follows accepted RFC0059's strict `>1`,
-distinct from the positive `until_lp_em` tier hurdle; the prior Python `>0`
-guard was an implementation defect, not an owner decision.
-It preserves schema-admitted null/empty/zero, distinguishes bool from numbers,
-checks fixed closed unions/objects and never computes a sizing or outcome.
-These shape conditions receive no invented registered diagnostic. Conditions
-not already represented by an exact registered check cause a command refusal
-with detached local field/source evidence. The bounded checker
-explicitly refuses unsupported schema validation keywords, including in
-conditional/union branches, rather than treating an unchecked condition as valid.
-Unknown unrelated payload is preserved, externalized payload stays unresolved,
-and history is not financially reclassified. Other registered REC/CS/WF
-semantic checks and arithmetic are unchanged.
+Structural REC-01–04/09 covers current peers; selected financial REC-05–08 and
+LSE do not expand. The governed reject-member-without-method expectation changes
+from two REC-02 to one under exact M/P. Missing/invalid split total rate remains
+CS-02 without duplicate CS-02b aggregate; independent tranche fields keep order.
+RFC0055 notice_months is a nonnegative safe integer; this specific ceiling does
+not extend to revision or unrelated integers.
 
-After the optional-shape and accepted clawback-floor corrections, all
-**111/111 actual portable validation cases passed** at source checkpoint
-`33c11ca0da07c1018d2178a8416027f9d95c6a58`, with zero failed/skipped.
-Command: `python -B implementations/python/run_validation_cases.py`.
-The retained report SHA-256 is
-`1e3e20df8b3fa97c2e1e176e0e2531964e4b49fcd545552ab2d77ef4d19191be`.
-This executes the unchanged cases/comparisons through real subprocesses; it is
-not a run of the advertised validate capability. Stream files retain the shared
-runner's UTF-8-decoded/text-mode captures, including its newline normalization;
-their hashes are not a raw stdout-byte attestation. All three same-source
-malformed optional probes changed from clean/exit0 to explicit local refusal/
-exit1 without altering their registered issue arrays. Focused current controls
-pass nine real-command methods and eight optional-admission methods.
-Discovery remains parse-only and the whole-capability gates below remain open.
+### Formal admission inventory: remaining condition-to-owner proof
 
-Exact remaining validate gates include accepted transport for unallocated
-metadata/section shape conditions; unreviewed top-level and other optional
-payload domains; CS selector/source admission beyond declaration shape; REC
-source-reference admission; all applicable family-order/partition/negative-wire
-controls; malformed/unresolved composition refusal precedence; and independent
-cross-platform command evidence. These are remaining validation obligations,
-not a claim that the bounded shape collector discovers every unsupported
-authored input. CS sizing, waterfall outcomes and the other stated-figure
-recomputations are subsequent base-Verifier obligations, rather than automatic
-blockers to the structural validate command. Composition resolution is optional:
-UW_COMPOSITION section 8 permits a conforming implementation to report an
-externalized section unresolved instead of presenting the record as complete.
-No local assessment list proves complete schema coverage. General dictionary,
-state-and-verify financial outcomes and receipt verification remain subsequent
-base-Verifier obligations. No numerical procedure or optional profile is enabled.
-
-### Accepted metadata integration
-
-RFC0090/0091 now own required canonical actors and booleans. Shape admission
-runs first, then all actors, then each physical block's META-02/META-03, before
-active role/period/source checks. All retained physical data blocks are checked,
-including history and overwritten peers. No fence inference or JSON repair occurs.
-The source checker is shared with accepted main; the pipeline retains duplicate
-local evidence privately while normal registered results own these exact failures.
-Unrelated typed/conditional metadata remains an explicit local refusal.
-
-### Base-metadata field admission checkpoint
-
-The integrated admission audit covers every declared non-integrity member in
-[Format 2.5–2.6](../../spec/UW_FORMAT_SPEC.md), the base metadata/leaf portions of
-[uwmd-block.schema.json](../../spec/schemas/uwmd-block.schema.json), and the
-conditional references of RFCs 0021/0022. This is field admission within the
-existing validate command, not another inspector or complete validation claim.
-
-The audit found two concrete false-clean paths and one missing registered
-finding. A leaf-only `market_data_accepted` declaration previously returned
-clean/exit0 without a reference, and a non-string `market_data_ref.rationale`
-also returned clean/exit0. Block-level missing-reference input already refused
-locally but omitted its published diagnostic. The existing DQ-06/error allocation
-in [RFC0022's implementation record](../../docs/rfcs/0022-market-data-documents.md)
-now applies to promoted block **or leaf** resolution lacking a usable reference
-within the published checkDataQuality population: current `sections` entries
-and every current variant, including financially ineligible component variants.
-It excludes overwritten peers, append collections, extensions and history;
-all active physical blocks still retain their existing local required/typed
-reference evidence. RFC0090 broadens only its shape/actor population, not this
-other registered check. Wider DQ-06 diagnostic applicability would require a
-separate governed clarification; no source evidence is discarded here.
-This is distinct from DQ-06/info for missing declared-stage sections under RFC0028.
-Empty object/array references are present under the published presence test and
-remain malformed local shape findings; null, false, zero and exact-empty strings
-are absent. No Python container truthiness is substituted. A stated optional
-rationale must be a string; omission and the exact empty string remain admitted.
-
-| Field / accepted condition | Registered finding or local assessment | Applicable evidence boundary |
-|---|---|---|
-| Whole absent `_meta`; five absent completeness fields | Existing META_MISSING / META_FIELD_MISSING_* warnings | Exact active physical block. Duplicate local evidence is handled only at the actual completeness index/path with authored absence and admitted parents; null, parent and independent failures remain distinct. |
-| Retired `section_id`, nonobject `_meta`, malformed provenance/lifecycle object | Existing META-01/error | All retained physical blocks; exact wrapper predicate precedes actor, with no expanded allocation. |
-| Required nonempty canonical actor | Existing META-01/error; no local duplicate | All physical blocks including history/overwritten/append/extensions; absent/null/empty/non-string refuse, whitespace remains authored. |
-| First `_meta` member and matching `_meta.section` | Uncoded local shape findings | Active physical blocks, including overwritten peers; no silent correction or history reclassification. |
-| Source/resolution vocabulary at block or leaf | Existing SRC-01/02/03 errors | Exact authored values on active physical blocks. The canonical block source type condition is handled only by its exact actual SRC-01/error owner; no alias, field substitution or history expansion. |
-| Agent source requires agent_id; nullable agent_id/agent_version/notes types | Uncoded local shape findings | Agent_id may explicitly be null; no agent identity inferred. Unknown provenance members remain informative. |
-| Timestamp string/date-time | Completeness warning when absent; uncoded local shape finding for typed/date-time refusal | Existing RFC3339 calendar/offset/fraction/leap-slot controls; no event-authentication assertion. |
-| Promoted block/leaf missing market_data_ref | Existing DQ-06/error plus retained local required-reference evidence | Registered finding: current section entries/all current variants, independent of quality shape or financial role selection. Local reference evidence: every active physical block, including overwritten/append/extension peers. History keeps its separate shape/actor-only scope. |
-| Authored market_data_ref: document_id/as_of/digest, optional rationale; inherited_from: document_id/digest/distance | Uncoded local shape findings | References checked whenever authored; conditional absence also checked for market promotion / block inherited_assumption. Lowercase SHA256 digest; positive JSON-integer distance. Empty text and unknown reference members retain schema-admitted meaning; no lookup or provenance authentication. |
-| Required quality confidence/review flag; optional flags/partial/provisional; forbidden field_overrides | Existing completeness/info/DQ findings preserved; accepted META-02 handles only the review boolean; other unallocated type/shape findings remain local | Exact enums/booleans/string arrays, with confidence and review kept orthogonal. Missing optional members are not fabricated. |
-| Lifecycle positive integer revision / boolean superseded | Accepted META-03 handles only superseded; unallocated revision shapes remain local | JSON integer semantics distinguish bool. This checks field shape, not a newly invented chain grouping, revision-history policy or integrity verdict. |
-| Leaf path/confidence/source/resolution/reason/note | Existing SRC vocabulary errors; unallocated leaf shapes local | Every active authored entry; path string/type evidence only, no guessed target existence or new path grammar. Unknown entry members remain retained. |
-| `_notes`, unknown payload and optional integrity/signature content | Informative / unchecked at this base boundary | No ordinary validation of `_notes`, no INT/signature/profile claim or metadata rewrite. |
-
-Ten new focused methods inventory the entire declared field set and test
-required/type/nullable/conditional controls, both reference objects, exact
-presence semantics, schema-admitted empty/zero values, all leaf members,
-registered precedence, detached evidence, active physical/history distinctions
-and four real CLI subprocess inputs. A retained frozen promoted-source control
-retains its registered metadata findings and handled absent-field evidence,
-then tests a model-only rationale mutation; it does not claim a promotion or full validation case pass.
-Source bytes and current parsed models
-remain unchanged. They supplement existing source/actor/timestamp controls;
-field inventory alone is not a schema conformance claim.
-
-Required conditions with no allocated ordinary diagnostic still receive the
-explicit local refusal described above. An actor-only META-01 or an unrelated
-registered error does not consume a local requirement. An existing registered
-wrapper/nested-object rejection is an admission precondition: its descendant
-local metadata evidence remains retained privately but does not require another
-refusal transport. This does not allocate those descendants to META-01. Complete
-negative-wire acceptance must resolve the remaining boundary without broad META-01 expansion,
-new suffixes or silently discarded findings. The all111 portable execution at
-the prior checkpoint remains distinct from these additional admission controls;
-new-head portable/nonportable/cross-platform proof is not implied by inspection.
-
-### Next coherent payload-admission gate — proposal
-
-The next subsystem is exhaustive admission of the **formal normative payload
-schemas**, not four isolated property probes or another public inspector.
-Its bounded inventory contains 27 artifacts:
+The existing inventory contains 27 schema artifacts. This is an applicability map,
+not 27 new diagnostic allocations or a blanket whole-fence schema loop.
 
 | Formal section or nested domain | Existing schema artifacts to reconcile |
 |---|---|
@@ -345,40 +202,23 @@ Its bounded inventory contains 27 artifacts:
 | Tax / sources / capex | tax-terminal, tax-reassessment, tax-abatement, sources-uses-escrow, renovation-draw, expense-targeted-capex |
 | Commercial lease / recoveries / hedge | lease-termination-option, lease-escalation-schedule, lease-co-tenancy, lease-recovery-terms, lease-recovery-true-up, debt-rate-hedge |
 
-These are schema filenames under `spec/schemas` without `.schema.json` suffixes;
-the starter refinement-issue output schema and optional-profile/representation/
-receipt schemas are outside this structural payload inventory. Required work is
-one explicit domain/applicability map, not automatically applying every schema
-to every record. Preserve section presence, current identity/role/class rules,
-null/omission conditions, external unresolved status and history scope. Route
-universal `_meta`, `_role`, `_overrides` and `_notes` through their owning Format
-contracts: several closed section schemas omit valid universal annotations.
-Unknown members remain retained wherever the owning contract admits them.
+Filenames are under spec/schemas without .schema.json. Required class/current/
+role/source population, nullable carrier, G1 conditional and each exact accepted
+code must be reconciled together. Universal meta/role/overrides/notes keep their
+own contracts. Unknown lawful data is retained. Explicit semantic loops can own
+schema operators; adding unused anyOf/dependentRequired/uniqueItems helpers does
+not close a production validation path.
 
-Actual schema keywords beyond the current fragment checker include `anyOf`,
-`dependentRequired` and `uniqueItems`; fixed period, currency, nonblank and digest
-patterns; date-time through the existing RFC3339 predicate; and two registered
-local cross-schema references (components to capital stack, renovation draw to
-expense-targeted capex). No network resolver or new dependency is needed.
-Unsupported required keywords must explicitly refuse, including unused union/
-conditional branches. Existing registered semantic loops remain separate;
-schema constraints do not invent new ordinary codes. Exit gates are exhaustive
-field/condition tests per artifact, all current-source/class/null boundaries,
-registered versus uncovered-local evidence, unchanged complete portable CLI
-comparisons and independent nonportable/wire checks before capability promotion.
-
-A second inventory must separately identify **explicit normative Format rules**
-for domains without complete schemas. There is no general property schema.
-The integrator's four prior-source probes (address=true, asking_price=true,
-asset_class={}, total_units="twelve") are observed accepted outputs, not four
-established normative defects. Property's illustrative JSON depicts an address
-object while existing sources also use strings; asking_price is not in that
-property template. Neither examples nor a TypeScript-only interface establish
-exhaustive required types or authorize new failure diagnostics. Preserve those
-observations and pin each actual rule/condition before adding admission behavior.
-This proposal authorizes no broad implementation or new conformance claim.
+No general property schema exists. Illustrative JSON or a TypeScript-only
+interface does not establish exhaustive address/asking_price types or allocate
+a new error. Rejected schema subjects and toy calculation-only payloads do not
+by themselves establish a validation defect or owner decision.
 
 ### Formal-domain applicability audit — 2026-10-17
+
+This dated frozen audit is evidence at 046640b5, not a current capability gate.
+Accepted 0095/0096 supersede its former missing metadata/payload allocations;
+its subject/rejection counts are not newly executed validation results.
 
 A read-only audit at `046640b5` harvested the 734 existing corpus `.uwx.md`
 sources once: 725 parsed and nine retained their existing source refusals.
@@ -472,8 +312,8 @@ type and group statedness separately. Do not strip all nulls to force schema
 agreement, replace optional omissions with null, or conflate a standalone
 object/array schema with the enclosing optional carrier's admission. The lack of
 null-root corpus subjects is a remaining negative-evidence coverage gap, not a
-contradictory contract by itself. Exact negative-wire disposition for unallocated
-conditions remains the separately recorded command gate; no new diagnostic,
+contradictory contract by itself. Current negative-wire disposition must use accepted 0090–96 owners first,
+with remaining conditions in the residual gate table; no new diagnostic,
 capability, schema activation or general validator is introduced by this audit.
 
 ## Validation applicability audit — 2026-10-16
@@ -485,78 +325,34 @@ RFCs. All fifteen registered CC entries are produced, including skips; all
 fourteen FV codes have focused threshold/severity/type/override controls.
 Reachable codes and passing projections do not establish every field condition.
 
-### External source boundary
+### External source and composition boundary
 
-The **local** `composition_assessment` sibling uses the existing
-CompositionResolution precedent: `status: resolved | unresolved`,
-`externalized` section ids in source order, and ProtocolError-shaped `issues`.
-It is not a normative ValidationResult member or a full composition-resolution
-result. No new validation status or severity is introduced. A current fence
-marked `external=true` is unresolved; a payload member merely named `external`
-does not change an inline block's meaning. Malformed directives receive accepted
-COMP shape/count/duplicate findings in this separate assessment, not guessed
-validator findings.
+The local composition_assessment is not a normative ValidationResult member.
+It records resolved/unresolved, source-order externalized IDs and existing COMP
+issues. A payload merely named external is inline data. Actual directive admission
+and lookup have separate errors; unavailable payload is not an empty property,
+malformed reserve or fabricated V.12 result. Presence-based readiness does not
+establish payload availability; selected external sources do not fall through to
+another peer. Only a consulted external dependency prevents V.12 assessment.
 
-Current identity and role selection run before content availability is checked.
-An exact selected external statement yields field_absent coverage with an
-explicit unresolved detail; it never falls through to another variant.
-CC-14 counts its presence, and CC-13 exempts an externalized property. Source,
-metadata and role checks still inspect every active physical block; payload
-rules do not interpret directives as incomplete reserve/cash/class data.
-Existing cash identities can satisfy WF/REC reference existence while their
-contribution/distribution facts remain unavailable. External components still
-obey CC-11's unconditional asset-class restriction.
+Independent resolution is implemented in `uwmd_composition`: whole-section
+content from its one part, declared collection identity/UTF-8 ordering, original
+root+consumed sources, exact number-token source origins and unused-part exclusion.
+History-only parts receive existing COMP-PART-MALFORMED. The private source-taking
+validate API can consume actual parts; MODEL assessment snapshots the current
+assembled view. Ordinary SRC/ROLE stays on its narrower current projection;
+metadata alone uses the retained identity union. The CLI exposes accepted
+resolve--parts--json, not invented validate flags. Unresolved reporting remains
+allowed by Composition §8 and cannot claim a complete unavailable record.
 
-The existing V.12 helper privately inventories blocks it actually consults.
-Only a consulted external dependency makes this local API's
-`replacement_funding_verification` **null (unperformed)**. That null is not an
-accepted V.12 result, is never emitted by the existing standalone V.12 command,
-and cannot be transported as a complete future validate result. Unrelated or
-unselected external blocks do not suppress an otherwise decidable V.12 union.
-Scope field readiness stays false for unresolved property content. The other
-stage booleans report the accepted section-presence table, not whole-record
-completeness; `composition_assessment.status` must be consulted separately.
+### Lease-up structural versus financial scope
 
-The preceding 33 focused validation methods include eleven external-boundary
-methods and two FV audit methods; subsequent field, readiness and metadata-routing
-controls bring the current focused count to 62. External controls include the unchanged
-frozen missing-part source's unresolved meaning, exact roles/history, malformed
-directives, source retention and V.12 consultation precedence. No fragment
-resolution, smaller partial collection, network fetch, composition-suite pass,
-new receipt interpretation or CLI capability follows.
-
-### Lease-up field/applicability closure — 2026-10-17
-
-The private family integrates [Format 4.25](../../spec/UW_FORMAT_SPEC.md) and
-the [lease-up schema](../../spec/schemas/section-lease-up-schedule.schema.json).
-Existing current-source LU-01–04 checks retain their code, severity, ordering and
-applicability. The new **local** `section_assessment.lease_up_schedule` contains
-uncoded `shape_findings` plus physical `blocks_checked` and
-`external_blocks_skipped` evidence. It is not a normative ValidationResult
-member, registered diagnostic, complete schema capability or financial verdict.
-
-| Schema field/condition | Allocated ordinary finding | Additional local payload admission evidence |
-|---|---|---|
-| `model_type` required, natural_turnover / absorption_curve only | LU-04 warning only for natural_turnover with no rent_roll | Missing/null/unknown/wrong-type model remains uncoded; neither model changes required assumptions or row fields. |
-| `period_granularity`; every row `period` matches calendar cadence | LU-01 error | Required/enum/string/grammar shape evidence; no new code or period policy. |
-| Strictly increasing gap-free periods | LU-02 error | Existing comparison remains unchanged; no inferred/interpolated rows. |
-| Required nonempty `schedule`; target not before first period | LU-03 error; cadence/target grammar uses LU-01 | Nonarray/nonobject rows, missing period and nullable target shape remain visible. |
-| Six `assumptions` members | No generic allocated LU shape finding | All optional/nullable; three fraction fields in [0,1], other amounts nonnegative; finite numeric types only, no bool/string coercion, defaults or model-based requirement. |
-| Nine optional numeric schedule fields | No generic allocated LU shape finding | All nullable; occupied/leased SF and two rent-PSF members nonnegative; vacancy [0,1]; four cash members finite without invented numerical/sign bounds. |
-| `stabilized_summary` occupied SF/occupancy/annualized EGI/NOI | CC-15 separately checks the eligible base NOI seam | Nullable shape; occupied SF nonnegative, occupancy [0,1], EGI/NOI finite. Endpoint/occupancy equations are not recomputed. |
-| Closed top/row/assumption/summary member sets | No generic allocated LU shape finding | Unknown data retained with uncoded local evidence. Universal `_notes` is never validated; `_meta`/`_role`/`_overrides` retain their own contracts. |
-| Physical identity, history and external directives | Current LU diagnostics unchanged; Composition owns unresolved external references | Payload shape covers all retained inline physical lease blocks, with current/superseded context; history is not reclassified or refused by local evidence. Actual external markers skip unavailable payload checks; an ordinary payload member called external is not a marker. |
-
-Twelve new methods exercise every numeric member's type/null/boundary domain,
-all containers/closed member sets, both model vocabularies, optional/universal
-fields, source/variant/current/history/external accounting, detachment and seven
-unchanged frozen lease-up **document diagnostic** assertions. The two bare
-lease-up financial cases and the positive documents' verified outcome are
-separate obligations. No trajectory, rent/occupancy model, net-cash-flow
-recomputation or stabilized aggregate verification follows from this evidence.
-An uncoded finding cannot silently become a registered failure or a complete
-successful validate response; CLI/discovery stay unchanged pending the whole
-applicable diagnostic/admission/result/refusal boundary.
+Accepted LU-01–05 and CC-15 are implemented with the exact owners above. The local
+assessment retains history/overwritten findings separately without widening current
+ordinary payload validation. Active exact registered owners consume duplicate
+local evidence; another code/field/peer/stale predicate cannot cover a sibling.
+No trajectory, rent/occupancy model, net-cash-flow or stabilized aggregate is
+recomputed here. Those stated-result obligations remain base-Verifier work.
 
 ### CC coverage ledger
 
@@ -622,7 +418,8 @@ in 46.748 seconds (all 151 original methods unchanged, plus 52 integrated
 validation and three YAML methods). The actual shared Reader subprocess passed
 **17/17**, with zero failed, skipped or unverifiable cases. Existing standalone
 reserve/draw/replacement controls remain in that full suite; validate CLI and
-manifest claims remain unchanged. No JavaScript full suite was run in this lane.
+manifest claims remained unchanged. These are dated evidence counts, not a
+new full-suite run at 7178f177. No JavaScript full suite was run in this lane.
 
 ### FV conditions and field locations
 
@@ -649,31 +446,27 @@ published routing before a complete command claim; no financial threshold
 decision is needed. Likewise, derived uses footing in Format 4.8 G1 does not
 by itself register a new CC-04 stated-versus-derived disagreement.
 
-### Remaining family / field-condition gates
+### Minimum residual validation gates
 
-| Family | Implemented scope | Minimum remaining validation obligation |
-|---|---|---|
-| LOC / CUR / descriptive identity | Locale/currency vocabulary, builtin/custom class syntax, scenario and BTR agreement | Complete frontmatter presence/type/source applicability, preserving unknown fields; descriptive values never select models. |
-| SRC / ROLE / META | All active physical SRC-01/02/03, ROLE-01, pinned META-01, five missing-field warnings, missing-meta warning and low-confidence info | Accepted RFC0090 actor META-01 plus wrapper/nested-shape and SRC/ROLE findings are registered unchanged; actor findings are not duplicated locally. Every declared base metadata/leaf field is now audited; promoted block/leaf missing-reference DQ-06/error is integrated separately from stage-gap info. Unallocated typed/conditional shape findings remain local, while the five completeness warnings stay exact. Complete negative-wire transport for these conditions remains a gate. The original actor/corpus conflict is now governed history, not a remaining gate. |
-| DQ / stage readiness | Seven class-adjusted presence lists, scope fields, provisional/partial/gap/freshness checks, field/stage/declaration-specific incomplete policies | All seven presence lists, overlays and role-selected scope readiness now share tested inputs; scope completeness treats absent/null/exact empty strings as missing without trimming, coercion or claiming field-type validity. Field-specific institution matching and equal-specificity overrides have controls; finish exact gap/override consumption and remaining externalized-field applicability without executing substitution/default actions. |
-| MU / CS | Bounded class map, allocation/NOI and component debt restriction; tranche identities/rates/split/months and partnership-boundary checks | Authored optional accrual now enforces the closed enum, including explicit-null refusal under existing CS-01, for top-level and component stacks. Complete remaining closed-field shape/applicability and stated sizing declaration guards; financial stack sizing reproduction stays separate. |
-| LU / PS / RT | Registered period structure/kinds, static PS-03, cadence/contiguity/target and rent-roll presence; tax-basis vocabulary | Fixed LU model/assumption/row/summary field shape is now integrated as local section_assessment where no LU diagnostic is allocated; existing LU-01–04 remain unchanged. Diagnostic/admission allocation for those schema conditions is still a complete-command gate. Period/shape inspection is not evaluation or stated-aggregate verification. |
-| TAX / CAPX | Frozen diagnostic arrays, same-quantum tax equations, abatement/draw/target/payback rules | Terminal required assessment versus optional normal G1 group is now controlled. Finish closed-object/stated-member/null/conditional applicability; no savings applied. |
-| LSE / REC | Frozen arrays, lease dates/steps/options/remedies/balances and settled recovery arithmetic | Complete optional administrative-fee/gross-up/cap/true-up shape/conditions and exact source-reference admission. Schema bounds alone do not assign those conditions to REC-01 (explicit share/cap pct) or REC-02 (method/companions/accumulation); do not invent that routing. No cap history or pool allocation is generated. |
-| HDG / ESC / V.12 | Existing selected-source structure and exact separate binding union; external consulted-source gating is local only | Preserve all scalar/date/group/source/refusal conditions, debt-only evidence and no false result from unresolved content; complete future command transport must exclude local null as a normative result. |
-| WF | Tier/split/hurdle/clawback structure and current exact cash identity; optional clawback/outcome/schedule schema-fragment admission | Complete remaining top-level/source applicability; actual outcomes, IRR hurdles and clawback arithmetic remain separate stated-figure verification. |
-| RSV / BED | Existing reserve structure and student bed/date rules | Complete per-source/class/optional-member application and malformed-input evidence; RSV balance verification remains separate and unchanged. |
-| CLS / class rules / MOD | Fixed fields, accepted class-specific definitions/rules and the five G3 removed hospitality field homes on selected sources; all 61 builtin validation code projections | Exhaustive role/type/conditional/input applicability remains open. The generic scalar field loop still needs its own selected-source audit; arbitrary closed-schema extras have no blanket CLS-04 allocation. Keep class checks separate from generic 171-metric reproduction and raw size lookup. |
-| External composition | Local unresolved/directive assessment, exact presence and dependent-field gating | UW_COMPOSITION section 8 permits unresolved reporting without a part resolver. The command now preserves the first existing composition issue, including earlier COMP-UNRESOLVED, with full assessments retained; no cross-section directive priority is invented. Focused actual CLI controls include frozen count-mismatch/missing-part assertions; no complete-record, part-resolution or composition-suite claim. Remaining full negative-wire/applicability proof is distinct from implementing an optional resolver. |
-| General command and result | Real unadvertised command, exact result partitions, seven stage keys, fifteen coverage keys, separate V.12 and explicit unsupported-input refusal | All111 unchanged actual portable cases passed at the prior source checkpoint. Preserve that proof on each new production checkpoint and close the specific admission/refusal, ordering and nonportable gates above, with independent three-OS evidence before promotion. Parse-only discovery remains unchanged until whole-capability proof passes. |
+Accepted metadata 0090–95 and payload 0096 allocations are implemented. They are
+not open owner questions. A passing111-case subset still leaves these exact
+implementation/proof boundaries:
 
-This is a completion backlog inside the single integrated validator. It does
-not authorize more isolated inspector commands. General dictionary comparison,
-calendar cash-flow/property assembly/waterfall stated outcomes and receipt
-verification remain mandatory base-Verifier milestones after this validation
-boundary; optional Integrity/Module/Representations profiles do not enlarge
-the minimum. Existing #365 and RFC 0088 limits remain explicit where actually
-dependent, without blocking independent accepted structural work.
+| Existing path | Residual complete-validation gate |
+|---|---|
+| Formal 27-domain inventory above | Finish conditional/null/carrier/current/class/operator-to-owner mapping and negative-wire assertions. Gap item/summary and remaining tax/capex/component/CF optional fields need exact accepted owners before code; schema rejection alone is not a new diagnostic. |
+| uwmd_validation_core / cross | Complete CC/FV/DQ carrier/operand/selection/coverage/readiness/incomplete-policy proof, including zero/null/invalid/role collision and skipped reasons. Existing keys/projections alone do not prove every condition. Completed CC-02 denominator and CC-03 independent amount/rate controls are evidence, not new numerical choices. |
+| uwmd_validation_builtins | Fixed scalar types/enum/min/max, MHC conditions, hospitality field homes and 61 builtin diagnostic projections exist. Complete class/current/role/external/foreign-class and nullable/top-level conditional proof; no generic CLS-04 for unknown lawful data. Pending metric definitions are not changed to clear this gate. |
+| uwmd_validation.py and CLI | Demonstrate all applicable ordering, partitions, seven readiness values, V.12 precedence and typed parse/error/exit/source-preservation assertions across SOURCE, mutable MODEL and resolved composition. Unperformed V.12 stays partial, not a fifth result state. |
+| uwmd_institution / proposed RFC0097 | Known flat overrides work. Malformed/unreadable/null/nonnumber/carrier policy is genuinely unaccepted; local incomplete refusal is not a normative verdict. Draft0097 is not activated. |
+| Format 5.2 construction LTC | 80%/90% appear without a separately named FV-01–14 diagnostic. Reconcile routing; do not invent FV-15 or a numerical convention. |
+| Capability proof | Complete every applicable native assertion and final truthful portable/transport proof on Windows/Linux/macOS with explicit manifests/selectors/skips. Only then advertise validate; that does not establish a Verifier tier. |
+
+Remaining negative-proof gaps must first be tied to exact accepted predicates and
+owners or typed refusals. This audit establishes no additional code allocation.
+General dictionary comparison, calendar cash flows, property financial assembly,
+waterfall outcomes and receipts remain subsequent base-Verifier obligations.
+Optional profiles and model-generation/workflow products do not enlarge the minimum.
 
 ## Structured YAML sequence mappings
 
@@ -711,11 +504,11 @@ parents suppress descendants, while sibling annotations remain independent.
 Reference assertions are symmetric across canonical resolution and any stated
 object override, without effective-path selection or duplicate carrier findings.
 The independent date-only predicate consumes exact ASCII Gregorian YYYY-MM-DD,
-years0001–9999; it is separate from T1B. Shared frozen date vectors exercise the
+years 0001–9999; it is separate from T1B. Shared frozen date vectors exercise the
 actual Python META-06 predicate, not a fixture lookup in runtime code.
 
 This source helper does not supply or advertise a complete validate CLI. Ordinary
-result integration remains on the published complete-validation WIP; composition,
+result integration is on the published complete-validation WIP; composition,
 complete admission, native obligations and independent certification still gate
 promotion. Source inspection keeps its own evidence DTO and does not certify a
 financial result or receipt. Discovery remains parse-only.
@@ -732,18 +525,12 @@ Other optional and conditional metadata shapes remain explicitly local where no
 registered diagnostic owns them. This bounded admission implementation does not
 ship the developing complete `validate` CLI or advertise a validation capability.
 
-## Minimum-complete capability path — 2026-10-16
+## Minimum-complete capability path — reconciled 2026-10-19
 
-This assessment uses main `fbf8f66a` (through #371). It inventories code and
-accepted contracts; it is **not a new conformance run**. Earlier run counts below
-are historical evidence. That assessment baseline contained 151 unit methods, counted
-from their definitions. The newer execution evidence appears above.
-
-The next engineering milestone is **complete structural validation**, integrating
-the existing checks behind one `validate <file> --json` result. Further isolated
-inspection commands do not close that capability. Keep discovery at
-`capabilities: ["parse"]`, `profiles: []`, with no tier, until each complete
-claim has its own exit evidence.
+This matrix reconciles accepted contracts and exact 7178f177 development
+evidence above. It is not a complete conformance execution. Discovery stays
+parse-only until each complete claimed operation has its honest exit evidence.
+Further standalone inspectors do not close validation.
 
 ### Minimum requirements and current implementation
 
@@ -761,13 +548,13 @@ fill defaults, host agents, or require starter rendering/editing workflows.
 | Reader current/history identity: Format 2.4, 2.7–2.8; Protocol II.6a.6 | Registered parallel sections, role opt-in and append collections are implemented. Reader projection and verification share `source_superseded`, which recognizes the exact fence flag or JSON lifecycle true without altering authored metadata. | The documented fence-only history-routing defect is corrected under the accepted Format 2.4/2.7 contract. Exact nullable versus named variant identities and the remaining Reader gates still require independent evidence before certification. |
 | Full `validate`: Format II–V and 6.2; Protocol III.6a, V.12 | The real unadvertised command integrates structural result partitions, all fifteen CC coverage entries, seven readiness values and separate V.12. All111 unchanged actual portable subprocess cases now pass; local/composition refusals remain explicit. No complete capability is claimed. | Finish the named field/domain, applicable ordering and nonportable obligations above before promotion. Preserve published metadata warning/info/error distinctions; a portable pass does not establish complete admission or a Verifier tier. |
 | Standard metrics: Protocol II.2.2, VIII.2, VIII.5.1, XIII; [dictionary](../../spec/metrics/README.md) | Source numeric precision, AST parsing, calendar and quantization foundations exist. A private allowlisted executor supplies accepted class-validation prerequisites only. No complete statement discovery, comparison API or document metric report. | Reproduce all 171 class-scoped definitions and eleven raw primary-size selectors, with exact class/id lookup, lazy null branches, role/variant selection and retained source precision. Verified/failed/unverifiable remain distinct; absent inputs are never filled. |
-| General calculation method: Protocol II.2.6, VIII.1–6 | `uwmd_calc` now executes the accepted grammar, source selection, overrides, prior-result API, all21 builtins and quantized `CalcResult` values through the actual `calc` CLI. The current base portable subset has110 cases; the new scoped evidence is described above. | Complete all applicable nonportable execution and transport controls and independent platform evidence before any capability claim. Passing this subset does not close validation, dictionary reproduction, other financial verifiers or receipts; discovery remains parse-only. |
+| General calculation method: Protocol II.2.6, VIII.1–6 | `uwmd_calc` now executes the accepted grammar, source selection, overrides, prior-result API, all 21 builtins and quantized `CalcResult` values through the actual `calc` CLI. The current base portable subset has110 cases; the new scoped evidence is described above. | Complete all applicable nonportable execution and transport controls and independent platform evidence before any capability claim. Passing this subset does not close validation, dictionary reproduction, other financial verifiers or receipts; discovery remains parse-only. |
 | Calendar cash flows: Protocol VIII.9; Format 4.26 | Integer Gregorian dates, three day counts, ordered totals/MOIC and selected-source structural prerequisites only. | Complete declared/stated metric verification, source/variant/override refusal, quantized results and xnpv/xirr procedure. `calc-cash-flow` has a separate declaration/refusal contract; these functions are not expression-callable. |
 | Property cash-flow assembly: Protocol VIII.9.5–9.6 | Closed lease-up/CF source checks used by bindings; no assembly or complete stated-result verifier. | Independently reproduce every accepted stated assembly/projection claim, coverage/source admission and explicit refusal. Reproducing a producer's stated model is verification; generating missing models remains outside this implementation's purpose. |
 | Distribution waterfalls: Protocol VIII.10; Format 4.27 | Structural WF checks now participate in the developing validation API; allocation and stated-outcome verification are absent. | Full applicable structure, allocation/stated outcomes, hurdle/clawback procedures and finite ordered evidence; do not equate structural WF checks with outcome verification. |
-| Reserve accounts: Protocol VIII.11; Format 4.28 | `uwmd_reserves`: complete standalone structure/balance/continuity verification with ordered binary64 arithmetic, 2dp comparison, source digest and required states. Existing evidence: all 28 unchanged cases through shared `run_case`. | Retain this implementation and evidence, integrate structural findings into validation, and close the lawful-source Envelope boundary below. This is not general calculation support. |
+| Reserve accounts: Protocol VIII.11; Format 4.28 | `uwmd_reserves`: complete standalone structure/balance/continuity verification with ordered binary64 arithmetic, 2dp comparison, source digest and required states. Existing evidence: all 28 unchanged cases through shared `run_case`. | Structural findings are integrated into validation. Close remaining applicable native/platform proof and the lawful-source Envelope boundary below. This is not general calculation support. |
 | Reserve draw bindings: Protocol VIII.12 | `uwmd_reserve_draws`, `uwmd_binding_sources`: complete standalone selected-source/allocation checks; selected reserve variants verify in full, original whole-document digest retained. Existing evidence: all 46 unchanged cases through shared `run_case`. | Retain exact nullable variants, plan/source/digest/arithmetic precedence and evidence; close the same Envelope boundary. Omitted plan is not a selected/verified plan. |
-| Replacement funding: Protocol V.12; RFCs 0070/0075/0076/0081 | `uwmd_replacement_funding`: exact selected-cash commitment and structural prerequisites, snapshots and accepted result union. Existing evidence: 71 explicitly adapted standalone comparisons, **not** portable `validate` passes. | Integrate the existing async verifier beside, never inside, structural errors. Complete validation must invoke it for applicable outright funding and refuse incomplete/failed verification. Its selected-cash digest is independent of #365. |
+| Replacement funding: Protocol V.12; RFCs 0070/0075/0076/0081 | `uwmd_replacement_funding`: exact selected-cash commitment and structural prerequisites, snapshots and accepted result union. Existing evidence: 71 explicitly adapted standalone comparisons, **not** portable `validate` passes. | The async verifier is integrated beside structural errors in actual validate. Close remaining applicable native/transport/source proof; unperformed binding stays partial. Its selected-cash digest is independent of #365. |
 | Receipts: Protocol II.2.4; [UW Receipt 3–5, 10–11](../../spec/UW_RECEIPT.md) | JCS and Envelope digest prerequisites only. No receipt parsing, recomputation, verdict API or command. Digest-only matches against receipt subjects are not receipt verification. | Implement exact supported receipt shape/version, subject canonicalization, pack/version/engine identity, reference inputs, output coverage/recomputation/results digest and precedence. Return exactly verified/failed/unverifiable with RCP findings. Unknown packs/versions, unavailable references or absent signature backends must remain unverifiable. Issuance is not required to close a read-only Verifier. |
 
 The dependency helpers are not additional capabilities: `uwmd_jcs` implements
@@ -830,8 +617,8 @@ The other mandatory result boundaries also remain explicit:
   [CalcResult schema](../../spec/schemas/calc-result.schema.json), with numeric
   values quantized once and protocol errors separately identified. Missing
   input/null is not an invented zero, ambiguous selection is CALC-RESOLVE-002,
-  and nonboolean logical operands are CALC-TYPE-001. The current local CLI
-  diagnostic envelope is not yet a complete ProtocolError adapter.
+  and nonboolean logical operands are CALC-TYPE-001. Current scoped calc responses have schema/comparison evidence; complete
+  malformed-input/nonportable transport proof remains a separate gate.
 - Cash-flow and waterfall verification use the accepted three verdicts.
   A stated IRR whose procedure raises is failed; undefined MOIC is
   unverifiable; an absent metric is not checked. Waterfall failure outranks
@@ -844,19 +631,16 @@ The other mandatory result boundaries also remain explicit:
   prerequisites, unavailable digest and nonfinite arithmetic remain
   unverifiable; stale draw commitment or finite disagreement is failed.
   The commands exit 1 for failed/unverifiable, 0 for verified/not_applicable.
-- A receipt verifier returns `verdict`, `issues` and, when available,
-  recomputed results. UW Receipt 5.1 orders unavailable canonicalization
-  (RCP-09), subject mismatch (RCP-01 or version-aware RCP-10), resolved
-  reference mismatch (RCP-12), inability to decide (RCP-05/06/08/11), invalid
-  signature, output coverage/value disagreement (RCP-02/03, or engine-aware
-  RCP-07), then results-digest mismatch (RCP-04), before verified. Equal
-  subject hashes alone cannot pass this sequence. The existing reference CLI
-  is `receipt verify <file> <receipt.json>`; the portable six-command table
-  has no receipt operation, so a genuine API/CLI adapter is needed for its
-  nonportable assertions. For the launch implementation, support the
-  accepted launch receipt/version/procedure registry; historical pre-5 receipt
-  success is not a reason to add a legacy decoder, alternate numerical
-  backend or acceptance fallback.
+- Receipt verification remains unimplemented. Its current contract includes
+  accepted RFC0088 authenticate-first precedence: malformed transport retains
+  its typed refusal; canonical subject/reference and pack/input/backend
+  availability precede signature authentication; supplied signatures must verify
+  before recomputation or a recomputation-refusal verdict. Coverage/value and
+  engine-aware disagreement, then results_digest, retain UW Receipt §5 ordering.
+  Missing signing backend is RCP-08/unverifiable, never ignored. Equal subject
+  hashes cannot verify a receipt. The existing receipt verify operation and
+  twelve native assertions need an actual Python API/transport; issuance is not
+  required to complete a read-only Verifier.
 
 ### Optional scope does not enlarge the minimum
 
@@ -877,7 +661,7 @@ recomputation attest different things and must not substitute for one another.
 
 ### Actual corpus obligations and evidence
 
-Current accepted-main `e2761157` counts below were read from the existing
+Current WIP `7178f177` counts below were read from the existing
 [ownership index](../../conformance/corpus-index.json) and generated
 [portable cases](../../conformance/runner/cases), not inferred from suite names
 or older README totals:
@@ -885,7 +669,7 @@ or older README totals:
 | Owner | Indexed reference checks | Portable cases |
 |---|---:|---:|
 | Reader | 26 | 17 |
-| Verifier | 698 | 281 |
+| Verifier | 734 | 295 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 142 | 0 |
@@ -893,28 +677,14 @@ or older README totals:
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products, reported separately | 106 | 37 |
-| Total | 1,106 | 350 |
+| Total | 1,142 | 364 |
 
-A separate integrator audit at prior checkpoint `0a2cbd9d` executed 99 native
-structural comparison projections through the real Python CLI: 21 tax, 21 lease,
-18 capex, 16 recovery and 23 malformed-document comparisons. All projections
-matched at that historical checkpoint, but only 90 returned normal ValidationResult responses; nine returned
-explicit partial local refusals. This is **not** 99 complete case passes or all
-nonportable validation coverage. The nine refused inputs retain unsupported
-REC conditional-shape or metadata evidence rather than silently returning clean.
-The current exact-nine reconciliation above supersedes only that refusal count;
-this broader historical report remains unchanged.
-Report SHA-256: `80b09523e92f5e379e064241f2c0ccbd9d9e8357f6ff552b605543f8b5e75287`.
-
-The 281 portable Verifier cases are **111 validate** (17 documents, 71 hedge,
-23 scenario), **96 calc**, **28 reserve accounts** and **46 reserve draws**.
-Validate cases require `validate`; calc cases require `calc-evaluate`;
-the two reserve commands require both `parse` and `calc-evaluate`. Directly
-running the 74 unchanged reserve cases proves those commands but bypasses
-catalogue discovery, deliberately and explicitly. It cannot justify claiming
-the broader calculation capability. With the current parse-only manifest,
-a selected portable Reader+Verifier run would run 17 and capability-skip 281;
-that is an inventory prediction, not a newly executed result.
+The 312 portable Reader+Verifier cases are 17 parse, 111 validate, 110 base calc,
+28 reserve and 46 draw. The extra Module-owned calc case is outside base calc 110.
+Reserve cases require broader calc-evaluate discovery; direct scoped passes do
+not certify that capability. Parse-only discovery cannot honestly pass a complete
+validate/calc/Verifier selector. Counts are an ownership inventory, not a newly
+executed 760-case native Python proof.
 
 Portable comparisons are subsets, with length-sensitive arrays and only named
 projections/masks; full validation output is not proved by a code-set projection.
@@ -923,7 +693,7 @@ currency comparisons explicitly adapt to narrower standalone outputs. They
 are useful evidence, not additional unchanged portable passes or complete
 validation/profile claims.
 
-The nonportable Verifier checks matter: the index includes 41 metric checks,
+The nonportable Verifier checks matter: the index includes 45 metric checks,
 61 builtin-owned checks stored under `modules`, 12 receipt checks, 20 cash-flow,
 85 property-assembly, 42 waterfall, 11 capital-stack checks, plus full structural
 families. Directory names do not make builtin classes optional modules.
@@ -947,7 +717,7 @@ may be rewritten to make the Python report green.
 | Unlabelled versus literal `default` variants | Current parse projection uses `attributes.get("variant", "default")`, so admitted unlabelled and explicitly named `default` peers can collapse despite physical retention. Prove exact source identity, no silent peer loss and stable current/history selection at the Reader surface; coordinate the joint representation question with #365 instead of inventing a mapping or choosing a peer. Explicit local unsupported refusal is honest partial behavior while unresolved, not proof of complete Reader support for lawful admitted input. |
 | Metadata completeness prose omission | III.6a names the five missing-field paths and explicitly pins the low-confidence info finding, but omits the other severities. Preserve the accepted published validator precedent: META_MISSING and all five META_FIELD_MISSING_* findings are warning, META_LOW_CONFIDENCE_NO_REVIEW_FLAG is info, and allocated wrapper/nested-shape META-01 is error. This is an ordinary implementation decision, recorded under the repository's precedent rule, not an owner blocker or permission to alter severity. Independently implement the triggers and report the prose omission separately. |
 | [#365](https://github.com/UWMD-OSP/UW-Markdown/issues/365), lawful role-opted extension variants versus Envelope 1.0 singleton extension slots | Source is retained and digest callers report unavailable rather than discard peers or invent a new shape. Whole-source reserve/draw and future receipt commitments need the accepted representation resolution for these documents. Structural validation, selected-cash replacement commitments, block hashes and ordinary dictionary arithmetic are independently implementable. Draft proposals are not an accepted codec contract. |
-| [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356) / RFC 0088 numerical determinism | Full pow/log/exp/annuity/NPV/IRR/XNPV/XIRR paths need accepted cross-runtime procedures/order. Experiments do not select them. All 171 current dictionary formulas use arithmetic/conditionals and, as their only named function, round (six occurrences); their definitions do not themselves depend on those procedures. Complete general builtin support and numerical-dependent stated-figure branches still do. |
+| RFC0088 numerical determinism | Accepted and implemented in production Python calc with pinned pow/exp/log, unchanged associations, quantizer and solver. It is no longer an unresolved arithmetic prerequisite; independent procedure/financial/transport proof remains part of any complete calculation claim. |
 | Historical role changes in chain grouping | Bounded chain reports explicitly mark unsupported identity classification. Do not invent a history/orphan policy or call this complete Integrity support; it is optional and does not block base validation/metrics. |
 | Stale counts and portable catalogue granularity | “21 sections” in II.1 and old corpus README totals are documentary drift, not a new closed registry. Recognize current Format Part IV and preserve unknown IDs. Broad reserve-case calc flags and missing portable receipt/metric cases are evidence/discovery limitations, not permission to omit normative Verifier work or fabricate a narrower flag. |
 
@@ -972,26 +742,26 @@ may be rewritten to make the Python report green.
 3. **Close metric reproduction and the chosen calculation method.** Implement
    document runtime selection, lazy null/refusal semantics, token precision and
    every builtin dictionary definition/size selector. Gate: all 171 definitions
-   across twelve classes, eleven raw-size contracts, all 41 metric checks and
+   across twelve classes, eleven raw-size contracts, all 45 metric checks and
    adversarial missing/type/zero/selection/precision controls. If expressions
    are the method, finish II.2.6's entire builtin/grammar contract and the
-   96 Verifier calc cases before advertising `calc-evaluate`; dictionary-only
+   110 Verifier calc cases before advertising `calc-evaluate`; dictionary-only
    success never promotes that flag. Independent arithmetic work can proceed
-   while the numerical procedures are resolved.
+   using the accepted numerical procedures.
 4. **Close all remaining stated-figure obligations.** Integrate existing
    reserve/draw/replacement verifiers and independently complete calendar
    cash flows, lease-up/property assembly and waterfalls. Gate: all applicable
    indexed assertions, exact schemas/states/precedence, original-source digest,
    finite ordered evidence and numerical cross-platform results; accepted
-   #365/0088 resolutions are prerequisites only for the paths they affect.
+   #365 representation resolution is prerequisite only for the paths it affects.
    Missing claims, unavailable inputs and real disagreement remain distinct.
 5. **Close receipt verification, then certify the base Verifier.** Implement the
    read-only receipt contract and its 12 indexed verification assertions,
    including recomputation, reference-input and identity/precedence controls;
    do not require issuance or optional signing success. Gate: audit all
-   26 Reader + 698 Verifier indexed assertions against their actual required
+   26 Reader + 734 Verifier indexed assertions against their actual required
    capabilities and accepted contexts; pass every applicable base assertion,
-   with optional requirements separately identified. Run the real 298-case portable
+   with optional requirements separately identified. Run the real 312-case portable
    Reader+Verifier selection without capability skips, explicit exclusions/
    refusals for unclaimed optional profiles, unchanged corpus and repeatable
    independent cross-platform evidence. Claim a Verifier tier only when all
@@ -1087,7 +857,7 @@ alongside the existing 28 reserve cases. Extra controls cover exact identity,
 selective/full-source verification, closed sources, precedence, monetary
 boundaries, overflow with later finite findings, evidence order and no mutation.
 These direct case results are not tier/capability certification: the catalogue
-requires broader `calc-evaluate`, which remains unimplemented and unclaimed.
+requires broader `calc-evaluate`, which remains unclaimed pending whole-capability proof.
 The manifest stays parse-only and genuine Reader 17/17 runs remain separate.
 
 
@@ -1139,8 +909,8 @@ adapted standalone comparisons**: actual command subprocesses, then unchanged
 shared `replacement-funding` projection and `json_subset` comparison. A test-only
 adapter maps narrow structural findings to that projection's input. It does not
 implement validate, change generated cases/capability flags, or claim 71 portable
-or full-validation passes. The catalogue requires broader `validate`, which
-remains unimplemented. Discovery stays parse-only; genuine Reader17/17 runs stay
+or full-validation passes. The catalogue requires complete `validate`, which
+remains unclaimed; the developing actual command is described above. Discovery stays parse-only; genuine Reader17/17 runs stay
 separate.
 
 
@@ -1151,7 +921,7 @@ adds independent Protocol §V.9 block hashing and a bounded §V.10 chain assessm
 This command's report and local assessment vocabulary are **nonnormative**. It
 is not the full `IntegrityResult`, an integrity-profile claim, full validation,
 signature verification or document authentication. Discovery stays parse-only;
-generic verify and calc remain unsupported. The unadvertised validate command has the bounded scope above.
+generic receipt/metric verification remains unimplemented; calc is described above. The unadvertised validate command has the bounded scope above.
 
 `compute_block_hash` snapshots an explicit fenced object, removes only top-level
 `_meta`, canonicalizes with independent RFC8785 JCS and hashes UTF-8 using stdlib
@@ -1210,7 +980,7 @@ hash-provider/JCS failures, unchanged roots and snapshots before the first await
 performs a bounded independent Format §2.5/§2.6/§2.8 inventory. The report is a
 **nonnormative standalone wrapper**, not `ValidationResult`, complete Format
 validation or a Reader/Verifier tier claim. Discovery stays parse-only;
-calc and generic verify remain unsupported; the developing validate command is described above. The unadvertised validate command has the bounded scope above.
+calc exists; generic receipt/metric verification remains unimplemented; the developing validate command is described above. The unadvertised validate command has the bounded scope above.
 
 `inspect_source_roles` snapshots the current parsed-value model. Its source/role
 checks inspect every active physical block, including earlier active blocks
@@ -1235,19 +1005,20 @@ provenance/quality/lifecycle member types and override path/confidence/reason/no
 shapes are checked against the accepted block schema. These checks do not invent
 an override path grammar, traverse a target, require its existence, reject unknown
 payload/annotation members, or apply override precedence to underwriting values.
+Accepted META-05/06 now own the bounded optional/reference predicates above.
 An agent source requires the `agent_id` member; admitted null remains unchanged.
 JSON integer semantics admit revision `1.0` and reject booleans.
 
 Historical blocks are counted as skipped by the active source/role checks;
-their metadata shape, actor, required booleans and present-invalid RFC0094
-leaves are inspected, and their roles are not reclassified. Source byte spans,
+their accepted metadata shape, actor, required booleans, present-invalid leaves
+and RFC0095 optional/reference predicates are inspected, and their roles are not reclassified. Source byte spans,
 physical ordinals and exact authored variants distinguish findings on repeated
 active blocks. Returned evidence is detached and the original source/Reader
 projection remains unchanged. The wrapper's local `ok` requires both finding
 lists to be empty; CLI exit is nonzero when this bounded inventory refuses.
 
-The live underscore provenance-completeness family, other metadata-schema
-requirements and conditional market-data/composition reference verification,
+The live underscore completeness family and accepted conditional-reference
+admission are integrated above. External reference resolution,
 edit authority, role selection for calculations and signatures remain separate
 obligations. This inventory does not add defaults, financial behavior or a full
 validation capability.
@@ -1270,7 +1041,7 @@ Accepted RFC0090 defines the bounded actor contract implemented here. It adds
 META-01/error at `_meta.provenance.actor` for absent, null, exact empty string
 or non-string values. Every nonempty string is retained, including whitespace;
 there is no trimming, actor namespace rule, inferred principal or alias fallback.
-Other typed metadata findings remain uncoded local assessments.
+Other metadata uses accepted RFC0091/0093/0094/0095 owners above; no generic META-01 expansion is inferred.
 
 The existing wrapper/nested-object checks run first across all retained physical
 blocks, followed by the actor pass in physical source order, then the existing
@@ -1281,17 +1052,9 @@ unselected variants and overwritten physical peers receive actor checks. History
 roles and sources are not reclassified. The legacy `blocks_checked` and
 `history_blocks_skipped` counters describe only the active source/role pass.
 
-Routing correction against accepted RFC 0081 section 3: the original test
-blob above also allocated META-01 for (1) otherwise valid metadata with
-`_meta.section="wrong"` and (2) otherwise valid metadata appearing after a
-payload member. Both assertions are now explicitly corrected to no registered
-issue plus an uncoded local finding at `_meta.section` or `_meta` respectively;
-local `ok` remains false. Those requirements are retained in their active-only
-scope and are not widened to history or used as actor-suppression predicates.
-This removes a prior unsupported code allocation rather than preserving it for
-prelaunch compatibility. Combined controls prove missing actors still produce
-their own META-01 with either requirement, including history, without allocating
-an extra historical finding for member order or section identity.
+RFC0093 explicitly owns late metadata and present invalid/mismatched section
+under META-01 across retained references. Earlier local-only wording is
+superseded. These predicates do not suppress independent actor or flag errors.
 
 The current canonical inline parsed `_meta` is authoritative. The operation
 snapshots `Document.source.blocks`; it does not silently reparse immutable raw
@@ -1300,29 +1063,9 @@ remain origin evidence, not a source/model consistency verdict. Inputs and sourc
 bytes are unchanged. No new command, capability, full validation or tier claim
 is introduced.
 
-Governed test delta: the previous source-test blob
-`0333e25bd130d024b25e8c53784f3394aa162894` asserted malformed actor `0` only
-as a local finding and compared three actor-absent role documents without actor
-codes. The governed tests now explicitly expect META-01/error instead of the actor
-local finding, and 11/8/8 actor findings on the unchanged documents below.
-These are governed diagnostic assertions, not rewritten frozen validate results
-or a complete affected-corpus inventory.
-
-| Unchanged source fixture | Git blob |
-| --- | --- |
-| `10-declared-roles.uwx.md` | `cf59916f6d05e96ba2d34cff2405453b25945279` |
-| `11-role-collision.uwx.md` | `0231d5b466b733637f8fd062fbd515ba0bf82f82` |
-| `12-role-eligibility.uwx.md` | `6c2a00fc74c4305315a4af235abe4c889914b573` |
-
-Five additional focused methods cover actor value boundaries, all-physical
-coverage, shape/actor/role/source ordering, independent actor admission beside
-unallocated order/identity requirements, and parsed-model authority. Existing
-source, timestamp, quality, lifecycle and override diagnostics keep their
-registered-versus-local allocation. Changing an actor would leave the V.9
-content hash (which excludes `_meta`) unchanged but can change block signatures,
-Envelope/document signatures and receipt subjects; this implementation changes
-diagnostics only and never repairs actors or reissues historical evidence.
-
+Accepted metadata tests cover every retained physical/current-model scope,
+value boundaries, ordering, actual-owner consumption and source preservation.
+Diagnostics do not rewrite source, infer actors or authenticate an artifact.
 
 ## Document currency assertion
 
@@ -1430,26 +1173,22 @@ Discovery remains parse-only; this is not a complete validation capability claim
 ### Recovery parent admission
 
 The developing validator reports the existing REC-02 for non-null, nonobject
-recovery terms and caps under Format4.3/RFC0058. The cap predicate applies
+recovery terms and caps under Format 4.3/RFC0058. The cap predicate applies
 independently of method; absence, null, empty objects and G1's lone cap retain
 their prior admission. Duplicate local type evidence is consumed only with the
 actual REC-02/error on the same physical block, tenant field and fixed type
 constraint. An unrelated code, sibling field, peer, missing owner or changed
-constraint cannot provide coverage. Unknown members and other unallocated
-conditions stay explicit local refusals. No recovery amount, cash source,
+constraint cannot provide coverage. RFC0096 owns closed recovery extras and
+declared optional members; REC-02 cannot consume those siblings generically. No recovery amount, cash source,
 default, standalone command, conformance expectation or discovery claim changes.
 
 
 ### Lease-up registered-condition ownership
 
-The developing validator consumes duplicate local evidence only for an actual
-LU-03 nonempty-schedule error or LU-01 cadence/period/target grammar error on the
-same current physical block and exact field. Predicate tags are private;
-ordinary result states and registered issue ordering remain unchanged.
-Unallocated model, numeric, row-container and unknown-member requirements remain
-local even beside a registered LU error. This corrects partial-refusal transport
-for the unchanged native empty-schedule negative without computing a trajectory,
-changing a frozen expectation or claiming complete validation.
+Exact current LU-01/03/05 owners consume duplicate private evidence only for the
+same block/field/current predicate. RFC0096 owns former model, numeric, target/
+container and closed-member conditions under LU-05. Historical and overwritten
+evidence stays separate; no trajectory is generated.
 
 ## Accepted RFC0096 payload admission helper
 
@@ -1462,6 +1201,6 @@ existing diagnostic ownership and lexical-only waterfall dates remain distinct.
 Seventeen focused methods cover the independent predicates and nonmutation.
 
 This private helper is not a standalone inspector or complete validation command.
-It adds no advertised capability; discovery remains parse-only. The complete
-validator integration and its portable/nonportable certification are separate
+It adds no advertised capability; discovery remains parse-only. The complete WIP validator already integrates this helper with the evidence
+above; whole-capability portable/nonportable certification remains separate
 Issue354 work.
