@@ -11,9 +11,9 @@ complete financial reproducibility. Draft RFCs are not accepted contracts.
 
 ## Reserved milestone: 5.0, the coordinated public launch
 
-The [owner launch rule,2026-10-17](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
-reserves5.0.0 for the official public launch. Every `@uwmd` npm package moves
-to5.0.0 together then. Before launch, releases use4.x.x from main as needed.
+The [owner launch rule, 2026-10-17](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+reserves 5.0.0 for the official public launch. Every `@uwmd` npm package moves
+to 5.0.0 together then. Before launch, releases use 4.x.x from main as needed.
 Format, Protocol and other documents remain independently versioned surfaces.
 
 The launch still requires separate explicit owner approval. This roadmap
