@@ -34,7 +34,7 @@ def document(asset="multifamily", **sections):
 
 
 class ValidationFamilyTests(unittest.TestCase):
-    def test_76_frozen_exact_structural_arrays_with_multiplicity(self):
+    def test_78_frozen_exact_structural_arrays_with_multiplicity(self):
         counts = {}
         for family, prefix in (("tax","TAX-"),("capex","CAPX-"),("lease","LSE-"),("recoveries","REC-")):
             paths = sorted((ROOT/"conformance"/family).glob("*/expected.json"))
@@ -48,7 +48,7 @@ class ValidationFamilyTests(unittest.TestCase):
                     self.assertEqual(sorted(selected_codes(actual,(prefix,))), sorted(expected["codes"]))
                     self.assertEqual(parsed, before)
                     self.assertEqual(source.read_bytes(),raw)
-        self.assertEqual(counts,dict(tax=21,capex=18,lease=21,recoveries=16))
+        self.assertEqual(counts,dict(tax=21,capex=18,lease=21,recoveries=18))
 
     def test_17_frozen_waterfall_document_assertions_without_outcome_verdicts(self):
         paths = [p for p in (ROOT/"conformance/waterfall").glob("*/expected.json")
