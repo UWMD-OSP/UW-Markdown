@@ -240,11 +240,11 @@ function hasValidateCase(suite, scenario) {
   return index.has(key(suite, `${scenario} [validate]`));
 }
 
-function recordValidationOnly(suite, scenario, baselinePath, parsed, requiredCodes, provenanceIssues) {
+function recordValidationOnly(suite, scenario, baselinePath, parsed, requiredCodes, provenanceIssues, source) {
   const id = `${scenario} [validate]`;
   let validation;
   try {
-    validation = validateUWFile(parsed);
+    validation = validateUWFile(source ?? parsed);
   } catch (e) {
     record(suite, id, 'fail', `validateUWFile threw: ${e.message}`);
     return;
@@ -364,7 +364,7 @@ function runDocuments() {
     // and a severity flip on an existing one are visible diffs.
     let validation;
     try {
-      validation = validateUWFile(parsed);
+      validation = validateUWFile(fixtureContent);
     } catch (e) {
       record('documents', `${id} [validate]`, 'fail', `validateUWFile threw: ${e.message}`);
       continue;
@@ -497,15 +497,26 @@ async function runMalformedDocuments() {
       } catch (e) {
         record('documents', `malformed/${id} [validate]`, 'fail', `verifyProvenance threw: ${e.message}`);
       }
-      if (provenance !== undefined) recordValidationOnly('documents', `malformed/${id}`, join(malformedDir, `${id}.validation.json`), parsed, expectedCodes, provenance);
+      if (provenance !== undefined) recordValidationOnly('documents', `malformed/${id}`, join(malformedDir, `${id}.validation.json`), parsed, expectedCodes, provenance, fixtureContent);
     }
 
     let validation;
     try {
-      validation = validateUWFile(parsed);
+      validation = validateUWFile(fixtureContent);
     } catch (e) {
       record('documents', `malformed/${id}`, 'fail', `validateUWFile threw: ${e.message}`);
       continue;
+    }
+
+    // RFC0093 controls pin exact closed predicates and cross-block pass order.
+    // Authored expected rows are reviewed independently, never generated here.
+    if (Array.isArray(expected.metadata_issues)) {
+      const actual = validation.issues.filter(i => ['META-01', 'META-02', 'META-03'].includes(i.code))
+        .map(({ code, severity, section, field }) => ({ code, severity, section, ...(field === undefined ? {} : { field }) }));
+      if (!isDeepStrictEqual(actual, expected.metadata_issues)) {
+        record('documents', `malformed/${id}`, 'fail', `metadata findings/order differ: ${JSON.stringify(actual)}`);
+        continue;
+      }
     }
 
     const actualCodes = new Set((validation.issues ?? []).map((m) => m.code));

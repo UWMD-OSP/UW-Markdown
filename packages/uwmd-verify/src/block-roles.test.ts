@@ -113,7 +113,7 @@ describe('RFC 0040 role selection', () => {
     expect(result.issues.some(i => i.code === 'CC-12')).toBe(false);
   });
   it('keeps the legacy role-free shape and does not alias _meta.role', () => {
-    const plain = block({ total_sources: 100, total_uses: 100 }, 'sources_uses');
+    const plain = block({ _meta: meta('sources_uses'), total_sources: 100, total_uses: 100 }, 'sources_uses');
     const baseline = validateUWFile(file({ sources_uses: plain }));
     const ignored = { ...plain, content: { ...plain.content, _meta: { ...plain.meta, role: 'component' } } };
     expect(validateUWFile(file({ sources_uses: ignored }))).toEqual(baseline);

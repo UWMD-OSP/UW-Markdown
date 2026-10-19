@@ -259,7 +259,7 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content);
   const instCfg = loadInstitutionConfig(flags['institution'] as string | undefined);
-  const structural = validateUWFile(parsed, instCfg?.thresholds);
+  const structural = validateUWFile(content, instCfg?.thresholds);
   const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
   const result = { ...structural, replacement_funding_verification };
   const fundingRefuses = replacement_funding_verification.state !== 'verified'
@@ -396,7 +396,10 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   const content = readFile(file);
   // --resolved verifies the assembled record. Without it an externalized
   // section verifies as a directive, which is not the document anyone means.
-  const parsed = withResolved(parseUWFile(content), file, flags);
+  const partSources = flags['resolved']
+    ? loadPartSourcesDir(flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file))
+    : undefined;
+  const parsed = withResolved(parseUWFile(content), file, flags, partSources);
 
   // No flag set → run all three.
   const onlyValidate = flags['validate'] === true;
@@ -410,7 +413,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   let hadError = false;
 
   if (runAll || onlyValidate) {
-    const v = validateUWFile(parsed);
+    const v = validateUWFile(content, undefined, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
     sections['validation'] = v;
     const funding = await verifyReplacementFundingBindings(parsed);
     sections['replacement_funding_verification'] = funding;
@@ -1265,13 +1268,17 @@ const positional = extractPositionals(args);
 
 // ─── Composition (RFC 0021) ──────────────────────────────────────────────────
 
-/** Load every `.uwpart.md` in a directory, keyed by `part_id`. */
-function loadPartsDir(dir: string): Map<string, UWPart> {
+/** Read each actual part once; retain its filename for existing parse diagnostics. */
+function loadPartSourcesDir(dir: string): { filename: string; source: string }[] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir).filter((f) => f.endsWith(UWPART_EXTENSION)).sort()
+    .map(filename => ({ filename, source: readFileSync(resolve(dir, filename), 'utf-8') }));
+}
+
+function loadPartsDir(dir: string, sources = loadPartSourcesDir(dir)): Map<string, UWPart> {
   const parts = new Map<string, UWPart>();
-  if (!existsSync(dir)) return parts;
-  for (const file of readdirSync(dir).filter((f) => f.endsWith(UWPART_EXTENSION)).sort()) {
-    const path = resolve(dir, file);
-    const part = parseUWPart(parseUWFile(readFileSync(path, 'utf-8')), { filename: file });
+  for (const { filename, source } of sources) {
+    const part = parseUWPart(parseUWFile(source), { filename });
     if (parts.has(part.part_id)) {
       console.error(`Duplicate part_id '${part.part_id}' in ${dir}`);
       process.exit(1);
@@ -1399,10 +1406,11 @@ function withResolved(
   parsed: ParsedUWFile,
   file: string,
   flags: Record<string, string | boolean>,
+  partSources?: { filename: string; source: string }[],
 ): ParsedUWFile {
   if (!flags['resolved']) return parsed;
   const partsDir = flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file);
-  const resolution = resolveComposition(parsed, { parts: loadPartsDir(partsDir) });
+  const resolution = resolveComposition(parsed, { parts: loadPartsDir(partsDir, partSources) });
   if (resolution.status !== 'resolved') {
     console.error(`Cannot resolve ${basename(file)} against ${basename(partsDir)}/:`);
     for (const issue of resolution.issues) console.error(`  [${issue.code}] ${issue.message}`);

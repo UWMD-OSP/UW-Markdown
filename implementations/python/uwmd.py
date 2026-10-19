@@ -10,7 +10,7 @@ from uwmd_reserves import verify_reserve_accounts
 from uwmd_reserve_draws import verify_reserve_draw_bindings
 from uwmd_replacement_funding import replacement_funding_report
 from uwmd_block_integrity import BlockIntegrityError, verify_block_integrity
-from uwmd_source_validation import inspect_source_roles
+from uwmd_source_validation import _inspect_source_roles_source
 from uwmd_currency import inspect_document_currency
 
 
@@ -40,7 +40,7 @@ def main(arguments):
     if len(arguments) in (2, 3) and arguments[0] == "inspect-source-roles" and (len(arguments) == 2 or arguments[2] == "--json"):
         try:
             path = Path(arguments[1])
-            result = inspect_source_roles(parse(path.read_bytes(), filename=path.name))
+            result = _inspect_source_roles_source(path.read_bytes(), filename=path.name)
             return result, 0 if result["ok"] else 1
         except SourceError as error:
             return {"error": {"message": str(error)}}, 1
