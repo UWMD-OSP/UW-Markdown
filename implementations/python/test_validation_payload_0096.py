@@ -199,7 +199,8 @@ class PayloadIntegrationTests(unittest.TestCase):
                 result=value["partial_validation_result"] if marked else value
                 self.assertEqual(rows(result),[("LU-05","model_type"),("LU-05","external")])
                 if marked:
-                    self.assertIn("COMP-DIRECTIVE-MALFORMED",[i["code"] for i in result["composition_assessment"]["issues"]])
+                    self.assertIn("COMP-DIRECTIVE-MALFORMED",[i["code"] for i in value["composition_assessment"]["issues"]])
+                    self.assertEqual(value["error"]["code"],"COMP-DIRECTIVE-MALFORMED")
                 else:self.assertNotIn("partial_validation_result",value)
                 self.assertEqual(path.read_bytes(),raw)
 
