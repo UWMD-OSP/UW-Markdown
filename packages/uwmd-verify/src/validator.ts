@@ -1246,7 +1246,7 @@ function checkCoTenancy(
       'LSE-08: an alternate_rent remedy_value is a nonnegative amount', value);
   }
   const cure = d['cure_period_months'];
-  if (cure !== undefined && cure !== null && (!Number.isSafeInteger(cure) || (cure as number) < 0)) {
+  if (cure !== undefined && cure !== null && (!Number.isInteger(cure) || (cure as number) < 0)) {
     leaseIssue(issues, 'LSE-07', `${p}.cure_period_months`,
       'LSE-07: cure_period_months must be a nonnegative whole number of months', cure);
   }
