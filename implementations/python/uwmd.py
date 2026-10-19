@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 
 from uwmd_reader import parse
+from uwmd_calc import evaluate_calc, parse_context
+from uwmd_calc_errors import CalcError, CalcUnavailable
 from uwmd_source import SourceError, parse_json_source
 from uwmd_reserves import verify_reserve_accounts
 from uwmd_reserve_draws import verify_reserve_draw_bindings
@@ -61,6 +63,37 @@ def main(arguments):
         return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
                 "capabilities": ["parse"], "profiles": []}, 0
+    if arguments and arguments[0] == "calc":
+        tail = arguments[1:]
+        if tail and tail[-1] == "--json":
+            tail = tail[:-1]
+        if len(tail) not in (2, 4) or len(tail) == 4 and tail[2] != "--calc-context":
+            return {"error": {"message": "calc <file> <calc.json|formula> [--calc-context <file>] [--json]"}}, 1
+        try:
+            path = Path(tail[0])
+            document = parse(path.read_bytes(), filename=path.name)
+            argument = Path(tail[1])
+            if argument.is_file():
+                declarations = parse_json_source(argument.read_bytes()).value
+            else:
+                declarations = {"id": "inline", "formula": tail[1], "deterministic": True}
+            context = parse_context(parse_json_source(Path(tail[3]).read_bytes()).value) if len(tail) == 4 else {}
+            array_input = isinstance(declarations, list)
+            results = [evaluate_calc(declaration, document, context=context)
+                       for declaration in (declarations if array_input else [declarations])]
+            response = results if array_input else results[0]
+            return response, 1 if any(not result["ok"] for result in results) else 0
+        except CalcError as error:
+            return {"error": error.projection()}, 1
+        except (SourceError, CalcUnavailable) as error:
+            diagnostic = {"message": str(error)}
+            if hasattr(error, "code"):
+                diagnostic.update(code=error.code, category="parse")
+            return {"error": diagnostic}, 1
+        except OSError as error:
+            return {"error": {"message": str(error)}}, 2
+        except Exception as error:
+            return {"error": {"message": "Internal calculation failure: " + str(error)}}, 2
     if arguments and arguments[0] == "validate":
         if len(arguments) not in (2, 3) or (len(arguments) == 3 and arguments[2] != "--json"):
             return {"error": {"message": "validate <file> [--json]"}}, 1
@@ -164,7 +197,7 @@ def main(arguments):
             return {"error": diagnostic}, 1
         except OSError as error:
             return {"error": {"message": str(error)}}, 2
-    return {"error": {"message": "implemented commands: manifest, parse <file>, validate <file> [--json], verify-reserve-accounts <file> [--json], verify-reserve-draws <file> [plan.json] [--json], verify-replacement-funding <file> [--json], verify-block-integrity <file> [--json], inspect-source-roles <file> [--json], inspect-document-currency <file> [--json]"}}, 1
+    return {"error": {"message": "implemented commands: manifest, parse <file>, calc <file> <calc.json|formula> [--calc-context <file>] [--json], validate <file> [--json], verify-reserve-accounts <file> [--json], verify-reserve-draws <file> [plan.json] [--json], verify-replacement-funding <file> [--json], verify-block-integrity <file> [--json], inspect-source-roles <file> [--json], inspect-document-currency <file> [--json]"}}, 1
 
 
 if __name__ == "__main__":
