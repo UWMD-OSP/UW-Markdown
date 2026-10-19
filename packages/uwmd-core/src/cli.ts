@@ -39,7 +39,6 @@ import {
   inspectPropertyCashFlowInputs,
   type AssetClass,
   type DealStage,
-  type InstitutionConfig,
   parseUWPart,
   resolveComposition,
   externalizeSection,
@@ -77,6 +76,7 @@ import { issueReceipt } from './receipt-engine.js';
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
+import { loadInstitutionThresholds } from './institution-config.js';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { render } from './renderer.js';
@@ -134,16 +134,6 @@ function readFile(path: string): string {
     process.exit(1);
   }
   return readFileSync(resolved, 'utf-8');
-}
-
-function loadInstitutionConfig(path: string | undefined): InstitutionConfig | undefined {
-  if (!path) return undefined;
-  try {
-    return JSON.parse(readFileSync(resolve(path), 'utf-8')) as InstitutionConfig;
-  } catch {
-    console.error(`Warning: could not load institution config: ${path}`);
-    return undefined;
-  }
 }
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
@@ -258,8 +248,8 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content);
-  const instCfg = loadInstitutionConfig(flags['institution'] as string | undefined);
-  const structural = validateUWFile(content, instCfg?.thresholds);
+  const thresholds = loadInstitutionThresholds(file, flags['institution'] as string | undefined);
+  const structural = validateUWFile(content, thresholds);
   const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
   const result = { ...structural, replacement_funding_verification };
   const fundingRefuses = replacement_funding_verification.state !== 'verified'
@@ -413,7 +403,8 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   let hadError = false;
 
   if (runAll || onlyValidate) {
-    const v = validateUWFile(content, undefined, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
+    const thresholds = loadInstitutionThresholds(file);
+    const v = validateUWFile(content, thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
     sections['validation'] = v;
     const funding = await verifyReplacementFundingBindings(parsed);
     sections['replacement_funding_verification'] = funding;
@@ -2126,7 +2117,7 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   --issued-at <iso>  Fix the receipt issuance timestamp (receipt issue)
   --tier <tier>      Module host conformance tier: reader | verifier (modules; default verifier)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
-  --institution <f>  Path to .uw.institution.json config (validate)
+  --institution <f>  Path to .uw.institution.json config (validate; otherwise adjacent sidecar)
   --name <n>         Deal name (init)
   --address <a>      Property address (init)
   --city <c>         City (init)
