@@ -595,9 +595,10 @@ claim about every composition, generated model, embedded test or full validation
 
 Six new native controls38–43 independently state exact metadata fields/order,
 including a lawful empty result. Existing source fixtures and frozen expected
-results are unchanged. Tests exercise the frozen106 date vectors,6 carrier
-contexts and full158400-input Gregorian cycle across actual runtime/schema
-predicates. SOURCE/MODEL/history/composition identity controls, actual CLI exits
+results are unchanged. Actual TypeScript/Python META-06 predicates exercise the frozen106 date vectors
+and6 carrier contexts. The activated schema matches the frozen158400-input
+Gregorian cycle; isolated research procedures supply independent full-cycle
+evidence. SOURCE/MODEL/history/composition identity controls, actual CLI exits
 and receipt-policy effects accompany the implementation. The old attribution
 DQ-06/error is removed; declared-stage readiness remains DQ-06/info.
 
