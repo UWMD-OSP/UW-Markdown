@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseUWFile, getSection, getSectionVariant } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { checkPayloadAdmission } from './payload-admission.js';
-import type { UWBlock, ValidationMessage } from './types.js';
+import type { ValidationMessage } from './types.js';
 
 const codes = new Set(['LU-05', 'REC-11', 'CS-03', 'WF-16']);
 const classes = new Set(['office', 'retail']);
