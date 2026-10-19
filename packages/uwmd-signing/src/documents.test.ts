@@ -69,7 +69,7 @@ describe('document signing production inputs', () => {
 describe('lawful annotation variant signing caller', () => {
   it.each([false, true])('signs every concurrent peer and detects formerly discarded peer changes (reverse=%s)', async reverse => {
     const peers = ['annotation', 'z'].map((variant, index) => `\n\`\`\`json uw:section=operating_statement variant=${variant}\n${JSON.stringify({ _meta: { section: 'operating_statement', lifecycle: { revision: 1, superseded: false } }, value: index + 111 })}\n\`\`\`\n`);
-    const source = '---\nuw_version: "3.0"\n---\n' + (reverse ? peers.reverse() : peers).join('');
+    const source = `---\nuw_version: "3.0"\n---\n${(reverse ? peers.reverse() : peers).join('')}`;
     const { signing, verifying } = await generateSigningKeyPair('ed25519', 'variant-key');
     const signature = await signDocument(source, signing, { signedAt: '2026-10-19T00:00:00Z' });
     const options = { signatureVerifier: createDocumentSignatureVerifier(new InMemoryKeyStore([verifying])) };
