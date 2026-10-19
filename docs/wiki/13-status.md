@@ -19,6 +19,18 @@ calc evidence. Discovery stays parse-only; complete validation, dictionary/state
 result verification and receipts remain required before a Verifier claim. No
 normative arithmetic, schema, conformance expectation or version changes.
 
+**Accepted RFC0094 — owner decision2026-10-18 at47e6a547.**
+[RFC0094](../rfcs/0094-present-invalid-metadata-leaves.md) accepts META-04/error
+for exactly present-invalid confidence, revision and timestamp. Absence warnings
+and META-01/02/03 remain unchanged; conditional provenance references stay separate.
+The independently verified main0450 inventory has174 candidate leaves in78 files:
+166 confidence=`verified` values in scoped reserve fixtures and8 timestamp markers
+in normalized editor AFTER templates. Those are not174 demonstrated live validation
+failures or automatic expectation edits. The owner selected T1B, exact uppercase UTC-Z
+with Gregorian validity and second00–59. Schema-library permissiveness does not define this contract.
+This is docs-only acceptance; synchronized TS/Python implementation and contracts
+follow on Issue354. No runtime activation or capability promotion in this PR. Python discovery stays parse-only while complete-validation gates close.
+
 **Accepted RFC0093 — owner decision2026-10-18 at0306d126.**
 [RFC0093](../rfcs/0093-metadata-shape-diagnostics.md) accepts exactly the three
 META-01 additions: late/misplaced canonical `_meta`, present invalid/mismatched
