@@ -13,11 +13,14 @@ remain. No package numbers or release publication are changed here.
 validate-operation errors for unreadable/malformed selected configuration,
 error-only JSON/exit1, atomic admission of the three documented overrides and
 automatic-absence defaults. Exact lexical selection, strict JSON/Unicode profile,
-opaque data and config-relative pointer authority are accepted. The docs-only
-acceptance activates no runtime/schema/capability. Synchronized TS/Python,
-Format/Protocol/schema/type and actual CLI conformance follow on Issue354.
-Pure API threshold maps and receipt identity/count/authentication rules remain
-separate; no new financial threshold or comparison is introduced.
+opaque data and config-relative pointer authority are accepted. The synchronized implementation provides the strict file adapter and CLI
+transport, public canonical wire type, minimum schema and Format/Protocol/pointer
+rules. The independent private Python helper is main-safe; full validation CLI
+wiring remains in Issue354's unadvertised WIP. Twenty-nine paired source/config
+controls supplement the unchanged111 original portable validation cases. Pure API
+threshold maps and receipt identity/count/authentication rules remain separate;
+no new financial threshold/comparison is introduced. Discovery stays parse-only
+until complete validation and applicable native/platform requirements certify.
 
 **Accepted RFC0096 — owner decision2026-10-19 at1926efe4.**
 [RFC0096](../rfcs/0096-bounded-stated-payload-admission.md) allocates closed

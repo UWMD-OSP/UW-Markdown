@@ -35,8 +35,9 @@ Owner acceptance,2026-10-19, quoted verbatim:
 
 This RFC is separate from accepted payload admission RFC0096 and the Python
 complete-validation WIP. Discovery stays parse-only until its complete capability
-gate passes. No runtime, schema, conformance expectation or release state changes
-in this docs-only PR.
+gate passes. The acceptance PR396 changed only documentation. The synchronized
+implementation below changes runtime/types/schema and adds governed controls;
+release state and advertised capabilities remain unchanged.
 
 ## Motivation and independently verified evidence
 
@@ -281,7 +282,7 @@ extension of receipts to configured policy requires its own explicit governed
 scope. Config errors are not additional document findings or receipt error counts.
 The accepted authenticate-first receipt contract remains authority.
 
-## Remaining synchronized specification and type changes
+## Synchronized specification and type changes
 
 Synchronize Format Appendix C.6, Protocol VI.3, II.6a transport
 cross-references and XI operation-error documentation. Add a normative minimum
@@ -299,12 +300,12 @@ not in this docs-only acceptance. No generic runtime schema engine or new depend
 
 ## Conformance impact and implementation gates
 
-No current fixture, frozen expectation, source, schema, runtime or manifest
-changes in this PR. The existing111 portable validation cases without a selected
-config stay unchanged. New authored Verifier/validate controls must isolate the
-source/config pair and exercise actual subprocesses on Windows/Linux/macOS.
-Proposed fixture family: `conformance/institution-config/`, with explicit-path
-portable cases and native filesystem/source/model assertions where needed.
+The existing111 portable validation cases, sources and frozen expectations
+remain unchanged. The implementation adds29 paired Verifier/validate controls
+under `conformance/institution-config/`, with actual subprocesses and native
+filesystem/source/model assertions. Portable validation becomes140 cases; the
+whole portable catalogue becomes393. These counts do not certify the Python
+capability or eliminate applicable nonportable/platform proof requirements.
 
 | Required controls | Required outcome |
 |---|---|
@@ -384,6 +385,48 @@ The owner accepted all six dispositions above at4a31eb3c. No numerical
 convention is unresolved or selected here. Synchronized implementation still
 requires independent review and green exact-head/main CI. RFC0096 and
 RFCs0085/0089/0092 retain their own ownership and acceptance states.
+
+## Implementation disposition
+
+The TypeScript private file adapter and CLI implement strict admission, atomic
+three-key mapping, exact config errors and lexical selection. The existing
+aggregate wrapper reports `validation: { error: ProtocolError }`, `ok: false`,
+omits replacement-funding/stated-metric results for that refused branch, and
+retains requested independent integrity/provenance operations. No new aggregate
+flag or receipt config loading is introduced. Config preflight reports described
+refusals at exit1 and unexpected adapter defects at exit2, with actual injected
+error controls for standalone and aggregate calls. The existing global CLI catch
+is unchanged: broader unrelated input-refusal classification is not altered by
+this bounded adapter.
+
+The independent main-safe Python module uses only the standard library. Its
+numeric tokens preserve opaque overflow spellings without coercion; only recognized
+leaves become finite binary64. It imports no developing validator. The separate
+Issue354 adapter wires accepted preflight and error-only transport into the
+unadvertised `validate` command; no standalone inspector or capability is added.
+Both adapters attempt the read first, then distinguish genuine automatic absence
+from dangling/present entries or inconclusive inspection errors. Pure callers'
+nested maps and receipt subject/count/authentication contracts remain unchanged.
+
+Attribution of the29 new paired controls:
+
+| Controls | Accepted requirement |
+|---|---|
+|01–03|Automatic absence, explicit missing path and selected directory read outcomes|
+|04–10|Strict UTF8/BOM/whole JSON, decoded duplicate names and Unicode scalar content, including opaque data|
+|11–19|Root/carrier/leaf admission, forbidden-root and fixed-leaf precedence, finite binary64 and atomic sibling refusal|
+|20–23|Empty/opaque data, opaque overflow and paired scalars, three exact warning mappings and spaced explicit paths|
+|24–29|Automatic adjacency/malformed input, explicit suppression/no fallback, nested lookalike opacity and JSON whitespace|
+
+Existing frozen minimal/full source bytes are reused; location-dependent controls
+copy those bytes solely to isolate the lexical source directory. No original
+record or expected result is repaired/rebaselined. The native runner additionally
+checks the error-only outer object, ProtocolError schema, pointer presence/absence,
+ordinary-result exclusion, exact exit and source/config preservation. Portable
+cases reuse the existing comparator. Separate runtime/actual CLI controls assess
+permission/link/race and internal failures, non-JSON/aggregate transport, caller
+map isolation and receipt exclusion. PR evidence distinguishes executed proof
+from pending exact-head/platform/complete-capability gates.
 
 ## Prior art
 

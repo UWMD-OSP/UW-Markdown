@@ -1227,3 +1227,22 @@ This private helper is not a standalone inspector or complete validation command
 It adds no advertised capability; discovery remains parse-only. The complete WIP validator already integrates this helper with the evidence
 above; whole-capability portable/nonportable certification remains separate
 Issue354 work.
+
+
+## Accepted RFC0097 selected institution configuration
+
+`uwmd_institution_config.py` is a private standard-library-only admission/file
+adapter for the developing validator. It selects one explicit or lexical adjacent
+path, defaults only on genuine automatic absence, admits the whole strict JSON/
+UTF8/decoded-name/Unicode profile and atomically returns only the three recognized
+finite binary64 leaves. Opaque number tokens are not coerced or applied. Fresh
+bands come from caller-supplied defaults; no document, config or caller map is
+mutated. Unreadable/malformed inputs produce the two accepted operation errors
+with exact messages/pointers; resource/programming failures remain internal errors.
+
+Twelve focused methods cover strict profile, defaults/atomicity and actual or
+injected file/link/race outcomes. This module imports no developing validator and
+adds no standalone command or discovery capability. Actual `validate` preflight/
+error-only transport is integrated separately on the existing complete-validation
+WIP. Pure SOURCE/MODEL calls and receipt operations gain no hidden config I/O.
+Discovery remains parse-only; this helper is not complete validation certification.

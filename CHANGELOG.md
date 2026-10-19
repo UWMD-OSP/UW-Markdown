@@ -10,6 +10,17 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC0097 selected institution-config admission in the
+  reference CLI and an independent private Python helper: strict UTF8/JSON/
+  decoded-name/Unicode checks, exact lexical selection, atomic three-key mapping
+  and typed operation refusals. Standalone JSON is error-only/exit1; aggregate
+  verification preserves independent branches and omits refused financial work.
+  Synchronize public wire type, Format/Protocol/schema/pointer authority and29
+  paired conformance controls. Existing financial comparisons, pure API maps and
+  receipt config isolation remain unchanged. Config preflight keeps described
+  refusals at exit1 and unexpected adapter defects at exit2. Python discovery stays
+  parse-only; complete validation certification remains separately gated.
+
 - Accept RFC0097 under the owner's2026-10-19 decision at4a31eb3c: two closed
   institution-config operation errors, error-only JSON/exit1, exact lexical
   selection, strict JSON admission and atomic three-key application. Genuine

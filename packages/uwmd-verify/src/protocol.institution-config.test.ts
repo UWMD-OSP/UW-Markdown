@@ -23,12 +23,12 @@ describe('RFC0097 public wire and operation-error boundaries', () => {
     [{ validation_overrides: { dscr_warning_below: null } }, false],
     [{ validation_overrides: { ltv_warning_above: false } }, false],
     [{ validation_overrides: { debt_yield_warning_below: '0.09' } }, false],
-    [{ validation_overrides: { dscr_warning_below: Infinity } }, false],
+    [{ validation_overrides: { dscr_warning_below: Number.POSITIVE_INFINITY } }, false],
   ])('asserts only the accepted minimum wire shape %j', (input, valid) => {
     expect(admit(input)).toBe(valid);
   });
   it('leaves opaque data unassessed and requires separate byte/profile admission', () => {
-    expect(admit({ opaque: Infinity })).toBe(true);
+    expect(admit({ opaque: Number.POSITIVE_INFINITY })).toBe(true);
     expect(admit({ opaque: '\ud800' })).toBe(true);
     expect(configSchema.description).toContain('runtime checks');
     // Schema shape acceptance is not whole-input profile admission. Runtime
