@@ -20,25 +20,17 @@ const PARKVIEW = 'Parkview-Apts-Glendale-AZ.uwx.md';
         </nav>
       </div>
 
-      <aside class="uw-release-card" aria-label="Version summary">
-        <div class="uw-panel-bar">
-          <span>VERSIONS</span>
-          <span class="uw-status uw-status-valid">MIT</span>
-        </div>
-        <h3 class="uw-card-group">Source tree</h3>
+      <aside class="uw-standard-card" aria-label="The standard">
+        <div class="uw-panel-bar"><span>THE STANDARD</span><span class="uw-status uw-status-valid">MIT</span></div>
         <dl>
-          <div><dt>Format</dt><dd><code>v{{ versions.specFormat }}</code></dd></div>
-          <div><dt>Protocol</dt><dd><code>v{{ versions.specProtocol }}</code></dd></div>
-          <div><dt>Core library + CLI</dt><dd><code>v{{ versions.core }}</code></dd></div>
+          <div><dt><a href="/spec/format">Format</a></dt><dd><code>{{ versions.specFormat }}</code></dd></div>
+          <div><dt><a href="/spec/protocol">Protocol</a></dt><dd><code>{{ versions.specProtocol }}</code></dd></div>
+          <div><dt><a href="/spec/receipt">Receipts</a></dt><dd><code>{{ versions.receipt }}</code></dd></div>
+          <div><dt><a href="/spec/metrics/">Metric dictionary</a></dt><dd>JSON</dd></div>
+          <div><dt><a href="/conformance/">Conformance corpus</a></dt><dd>Tests</dd></div>
         </dl>
-        <h3 class="uw-card-group">Latest published release</h3>
-        <dl>
-          <div><dt>Generation</dt><dd><code>v{{ versions.published }}</code></dd></div>
-        </dl>
-        <p>On npm: <span v-for="(name, i) in versions.npm" :key="name"><code>{{ name }}</code><template v-if="i < versions.npm.length - 1"> · </template></span>. Other packages build from source.</p>
-        <p v-if="versions.specFormat !== versions.format || versions.specProtocol !== versions.protocol" class="uw-card-note">The specifications are accepted ahead of the reference implementation, which still reads Format v{{ versions.format }} and Protocol v{{ versions.protocol }}.</p>
-        <p v-if="versions.unpublishedSource" class="uw-card-note">Core v{{ versions.core }} is prepared in source and not yet published.</p>
-        <a href="/about/versions">Version matrix</a>
+        <p>The documents every implementation uses to read and verify a record.</p>
+        <a href="/about/versions">Document and package versions</a>
       </aside>
     </section>
 
@@ -137,7 +129,7 @@ the post-sale value.
           </section>
         </div>
         <div class="uw-file-footer">
-          <span>Authored at format 1.1 · current tools read it unchanged</span>
+          <span>Format 3.0 · excerpt of the complete record</span>
           <span class="uw-file-links">
             <a href="/viewer/">Open in the viewer</a>
             <a :href="`https://www.uwmd.org/editor/?sample=/viewer/samples/${PARKVIEW}`" target="_self">Edit it in the reference editor</a>
@@ -200,35 +192,6 @@ the post-sale value.
       <AiBoundary />
     </section>
 
-    <section class="uw-section" aria-labelledby="capabilities-title">
-      <div class="uw-section-heading uw-section-heading-narrow">
-        <div>
-          <p class="uw-eyebrow">Design commitments</p>
-          <h2 id="capabilities-title">Why a shared record is worth trusting.</h2>
-        </div>
-      </div>
-      <div class="uw-capability-grid uw-capability-grid-3">
-        <article>
-          <span class="uw-index">01</span>
-          <h3>Deterministic calculation</h3>
-          <p>Financial outputs covered by a registered calculation pack or verifier are recomputed rather than accepted because an AI or upstream system stated them. Values outside that coverage remain stated facts in the record. The protocol fixes rounding, so any conforming implementation produces the same quantized values. Where the Excel export covers a metric, the workbook formulas match those values exactly.</p>
-          <a href="/guide/calc-conventions">Calculation conventions</a>
-        </article>
-        <article>
-          <span class="uw-index">02</span>
-          <h3>Portable across tools</h3>
-          <p>The same record converts to UW JSON, UW XML, and a CSV bundle, each with a semantic digest. The CLI and core library ship on npm. A batch indexer flattens a folder of deals into a fact table for DuckDB or a warehouse. The Excel workbook exporter and the PostgreSQL lake adapter are npm packages too.</p>
-          <a href="/guide/tools">Tools and packages</a>
-        </article>
-        <article>
-          <span class="uw-index">03</span>
-          <h3>Verifiable provenance</h3>
-          <p>Edits supersede earlier blocks rather than overwriting them, so the history stays in the file. When you issue a verification receipt, it records that the stated metrics follow from the record under a named pack, and anyone can recompute it offline. Receipts are issued on request, not after every edit. Signing blocks and receipts is a separate, optional capability.</p>
-          <a href="/guide/receipts">Verification receipts</a>
-        </article>
-      </div>
-    </section>
-
     <section class="uw-section uw-try" aria-labelledby="try-title">
       <div class="uw-try-copy">
         <p class="uw-eyebrow">Try it</p>
@@ -255,36 +218,16 @@ the post-sale value.
       </div>
     </section>
 
-    <section class="uw-section uw-ecosystem" aria-labelledby="ecosystem-title">
-      <div class="uw-section-heading">
-        <div>
-          <p class="uw-eyebrow">Standard and starter products</p>
-          <h2 id="ecosystem-title">A normative standard for verification. Free starter tools on top.</h2>
-        </div>
-      </div>
-      <div class="uw-link-columns">
-        <div>
-          <h3 class="uw-column-title">The standard</h3>
-          <div class="uw-link-list">
-            <a href="/spec/format"><span><strong>Format specification</strong><small>Normative structure of a record</small></span><code>v{{ versions.specFormat }}</code></a>
-            <a href="/spec/protocol"><span><strong>Protocol — verification</strong><small>How any party checks a record: Reader and Verifier tiers, optional profiles</small></span><code>v{{ versions.specProtocol }}</code></a>
-            <a href="/spec/metrics/"><span><strong>Metric dictionary</strong><small>The normative definition of every builtin metric</small></span><code>JSON</code></a>
-            <a href="/spec/receipt"><span><strong>Verification receipts</strong><small>An offline, recomputable proof of the arithmetic</small></span><code>spec</code></a>
-            <a href="/spec/bindings/"><span><strong>Representations and bindings</strong><small>UW Lite, XML, CSV, and optional HTTP and MCP profiles</small></span><code>spec</code></a>
-            <a href="/conformance/"><span><strong>Conformance corpus</strong><small>Fixture and expected-output pairs any implementation can run</small></span><code>tests</code></a>
-          </div>
-        </div>
-        <div>
-          <h3 class="uw-column-title">Starter products</h3>
-          <div class="uw-link-list">
-            <a href="/guide/tools"><span><strong>Core library and CLI</strong><small>Parse, validate, calculate, convert, render, and issue receipts</small></span><code>v{{ versions.published }} · npm</code></a>
-            <a href="/guide/calc-conventions"><span><strong>Calc engine and defaults</strong><small>The reference evaluator, packs, and starter assumptions</small></span><code>guide</code></a>
-            <a href="/starter/"><span><strong>Editor, viewer, and Excel</strong><small>Non-normative guidance for the reference tools</small></span><code>guide</code></a>
-            <a href="/guide/data-lake"><span><strong>Portfolio and data lake</strong><small>Index a folder of deals into one fact table, digests intact</small></span><code>guide</code></a>
-            <a href="/ai/"><span><strong>AI agents</strong><small>Instruction files, bounded skills, and the reference agent host</small></span><code>guide</code></a>
-          </div>
-        </div>
-      </div>
+    <section class="uw-section uw-tools-strip" aria-labelledby="tools-title">
+      <h2 id="tools-title">Starter tools · non-normative</h2>
+      <p><code>@uwmd/verify</code> reads and verifies a record on its own. The reference tools help you work with it.</p>
+      <nav aria-label="Starter tools">
+        <a href="/guide/tools">Library and CLI</a>
+        <a href="/starter/">Editor, viewer and Excel</a>
+        <a href="/guide/data-lake">Portfolio and data lake</a>
+        <a href="/ai/">AI instructions and agent host</a>
+        <a href="/guide/receipts">Working with receipts</a>
+      </nav>
     </section>
 
     <section class="uw-section uw-closing" aria-labelledby="closing-title">
