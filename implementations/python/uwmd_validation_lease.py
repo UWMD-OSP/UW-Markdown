@@ -25,6 +25,47 @@ def _money(a, b):
     return finite(a) and finite(b) and quantize(a, 2) == quantize(b, 2)
 
 
+def _co_tenancy_rules(tenant, issue):
+    """Admit this clause in RFC0055 order; independent tenant rules still run."""
+    details, flag = tenant.get("co_tenancy_details"), tenant.get("co_tenancy_clause")
+    if details is not None and flag is not True:
+        issue("LSE-06", "co_tenancy_clause", "Stated co-tenancy details require a true clause flag")
+        return
+    if details is None:
+        if flag is True:
+            issue("LSE-06", "co_tenancy_details", "A true clause flag requires co-tenancy details")
+        return
+    if not isinstance(details, dict):
+        issue("LSE-06", "co_tenancy_details", "Stated co-tenancy details must be an object")
+        return
+    root = "co_tenancy_details."
+    trigger = details.get("trigger")
+    if trigger not in ("named_tenant_departure", "occupancy_threshold", "both"):
+        issue("LSE-07", root + "trigger", "Co-tenancy trigger must use its closed vocabulary")
+        return
+    if trigger in ("named_tenant_departure", "both"):
+        names = details.get("named_cotenants")
+        # RFC0055 requires nonempty strings, not trimmed/nonblank names.
+        if not isinstance(names, list) or not names or any(not isinstance(name, str) or not name for name in names):
+            issue("LSE-07", root + "named_cotenants", "The named trigger requires a nonempty list of nonempty names")
+    if trigger in ("occupancy_threshold", "both"):
+        threshold = details.get("occupancy_threshold")
+        if not finite(threshold) or not 0 < threshold < 1:
+            issue("LSE-07", root + "occupancy_threshold", "The occupancy trigger requires a fraction strictly between zero and one")
+    remedy, value = details.get("remedy"), details.get("remedy_value")
+    if remedy not in ("rent_reduction", "alternate_rent", "termination_right"):
+        issue("LSE-08", root + "remedy", "Co-tenancy remedy must use its closed vocabulary")
+        return
+    if (remedy == "termination_right" and value is not None
+            or remedy == "rent_reduction" and (not finite(value) or not 0 < value <= 1)
+            or remedy == "alternate_rent" and not _nonnegative(value)):
+        issue("LSE-08", root + "remedy_value", "The remedy and its stated value must agree")
+    cure = details.get("cure_period_months")
+    # Unlike termination notice_months, this accepted domain has no safe-integer ceiling.
+    if cure is not None and not _whole(cure):
+        issue("LSE-07", root + "cure_period_months", "Cure period must be a nonnegative whole number of months")
+
+
 def lease_rules(ledger):
     document = ledger.document
     represented = {}
@@ -103,28 +144,7 @@ def lease_rules(ledger):
                                     issue("LSE-05", path, "Penalty component is listed more than once")
                                     break
                                 seen.add(component)
-            details, clause = tenant.get("co_tenancy_details"), tenant.get("co_tenancy_clause")
-            if (details is not None and clause is not True) or (clause is True and not isinstance(details, dict)):
-                issue("LSE-06", "co_tenancy_details", "Co-tenancy flag and details must agree")
-            if isinstance(details, dict):
-                trigger = details.get("trigger")
-                valid = trigger in ("named_tenant_departure", "occupancy_threshold", "both")
-                if trigger in ("named_tenant_departure", "both"):
-                    names = details.get("named_cotenants")
-                    valid = valid and isinstance(names, list) and bool(names) and all(nonblank(x) for x in names)
-                if trigger in ("occupancy_threshold", "both"):
-                    value = details.get("occupancy_threshold")
-                    valid = valid and finite(value) and 0 < value < 1
-                if details.get("cure_period_months") is not None:
-                    valid = valid and _whole(details["cure_period_months"])
-                if not valid:
-                    issue("LSE-07", "co_tenancy_details", "Trigger companions or cure period are invalid")
-                remedy, value = details.get("remedy"), details.get("remedy_value")
-                valid = (remedy == "rent_reduction" and finite(value) and 0 < value <= 1
-                         or remedy == "alternate_rent" and _nonnegative(value)
-                         or remedy == "termination_right" and value is None)
-                if not valid:
-                    issue("LSE-08", "co_tenancy_details.remedy_value", "Remedy and its stated value must agree")
+            _co_tenancy_rules(tenant, issue)
             for original, outstanding in (("ti_allowance_original", "ti_outstanding_balance"), ("lc_original", "lc_outstanding_balance")):
                 a, b = tenant.get(original), tenant.get(outstanding)
                 if ((a is not None and not _nonnegative(a)) or (b is not None and not _nonnegative(b))
