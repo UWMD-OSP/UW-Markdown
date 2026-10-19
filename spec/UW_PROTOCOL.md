@@ -1814,9 +1814,7 @@ For example, from `/work`, `records/link.uwx.md` selects
 `/work/.uw.institution.json`. This accepted directory rule is independent of
 existing document-read semantics; it does not change whether/how the OS follows
 a document link. Tests must distinguish invocation-path and physical-target
-sidecars. The unintegrated Python Path.resolve-based discovery must be aligned
-to this accepted lexical directory choice.
-
+sidecars. 
 A missing automatically selected path is the sole absence/default branch.
 Attempt the read; a genuine not-found outcome for that automatic path means no
 configuration. Access denial, a directory in place of the file, a broken
@@ -1914,10 +1912,9 @@ Allocate exactly these operation errors, both category `validate`:
 These codes do not enter ordinary errors/warnings/issues arrays, change their
 registered severity system or allocate a META/FV fallback. Add operation-error
 documentation/remediation without pretending they are document issue families.
-`ProtocolError`'s existing category/shape remains unchanged. Synchronize its
-pointer comment and the protocol-error schema's pointer description: for these
-two codes the pointer is relative to the selected configuration input, not the
-underwriting document. Existing other codes retain their own pointer authority.
+`ProtocolError`'s existing category/shape remains unchanged. Its pointer comment
+and the protocol-error schema describe these two codes relative to the selected
+configuration input, not the underwriting document. Existing other codes retain their own pointer authority.
 No new pointer syntax or outer filename field is allocated.
 
 Return exactly one primary config error:
