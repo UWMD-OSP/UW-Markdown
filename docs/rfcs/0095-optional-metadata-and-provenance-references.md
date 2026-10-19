@@ -370,8 +370,8 @@ order. Calendar validity does not authenticate or fetch the referenced artifact.
 
 This is a date-only field. Do not reuse RFC0094's T1B timestamp domain, which
 admits year0000 and has time components. Do not tighten unrelated calendar
-fields or call a permissive host string-date parser. Existing day-count helpers
-and a JavaScript `$` anchor alone are not an exact implementation of U3.
+fields or call a permissive host string-date parser. A lexical end anchor alone
+does not establish U3's Gregorian validity and selected year domain.
 
 #### Joint Format, Protocol and schema activation text
 
@@ -412,7 +412,12 @@ Accepted `$defs/MarketReferenceDate` assertion for synchronized activation:
 ```
 
 The final negative lookahead is an absolute end guard, including line
-terminators; an ordinary `$` can match before a final newline in JavaScript.
+terminators. In ECMAScript an unflagged `$` also requires the end of input; a
+match before a line terminator requires multiline mode. See the primary
+[CompileAssertion specification, Assertion :: $, step6](https://tc39.es/ecma262/multipage/text-processing.html#sec-compileassertion).
+This corrects the earlier explanatory claim only: the accepted lookahead patterns,
+predicates, frozen89-reference inventory and date vectors are unchanged, with
+no activation or contract change.
 The regex admits only the selected year/month/day domain, including century
 leap cases. Independent TS/Python vectors and schema-predicate comparisons are
 required below. No governing spec/schema, registry, runtime or frozen expected
