@@ -36,7 +36,7 @@ RFCs0008/0026/0035/0058/0059/0081 and their named schemas. The drafting base is
 main `64c34f3a33685338f9626eada2eb56a49dbd2297` after PR392. Python development evidence is
 `df7831e6d3675881d3f7714da42230c7163da256`; it is not shipped capability evidence.
 A reproducible, bounded observation set is frozen in the existing
-[Issue354 review family](../reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.observations.json).
+[Issue354 review family](https://github.com/UWMD-OSP/UW-Markdown/blob/d8b3601ba7b0d951450503c974a6ce7181893098/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.observations.json).
 Its30 observations are29 synthetic cases plus one unchanged native fixture,
 not a population census,30 newly allocated defects or30 conformance changes.
 The source hashes, exact observed issues, local fields and transport states
@@ -54,7 +54,7 @@ registered issues, but refused to claim a complete validation result:
 | valid equity cash vector and split waterfall, stated_outcomes=false | stated_outcomes | same |
 
 All four returned empty stderr and `partial_validation_result.issues=[]`, and
-left source bytes unchanged. The [read-only reproducer](../reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.repro.py)
+left source bytes unchanged. The [read-only reproducer](https://github.com/UWMD-OSP/UW-Markdown/blob/d8b3601ba7b0d951450503c974a6ce7181893098/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.repro.py)
 extracts the exact WIP from Git into a temporary directory, reuses its authored
 source factories and runs `python -B implementations/python/uwmd.py validate
 <source> --json`. Run it from a checkout containing that commit:
@@ -72,7 +72,7 @@ WIP tests include `test_validation_lease_up.py`,
 `test_validation_lease_up_ownership.py`, `test_validation_optional_shapes.py`
 and `test_validation_refusal_reconciliation.py`.
 
-The [nine TypeScript observations](../reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.ts-observations.json)
+The [nine TypeScript observations](https://github.com/UWMD-OSP/UW-Markdown/blob/d8b3601ba7b0d951450503c974a6ce7181893098/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0096-payload.ts-observations.json)
 were executed against built TS checkpoint4b0e1ae1, whose RFC0095 changes do not
 change these four payload validators. They distinguish actual existing owners
 from the Python WIP's sometimes coarser field attribution. They are not future
@@ -81,7 +81,7 @@ expectations. Main TS `lease-up-structure.ts`, validator
 and the five schemas named below are the reproducible authority comparison.
 
 The wider27-schema audit remains
-[separate evidence](../reviews/2026-10-17-validation-diagnostic-gap-354.formal-audit.json.gz).
+[separate evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/64c34f3a33685338f9626eada2eb56a49dbd2297/docs/reviews/2026-10-17-validation-diagnostic-gap-354.formal-audit.json.gz).
 A schema rejection is not automatically a new validator error. Descriptions,
 defaults and examples are annotations; JSON Schema2020-12's default format
 vocabulary does not automatically assert calendar validity. See
@@ -187,6 +187,14 @@ other shape check. No rent roll, trajectory, occupancy denominator or endpoint
 recomputation is required for LU-05. LU-01 keeps cadence and row-period grammar;
 LU-02 contiguity; LU-03 schedule presence/type/nonempty and target inversion;
 LU-04 remains a missing-rent-roll warning; CC-15 remains endpoint tolerance.
+For a present non-null stabilization_target, assess string type independently
+of cadence. Assess its monthly/quarterly grammar only when current own
+period_granularity is exactly monthly/quarterly. An absent or invalid cadence
+keeps its existing LU-01; do not infer a quarterly default or add a target-grammar
+finding without an admitted declared grammar. A non-string target still receives
+LU-05 independently. Synchronized schema assertions MUST use the same cadence
+eligibility and whole-input ASCII grammar, not an unconditional fallback pattern.
+
 The target grammar allocation above is explicit: WIP Python's LU-01 target
 handling and TS's silently ignored invalid target are implementation evidence,
 not authority to broaden LU-01 implicitly. No calendar/date-time profile is
@@ -208,7 +216,7 @@ existing parent admission owners. Allocate only these additional predicates:
 | recovery_terms.admin_fee_pct | finite [0,1) |
 | recovery_terms.gross_up_pct | finite (0,1] |
 | recovery_terms.cap.over | exactly base_year or prior_year |
-| recovery_terms.cap.accumulation | exactly cumulative, non_cumulative or compounding, only when the invalid stated value is not already owned by REC-02's applicable accumulation predicate |
+| recovery_terms.cap.accumulation | exactly cumulative, non_cumulative or compounding; REC-02 owns the conditional case M and P defined below, otherwise invalid present non-null values receive REC-11 |
 | recovery_true_up[i].pool_actual | finite >=0 |
 | recovery_true_up[i].tenant_share_uncapped | finite >=0 |
 | recovery_true_up[i].tenant_share_capped | finite >=0 |
@@ -232,6 +240,41 @@ wrong companion type/bound (for example base_year=bad with base_year_stop) is
 REC-11; absence/null of the required companion remains REC-02. A coarse WIP
 REC-02 parent finding does not establish ownership of an unrelated child.
 REC-11 does not reallocate or tighten REC-04's accepted calendar contract.
+
+#### Exact cap accumulation ownership and null precedence
+
+For an admitted recovery_terms and cap object, let M mean an own method member
+whose value is not null, and P mean an own cap.pct whose value is not null.
+These are presence predicates, not inferred values or successful enum/number
+admission. Validate method and pct independently under their existing owners.
+
+- If M and P, REC-02 owns accumulation: absent, null or outside the three-string
+  vocabulary gives exactly one REC-02 at cap.accumulation. REC-11 MUST NOT
+  duplicate that same condition. An invalid pct also keeps its independent REC-01.
+- Otherwise accumulation is optional/nullable. Absent/null gives no accumulation
+  finding; a present non-null value outside the vocabulary gives REC-11 once.
+- A present method:null remains its own REC-02 type error under the non-nullable
+  enum/S6 qualification. It does not make M true. Nullable companion nulls neither
+  require a method nor satisfy an actually required companion.
+
+| method | cap | Findings at the named method/pct/accumulation fields |
+|---|---|---|
+| absent | {pct:0.05} | none |
+| absent | {pct:0.05,accumulation:null} | none |
+| absent | {pct:0.05,accumulation:bad} | REC-11 accumulation |
+| absent | {pct:null,accumulation:bad} | REC-11 accumulation |
+| net | {pct:0.05} | REC-02 accumulation |
+| net | {pct:0.05,accumulation:null} | REC-02 accumulation |
+| null | {pct:0.05,accumulation:null} | REC-02 method only |
+| net | {pct:null,accumulation:bad} | REC-11 accumulation |
+| net | {pct:false,accumulation:null} | REC-01 pct; REC-02 accumulation |
+
+This explicitly corrects the current implementation's own-null accumulation
+trigger on a method-absent cap; it does not silently preserve that coarse
+predicate as authority. Synchronized Format/Protocol/schema conditions MUST pin
+M/P and the same null/required boundaries. Neither method nor accumulation is
+invented or defaulted. These are proposed diagnostic dispositions for owner review,
+not a new financial treatment and not activation by this draft.
 
 ### CS-03: capital-stack sizing claims
 
@@ -291,7 +334,10 @@ No claim is generated from an absent leaf, no distribution date/tier is inferred
 and no balance is recomputed. The structural tier integer predicate does not
 add a new index-range or duplicate-cell financial interpretation.
 
-The stated_schedule date predicate is lexical admission only. Its existing
+The stated_schedule date predicate is lexical admission only. Its synchronized
+schema assertion MUST consume the entire ASCII digit/hyphen string, including
+rejection of trailing line endings. Explicit absolute-end guards preserve this
+contract across validator regex engines; no optional format plugin defines it. Its existing
 schema has a digit pattern, no format:date assertion. This RFC does NOT
 transplant RFC0095's as_of Gregorian/year profile, RFC0094's T1B timestamp or
 REC-04's separate date owner. A date-shaped impossible calendar value's
@@ -306,7 +352,9 @@ before CC-16 coverage-summary output, remediation enrichment and result
 partitioning. It MUST preserve all existing checks' relative order. Within
 this pass use LU-05, REC-11, CS-03, WF-16 family order. Visit an unlabelled entry
 as one current block; for maps visit every current variant in Unicode code-point
-key order. Component names use the same ordering. Do not select only base or
+key order. Admitted component-class keys use the same ordering, only under the existing
+mixed_use and declared component-class eligibility of Format4.23; an unknown
+component key or opaque nested object does not create a new traversal scope. Do not select only base or
 primary. This pass does not resort the preexisting issue array.
 
 Within LU use model_type, stabilization_target, assumptions, schedule,
@@ -405,7 +453,7 @@ validation's entire capability gate is proven.
 
 ## Reference implementation
 
-Follow acceptance with synchronized Format/Protocol/schema annotations and
+Follow acceptance with synchronized Format/Protocol/schema assertions and annotations, and
 registry/remediation entries in one reviewed TS/Python implementation PR.
 Likely runtime locations are `packages/uwmd-verify/src/validator.ts`, its fixed
 payload helpers and Python's `uwmd_validation_lease_up.py` /
