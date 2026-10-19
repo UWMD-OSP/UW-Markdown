@@ -2181,5 +2181,5 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   } else {
     console.error(err);
   }
-  process.exit(1);
+  process.exit(err instanceof Error && typeof (err as { code?: unknown }).code === 'string' ? 1 : 2);
 });

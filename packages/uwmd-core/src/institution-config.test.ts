@@ -28,20 +28,20 @@ describe('RFC0097 whole-byte and whole-JSON profile', () => {
     [0xf4, 0x90, 0x80, 0x80], [0xe2, 0x82], [0x7b, 0x22, 0xff, 0x22, 0x3a, 0x31, 0x7d],
   ])('refuses BOM/invalid UTF8 bytes (%#)', octets => refusal(() => parseInstitutionThresholds(Uint8Array.from(octets))));
   it.each([
-    '{"a":1,"a":2}', '{"a":1,"\u0061":2}', '{"opaque":[{"x":1,"x":2}]}',
-    '{"validation_overrides":{"dscr_warning_below":1,"\u0064scr_warning_below":2}}',
+    '{"a":1,"a":2}', String.raw`{"a":1,"\u0061":2}`, '{"opaque":[{"x":1,"x":2}]}',
+    String.raw`{"validation_overrides":{"dscr_warning_below":1,"\u0064scr_warning_below":2}}`,
     '{"opaque":{"nested":{"a":1,"a":2}}}',
   ])('refuses decoded duplicate names in every object (%#)', text => refusal(() => parse(text)));
   it.each([
-    '{"opaque":"\ud800"}', '{"opaque":"\udfff"}', '{"\ud800":1}',
-    '{"opaque":["\ud800","\udc00"]}', '{"opaque":"\ud800x"}',
-    '{"thresholds":null,"opaque":"\ud800"}',
+    String.raw`{"opaque":"\ud800"}`, String.raw`{"opaque":"\udfff"}`, String.raw`{"\ud800":1}`,
+    String.raw`{"opaque":["\ud800","\udc00"]}`, String.raw`{"opaque":"\ud800x"}`,
+    String.raw`{"thresholds":null,"opaque":"\ud800"}`,
   ])('whole Unicode profile precedes shape (%#)', text => refusal(() => parse(text)));
   it.each([
-    '{}', ' \r\n\t{}\t\r\n ', '{"opaque":1e309}', '{"opaque":"\ud83d\ude00"}',
-    '{"opaque":"😀"}', '{"opaque":"\ufffd\uffff\ufeff"}', '{"opaque":"\u0000"}',
-    '{"a":{"x":1},"b":{"x":2}}', '{"é":1,"e\u0301":2}',
-    '{"opaque":"escaped quote \\" braces {} colon: [ ]"}',
+    '{}', ' \r\n\t{}\t\r\n ', '{"opaque":1e309}', String.raw`{"opaque":"\ud83d\ude00"}`,
+    '{"opaque":"😀"}', String.raw`{"opaque":"\ufffd\uffff\ufeff"}`, String.raw`{"opaque":"\u0000"}`,
+    '{"a":{"x":1},"b":{"x":2}}', String.raw`{"é":1,"e\u0301":2}`,
+    JSON.stringify({ opaque: 'escaped quote " braces {} colon: [ ]' }),
     '{"nested":{"validation_overrides":null,"thresholds":true}}',
     '{"validation_overrides":{"unknown":1e309,"nested":{"dscr_warning_below":null}}}',
   ])('admits opaque data without normalization or accidental application (%#)', text => expect(parse(text)).toBeUndefined());
