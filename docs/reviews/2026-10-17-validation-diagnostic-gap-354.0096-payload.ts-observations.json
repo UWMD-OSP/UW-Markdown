@@ -1,0 +1,58 @@
+[
+  {
+    "case": "REC null method alone",
+    "issues": [
+      {
+        "code": "REC-02",
+        "field": "tenants[0].recovery_terms.method"
+      }
+    ]
+  },
+  {
+    "case": "REC null non-cap companion",
+    "issues": [
+      {
+        "code": "REC-02",
+        "field": "tenants[0].recovery_terms.method"
+      }
+    ]
+  },
+  {
+    "case": "REC unknown method",
+    "issues": [
+      {
+        "code": "REC-02",
+        "field": "tenants[0].recovery_terms.method"
+      }
+    ]
+  },
+  {
+    "case": "REC invalid cap accumulation",
+    "issues": [
+      {
+        "code": "REC-02",
+        "field": "tenants[0].recovery_terms.cap.accumulation"
+      }
+    ]
+  },
+  {
+    "case": "REC invalid cap over",
+    "issues": []
+  },
+  {
+    "case": "REC wrong base_year type",
+    "issues": []
+  },
+  {
+    "case": "REC admin_fee_pct string",
+    "issues": []
+  },
+  {
+    "case": "LU invalid scalar target",
+    "issues": []
+  },
+  {
+    "case": "LU unknown model_type",
+    "issues": []
+  }
+]
