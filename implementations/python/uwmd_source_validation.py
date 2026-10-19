@@ -9,6 +9,7 @@ import re
 
 from uwmd_source_lifecycle import source_superseded
 from uwmd_numeric import calendar_date
+from uwmd_metadata_admission import _optional_predicates, _reference_predicates
 
 
 SOURCE_NAMESPACES = ("agent", "document", "system", "institution")
@@ -116,6 +117,21 @@ def _metadata_leaf_predicates(body):
     return tuple(failed)
 
 
+def _metadata_optional_predicates(body):
+    meta = body["_meta"] if "_meta" in body and not _metadata_routing(body) else None
+    return _optional_predicates(body, meta)
+
+
+def _metadata_reference_predicates(body):
+    if "_meta" not in body or _metadata_routing(body):
+        return []
+    meta = body["_meta"]
+    provenance = meta["provenance"]
+    source = provenance.get("source")
+    agent = "source" in provenance and source_code(source) is None and source.startswith("agent/")
+    return _reference_predicates(body, meta, agent_source=agent)
+
+
 def inspect_source_roles(document):
     """Assess the current canonical Document model; raw bytes are not authority."""
     return _inspect_source_roles(document)
@@ -201,6 +217,20 @@ def _inspect_source_roles(document, *, _source_order=False):
                 field=field, message=message,
                 remediation="State the actual " + field + " using its admitted value; do not infer or repair it.",
                 context=copy.deepcopy(context)))
+    # RFC0095 complete optional and reference passes precede old role/SRC.
+    # Sibling overrides remain assessable even beneath rejected metadata.
+    for code, predicate in (("META-05", _metadata_optional_predicates),
+                            ("META-06", _metadata_reference_predicates)):
+        checked = set()
+        for index, block in enumerate(snapshot.source.blocks):
+            if id(block) in checked:
+                continue
+            checked.add(id(block))
+            for field, message in predicate(block.parsed.value):
+                result["issues"].append(dict(code=code, severity="error", section=block.section,
+                    field=field, message=message,
+                    context=dict(block_index=index, variant=dict(block.attributes).get("variant"),
+                                 body_byte_start=block.body_span.start, body_byte_end=block.body_span.end)))
     for index, block in enumerate(snapshot.source.blocks):
         if source_superseded(block):
             result["history_blocks_skipped"] += 1
@@ -263,9 +293,13 @@ def _inspect_source_roles(document, *, _source_order=False):
                 for field in ("human_review_required", "partial", "provisional"):
                     if (field == "human_review_required" or field in quality) and not isinstance(quality.get(field), bool):
                         shape("_meta.quality." + field, "A boolean is required.")
-                if "flags" in quality and (not isinstance(quality["flags"], list)
-                        or any(not isinstance(flag, str) for flag in quality["flags"])):
-                    shape("_meta.quality.flags", "An array of strings is required.")
+                if "flags" in quality:
+                    if not isinstance(quality["flags"], list):
+                        shape("_meta.quality.flags", "An array of strings is required.")
+                    else:
+                        for flag_index, flag in enumerate(quality["flags"]):
+                            if not isinstance(flag, str):
+                                shape("_meta.quality.flags[" + str(flag_index) + "]", "A string flag is required.")
                 if "field_overrides" in quality:
                     shape("_meta.quality.field_overrides", "Per-field annotations belong only in top-level _overrides.")
             lifecycle = meta.get("lifecycle")
