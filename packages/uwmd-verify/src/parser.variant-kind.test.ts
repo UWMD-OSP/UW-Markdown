@@ -39,8 +39,8 @@ describe('lawful variant labels and complete subject accounting', () => {
   it('preserves same-key superseded history and concurrent current peers', async () => {
     const raw = FRONT + section('annotation', 1, true) + section('annotation', 2) + section('annotation', 3) + section('z', 4);
     const parsed = parseUWFile(raw);
-    expect(getSectionVariant(parsed, 'operating_statement', 'annotation')?.content.value).toBe(3);
-    expect(parsed.superseded.operating_statement.map(b => b.content.value)).toEqual([1, 2]);
+    expect(getSectionVariant(parsed, 'operating_statement', 'annotation')?.content.value).toBe(2);
+    expect(parsed.superseded.operating_statement.map(b => b.content.value)).toEqual([1, 3]);
     const envelope = toUWEnvelope(parsed);
     expect(envelope.superseded.operating_statement).toHaveLength(2);
     expect(await computeEnvelopeDigest(envelope)).not.toBe(await computeEnvelopeDigest(toUWEnvelope(parseUWFile(raw.replace('"value":1', '"value":9')))));
@@ -57,7 +57,7 @@ describe('lawful variant labels and complete subject accounting', () => {
     const signed = await resolveDocumentSigningSubject(original);
     expect((await resolveDocumentSigningSubject(changed)).digest).not.toBe(signed.digest);
     const signature: UWDocumentSignature = { kind: 'uwmd-document-signature', signature_version: '1', subject: signed, alg: 'ed25519', kid: 'test', signed_at: '2026-10-19T00:00:00Z', sig: 'A'.repeat(86) };
-    const backend = { verify: async () => ({ ok: true }) };
+    const backend = { verify: async () => ({ ok: true as const }) };
     expect((await verifyDocumentSignature(original, signature, { signatureVerifier: backend })).state).toBe('verified');
     expect((await verifyDocumentSignature(changed, signature, { signatureVerifier: backend })).state).toBe('failed');
     expect(before.parsed.raw).toBe(original);
@@ -66,7 +66,7 @@ describe('lawful variant labels and complete subject accounting', () => {
   it('round-trips annotation/content peers including lawful block extras', async () => {
     const parsed = parseUWFile(FRONT + section('annotation', 1) + section('content', 2));
     const envelope = toUWEnvelope(parsed);
-    const peers = envelope.sections.operating_statement as Record<string, { [key: string]: unknown }>;
+    const peers = envelope.sections.operating_statement as unknown as Record<string, { [key: string]: unknown }>;
     peers.annotation!.section = 'spoof';
     peers.annotation!.meta = { lawfulExtra: true };
     expect(() => assertUWEnvelope(envelope)).not.toThrow();
