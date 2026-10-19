@@ -1,10 +1,12 @@
-"""Independent, incomplete Python numeric kernel from Protocol VIII.5/9.1.
+"""Independent Python reporting and calendar helpers from Protocol VIII.5/9.1.
 
 This is not a Reader/Verifier or a claimed implementation of calc-evaluate.
 No TypeScript imports, subprocesses, reference output lookup, or dependencies.
 """
 
 import math
+
+from uwmd_jcs import _number as _binary64_decimal
 
 
 def quantize(value, places):
@@ -17,8 +19,9 @@ def quantize(value, places):
     if isinstance(value, bool) or not isinstance(value, (float, int)) or not math.isfinite(value):
         raise ValueError("CALC-TYPE-001")
     value = float(value)
-    # repr is Python's shortest round-tripping decimal, not Decimal.from_float.
-    coefficient, _, exponent = repr(abs(value)).lower().partition("e")
+    # Use the existing exact rational shortest-decimal selector. Python repr
+    # is not the protocol's ECMAScript decimal identity. No JCS contract changes.
+    coefficient, _, exponent = _binary64_decimal(abs(value)).lower().partition("e")
     shifted = float(coefficient + "e" + str(int(exponent or 0) + places))
     if not math.isfinite(shifted) or shifted > 9007199254740991:
         return 0.0 if value == 0 else value
