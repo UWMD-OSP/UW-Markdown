@@ -222,11 +222,12 @@ class ValidationProvenanceTests(unittest.TestCase):
         source_issues=inspect_source_roles(parsed)["issues"]
         self.assertEqual(result["issues"][:len(source_issues)],source_issues)
         self.assertEqual([(i["code"],i["field"]) for i in source_issues],
-            [("META-01","_meta"),("META-01","_meta.provenance.actor"),
-             ("ROLE-01","_role"),("SRC-01","_meta.provenance.source")])
+            [("META-01","_meta"),("META-01","_meta"),("META-01","_meta.section"),
+             ("META-01","_meta.provenance.actor"),("ROLE-01","_role"),
+             ("SRC-01","_meta.provenance.source")])
         self.assertEqual(sum(i["code"]=="META_MISSING" for i in result["issues"]),1)
         self.assertNotIn("_meta.provenance.actor",local_fields(result))
-        self.assertTrue({"_meta","_meta.section"} <= set(local_fields(result)))
+        self.assertFalse({"_meta","_meta.section"} & set(local_fields(result)))
         self.assertEqual(result["errors"],[i for i in result["issues"] if i["severity"]=="error"])
         self.assertEqual(parsed,before)
 
