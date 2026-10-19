@@ -37,6 +37,24 @@ describe('lawful variant labels and complete subject accounting', () => {
     expect(() => validateUWFile(parsed)).not.toThrow();
     expect(parsed.raw).toBe(raw);
   });
+  it.each(['toString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf'].flatMap(variant =>
+    [false, true].map(reverse => ({ variant, reverse }))))('keeps own prototype-named variant $variant in both source orders (reverse=$reverse)', async ({ variant, reverse }) => {
+    const peers = [section('annotation', 111), section(variant, 222)];
+    const raw = FRONT + (reverse ? peers.reverse() : peers).join('');
+    const parsed = parseUWFile(raw);
+    expect(Object.keys(parsed.sections.operating_statement).sort()).toEqual(['annotation', variant].sort());
+    expect(getSectionVariant(parsed, 'operating_statement', variant)?.content.value).toBe(222);
+    expect(resolveSectionBlock(parsed, 'operating_statement', { sectionVariants: { operating_statement: variant } })?.content.value).toBe(222);
+    expect(parsed.superseded).toEqual({});
+    const changed = raw.replace('"value":222', '"value":223');
+    expect((await resolveReceiptSubject(changed)).subject.digest).not.toBe((await resolveReceiptSubject(raw)).subject.digest);
+    expect((await resolveDocumentSigningSubject(changed)).digest).not.toBe((await resolveDocumentSigningSubject(raw)).digest);
+    const duplicated = parseUWFile(raw + section(variant, 333));
+    expect(getSectionVariant(duplicated, 'operating_statement', variant)?.content.value).toBe(222);
+    expect(duplicated.superseded.operating_statement.map(block => block.content.value)).toEqual([333]);
+    await expect(resolveDocumentSigningSubject(raw + section(variant, 333))).rejects.toThrow(/Duplicate active/);
+    expect(parsed.raw).toBe(raw);
+  });
   it('preserves same-key superseded history and concurrent current peers', async () => {
     const raw = FRONT + section('annotation', 1, true) + section('annotation', 2) + section('annotation', 3) + section('z', 4);
     const parsed = parseUWFile(raw);

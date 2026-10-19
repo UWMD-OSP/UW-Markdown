@@ -528,7 +528,7 @@ function routeBlock(
       result.sections[sectionId] = { [variant]: block };
     } else {
       const variantMap = existing as { [v: string]: UWBlock };
-      const current = variantMap[variant];
+      const current = Object.hasOwn(variantMap, variant) ? variantMap[variant] : undefined;
 
       if (!current) {
         variantMap[variant] = block;
