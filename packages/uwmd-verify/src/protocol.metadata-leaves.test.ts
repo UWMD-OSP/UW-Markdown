@@ -16,7 +16,7 @@ const vectors = rfc.split(/\r?\n/).flatMap(line => {
 // must supply the accepted domain even when the consumer treats format as annotation.
 for (const formats of [false, true]) {
   const ajv = new Ajv2020({ strict: false, validateFormats: formats });
-  if (formats) addFormats(ajv);
+  if (formats) addFormats.default(ajv);
   const validate = ajv.compile(timestamp);
   describe(`RFC0094 schema T1B (format assertions ${formats})`, () => {
     it('matches all60 independently reviewed positive/negative RFC controls', () => {

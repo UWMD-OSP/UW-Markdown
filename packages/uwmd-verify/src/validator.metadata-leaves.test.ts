@@ -28,7 +28,7 @@ const bad = (section = 'property') => {
 };
 const fields = ['_meta.quality.confidence', '_meta.lifecycle.revision', '_meta.provenance.timestamp'];
 const rfc = readFileSync(new URL('../../../docs/rfcs/0094-present-invalid-metadata-leaves.md', import.meta.url), 'utf8');
-const vectors = rfc.split('\n').flatMap(line => {
+const vectors = rfc.split(/\r?\n/).flatMap(line => {
   const m = /^\| ([^|]+) \| `(.*)` \| (admit|META-04) \|$/.exec(line);
   return m ? [{ name: m[1]!, value: JSON.parse(m[2]!) as unknown, expected: m[3]! }] : [];
 });
