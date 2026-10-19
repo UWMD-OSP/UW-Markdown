@@ -14,7 +14,8 @@ from uwmd_replacement_funding import replacement_funding_report
 from uwmd_block_integrity import BlockIntegrityError, verify_block_integrity
 from uwmd_source_validation import _inspect_source_roles_source
 from uwmd_currency import inspect_document_currency
-from uwmd_validation import _validate_source
+from uwmd_validation import _validate_document
+from uwmd_institution_config import _InstitutionConfigError
 from uwmd_validation_selection import ValidationUnavailable
 
 
@@ -155,10 +156,15 @@ def main(arguments):
         try:
             path = Path(tail[0])
             raw=path.read_bytes()
+            # Fatal actual-source admission precedes config preflight. Validate
+            # this fresh parse with SOURCE ordering after admission succeeds.
+            document=parse(raw,filename=path.name)
             from uwmd_institution import load_institution_thresholds
             thresholds=load_institution_thresholds(path,explicit)
             return _validation_response(asyncio.run(
-                _validate_source(raw, filename=path.name,thresholds=thresholds)))
+                _validate_document(document,_source_order=True,thresholds=thresholds)))
+        except _InstitutionConfigError as error:
+            return {"error":error.projection()},1
         except SourceError as error:
             diagnostic = {"message": str(error)}
             if hasattr(error, "code"):
@@ -262,5 +268,11 @@ if __name__ == "__main__":
     value, status = main(sys.argv[1:])
     # ASCII escapes are UTF-8 JSON and preserve parsed Unicode values even
     # when the source carried an escaped lone surrogate. No source is rewritten.
-    print(json.dumps(value, ensure_ascii=True, allow_nan=False))
+    config_error=value.get("error") if isinstance(value,dict) else None
+    human_config_refusal=(sys.argv[1:2]==["validate"] and "--json" not in sys.argv[2:]
+        and isinstance(config_error,dict) and config_error.get("code") in (
+            "VAL-INSTITUTION-CONFIG-UNREADABLE","VAL-INSTITUTION-CONFIG-MALFORMED"))
+    if human_config_refusal:
+        print(config_error["code"]+": "+config_error["message"],file=sys.stderr)
+    else:print(json.dumps(value, ensure_ascii=True, allow_nan=False))
     sys.exit(status)

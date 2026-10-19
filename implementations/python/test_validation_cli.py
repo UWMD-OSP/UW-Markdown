@@ -250,7 +250,7 @@ class ValidationCLITests(unittest.TestCase):
         with patch("uwmd_reader.parse",side_effect=SourceError("Unallocated source refusal")):
             result,status=main(["validate",str(self.path),"--json"])
             self.assertEqual((result,status),({"error":{"message":"Unallocated source refusal"}},1))
-        with patch("uwmd._validate_source",side_effect=ValidationUnavailable("Unallocated selection refusal")):
+        with patch("uwmd._validate_document",side_effect=ValidationUnavailable("Unallocated selection refusal")):
             result,status=main(["validate",str(self.path),"--json"])
             self.assertEqual((result,status),({"error":{"message":"Unallocated selection refusal"}},1))
         # A real duplicate JSON member likewise retains its local source refusal,
@@ -271,7 +271,7 @@ class ValidationCLITests(unittest.TestCase):
         self.assertEqual(main(["validate",str(self.path),"--wrong"])[1],1)
         self.assertEqual(main(["validate",str(self.path.parent/"absent")])[1],2)
         self.path.write_bytes(property_source())
-        with patch("uwmd._validate_source",side_effect=RuntimeError("test failure")):
+        with patch("uwmd._validate_document",side_effect=RuntimeError("test failure")):
             result,status=main(["validate",str(self.path),"--json"])
         self.assertEqual(status,2)
         self.assertNotIn("overall_status",result)
