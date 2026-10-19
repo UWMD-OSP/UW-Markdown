@@ -8,6 +8,17 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Accepted RFC0097 — owner decision2026-10-19 at4a31eb3c.**
+[RFC0097](../rfcs/0097-institution-config-refusal.md) allocates two typed
+validate-operation errors for unreadable/malformed selected configuration,
+error-only JSON/exit1, atomic admission of the three documented overrides and
+automatic-absence defaults. Exact lexical selection, strict JSON/Unicode profile,
+opaque data and config-relative pointer authority are accepted. The docs-only
+acceptance activates no runtime/schema/capability. Synchronized TS/Python,
+Format/Protocol/schema/type and actual CLI conformance follow on Issue354.
+Pure API threshold maps and receipt identity/count/authentication rules remain
+separate; no new financial threshold or comparison is introduced.
+
 **Accepted RFC0096 — owner decision2026-10-19 at1926efe4.**
 [RFC0096](../rfcs/0096-bounded-stated-payload-admission.md) allocates closed
 LU-05/REC-11/CS-03/WF-16 validation-only errors. The owner accepted all six
