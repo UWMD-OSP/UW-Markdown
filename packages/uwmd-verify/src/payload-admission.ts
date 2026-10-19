@@ -35,7 +35,7 @@ function optionalObject(o: Obj, k: string, emit: Emit, visit: (child: Obj, at: s
   if (!own(o, k) || o[k] === null) return;
   if (!object(o[k])) emit(at + k); else visit(o[k], at + k + '.');
 }
-function blocks(parsed: ParsedUWFile, section: string): Array<[string | null, UWBlock]> {
+export function currentPayloadBlocks(parsed: ParsedUWFile, section: string): Array<[string | null, UWBlock]> {
   if (!own(parsed.sections, section)) return [];
   const entry = parsed.sections[section];
   if (!object(entry)) return [];
@@ -85,7 +85,7 @@ function recovery(o: Obj, emit: Emit): void {
   const tenants = value(o, 'tenants'); if (!Array.isArray(tenants)) return;
   for (const [i, tenant] of tenants.entries()) {
     if (!object(tenant)) continue;
-    optionalObject(tenant, 'recovery_terms', () => {}, (t, ignored) => {
+    optionalObject(tenant, 'recovery_terms', () => {}, t => {
       const at = `tenants[${i}].recovery_terms.`;
       leaf(t, 'share_basis', enumeration('nra', 'gla', 'stated'), emit, at);
       leaf(t, 'base_year', integer, emit, at);
@@ -164,8 +164,8 @@ export function checkPayloadAdmission(parsed: ParsedUWFile, issues: ValidationMe
     ['lease_up_schedule', 'LU-05', leaseUp], ['rent_roll', 'REC-11', recovery],
     ['capital_stack', 'CS-03', sizing], ['distribution_waterfall', 'WF-16', waterfall],
   ] as const) {
-    for (const [variant, block] of blocks(parsed, section)) visit(block.content, emitter(issues, code, section, variant));
-    if (code === 'CS-03' && parsed.frontmatter.asset_class === 'mixed_use') for (const [variant, block] of blocks(parsed, 'components')) {
+    for (const [variant, block] of currentPayloadBlocks(parsed, section)) visit(block.content, emitter(issues, code, section, variant));
+    if (code === 'CS-03' && parsed.frontmatter.asset_class === 'mixed_use') for (const [variant, block] of currentPayloadBlocks(parsed, 'components')) {
       for (const key of Object.keys(block.content).filter(k => componentClasses.has(k)).sort(compare)) {
         const component = block.content[key];
         if (!object(component) || value(component, 'component_class') !== key || !own(component, 'capital_stack') || !object(component.capital_stack)) continue;
