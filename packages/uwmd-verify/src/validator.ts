@@ -3612,7 +3612,6 @@ export function checkDataQuality(
 
     for (const block of blocks) {
       const quality = block.meta?.quality;
-      const provenance = block.meta?.provenance;
       const overrides = blockOverrides(block);
 
       // DQ-01: provisional block not in gaps

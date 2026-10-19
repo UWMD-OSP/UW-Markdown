@@ -115,7 +115,7 @@ describe('RFC0095 conditional agent and reference carriers', () => {
     expect(findings(reference({ inherited_from: { ...inherited(), opaque: null }, market_data_ref: { ...market(), opaque: [] } }))).toEqual([]);
     for (const distance of [1, 1.0, 9007199254740992, Number.MAX_VALUE]) expect(findings(reference({ inherited_from: { ...inherited(), distance } }))).toEqual([]);
     for (const distance of [0, -1, 1.5, true, '1', null]) expect(fields(reference({ inherited_from: { ...inherited(), distance } }), 'META-06')).toEqual(['_meta.provenance.inherited_from.distance']);
-    for (const digest of ['sha256:' + 'a'.repeat(64) + '\n', 'sha256:' + 'A'.repeat(64), 'sha256:' + 'a'.repeat(63), '', null]) {
+    for (const digest of [`sha256:${'a'.repeat(64)}\n`, `sha256:${'A'.repeat(64)}`, `sha256:${'a'.repeat(63)}`, '', null]) {
       expect(fields(reference({ inherited_from: { ...inherited(), digest }, market_data_ref: { ...market(), digest } }), 'META-06')).toEqual(['_meta.provenance.inherited_from.digest', '_meta.provenance.market_data_ref.digest']);
     }
     expect(fields(reference({ market_data_ref: { document_id: null, as_of: false, digest: 'bad', rationale: null } }), 'META-06')).toEqual(['document_id', 'as_of', 'digest', 'rationale'].map(x => `_meta.provenance.market_data_ref.${x}`));
@@ -196,7 +196,7 @@ describe('RFC0095 physical/model/source order and result boundaries', () => {
   });
   it('accounts for actual consumed parts before synthesized model refs, excluding loaded unused parts', () => {
     const root = header + fence('rent_roll', { _meta: { ...meta('rent_roll'), quality: { ...meta('rent_roll').quality, flags: false } }, external: { parts: ['p1'], collection_key: 'unit_id', collection_path: 'units', part_count: 1 } }, 'external=true');
-    const part = (id: string) => `---\nuw_version: "3.0"\nuwpart_version: "1.0"\npart_id: ${id}\nsection: rent_roll\ncollection_member: true\n---\n` + fence('rent_roll', { _meta: bad('rent_roll'), unit_id: id });
+    const part = (id: string) => `---\nuw_version: "3.0"\nuwpart_version: "1.0"\npart_id: ${id}\nsection: rent_roll\ncollection_member: true\n---\n${fence('rent_roll', { _meta: bad('rent_roll'), unit_id: id })}`;
     const result = validateUWFile(root, undefined, { parts: [part('p1'), part('unused')] });
     expect(result.issues.filter(i => i.code === 'META-05').map(i => i.field)).toEqual(['_meta.quality.flags', '_meta.provenance.notes', '_meta.quality.flags']);
     expect(result.issues.filter(i => i.code === 'META-06').map(i => i.field)).toEqual(['_meta.provenance.agent_id']);
