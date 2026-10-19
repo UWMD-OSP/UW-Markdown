@@ -51,7 +51,7 @@ export function currentPayloadBlocks(parsed: ParsedUWFile, section: string): Arr
     const lifecycle = object(meta) ? value(meta, 'lifecycle') : undefined;
     const historical = object(lifecycle) && value(lifecycle, 'superseded') === true;
     if (historical || value(block.annotation, 'superseded') === true) return false;
-    if (!own(block.content, 'external')) return true;
+    if (value(block.annotation, 'external') !== true || !own(block.content, 'external')) return true;
     try { return readExternalDirective(block) === null; }
     catch (error) {
       if (!(error instanceof CompositionError)) throw error;
