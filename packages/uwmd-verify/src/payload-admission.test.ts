@@ -128,6 +128,12 @@ describe('RFC0096 current SOURCE/MODEL scope and full pass ordering', () => {
     expect(issues.map(i => i.field)).toEqual(['model_type','assumptions']);
     expect(issues[0].message).toContain('variant "annotation"');
   });
+  it('does not treat an inherited external directive as current MODEL authority', () => {
+    const parsed = parseUWFile(doc('lease_up_schedule', lu({ model_type: false })));
+    const block = getSectionVariant(parsed, 'lease_up_schedule', 'default')!;
+    Object.setPrototypeOf(block.content, { external: { parts: ['missing'], part_count: 1 } });
+    expect(validateUWFile(parsed).issues.filter(i => codes.has(i.code)).map(i => i.field)).toEqual(['model_type']);
+  });
   it('does not let null/false/malformed external members hide independent payload errors', () => {
     for (const external of [null, false, {}, { parts: [], part_count: 0 }]) {
       expect(fields('lease_up_schedule', lu({ model_type: false, external }))).toEqual(['model_type','external']);
