@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // .uw.md parser — extracts frontmatter, section blocks, prose, and pipeline log
 // Spec: UW_FORMAT_SPEC.md §2.4 (annotation syntax), §2.7 (update semantics), §2.8 (multi-variant)
 
@@ -577,7 +578,7 @@ function routeBlock(
 function isMultiVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
   // A UWBlock has annotation, meta, content — a variant map has string keys pointing to blocks
-  return !('annotation' in (val as object));
+  return !hasBlockShape(val);
 }
 
 // ─── Convenience: get current block for a section ─────────────────────────────

@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // UW Document Envelope — format-neutral semantic model shared by machine codecs.
 
 import { canonicalize } from './integrity-canonical.js';
@@ -238,7 +239,7 @@ export function assertUWEnvelope(value: unknown): asserts value is UWDocumentEnv
     throw new UWEnvelopeError('ENVELOPE_MISSING_SECTIONS', 'sections must be an object.');
   }
   for (const [sectionId, entry] of Object.entries(value['sections'])) {
-    if (isRecord(entry) && 'annotation' in entry) {
+    if (hasBlockShape(entry)) {
       assertEnvelopeBlock(entry, `sections.${sectionId}`);
       continue;
     }
@@ -340,7 +341,7 @@ function fromEnvelopeBlock(block: UWEnvelopeBlock, pointer: string): UWBlock {
 }
 
 function isVariantMap(entry: UWEnvelopeSectionEntry | ParsedSections[string]): boolean {
-  return isRecord(entry) && !('annotation' in entry);
+  return isRecord(entry) && !hasBlockShape(entry);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

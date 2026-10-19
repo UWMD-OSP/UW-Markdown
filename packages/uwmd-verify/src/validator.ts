@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 import { pinnedPow } from './calc/pinned-numerics.js';
 import { checkBuiltinClassContent } from './builtin-class-validation.js';
 import { isScenarioId } from './scenario.js';
@@ -3567,7 +3568,7 @@ function checkScopeReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]):
 
 function isVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
-  return !('annotation' in (val as object));
+  return !hasBlockShape(val);
 }
 
 // ─── DQ-01..03 / DQ-05: data quality checks ──────────────────────────────────

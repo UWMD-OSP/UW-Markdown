@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // RFC 0047: read-only inventory for the RFC 0045 property cash-flow handoff.
 // This module reports source shape and required plan dimensions. It never
 // assigns economics, dates, categories, zeros, or assertions.
@@ -34,12 +35,11 @@ export interface PropertyCashFlowInputInventory {
   notes: string[];
 }
 
-const own = (value: object, key: string): boolean => Object.prototype.hasOwnProperty.call(value, key);
 const isObject = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
 
 function isBlock(value: unknown): value is UWBlock {
-  return isObject(value) && own(value, 'annotation') && own(value, 'content');
+  return hasBlockShape(value);
 }
 
 function blocks(parsed: ParsedUWFile, section: string): UWBlock[] {

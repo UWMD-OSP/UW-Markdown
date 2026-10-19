@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 import type {
   UWDocumentEnvelope,
   UWEnvelopeBlock,
@@ -755,7 +756,7 @@ function sortObject(value: unknown): unknown {
 }
 
 function isEnvelopeBlock(value: UWEnvelopeSectionEntry): value is UWEnvelopeBlock {
-  return isRecord(value) && 'annotation' in value && 'content' in value;
+  return hasBlockShape(value);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
