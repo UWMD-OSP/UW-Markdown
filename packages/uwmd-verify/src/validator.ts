@@ -3143,6 +3143,35 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
       }
     }
   }
+  // Accepted leaf counterparts (Format2.5g/RFC0031): assess own annotation
+  // assertions across the retained/current identity union. Canonical SRC
+  // admission/population above stays unchanged; these findings name the leaf.
+  for (const [section, block] of metadataReferences(parsed)) {
+    if (!Object.hasOwn(block.content, '_overrides') || !Array.isArray(block.content['_overrides'])) continue;
+    const overrides = block.content['_overrides'];
+    for (let index = 0; index < overrides.length; index++) {
+      const override = overrides[index];
+      if (!metaObject(override)) continue; // META-05 owns the entry shape.
+      const path = `_overrides[${index}]`;
+      if (Object.hasOwn(override, 'source')) {
+        const value = override.source;
+        if (typeof value === 'string' && RESOLUTION_TAG_SET.has(value)) {
+          issues.push({ code: 'SRC-02', severity, section, field: `${path}.source`,
+            message: `Block ${path}.source is a resolution tag in the actor field.` });
+        } else {
+          const actor = typeof value === 'string' ? parseActorSource(value) : { kind: 'invalid' as const };
+          const valid = actor.kind === 'manual' || (actor.kind === 'namespaced' && value === `${actor.namespace}/${actor.id}`);
+          if (!valid) issues.push({ code: 'SRC-01', severity, section, field: `${path}.source`,
+            message: `Block ${path}.source must be manual or an exact registered <namespace>/<id> actor.` });
+        }
+      }
+      if (Object.hasOwn(override, 'resolution') && !(typeof override.resolution === 'string' && RESOLUTION_TAG_SET.has(override.resolution))) {
+        issues.push({ code: 'SRC-03', severity, section, field: `${path}.resolution`,
+          message: `Block ${path}.resolution is outside the closed resolution vocabulary.` });
+      }
+    }
+  }
+
 }
 
 // ─── META-01: the one block shape (Format §2.4–§2.5, RFC 0081 §3) ───────────
