@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept RFC0095 under the owner's2026-10-18 decision atc551e956: closed
+  META-05/06 allocations, readiness-only DQ-06/info, symmetric stated-assertion
+  reference triggers and strict Gregorian date-only as_of admission. Freeze the
+  reviewed89-reference activation baseline and independent TS/Python calendar
+  controls. Documentation only; synchronized implementation follows on Issue354.
+  No live schema, conformance expectation, capability or release change.
+
 - Implement accepted RFC0094 in TypeScript and Python: META-04/error for exactly
   present-invalid canonical confidence, revision and exact T1B UTC-Z timestamps.
   Preserve absence warnings, META-01/02/03, physical/model source accounting and

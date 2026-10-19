@@ -1,0 +1,72 @@
+{
+  "observer": "Independent root observer; separate code, fresh exact-base parser, no candidate activation",
+  "base": "fa9a9ea37d31b918f5993eae4276b159f31719f3",
+  "inputs": 880,
+  "parsed": 816,
+  "lite": 55,
+  "refused": [
+    {
+      "path": "conformance/documents/malformed/11-yaml-flow-mapping.uwx.md",
+      "code": "UNSUPPORTED_YAML_FEATURE"
+    },
+    {
+      "path": "conformance/documents/malformed/12-yaml-flow-sequence.uwx.md",
+      "code": "UNSUPPORTED_YAML_FEATURE"
+    },
+    {
+      "path": "conformance/documents/malformed/13-yaml-invalid-escape.uwx.md",
+      "code": "UNSUPPORTED_YAML_FEATURE"
+    },
+    {
+      "path": "conformance/documents/malformed/14-yaml-unquoted-anchor.uwx.md",
+      "code": "UNSUPPORTED_YAML_FEATURE"
+    },
+    {
+      "path": "conformance/documents/malformed/15-uw-version-1-1.uwx.md",
+      "code": "UNSUPPORTED_FORMAT_VERSION"
+    },
+    {
+      "path": "conformance/documents/malformed/16-uw-version-2-0.uwx.md",
+      "code": "UNSUPPORTED_FORMAT_VERSION"
+    },
+    {
+      "path": "conformance/documents/malformed/17-uw-version-2-1.uwx.md",
+      "code": "UNSUPPORTED_FORMAT_VERSION"
+    },
+    {
+      "path": "conformance/documents/malformed/18-uw-version-4-0.uwx.md",
+      "code": "UNSUPPORTED_FORMAT_VERSION"
+    },
+    {
+      "path": "conformance/documents/malformed/19-uw-version-absent.uwx.md",
+      "code": "UNSUPPORTED_FORMAT_VERSION"
+    }
+  ],
+  "physical": 2238,
+  "current": 2149,
+  "new_references": 89,
+  "new_source_count": 49,
+  "new_parent_admitted": 87,
+  "triggers": [
+    {
+      "path": "conformance/market-data/promote/explicit/deal-after-promotion.uwx.md",
+      "line": 9,
+      "tag": "market_data_accepted",
+      "ref": "market_data_ref",
+      "present": true,
+      "value": {
+        "document_id": "md:phx:2026-Q2",
+        "as_of": "2026-06-30",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "rationale": "No comparable trades in the immediate submarket."
+      }
+    }
+  ],
+  "node": "v24.14.1",
+  "platform": "win32",
+  "source_hashes_equal": 880,
+  "newly_assessed_rows_equal": 89,
+  "source_manifest_sha256": "27fdd1be85ad3417ebcadd11327bd1038e9dc9a9387e197dff18a5a99d9e7232",
+  "newly_rows_sha256": "8fc794f77bf74939cb611edab0cc9f07165ce73a9bb314f778cb088bcdebdcf5",
+  "observed_market_ref_U3_valid": true
+}
