@@ -393,10 +393,11 @@ three-key mapping, exact config errors and lexical selection. The existing
 aggregate wrapper reports `validation: { error: ProtocolError }`, `ok: false`,
 omits replacement-funding/stated-metric results for that refused branch, and
 retains requested independent integrity/provenance operations. No new aggregate
-flag or receipt config loading is introduced. The global CLI catch now exits1
-for its already-coded refusal class and2 for uncoded internal defects, matching
-its existing classification and Protocol II.6a; actual injected-error controls
-pin this distinction.
+flag or receipt config loading is introduced. Config preflight reports described
+refusals at exit1 and unexpected adapter defects at exit2, with actual injected
+error controls for standalone and aggregate calls. The existing global CLI catch
+is unchanged: broader unrelated input-refusal classification is not altered by
+this bounded adapter.
 
 The independent main-safe Python module uses only the standard library. Its
 numeric tokens preserve opaque overflow spellings without coercion; only recognized
