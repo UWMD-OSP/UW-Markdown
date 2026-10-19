@@ -88,13 +88,21 @@ class RefusalReconciliationTests(unittest.TestCase):
         body["_overrides"] = [dict(path=False, source="not-an-actor")]
         source, result = self.assess(HEADER + fence(body))
         assessment = result["metadata_assessment"]
-        self.assertEqual([f["field"] for f in assessment["shape_findings"]], ["_overrides[0].path"])
+        self.assertEqual(assessment["shape_findings"], [])
+        # RFC0095 owns this sibling path even beneath rejected canonical meta.
+        self.assertEqual([(i["code"],i.get("field")) for i in result["errors"]],
+                         [("META-01",None),("META-05","_overrides[0].path"),
+                          ("SRC-01","_overrides[0].source")])
         self.assertIn("_meta.quality.human_review_required",
                       [f["field"] for f in assessment["handled_shape_findings"]])
-        self.assertEqual(result["errors"], inspect_source_roles(source)["issues"])
+        source_issues = copy.deepcopy(inspect_source_roles(source)["issues"])
+        self.assertEqual(source_issues[0].pop("field"),"_meta")
+        self.assertEqual(result["errors"],source_issues)
         self.assertTrue(any(i["code"] == "SRC-01" for i in result["errors"]))
-        self.assertTrue(all(f["disposition"] == "blocked_by_registered_metadata_shape"
-                            for f in assessment["handled_shape_findings"]))
+        self.assertEqual([(f["field"],f["registered_code"],f["disposition"])
+                          for f in assessment["handled_shape_findings"]],
+                         [("_meta.quality.human_review_required","META-01","blocked_by_registered_metadata_shape"),
+                          ("_overrides[0].path","META-05","represented_by_registered_optional_metadata_predicate")])
         assessment["handled_shape_findings"][0]["message"] = "consumer edit"
         self.assertNotEqual(validate(source)["metadata_assessment"]["handled_shape_findings"][0]["message"],
                             "consumer edit")
@@ -165,8 +173,9 @@ class RefusalReconciliationTests(unittest.TestCase):
         source, result = self.assess(HEADER + fence(historical, historical=True) + fence(actor))
         self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
         self.assertNotIn("handled_shape_findings", result["metadata_assessment"])
-        self.assertEqual([(i["field"], i["context"]["block_index"]) for i in result["errors"]],
-                         [("_meta", 0), ("_meta.provenance.actor", 1)])
+        self.assertEqual([(i.get("field"), i["context"]["block_index"]) for i in result["errors"]],
+                         [(None, 0), ("_meta.provenance.actor", 1)])
+        self.assertNotIn("field",result["errors"][0])
         response, status = _validation_response(result)
         self.assertEqual((status, response["overall_status"]), (1, "errors"))
         self.assertEqual(len(source.source.blocks), 2)

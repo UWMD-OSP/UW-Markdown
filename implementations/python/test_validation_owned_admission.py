@@ -104,7 +104,6 @@ class AllocatedAdmissionTests(unittest.TestCase):
 
     def test_current_lu_only_incomplete_peers_gate_and_history_evidence_is_separate(self):
         good=dict(model_type="absorption_curve",period_granularity="monthly",schedule=[dict(period="2026-01")])
-        historical=parse(well_formed("lease_up_schedule",**good).join([b"",b""])) if False else None
         old=parse(property_source()+well_formed("lease_up_schedule",**good)).source.blocks[1].parsed.value
         old["model_type"]="unknown";old["schedule"]=[{}];old["_meta"]["lifecycle"]["superseded"]=True
         stale=copy.deepcopy(old);stale["_meta"]["lifecycle"]["superseded"]=False
