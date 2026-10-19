@@ -433,19 +433,19 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
       delete sections['replacement_funding_verification'];
     }
     if (configError === undefined) {
-    const v = validateUWFile(content, thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
-    sections['validation'] = v;
-    const funding = await verifyReplacementFundingBindings(parsed);
-    sections['replacement_funding_verification'] = funding;
-    if (v.errors.length > 0 || (funding.state !== 'verified'
-      && !(funding.state === 'not_checked' && funding.reason === 'not_applicable'))) hadError = true;
-    // Protocol §II.2 item 2: a stated metric that disagrees with its
-    // recomputation is a verification failure. One whose inputs are absent is
-    // `unverifiable`, which is reported but is not a failure. Through 4.2.0 this
-    // check never ran here, so a wrong stated cap rate printed `OK`.
-    const metrics = verifyStatedMetrics(parsed);
-    sections['stated_metrics'] = metrics;
-    if (metrics.counts.failed > 0) hadError = true;
+      const v = validateUWFile(content, thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
+      sections['validation'] = v;
+      const funding = await verifyReplacementFundingBindings(parsed);
+      sections['replacement_funding_verification'] = funding;
+      if (v.errors.length > 0 || (funding.state !== 'verified'
+        && !(funding.state === 'not_checked' && funding.reason === 'not_applicable'))) hadError = true;
+      // Protocol §II.2 item 2: a stated metric that disagrees with its
+      // recomputation is a verification failure. One whose inputs are absent is
+      // `unverifiable`, which is reported but is not a failure. Through 4.2.0 this
+      // check never ran here, so a wrong stated cap rate printed `OK`.
+      const metrics = verifyStatedMetrics(parsed);
+      sections['stated_metrics'] = metrics;
+      if (metrics.counts.failed > 0) hadError = true;
     }
   }
   let chain: IntegrityResult | undefined;
@@ -490,9 +490,9 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     }
     const funding = sections['replacement_funding_verification'] as Awaited<ReturnType<typeof verifyReplacementFundingBindings>> | undefined;
     if (funding) {
-    console.log(`Replacement funding verification: ${funding.state}${'reason' in funding ? ` / ${funding.reason}` : ''}`);
-    for (const issue of funding.issues) console.log(issue.message);
-    if (funding.state === 'not_checked' && funding.reason === 'not_invoked') console.log('Validation not requested; no complete binding verification claim.');
+      console.log(`Replacement funding verification: ${funding.state}${'reason' in funding ? ` / ${funding.reason}` : ''}`);
+      for (const issue of funding.issues) console.log(issue.message);
+      if (funding.state === 'not_checked' && funding.reason === 'not_invoked') console.log('Validation not requested; no complete binding verification claim.');
     }
     if (chain) {
       const document = chain.document_signature;
