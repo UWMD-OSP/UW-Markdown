@@ -11,8 +11,7 @@ from uwmd_binding_sources import finite
 from uwmd_currency import inspect_document_currency
 from uwmd_reader import APPEND
 from uwmd_source_validation import _inspect_source_roles, _metadata_routing
-from uwmd_validation_provenance import (metadata_assessment, incomplete_policy,
-                                        market_data_accepted, missing_market_reference)
+from uwmd_validation_provenance import metadata_assessment, incomplete_policy
 from uwmd_validation_selection import active_blocks, current_blocks, select_section, field
 
 STAGES = ("scope", "screening", "term_sheet", "full_underwrite",
@@ -142,7 +141,6 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     ledger.issues.extend(_validation_source_issue(document, issue) for issue in source["issues"])
     missing_meta_blocks = set()
     missing_field_owners = []
-    missing_market_reference_owners = []
     physical = {id(block): index for index, block in enumerate(document.source.blocks)}
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
@@ -216,18 +214,8 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
                 ledger.issue("DQ-02", "error", section, "_meta.quality.provisional",
                              "Declared stage requires observed rather than provisional data",
                              value={"policy_fields": sorted({p.get("field_path","") for p in halts})})
-    # Preserve published checkDataQuality's current sections population for
-    # RFC0022 DQ-06/error, distinct from declared-stage DQ-06/info below.
-    # Inspect every current variant, never only the selected financial role.
-    # Physical active peers excluded here retain local reference assessment.
-    for section in dict.fromkeys(b.section for b in active_blocks(document)):
-        if section in APPEND or section.startswith("x_"):
-            continue
-        for block in current_blocks(document, section, include_external=True):
-            if market_data_accepted(block.parsed.value) and missing_market_reference(block.parsed.value):
-                ledger.issue("DQ-06", "error", section, "_meta.provenance.market_data_ref",
-                             "A market_data_accepted value must identify its observation set, vintage and digest")
-                missing_market_reference_owners.append((physical[id(block)], ledger.issues[-1]))
+    # RFC0095 moves attribution to the earlier physical META-06 pass.
+    # Readiness-only DQ-06/info retains its existing position below.
     present = _section_presence(document)
     if stage in STAGES:
         for section in sections_required(stage, asset):
@@ -258,5 +246,4 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
             ledger.issue("DQ-05", "info", "gaps", "items[" + str(index) + "].last_checked", "Gap exceeds the disclosed freshness threshold")
     return metadata_assessment(document, source, missing_meta_blocks=missing_meta_blocks,
                                missing_field_owners=missing_field_owners,
-                               missing_market_reference_owners=missing_market_reference_owners,
                                _source_order=_source_order)

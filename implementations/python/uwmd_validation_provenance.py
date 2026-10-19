@@ -5,15 +5,14 @@ unallocated metadata findings without inventing codes, severity or new states.
 Existing SRC/ROLE/META-01 and five completeness paths stay with their owners.
 """
 import copy
-import re
 
 from uwmd_binding_sources import finite
 from uwmd_source_validation import (_metadata_routing, _metadata_shape_predicates,
-    _metadata_leaf_predicates, _timestamp_t1b)
+    _metadata_leaf_predicates, _timestamp_t1b, _metadata_optional_predicates,
+    _metadata_reference_predicates)
 from uwmd_reader import APPEND
 from uwmd_validation_selection import current_blocks
 
-_DIGEST = re.compile(r"sha256:[0-9a-f]{64}\Z")
 # Published incomplete-data declarations, including non-halt entries because
 # their specificity can defeat a broader adopter halt. Actions are never run.
 _DEFAULTS = (
@@ -40,31 +39,8 @@ def timestamp_shape(value):
     return _timestamp_t1b(value)
 
 
-def market_data_accepted(body):
-    """RFC0022 promotion includes a stated block or leaf resolution tag."""
-    meta = body.get("_meta")
-    provenance = meta.get("provenance") if isinstance(meta, dict) else None
-    overrides = body.get("_overrides")
-    return (isinstance(provenance, dict) and provenance.get("resolution") == "market_data_accepted"
-            or isinstance(overrides, list) and any(isinstance(entry, dict)
-                and entry.get("resolution") == "market_data_accepted" for entry in overrides))
-
-
-def missing_market_reference(body):
-    """Published DQ-06 presence test; object/array shape is assessed separately.
-
-    Empty objects/arrays are present JSON values, unlike null, false, zero or
-    the exact empty string. Never apply Python container truthiness here.
-    """
-    meta = body.get("_meta")
-    provenance = meta.get("provenance") if isinstance(meta, dict) else None
-    reference = provenance.get("market_data_ref") if isinstance(provenance, dict) else None
-    return (reference is None or reference is False or reference == ""
-            or finite(reference) and reference == 0)
-
-
 def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
-                        missing_field_owners=(), missing_market_reference_owners=(),
+                        missing_field_owners=(),
                         _source_order=False):
     """LOCAL sibling, not ValidationResult findings or full schema validation.
 
@@ -102,29 +78,9 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
 
         if isinstance(provenance.get("timestamp"), str) and not timestamp_shape(provenance["timestamp"]):
             malformed("timestamp", "Timestamp must have the admitted calendar/date-time shape")
-        for resolution, key, names in (
-                ("market_data_accepted", "market_data_ref", ("document_id", "as_of", "digest")),
-                ("inherited_assumption", "inherited_from", ("document_id", "digest", "distance"))):
-            required = (market_data_accepted(block.parsed.value) if key == "market_data_ref"
-                        else provenance.get("resolution") == resolution)
-            if key not in provenance and not required:
-                continue
-            reference = provenance.get(key)
-            valid = isinstance(reference, dict)
-            if valid:
-                for name in names:
-                    value = reference.get(name)
-                    if name == "distance":
-                        valid = valid and finite(value) and value >= 1 and int(value) == value
-                    else:
-                        valid = valid and isinstance(value, str)
-                valid = (valid and isinstance(reference.get("digest"), str)
-                         and _DIGEST.fullmatch(reference["digest"]) is not None)
-            if not valid:
-                malformed(key, "Conditional provenance reference must satisfy its required shape")
-            if (key == "market_data_ref" and isinstance(reference, dict)
-                    and "rationale" in reference and not isinstance(reference["rationale"], str)):
-                malformed(key + ".rationale", "A stated market-data rationale must be a string")
+        for path, message in _metadata_reference_predicates(block.parsed.value):
+            if path != "_meta.provenance.agent_id":  # Existing inventory owns this exact presence evidence.
+                malformed(path.removeprefix("_meta.provenance."), message)
     # RFC0081/0090 reject these containers before descendant admission. Actor-
     # only META-01 and otherwise-shaped late/mismatched metadata do not qualify.
     # Preserve the original local evidence separately instead of reallocating it
@@ -237,29 +193,23 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             parent = parent.get(name) if isinstance(parent, dict) else None
         if isinstance(parent, dict) and names[-1] not in parent:
             absent_owners[index, path] = code
-    # RFC0022 already assigns the missing promoted-reference obligation to
-    # DQ-06/error. Only actual emitted owners for an absent member qualify.
-    # Authored null/falsy scalars or malformed objects have independent type/
-    # content requirements; this presence owner cannot consume those findings.
-    market_absence_owners = set()
-    for index, issue in missing_market_reference_owners:
-        if (not isinstance(index, int) or isinstance(index, bool)
-                or not 0 <= index < len(document.source.blocks)):
+    # RFC0095 consumes only the same current closed predicate, physical
+    # reference, canonical field and local requirement. No generic META owner.
+    allocated_owners = {}
+    for issue in source_inventory["issues"]:
+        code = issue.get("code")
+        if code not in ("META-05", "META-06") or issue.get("severity") != "error":
+            continue
+        index = issue.get("context", {}).get("block_index")
+        if type(index) is not int or not 0 <= index < len(document.source.blocks):
             continue
         block = document.source.blocks[index]
-        if (block.section in APPEND or block.section.startswith("x_")
-                or not any(current is block for current in current_blocks(
-                    document, block.section, include_external=True))):
+        if issue.get("section") != block.section:
             continue
-        body = block.parsed.value
-        meta = body.get("_meta") if isinstance(body, dict) else None
-        parent = meta.get("provenance") if isinstance(meta, dict) else None
-        if (issue.get("code") == "DQ-06" and issue.get("severity") == "error"
-                and issue.get("field") == "_meta.provenance.market_data_ref"
-                and issue.get("section") == block.section
-                and isinstance(parent, dict) and "market_data_ref" not in parent
-                and not _metadata_routing(body) and market_data_accepted(body)):
-            market_absence_owners.add((index, "_meta.provenance.market_data_ref"))
+        predicate = _metadata_optional_predicates if code == "META-05" else _metadata_reference_predicates
+        for field, message in predicate(block.parsed.value):
+            if issue.get("field") == field:
+                allocated_owners[index, field, message] = code
     retained, handled = [], []
     for finding in findings:
         field = finding["field"]
@@ -283,11 +233,10 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
                     finding["context"]["block_index"]].section):
             handled.append(dict(**finding, registered_code="SRC-01",
                 disposition="represented_by_registered_source_type_error"))
-        elif ((finding["context"]["block_index"], field) in market_absence_owners
-                and finding["section"] == document.source.blocks[
-                    finding["context"]["block_index"]].section):
-            handled.append(dict(**finding, registered_code="DQ-06",
-                disposition="represented_by_registered_missing_market_reference"))
+        elif (finding["context"]["block_index"], field, finding.get("message")) in allocated_owners:
+            handled.append(dict(**finding, registered_code=allocated_owners[
+                finding["context"]["block_index"], field, finding["message"]],
+                disposition="represented_by_registered_optional_metadata_predicate"))
         elif ((finding["context"]["block_index"], field) in leaf_owners
                 and finding["section"] == document.source.blocks[
                     finding["context"]["block_index"]].section
