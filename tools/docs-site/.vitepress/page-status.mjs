@@ -8,8 +8,8 @@ export const PAGE_STATUS = Object.freeze({
 
 export function pageStatus(path, override) {
   if (typeof override === 'string' && Object.hasOwn(PAGE_STATUS, override)) return override;
-  const route = '/' + String(path).split(/[?#]/, 1)[0].replace(/^\/+/, '').replace(/(?:\/index)?\.(?:md|html)$/, '').replace(/\/$/, '');
-  const under = (prefix) => route === prefix || route.startsWith(prefix + '/');
+  const route = `/${String(path).split(/[?#]/, 1)[0].replace(/^\/+/, '').replace(/(?:\/index)?\.(?:md|html)$/, '').replace(/\/$/, '')}`;
+  const under = (prefix) => route === prefix || route.startsWith(`${prefix}/`);
   if (route.startsWith('/conformance/starter-') || ['/starter', '/guide', '/ai'].some(under)) return 'starter';
   if (['/spec', '/conformance'].some(under)) return 'normative';
   if (['/tutorials', '/downloads', '/viewer'].some(under)) return 'guide';
@@ -20,7 +20,7 @@ export function markNormative(items) {
   return items.map((item) => ({
     ...item,
     ...(item.link && item.text && pageStatus(item.link) === 'normative'
-      ? { text: item.text + ' <span class="uw-normative-mark" title="Normative" aria-label="Normative">N</span>' } : {}),
+      ? { text: `${item.text} <span class="uw-normative-mark" title="Normative" aria-label="Normative">N</span>` } : {}),
     ...(item.items ? { items: markNormative(item.items) } : {}),
   }));
 }
