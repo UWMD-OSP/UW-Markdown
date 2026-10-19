@@ -584,11 +584,18 @@ export interface ParseOptions {
 
 // ─── Institution sidecar (.uw.institution.json) ───────────────────────────────
 
+/** Canonical sidecar wire object (Format C.6, RFC0097); not a pure API map. */
 export interface InstitutionConfig {
-  institution_name: string;
-  thresholds?: Partial<FinancialThresholds>;
-  required_fields?: string[];       // dot-path fields that must be non-null
-  render_template?: string;
+  validation_overrides?: {
+    dscr_warning_below?: number;
+    ltv_warning_above?: number;
+    debt_yield_warning_below?: number;
+    /** Other data is opaque and is never claimed applied. */
+    [member: string]: unknown;
+  };
+  /** Forbidden wire member; pure APIs separately accept FinancialThresholds. */
+  thresholds?: never;
+  [member: string]: unknown;
 }
 
 /** Resolve only published builtin identities; never suffix-match custom ids. */

@@ -1561,7 +1561,10 @@ export interface ProtocolError {
   category: ProtocolErrorCategory;
   code: string;                     // e.g. "PROTO-EDIT-001"
   message: string;
-  /** Path into the file (section.field or frontmatter.path). */
+  /** Path into the owning input. For VAL-INSTITUTION-CONFIG-UNREADABLE and
+   * VAL-INSTITUTION-CONFIG-MALFORMED this is the selected configuration,
+   * not the underwriting document (RFC0097, Protocol VI.3). Other codes retain
+   * their own section.field or frontmatter.path authority. */
   pointer?: string;
   /** Suggested remediation text. */
   remediation?: string;
