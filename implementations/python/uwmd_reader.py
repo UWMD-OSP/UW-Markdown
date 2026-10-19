@@ -37,6 +37,9 @@ def _projection(block: StructuredBlock) -> dict:
 class Document:
     source: ScannedSource
     frontmatter: FrontmatterSource
+    # Composition keeps original root/consumed fragment sources separate from
+    # the assembled financial view. Empty for an ordinary parsed record.
+    _retained_sources: tuple[ScannedSource, ...] = ()
 
     def projection(self) -> dict:
         output = dict(frontmatter=self.frontmatter.value, sections={}, superseded={},
