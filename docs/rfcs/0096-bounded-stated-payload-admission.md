@@ -425,7 +425,7 @@ No bulk rebaseline or assumption that all27 schema rejections require codes.
 
 The bounded observation dispositions are:
 
-| Observations in frozen evidence | Count | Proposed disposition |
+| Observations in frozen evidence | Count | Accepted disposition |
 |---|---:|---|
 | LU unknown model, numeric type, bounded assumption | 3 | LU-05 |
 | LU historical unknown model with valid current | 1 | Not a new error: outside accepted current-payload scope |
@@ -527,5 +527,5 @@ population is not generalized here. RFC0081 G1 distinguishes stated facts,
 nullable absence and required input groups. RFCs0026/0035 and Format4.24's
 "stated and verified, never trusted" separate declaration admission from
 financial recomputation. JSON Schema2020-12 distinguishes assertions from
-annotations as cited above. The owner's prelaunch rule applies; this draft
+annotations as cited above. The owner's prelaunch rule applies; this acceptance
 allocates no release or publication action.
