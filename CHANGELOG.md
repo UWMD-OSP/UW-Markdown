@@ -10,6 +10,16 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC0096 in TypeScript and an independent private Python
+  admission helper: closed LU-05/REC-11/CS-03/WF-16 errors on assembled current
+  payloads, synchronized Format/Protocol/schema/remediation and eight authored
+  conformance controls. Correct existing structural recovery own-member checks;
+  preserve financial selection, arithmetic and result rules. Attribute the sole
+  existing expectation change (two REC-02 findings become one) to the accepted
+  recovery presence table. Python discovery remains parse-only; complete
+  validation is a separate implementation and certification gate.
+
+
 - Accept RFC0096 under the owner's2026-10-19 decision at1926efe4: closed
   LU-05/REC-11/CS-03/WF-16 validation errors, assembled current-payload authority,
   exact target/recovery-null/lexical-date dispositions and unchanged financial

@@ -1450,3 +1450,18 @@ Unallocated model, numeric, row-container and unknown-member requirements remain
 local even beside a registered LU error. This corrects partial-refusal transport
 for the unchanged native empty-schedule negative without computing a trajectory,
 changing a frozen expectation or claiming complete validation.
+
+## Accepted RFC0096 payload admission helper
+
+`uwmd_payload_admission.py` supplies the closed LU-05, REC-11, CS-03 and WF-16
+predicates for the developing validator. Its caller supplies current assembled
+payload views and owns source/variant/component selection; it performs no source
+reads, history traversal, fetching or financial calculation. Family order and
+code-point field ordering follow the accepted RFC. Nullable recovery companions,
+existing diagnostic ownership and lexical-only waterfall dates remain distinct.
+Seventeen focused methods cover the independent predicates and nonmutation.
+
+This private helper is not a standalone inspector or complete validation command.
+It adds no advertised capability; discovery remains parse-only. The complete
+validator integration and its portable/nonportable certification are separate
+Issue354 work.
