@@ -3144,9 +3144,11 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
     }
   }
   // Accepted leaf counterparts (Format2.5g/RFC0031): assess own annotation
-  // assertions across the retained/current identity union. Canonical SRC
+  // assertions in the existing sections/current-variant population. Canonical SRC
   // admission/population above stays unchanged; these findings name the leaf.
-  for (const [section, block] of metadataReferences(parsed)) {
+  for (const [section, entry] of Object.entries(parsed.sections)) {
+    const blocks = isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock];
+    for (const block of blocks) {
     if (!Object.hasOwn(block.content, '_overrides') || !Array.isArray(block.content['_overrides'])) continue;
     const overrides = block.content['_overrides'];
     for (let index = 0; index < overrides.length; index++) {
@@ -3172,6 +3174,7 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
     }
   }
 
+  }
 }
 
 // ─── META-01: the one block shape (Format §2.4–§2.5, RFC 0081 §3) ───────────
