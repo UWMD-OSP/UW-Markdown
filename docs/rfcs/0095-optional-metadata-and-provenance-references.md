@@ -1,7 +1,7 @@
 ---
 rfc: 0095
 title: Allocate bounded optional metadata and provenance-reference diagnostics
-status: draft
+status: accepted
 author: codex
 created: 2026-10-18
 affects:
@@ -16,20 +16,21 @@ affects:
 
 ## Summary
 
-Propose two closed validation allocations: `META-05`/error for the optional
+Allocate two closed validation diagnostics: `META-05`/error for the optional
 metadata and block-override predicates enumerated below, and `META-06`/error
 for conditional agent identity presence and stated provenance-reference carrier
 requirements. Preserve META-01/02/03/04, existing completeness warnings and SRC
 vocabulary ownership. Use the accepted retained-physical/current-model operation.
-The owner selected U1–U3 as draft direction on 2026-10-18: keep DQ-06/info
-for readiness, allocate both references to META-06 under symmetric stated-assertion
-triggers, and require the date-only calendar domain below. Final RFC acceptance
-and activation remain separate gates.
+**Accepted by the owner,2026-10-18, as reviewed atc551e956.**
 
-**Draft only.** The owner authorized preparing this document, not accepting its
-text, allocating codes in the live registry or activating an implementation.
-No production implementation, specification, schema, conformance expectation, manifest,
-source selection, receipt or release behavior changes in this PR.
+> RFC 0095 (#389) is accepted as pinned at c551e956: U1 the DQ-06 split with attribution under META-06, U2 symmetric stated-assertion triggers, U3 the whole-string YYYY-MM-DD Gregorian date domain. Mark it ready and merge when exact-main CI is green; record the acceptance in NOW.md with the SHA and CI link. Implement META-05/06 and the as_of domain in TS and Python together on the #354 lane, with the 89-reference inventory frozen as the activation baseline and the calendar vectors as cross-runtime tests. No release, version, tag or publication.
+
+This docs-only acceptance records the approved contract. Synchronized
+Format/Protocol/schema, TypeScript/Python and conformance implementation follows
+on Issue354. This PR itself changes no live registry, runtime predicate,
+conformance expectation, capability declaration or receipt behavior. The frozen
+89-reference inventory is the activation baseline; its scope and limits below
+remain explicit. Earlier drafting authority and owner direction follow.
 
 Owner direction,2026-10-18, with the exact question context:
 
@@ -82,14 +83,15 @@ Existing Python controls at the checkpoint include
 reference carriers and unallocated local evidence. These WIP files are evidence
 at that checkpoint; they are not claimed to be shipped on this RFC's main base.
 
-## Proposed change
+## Accepted contract
 
-All MUST statements in this section specify the **proposed** contract after
-owner acceptance and synchronized implementation. They are not active rules.
+All MUST statements in this section define the accepted contract for the
+synchronized implementation. This docs-only acceptance does not activate runtime
+predicates or change governing specifications, schemas or frozen expectations.
 
 ### Closed allocations and field attribution
 
-Both proposed codes have severity `error`. Ordinary validation issues keep the
+Both allocated codes have severity `error`. Ordinary validation issues keep the
 existing DTO without a `category` member; a corresponding `ProtocolError` uses
 category `validate`. Identify the exact field, block section and failed
 requirement. Preserve available variant/physical context without inventing a new
@@ -101,7 +103,7 @@ Emit only the following findings when their stated members are present. Absent
 optional members remain valid; presence means an own member of the admitted
 canonical parent. Null is a present value, admitted only where explicitly allowed.
 
-| Fixed order | Field | Exact proposed invalid condition |
+| Fixed order | Field | Exact invalid condition |
 |---|---|---|
 | 1 | `_meta.provenance.agent_id` | Present and neither a string nor null |
 | 2 | `_meta.provenance.agent_version` | Present and neither a string nor null |
@@ -132,7 +134,7 @@ This RFC does not define a path parser or a target-existence requirement.
 The `source` and `resolution` vocabulary predicates retain SRC-01/02/03
 ownership. META-05 MUST NOT duplicate them or silently claim an unimplemented
 SRC predicate is already discharged. Auditing override vocabulary applicability
-and exact field attribution remains an implementation gate; this draft does not
+and exact field attribution remains an implementation gate; this RFC does not
 allocate a second code for the same requirement. No semver grammar is added for
 agent_version, no flag vocabulary is closed and `_notes` remains outside this
 allocation. In particular, `_notes` is not provenance.notes: its existing
@@ -240,7 +242,7 @@ or compaction decision from draft RFC0085 is presumed.
 
 ### Results, transport and scope boundaries
 
-The new findings would enter ordinary issue/error partitions and derived
+The implemented findings enter ordinary issue/error partitions and derived
 validation status, displays and CLI exits. A local completeness assessor may
 consume only evidence owned by the exact allocated predicate, block reference
 and path. An unrelated error elsewhere is not ownership. Preserve local evidence
@@ -251,7 +253,7 @@ reference sources. Malformed JSON keeps accepted Reader refusal behavior; valid
 JSON with bad metadata is not relabelled as a parse error. Carrier validation
 performs no external resolution. No new validation result state, receipt verdict,
 issuance policy, wire schema, digest construction, signing rule or authentication
-precedence is proposed. Actual validation policy counts may reflect the accepted
+precedence is introduced. Actual validation policy counts may reflect the accepted
 new errors after implementation; authenticate/recompute rules remain separate.
 Validation is read-only and MUST NOT fabricate or repair metadata.
 
@@ -261,9 +263,9 @@ remain separate. This is not a generic schema-to-error allocation or complete
 Python validation/Verifier certification. Discovery stays parse-only until its
 independent complete capability gate passes.
 
-## Decisions from precedent and owner-selected draft direction
+## Accepted decisions from precedent and owner direction
 
-| Call | Draft disposition | Evidence |
+| Call | Accepted disposition | Evidence |
 |---|---|---|
 | D1 | Two closed META codes, error, ProtocolError category validate only | Accepted RFC0094 allocation/transport pattern |
 | D2 | All retained physical/current-model references and source composition accounting | RFC0090/0091/0093/0094 |
@@ -272,7 +274,7 @@ independent complete capability gate passes.
 | D5 | Source/resolution keep SRC ownership; no generic schema fallback | RFC0031 and closed META-01–04 allocations |
 | D6 | Reuse exact carrier domains except the expressly selected U3 date predicate | Block schema plus explicit U3 boundary |
 
-### U1 — DQ-06 split: OWNER-SELECTED DRAFT DIRECTION
+### U1 — DQ-06 split: ACCEPTED OWNER DECISION
 
 DQ-06/info MUST mean stage readiness only. Promoted-reference attribution moves
 to META-06/error under U2; remove the old attribution emission from
@@ -289,7 +291,7 @@ current own members. Inventory this population and report it to the owner before
 activation. A raw source candidate is not automatically an admitted operation;
 rejected inputs and unavailable/unconsumed composition parts must be separated.
 
-### U2 — symmetric stated-assertion triggers: OWNER-SELECTED DRAFT DIRECTION
+### U2 — symmetric stated-assertion triggers: ACCEPTED OWNER DECISION
 
 For each distinct admitted block identity, independently determine these two
 boolean obligations from current own members:
@@ -348,7 +350,7 @@ and both carriers are absent; counts name only the new carrier findings:
 | absent | null entry followed by own market_data_accepted | One market_data_ref plus one META-05 entry error, no crash |
 | absent | MODEL prototype-only resolution | No required-carrier finding; optional stated carriers still checked |
 
-### U3 — market reference calendar date: OWNER-SELECTED DRAFT DIRECTION
+### U3 — market reference calendar date: ACCEPTED OWNER DECISION
 
 A stated `market_data_ref.as_of` MUST be a string containing exactly ten ASCII
 characters `YYYY-MM-DD`: four ASCII year digits, two month digits, two day digits,
@@ -392,14 +394,14 @@ Under this RFC, one synchronized activation changeset MUST:
    reference it from `$defs/UWMeta/properties/provenance/properties/market_data_ref/properties/as_of`.
    The calendar assertion MUST NOT depend on optional `format` plugin support.
    Both existing reference-digest patterns must likewise use an absolute end
-   guard for the already-proposed exact `sha256:` plus64 lowercase ASCII hex
+   guard for the accepted exact `sha256:` plus64 lowercase ASCII hex
    predicate; a trailing newline is not a lawful digest. No other digest
    construction, identity or authentication rule changes.
 4. Synchronize TypeScript, independent Python, authored positive/negative
    conformance controls and explicitly attributed expectation changes. Test
    schema/Format/Protocol admission jointly; no runtime-only stricter domain.
 
-Proposed `$defs/MarketReferenceDate` (research only until acceptance):
+Accepted `$defs/MarketReferenceDate` assertion for synchronized activation:
 
 ```json
 {
@@ -414,11 +416,11 @@ terminators; an ordinary `$` can match before a final newline in JavaScript.
 The regex admits only the selected year/month/day domain, including century
 leap cases. Independent TS/Python vectors and schema-predicate comparisons are
 required below. No governing spec/schema, registry, runtime or frozen expected
-result is changed by this draft update.
+result is changed by this docs-only acceptance.
 
 ## Conformance impact and evidence gates
 
-No fixture, expected result or original source changes in this draft. The
+No fixture, expected result or original source changes in this acceptance PR. The
 read-only inventory below reports measured source populations, not a future
 validation or conformance error total. Before activation, independently inventory
 every live requirement owner and source population at the final implementation
@@ -517,7 +519,7 @@ failures. Re-run the attribution inventory at the actual activation base,
 including separately pending RFC0094 implementation, and review any expectation
 delta before activation. No current source/fixture/expected result is changed.
 
-### Executed independent date-only evidence (draft research)
+### Executed independent date-only evidence (isolated research)
 
 The isolated review files use the existing
 `docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only` stem.
@@ -564,7 +566,7 @@ conformance expectations or advertise validation capability.
 
 ## Reference implementation plan
 
-After owner acceptance only, synchronize Format2.5b/c/f, ProtocolIII.6a/XI,
+Under the owner acceptance, synchronize Format2.5b/c/f, ProtocolIII.6a/XI,
 the executable registry/remediation, applicable schema annotations and any
 assertions explicitly selected in U1–U3, plus TypeScript and independent Python.
 Expected implementation sites are `packages/uwmd-verify/src/validator.ts`,
@@ -577,7 +579,7 @@ Audit current producer obligations and live consumer outputs without fabricating
 metadata. No new public function, CLI command, diagnostic DTO property, financial
 procedure, schema fallback or capability promotion is needed for this allocation.
 Production implementation and changes to governing contracts are outside this
-draft PR. The isolated review controls have no production imports or hooks.
+docs-only acceptance PR. The isolated review controls have no production imports or hooks.
 
 ## Alternatives considered
 
@@ -589,7 +591,8 @@ draft PR. The isolated review controls have no production imports or hooks.
 - Infer missing identity/reference/defaults or fetch external data: changes the
   stated record and exceeds read-only validation.
 - Activate the uncontroversial rows while leaving U1–U3 implementation-defined:
-  leaves cross-implementation results undefined; final acceptance needs exact text.
+  would leave cross-implementation results undefined; the owner accepted the exact
+  U1–U3 text instead.
 
 ## Prior art
 

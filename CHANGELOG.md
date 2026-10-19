@@ -10,11 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- Pin the owner-selected RFC0095 draft direction: DQ-06/info for stage readiness,
-  symmetric META-06 reference assertions and a strict date-only as_of domain.
-  Add read-only population evidence and independent TypeScript/Python/schema
-  research vectors. No production code allocation, governing schema/conformance
-  activation, acceptance or capability change.
+- Accept RFC0095 under the owner's2026-10-18 decision atc551e956: closed
+  META-05/06 allocations, readiness-only DQ-06/info, symmetric stated-assertion
+  reference triggers and strict Gregorian date-only as_of admission. Freeze the
+  reviewed89-reference activation baseline and independent TS/Python calendar
+  controls. Documentation only; synchronized implementation follows on Issue354.
+  No live schema, conformance expectation, capability or release change.
 
 - Implement accepted RFC0093 in TypeScript and Python: exact META-01 placement,
   present section and required quality admission, ordered physical/model passes,
