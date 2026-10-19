@@ -1,8 +1,7 @@
 {
   "schema": "read-only-rfc0095-attribution-population-v1",
   "base": "fa9a9ea37d31b918f5993eae4276b159f31719f3",
-  "draft": "cf3112951537fe0b69f1f06239fcc3330e6303c6",
-  "draft_rfc_sha256": "e9407c1b13569f22e47089b92e418a2747d7ad8de4c543900688dccf49c08b21",
+  "original_reviewed_draft": "cf3112951537fe0b69f1f06239fcc3330e6303c6",
   "runtime": {
     "node": "v24.14.1",
     "typescript": "5.9.3",
@@ -241,9 +240,9 @@
   },
   "full_record_evidence": {
     "file": "2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.all-records.json.gz",
-    "gzip_sha256": "ae2436c173e4ef39a7a58f0e578db0d1493a2f360e6db53c02c6818416338001",
-    "decoded_json_sha256": "e013399e99402c0eff62b30f81f2a8ca708fe5c13fff3c32dcd02aa48d32eef0",
-    "decoded_bytes": 3613229
+    "gzip_sha256": "d186ce8d5d607d50855ee5cdaf4ce0ef6799553c0eb40ff82215db719ab28d7e",
+    "decoded_json_sha256": "036108a1142da019a822b1e18a29606788cadc0b0a81e1b2975c7194ca833d43",
+    "decoded_bytes": 3613157
   },
   "newly_assessed_records": [
     {

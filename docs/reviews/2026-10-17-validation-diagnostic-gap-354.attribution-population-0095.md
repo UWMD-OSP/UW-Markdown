@@ -9,9 +9,9 @@ Exact input main: `fa9a9ea37d31b918f5993eae4276b159f31719f3`. Draft reviewed: `c
 - [Reproduction script](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.mjs)
 - [Human-summary JSON and all 89 newly assessed standalone refs](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.json)
 - [Complete source/block/composition trace](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.all-records.json.gz)
-- JSON SHA-256: `6301337ad42993b4139a1522096f2c8e99a020752396bc4b47b8d7c56c8b886c`
-- Gzip SHA-256: `ae2436c173e4ef39a7a58f0e578db0d1493a2f360e6db53c02c6818416338001`
-- Decoded full JSON SHA-256: `e013399e99402c0eff62b30f81f2a8ca708fe5c13fff3c32dcd02aa48d32eef0`
+- JSON SHA-256: `36bffdec7e7d54e4032aa08a70354896a59eda8b59537a9e7bf5bd59e42610cb`
+- Gzip SHA-256: `d186ce8d5d607d50855ee5cdaf4ce0ef6799553c0eb40ff82215db719ab28d7e`
+- Decoded full JSON SHA-256: `036108a1142da019a822b1e18a29606788cadc0b0a81e1b2975c7194ca833d43`
 - Runtime: Node `v24.14.1`, TypeScript `5.9.3`, `win32` / `10.0.26200`.
 
 With the existing TypeScript development dependency installed, from the repository root:
@@ -163,3 +163,5 @@ This independently establishes the exact population expansion at the assigned ba
 Re-run on the final implementation/activation base, including the separately pending RFC0094 implementation. No source or frozen expectation change follows solely from this attribution inventory. It does not establish full Python validation capability, final CI, carrier authenticity or external-reference availability.
 
 Review added an exact-string guard to both trigger lookups: a JSON array containing a tag never asserts that tag. The dedicated non-string canonical/override control passes; corpus populations and findings are unchanged. The integrator separately verified all880 source hashes and all89 newly assessed rows with a fresh parser-only observer.
+
+Only the exact main base is a Git input to reproduction; the original cf311295 review head is a citation, not a required old Git object. For a shallow checkout, fetch the pinned base first: `git fetch origin fa9a9ea37d31b918f5993eae4276b159f31719f3`.
