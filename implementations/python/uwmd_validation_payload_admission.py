@@ -1,8 +1,9 @@
 """WIP adapter from current assembled Document refs to pure RFC0096 admission."""
+from uwmd_composition import _directive
 from uwmd_document_sources import source_context
 from uwmd_payload_admission import _PayloadView, _payload_admission
 from uwmd_reader import PARALLEL
-from uwmd_validation_selection import active_blocks,current_blocks
+from uwmd_validation_selection import active_blocks,current_blocks,is_externalized
 
 
 def current_payload_views(document):
@@ -12,7 +13,13 @@ def current_payload_views(document):
         active=active_blocks(document,section)
         mapped=section in PARALLEL or (any("_role" in block.parsed.value for block in active)
                                       and any("variant" in dict(block.attributes) for block in active))
-        for block in current_blocks(document,section):
+        for block in current_blocks(document,section,include_external=True):
+            # Composition §3 requires both the fence marker and an admitted
+            # directive. A malformed MODEL placeholder must not hide independent
+            # payload findings; the SOURCE resolver retains its own refusals.
+            body=block.parsed.value
+            if is_externalized(block) and "external" in body and not _directive(body["external"]):
+                continue
             key=dict(block.attributes).get("variant","default") if mapped else None
             views.append(_PayloadView(section,block.parsed.value,key,
                          source_context(document,physical[id(block)],block)))

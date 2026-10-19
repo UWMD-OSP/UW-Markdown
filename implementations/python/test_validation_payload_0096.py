@@ -149,6 +149,60 @@ class PayloadIntegrationTests(unittest.TestCase):
         self.assertEqual(result["composition_assessment"]["status"],"resolved")
         self.assertEqual(result["section_assessment"]["lease_up_schedule"]["shape_findings"],[])
 
+    def test_external_exemption_requires_marker_and_own_admitted_directive(self):
+        valid=dict(parts=["part-a"],part_count=1)
+        cases=[(None,None),(None,valid),("true",None),("true",False),("true",[]),
+            ("true",{}),("true",dict(parts=["a"],part_count=2)),
+            ("true",dict(parts=["a","a"],part_count=2)),
+            ("true",dict(parts=["a"],part_count=1,collection_path="rows")),
+            ("true",dict(parts=["a"],part_count=1,unknown=1)),
+            ("false",valid),("true",valid)]
+        for annotation,directive in cases:
+            with self.subTest(annotation=annotation,directive=directive):
+                body=lease(model_type="unknown")
+                if directive is not None:body["external"]=directive
+                raw=property_source()+well_formed("lease_up_schedule",**body)
+                if annotation is not None:
+                    raw=raw.replace(b"uw:section=lease_up_schedule",b"uw:section=lease_up_schedule external="+annotation.encode(),1)
+                expected=[] if annotation=="true" and directive==valid else [("LU-05","model_type")]
+                if directive is not None and expected:expected.append(("LU-05","external"))
+                document=parse(raw);before=copy.deepcopy(document)
+                model=validate(document);source=asyncio.run(_validate_source(raw))
+                self.assertEqual(rows(model),expected);self.assertEqual(rows(source),expected)
+                self.assertEqual(document,before);self.assertEqual(document.source.raw,raw)
+                if annotation=="true" and directive!=valid:
+                    self.assertIn("COMP-DIRECTIVE-MALFORMED" if directive is None or directive in (False,[],{}) else
+                                  "COMP-COUNT-MISMATCH" if directive.get("part_count")!=len(directive["parts"]) else
+                                  "COMP-DUP-KEY" if len(set(directive["parts"]))!=len(directive["parts"]) else
+                                  "COMP-DIRECTIVE-MALFORMED",
+                                  [i["code"] for i in source["composition_assessment"]["issues"]])
+        # MODEL authority reads current content, while the fresh SOURCE operation
+        # continues to see the original admitted directive and skips payload.
+        raw=property_source()+fence("lease_up_schedule",dict(lease(model_type="unknown"),external=valid)," external=true")
+        document=parse(raw);document.source.blocks[1].parsed.value["external"]=False
+        self.assertEqual(rows(validate(document)),[("LU-05","model_type"),("LU-05","external")])
+        self.assertEqual(rows(asyncio.run(_validate_source(raw))),[])
+        self.assertEqual(document.source.raw,raw)
+
+    def test_actual_cli_preserves_composition_refusals_and_independent_payload_findings(self):
+        with tempfile.TemporaryDirectory(prefix="uwmd-payload-0096-external-") as directory:
+            path=Path(directory)/"source.uwx.md"
+            for marked,directive in ((True,False),(False,dict(parts=["a"],part_count=1))):
+                body=lease(model_type="unknown");body["external"]=directive
+                raw=property_source()+well_formed("lease_up_schedule",**body)
+                if marked:raw=raw.replace(b"uw:section=lease_up_schedule",b"uw:section=lease_up_schedule external=true",1)
+                path.write_bytes(raw)
+                process=subprocess.run([sys.executable,"-B",str(Path(__file__).with_name("uwmd.py")),"validate",str(path),"--json"],
+                    capture_output=True,encoding="utf8",timeout=20)
+                value=json.loads(process.stdout)
+                self.assertEqual(process.returncode,1);self.assertEqual(process.stderr,"")
+                result=value["partial_validation_result"] if marked else value
+                self.assertEqual(rows(result),[("LU-05","model_type"),("LU-05","external")])
+                if marked:
+                    self.assertIn("COMP-DIRECTIVE-MALFORMED",[i["code"] for i in result["composition_assessment"]["issues"]])
+                else:self.assertNotIn("partial_validation_result",value)
+                self.assertEqual(path.read_bytes(),raw)
+
     def test_wf_lexical_impossible_date_has_no_structural_calendar_promotion(self):
         raw=property_source()+cash()+well_formed("distribution_waterfall",**waterfall(
             stated_schedule=[dict(date="0000-99-99",by_tier=[])]))
