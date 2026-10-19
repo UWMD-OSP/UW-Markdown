@@ -31,7 +31,7 @@ The project has five layers, each consuming the one above it:
 │                   ├── editor (starter edit dispatcher)       │  verify
 │                   ├── renderer / report / cascade / defaults │
 │                   ├── packs/ (excel-emit)                    │
-│                   └── agents/ (Bancroft, starter agent host) │
+│                   └── agents/ (starter agent host)           │
 └─────────────────────────────────────────────────────────────┘
                           ▲
                           │ used by
@@ -100,8 +100,8 @@ module.
 | `editor.ts` (core) | Starter-product edit dispatcher: `applyEdit()` over four operation types, gated by `BUILTIN_EDIT_POLICIES`. |
 | `bindings.ts` (verify) + `bindings-edit.ts` (core) | HTTP negotiation/ETags and MCP resource/tool-result adapters over the shared codecs; core injects its editor for source edits. |
 | `renderer.ts` (core) | HTML / Markdown rendering paths. PDF/DOCX are stubs deferred to a third-party pipeline. |
-| `runner.ts` (core) | Legacy 4.x writer compatibility API; generic metadata is supplied by verify's `buildMeta`. Generic editing and initialization import metadata directly from verify. |
-| `agents/` + `context.ts` (core) | Optional 4.x Bancroft product compatibility surface: layer prompts, provider execution and replay. The [starter guide](docs/starter/ai-host.md) is non-normative. StackUW owns modeling, agents and workflows; UWMD owns vendor-neutral exchange and verification. See the [inventory](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-architecture-boundary.md) and separate [5.0 removal plan](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-agent-removal-5.0.md). |
+| `runner.ts` (core) | Writer API; generic metadata is supplied by verify's `buildMeta`. Generic editing and initialization import metadata directly from verify. |
+| `agents/` + `context.ts` (core) | Optional starter agent host: layer prompts, provider execution and replay. The [starter guide](docs/starter/ai-host.md) describes this non-normative product surface. |
 | `calc/` (verify) | `parser.ts` (recursive-descent), `evaluator.ts` (AST walker), `builtins.ts` (financial + math primitives). The evaluator is sandboxed: capped input, no globals, no I/O. |
 | `builtin-packs/` (verify) + `packs/` (core) | One pack manifest per builtin asset class in `builtin-packs/` (standard data), each equal to its normative `spec/metrics/` entries (`metric-dictionary.test.ts`); `packs/` re-exports them. `packs/excel-emit.ts` translates the same AST to Excel formulas, and the pack tests assert the two paths agree exactly after §VIII.5 quantization (a starter-product quality bar). |
 | `protocol.ts` (verify) | The normative contract types, `BUILTIN_EDIT_POLICIES`, `BUILTIN_REMEDIATIONS`, version constants. |
@@ -157,7 +157,7 @@ subdirectory (where applicable) holds deliberately-invalid fixtures whose
 
 ## Governance and process
 
-- [`GOVERNANCE.md`](GOVERNANCE.md) — BDFL model with RFC pipeline.
+- [`GOVERNANCE.md`](GOVERNANCE.md) — owner-led model with RFC pipeline.
   Editorial-vs-normative split is the central distinction.
 - [`docs/rfcs/`](docs/rfcs/) — RFC drafts. Numbered sequentially;
   the [`0000-template.md`](docs/rfcs/0000-template.md) carries the
@@ -165,11 +165,11 @@ subdirectory (where applicable) holds deliberately-invalid fixtures whose
 - [`CHANGELOG.md`](CHANGELOG.md) — Keep a Changelog format. The
   project uses semver-per-surface (format, protocol, and each
   package each carry an independent version). See
-  [`VERSIONS.md`](VERSIONS.md) for the compatibility matrix.
+  [`VERSIONS.md`](VERSIONS.md) for the version matrix.
 - [`SECURITY.md`](SECURITY.md) — disclosure policy (5-day ack,
   90-day fix target).
 - [`.github/CODEOWNERS`](.github/CODEOWNERS) routes spec, schema,
-  and reference-library paths to the BDFL.
+  and reference-library paths to the project owner.
 - [`.github/workflows/`](.github/workflows/) — CI runs lint + test
   + conformance + schema validation on each push; release publishes
   on `v*` tags.

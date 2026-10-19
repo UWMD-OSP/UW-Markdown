@@ -127,6 +127,8 @@ detail it leaves out.
   [JSON Schemas](/spec/schemas/) for every cross-boundary type, and the
   [conformance corpus](/conformance/). The tools below are non-normative
   [starter products](/starter/) built on it.
+- **The reference verifier.** `@uwmd/verify` reads and verifies a record with
+  nothing else installed. `@uwmd/core` builds on it.
 - **The reference library and CLI.** `@uwmd/core` parses, validates, renders,
   edits with byte preservation (an edit leaves every byte outside the
   edited region unchanged), calculates, converts, and verifies. `@uwmd/cli` wraps it
@@ -136,8 +138,8 @@ detail it leaves out.
   fact table.
 - **More packages on npm.** `@uwmd/excel` (the Excel exporter),
   `@uwmd/report` (the report renderer) and `@uwmd/lake` (the PostgreSQL lake
-  adapter) have published with every release since 3.0.0. Hospitality and data center are builtin asset classes; their
-  former module packages remain only as compatibility shells.
+  adapter) are on npm with every release. Hospitality and data center are
+  builtin asset classes like every other official class.
 - **Representations and bindings.** The same record round-trips through UW
   JSON, UW XML, and a CSV bundle, each with a semantic digest. Optional HTTP and
   MCP profiles describe how services and AI agents exchange it.
@@ -154,12 +156,12 @@ lake-level aggregate math; those belong to the platforms that consume it. What
 it contributes is what a data lake cannot retrofit later: canonical facts,
 stable identity through semantic digests, and a verifiable trust chain through
 receipts. The [data-lake guide](/guide/data-lake) runs the whole pipeline with
-the published CLI and DuckDB. A reference adapter, `@uwmd/lake` (on npm
-from release 3.0.0), shows one way to project records into PostgreSQL.
+the published CLI and DuckDB. A reference adapter, `@uwmd/lake`, shows one way
+to project records into PostgreSQL.
 
-Commercial products build on the standard, and
-[underwriter.cc](https://underwriter.cc) is the first. The standard itself is
-MIT-licensed and vendor-neutral. No part of it depends on a vendor SDK,
+The UWMD maintainers also build StackUW, a commercial underwriting product that writes `.uwx.md` records; nothing in the standard requires a StackUW account, package or service.
+
+The standard itself is MIT-licensed and vendor-neutral. No part of it depends on a vendor SDK,
 service, or model provider.
 
 ## Start here
