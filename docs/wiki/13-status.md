@@ -8,6 +8,18 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Accepted RFC0095 — owner decision2026-10-18 atc551e956.**
+[RFC0095](../rfcs/0095-optional-metadata-and-provenance-references.md) accepts
+META-05/06/error with META-01–04 and absence warnings unchanged. DQ-06/info
+remains stage readiness only; symmetric canonical/any-stated-override reference
+assertions belong to META-06 with exact identity/carrier dedup. The as_of domain
+is whole ASCII Gregorian YYYY-MM-DD, years0001–9999, without normalization.
+The reviewed89-reference inventory is frozen as the activation baseline, with
+its population limits preserved. Independent TS/Python/schema calendar vectors
+are the cross-runtime controls. Synchronized Format/Protocol/schema and TS/Python
+implementation follows on Issue354. This docs-only acceptance changes no live
+registry, fixture expectation, receipt procedure, capability or release state.
+
 **Python expression execution — Issue354.** A coherent read-only `calc` CLI
 implements the accepted expression grammar, all21 builtins, exact source/variant/
 role/period selection, scalar/null overrides and quantized result/refusal transport.
