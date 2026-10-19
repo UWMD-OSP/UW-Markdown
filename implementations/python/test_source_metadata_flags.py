@@ -149,14 +149,16 @@ class SourceMetadataFlagTests(unittest.TestCase):
         self.assertEqual([i["code"] for i in flags(inspect_source_roles(copy_model))], ["META-03"])
         self.assertEqual([i["code"] for i in flags(inspect_source_roles(document))], ["META-02", "META-03"])
 
-    def test_unrelated_active_shape_findings_remain_unallocated_and_detached(self):
+    def test_unrelated_active_shapes_remain_detached_beside_registered_leaf_error(self):
         body = payload()
         body["_meta"]["section"] = "wrong"
         body["_meta"]["quality"].update(human_review_required="bad", confidence="unknown", partial="bad")
         body["_overrides"] = [dict(path=False)]
         body = {"value": 1, **body}
         _, result = self.inspect(HEADER + fence(body))
-        self.assertEqual([i["code"] for i in result["issues"]], ["META-01", "META-01", "META-02"])
+        self.assertEqual([(i["code"], i["field"]) for i in result["issues"]],
+            [("META-01", "_meta"), ("META-01", "_meta.section"),
+             ("META-02", "_meta.quality.human_review_required"), ("META-04", "_meta.quality.confidence")])
         self.assertEqual([f["field"] for f in result["shape_findings"]],
             ["_meta", "_meta.section", "_meta.quality.confidence", "_meta.quality.human_review_required",
              "_meta.quality.partial", "_overrides[0].path"])

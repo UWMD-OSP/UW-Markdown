@@ -444,7 +444,7 @@ organized into four named sub-objects by concern:
 | `actor` | nonempty string | yes | The principal that initiated the write. Distinct from `source`: `source` is the policy-vocabulary identity of the writer, `actor` is who asked for the write. No trimming, source grammar or attribution inference applies (RFC 0090). |
 | `agent_id` | string\|null | no | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"`. REQUIRED when `source` matches `agent/*`. |
 | `agent_version` | string\|null | no | Version (semver) of the agent or tool that produced this block. |
-| `timestamp` | ISO 8601 | yes | When this block was written. |
+| `timestamp` | T1B UTC-Z string | yes | When this block was written; exact reader domain below (RFC0094). |
 | `notes` | string\|null | no | Free-text notes from the agent or user. |
 | `market_data_ref` | object | cond. | RFC 0022 §4 — REQUIRED when `resolution` is `market_data_accepted`. |
 | `inherited_from` | object | cond. | RFC 0021 §5 — REQUIRED when `resolution` is `inherited_assumption`. |
@@ -585,6 +585,36 @@ suppresses only META-02. An actor-only error does not suppress either flag.
 Existing completeness rules and META-01 retain their scope. Protocol §III.6a
 defines exact attribution and ordering; these allocations do not extend to
 other missing or malformed metadata members.
+
+**Present-invalid metadata leaves (RFC0094).** After the complete META-02/03
+pass, emit one `META-04`/error for each present invalid canonical leaf, per block
+in this order: `_meta.quality.confidence` must be exactly `high`, `medium` or
+`low`; `_meta.lifecycle.revision` must be a finite integral number at least1;
+`_meta.provenance.timestamp` must satisfy T1B below. Numeric1.0 and1e0 are
+integer1; booleans are not integers. No new safe-integer maximum, chain rule or
+fraction-length limit is imposed.
+
+T1B is exactly `YYYY-MM-DDTHH:mm:ss[.digits]Z`: ASCII digits, four-digit year0000
+through9999 and a valid proleptic Gregorian date, hour00–23, minute/second00–59,
+uppercase T/Z and optional nonempty ASCII fraction. Gregorian leap years are
+divisible by400 or divisible by4 but not100, including year0000. Consume the
+entire string. Offsets (including zero), lowercase, whitespace, second60 and
+normalization are refused; no clock or leap-second lookup supplies admission.
+This profile applies to the canonical provenance timestamp only.
+
+Use the same all-retained-physical plus current model-reference identity union
+and SOURCE/MODEL/composition authority as above. Complete every shape, actor and
+boolean pass before this complete leaf pass, and keep role/period/source checks
+later. Within each block confidence precedes revision, then timestamp. Attribute
+each finding to its exact canonical field and block section. Rejected old whole
+metadata/provenance/lifecycle shape suppresses descendants; absent/nonobject
+quality suppresses only confidence. Placement/section, actor and boolean errors
+do not suppress independent leaves. An absent leaf gains no META-04; existing
+completeness warning predicates, populations and order remain, including any
+warning that also applies to present null. No default, coercion, repair or
+generic schema fallback is permitted. Optional metadata and conditional
+references remain outside this closed allocation. Protocol §III.6a defines
+transport and resulting validation/receipt-policy accounting.
 
 ### 2.6 Source Identifiers
 
