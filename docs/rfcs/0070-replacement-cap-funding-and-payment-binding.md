@@ -116,8 +116,8 @@ Canonical baseline is `UWMD-OSP/UW-Markdown` main
 
 ### Demonstrated adopter requirement
 
-[StackUW TASK-3294](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/tasks/queue/TASK-3294.md)
-and [Q-1297](https://github.com/jaredmaxey/underwriter-app/blob/9a6dfb9fad0f307df10031fef8ca49ced111afd8/decisions/Q-1297.md)
+StackUW `TASK-3294` and `Q-1297`, recorded at source commit
+`9a6dfb9fad0f307df10031fef8ca49ced111afd8`,
 identify a bridge with an initial rate cap expiring before the modeled loan/hold
 ends. The replacement is purchased outright in a specified future loan month,
 with a modeled premium paid from deal cash. There is no close-date replacement
