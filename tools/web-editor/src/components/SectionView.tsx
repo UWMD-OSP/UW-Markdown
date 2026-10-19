@@ -144,11 +144,9 @@ function SectionIssues({ issues }: { issues: ValidationMessage[] }) {
 function isBlock(entry: SectionEntry): entry is UWBlock {
   if (!Object.hasOwn(entry, 'annotation') || !Object.hasOwn(entry, 'content')) return false;
   const annotation = (entry as UWBlock).annotation;
-  const content = (entry as UWBlock).content;
   return annotation !== null && typeof annotation === 'object' && !Array.isArray(annotation)
     && Object.hasOwn(annotation, 'section') && typeof annotation.section === 'string'
-    && Object.values(annotation).every(value => value === undefined || ['string', 'number', 'boolean'].includes(typeof value))
-    && content !== null && typeof content === 'object' && !Array.isArray(content);
+    && Object.values(annotation).every(value => value === undefined || ['string', 'number', 'boolean'].includes(typeof value));
 }
 
 function ProseView({ prose }: { prose: string | undefined }) {
