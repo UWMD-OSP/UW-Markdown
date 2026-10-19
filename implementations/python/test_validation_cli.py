@@ -91,7 +91,7 @@ class ValidationCLITests(unittest.TestCase):
         self.assertEqual([(i["code"],i["context"]["block_index"],i["field"]) for i in
                           integrated["errors"]], [("META-01",1,"_meta")])
 
-    def test_accepted_0093_and_unallocated_typed_requirements_have_distinct_transport(self):
+    def test_accepted_metadata_and_unallocated_lease_model_have_distinct_transport(self):
         body=parse(property_source()).source.blocks[0].parsed.value
         typed=copy.deepcopy(body);typed["_meta"]["quality"]["confidence"]=False
         section=copy.deepcopy(body);section["_meta"]["section"]="wrong"
@@ -100,15 +100,11 @@ class ValidationCLITests(unittest.TestCase):
             with self.subTest(value=value):
                 result,status=self.command(HEADER+fence(value))
                 self.assertEqual(status,1)
-                if value is typed:
-                    self.assertNotIn("code",result["error"])
-                    self.assertNotIn("overall_status",result)
-                    self.assertTrue(result["metadata_assessment"]["shape_findings"])
-                    self.assertIn("partial_validation_result",result)
-                else:
-                    self.assertNotIn("error",result)
-                    self.assertEqual(result["overall_status"],"errors")
-                    self.assertEqual([i["code"] for i in result["errors"]],["META-01"])
+                self.assertNotIn("error",result)
+                self.assertEqual(result["overall_status"],"errors")
+                self.assertEqual([i["code"] for i in result["errors"]],
+                                 ["META-04" if value is typed else "META-01"])
+                self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
         # A declared fixed lease-up payload has separate unallocated shape evidence.
         raw=property_source()+well_formed("lease_up_schedule",model="not_registered",
             period_granularity="monthly",stabilization_target="2026-01",

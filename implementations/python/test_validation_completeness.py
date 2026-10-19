@@ -84,7 +84,9 @@ class CompletenessOwnershipTests(unittest.TestCase):
                         self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
                                          [("SRC-01", "_meta.provenance.source")])
                     else:
-                        self.assertIn("_meta." + path, fields)
+                        self.assertNotIn("_meta." + path, fields)
+                        self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
+                                         [("META-04", "_meta." + path)])
                     self.assertNotIn("META_FIELD_MISSING_" + suffix, [i["code"] for i in result["issues"]])
 
     def test_exact_physical_owner_does_not_consume_same_path_on_another_block(self):
@@ -96,11 +98,13 @@ class CompletenessOwnershipTests(unittest.TestCase):
         for owners in ((), ((1, path, code),), ((0, path, "META_FIELD_MISSING_SOURCE"),),
                        ((True, path, code),), ((-1, path, code),)):
             result = metadata_assessment(document, inventory, missing_field_owners=owners)
-            self.assertEqual([f["context"]["block_index"] for f in result["shape_findings"]], [0, 1])
+            self.assertEqual([f["context"]["block_index"] for f in result["shape_findings"]], [0])
         result = validate(document)
-        self.assertEqual([f["context"]["block_index"] for f in result["metadata_assessment"]["shape_findings"]], [1])
+        self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
         self.assertEqual([(f["context"]["block_index"], f["registered_code"]) for f in
-                         result["metadata_assessment"]["handled_shape_findings"]], [(0, code)])
+                         result["metadata_assessment"]["handled_shape_findings"]], [(0, code), (1, "META-04")])
+        self.assertEqual([(i["code"], i["context"]["block_index"]) for i in result["errors"]],
+                         [("META-04", 1)])
 
     def test_accepted_parent_and_independent_unallocated_shape_remain_separate(self):
         authored = body(); authored["_meta"]["quality"] = None
@@ -147,15 +151,12 @@ class CompletenessOwnershipTests(unittest.TestCase):
                         self.assertEqual(process.stderr, "")
                         self.assertEqual(path.read_bytes(), raw)
                         self.assertEqual(process.returncode, int(null))
-                        if null and field in ("section", "provenance.source"):
+                        if null:
                             self.assertNotIn("error", result)
                             self.assertEqual(result["overall_status"], "errors")
-                            self.assertEqual([i["code"] for i in result["errors"]],
-                                             ["META-01" if field == "section" else "SRC-01"])
-                        elif null:
-                            self.assertNotIn("code", result["error"])
-                            self.assertIn("partial_validation_result", result)
-                            self.assertIn("_meta." + field, [f["field"] for f in result["metadata_assessment"]["shape_findings"]])
+                            owner = {"section": "META-01", "provenance.source": "SRC-01"}.get(field, "META-04")
+                            self.assertEqual([i["code"] for i in result["errors"]], [owner])
+                            self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
                         else:
                             self.assertNotIn("error", result)
                             self.assertEqual(result["overall_status"], "warnings")

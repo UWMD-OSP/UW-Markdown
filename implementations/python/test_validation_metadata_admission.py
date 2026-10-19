@@ -94,7 +94,10 @@ class MetadataAdmissionTests(unittest.TestCase):
                 result, findings = self.assess(authored)
                 field = "_meta." + group + "." + key
                 owner = {("quality", "human_review_required"): "META-02",
-                         ("lifecycle", "superseded"): "META-03"}.get((group, key))
+                         ("lifecycle", "superseded"): "META-03",
+                         ("provenance", "timestamp"): "META-04",
+                         ("quality", "confidence"): "META-04",
+                         ("lifecycle", "revision"): "META-04"}.get((group, key))
                 if owner:
                     self.assertNotIn(field, [f["field"] for f in findings])
                     self.assertEqual([(i["code"], i["severity"], i["field"]) for i in result["errors"]],

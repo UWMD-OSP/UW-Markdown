@@ -122,19 +122,19 @@ class MetadataShape0093Tests(unittest.TestCase):
                           metadata_assessment(numeric, inventory)["shape_findings"]], ["_meta"])
         self.assertEqual(metadata_assessment(numeric, inventory, _source_order=True)["shape_findings"], [])
 
-    def test_unallocated_typed_requirement_stays_local_beside_registered_shapes(self):
+    def test_accepted_leaf_requirement_integrates_beside_registered_shapes(self):
         value = {"before": 1, **body()}
         value["_meta"]["section"] = "wrong"
         value["_meta"]["quality"]["confidence"] = "unknown"
         report = asyncio.run(_validate_source(HEADER + fence(value)))
-        self.assertEqual([f["field"] for f in report["metadata_assessment"]["shape_findings"]],
-                         ["_meta.quality.confidence"])
+        self.assertEqual(report["metadata_assessment"]["shape_findings"], [])
         response, status = _validation_response(report)
         self.assertEqual(status, 1)
-        self.assertNotIn("code", response["error"])
-        self.assertNotIn("overall_status", response)
-        self.assertEqual(shapes(response["partial_validation_result"]),
-                         [(0, "_meta"), (0, "_meta.section")])
+        self.assertNotIn("error", response)
+        self.assertEqual(response["overall_status"], "errors")
+        self.assertEqual([(i["code"], i["field"]) for i in response["errors"]],
+                         [("META-01", "_meta"), ("META-01", "_meta.section"),
+                          ("META-04", "_meta.quality.confidence")])
 
     def test_real_cli_source_order_normal_invalid_wire_and_discovery(self):
         cases = [(body(), [], 0),

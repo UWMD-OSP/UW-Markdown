@@ -68,7 +68,9 @@ class ValidationProvenanceTests(unittest.TestCase):
                 self.assertNotIn(("META-01","error"),codes(result))
                 field = "_meta."+".".join(path)
                 owner = {("quality", "human_review_required"): "META-02",
-                         ("lifecycle", "superseded"): "META-03"}.get(path)
+                         ("lifecycle", "superseded"): "META-03",
+                         ("quality", "confidence"): "META-04",
+                         ("lifecycle", "revision"): "META-04"}.get(path)
                 if owner:
                     self.assertNotIn(field,local_fields(result))
                     self.assertIn((owner,"error"),codes(result))
@@ -126,26 +128,30 @@ class ValidationProvenanceTests(unittest.TestCase):
                 body["_meta"]["provenance"][key]["digest"]="SHA256:invalid"
                 self.assertIn("_meta.provenance."+key,local_fields(validate(document(body))))
 
-    def test_rfc3339_shape_keeps_fraction_offset_case_calendar_and_leap_slots(self):
-        for value in ("1985-04-12T23:20:50.52Z","1996-12-19T16:39:57-08:00",
-            "1990-12-31T23:59:60Z","1990-12-31T15:59:60-08:00",
-            "1937-01-01T12:00:27.87+00:20","2024-02-29t00:00:00z",
-            "0000-02-29T00:00:00-00:00","2026-01-01T00:00:00.123456789123456789Z"):
+    def test_t1b_keeps_fraction_calendar_and_rejects_original_noncanonical_values(self):
+        for value in ("1985-04-12T23:20:50.52Z", "0000-02-29T00:00:00Z",
+                      "2026-01-01T00:00:00.123456789123456789Z"):
             with self.subTest(value=value):
                 self.assertTrue(timestamp_shape(value))
                 body=body_with_meta();body["_meta"]["provenance"]["timestamp"]=value
                 parsed=document(body)
                 self.assertNotIn("_meta.provenance.timestamp",local_fields(validate(parsed)))
                 self.assertEqual(parsed.source.blocks[0].parsed.value["_meta"]["provenance"]["timestamp"],value)
-        for value in ("2026-02-29T00:00:00Z","2026-01-01","2026-01-01T00:00:00",
+        # Preserve the formerly accepted authored vectors as strict T1B negatives.
+        for value in ("1996-12-19T16:39:57-08:00", "1990-12-31T23:59:60Z",
+            "1990-12-31T15:59:60-08:00", "1937-01-01T12:00:27.87+00:20",
+            "2024-02-29t00:00:00z", "0000-02-29T00:00:00-00:00",
+            "2026-02-29T00:00:00Z","2026-01-01","2026-01-01T00:00:00",
             "2026-01-01T24:00:00Z","2026-01-01T00:60:00Z","2026-01-01T00:00:00+24:00",
             "2026-01-01T00:00:60Z","2026-01-30T23:59:60Z","2026-01-01 00:00:00Z"):
             with self.subTest(value=value):
                 self.assertFalse(timestamp_shape(value))
                 body=body_with_meta();body["_meta"]["provenance"]["timestamp"]=value
-                result=validate(document(body))
-                self.assertIn("_meta.provenance.timestamp",local_fields(result))
-                self.assertNotIn(("META-01","error"),codes(result))
+                parsed=document(body); result=validate(parsed)
+                self.assertNotIn("_meta.provenance.timestamp",local_fields(result))
+                self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
+                                 [("META-04", "_meta.provenance.timestamp")])
+                self.assertEqual(parsed.source.blocks[0].parsed.value["_meta"]["provenance"]["timestamp"],value)
 
     def test_overrides_and_leaf_confidence_preserve_orthogonal_review_flag(self):
         body=body_with_meta();body["_overrides"]=[dict(path="unknown",confidence="low",note="stated")]
