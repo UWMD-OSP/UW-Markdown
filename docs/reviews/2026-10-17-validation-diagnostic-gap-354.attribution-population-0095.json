@@ -241,9 +241,9 @@
   },
   "full_record_evidence": {
     "file": "2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.all-records.json.gz",
-    "gzip_sha256": "8013995089f28dc85734d23b7a5aa287c1e810b135a9efc4e261b2cff95d6c48",
-    "decoded_json_sha256": "ec6263e3c95fbd6df8d9aba0774b7927bbb2f3c4f32bcc2b27d48ca4da588c16",
-    "decoded_bytes": 3611070
+    "gzip_sha256": "ae2436c173e4ef39a7a58f0e578db0d1493a2f360e6db53c02c6818416338001",
+    "decoded_json_sha256": "e013399e99402c0eff62b30f81f2a8ca708fe5c13fff3c32dcd02aa48d32eef0",
+    "decoded_bytes": 3613229
   },
   "newly_assessed_records": [
     {
@@ -3406,6 +3406,22 @@
     }
   ],
   "authored_controls": [
+    {
+      "name": "nonstring-resolution-arrays-never-assert-tags",
+      "source_sha256": "d519c04ff26e6b3b15e1fa17582c44c97a5362cbe970ebcf5df4c1d1894baaab",
+      "expectation": {
+        "failures": 0,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
     {
       "name": "historical-market-reference",
       "source_sha256": "13f765ccbe9fdc7db56dc83c6f9137da6a6eac2b703046b02e22c6d215dcdb03",

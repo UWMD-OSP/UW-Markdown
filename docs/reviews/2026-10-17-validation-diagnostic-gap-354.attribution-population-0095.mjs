@@ -136,8 +136,8 @@ function snapshot(p, operationId) {
     const overrideValue=b.content?._overrides;
     const overrides=Array.isArray(overrideValue)?overrideValue:[];
     const triggers={ inherited_assumption:[],market_data_accepted:[] };
-    if (own(provenance,'resolution') && Object.hasOwn(triggers,provenance.resolution)) triggers[provenance.resolution].push('_meta.provenance.resolution');
-    overrides.forEach((o,j)=>{if(object(o)&&own(o,'resolution')&&Object.hasOwn(triggers,o.resolution)) triggers[o.resolution].push(`_overrides[${j}].resolution`);});
+    if (own(provenance,'resolution') && typeof provenance.resolution==='string' && Object.hasOwn(triggers,provenance.resolution)) triggers[provenance.resolution].push('_meta.provenance.resolution');
+    overrides.forEach((o,j)=>{if(object(o)&&own(o,'resolution')&&typeof o.resolution==='string'&&Object.hasOwn(triggers,o.resolution)) triggers[o.resolution].push(`_overrides[${j}].resolution`);});
     const gate=metaGate(b);
     const admitted=gate==='admitted';
     const inherited=carrier(provenance,'inherited_from',triggers.inherited_assumption.length>0);
@@ -217,6 +217,7 @@ const count=a=>Object.fromEntries([...a.reduce((m,x)=>m.set(x,(m.get(x)??0)+1),n
    if(expectation.old!==undefined)assert.equal(view.actual_dq06_error.length,expectation.old,name);
    controls.push({name,source_sha256:sha(front+source),expectation,observation:view});
  };
+ addControl('nonstring-resolution-arrays-never-assert-tags',fence('property',block('property',['market_data_accepted'],{_overrides:[{path:'a',resolution:['inherited_assumption']}]})),{failures:0,old:0});
  const historical=block('property','market_data_accepted');historical._meta.lifecycle.superseded=true;
  addControl('historical-market-reference',fence('property',historical)+fence('property',block('property','user_input')),{failures:1,newly:1,old:0});
  addControl('overwritten-extension-market',fence('x_census',block('x_census','market_data_accepted'),'variant=a')+fence('x_census',block('x_census','user_input'),'variant=b'),{failures:1,newly:2,old:0});

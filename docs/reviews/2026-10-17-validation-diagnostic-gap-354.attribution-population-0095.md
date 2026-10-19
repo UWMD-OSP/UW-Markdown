@@ -9,9 +9,9 @@ Exact input main: `fa9a9ea37d31b918f5993eae4276b159f31719f3`. Draft reviewed: `c
 - [Reproduction script](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.mjs)
 - [Human-summary JSON and all 89 newly assessed standalone refs](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.json)
 - [Complete source/block/composition trace](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.all-records.json.gz)
-- JSON SHA-256: `6d59bccd6932fc68f129db2fd89d9c2a3e0290ec84c0dacd96d9f4e88f922919`
-- Gzip SHA-256: `8013995089f28dc85734d23b7a5aa287c1e810b135a9efc4e261b2cff95d6c48`
-- Decoded full JSON SHA-256: `ec6263e3c95fbd6df8d9aba0774b7927bbb2f3c4f32bcc2b27d48ca4da588c16`
+- JSON SHA-256: `6301337ad42993b4139a1522096f2c8e99a020752396bc4b47b8d7c56c8b886c`
+- Gzip SHA-256: `ae2436c173e4ef39a7a58f0e578db0d1493a2f360e6db53c02c6818416338001`
+- Decoded full JSON SHA-256: `e013399e99402c0eff62b30f81f2a8ca708fe5c13fff3c32dcd02aa48d32eef0`
 - Runtime: Node `v24.14.1`, TypeScript `5.9.3`, `win32` / `10.0.26200`.
 
 With the existing TypeScript development dependency installed, from the repository root:
@@ -61,7 +61,7 @@ Across the seven resolved operations: 12 root physical refs +21 consumed-part ph
 
 ## Independently authored census controls
 
-The following 16 controls execute only in the census. They are not new conformance fixtures, frozen expected-result changes or activated diagnostics. Findings count reference predicates only. Current DQ observations retain its old population, convenience authority, falsy-reference behavior and exception boundary.
+The following 17 controls execute only in the census. They are not new conformance fixtures, frozen expected-result changes or activated diagnostics. Findings count reference predicates only. Current DQ observations retain its old population, convenience authority, falsy-reference behavior and exception boundary.
 
 | Control | Candidate reference findings | Observed old attribution errors |
 |---|---:|---:|
@@ -161,3 +161,5 @@ These remain earlier failures and are never counted as successful empty attribut
 This independently establishes the exact population expansion at the assigned base, with zero current tracked-source attribution deltas. The stage-only DQ-06 direction requires removal of the old attribution emission when its governed replacement is implemented; never retain both. It does not remove stage readiness or CC-14 suppression. Final implementation still needs exact field/pass ordering, both trigger families, parent precedence and ordinary result/CLI/receipt-policy tests in TypeScript and Python. The U3 date-only direction is fixed by the owner and independently tested in the adjacent date controls; one ordinary carrier date is not exhaustive date-domain evidence. All other optional-field/agent-presence effects remain outside this census.
 
 Re-run on the final implementation/activation base, including the separately pending RFC0094 implementation. No source or frozen expectation change follows solely from this attribution inventory. It does not establish full Python validation capability, final CI, carrier authenticity or external-reference availability.
+
+Review added an exact-string guard to both trigger lookups: a JSON array containing a tag never asserts that tag. The dedicated non-string canonical/override control passes; corpus populations and findings are unchanged. The integrator separately verified all880 source hashes and all89 newly assessed rows with a fresh parser-only observer.
