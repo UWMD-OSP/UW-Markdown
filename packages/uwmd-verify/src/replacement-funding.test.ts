@@ -189,7 +189,7 @@ describe('RFC 0070 separate verification', () => {
       for (const [id, entry] of Object.entries(parsed.sections))
         for (const block of sectionBlocks(entry)) {
           block.meta = buildMeta(id, 1, { source: 'manual', actor: 'test', confidence: 'high', timestamp: '2026-10-03T00:00:00Z' });
-          block.content._meta = block.meta;
+          stampMetaIntoBlockContent(block.content, block.meta);
         }
       const result = await createUWMCPValidationResult(toUWEnvelope(parsed), 'HDG-CONF');
       expect(result.structuredContent).toMatchObject({
