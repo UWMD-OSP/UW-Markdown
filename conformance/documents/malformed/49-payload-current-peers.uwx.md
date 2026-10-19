@@ -60,7 +60,7 @@ deal_id: rfc0096-authored-control
   "extra": 1
 }
 ```
-```json uw:section=lease_up_schedule variant=a source=manual ts=2026-10-19T00:00:00Z v=1 confidence=high
+```json uw:section=lease_up_schedule variant=a source=manual ts=2026-10-19T00:00:00Z v=2 confidence=high
 {
   "_meta": {
     "section": "lease_up_schedule",
@@ -74,7 +74,7 @@ deal_id: rfc0096-authored-control
       "human_review_required": false
     },
     "lifecycle": {
-      "revision": 1,
+      "revision": 2,
       "superseded": false
     }
   },

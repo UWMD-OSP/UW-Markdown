@@ -5700,6 +5700,16 @@
       "suite": "documents",
       "scenario": "malformed/49-payload-current-peers",
       "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-inherited-cash-flow-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "accept-own-prototype-named-variant",
+      "target": "verifier"
     }
   ]
 }
