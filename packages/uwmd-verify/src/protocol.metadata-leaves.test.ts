@@ -7,7 +7,7 @@ import { BUILTIN_REMEDIATIONS } from './protocol.js';
 const schema = JSON.parse(readFileSync(new URL('../../../spec/schemas/uwmd-block.schema.json', import.meta.url), 'utf8'));
 const timestamp = schema.$defs.UWMeta.properties.provenance.properties.timestamp;
 const rfc = readFileSync(new URL('../../../docs/rfcs/0094-present-invalid-metadata-leaves.md', import.meta.url), 'utf8');
-const vectors = rfc.split('\n').flatMap(line => {
+const vectors = rfc.split(/\r?\n/).flatMap(line => {
   const row = /^\| ([^|]+) \| `(.*)` \| (admit|META-04) \|$/.exec(line);
   return row ? [{ name: row[1]!, value: JSON.parse(row[2]!), valid: row[3] === 'admit' }] : [];
 });
