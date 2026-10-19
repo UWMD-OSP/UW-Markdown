@@ -137,12 +137,28 @@ def main(arguments):
         except Exception as error:
             return {"error": {"message": "Internal calculation failure: " + str(error)}}, 2
     if arguments and arguments[0] == "validate":
-        if len(arguments) not in (2, 3) or (len(arguments) == 3 and arguments[2] != "--json"):
-            return {"error": {"message": "validate <file> [--json]"}}, 1
+        tail=arguments[1:]
+        if not tail or tail[0].startswith("--"):
+            return {"error": {"message": "validate <file> [--institution <config.json>] [--json]"}}, 1
+        index,json_requested,explicit=1,False,None
+        while index<len(tail):
+            flag=tail[index]
+            if flag=="--json" and not json_requested:
+                json_requested=True
+            elif flag=="--institution" and explicit is None and index+1<len(tail) and not tail[index+1].startswith("--"):
+                index+=1;explicit=tail[index]
+            elif flag.startswith("--institution=") and explicit is None and len(flag)>14:
+                explicit=flag[14:]
+            else:
+                return {"error": {"message": "validate <file> [--institution <config.json>] [--json]"}}, 1
+            index+=1
         try:
-            path = Path(arguments[1])
+            path = Path(tail[0])
+            raw=path.read_bytes()
+            from uwmd_institution import load_institution_thresholds
+            thresholds=load_institution_thresholds(path,explicit)
             return _validation_response(asyncio.run(
-                _validate_source(path.read_bytes(), filename=path.name)))
+                _validate_source(raw, filename=path.name,thresholds=thresholds)))
         except SourceError as error:
             diagnostic = {"message": str(error)}
             if hasattr(error, "code"):

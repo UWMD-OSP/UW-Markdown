@@ -138,23 +138,33 @@ def cross_checks(ledger):
     ledger.finish_coverage()
 
 
+_THRESHOLD_SPECS = (
+    ("valuation", ("going_in_cap_rate",), "cap_rate", .03, .15, None, None, "FV-01", "FV-02"),
+    ("debt_structure", ("sizing_metrics.debt_yield",), "debt_yield", .07, None, None, None, "FV-03", None),
+    ("debt_structure", ("sizing_metrics.dscr_underwritten",), "dscr", 1.2, None, 1.0, None, "FV-04", None),
+    ("debt_structure", ("sizing_metrics.ltv",), "ltv", None, .75, None, .85, None, "FV-09"),
+    ("dcf", ("returns.equity_multiple",), "equity_multiple", 1, 5, None, None, "FV-05", "FV-06"),
+    ("dcf", ("returns.levered_irr",), "irr", .05, .4, None, None, "FV-07", "FV-08"),
+    ("noi_model", ("expenses.expense_ratio",), "opex_ratio", .2, .7, None, None, "FV-10", "FV-11"),
+    ("dcf", ("assumptions.revenue_growth_rate",), "annual_rent_growth", None, .08, None, None, None, "FV-12"),
+    ("noi_model", ("income.vacancy_credit_loss.rate_applied",), "vacancy_rate", .02, .4, None, None, "FV-13", "FV-14"),
+)
+
+
+def _default_threshold_bands():
+    """Detached current validation defaults, including each unchanged bound."""
+    return {key:{name:bound for name,bound in (
+                ("warning_below",low),("warning_above",high),
+                ("error_below",error_low),("error_above",error_high)) if bound is not None}
+            for _,_,key,low,high,error_low,error_high,_,_ in _THRESHOLD_SPECS}
+
+
 def financial_thresholds(ledger, thresholds=None):
     """Published Format 5.2 thresholds; compare stated values, never solve inputs."""
     thresholds = thresholds or {}
     document = ledger.document
-    specs = (
-        ("valuation", ("going_in_cap_rate",), "cap_rate", .03, .15, None, None, "FV-01", "FV-02"),
-        ("debt_structure", ("sizing_metrics.debt_yield",), "debt_yield", .07, None, None, None, "FV-03", None),
-        ("debt_structure", ("sizing_metrics.dscr_underwritten",), "dscr", 1.2, None, 1.0, None, "FV-04", None),
-        ("debt_structure", ("sizing_metrics.ltv",), "ltv", None, .75, None, .85, None, "FV-09"),
-        ("dcf", ("returns.equity_multiple",), "equity_multiple", 1, 5, None, None, "FV-05", "FV-06"),
-        ("dcf", ("returns.levered_irr",), "irr", .05, .4, None, None, "FV-07", "FV-08"),
-        ("noi_model", ("expenses.expense_ratio",), "opex_ratio", .2, .7, None, None, "FV-10", "FV-11"),
-        ("dcf", ("assumptions.revenue_growth_rate",), "annual_rent_growth", None, .08, None, None, None, "FV-12"),
-        ("noi_model", ("income.vacancy_credit_loss.rate_applied",), "vacancy_rate", .02, .4, None, None, "FV-13", "FV-14"),
-    )
     from uwmd_validation_selection import select_section
-    for section, paths, key, low, high, error_low, error_high, low_code, high_code in specs:
+    for section, paths, key, low, high, error_low, error_high, low_code, high_code in _THRESHOLD_SPECS:
         selected = select_section(document, section, preferred_role="senior" if section == "debt_structure" else None)
         if selected.block is None:
             continue
