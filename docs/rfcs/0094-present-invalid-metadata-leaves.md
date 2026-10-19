@@ -241,7 +241,11 @@ predicate inventory found174 present-invalid leaves across78 files:
 
 There were no present-invalid revisions and no candidate hidden by the old
 wrapper/provenance/lifecycle rejection in this scan. No candidate occurred in
-`conformance/documents/fixtures/` or `conformance/documents/malformed/`.
+`conformance/documents/fixtures/` or `conformance/documents/malformed/`. Independently
+resolving all111 portable `validate` case inputs against their declared fixture
+directories found zero intersection with these78 candidate paths. This is an
+input-path inventory, not execution of a new META-04 validator or a prediction
+that every future derived-result expectation remains unchanged.
 
 The reserve runners invoke their focused financial verifiers; their positive
 financial verdicts do not allocate a different confidence vocabulary. The editor
@@ -263,7 +267,12 @@ negative assertion may be weakened to obtain a green result.
 
 The independent scan uses `git ls-files -z` and `git cat-file --batch` at the
 exact baseline above, UTF8 JSON decoding, physical fence order and own canonical
-members, before routing. Confidence uses exact enum membership; revision uses
+members, before routing. Its independent Markdown carrier scan accepts zero to
+three leading spaces, backtick or tilde fences of length at least three, matching
+longer closing fences, and keeps generic fenced examples opaque. A widened scan
+reproduced the same2223 objects and exact174 candidate records as the initial
+literal-backtick scan; no extra candidate was silently omitted by that narrower
+first recognizer. Confidence uses exact enum membership; revision uses
 integer/minimum without Python boolean coercion. Timestamp candidate
 classification uses the installed schema tool's full date-time predicate only
 as measured tooling evidence; T1 remains unresolved. Source SHA256 plus physical
@@ -271,7 +280,7 @@ block ordinal, opening line, annotation, field and value identify every candidat
 in AppendixA. Whole/nested-shape exclusions and absences are separate populations.
 
 The complete inventory report SHA256 is
-`46b5df86ff92305405814d3691f06df2ee5fd614eb45e46453d823e2cc657c08`;
+`3ba6f087ae6e90b716ee7f075ff0d60580beef6045b090347b083d8ab594ad8c`;
 the15-value timestamp boundary report SHA256 is
 `6b11fe95dcc93b324bb8ad6e3c5d2fbe3f10307f41f72689dd95193fbd9e0f1f`.
 These are candidate evidence, not accepted expected outputs, platform results or
