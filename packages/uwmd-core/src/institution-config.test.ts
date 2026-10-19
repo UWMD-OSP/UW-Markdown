@@ -26,7 +26,7 @@ describe('RFC0097 whole-byte and whole-JSON profile', () => {
   it.each([
     [0xef, 0xbb, 0xbf, 0x7b, 0x7d], [0xff], [0xc0, 0xaf], [0xed, 0xa0, 0x80],
     [0xf4, 0x90, 0x80, 0x80], [0xe2, 0x82], [0x7b, 0x22, 0xff, 0x22, 0x3a, 0x31, 0x7d],
-  ])('refuses BOM/invalid UTF8 bytes (%#)', octets => refusal(() => parseInstitutionThresholds(Uint8Array.from(octets))));
+  ].map(octets => ({ octets })))('refuses BOM/invalid UTF8 bytes (%#)', ({ octets }) => refusal(() => parseInstitutionThresholds(Uint8Array.from(octets))));
   it.each([
     '{"a":1,"a":2}', String.raw`{"a":1,"\u0061":2}`, '{"opaque":[{"x":1,"x":2}]}',
     String.raw`{"validation_overrides":{"dscr_warning_below":1,"\u0064scr_warning_below":2}}`,

@@ -44,7 +44,7 @@ describe('RFC0097 actual standalone CLI admission', () => {
     expect(JSON.parse(result.stdout)).toEqual({ error: errorObject('MALFORMED', pointer) });
     expect(readFileSync(file, 'utf8')).toBe(SOURCE); expect(readFileSync(config)).toEqual(before);
   });
-  it.each([[0xef, 0xbb, 0xbf, 0x7b, 0x7d], [0xff], [0xed, 0xa0, 0x80]])('actual invalid UTF8/BOM bytes refuse before shape (%#)', async octets => {
+  it.each([[0xef, 0xbb, 0xbf, 0x7b, 0x7d], [0xff], [0xed, 0xa0, 0x80]].map(octets => ({ octets })))('actual invalid UTF8/BOM bytes refuse before shape (%#)', async ({ octets }) => {
     const { file, config } = setup(); const raw = Buffer.from(octets); writeFileSync(config, raw);
     const result = await run(['validate', file, '--json']);
     expect(result.status).toBe(1); expect(JSON.parse(result.stdout)).toEqual({ error: errorObject() });
@@ -139,7 +139,7 @@ describe('RFC0097 actual standalone CLI admission', () => {
 });
 
 describe('RFC0097 aggregate and receipt boundaries', () => {
-  it.each([['--validate'], []] as string[][])('aggregate keeps wrapper and requested independent operations (%j)', async flags => {
+  it.each([{ flags: ['--validate'] }, { flags: [] }])('aggregate keeps wrapper and requested independent operations ($flags)', async ({ flags }) => {
     const { file, config } = setup(); writeFileSync(config, '{');
     const result = await run(['verify', file, ...flags, '--json']);
     expect(result.status).toBe(1); const output = JSON.parse(result.stdout);
