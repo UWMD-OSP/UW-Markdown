@@ -248,7 +248,11 @@ input-path inventory, not execution of a new META-04 validator or a prediction
 that every future derived-result expectation remains unchanged.
 
 The reserve runners invoke their focused financial verifiers; their positive
-financial verdicts do not allocate a different confidence vocabulary. The editor
+financial verdicts do not allocate a different confidence vocabulary. Independent
+review of the73 reserve-family expected states found17 documents whose focused
+financial verdict is `verified` (6 reserve-account documents carrying7 candidate
+blocks and11 reserve-draw documents carrying33), and56 documents in other
+financial states. Neither group promises complete metadata validity. The editor
 runner deliberately normalizes timestamps into `<volatile>` before comparing its
 AFTER templates (`scripts/run-conformance.mjs`, `stripVolatileFields`). Those8 template
 strings are not8 demonstrated failures in actual writer output. Distinguish
