@@ -8,6 +8,15 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Draft RFC0097 — selected institution-config refusal.**
+[RFC0097](../rfcs/0097-institution-config-refusal.md) proposes two typed
+validate-operation errors for unreadable/malformed selected configuration,
+atomic admission of the three documented overrides and automatic-absence defaults.
+Exact selection, stricter JSON profile, opaque data, pointer authority and CLI
+transport are explicit proposed details. Owner authority is drafting only;
+no error allocation/runtime/schema/capability is activated. Pure API threshold
+maps and all receipt identity/count/authentication rules remain separate.
+
 **Accepted RFC0096 — owner decision2026-10-19 at1926efe4.**
 [RFC0096](../rfcs/0096-bounded-stated-payload-admission.md) allocates closed
 LU-05/REC-11/CS-03/WF-16 validation-only errors. The owner accepted all six

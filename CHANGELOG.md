@@ -10,6 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Draft RFC0097 for typed refusal of selected unreadable/malformed institution
+  configs, atomic three-key application and defaults only on automatic absence.
+  Selection, JSON-profile and error-pointer details remain proposed. Docs only;
+  no runtime/schema/expectation, financial threshold or receipt rule changes.
+
 - Accept RFC0096 under the owner's2026-10-19 decision at1926efe4: closed
   LU-05/REC-11/CS-03/WF-16 validation errors, assembled current-payload authority,
   exact target/recovery-null/lexical-date dispositions and unchanged financial
