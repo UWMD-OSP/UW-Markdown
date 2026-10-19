@@ -264,7 +264,12 @@ chosen U2 trigger. Remove the duplicate attribution emission, retaining its
 requirement and error severity. Precisely separate absent from invalid-present
 carriers: null/false become invalid carrier shape, not an invented default.
 Stage readiness, CC-14 suppression and unrelated DQ ordering stay unchanged.
-The resulting code/path/ordering changes require explicit governed acceptance
+The current attribution check walks parsed.sections/current variants, excluding
+history, overwritten peers, append and extension collections. The proposed
+META-06 pass uses the full retained-physical/current-model union: this is an
+explicit population expansion requiring acceptance, not merely a code rename.
+Inventory the newly assessed population independently before activation.
+The resulting code/path/population/ordering changes require explicit governed acceptance
 and synchronized tests; they are not authorized by drafting approval.
 
 Alternative: retain DQ-06/error for attribution and allocate a separate
