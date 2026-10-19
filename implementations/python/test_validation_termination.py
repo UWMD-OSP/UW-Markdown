@@ -1,4 +1,5 @@
 """Accepted RFC0055 termination admission, exact diagnostic fields and transport."""
+import asyncio
 import copy
 import json
 from pathlib import Path
@@ -11,6 +12,7 @@ from test_reader import HEADER, block
 from test_validation import ROOT, validate, well_formed
 from test_validation_cli import property_source
 from uwmd_reader import parse
+from uwmd_validation import _validate_source
 
 BASE = "tenants[0].termination_option"
 COMPONENTS = ["unamortized_ti", "unamortized_lc", "free_rent", "fee"]
@@ -46,9 +48,9 @@ class TerminationAdmissionTests(unittest.TestCase):
                       {"conditions": None}, {"conditions": "literal narrative"}):
             with self.subTest(extra=extra):
                 self.assertEqual(self.assess(option(**extra)), [])
-        for months in (0, 1, 1.0, 9007199254740992, 1e100):
+        for months in (0, 1, 1.0, 9007199254740991):
             value = option(); value["notice_months"] = months
-            self.assertEqual(self.assess(value), [])  # No invented safe-integer ceiling.
+            self.assertEqual(self.assess(value), [])  # RFC0055 LSE-04 safe-integer boundary.
         for date in ("2026-01-01", "2026-12-31"):
             value = option(); value["earliest_date"] = date
             self.assertEqual(self.assess(value, lease_commencement="2026-01-01", lease_expiration="2026-12-31"), [])
@@ -64,7 +66,7 @@ class TerminationAdmissionTests(unittest.TestCase):
         self.assertEqual([i["code"] for i in result["issues"] if i["code"].startswith("LSE-")], ["LSE-04", "LSE-06"])
 
     def test_notice_and_penalty_predicates_keep_exact_independent_fields(self):
-        for notice in (None, False, True, -1, .5, "1", [], {}):
+        for notice in (None, False, True, -1, .5, "1", [], {}, 9007199254740992, 1e100):
             value = option(); value["notice_months"] = notice
             self.assertEqual(self.assess(value), [("LSE-04", BASE + ".notice_months")])
         value = option(); del value["notice_months"]
@@ -112,8 +114,27 @@ class TerminationAdmissionTests(unittest.TestCase):
         self.assertEqual(findings(validate(parse(source))), [("LSE-04", BASE + ".earliest_date")])
         self.assertEqual(findings(validate(parse(property_source() + well_formed("x_lawful", tenants=[dict(termination_option={})])))), [])
 
+    def test_safe_integer_boundary_is_field_specific_and_current_model_authoritative(self):
+        admitted = option(); admitted["notice_months"] = 9007199254740991
+        original = raw(admitted); document = parse(original)
+        document.source.blocks[1].parsed.value["_meta"]["lifecycle"]["revision"] = 9007199254740992
+        current = document.source.blocks[1].parsed.value["tenants"][0]["termination_option"]
+        current["notice_months"] = 9007199254740992
+        before = copy.deepcopy(document)
+        result = validate(document)
+        self.assertEqual(findings(result), [("LSE-04", BASE + ".notice_months")])
+        self.assertFalse(any(i["code"] == "META-04" for i in result["issues"]))
+        self.assertEqual(document, before)
+        self.assertEqual(document.source.raw, original)
+        self.assertEqual(findings(asyncio.run(_validate_source(original))), [])
+        current["earliest_date"] = "bad"
+        self.assertEqual(findings(validate(document)), [("LSE-04", BASE + ".earliest_date")])
+
     def test_actual_cli_exact_fields_partitions_exits_and_unchanged_sources(self):
-        cases = [(option(), [], 0), ({}, [("LSE-04", BASE + ".earliest_date")], 1),
+        max_notice = {**option(), "notice_months": 9007199254740991}
+        above = {**option(), "notice_months": 9007199254740992}
+        cases = [(option(), [], 0), (max_notice, [], 0),
+                 (above, [("LSE-04", BASE + ".notice_months")], 1), ({}, [("LSE-04", BASE + ".earliest_date")], 1),
                  (option(penalty_includes=["fee", "fee"]), [("LSE-05", BASE + ".penalty_includes[1]")], 1)]
         with tempfile.TemporaryDirectory(prefix="uwmd-termination-cli-") as folder:
             path = Path(folder) / "source.uwx.md"

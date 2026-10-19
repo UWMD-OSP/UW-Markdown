@@ -77,8 +77,10 @@ def lease_rules(ledger):
                     issue("LSE-04", "termination_option.earliest_date", "Termination date must be a real YYYY-MM-DD date")
                 else:
                     date, notice, penalty = termination["earliest_date"], termination.get("notice_months"), termination.get("penalty")
-                    if not _whole(notice):
-                        issue("LSE-04", "termination_option.notice_months", "Notice must be a nonnegative whole number of months")
+                    # RFC0055 LSE-04 explicitly bounds this field to safe
+                    # integers; other admitted integer domains are unchanged.
+                    if not _whole(notice) or notice > 9007199254740991:
+                        issue("LSE-04", "termination_option.notice_months", "Notice must be a nonnegative safe integer number of months")
                     if penalty is not None and not _nonnegative(penalty):
                         issue("LSE-04", "termination_option.penalty", "Stated penalty must be finite and nonnegative; null means none")
                     if term and not start <= date <= end:
