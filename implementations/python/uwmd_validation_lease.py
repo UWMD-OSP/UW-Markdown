@@ -71,18 +71,33 @@ def lease_rules(ledger):
             if termination is not None:
                 if not isinstance(termination, dict):
                     issue("LSE-04", "termination_option", "Termination option must be an object")
+                elif not calendar_date(termination.get("earliest_date")):
+                    # A malformed date stops only this clause's admission; the
+                    # independent co-tenancy and recovery passes still run.
+                    issue("LSE-04", "termination_option.earliest_date", "Termination date must be a real YYYY-MM-DD date")
                 else:
-                    date, notice, penalty = termination.get("earliest_date"), termination.get("notice_months"), termination.get("penalty")
-                    valid = calendar_date(date) and _whole(notice) and (penalty is None or _nonnegative(penalty))
-                    valid = valid and (not term or start <= date <= end)
-                    if not valid:
-                        issue("LSE-04", "termination_option", "Termination date, notice or stated penalty is invalid")
+                    date, notice, penalty = termination["earliest_date"], termination.get("notice_months"), termination.get("penalty")
+                    if not _whole(notice):
+                        issue("LSE-04", "termination_option.notice_months", "Notice must be a nonnegative whole number of months")
+                    if penalty is not None and not _nonnegative(penalty):
+                        issue("LSE-04", "termination_option.penalty", "Stated penalty must be finite and nonnegative; null means none")
+                    if term and not start <= date <= end:
+                        issue("LSE-04", "termination_option.earliest_date", "Termination date lies outside the stated lease term")
                     included = termination.get("penalty_includes")
                     if included is not None:
-                        if (not isinstance(included, list) or not included
-                                or any(x not in ("unamortized_ti", "unamortized_lc", "free_rent", "fee") for x in included)
-                                or len({x for x in included if isinstance(x, str)}) != len(included)):
-                            issue("LSE-05", "termination_option.penalty_includes", "Penalty components must be unique admitted values")
+                        if not isinstance(included, list) or not included:
+                            issue("LSE-05", "termination_option.penalty_includes", "Penalty components must be a nonempty array when stated")
+                        else:
+                            seen = set()
+                            for index, component in enumerate(included):
+                                path = "termination_option.penalty_includes[" + str(index) + "]"
+                                if not isinstance(component, str) or component not in ("unamortized_ti", "unamortized_lc", "free_rent", "fee"):
+                                    issue("LSE-05", path, "Penalty component is outside the closed vocabulary")
+                                    break
+                                if component in seen:
+                                    issue("LSE-05", path, "Penalty component is listed more than once")
+                                    break
+                                seen.add(component)
             details, clause = tenant.get("co_tenancy_details"), tenant.get("co_tenancy_clause")
             if (details is not None and clause is not True) or (clause is True and not isinstance(details, dict)):
                 issue("LSE-06", "co_tenancy_details", "Co-tenancy flag and details must agree")
