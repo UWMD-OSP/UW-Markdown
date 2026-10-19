@@ -522,6 +522,33 @@ digest, including every stated override.
 
 A `_meta` without nested `provenance` and `lifecycle` is `META-01`. The provenance-completeness codes remain `META_MISSING`, `META_FIELD_MISSING_<FIELD>` and `META_LOW_CONFIDENCE_NO_REVIEW_FLAG`.
 
+**Bounded metadata admission (RFC0093).** After existing wrapper/nested-shape
+admission, each of the following yields one `META-01`/error per distinct retained
+physical or model-only block, in this order: present top-level `_meta` not first
+(field `_meta`); present `_meta.section` not a nonempty string exactly equal to
+the admitted annotation section (field `_meta.section`); required `_meta.quality`
+absent, null, array or scalar (field `_meta.quality`). Complete the entire new
+pass after existing shape findings and before all actor and boolean findings.
+Protocol §III.6a defines exact source/model order, identity union and transport.
+
+Fresh structured JSON source uses lexical decoded top-level member order,
+including escaped names and authored numeric-key placement. Mutable models use
+current own enumerable non-array-index string-member order; array-index names
+are exactly canonical unsigned decimal spellings0 through4294967294. Their
+original position is not recoverable from ordinary model enumeration. Never
+reparse stale raw text or substitute convenience metadata for current content.
+Other representations retain their accepted compilation/model path, including
+UW Lite; no authored fenced-JSON order is attributed to generated blocks.
+
+Whole missing metadata and existing rejected wrapper/provenance/lifecycle shape
+keep their earlier precedence without these additional errors. Absent section
+keeps its warning without the present-invalid-section error. Placement/section
+errors do not suppress actors or admitted-parent booleans; missing/nonobject
+quality suppresses only META-02. An empty quality object is admitted: confidence
+completeness and missing human_review_required remain independently assessed.
+Matching unknown nonempty sections pass; do not trim, normalize, coerce or infer
+values. No other metadata-schema requirement receives a diagnostic allocation.
+
 **Required actor admission (RFC 0090).** After existing
 wrapper/nested-shape precedence, an absent, null, exact-empty or non-string
 canonical `_meta.provenance.actor` produces one `META-01`/error with field

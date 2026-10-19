@@ -5600,6 +5600,26 @@
       "suite": "calc",
       "scenario": "rfc0088-npv-nan-raw",
       "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/30-meta-placement",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/31-meta-section",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/32-meta-quality",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/33-meta-pass-order",
+      "target": "verifier"
     }
   ]
 }

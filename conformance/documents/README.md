@@ -65,6 +65,14 @@ coverage requires fixture-bound policies).
 | `malformed/22-resolution-outside-vocabulary` | `SRC-03` | Validator (`provenance.resolution` outside the closed vocabulary) |
 | `malformed/23-retired-official-alias` | `INVALID-ASSET-CLASS-002` | Validator (`org.uwmd.data_center` is refused like any namespaced builtin suffix) |
 
+RFC0093 adds native Verifier controls `30-meta-placement`, `31-meta-section`,
+`32-meta-quality` and `33-meta-pass-order`. Their `metadata_issues` rows pin exact
+META-01/02/03 field attribution, multiplicity and complete-pass order; existing
+wrapper findings retain their earlier attribution. The runner assesses the actual
+structured source so numeric-key lexical placement is observed. Ordinary mutable
+model and composed-source controls also live in the reference implementation's
+focused tests. No existing fixture or expectation is rebaselined.
+
 A fixture whose `expected.json` sets `"must_parse": false` must be refused by
 the parser itself, with one of its `expected_codes`.
 

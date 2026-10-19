@@ -17,11 +17,11 @@ import type {
   CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
 import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
-import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks } from './parser.js';
+import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks, parseUWFile, parsedFirstSourceMember } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
 } from './protocol.js';
-import { EXTERNAL_ANNOTATION_KEY } from './composition.js';
+import { EXTERNAL_ANNOTATION_KEY, CompositionError, parseUWPart, resolveComposition } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
 import type { IssueRemediation, IncompleteDataPolicy } from './protocol.js';
 import { readGapsContent } from './gaps-content.js';
@@ -97,9 +97,29 @@ function resolveSectionFieldPath(parsed: ParsedUWFile, path: string): unknown {
 // ─── Main validate function ───────────────────────────────────────────────────
 
 export function validateUWFile(
-  parsed: ParsedUWFile,
+  input: ParsedUWFile | string,
   thresholdOverrides?: Partial<FinancialThresholds>,
+  sourceOptions?: { parts: readonly string[] },
 ): ValidationResult {
+  // String input is a fresh source operation. A supplied model stays a model,
+  // even if it happens to retain parser evidence or stale raw source strings.
+  const sourceOperation = typeof input === 'string';
+  let parsed = sourceOperation ? parseUWFile(input) : input;
+  if (sourceOptions !== undefined) {
+    if (!sourceOperation) throw new CompositionError('COMP-PART-MALFORMED', 'Source composition requires actual source input, not a mutable model.');
+    const parts = new Map<string, ReturnType<typeof parseUWPart>>();
+    for (const source of sourceOptions.parts) {
+      const part = parseUWPart(parseUWFile(source));
+      if (parts.has(part.part_id)) throw new CompositionError('COMP-DUP-KEY', `Duplicate part_id '${part.part_id}' in source input.`);
+      parts.set(part.part_id, part);
+    }
+    const resolved = resolveComposition(parsed, { parts });
+    if (resolved.status !== 'resolved') {
+      const issue = resolved.issues[0]!;
+      throw new CompositionError(issue.code as ConstructorParameters<typeof CompositionError>[0], issue.message);
+    }
+    parsed = resolved.document;
+  }
   const thresholds: FinancialThresholds = { ...DEFAULT_THRESHOLDS, ...thresholdOverrides };
   const issues: ValidationMessage[] = [];
 
@@ -128,6 +148,7 @@ export function validateUWFile(
   checkScenarioIdentity(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
+  checkMetadataAdmission(parsed, issues, sourceOperation);
   checkProvenanceActors(parsed, issues);
   checkMetadataBooleans(parsed, issues);
   checkBlockRoles(parsed, issues);
@@ -3165,6 +3186,41 @@ function checkMetaShape(parsed: ParsedUWFile, issues: ValidationMessage[]): void
   for (const block of parsedPhysicalBlocks(parsed)) {
     if (!visible.has(block)) walk(block.annotation.section, block);
   }
+}
+
+// RFC0093: exactly P1/P2/P3, separate from the existing container gate.
+function checkMetadataAdmission(parsed: ParsedUWFile, issues: ValidationMessage[], sourceOperation: boolean): void {
+  const visited = new Set<UWBlock>();
+  const walk = (sectionId: string, block: UWBlock): void => {
+    if (visited.has(block)) return;
+    visited.add(block);
+    const meta = block.content['_meta'];
+    if (!Object.hasOwn(block.content, '_meta') || meta === undefined || malformedMetaShape(block)) return;
+    const admitted = meta as Record<string, unknown>;
+    // Synthesized composition blocks have no authored JSON sequence. Assess
+    // those model-only references by MODEL order; physical refs retain SOURCE.
+    const lexicalFirst = sourceOperation ? parsedFirstSourceMember(block) : undefined;
+    const first = lexicalFirst ?? Object.keys(block.content).find(key => !isArrayIndexMember(key));
+    const failures: [string, string][] = [];
+    if (first !== '_meta') failures.push(['_meta', 'Block canonical _meta must be the first member.']);
+    if (Object.hasOwn(admitted, 'section') && (typeof admitted.section !== 'string'
+      || admitted.section.length === 0 || admitted.section !== block.annotation.section)) {
+      failures.push(['_meta.section', 'Block _meta.section must be a nonempty string exactly matching the annotation section.']);
+    }
+    if (!Object.hasOwn(admitted, 'quality') || !metaObject(admitted.quality)) {
+      failures.push(['_meta.quality', 'Block _meta.quality must be a required object.']);
+    }
+    for (const [field, message] of failures) issues.push({
+      code: 'META-01', severity: 'error', section: sectionId, field, message,
+    });
+  };
+  for (const block of parsedPhysicalBlocks(parsed)) walk(block.annotation.section, block);
+  for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
+}
+
+function isArrayIndexMember(key: string): boolean {
+  const value = Number(key);
+  return Number.isInteger(value) && value >= 0 && value < 4294967295 && String(value) === key;
 }
 
 function checkProvenanceActors(parsed: ParsedUWFile, issues: ValidationMessage[]): void {

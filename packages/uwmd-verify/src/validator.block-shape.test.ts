@@ -6,7 +6,8 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import * as publicAPI from './index.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
-import { parseUWFile } from './parser.js';
+import { parseUWFile, parsedPhysicalBlocks, retainParsedPhysicalBlocks } from './parser.js';
+import { CompositionError, parseUWPart, resolveComposition } from './composition.js';
 import { validateUWFile } from './validator.js';
 import { buildMeta } from './metadata.js';
 
@@ -193,5 +194,294 @@ describe('RFC 0090 actor admission', () => {
     const parsed = doc(body('property'));
     expect(Object.keys(parsed)).toEqual(['frontmatter', 'sections', 'prose', 'pipeline_log', 'custom_calculations', 'custom_scenarios', 'extensions', 'superseded', 'raw']);
     expect(publicAPI).not.toHaveProperty('parsedPhysicalBlocks');
+  });
+});
+
+// RFC0093: the three accepted predicates have their own checkpoint and authority.
+const admittedIssues = (input: ParsedUWFile | string) => validateUWFile(input).issues.filter(i =>
+  i.code === 'META-01' && ['_meta', '_meta.section', '_meta.quality'].includes(i.field ?? ''));
+const shapeSource = (json: string, id = 'property') => `${header}\`\`\`json uw:section=${id}\n${json}\n\`\`\`\n`;
+const canonicalMeta = () => structuredClone(meta) as unknown as Record<string, unknown>;
+
+describe('RFC0093 bounded metadata admission', () => {
+  it('accepts ordinary payload, nested _meta, unknown members and matching unknown sections', () => {
+    for (const id of ['property', 'x_unknown']) {
+      const value = { _meta: { ...canonicalMeta(), section: id }, content: { _meta: 'payload' }, lawful_unknown: [] };
+      expect(admittedIssues(header + fence(id, value))).toEqual([]);
+    }
+    expect(admittedIssues(doc({ payload: { _meta: meta } }))).toEqual([]);
+  });
+
+  it.each([null, '', true, false, 0, 1, [], {}])('rejects exact invalid section %j without normalization', value => {
+    expect(admittedIssues(doc({ _meta: { ...canonicalMeta(), section: value } })).map(i => i.field)).toEqual(['_meta.section']);
+  });
+
+  it.each(['Property', ' property', 'property ', 'other'])('rejects mismatched section %j', section => {
+    expect(admittedIssues(doc({ _meta: { ...canonicalMeta(), section } })).map(i => i.field)).toEqual(['_meta.section']);
+  });
+
+  it('preserves absent section completeness and canonical annotation authority', () => {
+    const value = canonicalMeta();
+    delete value.section;
+    const parsed = doc({ _meta: value });
+    expect(admittedIssues(parsed)).toEqual([]);
+    expect(validateUWFile(parsed).warnings.some(i => i.code === 'META_FIELD_MISSING_SECTION')).toBe(true);
+    const block = parsed.sections.property as UWBlock;
+    block.content._meta = canonicalMeta();
+    block.meta = { ...meta, section: 'wrong convenience alias' };
+    parsed.sections = { wrong_map_key: block };
+    expect(admittedIssues(parsed)).toEqual([]);
+    block.annotation.section = 'changed_annotation';
+    expect(admittedIssues(parsed).map(i => i.field)).toEqual(['_meta.section']);
+  });
+
+  it.each([undefined, null, [], '', 'object', 0, true])('rejects required nonobject quality %j independently', quality => {
+    const value = { ...canonicalMeta(), quality };
+    const parsed = doc({ _meta: value });
+    const result = validateUWFile(parsed);
+    expect(admittedIssues(parsed).map(i => i.field)).toEqual(['_meta.quality']);
+    expect(result.issues.some(i => i.code === 'META_FIELD_MISSING_CONFIDENCE')).toBe(true);
+    expect(result.issues.some(i => i.code === 'META-02')).toBe(false);
+    expect(result.issues.some(i => i.field === '_meta.provenance.actor')).toBe(false);
+  });
+
+  it('accepts empty quality with existing missing-review and confidence findings', () => {
+    const parsed = doc({ _meta: { ...canonicalMeta(), quality: {} } });
+    expect(admittedIssues(parsed)).toEqual([]);
+    const issues = validateUWFile(parsed).issues;
+    expect(issues.some(i => i.code === 'META-02')).toBe(true);
+    expect(issues.some(i => i.code === 'META_FIELD_MISSING_CONFIDENCE')).toBe(true);
+  });
+
+  it('keeps exact source lexical order distinct from model integer-index order', () => {
+    const encoded = JSON.stringify(canonicalMeta());
+    for (const key of ['0', '1', '4294967294']) {
+      const source = shapeSource(`{"${key}":1,"_meta":${encoded}}`);
+      expect(admittedIssues(source).map(i => i.field)).toEqual(['_meta']);
+      expect(admittedIssues(parseUWFile(source))).toEqual([]);
+      expect(admittedIssues(shapeSource(`{"_meta":${encoded},"${key}":1}`))).toEqual([]);
+    }
+    for (const key of ['00', '-0', '4294967295', '1e0', 'payload']) {
+      const source = shapeSource(`{"${key}":1,"_meta":${encoded}}`);
+      expect(admittedIssues(source).map(i => i.field)).toEqual(['_meta']);
+      expect(admittedIssues(parseUWFile(source)).map(i => i.field)).toEqual(['_meta']);
+    }
+    expect(admittedIssues(shapeSource(`{  "\\u005fmeta":${encoded},"0":1}`))).toEqual([]);
+    expect(admittedIssues(shapeSource(`{"payload":{"_meta":1},"\\u005fmeta":${encoded}}`)).map(i => i.field)).toEqual(['_meta']);
+  });
+
+  it('uses current model key order and canonical content without stale raw authority', () => {
+    const source = shapeSource(JSON.stringify({ _meta: canonicalMeta(), payload: 1 }));
+    const parsed = parseUWFile(source);
+    const block = parsed.sections.property as UWBlock;
+    const current = block.content._meta;
+    delete block.content._meta;
+    block.content._meta = current;
+    expect(admittedIssues(parsed).map(i => i.field)).toEqual(['_meta']);
+    expect(admittedIssues(source)).toEqual([]);
+    block.rawJson = '{"_meta":{}}';
+    parsed.raw = header + fence('property', { section_id: 'wrong' });
+    block.content = { _meta: current, payload: 1 };
+    block.meta = { ...meta, section: 'stale' };
+    expect(admittedIssues(parsed)).toEqual([]);
+    const clone = JSON.parse(JSON.stringify(parsed)) as ParsedUWFile;
+    expect(admittedIssues(clone)).toEqual([]);
+  });
+
+  it('attributes all eight predicate combinations without absorbing actor or lifecycle errors', () => {
+    for (let mask = 0; mask < 8; mask++) {
+      const m = canonicalMeta();
+      if (mask & 2) m.section = false;
+      if (mask & 4) m.quality = null;
+      const value = mask & 1 ? { payload: 1, _meta: m } : { _meta: m, payload: 1 };
+      const fields = admittedIssues(header + fence('property', value)).map(i => i.field);
+      expect(fields).toEqual(['_meta', '_meta.section', '_meta.quality'].filter((_, index) => mask & (1 << index)));
+    }
+  });
+
+  it('keeps wrapper/nested-shape precedence and never cascades three predicates', () => {
+    for (const value of [null, [], '', {}, { provenance: null, lifecycle: {} }, { provenance: {}, lifecycle: null }]) {
+      const parsed = doc({ payload: 1, _meta: value });
+      expect(admittedIssues(parsed)).toEqual([]);
+      expect(validateUWFile(parsed).issues.filter(i => i.code === 'META-01')).toHaveLength(1);
+    }
+    expect(admittedIssues(doc({ section_id: 'property', payload: 1, _meta: { ...canonicalMeta(), section: false, quality: null } }))).toEqual([]);
+    expect(admittedIssues(doc({ payload: 1 }))).toEqual([]);
+  });
+
+  it('finishes all old shapes, then all P1/P2/P3, then actors and booleans', () => {
+    const broken = () => ({ payload: 1, _meta: {
+      ...canonicalMeta(), section: 'mismatch', quality: null,
+      provenance: { ...meta.provenance, actor: '' }, lifecycle: { ...meta.lifecycle, superseded: null },
+    } });
+    const source = header + fence('x_first', broken())
+      + fence('x_second', broken()) + fence('property', { _meta: {} });
+    const issues = validateUWFile(source).issues.filter(i => ['META-01', 'META-02', 'META-03'].includes(i.code));
+    expect(issues.map(i => [i.section, i.field])).toEqual([
+      ['property', undefined],
+      ...['x_first', 'x_second'].flatMap(id => [[id, '_meta'], [id, '_meta.section'], [id, '_meta.quality']]),
+      ['x_first', '_meta.provenance.actor'], ['x_second', '_meta.provenance.actor'],
+      ['x_first', '_meta.lifecycle.superseded'], ['x_second', '_meta.lifecycle.superseded'],
+    ]);
+    expect(issues.every(i => i.severity === 'error' && !('category' in i))).toBe(true);
+  });
+
+  it('retains history and overwritten peers, then model-only additions once by identity', () => {
+    const bad = (id: string) => ({ _meta: { ...canonicalMeta(), section: id, quality: null } });
+    const ids = ['x_peer', 'pipeline_log', 'property', 'custom_calculations', 'custom_scenarios'];
+    const source = header + ids.map(id => fence(id, bad(id), id === 'property' ? 'superseded=true' : '')).join('')
+      + fence('x_peer', { _meta: { ...canonicalMeta(), section: 'x_peer' } })
+      + fence('property', { _meta: canonicalMeta() });
+    const parsed = parseUWFile(source);
+    const before = JSON.stringify(parsed);
+    expect(admittedIssues(parsed).map(i => i.section)).toEqual(ids);
+    expect(JSON.stringify(parsed)).toBe(before);
+    expect(parsed.raw).toBe(source);
+    const added = doc(bad('property')).sections.property as UWBlock;
+    parsed.sections.new_block = added;
+    parsed.extensions.alias = added;
+    parsed.extensions.distinct = structuredClone(added);
+    expect(admittedIssues(parsed).map(i => i.section)).toEqual([...ids, 'new_block', 'distinct']);
+    const copy = JSON.parse(before) as ParsedUWFile;
+    expect(admittedIssues(copy).map(i => i.section)).toEqual(['property', 'pipeline_log', 'custom_calculations', 'custom_scenarios']);
+  });
+
+  it('keeps source bytes, public model shape, partitions and readiness intact', () => {
+    const source = shapeSource(JSON.stringify({ _meta: { ...canonicalMeta(), quality: null } }));
+    const result = validateUWFile(source);
+    const parsed = parseUWFile(source);
+    const before = JSON.stringify(parsed);
+    const good = validateUWFile(shapeSource(JSON.stringify({ _meta: canonicalMeta() })));
+    expect(result.stage_readiness).toEqual(good.stage_readiness);
+    expect(result.coverage).toEqual(good.coverage);
+    expect(result.errors.filter(i => i.field === '_meta.quality')).toHaveLength(1);
+    expect(result.issues.filter(i => i.severity === 'error')).toEqual(result.errors);
+    expect(result.issues.filter(i => i.severity === 'warning')).toEqual(result.warnings);
+    expect(result.issues.filter(i => i.severity === 'info')).toEqual(result.info);
+    validateUWFile(parsed);
+    expect(JSON.stringify(parsed)).toBe(before);
+    expect(parsed.raw).toBe(source);
+    expect(publicAPI).not.toHaveProperty('parsedFirstSourceMember');
+  });
+});
+
+
+const partSource = (id: string, section: string, json: string, history = '') => `---
+uw_version: "3.0"
+uwpart_version: "1.0"
+part_id: ${id}
+section: ${section}
+---
+${history}\`\`\`json uw:section=${section}
+${json}
+\`\`\`
+`;
+const externalSource = (section: string, parts: string[], collection = false) => header + fence(section, {
+  _meta: { ...canonicalMeta(), section },
+  external: { parts, part_count: parts.length, ...(collection ? { collection_key: 'unit_id', collection_path: 'units' } : {}) },
+});
+
+describe('RFC0093 composed SOURCE and derived MODEL accounting', () => {
+  it('keeps whole-section financial content while assessing actual part lexical order', () => {
+    const root = externalSource('property', ['whole']);
+    const part = partSource('whole', 'property', `{"0":1,"_meta":${JSON.stringify(canonicalMeta())},"total_units":17}`);
+    const result = validateUWFile(root, undefined, { parts: [part] });
+    expect(result.errors.filter(i => i.code === 'META-01').map(i => i.field)).toEqual(['_meta']);
+    const parsed = parseUWFile(root);
+    const actualPart = parseUWPart(parseUWFile(part));
+    const resolved = resolveComposition(parsed, { parts: new Map([['whole', actualPart]]) });
+    expect(resolved.status).toBe('resolved');
+    expect((resolved.document.sections.property as UWBlock).content.total_units).toBe(17);
+    expect(validateUWFile(resolved.document).errors.filter(i => i.code === 'META-01')).toEqual([]);
+    expect(parsedPhysicalBlocks(resolved.document)).toEqual([...parsedPhysicalBlocks(parsed), ...actualPart.blocks]);
+    expect(root).toContain('"external"');
+    expect(part).toContain('"0":1,"_meta"');
+  });
+
+  it('retains every physical historical part block and excludes unused loaded parts', () => {
+    const oldMeta = { ...canonicalMeta(), quality: null };
+    const old = fence('property', { _meta: oldMeta }, 'superseded=true v=1');
+    const part = partSource('whole', 'property', JSON.stringify({ _meta: canonicalMeta(), total_units: 17 }), old);
+    const unused = partSource('unused', 'property', JSON.stringify({ _meta: oldMeta }));
+    const root = externalSource('property', ['whole']);
+    const result = validateUWFile(root, undefined, { parts: [unused, part] });
+    expect(result.errors.filter(i => i.code === 'META-01').map(i => i.field)).toEqual(['_meta.quality']);
+    expect(result.errors.some(i => i.code === 'META-02')).toBe(false);
+  });
+
+  it('assesses collection fragments before metadata is stripped from assembled rows', () => {
+    const root = externalSource('rent_roll', ['second', 'first'], true);
+    const make = (id: string, unit: string) => partSource(id, 'rent_roll', JSON.stringify({
+      _meta: { ...canonicalMeta(), section: 'rent_roll', quality: null }, unit_id: unit, monthly_rent: 1000,
+    })).replace('section: rent_roll\n', 'section: rent_roll\ncollection_member: true\n');
+    const first = make('first', 'A');
+    const second = make('second', 'B');
+    const result = validateUWFile(root, undefined, { parts: [first, second] });
+    expect(result.errors.filter(i => i.code === 'META-01').map(i => i.field)).toEqual(['_meta.quality', '_meta.quality']);
+    const parsed = parseUWFile(root);
+    const parts = new Map([first, second].map(source => { const part = parseUWPart(parseUWFile(source)); return [part.part_id, part] as const; }));
+    const resolved = resolveComposition(parsed, { parts });
+    const refs = parsedPhysicalBlocks(resolved.document);
+    expect(refs).toEqual([...parsedPhysicalBlocks(parsed), ...parts.get('second')!.blocks, ...parts.get('first')!.blocks]);
+    expect((resolved.document.sections.rent_roll as UWBlock).content.units).toEqual([
+      { unit_id: 'A', monthly_rent: 1000 }, { unit_id: 'B', monthly_rent: 1000 },
+    ]);
+  });
+
+  it('keeps complete shape, actor and boolean checkpoints on root then part population', () => {
+    const actorMissing = { ...canonicalMeta(), provenance: { ...meta.provenance, actor: '' } };
+    const root = externalSource('property', ['whole']);
+    const part = partSource('whole', 'property', JSON.stringify({ _meta: actorMissing, total_units: 17 }),
+      fence('property', { _meta: { ...canonicalMeta(), quality: null, lifecycle: { ...meta.lifecycle, superseded: null } } }, 'superseded=true'));
+    const issues = validateUWFile(root, undefined, { parts: [part] }).issues.filter(i => ['META-01', 'META-02', 'META-03'].includes(i.code));
+    expect(issues.map(i => i.field)).toEqual([
+      '_meta.quality', '_meta.provenance.actor', '_meta.provenance.actor', '_meta.lifecycle.superseded',
+    ]); // selected source and synthesized whole-section references are distinct
+  });
+
+  it('deduplicates exact references, never equal content, without public evidence fields', () => {
+    const parsed = doc({ _meta: canonicalMeta() });
+    const block = parsed.sections.property as UWBlock;
+    const equal = structuredClone(block);
+    retainParsedPhysicalBlocks(parsed, [block, block, equal]);
+    expect(parsedPhysicalBlocks(parsed)).toEqual([block, equal]);
+    expect(parsedPhysicalBlocks(parsed)[1]).not.toBe(block);
+    expect(publicAPI).not.toHaveProperty('retainParsedPhysicalBlocks');
+    expect(Object.keys(parsed)).not.toContain('physical');
+  });
+
+  it('retains supplied part model references without inventing source history or lexical order', () => {
+    const root = parseUWFile(externalSource('property', ['whole']));
+    const source = partSource('whole', 'property', JSON.stringify({ _meta: { ...canonicalMeta(), quality: null } }));
+    const copied = JSON.parse(JSON.stringify(parseUWFile(source))) as ParsedUWFile;
+    copied.raw = 'stale copied part source must not be parsed';
+    const part = parseUWPart(copied);
+    const resolved = resolveComposition(root, { parts: new Map([['whole', part]]) });
+    expect(parsedPhysicalBlocks(resolved.document)).toContain(part.blocks[0]);
+    expect(validateUWFile(resolved.document).errors.filter(i => i.field === '_meta.quality')).toHaveLength(2);
+  });
+
+  it('keeps newly added unselected part model blocks in the metadata population', () => {
+    const root = parseUWFile(externalSource('property', ['whole']));
+    const part = parseUWPart(parseUWFile(partSource('whole', 'property', JSON.stringify({ _meta: canonicalMeta(), total_units: 17 }))));
+    const added = doc({ _meta: { ...canonicalMeta(), quality: null } }).sections.property as UWBlock;
+    part.blocks.push(added);
+    const resolved = resolveComposition(root, { parts: new Map([['whole', part]]) });
+    expect((resolved.document.sections.property as UWBlock).content.total_units).toBe(17);
+    expect(parsedPhysicalBlocks(resolved.document)).toContain(added);
+    expect(validateUWFile(resolved.document).errors.filter(i => i.field === '_meta.quality')).toHaveLength(1);
+  });
+
+  it('refuses unavailable composition and duplicate ids with existing typed boundaries', () => {
+    const root = externalSource('property', ['missing']);
+    expect(() => validateUWFile(root, undefined, { parts: [] })).toThrowError(CompositionError);
+    try { validateUWFile(root, undefined, { parts: [] }); } catch (error) {
+      expect((error as CompositionError).code).toBe('COMP-UNRESOLVED');
+    }
+    const part = partSource('missing', 'property', JSON.stringify({ _meta: canonicalMeta() }));
+    try { validateUWFile(root, undefined, { parts: [part, part] }); } catch (error) {
+      expect((error as CompositionError).code).toBe('COMP-DUP-KEY');
+    }
+    expect(() => validateUWFile(parseUWFile(root), undefined, { parts: [part] })).toThrowError(CompositionError);
   });
 });

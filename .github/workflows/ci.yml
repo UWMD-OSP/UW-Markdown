@@ -63,6 +63,17 @@ jobs:
           path: python-reader-conformance.json
           if-no-files-found: error
 
+      # Scoped actual CLI evidence, not a capability or Verifier-tier claim.
+      # Reuse these existing runtimes; discovery intentionally remains parse-only.
+      - name: Actual portable Python calculation cases (development evidence)
+        run: python -B implementations/python/run_calc_cases.py --output-dir "${{ runner.temp }}/python-calc-cases"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: independent-python-calc-${{ matrix.os }}
+          path: ${{ runner.temp }}/python-calc-cases/
+          if-no-files-found: error
+
   verify-publication:
     name: Verify published release (explicit read-only request)
     if: github.event_name == 'workflow_dispatch' && inputs['verify-publication']

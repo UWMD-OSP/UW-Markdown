@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/uwmd-block.schema.json",
   "title": "UW Markdown Section Block (Format 3.0)",
-  "description": "Bare section payload with inline nested _meta first, and optional _role, _overrides and _notes. Format §2.4–§2.6, RFC 0081 G2. JSON object member order is a document requirement, not expressible in JSON Schema.",
+  "description": "Bare section payload with inline nested _meta first, and optional _role, _overrides and _notes. Format §2.4–§2.6, RFC 0081 G2. RFC0093 allocates META-01 for misplaced _meta, present invalid/mismatched section and required absent/nonobject quality; existing predicates below are unchanged. Lexical source order and equality to an external annotation are document requirements, not expressible in JSON Schema.",
   "type": "object",
   "required": [
     "_meta"

@@ -18,10 +18,38 @@ import { maskQuotedScalar, readYamlScalar, YAML_SCALAR_FAILURE_FEATURE } from '.
 // This is private model evidence, not an immutable source certificate. In-place
 // model edits remain visible; raw text is never reparsed behind the caller.
 const retainedPhysicalBlocks = new WeakMap<ParsedUWFile, readonly UWBlock[]>();
+// RFC0093: only an explicit fresh-source validation operation may consume this
+// lexical evidence. Mutable-model operations must observe current member order.
+const firstSourceMember = new WeakMap<UWBlock, string>();
+
+/** Internal only; never infer lexical order from object enumeration or rawJson. */
+export function parsedFirstSourceMember(block: UWBlock): string | undefined {
+  return firstSourceMember.get(block);
+}
+
+function firstJSONMember(json: string): string | undefined {
+  let i = 0;
+  const whitespace = () => json[i] === ' ' || json[i] === '\t' || json[i] === '\r' || json[i] === '\n';
+  while (whitespace()) i++;
+  if (json[i++] !== '{') return undefined;
+  while (whitespace()) i++;
+  if (json[i] !== '"') return undefined;
+  const start = i++;
+  while (i < json.length) {
+    if (json[i] === '\\') { i += 2; continue; }
+    if (json[i++] === '"') return JSON.parse(json.slice(start, i)) as string;
+  }
+  return undefined;
+}
 
 /** Internal only: deliberately absent from the package's public barrels. */
 export function parsedPhysicalBlocks(parsed: ParsedUWFile): readonly UWBlock[] {
   return retainedPhysicalBlocks.get(parsed) ?? [];
+}
+
+/** Internal only: composition retains exact original references, never raw snapshots. */
+export function retainParsedPhysicalBlocks(parsed: ParsedUWFile, blocks: readonly UWBlock[]): void {
+  retainedPhysicalBlocks.set(parsed, Object.freeze([...new Set(blocks)]));
 }
 
 // ─── Regex patterns ───────────────────────────────────────────────────────────
@@ -411,9 +439,11 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
 
     const rawJson = jsonLines.join('\n');
     let parsed: Record<string, unknown>;
+    let firstMember: string | undefined;
 
     try {
       parsed = JSON.parse(rawJson) as Record<string, unknown>;
+      firstMember = firstJSONMember(rawJson);
     } catch (err) {
       if (strict) {
         throw new Error(`JSON parse error in section ${sectionId} at line ${lineStart}: ${err}`);
@@ -433,6 +463,7 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
       lineEnd,
     };
 
+    if (firstMember !== undefined) firstSourceMember.set(block, firstMember);
     options.onBlock?.(block);
     scanned.push(block);
   }

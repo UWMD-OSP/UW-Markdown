@@ -34,6 +34,7 @@ import { MULTIFAMILY_PACK } from './builtin-packs/multifamily.js';
 import { OFFICE_PACK } from './builtin-packs/office.js';
 import { VERIFY_PACKAGE_NAME, VERIFY_VERSION } from './version.js';
 import { parseUWFile } from './parser.js';
+import { validateUWFile } from './validator.js';
 import { InvalidUnicodeError } from './integrity-canonical.js';
 
 const PARKVIEW = resolve(__dirname, '../../../examples/Parkview-Apts-Glendale-AZ.uwx.md');
@@ -133,6 +134,22 @@ describe('issueReceipt', () => {
     const verified = await verifyReceipt(after, actorAbsent, { filename: PARKVIEW });
     expect(verified.verdict).toBe('verified');
     expect(verified.issues).toEqual([]);
+  });
+
+  it('uses exact fresh structured source order for RFC0093 receipt policy counts', async () => {
+    const original = await parkview();
+    // Same values and subject, different authored lexical order. Integer-index
+    // enumeration would erase this distinction, so a model check is insufficient.
+    const first = original.replace(/(\`\`\`json uw:section=property[^\n]*\n\s*\{)/, '$1"0":1,');
+    expect(first).not.toBe(original);
+    const parsed = parseUWFile(first);
+    const options = { filename: PARKVIEW, issued_at: ISSUED_AT };
+    const issued = await issueReceipt(first, options);
+    const modelCount = validateUWFile(parsed).errors.length;
+    expect(issued.policy.validation.errors).toBe(modelCount + 1);
+    expect((await resolveReceiptSubject(first, options)).subject).toEqual(issued.subject);
+    expect((await verifyReceipt(issued, first, options)).verdict).toBe('verified');
+    expect(first).toContain('"0":1,');
   });
 
   it('records every declared output and no others', async () => {

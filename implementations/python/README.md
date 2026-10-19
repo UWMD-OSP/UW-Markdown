@@ -9,7 +9,51 @@ translation. No PyPI name, supported Python floor or publication is decided.
 The discovery manifest advertises only `parse`, **no Reader/Verifier tier,
 full-validation, expression-calculation, signature, receipt or optional-profile capability**.
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
-reserve accounts, explicit reserve-draw plans and replacement-funding commitments. It does not certify every Reader or Verifier requirement.
+reserve accounts, explicit reserve-draw plans and replacement-funding commitments.
+It also executes accepted expressions through the read-only `calc` command.
+It does not certify every Reader or Verifier requirement.
+
+## Read-only expression execution — 2026-10-18
+
+```powershell
+python implementations/python/uwmd.py calc deal.uwx.md calculations.json --json
+python implementations/python/uwmd.py calc deal.uwx.md calculations.json --calc-context context.json --json
+```
+
+A declaration object returns one `CalcResult`; an array returns an ordered array.
+Numeric values are quantized once at the declared `round_to` or the Protocol's
+unit default. Refused calculations carry their registered `calc` error and a
+null value; any failed result makes the command exit1. The command reads source,
+declarations and optional context without writing them.
+
+`uwmd_calc` independently executes the accepted grammar and all21 expression
+builtins, with own-property guards, frontmatter/section/prior-result precedence,
+exact selected variants, declaration roles, period identities and scalar/null
+overrides. Ordinary member-period lookup retains its specified first-match
+behavior; explicit `@` selection applies its separate all-row and duplicate
+checks. Logical operators and ternary syntax are lazy; ordinary function
+arguments, including `if` and `coalesce`, are evaluated eagerly.
+
+`uwmd_fdlibm` embeds the accepted independent Python pinned pow/exp/log procedure
+and its exact constant words, retaining the Sun notices. Runtime imports only
+`struct`; it reads no experiment or expected-result files. Financial functions
+retain the accepted associations, raw intermediate IEEE values and IRR procedure.
+Public primitive domain/refusal checks and final finite-result reporting remain
+separate. Quantization uses the existing exact ECMAScript decimal formatter.
+
+The actual CLI is checked against all110 unchanged portable base calc cases via
+`run_calc_cases.py`, which calls the shared `run_case` and retains subprocess
+streams, exits and input hashes. Its report is explicitly development evidence:
+there is no manifest override or advertised-capability certification. CI reuses
+the existing Windows/Linux/macOS Python jobs and uploads the complete captures.
+Archived native operands and mathematical certificates prove bounded procedure
+identity and measured accuracy; they are not new cross-runtime executions.
+
+Discovery stays `capabilities: ["parse"]`, `profiles: []`, with no tier. Complete
+validation, dictionary reproduction, other stated-result verifiers and receipt
+verification remain distinct closure gates. This command neither loads modules
+nor generates missing underwriting models. Existing resource limits are host
+budgets, not new numerical conventions.
 
 ## Current implementation target
 
@@ -644,6 +688,19 @@ the unchanged source, including CRLF and quoted keys. Real parse subprocess
 controls check the object shape and input bytes. Discovery remains parse-only;
 complete validation and Reader/Verifier tier gates remain separate.
 
+## Accepted RFC0093 metadata admission
+
+Source-role assessment implements the accepted three META-01/error predicates:
+misplaced canonical metadata, present invalid/mismatched section and required
+absent/nonobject quality. A separate complete pass precedes actors and META-02/03
+across retained physical references; the earlier container gate stays unchanged.
+Source-taking operations parse actual bytes and use decoded lexical order;
+`inspect_source_roles(document)` observes the current model's non-index member
+order. Private source operation helpers add no public capability. Focused tests
+cover numeric-key boundaries, source/model mutations, history and exact identity.
+The developing complete validator integrates the same admission rules separately;
+this main-safe change does not advertise `validate` or a Verifier tier.
+
 ## Minimum-complete capability path — 2026-10-16
 
 This assessment uses main `fbf8f66a` (through #371). It inventories code and
@@ -673,7 +730,7 @@ fill defaults, host agents, or require starter rendering/editing workflows.
 | Reader current/history identity: Format 2.4, 2.7–2.8; Protocol II.6a.6 | Registered parallel sections, role opt-in and append collections are implemented. Reader projection and verification share `source_superseded`, which recognizes the exact fence flag or JSON lifecycle true without altering authored metadata. | The documented fence-only history-routing defect is corrected under the accepted Format 2.4/2.7 contract. Exact nullable versus named variant identities and the remaining Reader gates still require independent evidence before certification. |
 | Full `validate`: Format II–V and 6.2; Protocol III.6a, V.12 | The real unadvertised command integrates structural result partitions, all fifteen CC coverage entries, seven readiness values and separate V.12. All111 unchanged actual portable subprocess cases now pass; local/composition refusals remain explicit. No complete capability is claimed. | Finish the named field/domain, applicable ordering and nonportable obligations above before promotion. Preserve published metadata warning/info/error distinctions; a portable pass does not establish complete admission or a Verifier tier. |
 | Standard metrics: Protocol II.2.2, VIII.2, VIII.5.1, XIII; [dictionary](../../spec/metrics/README.md) | Source numeric precision, AST parsing, calendar and quantization foundations exist. A private allowlisted executor supplies accepted class-validation prerequisites only. No complete statement discovery, comparison API or document metric report. | Reproduce all 171 class-scoped definitions and eleven raw primary-size selectors, with exact class/id lookup, lazy null branches, role/variant selection and retained source precision. Verified/failed/unverifiable remain distinct; absent inputs are never filled. |
-| General calculation method: Protocol II.2.6, VIII.1–6 | `uwmd_expressions` parses grammar and inventories references; `uwmd_periods` inspects already-selected payloads. `uwmd_numeric` provides a small seed. No execution, document lookup, overrides, prior-result evaluation, complete builtins or `calc` command. | If using expression evaluation, implement the full grammar, resolution, operator/null/lazy semantics and listed builtin signatures/refusals. Return schema-conforming quantized `CalcResult` objects; arrays preserve declaration order. AST admission or a few successful operations cannot justify `calc-evaluate`. |
+| General calculation method: Protocol II.2.6, VIII.1–6 | `uwmd_calc` now executes the accepted grammar, source selection, overrides, prior-result API, all21 builtins and quantized `CalcResult` values through the actual `calc` CLI. The current base portable subset has110 cases; the new scoped evidence is described above. | Complete all applicable nonportable execution and transport controls and independent platform evidence before any capability claim. Passing this subset does not close validation, dictionary reproduction, other financial verifiers or receipts; discovery remains parse-only. |
 | Calendar cash flows: Protocol VIII.9; Format 4.26 | Integer Gregorian dates, three day counts, ordered totals/MOIC and selected-source structural prerequisites only. | Complete declared/stated metric verification, source/variant/override refusal, quantized results and xnpv/xirr procedure. `calc-cash-flow` has a separate declaration/refusal contract; these functions are not expression-callable. |
 | Property cash-flow assembly: Protocol VIII.9.5–9.6 | Closed lease-up/CF source checks used by bindings; no assembly or complete stated-result verifier. | Independently reproduce every accepted stated assembly/projection claim, coverage/source admission and explicit refusal. Reproducing a producer's stated model is verification; generating missing models remains outside this implementation's purpose. |
 | Distribution waterfalls: Protocol VIII.10; Format 4.27 | Structural WF checks now participate in the developing validation API; allocation and stated-outcome verification are absent. | Full applicable structure, allocation/stated outcomes, hurdle/clawback procedures and finite ordered evidence; do not equate structural WF checks with outcome verification. |
