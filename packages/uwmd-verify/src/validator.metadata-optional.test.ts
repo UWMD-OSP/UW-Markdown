@@ -20,7 +20,7 @@ const datesPath = new URL('../../../docs/reviews/2026-10-17-validation-diagnosti
 const dateBytes = readFileSync(datesPath);
 const dates = JSON.parse(dateBytes.toString('utf8')) as {
   date_cases: { id: string; input: unknown; admitted: boolean }[];
-  carrier_contexts: { id: string; input: Record<string, unknown>; admitted: boolean }[];
+  required_as_of_carriers: { id: string; input: Record<string, unknown>; admitted: boolean }[];
 };
 
 describe('RFC0095 closed optional metadata predicates', () => {
@@ -76,12 +76,12 @@ describe('RFC0095 closed optional metadata predicates', () => {
 describe('RFC0095 conditional agent and reference carriers', () => {
   it('requires only own agent_id presence for an exact canonical agent source', () => {
     const p: Record<string, unknown> = { ...meta().provenance, source: 'agent/X' }; delete p.agent_id;
-    expect(fields(reference(p))).toEqual(['_meta.provenance.agent_id']);
+    expect(fields(source({ _meta: { ...meta(), provenance: p } }))).toEqual(['_meta.provenance.agent_id']);
     for (const agent_id of [null, '']) expect(findings(reference({ ...p, agent_id }))).toEqual([]);
     expect(fields(reference({ ...p, agent_id: 0 }))).toEqual(['_meta.provenance.agent_id']);
     expect(findings(reference({ ...p, agent_id: 0 }))[0]!.code).toBe('META-05');
     for (const actorSource of ['manual', 'system/X', 'agent:', 'agent/', 'agent/X\n', 'AGENT/X', 'agent/X/Y']) {
-      expect(fields(reference({ ...p, source: actorSource }), 'META-06')).toEqual([]);
+      expect(fields(source({ _meta: { ...meta(), provenance: { ...p, source: actorSource } } }), 'META-06')).toEqual([]);
     }
     expect(fields(reference({}, { _overrides: [{ path: 'x', source: 'agent/X' }] }), 'META-06')).toEqual([]);
   });
@@ -137,13 +137,13 @@ describe('RFC0095 exact frozen date-only domain', () => {
   it.each(dates.date_cases)('date $id has admitted=$admitted', ({ input, admitted }) => {
     expect(fields(reference({ market_data_ref: { ...market(), as_of: input } }), 'META-06')).toEqual(admitted ? [] : ['_meta.provenance.market_data_ref.as_of']);
   });
-  it.each(dates.carrier_contexts)('carrier $id has admitted=$admitted', ({ input, admitted }) => {
+  it.each(dates.required_as_of_carriers)('carrier $id has admitted=$admitted', ({ input, admitted }) => {
     expect(fields(reference({ market_data_ref: { document_id: '', digest: inherited().digest, ...input } }), 'META-06')).toEqual(admitted ? [] : ['_meta.provenance.market_data_ref.as_of']);
   });
 });
 
 describe('RFC0095 physical/model/source order and result boundaries', () => {
-  const bad = (section: string) => { const m = meta(section); return { ...m, provenance: { ...m.provenance, source: 'agent/X', notes: false, agent_id: undefined } }; };
+  const bad = (section: string) => { const m = meta(section); const provenance = { ...m.provenance, source: 'agent/X', notes: false }; delete provenance.agent_id; return { ...m, provenance }; };
   it('assesses all retained peers/history/append collections, with complete family passes', () => {
     const sections = ['property', 'x_lost', 'x_lost', 'pipeline_log', 'custom_calculations', 'custom_scenarios', 'operating_statement', 'operating_statement'];
     const text = header + sections.map((section, index) => fence(section, { _meta: bad(section) }, index === 0 ? 'superseded=true' : `variant=v${index}`)).join('');
@@ -165,7 +165,7 @@ describe('RFC0095 physical/model/source order and result boundaries', () => {
     expect(fields(parsed, 'META-06')).toEqual(['_meta.provenance.agent_id', '_meta.provenance.agent_id']);
     expect(findings(text)).toEqual([]);
     expect(parsed.raw).toBe(text);
-    expect(b.rawJson).toContain('"notes": null');
+    expect(b.rawJson).toContain('"notes":null');
   });
   it('does not invent source refs on copied models or consult stale raw for replacements', () => {
     const parsed = parseUWFile(header + fence('x_lost', { _meta: bad('x_lost') }) + fence('x_lost', { _meta: meta('x_lost') }));
