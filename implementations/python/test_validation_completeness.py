@@ -156,7 +156,7 @@ class CompletenessOwnershipTests(unittest.TestCase):
                             self.assertEqual(result["overall_status"], "errors")
                             owner = {"section": "META-01", "provenance.source": "SRC-01"}.get(field, "META-04")
                             self.assertEqual([i["code"] for i in result["errors"]], [owner])
-                            self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
+                            self.assertNotIn("metadata_assessment", result)
                         else:
                             self.assertNotIn("error", result)
                             self.assertEqual(result["overall_status"], "warnings")

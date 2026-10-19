@@ -104,7 +104,7 @@ class ValidationCLITests(unittest.TestCase):
                 self.assertEqual(result["overall_status"],"errors")
                 self.assertEqual([i["code"] for i in result["errors"]],
                                  ["META-04" if value is typed else "META-01"])
-                self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
+                self.assertNotIn("metadata_assessment", result)
         # A declared fixed lease-up payload has separate unallocated shape evidence.
         raw=property_source()+well_formed("lease_up_schedule",model="not_registered",
             period_granularity="monthly",stabilization_target="2026-01",
