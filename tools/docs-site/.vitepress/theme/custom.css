@@ -190,3 +190,12 @@ body { text-rendering: optimizeLegibility; }
   line-height: 1.4;
   vertical-align: middle;
 }
+
+/* Five top-level groups leave room for the theme and GitHub controls on tablets. */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .VPNavBar .VPNavBarExtra { display: none !important; }
+  .VPNavBar .VPNavBarAppearance,
+  .VPNavBar .VPNavBarSocialLinks { display: flex !important; align-items: center; }
+  .VPNavBar .appearance::before,
+  .VPNavBar .social-links::before { margin-inline: 8px !important; }
+}
