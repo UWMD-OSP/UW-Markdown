@@ -8,6 +8,7 @@ import re
 from dataclasses import dataclass, replace
 
 from uwmd_binding_sources import finite
+from uwmd_document_sources import number_source
 from uwmd_source import JSONSource, NumberToken
 from uwmd_validation_selection import current_blocks, is_externalized, ValidationUnavailable
 
@@ -66,7 +67,7 @@ def parse_part(document):
             raise CompositionError("COMP-PART-MALFORMED", "A fragment must not itself externalize a section")
     blocks = current_blocks(document, section, include_external=True)
     if not blocks:
-        raise ValidationUnavailable("Fragment has no current payload to supply its section")
+        raise CompositionError("COMP-PART-MALFORMED", "Fragment carries no current section block")
     return Part(fm["part_id"], section, fm.get("collection_member") is True, document, blocks)
 
 
@@ -119,6 +120,7 @@ def resolve_composition(document, parts):
     document, parts = copy.deepcopy((document, parts))
     replacements, externalized, issues, consumed = {}, [], [], []
     seen_sources = set()
+    number_origins = list(document._number_origins)
     current = {id(block) for section in dict.fromkeys(b.section for b in document.source.blocks)
                for block in current_blocks(document, section, include_external=True)}
     for block in document.source.blocks:
@@ -163,21 +165,23 @@ def resolve_composition(document, parts):
                     elif key in keyed:
                         failed.append(CompositionError("COMP-DUP-KEY", "Collection rows repeat the declared key", section).projection())
                     else:
-                        keyed[key] = (row, row_block.parsed.numbers)
+                        keyed[key] = (row, row_block.parsed.numbers, part.document)
             if failed:
                 issues.extend(failed); continue
             ordered = [keyed[key] for key in sorted(keyed, key=lambda key: key.encode("utf8"))]
             field = directive["collection_path"]
             content = {key: value for key, value in block.parsed.value.items() if key != "external"}
-            content[field] = [row for row, _ in ordered]
+            content[field] = [row for row, _, _ in ordered]
             prefix = "/" + _pointer(field)
             numbers = [token for token in block.parsed.numbers
                        if token.pointer != "/external" and not token.pointer.startswith("/external/")
                        and token.pointer != prefix and not token.pointer.startswith(prefix + "/")]
-            for index, (_, tokens) in enumerate(ordered):
+            for index, (_, tokens, origin) in enumerate(ordered):
                 for token in tokens:
                     if token.pointer != "/_meta" and not token.pointer.startswith("/_meta/"):
-                        numbers.append(NumberToken(prefix + "/" + str(index) + token.pointer, token.lexeme, token.span))
+                        rebased = NumberToken(prefix + "/" + str(index) + token.pointer, token.lexeme, token.span)
+                        numbers.append(rebased)
+                        number_origins.append((rebased, number_source(origin, token)))
             parsed = JSONSource(content, tuple(numbers))
         inline = replace(block, attributes=tuple((key, value) for key, value in block.attributes if key != "external"), parsed=parsed)
         replacements[id(block)] = inline
@@ -188,5 +192,5 @@ def resolve_composition(document, parts):
     sources = (*sources, *(part.document.source for part in consumed))
     assembled = replace(document, source=replace(document.source,
         blocks=tuple(replacements.get(id(block), block) for block in document.source.blocks)),
-        _retained_sources=sources)
+        _retained_sources=sources, _number_origins=tuple(number_origins))
     return Resolution("unresolved" if issues else "resolved", assembled, tuple(externalized), tuple(issues), tuple(consumed))

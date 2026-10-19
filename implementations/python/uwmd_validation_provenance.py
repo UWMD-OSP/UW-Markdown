@@ -7,6 +7,7 @@ Existing SRC/ROLE/META-01 and five completeness paths stay with their owners.
 import copy
 
 from uwmd_binding_sources import finite
+from uwmd_document_sources import metadata_blocks, authored_source_reference, source_context
 from uwmd_source_validation import (_metadata_routing, _metadata_shape_predicates,
     _metadata_leaf_predicates, _timestamp_t1b, _metadata_optional_predicates,
     _metadata_reference_predicates)
@@ -49,19 +50,20 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
     inventory issues, never duplicate local evidence or broader META-01 routing.
     Empty local findings alone do not prove full metadata/schema conformance.
     """
+    blocks = metadata_blocks(document)
     # Consume only helper evidence already represented by the completeness
     # warning for this exact physical input. The same field path on a present
     # (for example late) _meta is still an unallocated requirement.
     covered_absence = {index for index in missing_meta_blocks
                        if isinstance(index, int) and not isinstance(index, bool)
-                       and 0 <= index < len(document.source.blocks)
-                       and "_meta" not in document.source.blocks[index].parsed.value}
+                       and 0 <= index < len(blocks)
+                       and "_meta" not in blocks[index].parsed.value}
     findings = copy.deepcopy([
         finding for finding in source_inventory["shape_findings"]
         if not (finding.get("field") == "_meta"
                 and finding.get("context", {}).get("block_index") in covered_absence)])
     active = {entry["block_index"] for entry in source_inventory["blocks"]}
-    for index, block in enumerate(document.source.blocks):
+    for index, block in enumerate(blocks):
         if index not in active:
             continue
         meta = block.parsed.value.get("_meta")
@@ -72,9 +74,7 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
         def malformed(path, message):
             findings.append(dict(section=block.section,
                 field="_meta.provenance." + path, message=message,
-                context=dict(block_index=index, variant=dict(block.attributes).get("variant"),
-                             body_byte_start=block.body_span.start,
-                             body_byte_end=block.body_span.end)))
+                context=source_context(document, index, block)))
 
         if isinstance(provenance.get("timestamp"), str) and not timestamp_shape(provenance["timestamp"]):
             malformed("timestamp", "Timestamp must have the admitted calendar/date-time shape")
@@ -88,7 +88,7 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
     rejected_containers = {
         issue["context"]["block_index"] for issue in source_inventory["issues"]
         if issue["code"] == "META-01" and issue.get("field") == "_meta"
-        and _metadata_routing(document.source.blocks[issue["context"]["block_index"]].parsed.value)}
+        and _metadata_routing(blocks[issue["context"]["block_index"]].parsed.value)}
     # RFC0093 owns only its exact current predicate on this physical input.
     # A META-01 actor/other block/container or stale model cannot consume it.
     shape_owners = set()
@@ -97,13 +97,14 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             continue
         index = issue.get("context", {}).get("block_index")
         if (not isinstance(index, int) or isinstance(index, bool)
-                or not 0 <= index < len(document.source.blocks)):
+                or not 0 <= index < len(blocks)):
             continue
-        block = document.source.blocks[index]
+        block = blocks[index]
         if issue.get("section") != block.section:
             continue
         fields = {path for path, _ in _metadata_shape_predicates(
-            block.parsed.value, block.section, _source_order=_source_order)}
+            block.parsed.value, block.section,
+            _source_order=_source_order and authored_source_reference(document, block))}
         if issue.get("field") in fields:
             shape_owners.add((index, issue["field"]))
     # RFC0094 owns only its three present-invalid predicates. Actual emitted
@@ -114,9 +115,9 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             continue
         index = issue.get("context", {}).get("block_index")
         if (not isinstance(index, int) or isinstance(index, bool)
-                or not 0 <= index < len(document.source.blocks)):
+                or not 0 <= index < len(blocks)):
             continue
-        block = document.source.blocks[index]
+        block = blocks[index]
         if issue.get("section") != block.section or not isinstance(block.parsed.value, dict):
             continue
         fields = {path for path, _ in _metadata_leaf_predicates(block.parsed.value)}
@@ -138,11 +139,11 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             continue
         index = issue.get("context", {}).get("block_index")
         if (not isinstance(index, int) or isinstance(index, bool)
-                or not 0 <= index < len(document.source.blocks)):
+                or not 0 <= index < len(blocks)):
             continue
         group, name = target
         field = "_meta." + group + "." + name
-        body = document.source.blocks[index].parsed.value
+        body = blocks[index].parsed.value
         meta = body.get("_meta")
         parent = meta.get(group) if isinstance(meta, dict) else None
         if (issue.get("field") == field and not _metadata_routing(body)
@@ -158,9 +159,9 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             continue
         index = issue.get("context", {}).get("block_index")
         if (not isinstance(index, int) or isinstance(index, bool)
-                or not 0 <= index < len(document.source.blocks)):
+                or not 0 <= index < len(blocks)):
             continue
-        block = document.source.blocks[index]
+        block = blocks[index]
         body = block.parsed.value
         if not isinstance(body, dict):
             continue  # Ownership proof cannot admit a nonobject mutable payload.
@@ -184,10 +185,10 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
     absent_owners = {}
     for index, path, code in missing_field_owners:
         if (not isinstance(index, int) or isinstance(index, bool)
-                or not 0 <= index < len(document.source.blocks)
+                or not 0 <= index < len(blocks)
                 or completeness_paths.get(path) != code):
             continue
-        parent = document.source.blocks[index].parsed.value
+        parent = blocks[index].parsed.value
         names = path.split(".")
         for name in names[:-1]:
             parent = parent.get(name) if isinstance(parent, dict) else None
@@ -201,9 +202,9 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
         if code not in ("META-05", "META-06") or issue.get("severity") != "error":
             continue
         index = issue.get("context", {}).get("block_index")
-        if type(index) is not int or not 0 <= index < len(document.source.blocks):
+        if type(index) is not int or not 0 <= index < len(blocks):
             continue
-        block = document.source.blocks[index]
+        block = blocks[index]
         if issue.get("section") != block.section:
             continue
         predicate = _metadata_optional_predicates if code == "META-05" else _metadata_reference_predicates
@@ -218,18 +219,18 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             handled.append(dict(**finding, registered_code="META-01",
                                 disposition="blocked_by_registered_metadata_shape"))
         elif ((finding["context"]["block_index"], field) in shape_owners
-                and finding["section"] == document.source.blocks[
+                and finding["section"] == blocks[
                     finding["context"]["block_index"]].section):
             handled.append(dict(**finding, registered_code="META-01",
                 disposition="represented_by_registered_metadata_shape"))
         elif ((finding["context"]["block_index"], field) in absent_owners
-                and finding["section"] == document.source.blocks[
+                and finding["section"] == blocks[
                     finding["context"]["block_index"]].section):
             handled.append(dict(**finding,
                 registered_code=absent_owners[finding["context"]["block_index"], field],
                 disposition="represented_by_registered_completeness_warning"))
         elif ((finding["context"]["block_index"], field) in typed_source_owners
-                and finding["section"] == document.source.blocks[
+                and finding["section"] == blocks[
                     finding["context"]["block_index"]].section):
             handled.append(dict(**finding, registered_code="SRC-01",
                 disposition="represented_by_registered_source_type_error"))
@@ -238,7 +239,7 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
                 finding["context"]["block_index"], field, finding["message"]],
                 disposition="represented_by_registered_optional_metadata_predicate"))
         elif ((finding["context"]["block_index"], field) in leaf_owners
-                and finding["section"] == document.source.blocks[
+                and finding["section"] == blocks[
                     finding["context"]["block_index"]].section
                 and finding.get("message") in leaf_requirements.get(field, ())):
             handled.append(dict(**finding, registered_code="META-04",

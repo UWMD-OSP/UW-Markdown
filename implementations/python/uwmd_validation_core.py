@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import re
 
 from uwmd_binding_sources import finite
+from uwmd_document_sources import metadata_blocks
 from uwmd_currency import inspect_document_currency
 from uwmd_reader import APPEND
 from uwmd_source_validation import _inspect_source_roles, _metadata_routing
@@ -120,10 +121,11 @@ def _validation_source_issue(document, issue):
     """
     projected = copy.deepcopy(issue)
     index = issue.get("context", {}).get("block_index")
+    blocks = metadata_blocks(document)
     if (issue.get("code") == "META-01" and issue.get("severity") == "error"
             and issue.get("field") == "_meta" and type(index) is int
-            and 0 <= index < len(document.source.blocks)):
-        block = document.source.blocks[index]
+            and 0 <= index < len(blocks)):
+        block = blocks[index]
         if issue.get("section") == block.section and _metadata_routing(block.parsed.value):
             projected.pop("field", None)
     return projected
@@ -138,10 +140,22 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     """
     document, fm = ledger.document, ledger.document.frontmatter.value
     source = _inspect_source_roles(document, _source_order=_source_order)
-    ledger.issues.extend(_validation_source_issue(document, issue) for issue in source["issues"])
+    # META01--06 apply to retained physical sources and assembled model refs.
+    # Ordinary SRC/ROLE retain their existing current sections/variants view;
+    # fragment history and replaced root directives do not broaden that pass.
+    current = {id(block) for section in dict.fromkeys(b.section for b in document.source.blocks)
+               if section not in APPEND and not section.startswith("x_")
+               for block in current_blocks(document, section, include_external=True)}
+    references = metadata_blocks(document)
+    for issue in source["issues"]:
+        if document._retained_sources and issue["code"].startswith(("SRC-", "ROLE-")):
+            index = issue.get("context", {}).get("block_index")
+            if type(index) is not int or not 0 <= index < len(references) or id(references[index]) not in current:
+                continue
+        ledger.issues.append(_validation_source_issue(document, issue))
     missing_meta_blocks = set()
     missing_field_owners = []
-    physical = {id(block): index for index, block in enumerate(document.source.blocks)}
+    physical = {id(block): index for index, block in enumerate(metadata_blocks(document))}
     ledger.issues.extend(inspect_document_currency(document)["issues"])
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
         ledger.issue("LOC-01", "error", "frontmatter", "locale", "Locale is outside the registered vocabulary", value=fm["locale"])

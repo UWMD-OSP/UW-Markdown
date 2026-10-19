@@ -26,10 +26,20 @@ async def validate_document(document, *, now=None, gap_staleness_days=14,
         incomplete_policies=incomplete_policies, thresholds=thresholds)
 
 
-async def _validate_source(raw, *, filename=None, **options):
-    """Private source-taking operation; only a fresh parse selects lexical P1."""
+async def _validate_source(raw, *, filename=None, parts=None, **options):
+    """Fresh SOURCE operation; supplied fragment bytes resolve without I/O."""
     from uwmd_reader import parse
-    return await _validate_document(parse(raw, filename=filename), _source_order=True, **options)
+    document = parse(raw, filename=filename)
+    resolution = None
+    if parts is not None:
+        from uwmd_composition import index_parts, resolve_composition
+        resolution = resolve_composition(document, index_parts(parse(source) for source in parts))
+        document = resolution.document
+    result = await _validate_document(document, _source_order=True, **options)
+    if resolution is not None:
+        result["composition_assessment"] = dict(status=resolution.status,
+            externalized=list(resolution.externalized), issues=list(resolution.issues))
+    return result
 
 
 async def _validate_document(document, *, now=None, gap_staleness_days=14,

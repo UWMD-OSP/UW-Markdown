@@ -63,6 +63,48 @@ def main(arguments):
         return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
                 "capabilities": ["parse"], "profiles": []}, 0
+    if arguments and arguments[0] == "resolve":
+        # Existing accepted spelling only; no invented validate resolution flag.
+        # This bounded read-only transport never writes a resolved artifact.
+        tail = arguments[1:]
+        if not tail or tail[0].startswith("--"):
+            return {"error": {"message": "resolve <file> [--parts <dir>] --json"}}, 1
+        path = Path(tail[0]); directory = path.resolve().parent / "parts"
+        index, json_requested, supplied_parts = 1, False, False
+        while index < len(tail):
+            flag = tail[index]
+            if flag == "--json" and not json_requested:
+                json_requested = True
+            elif flag == "--parts" and not supplied_parts and index + 1 < len(tail) and not tail[index+1].startswith("--"):
+                index += 1; directory = Path(tail[index]); supplied_parts = True
+            elif flag.startswith("--parts=") and not supplied_parts and len(flag) > 8:
+                directory = Path(flag[8:]); supplied_parts = True
+            else:
+                return {"error": {"message": "resolve <file> [--parts <dir>] --json"}}, 1
+            index += 1
+        if not json_requested:
+            return {"error": {"message": "This read-only resolver requires --json"}}, 1
+        from uwmd_composition import CompositionError, index_parts, resolve_composition
+        try:
+            root = parse(path.read_bytes(), filename=path.name)
+            paths = sorted(directory.glob("*.uwpart.md")) if directory.exists() else []
+            parts = index_parts(parse(part.read_bytes(), filename=part.name) for part in paths if part.is_file())
+            result = resolve_composition(root, parts)
+            return dict(status=result.status, externalized=list(result.externalized),
+                        parts_available=len(parts), issues=list(result.issues)), int(result.status != "resolved")
+        except CompositionError as error:
+            return {"error": error.projection()}, 1
+        except (SourceError, ValidationUnavailable) as error:
+            diagnostic = {"message": str(error)}
+            if hasattr(error, "code"):
+                diagnostic["code"] = error.code
+                if error.code in ("UNSUPPORTED_FORMAT_VERSION", "UNSUPPORTED_YAML_FEATURE", "SOURCE_CONTENT_MISMATCH"):
+                    diagnostic["category"] = "parse"
+            return {"error": diagnostic}, 1
+        except OSError as error:
+            return {"error": {"message": str(error)}}, 2
+        except Exception as error:
+            return {"error": {"message": "Internal composition failure: " + str(error)}}, 2
     if arguments and arguments[0] == "calc":
         tail = arguments[1:]
         if tail and tail[-1] == "--json":
