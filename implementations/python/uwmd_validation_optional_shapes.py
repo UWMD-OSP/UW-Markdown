@@ -12,6 +12,7 @@ from uwmd_numeric import calendar_date
 from uwmd_validation_selection import current_blocks
 from uwmd_validation_core import BUILTINS
 from uwmd_validation_lease import _POOL
+from uwmd_validation_payload_admission import payload_findings,same_payload_owner
 
 _SCHEMAS=Path(__file__).resolve().parents[2]/"spec/schemas"
 
@@ -89,7 +90,7 @@ def _violations(value,schema,root,path=""):
     if "enum" in schema and not any(_same(value,item) for item in schema["enum"]):
         problem("Value is outside the fixed schema enumeration", ("enum", tuple(schema["enum"])))
     if "const" in schema and not _same(value,schema["const"]):
-        problem("Value differs from the fixed schema constant")
+        problem("Value differs from the fixed schema constant", ("const",schema["const"]))
     if isinstance(value,dict):
         for key in schema.get("required",()):
             if key not in value:
@@ -155,6 +156,25 @@ def _registered_optional_owner(block, index, field, constraint, issues):
             return None
         root, path = "tenants["+match[1]+"].", match[2]
         terms = tenant.get("recovery_terms")
+        if isinstance(terms,dict):
+            cap=terms.get("cap");cap=cap if isinstance(cap,dict) else {}
+            method=terms.get("method");method_needed=any(value is not None for key,value in terms.items() if key not in ("method","cap"))
+            if path=="recovery_terms.method":
+                invalid=("method" in terms and (not isinstance(method,str) or method not in ("net","base_year_stop","fixed_stop","fixed_amount","none")))
+                owned=(invalid and constraint==("enum",("net","base_year_stop","fixed_stop","fixed_amount","none"))
+                       or "method" not in terms and method_needed and constraint==("required",None))
+                if owned:code,owner_field="REC-02",root+path
+            elif path=="recovery_terms.cap.accumulation":
+                mp=("method" in terms and method is not None and "pct" in cap and cap["pct"] is not None)
+                invalid=cap.get("accumulation") not in ("cumulative","non_cumulative","compounding")
+                if mp and invalid and constraint in (("required",None),("type",("string",)),
+                    ("enum",("cumulative","non_cumulative","compounding",None))):
+                    code,owner_field="REC-02",root+path
+            elif path in ("recovery_terms.base_year","recovery_terms.expense_stop_per_sqft","recovery_terms.fixed_recovery_annual"):
+                required={"base_year_stop":"base_year","fixed_stop":"expense_stop_per_sqft","fixed_amount":"fixed_recovery_annual"}.get(method) if isinstance(method,str) else None
+                name=path.split(".")[-1]
+                if name==required and (name not in terms or terms[name] is None) and constraint==("required",None):
+                    code,owner_field="REC-02",root+path
         if path.startswith("recovery_terms.recoverable_pool") and isinstance(terms, dict):
             pool = terms.get("recoverable_pool")
             owner_field = root+"recovery_terms.recoverable_pool"
@@ -176,7 +196,7 @@ def _registered_optional_owner(block, index, field, constraint, issues):
                 if entries is not None and not isinstance(entries, list) and constraint == ("type", ("array",)):
                     code, owner_field = "REC-04", root+path
             else:
-                child = re.fullmatch(r"recovery_true_up\[(0|[1-9][0-9]*)\](?:\.(period_start|period_end|settlement))?",path)
+                child = re.fullmatch(r"recovery_true_up\[(0|[1-9][0-9]*)\](?:\.(period_start|period_end|settlement|cash_flow_ref))?",path)
                 if child and isinstance(entries,list) and int(child[1]) < len(entries):
                     row = entries[int(child[1])]; leaf = child[2]
                     owner_field = root+"recovery_true_up["+child[1]+"]"
@@ -188,12 +208,16 @@ def _registered_optional_owner(block, index, field, constraint, issues):
                             or (leaf in row and not isinstance(date,str) and constraint == ("type",("string",)))
                             or isinstance(date,str) and not calendar_date(date) and constraint in (
                                 ("pattern",r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"),("format","date")))
+                    elif isinstance(row,dict) and leaf == "cash_flow_ref":
+                        value=row.get(leaf)
+                        valid=value is not None and not isinstance(value,dict) and constraint==("type",("object","null"))
+                        if valid:code,owner_field="REC-09",root+path
                     elif isinstance(row,dict) and leaf == "settlement":
                         valid = ("settlement" in row and row[leaf] not in (None,"billed","credited","disputed","unsettled")
                             and constraint == ("enum",("billed","credited","disputed","unsettled",None)))
                     else:
                         valid = False
-                    if valid: code = "REC-04"
+                    if valid and leaf!="cash_flow_ref": code = "REC-04"
     elif block.section == "distribution_waterfall":
         claim = block.parsed.value.get("clawback")
         if field == "clawback":
@@ -215,6 +239,10 @@ def _registered_optional_owner(block, index, field, constraint, issues):
                        and constraint == ("exclusiveMinimum",0 if rate else 1)
                     or rate and finite(value) and value >= 1 and constraint == ("exclusiveMaximum",1)):
                     code,owner_field = "WF-10","clawback"
+            elif field == "clawback.cap":
+                if (("cap" not in claim and constraint==("required",None)) or
+                    (claim.get("cap")!="promote_received" and constraint==("const","promote_received"))):
+                    code,owner_field="WF-12",field
             elif field == "clawback.net_of_tax_rate":
                 value = claim.get("net_of_tax_rate")
                 if value is not None and (
@@ -238,6 +266,20 @@ def optional_shape_assessments(document, *, registered_recovery_shapes=None,
             ("lease_recoveries","capital_stack_sizing","waterfall_claims")}
     physical={id(block):index for index,block in enumerate(document.source.blocks)}
     schemas={}
+    predictions=payload_findings(document)
+    new_fields={}
+    for prediction in predictions:
+        code=prediction["code"]
+        family={"REC-11":"lease_recoveries","CS-03":"capital_stack_sizing","WF-16":"waterfall_claims"}.get(code)
+        if family is None:continue
+        index=prediction["context"]["block_index"]
+        new_fields[index,prediction["field"]]=prediction
+        evidence=dict(section=prediction["section"],field=prediction["field"],message=prediction["message"],
+                      context=dict(prediction["context"]))
+        if same_payload_owner(prediction,registered_recovery_issues):
+            result[family].setdefault("handled_shape_findings",[]).append(dict(**evidence,
+                registered_code=code,disposition="represented_by_registered_payload_admission"))
+        else:result[family]["shape_findings"].append(evidence)
     def check(block,family,value,filename,pointer="",field=""):
         if filename not in schemas:
             schemas[filename]=json.loads((_SCHEMAS/filename).read_text(encoding="utf8"))
@@ -251,6 +293,22 @@ def optional_shape_assessments(document, *, registered_recovery_shapes=None,
                   if unsupported else _violations(value,schema,root,field))
         for finding in findings:
             constraint = finding.pop("_constraint", None)
+            if (physical[id(block)],finding["field"]) in new_fields:
+                continue  # Fresh exact predicate evidence above owns its local DTO.
+            # RFC0096's M/P contract supersedes an old schema presence-only
+            # accumulation trigger. Keep that obsolete assertion as evidence,
+            # without making absent/null optional accumulation a local refusal.
+            match=re.fullmatch(r"tenants\[(0|[1-9][0-9]*)\]\.recovery_terms\.cap\.accumulation",finding["field"])
+            tenants=block.parsed.value.get("tenants")
+            if match and isinstance(tenants,list) and int(match[1])<len(tenants):
+                tenant=tenants[int(match[1])];terms=tenant.get("recovery_terms") if isinstance(tenant,dict) else None
+                cap=terms.get("cap") if isinstance(terms,dict) else None
+                if isinstance(cap,dict):
+                    mp=("method" in terms and terms["method"] is not None and "pct" in cap and cap["pct"] is not None)
+                    if not mp and cap.get("accumulation") is None:
+                        result[family].setdefault("excluded_shape_findings",[]).append(dict(section=block.section,
+                            **finding,context=dict(context),disposition="optional_nullable_accumulation_without_M_and_P"))
+                        continue
             evidence = dict(section=block.section, **finding, context=dict(context))
             code = (represented.get((physical[id(block)], finding["field"], constraint))
                     if family == "lease_recoveries" else None)
@@ -291,21 +349,10 @@ def optional_shape_assessments(document, *, registered_recovery_shapes=None,
                                  ("recovery_true_up","lease-recovery-true-up.schema.json")):
                 if key in tenant and tenant[key] is not None:
                     check(block,"lease_recoveries",tenant[key],filename,field="tenants["+str(index)+"]."+key)
-    for block in current_blocks(document,"capital_stack"):
-        if "sizing" in block.parsed.value:
-            check(block,"capital_stack_sizing",block.parsed.value["sizing"],
-                  "section-capital-stack.schema.json","properties/sizing","sizing")
-    for block in current_blocks(document,"components"):
-        for component,body in block.parsed.value.items():
-            if component not in BUILTINS or component in ("mixed_use","land") or not isinstance(body,dict):
-                continue
-            stack=body.get("capital_stack")
-            if isinstance(stack,dict) and "sizing" in stack:
-                check(block,"capital_stack_sizing",stack["sizing"],
-                      "section-capital-stack.schema.json","properties/sizing",component+".capital_stack.sizing")
+    # CS sizing and WF stated-claim structures now use the explicit accepted
+    # union/lexical predicates above, rather than generic schema union/date guesses.
     for block in current_blocks(document,"distribution_waterfall"):
-        for key in ("clawback","stated_outcomes","stated_schedule"):
-            if key in block.parsed.value:
-                check(block,"waterfall_claims",block.parsed.value[key],
-                      "section-distribution-waterfall.schema.json","properties/"+key,key)
+        if "clawback" in block.parsed.value:
+            check(block,"waterfall_claims",block.parsed.value["clawback"],
+                  "section-distribution-waterfall.schema.json","properties/clawback","clawback")
     return result

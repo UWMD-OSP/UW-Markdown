@@ -19,7 +19,7 @@ def number(payload, *paths):
     return None
 
 
-def cross_checks(ledger):
+def cross_checks(ledger, *, defer_summaries=False):
     document, fm = ledger.document, ledger.document.frontmatter.value
     def read(rule, section, **options):
         return ledger.read(rule, section, **options)
@@ -135,7 +135,7 @@ def cross_checks(ledger):
     lease, noi = read("CC-15", "lease_up_schedule", lease_up_base=True), read("CC-15", "noi_model")
     compare("CC-15", number(lease, "stabilized_summary.annualized_noi"), number(noi, "net_operating_income"),
             .02, relative=True, section="lease_up_schedule", path="stabilized_summary.annualized_noi")
-    ledger.finish_coverage()
+    ledger.finish_coverage(summaries=not defer_summaries)
 
 
 _THRESHOLD_SPECS = (

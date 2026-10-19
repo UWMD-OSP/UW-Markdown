@@ -123,7 +123,7 @@ def waterfall_rules(ledger):
         def issue(code, path, message, severity="error"):
             evidence = (dict(context=dict(block_index=physical[id(block)],
                         variant=dict(block.attributes).get("variant")))
-                        if code in ("WF-10", "WF-13") else {})
+                        if code in ("WF-10", "WF-12", "WF-13") else {})
             ledger.issue(code, severity, "distribution_waterfall", path, message, **evidence)
         equity, tiers = payload.get("equity_split"), payload.get("tiers")
         grammar = (isinstance(equity, dict) and set(equity) == {"lp", "gp"}

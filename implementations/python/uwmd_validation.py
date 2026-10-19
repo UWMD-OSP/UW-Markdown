@@ -17,6 +17,8 @@ from uwmd_validation_builtins import builtin_rules
 from uwmd_validation_external import composition_assessment
 from uwmd_validation_selection import is_externalized
 from uwmd_validation_optional_shapes import optional_shape_assessments
+from uwmd_validation_payload_admission import payload_rules
+from uwmd_validation_lease_up import _lease_up_assessment
 
 
 async def validate_document(document, *, now=None, gap_staleness_days=14,
@@ -54,7 +56,7 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
     ledger = Ledger(snapshot)
     metadata = basic_rules(ledger, now=now, gap_staleness_days=gap_staleness_days,
                 incomplete_policies=incomplete_policies, _source_order=_source_order)
-    cross_checks(ledger)
+    cross_checks(ledger,defer_summaries=True)
     financial_thresholds(ledger, thresholds)
     lease_up = series_rules(ledger)
     bed_rules(ledger)
@@ -73,6 +75,9 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
     else:
         ledger.issues.extend(i for i in check.issues if i["code"].startswith(("HDG-", "ESC-")))
         binding = await _binding_verify(check, None)
+    payload_rules(ledger)
+    lease_up=_lease_up_assessment(snapshot,ledger.issues)
+    ledger.coverage_summaries()
     issues = copy.deepcopy(ledger.issues)
     partitions = {severity: [i for i in issues if i["severity"] == severity]
                   for severity in ("error", "warning", "info")}

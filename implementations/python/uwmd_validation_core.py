@@ -70,9 +70,13 @@ class Ledger:
             entry["resolutions"] = copy.deepcopy(resolutions)
         self.coverage[check] = entry
 
-    def finish_coverage(self):
+    def finish_coverage(self, *, summaries=True):
         if set(self.coverage) != set(CC_IDS):
             raise ValueError("All registered CC rules must report actual coverage")
+        if summaries:
+            self.coverage_summaries()
+
+    def coverage_summaries(self):
         for section, checks in sorted(self._unresolved.items()):
             self.issue("CC-16", "info", section, "", "Property statement is unresolvable for " + ", ".join(sorted(checks)))
 

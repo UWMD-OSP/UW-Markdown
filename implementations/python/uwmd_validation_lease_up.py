@@ -8,6 +8,7 @@ import re
 
 from uwmd_binding_sources import finite, calendar_period
 from uwmd_source_lifecycle import source_superseded
+from uwmd_payload_admission import _PayloadView,_payload_admission
 from uwmd_validation_selection import active_blocks, current_blocks, is_externalized
 
 _PERIOD = re.compile(r"[0-9]{4}-(?:Q[1-4]|0[1-9]|1[0-2])\Z")
@@ -33,71 +34,22 @@ _SUMMARY = {
 
 
 def _payload_shape(payload):
-    """The accepted fixed payload fields only; no general JSON Schema claim."""
-    findings = []
-
-    def shape(path, message, predicate=None):
-        findings.append(dict(field=path, message=message, _owner_predicate=predicate))
-
-    def closed(value, allowed, path):
-        if not isinstance(value, dict):
-            shape(path, "An object is required")
-            return False
-        for key in value:
-            if key not in allowed:
-                shape(path + ("." if path else "") + key, "Field is outside the closed payload")
-        return True
-
-    def number(value, path, minimum, maximum):
-        if value is None:
-            return  # Every listed optional numeric member is nullable.
-        if (not finite(value) or minimum is not None and value < minimum
-                or maximum is not None and value > maximum):
-            shape(path, "A finite number within the stated field bounds or null is required")
-
-    def period(value, path, nullable=False):
-        if value is None and nullable:
-            return
-        if not isinstance(value, str) or _PERIOD.fullmatch(value) is None:
-            shape(path, "A string in the admitted monthly/quarterly period grammar is required", "period")
-
-    closed(payload, _TOP | _UNIVERSAL, "")
-    for key, admitted in (("model_type", ("natural_turnover", "absorption_curve")),
-                          ("period_granularity", ("monthly", "quarterly"))):
-        if key not in payload:
-            shape(key, "Required payload member is absent",
-                  "cadence" if key == "period_granularity" else None)
-        elif payload[key] not in admitted:
-            shape(key, "Value must be from the closed field vocabulary",
-                  "cadence" if key == "period_granularity" else None)
-    if "stabilization_target" in payload:
-        period(payload["stabilization_target"], "stabilization_target", nullable=True)
-    if "schedule" not in payload:
-        shape("schedule", "Required payload member is absent", "schedule")
-    else:
-        rows = payload["schedule"]
-        if not isinstance(rows, list) or not rows:
-            shape("schedule", "A nonempty array is required", "schedule")
-        if isinstance(rows, list):
-            for index, row in enumerate(rows):
-                path = "schedule[" + str(index) + "]"
-                if not closed(row, {"period", *_ROW}, path):
-                    continue
-                if "period" not in row:
-                    shape(path + ".period", "Required period member is absent", "period")
-                else:
-                    period(row["period"], path + ".period")
-                for key, bounds in _ROW.items():
-                    if key in row:
-                        number(row[key], path + "." + key, *bounds)
-    for key, fields in (("assumptions", _ASSUMPTIONS), ("stabilized_summary", _SUMMARY)):
-        value = payload.get(key)
-        if value is None:
-            continue
-        if closed(value, fields, key):
-            for name, bounds in fields.items():
-                if name in value:
-                    number(value[name], key + "." + name, *bounds)
+    """Explicit accepted new predicates plus the original LU01/03 owners."""
+    findings=[dict(field=issue["field"],message=issue["message"],_owner_predicate="LU-05")
+              for issue in _payload_admission([_PayloadView("lease_up_schedule",payload)])]
+    cadence=payload.get("period_granularity")
+    if cadence not in ("monthly","quarterly"):
+        findings.append(dict(field="period_granularity",message="Cadence is missing or invalid",_owner_predicate="cadence"))
+    rows=payload.get("schedule")
+    if not isinstance(rows,list) or not rows:
+        findings.append(dict(field="schedule",message="A nonempty schedule is required",_owner_predicate="schedule"))
+    if isinstance(rows,list):
+        for index,row in enumerate(rows):
+            path="schedule["+str(index)+"]"
+            if not isinstance(row,dict):
+                findings.append(dict(field=path,message="A row object with its required period is needed",_owner_predicate="row_period"))
+            elif calendar_period(row.get("period"),cadence) is None:
+                findings.append(dict(field=path+".period",message="Period is missing or invalid for the current cadence",_owner_predicate="period"))
     return findings
 
 
@@ -131,9 +83,7 @@ def lease_up_rules(ledger):
         target = payload.get("stabilization_target")
         if target is not None:
             identity = calendar_period(target, cadence)
-            if identity is None:
-                issue("LU-01", "stabilization_target", "Target period does not match cadence")
-            elif first is not None and identity < first:
+            if identity is not None and first is not None and identity < first:
                 issue("LU-03", "stabilization_target", "Target precedes the schedule")
         if payload.get("model_type") == "natural_turnover" and not active_blocks(document, "rent_roll"):
             issue("LU-04", "model_type", "Turnover has no stated rent roll", "warning")
@@ -143,6 +93,15 @@ def lease_up_rules(ledger):
 def _shape_owner(payload, path, predicate):
     """Recheck only the already allocated grammar/nonempty predicates."""
     cadence = payload.get("period_granularity")
+    if predicate == "LU-05":
+        return "LU-05" if any(issue["field"]==path for issue in _payload_admission(
+            [_PayloadView("lease_up_schedule",payload)])) else None
+    if predicate == "row_period":
+        match=re.fullmatch(r"schedule\[(0|[1-9][0-9]*)\]",path)
+        rows=payload.get("schedule")
+        if match and isinstance(rows,list) and int(match[1])<len(rows) and not isinstance(rows[int(match[1])],dict):
+            return "LU-01"
+        return None
     if predicate == "cadence" and path == "period_granularity":
         return "LU-01" if cadence not in ("monthly", "quarterly") else None
     if predicate == "schedule" and path == "schedule":
@@ -150,9 +109,6 @@ def _shape_owner(payload, path, predicate):
         return "LU-03" if not isinstance(rows, list) or not rows else None
     if predicate != "period":
         return None
-    if path == "stabilization_target":
-        value = payload.get("stabilization_target")
-        return "LU-01" if value is not None and calendar_period(value, cadence) is None else None
     match = re.fullmatch(r"schedule\[(0|[1-9][0-9]*)\]\.period", path)
     rows = payload.get("schedule")
     if not match or not isinstance(rows, list) or int(match[1]) >= len(rows):
@@ -181,10 +137,11 @@ def _lease_up_assessment(document, issues):
         for finding in _payload_shape(block.parsed.value):
             predicate = finding.pop("_owner_predicate", None)
             code = _shape_owner(block.parsed.value, finding["field"], predicate)
+            owner_field=finding["field"]+".period" if predicate=="row_period" else finding["field"]
             owner = context["current"] and code and any(
                 issue.get("code") == code and issue.get("severity") == "error"
                 and issue.get("section") == block.section
-                and issue.get("field") == finding["field"]
+                and issue.get("field") == owner_field
                 and type(issue.get("context", {}).get("block_index")) is int
                 and issue["context"]["block_index"] == index for issue in issues)
             evidence = dict(section=block.section, **finding, context=dict(context))

@@ -40,7 +40,7 @@ def lease_rules(ledger):
                 continue
             root = "tenants[" + str(ordinal) + "]"
             def issue(code, suffix, message, **evidence):
-                if code in ("REC-03", "REC-04"):
+                if code in ("REC-02", "REC-03", "REC-04", "REC-09"):
                     evidence["context"] = dict(block_index=physical[id(block)],
                                                variant=dict(block.attributes).get("variant"))
                 ledger.issue(code, "error", "rent_roll", root + ("." + suffix if suffix else ""), message, **evidence)
@@ -142,39 +142,35 @@ def lease_rules(ledger):
             cap = cap if isinstance(cap, dict) else {}
             pct, method = cap.get("pct"), terms.get("method")
             invalid_cap = terms.get("cap") is not None and not isinstance(terms.get("cap"), dict)
-            if ((share is not None and (not finite(share) or not 0 < share <= 1))
-                    or pct is not None and (not finite(pct) or not 0 < pct < 1)):
-                issue("REC-01", "recovery_terms", "Recovery shares and cap rates must be fractions in their admitted ranges")
-                for value, suffix, upper in ((share, "pro_rata_share", "maximum"),
-                                             (pct, "cap.pct", "exclusiveMaximum")):
-                    if value is not None and not finite(value):
-                        represented_shape("recovery_terms." + suffix, ("type", ("number", "null")), "REC-01")
-                    elif finite(value):
-                        if value <= 0:
-                            represented_shape("recovery_terms." + suffix, ("exclusiveMinimum", 0), "REC-01")
-                        if value > 1 or upper == "exclusiveMaximum" and value == 1:
-                            represented_shape("recovery_terms." + suffix, (upper, 1), "REC-01")
+            for value,suffix,upper in ((share,"pro_rata_share","maximum"),(pct,"cap.pct","exclusiveMaximum")):
+                invalid=(value is not None and (not finite(value) or value<=0 or value>1 or upper=="exclusiveMaximum" and value==1))
+                if invalid:
+                    issue("REC-01","recovery_terms."+suffix,"Recovery share or cap rate violates its stated fraction domain",
+                          context=dict(block_index=physical[id(block)],variant=dict(block.attributes).get("variant")))
+                    if not finite(value):
+                        represented_shape("recovery_terms."+suffix,("type",("number","null")),"REC-01")
+                    elif value<=0:
+                        represented_shape("recovery_terms."+suffix,("exclusiveMinimum",0),"REC-01")
+                    else:
+                        represented_shape("recovery_terms."+suffix,(upper,1),"REC-01")
             method_needed = any(value is not None for key, value in terms.items() if key not in ("method", "cap"))
-            valid = (not method_needed or method is not None)
-            if method is not None:
-                valid = valid and method in ("net", "base_year_stop", "fixed_stop", "fixed_amount", "none")
-                required = {"base_year_stop": "base_year", "fixed_stop": "expense_stop_per_sqft", "fixed_amount": "fixed_recovery_annual"}.get(method) if isinstance(method, str) else None
-                if required:
-                    value = terms.get(required)
-                    valid = valid and finite(value) and (int(value) == value if required == "base_year" else value >= 0)
-                if pct is not None:
-                    valid = valid and cap.get("accumulation") in ("cumulative", "non_cumulative", "compounding")
-            if cap.get("accumulation") is not None and cap["accumulation"] not in ("cumulative", "non_cumulative", "compounding"):
-                valid = False
-            if cap.get("over") is not None and cap["over"] not in ("base_year", "prior_year"):
-                valid = False
-            if method_needed and method is None:
-                issue("REC-02", "recovery_terms.method", "A stated recovery member requires its method")
-                if "method" not in terms:
+            method_present = "method" in terms
+            method_stated = method_present and method is not None
+            if ((method_present and (not isinstance(method,str) or method not in ("net","base_year_stop","fixed_stop","fixed_amount","none")))
+                    or not method_present and method_needed):
+                issue("REC-02", "recovery_terms.method", "A stated recovery method must use its non-nullable closed vocabulary")
+                if not method_present:
                     represented_shape("recovery_terms.method", ("required", None), "REC-02")
-            if not valid:
-                issue("REC-02", "recovery_terms", "Recovery method, required companions or stated cap treatment is invalid")
-                if method is not None and pct is not None and "accumulation" not in cap:
+            required = {"base_year_stop":"base_year","fixed_stop":"expense_stop_per_sqft",
+                        "fixed_amount":"fixed_recovery_annual"}.get(method) if isinstance(method,str) else None
+            if required and (required not in terms or terms[required] is None):
+                issue("REC-02", "recovery_terms."+required, "The selected recovery method requires its stated companion")
+                if required not in terms:
+                    represented_shape("recovery_terms."+required, ("required", None), "REC-02")
+            pct_stated = "pct" in cap and pct is not None
+            if method_stated and pct_stated and cap.get("accumulation") not in ("cumulative","non_cumulative","compounding"):
+                issue("REC-02", "recovery_terms.cap.accumulation", "Stated method and cap.pct require one accumulation declaration")
+                if "accumulation" not in cap:
                     represented_shape("recovery_terms.cap.accumulation", ("required", None), "REC-02")
             pool = terms.get("recoverable_pool")
             if pool is not None and (not isinstance(pool, list) or not pool or any(k not in _POOL for k in pool)):
