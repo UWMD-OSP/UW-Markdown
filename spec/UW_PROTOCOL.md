@@ -3800,7 +3800,11 @@ families, owning capabilities and remediation-entry schema are
 normative in §III.6a, which keeps its section number so existing
 references resolve (RFC 0078). RFC0093 adds only P1/P2/P3 to META-01;
 its fields, error severity, ordering and admitted-parent suppression are normative
-there. META-02/03 and ordinary issue/ProtocolError transport remain unchanged.
+there. RFC0094 adds the closed META-04 present-leaf allocation; RFC0095 adds
+closed META-05 optional/override and META-06 conditional/reference allocations,
+with readiness-only DQ-06/info. Their exact fields, complete-pass ordering and
+admitted-parent suppression are normative in §III.6a. META-01/02/03 and ordinary
+issue/ProtocolError transport remain unchanged.
 
 ---
 

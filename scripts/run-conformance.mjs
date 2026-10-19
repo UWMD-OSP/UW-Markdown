@@ -455,7 +455,7 @@ async function runMalformedDocuments() {
 
     const mustParse = expected.must_parse !== false;
     const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
-    if (expectedCodes.length === 0) {
+    if (expectedCodes.length === 0 && !(expected.must_parse === true && Array.isArray(expected.metadata_issues))) {
       record('documents', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
       continue;
     }
