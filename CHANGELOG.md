@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Draft RFC0096 for four closed stated-payload admission diagnostics in the
+  Issue354 complete-validation lane. Distinguish existing-code ownership and
+  nullable-group corrections from proposed LU/REC/CS/WF allocations. Research
+  evidence includes30 bounded observations and four actual CLI partial refusals.
+  Documentation only; no runtime, schema, expectation or capability activation.
+
 - Implement accepted RFC0095 in TypeScript and independent Python source validation:
   ordered META-05/06, readiness-only DQ-06/info, symmetric stated-reference
   assertions and exact Gregorian as_of admission. Synchronize Format/Protocol,

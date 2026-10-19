@@ -8,6 +8,18 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Draft RFC0096 — bounded payload admission for Issue354.**
+[RFC0096](../rfcs/0096-bounded-stated-payload-admission.md) proposes closed
+LU-05/REC-11/CS-03/WF-16 errors for remaining stated payload types and carriers.
+Its30-case read-only observations distinguish new allocations from existing
+registered owners, nullable-group reconciliation and current-only scope.
+Four actual Python CLI sources have no registered issue but honest partial
+refusals; the draft does not turn those into a capability claim. Target grammar,
+recovery null qualification and lexical-only waterfall date boundaries remain
+explicit review decisions. No runtime/schema/frozen-expectation activation;
+Python discovery remains parse-only. Complete validation certification continues
+independently of dictionary/financial/receipt Verifier obligations.
+
 **Accepted RFC0095 — owner decision2026-10-18 atc551e956.**
 [RFC0095](../rfcs/0095-optional-metadata-and-provenance-references.md) accepts
 META-05/06/error with META-01–04 and absence warnings unchanged. DQ-06/info
