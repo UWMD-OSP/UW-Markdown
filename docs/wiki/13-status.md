@@ -16,10 +16,18 @@ model authority, no physical-history expansion, LU-05 target grammar only,
 unchanged recovery null qualification, existing lexical-only waterfall dates,
 and untouched financial selector/result rules. Thirty bounded observations
 and four actual CLI partial refusals remain evidence with their stated limits.
-This acceptance changes no live runtime/schema/frozen expectation. Synchronized
-TS/Python/spec/schema/registry implementation and attributed conformance follow
-on Issue354; Python discovery remains parse-only until complete capability
-certification. Dictionary/financial/receipt obligations remain separate.
+The synchronized implementation adds the four closed TypeScript predicates,
+independent private Python admission helper, Format/Protocol/schema/remediation
+and eight authored native conformance controls. The six document controls pin37
+ordered new-code findings, including lawful and current-peer cases; two recovery
+controls distinguish missing prototype-named references from actual own variants.
+The only prior expectation change is two REC-02 findings becoming one for a
+member without a method, as the accepted presence table requires; its source is
+unchanged. Structural recovery own-member corrections preserve financial
+expressions, selectors and result rules. Python's complete-validation integration
+remains on Issue354; the main helper adds no command, and discovery remains
+parse-only until complete capability certification. Dictionary/financial/receipt
+obligations remain separate.
 
 **Accepted RFC0095 — owner decision2026-10-18 atc551e956.**
 [RFC0095](../rfcs/0095-optional-metadata-and-provenance-references.md) accepts
