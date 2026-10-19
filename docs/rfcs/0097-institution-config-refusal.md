@@ -139,6 +139,12 @@ well-formed Unicode scalar content: reject an escaped lone high/low surrogate;
 a correctly paired escaped surrogate sequence is admitted. Do not normalize
 strings or replace invalid code units. A Unicode-profile failure is malformed
 without a pointer, at the same pre-shape stage as whole JSON admission.
+The BOM, duplicate-name and decoded-Unicode rules are explicit proposed
+profile choices, not inherited JSON MUSTs or reuse of document JCS admission.
+[RFC8259 section4](https://www.rfc-editor.org/rfc/rfc8259.html#section-4)
+recommends unique names; [section8.1](https://www.rfc-editor.org/rfc/rfc8259.html#section-8.1)
+permits parsers to ignore a BOM. They do not themselves select this stricter
+configuration profile. Final owner acceptance must cover these stated choices.
 The root MUST be an object, not null or an array.
 
 The recognized carrier is an own `validation_overrides` member. Absence means
@@ -197,7 +203,11 @@ Allocate exactly these operation errors, both category `validate`:
 These codes do not enter ordinary errors/warnings/issues arrays, change their
 registered severity system or allocate a META/FV fallback. Add operation-error
 documentation/remediation without pretending they are document issue families.
-`ProtocolError`'s existing category/shape remains unchanged.
+`ProtocolError`'s existing category/shape remains unchanged. Synchronize its
+pointer comment and the protocol-error schema's pointer description: for these
+two codes the pointer is relative to the selected configuration input, not the
+underwriting document. Existing other codes retain their own pointer authority.
+No new pointer syntax or outer filename field is allocated.
 
 Return exactly one primary config error:
 
