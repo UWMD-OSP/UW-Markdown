@@ -8,14 +8,17 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
-**Draft RFC0095 — owner-authorized drafting,2026-10-18.**
-[RFC0095](../rfcs/0095-optional-metadata-and-provenance-references.md) proposes
-closed META-05/06 optional-metadata/override and conditional-reference diagnostics.
-META-01–04 and absence warnings remain unchanged. DQ-06's attribution/readiness
-collision, exact reference triggers and market_data_ref.as_of remain explicit
-owner choices. This is docs-only, with no implementation, governing schema/spec
-activation, expected-result changes or capability promotion. Acceptance is separate;
-Python discovery remains parse-only pending complete certification.
+**Draft RFC0095 — owner-selected U1–U3, 2026-10-18.**
+[RFC0095](../rfcs/0095-optional-metadata-and-provenance-references.md) keeps
+META-01–04 and absence warnings unchanged. The selected draft allocates stage
+readiness only to DQ-06/info, moves symmetric canonical/any-stated-override
+reference attribution to META-06/error with exact identity/carrier dedup, and
+pins whole ASCII Gregorian as_of dates (years0001–9999, no normalization).
+The existing Issue354 review family contains read-only population evidence and
+independent TS/Python/proposed-schema vectors. Joint Format/Protocol/schema and
+implementation/conformance activation requires final owner acceptance; this PR
+is draft research only. No registry, source fixture, frozen expectation,
+receipt procedure, Python capability, version or release changes.
 
 **Python expression execution — Issue354.** A coherent read-only `calc` CLI
 implements the accepted expression grammar, all21 builtins, exact source/variant/

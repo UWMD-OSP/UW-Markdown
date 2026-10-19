@@ -21,12 +21,14 @@ metadata and block-override predicates enumerated below, and `META-06`/error
 for conditional agent identity presence and stated provenance-reference carrier
 requirements. Preserve META-01/02/03/04, existing completeness warnings and SRC
 vocabulary ownership. Use the accepted retained-physical/current-model operation.
-Keep three decisions explicitly open: DQ-06's conflicting allocations, the exact
-conditional-reference triggers and the `market_data_ref.as_of` reader domain.
+The owner selected U1–U3 as draft direction on 2026-10-18: keep DQ-06/info
+for readiness, allocate both references to META-06 under symmetric stated-assertion
+triggers, and require the date-only calendar domain below. Final RFC acceptance
+and activation remain separate gates.
 
 **Draft only.** The owner authorized preparing this document, not accepting its
 text, allocating codes in the live registry or activating an implementation.
-No implementation, specification, schema, conformance expectation, manifest,
+No production implementation, specification, schema, conformance expectation, manifest,
 source selection, receipt or release behavior changes in this PR.
 
 Owner direction,2026-10-18, with the exact question context:
@@ -34,6 +36,16 @@ Owner direction,2026-10-18, with the exact question context:
 > May I prepare a docs-only RFC 0095 from the concrete Issue #354 packet (https://github.com/UWMD-OSP/UW-Markdown/issues/354#issuecomment-6256947939)? It would propose closed META-05/06 allocations for the remaining optional metadata and conditional-reference requirements, leaving the DQ-06 collision, reference triggers and as_of domain as explicit owner choices. This authorizes drafting only; acceptance and activation remain separate.
 
 > Approve docs-only RFC 0095 draft
+
+The owner's subsequent choices, quoted verbatim (2026-10-18):
+
+> U1 adopt the draft's recommended split: DQ-06/info stays for stage readiness only; promoted-reference attribution moves to META-06/error under the U2 trigger; remove the duplicate emission; inventory the newly assessed population and report it to me before any activation.
+>
+> U2: the obligation is triggered by canonical provenance.resolution and by any stated override resolution assertion, applied identically to both references; shadowed and duplicate paths are suppressed exactly once; no fetching, no inferred asymmetry.
+>
+> U3: calendar date domain: whole-string YYYY-MM-DD, ASCII digits, valid Gregorian date, years 0001–9999, no trimming or normalization, null and absence as the draft defines; synchronize Format, Protocol and schema in the same RFC and add independent TS and Python vectors; do not reuse T1B.
+>
+> Pin all three in the RFC text, re-review, and bring it to me for acceptance when exact-head CI is green. Drafting authority only until then; prelaunch 4.x, no versions, releases, tags or publication.
 
 ## Motivation and verified authority
 
@@ -44,14 +56,15 @@ prove exhaustive Format admission or allocate a diagnostic for an unrelated
 requirement. A schema rejection also does not automatically justify a validator
 error, a typed parse refusal or a new generic fallback.
 
-This draft is based on main
-`8529af18ab1344e5d1b28ddc7cb378fe7911a5cf`, with accepted RFC0094 implementation
+The original reviewed draft was `cf3112951537fe0b69f1f06239fcc3330e6303c6`.
+This revision is based on current main
+`fa9a9ea37d31b918f5993eae4276b159f31719f3`, with accepted RFC0094 implementation
 reviewed separately in [PR388](https://github.com/UWMD-OSP/UW-Markdown/pull/388).
 The Python development checkpoint is
 `54a44a3bde8bdca75e946b2f1801db672a18e095`; its local111-case result is development
-evidence, not complete validation or Verifier certification. This document does
-not claim a new corpus census, live error count or executed future conformance
-result. Its examples are proposed controls, not changes to frozen expectations.
+evidence, not complete validation or Verifier certification. The read-only population inventory and isolated date controls below are
+research evidence, not a live error count or executed future conformance result.
+Authored controls do not change frozen expectations.
 
 | Requirement or conflict | Current repository evidence |
 |---|---|
@@ -146,7 +159,7 @@ resolution; U2 decides required absence, not whether stated carriers are checked
 - A stated inherited_from or market_data_ref MUST be a non-null non-array
   object. For an invalid present carrier emit one META-06 at the carrier field
   and suppress its descendants. A required-but-absent carrier receives one
-  finding at that same parent field **under the trigger selected in U2**.
+  finding at that same parent field **under U2's stated-assertion trigger**.
   Optional absent carriers receive no finding. Stated carriers are checked
   even when their matching resolution is not selected.
 - For an admitted inherited_from object, assess required document_id:string,
@@ -156,13 +169,13 @@ resolution; U2 decides required absence, not whether stated carriers are checked
   No safe-integer ceiling, graph lookup, hop recomputation or network fetch
   is added. Python booleans are not integers.
 - For an admitted market_data_ref object, assess required document_id:string,
-  as_of under **U3**, digest with the same exact lexical predicate, then optional
+  as_of under the exact **U3** date-only domain, digest with the same exact lexical predicate, then optional
   rationale:string in that order. Missing required members receive their own
   child finding; present null is not a string. Unknown members remain admitted.
 
 The schema has no minLength for document_id or rationale: the draft does not
-add one. For as_of, empty-string admission depends on U3 and is not decided by
-this direction. A carrier digest is a stated reference identifier; validating
+add one. For as_of, null and exact-empty string are invalid under U3; an admitted
+carrier missing this required member receives one child finding. A carrier digest is a stated reference identifier; validating
 its lexical shape does not authenticate the referenced document or establish
 that its contents are available, current or financially valid.
 
@@ -190,16 +203,18 @@ as an accepted refusal. The existing typed data-quality predicates remain the
 authority: malformed truthy optional values do not establish literal true. Audit
 TypeScript truthiness versus Python literal-true behavior rather than copying
 runtime discrepancies into governed expectations.
-Existing data-quality consequences keep their predicates and order unless U1
-expressly changes the conflicting promoted-reference allocation.
+Existing data-quality consequences keep their predicates and relative order,
+except that U1 removes the old promoted-reference DQ-06/error emission and
+assigns its requirement to the earlier META-06 pass.
 
 Complete old shape, RFC0093 placement/section/quality, actor, META-02/03 and
 META-04 passes first. Then complete all META-05 findings across the union;
 then all META-06 findings; then run existing role/period/source checkpoints and
 the remaining validators in their existing relative order. Do not globally
-sort issues or interleave these passes with per-block old findings. U1 must
-explicitly disposition removal/reallocation of the later DQ-06/error; no
-second hidden duplicate of that condition may be introduced.
+sort issues or interleave these passes with per-block old findings. Remove the
+later attribution DQ-06/error under U1; it MUST NOT also emit for a requirement
+already discharged in META-06. Readiness DQ-06/info and CC-14 suppression stay
+in their existing pass positions.
 
 ### Population and operation authority
 
@@ -229,7 +244,7 @@ The new findings would enter ordinary issue/error partitions and derived
 validation status, displays and CLI exits. A local completeness assessor may
 consume only evidence owned by the exact allocated predicate, block reference
 and path. An unrelated error elsewhere is not ownership. Preserve local evidence
-for requirements this RFC does not allocate or whose choice remains unresolved.
+for requirements this RFC does not allocate.
 
 Structural invalidity is distinct from unsupported composition and unavailable
 reference sources. Malformed JSON keeps accepted Reader refusal behavior; valid
@@ -246,7 +261,7 @@ remain separate. This is not a generic schema-to-error allocation or complete
 Python validation/Verifier certification. Discovery stays parse-only until its
 independent complete capability gate passes.
 
-## Decisions from precedent and unresolved owner choices
+## Decisions from precedent and owner-selected draft direction
 
 | Call | Draft disposition | Evidence |
 |---|---|---|
@@ -255,67 +270,156 @@ independent complete capability gate passes.
 | D3 | Complete META-05 then META-06 after META-04, before role/period/source | Existing metadata pass pattern; no global sort |
 | D4 | String-or-null is literal; agent presence does not imply nonempty | Format2.5b and block schema |
 | D5 | Source/resolution keep SRC ownership; no generic schema fallback | RFC0031 and closed META-01–04 allocations |
-| D6 | Reuse exact schema carrier domains except the unresolved as_of choice | Block schema plus explicit U3 boundary |
+| D6 | Reuse exact carrier domains except the expressly selected U3 date predicate | Block schema plus explicit U3 boundary |
 
-### U1 — DQ-06 attribution/readiness collision: OPEN
+### U1 — DQ-06 split: OWNER-SELECTED DRAFT DIRECTION
 
-RFC0022's implementation record and current checkDataQuality use DQ-06/error
-for an absent/falsy promoted-market reference. RFC0028 and the live registry use
-DQ-06/info for missing declared-stage sections. Both behaviors exist; the
-attribution condition is **not an unallocated requirement**.
+DQ-06/info MUST mean stage readiness only. Promoted-reference attribution moves
+to META-06/error under U2; remove the old attribution emission from
+`checkDataQuality`. Its separate carrier-shape and child checks stay in META-06.
+No readiness predicate, CC-14 property suppression, severity or unrelated issue
+ordering changes. There is no DQ-06/error alias or duplicate attribution output.
 
-Recommended decision for review: retain DQ-06/info exclusively for stage
-readiness and move only promoted-reference attribution into META-06 under the
-chosen U2 trigger. Remove the duplicate attribution emission, retaining its
-requirement and error severity. Precisely separate absent from invalid-present
-carriers: null/false become invalid carrier shape, not an invented default.
-Stage readiness, CC-14 suppression and unrelated DQ ordering stay unchanged.
-The current attribution check walks parsed.sections/current variants, excluding
-history, overwritten peers, append and extension collections. The proposed
-META-06 pass uses the full retained-physical/current-model union: this is an
-explicit population expansion requiring acceptance, not merely a code rename.
-Inventory the newly assessed population independently before activation.
-The resulting code/path/population/ordering changes require explicit governed acceptance
-and synchronized tests; they are not authorized by drafting approval.
+This is more than a code rename: the current attribution check visits
+`parsed.sections` and current variants, whereas META-06 visits the full exact
+identity union. History, overwritten peers, append and extension blocks can
+therefore become newly assessed. The U2 inheritance trigger is symmetric with
+market attribution, and supplied mutable MODEL records are assessed using their
+current own members. Inventory this population and report it to the owner before
+activation. A raw source candidate is not automatically an admitted operation;
+rejected inputs and unavailable/unconsumed composition parts must be separated.
 
-Alternative: retain DQ-06/error for attribution and allocate a separate
-readiness code, amending RFC0028, registry, displays and applicable assertions.
-Retaining one code with unrelated severities/meanings would require an explicit
-contract rather than silently treating the current collision as intentional.
+### U2 — symmetric stated-assertion triggers: OWNER-SELECTED DRAFT DIRECTION
 
-### U2 — conditional reference triggers: OPEN
+For each distinct admitted block identity, independently determine these two
+boolean obligations from current own members:
 
-Format2.5b says canonical provenance.resolution triggers the two requirements.
-Current runtime additionally tests any _overrides[].resolution for
-market_data_accepted; an analogous inherited-only override trigger is not equally
-specified/enforced. Ordinary override precedence does not settle whether every
-stated but shadowed override creates a whole-block carrier obligation.
+| Required carrier | Trigger tag |
+|---|---|
+| `_meta.provenance.inherited_from` | `inherited_assumption` |
+| `_meta.provenance.market_data_ref` | `market_data_accepted` |
 
-Choose the complete domain explicitly: canonical resolution only; or canonical
-plus defined override assertions for both references; or another precisely
-bounded rule. Define empty/invalid override entries, duplicate/shadowed paths,
-unselected peers and history consistently with the new all-physical population.
-Do not infer a market-only/inheritance-only asymmetry or introduce reference
-fetching. The draft carrier-shape checks on stated references are independent
-of this required-absence decision. Final acceptance text must pin the triggers
-and exact duplicate suppression.
+For either row the trigger is true when the admitted canonical
+`_meta.provenance.resolution` equals its tag **or** any object entry in the stated
+block-level `_overrides` array has an own `resolution` equal to that tag.
+Inherited prototype members are not assertions. Nonobject entries cannot assert
+a resolution and retain only their independent META-05 entry error. Invalid
+source/resolution vocabularies keep their SRC ownership; no coercion or prefix
+matching creates a trigger.
 
-### U3 — market_data_ref.as_of: OPEN
+This is assertion accounting, not effective leaf-metadata selection. An
+object's missing, invalid, exact-empty, duplicate, unmatched or shadowed `path`
+does not erase its own resolution assertion. Its independent META-05 path
+finding, when required, remains. No path parser, target-existence check or
+last/first-winner selection is introduced for attribution. An assertion in a
+later override cannot retract an earlier assertion, including a different tag
+at the same path. Canonical inheritance plus an override market assertion
+therefore requires both carriers. This deliberately removes the current
+market-only override asymmetry.
 
-Choose string-only admission as asserted by the current schema, or an explicit
-calendar reader domain with joint Format/Protocol/schema synchronization.
-The MarketDataRef YYYY-MM-DD comment and dated examples are not by themselves
-an exhaustive reader grammar. The referenced market-data artifact has its own
-calendar admission in uw-market-data.schema.json and market-data.ts; this does
-not silently strengthen the reference carrier's as_of assertion. If calendar admission is selected, specify whole
-string, ASCII digits, year range/year zero, Gregorian validity, null/absence,
-no trimming/normalization and independent cross-runtime vectors before acceptance.
-Do not reuse RFC0094's timestamp T1B for a date-only field or a host date parser.
+Collapse all matching assertions for a block/carrier to one boolean obligation.
+Emit the missing carrier finding once at its canonical carrier field, never once
+per assertion/path. A present null/scalar/array carrier produces its one shape
+finding instead of an additional absence finding. An admitted object receives
+its ordered child findings once. This also suppresses duplicate diagnostics for
+shared physical/model object identity; equal distinct blocks remain distinct.
+Optional stated carriers are still validated without a matching trigger.
+
+Existing malformed-wrapper/provenance parent precedence continues to suppress
+its metadata descendants, even if a sibling override states a tag. Assess the
+sibling override's own shape and annotation predicates independently, but do not
+invent a provenance parent or cascade carrier findings beneath a rejected parent.
+RFC0090/0091/0093 physical/current-model authority and SOURCE composition
+accounting apply identically to both references; no external reference fetching,
+hop inference or source-repair behavior is added.
+
+Proposed trigger controls below assume the canonical parent shape is admitted
+and both carriers are absent; counts name only the new carrier findings:
+
+| Canonical resolution | Stated override assertions (array order) | Required findings |
+|---|---|---|
+| market_data_accepted | none or repeated market tags | One market_data_ref parent error |
+| absent | inherited_assumption | One inherited_from parent error |
+| inherited_assumption | market_data_accepted | inherited_from, then market_data_ref |
+| absent | same path: market_data_accepted then user_input | One market_data_ref; later assertion does not retract it |
+| absent | same path: user_input then market_data_accepted | One market_data_ref; order does not change the obligation |
+| absent | same path: inherited_assumption, market_data_accepted, user_input | inherited_from, then market_data_ref; one each |
+| absent | missing/non-string path with own market_data_accepted | One market_data_ref plus the independent META-05 path error |
+| absent | null entry followed by own market_data_accepted | One market_data_ref plus one META-05 entry error, no crash |
+| absent | MODEL prototype-only resolution | No required-carrier finding; optional stated carriers still checked |
+
+### U3 — market reference calendar date: OWNER-SELECTED DRAFT DIRECTION
+
+A stated `market_data_ref.as_of` MUST be a string containing exactly ten ASCII
+characters `YYYY-MM-DD`: four ASCII year digits, two month digits, two day digits,
+and the two literal hyphens. The year MUST be 0001–9999. Validate the proleptic
+Gregorian month/day, including the divisible-by-4, except-divisible-by-100,
+unless-divisible-by-400 leap-year rule. Whole-string matching is required;
+reject leading/trailing whitespace, line terminators, Unicode digits, reduced
+widths, signs, year zero, timestamps, offsets, week dates and invalid dates.
+Never trim, coerce, repair or normalize the stated value.
+
+The carrier semantics remain explicit: an absent optional market_data_ref gives
+no error; an absent carrier when U2 requires it gives one parent META-06/error;
+a present null/nonobject carrier gives its parent shape finding. An admitted
+carrier with absent, null or invalid as_of gives one child META-06/error at
+`_meta.provenance.market_data_ref.as_of`, in document_id/as_of/digest/rationale
+order. Calendar validity does not authenticate or fetch the referenced artifact.
+
+This is a date-only field. Do not reuse RFC0094's T1B timestamp domain, which
+admits year0000 and has time components. Do not tighten unrelated calendar
+fields or call a permissive host string-date parser. Existing day-count helpers
+and a JavaScript `$` anchor alone are not an exact implementation of U3.
+
+#### Joint Format, Protocol and schema activation text
+
+Under this RFC, one synchronized activation changeset MUST:
+
+1. Amend Format2.5b's two conditional table rows and following canonical-only
+   sentence to the complete U2 assertion rule, with the exact carrier child
+   domains and U3 as_of predicate. Format2.5f leaf-wins behavior is unchanged;
+   it does not select attribution assertions away.
+2. Amend ProtocolIII.6a/XI, executable registry and remediation for META-05/06,
+   DQ-06/info-only, the fixed pass/field ordering, source/model/shape authority
+   and exact U2/U3 predicates. Remove only the old attribution DQ-06/error.
+3. Amend `spec/schemas/uwmd-block.schema.json`: retain the existing object types,
+   required members, nullability and unknown-member admission; describe both
+   canonical and override triggers on inherited_from/market_data_ref; assert
+   conditional presence symmetrically for both at the root (sibling `_overrides`
+   cannot be inspected from a provenance-only local subschema). The admitted
+   canonical parent guard MUST precede conditional descendant requirements.
+   Add a reusable `$defs/MarketReferenceDate` with the exact schema below and
+   reference it from `$defs/UWMeta/properties/provenance/properties/market_data_ref/properties/as_of`.
+   The calendar assertion MUST NOT depend on optional `format` plugin support.
+   Both existing reference-digest patterns must likewise use an absolute end
+   guard for the already-proposed exact `sha256:` plus64 lowercase ASCII hex
+   predicate; a trailing newline is not a lawful digest. No other digest
+   construction, identity or authentication rule changes.
+4. Synchronize TypeScript, independent Python, authored positive/negative
+   conformance controls and explicitly attributed expectation changes. Test
+   schema/Format/Protocol admission jointly; no runtime-only stricter domain.
+
+Proposed `$defs/MarketReferenceDate` (research only until acceptance):
+
+```json
+{
+  "type": "string",
+  "pattern": "^(?!0000)(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8]))|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)(?![\\s\\S])",
+  "description": "Whole ASCII YYYY-MM-DD, valid Gregorian date, years 0001–9999; no trimming or normalization. RFC 0095 U3."
+}
+```
+
+The final negative lookahead is an absolute end guard, including line
+terminators; an ordinary `$` can match before a final newline in JavaScript.
+The regex admits only the selected year/month/day domain, including century
+leap cases. Independent TS/Python vectors and schema-predicate comparisons are
+required below. No governing spec/schema, registry, runtime or frozen expected
+result is changed by this draft update.
 
 ## Conformance impact and evidence gates
 
-No fixture, expected result or original source changes in this draft. No fixed
-impact count is asserted. Before acceptance/activation, independently inventory
+No fixture, expected result or original source changes in this draft. The read-only inventory below reports measured source populations, not a future
+validation or conformance error total. Before activation, independently inventory
 every live requirement owner and source population at the final implementation
 base; distinguish intentionally invalid cases, positive documents, output
 templates and focused financial tests. The earlier27-schema audit is not27
@@ -323,7 +427,7 @@ new error allocations. Original111 portable validate expectations remain the
 current authority unless a separately reviewed attributed change is approved.
 
 Implementation must provide these focused authored controls and independent
-expected arrays, with the selected U1–U3 rules frozen before activation:
+expected arrays, with the owner-selected U1–U3 rules frozen before activation:
 
 | Group | Required positive/negative evidence |
 |---|---|
@@ -342,11 +446,56 @@ platform identity. A successful focused run does not establish a full capability
 Required final-head CI follows ordinary integration gates. No rebaseline is
 authorized merely to make Python pass.
 
+### Executed independent date-only evidence (draft research)
+
+The isolated review files use the existing
+`docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only` stem.
+They are not imported by a production parser, validator or schema registry.
+The independently authored [Python reference](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.py)
+and [TypeScript reference](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.ts)
+share manually authored frozen inputs, not implementation logic. The Python
+procedure uses ASCII character arithmetic; TS independently uses an exact-width
+ASCII grammar and calendar arithmetic. Neither uses a string-date parser,
+current clock or RFC0094's T1B predicate.
+
+- [106 date vectors and6 admitted-carrier contexts](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json):
+  both procedures pass all112 expectations (25 date admits,81 refusals).
+  The six contexts distinguish a required absent as_of from present null,
+  wrong-type and invalid-calendar values; unknown carrier siblings remain intact.
+- [Complete400-year cycle](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.cycle.json):
+ 158,400 ordered inputs (years1–400, months1–12, days0–32),146,097 admits and
+ 12,303 refusals. Both references, the proposed JSON Schema with format plugins
+ disabled, and the independent Python `datetime.date(year, month, day)` integer
+ constructor oracle agree. The constructor is an external calendar oracle, not
+ a parser or an activated dependency.
+- The whole ordered truth sequence (ASCII1/0, no separators/newline) has SHA256
+ `140e5faf25833eca88eae2bd7a3d35d787f90ab2a06952f87a79dbac894d1b7f`.
+ The frozen vectors have SHA256
+ `f8d3ebc4aef8b0992edf2a333cc53fa2325b869c680ba990158225f18c6e7400`.
+ [Observed local report](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.observations.json)
+ records source hashes, Node24.14.1/Windows and TypeScript5.9.3. The independent
+ Python files identify the author authority main separately from the unmodified
+ Python WIP checkpoint. Fresh final-head CI re-executes the research; archived
+ observations alone are not a fresh platform result.
+
+Reproduce from the repository root with existing locked dependencies and Python:
+
+```bash
+node docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.check.mjs
+```
+
+On Windows, set `PYTHON` to the desired Python executable when `python` is not
+available. The check compiles/type-checks the isolated TS source into a temporary
+folder, re-executes independent Python, compares the exact proposed schema to
+this RFC, and confirms vector/input immutability. Its CI step is explicitly
+research-only and does not allocate a code, activate a predicate, replace frozen
+conformance expectations or advertise validation capability.
+
 ## Reference implementation plan
 
 After owner acceptance only, synchronize Format2.5b/c/f, ProtocolIII.6a/XI,
 the executable registry/remediation, applicable schema annotations and any
-assertions explicitly selected by U1–U3, plus TypeScript and independent Python.
+assertions explicitly selected in U1–U3, plus TypeScript and independent Python.
 Expected implementation sites are `packages/uwmd-verify/src/validator.ts`,
 `protocol.ts` and metadata types; Python `uwmd_source_validation.py`, `uwmd_validation_provenance.py` and the
 complete validation ledger/core; authored conformance cases/portable transport assertions.
@@ -356,7 +505,8 @@ Keep standalone evidence ownership separate from ordinary result projection.
 Audit current producer obligations and live consumer outputs without fabricating
 metadata. No new public function, CLI command, diagnostic DTO property, financial
 procedure, schema fallback or capability promotion is needed for this allocation.
-Implementation code and changes to governing contracts are outside this PR.
+Production implementation and changes to governing contracts are outside this
+draft PR. The isolated review controls have no production imports or hooks.
 
 ## Alternatives considered
 
