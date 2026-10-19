@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseUWFile, getSection, getSectionVariant } from './parser.js';
 import { validateUWFile } from './validator.js';
 import { checkPayloadAdmission } from './payload-admission.js';
-import type { ValidationMessage } from './types.js';
+import type { UWBlock, ValidationMessage } from './types.js';
 
 const codes = new Set(['LU-05', 'REC-11', 'CS-03', 'WF-16']);
 const classes = new Set(['office', 'retail']);
@@ -118,6 +118,29 @@ describe('RFC0096 WF16 claims and selected-floor exclusions', () => {
 });
 
 describe('RFC0096 current SOURCE/MODEL scope and full pass ordering', () => {
+  it('distinguishes a legal annotation variant key from a block wrapper', () => {
+    const parsed = parseUWFile(doc('lease_up_schedule', lu()));
+    const prototype = getSectionVariant(parsed, 'lease_up_schedule', 'default')!;
+    const a = { ...prototype, content: lu({ model_type: false }) };
+    const z = { ...prototype, content: lu({ assumptions: false }) };
+    parsed.sections.lease_up_schedule = { annotation: a, z };
+    const issues: ValidationMessage[] = []; checkPayloadAdmission(parsed, issues, classes);
+    expect(issues.map(i => i.field)).toEqual(['model_type','assumptions']);
+    expect(issues[0].message).toContain('variant "annotation"');
+  });
+  it('does not let null/false/malformed external members hide independent payload errors', () => {
+    for (const external of [null, false, {}, { parts: [], part_count: 0 }]) {
+      expect(fields('lease_up_schedule', lu({ model_type: false, external }))).toEqual(['model_type','external']);
+    }
+    expect(fields('lease_up_schedule', { external: { parts: ['missing'], part_count: 1 } })).toEqual([]);
+  });
+  it('does not crash on an unavailable wrapper annotation or infer a new shape diagnostic', () => {
+    const parsed = parseUWFile(doc('lease_up_schedule', lu()));
+    const block = getSectionVariant(parsed, 'lease_up_schedule', 'default')!;
+    (block as unknown as {annotation: unknown}).annotation = undefined;
+    const issues: ValidationMessage[] = []; expect(() => checkPayloadAdmission(parsed, issues, classes)).not.toThrow();
+    expect(issues).toEqual([]);
+  });
   it('assesses assembled consumed content once and excludes unused sources', () => {
     const root = doc('rent_roll', { external: { parts: ['p'], part_count: 1, collection_key: 'tenant_id', collection_path: 'tenants' } }, ' external=true');
     const part = (id: string, fee: unknown) => `---\nuw_version: "3.0"\nuwpart_version: "1.0"\npart_id: ${id}\nsection: rent_roll\ncollection_member: true\n---\n${fence('rent_roll', { tenant_id: id, recovery_terms: { method: 'net', admin_fee_pct: fee } })}`;

@@ -1,4 +1,5 @@
 // RFC0096: bounded admission of current stated payloads, never financial recomputation.
+import { readExternalDirective, CompositionError } from './composition.js';
 import type { ParsedUWFile, UWBlock, ValidationMessage } from './types.js';
 
 type Obj = Record<string, unknown>;
@@ -39,7 +40,9 @@ export function currentPayloadBlocks(parsed: ParsedUWFile, section: string): Arr
   if (!own(parsed.sections, section)) return [];
   const entry = parsed.sections[section];
   if (!object(entry)) return [];
-  const rows: Array<[string | null, UWBlock]> = own(entry, 'annotation')
+  const single = own(entry, 'annotation') && object(entry.annotation)
+    && typeof value(entry.annotation, 'section') === 'string' && own(entry, 'content');
+  const rows: Array<[string | null, UWBlock]> = single
     ? [[null, entry as unknown as UWBlock]]
     : Object.keys(entry).sort(compare).map(key => [key, entry[key] as UWBlock]);
   return rows.filter(([, block]) => {
@@ -47,8 +50,14 @@ export function currentPayloadBlocks(parsed: ParsedUWFile, section: string): Arr
     const meta = value(block.content, '_meta');
     const lifecycle = object(meta) ? value(meta, 'lifecycle') : undefined;
     const historical = object(lifecycle) && value(lifecycle, 'superseded') === true;
-    return !historical && value(block.annotation, 'superseded') !== true
-      && !own(block.annotation, 'external') && !own(block.content, 'external');
+    if (historical || value(block.annotation, 'superseded') === true) return false;
+    try { return readExternalDirective(block) === null; }
+    catch (error) {
+      if (!(error instanceof CompositionError)) throw error;
+      // A malformed or null external member is not an admitted directive and
+      // cannot hide independent payload errors. Its composition owner is separate.
+      return true;
+    }
   });
 }
 function emitter(issues: ValidationMessage[], code: string, section: string, variant: string | null): Emit {
