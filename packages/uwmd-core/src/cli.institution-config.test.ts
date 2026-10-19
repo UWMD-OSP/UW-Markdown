@@ -137,10 +137,10 @@ describe('RFC0097 actual standalone CLI admission', () => {
     const result = await run(['validate', file, '--json']);
     expect(result.status).toBe(1); expect(JSON.parse(result.stdout)).toEqual({ error: errorObject() });
   });
-  it('an unexpected adapter defect remains internal-error exit2, never malformed or exit1', async () => {
+  it.each(['validate', 'verify'])('an unexpected %s adapter defect remains internal-error exit2, never malformed or exit1', async command => {
     const { directory, file } = setup(); const hook = resolve(directory, 'injected-bug.mjs');
     writeFileSync(hook, `import fs from 'node:fs'; import { syncBuiltinESMExports } from 'node:module'; const original = fs.readFileSync; fs.readFileSync = function(path, ...args) { if (typeof path === 'string' && path.endsWith('.uw.institution.json')) throw new RangeError('internal-adapter-test'); return original.call(this, path, ...args); }; syncBuiltinESMExports();`);
-    const result = await runProcess(process.execPath, ['--import', pathToFileURL(hook).href, CLI, 'validate', file, '--json'], { encoding: 'utf8' });
+    const result = await runProcess(process.execPath, ['--import', pathToFileURL(hook).href, CLI, command, file, ...(command === 'verify' ? ['--validate'] : []), '--json'], { encoding: 'utf8' });
     expect(result.status).toBe(2); expect(result.stdout).toBe(''); expect(result.stderr).toContain('internal-adapter-test'); expect(result.stderr).not.toContain('VAL-INSTITUTION-CONFIG');
   });
 });

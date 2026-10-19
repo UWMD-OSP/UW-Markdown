@@ -136,7 +136,14 @@ function readFile(path: string): string {
   return readFileSync(resolved, 'utf-8');
 }
 
-function institutionFailure(error: InstitutionConfigError, json: boolean): void {
+function institutionFailure(error: unknown, json: boolean): void {
+  // Only failures in the new config preflight get this internal-error boundary.
+  // Other CLI commands retain their existing refusal transport unchanged.
+  if (!(error instanceof InstitutionConfigError)) {
+    console.error(error);
+    process.exitCode = 2;
+    return;
+  }
   if (json) console.log(JSON.stringify({ error: error.proto }, null, 2));
   else console.error(`uwmd: ${error.code}: ${error.message}${error.proto.pointer ? ` [${error.proto.pointer}]` : ''}`);
   process.exitCode = 1;
@@ -225,7 +232,6 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
     const lite = parseUWLite(content);
     try { loadInstitutionThresholds(file, flags['institution'] as string | undefined); }
     catch (error) {
-      if (!(error instanceof InstitutionConfigError)) throw error;
       institutionFailure(error, flags['json'] === true); return;
     }
     const errors = lite.issues.filter((issue) => issue.severity === 'error');
@@ -265,7 +271,6 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   let thresholds: ReturnType<typeof loadInstitutionThresholds>;
   try { thresholds = loadInstitutionThresholds(file, flags['institution'] as string | undefined); }
   catch (error) {
-    if (!(error instanceof InstitutionConfigError)) throw error;
     institutionFailure(error, flags['json'] === true); return;
   }
   const structural = validateUWFile(content, thresholds);
@@ -426,7 +431,9 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     let thresholds: ReturnType<typeof loadInstitutionThresholds>;
     try { thresholds = loadInstitutionThresholds(file); }
     catch (error) {
-      if (!(error instanceof InstitutionConfigError)) throw error;
+      if (!(error instanceof InstitutionConfigError)) {
+        institutionFailure(error, flags['json'] === true); return;
+      }
       configError = error;
       hadError = true;
       sections['validation'] = { error: error.proto };
@@ -2181,5 +2188,5 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   } else {
     console.error(err);
   }
-  process.exit(err instanceof Error && typeof (err as { code?: unknown }).code === 'string' ? 1 : 2);
+  process.exit(1);
 });
