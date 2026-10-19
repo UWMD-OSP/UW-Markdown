@@ -3,7 +3,7 @@ rfc: 0050
 title: Preferred equity with a split coupon (current-pay and accrued on one tranche)
 status: implemented
 accepted: 2026-09-15
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-13
 depends_on:
   - 0026

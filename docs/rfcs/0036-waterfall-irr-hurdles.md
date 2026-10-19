@@ -2,7 +2,7 @@
 rfc: 0036
 title: IRR-hurdled waterfall tiers — a closed-form boundary, not a nested solve
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-07
 affects:
   - format-spec

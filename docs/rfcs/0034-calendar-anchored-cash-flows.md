@@ -2,7 +2,7 @@
 rfc: 0034
 title: Calendar-anchored cash flows — dated series, day counts, and deterministic xirr/xnpv
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-02
 accepted: 2026-09-02
 implemented: 2026-09-02

@@ -2,7 +2,7 @@
 rfc: 0002
 title: Module signing
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-26
 affects:
   - protocol-spec

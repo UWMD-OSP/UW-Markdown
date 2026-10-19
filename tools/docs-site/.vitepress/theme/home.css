@@ -237,7 +237,7 @@
   font-size: clamp(27px, 4vw, 38px);
   font-weight: 700;
   line-height: 1.12;
-  letter-spacing: -.04em;
+  letter-spacing: -.025em;
 }
 .uw-section-heading > a { flex: none; margin-bottom: 4px; font-size: 12px; font-weight: 600; }
 .uw-section-lede {

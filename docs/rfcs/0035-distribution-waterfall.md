@@ -2,7 +2,7 @@
 rfc: 0035
 title: Distribution waterfall — state-and-verify promote, pref, and catch-up over a dated series
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-02
 accepted: 2026-09-02
 implemented: 2026-09-02

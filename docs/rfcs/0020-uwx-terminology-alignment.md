@@ -2,7 +2,7 @@
 rfc: 0020
 title: Align the format spec and examples with the .uwx.md extension
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-13
 affects:
   - format-spec

@@ -2,7 +2,7 @@
 rfc: 0037
 title: Cross-check resolution over variant maps, and a validation coverage channel
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-09
 affects:
   - format-spec

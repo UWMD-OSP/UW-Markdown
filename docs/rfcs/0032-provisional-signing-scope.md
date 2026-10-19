@@ -2,7 +2,7 @@
 rfc: 0032
 title: State how `_meta.provisional` interacts with signing
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-01
 affects:
   - protocol-spec

@@ -2,7 +2,7 @@
 rfc: 0010
 title: Signed blocks
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-27
 affects:
   - format-spec

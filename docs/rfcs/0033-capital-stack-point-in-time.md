@@ -2,7 +2,7 @@
 rfc: 0033
 title: Scope `capital_stack` to one point in time
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-01
 affects:
   - format-spec
