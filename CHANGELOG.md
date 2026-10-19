@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept RFC0096 under the owner's2026-10-19 decision at1926efe4: closed
+  LU-05/REC-11/CS-03/WF-16 validation errors, assembled current-payload authority,
+  exact target/recovery-null/lexical-date dispositions and unchanged financial
+  selectors/results. Synchronized TS/Python implementation and attributed
+  conformance follow on Issue354. Documentation only; no runtime, schema,
+  expectation or capability activation.
+
 - Correct RFC0095's ECMAScript end-anchor explanation and validator comments;
   unflagged `$` already requires input end. Add public parser/schema controls for
   five valid actors and35 rejected suffixes. Accepted predicates, schemas,
