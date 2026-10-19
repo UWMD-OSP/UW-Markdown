@@ -1,7 +1,7 @@
 ---
 rfc: 0096
 title: Allocate bounded stated-payload admission diagnostics
-status: draft
+status: accepted
 author: codex
 created: 2026-10-18
 affects:
@@ -16,18 +16,24 @@ affects:
 
 ## Summary
 
-Propose four closed error allocations for missing validation admission in
+Allocate four closed error allocations for missing validation admission in
 lease-up payloads (`LU-05`), recovery leaves (`REC-11`), capital-stack sizing
 claims (`CS-03`) and waterfall claims (`WF-16`). They validate stated structure,
 types and already specified bounds; they do not generate a model, recompute
 financial results, fetch unavailable sources or replace a financial verifier.
-**Draft, not accepted or activated.** This document and its research evidence
-change no runtime, schema, original source, frozen expectation or capability.
+**Accepted by the owner,2026-10-19, as reviewed at1926efe4.**
+
+> RFC 0096 (#394 at 1926efe4) is accepted as drafted, with the six dispositions in "Decisions proposed for owner review" exactly as written: LU-05, REC-11, CS-03 and WF-16 as validation-only errors, current canonical and current variants under assembled model authority, no broadening to physical history, target grammar on LU-05 only, recovery nulls unchanged, the existing lexical date shape for waterfalls, financial selector and result rules untouched. Mark ready, merge on green exact-main CI, record it in NOW.md with SHA and CI link, then implement in TS and Python together on the #354 lane with attributed conformance controls. No release, version, tag or publication.
+
+This docs-only acceptance records the approved contract. Synchronized
+Format/Protocol/schema, TypeScript/Python and attributed conformance implementation
+follows on Issue354. This PR changes no live runtime, schema, original source,
+frozen expectation or capability declaration.
 
 This is governed preparation toward Issue354's complete `validate` capability.
 The independent Python checkpoint remains parse-only. Accepted RFC0095 is
 implemented separately in merged PR392; its metadata population does not determine the
-payload population proposed here. RFCs0085/0089/0092 remain separate.
+payload population accepted here. RFCs0085/0089/0092 remain separate.
 
 ## Motivation and evidence boundary
 
@@ -90,12 +96,12 @@ Existing typed parse refusals still own malformed JSON/source grammar and
 unsupported format admission. The four parsed payload examples are not those
 reader failures.
 
-## Proposed change
+## Accepted change
 
-All MUST statements below are proposed contract text, contingent on acceptance
-and synchronized implementation. No generic schema fallback is allocated.
+The MUST statements below define the accepted contract for synchronized
+implementation. No generic schema fallback is allocated.
 
-### Diagnostic transport and candidate allocation
+### Diagnostic transport and allocation
 
 | Code | Severity | Closed responsibility |
 |---|---|---|
@@ -110,7 +116,7 @@ The section, exact authored field and available variant context MUST identify
 the failed predicate. No new public API export is required.
 
 The allocation audit at the base checked the Protocol registry and all RFCs,
-including retired codes. These four candidates are unallocated. `REC-10` is
+including retired codes. These four codes were unallocated at the reviewed base. `REC-10` is
 retired by RFC0081 and MUST NOT be reused. RFC0036 expressly did not allocate
 its earlier draft label `WF-04`; WF-16 avoids repurposing that draft label.
 Existing financial result codes such as `CS-SIZING-DISAGREES`,
@@ -272,8 +278,8 @@ This explicitly corrects the current implementation's own-null accumulation
 trigger on a method-absent cap; it does not silently preserve that coarse
 predicate as authority. Synchronized Format/Protocol/schema conditions MUST pin
 M/P and the same null/required boundaries. Neither method nor accumulation is
-invented or defaulted. These are proposed diagnostic dispositions for owner review,
-not a new financial treatment and not activation by this draft.
+invented or defaulted. These diagnostic dispositions are accepted; they add no financial treatment.
+The docs-only acceptance itself activates no runtime predicate.
 
 ### CS-03: capital-stack sizing claims
 
@@ -375,10 +381,10 @@ the result. Errors enter ordinary errors/issues partitions and existing overall
 status and CLI exit semantics. Stage readiness remains independently derived;
 no profile or complete-Verifier claim follows from this allocation.
 
-## Accepted-contract corrections outside the proposal
+## Existing-contract corrections accompanying the allocation
 
 These dispositions require no new diagnostic family and MUST be reviewed
-separately from the proposed allocations:
+separately from the new allocations:
 
 1. The WIP's local shape owner mapping currently recognizes some REC-01/02
    predicates but retains already-represented REC-03/04 and WF-10/13 conditions
@@ -397,18 +403,18 @@ separately from the proposed allocations:
 3. method itself is non-nullable in the current closed enum. RFC0081's S6
    disposition explicitly retains type errors for non-nullable members stated
    null, while Format4.3 broadly describes null as unstated. Do not silently
-   broaden the enum or manufacture a method. The proposed reconciliation is
+   broaden the enum or manufacture a method. The accepted reconciliation is
    present method:null => existing REC-02; absent method with only nullable
    null companions => admitted. Pin this precise qualification in synchronized
    text and controls before claiming the null discrepancy resolved. It is not
-   a new REC-11 condition and is an explicit review point below.
-4. LU stabilization_target allocation is proposed above, not retroactive
+   a new REC-11 condition; the owner accepted the precise qualification below.
+4. LU stabilization_target allocation is accepted above, not retroactive
    acceptance of WIP LU-01 target errors. Existing registered target inversion
    stays LU-03; no new financial/period convention is inferred.
 
 ## Conformance impact and complete-validation gate
 
-No existing fixture or expected result changes in this docs-only draft.
+No existing fixture or expected result changes in this docs-only acceptance.
 The implementation must publish a predicate-by-predicate attribution inventory
 before expectation changes, keeping the unchanged source corpus as authority.
 New authored controls must cover every listed predicate, bounds, null/absence,
@@ -422,7 +428,7 @@ The bounded observation dispositions are:
 | Observations in frozen evidence | Count | Proposed disposition |
 |---|---:|---|
 | LU unknown model, numeric type, bounded assumption | 3 | LU-05 |
-| LU historical unknown model with valid current | 1 | Not a new error: outside proposed current-payload scope |
+| LU historical unknown model with valid current | 1 | Not a new error: outside accepted current-payload scope |
 | LU nonobject row, bad period, wrong cadence, empty schedule | 4 | Existing LU-01/03 ownership; preserve accompanying PS-01 warnings |
 | REC admin type, cap.over, base_year type, negative pool_actual | 4 | REC-11; coarse unrelated parent finding does not consume leaf |
 | REC unknown method, null method, null method+share, cap accumulation | 4 | Existing REC-02, with G1 qualification above |
@@ -452,7 +458,7 @@ validation's entire capability gate is proven.
 
 ## Reference implementation
 
-Follow acceptance with synchronized Format/Protocol/schema assertions and annotations, and
+Implement with synchronized Format/Protocol/schema assertions and annotations, and
 registry/remediation entries in one reviewed TS/Python implementation PR.
 Likely runtime locations are `packages/uwmd-verify/src/validator.ts`, its fixed
 payload helpers and Python's `uwmd_validation_lease_up.py` /
@@ -465,7 +471,7 @@ reviewable. Financial procedures and their existing result states stay separate.
 
 - Generic schema-error code: rejected; erases precise ownership and may turn
   annotations into asserted rules or unavailable sources into invalid documents.
-- All-retained-physical payload scope: rejected for this proposal; metadata's
+- All-retained-physical payload scope: rejected for this allocation; metadata's
   identity/accounting RFCs do not allocate financial-payload history validation.
 - Keep uncoded partials permanently: rejected; useful development honesty does
   not close complete validate's registered admission/transport requirements.
@@ -474,7 +480,7 @@ reviewable. Financial procedures and their existing result states stay separate.
 - Infer defaults or stronger dates/signs from local schema tooling: rejected;
   new financial/calendar conventions require an explicit governed contract.
 
-## Decisions proposed for owner review
+## Accepted decisions from owner review
 
 | Question | Exact recommended disposition |
 |---|---|
@@ -485,24 +491,33 @@ reviewable. Financial procedures and their existing result states stay separate.
 | Waterfall date | Allocate only the existing exact lexical date shape; do not import as_of/T1B or silently tighten calendar admission |
 | Financial selector/result meaning | Leave accepted fn/selector, calendar comparison, result/refusal and arithmetic rules unchanged |
 
-These are proposed contract decisions, not owner approvals. The draft may be
-revised from independent review before final acceptance is requested. Any
-remaining genuine conflict over target allocation or the recovery null
-qualification must be resolved in the final text, rather than hidden behind
-an implementation convenience. No new numerical choice is proposed.
+The owner accepted all six dispositions above exactly as written at1926efe4.
+Target allocation, nullable recovery qualification and lexical waterfall dates
+are settled within this bounded scope. Any further normative conflict discovered
+during implementation must be surfaced rather than resolved through an
+implementation convenience. No new numerical convention is introduced.
 
-## Remaining acceptance and activation gates
+## Acceptance record and remaining implementation gates
 
-1. Independently verify each listed predicate against Format/schema/accepted
-   RFC authority and audit the fresh codes against final current registry.
-2. Reproduce the four CLI sources and review all30 observations, distinguishing
-   implementation ownership/null corrections from genuinely new allocations.
-3. Confirm the current-only source/model/composition scope, field/pass ordering,
-   target allocation and explicit date/null boundaries in final reviewed text.
-4. Owner accepts the final RFC text; docs-only draft CI must be green.
-5. Synchronized TS/Python/spec/schema/registry implementation, attributed
-   conformance controls and independent material-claim review; exact-head and
-   exact-main required CI before an implementation claim. No activation by draft.
+The owner accepted1926efe4 on2026-10-19. Independent review verified the closed
+predicates, existing owners, current-only authority, ordering and exact date/null
+boundaries; the four CLI reproductions and30 observations remain evidence with
+the stated limits. Reviewed-head CI39213718608 passed all17 ordinary jobs:
+https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39213718608 .
+Final administrative acceptance-head review and CI are recorded in PR394 before
+merge; exact-main CI and merge SHA are recorded in the existing maintainer status.
+
+Implementation gates remain:
+
+1. Synchronized TypeScript/Python, Format/Protocol/schema, registry/remediation
+   changes, with a predicate-by-predicate attributed conformance inventory.
+2. Independent material-claim verification, including all30 observation
+   dispositions, current/model/composition scope, malformed parents, exact
+   ownership/order, transport and receipt policy-count controls.
+3. Green exact-final-head and exact-main required CI. A complete validation
+   claim separately needs all111 portable cases and every applicable nonportable
+   obligation on Windows/Linux/macOS. Discovery remains parse-only until that
+   entire capability gate passes. This docs-only acceptance activates no code.
 
 ## Prior art
 

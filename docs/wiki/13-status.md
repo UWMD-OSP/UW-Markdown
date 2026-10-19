@@ -8,17 +8,18 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
-**Draft RFC0096 — bounded payload admission for Issue354.**
-[RFC0096](../rfcs/0096-bounded-stated-payload-admission.md) proposes closed
-LU-05/REC-11/CS-03/WF-16 errors for remaining stated payload types and carriers.
-Its30-case read-only observations distinguish new allocations from existing
-registered owners, nullable-group reconciliation and current-only scope.
-Four actual Python CLI sources have no registered issue but honest partial
-refusals; the draft does not turn those into a capability claim. Target grammar,
-recovery null qualification and lexical-only waterfall date boundaries remain
-explicit review decisions. No runtime/schema/frozen-expectation activation;
-Python discovery remains parse-only. Complete validation certification continues
-independently of dictionary/financial/receipt Verifier obligations.
+**Accepted RFC0096 — owner decision2026-10-19 at1926efe4.**
+[RFC0096](../rfcs/0096-bounded-stated-payload-admission.md) allocates closed
+LU-05/REC-11/CS-03/WF-16 validation-only errors. The owner accepted all six
+reviewed dispositions: current canonical/all current variants under assembled
+model authority, no physical-history expansion, LU-05 target grammar only,
+unchanged recovery null qualification, existing lexical-only waterfall dates,
+and untouched financial selector/result rules. Thirty bounded observations
+and four actual CLI partial refusals remain evidence with their stated limits.
+This acceptance changes no live runtime/schema/frozen expectation. Synchronized
+TS/Python/spec/schema/registry implementation and attributed conformance follow
+on Issue354; Python discovery remains parse-only until complete capability
+certification. Dictionary/financial/receipt obligations remain separate.
 
 **Accepted RFC0095 — owner decision2026-10-18 atc551e956.**
 [RFC0095](../rfcs/0095-optional-metadata-and-provenance-references.md) accepts
