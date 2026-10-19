@@ -1403,7 +1403,7 @@ function checkRecoveryTerms(
 
   // The cap. Accumulation has no default: the three treatments diverge
   // materially within three years, so a silent choice is a wrong number.
-  const cap = terms['cap'];
+  const cap = Object.hasOwn(terms, 'cap') ? terms['cap'] : undefined;
   if (cap != null) {
     const cp = `${p}.cap`;
     if (typeof cap !== 'object' || Array.isArray(cap)) {

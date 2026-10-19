@@ -78,6 +78,13 @@ describe('RFC0096 REC11 leaves and existing owners', () => {
     block.content.tenants = [{ recovery_terms: terms }];
     expect(validateUWFile(parsed).issues.filter(i => i.code === 'REC-02').map(i => i.field)).toEqual([`tenants[0].recovery_terms.${field}`]);
   });
+  it('does not create an M/P accumulation requirement through an inherited cap container', () => {
+    const parsed = parseUWFile(doc('rent_roll', rec({})));
+    const block = getSection(parsed, 'rent_roll')!;
+    const terms = Object.assign(Object.create({ cap: { pct: .05 } }), { method: 'net' });
+    block.content.tenants = [{ recovery_terms: terms }];
+    expect(validateUWFile(parsed).issues.filter(i => i.code.startsWith('REC-'))).toEqual([]);
+  });
   it('null companions do not require method; method null remains its own error', () => {
     const body = rec({ pro_rata_share: null, base_year: null, admin_fee_pct: null });
     expect(validateUWFile(doc('rent_roll', body)).issues.filter(i => i.code.startsWith('REC-'))).toEqual([]);
