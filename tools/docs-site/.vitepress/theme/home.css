@@ -583,3 +583,8 @@
 .uw-tools-strip h2 { margin: 0 0 12px; font-size: 23px; letter-spacing: -.025em; }
 .uw-tools-strip p { color: var(--vp-c-text-2); font-size: 14px; line-height: 1.65; }
 .uw-tools-strip nav { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 18px; font-size: 13px; }
+
+/* Below 960px the navbar occupies document flow; reserve it only once. */
+@media (max-width: 959px) {
+  .uwmd-home-page .VPContent { padding-top: 0; }
+}
