@@ -1,0 +1,18 @@
+{
+  "id": "verifier__institution-config__25-automatic-malformed__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "record.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/25-automatic-malformed",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/25-automatic-malformed/expected.json",
+    "exit_code": 1
+  }
+}

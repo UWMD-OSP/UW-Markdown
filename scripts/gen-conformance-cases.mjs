@@ -152,6 +152,17 @@ function hasError(result) {
   return (result.issues ?? []).some((i) => i.severity === 'error');
 }
 
+// RFC0097 paired filesystem operation controls. The existing comparator is
+// unchanged; native assertions additionally enforce error-only outer transport.
+const INSTITUTION_CONFIG = join(CONFORMANCE, 'institution-config');
+for (const scenario of dirs(INSTITUTION_CONFIG)) {
+  const dir = join(INSTITUTION_CONFIG, scenario);
+  const descriptor = JSON.parse(readFileText(join(dir, 'case.json')));
+  add(`institution-config/${scenario}/validate`, 'validate', descriptor.args, dir, {
+    ...descriptor.expect, file: rel(join(dir, descriptor.expect.file)),
+  });
+}
+
 // ── Starter editor ────────────────────────────────────────────────────────────
 //
 // Only the fixtures whose whole story is "apply this operation, get these

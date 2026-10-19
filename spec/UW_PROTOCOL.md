@@ -411,6 +411,12 @@ or `edit-*` capabilities they need has those cases skipped (§II.6a.5).
 - **Exit `2`** — unrecoverable internal error. stdout is not required to
   be anything.
 
+Selected institution-config failures are operation errors, not ValidationResult
+findings: `validate --json` emits only `{ "error": ProtocolError }` and exits1.
+The exact codes, message/pointer precedence and source-admission ordering are
+normative in §VI.3. No partial result or replacement-funding result accompanies
+that refusal. Pure SOURCE/MODEL calls and receipts do not discover configs.
+
 Implementations SHOULD emit UTF-8 regardless of platform locale.
 
 #### II.6a.3 What the driver may assume about output
@@ -1780,10 +1786,203 @@ Module profile reports them `unverifiable`, never wrong.
 
 ### VI.3 InstitutionConfig layering
 
-A `.uw.institution.json` sidecar (format spec Appendix C.6) overrides
-threshold defaults. Implementations MUST apply the institution config
-to validation but MUST NOT apply it to display formatting (display is a
-starter product; locale is frozen).
+A `.uw.institution.json` sidecar (Format Appendix C.6) configures the three
+validation overrides below. Implementations MUST apply admitted settings to
+validation, and MUST NOT apply them to display formatting. The selected-config
+operation contract is normative under RFC0097. The minimum wire schema is
+[`institution-config.schema.json`](schemas/institution-config.schema.json);
+byte/profile admission, binary64 finiteness and filesystem outcomes also require
+the following runtime rules. No new financial threshold or comparison is added.
+
+#### VI.3.1 Selection and operation boundary
+
+A filesystem validation adapter selects exactly one file:
+
+1. If the caller explicitly supplies an institution-config path, use that path.
+   The reference CLI's existing `--institution` option selects it. Resolve a
+   relative explicit path from the invocation's working directory.
+2. Otherwise select `.uw.institution.json` in the directory of the absolute,
+   lexically resolved document path. Do not search the working directory,
+   parents, frontmatter ids or another document's directory. Do not realpath
+   the document through symlinks merely to choose a different sidecar directory.
+3. An explicit path suppresses automatic discovery entirely. Do not merge two
+   files or fall back to the adjacent file if the explicit one fails.
+
+For example, from `/work`, `records/link.uwx.md` selects
+`/work/records/.uw.institution.json` even if the document link targets
+`/archive/deal.uwx.md`. `records/../deal.uwx.md` selects
+`/work/.uw.institution.json`. This accepted directory rule is independent of
+existing document-read semantics; it does not change whether/how the OS follows
+a document link. Tests must distinguish invocation-path and physical-target
+sidecars.
+A missing automatically selected path is the sole absence/default branch.
+Attempt the read; a genuine not-found outcome for that automatic path means no
+configuration. Access denial, a directory in place of the file, a broken
+symlink at the sidecar path, or any other read failure is not absence. An
+explicit missing path is unreadable. If a path disappears after selection or
+inspection, classify the actual read outcome; do not rely on a racy exists-only
+check. Distinguishing a dangling link from no directory entry is an adapter
+responsibility and is tested without prescribing an OS-specific API.
+
+CLI argument and fatal input-source/representation/parse admission retain their
+existing precedence. After those prerequisites and before document validation
+predicates or financial funding checks, finish config preflight. Do not add new
+document parse rules through this RFC. Once config preflight fails, no ordinary
+ValidationResult, overall status, partitions, stage-readiness, coverage or
+replacement-funding result is computed or presented for that operation.
+
+Pure SOURCE/MODEL validation APIs remain I/O-free with respect to institution
+files. `validateUWFile(input, thresholdOverrides?)` and Python's equivalent take
+the caller's supplied nested threshold map; that parameter is not the sidecar
+wire object. They do not discover files or acquire hidden sidecar authority.
+A file adapter parses the selected wire object into that existing parameter.
+
+#### VI.3.2 Bounded malformed domain and atomic application
+
+The selected file MUST decode as strict UTF-8 and exactly one JSON value with
+only JSON whitespace around it. A leading BOM, trailing non-whitespace, invalid
+UTF-8, invalid JSON or duplicate object member names is malformed. Names are
+compared after JSON escape decoding, without trimming or Unicode normalization.
+Every decoded member name and string value, including opaque data, MUST have
+well-formed Unicode scalar content: reject an escaped lone high/low surrogate;
+a correctly paired escaped surrogate sequence is admitted. Do not normalize
+strings or replace invalid code units. A Unicode-profile failure is malformed
+without a pointer, at the same pre-shape stage as whole JSON admission.
+The BOM, duplicate-name and decoded-Unicode rules are explicit accepted
+profile choices, not inherited JSON MUSTs or reuse of document JCS admission.
+[RFC8259 section4](https://www.rfc-editor.org/rfc/rfc8259.html#section-4)
+recommends unique names; [section8.1](https://www.rfc-editor.org/rfc/rfc8259.html#section-8.1)
+permits parsers to ignore a BOM. They do not themselves select this stricter
+configuration profile. The owner accepted these stated choices at4a31eb3c.
+The root MUST be an object, not null or an array.
+
+The recognized carrier is an own `validation_overrides` member. Absence means
+no override. If present it MUST be an object, not null or an array. Empty is
+valid. Its three recognized optional own members MUST be finite binary64
+numbers when present; null, booleans and strings are invalid, with no coercion:
+
+| Wire member | Existing explicit API member |
+|---|---|
+| dscr_warning_below | dscr.warning_below |
+| ltv_warning_above | ltv.warning_above |
+| debt_yield_warning_below | debt_yield.warning_below |
+
+This adds no numeric bounds, threshold defaults, rounding or comparisons.
+Negative values, zero and finite fractional values are admitted as configuration
+numbers; the existing validation comparison procedures remain unchanged.
+A JSON number spelling which overflows binary64 is not an admitted recognized
+threshold. No new safe-integer restriction is imposed.
+
+A root own `thresholds` member is explicitly noncanonical and malformed,
+including when a canonical carrier is also present. Do not choose between two
+carriers or treat it as a nested wire alias. This does not change the existing
+nested threshold-map parameter of pure APIs.
+
+Other top-level data and other members of `validation_overrides` remain opaque:
+this RFC does not allocate new validation for `institution_id`, workflow/render
+preferences or an exhaustive vocabulary for every Format5.2 threshold. Do not
+report an opaque member as applied. A similarly named nested lookalike is not
+the root canonical carrier. The duplicate-name JSON rule still applies to every
+object in the selected file. This scope is deliberately explicit; unknown-data
+handling is not a claim of complete institution-policy support. In particular,
+a lexically valid overflow number in opaque data (for example an unknown
+`note_number:1e309`) does not trigger the recognized-leaf finite check and is
+never applied or reported as a threshold. An adapter need not coerce that opaque
+number into binary64 or reserialize the config. Original bytes stay unchanged.
+An escaped lone surrogate remains malformed even in opaque data under the whole
+Unicode rule above; paired scalars are valid. Neither rule authenticates a config
+or makes it an Envelope, signature or receipt subject.
+
+The adapter MUST admit the complete selected config before applying any
+recognized override. One invalid recognized member refuses the whole operation;
+no partial map is passed to validation. On success build fresh affected bands
+from existing defaults, then replace only the named member. Existing DSCR/LTV
+error limits and unrelated bands remain present. Do not mutate process-wide
+defaults, the caller's model/map, the document or the selected config bytes.
+
+#### VI.3.3 Exact refusal, precedence and field attribution
+
+Allocate exactly these operation errors, both category `validate`:
+
+| Code | Condition | Required message |
+|---|---|---|
+| VAL-INSTITUTION-CONFIG-UNREADABLE | Selected read fails, except genuine automatic absence | Selected institution config could not be read. |
+| VAL-INSTITUTION-CONFIG-MALFORMED | Decoding/JSON/profile or recognized admission fails | Selected institution config is malformed. |
+
+These codes do not enter ordinary errors/warnings/issues arrays, change their
+registered severity system or allocate a META/FV fallback. Add operation-error
+documentation/remediation without pretending they are document issue families.
+`ProtocolError`'s existing category/shape remains unchanged. Its pointer comment
+and the protocol-error schema describe these two codes relative to the selected
+configuration input, not the underwriting document. Existing other codes retain their own pointer authority.
+No new pointer syntax or outer filename field is allocated.
+
+Return exactly one primary config error:
+
+1. Read failure wins before decode/profile checks.
+2. Decode, whole JSON syntax, duplicate-name or Unicode-profile failure: malformed; omit pointer.
+3. Nonobject root: malformed; omit pointer.
+4. Own root `thresholds`: malformed; pointer `thresholds`.
+5. Invalid canonical carrier: malformed; pointer `validation_overrides`.
+6. Invalid recognized leaves: first in the fixed order dscr_warning_below,
+   ltv_warning_above, debt_yield_warning_below; pointer is the exact
+   `validation_overrides.<member>` path.
+
+No document-field issue or lower-priority config error cascades. Opaque members
+have no admission pass beyond the whole-JSON rules. A caller MAY receive optional
+`cause`/`remediation` strings permitted by ProtocolError; do not add schema-forbidden
+inner members, reinterpret pointer as a document field or expose config bytes
+as part of the error. Optional diagnostic detail does not change the primary
+code/message/pointer above.
+
+#### VI.3.4 CLI transport
+
+`validate <file> --json`, with an optional explicit config selector, MUST exit1
+and write exactly one JSON object to stdout:
+
+```json
+{
+  "error": {
+    "category": "validate",
+    "code": "VAL-INSTITUTION-CONFIG-MALFORMED",
+    "message": "Selected institution config is malformed.",
+    "pointer": "validation_overrides.ltv_warning_above"
+  }
+}
+```
+
+The outer object has only `error`; its value conforms to the existing
+`protocol-error.schema.json`. Omit pointer for cases which have none. A trailing
+newline is allowed. No `partial_validation_result`, structural result, clean
+verdict or partial override output accompanies this refusal. Stderr may carry
+diagnostics but cannot substitute for the structured stdout error. A described
+selected-config failure is exit1, never internal-error exit2 or success exit0.
+An actual unrelated implementation defect retains the existing exit2 boundary.
+
+Without `--json`, the same refusal/code exits1; human diagnostics go to stderr
+and stdout contains no validation-result claim. No new normative CLI selector
+syntax is required beyond the existing optional reference-CLI flag.
+
+Any existing aggregate adapter which invokes validation, including the
+reference `verify` command's validation branch, must propagate this same typed
+validation-operation failure and cannot report that branch as passed. Its
+existing aggregate wrapper/other independent operations are not redesigned by
+this RFC, and no new `verify --institution` flag is allocated.
+
+#### VI.3.5 Receipt and authentication boundary
+
+Receipt issuance presently validates with builtin defaults and records those
+counts (`receipts.ts` validate/counts calls). Issuance/verification options have
+no config parameter, and receipt CLI commands load no sidecar. Verification
+checks count shape rather than recomputing the policy counts. Configured CLI
+validation findings can therefore differ from builtin receipt counts.
+
+This RFC MUST NOT silently make receipt issue/verify discover or refuse on an
+adjacent config. It changes no receipt subject, policy identity/count binding,
+signature requirement, recomputation, result-digest or verdict precedence. Any
+extension of receipts to configured policy requires its own explicit governed
+scope. Config errors are not additional document findings or receipt error counts.
+The accepted authenticate-first receipt contract remains authority.
 
 ---
 
@@ -3870,7 +4069,7 @@ All protocol-level errors MUST be expressible as a `ProtocolError`:
           | 'package' | 'portfolio',
   code: string,           // e.g. "PROTO-EDIT-001"
   message: string,
-  pointer?: string,       // dot-path into the file
+  pointer?: string,       // dot-path into the owning input; selected config for §VI.3 errors
   remediation?: string,
   cause?: string,
 }
@@ -3891,6 +4090,22 @@ closed META-05 optional/override and META-06 conditional/reference allocations,
 with readiness-only DQ-06/info. Their exact fields, complete-pass ordering and
 admitted-parent suppression are normative in §III.6a. META-01/02/03 and ordinary
 issue/ProtocolError transport remain unchanged.
+
+### XI.1 Selected institution-configuration operation errors (RFC0097)
+
+`VAL-INSTITUTION-CONFIG-UNREADABLE` and
+`VAL-INSTITUTION-CONFIG-MALFORMED` are category `validate` operation errors.
+Their exact conditions/messages, fixed primary precedence, optional config-relative
+pointer and error-only JSON/exit1 are defined in §VI.3. They MUST NOT be emitted
+as document errors/warnings/issues or change ordinary issue severities/counts.
+For unreadable input, obtain a readable selected config; for malformed input,
+correct that config's strict profile or indicated canonical carrier/finite leaf.
+Do not repair the underwriting document or fall back to another policy.
+
+The `ProtocolError.pointer` authority for these two codes is the selected config,
+not a document field. This does not change other codes' pointer authority or the
+ProtocolError DTO. Optional cause/remediation may not expose config bytes. Receipts
+retain their own input/policy/authentication rules; §VI.3 adds no config dependency.
 
 ---
 

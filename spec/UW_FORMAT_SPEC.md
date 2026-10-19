@@ -4747,7 +4747,30 @@ The `.uw.institution.json` sidecar file (same directory as the `.uwx.md` file) c
 }
 ```
 
-When a `.uw.institution.json` is present, its thresholds take precedence over the spec defaults. This allows institutional deployments to enforce their own credit policy without modifying the spec.
+**Selected configuration admission (normative, RFC0097).** Filesystem validation
+selects one explicit path or the lexical document-adjacent `.uw.institution.json`,
+without merging, fallback or relocating discovery through the document's realpath.
+Only genuine automatic absence keeps defaults. A selected unreadable/malformed
+config refuses the validation operation; it is not a document finding. Protocol
+§VI.3 defines source/preflight order, strict UTF-8/JSON/decoded-name/Unicode
+admission, atomic application, fixed typed error/pointer precedence and transport.
+The minimum wire schema is
+[`institution-config.schema.json`](schemas/institution-config.schema.json).
+
+The own optional `validation_overrides` carrier must be an object. Its three
+optional own leaves above must be finite binary64 numbers, with no coercion,
+null/default inference or additional financial range. Admit the entire selected
+config before applying any leaf. The root member `thresholds` is forbidden;
+the pure API's nested threshold map is a separate input. Other members remain
+opaque and are not claimed applied. Unknown overflow number spellings remain
+opaque; malformed Unicode or duplicate decoded names anywhere are refused.
+
+Admitted overrides replace only their named warning limits in fresh affected
+default bands. Existing error limits, unrelated bands and financial comparisons
+remain unchanged. No source/config bytes or caller/process defaults are mutated.
+Pure SOURCE/MODEL validation does no hidden config I/O, and receipt issue/verify
+adds no config loading or subject/count/verdict change. Full rules are in
+Protocol §VI.3 and its operation-error taxonomy (§XI).
 
 ### C.7 — Spec Evolution Protocol
 

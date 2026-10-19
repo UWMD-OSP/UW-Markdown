@@ -1,0 +1,21 @@
+{
+  "id": "verifier__institution-config__21-opaque-overflow-paired-scalar__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "policy.input",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/21-opaque-overflow-paired-scalar",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/21-opaque-overflow-paired-scalar/expected.json",
+    "exit_code": 0,
+    "project": "issue-code-severity-set"
+  }
+}
