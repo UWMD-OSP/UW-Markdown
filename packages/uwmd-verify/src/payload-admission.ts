@@ -42,8 +42,14 @@ export function currentPayloadBlocks(parsed: ParsedUWFile, section: string): Arr
   const rows: Array<[string | null, UWBlock]> = own(entry, 'annotation')
     ? [[null, entry as unknown as UWBlock]]
     : Object.keys(entry).sort(compare).map(key => [key, entry[key] as UWBlock]);
-  return rows.filter(([, block]) => object(block) && object(block.content)
-    && !own(block.annotation, 'external') && !own(block.content, 'external'));
+  return rows.filter(([, block]) => {
+    if (!object(block) || !object(block.content) || !object(block.annotation)) return false;
+    const meta = value(block.content, '_meta');
+    const lifecycle = object(meta) ? value(meta, 'lifecycle') : undefined;
+    const historical = object(lifecycle) && value(lifecycle, 'superseded') === true;
+    return !historical && value(block.annotation, 'superseded') !== true
+      && !own(block.annotation, 'external') && !own(block.content, 'external');
+  });
 }
 function emitter(issues: ValidationMessage[], code: string, section: string, variant: string | null): Emit {
   return field => issues.push({ code, severity: 'error', section, field,

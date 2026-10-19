@@ -138,6 +138,10 @@ describe('RFC0096 current SOURCE/MODEL scope and full pass ordering', () => {
     block.content.model_type = false;
     expect(validateUWFile(parsed).issues.filter(i => codes.has(i.code)).map(i => i.field)).toEqual(['model_type']);
     expect(validateUWFile(doc('lease_up_schedule', lu())).issues.filter(i => codes.has(i.code))).toEqual([]);
+    block.content._meta = { lifecycle: { superseded: true } };
+    expect(validateUWFile(parsed).issues.filter(i => codes.has(i.code))).toEqual([]);
+    block.content._meta = { lifecycle: { superseded: false } };
+    expect(validateUWFile(parsed).issues.filter(i => codes.has(i.code)).map(i => i.field)).toEqual(['model_type']);
     const inherited = Object.assign(Object.create({ model_type: 'natural_turnover', stabilization_target: false }), { period_granularity: 'monthly', schedule: [] });
     expect(fields('lease_up_schedule', inherited)).toEqual(['model_type']);
   });

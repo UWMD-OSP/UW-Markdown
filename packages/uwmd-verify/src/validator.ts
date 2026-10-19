@@ -1539,22 +1539,22 @@ function checkRecoveryTrueUp(
 function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const block = resolveCrossCheckSection(parsed, 'rent_roll').block;
   if (block) {
-  const tenants = deepGet(block.content, 'tenants');
-  if (Array.isArray(tenants)) {
-  const rawAsOf = deepGet(block.content, 'as_of_date');
-  const asOf = isDate(rawAsOf) ? rawAsOf : null;
-  for (const [i, raw] of tenants.entries()) {
-    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
-    const t = raw as Record<string, unknown>;
-    const at = `tenants[${i}]`;
-    checkEscalationSchedule(t, issues, at);
-    checkTerminationOption(t, issues, at);
-    checkCoTenancy(t, issues, at);
-    checkLeasingCapital(t, issues, at);
-    const share = checkRecoveryTerms(t, issues, at);
-    checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
-  }
-  }
+    const tenants = deepGet(block.content, 'tenants');
+    if (Array.isArray(tenants)) {
+      const rawAsOf = deepGet(block.content, 'as_of_date');
+      const asOf = isDate(rawAsOf) ? rawAsOf : null;
+      for (const [i, raw] of tenants.entries()) {
+        if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
+        const t = raw as Record<string, unknown>;
+        const at = `tenants[${i}]`;
+        checkEscalationSchedule(t, issues, at);
+        checkTerminationOption(t, issues, at);
+        checkCoTenancy(t, issues, at);
+        checkLeasingCapital(t, issues, at);
+        const share = checkRecoveryTerms(t, issues, at);
+        checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
+      }
+    }
   }
   // Local recovery admission covers every current peer, independent of the
   // financial role selection. Preserve selected financial/LSE checks above.
