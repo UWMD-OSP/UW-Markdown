@@ -1,0 +1,16 @@
+{
+  "kind": "Independent research evidence; no production or normative activation",
+  "author_base": "fa9a9ea37d31b918f5993eae4276b159f31719f3",
+  "python_wip_source_base": "54a44a3bde8bdca75e946b2f1801db672a18e095",
+  "reference_sha256": "528d35ee9fac7b03480436f0641e864056b682d866c17bb6b6c1bed0c60fc133",
+  "cycle_source_sha256": "66fb617d0e355215e5a839dd251ba8932cc6344fc70c9c137694e30454f71af5",
+  "order": "year ascending 1..400, then month ascending 1..12, then day ascending 0..32",
+  "truth_encoding": "one ASCII byte 1 for admit or 0 for refuse per ordered input; no separator or newline",
+  "oracle": "Python datetime.date(year, month, day) integer constructor; not string parsing",
+  "cases": 158400,
+  "admitted": 146097,
+  "refused": 12303,
+  "mismatches": [],
+  "truth_sha256": "140e5faf25833eca88eae2bd7a3d35d787f90ab2a06952f87a79dbac894d1b7f",
+  "oracle_truth_sha256": "140e5faf25833eca88eae2bd7a3d35d787f90ab2a06952f87a79dbac894d1b7f"
+}
