@@ -175,7 +175,7 @@ resolution; U2 decides required absence, not whether stated carriers are checked
   rationale:string in that order. Missing required members receive their own
   child finding; present null is not a string. Unknown members remain admitted.
 
-The schema has no minLength for document_id or rationale: the draft does not
+The schema has no minLength for document_id or rationale: this RFC does not
 add one. For as_of, null and exact-empty string are invalid under U3; an admitted
 carrier missing this required member receives one child finding. A carrier digest is a stated reference identifier; validating
 its lexical shape does not authenticate the referenced document or establish
