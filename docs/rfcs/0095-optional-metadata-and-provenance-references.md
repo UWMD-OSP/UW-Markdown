@@ -451,18 +451,18 @@ authorized merely to make Python pass.
 The isolated review files use the existing
 `docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only` stem.
 They are not imported by a production parser, validator or schema registry.
-The independently authored [Python reference](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.py)
-and [TypeScript reference](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.ts)
+The independently authored [Python reference](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.py)
+and [TypeScript reference](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.ts)
 share manually authored frozen inputs, not implementation logic. The Python
 procedure uses ASCII character arithmetic; TS independently uses an exact-width
 ASCII grammar and calendar arithmetic. Neither uses a string-date parser,
 current clock or RFC0094's T1B predicate.
 
-- [106 date vectors and6 admitted-carrier contexts](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json):
+- [106 date vectors and6 admitted-carrier contexts](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.vectors.json):
   both procedures pass all112 expectations (25 date admits,81 refusals).
   The six contexts distinguish a required absent as_of from present null,
   wrong-type and invalid-calendar values; unknown carrier siblings remain intact.
-- [Complete400-year cycle](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.cycle.json):
+- [Complete400-year cycle](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.cycle.json):
  158,400 ordered inputs (years1–400, months1–12, days0–32),146,097 admits and
  12,303 refusals. Both references, the proposed JSON Schema with format plugins
  disabled, and the independent Python `datetime.date(year, month, day)` integer
@@ -472,7 +472,7 @@ current clock or RFC0094's T1B predicate.
  `140e5faf25833eca88eae2bd7a3d35d787f90ab2a06952f87a79dbac894d1b7f`.
  The frozen vectors have SHA256
  `f8d3ebc4aef8b0992edf2a333cc53fa2325b869c680ba990158225f18c6e7400`.
- [Observed local report](../reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.observations.json)
+ [Observed local report](https://github.com/UWMD-OSP/UW-Markdown/blob/5667d100be1eebdcb1fe494a9086cd4361518934/docs/reviews/2026-10-17-validation-diagnostic-gap-354.0095-date-only.observations.json)
  records source hashes, Node24.14.1/Windows and TypeScript5.9.3. The independent
  Python files identify the author authority main separately from the unmodified
  Python WIP checkpoint. Fresh final-head CI re-executes the research; archived
