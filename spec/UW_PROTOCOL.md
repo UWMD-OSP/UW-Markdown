@@ -820,7 +820,7 @@ no extra rejection. Source/resolution remain SRC-owned; no generic fallback.
 
 META-06/error uses agent_id, inherited_from, market_data_ref order per block:
 
-- A valid canonical agent/<id> source requires an own agent_id member. Absence
+- A valid canonical `agent/<id>` source requires an own agent_id member. Absence
   yields META-06; null/empty string satisfy presence. Wrong present types yield
   META-05 only. An invalid source/override source creates no agent-id trigger.
 - An optional absent carrier passes. A required absent or any present invalid
