@@ -1342,7 +1342,12 @@ function checkRecoveryTerms(
   t: Record<string, unknown>, issues: ValidationMessage[], at: string,
 ): number | null {
   const raw = t['recovery_terms'];
-  if (raw == null) return null;
+  // Keep REC06's existing financial operand selection separate from the
+  // structural own-member checks below; this batch does not redefine arithmetic.
+  const priorShare = raw !== null && typeof raw === 'object' && !Array.isArray(raw)
+    ? (raw as Record<string, unknown>)['pro_rata_share'] : undefined;
+  const shareValue = leaseNum(priorShare) && priorShare > 0 && priorShare <= 1 ? priorShare : null;
+  if (!Object.hasOwn(t, 'recovery_terms') || raw === null) return shareValue;
   const p = `${at}.recovery_terms`;
   if (typeof raw !== 'object' || Array.isArray(raw)) {
     recIssue(issues, 'REC-02', p, 'REC-02: recovery_terms must be an object stating a method', raw);
@@ -1353,14 +1358,11 @@ function checkRecoveryTerms(
   // REC-01: the share is a fraction, not a percent. 4.12 instead of 0.0412 is
   // the single most consequential typo available here — it multiplies every
   // recovery by a hundred.
-  const share = terms['pro_rata_share'];
-  let shareValue: number | null = null;
-  if (share != null) {
+  const share = Object.hasOwn(terms, 'pro_rata_share') ? terms['pro_rata_share'] : undefined;
+  if (Object.hasOwn(terms, 'pro_rata_share') && share !== null) {
     if (!(leaseNum(share) && share > 0 && share <= 1)) {
       recIssue(issues, 'REC-01', `${p}.pro_rata_share`,
         'REC-01: pro_rata_share must be a fraction in (0,1] — 0.0412 is 4.12%, not 4.12', share);
-    } else {
-      shareValue = share;
     }
   }
 
@@ -1386,8 +1388,8 @@ function checkRecoveryTerms(
   }
 
   // REC-03: a pool entry that names nothing recovers nothing, silently.
-  const pool = terms['recoverable_pool'];
-  if (pool != null) {
+  const pool = Object.hasOwn(terms, 'recoverable_pool') ? terms['recoverable_pool'] : undefined;
+  if (Object.hasOwn(terms, 'recoverable_pool') && pool !== null) {
     if (!Array.isArray(pool) || pool.length === 0) {
       recIssue(issues, 'REC-03', `${p}.recoverable_pool`,
         'REC-03: recoverable_pool must be a nonempty array of operating-statement expense keys', pool);
@@ -1404,14 +1406,14 @@ function checkRecoveryTerms(
   // The cap. Accumulation has no default: the three treatments diverge
   // materially within three years, so a silent choice is a wrong number.
   const cap = Object.hasOwn(terms, 'cap') ? terms['cap'] : undefined;
-  if (cap != null) {
+  if (Object.hasOwn(terms, 'cap') && cap !== null) {
     const cp = `${p}.cap`;
     if (typeof cap !== 'object' || Array.isArray(cap)) {
       recIssue(issues, 'REC-02', cp, 'REC-02: cap must be an object', cap);
     } else {
       const c = cap as Record<string, unknown>;
-      const pct = c['pct'];
-      if (pct != null && !(leaseNum(pct) && pct > 0 && pct < 1)) {
+      const pct = Object.hasOwn(c, 'pct') ? c['pct'] : undefined;
+      if (Object.hasOwn(c, 'pct') && pct !== null && !(leaseNum(pct) && pct > 0 && pct < 1)) {
         recIssue(issues, 'REC-01', `${cp}.pct`,
           'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
       }
@@ -1435,10 +1437,10 @@ function checkRecoveryTerms(
  * claims the amount reached the cash flows, and nothing checks that it did.
  */
 function recoveryRefResolves(parsed: ParsedUWFile, variant: string): boolean {
-  const entry = parsed.sections['cash_flow_series'];
+  const entry = Object.hasOwn(parsed.sections, 'cash_flow_series') ? parsed.sections['cash_flow_series'] : undefined;
   if (!entry) return false;
   return isVariantMap(entry)
-    ? (entry as Record<string, UWBlock>)[variant] !== undefined
+    ? Object.hasOwn(entry, variant) && (entry as Record<string, UWBlock>)[variant] !== undefined
     : variant === 'default';
 }
 
@@ -1447,8 +1449,10 @@ function checkRecoveryTrueUp(
   share: number | null, asOf: string | null, parsed: ParsedUWFile, structuralOnly = false,
 ): void {
   const rows = t['recovery_true_up'];
-  if (rows == null) return;
+  const ownRows = Object.hasOwn(t, 'recovery_true_up');
+  if (rows === null || (!ownRows && structuralOnly)) return;
   if (!Array.isArray(rows)) {
+    if (!ownRows) return;
     recIssue(issues, 'REC-04', `${at}.recovery_true_up`,
       'REC-04: recovery_true_up must be an array of reconciliation rows', rows);
     return;
@@ -1456,23 +1460,28 @@ function checkRecoveryTrueUp(
   for (const [j, raw] of rows.entries()) {
     const p = `${at}.recovery_true_up[${j}]`;
     if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
-      recIssue(issues, 'REC-04', p, 'REC-04: each true-up entry must be an object', raw);
+      if (ownRows) recIssue(issues, 'REC-04', p, 'REC-04: each true-up entry must be an object', raw);
       continue;
     }
     const row = raw as Record<string, unknown>;
     const start = row['period_start'];
     const end = row['period_end'];
-    if (!isDate(start) || !isDate(end)) {
+    const ownStart = Object.hasOwn(row, 'period_start') ? start : undefined;
+    const ownEnd = Object.hasOwn(row, 'period_end') ? end : undefined;
+    let structuralRow = ownRows;
+    if (ownRows && (!isDate(ownStart) || !isDate(ownEnd))) {
       recIssue(issues, 'REC-04', `${p}.period_start`,
         'REC-04: a true-up states period_start and period_end as YYYY-MM-DD dates');
-      continue;
-    }
-    if (end < start) {
+      structuralRow = false;
+    } else if (ownRows && (ownEnd as string) < (ownStart as string)) {
       recIssue(issues, 'REC-04', `${p}.period_end`,
-        `REC-04: period_end (${end}) precedes period_start (${start})`, end);
-      continue;
+        `REC-04: period_end (${ownEnd}) precedes period_start (${ownStart})`, ownEnd);
+      structuralRow = false;
     }
 
+    // Preserve the selected financial procedure and its existing operand/date
+    // eligibility. Only REC01--04/09 structural member authority changes here.
+    if (isDate(start) && isDate(end) && end >= start) {
     // REC-05: a reconciliation of a period that has not ended is a forecast.
     // Anchored on the rent roll's own as_of_date — never on file metadata,
     // which is an edit timestamp and would refuse a legitimately re-saved
@@ -1513,16 +1522,18 @@ function checkRecoveryTrueUp(
       }
     }
 
-    const settlement = row['settlement'];
-    if (settlement != null && !(typeof settlement === 'string' && (RECOVERY_SETTLEMENTS as readonly string[]).includes(settlement))) {
+    }
+    if (!structuralRow) continue;
+    const settlement = Object.hasOwn(row, 'settlement') ? row['settlement'] : undefined;
+    if (Object.hasOwn(row, 'settlement') && settlement !== null && !(typeof settlement === 'string' && (RECOVERY_SETTLEMENTS as readonly string[]).includes(settlement))) {
       recIssue(issues, 'REC-04', `${p}.settlement`,
         `REC-04: settlement must be one of ${RECOVERY_SETTLEMENTS.join(', ')}`, settlement);
     }
 
     // REC-09: the §4.26 handoff.
-    const ref = row['cash_flow_ref'];
-    if (ref != null) {
-      const variant = typeof ref === 'object' && !Array.isArray(ref)
+    const ref = Object.hasOwn(row, 'cash_flow_ref') ? row['cash_flow_ref'] : undefined;
+    if (Object.hasOwn(row, 'cash_flow_ref') && ref !== null) {
+      const variant = typeof ref === 'object' && ref !== null && !Array.isArray(ref) && Object.hasOwn(ref, 'variant')
         ? (ref as Record<string, unknown>)['variant']
         : undefined;
       if (typeof variant !== 'string' || variant.length === 0) {
@@ -1560,7 +1571,7 @@ function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): v
   // financial role selection. Preserve selected financial/LSE checks above.
   for (const [variant, peer] of currentPayloadBlocks(parsed, 'rent_roll')) {
     if (peer === block) continue;
-    const tenants = peer.content['tenants'];
+    const tenants = Object.hasOwn(peer.content, 'tenants') ? peer.content['tenants'] : undefined;
     if (!Array.isArray(tenants)) continue;
     const start = issues.length;
     for (const [i, raw] of tenants.entries()) {
