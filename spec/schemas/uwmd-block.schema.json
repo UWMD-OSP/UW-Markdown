@@ -183,27 +183,7 @@
                 }
               }
             }
-          },
-          "allOf": [
-            {
-              "if": {
-                "required": [
-                  "source"
-                ],
-                "properties": {
-                  "source": {
-                    "type": "string",
-                    "pattern": "^agent/[A-Za-z0-9][A-Za-z0-9._-]*(?![\\s\\S])"
-                  }
-                }
-              },
-              "then": {
-                "required": [
-                  "agent_id"
-                ]
-              }
-            }
-          ]
+          }
         },
         "quality": {
           "type": "object",
@@ -398,6 +378,78 @@
     ]
   },
   "allOf": [
+    {
+      "if": {
+        "allOf": [
+          {
+            "required": [
+              "_meta"
+            ],
+            "properties": {
+              "_meta": {
+                "type": "object",
+                "required": [
+                  "provenance",
+                  "lifecycle"
+                ],
+                "properties": {
+                  "provenance": {
+                    "type": "object"
+                  },
+                  "lifecycle": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "not": {
+              "required": [
+                "section_id"
+              ]
+            }
+          },
+          {
+            "required": [
+              "_meta"
+            ],
+            "properties": {
+              "_meta": {
+                "type": "object",
+                "required": [
+                  "provenance"
+                ],
+                "properties": {
+                  "provenance": {
+                    "required": [
+                      "source"
+                    ],
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "pattern": "^agent/[A-Za-z0-9][A-Za-z0-9._-]*(?![\\s\\S])"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "_meta": {
+            "properties": {
+              "provenance": {
+                "required": [
+                  "agent_id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     {
       "if": {
         "allOf": [
