@@ -53,7 +53,7 @@ describe('RFC0094 exact canonical metadata leaves', () => {
   it.each([null, 0, -1, 0.5, '', '1', true, false, [], {}])('refuses present-invalid revision %j', revision => {
     expect(leaves(source({ _meta: { ...meta(), lifecycle: { ...meta().lifecycle, revision } } })).map(i => i.field)).toEqual([fields[1]]);
   });
-  it.each([NaN, Infinity, -Infinity])('refuses nonfinite MODEL revision %j', revision => {
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])('refuses nonfinite MODEL revision %j', revision => {
     const parsed = parseUWFile(source({ _meta: meta() }));
     canonical(parsed.sections.property as UWBlock).lifecycle.revision = revision;
     expect(leaves(parsed).map(i => i.field)).toEqual([fields[1]]);
