@@ -357,10 +357,9 @@ validation expectations or changed financial/source/receipt subjects.
 
 ## Reference implementation
 
-No implementation is included in this docs-only acceptance. The owner authorizes
-implementing the exact same closed predicate and pass in TypeScript and
-Python together on Issue354, with synchronized Format/Protocol/registry/remediation and
-schema assertions for the selected T1B profile. Primary sites:
+The synchronized implementation uses the same closed predicate and pass in
+TypeScript and Python, with Format/Protocol/registry/remediation and schema
+assertions for T1B. Primary sites:
 `packages/uwmd-verify/src/validator.ts`, `protocol.ts` and focused tests;
 `implementations/python/uwmd_source_validation.py` and the integrated #354
 validation modules/tests. Reuse existing DTO/result transport; no new public
@@ -499,7 +498,8 @@ inventory report; source plus ordinal/line reconstruct them without routing.
 
 ## AppendixB: Accepted T1B boundary controls
 
-These are accepted profile controls, not yet activated conformance expectations.
+These accepted profile controls are exercised by the synchronized TypeScript,
+Python and schema tests and the authored native `34-meta-t1b` conformance case.
 Each JSON value is a **present** canonical timestamp under admitted parents;
 absence and parent suppression are tested separately. Read the decoded JSON
 value exactly, including escaped whitespace/Unicode; do not normalize it.
