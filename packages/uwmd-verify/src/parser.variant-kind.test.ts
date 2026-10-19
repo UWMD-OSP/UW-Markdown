@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseUWFile, getSection, getSectionVariant } from './parser.js';
-import { buildMeta } from './meta.js';
+import { buildMeta } from './metadata.js';
 import { toUWEnvelope, fromUWEnvelope, assertUWEnvelope, computeEnvelopeDigest, UWEnvelopeError } from './envelope.js';
 import { resolveReceiptSubject } from './receipts.js';
 import { resolveDocumentSigningSubject, verifyDocumentSignature, DocumentSigningError, type UWDocumentSignature } from './document-signatures.js';
@@ -58,8 +58,8 @@ describe('lawful variant labels and complete subject accounting', () => {
     expect((await resolveDocumentSigningSubject(changed)).digest).not.toBe(signed.digest);
     const signature: UWDocumentSignature = { kind: 'uwmd-document-signature', signature_version: '1', subject: signed, alg: 'ed25519', kid: 'test', signed_at: '2026-10-19T00:00:00Z', sig: 'A'.repeat(86) };
     const backend = { verify: async () => ({ ok: true }) };
-    expect((await verifyDocumentSignature(original, signature, backend)).verdict).toBe('verified');
-    expect((await verifyDocumentSignature(changed, signature, backend)).verdict).toBe('failed');
+    expect((await verifyDocumentSignature(original, signature, { signatureVerifier: backend })).state).toBe('verified');
+    expect((await verifyDocumentSignature(changed, signature, { signatureVerifier: backend })).state).toBe('failed');
     expect(before.parsed.raw).toBe(original);
     expect(after.parsed.raw).toBe(changed);
   });
