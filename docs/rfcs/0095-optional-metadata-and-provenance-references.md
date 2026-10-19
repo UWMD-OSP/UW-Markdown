@@ -129,6 +129,12 @@ allocation. In particular, `_notes` is not provenance.notes: its existing
 
 After completing the entire META-05 pass, assess each block in the same union
 order. Within each block use agent_id, inherited_from, market_data_ref order.
+Own-member authority also applies to carriers, required/optional carrier children
+and the canonical resolution/source used by conditional triggers. Inherited
+prototype properties neither satisfy a required member nor create a trigger.
+SOURCE uses decoded JSON members; MODEL uses current own canonical members.
+A stated malformed reference remains independently invalid without a matching
+resolution; U2 decides required absence, not whether stated carriers are checked.
 
 - If the admitted canonical source is a valid `agent/<id>` under the accepted
   actor-source grammar, emit one META-06 at `_meta.provenance.agent_id` only
@@ -328,7 +334,7 @@ expected arrays, with the selected U1–U3 rules frozen before activation:
 | Reference shapes | Each optional absence and required absence under U2; null/array/scalar/object; each missing/wrong-type child; exact digest anchors/case/length/trailing newline; distance0/1/1.0/fraction/bool/large integer; unknown members |
 | Owner choices | Both DQ-06 conditions together, stage suppression and exact attribution; canonical-only and override-only reference triggers; shadowed/duplicate paths; as_of vectors selected under U3 |
 | Parent/order | Whole missing/rejected metadata with independently invalid sibling _overrides; invalid quality independent of provenance; META-01/02/03/04 unchanged; complete META-05 then META-06 then unrelated checkpoints |
-| Physical/model/composed | History, overwritten and extension peers, append and unselected variants; identity dedup; equal distinct objects; in-place mutation, replaced/added blocks; fresh SOURCE, current MODEL, root/consumed parts and unused loaded files |
+| Physical/model/composed | History, overwritten and extension peers, append and unselected variants; identity dedup; equal distinct objects; in-place mutation, replaced/added blocks and own-versus-prototype carriers/children/triggers; fresh SOURCE, current MODEL, root/consumed parts and unused loaded files |
 | Transport/integrity | Exact issue fields/partitions/status and actual CLI stdout/stderr/exits; unsupported/unavailable source distinctions; byte preservation; receipt policy counts with unchanged subject/authentication/verdict procedures |
 
 Freeze independent TypeScript/Python observations at exact heads and retain
