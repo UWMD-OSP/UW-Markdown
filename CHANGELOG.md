@@ -8,6 +8,10 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Prepare Cloudflare Workers static hosting for the refreshed docs site, with a
+  pinned Node runtime, asset headers, real 404 responses and owner-configured
+  docs-only build watch paths. Vercel remains unchanged pending owner cutover.
+
 ### Changed
 
 - Refresh uwmd.org with the owner-approved direction C: document-version card,

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/wrangler@4.151.1/config-schema.json",
+  "name": "uwmd-org",
+  "compatibility_date": "2026-10-18",
+  "assets": {
+    "directory": "./tools/docs-site/.vitepress/dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

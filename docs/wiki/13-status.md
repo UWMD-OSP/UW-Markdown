@@ -1853,3 +1853,10 @@ invariants move to Representations, and five new validate-only Verifier checks
 (`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
 1,061 (Verifier 679 / 280 portable, Module 68 / 1). Release: published in
 core/CLI 3.0.0 with Stable Protocol 3.0.0.
+
+### Cloudflare static-host preparation
+
+The owner-directed `codex/site-cloudflare-migration` branch contains direction C
+first, then Workers static-asset configuration. `tools/docs-site/README.md` gives
+the exact build, watch-path and owner project/cutover settings. Vercel stays in
+place; this preparation does not change credentials, DNS or active hosting.

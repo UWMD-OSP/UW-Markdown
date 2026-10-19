@@ -21,3 +21,6 @@ packages/*/package-lock.json
 
 # Maintainer-local agent instructions (see AGENTS.md)
 CLAUDE.local.md
+
+# Local Workers development state.
+.wrangler/

@@ -1,0 +1,54 @@
+name: Docs site static hosting
+
+on:
+  pull_request:
+    paths:
+      - 'tools/docs-site/**'
+      - 'docs/**'
+      - '.nvmrc'
+      - 'wrangler.jsonc'
+      - '.github/workflows/docs-site.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/docs-site/**'
+      - 'docs/**'
+      - '.nvmrc'
+      - 'wrangler.jsonc'
+      - '.github/workflows/docs-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-host:
+    name: Docs build and local Workers routing
+    runs-on: ubuntu-latest
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            tools/docs-site/package-lock.json
+            tools/web-editor/package-lock.json
+      - name: Install locked build dependencies
+        run: npm ci && npm --prefix tools/docs-site ci && npm --prefix tools/web-editor ci
+      - name: Build the complete static site
+        run: npm --prefix tools/docs-site run build:cloudflare
+      - name: Validate the Workers asset configuration without deployment
+        run: npx --yes wrangler@4.151.1 deploy --dry-run --outdir "$RUNNER_TEMP/uwmd-worker-dry-run"
+      - name: Exercise local Workers routing and response headers
+        shell: bash
+        run: |
+          npx --yes wrangler@4.151.1 dev --local --ip 127.0.0.1 --port 8787 > "$RUNNER_TEMP/uwmd-worker-local.log" 2>&1 &
+          worker_pid=$!
+          trap 'kill "$worker_pid" 2>/dev/null || true; cat "$RUNNER_TEMP/uwmd-worker-local.log"' EXIT
+          npm --prefix tools/docs-site run test:cloudflare

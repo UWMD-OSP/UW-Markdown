@@ -9,6 +9,8 @@
     "dev": "npm run prebuild && vitepress dev",
     "build": "npm run prebuild && vitepress build",
     "preview": "vitepress preview",
+    "build:cloudflare": "npm --prefix ../.. run build -w @uwmd/verify && npm --prefix ../.. run build -w @uwmd/core && npm --prefix ../web-editor run build && node scripts/prepare-public.mjs && npm run build",
+    "test:cloudflare": "node scripts/check-cloudflare.mjs",
     "clean": "node scripts/prebuild.mjs --clean"
   },
   "devDependencies": {
