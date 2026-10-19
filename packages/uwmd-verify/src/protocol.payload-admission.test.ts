@@ -4,7 +4,7 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import { describe, expect, it } from 'vitest';
 import { BUILTIN_REMEDIATIONS, validatorCodeFamily } from './protocol.js';
 const ajv = new Ajv2020.default({ strict: false, validateFormats: false, allowUnionTypes: true });
-const schema = (name: string) => JSON.parse(readFileSync(resolve(process.cwd(), '../../spec/schemas/' + name + '.schema.json'), 'utf8'));
+const schema = (name: string) => JSON.parse(readFileSync(resolve(process.cwd(), `../../spec/schemas/${name}.schema.json`), 'utf8'));
 const lu = ajv.compile(schema('section-lease-up-schedule'));
 const terms = ajv.compile(schema('lease-recovery-terms'));
 const trueUp = ajv.compile(schema('lease-recovery-true-up'));

@@ -8,7 +8,7 @@ const codes = new Set(['LU-05', 'REC-11', 'CS-03', 'WF-16']);
 const classes = new Set(['office', 'retail']);
 const header = '---\nuw_version: "3.0"\nasset_class: mixed_use\ndeal_id: payload0096\n---\n';
 function doc(section: string, body: unknown, suffix = '') { return header + fence(section, body, suffix); }
-function fence(section: string, body: unknown, suffix = '') { return '```json uw:section=' + section + suffix + '\n' + JSON.stringify(body) + '\n```\n'; }
+function fence(section: string, body: unknown, suffix = '') { return `\`\`\`json uw:section=${section}${suffix}\n${JSON.stringify(body)}\n\`\`\`\n`; }
 function assess(section: string, body: Record<string, unknown>): ValidationMessage[] {
   const parsed = parseUWFile(doc(section, {})); (getSectionVariant(parsed, section, 'default') ?? getSection(parsed, section))!.content = body;
   const issues: ValidationMessage[] = []; checkPayloadAdmission(parsed, issues, classes); return issues;

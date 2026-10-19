@@ -33,7 +33,7 @@ function numeric(o: Obj, fields: readonly (readonly [string, Predicate])[], emit
 }
 function optionalObject(o: Obj, k: string, emit: Emit, visit: (child: Obj, at: string) => void, at = ''): void {
   if (!own(o, k) || o[k] === null) return;
-  if (!object(o[k])) emit(at + k); else visit(o[k], at + k + '.');
+  if (!object(o[k])) emit(at + k); else visit(o[k], `${at + k}.`);
 }
 export function currentPayloadBlocks(parsed: ParsedUWFile, section: string): Array<[string | null, UWBlock]> {
   if (!own(parsed.sections, section)) return [];
@@ -94,11 +94,11 @@ function recovery(o: Obj, emit: Emit): void {
       leaf(t, 'admin_fee_pct', v => finite(v) && v >= 0 && v < 1, emit, at);
       leaf(t, 'gross_up_pct', v => finite(v) && v > 0 && v <= 1, emit, at);
       optionalObject(t, 'cap', () => {}, c => {
-        leaf(c, 'over', enumeration('base_year', 'prior_year'), emit, at + 'cap.');
+        leaf(c, 'over', enumeration('base_year', 'prior_year'), emit, `${at}cap.`);
         if (!(own(t, 'method') && t.method !== null && own(c, 'pct') && c.pct !== null)) {
-          leaf(c, 'accumulation', accumulated, emit, at + 'cap.');
+          leaf(c, 'accumulation', accumulated, emit, `${at}cap.`);
         }
-        extras(c, ['pct', 'over', 'accumulation'], emit, at + 'cap.');
+        extras(c, ['pct', 'over', 'accumulation'], emit, `${at}cap.`);
       });
       extras(t, termKeys, emit, at);
     });
@@ -113,18 +113,18 @@ function recovery(o: Obj, emit: Emit): void {
 }
 function sizing(o: Obj, emit: Emit, prefix = ''): void {
   if (!own(o, 'sizing')) return;
-  const rows = o.sizing; if (!Array.isArray(rows)) { emit(prefix + 'sizing'); return; }
+  const rows = o.sizing; if (!Array.isArray(rows)) { emit(`${prefix}sizing`); return; }
   for (const [i, row] of rows.entries()) {
     const at = `${prefix}sizing[${i}]`;
     if (!object(row)) { emit(at); continue; }
-    leaf(row, 'id', text, emit, at + '.', true);
-    leaf(row, 'fn', enumeration('coverage', 'blended_coverage', 'debt_yield_through', 'ltc_through', 'ltv_through', 'weighted_cost'), emit, at + '.', true);
+    leaf(row, 'id', text, emit, `${at}.`, true);
+    leaf(row, 'fn', enumeration('coverage', 'blended_coverage', 'debt_yield_through', 'ltc_through', 'ltv_through', 'weighted_cost'), emit, `${at}.`, true);
     const over = own(row, 'over'); const through = own(row, 'through');
     if (over === through) emit(at);
-    else if (over) leaf(row, 'over', text, emit, at + '.', true);
-    else leaf(row, 'through', v => integer(v) && v >= 1, emit, at + '.', true);
-    leaf(row, 'value', finite, emit, at + '.', true);
-    extras(row, ['id', 'fn', 'over', 'through', 'value'], emit, at + '.');
+    else if (over) leaf(row, 'over', text, emit, `${at}.`, true);
+    else leaf(row, 'through', v => integer(v) && v >= 1, emit, `${at}.`, true);
+    leaf(row, 'value', finite, emit, `${at}.`, true);
+    extras(row, ['id', 'fn', 'over', 'through', 'value'], emit, `${at}.`);
   }
 }
 function waterfall(o: Obj, emit: Emit): void {
@@ -146,16 +146,16 @@ function waterfall(o: Obj, emit: Emit): void {
   for (const [i, row] of o.stated_schedule.entries()) {
     const at = `stated_schedule[${i}]`;
     if (!object(row)) { emit(at); continue; }
-    leaf(row, 'date', v => typeof v === 'string' && /^[0-9]{4}-[0-9]{2}-[0-9]{2}(?![\s\S])/.test(v), emit, at + '.', true);
-    if (!own(row, 'by_tier') || !Array.isArray(row.by_tier)) emit(at + '.by_tier');
+    leaf(row, 'date', v => typeof v === 'string' && /^[0-9]{4}-[0-9]{2}-[0-9]{2}(?![\s\S])/.test(v), emit, `${at}.`, true);
+    if (!own(row, 'by_tier') || !Array.isArray(row.by_tier)) emit(`${at}.by_tier`);
     else for (const [j, tier] of row.by_tier.entries()) {
       const tat = `${at}.by_tier[${j}]`;
       if (!object(tier)) { emit(tat); continue; }
-      leaf(tier, 'tier', v => integer(v) && v >= 0, emit, tat + '.', true);
-      numeric(tier, [['lp', finite], ['gp', finite]], emit, tat + '.');
-      extras(tier, ['tier', 'lp', 'gp'], emit, tat + '.');
+      leaf(tier, 'tier', v => integer(v) && v >= 0, emit, `${tat}.`, true);
+      numeric(tier, [['lp', finite], ['gp', finite]], emit, `${tat}.`);
+      extras(tier, ['tier', 'lp', 'gp'], emit, `${tat}.`);
     }
-    extras(row, ['date', 'by_tier'], emit, at + '.');
+    extras(row, ['date', 'by_tier'], emit, `${at}.`);
   }
 }
 
@@ -169,7 +169,7 @@ export function checkPayloadAdmission(parsed: ParsedUWFile, issues: ValidationMe
       for (const key of Object.keys(block.content).filter(k => componentClasses.has(k)).sort(compare)) {
         const component = block.content[key];
         if (!object(component) || value(component, 'component_class') !== key || !own(component, 'capital_stack') || !object(component.capital_stack)) continue;
-        sizing(component.capital_stack, emitter(issues, code, 'components', variant), key + '.capital_stack.');
+        sizing(component.capital_stack, emitter(issues, code, 'components', variant), `${key}.capital_stack.`);
       }
     }
   }
