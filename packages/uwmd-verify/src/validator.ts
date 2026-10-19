@@ -1,3 +1,4 @@
+import { checkPayloadAdmission, currentPayloadBlocks } from './payload-admission.js';
 import { pinnedPow } from './calc/pinned-numerics.js';
 import { checkBuiltinClassContent } from './builtin-class-validation.js';
 import { isScenarioId } from './scenario.js';
@@ -159,6 +160,7 @@ export function validateUWFile(
   checkSourceVocabulary(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
+  checkPayloadAdmission(parsed, issues, ADMISSIBLE_COMPONENT_CLASSES);
 
   // CC-16: one info issue per section that was present as a variant map no
   // cross-check could resolve (§5.3, RFC 0037). Emitted after every check has
@@ -1365,7 +1367,8 @@ function checkRecoveryTerms(
   // REC-02: a method without the input it needs. A lone `cap` is a complete
   // statement (RFC 0081 §7); any other member requires the method.
   const method = terms['method'];
-  const methodRequired = Object.keys(terms).some(k => k !== 'cap');
+  const methodPresent = Object.hasOwn(terms, 'method');
+  const methodRequired = methodPresent || Object.keys(terms).some(k => k !== 'cap' && terms[k] !== null);
   if (methodRequired && (typeof method !== 'string' || !(RECOVERY_METHODS as readonly string[]).includes(method))) {
     recIssue(issues, 'REC-02', `${p}.method`,
       `REC-02: method must be one of ${RECOVERY_METHODS.join(', ')} — the vocabulary is closed`, method);
@@ -1412,7 +1415,7 @@ function checkRecoveryTerms(
         recIssue(issues, 'REC-01', `${cp}.pct`,
           'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
       }
-      if (pct != null && (methodRequired || Object.hasOwn(c, 'accumulation'))) {
+      if (methodPresent && method !== null && Object.hasOwn(c, 'pct') && pct !== null) {
         const acc = c['accumulation'];
         if (typeof acc !== 'string' || !(RECOVERY_CAP_ACCUMULATIONS as readonly string[]).includes(acc)) {
           recIssue(issues, 'REC-02', `${cp}.accumulation`,
@@ -1441,7 +1444,7 @@ function recoveryRefResolves(parsed: ParsedUWFile, variant: string): boolean {
 
 function checkRecoveryTrueUp(
   t: Record<string, unknown>, issues: ValidationMessage[], at: string,
-  share: number | null, asOf: string | null, parsed: ParsedUWFile,
+  share: number | null, asOf: string | null, parsed: ParsedUWFile, structuralOnly = false,
 ): void {
   const rows = t['recovery_true_up'];
   if (rows == null) return;
@@ -1474,7 +1477,7 @@ function checkRecoveryTrueUp(
     // Anchored on the rent roll's own as_of_date — never on file metadata,
     // which is an edit timestamp and would refuse a legitimately re-saved
     // document. Skipped when the rent roll states no date.
-    if (asOf !== null && !(end < asOf)) {
+    if (!structuralOnly && asOf !== null && !(end < asOf)) {
       recIssue(issues, 'REC-05', `${p}.period_end`,
         `REC-05: the true-up period ends ${end}, on or after the rent roll as_of_date ${asOf} — a reconciliation of an open period is a forecast, and this section carries settled facts`, end);
     }
@@ -1486,7 +1489,7 @@ function checkRecoveryTrueUp(
     const trueUp = row['true_up_amount'];
 
     // REC-06: the one product a single document can check.
-    if (leaseNum(poolActual) && share !== null && leaseNum(uncapped)) {
+    if (!structuralOnly && leaseNum(poolActual) && share !== null && leaseNum(uncapped)) {
       const want = roundRec(poolActual * share);
       if (roundRec(uncapped) !== want) {
         recIssue(issues, 'REC-06', `${p}.tenant_share_uncapped`,
@@ -1496,13 +1499,13 @@ function checkRecoveryTrueUp(
 
     // REC-07: the cap can only reduce. The capped amount itself is stated,
     // not recomputed — see the section note.
-    if (leaseNum(uncapped) && leaseNum(capped) && roundRec(capped) > roundRec(uncapped)) {
+    if (!structuralOnly && leaseNum(uncapped) && leaseNum(capped) && roundRec(capped) > roundRec(uncapped)) {
       recIssue(issues, 'REC-07', `${p}.tenant_share_capped`,
         `REC-07: tenant_share_capped (${capped}) exceeds tenant_share_uncapped (${uncapped}) — a cap cannot increase a recovery`, capped);
     }
 
     // REC-08: the subtraction the whole row exists to record.
-    if (leaseNum(capped) && leaseNum(billed) && leaseNum(trueUp)) {
+    if (!structuralOnly && leaseNum(capped) && leaseNum(billed) && leaseNum(trueUp)) {
       const want = roundRec(capped - billed);
       if (roundRec(trueUp) !== want) {
         recIssue(issues, 'REC-08', `${p}.true_up_amount`,
@@ -1535,21 +1538,38 @@ function checkRecoveryTrueUp(
 
 function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const block = resolveCrossCheckSection(parsed, 'rent_roll').block;
-  if (!block) return;
-  const tenants = deepGet(block.content, 'tenants');
-  if (!Array.isArray(tenants)) return;
-  const rawAsOf = deepGet(block.content, 'as_of_date');
-  const asOf = isDate(rawAsOf) ? rawAsOf : null;
-  for (const [i, raw] of tenants.entries()) {
-    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
-    const t = raw as Record<string, unknown>;
-    const at = `tenants[${i}]`;
-    checkEscalationSchedule(t, issues, at);
-    checkTerminationOption(t, issues, at);
-    checkCoTenancy(t, issues, at);
-    checkLeasingCapital(t, issues, at);
-    const share = checkRecoveryTerms(t, issues, at);
-    checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
+  if (block) {
+    const tenants = deepGet(block.content, 'tenants');
+    if (Array.isArray(tenants)) {
+      const rawAsOf = deepGet(block.content, 'as_of_date');
+      const asOf = isDate(rawAsOf) ? rawAsOf : null;
+      for (const [i, raw] of tenants.entries()) {
+        if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
+        const t = raw as Record<string, unknown>;
+        const at = `tenants[${i}]`;
+        checkEscalationSchedule(t, issues, at);
+        checkTerminationOption(t, issues, at);
+        checkCoTenancy(t, issues, at);
+        checkLeasingCapital(t, issues, at);
+        const share = checkRecoveryTerms(t, issues, at);
+        checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
+      }
+    }
+  }
+  // Local recovery admission covers every current peer, independent of the
+  // financial role selection. Preserve selected financial/LSE checks above.
+  for (const [variant, peer] of currentPayloadBlocks(parsed, 'rent_roll')) {
+    if (peer === block) continue;
+    const tenants = peer.content['tenants'];
+    if (!Array.isArray(tenants)) continue;
+    const start = issues.length;
+    for (const [i, raw] of tenants.entries()) {
+      if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
+      const tenant = raw as Record<string, unknown>; const at = `tenants[${i}]`;
+      const share = checkRecoveryTerms(tenant, issues, at);
+      checkRecoveryTrueUp(tenant, issues, at, share, null, parsed, true);
+    }
+    for (let i = start; i < issues.length; i++) issues[i].message += ` (variant "${variant}")`;
   }
 }
 
