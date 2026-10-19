@@ -15,10 +15,15 @@ remains stage readiness only; symmetric canonical/any-stated-override reference
 assertions belong to META-06 with exact identity/carrier dedup. The as_of domain
 is whole ASCII Gregorian YYYY-MM-DD, years0001–9999, without normalization.
 The reviewed89-reference inventory is frozen as the activation baseline, with
-its population limits preserved. Independent TS/Python/schema calendar vectors
-are the cross-runtime controls. Synchronized Format/Protocol/schema and TS/Python
-implementation follows on Issue354. This docs-only acceptance changes no live
-registry, fixture expectation, receipt procedure, capability or release state.
+its population limits preserved. Synchronized TS/Python source predicates,
+Format/Protocol/registry/schema and six authored native controls implement the
+accepted allocation. Complete META-05 and META-06 passes follow META-04;
+malformed-parent/sibling boundaries and current physical/model authority remain
+explicit. Independent frozen calendar vectors exercise both runtimes. A bounded
+SRC override correction uses only the existing sections/current-variant population.
+The separate complete-validation WIP still requires composition, full admission,
+applicable native/platform evidence and actual certification. Discovery remains
+parse-only; receipt subject/authentication rules and release state are unchanged.
 
 **Python expression execution — Issue354.** A coherent read-only `calc` CLI
 implements the accepted expression grammar, all21 builtins, exact source/variant/

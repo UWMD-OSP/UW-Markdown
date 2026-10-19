@@ -581,6 +581,33 @@ procedure, schema fallback or capability promotion is needed for this allocation
 Production implementation and changes to governing contracts are outside this
 docs-only acceptance PR. The isolated review controls have no production imports or hooks.
 
+## Synchronized implementation checkpoint
+
+The Issue354 activation implements the closed predicates in TypeScript and
+independent Python source validation, with Format/Protocol/registry/schema
+synchronized. The reviewed89-reference inventory and all calendar inputs remain
+unchanged. A separate exact-RFC0094-base inventory of884 recognized sources
+(820 fenced parses,9 prior typed refusals,55 Lite inputs outside this census)
+found no META-05/06 findings in2320 retained/current references;408 earlier-parent
+rejections remain separately classified. All22 admitted canonical agent-source
+blocks state agent_id. This is a standalone-source predicate inventory, not a
+claim about every composition, generated model, embedded test or full validation.
+
+Six new native controls38–43 independently state exact metadata fields/order,
+including a lawful empty result. Existing source fixtures and frozen expected
+results are unchanged. Tests exercise the frozen106 date vectors,6 carrier
+contexts and full158400-input Gregorian cycle across actual runtime/schema
+predicates. SOURCE/MODEL/history/composition identity controls, actual CLI exits
+and receipt-policy effects accompany the implementation. The old attribution
+DQ-06/error is removed; declared-stage readiness remains DQ-06/info.
+
+The companion SRC override correction enforces already accepted leaf vocabularies
+within the existing sections/current-variant population only. It does not widen
+SRC to META's retained-physical population or silently fix other source grammar
+behavior. No complete validation/Verifier capability, release or publication is
+claimed by this allocation. The complete-validation WIP remains independently
+gated; full certification cannot be inferred from portable examples or helpers.
+
 ## Alternatives considered
 
 - Extend META-01 or META-04: obscures their owner-accepted closed predicates.
