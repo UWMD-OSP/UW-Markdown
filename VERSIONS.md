@@ -1,8 +1,46 @@
 # Versions
 
 Format and Protocol are separate normative surfaces. npm packages follow the
-owner release rule below: prelaunch4.x.x, then a coordinated5.0.0 public launch.
+owner release rule below: prelaunch 4.x.x, then a coordinated 5.0.0 public launch.
 This file also records the versions actually released.
+
+## Current matrix
+
+| Surface | Version | Pairs with |
+|---|---|---|
+| `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
+| UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.3.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
+| `@uwmd/verify` | **0.2.1** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.3.0 depends on it exactly and re-exports it |
+| `@uwmd/core` | **4.3.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.1 |
+| `@uwmd/cli` (CLI) | **4.3.0** | `@uwmd/core` 4.3.0 |
+| `@uwmd/excel` | **0.9.19** | `@uwmd/core` 4.3.0, format 3.0, explicit contextual calculations |
+| `@uwmd/report` | **0.9.0** | `@uwmd/core` 4.3.0, format spec §7.1/§7.2 |
+| `@uwmd/batch` | **0.9.2** | `@uwmd/verify` 0.2.1, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
+| `@uwmd/lake` | **0.3.2** | `@uwmd/verify` 0.2.1, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
+| `@uwmd/signing` | **0.6.0** | `@uwmd/verify` 0.2.1 and `@uwmd/core` 4.3.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
+| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.3.0 browser entry |
+| `tools/web-viewer` | n/a (single-file HTML, no package) | format 3.0 |
+| `tools/vscode-uwmd` | **0.2.0** | format 3.0; `@uwmd/verify` 0.2.1 (`file:` link) |
+
+Release 4.3.0 pairs core/CLI 4.3.0 with the unchanged Protocol 4.1.0 and
+Format 3.0. Verifier 0.2.1 repairs capital-stack and lease-up comparison
+quantization under the existing Protocol VIII.5 rule; receipts name
+`@uwmd/verify` 0.2.1 as the engine. Core/CLI 4.3.0 reject unknown flags and
+false verification. The CLI accepts `validate --stage` for stage readiness,
+`export --compact` to omit superseded blocks, and `compose --parts` as an
+output-directory alias.
+Signing 0.6.0 and report 0.9.0 declare their Node 20 floor; Excel 0.9.19 preserves
+source financial aggregates and discloses retained-literal editing limits.
+Batch 0.9.2 and lake 0.3.2 pin verifier 0.2.1. All eight exact package pins move
+with their independently versioned packages. Core's optional signing peer is
+0.6.0. No metric formula, Format/Protocol/receipt schema version, pack version or
+draft RFC status changes. Receipt disagreements across engine identities retain
+the existing RCP-07 `unverifiable` behavior. See the
+[preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md).
+All 8 versions are published and independently checked from annotated `v4.3.0`
+on `80c68c3d0950948c85a1d3a90c02cd05f3a650a4` (2026-10-15). Registry
+integrity/provenance and fresh consumers pass; see the
+[publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
 
 ## Why three streams?
 
@@ -21,43 +59,25 @@ released independently as long as both honor the same protocol version.
 The owner rule at the top of AGENTS.md and CLAUDE.md
 supersedes earlier compatibility and artifact-preservation directions.
 5.0.0 is exclusively the official public launch: **every @uwmd npm package
-moves to5.0.0 together then**. All prelaunch releases use4.x.x and may ship
+moves to 5.0.0 together then**. All prelaunch releases use 4.x.x and may ship
 from main as needed, including incompatible changes.
 
 Before launch there is zero backward compatibility. Do not prepare migration
 notes, deprecation paths, consumer-breakage analyses, version-bump recommendations
 or preservation/repair of prelaunch documents, signatures, receipts or artifacts.
-Jared is the sole prelaunch consumer; prelaunch documents are not public inputs.
+The project owner is the sole prelaunch consumer; prelaunch documents are not public inputs.
 Drop compatibility-only and artifact-preservation-only work. Current numerical,
 verification, read-only source-integrity and conformance requirements remain;
 those are current contracts, not legacy support obligations.
 
-Format and Protocol remain distinct normative surfaces; the coordinated5.0.0
-rule applies to npm package releases. Earlier matrix entries below report what
+Format and Protocol remain distinct normative surfaces; the coordinated 5.0.0
+rule applies to npm package releases. Earlier release entries below report what
 was released, not versions to repeat or compatibility commitments. No package
 number, release, tag or publication is changed by recording this rule. The
 public launch still requires separate explicit owner approval, and normative
 changes still require RFC discipline and synchronized specifications/conformance.
 
-## Current matrix
-
-Release 4.3.0 pairs core/CLI 4.3.0 with the unchanged Protocol 4.1.0 and
-Format 3.0. Verifier 0.2.1 repairs capital-stack and lease-up comparison
-quantization under the existing Protocol VIII.5 rule; receipts name
-`@uwmd/verify` 0.2.1 as the engine. Core/CLI 4.3.0 retain the approved deprecated
-CLI compatibility behavior while rejecting unknown flags and false verification.
-Signing 0.6.0 and report 0.9.0 declare their Node20 floor; Excel 0.9.19 preserves
-source financial aggregates and discloses retained-literal editing limits.
-Batch 0.9.2 and lake 0.3.2 pin verifier 0.2.1. All eight exact package pins move
-with their independently versioned packages. Core's optional signing peer is
-0.6.0. No metric formula, Format/Protocol/receipt schema version, pack version or
-draft RFC status changes. Receipt disagreements across engine identities retain
-the existing RCP-07 `unverifiable` behavior. See the
-[preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-preparation.md).
-All8 versions are published and independently checked from annotated `v4.3.0`
-on `80c68c3d0950948c85a1d3a90c02cd05f3a650a4` (2026-10-15). Registry
-integrity/provenance and fresh consumers pass; see the
-[publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
+## Release history
 
 Release 4.2.0 pairs core/CLI 4.2.0 with Protocol 4.1.0 and Format 3.0.
 Protocol 4.1.0 carries RFC 0084: an optional detached document snapshot
@@ -339,7 +359,7 @@ Protocol 2.19.0 adds RFC 0066. Ordinary calc identifiers select one block of a
 variant-map section by §VIII.2: an explicit variant, then the calculation's
 declared `section_roles`, then RFC 0040's generic order. Ambiguity refuses as
 `CALC-RESOLVE-002` instead of a silent `null`. The cascade, refinement and the
-Excel converter share that selection. Jared's owner decisions of 2026-10-02
+Excel converter share that selection. The owner's decisions of 2026-10-02
 (D1–D3) set that contract and the 2.15.0 target; RFC 0066 is now
 `implemented`. Core/CLI 2.15.0, signing 0.2.19 and batch 0.8.14 are published
 from the `v2.15.0` tag with SLSA provenance through trusted publishing (OIDC).
@@ -347,7 +367,7 @@ The release workflow publishes those four and no others.
 
 Release 2.14.0 paired core/CLI 2.14.0 with Protocol 2.18.0 and Format 2.0.
 Protocol 2.18.0 adds RFC 0063's explicit final-period exclusive-boundary
-admission to the **2.17.1** RFC 0062 same-day errata. Jared accepted both RFCs
+admission to the **2.17.1** RFC 0062 same-day errata. The owner accepted both RFCs
 on 2026-09-24 (RFC 0063 at `f04b34a`); they integrated on canonical `main` at
 `e49eb43` and `413a645` and are now `implemented`. The 2.17.1 errata decision
 remains recorded below. Core/CLI 2.14.0, signing 0.2.18 and batch 0.8.13 were
@@ -361,7 +381,7 @@ At 2.13.0 the reference modules had never been published, and Excel and
 report were not published at their then-current versions. The registry does
 serve a stray `0.3.0` of each, pushed by hand on 2026-08-16 during the 1.3.0
 manual release; both declare `@uwmd/core` `1.3.0` and neither was maintained at
-that version. Jared deprecated both on 2026-10-02, and the registry shows the
+that version. The owner deprecated both on 2026-10-02, and the registry shows the
 deprecation message on each `0.3.0`. `verify-versions` reconciles the
 manifests against this file and never contacts the registry, which is why the
 earlier flat "unpublished" claim went unchallenged. From the 3.0.0 generation
@@ -371,23 +391,6 @@ from the `v2.21.0` tag to create the package for its trusted publisher; lake
 is in the release workflow from 3.0.0 as well. Module package 0.1.1 only repins core; the typed module manifests
 retain their independent 0.1.0 contract version. Package, Format and Protocol
 versions advance independently.
-
-| Surface | Version | Pairs with |
-|---|---|---|
-| `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
-| UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.3.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
-| `@uwmd/verify` | **0.2.1** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.3.0 depends on it exactly and re-exports it |
-| `@uwmd/core` | **4.3.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.1 |
-| `@uwmd/cli` (CLI) | **4.3.0** | `@uwmd/core` 4.3.0 |
-| `@uwmd/excel` | **0.9.19** | `@uwmd/core` 4.3.0, format 3.0, explicit contextual calculations |
-| `@uwmd/report` | **0.9.0** | `@uwmd/core` 4.3.0, format spec §7.1/§7.2 |
-| `@uwmd/batch` | **0.9.2** | `@uwmd/verify` 0.2.1, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
-| `@uwmd/lake` | **0.3.2** | `@uwmd/verify` 0.2.1, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
-| `@uwmd/signing` | **0.6.0** | `@uwmd/verify` 0.2.1 and `@uwmd/core` 4.3.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |
-| `tools/web-editor` | **0.8.0** (private) | `@uwmd/core` 4.3.0 browser entry |
-| `tools/web-viewer` | n/a (single-file HTML, no package) | format 3.0 |
-| `tools/vscode-uwmd` | **0.2.0** | format 3.0; `@uwmd/verify` 0.2.1 (`file:` link) |
-
 
 ### Official module compatibility
 
@@ -425,7 +428,7 @@ These were candidate versions when the plan was written. See the
 
 ## Development and release policy
 
-Apply the2026-10-17 owner rule above. Earlier release descriptions are not
+Apply the 2026-10-17 owner rule above. Earlier release descriptions are not
 compatibility obligations. Use the current source, accepted RFCs and conformance
 for development; do not maintain old readers, receipts, APIs or document repair
 paths for prelaunch consumers. Current source/digest correctness remains part of
