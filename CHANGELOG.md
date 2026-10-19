@@ -25,6 +25,12 @@ protocol, and each package each carry an independent semver).
   parse-only; full validation, other financial verifiers and receipts are
   separate gates. No normative, schema, frozen-expectation or version changes.
 
+- Accept RFC0094 under the owner's2026-10-18 decision at47e6a547: META-04/error
+  for present-invalid confidence, revision and timestamp, preserving existing
+  absence warnings and META-01/02/03. Record independently attributed fixture
+  scope and the accepted exact UTC-Z timestamp profile T1B. Documentation
+  only; no implementation, schema, expectation, capability or release change.
+
 
 - Accept RFC0093 for Issue354 under the owner's2026-10-18 decision at0306d126:
   exactly late canonical metadata, present invalid/mismatched canonical section
