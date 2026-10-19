@@ -5670,6 +5670,36 @@
       "suite": "documents",
       "scenario": "malformed/43-meta-reference-calendar",
       "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/44-payload-lease-up",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/45-payload-recovery",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/46-payload-sizing",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/47-payload-waterfall",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/48-payload-lawful",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/49-payload-current-peers",
+      "target": "verifier"
     }
   ]
 }

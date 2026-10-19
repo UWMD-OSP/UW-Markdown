@@ -1,0 +1,93 @@
+{
+  "description": "Authored accepted RFC0096 predicates; manually attributed ordered new-code projection only, not a whole-document positive-validation claim.",
+  "must_parse": true,
+  "expected_codes": [
+    "WF-16"
+  ],
+  "payload_issues": [
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "clawback.floor_rate"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "clawback.floor_multiple"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "clawback.extra"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_outcomes.lp.contributions"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_outcomes.lp.moic"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_outcomes.lp.extra"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_outcomes.promote_total"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_outcomes.extra"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_schedule[0].by_tier[0].tier"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_schedule[0].by_tier[0].lp"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_schedule[0].by_tier[0].extra"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_schedule[0].extra"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_schedule[1].date"
+    },
+    {
+      "code": "WF-16",
+      "severity": "error",
+      "section": "distribution_waterfall",
+      "field": "stated_schedule[1].by_tier"
+    }
+  ]
+}
