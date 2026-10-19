@@ -91,7 +91,7 @@ class ValidationCLITests(unittest.TestCase):
         self.assertEqual([(i["code"],i["context"]["block_index"],i["field"]) for i in
                           integrated["errors"]], [("META-01",1,"_meta")])
 
-    def test_accepted_metadata_and_unallocated_lease_model_have_distinct_transport(self):
+    def test_accepted_metadata_and_0096_payload_have_registered_transport(self):
         body=parse(property_source()).source.blocks[0].parsed.value
         typed=copy.deepcopy(body);typed["_meta"]["quality"]["confidence"]=False
         section=copy.deepcopy(body);section["_meta"]["section"]="wrong"
@@ -105,14 +105,16 @@ class ValidationCLITests(unittest.TestCase):
                 self.assertEqual([i["code"] for i in result["errors"]],
                                  ["META-04" if value is typed else "META-01"])
                 self.assertNotIn("metadata_assessment", result)
-        # A declared fixed lease-up payload has separate unallocated shape evidence.
+        # Accepted RFC0096 independently owns missing model_type and unknown model.
         raw=property_source()+well_formed("lease_up_schedule",model="not_registered",
             period_granularity="monthly",stabilization_target="2026-01",
             schedule=[{"period":"2026-01"}])
         result,status=self.command(raw)
         self.assertEqual(status,1)
-        self.assertTrue(result["section_assessment"]["lease_up_schedule"]["shape_findings"])
-        self.assertNotIn("code",result["error"])
+        self.assertEqual([(i["code"],i["field"]) for i in result["errors"]],
+                         [("LU-05","model_type"),("LU-05","model")])
+        self.assertNotIn("section_assessment",result)
+        self.assertNotIn("error",result)
 
     def test_actor_and_present_null_meta_use_registered_errors_without_inferred_attribution(self):
         actor=parse(property_source()).source.blocks[0].parsed.value
@@ -247,7 +249,7 @@ class ValidationCLITests(unittest.TestCase):
 
     def test_unallocated_source_and_selection_refusals_get_no_default_protocol_error(self):
         self.path.write_bytes(property_source())
-        with patch("uwmd_reader.parse",side_effect=SourceError("Unallocated source refusal")):
+        with patch("uwmd.parse",side_effect=SourceError("Unallocated source refusal")):
             result,status=main(["validate",str(self.path),"--json"])
             self.assertEqual((result,status),({"error":{"message":"Unallocated source refusal"}},1))
         with patch("uwmd._validate_document",side_effect=ValidationUnavailable("Unallocated selection refusal")):
