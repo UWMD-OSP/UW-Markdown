@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getSection, parseUWFile } from './parser.js';
 import { validateUWFile } from './validator.js';
-import type { ParsedUWFile, UWBlock } from './types.js';
+import type { ParsedUWFile } from './types.js';
 type Obj = Record<string, unknown>;
 const header = '---\nuw_version: "3.0"\nasset_class: office\ndeal_id: recovery-own\n---\n';
 const fence = (section: string, body: unknown, suffix = '') => `\`\`\`json uw:section=${section}${suffix}\n${JSON.stringify(body)}\n\`\`\`\n`;
