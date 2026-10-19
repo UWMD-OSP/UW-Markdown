@@ -614,7 +614,7 @@ capability is unconditional: every implementation owes it.
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
-| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), and required canonical boolean members (`META-02`/`META-03`, RFC0091). | `validate` | `error` |
+| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), required canonical boolean members (`META-02`/`META-03`, RFC0091), and exactly three present-invalid canonical leaves (`META-04`, RFC0094). | `validate` | `error` |
 | `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
 | `CLS-NN` | Official builtin field contracts (RFC 0080, RFC 0081). | `validate` | error |
@@ -756,6 +756,42 @@ blocks first, then model-only collections in the stated order; within each
 block emit META-02 before META-03. This pass precedes role, period-series and
 source-vocabulary checks and preserves unrelated findings' relative order.
 No other required metadata field or malformed parent gains an allocation.
+
+**Present-invalid metadata leaves (RFC0094).** Complete the entire required
+boolean pass first; then, before role/period/source checks, traverse the same
+retained-physical plus current model-only exact-reference union above. For each
+block emit `META-04`/error for each present invalid canonical leaf, in this order:
+
+| Field | Admitted present domain |
+|---|---|
+| `_meta.quality.confidence` | Exactly the strings `high`, `medium`, `low`. |
+| `_meta.lifecycle.revision` | Finite integral number at least1; JSON1.0/1e0 are integer1, booleans are not numbers for this predicate; no new maximum. |
+| `_meta.provenance.timestamp` | Exact T1B UTC-Z domain in Format §2.5 and below. |
+
+T1B consumes the entire string `YYYY-MM-DDTHH:mm:ss[.digits]Z`, using only ASCII
+digits, year0000–9999 and valid proleptic Gregorian month/day (leap if divisible
+by400 or divisible by4 but not100), hour00–23, minute/second00–59, uppercase T/Z
+and an optional nonempty fraction without a new length cap. Reject every numeric
+offset, lowercase separator, whitespace, second60 and invalid date without
+normalization, time-zone conversion, host-parser authority, clock or calendar
+lookup. The allocation imposes no age, temporal ordering or revision-chain test.
+
+Presence means an own member of the admitted canonical parent. An absent leaf
+never gains META-04. Keep every existing completeness warning predicate,
+applicability and relative order, including null warnings alongside new errors.
+Old rejected metadata/provenance/lifecycle shapes suppress descendants; missing
+or nonobject quality suppresses only confidence. Other shape/actor/boolean
+errors do not suppress these leaves. Use current canonical values, never cached
+metadata aliases or stale raw text; resolved source composition accounts for
+original root, actual consumed parts and derived model references as above.
+
+Each finding identifies its exact canonical field and section. Ordinary issues
+gain no category; ProtocolError transport uses `validate`. Findings enter normal
+issues/error partitions, status and CLI exits. Newly issued receipt policy counts
+follow actual validation findings; source digests, authenticated subjects,
+issuance rules and authenticate-first receipt verdict precedence are unchanged.
+Validation stays read-only. Optional/conditional metadata and all other shapes
+remain outside this closed list; no generic fallback is allocated.
 
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
@@ -912,7 +948,7 @@ On every write, the host MUST set:
   resolution vocabulary (format §2.6) naming how the value was resolved (e.g. a step of the starter fallback
   cascade, [§V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)), when the
   host knows it.
-- `_meta.provenance.timestamp` — current ISO-8601 UTC timestamp.
+- `_meta.provenance.timestamp` — current write time in the exact T1B UTC-Z domain (Format §2.5, RFC0094); never normalize existing timestamps while validating.
 - `_meta.provenance.actor` — REQUIRED nonempty string naming the initiating
   human or system principal. RFC 0090 actor admission performs no
   trimming, source-namespace grammar or principal inference.
