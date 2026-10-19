@@ -40,6 +40,9 @@ def lease_rules(ledger):
                 continue
             root = "tenants[" + str(ordinal) + "]"
             def issue(code, suffix, message, **evidence):
+                if code in ("REC-03", "REC-04"):
+                    evidence["context"] = dict(block_index=physical[id(block)],
+                                               variant=dict(block.attributes).get("variant"))
                 ledger.issue(code, "error", "rent_roll", root + ("." + suffix if suffix else ""), message, **evidence)
             def represented_shape(suffix, constraint, code):
                 represented[(physical[id(block)], root + "." + suffix, constraint)] = code

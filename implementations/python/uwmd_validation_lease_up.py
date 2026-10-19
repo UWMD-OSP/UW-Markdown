@@ -188,7 +188,11 @@ def _lease_up_assessment(document, issues):
                 and type(issue.get("context", {}).get("block_index")) is int
                 and issue["context"]["block_index"] == index for issue in issues)
             evidence = dict(section=block.section, **finding, context=dict(context))
-            if owner:
+            if not context["current"]:
+                # Retain private history/overwritten evidence without widening
+                # ordinary payload validation beyond current canonical variants.
+                result.setdefault("inactive_shape_findings", []).append(evidence)
+            elif owner:
                 result.setdefault("handled_shape_findings", []).append(dict(
                     **evidence, registered_code=code,
                     disposition="represented_by_registered_lease_up_finding"))

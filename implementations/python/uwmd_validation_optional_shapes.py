@@ -11,6 +11,7 @@ from uwmd_binding_sources import finite
 from uwmd_numeric import calendar_date
 from uwmd_validation_selection import current_blocks
 from uwmd_validation_core import BUILTINS
+from uwmd_validation_lease import _POOL
 
 _SCHEMAS=Path(__file__).resolve().parents[2]/"spec/schemas"
 
@@ -86,7 +87,7 @@ def _violations(value,schema,root,path=""):
         return [dict(field=path,message="Value does not satisfy the fixed schema type",
                      _constraint=("type", tuple(kinds)))]
     if "enum" in schema and not any(_same(value,item) for item in schema["enum"]):
-        problem("Value is outside the fixed schema enumeration")
+        problem("Value is outside the fixed schema enumeration", ("enum", tuple(schema["enum"])))
     if "const" in schema and not _same(value,schema["const"]):
         problem("Value differs from the fixed schema constant")
     if isinstance(value,dict):
@@ -105,7 +106,7 @@ def _violations(value,schema,root,path=""):
             if key in value:out.extend(_violations(value,dependent,root,path))
     if isinstance(value,list):
         if len(value)<schema.get("minItems",0):
-            problem("Array has fewer than the fixed minimum items")
+            problem("Array has fewer than the fixed minimum items", ("minItems", schema["minItems"]))
         if "items" in schema:
             for index,item in enumerate(value):
                 out.extend(_violations(item,schema["items"],root,path+"["+str(index)+"]"))
@@ -113,9 +114,9 @@ def _violations(value,schema,root,path=""):
         if len(value)<schema.get("minLength",0):
             problem("String is shorter than the fixed minimum")
         if "pattern" in schema and re.search(schema["pattern"],value,re.ASCII) is None:
-            problem("String does not match the fixed schema pattern")
+            problem("String does not match the fixed schema pattern", ("pattern", schema["pattern"]))
         if schema.get("format")=="date" and not calendar_date(value):
-            problem("A real authored calendar date is required")
+            problem("A real authored calendar date is required", ("format", "date"))
     if finite(value):
         for key,valid in (("minimum",lambda bound:value>=bound),
                           ("maximum",lambda bound:value<=bound),
@@ -134,6 +135,99 @@ def _violations(value,schema,root,path=""):
         key="else" if _violations(value,schema["if"],root,path) else "then"
         if key in schema:out.extend(_violations(value,schema[key],root,path))
     return out
+
+
+
+def _registered_optional_owner(block, index, field, constraint, issues):
+    """Closed REC03/04 and WF10/13 predicates; no generic schema ownership.
+
+    Match current data, exact fixed constraint, emitted error and same physical
+    block. A broad row diagnostic never consumes its unrelated numeric siblings.
+    """
+    code, owner_field = None, None
+    if block.section == "rent_roll":
+        match = re.fullmatch(r"tenants\[(0|[1-9][0-9]*)\]\.(.+)", field)
+        tenants = block.parsed.value.get("tenants")
+        if not match or not isinstance(tenants, list) or int(match[1]) >= len(tenants):
+            return None
+        tenant = tenants[int(match[1])]
+        if not isinstance(tenant, dict):
+            return None
+        root, path = "tenants["+match[1]+"].", match[2]
+        terms = tenant.get("recovery_terms")
+        if path.startswith("recovery_terms.recoverable_pool") and isinstance(terms, dict):
+            pool = terms.get("recoverable_pool")
+            owner_field = root+"recovery_terms.recoverable_pool"
+            if path == "recovery_terms.recoverable_pool":
+                valid = (pool is not None and not isinstance(pool, list)
+                         and constraint == ("type", ("array", "null"))
+                         or isinstance(pool, list) and not pool and constraint == ("minItems", 1))
+            else:
+                child = re.fullmatch(r"recovery_terms\.recoverable_pool\[(0|[1-9][0-9]*)\]", path)
+                valid = (child is not None and isinstance(pool, list) and int(child[1]) < len(pool)
+                         and not isinstance(pool[int(child[1])], str)
+                         and constraint == ("type", ("string",)))
+            if valid and pool is not None and (not isinstance(pool, list) or not pool
+                    or any(item not in _POOL for item in pool)):
+                code = "REC-03"
+        elif path.startswith("recovery_true_up"):
+            entries = tenant.get("recovery_true_up")
+            if path == "recovery_true_up":
+                if entries is not None and not isinstance(entries, list) and constraint == ("type", ("array",)):
+                    code, owner_field = "REC-04", root+path
+            else:
+                child = re.fullmatch(r"recovery_true_up\[(0|[1-9][0-9]*)\](?:\.(period_start|period_end|settlement))?",path)
+                if child and isinstance(entries,list) and int(child[1]) < len(entries):
+                    row = entries[int(child[1])]; leaf = child[2]
+                    owner_field = root+"recovery_true_up["+child[1]+"]"
+                    if leaf is None:
+                        valid = not isinstance(row,dict) and constraint == ("type",("object",))
+                    elif isinstance(row,dict) and leaf in ("period_start","period_end"):
+                        date = row.get(leaf)
+                        valid = ((leaf not in row and constraint == ("required",None))
+                            or (leaf in row and not isinstance(date,str) and constraint == ("type",("string",)))
+                            or isinstance(date,str) and not calendar_date(date) and constraint in (
+                                ("pattern",r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"),("format","date")))
+                    elif isinstance(row,dict) and leaf == "settlement":
+                        valid = ("settlement" in row and row[leaf] not in (None,"billed","credited","disputed","unsettled")
+                            and constraint == ("enum",("billed","credited","disputed","unsettled",None)))
+                    else:
+                        valid = False
+                    if valid: code = "REC-04"
+    elif block.section == "distribution_waterfall":
+        claim = block.parsed.value.get("clawback")
+        if field == "clawback":
+            if claim is not None and not isinstance(claim,dict) and constraint == ("type",("object","null")):
+                code,owner_field = "WF-10","clawback"
+        elif isinstance(claim,dict):
+            basis = claim.get("basis")
+            if field == "clawback.basis":
+                if (("basis" not in claim and constraint == ("required",None)) or
+                    ("basis" in claim and basis not in ("lp_preferred_shortfall","lp_irr_floor","lp_em_floor")
+                     and constraint == ("enum",("lp_preferred_shortfall","lp_irr_floor","lp_em_floor")))):
+                    code,owner_field = "WF-10","clawback"
+            elif ((field == "clawback.floor_rate" and basis == "lp_irr_floor") or
+                  (field == "clawback.floor_multiple" and basis == "lp_em_floor")):
+                value = claim.get(field.split(".")[1]); rate = basis == "lp_irr_floor"
+                if value is not None and (
+                    not finite(value) and constraint == ("type",("number","null"))
+                    or finite(value) and value <= (0 if rate else 1)
+                       and constraint == ("exclusiveMinimum",0 if rate else 1)
+                    or rate and finite(value) and value >= 1 and constraint == ("exclusiveMaximum",1)):
+                    code,owner_field = "WF-10","clawback"
+            elif field == "clawback.net_of_tax_rate":
+                value = claim.get("net_of_tax_rate")
+                if value is not None and (
+                    not finite(value) and constraint == ("type",("number","null"))
+                    or finite(value) and value < 0 and constraint == ("minimum",0)
+                    or finite(value) and value >= 1 and constraint == ("exclusiveMaximum",1)):
+                    code,owner_field = "WF-13",field
+    if code and any(issue.get("code") == code and issue.get("severity") == "error"
+            and issue.get("section") == block.section and issue.get("field") == owner_field
+            and type(issue.get("context",{}).get("block_index")) is int
+            and issue["context"]["block_index"] == index for issue in issues):
+        return code
+    return None
 
 
 def optional_shape_assessments(document, *, registered_recovery_shapes=None,
@@ -177,12 +271,15 @@ def optional_shape_assessments(document, *, registered_recovery_shapes=None,
                              for owner in registered_recovery_issues))
                 if not owned:
                     code = None
+            if code is None:
+                code = _registered_optional_owner(block,physical[id(block)],finding["field"],
+                                                  constraint,registered_recovery_issues)
             if code:
                 # Exact physical row, authored field and schema constraint only.
                 # Retain evidence; never infer ownership from a generic REC code.
                 result[family].setdefault("handled_shape_findings", []).append(dict(
                     **evidence, registered_code=code,
-                    disposition="represented_by_registered_recovery_finding"))
+                    disposition="represented_by_registered_admission_finding"))
             else:
                 result[family]["shape_findings"].append(evidence)
     for block in current_blocks(document,"rent_roll"):

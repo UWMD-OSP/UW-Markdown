@@ -117,10 +117,14 @@ def waterfall_rules(ledger):
     document = ledger.document
     cash = {dict(b.attributes).get("variant"): b
             for b in current_blocks(document, "cash_flow_series", include_external=True)}
+    physical = {id(block): index for index, block in enumerate(document.source.blocks)}
     for block in current_blocks(document, "distribution_waterfall"):
         payload = block.parsed.value
         def issue(code, path, message, severity="error"):
-            ledger.issue(code, severity, "distribution_waterfall", path, message)
+            evidence = (dict(context=dict(block_index=physical[id(block)],
+                        variant=dict(block.attributes).get("variant")))
+                        if code in ("WF-10", "WF-13") else {})
+            ledger.issue(code, severity, "distribution_waterfall", path, message, **evidence)
         equity, tiers = payload.get("equity_split"), payload.get("tiers")
         grammar = (isinstance(equity, dict) and set(equity) == {"lp", "gp"}
                    and _unit(equity["lp"]) and _unit(equity["gp"])

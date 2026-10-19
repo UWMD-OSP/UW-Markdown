@@ -98,7 +98,7 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
                         {"period_end":"2026-02-30"},{"unknown":0}):
             bad={**row,**changes}
             _,findings,_,_=self.report(self.recoveries(recovery_true_up=[bad]),"lease_recoveries")
-            self.assertTrue(findings)
+            self.assertEqual(bool(findings), "period_end" not in changes)
 
     def test_sizing_fixed_declaration_union_types_and_component_scope(self):
         figure=dict(id="stated",fn="weighted_cost",over="*",value=0)
@@ -150,7 +150,7 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
                 self.assertEqual(len(errors),int(refused))
                 # Null is admitted by the field's optional schema, while the
                 # lp_em_floor conditional requires its value via registered WF-10.
-                self.assertEqual(bool(findings),refused and value is not None)
+                self.assertEqual(findings,[])
         # Unused companions still have their declared shape; no inactive field
         # becomes a normalized/ignored payload value.
         claim=dict(basis="lp_em_floor",floor_multiple=1.5,floor_rate="bad",cap="promote_received")
