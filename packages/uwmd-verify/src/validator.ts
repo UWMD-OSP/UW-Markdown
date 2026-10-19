@@ -1366,8 +1366,8 @@ function checkRecoveryTerms(
 
   // REC-02: a method without the input it needs. A lone `cap` is a complete
   // statement (RFC 0081 §7); any other member requires the method.
-  const method = terms['method'];
   const methodPresent = Object.hasOwn(terms, 'method');
+  const method = methodPresent ? terms['method'] : undefined;
   const methodRequired = methodPresent || Object.keys(terms).some(k => k !== 'cap' && terms[k] !== null);
   if (methodRequired && (typeof method !== 'string' || !(RECOVERY_METHODS as readonly string[]).includes(method))) {
     recIssue(issues, 'REC-02', `${p}.method`,
@@ -1379,7 +1379,7 @@ function checkRecoveryTerms(
       fixed_amount: 'fixed_recovery_annual',
     };
     const needs = REQUIRED[method];
-    if (needs && terms[needs] == null) {
+    if (needs && (!Object.hasOwn(terms, needs) || terms[needs] === null)) {
       recIssue(issues, 'REC-02', `${p}.${needs}`,
         `REC-02: method "${method}" requires ${needs}; without it the method states nothing`);
     }
@@ -1416,7 +1416,7 @@ function checkRecoveryTerms(
           'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
       }
       if (methodPresent && method !== null && Object.hasOwn(c, 'pct') && pct !== null) {
-        const acc = c['accumulation'];
+        const acc = Object.hasOwn(c, 'accumulation') ? c['accumulation'] : undefined;
         if (typeof acc !== 'string' || !(RECOVERY_CAP_ACCUMULATIONS as readonly string[]).includes(acc)) {
           recIssue(issues, 'REC-02', `${cp}.accumulation`,
             `REC-02: a stated cap.pct requires cap.accumulation (${RECOVERY_CAP_ACCUMULATIONS.join(' | ')}) — there is no default, because the three disagree`, acc);

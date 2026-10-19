@@ -66,6 +66,18 @@ describe('RFC0096 REC11 leaves and existing owners', () => {
     const all = validateUWFile(doc('rent_roll', rec({ ...terms, cap }))).issues;
     expect(all.filter(i => ['REC-01', 'REC-02', 'REC-11'].includes(i.code)).map(i => i.code)).toEqual(expected);
   });
+  it.each([
+    ['method', { admin_fee_pct: 0 }, { method: 'net' }, false],
+    ['base_year', { method: 'base_year_stop' }, { base_year: 2020 }, false],
+    ['cap.accumulation', { method: 'net', cap: { pct: .05 } }, { accumulation: 'cumulative' }, true],
+  ] as const)('requires own REC02 %s rather than accepting a prototype', (field, ownTerms, inherited, onCap) => {
+    const parsed = parseUWFile(doc('rent_roll', rec({})));
+    const block = getSection(parsed, 'rent_roll')!;
+    const terms = { ...ownTerms } as Record<string, unknown>;
+    Object.setPrototypeOf(onCap ? terms.cap as object : terms, inherited);
+    block.content.tenants = [{ recovery_terms: terms }];
+    expect(validateUWFile(parsed).issues.filter(i => i.code === 'REC-02').map(i => i.field)).toEqual([`tenants[0].recovery_terms.${field}`]);
+  });
   it('null companions do not require method; method null remains its own error', () => {
     const body = rec({ pro_rata_share: null, base_year: null, admin_fee_pct: null });
     expect(validateUWFile(doc('rent_roll', body)).issues.filter(i => i.code.startsWith('REC-'))).toEqual([]);
