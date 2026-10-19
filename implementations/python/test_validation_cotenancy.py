@@ -160,7 +160,7 @@ class CoTenancyAdmissionTests(unittest.TestCase):
             for name,body,wanted in cases:
                 payload=copy.deepcopy(carrier.parsed.value)
                 payload["tenants"][0]["co_tenancy_details"]=body
-                authored=original[:carrier.body_span.start]+json.dumps(payload,ensure_ascii=False,indent=2).encode()+original[carrier.body_span.end:]
+                authored=original[:carrier.body_span.start]+json.dumps(payload,ensure_ascii=False,indent=2).encode()+b"\n"+original[carrier.body_span.end:]
                 path=Path(folder)/(name+".uwx.md");path.write_bytes(authored)
                 process=subprocess.run([sys.executable,"-B",str(ROOT/"implementations/python/uwmd.py"),
                     "validate",str(path),"--json"],capture_output=True,encoding="utf8",timeout=30)
