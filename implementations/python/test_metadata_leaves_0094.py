@@ -129,7 +129,7 @@ class MetadataLeaf0094Tests(unittest.TestCase):
         self.assertEqual(document.source.raw, original)
         self.assertEqual(len(asyncio.run(_validate_source(original))["errors"]), 3)
 
-    def test_excluded_conditional_optional_and_annotation_requirements_stay_partial(self):
+    def test_later_accepted_metadata_predicates_remain_independent_of_meta04(self):
         for extra in ("inherited", "optional", "annotation"):
             body = invalid_body()
             if extra == "inherited":
@@ -143,9 +143,10 @@ class MetadataLeaf0094Tests(unittest.TestCase):
                 expected = "_overrides[0].path"
             report, (response, status) = validate(HEADER + fence(body))
             self.assertEqual(status, 1)
-            self.assertNotIn("code", response["error"])
-            self.assertIn(expected, [f["field"] for f in report["metadata_assessment"]["shape_findings"]])
-            self.assertEqual([i["field"] for i in response["partial_validation_result"]["errors"]], list(FIELDS))
+            self.assertNotIn("error", response)
+            self.assertEqual(report["metadata_assessment"]["shape_findings"], [])
+            self.assertEqual([i["field"] for i in response["errors"]], list(FIELDS) + [expected])
+            self.assertEqual(response["errors"][-1]["code"], "META-06" if extra == "inherited" else "META-05")
 
     def test_timestamp_observer_is_exact_t1b_without_offset_or_leap_fallback(self):
         for timestamp in ("0000-02-29T23:59:59Z", "9999-12-31T23:59:59.0000001Z"):
@@ -159,7 +160,7 @@ class MetadataLeaf0094Tests(unittest.TestCase):
             path = Path(temporary) / "source.uwx.md"
             excluded = invalid_body(); excluded["_meta"]["provenance"]["resolution"] = "inherited_assumption"
             valid = valid_body(); valid["_meta"]["provenance"]["timestamp"] = "0000-02-29T23:59:59.0000000000000001Z"
-            for body, expected_exit, ordinary in ((invalid_body(), 1, True), (valid, 0, True), (excluded, 1, False)):
+            for body, expected_exit, ordinary in ((invalid_body(), 1, True), (valid, 0, True), (excluded, 1, True)):
                 original = HEADER + fence(body); path.write_bytes(original)
                 process = subprocess.run([sys.executable, "-B", str(ROOT / "implementations/python/uwmd.py"),
                     "validate", str(path), "--json"], capture_output=True, encoding="utf-8", timeout=30)

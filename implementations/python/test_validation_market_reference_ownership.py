@@ -1,4 +1,4 @@
-"""Exact RFC0022 missing-reference ownership at the integrated validate boundary."""
+"""Accepted RFC0095 provenance-reference ownership at the integrated validate boundary."""
 import copy
 import json
 from pathlib import Path
@@ -27,46 +27,40 @@ class MarketReferenceOwnershipTests(unittest.TestCase):
     def test_actual_error_and_current_physical_identity_are_required(self):
         parsed = parse(HEADER + fence(promoted()) + fence(promoted()))
         inventory = inspect_source_roles(parsed)
-        issue = dict(code="DQ-06", severity="error", section="property", field=FIELD)
+        issue = dict(code="META-06", severity="error", section="property", field=FIELD)
         def assess(index=1, owner=None):
-            return metadata_assessment(parsed, inventory,
-                missing_market_reference_owners=[(index, issue if owner is None else owner)])
-        # Earlier same-section peer is overwritten, yet its local evidence remains.
-        good = assess()
-        self.assertEqual([f["context"]["block_index"] for f in good["shape_findings"]], [0])
-        self.assertEqual([f["context"]["block_index"] for f in good["handled_shape_findings"]], [1])
-        for index in (0, True, -1, 2):
+            supplied = copy.deepcopy(inventory)
+            supplied["issues"] = [{**(issue if owner is None else owner), "context": {"block_index": index}}]
+            return metadata_assessment(parsed, supplied)
+        self.assertEqual([f["context"]["block_index"] for f in assess()["shape_findings"]], [0])
+        self.assertEqual([f["context"]["block_index"] for f in assess(0)["shape_findings"]], [1])
+        for index in (True, -1, 2):
             self.assertEqual([f["context"]["block_index"] for f in assess(index)["shape_findings"]], [0, 1])
-        for key, value in (("code", "DQ-05"), ("severity", "info"),
-                           ("field", "market_data_ref"), ("section", "other")):
-            with self.subTest(key=key, value=value):
-                self.assertEqual([f["context"]["block_index"] for f in
-                    assess(owner={**issue, key: value})["shape_findings"]], [0, 1])
-        self.assertEqual(len(metadata_assessment(parsed, inventory)["shape_findings"]), 2)
+        for key, value in (("code", "DQ-06"), ("severity", "info"), ("field", "market_data_ref"), ("section", "other")):
+            self.assertEqual([f["context"]["block_index"] for f in assess(owner={**issue, key: value})["shape_findings"]], [0, 1])
+        self.assertEqual(metadata_assessment(parsed, inventory)["shape_findings"], [])
 
-    def test_present_typed_or_member_failures_and_independent_fields_remain_local(self):
+    def test_present_carrier_and_child_failures_use_exact_registered_predicates(self):
         for value in (None, False, 0, "", [], {}, {"document_id": "market"}):
             with self.subTest(value=value):
                 authored = promoted(); authored["_meta"]["provenance"]["market_data_ref"] = value
                 result = validate(parse(HEADER + fence(authored)))
-                self.assertIn(FIELD, [f["field"] for f in result["metadata_assessment"]["shape_findings"]])
-        authored = promoted()
-        authored["_meta"]["provenance"]["timestamp"] = "invalid"
+                self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
+                expected = [FIELD] if not isinstance(value, dict) else [FIELD + "." + name for name in ("document_id", "as_of", "digest") if name not in value]
+                self.assertEqual([i["field"] for i in result["errors"] if i["code"] == "META-06"], expected)
+        authored = promoted(); authored["_meta"]["provenance"]["timestamp"] = "invalid"
         authored["_overrides"] = [{"path": None}]
-        parsed = parse(HEADER + fence(authored)); before = copy.deepcopy(parsed)
-        result = validate(parsed)
-        self.assertEqual({f["field"] for f in result["metadata_assessment"]["shape_findings"]},
-                         {"_meta.provenance.timestamp", "_overrides[0].path"})
-        self.assertEqual([f["registered_code"] for f in
-            result["metadata_assessment"]["handled_shape_findings"]], ["DQ-06"])
+        parsed = parse(HEADER + fence(authored)); before = copy.deepcopy(parsed); result = validate(parsed)
+        self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
+        self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
+                         [("META-04", "_meta.provenance.timestamp"), ("META-05", "_overrides[0].path"), ("META-06", FIELD)])
         self.assertEqual(parsed, before)
-        # A reference may be required by a leaf without a block-level resolution.
         authored = body(); authored["_overrides"] = [dict(path="units", resolution="market_data_accepted")]
         result = validate(parse(HEADER + fence(authored)))
         self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
-        self.assertEqual([i["code"] for i in result["errors"]], ["DQ-06"])
+        self.assertEqual([i["code"] for i in result["errors"]], ["META-06"])
 
-    def test_all_current_variants_but_not_append_extensions_or_history_are_owned(self):
+    def test_all_retained_variants_append_extensions_and_history_are_owned(self):
         raw = HEADER
         for section in ("pipeline_log", "x_private"):
             authored = promoted(); authored["_meta"]["section"] = section
@@ -79,11 +73,11 @@ class MarketReferenceOwnershipTests(unittest.TestCase):
         raw += fence(historical)
         parsed = parse(raw); before = copy.deepcopy(parsed); result = validate(parsed)
         self.assertEqual([f["context"]["block_index"] for f in
-            result["metadata_assessment"]["shape_findings"]], [0, 1, 2])
+            result["metadata_assessment"]["shape_findings"]], [])
         self.assertEqual([f["context"]["block_index"] for f in
-            result["metadata_assessment"]["handled_shape_findings"]], [3, 4])
+            result["metadata_assessment"]["handled_shape_findings"]], [0, 1, 2, 3, 4])
         self.assertEqual([i["section"] for i in result["errors"]],
-                         ["operating_statement", "operating_statement"])
+                         ["pipeline_log", "x_private", "operating_statement", "operating_statement", "operating_statement", "property"])
         self.assertEqual(parsed, before)
 
     def test_real_cli_result_refusal_partitions_readiness_and_source_are_preserved(self):
@@ -104,15 +98,15 @@ class MarketReferenceOwnershipTests(unittest.TestCase):
                     "validate", str(path), "--json"], capture_output=True, encoding="utf8", timeout=30)
                 output = json.loads(done.stdout)
                 self.assertEqual(done.stderr, ""); self.assertEqual(path.read_bytes(), raw)
-                self.assertEqual(done.returncode, int(kind != "valid"))
-                if kind in ("null", "bad_member", "independent"):
-                    self.assertNotIn("overall_status", output)
-                    self.assertNotIn("code", output["error"])
-                    result = output["partial_validation_result"]
-                else:
-                    self.assertNotIn("partial_validation_result", output)
-                    self.assertEqual(output["overall_status"], "clean" if kind == "valid" else "errors")
-                    result = output
+                # Keep the old authored-vintage literal unchanged: under U3
+                # the case formerly named valid now has its exact as_of error.
+                self.assertEqual(done.returncode, 1)
+                self.assertNotIn("partial_validation_result", output)
+                self.assertEqual(output["overall_status"], "errors")
+                result = output
+                expected = ([FIELD + ".as_of", FIELD + ".digest"] if kind == "bad_member" else
+                            [FIELD + ".as_of"] if kind == "valid" else [FIELD])
+                self.assertEqual([i["field"] for i in result["errors"] if i["code"] == "META-06"], expected)
                 self.assertEqual(result["errors"], [i for i in result["issues"] if i["severity"] == "error"])
                 self.assertEqual(len(result["stage_readiness"]), 7)
                 self.assertEqual(len(result["coverage"]), 15)

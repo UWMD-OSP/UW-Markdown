@@ -92,12 +92,15 @@ class MetadataAdmissionTests(unittest.TestCase):
             with self.subTest(group=group, key=key, value=value):
                 authored = body(); authored["_meta"][group][key] = value
                 result, findings = self.assess(authored)
-                field = "_meta." + group + "." + key
+                field = "_meta." + group + "." + key + ("[0]" if key == "flags" and isinstance(value, list) else "")
                 owner = {("quality", "human_review_required"): "META-02",
                          ("lifecycle", "superseded"): "META-03",
                          ("provenance", "timestamp"): "META-04",
                          ("quality", "confidence"): "META-04",
-                         ("lifecycle", "revision"): "META-04"}.get((group, key))
+                         ("lifecycle", "revision"): "META-04",
+                         ("provenance", "agent_id"): "META-05", ("provenance", "agent_version"): "META-05",
+                         ("provenance", "notes"): "META-05", ("quality", "flags"): "META-05",
+                         ("quality", "partial"): "META-05", ("quality", "provisional"): "META-05"}.get((group, key))
                 if owner:
                     self.assertNotIn(field, [f["field"] for f in findings])
                     self.assertEqual([(i["code"], i["severity"], i["field"]) for i in result["errors"]],
@@ -113,7 +116,7 @@ class MetadataAdmissionTests(unittest.TestCase):
         self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
                          [("META-01", "_meta.section")])
         authored = body(); authored["_meta"]["quality"]["field_overrides"] = []
-        self.assertIn("_meta.quality.field_overrides", [f["field"] for f in self.assess(authored)[1]])
+        self.assertIn(("META-05", "_meta.quality.field_overrides"), [(i["code"], i["field"]) for i in self.assess(authored)[0]["errors"]])
 
     def test_optional_and_required_presence_keeps_exact_nullable_and_registered_domains(self):
         authored = body()
@@ -123,7 +126,7 @@ class MetadataAdmissionTests(unittest.TestCase):
         self.assertEqual(self.assess(authored)[1], [])
         authored["_meta"]["provenance"]["source"] = "agent/extractor"
         del authored["_meta"]["provenance"]["agent_id"]
-        self.assertIn("_meta.provenance.agent_id", [f["field"] for f in self.assess(authored)[1]])
+        self.assertIn(("META-06", "_meta.provenance.agent_id"), [(i["code"], i["field"]) for i in self.assess(authored)[0]["errors"]])
         for group, key, suffix in ((None, "section", "SECTION"), ("lifecycle", "revision", "VERSION"),
                 ("provenance", "source", "SOURCE"), ("provenance", "timestamp", "TIMESTAMP"),
                 ("quality", "confidence", "CONFIDENCE")):
@@ -143,7 +146,7 @@ class MetadataAdmissionTests(unittest.TestCase):
         authored = body(); authored["_meta"]["provenance"]["actor"] = " \t"
         self.assertEqual(self.assess(authored)[1], [])
 
-    def test_promoted_block_or_leaf_uses_existing_dq06_error_with_exact_presence(self):
+    def test_promoted_block_or_leaf_uses_meta06_without_duplicate_dq06(self):
         for leaf in (False, True):
             for value in (OMITTED, None, False, 0, "", [], {}):
                 with self.subTest(leaf=leaf, value=value):
@@ -152,52 +155,54 @@ class MetadataAdmissionTests(unittest.TestCase):
                     else: authored["_meta"]["provenance"]["resolution"] = "market_data_accepted"
                     if value is not OMITTED: authored["_meta"]["provenance"]["market_data_ref"] = value
                     result, findings = self.assess(authored)
-                    errors = [i for i in result["issues"] if (i["code"], i["severity"]) == ("DQ-06", "error")]
-                    self.assertEqual(len(errors), int(not isinstance(value, (list, dict))))
-                    self.assertEqual("_meta.provenance.market_data_ref" in [f["field"] for f in findings],
-                                     value is not OMITTED)
-        authored = body()
-        authored["_overrides"] = [dict(path="units", resolution="market_data_accepted")]
+                    self.assertEqual(findings, [])
+                    expected = ["_meta.provenance.market_data_ref." + k for k in ("document_id", "as_of", "digest")] if value == {} and isinstance(value, dict) else ["_meta.provenance.market_data_ref"]
+                    self.assertEqual([i["field"] for i in result["errors"] if i["code"] == "META-06"], expected)
+                    self.assertFalse(any(i["code"] == "DQ-06" and i["severity"] == "error" for i in result["issues"]))
+        authored = body(); authored["_overrides"] = [dict(path="units", resolution="market_data_accepted")]
         authored["_meta"]["provenance"]["market_data_ref"] = reference("market_data_ref")
-        self.assertEqual(self.assess(authored)[0]["issues"], [])
-        # A plain market lookup is not an accepted/promoted observation.
+        # The original authored vintage literal is intentionally retained and now invalid under U3.
+        self.assertEqual([(i["code"], i["field"]) for i in self.assess(authored)[0]["issues"]],
+                         [("META-06", "_meta.provenance.market_data_ref.as_of")])
         authored = body(); authored["_meta"]["provenance"]["resolution"] = "market_data"
         self.assertEqual(self.assess(authored)[0]["issues"], [])
 
     def test_both_reference_shapes_cover_each_required_member_and_optional_rationale(self):
-        for kind, resolution in (("market_data_ref", "market_data_accepted"),
-                                 ("inherited_from", "inherited_assumption")):
-            valid = reference(kind)
-            for key in valid:
+        for kind, resolution in (("market_data_ref", "market_data_accepted"), ("inherited_from", "inherited_assumption")):
+            original = reference(kind)
+            for key in original:
                 for bad in (OMITTED, None, False, [], {}):
                     with self.subTest(kind=kind, key=key, bad=bad):
                         authored = body(); provenance = authored["_meta"]["provenance"]
-                        provenance["resolution"] = resolution; provenance[kind] = copy.deepcopy(valid)
+                        provenance["resolution"] = resolution; provenance[kind] = copy.deepcopy(original)
                         if bad is OMITTED: del provenance[kind][key]
                         else: provenance[kind][key] = bad
-                        self.assertIn("_meta.provenance." + kind,
-                                      [f["field"] for f in self.assess(authored)[1]])
-            # References are checked whenever authored, not only when selected by resolution.
-            authored = body(); authored["_meta"]["provenance"][kind] = valid
-            self.assertEqual(self.assess(authored)[1], [])
+                        result, findings = self.assess(authored)
+                        self.assertEqual(findings, [])
+                        expected = ["_meta.provenance." + kind + "." + name for name in original
+                                    if name == key or kind == "market_data_ref" and name == "as_of"]
+                        self.assertEqual([i["field"] for i in result["errors"] if i["code"] == "META-06"], expected)
+            authored = body(); authored["_meta"]["provenance"][kind] = original
+            result, findings = self.assess(authored)
+            self.assertEqual(findings, [])
+            self.assertEqual([i["field"] for i in result["errors"] if i["code"] == "META-06"],
+                             ["_meta.provenance.market_data_ref.as_of"] if kind == "market_data_ref" else [])
         for distance in (0, -1, .5, True, "1"):
-            authored = body(); authored["_meta"]["provenance"]["inherited_from"] = {
-                **reference("inherited_from"), "distance": distance}
-            self.assertTrue(self.assess(authored)[1])
+            authored = body(); authored["_meta"]["provenance"]["inherited_from"] = {**reference("inherited_from"), "distance": distance}
+            self.assertEqual([i["field"] for i in self.assess(authored)[0]["errors"]], ["_meta.provenance.inherited_from.distance"])
         for rationale in (None, False, 0, [], {}):
-            authored = body(); authored["_meta"]["provenance"]["market_data_ref"] = {
-                **reference("market_data_ref"), "rationale": rationale}
-            self.assertIn("_meta.provenance.market_data_ref.rationale",
-                          [f["field"] for f in self.assess(authored)[1]])
+            authored = body(); authored["_meta"]["provenance"]["market_data_ref"] = {**reference("market_data_ref"), "rationale": rationale}
+            self.assertEqual([i["field"] for i in self.assess(authored)[0]["errors"]],
+                             ["_meta.provenance.market_data_ref.as_of", "_meta.provenance.market_data_ref.rationale"])
         authored = body(); authored["_meta"]["provenance"].update(
             market_data_ref={**reference("market_data_ref"), "document_id": "", "as_of": "", "rationale": ""},
             inherited_from={**reference("inherited_from"), "distance": 1.0})
-        self.assertEqual(self.assess(authored)[1], [])
+        self.assertEqual([i["field"] for i in self.assess(authored)[0]["errors"]], ["_meta.provenance.market_data_ref.as_of"])
 
     def test_every_leaf_annotation_field_and_unknown_payload_preservation(self):
         for key, bad in (("path", None), ("confidence", "other"), ("reason", False), ("note", None)):
             authored = body(); authored["_overrides"] = [{"path": "units", key: bad}]
-            self.assertIn("_overrides[0]." + key, [f["field"] for f in self.assess(authored)[1]])
+            self.assertIn(("META-05", "_overrides[0]." + key), [(i["code"], i["field"]) for i in self.assess(authored)[0]["errors"]])
         for key, bad, code in (("source", "system:bad", "SRC-01"),
                                 ("source", "user_input", "SRC-02"), ("resolution", "manual", "SRC-03")):
             authored = body(); authored["_overrides"] = [{"path": "units", key: bad}]
@@ -214,7 +219,7 @@ class MetadataAdmissionTests(unittest.TestCase):
         result, findings = self.assess(authored)
         self.assertEqual(findings, [])
         self.assertEqual([(i["code"], i["severity"]) for i in result["issues"]],
-                         [("META_LOW_CONFIDENCE_NO_REVIEW_FLAG", "info")])
+                         [("META-06", "error"), ("META_LOW_CONFIDENCE_NO_REVIEW_FLAG", "info")])
         self.assertFalse(any(i["code"].startswith("INT-") for i in result["issues"]))
 
     def test_active_physical_peers_append_extensions_and_history_keep_distinct_scope(self):
@@ -236,10 +241,10 @@ class MetadataAdmissionTests(unittest.TestCase):
         document = parse(raw); before = copy.deepcopy(document)
         result = validate(document)
         self.assertEqual([i["section"] for i in result["issues"]
-            if (i["code"], i["severity"]) == ("DQ-06", "error")],
-            ["property", "operating_statement", "operating_statement"])
+            if (i["code"], i["severity"]) == ("META-06", "error")],
+            ["property", "property", "pipeline_log", "x_private", "property", "operating_statement", "operating_statement", "operating_statement"])
         self.assertEqual([f["context"]["block_index"] for f in
-            result["metadata_assessment"]["shape_findings"]], [0, 2, 3, 5])
+            result["metadata_assessment"]["shape_findings"]], [])
         actor = [i for i in result["issues"] if i["field"] == "_meta.provenance.actor"]
         self.assertEqual([i["context"]["block_index"] for i in actor], [4])
         self.assertEqual(document, before)
@@ -253,7 +258,8 @@ class MetadataAdmissionTests(unittest.TestCase):
         result = validate(document)
         self.assertEqual(result["issues"][:len(inventory["issues"])], inventory["issues"])
         dq = [(i["severity"], i["section"]) for i in result["issues"] if i["code"] == "DQ-06"]
-        self.assertEqual(dq, [("error", "property"), ("info", "debt_structure"), ("info", "validation")])
+        self.assertEqual(dq, [("info", "debt_structure"), ("info", "validation")])
+        self.assertIn(("META-06", "_meta.provenance.market_data_ref"), [(i["code"], i["field"]) for i in result["issues"]])
         self.assertEqual(result["overall_status"], "errors")
         malformed = body(); malformed["_meta"]["provenance"] = None
         result = validate(parse(HEADER + fence(malformed)))
@@ -285,13 +291,11 @@ class MetadataAdmissionTests(unittest.TestCase):
         changed = copy.deepcopy(document)
         changed.source.blocks[0].parsed.value["_meta"]["provenance"]["market_data_ref"]["rationale"] = False
         result = validate(changed)
-        self.assertEqual(result["issues"], original["issues"])
-        self.assertEqual(result["metadata_assessment"]["shape_findings"], prior + [dict(
-            section="valuation", field="_meta.provenance.market_data_ref.rationale",
-            message="A stated market-data rationale must be a string",
-            context=dict(block_index=0, variant=None,
-                body_byte_start=changed.source.blocks[0].body_span.start,
-                body_byte_end=changed.source.blocks[0].body_span.end))])
+        self.assertEqual([(i["code"], i["field"]) for i in result["issues"]],
+            [(i["code"], i["field"]) for i in original["issues"][:1]] +
+            [("META-06", "_meta.provenance.market_data_ref.rationale")] +
+            [(i["code"], i["field"]) for i in original["issues"][1:]])
+        self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
         self.assertEqual(document, before)
         self.assertEqual(path.read_bytes(), raw)
 
@@ -314,17 +318,13 @@ class MetadataAdmissionTests(unittest.TestCase):
                 result = json.loads(completed.stdout)
                 self.assertEqual(completed.stderr, "")
                 self.assertEqual(path.read_bytes(), raw)
-                self.assertEqual(completed.returncode, int(kind != "valid"))
-                if kind == "valid": self.assertEqual(result["overall_status"], "clean")
-                elif kind in ("block_missing", "leaf_missing"):
-                    self.assertEqual(result["overall_status"], "errors")
-                    self.assertEqual([i["code"] for i in result["errors"]], ["DQ-06"])
-                    self.assertNotIn("partial_validation_result", result)
-                else:
-                    self.assertNotIn("overall_status", result)
-                    self.assertNotIn("code", result["error"])
-                    issues = result["partial_validation_result"]["issues"]
-                    self.assertEqual([i["code"] for i in issues], ["DQ-06"] if kind != "rationale" else [])
+                self.assertEqual(completed.returncode, 1)
+                self.assertEqual(result["overall_status"], "errors")
+                self.assertNotIn("partial_validation_result", result)
+                fields = [i["field"] for i in result["errors"] if i["code"] == "META-06"]
+                expected = ["_meta.provenance.market_data_ref"] if kind in ("block_missing", "leaf_missing") else ["_meta.provenance.market_data_ref.as_of"]
+                if kind == "rationale": expected.append("_meta.provenance.market_data_ref.rationale")
+                self.assertEqual(fields, expected)
         manifest, status = main(["manifest"])
         self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse"], []))
 

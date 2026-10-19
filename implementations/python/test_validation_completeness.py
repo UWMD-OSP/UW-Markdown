@@ -121,9 +121,9 @@ class CompletenessOwnershipTests(unittest.TestCase):
         authored["_overrides"] = [{"path": "units", "confidence": "invalid"}]
         result = self.assess(authored)
         self.assertEqual([f["field"] for f in result["metadata_assessment"]["shape_findings"]],
-                         ["_overrides[0].confidence"])
+                         [])
         self.assertEqual([(i["code"],i["field"]) for i in result["errors"]],
-                         [("META-01","_meta.section")])
+                         [("META-01","_meta.section"), ("META-05", "_overrides[0].confidence")])
 
     def test_history_and_low_level_inventory_scope_are_unchanged(self):
         authored = body(); change(authored, "lifecycle.revision")

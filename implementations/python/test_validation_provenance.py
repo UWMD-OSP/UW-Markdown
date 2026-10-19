@@ -66,11 +66,12 @@ class ValidationProvenanceTests(unittest.TestCase):
                 self.assertTrue(inventory["shape_findings"])
                 result=validate(parsed)
                 self.assertNotIn(("META-01","error"),codes(result))
-                field = "_meta."+".".join(path)
+                field = "_meta."+".".join(path) + ("[0]" if path == ("quality", "flags") else "")
                 owner = {("quality", "human_review_required"): "META-02",
                          ("lifecycle", "superseded"): "META-03",
                          ("quality", "confidence"): "META-04",
-                         ("lifecycle", "revision"): "META-04"}.get(path)
+                         ("lifecycle", "revision"): "META-04", ("quality", "flags"): "META-05",
+                         ("quality", "partial"): "META-05", ("provenance", "agent_version"): "META-05"}.get(path)
                 if owner:
                     self.assertNotIn(field,local_fields(result))
                     self.assertIn((owner,"error"),codes(result))
@@ -101,11 +102,11 @@ class ValidationProvenanceTests(unittest.TestCase):
 
     def test_agent_identity_required_when_stated_actor_is_agent(self):
         body=body_with_meta();body["_meta"]["provenance"]["source"]="agent/extractor"
-        self.assertIn("_meta.provenance.agent_id",local_fields(validate(document(body))))
+        self.assertIn(("META-06", "error"), codes(validate(document(body))))
         body["_meta"]["provenance"]["agent_id"]=None
         self.assertNotIn("_meta.provenance.agent_id",local_fields(validate(document(body))))
         body["_meta"]["provenance"]["agent_id"]=5
-        self.assertIn("_meta.provenance.agent_id",local_fields(validate(document(body))))
+        self.assertIn(("META-05", "error"), codes(validate(document(body))))
 
     def test_conditional_provenance_references_are_shapes_never_resolved_or_inferred(self):
         digest="sha256:"+"0"*64
@@ -115,18 +116,17 @@ class ValidationProvenanceTests(unittest.TestCase):
             with self.subTest(resolution=resolution):
                 body=body_with_meta();body["_meta"]["provenance"]["resolution"]=resolution
                 absent = validate(document(body))
-                if key == "market_data_ref":
-                    self.assertNotIn("_meta.provenance."+key,local_fields(absent))
-                    self.assertIn(("DQ-06","error"),codes(absent))
-                else:
-                    self.assertIn("_meta.provenance."+key,local_fields(absent))
+                self.assertNotIn("_meta.provenance."+key,local_fields(absent))
+                self.assertIn(("META-06", "error"), codes(absent))
                 reference["unknown"]="retained"
                 body["_meta"]["provenance"][key]=reference
                 parsed=document(body);before=copy.deepcopy(parsed)
                 self.assertNotIn("_meta.provenance."+key,local_fields(validate(parsed)))
                 self.assertEqual(parsed,before)
                 body["_meta"]["provenance"][key]["digest"]="SHA256:invalid"
-                self.assertIn("_meta.provenance."+key,local_fields(validate(document(body))))
+                changed = validate(document(body))
+                self.assertNotIn("_meta.provenance."+key, local_fields(changed))
+                self.assertIn("_meta.provenance."+key+".digest", [i["field"] for i in changed["errors"] if i["code"] == "META-06"])
 
     def test_t1b_keeps_fraction_calendar_and_rejects_original_noncanonical_values(self):
         for value in ("1985-04-12T23:20:50.52Z", "0000-02-29T00:00:00Z",
@@ -160,7 +160,7 @@ class ValidationProvenanceTests(unittest.TestCase):
         self.assertEqual(parsed,before)
         self.assertIs(parsed.source.blocks[0].parsed.value["_meta"]["quality"]["human_review_required"],False)
         body["_overrides"][0]["path"]=5
-        self.assertIn("_overrides[0].path",local_fields(validate(document(body))))
+        self.assertIn(("META-05", "error"), codes(validate(document(body))))
 
     def test_unknown_notes_integrity_and_history_are_not_promoted_to_verification(self):
         body=body_with_meta();body["unknown"]={"opaque":[1,2]};body["_notes"]={"never":"validated"}
@@ -245,7 +245,8 @@ class ValidationProvenanceTests(unittest.TestCase):
         self.assertEqual(registered, projected)
         self.assertEqual(len(registered),1)
         self.assertNotIn("value",registered[0])
-        self.assertIn("_overrides[0].path",local_fields(result))
+        self.assertNotIn("_overrides[0].path", local_fields(result))
+        self.assertIn(("META-05", "_overrides[0].path"), [(i["code"], i.get("field")) for i in result["issues"]])
         self.assertEqual(parsed,before)
 
     def test_policy_specificity_uses_field_then_stage_then_declaration(self):
