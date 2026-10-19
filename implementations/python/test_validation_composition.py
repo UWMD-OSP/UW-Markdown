@@ -92,7 +92,7 @@ class ValidationCompositionTests(unittest.TestCase):
         extension = typed("x_kept"); extension["_role"] = "bad-role"
         current = replace(model,source=replace(model.source,blocks=model.source.blocks+parse(HEADER+fence("x_kept",extension)).source.blocks))
         self.assertEqual([i["code"] for i in asyncio.run(validate_document(current))["issues"]
-            if i["code"].startswith(("SRC-","ROLE-"))],["ROLE-01","SRC-01"])
+            if i["code"].startswith(("SRC-","ROLE-"))],["ROLE-01","SRC-01","ROLE-01"])
 
     def test_history_metadata_and_history_only_typed_refusal(self):
         historical = typed("rent_roll",units=[]); historical["_meta"]["lifecycle"]["superseded"] = True

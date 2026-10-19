@@ -140,17 +140,25 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     """
     document, fm = ledger.document, ledger.document.frontmatter.value
     source = _inspect_source_roles(document, _source_order=_source_order)
-    # META01--06 apply to retained physical sources and assembled model refs.
-    # Ordinary SRC/ROLE retain their existing current sections/variants view;
-    # fragment history and replaced root directives do not broaden that pass.
-    current = {id(block) for section in dict.fromkeys(b.section for b in document.source.blocks)
-               if section not in APPEND and not section.startswith("x_")
-               for block in current_blocks(document, section, include_external=True)}
+    # META01--06 retain every physical/model reference. Ordinary SRC sees
+    # current sections/variants; ROLE additionally sees current extensions and
+    # every active append entry. Neither reclassifies history, overwritten
+    # peers or original-only references replaced during source composition.
+    sections = tuple(dict.fromkeys(block.section for block in document.source.blocks))
+    source_current = {id(block) for section in sections
+                      if section not in APPEND and not section.startswith("x_")
+                      for block in current_blocks(document, section, include_external=True)}
+    role_current = source_current | {
+        id(block) for section in sections if section.startswith("x_")
+        for block in current_blocks(document, section, include_external=True)} | {
+        id(block) for section in APPEND for block in active_blocks(document, section)}
     references = metadata_blocks(document)
     for issue in source["issues"]:
-        if document._retained_sources and issue["code"].startswith(("SRC-", "ROLE-")):
+        population = (source_current if issue["code"].startswith("SRC-") else
+                      role_current if issue["code"].startswith("ROLE-") else None)
+        if population is not None:
             index = issue.get("context", {}).get("block_index")
-            if type(index) is not int or not 0 <= index < len(references) or id(references[index]) not in current:
+            if type(index) is not int or not 0 <= index < len(references) or id(references[index]) not in population:
                 continue
         ledger.issues.append(_validation_source_issue(document, issue))
     missing_meta_blocks = set()
