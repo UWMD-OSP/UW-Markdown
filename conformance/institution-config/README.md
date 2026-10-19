@@ -4,8 +4,8 @@ These29 authored document/config operation controls belong to Verifier/validate.
 They allocate no document issue or financial procedure. The original111 portable
 validation cases, their sources and their expectations remain unchanged.
 
-Every explicit-policy case uses the unchanged frozen full-multifamily source.
-Location-dependent cases copy frozen minimal/full source bytes solely to isolate
+Controls pair with unchanged frozen minimal/full sources.
+Location-dependent cases copy those source bytes solely to isolate
 the lexical source directory; they do not repair metadata or author a new model.
 The original records are not edited. Config inputs use `.input` so intentionally
 malformed JSON/UTF8 remains test data, rather than repository JSON configuration.
