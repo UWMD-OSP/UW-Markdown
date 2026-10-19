@@ -13,7 +13,18 @@ on:
   # when a run failed for an infrastructure reason rather than a code one.
   workflow_dispatch:
     inputs:
-      verify-publication:
+          # Scoped actual CLI evidence, not a capability or Verifier-tier claim.
+      # Reuse these existing runtimes; discovery intentionally remains parse-only.
+      - name: Actual portable Python calculation cases (development evidence)
+        run: python -B implementations/python/run_calc_cases.py --output-dir "${{ runner.temp }}/python-calc-cases"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: independent-python-calc-${{ matrix.os }}
+          path: ${{ runner.temp }}/python-calc-cases/
+          if-no-files-found: error
+
+  verify-publication:
         description: 'Read-only registry, provenance and downstream verification'
         type: boolean
         default: false

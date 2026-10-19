@@ -8,6 +8,17 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Python expression execution — Issue354.** A coherent read-only `calc` CLI
+implements the accepted expression grammar, all21 builtins, exact source/variant/
+role/period selection, scalar/null overrides and quantized result/refusal transport.
+Its independent Python pinned procedure uses embedded constants and no experiment
+runtime imports. Actual unchanged110-case portable calculations, source-preserving
+CLI controls and numerical/reporting boundaries are checked separately from the
+Reader projections. The existing three-platform Python CI jobs retain actual
+calc evidence. Discovery stays parse-only; complete validation, dictionary/stated-
+result verification and receipts remain required before a Verifier claim. No
+normative arithmetic, schema, conformance expectation or version changes.
+
 **Accepted RFC0093 — owner decision2026-10-18 at0306d126.**
 [RFC0093](../rfcs/0093-metadata-shape-diagnostics.md) accepts exactly the three
 META-01 additions: late/misplaced canonical `_meta`, present invalid/mismatched

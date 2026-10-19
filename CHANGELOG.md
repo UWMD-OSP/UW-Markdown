@@ -17,6 +17,15 @@ protocol, and each package each carry an independent semver).
   conformance controls; existing expectations and source/digest rules are unchanged.
   Python discovery remains parse-only.
 
+- Add an independent read-only Python `calc` CLI for accepted expressions,
+  exact input selection, all21 builtins and quantized result/refusal transport.
+  Embed the accepted Python pinned pow/exp/log procedure with exact constant
+  words and no experiment runtime imports. Reuse the existing three-platform
+  Python jobs for actual unchanged110-case CLI evidence. Discovery remains
+  parse-only; full validation, other financial verifiers and receipts are
+  separate gates. No normative, schema, frozen-expectation or version changes.
+
+
 - Accept RFC0093 for Issue354 under the owner's2026-10-18 decision at0306d126:
   exactly late canonical metadata, present invalid/mismatched canonical section
   and absent/nonobject required quality extend the META-01 closed list. Retain
