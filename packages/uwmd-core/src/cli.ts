@@ -1,5 +1,5 @@
-import { hasBlockShape } from './block-kind.js';
 #!/usr/bin/env node
+import { hasBlockShape } from './block-kind.js';
 import {
   verifyReserveDrawBindings,
   verifyReserveAccounts,

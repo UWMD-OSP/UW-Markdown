@@ -7,7 +7,7 @@ function record(value: unknown): value is Record<string, unknown> {
 }
 export function hasBlockShape(value: unknown): boolean {
   if (!record(value) || !Object.hasOwn(value, 'annotation') || !Object.hasOwn(value, 'content')
-    || !record(value.annotation) || !record(value.content)) return false;
+    || !record(value.annotation)) return false;
   const annotation = value.annotation;
   return Object.hasOwn(annotation, 'section') && typeof annotation.section === 'string'
     && Object.values(annotation).every(v => v === undefined || ['string', 'number', 'boolean'].includes(typeof v));
