@@ -8,12 +8,11 @@ import copy
 import re
 
 from uwmd_binding_sources import finite
-from uwmd_numeric import calendar_date, _ordinal
-from uwmd_source_validation import _metadata_routing, _metadata_shape_predicates
+from uwmd_source_validation import (_metadata_routing, _metadata_shape_predicates,
+    _metadata_leaf_predicates, _timestamp_t1b)
 from uwmd_reader import APPEND
 from uwmd_validation_selection import current_blocks
 
-_TIMESTAMP = re.compile(r"([0-9]{4}-[0-9]{2}-[0-9]{2})[Tt]([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\.[0-9]+)?([Zz]|[+-][0-9]{2}:[0-9]{2})\Z")
 _DIGEST = re.compile(r"sha256:[0-9a-f]{64}\Z")
 # Published incomplete-data declarations, including non-halt entries because
 # their specificity can defeat a broader adopter halt. Actions are never run.
@@ -37,36 +36,8 @@ _DEFAULTS = (
 
 
 def timestamp_shape(value):
-    """Normative block schema date-time: RFC3339 5.6/5.7, not host parsing.
-
-    Accept structural UTC month-end leap slots, including shifted local offsets;
-    no IERS bulletin fetch or assertion that the recorded event actually occurred.
-    https://www.rfc-editor.org/rfc/rfc3339.html#section-5.6
-    """
-    if not isinstance(value, str):
-        return False
-    match = _TIMESTAMP.fullmatch(value)
-    if match is None or not calendar_date(match[1]):
-        return False
-    hour, minute, second = (int(match[i]) for i in (2,3,4))
-    if hour > 23 or minute > 59 or second > 60:
-        return False
-    zone = match[5]
-    offset = 0
-    if zone not in ("Z","z"):
-        hh, mm = int(zone[1:3]), int(zone[4:6])
-        if hh > 23 or mm > 59:
-            return False
-        offset = (hh * 60 + mm) * (1 if zone[0] == "+" else -1)
-    if second < 60:
-        return True
-    year, month, day = map(int, match[1].split("-"))
-    utc_minute = _ordinal((year,month,day)) * 1440 + hour * 60 + minute - offset
-    utc_day, minutes = divmod(utc_minute,1440)
-    if minutes != 1439:
-        return False
-    return any(utc_day == _ordinal((y + (m == 12), 1 if m == 12 else m+1, 1))-1
-               for y in (year-1,year,year+1) for m in range(1,13))
+    """Accepted RFC0094 T1B, shared with source admission; no alternate parser."""
+    return _timestamp_t1b(value)
 
 
 def market_data_accepted(body):
@@ -179,6 +150,30 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
             block.parsed.value, block.section, _source_order=_source_order)}
         if issue.get("field") in fields:
             shape_owners.add((index, issue["field"]))
+    # RFC0094 owns only its three present-invalid predicates. Actual emitted
+    # same-reference errors cannot consume an absent/other/current-valid leaf.
+    leaf_owners = set()
+    for issue in source_inventory["issues"]:
+        if issue.get("code") != "META-04" or issue.get("severity") != "error":
+            continue
+        index = issue.get("context", {}).get("block_index")
+        if (not isinstance(index, int) or isinstance(index, bool)
+                or not 0 <= index < len(document.source.blocks)):
+            continue
+        block = document.source.blocks[index]
+        if issue.get("section") != block.section or not isinstance(block.parsed.value, dict):
+            continue
+        fields = {path for path, _ in _metadata_leaf_predicates(block.parsed.value)}
+        if issue.get("field") in fields:
+            leaf_owners.add((index, issue["field"]))
+    # Local evidence is private and open-ended: the same path alone must not
+    # stand in for an unrelated conditional/temporal/annotation requirement.
+    leaf_requirements = {
+        "_meta.quality.confidence": {"An admitted confidence is required."},
+        "_meta.lifecycle.revision": {"A positive JSON integer is required; no sequence order is inferred."},
+        "_meta.provenance.timestamp": {"A string is required.",
+            "Timestamp must have the admitted calendar/date-time shape"},
+    }
     flag_owners = {}
     for issue in source_inventory["issues"]:
         target = {"META-02": ("quality", "human_review_required"),
@@ -293,6 +288,12 @@ def metadata_assessment(document, source_inventory, *, missing_meta_blocks=(),
                     finding["context"]["block_index"]].section):
             handled.append(dict(**finding, registered_code="DQ-06",
                 disposition="represented_by_registered_missing_market_reference"))
+        elif ((finding["context"]["block_index"], field) in leaf_owners
+                and finding["section"] == document.source.blocks[
+                    finding["context"]["block_index"]].section
+                and finding.get("message") in leaf_requirements.get(field, ())):
+            handled.append(dict(**finding, registered_code="META-04",
+                disposition="represented_by_registered_present_invalid_metadata_leaf"))
         elif (finding["context"]["block_index"], field) in flag_owners:
             handled.append(dict(**finding,
                 registered_code=flag_owners[finding["context"]["block_index"], field],
