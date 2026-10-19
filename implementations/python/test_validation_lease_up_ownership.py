@@ -57,25 +57,29 @@ class LeaseUpOwnershipTests(unittest.TestCase):
             with self.subTest(field=field, value=value):
                 _, report = self.assess(value)
                 self.assertEqual(local(report)["shape_findings"], [])
-                self.assertIn(("LU-01", field), [(i["code"], i["field"]) for i in report["errors"]])
-                self.assertEqual([f["registered_code"] for f in local(report)["handled_shape_findings"]], ["LU-01"])
+                code="LU-05" if field=="stabilization_target" else "LU-01"
+                self.assertIn((code, field), [(i["code"], i["field"]) for i in report["errors"]])
+                self.assertIn((code,field),[(f["registered_code"],f["field"]) for f in local(report)["handled_shape_findings"]])
+                self.assertEqual(local(report)["shape_findings"],[])
         _, report = self.assess(payload(stabilization_target=None))
         self.assertEqual(report["errors"], [])
 
-    def test_unallocated_model_numeric_container_and_unknown_data_remain_local(self):
+    def test_0096_allocated_payload_siblings_have_independent_exact_owners(self):
         cases = [(payload(model_type="unknown"), "model_type"),
                  (payload(schedule=[None]), "schedule[0]"),
                  (payload(assumptions=dict(monthly_turnover_rate="bad")), "assumptions.monthly_turnover_rate"),
                  (payload(stabilized_summary=[]), "stabilized_summary"),
                  (payload(unknown=1), "unknown")]
         for value, field in cases:
-            value["stabilization_target"] = False  # An independent allocated LU-01 is insufficient.
+            value["stabilization_target"] = False  # Its independent LU-05 must not consume the sibling.
             _, report = self.assess(value)
-            self.assertIn(field, [f["field"] for f in local(report)["shape_findings"]])
+            self.assertEqual(local(report)["shape_findings"],[])
+            expected_code="LU-01" if field=="schedule[0]" else "LU-05"
+            self.assertIn((expected_code,field),[(f["registered_code"],f["field"]) for f in local(report)["handled_shape_findings"]])
             response, status = _validation_response(report)
             self.assertEqual(status, 1)
-            self.assertIn("partial_validation_result", response)
-            self.assertNotIn("code", response["error"])
+            self.assertNotIn("partial_validation_result", response)
+            self.assertNotIn("error", response)
 
     def test_actual_owner_requires_code_severity_section_field_current_physical_reference(self):
         document = parse(source(payload(schedule=[])))
@@ -132,7 +136,7 @@ class LeaseUpOwnershipTests(unittest.TestCase):
         cases = [(payload(), 0, False), (invalid, 1, False),
                  (payload(schedule=[dict(period="bad")]), 1, False),
                  (payload(stabilization_target=False), 1, False),
-                 (payload(schedule=[], model_type="unknown"), 1, True)]
+                 (payload(schedule=[], model_type="unknown"), 1, False)]
         with tempfile.TemporaryDirectory(prefix="uwmd-python-lu-owner-") as folder:
             path = Path(folder) / "input.uwx.md"
             for value, exit_code, partial in cases:

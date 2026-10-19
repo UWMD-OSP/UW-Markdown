@@ -48,12 +48,18 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
             self.assertNotIn("code",command["error"])
             self.assertNotIn("overall_status",command)
             self.assertEqual(command["partial_validation_result"]["issues"],result["issues"])
-        return result,findings,command,status
+        new_owned=[f for f in result["section_assessment"][family].get("handled_shape_findings",())
+                   if f["registered_code"] in ("REC-11","CS-03","WF-16")]
+        if new_owned and not findings:
+            self.assertEqual(status,1)
+            self.assertNotIn("partial_validation_result",command)
+            self.assertNotIn("error",command)
+        return result,findings+new_owned,command,status
 
     def recoveries(self,**tenant):
         return property_source()+well_formed("rent_roll",as_of_date="2026-03-01",tenants=[tenant])
 
-    def test_three_previously_clean_malformed_authored_paths_are_local_refusals(self):
+    def test_three_previously_local_paths_have_exact_0096_normal_errors(self):
         for raw,family,field in (
             (self.recoveries(recovery_terms={"method":"net","admin_fee_pct":"bad"}),
                 "lease_recoveries","tenants[0].recovery_terms.admin_fee_pct"),
@@ -62,7 +68,8 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
             (property_source()+cash()+well_formed("distribution_waterfall",
                 **waterfall(stated_outcomes=False)),"waterfall_claims","stated_outcomes")):
             result,findings,_,_=self.report(raw,family)
-            self.assertEqual(result["issues"],[])
+            self.assertEqual([(i["code"],i["field"]) for i in result["errors"]],
+                             [(dict(lease_recoveries="REC-11",capital_stack_sizing="CS-03",waterfall_claims="WF-16")[family],field)])
             self.assertIn(field,[finding["field"] for finding in findings])
 
     def test_recovery_nullable_zero_and_fraction_boundaries_follow_fixed_schema(self):
@@ -185,11 +192,11 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="uwmd-optional-shape-schema-") as folder:
             provider=Path(folder)
             # A test-only future schema change; normative source files are untouched.
-            schema={"properties":{"sizing":{"type":"array","items":{"type":"number","multipleOf":2}}}}
-            (provider/"section-capital-stack.schema.json").write_text(json.dumps(schema),encoding="utf8")
+            schema={"type":"object","properties":{"cap":{"type":"object","properties":{"pct":{"type":"number","multipleOf":2}}}}}
+            (provider/"lease-recovery-terms.schema.json").write_text(json.dumps(schema),encoding="utf8")
             with patch("uwmd_validation_optional_shapes._SCHEMAS",provider):
-                _,findings,_,_=self.report(property_source()+well_formed("capital_stack",**stack([])),
-                                          "capital_stack_sizing")
+                _,findings,_,_=self.report(self.recoveries(recovery_terms={"method":"net","cap":{}}),
+                                          "lease_recoveries")
             self.assertTrue(any("Unsupported fixed-schema keyword: multipleOf"==f["message"] for f in findings))
 
 

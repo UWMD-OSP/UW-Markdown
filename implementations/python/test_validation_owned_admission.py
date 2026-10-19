@@ -67,10 +67,12 @@ class AllocatedAdmissionTests(unittest.TestCase):
     def test_rec04_registered_row_never_consumes_unrelated_amount_or_unknown_sibling(self):
         raw=recoveries(recovery_true_up=[dict(period_start="2026-02-30",period_end="2026-03-01",pool_actual=False,unknown=1)])
         result,assessment=report(raw,"lease_recoveries")
-        self.assertEqual([f["field"] for f in assessment["shape_findings"]],
-                         ["tenants[0].recovery_true_up[0].pool_actual","tenants[0].recovery_true_up[0].unknown"])
-        self.assertEqual([f["field"] for f in assessment["handled_shape_findings"]],["tenants[0].recovery_true_up[0].period_start"])
-        self.assertIn("partial_validation_result",_validation_response(result)[0])
+        self.assertEqual(assessment["shape_findings"],[])
+        self.assertEqual([(f["registered_code"],f["field"]) for f in assessment["handled_shape_findings"]],
+            [("REC-11","tenants[0].recovery_true_up[0].pool_actual"),
+             ("REC-11","tenants[0].recovery_true_up[0].unknown"),
+             ("REC-04","tenants[0].recovery_true_up[0].period_start")])
+        self.assertNotIn("partial_validation_result",_validation_response(result)[0])
 
     def test_wf10_selected_floor_and_wf13_tax_with_optional_siblings_preserved(self):
         for basis,leaf,value in (("lp_irr_floor","floor_rate",False),("lp_irr_floor","floor_rate",0),
@@ -84,8 +86,9 @@ class AllocatedAdmissionTests(unittest.TestCase):
             self.assert_owned(raw,"waterfall_claims","WF-13",["clawback.net_of_tax_rate"])
         claim=dict(basis="lp_em_floor",floor_multiple=0,floor_rate="bad",cap="promote_received")
         _,assessment=report(property_source()+cash()+well_formed("distribution_waterfall",**waterfall(clawback=claim)),"waterfall_claims")
-        self.assertEqual([f["field"] for f in assessment["shape_findings"]],["clawback.floor_rate"])
-        self.assertEqual([f["field"] for f in assessment["handled_shape_findings"]],["clawback.floor_multiple"])
+        self.assertEqual(assessment["shape_findings"],[])
+        self.assertEqual([(f["registered_code"],f["field"]) for f in assessment["handled_shape_findings"]],
+                         [("WF-16","clawback.floor_rate"),("WF-10","clawback.floor_multiple")])
 
     def test_wrong_block_severity_code_field_and_stale_predicate_never_own(self):
         raw=recoveries(recovery_true_up=[dict(period_start=False,period_end="2026-01-31")])
@@ -112,11 +115,12 @@ class AllocatedAdmissionTests(unittest.TestCase):
         self.assertEqual(assessment["shape_findings"],[])
         self.assertEqual(len(assessment["inactive_shape_findings"]),4)
         self.assertNotIn("partial_validation_result",_validation_response(result)[0])
-        # A distinct CURRENT downside peer retains its actual unallocated finding.
+        # RFC0096 gives a distinct CURRENT downside peer its own exact LU-05.
         current=copy.deepcopy(good);current["model_type"]="unknown"
         result,assessment=report(raw+block("lease_up_schedule",current,variant="downside"),"lease_up_schedule")
-        self.assertEqual([f["field"] for f in assessment["shape_findings"]],["model_type"])
-        self.assertIn("partial_validation_result",_validation_response(result)[0])
+        self.assertEqual(assessment["shape_findings"],[])
+        self.assertEqual([(f["registered_code"],f["field"]) for f in assessment["handled_shape_findings"]],[("LU-05","model_type")])
+        self.assertNotIn("partial_validation_result",_validation_response(result)[0])
 
     def test_actual_cli_returns_registered_error_results_and_does_not_rewrite_source(self):
         sources=[recoveries(recovery_terms=dict(method="net",recoverable_pool=[False])),

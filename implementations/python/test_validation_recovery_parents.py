@@ -66,7 +66,7 @@ class RecoveryParentAdmissionTests(unittest.TestCase):
                 self.assertEqual(report["section_assessment"]["lease_recoveries"]["shape_findings"], [])
                 self.assertEqual(_validation_response(report)[1], 0)
 
-    def test_parent_ownership_does_not_consume_unallocated_siblings_or_members(self):
+    def test_0096_siblings_are_owned_independently_from_parent_errors(self):
         for terms, expected in (
                 (dict(method="net", cap=[], admin_fee_pct="bad"),
                  ["tenants[0].recovery_terms.admin_fee_pct"]),
@@ -76,12 +76,15 @@ class RecoveryParentAdmissionTests(unittest.TestCase):
                  ["tenants[0].recovery_terms.method", "tenants[0].recovery_terms.cap.over"])):
             with self.subTest(terms=terms):
                 _, report = self.assess(source(terms))
-                local = report["section_assessment"]["lease_recoveries"]["shape_findings"]
-                self.assertEqual([f["field"] for f in local], expected)
+                assessment=report["section_assessment"]["lease_recoveries"]
+                self.assertEqual(assessment["shape_findings"], [])
+                handled={f["field"]:f["registered_code"] for f in assessment["handled_shape_findings"]}
+                for field in expected:
+                    self.assertEqual(handled[field], "REC-02" if field.endswith(".method") else "REC-11")
                 response, status = _validation_response(report)
                 self.assertEqual(status, 1)
-                self.assertNotIn("code", response["error"])
-                self.assertIn("partial_validation_result", response)
+                self.assertNotIn("error", response)
+                self.assertNotIn("partial_validation_result", response)
 
     def test_consumption_requires_actual_error_code_severity_field_section_and_physical_owner(self):
         for terms, field in ((3, "tenants[0].recovery_terms"),
@@ -124,12 +127,12 @@ class RecoveryParentAdmissionTests(unittest.TestCase):
         report["errors"][0]["context"]["block_index"] = 999
         self.assertEqual(document.source.blocks[1].parsed.value["tenants"][0]["recovery_terms"], dict(cap=[]))
 
-    def test_real_validate_cli_reports_normal_invalid_or_unallocated_partial_and_exact_exit(self):
+    def test_real_validate_cli_reports_parent_and_0096_sibling_normal_errors_and_exact_exit(self):
         cases = [(None, [], False), (dict(cap={}), [], False),
                  (3, ["tenants[0].recovery_terms"], False),
                  (dict(cap=[]), ["tenants[0].recovery_terms.cap"], False),
                  (dict(method="net", cap=[], admin_fee_pct="bad"),
-                  ["tenants[0].recovery_terms.cap"], True)]
+                  ["tenants[0].recovery_terms.cap","tenants[0].recovery_terms.admin_fee_pct"], False)]
         with tempfile.TemporaryDirectory(prefix="uwmd-python-rec-parent-cli-") as folder:
             path = Path(folder) / "input.uwx.md"
             for terms, expected, partial in cases:
@@ -144,7 +147,7 @@ class RecoveryParentAdmissionTests(unittest.TestCase):
                     self.assertEqual("partial_validation_result" in value, partial)
                     result = value["partial_validation_result"] if partial else value
                     self.assertEqual([(i["code"],i["field"]) for i in result["errors"]],
-                                     [("REC-02", field) for field in expected])
+                                     [("REC-11" if field.endswith(".admin_fee_pct") else "REC-02", field) for field in expected])
                     for key, severity in (("errors", "error"), ("warnings", "warning"), ("info", "info")):
                         self.assertEqual(result[key], [i for i in result["issues"] if i["severity"] == severity])
                     if partial: self.assertNotIn("code", value["error"])

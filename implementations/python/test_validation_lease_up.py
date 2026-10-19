@@ -1,4 +1,4 @@
-"""Complete fixed lease-up payload admission evidence; no model/verifier claim."""
+"""Accepted RFC0096 LU payload admission; no model/verifier claim."""
 import copy
 import json
 import unittest
@@ -24,7 +24,10 @@ def local(result):
     return assessment
 
 def fields(result):
-    return [finding["field"] for finding in local(result)["shape_findings"]]
+    assessment=local(result)
+    return [finding["field"] for finding in assessment["shape_findings"]] + [
+        finding["field"] for finding in assessment.get("handled_shape_findings",())
+        if finding["registered_code"]=="LU-05"]
 
 def lu_codes(result):
     return [i["code"] for i in result["issues"] if i["code"].startswith("LU-")]
@@ -63,7 +66,7 @@ class ValidationLeaseUpTests(unittest.TestCase):
                     body=payload();body["schedule"][0][key]=value
                     result=validate(parsed(body))
                     self.assertIn("schedule[0]."+key,fields(result))
-                    self.assertEqual(lu_codes(result),[])
+                    self.assertEqual(lu_codes(result),["LU-05"])
         for key in signed:
             body=payload();body["schedule"][0][key]=-5
             self.assertEqual(fields(validate(parsed(body))),[])
@@ -80,7 +83,7 @@ class ValidationLeaseUpTests(unittest.TestCase):
                     body=payload();body["assumptions"]={key:value}
                     result=validate(parsed(body))
                     self.assertIn("assumptions."+key,fields(result))
-                    self.assertEqual(lu_codes(result),[])
+                    self.assertEqual(lu_codes(result),["LU-05"])
             if key in rates:
                 body=payload();body["assumptions"]={key:1.01}
                 self.assertIn("assumptions."+key,fields(validate(parsed(body))))
@@ -121,8 +124,8 @@ class ValidationLeaseUpTests(unittest.TestCase):
         body=payload();body["unknown"]={"retained":True}
         body["schedule"][0]["future"]=None
         source=parsed(body);before=copy.deepcopy(source);result=validate(source)
-        self.assertEqual(fields(result),["unknown","schedule[0].future"])
-        self.assertEqual(lu_codes(result),[])
+        self.assertEqual(fields(result),["schedule[0].future","unknown"])
+        self.assertEqual(lu_codes(result),["LU-05","LU-05"])
         self.assertEqual(source,before)
         for row in (None,[],{},dict(period=0),dict(period="2026-99")):
             body=payload();body["schedule"]=[row]
@@ -131,9 +134,10 @@ class ValidationLeaseUpTests(unittest.TestCase):
                 self.assertEqual(fields(result), [])
                 self.assertIn("LU-01", lu_codes(result))
             else:
-                self.assertEqual(fields(result), ["schedule[0]"])
+                self.assertEqual(fields(result), [])
+                self.assertEqual(lu_codes(result), ["LU-01"])
         # Registered period diagnostics still own period/cadence failure;
-        # none of these schema fields silently acquires LU-05 or META-01.
+        # non-object rows retain LU-01; RFC0096 allocates the other payload fields.
 
     def test_model_vocabulary_does_not_gate_shapes_or_fill_missing_inputs(self):
         for model,expected in (("absorption_curve",[]),("natural_turnover",["LU-04"])):
@@ -146,7 +150,7 @@ class ValidationLeaseUpTests(unittest.TestCase):
             body=payload();body["model_type"]=model
             result=validate(parsed(body))
             self.assertIn("model_type",fields(result))
-            self.assertEqual(lu_codes(result),[])
+            self.assertEqual(lu_codes(result),["LU-05"])
 
     def test_universal_annotations_and_unknown_sections_are_not_payload_shape_rules(self):
         body=payload();body["_notes"]={"opaque":"never validated"}
@@ -172,9 +176,9 @@ class ValidationLeaseUpTests(unittest.TestCase):
         self.assertEqual([b["block_index"] for b in assessment["blocks_checked"]],[0,1,2,3])
         self.assertEqual([b["current"] for b in assessment["blocks_checked"]],[False,False,True,True])
         self.assertEqual([b["superseded"] for b in assessment["blocks_checked"]],[True,False,False,False])
-        self.assertEqual([f["context"]["block_index"] for f in assessment["shape_findings"]],[3])
+        self.assertEqual([f["context"]["block_index"] for f in assessment["handled_shape_findings"]],[3])
         self.assertEqual([f["context"]["block_index"] for f in assessment["inactive_shape_findings"]],[0,0,1])
-        self.assertEqual(lu_codes(result),[])
+        self.assertEqual(lu_codes(result),["LU-05"])
         self.assertFalse(any(i["code"]=="ROLE-01" for i in result["issues"]))
         self.assertEqual(source,before)
 
@@ -192,12 +196,12 @@ class ValidationLeaseUpTests(unittest.TestCase):
     def test_detached_evidence_spans_preserve_original_source_and_consumer_mutation(self):
         body=payload();body["assumptions"]={"monthly_turnover_rate":"1"}
         source=parsed(body);before=copy.deepcopy(source);result=validate(source)
-        assessment=local(result);finding=assessment["shape_findings"][0]
+        assessment=local(result);finding=assessment["handled_shape_findings"][0]
         self.assertEqual(finding["context"]["body_byte_start"],source.source.blocks[0].body_span.start)
         self.assertEqual(finding["context"]["body_byte_end"],source.source.blocks[0].body_span.end)
         finding["message"]="consumer edit";assessment["blocks_checked"][0]["variant"]="edited"
         self.assertEqual(source,before)
-        self.assertNotEqual(local(validate(source))["shape_findings"][0]["message"],"consumer edit")
+        self.assertNotEqual(local(validate(source))["handled_shape_findings"][0]["message"],"consumer edit")
 
     def test_seven_frozen_document_assertions_without_financial_verdict_claims(self):
         paths=[p for p in (ROOT/"conformance/lease-up").glob("*/expected.json")
