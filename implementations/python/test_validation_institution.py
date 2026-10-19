@@ -154,7 +154,8 @@ class InstitutionThresholdTests(unittest.TestCase):
     def test_fatal_actual_source_precedes_config_but_document_issues_do_not(self):
         self.sidecar.write_bytes(b'{ invalid config }')
         for raw in (self.raw.replace(b'uw_version: "3.0"',b'uw_version: "2.0"'),
-                    self.raw.replace(b'asset_class: multifamily',b'asset_class: &anchor value')):
+                    self.raw.replace(b'asset_class: "multifamily"',b'asset_class: &anchor value')):
+            self.assertNotEqual(raw,self.raw)
             self.document.write_bytes(raw)
             with patch("uwmd_institution.load_institution_thresholds",side_effect=AssertionError("config must wait for fatal parse")):
                 value,status=main(["validate",str(self.document),"--json"])
