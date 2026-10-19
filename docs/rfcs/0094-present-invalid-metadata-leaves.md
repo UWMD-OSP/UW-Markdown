@@ -50,7 +50,7 @@ Existing authority already supplies the confidence vocabulary and positive
 integer revision predicate: Format2.5c/2.5d and the block schema. Timestamp
 requires joint reconciliation: Format2.5b says ISO8601, the schema requires a
 string with `format: date-time` while describing UTC, the TypeScript metadata
-type describes UTC, and ProtocolV.3 requires UTC writes. Those statements do
+type describes UTC, and ProtocolV.4 requires UTC writes. Those statements do
 not yet establish a single exhaustive reader grammar. Neither a permissive host
 date parser nor one schema library's extra accepted spellings defines it.
 
@@ -63,11 +63,11 @@ date parser nor one schema library's extra accepted spellings defines it.
 | D3: placement | Complete old shape, RFC0093 P1/P2/P3, actor, META-02/03, then the complete META-04 pass; role/period/source remain later | Existing checkpoint order; no global issue sort |
 | D4: parent precedence | Existing rejected whole metadata shape suppresses META-04; nonobject/missing quality suppresses confidence only | RFC0090/0091 parent admission and RFC0093 D4 |
 | D5: presence | Own canonical leaf member, including null; no inherited member, convenience alias or inferred value | RFC0093 presence/authority; preserve existing absence allocations |
-| D6: timestamp | Reconcile one exact timestamp reader predicate before acceptance; no implementation-defined date parser | Format2.5b, schema date-time, ProtocolV.3 UTC writer requirement |
+| D6: timestamp | Reconcile one exact timestamp reader predicate before acceptance; no implementation-defined date parser | Format2.5b, schema date-time, ProtocolV.4 UTC writer requirement |
 
 ## Proposed change
 
-Synchronize Format2.5b–2.5d, ProtocolIII.6a/V.3/XI, the executable registry and
+Synchronize Format2.5b–2.5d, ProtocolIII.6a/V.3–V.4/XI, the executable registry and
 remediation in the eventual implementation. The current docs-only proposal
 changes none of them.
 
