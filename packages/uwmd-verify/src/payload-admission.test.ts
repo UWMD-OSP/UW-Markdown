@@ -9,11 +9,11 @@ const classes = new Set(['office', 'retail']);
 const header = '---\nuw_version: "3.0"\nasset_class: mixed_use\ndeal_id: payload0096\n---\n';
 function doc(section: string, body: unknown, suffix = '') { return header + fence(section, body, suffix); }
 function fence(section: string, body: unknown, suffix = '') { return `\`\`\`json uw:section=${section}${suffix}\n${JSON.stringify(body)}\n\`\`\`\n`; }
-function assess(section: string, body: Record<string, unknown>): ValidationMessage[] {
-  const parsed = parseUWFile(doc(section, {})); (getSectionVariant(parsed, section, 'default') ?? getSection(parsed, section))!.content = body;
+function assess(section: string, body: Record<string, unknown>, suffix = ''): ValidationMessage[] {
+  const parsed = parseUWFile(doc(section, {}, suffix)); (getSectionVariant(parsed, section, 'default') ?? getSection(parsed, section))!.content = body;
   const issues: ValidationMessage[] = []; checkPayloadAdmission(parsed, issues, classes); return issues;
 }
-function fields(section: string, body: Record<string, unknown>) { return assess(section, body).map(i => i.field); }
+function fields(section: string, body: Record<string, unknown>, suffix = '') { return assess(section, body, suffix).map(i => i.field); }
 const lu = (extra = {}) => ({ model_type: 'absorption_curve', period_granularity: 'monthly', schedule: [{ period: '2026-01' }], ...extra });
 const rec = (terms: unknown, rows?: unknown) => ({ _role: 'detail', tenants: [{ recovery_terms: terms, ...(rows === undefined ? {} : { recovery_true_up: rows }) }] });
 const figure = (extra = {}) => ({ id: 'size', fn: 'coverage', over: 'senior', value: 0, ...extra });
@@ -138,7 +138,9 @@ describe('RFC0096 current SOURCE/MODEL scope and full pass ordering', () => {
     for (const external of [null, false, {}, { parts: [], part_count: 0 }]) {
       expect(fields('lease_up_schedule', lu({ model_type: false, external }))).toEqual(['model_type','external']);
     }
-    expect(fields('lease_up_schedule', { external: { parts: ['missing'], part_count: 1 } })).toEqual([]);
+    expect(fields('lease_up_schedule', { external: { parts: ['missing'], part_count: 1 } })).toEqual(['model_type','external']);
+    expect(fields('lease_up_schedule', { external: { parts: ['missing'], part_count: 1 } }, ' external=true')).toEqual([]);
+    expect(fields('lease_up_schedule', lu({ model_type: false, external: false }), ' external=true')).toEqual(['model_type','external']);
   });
   it('does not crash on an unavailable wrapper annotation or infer a new shape diagnostic', () => {
     const parsed = parseUWFile(doc('lease_up_schedule', lu()));
