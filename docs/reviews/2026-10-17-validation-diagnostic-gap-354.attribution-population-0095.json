@@ -1,0 +1,3722 @@
+{
+  "schema": "read-only-rfc0095-attribution-population-v1",
+  "base": "fa9a9ea37d31b918f5993eae4276b159f31719f3",
+  "draft": "cf3112951537fe0b69f1f06239fcc3330e6303c6",
+  "draft_rfc_sha256": "e9407c1b13569f22e47089b92e418a2747d7ad8de4c543900688dccf49c08b21",
+  "runtime": {
+    "node": "v24.14.1",
+    "typescript": "5.9.3",
+    "platform": "win32",
+    "os_release": "10.0.26200"
+  },
+  "authority": [
+    {
+      "path": "docs/rfcs/0090-provenance-actor-admission.md",
+      "sha256": "654d87c3d1d78c8ff20d44cfcf55dd5d34abbf06d4f84b54718504c1461c86fa"
+    },
+    {
+      "path": "docs/rfcs/0091-required-metadata-booleans.md",
+      "sha256": "e2b1a586361440b878347bb4100c6503cbd69861273904805462660ca03155b6"
+    },
+    {
+      "path": "docs/rfcs/0093-metadata-shape-diagnostics.md",
+      "sha256": "e27b49ed2ee0e46ece77ae58cc68d83a7c50726eed627292995888c797489f3b"
+    },
+    {
+      "path": "packages/uwmd-core/src/cascade.market-data.test.ts",
+      "sha256": "53991410b2d12ab5d34da989b200a7887a91835965cbce2a725dc4340f0658a3"
+    },
+    {
+      "path": "packages/uwmd-verify/src/composition.ts",
+      "sha256": "5ea2b5d6835e139add4dca091898108045e62878154f78573fe0fa903fd1cc22"
+    },
+    {
+      "path": "packages/uwmd-verify/src/gaps-content.ts",
+      "sha256": "f13f528be3b320fb61c376193126b73e1e045b54ea7094242a11e162dcc8d755"
+    },
+    {
+      "path": "packages/uwmd-verify/src/market-data.test.ts",
+      "sha256": "2ef92dcd940d0964a59b94f5cb426fd453f37c36fc2d60cd59719c9fd668c0d2"
+    },
+    {
+      "path": "packages/uwmd-verify/src/metadata.ts",
+      "sha256": "b3b67f23a5df6b72d9dae42067fcc6ceefe478b227eaefda8fff118efa0c4aa5"
+    },
+    {
+      "path": "packages/uwmd-verify/src/parser.ts",
+      "sha256": "8ba7b0639182b57bc0ded7b2a3d666a7244203838298e9a553fe46f79c9b234e"
+    },
+    {
+      "path": "packages/uwmd-verify/src/protocol.ts",
+      "sha256": "47e857a7bf85515e0a2cfcdae4ec4bebd9dce52606235172e416167ddfd2e272"
+    },
+    {
+      "path": "packages/uwmd-verify/src/types.ts",
+      "sha256": "21d6669cddd077ef42ae762d496af891b02d4dafc9b1c15dbc9905a029f9c511"
+    },
+    {
+      "path": "packages/uwmd-verify/src/validator.section-readiness.test.ts",
+      "sha256": "439bbbbe3e4320ffb27aa728488f63e660c0a9e1932e780cbbe42a84cd3a97bd"
+    },
+    {
+      "path": "packages/uwmd-verify/src/validator.ts",
+      "sha256": "1a60702336ecd3908f3502aca99c62b29ebbcf07e7a3d026c375bc184622e33d"
+    },
+    {
+      "path": "packages/uwmd-verify/src/yaml-scalar.ts",
+      "sha256": "7cc1f269c7fcbdbe6d0c2a75a1e45e77f1a9f7b22be8d1f8463cb1cc2755eb03"
+    }
+  ],
+  "transpiled_runtime": [
+    {
+      "module": "parser",
+      "source_sha256": "8ba7b0639182b57bc0ded7b2a3d666a7244203838298e9a553fe46f79c9b234e",
+      "emitted_sha256": "fb8c9e0fcd8e3f94a5b41732409a19e0813b787148b9f21006b9234e0a095a00"
+    },
+    {
+      "module": "types",
+      "source_sha256": "21d6669cddd077ef42ae762d496af891b02d4dafc9b1c15dbc9905a029f9c511",
+      "emitted_sha256": "1905c6a10c44869a15cc7c01d20a0eaf2a00daa707587d9a57a1885d52c95f92"
+    },
+    {
+      "module": "yaml-scalar",
+      "source_sha256": "7cc1f269c7fcbdbe6d0c2a75a1e45e77f1a9f7b22be8d1f8463cb1cc2755eb03",
+      "emitted_sha256": "b0fea4ff0ae5a74376c86ca1bb353432f62dead881dd060be73cf6d444201aff"
+    },
+    {
+      "module": "composition",
+      "source_sha256": "5ea2b5d6835e139add4dca091898108045e62878154f78573fe0fa903fd1cc22",
+      "emitted_sha256": "ba5509c0a8cd5129a288c929da37463b464f020e556640ab3c225e133877a4b7"
+    },
+    {
+      "module": "protocol",
+      "source_sha256": "47e857a7bf85515e0a2cfcdae4ec4bebd9dce52606235172e416167ddfd2e272",
+      "emitted_sha256": "4812a80175d0a3ac1dc8be16dfb01bdca4c669df85b123e4a699535cfdde992b"
+    },
+    {
+      "module": "gaps-content",
+      "source_sha256": "f13f528be3b320fb61c376193126b73e1e045b54ea7094242a11e162dcc8d755",
+      "emitted_sha256": "48d1f2af976ff8c4760dc269dd51e1fd1f59af1b866982e5450fc2a48f23aaca"
+    },
+    {
+      "module": "metadata",
+      "source_sha256": "b3b67f23a5df6b72d9dae42067fcc6ceefe478b227eaefda8fff118efa0c4aa5",
+      "emitted_sha256": "d84b7e5fc55304f64180532c54a3751b961eef2e3fffb2de89b7b463d0c0de94"
+    }
+  ],
+  "boundaries": {
+    "no_activation": true,
+    "scope": "Reference-attribution population only; not the full META-05/06 optional-field or conditional-agent-id inventory, full validation certification, or a prediction of all RFC0095 effects.",
+    "trigger_assumption": "Counterfactual canonical plus ANY own stated object-override resolution for BOTH inherited_assumption and market_data_accepted, including duplicate/shadowed/unmatched paths. This is not a new validator.",
+    "as_of": "String-only shape for inventory; calendar choice U3 remains unresolved. No date parser oracle.",
+    "old_population": "Only parsed.sections current single/variant blocks; convenience block.meta and current truthiness preserved in observed checkDataQuality.",
+    "new_population": "Exact-identity retained physical followed by current MODEL sections/superseded/pipeline_log/custom_calculations/custom_scenarios/extensions. No projected collection is silently dropped.",
+    "intent": "Location/path-derived classifications do not establish positive metadata validity or invent negative expectations.",
+    "excluded": "Embedded source literals in TS/Python/JSON test descriptions, ZIP members and generated Lite model blocks are not independent tracked fenced-source files. Standalone sources include test fixtures and templates where tracked with recognized suffixes.",
+    "parse": "Default accepted non-strict parser behavior is preserved. Parser refusals and non-strict malformed-JSON placeholders are listed separately. Parts are additionally passed through actual parseUWPart; invalid parts are never claimed as resolved."
+  },
+  "summary": {
+    "tracked_sources": 880,
+    "file_statuses": {
+      "outside-fenced-source-census": 55,
+      "parsed": 816,
+      "parser-refused": 9
+    },
+    "files_by_location": {
+      "conformance": 822,
+      "documentation": 5,
+      "examples": 53
+    },
+    "standalone": {
+      "operations": 816,
+      "physical": 2238,
+      "union": 2238,
+      "old_sections": 2149,
+      "newly_assessed": 89,
+      "newly_by_collection": {
+        "custom_calculations": 7,
+        "custom_scenarios": 6,
+        "extensions": 22,
+        "physical-only-overwritten": 17,
+        "pipeline_log": 15,
+        "superseded": 22
+      },
+      "newly_source_locations": {
+        "conformance": 66,
+        "documentation": 6,
+        "examples": 17
+      },
+      "newly_source_intents": {
+        "authored output template by path; not observed producer output": 6,
+        "fixture intent not inferred": 33,
+        "intentionally invalid by explicit malformed/reject directory": 33,
+        "negative intent inferred from path": 1,
+        "published example location; metadata validity not inferred": 16
+      },
+      "newly_source_count": 49,
+      "triggered_blocks": {
+        "market_data_accepted": 1
+      },
+      "trigger_assertions": {
+        "market_data_accepted": 1
+      },
+      "newly_triggered_blocks": {},
+      "carriers": {
+        "inherited_from": {
+          "absent": 2238
+        },
+        "market_data_ref": {
+          "absent": 2237,
+          "object": 1
+        }
+      },
+      "metadata_gates": {
+        "admitted": 1831,
+        "rejected-provenance": 1,
+        "retired-wrapper": 3,
+        "whole-meta-absent": 403
+      },
+      "newly_metadata_gates": {
+        "admitted": 87,
+        "retired-wrapper": 1,
+        "whole-meta-absent": 1
+      },
+      "candidate_failures": {},
+      "newly_candidate_failures": {},
+      "newly_affected_blocks": 0,
+      "newly_affected_sources": [],
+      "actual_dq06_errors": 0,
+      "actual_dq_refusals": []
+    },
+    "composition": {
+      "attempts": 12,
+      "statuses": {
+        "part-load-refused": 2,
+        "resolved": 7,
+        "unresolved": 3
+      },
+      "resolved_population": {
+        "operations": 7,
+        "physical": 33,
+        "union": 40,
+        "old_sections": 12,
+        "newly_assessed": 28,
+        "newly_by_collection": {
+          "physical-original-replaced-in-projection": 28
+        },
+        "newly_source_locations": {
+          "conformance": 12,
+          "examples": 16
+        },
+        "newly_source_intents": {
+          "fixture intent not inferred": 12,
+          "published example location; metadata validity not inferred": 16
+        },
+        "newly_source_count": 28,
+        "triggered_blocks": {},
+        "trigger_assertions": {},
+        "newly_triggered_blocks": {},
+        "carriers": {
+          "inherited_from": {
+            "absent": 40
+          },
+          "market_data_ref": {
+            "absent": 40
+          }
+        },
+        "metadata_gates": {
+          "admitted": 40
+        },
+        "newly_metadata_gates": {
+          "admitted": 28
+        },
+        "candidate_failures": {},
+        "newly_candidate_failures": {},
+        "newly_affected_blocks": 0,
+        "newly_affected_sources": [],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusals": []
+      }
+    }
+  },
+  "full_record_evidence": {
+    "file": "2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.all-records.json.gz",
+    "gzip_sha256": "b260d5194e22cab19f4af5771440ee8afa8a52c1c5c30ed9fe5ce4dae66c1f0a",
+    "decoded_json_sha256": "3f58ceb6504141e22d231abe009bc725eaaefc33e8a54398c8efd38f02c1a7c8",
+    "decoded_bytes": 3610949
+  },
+  "newly_assessed_records": [
+    {
+      "operation": "conformance/document-signatures/01-valid/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/01-valid/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/02-relabel/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/02-relabel/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/03-flip/deal.uwx.md",
+      "ref": 1,
+      "path": "conformance/document-signatures/03-flip/deal.uwx.md",
+      "line": 44,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/04-splice/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/04-splice/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/06-frontmatter/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/06-frontmatter/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/07-cosmetic/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/07-cosmetic/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/08-missing/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/08-missing/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/09-unknown-key/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/09-unknown-key/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/10-padded/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/10-padded/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/11-time-edited/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/11-time-edited/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/12-unsupported-version/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/12-unsupported-version/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/13-duplicate-active/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/13-duplicate-active/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/13-duplicate-active/deal.uwx.md",
+      "ref": 3,
+      "path": "conformance/document-signatures/13-duplicate-active/deal.uwx.md",
+      "line": 119,
+      "source_model_paths": [
+        "superseded.operating_statement[1]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[1]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/14-no-backend/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/14-no-backend/deal.uwx.md",
+      "line": 6,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/document-signatures/15-retained-prose/deal.uwx.md",
+      "ref": 0,
+      "path": "conformance/document-signatures/15-retained-prose/deal.uwx.md",
+      "line": 7,
+      "source_model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "section": "operating_statement",
+      "variant": "t12",
+      "model_paths": [
+        "superseded.operating_statement[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/fixtures/02-full-multifamily.uwx.md",
+      "ref": 18,
+      "path": "conformance/documents/fixtures/02-full-multifamily.uwx.md",
+      "line": 2288,
+      "source_model_paths": [
+        "custom_calculations[0]"
+      ],
+      "section": "custom_calculations",
+      "variant": null,
+      "model_paths": [
+        "custom_calculations[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/fixtures/02-full-multifamily.uwx.md",
+      "ref": 19,
+      "path": "conformance/documents/fixtures/02-full-multifamily.uwx.md",
+      "line": 2416,
+      "source_model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "section": "custom_scenarios",
+      "variant": null,
+      "model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/fixtures/02-full-multifamily.uwx.md",
+      "ref": 20,
+      "path": "conformance/documents/fixtures/02-full-multifamily.uwx.md",
+      "line": 2523,
+      "source_model_paths": [
+        "extensions.x_lender_matrix"
+      ],
+      "section": "x_lender_matrix",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_lender_matrix"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/fixtures/02-full-multifamily.uwx.md",
+      "ref": 21,
+      "path": "conformance/documents/fixtures/02-full-multifamily.uwx.md",
+      "line": 2617,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/fixtures/13-period-identities.uwx.md",
+      "ref": 2,
+      "path": "conformance/documents/fixtures/13-period-identities.uwx.md",
+      "line": 88,
+      "source_model_paths": [
+        "custom_calculations[0]"
+      ],
+      "section": "custom_calculations",
+      "variant": null,
+      "model_paths": [
+        "custom_calculations[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/04-broken-chain.uwx.md",
+      "ref": 0,
+      "path": "conformance/documents/malformed/04-broken-chain.uwx.md",
+      "line": 29,
+      "source_model_paths": [
+        "superseded.property[0]"
+      ],
+      "section": "property",
+      "variant": null,
+      "model_paths": [
+        "superseded.property[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/27-actor-nonstrings.uwx.md",
+      "ref": 0,
+      "path": "conformance/documents/malformed/27-actor-nonstrings.uwx.md",
+      "line": 10,
+      "source_model_paths": [
+        "extensions.x_actor_0"
+      ],
+      "section": "x_actor_0",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_actor_0"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/27-actor-nonstrings.uwx.md",
+      "ref": 1,
+      "path": "conformance/documents/malformed/27-actor-nonstrings.uwx.md",
+      "line": 37,
+      "source_model_paths": [
+        "extensions.x_actor_1"
+      ],
+      "section": "x_actor_1",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_actor_1"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/27-actor-nonstrings.uwx.md",
+      "ref": 2,
+      "path": "conformance/documents/malformed/27-actor-nonstrings.uwx.md",
+      "line": 64,
+      "source_model_paths": [
+        "extensions.x_actor_2"
+      ],
+      "section": "x_actor_2",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_actor_2"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/27-actor-nonstrings.uwx.md",
+      "ref": 3,
+      "path": "conformance/documents/malformed/27-actor-nonstrings.uwx.md",
+      "line": 91,
+      "source_model_paths": [
+        "extensions.x_actor_3"
+      ],
+      "section": "x_actor_3",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_actor_3"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "ref": 0,
+      "path": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "line": 10,
+      "source_model_paths": [
+        "superseded.property[0]"
+      ],
+      "section": "property",
+      "variant": null,
+      "model_paths": [
+        "superseded.property[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "ref": 2,
+      "path": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "line": 64,
+      "source_model_paths": [],
+      "section": "x_peer",
+      "variant": "first",
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "ref": 3,
+      "path": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "line": 91,
+      "source_model_paths": [
+        "extensions.x_peer"
+      ],
+      "section": "x_peer",
+      "variant": "second",
+      "model_paths": [
+        "extensions.x_peer"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "ref": 4,
+      "path": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "line": 118,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "ref": 5,
+      "path": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "line": 145,
+      "source_model_paths": [
+        "custom_calculations[0]"
+      ],
+      "section": "custom_calculations",
+      "variant": null,
+      "model_paths": [
+        "custom_calculations[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "ref": 6,
+      "path": "conformance/documents/malformed/28-actor-physical-evidence.uwx.md",
+      "line": 172,
+      "source_model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "section": "custom_scenarios",
+      "variant": null,
+      "model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/29-actor-shape-precedence.uwx.md",
+      "ref": 1,
+      "path": "conformance/documents/malformed/29-actor-shape-precedence.uwx.md",
+      "line": 13,
+      "source_model_paths": [
+        "extensions.x_actor"
+      ],
+      "section": "x_actor",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_actor"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/30-meta-placement.uwx.md",
+      "ref": 1,
+      "path": "conformance/documents/malformed/30-meta-placement.uwx.md",
+      "line": 80,
+      "source_model_paths": [],
+      "section": "x_meta_order",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/30-meta-placement.uwx.md",
+      "ref": 2,
+      "path": "conformance/documents/malformed/30-meta-placement.uwx.md",
+      "line": 84,
+      "source_model_paths": [],
+      "section": "x_meta_order",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/30-meta-placement.uwx.md",
+      "ref": 3,
+      "path": "conformance/documents/malformed/30-meta-placement.uwx.md",
+      "line": 88,
+      "source_model_paths": [
+        "extensions.x_meta_order"
+      ],
+      "section": "x_meta_order",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_meta_order"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "ref": 1,
+      "path": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "line": 80,
+      "source_model_paths": [],
+      "section": "x_meta_section",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "ref": 2,
+      "path": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "line": 84,
+      "source_model_paths": [],
+      "section": "x_meta_section",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "ref": 3,
+      "path": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "line": 88,
+      "source_model_paths": [],
+      "section": "x_meta_section",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "ref": 4,
+      "path": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "line": 92,
+      "source_model_paths": [],
+      "section": "x_meta_section",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "ref": 5,
+      "path": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "line": 96,
+      "source_model_paths": [],
+      "section": "x_meta_section",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "ref": 6,
+      "path": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "line": 100,
+      "source_model_paths": [],
+      "section": "x_meta_section",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "ref": 7,
+      "path": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "line": 104,
+      "source_model_paths": [],
+      "section": "x_meta_section",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "ref": 8,
+      "path": "conformance/documents/malformed/31-meta-section.uwx.md",
+      "line": 108,
+      "source_model_paths": [
+        "extensions.x_meta_section"
+      ],
+      "section": "x_meta_section",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_meta_section"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "ref": 1,
+      "path": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "line": 80,
+      "source_model_paths": [],
+      "section": "x_meta_quality",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "ref": 2,
+      "path": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "line": 84,
+      "source_model_paths": [],
+      "section": "x_meta_quality",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "ref": 3,
+      "path": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "line": 88,
+      "source_model_paths": [],
+      "section": "x_meta_quality",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "ref": 4,
+      "path": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "line": 92,
+      "source_model_paths": [],
+      "section": "x_meta_quality",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "ref": 5,
+      "path": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "line": 96,
+      "source_model_paths": [],
+      "section": "x_meta_quality",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "ref": 6,
+      "path": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "line": 100,
+      "source_model_paths": [],
+      "section": "x_meta_quality",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "ref": 7,
+      "path": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "line": 104,
+      "source_model_paths": [],
+      "section": "x_meta_quality",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "ref": 8,
+      "path": "conformance/documents/malformed/32-meta-quality.uwx.md",
+      "line": 108,
+      "source_model_paths": [
+        "extensions.x_meta_quality"
+      ],
+      "section": "x_meta_quality",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_meta_quality"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/33-meta-pass-order.uwx.md",
+      "ref": 1,
+      "path": "conformance/documents/malformed/33-meta-pass-order.uwx.md",
+      "line": 80,
+      "source_model_paths": [
+        "extensions.x_meta_oldshape"
+      ],
+      "section": "x_meta_oldshape",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_meta_oldshape"
+      ],
+      "metadata_gate": "retired-wrapper",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/documents/malformed/33-meta-pass-order.uwx.md",
+      "ref": 2,
+      "path": "conformance/documents/malformed/33-meta-pass-order.uwx.md",
+      "line": 84,
+      "source_model_paths": [
+        "extensions.x_meta_combined"
+      ],
+      "section": "x_meta_combined",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_meta_combined"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "intentionally invalid by explicit malformed/reject directory",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/hedge/0070-superseded-source/deal.uwx.md",
+      "ref": 2,
+      "path": "conformance/hedge/0070-superseded-source/deal.uwx.md",
+      "line": 63,
+      "source_model_paths": [
+        "superseded.cash_flow_series[0]"
+      ],
+      "section": "cash_flow_series",
+      "variant": "cap-cash",
+      "model_paths": [
+        "superseded.cash_flow_series[0]"
+      ],
+      "metadata_gate": "whole-meta-absent",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/lite/expected/01-minimal.uwx.md",
+      "ref": 1,
+      "path": "conformance/lite/expected/01-minimal.uwx.md",
+      "line": 39,
+      "source_model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "section": "x_uw_lite_source",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/lite/expected/02-full-deal-summary.uwx.md",
+      "ref": 4,
+      "path": "conformance/lite/expected/02-full-deal-summary.uwx.md",
+      "line": 127,
+      "source_model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "section": "x_uw_lite_source",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/lite/expected/03-display-variants.uwx.md",
+      "ref": 4,
+      "path": "conformance/lite/expected/03-display-variants.uwx.md",
+      "line": 127,
+      "source_model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "section": "x_uw_lite_source",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/lite/expected/04-typed-values.uwx.md",
+      "ref": 4,
+      "path": "conformance/lite/expected/04-typed-values.uwx.md",
+      "line": 129,
+      "source_model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "section": "x_uw_lite_source",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/lite/expected/05-prose-and-normalization.uwx.md",
+      "ref": 1,
+      "path": "conformance/lite/expected/05-prose-and-normalization.uwx.md",
+      "line": 39,
+      "source_model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "section": "x_uw_lite_source",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/lite/expected/06-decimal-exact-percents.uwx.md",
+      "ref": 3,
+      "path": "conformance/lite/expected/06-decimal-exact-percents.uwx.md",
+      "line": 99,
+      "source_model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "section": "x_uw_lite_source",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/lite/expected/07-decimal-exact-fractions.uwx.md",
+      "ref": 3,
+      "path": "conformance/lite/expected/07-decimal-exact-fractions.uwx.md",
+      "line": 99,
+      "source_model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "section": "x_uw_lite_source",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/lite/expected/08-frontmatter-yaml-scalars.uwx.md",
+      "ref": 1,
+      "path": "conformance/lite/expected/08-frontmatter-yaml-scalars.uwx.md",
+      "line": 39,
+      "source_model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "section": "x_uw_lite_source",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_uw_lite_source"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/reserve-draw-bindings/superseded-source/deal.uwx.md",
+      "ref": 1,
+      "path": "conformance/reserve-draw-bindings/superseded-source/deal.uwx.md",
+      "line": 74,
+      "source_model_paths": [
+        "superseded.cash_flow_series[0]"
+      ],
+      "section": "cash_flow_series",
+      "variant": "gross",
+      "model_paths": [
+        "superseded.cash_flow_series[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/starter/agent/replay/l6-risk-rating/after.uwx.md",
+      "ref": 6,
+      "path": "conformance/starter/agent/replay/l6-risk-rating/after.uwx.md",
+      "line": 242,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/starter/editor/fixtures/parent-hash-stamp/after.uwx.md",
+      "ref": 0,
+      "path": "conformance/starter/editor/fixtures/parent-hash-stamp/after.uwx.md",
+      "line": 28,
+      "source_model_paths": [
+        "superseded.property[0]"
+      ],
+      "section": "property",
+      "variant": null,
+      "model_paths": [
+        "superseded.property[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "conformance/starter/editor/fixtures/section-supersede-risk-rating/after.uwx.md",
+      "ref": 0,
+      "path": "conformance/starter/editor/fixtures/section-supersede-risk-rating/after.uwx.md",
+      "line": 23,
+      "source_model_paths": [
+        "superseded.risk_assessment[0]"
+      ],
+      "section": "risk_assessment",
+      "variant": null,
+      "model_paths": [
+        "superseded.risk_assessment[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "conformance",
+        "intent": "fixture intent not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "docs/downloads/templates/blank-analyst.uwx.md",
+      "ref": 20,
+      "path": "docs/downloads/templates/blank-analyst.uwx.md",
+      "line": 738,
+      "source_model_paths": [
+        "custom_calculations[0]"
+      ],
+      "section": "custom_calculations",
+      "variant": null,
+      "model_paths": [
+        "custom_calculations[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "documentation",
+        "intent": "authored output template by path; not observed producer output",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "docs/downloads/templates/blank-analyst.uwx.md",
+      "ref": 21,
+      "path": "docs/downloads/templates/blank-analyst.uwx.md",
+      "line": 772,
+      "source_model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "section": "custom_scenarios",
+      "variant": null,
+      "model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "documentation",
+        "intent": "authored output template by path; not observed producer output",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "docs/downloads/templates/blank-analyst.uwx.md",
+      "ref": 22,
+      "path": "docs/downloads/templates/blank-analyst.uwx.md",
+      "line": 804,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "documentation",
+        "intent": "authored output template by path; not observed producer output",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "docs/downloads/templates/blank-screener.uwx.md",
+      "ref": 20,
+      "path": "docs/downloads/templates/blank-screener.uwx.md",
+      "line": 738,
+      "source_model_paths": [
+        "custom_calculations[0]"
+      ],
+      "section": "custom_calculations",
+      "variant": null,
+      "model_paths": [
+        "custom_calculations[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "documentation",
+        "intent": "authored output template by path; not observed producer output",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "docs/downloads/templates/blank-screener.uwx.md",
+      "ref": 21,
+      "path": "docs/downloads/templates/blank-screener.uwx.md",
+      "line": 772,
+      "source_model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "section": "custom_scenarios",
+      "variant": null,
+      "model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "documentation",
+        "intent": "authored output template by path; not observed producer output",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "docs/downloads/templates/blank-screener.uwx.md",
+      "ref": 22,
+      "path": "docs/downloads/templates/blank-screener.uwx.md",
+      "line": 804,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "documentation",
+        "intent": "authored output template by path; not observed producer output",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md",
+      "ref": 7,
+      "path": "examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md",
+      "line": 475,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Mill-Ave-Commons-Student-Tempe-AZ.uwx.md",
+      "ref": 7,
+      "path": "examples/Mill-Ave-Commons-Student-Tempe-AZ.uwx.md",
+      "line": 396,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Ocotillo-Senior-Living-Chandler-AZ.uwx.md",
+      "ref": 7,
+      "path": "examples/Ocotillo-Senior-Living-Chandler-AZ.uwx.md",
+      "line": 393,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Parkview-Apts-Glendale-AZ.uwx.md",
+      "ref": 18,
+      "path": "examples/Parkview-Apts-Glendale-AZ.uwx.md",
+      "line": 2288,
+      "source_model_paths": [
+        "custom_calculations[0]"
+      ],
+      "section": "custom_calculations",
+      "variant": null,
+      "model_paths": [
+        "custom_calculations[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Parkview-Apts-Glendale-AZ.uwx.md",
+      "ref": 19,
+      "path": "examples/Parkview-Apts-Glendale-AZ.uwx.md",
+      "line": 2416,
+      "source_model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "section": "custom_scenarios",
+      "variant": null,
+      "model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Parkview-Apts-Glendale-AZ.uwx.md",
+      "ref": 20,
+      "path": "examples/Parkview-Apts-Glendale-AZ.uwx.md",
+      "line": 2523,
+      "source_model_paths": [
+        "extensions.x_lender_matrix"
+      ],
+      "section": "x_lender_matrix",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_lender_matrix"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Parkview-Apts-Glendale-AZ.uwx.md",
+      "ref": 21,
+      "path": "examples/Parkview-Apts-Glendale-AZ.uwx.md",
+      "line": 2617,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md",
+      "ref": 7,
+      "path": "examples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md",
+      "line": 375,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md",
+      "ref": 7,
+      "path": "examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md",
+      "line": 370,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "ref": 6,
+      "path": "examples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+      "line": 335,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/parkview-after-L6.uwx.md",
+      "ref": 14,
+      "path": "examples/parkview-after-L6.uwx.md",
+      "line": 1744,
+      "source_model_paths": [
+        "superseded.risk_assessment[0]"
+      ],
+      "section": "risk_assessment",
+      "variant": null,
+      "model_paths": [
+        "superseded.risk_assessment[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/parkview-after-L6.uwx.md",
+      "ref": 18,
+      "path": "examples/parkview-after-L6.uwx.md",
+      "line": 2288,
+      "source_model_paths": [
+        "custom_calculations[0]"
+      ],
+      "section": "custom_calculations",
+      "variant": null,
+      "model_paths": [
+        "custom_calculations[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/parkview-after-L6.uwx.md",
+      "ref": 19,
+      "path": "examples/parkview-after-L6.uwx.md",
+      "line": 2416,
+      "source_model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "section": "custom_scenarios",
+      "variant": null,
+      "model_paths": [
+        "custom_scenarios[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/parkview-after-L6.uwx.md",
+      "ref": 20,
+      "path": "examples/parkview-after-L6.uwx.md",
+      "line": 2523,
+      "source_model_paths": [
+        "extensions.x_lender_matrix"
+      ],
+      "section": "x_lender_matrix",
+      "variant": null,
+      "model_paths": [
+        "extensions.x_lender_matrix"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/parkview-after-L6.uwx.md",
+      "ref": 22,
+      "path": "examples/parkview-after-L6.uwx.md",
+      "line": 2834,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/verification/deal.uwx.md",
+      "ref": 7,
+      "path": "examples/verification/deal.uwx.md",
+      "line": 475,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "published example location; metadata validity not inferred",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    },
+    {
+      "operation": "examples/verification/deal.wrong-cap-rate.uwx.md",
+      "ref": 7,
+      "path": "examples/verification/deal.wrong-cap-rate.uwx.md",
+      "line": 475,
+      "source_model_paths": [
+        "pipeline_log[0]"
+      ],
+      "section": "pipeline_log",
+      "variant": null,
+      "model_paths": [
+        "pipeline_log[0]"
+      ],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": [],
+      "intent": {
+        "location": "examples",
+        "intent": "negative intent inferred from path",
+        "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred"
+      }
+    }
+  ],
+  "newly_assessed_composed_records": [
+    {
+      "operation": "conformance/composition/lite-projection/externalized/record.uwx.md::resolved",
+      "ref": 0,
+      "path": "conformance/composition/lite-projection/externalized/record.uwx.md",
+      "line": 9,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/lite-projection/externalized/record.uwx.md::resolved",
+      "ref": 2,
+      "path": "conformance/composition/lite-projection/externalized/parts/lease-suite-210.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/lite-projection/externalized/record.uwx.md::resolved",
+      "ref": 3,
+      "path": "conformance/composition/lite-projection/externalized/parts/lease-suite-215.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/lite-projection/externalized/record.uwx.md::resolved",
+      "ref": 4,
+      "path": "conformance/composition/lite-projection/externalized/parts/lease-suite-220.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/resolve/collection-order/record.uwx.md::resolved",
+      "ref": 0,
+      "path": "conformance/composition/resolve/collection-order/record.uwx.md",
+      "line": 9,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/resolve/collection-order/record.uwx.md::resolved",
+      "ref": 1,
+      "path": "conformance/composition/resolve/collection-order/parts/lease-suite-220.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/resolve/collection-order/record.uwx.md::resolved",
+      "ref": 2,
+      "path": "conformance/composition/resolve/collection-order/parts/lease-suite-210.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/resolve/collection-order/record.uwx.md::resolved",
+      "ref": 3,
+      "path": "conformance/composition/resolve/collection-order/parts/lease-suite-215.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/resolve/inline-vs-external/record.uwx.md::resolved",
+      "ref": 0,
+      "path": "conformance/composition/resolve/inline-vs-external/record.uwx.md",
+      "line": 9,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/resolve/inline-vs-external/record.uwx.md::resolved",
+      "ref": 1,
+      "path": "conformance/composition/resolve/inline-vs-external/parts/lease-suite-210.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/resolve/inline-vs-external/record.uwx.md::resolved",
+      "ref": 2,
+      "path": "conformance/composition/resolve/inline-vs-external/parts/lease-suite-215.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "conformance/composition/resolve/inline-vs-external/record.uwx.md::resolved",
+      "ref": 3,
+      "path": "conformance/composition/resolve/inline-vs-external/parts/lease-suite-220.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/authored-2026-10-17/externalized-deal.uwx.md::resolved",
+      "ref": 1,
+      "path": "examples/standalone/authored-2026-10-17/externalized-deal.uwx.md",
+      "line": 47,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/authored-2026-10-17/externalized-deal.uwx.md::resolved",
+      "ref": 2,
+      "path": "examples/standalone/authored-2026-10-17/parts/rent-roll-210.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/authored-2026-10-17/externalized-deal.uwx.md::resolved",
+      "ref": 3,
+      "path": "examples/standalone/authored-2026-10-17/parts/rent-roll-215.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/authored-2026-10-17/externalized-deal.uwx.md::resolved",
+      "ref": 4,
+      "path": "examples/standalone/authored-2026-10-17/parts/rent-roll-220.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md::resolved",
+      "ref": 1,
+      "path": "examples/standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md",
+      "line": 47,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md::resolved",
+      "ref": 2,
+      "path": "examples/standalone/authored-2026-10-17/package/parts/rent-roll-210.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md::resolved",
+      "ref": 3,
+      "path": "examples/standalone/authored-2026-10-17/package/parts/rent-roll-215.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md::resolved",
+      "ref": 4,
+      "path": "examples/standalone/authored-2026-10-17/package/parts/rent-roll-220.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/externalized-deal.uwx.md::resolved",
+      "ref": 1,
+      "path": "examples/standalone/externalized-deal.uwx.md",
+      "line": 46,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/externalized-deal.uwx.md::resolved",
+      "ref": 2,
+      "path": "examples/standalone/parts/rent-roll-210.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/externalized-deal.uwx.md::resolved",
+      "ref": 3,
+      "path": "examples/standalone/parts/rent-roll-215.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/externalized-deal.uwx.md::resolved",
+      "ref": 4,
+      "path": "examples/standalone/parts/rent-roll-220.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/package/records/externalized-deal.uwx.md::resolved",
+      "ref": 1,
+      "path": "examples/standalone/package/records/externalized-deal.uwx.md",
+      "line": 46,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/package/records/externalized-deal.uwx.md::resolved",
+      "ref": 2,
+      "path": "examples/standalone/package/parts/rent-roll-210.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/package/records/externalized-deal.uwx.md::resolved",
+      "ref": 3,
+      "path": "examples/standalone/package/parts/rent-roll-215.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    },
+    {
+      "operation": "examples/standalone/package/records/externalized-deal.uwx.md::resolved",
+      "ref": 4,
+      "path": "examples/standalone/package/parts/rent-roll-220.uwpart.md",
+      "line": 11,
+      "source_model_paths": [
+        "sections.rent_roll.single"
+      ],
+      "section": "rent_roll",
+      "variant": null,
+      "model_paths": [],
+      "metadata_gate": "admitted",
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": []
+      },
+      "candidate_failures": []
+    }
+  ],
+  "relevant_reference_records": [
+    {
+      "operation": "conformance/market-data/promote/explicit/deal-after-promotion.uwx.md",
+      "ref": 0,
+      "origin": {
+        "path": "conformance/market-data/promote/explicit/deal-after-promotion.uwx.md",
+        "line": 9,
+        "source_model_paths": [
+          "sections.valuation.single"
+        ]
+      },
+      "section": "valuation",
+      "variant": null,
+      "physical": true,
+      "model_paths": [
+        "sections.valuation.single"
+      ],
+      "old_sections_population": true,
+      "newly_assessed": false,
+      "metadata_gate": "admitted",
+      "canonical_resolution_presence": "string",
+      "canonical_resolution": "market_data_accepted",
+      "overrides": {
+        "presence": "absent",
+        "entries": []
+      },
+      "triggers": {
+        "inherited_assumption": [],
+        "market_data_accepted": [
+          "_meta.provenance.resolution"
+        ]
+      },
+      "inherited_from": {
+        "presence": "absent",
+        "failures": []
+      },
+      "market_data_ref": {
+        "presence": "object",
+        "value": {
+          "document_id": "md:phx:2026-Q2",
+          "as_of": "2026-06-30",
+          "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "rationale": "No comparable trades in the immediate submarket."
+        },
+        "failures": []
+      },
+      "candidate_failures": [],
+      "suppressed_by_parent": [],
+      "legacy_market": {
+        "triggers": true,
+        "missing_falsy": false
+      }
+    }
+  ],
+  "rejected_sources": [
+    {
+      "path": "conformance/composition/reject/part-malformed/parts/lease-suite-210.uwpart.md",
+      "sha256": "49da8e29bb9eb5a258969f956de1978f086cf19cb38cdf7ebf54dc0d661df6b0",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parsed",
+      "non_strict_json_placeholders": [],
+      "part_status": "refused",
+      "part_refusal": {
+        "name": "CompositionError",
+        "code": "COMP-PART-MALFORMED",
+        "message": "[COMP-PART-MALFORMED] A fragment MUST NOT carry deal_id (conformance/composition/reject/part-malformed/parts/lease-suite-210.uwpart.md) — it is not an underwriting record."
+      }
+    },
+    {
+      "path": "conformance/composition/reject/section-mismatch/parts/lease-suite-210.uwpart.md",
+      "sha256": "19c8655bf5645c0b574255120d7f763af1ec84e5fe6036718f4dce1c2aa8f0b8",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parsed",
+      "non_strict_json_placeholders": [],
+      "part_status": "refused",
+      "part_refusal": {
+        "name": "CompositionError",
+        "code": "COMP-SECTION-MISMATCH",
+        "message": "[COMP-SECTION-MISMATCH] Fragment 'lease-suite-210' declares section 'valuation' but carries a block for 'rent_roll' (conformance/composition/reject/section-mismatch/parts/lease-suite-210.uwpart.md)."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/11-yaml-flow-mapping.uwx.md",
+      "sha256": "d384d3ca49efc932b31a48c83486b01fd12fbf89134a5d9c928ee84899b2e8d9",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_YAML_FEATURE",
+        "message": "[UNSUPPORTED_YAML_FEATURE] Frontmatter line 23 uses YAML flow-style mapping or non-empty sequence, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D)."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/12-yaml-flow-sequence.uwx.md",
+      "sha256": "88a8a02e76003fa127c2ad8e65f5c87ae9efb2899be3759a899e7798041e0e41",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_YAML_FEATURE",
+        "message": "[UNSUPPORTED_YAML_FEATURE] Frontmatter line 23 uses YAML flow-style mapping or non-empty sequence, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D)."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/13-yaml-invalid-escape.uwx.md",
+      "sha256": "84952caa591aa800e8de8d1f5fa39d66464b789eebaffcd795d228c7bb1df9c9",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_YAML_FEATURE",
+        "message": "[UNSUPPORTED_YAML_FEATURE] Frontmatter line 3 uses a double-quoted escape YAML 1.2 does not define, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D)."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/14-yaml-unquoted-anchor.uwx.md",
+      "sha256": "1936d404d6c82acbfb61d91116062768bd6a4381e34323a90cbebd01ac21a54a",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_YAML_FEATURE",
+        "message": "[UNSUPPORTED_YAML_FEATURE] Frontmatter line 3 uses YAML anchor (&name), which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D)."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/15-uw-version-1-1.uwx.md",
+      "sha256": "bdf318f1c5d778032d32099865f8e7f0479a360d54ed2540ef55f55356c756cb",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_FORMAT_VERSION",
+        "message": "[UNSUPPORTED_FORMAT_VERSION] Declared uw_version \"1.1\" is unsupported; supported value is \"3.0\"."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/16-uw-version-2-0.uwx.md",
+      "sha256": "8d8dba75fe90fc3584954c9be79f587fe9b25a508c4dc63fdfcd3a3f2157ce4e",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_FORMAT_VERSION",
+        "message": "[UNSUPPORTED_FORMAT_VERSION] Declared uw_version \"2.0\" is unsupported; supported value is \"3.0\"."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/17-uw-version-2-1.uwx.md",
+      "sha256": "42a7591a0dc1643b5614f291bf711a4111315b4d36f6c73e761790aefb113197",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_FORMAT_VERSION",
+        "message": "[UNSUPPORTED_FORMAT_VERSION] Declared uw_version \"2.1\" is unsupported; supported value is \"3.0\"."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/18-uw-version-4-0.uwx.md",
+      "sha256": "8767592cc756bd4c5682f75de8ae05aeef3de6445ec6340761a76547b5d7b546",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_FORMAT_VERSION",
+        "message": "[UNSUPPORTED_FORMAT_VERSION] Declared uw_version \"4.0\" is unsupported; supported value is \"3.0\"."
+      }
+    },
+    {
+      "path": "conformance/documents/malformed/19-uw-version-absent.uwx.md",
+      "sha256": "967aa411380cc25e8ebd5a67a95810f0b64bf41ce97c4d155d0cc64fabe2761c",
+      "location": "conformance",
+      "intent": "intentionally invalid by explicit malformed/reject directory",
+      "intent_basis": "path only; no new fixture assertions or positive-validity promise inferred",
+      "status": "parser-refused",
+      "refusal": {
+        "name": "UWMDParseError",
+        "code": "UNSUPPORTED_FORMAT_VERSION",
+        "message": "[UNSUPPORTED_FORMAT_VERSION] Declared uw_version absent is unsupported; supported value is \"3.0\"."
+      }
+    }
+  ],
+  "composition": [
+    {
+      "root": "conformance/composition/lite-projection/externalized/record.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "conformance/composition/lite-projection/externalized/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/lite-projection/externalized/parts/lease-suite-215.uwpart.md",
+        "conformance/composition/lite-projection/externalized/parts/lease-suite-220.uwpart.md"
+      ],
+      "status": "resolved",
+      "issues": [],
+      "externalized": [
+        "rent_roll"
+      ],
+      "consumed": [
+        "conformance/composition/lite-projection/externalized/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/lite-projection/externalized/parts/lease-suite-215.uwpart.md",
+        "conformance/composition/lite-projection/externalized/parts/lease-suite-220.uwpart.md"
+      ],
+      "unused_loaded": [],
+      "physical": 5,
+      "union": 6,
+      "current_sections": 2,
+      "newly_assessed": 4,
+      "root_physical": 2,
+      "part_physical": 3,
+      "synthesized": 1
+    },
+    {
+      "root": "conformance/composition/reject/count-mismatch/record.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "conformance/composition/reject/count-mismatch/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/reject/count-mismatch/parts/lease-suite-215.uwpart.md",
+        "conformance/composition/reject/count-mismatch/parts/lease-suite-220.uwpart.md"
+      ],
+      "status": "unresolved",
+      "issues": [
+        {
+          "category": "validate",
+          "code": "COMP-COUNT-MISMATCH",
+          "message": "[COMP-COUNT-MISMATCH] external.part_count is 4 but parts lists 3.",
+          "pointer": "rent_roll"
+        }
+      ],
+      "externalized": []
+    },
+    {
+      "root": "conformance/composition/reject/duplicate-key/record.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "conformance/composition/reject/duplicate-key/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/reject/duplicate-key/parts/lease-suite-210b.uwpart.md"
+      ],
+      "status": "unresolved",
+      "issues": [
+        {
+          "category": "validate",
+          "code": "COMP-DUP-KEY",
+          "message": "Parts 'lease-suite-210' and 'lease-suite-210b' both claim unit_id '210'.",
+          "pointer": "rent_roll"
+        }
+      ],
+      "externalized": [
+        "rent_roll"
+      ]
+    },
+    {
+      "root": "conformance/composition/reject/part-malformed/record.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "conformance/composition/reject/part-malformed/parts/lease-suite-210.uwpart.md"
+      ],
+      "status": "part-load-refused",
+      "invalid_or_duplicate_parts": [
+        "conformance/composition/reject/part-malformed/parts/lease-suite-210.uwpart.md"
+      ]
+    },
+    {
+      "root": "conformance/composition/reject/section-mismatch/record.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "conformance/composition/reject/section-mismatch/parts/lease-suite-210.uwpart.md"
+      ],
+      "status": "part-load-refused",
+      "invalid_or_duplicate_parts": [
+        "conformance/composition/reject/section-mismatch/parts/lease-suite-210.uwpart.md"
+      ]
+    },
+    {
+      "root": "conformance/composition/resolve/collection-order/record.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "conformance/composition/resolve/collection-order/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/resolve/collection-order/parts/lease-suite-215.uwpart.md",
+        "conformance/composition/resolve/collection-order/parts/lease-suite-220.uwpart.md"
+      ],
+      "status": "resolved",
+      "issues": [],
+      "externalized": [
+        "rent_roll"
+      ],
+      "consumed": [
+        "conformance/composition/resolve/collection-order/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/resolve/collection-order/parts/lease-suite-215.uwpart.md",
+        "conformance/composition/resolve/collection-order/parts/lease-suite-220.uwpart.md"
+      ],
+      "unused_loaded": [],
+      "physical": 4,
+      "union": 5,
+      "current_sections": 1,
+      "newly_assessed": 4,
+      "root_physical": 1,
+      "part_physical": 3,
+      "synthesized": 1
+    },
+    {
+      "root": "conformance/composition/resolve/inline-vs-external/record.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "conformance/composition/resolve/inline-vs-external/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/resolve/inline-vs-external/parts/lease-suite-215.uwpart.md",
+        "conformance/composition/resolve/inline-vs-external/parts/lease-suite-220.uwpart.md"
+      ],
+      "status": "resolved",
+      "issues": [],
+      "externalized": [
+        "rent_roll"
+      ],
+      "consumed": [
+        "conformance/composition/resolve/inline-vs-external/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/resolve/inline-vs-external/parts/lease-suite-215.uwpart.md",
+        "conformance/composition/resolve/inline-vs-external/parts/lease-suite-220.uwpart.md"
+      ],
+      "unused_loaded": [],
+      "physical": 4,
+      "union": 5,
+      "current_sections": 1,
+      "newly_assessed": 4,
+      "root_physical": 1,
+      "part_physical": 3,
+      "synthesized": 1
+    },
+    {
+      "root": "conformance/composition/unresolved/missing-part/record.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "conformance/composition/unresolved/missing-part/parts/lease-suite-210.uwpart.md",
+        "conformance/composition/unresolved/missing-part/parts/lease-suite-215.uwpart.md"
+      ],
+      "status": "unresolved",
+      "issues": [
+        {
+          "category": "validate",
+          "code": "COMP-UNRESOLVED",
+          "message": "Part 'lease-suite-220' does not resolve within this package.",
+          "pointer": "rent_roll.external.parts"
+        }
+      ],
+      "externalized": [
+        "rent_roll"
+      ]
+    },
+    {
+      "root": "examples/standalone/authored-2026-10-17/externalized-deal.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "examples/standalone/authored-2026-10-17/parts/cash-flow-series-dated.uwpart.md",
+        "examples/standalone/authored-2026-10-17/parts/operating-statement-t12.uwpart.md",
+        "examples/standalone/authored-2026-10-17/parts/rent-roll-210.uwpart.md",
+        "examples/standalone/authored-2026-10-17/parts/rent-roll-215.uwpart.md",
+        "examples/standalone/authored-2026-10-17/parts/rent-roll-220.uwpart.md"
+      ],
+      "status": "resolved",
+      "issues": [],
+      "externalized": [
+        "rent_roll"
+      ],
+      "consumed": [
+        "examples/standalone/authored-2026-10-17/parts/rent-roll-210.uwpart.md",
+        "examples/standalone/authored-2026-10-17/parts/rent-roll-215.uwpart.md",
+        "examples/standalone/authored-2026-10-17/parts/rent-roll-220.uwpart.md"
+      ],
+      "unused_loaded": [
+        "examples/standalone/authored-2026-10-17/parts/cash-flow-series-dated.uwpart.md",
+        "examples/standalone/authored-2026-10-17/parts/operating-statement-t12.uwpart.md"
+      ],
+      "physical": 5,
+      "union": 6,
+      "current_sections": 2,
+      "newly_assessed": 4,
+      "root_physical": 2,
+      "part_physical": 3,
+      "synthesized": 1
+    },
+    {
+      "root": "examples/standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "examples/standalone/authored-2026-10-17/package/parts/cash-flow-series-dated.uwpart.md",
+        "examples/standalone/authored-2026-10-17/package/parts/operating-statement-t12.uwpart.md",
+        "examples/standalone/authored-2026-10-17/package/parts/rent-roll-210.uwpart.md",
+        "examples/standalone/authored-2026-10-17/package/parts/rent-roll-215.uwpart.md",
+        "examples/standalone/authored-2026-10-17/package/parts/rent-roll-220.uwpart.md"
+      ],
+      "status": "resolved",
+      "issues": [],
+      "externalized": [
+        "rent_roll"
+      ],
+      "consumed": [
+        "examples/standalone/authored-2026-10-17/package/parts/rent-roll-210.uwpart.md",
+        "examples/standalone/authored-2026-10-17/package/parts/rent-roll-215.uwpart.md",
+        "examples/standalone/authored-2026-10-17/package/parts/rent-roll-220.uwpart.md"
+      ],
+      "unused_loaded": [
+        "examples/standalone/authored-2026-10-17/package/parts/cash-flow-series-dated.uwpart.md",
+        "examples/standalone/authored-2026-10-17/package/parts/operating-statement-t12.uwpart.md"
+      ],
+      "physical": 5,
+      "union": 6,
+      "current_sections": 2,
+      "newly_assessed": 4,
+      "root_physical": 2,
+      "part_physical": 3,
+      "synthesized": 1
+    },
+    {
+      "root": "examples/standalone/externalized-deal.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "examples/standalone/parts/cash-flow-series-dated.uwpart.md",
+        "examples/standalone/parts/operating-statement-t12.uwpart.md",
+        "examples/standalone/parts/rent-roll-210.uwpart.md",
+        "examples/standalone/parts/rent-roll-215.uwpart.md",
+        "examples/standalone/parts/rent-roll-220.uwpart.md"
+      ],
+      "status": "resolved",
+      "issues": [],
+      "externalized": [
+        "rent_roll"
+      ],
+      "consumed": [
+        "examples/standalone/parts/rent-roll-210.uwpart.md",
+        "examples/standalone/parts/rent-roll-215.uwpart.md",
+        "examples/standalone/parts/rent-roll-220.uwpart.md"
+      ],
+      "unused_loaded": [
+        "examples/standalone/parts/cash-flow-series-dated.uwpart.md",
+        "examples/standalone/parts/operating-statement-t12.uwpart.md"
+      ],
+      "physical": 5,
+      "union": 6,
+      "current_sections": 2,
+      "newly_assessed": 4,
+      "root_physical": 2,
+      "part_physical": 3,
+      "synthesized": 1
+    },
+    {
+      "root": "examples/standalone/package/records/externalized-deal.uwx.md",
+      "association_basis": "Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.",
+      "loaded": [
+        "examples/standalone/package/parts/cash-flow-series-dated.uwpart.md",
+        "examples/standalone/package/parts/operating-statement-t12.uwpart.md",
+        "examples/standalone/package/parts/rent-roll-210.uwpart.md",
+        "examples/standalone/package/parts/rent-roll-215.uwpart.md",
+        "examples/standalone/package/parts/rent-roll-220.uwpart.md"
+      ],
+      "status": "resolved",
+      "issues": [],
+      "externalized": [
+        "rent_roll"
+      ],
+      "consumed": [
+        "examples/standalone/package/parts/rent-roll-210.uwpart.md",
+        "examples/standalone/package/parts/rent-roll-215.uwpart.md",
+        "examples/standalone/package/parts/rent-roll-220.uwpart.md"
+      ],
+      "unused_loaded": [
+        "examples/standalone/package/parts/cash-flow-series-dated.uwpart.md",
+        "examples/standalone/package/parts/operating-statement-t12.uwpart.md"
+      ],
+      "physical": 5,
+      "union": 6,
+      "current_sections": 2,
+      "newly_assessed": 4,
+      "root_physical": 2,
+      "part_physical": 3,
+      "synthesized": 1
+    }
+  ],
+  "authored_controls": [
+    {
+      "name": "historical-market-reference",
+      "source_sha256": "13f765ccbe9fdc7db56dc83c6f9137da6a6eac2b703046b02e22c6d215dcdb03",
+      "expectation": {
+        "failures": 1,
+        "newly": 1,
+        "old": 0
+      },
+      "observed": {
+        "physical": 2,
+        "union": 2,
+        "newly_assessed": 1,
+        "candidate_failures": [
+          "market_data_ref.required_absent"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "overwritten-extension-market",
+      "source_sha256": "837a0beb2d9c07eb8fff8bbd0ce020593618fad762cda7f024691218ec2f74e0",
+      "expectation": {
+        "failures": 1,
+        "newly": 2,
+        "old": 0
+      },
+      "observed": {
+        "physical": 2,
+        "union": 2,
+        "newly_assessed": 2,
+        "candidate_failures": [
+          "market_data_ref.required_absent"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "append-pipeline_log",
+      "source_sha256": "d72f6d136e0d4881919b09fcb3ce257768ec81b0a381aa537d972ff33f6e362e",
+      "expectation": {
+        "failures": 1,
+        "newly": 1,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 1,
+        "candidate_failures": [
+          "inherited_from.required_absent"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "append-custom_calculations",
+      "source_sha256": "30e227ef70bebf9021c8d72f1f997be96a67138cea9efcd836158cbbc8ef2dc1",
+      "expectation": {
+        "failures": 1,
+        "newly": 1,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 1,
+        "candidate_failures": [
+          "inherited_from.required_absent"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "append-custom_scenarios",
+      "source_sha256": "84985f15e56a1879b011f7de360872a9b4c5047401b169da849f2da9a1d867f2",
+      "expectation": {
+        "failures": 1,
+        "newly": 1,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 1,
+        "candidate_failures": [
+          "inherited_from.required_absent"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "current-variants-already-assessed",
+      "source_sha256": "383237678e2283d21af559742cd51db49e4a945b92d7991d79901afea5fa5ba9",
+      "expectation": {
+        "failures": 1,
+        "newly": 0,
+        "old": 1
+      },
+      "observed": {
+        "physical": 2,
+        "union": 2,
+        "newly_assessed": 0,
+        "candidate_failures": [
+          "market_data_ref.required_absent"
+        ],
+        "actual_dq06_errors": 1,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "shadowed-inherited-override",
+      "source_sha256": "9c167367240a2487bc1f374f86bb11626d9c68de56c877c511893065258a21f7",
+      "expectation": {
+        "failures": 1,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [
+          "inherited_from.required_absent"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "unmatched-market-override",
+      "source_sha256": "7b9842e76f4942cd3211965fc38cfbac6cd321eb6f5e079aef21310eea55b494",
+      "expectation": {
+        "failures": 1,
+        "old": 1
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [
+          "market_data_ref.required_absent"
+        ],
+        "actual_dq06_errors": 1,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "both-triggers-duplicate-suppression",
+      "source_sha256": "a51d66da821a241829f7b1d9ee091e5ff478d3a398e82de0eaf25f79a47414d2",
+      "expectation": {
+        "failures": 2,
+        "old": 1
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [
+          "inherited_from.required_absent",
+          "market_data_ref.required_absent"
+        ],
+        "actual_dq06_errors": 1,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "present-false-carrier-not-absence",
+      "source_sha256": "cc19c4ab1b17ac845fe89c35decf550c39d772bb3a17e1a7056bc4a8723cd834",
+      "expectation": {
+        "failures": 1,
+        "old": 1
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [
+          "market_data_ref.object"
+        ],
+        "actual_dq06_errors": 1,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "stated-untriggered-carrier-typed-domain",
+      "source_sha256": "44341dfe4b39ecd0500710790b25004c54771fbee8ba8ea9adb0ce93b8cc3e4d",
+      "expectation": {
+        "failures": 2,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [
+          "inherited_from.digest.invalid",
+          "inherited_from.distance.invalid"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "old-parent-refusal-suppresses-new-carrier",
+      "source_sha256": "9e393a5d24ec45c5671ce46d5dd2feac74d04c61f9dc33c89516001939f6779c",
+      "expectation": {
+        "failures": 0,
+        "old": 1
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [],
+        "actual_dq06_errors": 1,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "invalid-null-override-keeps-observed-runtime-refusal",
+      "source_sha256": "3572ba7335f96727c56d3da0e519609ce42f5a7c73a500a5efc26f1186aef3c4",
+      "expectation": {
+        "failures": 0,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": {
+          "name": "TypeError",
+          "code": null,
+          "message": "Cannot read properties of null (reading 'resolution')"
+        }
+      }
+    },
+    {
+      "name": "mutable-canonical-meta-replaces-convenience-cache",
+      "source_sha256": "84255b6141edc4d4253c231c9a08166f3b97850417e8bd1489db47f851e6ba4f",
+      "expectation": {
+        "failures": 1,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 1,
+        "newly_assessed": 0,
+        "candidate_failures": [
+          "market_data_ref.required_absent"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "exact-reference-dedup-vs-distinct-model-added",
+      "source_sha256": "51ddd642618dcec3166f6f5fcb2f20d85f92f5b9edf3e1d0771d3ae726dc60ad",
+      "expectation": {
+        "failures": 1,
+        "newly": 1,
+        "old": 0
+      },
+      "observed": {
+        "physical": 1,
+        "union": 2,
+        "newly_assessed": 1,
+        "candidate_failures": [
+          "inherited_from.required_absent"
+        ],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    },
+    {
+      "name": "actual-copied-model",
+      "expectation": {
+        "physical": 0,
+        "union": 1,
+        "failures": 0
+      },
+      "observed": {
+        "physical": 0,
+        "union": 1,
+        "newly_assessed": 1,
+        "candidate_failures": [],
+        "actual_dq06_errors": 0,
+        "actual_dq_refusal": null
+      }
+    }
+  ],
+  "test_evidence": [
+    {
+      "path": "packages/uwmd-verify/src/validator.section-readiness.test.ts",
+      "sha256": "439bbbbe3e4320ffb27aa728488f63e660c0a9e1932e780cbbe42a84cd3a97bd",
+      "scope": "Existing embedded test controls; not separately enumerated as source documents or assumed future expectations."
+    },
+    {
+      "path": "packages/uwmd-verify/src/market-data.test.ts",
+      "sha256": "2ef92dcd940d0964a59b94f5cb426fd453f37c36fc2d60cd59719c9fd668c0d2",
+      "scope": "Existing embedded test controls; not separately enumerated as source documents or assumed future expectations."
+    },
+    {
+      "path": "packages/uwmd-core/src/cascade.market-data.test.ts",
+      "sha256": "53991410b2d12ab5d34da989b200a7887a91835965cbce2a725dc4340f0658a3",
+      "scope": "Existing embedded test controls; not separately enumerated as source documents or assumed future expectations."
+    }
+  ]
+}
