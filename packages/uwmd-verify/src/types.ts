@@ -250,7 +250,7 @@ export interface UWProvenance {
   /** REQUIRED when `source` matches `agent/*`. */
   agent_id?: string | null;
   agent_version?: string | null;
-  /** ISO 8601 UTC write time. */
+  /** Exact T1B UTC-Z write time: Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z (RFC0094). */
   timestamp: string;
   notes?: string | null;
   /**
@@ -384,7 +384,7 @@ export interface InheritedFrom {
  */
 export interface MarketDataRef {
   document_id: string;
-  /** ISO `YYYY-MM-DD`, copied from the observation set. */
+  /** Whole ASCII Gregorian YYYY-MM-DD, years0001–9999, no normalization (RFC0095). */
   as_of: string;
   /** `sha256:<64 lowercase hex>` over the observation set's canonical form. */
   digest: string;

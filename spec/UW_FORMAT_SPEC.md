@@ -444,14 +444,38 @@ organized into four named sub-objects by concern:
 | `actor` | nonempty string | yes | The principal that initiated the write. Distinct from `source`: `source` is the policy-vocabulary identity of the writer, `actor` is who asked for the write. No trimming, source grammar or attribution inference applies (RFC 0090). |
 | `agent_id` | string\|null | no | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"`. REQUIRED when `source` matches `agent/*`. |
 | `agent_version` | string\|null | no | Version (semver) of the agent or tool that produced this block. |
-| `timestamp` | ISO 8601 | yes | When this block was written. |
+| `timestamp` | T1B UTC-Z string | yes | When this block was written; exact reader domain below (RFC0094). |
 | `notes` | string\|null | no | Free-text notes from the agent or user. |
-| `market_data_ref` | object | cond. | RFC 0022 §4 — REQUIRED when `resolution` is `market_data_accepted`. |
-| `inherited_from` | object | cond. | RFC 0021 §5 — REQUIRED when `resolution` is `inherited_assumption`. |
+| `market_data_ref` | object | cond. | REQUIRED under the canonical or any stated override `market_data_accepted` assertion (RFC0095). |
+| `inherited_from` | object | cond. | REQUIRED under the canonical or any stated override `inherited_assumption` assertion (RFC0095). |
 
 `market_data_ref` and `inherited_from` sit in `provenance`, not `integrity`:
-each names *where a value came from*, and each is coupled to a `resolution`
-value. The conditional-requirement rules are defined against `provenance.resolution`.
+each names *where a value came from*. For each distinct admitted block, the
+corresponding carrier is REQUIRED when its tag occurs in own canonical
+`provenance.resolution` **or any own resolution of an object entry in the stated
+block-level `_overrides` array**, identically for both references. Invalid,
+missing, unmatched, duplicate or shadowed paths do not erase an assertion.
+A later assertion cannot retract an earlier one. Collapse matching assertions to
+one obligation per block/carrier; do not select an effective leaf winner, fetch
+references or infer asymmetry. Rejected canonical metadata/provenance/lifecycle
+parents suppress descendants; independent sibling annotations are still assessed.
+
+A stated carrier is a non-null non-array object even without a matching tag.
+For `inherited_from`, require `document_id:string`, `digest` exactly `sha256:`
+plus64 lowercase ASCII hexadecimal digits, and `distance` a finite integral JSON
+number at least1 (no new maximum; booleans are not numbers). For `market_data_ref`,
+require `document_id:string`, `as_of` in the domain below and the same exact
+digest; optional `rationale` is a string. Unknown children remain admitted;
+`document_id` and `rationale` have no nonempty constraint. Present null is invalid.
+
+`market_data_ref.as_of` consumes the whole string: exactly ASCII `YYYY-MM-DD`,
+four year digits, two month digits, two day digits and literal hyphens. Years
+are0001–9999; month/day follow the proleptic Gregorian calendar (leap if divisible
+by400 or divisible by4 but not100). No trimming, normalization, offsets, time
+components, Unicode digits or year zero. This date-only domain is distinct from
+RFC0094 T1B. A missing required carrier produces one parent META-06; an admitted
+carrier missing as_of produces one child META-06. Carrier shape errors suppress
+its children. Lexical reference validation does not authenticate external data.
 
 #### 2.5c `quality` — how trustworthy or complete the data is
 
@@ -464,6 +488,9 @@ value. The conditional-requirement rules are defined against `provenance.resolut
 | `provisional` | boolean | no | See §3.4. |
 
 Per-field exceptions are stated only in block-level `_overrides` (§2.5f).
+Present `flags` MUST be an array with string elements; present `partial` and
+`provisional` MUST be booleans. A present `quality.field_overrides`, regardless
+of value, is forbidden. These are closed META-05/error predicates (RFC0095).
 
 #### 2.5d `lifecycle` — where this block sits in the supersede chain
 
@@ -517,6 +544,22 @@ alike — `_meta.quality` / `_meta.provenance` apply elsewhere.
 
 `_overrides` is **block content for integrity purposes**: it is inside the
 digest, including every stated override.
+
+**Closed optional admission (RFC0095).** A present `_overrides` MUST be an array;
+each entry MUST be a non-null non-array object with an own string `path`.
+Present confidence is high/medium/low, reason is one of the five values above,
+and note is a string. No path parser, target-existence, nonempty or uniqueness
+constraint is added; unknown members remain admitted. META-05/error applies in
+container/entry/path/confidence/reason/note order. Source/resolution keep their
+SRC-01/02/03 ownership. Sibling `_overrides` is assessed even when `_meta` is
+missing or rejected; invalid containers/entries must not crash later validators.
+Optional provenance agent_id/agent_version/notes are string-or-null. A valid
+canonical agent source requires an own agent_id member (META-06 if absent);
+null/empty strings satisfy presence, wrong types receive META-05 only. No actor
+inference, source-suffix comparison or new identity/version grammar is imposed.
+Complete metadata ordering, parent precedence and physical/current MODEL
+accounting are defined in Protocol §III.6a; META-01–04 and absence warnings remain
+unchanged. DQ-06/info is stage readiness only; it emits no attribution duplicate.
 
 ---
 
@@ -585,6 +628,36 @@ suppresses only META-02. An actor-only error does not suppress either flag.
 Existing completeness rules and META-01 retain their scope. Protocol §III.6a
 defines exact attribution and ordering; these allocations do not extend to
 other missing or malformed metadata members.
+
+**Present-invalid metadata leaves (RFC0094).** After the complete META-02/03
+pass, emit one `META-04`/error for each present invalid canonical leaf, per block
+in this order: `_meta.quality.confidence` must be exactly `high`, `medium` or
+`low`; `_meta.lifecycle.revision` must be a finite integral number at least1;
+`_meta.provenance.timestamp` must satisfy T1B below. Numeric1.0 and1e0 are
+integer1; booleans are not integers. No new safe-integer maximum, chain rule or
+fraction-length limit is imposed.
+
+T1B is exactly `YYYY-MM-DDTHH:mm:ss[.digits]Z`: ASCII digits, four-digit year0000
+through9999 and a valid proleptic Gregorian date, hour00–23, minute/second00–59,
+uppercase T/Z and optional nonempty ASCII fraction. Gregorian leap years are
+divisible by400 or divisible by4 but not100, including year0000. Consume the
+entire string. Offsets (including zero), lowercase, whitespace, second60 and
+normalization are refused; no clock or leap-second lookup supplies admission.
+This profile applies to the canonical provenance timestamp only.
+
+Use the same all-retained-physical plus current model-reference identity union
+and SOURCE/MODEL/composition authority as above. Complete every shape, actor and
+boolean pass before this complete leaf pass, and keep role/period/source checks
+later. Within each block confidence precedes revision, then timestamp. Attribute
+each finding to its exact canonical field and block section. Rejected old whole
+metadata/provenance/lifecycle shape suppresses descendants; absent/nonobject
+quality suppresses only confidence. Placement/section, actor and boolean errors
+do not suppress independent leaves. An absent leaf gains no META-04; existing
+completeness warning predicates, populations and order remain, including any
+warning that also applies to present null. No default, coercion, repair or
+generic schema fallback is permitted. Optional metadata and conditional
+references remain outside this closed allocation. Protocol §III.6a defines
+transport and resulting validation/receipt-policy accounting.
 
 ### 2.6 Source Identifiers
 

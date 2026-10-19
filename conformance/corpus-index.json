@@ -5620,6 +5620,56 @@
       "suite": "documents",
       "scenario": "malformed/33-meta-pass-order",
       "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/34-meta-t1b",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/35-meta-leaf-values",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/36-meta-leaf-parents-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/37-meta-leaf-retained",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/38-meta-optional-values",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/39-meta-reference-values",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/40-meta-optional-parents-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/41-meta-optional-retained",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/42-meta-optional-lawful",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/43-meta-reference-calendar",
+      "target": "verifier"
     }
   ]
 }

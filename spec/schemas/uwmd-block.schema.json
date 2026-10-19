@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/uwmd-block.schema.json",
   "title": "UW Markdown Section Block (Format 3.0)",
-  "description": "Bare section payload with inline nested _meta first, and optional _role, _overrides and _notes. Format §2.4–§2.6, RFC 0081 G2. RFC0093 allocates META-01 for misplaced _meta, present invalid/mismatched section and required absent/nonobject quality; existing predicates below are unchanged. Lexical source order and equality to an external annotation are document requirements, not expressible in JSON Schema.",
+  "description": "Bare section payload with inline nested _meta first, and optional _role, _overrides and _notes. Format §2.4–§2.6, RFC 0081 G2. RFC0093 allocates META-01 for misplaced _meta, present invalid/mismatched section and required absent/nonobject quality; existing predicates below are unchanged. Lexical source order and equality to an external annotation are document requirements, not expressible in JSON Schema. RFC0095 allocates closed META-05/06; root conditions account for every stated override assertion without selecting paths. Reference dates use an exact Gregorian domain independent of format plugins.",
   "type": "object",
   "required": [
     "_meta"
@@ -25,7 +25,7 @@
     },
     "_overrides": {
       "type": "array",
-      "description": "Leaf metadata exceptions (Format §2.5f). Included in the block digest; a matching path wins over block-level metadata.",
+      "description": "Leaf metadata exceptions (Format §2.5f). Included in the block digest; a matching path wins over block-level metadata. RFC0095 META-05 validates only its closed container/entry/member predicates; SRC owns source/resolution. Stated reference-resolution assertions require canonical carriers even when their paths are shadowed or duplicate.",
       "items": {
         "type": "object",
         "required": [
@@ -128,7 +128,8 @@
             "timestamp": {
               "type": "string",
               "format": "date-time",
-              "description": "ISO-8601 UTC timestamp at write time."
+              "pattern": "^(?:(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26])00)-02-29|[0-9]{4}-(?:(?:01|03|05|07|08|10|12)-(?:0[1-9]|[12][0-9]|3[01])|(?:04|06|09|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8])))T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]+)?Z(?![\\s\\S])",
+              "description": "Exact T1B UTC-Z (RFC0094): ASCII YYYY-MM-DDTHH:mm:ss[.digits]Z, Gregorian year0000–9999, seconds00–59, uppercase T/Z and optional nonempty fraction. Full-string match; no offsets, normalization or host date parser authority. Present invalid values are META-04/error; existing absence diagnostics are unchanged."
             },
             "notes": {
               "type": [
@@ -143,17 +144,17 @@
                 "as_of",
                 "digest"
               ],
-              "description": "RFC 0022 §4 — REQUIRED when resolution is 'market_data_accepted'.",
+              "description": "RFC0095: required when canonical provenance.resolution or any stated object override resolution is market_data_accepted; both references use symmetric assertion accounting. Unknown children remain admitted.",
               "properties": {
                 "document_id": {
                   "type": "string"
                 },
                 "as_of": {
-                  "type": "string"
+                  "$ref": "#/$defs/MarketReferenceDate"
                 },
                 "digest": {
                   "type": "string",
-                  "pattern": "^sha256:[0-9a-f]{64}$"
+                  "pattern": "^sha256:[0-9a-f]{64}(?![\\s\\S])"
                 },
                 "rationale": {
                   "type": "string"
@@ -167,14 +168,14 @@
                 "digest",
                 "distance"
               ],
-              "description": "RFC 0021 §5 — REQUIRED when resolution is 'inherited_assumption'.",
+              "description": "RFC0095: required when canonical provenance.resolution or any stated object override resolution is inherited_assumption; both references use symmetric assertion accounting. Unknown children remain admitted.",
               "properties": {
                 "document_id": {
                   "type": "string"
                 },
                 "digest": {
                   "type": "string",
-                  "pattern": "^sha256:[0-9a-f]{64}$"
+                  "pattern": "^sha256:[0-9a-f]{64}(?![\\s\\S])"
                 },
                 "distance": {
                   "type": "integer",
@@ -235,7 +236,7 @@
             "revision": {
               "type": "integer",
               "minimum": 1,
-              "description": "1-based supersede-chain position."
+              "description": "1-based supersede-chain position. Present invalid revision is META-04/error (RFC0094); no new maximum or chain diagnostic is allocated."
             },
             "superseded": {
               "type": "boolean",
@@ -334,6 +335,11 @@
         "system_default"
       ],
       "description": "Closed resolution vocabulary (Format §2.6). Unknown values are SRC-03. manual is actor-only."
+    },
+    "MarketReferenceDate": {
+      "type": "string",
+      "pattern": "^(?!0000)(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8]))|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)(?![\\s\\S])",
+      "description": "Whole ASCII YYYY-MM-DD, valid Gregorian date, years 0001–9999; no trimming or normalization. RFC 0095 U3."
     }
   },
   "examples": [
@@ -370,5 +376,273 @@
     "required": [
       "section_id"
     ]
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "allOf": [
+          {
+            "required": [
+              "_meta"
+            ],
+            "properties": {
+              "_meta": {
+                "type": "object",
+                "required": [
+                  "provenance",
+                  "lifecycle"
+                ],
+                "properties": {
+                  "provenance": {
+                    "type": "object"
+                  },
+                  "lifecycle": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "not": {
+              "required": [
+                "section_id"
+              ]
+            }
+          },
+          {
+            "required": [
+              "_meta"
+            ],
+            "properties": {
+              "_meta": {
+                "type": "object",
+                "required": [
+                  "provenance"
+                ],
+                "properties": {
+                  "provenance": {
+                    "required": [
+                      "source"
+                    ],
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "pattern": "^agent/[A-Za-z0-9][A-Za-z0-9._-]*(?![\\s\\S])"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "_meta": {
+            "properties": {
+              "provenance": {
+                "required": [
+                  "agent_id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "allOf": [
+          {
+            "required": [
+              "_meta"
+            ],
+            "properties": {
+              "_meta": {
+                "type": "object",
+                "required": [
+                  "provenance",
+                  "lifecycle"
+                ],
+                "properties": {
+                  "provenance": {
+                    "type": "object"
+                  },
+                  "lifecycle": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "not": {
+              "required": [
+                "section_id"
+              ]
+            }
+          },
+          {
+            "anyOf": [
+              {
+                "required": [
+                  "_meta"
+                ],
+                "properties": {
+                  "_meta": {
+                    "type": "object",
+                    "required": [
+                      "provenance"
+                    ],
+                    "properties": {
+                      "provenance": {
+                        "type": "object",
+                        "required": [
+                          "resolution"
+                        ],
+                        "properties": {
+                          "resolution": {
+                            "const": "inherited_assumption"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "required": [
+                  "_overrides"
+                ],
+                "properties": {
+                  "_overrides": {
+                    "type": "array",
+                    "contains": {
+                      "type": "object",
+                      "required": [
+                        "resolution"
+                      ],
+                      "properties": {
+                        "resolution": {
+                          "const": "inherited_assumption"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "_meta": {
+            "properties": {
+              "provenance": {
+                "required": [
+                  "inherited_from"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "allOf": [
+          {
+            "required": [
+              "_meta"
+            ],
+            "properties": {
+              "_meta": {
+                "type": "object",
+                "required": [
+                  "provenance",
+                  "lifecycle"
+                ],
+                "properties": {
+                  "provenance": {
+                    "type": "object"
+                  },
+                  "lifecycle": {
+                    "type": "object"
+                  }
+                }
+              }
+            },
+            "not": {
+              "required": [
+                "section_id"
+              ]
+            }
+          },
+          {
+            "anyOf": [
+              {
+                "required": [
+                  "_meta"
+                ],
+                "properties": {
+                  "_meta": {
+                    "type": "object",
+                    "required": [
+                      "provenance"
+                    ],
+                    "properties": {
+                      "provenance": {
+                        "type": "object",
+                        "required": [
+                          "resolution"
+                        ],
+                        "properties": {
+                          "resolution": {
+                            "const": "market_data_accepted"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "required": [
+                  "_overrides"
+                ],
+                "properties": {
+                  "_overrides": {
+                    "type": "array",
+                    "contains": {
+                      "type": "object",
+                      "required": [
+                        "resolution"
+                      ],
+                      "properties": {
+                        "resolution": {
+                          "const": "market_data_accepted"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "_meta": {
+            "properties": {
+              "provenance": {
+                "required": [
+                  "market_data_ref"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

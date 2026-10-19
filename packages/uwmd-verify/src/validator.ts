@@ -151,6 +151,9 @@ export function validateUWFile(
   checkMetadataAdmission(parsed, issues, sourceOperation);
   checkProvenanceActors(parsed, issues);
   checkMetadataBooleans(parsed, issues);
+  checkMetadataLeaves(parsed, issues);
+  checkOptionalMetadata(parsed, issues);
+  checkMetadataReferences(parsed, issues);
   checkBlockRoles(parsed, issues);
   checkPeriodSeries(parsed, issues);
   checkSourceVocabulary(parsed, issues);
@@ -3140,6 +3143,38 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
       }
     }
   }
+  // Accepted leaf counterparts (Format2.5g/RFC0031): assess own annotation
+  // assertions in the existing sections/current-variant population. Canonical SRC
+  // admission/population above stays unchanged; these findings name the leaf.
+  for (const [section, entry] of Object.entries(parsed.sections)) {
+    const blocks = isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock];
+    for (const block of blocks) {
+    if (!Object.hasOwn(block.content, '_overrides') || !Array.isArray(block.content['_overrides'])) continue;
+    const overrides = block.content['_overrides'];
+    for (let index = 0; index < overrides.length; index++) {
+      const override = Object.hasOwn(overrides, index) ? overrides[index] : undefined;
+      if (!metaObject(override)) continue; // META-05 owns the entry shape.
+      const path = `_overrides[${index}]`;
+      if (Object.hasOwn(override, 'source')) {
+        const value = override.source;
+        if (typeof value === 'string' && RESOLUTION_TAG_SET.has(value)) {
+          issues.push({ code: 'SRC-02', severity, section, field: `${path}.source`,
+            message: `Block ${path}.source is a resolution tag in the actor field.` });
+        } else {
+          const actor = typeof value === 'string' ? parseActorSource(value) : { kind: 'invalid' as const };
+          const valid = actor.kind === 'manual' || (actor.kind === 'namespaced' && value === `${actor.namespace}/${actor.id}`);
+          if (!valid) issues.push({ code: 'SRC-01', severity, section, field: `${path}.source`,
+            message: `Block ${path}.source must be manual or an exact registered <namespace>/<id> actor.` });
+        }
+      }
+      if (Object.hasOwn(override, 'resolution') && !(typeof override.resolution === 'string' && RESOLUTION_TAG_SET.has(override.resolution))) {
+        issues.push({ code: 'SRC-03', severity, section, field: `${path}.resolution`,
+          message: `Block ${path}.resolution is outside the closed resolution vocabulary.` });
+      }
+    }
+  }
+
+  }
 }
 
 // ─── META-01: the one block shape (Format §2.4–§2.5, RFC 0081 §3) ───────────
@@ -3276,6 +3311,178 @@ function checkMetadataBooleans(parsed: ParsedUWFile, issues: ValidationMessage[]
   for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
 }
 
+// RFC0094: only present-invalid canonical confidence, revision and timestamp.
+// Keep all absence/completeness predicates and earlier parent gates unchanged.
+function checkMetadataLeaves(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const visited = new Set<UWBlock>();
+  const walk = (sectionId: string, block: UWBlock): void => {
+    if (visited.has(block)) return;
+    visited.add(block);
+    const meta = block.content['_meta'];
+    if (!Object.hasOwn(block.content, '_meta') || meta === undefined || malformedMetaShape(block)) return;
+    const admitted = meta as Record<string, unknown>;
+    for (const [group, leaf, valid, requirement] of [
+      ['quality', 'confidence', (value: unknown) => typeof value === 'string'
+        && ['high', 'medium', 'low'].includes(value), 'one of the exact strings high, medium or low'],
+      ['lifecycle', 'revision', (value: unknown) => typeof value === 'number'
+        && Number.isFinite(value) && Number.isInteger(value) && value >= 1, 'an integer greater than or equal to 1'],
+      ['provenance', 'timestamp', isMetadataTimestamp, 'an exact Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z timestamp'],
+    ] as const) {
+      const parent = admitted[group];
+      if (!Object.hasOwn(admitted, group) || !metaObject(parent) || !Object.hasOwn(parent, leaf) || valid(parent[leaf])) continue;
+      const field = `_meta.${group}.${leaf}`;
+      issues.push({
+        code: 'META-04', severity: 'error', section: sectionId, field,
+        message: `Block ${field} must be ${requirement}.`,
+      });
+    }
+  };
+  for (const block of parsedPhysicalBlocks(parsed)) walk(block.annotation.section, block);
+  for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
+}
+
+function isMetadataTimestamp(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const match = /^([0-9]{4}-[0-9]{2}-[0-9]{2})T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]+)?Z$/.exec(value);
+  // JavaScript $ also matches before a final newline: require exact consumption.
+  return match !== null && match[0] === value && parseISODate(match[1]!) !== null;
+}
+
+// RFC0095: exact-identity union shared by the two new complete passes.
+// Keep earlier passes/order intact and never reparse stale raw model evidence.
+function metadataReferences(parsed: ParsedUWFile): [string, UWBlock][] {
+  const seen = new Set<UWBlock>();
+  const entries: [string, UWBlock][] = [];
+  for (const [id, block] of [
+    ...parsedPhysicalBlocks(parsed).map(block => [block.annotation.section, block] as [string, UWBlock]),
+    ...metaModelBlocks(parsed),
+  ]) {
+    if (seen.has(block)) continue;
+    seen.add(block);
+    entries.push([id, block]);
+  }
+  return entries;
+}
+
+function admittedOwnMetadata(block: UWBlock): Record<string, unknown> | undefined {
+  if (!Object.hasOwn(block.content, '_meta') || malformedMetaShape(block)) return undefined;
+  const meta = block.content['_meta'];
+  if (!metaObject(meta) || !Object.hasOwn(meta, 'provenance') || !metaObject(meta.provenance)
+    || !Object.hasOwn(meta, 'lifecycle') || !metaObject(meta.lifecycle)) return undefined;
+  return meta;
+}
+
+function checkOptionalMetadata(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  for (const [section, block] of metadataReferences(parsed)) {
+    const fail = (field: string, requirement: string): void => {
+      issues.push({ code: 'META-05', severity: 'error', section, field,
+        message: `Block ${field} must ${requirement}.` });
+    };
+    const meta = admittedOwnMetadata(block);
+    if (meta !== undefined) {
+      const provenance = meta.provenance as Record<string, unknown>;
+      for (const key of ['agent_id', 'agent_version', 'notes']) {
+        if (Object.hasOwn(provenance, key) && provenance[key] !== null && typeof provenance[key] !== 'string') {
+          fail(`_meta.provenance.${key}`, 'be a string or null when present');
+        }
+      }
+      const quality = Object.hasOwn(meta, 'quality') ? meta.quality : undefined;
+      if (metaObject(quality)) {
+        if (Object.hasOwn(quality, 'flags')) {
+          if (!Array.isArray(quality.flags)) fail('_meta.quality.flags', 'be an array of strings');
+          else for (let index = 0; index < quality.flags.length; index++) {
+            if (!Object.hasOwn(quality.flags, index) || typeof quality.flags[index] !== 'string') fail(`_meta.quality.flags[${index}]`, 'be a string');
+          }
+        }
+        for (const key of ['partial', 'provisional']) {
+          if (Object.hasOwn(quality, key) && typeof quality[key] !== 'boolean') fail(`_meta.quality.${key}`, 'be a boolean');
+        }
+        if (Object.hasOwn(quality, 'field_overrides')) fail('_meta.quality.field_overrides', 'be absent; state leaf annotations in block-level _overrides');
+      }
+    }
+    // Sibling annotations remain independently assessed under a rejected _meta.
+    if (!Object.hasOwn(block.content, '_overrides')) continue;
+    const overrides = block.content['_overrides'];
+    if (!Array.isArray(overrides)) { fail('_overrides', 'be an array'); continue; }
+    for (let index = 0; index < overrides.length; index++) {
+      const override = Object.hasOwn(overrides, index) ? overrides[index] : undefined;
+      const path = `_overrides[${index}]`;
+      if (!metaObject(override)) { fail(path, 'be an object'); continue; }
+      if (!Object.hasOwn(override, 'path') || typeof override.path !== 'string') fail(`${path}.path`, 'be a required string');
+      if (Object.hasOwn(override, 'confidence') && !(typeof override.confidence === 'string'
+        && ['high', 'medium', 'low'].includes(override.confidence))) fail(`${path}.confidence`, 'be exactly high, medium or low');
+      if (Object.hasOwn(override, 'reason') && !(typeof override.reason === 'string'
+        && ['illegible', 'missing', 'overridden', 'estimated', 'computed'].includes(override.reason))) fail(`${path}.reason`, 'be exactly illegible, missing, overridden, estimated or computed');
+      if (Object.hasOwn(override, 'note') && typeof override.note !== 'string') fail(`${path}.note`, 'be a string');
+    }
+  }
+}
+
+function isReferenceDigest(value: unknown): boolean {
+  return typeof value === 'string' && value.length === 71 && /^sha256:[0-9a-f]{64}$/.test(value);
+}
+
+// RFC0095 U3 is date-only, years 0001–9999; do not reuse T1B or a host parser.
+function isMarketReferenceDate(value: unknown): boolean {
+  if (typeof value !== 'string' || value.length !== 10 || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)) return false;
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(5, 7));
+  const day = Number(value.slice(8, 10));
+  if (year === 0 || month < 1 || month > 12 || day < 1) return false;
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = month === 2 ? (leap ? 29 : 28) : ([4, 6, 9, 11].includes(month) ? 30 : 31);
+  return day <= days;
+}
+
+function checkMetadataReferences(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  for (const [section, block] of metadataReferences(parsed)) {
+    const meta = admittedOwnMetadata(block);
+    if (meta === undefined) continue;
+    const provenance = meta.provenance as Record<string, unknown>;
+    const fail = (field: string, requirement: string): void => {
+      issues.push({ code: 'META-06', severity: 'error', section, field,
+        message: `Block ${field} must ${requirement}.` });
+    };
+    if (Object.hasOwn(provenance, 'source') && typeof provenance.source === 'string') {
+      const source = parseActorSource(provenance.source);
+      // The existing parser's regex uses $, so also require exact consumption.
+      if (source.kind === 'namespaced' && source.namespace === 'agent'
+        && provenance.source === `agent/${source.id}` && !Object.hasOwn(provenance, 'agent_id')) {
+        fail('_meta.provenance.agent_id', 'be present for a canonical agent source (string or null)');
+      }
+    }
+    const overrides = Object.hasOwn(block.content, '_overrides') && Array.isArray(block.content['_overrides'])
+      ? block.content['_overrides'] as unknown[] : [];
+    for (const [carrier, tag] of [
+      ['inherited_from', 'inherited_assumption'], ['market_data_ref', 'market_data_accepted'],
+    ] as const) {
+      // Assertions are not effective leaf selection: path validity, duplicates,
+      // shadows and later tags cannot retract any own literal tag assertion.
+      const required = (Object.hasOwn(provenance, 'resolution') && provenance.resolution === tag)
+        || overrides.some((value, index) => Object.hasOwn(overrides, index) && metaObject(value) && Object.hasOwn(value, 'resolution') && value.resolution === tag);
+      const field = `_meta.provenance.${carrier}`;
+      if (!Object.hasOwn(provenance, carrier)) {
+        if (required) fail(field, `be present for a stated ${tag} assertion`);
+        continue;
+      }
+      const value = provenance[carrier];
+      if (!metaObject(value)) { fail(field, 'be an object'); continue; }
+      const requiredString = (key: string): void => {
+        if (!Object.hasOwn(value, key) || typeof value[key] !== 'string') fail(`${field}.${key}`, 'be a required string');
+      };
+      requiredString('document_id');
+      if (carrier === 'market_data_ref' && (!Object.hasOwn(value, 'as_of') || !isMarketReferenceDate(value.as_of))) {
+        fail(`${field}.as_of`, 'be a whole ASCII YYYY-MM-DD Gregorian date in years 0001–9999');
+      }
+      if (!Object.hasOwn(value, 'digest') || !isReferenceDigest(value.digest)) fail(`${field}.digest`, 'be exactly sha256: followed by 64 lowercase ASCII hexadecimal digits');
+      if (carrier === 'inherited_from') {
+        if (!Object.hasOwn(value, 'distance') || typeof value.distance !== 'number' || !Number.isFinite(value.distance)
+          || !Number.isInteger(value.distance) || value.distance < 1) fail(`${field}.distance`, 'be a finite integer greater than or equal to 1');
+      } else if (Object.hasOwn(value, 'rationale') && typeof value.rationale !== 'string') fail(`${field}.rationale`, 'be a string when present');
+    }
+  }
+}
+
 // ─── Stage readiness ──────────────────────────────────────────────────────────
 
 /**
@@ -3405,11 +3612,10 @@ export function checkDataQuality(
 
     for (const block of blocks) {
       const quality = block.meta?.quality;
-      const provenance = block.meta?.provenance;
       const overrides = blockOverrides(block);
 
       // DQ-01: provisional block not in gaps
-      if (quality?.provisional) {
+      if (quality?.provisional === true) {
         const referenced = gapKeys.has(`${sectionId}::`) ||
           // Any field-level gap counts as referencing the section
           [...gapKeys].some((k) => k.startsWith(`${sectionId}::`) && k !== `${sectionId}::`);
@@ -3435,7 +3641,7 @@ export function checkDataQuality(
       }
 
       // DQ-03: partial without enumeration
-      if (quality?.partial && overrides.length === 0) {
+      if (quality?.partial === true && overrides.length === 0) {
         issues.push({
           code: 'DQ-03',
           severity: 'warning',
@@ -3444,23 +3650,7 @@ export function checkDataQuality(
         });
       }
 
-      // DQ-06: a promoted market observation that cannot be traced back to the
-      // observation set it came from (RFC 0022 §4). An error, not a warning:
-      // without the reference the `market_data_accepted` tag is an
-      // unfalsifiable claim, and a reviewer can see that *something* was
-      // accepted but never recover which observations, of which vintage. That
-      // is precisely the gap the profile exists to close, so a block asserting
-      // the tag without the reference is worse than one tagged plainly.
-      const promoted = provenance?.resolution === 'market_data_accepted'
-        || overrides.some(o => o.resolution === 'market_data_accepted');
-      if (promoted && !provenance?.market_data_ref) {
-        issues.push({
-          code: 'DQ-06',
-          severity: 'error',
-          section: sectionId,
-          message: `Block ${sectionId} carries a market_data_accepted value but no _meta.provenance.market_data_ref naming the observation set, vintage, and digest it was promoted from.`,
-        });
-      }
+
     }
   }
 

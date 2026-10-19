@@ -10,12 +10,28 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC0095 in TypeScript and independent Python source validation:
+  ordered META-05/06, readiness-only DQ-06/info, symmetric stated-reference
+  assertions and exact Gregorian as_of admission. Synchronize Format/Protocol,
+  registry/remediation and schema with six authored conformance controls and
+  frozen cross-runtime calendar vectors. Bound override SRC checks to existing
+  current sections/variants. Discovery stays parse-only; no complete validation
+  or Verifier claim and no change to receipt subject/authentication procedures.
+
+
 - Accept RFC0095 under the owner's2026-10-18 decision atc551e956: closed
   META-05/06 allocations, readiness-only DQ-06/info, symmetric stated-assertion
   reference triggers and strict Gregorian date-only as_of admission. Freeze the
   reviewed89-reference activation baseline and independent TS/Python calendar
   controls. Documentation only; synchronized implementation follows on Issue354.
   No live schema, conformance expectation, capability or release change.
+
+- Implement accepted RFC0094 in TypeScript and Python: META-04/error for exactly
+  present-invalid canonical confidence, revision and exact T1B UTC-Z timestamps.
+  Preserve absence warnings, META-01/02/03, physical/model source accounting and
+  issue ordering. Synchronize Format, Protocol, registry and schema assertions;
+  authored conformance controls preserve existing sources and expectations.
+  Python discovery remains parse-only pending complete capability certification.
 
 - Implement accepted RFC0093 in TypeScript and Python: exact META-01 placement,
   present section and required quality admission, ordered physical/model passes,
