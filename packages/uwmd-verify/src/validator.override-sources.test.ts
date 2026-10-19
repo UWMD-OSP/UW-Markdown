@@ -37,19 +37,23 @@ describe('accepted override vocabulary ownership independent of META05/06', () =
   it('handles rejected array/entry containers without claiming generic vocabulary errors', () => {
     for (const value of [null, 1, {}, [null, false, [], 3]]) expect(vocabulary(source(value))).toEqual([]);
   });
-  it('covers physical history, lost extensions and append records without changing canonical SRC population', () => {
+  it('keeps history/extensions/append outside SRC while assessing current singles and every variant', () => {
     const ids = ['property', 'x_test', 'x_test', 'pipeline_log', 'custom_calculations', 'custom_scenarios'];
     const input = header + ids.map((id, index) => fence(id, { _meta: meta(id), _overrides: [{ path: 'x', resolution: 'manual' }] }, index === 0 ? 'superseded=true' : `variant=v${index}`)).join('');
-    expect(vocabulary(input).map(i => [i.section, i.field])).toEqual(ids.map(id => [id, '_overrides[0].resolution']));
+    expect(vocabulary(input)).toEqual([]);
+    const current = input + fence('property', { _meta: meta(), _overrides: [{ path: 'x', resolution: 'manual' }] })
+      + fence('operating_statement', { _meta: meta('operating_statement'), _overrides: [{ path: 'x', resolution: 'manual' }] }, 'variant=t12')
+      + fence('operating_statement', { _meta: meta('operating_statement'), _overrides: [{ path: 'x', resolution: 'manual' }] }, 'variant=year1');
+    expect(vocabulary(current).map(i => [i.section, i.field])).toEqual(['property', 'operating_statement', 'operating_statement'].map(id => [id, '_overrides[0].resolution']));
   });
-  it('uses current own MODEL members and exact identity dedup, never raw/convenience aliases', () => {
+  it('uses current own visible MODEL members without recovering hidden physical or extension refs', () => {
     const parsed = parseUWFile(source([])); const block = parsed.sections.property as UWBlock;
     block.content._overrides = [Object.assign(Object.create({ source: 'bad', resolution: 'bad' }), { path: 'x' })];
     expect(vocabulary(parsed)).toEqual([]);
     (block.content._overrides as Record<string, unknown>[])[0]!.source = 'bad';
     parsed.extensions.x_alias = block;
     parsed.extensions.x_copy = { ...block };
-    expect(vocabulary(parsed).map(i => i.field)).toEqual(['_overrides[0].source', '_overrides[0].source']);
+    expect(vocabulary(parsed).map(i => i.field)).toEqual(['_overrides[0].source']);
     expect(vocabulary(source([]))).toEqual([]);
   });
   it('does not read inherited root annotations or duplicate canonical issue ownership', () => {
