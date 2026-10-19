@@ -163,15 +163,27 @@ that its contents are available, current or financially valid.
 ### Parents, independent findings and pass placement
 
 Retain accepted whole-missing-metadata and malformed wrapper/provenance/lifecycle
-precedence. When those checkpoints reject a block, suppress these new passes
-for that block rather than cascading descendant metadata findings. Do not
-reinterpret another unallocated condition as owned by that shape error.
+precedence. Rejection of those parents suppresses only the new canonical
+metadata-descendant predicates rather than cascading child findings. Top-level
+_overrides is a sibling annotation, not a metadata descendant: assess its own
+container/entry predicates independently on an admitted block object, including
+when _meta is absent or rejected. A missing _meta with _overrides:[null] keeps
+its old metadata finding and the new annotation-entry finding. Do not reinterpret
+another unallocated condition as owned by that shape error.
 
 A missing/nonobject quality container keeps RFC0093's META-01 and suppresses
 only quality-dependent META-05 predicates. Admitted provenance and top-level
 _overrides remain independent. An invalid agent_id does not suppress references;
 a META-02/03/04 or actor finding does not suppress these new predicates. A
 present forbidden field_overrides does not substitute for lawful _overrides.
+Later validators must tolerate rejected annotation containers/entries without
+throwing or dereferencing null. Current metadata.ts only guards the array
+container in blockOverrides; checkDataQuality's o.resolution read is not an
+entry shape guard. Add joint regression controls rather than treating a crash
+as an accepted refusal. The existing typed data-quality predicates remain the
+authority: malformed truthy optional values do not establish literal true. Audit
+TypeScript truthiness versus Python literal-true behavior rather than copying
+runtime discrepancies into governed expectations.
 Existing data-quality consequences keep their predicates and order unless U1
 expressly changes the conflicting promoted-reference allocation.
 
@@ -310,7 +322,7 @@ expected arrays, with the selected U1–U3 rules frozen before activation:
 | Override annotation | Absent/empty array; each bad parent/entry; missing and typed path; full confidence/reason domains; note null; unknown members/empty and duplicate paths; independent SRC attribution; null entries cannot crash later DQ checks |
 | Reference shapes | Each optional absence and required absence under U2; null/array/scalar/object; each missing/wrong-type child; exact digest anchors/case/length/trailing newline; distance0/1/1.0/fraction/bool/large integer; unknown members |
 | Owner choices | Both DQ-06 conditions together, stage suppression and exact attribution; canonical-only and override-only reference triggers; shadowed/duplicate paths; as_of vectors selected under U3 |
-| Parent/order | Whole missing metadata and rejected shapes; invalid quality independent of provenance; META-01/02/03/04 unchanged; complete META-05 then META-06 then unrelated checkpoints |
+| Parent/order | Whole missing/rejected metadata with independently invalid sibling _overrides; invalid quality independent of provenance; META-01/02/03/04 unchanged; complete META-05 then META-06 then unrelated checkpoints |
 | Physical/model/composed | History, overwritten and extension peers, append and unselected variants; identity dedup; equal distinct objects; in-place mutation, replaced/added blocks; fresh SOURCE, current MODEL, root/consumed parts and unused loaded files |
 | Transport/integrity | Exact issue fields/partitions/status and actual CLI stdout/stderr/exits; unsupported/unavailable source distinctions; byte preservation; receipt policy counts with unchanged subject/authentication/verdict procedures |
 
@@ -325,8 +337,8 @@ After owner acceptance only, synchronize Format2.5b/c/f, ProtocolIII.6a/XI,
 the executable registry/remediation, applicable schema annotations and any
 assertions explicitly selected by U1–U3, plus TypeScript and independent Python.
 Expected implementation sites are `packages/uwmd-verify/src/validator.ts`,
-`protocol.ts` and metadata types; Python `uwmd_source.py` and the complete
-validation ledger; authored conformance cases/portable transport assertions.
+`protocol.ts` and metadata types; Python `uwmd_source_validation.py`, `uwmd_validation_provenance.py` and the
+complete validation ledger/core; authored conformance cases/portable transport assertions.
 
 Reuse current physical/reference accounting, not divergent parallel parsers.
 Keep standalone evidence ownership separate from ordinary result projection.
