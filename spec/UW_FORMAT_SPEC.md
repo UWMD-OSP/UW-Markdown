@@ -1398,7 +1398,7 @@ stated values with each other, never with the current date or file metadata.
 ```
 
 **Expense recoveries and the CAM true-up (RFC 0058).** `recovery_terms` and
-`recovery_true_up` are OPTIONAL. A tenant stating neither adds no requirement. A cap may be stated alone; method is required as soon as any other member of recovery_terms is stated non-null. A lone `cap` needs neither `over` nor `accumulation`. Rules reading method evaluate only when it is stated. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). Like the RFC 0055 clauses these are
+`recovery_true_up` are OPTIONAL. A tenant stating neither adds no requirement. A cap may be stated alone; method is required as soon as any other member of recovery_terms is stated non-null. A lone `cap` needs neither `over` nor `accumulation`. Rules reading method evaluate only when it is stated. A nullable optional member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). Like the RFC 0055 clauses these are
 **attributes of a lease** plus a reconciliation of a **closed** period — not a
 periodic ledger, which RFC 0054 placed behind a named consumer.
 
@@ -1444,6 +1444,81 @@ and is a modeling decision, not a recorded fact; each tenant states its own shar
   success: the row claims the settled amount reached the cash flows, and nothing
   else checks that it did.
 
+
+**Closed recovery payload admission (`REC-11`, RFC0096).**
+
+On every object tenant in a current
+rent_roll, optional nullable recovery_terms/recovery_true_up retain their
+existing parent admission owners. Allocate only these additional predicates:
+
+| Field | Predicate when present and non-null |
+|---|---|
+| recovery_terms.share_basis | exactly nra, gla or stated |
+| recovery_terms.base_year | integer |
+| recovery_terms.expense_stop_per_sqft | finite >=0 |
+| recovery_terms.fixed_recovery_annual | finite >=0 |
+| recovery_terms.admin_fee_pct | finite [0,1) |
+| recovery_terms.gross_up_pct | finite (0,1] |
+| recovery_terms.cap.over | exactly base_year or prior_year |
+| recovery_terms.cap.accumulation | exactly cumulative, non_cumulative or compounding; REC-02 owns the conditional case M and P defined below, otherwise invalid present non-null values receive REC-11 |
+| recovery_true_up[i].pool_actual | finite >=0 |
+| recovery_true_up[i].tenant_share_uncapped | finite >=0 |
+| recovery_true_up[i].tenant_share_capped | finite >=0 |
+| recovery_true_up[i].estimated_billed | finite >=0 |
+| recovery_true_up[i].true_up_amount | finite, signed |
+
+The three closed objects are recovery_terms (method, pro_rata_share,
+share_basis, base_year, expense_stop_per_sqft, fixed_recovery_annual,
+admin_fee_pct, gross_up_pct, recoverable_pool, cap), cap (pct, over,
+accumulation), and each true-up row (period_start, period_end, pool_actual,
+tenant_share_uncapped, tenant_share_capped, estimated_billed, true_up_amount,
+settlement, cash_flow_ref). Extra own members receive REC-11 at the exact child.
+No new inner closed structure is imposed on cash_flow_ref.
+
+Already owned and excluded: REC-01 share/cap fractions; REC-02 terms/cap
+carrier, closed method, required selected-method companion and applicable
+accumulation; REC-03 pool container/nonempty/member vocabulary; REC-04 true-up
+carrier/row/date/settlement; REC-05 closed-period admission; REC-06/07/08
+financial ties/direction; REC-09 cash-reference carrier/selection. A present
+wrong companion type/bound (for example base_year=bad with base_year_stop) is
+REC-11; absence/null of the required companion remains REC-02. A coarse WIP
+REC-02 parent finding does not establish ownership of an unrelated child.
+REC-11 does not reallocate or tighten REC-04's accepted calendar contract.
+
+#### Exact cap accumulation ownership and null precedence
+
+For an admitted recovery_terms and cap object, let M mean an own method member
+whose value is not null, and P mean an own cap.pct whose value is not null.
+These are presence predicates, not inferred values or successful enum/number
+admission. Validate method and pct independently under their existing owners.
+
+- If M and P, REC-02 owns accumulation: absent, null or outside the three-string
+  vocabulary gives exactly one REC-02 at cap.accumulation. REC-11 MUST NOT
+  duplicate that same condition. An invalid pct also keeps its independent REC-01.
+- Otherwise accumulation is optional/nullable. Absent/null gives no accumulation
+  finding; a present non-null value outside the vocabulary gives REC-11 once.
+- A present method:null remains its own REC-02 type error under the non-nullable
+  enum/S6 qualification. It does not make M true. Nullable companion nulls neither
+  require a method nor satisfy an actually required companion.
+
+| method | cap | Findings at the named method/pct/accumulation fields |
+|---|---|---|
+| absent | {pct:0.05} | none |
+| absent | {pct:0.05,accumulation:null} | none |
+| absent | {pct:0.05,accumulation:bad} | REC-11 accumulation |
+| absent | {pct:null,accumulation:bad} | REC-11 accumulation |
+| net | {pct:0.05} | REC-02 accumulation |
+| net | {pct:0.05,accumulation:null} | REC-02 accumulation |
+| null | {pct:0.05,accumulation:null} | REC-02 method only |
+| net | {pct:null,accumulation:bad} | REC-11 accumulation |
+| net | {pct:false,accumulation:null} | REC-01 pct; REC-02 accumulation |
+
+This explicitly corrects the current implementation's own-null accumulation
+trigger on a method-absent cap; it does not silently preserve that coarse
+predicate as authority. Synchronized Format/Protocol/schema conditions MUST pin
+M/P and the same null/required boundaries. Neither method nor accumulation is
+invented or defaulted. These diagnostic dispositions are accepted; they add no financial treatment.
+These are validation admissions, not financial recomputation.
 
 Nothing here is projected: no future recovery is forecast, no pool is grossed up
 from occupancy, and `gross_up_pct` records the occupancy a pool was grossed up
@@ -3617,6 +3692,32 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 - **Sizing is stated and verified, never trusted.** Each `sizing` entry names a closed `fn`, a selector, and a stated `value`; a verifier recomputes `fn` and compares. Disagreement is `CS-SIZING-DISAGREES` and the result is `failed`, never a silent pass. A figure that reads a tranche field the document does not supply is `unverifiable`, never `0`.
 - **The distribution waterfall is out of scope for this version.** A `capital_stack` that attempts to encode distribution tiers, promote, IRR hurdles, or catch-up MUST be refused (`CS-WATERFALL-UNSUPPORTED`) with guidance to `x_partnership_structure`; the multi-period distribution waterfall is deferred (RFC 0026 § E) pending a hold-period cash-flow primitive.
 
+**Sizing declaration admission (`CS-03`, RFC0096).**
+
+Absent sizing is valid. Present sizing MUST be an array (null is invalid);
+empty is valid. Each item MUST be an object closed to id, fn, over, through,
+value, with required own id, fn and value:
+
+- id: nonempty string.
+- fn: exactly coverage, blended_coverage, debt_yield_through, ltc_through,
+  ltv_through or weighted_cost.
+- value: finite number, including signed values and zero.
+- Exactly one own over/through member; over is a nonempty string; through is
+  an integer >=1. For neither/both selectors emit one CS-03 at sizing[i];
+  do not cascade selector-leaf findings. Otherwise report a wrong selected
+  carrier at sizing[i].over or sizing[i].through.
+
+Apply the same declaration check to each admitted builtin component's own
+capital_stack.sizing, under Format4.23's existing component eligibility;
+qualify fields as `<component>.capital_stack.sizing[i]` and `section=components`.
+Do not invent a new component kind or validate a component-like extension.
+CS-01 tranches/identities, CS-02 coupon/class, CS-02b split coupon and
+CS-WATERFALL-UNSUPPORTED retain their owners. This RFC does not resolve a
+selector to a tranche, require a missing financial input, calculate sizing or
+interpret unknown selectors as zero. Format4.24's fn/selector association table
+and its financial unverifiable/refusal rules remain authority; the new code
+covers the structural union above, without adding a new calculation rule.
+
 **Sizing vocabulary (closed, non-extensible).** Each figure selects tranches with `over` (a single tranche `id`), `through` (a `position`, cumulative through that layer), or `*` (the whole stack):
 
 | `fn` | selector | recomputation |
@@ -3695,6 +3796,46 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 - **Turnover needs a starting point (`LU-04`, warning).** `model_type: natural_turnover` with no `rent_roll` present in the document is a warning, not a refusal — a compose-time fragment may carry the schedule without the roll.
 - **Stated figures are verified, never trusted.** A verifier MUST recompute, three-state (`verified` / `failed` / `unverifiable`), quantizing both sides at the same quantum (Protocol § VIII.5 posture): each period's `net_cash_flow` = `rent_revenue + concessions + ti_lc_capex` (a period omitting a stated component is `unverifiable` for that row, never `failed`); `stabilized_summary.occupied_sf` against the final period; and `stabilized_summary.occupancy_rate` = final occupied SF ÷ the § XIII size denominator (no resolvable square-foot denominator → `unverifiable`, never a guess).
 - **Endpoint agreement (`CC-15`, warning, § 5.3).** The **base** variant's `stabilized_summary.annualized_noi` MUST agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%, a named exported constant). The tolerance is deliberate, not softness: unlike `CC-01` (one number restated in two places, exact), the trajectory endpoint and the stabilized-year projection are two different models of stabilization, and demanding exact agreement would force producers to hand-tune one to echo the other — destroying the independent-model signal the check exists to read. Non-base variants are exempt: a downside scenario is *supposed* to disagree with stabilized NOI.
+
+**Closed lease-up payload admission (`LU-05`, RFC0096).**
+
+The closed LU-05/error admission predicates are:
+
+| Field/object | Predicate |
+|---|---|
+| model_type | Required; exactly natural_turnover or absorption_curve |
+| stabilization_target | Optional nullable; when non-null, a string in the declared monthly YYYY-MM or quarterly YYYY-Q1…Q4 grammar |
+| assumptions | Optional nullable object, closed to the six members below |
+| stabilized_summary | Optional nullable object, closed to the four members below |
+| schedule row object | Closed to period plus the nine numeric members below; nonobject rows remain the existing LU-01 missing/invalid period boundary |
+| section payload | Closed to model_type, period_granularity, stabilization_target, assumptions, schedule, stabilized_summary and the universal members above |
+
+Optional nullable numeric fields, in fixed order:
+
+| Container | Order and predicate |
+|---|---|
+| schedule[i] | occupied_sf, leased_sf, in_place_rent_psf, market_rent_psf: >=0; vacancy_rate:[0,1]; rent_revenue, concessions, ti_lc_capex, net_cash_flow: finite, signed |
+| assumptions | monthly_turnover_rate:[0,1]; market_rent_psf_at_stabilization:>=0; vacancy_during_lease_up:[0,1]; concession_months_per_lease:>=0; tenant_improvement_psf:>=0; leasing_commission_rate:[0,1] |
+| stabilized_summary | occupied_sf:>=0; occupancy_rate:[0,1]; annualized_egi, annualized_noi: finite, signed |
+
+The description of concessions/capex as negative does not create a new sign
+restriction beyond the admitted numeric schema domain. Model type gates no
+other shape check. No rent roll, trajectory, occupancy denominator or endpoint
+recomputation is required for LU-05. LU-01 keeps cadence and row-period grammar;
+LU-02 contiguity; LU-03 schedule presence/type/nonempty and target inversion;
+LU-04 remains a missing-rent-roll warning; CC-15 remains endpoint tolerance.
+For a present non-null stabilization_target, assess string type independently
+of cadence. Assess its monthly/quarterly grammar only when current own
+period_granularity is exactly monthly/quarterly. An absent or invalid cadence
+keeps its existing LU-01; do not infer a quarterly default or add a target-grammar
+finding without an admitted declared grammar. A non-string target still receives
+LU-05 independently. Synchronized schema assertions MUST use the same cadence
+eligibility and whole-input ASCII grammar, not an unconditional fallback pattern.
+
+The target grammar allocation above is explicit: WIP Python's LU-01 target
+handling and TS's silently ignored invalid target are implementation evidence,
+not authority to broaden LU-01 implicitly. No calendar/date-time profile is
+added to these monthly/quarterly identities.
 
 ```json uw:section=lease_up_schedule variant=base source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
@@ -3851,6 +3992,47 @@ Like § 4.24 – § 4.26 this is a **state-and-verify** structure (RFC 0021 § 6
 - **The reference must resolve (`WF-02`, error).** `cash_flow_ref.variant` MUST name a variant present in the document's `cash_flow_series`. A waterfall without its cash vector is not reviewable.
 - **A waterfall needs capital (`WF-03`, error).** The referenced series MUST contain at least one negative amount; over pure inflows every tier is vacuous.
 - **Stated figures are verified, never trusted.** `verifyWaterfall` recomputes by Protocol § VIII.10, three-state, both sides quantized at the § VIII.9.4 quanta (`$` → 2, `x` → 4, `%` → 6): outcomes and schedule cells against the recomputed allocation; a stated `xirr` whose recomputation raises (§ VIII.9.3 refusal — e.g. a zero-contribution party) is `failed`; a `moic` over zero contributions is `unverifiable`; an unresolvable or structurally invalid referenced series makes every stated figure `unverifiable`, never a guess.
+
+**Stated-claim admission (`WF-16`, RFC0096).**
+
+Allocate exactly the following:
+
+| Field/object | Predicate |
+|---|---|
+| stated_outcomes | Optional nullable object, closed to lp, gp, promote_total, profit_total, clawback_amount |
+| stated_outcomes.lp / gp | Optional nullable objects, closed to contributions, distributions, moic, xirr |
+| each party's contributions, distributions, xirr | Optional nullable finite signed number |
+| each party's moic | Optional nullable finite number >=0 |
+| promote_total, profit_total, clawback_amount | Optional nullable finite signed number |
+| stated_schedule | Optional nullable array; empty valid |
+| stated_schedule[i] | Object closed to required date and by_tier |
+| stated_schedule[i].date | Required string matching exactly four ASCII digits, hyphen, two ASCII digits, hyphen, two ASCII digits |
+| stated_schedule[i].by_tier | Required array; empty valid |
+| by_tier[j] | Object closed to required tier plus optional nullable lp and gp |
+| by_tier[j].tier | Integer >=0 |
+| by_tier[j].lp / gp | Optional nullable finite signed number |
+| clawback.floor_rate | Optional nullable finite (0,1), when not already owned by selected-basis WF-10 |
+| clawback.floor_multiple | Optional nullable finite >1, when not already owned by selected-basis WF-10 |
+| clawback object | Closed to basis, floor_rate, floor_multiple, net_of_tax_rate, cap |
+
+WF-10 retains clawback carrier/basis and selected-floor presence/domain;
+WF-11 preferred-tier precondition; WF-12 cap; WF-13 tax fraction; WF-15 warning.
+Malformed clawback parents stop WF-16 descendants. WF-01 ladder/equity split,
+WF-02 source reference and WF-03 contribution keep their existing owners.
+No claim is generated from an absent leaf, no distribution date/tier is inferred,
+and no balance is recomputed. The structural tier integer predicate does not
+add a new index-range or duplicate-cell financial interpretation.
+
+The stated_schedule date predicate is lexical admission only. Its synchronized
+schema assertion MUST consume the entire ASCII digit/hyphen string, including
+rejection of trailing line endings. Explicit absolute-end guards preserve this
+contract across validator regex engines; no optional format plugin defines it. Its existing
+schema has a digit pattern, no format:date assertion. This RFC does NOT
+transplant RFC0095's as_of Gregorian/year profile, RFC0094's T1B timestamp or
+REC-04's separate date owner. A date-shaped impossible calendar value's
+financial comparison/refusal remains the existing verifier's responsibility.
+Any broader calendar requirement needs an explicit governed decision and
+cross-runtime vectors; the WIP's stronger local date check cannot supply it.
 
 **Deliberately deferred (RFC 0035, RFC 0036, RFC 0051, RFC 0059).** N-party splits, Excel emit (the § 4.26 literals posture), a `capital_stack` cross-check (waterfall contributions vs. the common-equity tranche), and GP-side hurdles (RFC 0051 lifted `hurdle_mode: "any"` into the normative contract; RFC 0059 took clawback as a terminal true-up, leaving per-period crystallization and interim promote escrows deferred).
 
