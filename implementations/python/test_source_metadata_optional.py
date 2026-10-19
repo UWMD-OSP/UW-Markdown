@@ -1,5 +1,6 @@
 """Closed RFC0095 predicates and actual SOURCE/MODEL source-inventory controls."""
 import copy
+from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
@@ -131,6 +132,38 @@ class OptionalMetadataSourceTests(unittest.TestCase):
         self.assertEqual(rows(inspect_source_roles(document)), [])
         self.assertEqual(len(rows(_inspect_source_roles_source(raw))), 6)
         self.assertEqual(document.source.raw, raw)
+
+    def test_model_inherited_attributes_are_not_own_reference_members_or_assertions(self):
+        class PrototypeReference(dict):
+            document_id = "prototype"
+            digest = DIGEST
+            distance = 1
+        class PrototypeOverride(dict):
+            resolution = "inherited_assumption"
+            path = "prototype"
+        value = body(); document = parse(HEADER + fence(value))
+        payload = document.source.blocks[0].parsed.value
+        payload["_overrides"] = [PrototypeOverride()]
+        self.assertEqual(rows(inspect_source_roles(document)), [("META-05", "_overrides[0].path")])
+        payload["_overrides"] = []
+        payload["_meta"]["provenance"]["inherited_from"] = PrototypeReference()
+        self.assertEqual(rows(inspect_source_roles(document)), [("META-06", "_meta.provenance.inherited_from." + field)
+                                                               for field in ("document_id", "digest", "distance")])
+
+    def test_exact_reference_identity_dedup_is_not_value_equality(self):
+        value = body(); value["_meta"]["quality"]["partial"] = "bad"
+        document = parse(HEADER + fence(value) + fence(value))
+        repeated = replace(document, source=replace(document.source,
+            blocks=(*document.source.blocks, document.source.blocks[0])))
+        result = inspect_source_roles(repeated)
+        self.assertEqual([i["context"]["block_index"] for i in result["issues"]], [0, 1])
+
+    def test_old_metadata_passes_and_source_checks_keep_independent_order(self):
+        value = body(); value["_meta"]["provenance"].update(actor="", source="invalid", notes=False, resolution="inherited_assumption")
+        value["_meta"]["quality"].update(confidence="bad", human_review_required=None)
+        value["_role"] = None
+        self.assertEqual([i["code"] for i in self.assess(value)["issues"]],
+                         ["META-01", "META-02", "META-04", "META-05", "META-06", "ROLE-01", "SRC-01"])
 
 
 if __name__ == "__main__":

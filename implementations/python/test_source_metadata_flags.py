@@ -158,7 +158,8 @@ class SourceMetadataFlagTests(unittest.TestCase):
         _, result = self.inspect(HEADER + fence(body))
         self.assertEqual([(i["code"], i["field"]) for i in result["issues"]],
             [("META-01", "_meta"), ("META-01", "_meta.section"),
-             ("META-02", "_meta.quality.human_review_required"), ("META-04", "_meta.quality.confidence")])
+             ("META-02", "_meta.quality.human_review_required"), ("META-04", "_meta.quality.confidence"),
+             ("META-05", "_meta.quality.partial"), ("META-05", "_overrides[0].path")])
         self.assertEqual([f["field"] for f in result["shape_findings"]],
             ["_meta", "_meta.section", "_meta.quality.confidence", "_meta.quality.human_review_required",
              "_meta.quality.partial", "_overrides[0].path"])
