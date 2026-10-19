@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/lease-recovery-terms.schema.json",
   "title": "lease-recovery-terms",
-  "description": "RFC 0081 G1 / Format §4.3. cap may be stated alone, without method, over or accumulation. method is required whenever any other member is stated non-null; a member stated as null is not stated. REC-02: once method is stated, a stated cap.pct requires cap.accumulation (no default). Method-dependent REC rules run only when method is stated.",
+  "description": "RFC 0081 G1 / Format §4.3. cap may be stated alone, without method, over or accumulation. method is required whenever any other member is stated non-null; a member stated as null is not stated. REC-02: once method is stated, a stated cap.pct requires cap.accumulation (no default). Method-dependent REC rules run only when method is stated. RFC0096 REC-11 owns only listed remaining typed leaves and extra closed members. Present method:null is REC-02; nullable companion nulls do not trigger method. M/P are own non-null presence, not successful method/pct admission.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -229,7 +229,7 @@
   },
   "allOf": [
     {
-      "description": "REC-02: with method stated, a stated cap.pct requires cap.accumulation. A lone cap (no method) needs none.",
+      "description": "REC-02: own non-null method and own non-null cap.pct require non-null valid accumulation, even when method/pct is otherwise invalid. Otherwise accumulation remains optional nullable (REC-11 for invalid non-null).",
       "if": {
         "required": [
           "method",
@@ -243,8 +243,15 @@
             ],
             "properties": {
               "pct": {
-                "type": "number"
+                "not": {
+                  "type": "null"
+                }
               }
+            }
+          },
+          "method": {
+            "not": {
+              "type": "null"
             }
           }
         }

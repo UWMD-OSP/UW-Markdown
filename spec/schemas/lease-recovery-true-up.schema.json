@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/lease-recovery-true-up.schema.json",
   "title": "lease-recovery-true-up",
-  "description": "RFC 0058 / format 4.3. Shape only; the closed-period rule and the three arithmetic ties are semantic checks (REC-05..REC-08).",
+  "description": "RFC 0058 / format 4.3. Shape only; the closed-period rule and the three arithmetic ties are semantic checks (REC-05..REC-08). RFC0096 REC-11 owns remaining numeric leaves and extra row members; REC-04 dates/settlement and REC-09 references remain unchanged.",
   "type": "array",
   "items": {
     "type": "object",

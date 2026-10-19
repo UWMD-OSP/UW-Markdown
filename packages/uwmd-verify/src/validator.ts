@@ -1,3 +1,4 @@
+import { checkPayloadAdmission } from './payload-admission.js';
 import { pinnedPow } from './calc/pinned-numerics.js';
 import { checkBuiltinClassContent } from './builtin-class-validation.js';
 import { isScenarioId } from './scenario.js';
@@ -159,6 +160,7 @@ export function validateUWFile(
   checkSourceVocabulary(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
+  checkPayloadAdmission(parsed, issues, ADMISSIBLE_COMPONENT_CLASSES);
 
   // CC-16: one info issue per section that was present as a variant map no
   // cross-check could resolve (§5.3, RFC 0037). Emitted after every check has
@@ -1365,7 +1367,8 @@ function checkRecoveryTerms(
   // REC-02: a method without the input it needs. A lone `cap` is a complete
   // statement (RFC 0081 §7); any other member requires the method.
   const method = terms['method'];
-  const methodRequired = Object.keys(terms).some(k => k !== 'cap');
+  const methodPresent = Object.hasOwn(terms, 'method');
+  const methodRequired = methodPresent || Object.keys(terms).some(k => k !== 'cap' && terms[k] !== null);
   if (methodRequired && (typeof method !== 'string' || !(RECOVERY_METHODS as readonly string[]).includes(method))) {
     recIssue(issues, 'REC-02', `${p}.method`,
       `REC-02: method must be one of ${RECOVERY_METHODS.join(', ')} — the vocabulary is closed`, method);
@@ -1412,7 +1415,7 @@ function checkRecoveryTerms(
         recIssue(issues, 'REC-01', `${cp}.pct`,
           'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
       }
-      if (pct != null && (methodRequired || Object.hasOwn(c, 'accumulation'))) {
+      if (methodPresent && method !== null && Object.hasOwn(c, 'pct') && pct !== null) {
         const acc = c['accumulation'];
         if (typeof acc !== 'string' || !(RECOVERY_CAP_ACCUMULATIONS as readonly string[]).includes(acc)) {
           recIssue(issues, 'REC-02', `${cp}.accumulation`,

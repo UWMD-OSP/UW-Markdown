@@ -2,13 +2,22 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/section-capital-stack.schema.json",
   "title": "UW Markdown Capital Stack Section",
-  "description": "Content payload for the `capital_stack` section (UW_FORMAT_SPEC.md §4.24, RFC 0026, RFC 0050). An ordered array of typed capital `tranches` plus a `sizing` array of stated figures a verifier recomputes. This is a state-and-verify structure (RFC 0021 §6): the Tier-3 calc engine never reads it, so a variable-length array is safe — two mezzanine notes are just two tranches. This schema enforces structure only. The cross-field rules a validator/verifier adds are: the senior tranche reconciles with `debt_structure` and the `sources_uses` senior bucket (generalized CC-03); a debt or preferred tranche states a `rate` and common equity does not (CS-02); a split preferred-equity coupon carries component rates whose sum equals `rate` (CS-02b); each stated `sizing` value recomputes equal or the result is `failed` (CS-SIZING-DISAGREES); and a stack encoding a distribution waterfall (promote, hurdles, tiers, catch-up) is refused (CS-WATERFALL-UNSUPPORTED), which is deferred to a later phase.",
+  "description": "Content payload for the `capital_stack` section (UW_FORMAT_SPEC.md §4.24, RFC 0026, RFC 0050). An ordered array of typed capital `tranches` plus a `sizing` array of stated figures a verifier recomputes. This is a state-and-verify structure (RFC 0021 §6): the Tier-3 calc engine never reads it, so a variable-length array is safe — two mezzanine notes are just two tranches. This schema enforces structure only. The cross-field rules a validator/verifier adds are: the senior tranche reconciles with `debt_structure` and the `sources_uses` senior bucket (generalized CC-03); a debt or preferred tranche states a `rate` and common equity does not (CS-02); a split preferred-equity coupon carries component rates whose sum equals `rate` (CS-02b); each stated `sizing` value recomputes equal or the result is `failed` (CS-SIZING-DISAGREES); and a stack encoding a distribution waterfall (promote, hurdles, tiers, catch-up) is refused (CS-WATERFALL-UNSUPPORTED), which is deferred to a later phase. RFC0096 CS-03 validates only sizing declaration carrier, fields and selector union; no financial recomputation.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["tranches"],
+  "required": [
+    "tranches"
+  ],
   "properties": {
     "_role": {
-      "enum": ["primary", "senior", "junior", "summary", "detail", "component"],
+      "enum": [
+        "primary",
+        "senior",
+        "junior",
+        "summary",
+        "detail",
+        "component"
+      ],
       "description": "Optional signed scalar block annotation (RFC 0040)."
     },
     "_meta": {
@@ -16,26 +25,38 @@
       "description": "Standard block provenance envelope (§2.5). Not constrained here."
     },
     "_notes": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Optional free-text annotation (§4 universal field)."
     },
     "tranches": {
       "type": "array",
       "minItems": 1,
       "description": "The capital tranches, ordered by seniority (`position` 1 = most senior). A single-tranche deal uses `debt_structure`, not this section; the validator enforces stack cardinality.",
-      "items": { "$ref": "#/$defs/tranche" }
+      "items": {
+        "$ref": "#/$defs/tranche"
+      }
     },
     "sizing": {
       "type": "array",
       "description": "Stated stack-aware sizing figures, each recomputed by `verifyCapitalStack` over the closed `fn` vocabulary and compared to `value`. Disagreement is `failed`, never a silent pass.",
-      "items": { "$ref": "#/$defs/sizingFigure" }
+      "items": {
+        "$ref": "#/$defs/sizingFigure"
+      }
     }
   },
   "$defs": {
     "tranche": {
       "type": "object",
       "description": "One layer of the capital stack.",
-      "required": ["id", "class", "position", "amount"],
+      "required": [
+        "id",
+        "class",
+        "position",
+        "amount"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -66,11 +87,18 @@
           "description": "Committed dollar amount of this tranche."
         },
         "rate": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "description": "Coupon (debt) or preferred return (pref), as a fraction (0.0625 = 6.25%). Required for every debt tranche and preferred_equity; MUST NOT appear on common_equity (validator CS-02)."
         },
         "accrual": {
-          "enum": ["cash", "accrued", "split"],
+          "enum": [
+            "cash",
+            "accrued",
+            "split"
+          ],
           "description": "`cash` = current-pay, enters cash coverage; `accrued` = PIK, compounds on balance and is excluded from cash coverage; `split` = preferred-equity cash_rate enters coverage while accrued_rate does not. A split coupon's balance still counts toward point-in-time attachment metrics."
         },
         "cash_rate": {
@@ -82,17 +110,26 @@
           "description": "Accrued/PIK rate as a fraction. Required only for preferred-equity `split` and forbidden otherwise (RFC 0050)."
         },
         "amortization_months": {
-          "type": ["integer", "null"],
+          "type": [
+            "integer",
+            "null"
+          ],
           "minimum": 0,
           "description": "Amortization period in months (0 = interest-only or non-amortizing). Debt tranches."
         },
         "io_months": {
-          "type": ["integer", "null"],
+          "type": [
+            "integer",
+            "null"
+          ],
           "minimum": 0,
           "description": "Interest-only period in months. Debt tranches."
         },
         "term_months": {
-          "type": ["integer", "null"],
+          "type": [
+            "integer",
+            "null"
+          ],
           "minimum": 0,
           "description": "Term to maturity in months. Debt tranches."
         }
@@ -100,18 +137,40 @@
       "allOf": [
         {
           "if": {
-            "required": ["accrual"],
-            "properties": { "accrual": { "const": "split" } }
+            "required": [
+              "accrual"
+            ],
+            "properties": {
+              "accrual": {
+                "const": "split"
+              }
+            }
           },
           "then": {
-            "required": ["rate", "cash_rate", "accrued_rate"],
-            "properties": { "class": { "const": "preferred_equity" } }
+            "required": [
+              "rate",
+              "cash_rate",
+              "accrued_rate"
+            ],
+            "properties": {
+              "class": {
+                "const": "preferred_equity"
+              }
+            }
           },
           "else": {
             "not": {
               "anyOf": [
-                { "required": ["cash_rate"] },
-                { "required": ["accrued_rate"] }
+                {
+                  "required": [
+                    "cash_rate"
+                  ]
+                },
+                {
+                  "required": [
+                    "accrued_rate"
+                  ]
+                }
               ]
             }
           }
@@ -120,8 +179,12 @@
     },
     "sizingFigure": {
       "type": "object",
-      "description": "One stated sizing figure. Mirrors uw-rollup.schema.json's aggregate: an id, a closed fn, a selector, and a stated value the verifier recomputes.",
-      "required": ["id", "fn", "value"],
+      "description": "One stated sizing figure. Mirrors uw-rollup.schema.json's aggregate: an id, a closed fn, a selector, and a stated value the verifier recomputes. CS-03: required own id/fn/value and exactly one over/through, no safe-integer ceiling or tranche-resolution requirement.",
+      "required": [
+        "id",
+        "fn",
+        "value"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -156,24 +219,94 @@
         }
       },
       "oneOf": [
-        { "required": ["over"], "not": { "required": ["through"] } },
-        { "required": ["through"], "not": { "required": ["over"] } }
+        {
+          "required": [
+            "over"
+          ],
+          "not": {
+            "required": [
+              "through"
+            ]
+          }
+        },
+        {
+          "required": [
+            "through"
+          ],
+          "not": {
+            "required": [
+              "over"
+            ]
+          }
+        }
       ]
     }
   },
   "examples": [
     {
       "tranches": [
-        { "id": "senior", "class": "senior_debt", "position": 1, "amount": 26000000, "rate": 0.0625, "amortization_months": 360, "io_months": 24, "term_months": 120, "accrual": "cash" },
-        { "id": "mezz_a", "class": "mezzanine_debt", "position": 2, "amount": 6000000, "rate": 0.11, "amortization_months": 0, "io_months": 120, "term_months": 120, "accrual": "cash" },
-        { "id": "pref", "class": "preferred_equity", "position": 3, "amount": 4000000, "rate": 0.09, "accrual": "accrued" },
-        { "id": "common", "class": "common_equity", "position": 4, "amount": 4000000 }
+        {
+          "id": "senior",
+          "class": "senior_debt",
+          "position": 1,
+          "amount": 26000000,
+          "rate": 0.0625,
+          "amortization_months": 360,
+          "io_months": 24,
+          "term_months": 120,
+          "accrual": "cash"
+        },
+        {
+          "id": "mezz_a",
+          "class": "mezzanine_debt",
+          "position": 2,
+          "amount": 6000000,
+          "rate": 0.11,
+          "amortization_months": 0,
+          "io_months": 120,
+          "term_months": 120,
+          "accrual": "cash"
+        },
+        {
+          "id": "pref",
+          "class": "preferred_equity",
+          "position": 3,
+          "amount": 4000000,
+          "rate": 0.09,
+          "accrual": "accrued"
+        },
+        {
+          "id": "common",
+          "class": "common_equity",
+          "position": 4,
+          "amount": 4000000
+        }
       ],
       "sizing": [
-        { "id": "senior_dscr", "fn": "coverage", "over": "senior", "value": 1.85 },
-        { "id": "combined_dscr", "fn": "blended_coverage", "through": 2, "value": 1.14 },
-        { "id": "mezz_debt_yield", "fn": "debt_yield_through", "through": 2, "value": 0.08 },
-        { "id": "wacc", "fn": "weighted_cost", "over": "*", "value": 0.0731 }
+        {
+          "id": "senior_dscr",
+          "fn": "coverage",
+          "over": "senior",
+          "value": 1.85
+        },
+        {
+          "id": "combined_dscr",
+          "fn": "blended_coverage",
+          "through": 2,
+          "value": 1.14
+        },
+        {
+          "id": "mezz_debt_yield",
+          "fn": "debt_yield_through",
+          "through": 2,
+          "value": 0.08
+        },
+        {
+          "id": "wacc",
+          "fn": "weighted_cost",
+          "over": "*",
+          "value": 0.0731
+        }
       ]
     }
   ]
