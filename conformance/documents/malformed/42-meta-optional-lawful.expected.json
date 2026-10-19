@@ -1,0 +1,7 @@
+{
+  "description": "Authored accepted RFC0095 controls; exact manually derived closed metadata findings/order.",
+  "must_parse": true,
+  "expected_codes": [],
+  "metadata_issues": [],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; RFC0095"
+}

@@ -81,6 +81,25 @@ cover numeric-key boundaries, source/model mutations, history and exact identity
 The developing complete validator integrates the same admission rules separately;
 this main-safe change does not advertise `validate` or a Verifier tier.
 
+## Accepted RFC0095 optional and reference admission
+
+Source-role assessment completes all META-05/error findings, then all META-06/error
+findings after META-04, using the same retained physical/current canonical model
+identity union. Optional provenance strings/null, quality flags/booleans and
+sibling override shape predicates have closed ownership; rejected canonical
+parents suppress descendants, while sibling annotations remain independent.
+Reference assertions are symmetric across canonical resolution and any stated
+object override, without effective-path selection or duplicate carrier findings.
+The independent date-only predicate consumes exact ASCII Gregorian YYYY-MM-DD,
+years0001–9999; it is separate from T1B. Shared frozen date vectors exercise the
+actual Python META-06 predicate, not a fixture lookup in runtime code.
+
+This source helper does not supply or advertise a complete validate CLI. Ordinary
+result integration remains on the published complete-validation WIP; composition,
+complete admission, native obligations and independent certification still gate
+promotion. Source inspection keeps its own evidence DTO and does not certify a
+financial result or receipt. Discovery remains parse-only.
+
 ## Accepted RFC0094 present-invalid leaves
 
 Source-role assessment applies META-04/error only to present-invalid canonical

@@ -15,7 +15,7 @@ describe content; they do not confer a tier claim.
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 26 | 17 |
-| Verifier | 720 | 295 |
+| Verifier | 726 | 295 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 142 | 0 |
@@ -23,7 +23,7 @@ describe content; they do not confer a tier claim.
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products | 106 | 37 |
-| **Total** | **1,128** | **364** |
+| **Total** | **1,134** | **364** |
 
 Current counts come from the runtime ownership index and generated CLI cases.
 Accepted RFC0088 adds14 Verifier calc cases to the prior1106 default checks,
@@ -36,7 +36,9 @@ checked for exact ownership, missing/duplicate results and generation drift.
 Accepted RFC0093 and RFC0094 each add four authored native Verifier cases.
 RFC0094 pins all60 accepted T1B vectors, present leaf types versus absence,
 parent suppression, complete pass ordering and retained physical peers. Exact
-metadata assertions include META-01 through META-04. The portable case count
+metadata assertions include META-01 through META-06. RFC0095 adds six authored
+native controls for optional values, symmetric references, parent/pass ordering,
+retained peers, lawful unknown data and strict date-only calendars. The portable case count
 is unchanged; existing source and expectation assertions are not rebaselined.
 
 Starter-product checks belong to the [starter guide](../docs/starter/README.md)

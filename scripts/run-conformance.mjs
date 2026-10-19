@@ -455,7 +455,7 @@ async function runMalformedDocuments() {
 
     const mustParse = expected.must_parse !== false;
     const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
-    if (expectedCodes.length === 0) {
+    if (expectedCodes.length === 0 && !(expected.must_parse === true && Array.isArray(expected.metadata_issues))) {
       record('documents', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
       continue;
     }
@@ -511,7 +511,7 @@ async function runMalformedDocuments() {
     // RFC0093/0094 controls pin exact closed predicates and cross-block pass order.
     // Authored expected rows are reviewed independently, never generated here.
     if (Array.isArray(expected.metadata_issues)) {
-      const actual = validation.issues.filter(i => ['META-01', 'META-02', 'META-03', 'META-04'].includes(i.code))
+      const actual = validation.issues.filter(i => ['META-01', 'META-02', 'META-03', 'META-04', 'META-05', 'META-06'].includes(i.code))
         .map(({ code, severity, section, field }) => ({ code, severity, section, ...(field === undefined ? {} : { field }) }));
       if (!isDeepStrictEqual(actual, expected.metadata_issues)) {
         record('documents', `malformed/${id}`, 'fail', `metadata findings/order differ: ${JSON.stringify(actual)}`);
