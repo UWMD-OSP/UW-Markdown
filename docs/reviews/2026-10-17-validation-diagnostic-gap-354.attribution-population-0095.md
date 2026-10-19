@@ -9,9 +9,9 @@ Exact input main: `fa9a9ea37d31b918f5993eae4276b159f31719f3`. Draft reviewed: `c
 - [Reproduction script](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.mjs)
 - [Human-summary JSON and all 89 newly assessed standalone refs](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.json)
 - [Complete source/block/composition trace](2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.all-records.json.gz)
-- JSON SHA-256: `1ba77f3ef28f7d49c38e88cf272c42af6d3cd09b88dd7a74621dbc8f9b85e65a`
-- Gzip SHA-256: `b260d5194e22cab19f4af5771440ee8afa8a52c1c5c30ed9fe5ce4dae66c1f0a`
-- Decoded full JSON SHA-256: `3f58ceb6504141e22d231abe009bc725eaaefc33e8a54398c8efd38f02c1a7c8`
+- JSON SHA-256: `6d59bccd6932fc68f129db2fd89d9c2a3e0290ec84c0dacd96d9f4e88f922919`
+- Gzip SHA-256: `8013995089f28dc85734d23b7a5aa287c1e810b135a9efc4e261b2cff95d6c48`
+- Decoded full JSON SHA-256: `ec6263e3c95fbd6df8d9aba0774b7927bbb2f3c4f32bcc2b27d48ca4da588c16`
 - Runtime: Node `v24.14.1`, TypeScript `5.9.3`, `win32` / `10.0.26200`.
 
 With the existing TypeScript development dependency installed, from the repository root:
@@ -26,7 +26,7 @@ Alternatively use `--typescript` with the absolute path to an installed `typescr
 
 | Observation | Count |
 |---|---:|
-| Tracked recognized-suffix source files | 880 |
+| Tracked `.uwx.md` / `.uwpart.md` / `.uw.md` source files | 880 |
 | Sources reaching the current fenced parser | 816 |
 | Typed parser refusals | 9 |
 | `.uw.md` / Lite sources outside authored fenced-source census | 55 |
@@ -43,7 +43,7 @@ The two precedence controls are `conformance/hedge/0070-superseded-source/deal.u
 
 Old `checkDataQuality` walks only `parsed.sections`, including current variants. Its market trigger uses convenience `block.meta.provenance.resolution` or any `_overrides` entry resolution, and its missing-carrier condition uses JavaScript falsiness. It does not enforce the analogous inherited-reference requirement or inspect other collections. Actual old execution over all 816 parsed sources emits zero attribution DQ-06/error and encounters zero exceptions. The stage-readiness DQ-06/info pass is not changed or reclassified by this research.
 
-The candidate inventory uses current canonical content after the accepted wrapper/provenance/lifecycle parent gate. Both canonical resolution and **ANY own stated object-override resolution** trigger the respective inherited/market carrier, including duplicate, shadowed and unmatched paths. Trigger multiplicity produces one required-absence predicate per carrier per distinct block. Stated carriers are independently shape-checked even without a trigger. Null/false/scalars/arrays are invalid-present, not absent. Required object children use the draft's exact string/digest/integer predicates. `as_of` is string-only here; this does not settle U3 or impose a host date parser. This is an attribution/reference census, **not** a complete META-05/06 optional-field or conditional-agent-id inventory.
+The candidate inventory uses current canonical content after the accepted wrapper/provenance/lifecycle parent gate. Both canonical resolution and **ANY own stated object-override resolution** trigger the respective inherited/market carrier, including duplicate, shadowed and unmatched paths. Trigger multiplicity produces one required-absence predicate per carrier per distinct block. Stated carriers are independently shape-checked even without a trigger. Null/false/scalars/arrays are invalid-present, not absent. Required object children use the draft's exact string/digest/integer predicates. `as_of` is assessed for string shape here; the owner-selected U3 calendar domain is independently tested by the adjacent date-only research controls. This census does not claim complete date-profile validation. This is an attribution/reference census, **not** a complete META-05/06 optional-field or conditional-agent-id inventory.
 
 ## Current reference evidence and source intent
 
@@ -158,6 +158,6 @@ These remain earlier failures and are never counted as successful empty attribut
 
 ## Activation boundary
 
-This independently establishes the exact population expansion at the assigned base, with zero current tracked-source attribution deltas. The stage-only DQ-06 direction requires removal of the old attribution emission when its governed replacement is implemented; never retain both. It does not remove stage readiness or CC-14 suppression. Final implementation still needs exact field/pass ordering, both trigger families, parent precedence and ordinary result/CLI/receipt-policy tests in TypeScript and Python. U3 is not decided by one ordinary date string. All other optional-field/agent-presence effects remain outside this census.
+This independently establishes the exact population expansion at the assigned base, with zero current tracked-source attribution deltas. The stage-only DQ-06 direction requires removal of the old attribution emission when its governed replacement is implemented; never retain both. It does not remove stage readiness or CC-14 suppression. Final implementation still needs exact field/pass ordering, both trigger families, parent precedence and ordinary result/CLI/receipt-policy tests in TypeScript and Python. The U3 date-only direction is fixed by the owner and independently tested in the adjacent date controls; one ordinary carrier date is not exhaustive date-domain evidence. All other optional-field/agent-presence effects remain outside this census.
 
 Re-run on the final implementation/activation base, including the separately pending RFC0094 implementation. No source or frozen expectation change follows solely from this attribution inventory. It does not establish full Python validation capability, final CI, carrier authenticity or external-reference availability.

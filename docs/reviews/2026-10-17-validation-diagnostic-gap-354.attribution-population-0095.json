@@ -108,7 +108,7 @@
     "no_activation": true,
     "scope": "Reference-attribution population only; not the full META-05/06 optional-field or conditional-agent-id inventory, full validation certification, or a prediction of all RFC0095 effects.",
     "trigger_assumption": "Counterfactual canonical plus ANY own stated object-override resolution for BOTH inherited_assumption and market_data_accepted, including duplicate/shadowed/unmatched paths. This is not a new validator.",
-    "as_of": "String-only shape for inventory; calendar choice U3 remains unresolved. No date parser oracle.",
+    "as_of": "String-only carrier shape in this attribution census. The owner-selected U3 calendar domain is independently assessed by the adjacent date-only research controls; this census is not complete date-profile validation.",
     "old_population": "Only parsed.sections current single/variant blocks; convenience block.meta and current truthiness preserved in observed checkDataQuality.",
     "new_population": "Exact-identity retained physical followed by current MODEL sections/superseded/pipeline_log/custom_calculations/custom_scenarios/extensions. No projected collection is silently dropped.",
     "intent": "Location/path-derived classifications do not establish positive metadata validity or invent negative expectations.",
@@ -241,9 +241,9 @@
   },
   "full_record_evidence": {
     "file": "2026-10-17-validation-diagnostic-gap-354.attribution-population-0095.all-records.json.gz",
-    "gzip_sha256": "b260d5194e22cab19f4af5771440ee8afa8a52c1c5c30ed9fe5ce4dae66c1f0a",
-    "decoded_json_sha256": "3f58ceb6504141e22d231abe009bc725eaaefc33e8a54398c8efd38f02c1a7c8",
-    "decoded_bytes": 3610949
+    "gzip_sha256": "8013995089f28dc85734d23b7a5aa287c1e810b135a9efc4e261b2cff95d6c48",
+    "decoded_json_sha256": "ec6263e3c95fbd6df8d9aba0774b7927bbb2f3c4f32bcc2b27d48ca4da588c16",
+    "decoded_bytes": 3611070
   },
   "newly_assessed_records": [
     {

@@ -44,7 +44,11 @@ const ts = require(compilerPath ?? 'typescript');
 const temp = mkdtempSync(join(tmpdir(), 'uwmd-0095-census-'));
 const emitted = [];
 const cleanup=()=>{ assert.equal(dirname(temp),resolve(tmpdir())); assert.ok(basename(temp).startsWith('uwmd-0095-census-')); rmSync(temp,{recursive:true,force:true}); };
-let parser, composition, protocol, metadata, checkDataQuality;
+let parser;
+let composition;
+let protocol;
+let metadata;
+let checkDataQuality;
 try {
   writeFileSync(join(temp, 'package.json'), '{"type":"module"}\n');
   for (const name of ['parser', 'types', 'yaml-scalar', 'composition', 'protocol', 'gaps-content', 'metadata']) {
@@ -91,7 +95,9 @@ function metaGate(b) {
   return 'admitted';
 }
 function carrier(p,name,required) {
-  const present=own(p,name), value=present ? p[name] : undefined, failures=[];
+  const present=own(p,name);
+  const value=present ? p[name] : undefined;
+  const failures=[];
   if (!present) { if (required) failures.push(`${name}.required_absent`); return { presence:'absent',failures }; }
   if (!object(value)) return { presence:kind(value),failures:[`${name}.object`] };
   const fields=name==='inherited_from' ? ['document_id','digest','distance'] : ['document_id','as_of','digest','rationale'];
@@ -113,18 +119,29 @@ function classify(path) {
   else if (/template|AFTER/.test(path)) intent='authored output template by path; not observed producer output';
   return { location,intent,intent_basis:'path only; no new fixture assertions or positive-validity promise inferred' };
 }
-const fileRows=[],operations=[],sourceModels=new Map(),parts=new Map(),recordOrigin=new WeakMap();
+const fileRows=[];
+const operations=[];
+const sourceModels=new Map();
+const parts=new Map();
+const recordOrigin=new WeakMap();
 function snapshot(p, operationId) {
-  const model=modelEntries(p), old=new Set(model.filter(([s])=>s.startsWith('sections.')).map(([,b])=>b));
-  const physical=parser.parsedPhysicalBlocks(p), refs=[...new Set([...physical,...model.map(([,b])=>b)])];
+  const model=modelEntries(p);
+  const old=new Set(model.filter(([s])=>s.startsWith('sections.')).map(([,b])=>b));
+  const physical=parser.parsedPhysicalBlocks(p);
+  const refs=[...new Set([...physical,...model.map(([,b])=>b)])];
   const rows=refs.map((b,i)=>{
-    const paths=model.filter(([,v])=>v===b).map(([s])=>s), m=b.content?._meta, provenance=object(m)&&object(m.provenance)?m.provenance:{};
-    const overrideValue=b.content?._overrides, overrides=Array.isArray(overrideValue)?overrideValue:[];
+    const paths=model.filter(([,v])=>v===b).map(([s])=>s);
+    const m=b.content?._meta;
+    const provenance=object(m)&&object(m.provenance)?m.provenance:{};
+    const overrideValue=b.content?._overrides;
+    const overrides=Array.isArray(overrideValue)?overrideValue:[];
     const triggers={ inherited_assumption:[],market_data_accepted:[] };
     if (own(provenance,'resolution') && Object.hasOwn(triggers,provenance.resolution)) triggers[provenance.resolution].push('_meta.provenance.resolution');
     overrides.forEach((o,j)=>{if(object(o)&&own(o,'resolution')&&Object.hasOwn(triggers,o.resolution)) triggers[o.resolution].push(`_overrides[${j}].resolution`);});
-    const gate=metaGate(b), admitted=gate==='admitted';
-    const inherited=carrier(provenance,'inherited_from',triggers.inherited_assumption.length>0), market=carrier(provenance,'market_data_ref',triggers.market_data_accepted.length>0);
+    const gate=metaGate(b);
+    const admitted=gate==='admitted';
+    const inherited=carrier(provenance,'inherited_from',triggers.inherited_assumption.length>0);
+    const market=carrier(provenance,'market_data_ref',triggers.market_data_accepted.length>0);
     const findings=admitted?[...inherited.failures,...market.failures]:[];
     const legacyProvenance=b.meta?.provenance;
     let oldMarket;
@@ -147,7 +164,8 @@ function snapshot(p, operationId) {
 }
 try {
  for(const path of sourcePaths){
-  const bytes=blobs.get(path), file={path,sha256:sha(bytes),...classify(path)};fileRows.push(file);
+  const bytes=blobs.get(path);
+  const file={path,sha256:sha(bytes),...classify(path)};fileRows.push(file);
   if(path.endsWith('.uw.md')){file.status='outside-fenced-source-census';file.reason='UW Lite has no authored fenced-JSON physical population; compilation/current MODEL boundary is separate.';continue;}
   let p;
   try{p=parser.parseUWFile(utf8(bytes));file.status='parsed';}
@@ -163,10 +181,12 @@ try {
  for(const [path,p] of sourceModels){
   if(path.endsWith('.uwpart.md'))continue;
   if(!modelEntries(p).some(([name,b])=>name.startsWith('sections.')&&(own(b.content,'external')||b.annotation.external===true)))continue;
-  const folder=posix.dirname(path), partFolder=folder.endsWith('/records')?posix.join(folder,'../parts'):posix.join(folder,'parts');
+  const folder=posix.dirname(path);
+  const partFolder=folder.endsWith('/records')?posix.join(folder,'../parts'):posix.join(folder,'parts');
   const candidates=fileRows.filter(f=>f.path.endsWith('.uwpart.md')&&posix.dirname(f.path)===partFolder);
   const entry={root:path,association_basis:'Explicit local parts directory; sibling ../parts for records/. Path-derived association, not a universal resolver.',loaded:candidates.map(f=>f.path),status:null};
-  const map=new Map(),invalid=[];
+  const map=new Map();
+  const invalid=[];
   for(const candidate of candidates){const part=parts.get(candidate.path);if(!part){invalid.push(candidate.path);continue;}if(map.has(part.part_id)){invalid.push(candidate.path);continue;}map.set(part.part_id,part);}
   if(invalid.length){entry.status='part-load-refused';entry.invalid_or_duplicate_parts=invalid;composed.push(entry);continue;}
   const resolved=composition.resolveComposition(p,{parts:map});entry.status=resolved.status;entry.issues=resolved.issues;entry.externalized=resolved.externalized;
@@ -178,17 +198,20 @@ try {
   }
   composed.push(entry);
  }
- function summary(ops){const blocks=ops.flatMap(o=>o.blocks),newly=blocks.filter(b=>b.newly_assessed),count=a=>Object.fromEntries([...a.reduce((m,x)=>m.set(x,(m.get(x)??0)+1),new Map())].sort());
+ function summary(ops){const blocks=ops.flatMap(o=>o.blocks);
+const newly=blocks.filter(b=>b.newly_assessed);
+const count=a=>Object.fromEntries([...a.reduce((m,x)=>m.set(x,(m.get(x)??0)+1),new Map())].sort());
   return {operations:ops.length,physical:ops.reduce((n,o)=>n+o.physical_count,0),union:blocks.length,old_sections:blocks.filter(b=>b.old_sections_population).length,newly_assessed:newly.length,newly_by_collection:count(newly.map(b=>b.model_paths.length?b.model_paths[0].split('.')[0].replace(/\[.*/, ''):b.origin.source_model_paths?.length?'physical-original-replaced-in-projection':'physical-only-overwritten')),newly_source_locations:count(newly.map(b=>classify(b.origin.path).location)),newly_source_intents:count(newly.map(b=>classify(b.origin.path).intent)),newly_source_count:new Set(newly.map(b=>b.origin.path)).size,triggered_blocks:count(blocks.flatMap(b=>Object.entries(b.triggers).filter(([,paths])=>paths.length).map(([name])=>name))),trigger_assertions:count(blocks.flatMap(b=>Object.entries(b.triggers).flatMap(([name,paths])=>paths.map(()=>name)))),newly_triggered_blocks:count(newly.flatMap(b=>Object.entries(b.triggers).filter(([,paths])=>paths.length).map(([name])=>name))),carriers:{inherited_from:count(blocks.map(b=>b.inherited_from.presence)),market_data_ref:count(blocks.map(b=>b.market_data_ref.presence))},metadata_gates:count(blocks.map(b=>b.metadata_gate)),newly_metadata_gates:count(newly.map(b=>b.metadata_gate)),candidate_failures:count(blocks.flatMap(b=>b.candidate_failures)),newly_candidate_failures:count(newly.flatMap(b=>b.candidate_failures)),newly_affected_blocks:newly.filter(b=>b.candidate_failures.length).length,newly_affected_sources:[...new Set(newly.filter(b=>b.candidate_failures.length).map(b=>b.origin.path))],actual_dq06_errors:ops.reduce((n,o)=>n+o.actual_dq06_error.length,0),actual_dq_refusals:ops.filter(o=>o.actual_dq_refusal).map(o=>({id:o.id,...o.actual_dq_refusal}))};}
  // Bounded independently authored controls pin the census mechanics, not the live contract.
  const controls=[];
  const meta=(section,changes={})=>({section,provenance:{actor:'census-control',source:'manual',resolution:'user_input'},quality:{confidence:'high',human_review_required:false},lifecycle:{revision:1,superseded:false},...changes});
- const fence=(section,value,annotation='')=>'```json uw:section='+section+(annotation?' '+annotation:'')+'\n'+JSON.stringify(value)+'\n```\n';
+ const fence=(section,value,annotation='')=>`\`\`\`json uw:section=${section}${annotation?` ${annotation}`:''}\n${JSON.stringify(value)}\n\`\`\`\n`;
  const front='---\nuw_version: "3.0"\ndeal_id: census_control\nasset_class: multifamily\n---\n';
  const block=(section,resolution,rest={})=>({_meta:meta(section,{provenance:{actor:'census-control',source:'manual',resolution}}),...rest});
  const addControl=(name,source,expectation,mutate)=>{
    const p=parser.parseUWFile(front+source);if(mutate)mutate(p);
-   const view=snapshot(p,`authored-control:${name}`), failures=view.blocks.flatMap(b=>b.candidate_failures);
+   const view=snapshot(p,`authored-control:${name}`);
+   const failures=view.blocks.flatMap(b=>b.candidate_failures);
    assert.equal(failures.length,expectation.failures,name);
    if(expectation.newly!==undefined)assert.equal(view.newly_assessed,expectation.newly,name);
    if(expectation.old!==undefined)assert.equal(view.actual_dq06_error.length,expectation.old,name);
@@ -210,7 +233,7 @@ try {
  addControl('old-parent-refusal-suppresses-new-carrier',fence('property',rejected),{failures:0,old:1});
  addControl('invalid-null-override-keeps-observed-runtime-refusal',fence('property',block('property','user_input',{_overrides:[null]})),{failures:0,old:0});
  assert.equal(controls.at(-1).observation.actual_dq_refusal?.name,'TypeError');
- const initial=block('property','market_data_accepted');initial._meta.provenance.market_data_ref={document_id:'d',as_of:'',digest:'sha256:'+'a'.repeat(64)};
+ const initial=block('property','market_data_accepted');initial._meta.provenance.market_data_ref={document_id:'d',as_of:'',digest:`sha256:${'a'.repeat(64)}`};
  addControl('mutable-canonical-meta-replaces-convenience-cache',fence('property',initial),{failures:1,old:0},p=>{p.sections.property.content._meta=block('property','market_data_accepted')._meta;});
  addControl('exact-reference-dedup-vs-distinct-model-added',fence('property',block('property','user_input')),{failures:1,newly:1,old:0},p=>{const original=p.sections.property;p.extensions.x_alias=original;p.extensions.x_new={...original,annotation:{section:'x_new'},content:block('x_new','inherited_assumption')};});
  const copySource=parser.parseUWFile(front+fence('x_census',block('x_census','market_data_accepted'),'variant=a')+fence('x_census',block('x_census','user_input'),'variant=b'));
@@ -218,18 +241,18 @@ try {
  assert.equal(copyView.physical_count,0);assert.equal(copyView.union_count,1);assert.equal(copyView.blocks.flatMap(b=>b.candidate_failures).length,0);
  controls.push({name:'actual-copied-model',expectation:{physical:0,union:1,failures:0},observation:copyView});
  const manifest={schema:'read-only-rfc0095-attribution-population-v1',base:BASE,draft:DRAFT,draft_rfc_sha256:sha(git('show',`${DRAFT}:${DRAFT_PATH}`)),runtime:{node:process.version,typescript:ts.version,platform:platform(),os_release:release()},authority:requested.filter(x=>!sourcePaths.includes(x)).map(path=>({path,sha256:sha(blobs.get(path))})),transpiled_runtime:emitted,
-  boundaries:{no_activation:true,scope:'Reference-attribution population only; not the full META-05/06 optional-field or conditional-agent-id inventory, full validation certification, or a prediction of all RFC0095 effects.',trigger_assumption:'Counterfactual canonical plus ANY own stated object-override resolution for BOTH inherited_assumption and market_data_accepted, including duplicate/shadowed/unmatched paths. This is not a new validator.',as_of:'String-only shape for inventory; calendar choice U3 remains unresolved. No date parser oracle.',old_population:'Only parsed.sections current single/variant blocks; convenience block.meta and current truthiness preserved in observed checkDataQuality.',new_population:'Exact-identity retained physical followed by current MODEL sections/superseded/pipeline_log/custom_calculations/custom_scenarios/extensions. No projected collection is silently dropped.',intent:'Location/path-derived classifications do not establish positive metadata validity or invent negative expectations.',excluded:'Embedded source literals in TS/Python/JSON test descriptions, ZIP members and generated Lite model blocks are not independent tracked fenced-source files. Standalone sources include test fixtures and templates where tracked with recognized suffixes.',parse:'Default accepted non-strict parser behavior is preserved. Parser refusals and non-strict malformed-JSON placeholders are listed separately. Parts are additionally passed through actual parseUWPart; invalid parts are never claimed as resolved.'},
+  boundaries:{no_activation:true,scope:'Reference-attribution population only; not the full META-05/06 optional-field or conditional-agent-id inventory, full validation certification, or a prediction of all RFC0095 effects.',trigger_assumption:'Counterfactual canonical plus ANY own stated object-override resolution for BOTH inherited_assumption and market_data_accepted, including duplicate/shadowed/unmatched paths. This is not a new validator.',as_of:'String-only carrier shape in this attribution census. The owner-selected U3 calendar domain is independently assessed by the adjacent date-only research controls; this census is not complete date-profile validation.',old_population:'Only parsed.sections current single/variant blocks; convenience block.meta and current truthiness preserved in observed checkDataQuality.',new_population:'Exact-identity retained physical followed by current MODEL sections/superseded/pipeline_log/custom_calculations/custom_scenarios/extensions. No projected collection is silently dropped.',intent:'Location/path-derived classifications do not establish positive metadata validity or invent negative expectations.',excluded:'Embedded source literals in TS/Python/JSON test descriptions, ZIP members and generated Lite model blocks are not independent tracked fenced-source files. Standalone sources include test fixtures and templates where tracked with recognized suffixes.',parse:'Default accepted non-strict parser behavior is preserved. Parser refusals and non-strict malformed-JSON placeholders are listed separately. Parts are additionally passed through actual parseUWPart; invalid parts are never claimed as resolved.'},
   summary:{tracked_sources:sourcePaths.length,file_statuses:Object.fromEntries([...new Set(fileRows.map(f=>f.status))].sort().map(s=>[s,fileRows.filter(f=>f.status===s).length])),files_by_location:Object.fromEntries([...new Set(fileRows.map(f=>f.location))].sort().map(s=>[s,fileRows.filter(f=>f.location===s).length])),standalone:summary(operations),composition:{attempts:composed.length,statuses:Object.fromEntries([...new Set(composed.map(c=>c.status))].sort().map(s=>[s,composed.filter(c=>c.status===s).length])),resolved_population:summary(composed.filter(c=>c.operation).map(c=>c.operation))}},test_evidence:testEvidencePaths.map(path=>({path,sha256:sha(blobs.get(path)),scope:'Existing embedded test controls; not separately enumerated as source documents or assumed future expectations.'})),authored_controls:controls,files:fileRows,operations,composition:composed};
- const allBytes=Buffer.from(JSON.stringify(manifest,null,2)+'\n');
+ const allBytes=Buffer.from(`${JSON.stringify(manifest,null,2)}\n`);
  const gzipPath=output.replace(/\.json$/,'.all-records.json.gz');assert.notEqual(gzipPath,output);
  const gz=gzipSync(allBytes,{level:9});mkdirSync(dirname(output),{recursive:true});writeFileSync(gzipPath,gz);
  const report={schema:manifest.schema,base:BASE,draft:DRAFT,draft_rfc_sha256:sha(git('show',`${DRAFT}:${DRAFT_PATH}`)),runtime:manifest.runtime,authority:manifest.authority,transpiled_runtime:emitted,boundaries:manifest.boundaries,summary:manifest.summary,
  full_record_evidence:{file:basename(gzipPath),gzip_sha256:sha(gz),decoded_json_sha256:sha(allBytes),decoded_bytes:allBytes.length},
  newly_assessed_records:operations.flatMap(o=>o.blocks.filter(b=>b.newly_assessed).map(b=>({operation:o.id,ref:b.ref,...b.origin,section:b.section,variant:b.variant,model_paths:b.model_paths,metadata_gate:b.metadata_gate,triggers:b.triggers,candidate_failures:b.candidate_failures,intent:classify(b.origin.path)}))),
- newly_assessed_composed_records:composed.flatMap(c=>(c.operation?.blocks??[]).filter(b=>b.newly_assessed).map(b=>({operation:c.root+'::resolved',ref:b.ref,...b.origin,section:b.section,variant:b.variant,model_paths:b.model_paths,metadata_gate:b.metadata_gate,triggers:b.triggers,candidate_failures:b.candidate_failures}))),
+ newly_assessed_composed_records:composed.flatMap(c=>(c.operation?.blocks??[]).filter(b=>b.newly_assessed).map(b=>({operation:`${c.root}::resolved`,ref:b.ref,...b.origin,section:b.section,variant:b.variant,model_paths:b.model_paths,metadata_gate:b.metadata_gate,triggers:b.triggers,candidate_failures:b.candidate_failures}))),
  relevant_reference_records:operations.flatMap(o=>o.blocks.filter(b=>Object.values(b.triggers).some(v=>v.length)||b.inherited_from.presence!=='absent'||b.market_data_ref.presence!=='absent').map(b=>({operation:o.id,...b}))),
  rejected_sources:fileRows.filter(f=>f.status==='parser-refused'||f.part_status==='refused'),composition:composed.map(({operation,...c})=>({...c,...(operation?{physical:operation.physical_count,union:operation.union_count,current_sections:operation.old_sections_count,newly_assessed:operation.newly_assessed,root_physical:operation.blocks.filter(b=>b.physical&&b.origin.path===c.root).length,part_physical:operation.blocks.filter(b=>b.physical&&b.origin.path!==c.root).length,synthesized:operation.blocks.filter(b=>!b.physical).length}:{} )})),
  authored_controls:controls.map(({name,expectation,source_sha256,observation:o})=>({name,source_sha256,expectation,observed:{physical:o.physical_count,union:o.union_count,newly_assessed:o.newly_assessed,candidate_failures:o.blocks.flatMap(b=>b.candidate_failures),actual_dq06_errors:o.actual_dq06_error.length,actual_dq_refusal:o.actual_dq_refusal}})),test_evidence:manifest.test_evidence};
- const json=JSON.stringify(report,null,2)+'\n';writeFileSync(output,json);
+ const json=`${JSON.stringify(report,null,2)}\n`;writeFileSync(output,json);
  console.log(JSON.stringify({output,sha256:sha(json),gzip_sha256:sha(gz),summary:manifest.summary},null,2));
 }finally{cleanup();}
