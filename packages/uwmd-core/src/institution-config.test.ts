@@ -23,7 +23,7 @@ describe('documented institution threshold adapter', () => {
     expect(institutionThresholds({ thresholds: { dscr: { warning_below: 2 } } })).toBeUndefined();
     expect(institutionThresholds({ validation_overrides: { dscr_error_below: 2 } })).toBeUndefined();
     expect(institutionThresholds({ validation_overrides: Object.create({ dscr_warning_below: 2 }) })).toBeUndefined();
-    for (const value of [null, true, '1.25', NaN, Infinity]) {
+    for (const value of [null, true, '1.25', Number.NaN, Number.POSITIVE_INFINITY]) {
       expect(institutionThresholds({ validation_overrides: { dscr_warning_below: value } })).toBeUndefined();
     }
     // These observations bound the mapper, not normative malformed-config verdicts.
