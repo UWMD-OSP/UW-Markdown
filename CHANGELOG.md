@@ -16,6 +16,12 @@ protocol, and each package each carry an independent semver).
   D2; not `CLS-04`), zero stays admissible (D3), and per-size dictionary metrics
   are `unverifiable` when their size is ≤ 0. The synchronized implementation
   follows in its own PR.
+- Accept RFC0099 (#416, owner 2026-10-20, as drafted): the metric dictionary
+  carries a closed statement-binding registry (today's conformance alias table,
+  moved), so a Verifier checks each dictionary metric at every place a document
+  states it (`valuation.going_in_cap_rate`, `valuation.price_per_sf`,
+  `debt_structure.sizing_metrics.*`, …), not only in `quick_metrics`. The
+  synchronized implementation follows in its own PR.
 
 - Certify the independent Python implementation (Issue #354): its discovery
   manifest claims the Reader tier plus `calc-evaluate`, and CI proves the claim
