@@ -20,6 +20,7 @@ protocol, and each package each carry an independent semver).
   deleted (one source); its Lite section map moves to `lite-input-sections.json`.
   New `conformance/metrics/statement-homes/` cases (21). Format §4.1/4.3/4.5/4.6/4.7/4.23
   name the verified fields; Protocol §II.2 states the rule.
+
 - Accept RFC0099 (#416, owner 2026-10-20, as drafted): the metric dictionary
   carries a closed statement-binding registry (today's conformance alias table,
   moved), so a Verifier checks each dictionary metric at every place a document
