@@ -1,0 +1,6 @@
+{
+  "why": "#406: the senior_debt tranche rate (0.0999) does not equal debt_structure.interest_rate (0.0625); \u00a74.24 'same amount, same rate' is exact (owner ruling). Amounts agree, so CC-03 is the rate leg alone.",
+  "expected_codes": [
+    "CC-03"
+  ]
+}

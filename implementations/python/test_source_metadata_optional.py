@@ -22,7 +22,7 @@ def body():
 
 
 def fence(value, section="x_optional", annotation=""):
-    return ("~~~json uw:section=" + section + annotation + "\n" + json.dumps(value, ensure_ascii=True) + "\n~~~\n").encode()
+    return ("```json uw:section=" + section + annotation + "\n" + json.dumps(value, ensure_ascii=True) + "\n```\n").encode()
 
 
 def rows(result, prefix="META-"):

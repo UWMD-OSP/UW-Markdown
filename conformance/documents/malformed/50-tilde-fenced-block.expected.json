@@ -1,0 +1,8 @@
+{
+  "description": "A tilde-fenced `json uw:section=property` block is ordinary Markdown, not a data block (Format \u00a72.4, RFC 0102 / #405). The record therefore has no property section and owes CC-14.",
+  "must_parse": true,
+  "expected_codes": [
+    "CC-14"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md \u00a72.4 (RFC 0102)"
+}

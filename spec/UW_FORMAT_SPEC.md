@@ -360,7 +360,7 @@ The anchor (e.g., `{#property}`) is the section ID used for internal linking and
 
 ### 2.4 Data Block Annotation Syntax
 
-Every data block is a fenced JSON code block. The opening fence carries a structured annotation:
+Every data block is a fenced JSON code block. The opening fence carries a structured annotation. A structured block opens on a line that begins, at the first column, with exactly three backticks immediately followed by `json`, whitespace and the `uw:section=` annotation; it closes on the next line that is exactly three backticks, optionally followed by spaces or tabs (RFC 0102). Nothing else opens a block: a tilde fence (`~~~json`), an indented fence or a longer backtick run is ordinary Markdown, as is any other code fence. The rule is line-based, so such a line opens a block even inside another Markdown code fence:
 
 ```
 ```json uw:section=<section_id> [key=value ...]
@@ -661,7 +661,7 @@ transport and resulting validation/receipt-policy accounting.
 
 ### 2.6 Source Identifiers
 
-`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); a resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
+`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); any present value outside this grammar is out of grammar, including a non-string, the empty string and `null` (RFC 0101). A `null` source also keeps its existing `META_FIELD_MISSING_SOURCE` warning; an absent source is not `SRC-01`. A resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
 
 `_meta.provenance.resolution` is OPTIONAL and describes how values were resolved. It MUST be one member of this closed vocabulary; any other value is `SRC-03` (error). `manual` is actor-only; human-typed values use `user_input`.
 
@@ -2008,6 +2008,8 @@ from `jurisdiction`, which is a label.
 }
 ```
 
+**Point in time (RFC 0098).** `point_in_time` is OPTIONAL: `closing` or `stabilization`, non-extensible. It names the only point at which this loan is outstanding: `closing` for a facility retired before stabilization (a construction loan, typically), `stabilization` for a facility first funded after closing (a permanent takeout). A block that omits it states a loan outstanding at **both** points, one loan for the hold, and this covers every single-loan record. A stated value outside the vocabulary MUST be rejected (`DS-01`). The field changes no figure, and `loan_purpose`/`loan_type` keep their meaning. A producer MUST NOT infer it from `loan_purpose: construction`: a construction loan that converts to permanent is one loan at both points and states no `point_in_time`.
+
 **Rate hedges (RFC 0056, RFC 0081 G1).** `rate_hedge` is OPTIONAL. Only `instrument` and `strike_rate` are required. `notional`, `index`, `effective_date`, `expiration_date` and `post_expiration_assumption` form an all-or-none terms group (`HDG-01`). A strike-only hedge may also state premium; no other fact is inferred. `HDG-01` validates stated members; `HDG-02`/`HDG-03` apply to every hedge. `HDG-06`–`HDG-10`, replacement_funding and the hedge clauses of `ESC-04` evaluate only when the terms group is stated. The premium is the single home of the cap cost. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). `replacement_funding: null` therefore requires no terms group.
 When `debt_structure` is a variant map, the hedge rules read the one block
 §5.3 selects for them, preferring `senior` (RFC 0075). A hedge on any other
@@ -2098,6 +2100,8 @@ identically.
 **Written by:** `wizard:step_4`, `agent/L4-05`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `debt_structure`, `valuation`
+
+**The closing statement (RFC 0098).** `sources_uses` states the closing: the sources that fund the deal and the uses they pay for, at closing. Its senior bucket (`sources.loan_amount`, or `sources.debt_proceeds` when that is absent) is a **closing** figure. A facility funded at closing appears in sources however it is retired later.
 
 ```json
 {
@@ -3669,6 +3673,8 @@ In this example property NOI is `1300000 + 372000 = 1672000`, which `noi_model.n
 
 The section has two parts: an ordered **`tranches`** array and a **`sizing`** array of stated figures a verifier recomputes. Unlike `components` (§ 4.23), which must be a bounded map because a calc pack reads its fields by static path, `capital_stack` is a **state-and-verify** structure (RFC 0021 § 6): the Tier‑3 calc engine never reads it, so a variable-length array is safe. Stated sizing figures are recomputed by a deterministic verifier (`verifyCapitalStack`, a sibling of `verifyRollup`) over a **fixed, closed function vocabulary** — not by a pack formula and not by any calc-engine primitive. This is what lets the stack carry an arbitrary number of tranches (including two mezzanine notes) without the sandbox iterating.
 
+**Point in time (RFC 0098).** `point_in_time` is REQUIRED: `closing` or `stabilization`, non-extensible. It names the one point in time the stack describes: `closing` for the capitalization funded at closing (including a deal underwritten during its bridge period), `stabilization` for the stabilized (permanent) capitalization. A mixed-use component stack (§ 4.23) carries the same field.
+
 **Tranches.** Each entry is a typed object:
 
 - `id` — document-local, unique within the section, free-form (`senior`, `mezz_a`, `mezz_b`). Two mezzanine notes are simply two tranches.
@@ -3686,9 +3692,10 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 
 - The `capital_stack` section is OPTIONAL and asset-class independent. A document with no `capital_stack` behaves exactly as before this RFC; every single-loan metric is unchanged.
 - **The stack is one point in time** (*stated by [RFC 0033](../docs/rfcs/0033-capital-stack-point-in-time.md)*). The section states the capitalization contemporaneous with the operating year the sizing verbs read (`noi_model.net_operating_income`) — for a deal underwritten to stabilization, the stabilized (permanent) stack. Facilities that do not coexist at that point MUST NOT be stated as concurrent tranches: a construction loan and the permanent takeout that retires it are one senior position in time sequence, and stating both double-counts the senior capital and misstates every attachment point above it. A producer underwriting a ground-up development SHOULD emit the stabilized stack — the takeout senior plus the layers that survive into stabilization — and MUST NOT add the retired construction facility to it. A `bridge` tranche is unaffected: a deal underwritten *during* its bridge period states the bridge-period capitalization, which is the point in time its NOI describes. Phased stacks (construction → takeout, draw schedules, as-is/as-stabilized dual sizing) are deferred with the multi-period spine (RFC 0026 § D; RFC 0033).
+- A stack MUST state `point_in_time` as `closing` or `stabilization`; a stack that omits it or states any other value MUST be rejected (`CS-04`, RFC 0098). This is the point RFC 0033's one-point rule names, and the point `CC-03` reads its senior at.
 - Each tranche MUST state `id`, `class`, `position`, and `amount`; `id` and `position` MUST be unique within the section. A malformed or duplicate-keyed tranche MUST be rejected (`CS-01`).
 - Every debt tranche and every `preferred_equity` tranche MUST state a `rate`; a `common_equity` tranche MUST NOT (`CS-02`).
-- When a `capital_stack` is present, its `senior_debt` tranche MUST reconcile with `debt_structure` and the `sources_uses` senior bucket — same amount, same rate. This is the generalized `CC-03`: the senior view is stated once and agrees everywhere.
+- When a `capital_stack` is present, its `senior_debt` tranche MUST reconcile with the senior `debt_structure` outstanding at the stack's `point_in_time` — same amount, same rate — and a `closing` stack also with the `sources_uses` senior bucket. This is the generalized `CC-03` (RFC 0098): each senior is stated once per point, and like-dated figures agree.
 - **Sizing is stated and verified, never trusted.** Each `sizing` entry names a closed `fn`, a selector, and a stated `value`; a verifier recomputes `fn` and compares. Disagreement is `CS-SIZING-DISAGREES` and the result is `failed`, never a silent pass. A figure that reads a tranche field the document does not supply is `unverifiable`, never `0`.
 - **The distribution waterfall is out of scope for this version.** A `capital_stack` that attempts to encode distribution tiers, promote, IRR hurdles, or catch-up MUST be refused (`CS-WATERFALL-UNSUPPORTED`) with guidance to `x_partnership_structure`; the multi-period distribution waterfall is deferred (RFC 0026 § E) pending a hold-period cash-flow primitive.
 
@@ -4342,7 +4349,7 @@ Tools MUST run these after each section write:
 |---|---|---|
 | `CC-01` | Rent roll GPR must match OS GPR within 3% | `rent_roll`, `operating_statement` |
 | `CC-02` | UW value in `valuation` must match value used for LTV in `debt_structure` | `valuation`, `debt_structure` |
-| `CC-03` | Senior loan reconciles: `sources_uses` senior loan, `debt_structure.loan_amount`, and (when present) the `capital_stack` `senior_debt` tranche must all match | `sources_uses`, `debt_structure`, `capital_stack` |
+| `CC-03` | Senior loan reconciles at each point in time (RFC 0098): the `sources_uses` senior bucket (a closing figure) matches the `loan_amount` of the senior `debt_structure` outstanding at `closing`; when present, the `capital_stack` `senior_debt` tranche matches the senior outstanding at the stack's `point_in_time` in amount (falling back to `sources_uses` only for a `closing` stack) and in rate (the tranche `rate` equals that senior's `interest_rate` exactly, with no tolerance). One senior is selected per point by the §5.3 order applied to the blocks whose `point_in_time` is that point or absent. A leg with no senior or no figure at its point does not apply | `sources_uses`, `debt_structure`, `capital_stack` |
 | `CC-04` | Sources must equal uses in `sources_uses` | `sources_uses` |
 | `CC-05` | NOI used for DSCR must match `noi_model.net_operating_income` within 1% | `noi_model`, `debt_structure` |
 | `CC-06` | DCF Year 1 NOI must be consistent with `noi_model` projections | `noi_model`, `dcf` |
@@ -4364,7 +4371,8 @@ For eligible variants, try (1) explicit check preference (`t12` on CC-01's
 operating statement, `appraisal` on CC-08's due diligence); (2) unique check
 role; (3) unique `primary`; (4) `default`; (5) `base`; (6) sole eligible
 variant. CC-01 prefers `detail` on rent_roll; CC-02/03/05/09 prefer `senior`
-on debt_structure. The rate-hedge and escrow rules `HDG-01`–`HDG-10` and
+on debt_structure; `CC-03` applies that preference to each point's candidates
+separately (RFC 0098). The rate-hedge and escrow rules `HDG-01`–`HDG-10` and
 `ESC-04` (§4.7/§4.8) also prefer `senior` on debt_structure, as one shared
 selection, so a hedge is read from the senior loan (RFC 0075). All of these
 are registered in `CROSS_CHECK_ROLE_PREFERENCE`. A consulted role collision
@@ -4387,7 +4395,10 @@ does not imply that every affected check was wholly skipped.
 section ids to `{ variant?, via }`, where `via` is `preference`, `role`,
 `primary`, `default`, `base`, `sole`, or `single`. Emit it only for selections
 from sections bearing roles, even when a later field check skips comparison.
-Multi-section checks record selections separately. Role-free coverage has no
+Multi-section checks record selections separately. `CC-03` selects one
+`debt_structure` per point (RFC 0098) and records each under
+`debt_structure@closing` / `debt_structure@stabilization`; no other check's keys
+change. Role-free coverage has no
 new fields. Constants, reporting and diagnostics do not alter financial math.
 
 **Coverage (RFC 0037).** A conforming validator MUST report, alongside its

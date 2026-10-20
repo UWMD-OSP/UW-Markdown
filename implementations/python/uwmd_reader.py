@@ -37,6 +37,11 @@ def _projection(block: StructuredBlock) -> dict:
 class Document:
     source: ScannedSource
     frontmatter: FrontmatterSource
+    # Composition keeps original root/consumed fragment sources separate from
+    # the assembled financial view. Empty for an ordinary parsed record.
+    _retained_sources: tuple[ScannedSource, ...] = ()
+    # Rebased collection number pointers retain their original token byte origin.
+    _number_origins: tuple[tuple[object, ScannedSource], ...] = ()
 
     def projection(self) -> dict:
         output = dict(frontmatter=self.frontmatter.value, sections={}, superseded={},
@@ -65,8 +70,22 @@ class Document:
         return output
 
 
-def parse(raw: bytes, *, filename: str | None = None) -> Document:
-    if re.match(rb"---(?:\r\n|\r|\n|$)", raw.removeprefix(b"\xef\xbb\xbf")) is None:
+_UWX_FENCE = re.compile(rb"(?:^|(?<=\r))```json[ \t]+uw:section=\S+", re.M)
+
+
+def parse(raw: bytes, *, filename: str | None = None, require_structured: bool = False) -> Document:
+    # The representation is decided before the version, as the reference
+    # decides it, from a structured fence opening any line of the source.
+    body = raw.removeprefix(b"\xef\xbb\xbf")
+    name = filename.lower() if filename is not None else None
+    structured = _UWX_FENCE.search(body) is not None
+    if name is not None and name.endswith(".uw.md") and structured:
+        raise ReaderError("SOURCE_CONTENT_MISMATCH", "structured records require .uwx.md")
+    # The reference's parse and validate commands refuse a .uwx.md with no
+    # structured fence; its other commands read it. Callers opt in.
+    if require_structured and name is not None and name.endswith(".uwx.md") and not structured:
+        raise ReaderError("SOURCE_CONTENT_MISMATCH", "a .uwx.md file must contain UWX structured section fences")
+    if re.match(rb"---(?:\r\n|\r|\n|$)", body) is None:
         raise ReaderError("UNSUPPORTED_FORMAT_VERSION", "declared uw_version is absent; supported value is '3.0'")
     source = scan_source(raw)
     frontmatter = parse_frontmatter(source.frontmatter_span.extract(raw),
@@ -75,6 +94,4 @@ def parse(raw: bytes, *, filename: str | None = None) -> Document:
         raise ReaderError("UNSUPPORTED_FORMAT_VERSION",
                           "declared uw_version is " + repr(frontmatter.value.get("uw_version"))
                           + "; supported value is '3.0'")
-    if filename is not None and filename.endswith(".uw.md") and source.blocks:
-        raise ReaderError("SOURCE_CONTENT_MISMATCH", "structured records require .uwx.md")
     return Document(source, frontmatter)

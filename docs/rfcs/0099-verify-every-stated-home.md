@@ -1,7 +1,7 @@
 ---
 rfc: 0099
 title: Verify each dictionary metric wherever the document states it
-status: draft
+status: accepted
 author: claude-code
 created: 2026-10-20
 affects:
@@ -14,11 +14,12 @@ affects:
 
 # RFC 0099: Verify each dictionary metric wherever the document states it
 
-> **Draft for owner acceptance.** Jared ruled on issue
-> [#416](https://github.com/UWMD-OSP/UW-Markdown/issues/416) on 2026-10-19:
-> "verify every home. Draft the RFC so each dictionary metric is checked wherever
-> it's stated." It changes what a Verifier owes, so it is normative and opens as
-> a draft. Implementation follows acceptance.
+> **Accepted by the owner, 2026-10-20, as drafted** (Jared: "RFC 0099 (#417) is
+> accepted as drafted; implement it"). The Decisions table D1–D6 stands as
+> written. It changes what a Verifier owes, so it opened alone as a draft under
+> PROCESS, and the synchronized implementation follows in its own PR. Origin:
+> issue [#416](https://github.com/UWMD-OSP/UW-Markdown/issues/416), ruled
+> 2026-10-19 ("verify every home").
 
 ## Summary
 
@@ -184,7 +185,7 @@ public symbol is added or removed.
   them because no NOI-based check applies to negative NOI. That is a separate
   question.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-20)
 
 | # | Question | Proposal | Why (precedent) |
 |---|---|---|---|
