@@ -34,8 +34,13 @@ class ValidationTests(unittest.TestCase):
     def test_111_existing_projection_assertions_direct_api_not_cli_or_capability(self):
         spec = importlib.util.spec_from_file_location("shared_validation_comparison", ROOT / "conformance/runner/runner.py")
         driver = importlib.util.module_from_spec(spec); spec.loader.exec_module(driver)
-        paths = sorted((ROOT / "conformance/runner/cases").glob("*__validate.case.json"))
-        self.assertEqual(len(paths), 111)
+        every = sorted((ROOT / "conformance/runner/cases").glob("*__validate.case.json"))
+        # RFC0097's 29 institution-config cases (#398) are CLI operation cases:
+        # sidecar discovery, --institution paths and operation refusals, which
+        # the direct API cannot express. The runner covers them through the CLI.
+        config = [p for p in every if "__institution-config__" in p.name]
+        paths = [p for p in every if p not in config]
+        self.assertEqual((len(paths), len(config)), (111, 29))
         for path in paths:
             case = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(case["requires_capabilities"], ["validate"])
