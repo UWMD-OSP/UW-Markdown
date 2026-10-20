@@ -53,7 +53,8 @@ def _number(value, field, issues, minimum=None, maximum=None):
 
 def cash_source_issues(payload):
     issues = []
-    if not _shape(payload, ("series",), (*_META, "label", "day_count", "stated_metrics"), "cash_flow_series", issues):
+    # An absent series is reported once, as the CF-02 non-empty rule below.
+    if not _shape(payload, (), (*_META, "series", "label", "day_count", "stated_metrics"), "cash_flow_series", issues):
         return issues
     _metadata(payload, issues)
     if payload.get("label") is not None and not isinstance(payload["label"], str):

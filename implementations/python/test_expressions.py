@@ -195,12 +195,13 @@ class ExpressionTests(unittest.TestCase):
         # PROTO-MOD-018 belongs to module loading; this tests its parse premise
         # without pretending a module loader or profile has been implemented.
 
-    def test_discovery_stays_parse_only_without_an_evaluator_command(self):
+    def test_discovery_claims_reader_tier_and_certified_capabilities(self):
         manifest, status = main(["manifest"])
         self.assertEqual(status, 0)
-        self.assertEqual(manifest["capabilities"], ["parse"])
+        self.assertEqual(manifest["capabilities"], ["parse", "calc-evaluate"])
         self.assertEqual(manifest["profiles"], [])
-        self.assertNotIn("tier", manifest)
+        # Certified Reader tier (#354); never the Verifier tier (Protocol II.2/II.5).
+        self.assertEqual(manifest["tier"], "reader")
         self.assertNotEqual(main(["calc", "unused"])[1], 0)
 
 

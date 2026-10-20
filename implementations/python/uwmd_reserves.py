@@ -103,9 +103,11 @@ def reserve_structure(payload, currency=None, variant=None):
                 left, right = previous.get("start_date"), previous.get("end_date")
                 if calendar_date(left) and calendar_date(right) and (start <= left or start < right):
                     issue("RSV-05", pp, "periods must be ordered without overlap")
+            # Format 4.28: an invalid explicit predecessor, a non-text one
+            # included, is RSV-05 alone.
             if "previous_period_id" in period:
-                text(period, "previous_period_id", pp)
-                if previous is None or period["previous_period_id"] != previous.get("period_id"):
+                if (not _text(period["previous_period_id"]) or previous is None
+                        or period["previous_period_id"] != previous.get("period_id")):
                     issue("RSV-05", pp + ".previous_period_id", "predecessor must be immediately preceding stated period")
             for key in ("opening_balance", "ending_balance"):
                 amount(period, key, pp)

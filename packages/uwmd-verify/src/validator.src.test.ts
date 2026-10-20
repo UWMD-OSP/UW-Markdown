@@ -7,6 +7,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { validateUWFile } from './validator.js';
+import { parseUWFile } from './parser.js';
 import type { ParsedUWFile, UWBlock, UWProvenance } from './types.js';
 import { SOURCE_TAGS } from './types.js';
 
@@ -120,3 +121,46 @@ describe('SRC-03 — resolution outside the closed vocabulary', () => {
     expect(srcIssues(file)).toHaveLength(0);
   });
 });
+
+// RFC 0101 (#413): every present value outside the §2.6 grammar is SRC-01.
+describe('SRC-01 — present non-string or empty source (RFC 0101)', () => {
+  const doc = (source: unknown) => parseUWFile(`---
+uw_version: "3.0"
+deal_id: src-0101
+asset_class: multifamily
+---
+
+\`\`\`json uw:section=property
+${JSON.stringify({
+    _meta: {
+      section: 'property',
+      provenance: { source, actor: 'test', timestamp: '2026-10-19T00:00:00Z' },
+      quality: { confidence: 'high', human_review_required: false },
+      lifecycle: { revision: 1, superseded: false },
+    },
+    total_units: 10,
+  })}
+\`\`\`
+`);
+  const codes = (source: unknown) => validateUWFile(doc(source)).issues
+    .filter((i) => i.code.startsWith('SRC-') || i.code === 'META_FIELD_MISSING_SOURCE')
+    .map((i) => [i.code, i.field ?? null]);
+
+  it.each([[''], [0], [false], [[]], [{}], [['manual']]])('refuses %j', (source) => {
+    expect(codes(source)).toEqual([['SRC-01', '_meta.provenance.source']]);
+  });
+
+  it('refuses null and keeps the existing completeness warning', () => {
+    const found = codes(null);
+    expect(found).toContainEqual(['SRC-01', '_meta.provenance.source']);
+    expect(found.map(([code]) => code)).toContain('META_FIELD_MISSING_SOURCE');
+  });
+
+  it('leaves an absent source to the completeness warning alone', () => {
+    const parsed = parseUWFile(doc('manual').raw.replace('"source":"manual",', ''));
+    const found = validateUWFile(parsed).issues.map((i) => i.code);
+    expect(found).toContain('META_FIELD_MISSING_SOURCE');
+    expect(found.filter((c) => c.startsWith('SRC-'))).toEqual([]);
+  });
+});
+

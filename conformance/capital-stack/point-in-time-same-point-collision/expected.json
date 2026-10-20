@@ -1,0 +1,6 @@
+{
+  "why": "RFC 0098: a same-point role collision is unchanged.",
+  "expected_codes": [
+    "CC-16"
+  ]
+}

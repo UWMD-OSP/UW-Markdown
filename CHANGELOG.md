@@ -10,10 +10,57 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- Draft RFC0100 (#415): a closed size contract (registered primary/secondary
-  sizes plus §4.3 rent-roll counts, areas and rents) refuses negative values and
-  fractional counts as `CLS-04`, and per-size dictionary metrics are
-  `unverifiable` when their size is ≤ 0. Docs-only draft for owner acceptance.
+- Accept RFC0100 (#415, owner 2026-10-20): a closed size contract (registered
+  primary/secondary sizes plus §4.3 rent-roll counts, areas and rents) refuses
+  negative values and fractional counts under a new error code `SIZE-01` (owner
+  D2; not `CLS-04`), zero stays admissible (D3), and per-size dictionary metrics
+  are `unverifiable` when their size is ≤ 0. The synchronized implementation
+  follows in its own PR.
+
+- Certify the independent Python implementation (Issue #354): its discovery
+  manifest claims the Reader tier plus `calc-evaluate`, and CI proves the claim
+  with the RFC 0004 runner on Windows, Linux and macOS (17 Reader and 184
+  `calc-evaluate` cases pass; only the 140 `validate` cases may skip). `validate`
+  passes the portable corpus but is not claimed until its differences from the
+  reference outside the corpus are resolved (#425 review). The Verifier tier is
+  not claimed: Python has no metric-dictionary reproduction, stated-figure
+  verifiers or receipt verification (Protocol §II.2, §II.5). Python also gains RFC 0098
+  (per-point CC-03, CS-04, DS-01), RFC 0101 null-source retention and the
+  reference's completeness-warning population; its unit suite is 527/527.
+
+- `CC-03` checks the senior rate (#406): the `capital_stack` `senior_debt`
+  tranche `rate` must equal the `interest_rate` of the senior `debt_structure` at
+  the stack's point exactly, as Format §4.24's "same amount, same rate" already
+  required (owner ruling: exact, no tolerance). The reference compared amounts
+  only. New `capital-stack/senior-rate-disagrees` case.
+
+- Accept RFC0102 (#405): a structured block opens only on a line beginning
+  exactly ```` ```json ```` + the `uw:section=` annotation and closes on a line of
+  three backticks; tilde, indented and longer fences are ordinary Markdown. The
+  reference already behaved this way; the independent Python reader aligns.
+  New `documents/malformed/50-tilde-fenced-block`.
+
+- `uwmd init` scaffolds only class sections a blank stub can satisfy (#414):
+  hospitality now scaffolds with no errors (no `rent_roll` stub, which must carry
+  `available_room_nights` once stated); data center and manufactured housing no
+  longer write empty `dc_*`/`mhc_sites` stubs that owed `CLS-04` on every required
+  field, and report the one missing required section (`CLS-03`) instead. The
+  scaffold's section labels now match the Format's section numbers.
+
+- Accept and implement RFC0101 (#413): every present `_meta.provenance.source`
+  outside the §2.6 actor grammar is `SRC-01`, including `""`, non-strings and
+  `null`; a `null` source keeps its `META_FIELD_MISSING_SOURCE` warning. The
+  reference previously validated these clean. Three `conformance/source` cases.
+
+- Implement accepted RFC0098 (#403): `capital_stack.point_in_time` is required
+  (`closing` | `stabilization`; `CS-04` when absent or unknown, including on a
+  mixed-use component stack); `debt_structure.point_in_time` is optional and
+  absent means outstanding at both points (`DS-01` for an unknown value, new
+  `DS` family); `sources_uses` is the closing statement; `CC-03` selects one
+  senior per point by the unchanged §5.3 order and compares like-dated figures,
+  recording `debt_structure@closing`/`@stabilization` evidence. Schema, Format,
+  Protocol, eight conformance cases, corpus and examples updated. Breaking for
+  documents with a `capital_stack` that state no point.
 
 - Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
   required `capital_stack.point_in_time` (`closing` | `stabilization`), an

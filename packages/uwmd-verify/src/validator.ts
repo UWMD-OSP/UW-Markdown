@@ -547,43 +547,77 @@ function checkCrossSectionConsistency(
     }
   }
 
-  // CC-03: the senior loan reconciles across sources_uses, debt_structure, and
-  // (when present) the capital_stack senior_debt tranche — one senior view stated
-  // once and agreeing everywhere (RFC 0026 §4.24). Two legs; the rule is
-  // evaluated when either leg compared.
+  // CC-03: the senior loan reconciles at each point in time (RFC 0098, which
+  // generalizes RFC 0026 §4.24). sources_uses is the closing statement; the
+  // capital_stack states its own point; a debt_structure block is outstanding at
+  // the point it states, or at both. One senior is selected per point by the
+  // §5.3 order applied to that point's candidates, so a construction facility
+  // and its takeout never collide. Two legs; the rule is evaluated when either
+  // leg compared.
   {
     const su = resolveCrossCheckSection(parsed, 'sources_uses', [], 'CC-03', ledger);
-    const ds = resolveCrossCheckSection(parsed, 'debt_structure', [], 'CC-03', ledger);
     if (su.state === 'unresolvable') noteUnresolvable(ledger, 'sources_uses', su.variants, 'CC-03', su.detail);
-    if (ds.state === 'unresolvable') noteUnresolvable(ledger, 'debt_structure', ds.variants, 'CC-03', ds.detail);
+    const debt = {
+      closing: seniorDebtAtPoint(parsed, 'closing', ledger),
+      stabilization: seniorDebtAtPoint(parsed, 'stabilization', ledger),
+    };
+    for (const point of CAPITAL_POINTS) {
+      const r = debt[point];
+      if (r.state === 'unresolvable') noteUnresolvable(ledger, 'debt_structure', r.variants, 'CC-03', r.detail ? `${point}: ${r.detail}` : point);
+    }
+    const debtUnresolvable = CAPITAL_POINTS.some((point) => debt[point].state === 'unresolvable');
+    const loanAt = (point: CapitalPoint): number | undefined => {
+      const block = debt[point].block;
+      return block ? num(deepGet(block.content, 'loan_amount')) : undefined;
+    };
     const suLoan = su.block ? (num(deepGet(su.block.content, 'sources.loan_amount')) ?? num(deepGet(su.block.content, 'sources.debt_proceeds'))) : undefined;
-    const dsLoan = ds.block ? num(deepGet(ds.block.content, 'loan_amount')) : undefined;
     let evaluated = false;
-    if (suLoan != null && dsLoan != null) {
+
+    // Closing leg: the closing statement against the senior outstanding at closing.
+    const closingLoan = loanAt('closing');
+    if (suLoan != null && closingLoan != null) {
       evaluated = true;
-      if (Math.abs(suLoan - dsLoan) > 100) {
-        issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', field: 'sources.loan_amount', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match Debt Structure loan amount ($${dsLoan.toLocaleString()})`, value: Math.abs(suLoan - dsLoan) });
+      if (Math.abs(suLoan - closingLoan) > 100) {
+        issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', field: 'sources.loan_amount', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match the closing senior Debt Structure loan amount ($${closingLoan.toLocaleString()})`, value: Math.abs(suLoan - closingLoan) });
       }
     }
 
+    // Stack leg: the senior tranche against the senior outstanding at the
+    // stack's point. Only a closing stack falls back to sources_uses, which is a
+    // closing figure.
     const senior = seniorDebtTranche(parsed, ledger);
-    if (senior) {
-      const seniorAmount = num(senior['amount']);
-      const reference = dsLoan ?? suLoan;
+    if (senior?.point) {
+      const seniorAmount = num(senior.tranche['amount']);
+      const reference = loanAt(senior.point) ?? (senior.point === 'closing' ? suLoan : undefined);
       if (seniorAmount != null && reference != null) {
         evaluated = true;
         if (Math.abs(seniorAmount - reference) > 100) {
-          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.amount', message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
+          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.amount', message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the ${senior.point} senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
+        }
+      }
+      // Same rate (§4.24): the tranche's rate equals the interest_rate of the
+      // senior at the stack's point, exactly, with no tolerance (owner ruling on
+      // #406). sources_uses states no rate, so a closing stack has no fallback.
+      const seniorRate = num(senior.tranche['rate']);
+      const atPoint = debt[senior.point].block;
+      const loanRate = atPoint ? num(deepGet(atPoint.content, 'interest_rate')) : undefined;
+      if (seniorRate != null && loanRate != null) {
+        evaluated = true;
+        if (seniorRate !== loanRate) {
+          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.rate', message: `CC-03: the capital_stack senior_debt tranche rate (${seniorRate}) does not equal the ${senior.point} senior loan interest_rate (${loanRate})`, value: Math.abs(seniorRate - loanRate) });
         }
       }
     }
 
+    const noSeniorAt = (point: CapitalPoint): boolean => debt[point].state === 'absent';
     if (evaluated) markEvaluated(ledger, 'CC-03');
     else if (su.state === 'unresolvable') markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'sources_uses');
-    else if (ds.state === 'unresolvable') markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'debt_structure');
+    else if (debtUnresolvable) markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'debt_structure');
     else if (ledger.coverage['CC-03']?.reason === 'variant_unresolvable') { /* A role-bearing capital stack could not resolve. */ }
     else if (su.state === 'absent') markSkipped(ledger, 'CC-03', 'section_absent', 'sources_uses');
-    else if (ds.state === 'absent') markSkipped(ledger, 'CC-03', 'section_absent', 'debt_structure');
+    else if (!parsed.sections['debt_structure']) markSkipped(ledger, 'CC-03', 'section_absent', 'debt_structure');
+    else if (senior?.point && noSeniorAt(senior.point)) markSkipped(ledger, 'CC-03', 'not_applicable', `no ${senior.point} senior debt_structure`);
+    else if (!senior && noSeniorAt('closing')) markSkipped(ledger, 'CC-03', 'not_applicable', 'no closing senior debt_structure');
     else markSkipped(ledger, 'CC-03', 'field_absent', suLoan == null ? 'sources_uses.sources.loan_amount' : 'debt_structure.loan_amount');
   }
 
@@ -2280,15 +2314,18 @@ const WATERFALL_MARKERS = [
 ];
 
 /** The capital_stack `senior_debt` tranche, if the section and tranche exist. */
-function seniorDebtTranche(parsed: ParsedUWFile, ledger: CoverageLedger): Record<string, unknown> | null {
+function seniorDebtTranche(parsed: ParsedUWFile, ledger: CoverageLedger): { tranche: Record<string, unknown>; point: CapitalPoint | null } | null {
   const cs = roleAwareDirectRead(parsed, 'capital_stack', 'CC-03', ledger);
   if (!cs) return null;
-  const tranches = (cs.content as Record<string, unknown>)['tranches'];
+  const content = cs.content as Record<string, unknown>;
+  const tranches = content['tranches'];
   if (!Array.isArray(tranches)) return null;
   const senior = tranches.find(
     (t) => t && typeof t === 'object' && (t as Record<string, unknown>)['class'] === 'senior_debt',
   );
-  return senior && typeof senior === 'object' ? (senior as Record<string, unknown>) : null;
+  if (!senior || typeof senior !== 'object') return null;
+  // An absent or invalid point is CS-04; the stack leg then has no point to read.
+  return { tranche: senior as Record<string, unknown>, point: isCapitalPoint(content['point_in_time']) ? content['point_in_time'] : null };
 }
 
 // Validates one capital-stack payload's structure: CS-01 (well-formed, unique
@@ -2306,6 +2343,17 @@ function checkStackContent(
   prefix: string,
   issues: ValidationMessage[],
 ): void {
+  // CS-04 (RFC 0098): the stack names the one point in time it describes.
+  if (!isCapitalPoint(content['point_in_time'])) {
+    issues.push({
+      code: 'CS-04', severity: 'error', section, field: `${prefix}point_in_time`,
+      message: Object.hasOwn(content, 'point_in_time')
+        ? `CS-04: capital_stack point_in_time must be "closing" or "stabilization"`
+        : `CS-04: capital_stack must state point_in_time ("closing" or "stabilization")`,
+      ...(Object.hasOwn(content, 'point_in_time') ? { value: content['point_in_time'] } : {}),
+    });
+  }
+
   // CS-WATERFALL-UNSUPPORTED: a distribution waterfall at the stack level.
   for (const key of Object.keys(content)) {
     if (WATERFALL_MARKERS.includes(key)) {
@@ -2525,7 +2573,59 @@ function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]
   }
 }
 
+// ─── Points in time of the capital stack and senior loans (RFC 0098) ─────────
+
+const CAPITAL_POINTS = ['closing', 'stabilization'] as const;
+type CapitalPoint = typeof CAPITAL_POINTS[number];
+
+function isCapitalPoint(value: unknown): value is CapitalPoint {
+  return typeof value === 'string' && (CAPITAL_POINTS as readonly string[]).includes(value);
+}
+
+/** DS-01: a stated debt_structure point_in_time outside the closed vocabulary. */
+function checkDebtPointInTime(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const entry = parsed.sections['debt_structure'];
+  if (!entry) return;
+  for (const block of isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock]) {
+    const content = block.content as Record<string, unknown>;
+    if (!Object.hasOwn(content, 'point_in_time') || isCapitalPoint(content['point_in_time'])) continue;
+    const variant = block.annotation.variant;
+    issues.push({
+      code: 'DS-01', severity: 'error', section: 'debt_structure', field: 'point_in_time',
+      message: `DS-01: debt_structure${variant ? ` variant=${variant}` : ''} point_in_time must be "closing" or "stabilization"; omit it for a loan outstanding at both points`,
+      value: content['point_in_time'],
+    });
+  }
+}
+
+/**
+ * The debt_structure blocks outstanding at `point`: those stating that point or
+ * none (a loan for the hold). A block with an invalid point (DS-01) is outstanding
+ * at neither. Returns the section entry restricted to them, or undefined.
+ */
+function debtAtPoint(entry: ParsedUWFile['sections'][string] | undefined, point: CapitalPoint): ParsedUWFile['sections'][string] | undefined {
+  if (!entry) return undefined;
+  const outstanding = (block: UWBlock): boolean => {
+    const content = block.content as Record<string, unknown>;
+    return !Object.hasOwn(content, 'point_in_time') || content['point_in_time'] === point;
+  };
+  if (!isVariantMap(entry)) return outstanding(entry as UWBlock) ? entry : undefined;
+  const kept = Object.entries(entry as Record<string, UWBlock>).filter(([, block]) => outstanding(block));
+  return kept.length ? Object.fromEntries(kept) : undefined;
+}
+
+/** CC-03's senior at one point: §5.3 resolution applied to that point's candidates only. */
+function seniorDebtAtPoint(parsed: ParsedUWFile, point: CapitalPoint, ledger: CoverageLedger): CrossCheckResolution {
+  const r = resolveRoleBlock(debtAtPoint(parsed.sections['debt_structure'], point), 'debt_structure', [], 'CC-03');
+  if (r.state === 'resolved' && r.evidence) {
+    ledger.resolutions['CC-03'] ??= {};
+    ledger.resolutions['CC-03']![`debt_structure@${point}`] = r.evidence;
+  }
+  return r;
+}
+
 function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  checkDebtPointInTime(parsed, issues);
   const cs = getSection(parsed, 'capital_stack');
   if (cs) checkStackContent(cs.content as Record<string, unknown>, 'capital_stack', '', issues);
 
@@ -3152,8 +3252,22 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
           message: `Section ${sectionId} provenance.resolution is outside the closed resolution vocabulary.`,
         });
       }
-      const src = block.meta?.provenance?.source;
-      if (typeof src !== 'string' || src.length === 0) continue; // absence is META/DQ territory
+      const provenance = block.meta?.provenance as unknown as Record<string, unknown> | undefined;
+      const src: unknown = provenance?.['source'];
+      if (src === undefined) continue; // absence is META/DQ territory
+      // Any present value outside the grammar is SRC-01, including a non-string,
+      // the empty string and null (RFC 0101); null also keeps its existing
+      // META_FIELD_MISSING_SOURCE warning.
+      if (typeof src !== 'string' || src.length === 0) {
+        issues.push({
+          code: 'SRC-01',
+          severity,
+          section: sectionId,
+          field: '_meta.provenance.source',
+          message: `Section ${sectionId} _meta.provenance.source must be 'manual' or '<namespace>/<id>'; got ${JSON.stringify(src)}.`,
+        });
+        continue;
+      }
 
       if (RESOLUTION_TAG_SET.has(src)) {
         issues.push({

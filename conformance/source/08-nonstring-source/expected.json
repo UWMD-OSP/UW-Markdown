@@ -1,0 +1,6 @@
+{
+  "why": "a non-string `_meta.provenance.source` is SRC-01 (RFC 0101, #413).",
+  "src_codes": [
+    "SRC-01"
+  ]
+}

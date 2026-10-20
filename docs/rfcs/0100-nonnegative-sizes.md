@@ -1,7 +1,7 @@
 ---
 rfc: 0100
 title: Refuse negative sizes, counts, areas and rents
-status: draft
+status: accepted
 author: claude-code
 created: 2026-10-20
 affects:
@@ -14,18 +14,18 @@ affects:
 
 # RFC 0100: Refuse negative sizes, counts, areas and rents
 
-> **Draft for owner acceptance.** Jared ruled on issue
-> [#415](https://github.com/UWMD-OSP/UW-Markdown/issues/415) on 2026-10-19:
-> "draft an RFC forbidding negative sizes." It adds a validation rule that
-> existing documents could fail, so it opens as a draft. Implementation follows
-> acceptance.
+> **Accepted by the owner, 2026-10-20, with D2 decided** (Jared: "RFC 0100
+> (#418) is accepted with D2 = a new SIZE-01 code (not CLS-04), and D3 as drafted
+> (zero stays admissible); implement it"). The text below is amended to the
+> chosen code; every other decision stands as drafted. Origin: issue
+> [#415](https://github.com/UWMD-OSP/UW-Markdown/issues/415), ruled 2026-10-19.
 
 ## Summary
 
 A closed list of size, count, area and rent fields gains a fixed contract. Each
 stated value MUST be a finite number ≥ 0, and a count MUST also be an integer. A
-stated value that breaks the contract is `CLS-04`, the existing "stated official
-field violates its fixed field contract" error. The list is every registered
+stated value that breaks the contract is `SIZE-01`, a new error code (the
+`SIZE-NN` family) for the generic size contract. The list is every registered
 primary and secondary size (Protocol §XIII.1 / `size_intensives`) and the §4.3
 rent-roll counts, areas and rents that #415 found unpoliced. The metric
 dictionary's per-size metrics also become `unverifiable` when their size
@@ -58,7 +58,7 @@ table below:
 > A stated value of a field in the **size contract table** MUST be a finite JSON
 > number ≥ 0; a field marked *count* MUST also be an integer (a JSON number with
 > no fractional part; `1.0` and `1e0` are integer 1, as RFC 0094 reads
-> revisions). A stated value that breaks this is `CLS-04` (error) at that field.
+> revisions). A stated value that breaks this is `SIZE-01` (error) at that field.
 > `null` and absence keep their existing meaning: absence is not a finding, and
 > stage readiness owns missing facts (§5.1).
 
@@ -91,9 +91,11 @@ which gains one closed value, `positive_size_denominator`.
 
 ### 3. Protocol
 
-§XI's `CLS-NN` row notes the size contract. The validation-code registry
-description of `CLS-04` gains "or a stated size/count/area/rent in the Format §5
-size contract table is negative or, for a count, not an integer".
+§XI gains a `SIZE-NN` row: the generic size contract of Format §5. The
+validation-code registry gains `SIZE-01` (error): "a stated size, count, area or
+rent in the Format §5 size contract table is negative or non-finite or, for a
+count, not an integer". `CLS-04` is unchanged and stays the class contracts'
+code.
 
 ## Compatibility analysis
 
@@ -115,24 +117,24 @@ size contract table is negative or, for a count, not an integer".
 New cases under `conformance/documents/malformed/`, synthetic: one negative
 value per kind (count, area, capacity, rent), a fractional count, and a negative
 twin (`rent_roll.total_sites` against a valid `mhc_sites.total_sites`). Each
-owes `CLS-04` at the field. One clean control states zero for a secondary size
+owes `SIZE-01` at the field. One clean control states zero for a secondary size
 (`property.entitled_units: 0`), which is valid. A dictionary case shows
 `price_per_unit` as `unverifiable` with `total_units: -1`.
 
 ## Reference implementation
 
 - `validator.ts` / `builtin-class-validation.ts`: one table-driven pass over the
-  current `property` and `rent_roll` blocks, emitting `CLS-04` per failing field.
+  current `property` and `rent_roll` blocks, emitting `SIZE-01` per failing field.
 - `metric-dictionary` / `calc`: honor `positive_size_denominator`.
 - Python: the same table and denominator rule.
 - Tests: one per row kind, the twin case and the zero control.
 
 ## Alternatives considered
 
-- **A new code family** (`SIZE-01`). Clearer in a code list, but `CLS-04`
-  already means "a stated official field violates its fixed field contract", and
-  the class contracts use it for exactly this kind of bound. A new family would
-  split one idea across two codes. Recorded as D2 so the owner can choose it.
+- **Reuse `CLS-04`** (the draft's proposal). `CLS-04` already means "a stated
+  official field violates its fixed field contract" for the class contracts.
+  The owner chose a new `SIZE-01` instead (D2), so the generic contract is
+  distinct in a code list from the class-specific ones.
 - **Bound every numeric field ≥ 0.** Wrong: concessions, credits, losses and net
   cash flows are signed by design.
 - **Forbid zero for primary sizes.** A land or pre-development deal can state
@@ -150,12 +152,12 @@ owes `CLS-04` at the field. One clean control states zero for a secondary size
 - **Section fields not in the table** that later prove to be sizes join it by a
   table change under this RFC's rules.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-20)
 
 | # | Question | Proposal | Why (precedent) |
 |---|---|---|---|
 | D1 | Scope | Closed table: registered primary/secondary sizes, plus §4.3 rent-roll counts, areas and rents | #415 evidence; closed vocabularies |
-| D2 | Code | `CLS-04` (error) | Existing "fixed field contract" code; alternative `SIZE-01` |
+| D2 | Code | **`SIZE-01` (error), a new `SIZE-NN` family** (owner's choice; drafted proposal was `CLS-04`) | Distinct from the class contracts in a code list |
 | D3 | Zero | Admissible | Legitimate for land/pre-development; already unverifiable as a denominator |
 | D4 | Counts | Integer (JSON number with no fractional part) | RFC 0094's integer reading for revisions |
 | D5 | Denominators | `null`/`unverifiable` when the size is ≤ 0 (`positive_size_denominator`) | No Verifier confirms a figure against an impossible size |
