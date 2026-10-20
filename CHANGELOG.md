@@ -10,6 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Draft RFC0100 (#415): a closed size contract (registered primary/secondary
+  sizes plus §4.3 rent-roll counts, areas and rents) refuses negative values and
+  fractional counts as `CLS-04`, and per-size dictionary metrics are
+  `unverifiable` when their size is ≤ 0. Docs-only draft for owner acceptance.
+
 - Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
   required `capital_stack.point_in_time` (`closing` | `stabilization`), an
   optional `debt_structure.point_in_time` (absent = outstanding at both points),

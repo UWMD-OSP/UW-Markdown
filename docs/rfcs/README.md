@@ -124,6 +124,7 @@ and how it gets accepted.
 | [0096](./0096-bounded-stated-payload-admission.md) | Allocate bounded stated-payload admission diagnostics | accepted | format, protocol, core, conformance, tooling |
 | [0097](./0097-institution-config-refusal.md) | Refuse invalid selected institution configuration before validation | accepted | format, protocol, core, conformance, tooling |
 | [0098](./0098-capital-point-in-time.md) | Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point | accepted | format, protocol, core, conformance, tooling |
+| [0100](./0100-nonnegative-sizes.md) | Refuse negative sizes, counts, areas and rents | draft | format, protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
