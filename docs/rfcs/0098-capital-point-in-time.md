@@ -295,7 +295,7 @@ to it by the same corpus.
   same rate", but the TypeScript `CC-03` at `16cf18c3` compares amounts only. The
   independent Python ledger records a tranche `rate` against
   `debt_structure.interest_rate` comparison. That divergence predates this RFC and
-  is filed separately as a bug-bash finding. Whatever resolves it applies per point
+  is filed separately as [#406](https://github.com/UWMD-OSP/UW-Markdown/issues/406). Whatever resolves it applies per point
   under this RFC.
 - **Other senior-preferring checks.** `CC-02`, `CC-05`, `CC-09`, `HDG-01`–`HDG-10`
   and `ESC-04` keep their single selection. In a two-senior record they still meet
