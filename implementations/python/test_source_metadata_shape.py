@@ -180,7 +180,7 @@ class SourceMetadataShapeTests(unittest.TestCase):
                 self.assertEqual(process.returncode, int(bool(expected)))
                 self.assertEqual([field for _, field in shapes(report)], expected)
                 self.assertEqual(path.read_bytes(), raw)
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate"])
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ The report's outer two-member wrapper is a nonnormative standalone CLI surface.
 Only replacement_funding_verification implements the exact V.12.3 result union.
 """
 import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import re
 
@@ -129,6 +129,8 @@ class _Check:
     context: dict | None = None
     series: list | None = None
     stated: str | None = None
+    # Private orchestration evidence only; never part of the V.12 result union.
+    consulted: list = field(default_factory=list)
 
 
 def _check(document):
@@ -136,6 +138,7 @@ def _check(document):
     check = _Check(issues)
     debt, debt_refused = _select(document, "debt_structure", "senior")
     sources, sources_refused = _select(document, "sources_uses")
+    check.consulted.extend(b for b in (debt, sources) if b is not None)
     hedge = debt.parsed.value.get("rate_hedge") if debt else None
     def binding_applicable(value):
         # RFC0081 G1 supersedes the older all-hedges trigger: a known strike-only
@@ -217,6 +220,8 @@ def _check(document):
         issues.append(_issue("CUR-01", "frontmatter", "currency_code", "Currency must be an exact three-letter uppercase code or null."))
     reference_valid = isinstance(variant, str) and bool(variant) and _safe_index(index) and isinstance(digest, str) and _DIGEST.fullmatch(digest)
     cash = _cash(document, variant) if isinstance(variant, str) and variant else None
+    if cash is not None:
+        check.consulted.append(cash)
     if cash is None and isinstance(variant, str) and variant:
         check.unresolved = True
     if not reference_valid or cash is None:

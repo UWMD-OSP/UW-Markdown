@@ -37,7 +37,7 @@ class ReserveTests(unittest.TestCase):
             with self.subTest(case=case["id"]):
                 _, problems = driver.run_case([sys.executable, "-B", str(ROOT / "implementations/python/uwmd.py")], case, 60)
                 self.assertEqual(problems, [])
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate"])
         self.assertNotEqual(main(["validate", "unused"])[1], 0)
         self.assertNotEqual(main(["calc", "unused"])[1], 0)
 
