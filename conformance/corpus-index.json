@@ -2623,6 +2623,11 @@
     },
     {
       "suite": "capital-stack",
+      "scenario": "senior-rate-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
       "scenario": "sizing-disagrees",
       "target": "verifier"
     },

@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- `CC-03` checks the senior rate (#406): the `capital_stack` `senior_debt`
+  tranche `rate` must equal the `interest_rate` of the senior `debt_structure` at
+  the stack's point exactly, as Format §4.24's "same amount, same rate" already
+  required (owner ruling: exact, no tolerance). The reference compared amounts
+  only. New `capital-stack/senior-rate-disagrees` case.
+
 - Accept and implement RFC0101 (#413): every present `_meta.provenance.source`
   outside the §2.6 actor grammar is `SRC-01`, including `""`, non-strings and
   `null`; a `null` source keeps its `META_FIELD_MISSING_SOURCE` warning. The

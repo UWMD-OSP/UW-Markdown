@@ -412,3 +412,30 @@ describe('validateUWFile — capital point in time (RFC 0098)', () => {
     }
   });
 });
+
+// #406: "same amount, same rate" (§4.24). The rate leg is exact (owner ruling).
+describe('validateUWFile — CC-03 senior rate (#406)', () => {
+  const withRate = (trancheRate: number, loanRate: number | undefined) => file({
+    capital_stack: block('capital_stack', {
+      point_in_time: 'stabilization',
+      tranches: [{ id: 'senior', class: 'senior_debt', position: 1, amount: 18_000_000, rate: trancheRate }],
+    }),
+    debt_structure: block('debt_structure', { loan_amount: 18_000_000, ...(loanRate === undefined ? {} : { interest_rate: loanRate }) }),
+  });
+  const rateIssues = (parsed: ParsedUWFile) => validateUWFile(parsed).issues
+    .filter((i) => i.code === 'CC-03').map((i) => i.field);
+
+  it('passes equal rates', () => {
+    expect(rateIssues(withRate(0.0625, 0.0625))).toEqual([]);
+  });
+  it('fails unequal rates at the tranche rate', () => {
+    expect(rateIssues(withRate(0.0999, 0.0625))).toEqual(['tranches.senior_debt.rate']);
+  });
+  it('has no tolerance', () => {
+    expect(rateIssues(withRate(0.0625 + 1e-9, 0.0625))).toEqual(['tranches.senior_debt.rate']);
+  });
+  it('does not compare when the loan states no rate', () => {
+    expect(rateIssues(withRate(0.0999, undefined))).toEqual([]);
+  });
+});
+
