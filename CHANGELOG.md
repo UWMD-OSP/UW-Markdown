@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Reader: the canonical block of a section (or of a variant key) is the
+  **last** non-superseded block, as Format §2.7 states, not the highest
+  revision (#404). Two non-superseded blocks at the same revision kept the
+  first, and a later lower revision was archived. The block a later one
+  overwrites stays retained in `superseded`, so integrity and subject
+  accounting are unchanged.
+
 - Correct Issue #395: distinguish actual block wrappers from variant maps by
   shape, and route current peers through own keys. Lawful labels such as
   `annotation`, `content` and `toString` retain their current/history identity
