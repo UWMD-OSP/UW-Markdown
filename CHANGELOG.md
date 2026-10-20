@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- `uwmd init` scaffolds only class sections a blank stub can satisfy (#414):
+  hospitality now scaffolds with no errors (no `rent_roll` stub, which must carry
+  `available_room_nights` once stated); data center and manufactured housing no
+  longer write empty `dc_*`/`mhc_sites` stubs that owed `CLS-04` on every required
+  field, and report the one missing required section (`CLS-03`) instead. The
+  scaffold's section labels now match the Format's section numbers.
+
 - Implement accepted RFC0098 (#403): `capital_stack.point_in_time` is required
   (`closing` | `stabilization`; `CS-04` when absent or unknown, including on a
   mixed-use component stack); `debt_structure.point_in_time` is optional and
