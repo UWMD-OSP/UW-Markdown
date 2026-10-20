@@ -74,9 +74,6 @@ def tax_rules(ledger):
                     basis, ratio = r.get("value_basis"), r.get("assessment_ratio")
                     if basis is not None or ratio is not None:
                         valid = valid and finite(basis) and finite(ratio) and _money_equal(basis * ratio, r.get("assessed_value"))
-                    decimals = r.get("round_to_decimals")
-                    if decimals is not None:
-                        valid = valid and finite(decimals) and int(decimals) == decimals
                 missing = [key for key in group if r.get(key) is None]
                 if any(r.get(key) is not None for key in group) and missing:
                     for key in missing:
@@ -87,9 +84,12 @@ def tax_rules(ledger):
                     product = r["assessed_value"] * r["millage_rate"]
                     if not _money_equal(product, r["indicated_tax"]):
                         issue("TAX-02", rpath("indicated_tax"), "Indicated tax must equal assessed value times millage")
+                    # Format 4.5: round_to_decimals MUST be an integer under TAX-03.
                     places = r.get("round_to_decimals")
                     places = 2 if places is None else places
-                    if finite(places) and int(places) == places :
+                    if not (finite(places) and int(places) == places):
+                        issue("TAX-03", rpath("round_to_decimals"), "Rounding decimals must be an integer")
+                    else:
                         if not terminal and not _money_equal(line.get("value"), _tax_quantize(r["indicated_tax"], int(places))):
                             issue("TAX-03", "value", "Stated tax does not equal indicated tax at the declared quantum")
         abatement = line.get("abatement")

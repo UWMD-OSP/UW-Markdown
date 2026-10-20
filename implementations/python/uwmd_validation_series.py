@@ -74,9 +74,9 @@ def series_rules(ledger):
 
 
 def bed_rules(ledger):
+    # Format §4.3: a class other than student_housing that states the bed
+    # fields draws no issue for doing so, but the rules apply to what it states.
     document = ledger.document
-    if document.frontmatter.value.get("asset_class") != "student_housing":
-        return
     prop = select_section(document, "property")
     beds = field(prop.block.parsed.value, "total_beds") if prop.block is not None else None
     for block in current_blocks(document, "rent_roll"):

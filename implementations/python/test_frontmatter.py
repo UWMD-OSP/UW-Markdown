@@ -140,6 +140,8 @@ class FrontmatterTests(unittest.TestCase):
         raw = HEADER.replace(b"unknown_key: retained",
             b'modules:\n  - id: com.example.specialty_facility\n    version: ">=0.1.0 <1.0.0"\n'
             b'unknown_key:\n  - "a/b~c": 1.2300\n    label: "Caf\\u00e9"')
+        # parse refuses a .uwx.md with no structured fence, as the reference does.
+        raw += b'```json uw:section=property\n{"total_units": 1}\n```\n'
         with tempfile.TemporaryDirectory(prefix="uwmd-yaml-sequence-cli-") as folder:
             path = Path(folder) / "input.uwx.md"
             for source in (raw, raw.replace(b"\n", b"\r\n")):

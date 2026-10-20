@@ -82,7 +82,10 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
     partitions = {severity: [i for i in issues if i["severity"] == severity]
                   for severity in ("error", "warning", "info")}
     status = "errors" if partitions["error"] else "warnings" if partitions["warning"] else "clean"
-    if snapshot.frontmatter.value.get("blocking_flags"):
+    flags = snapshot.frontmatter.value.get("blocking_flags")
+    # The reference: blocking when blocking_flags has a positive length (a
+    # non-empty list or string); a number or mapping is not a flag list.
+    if isinstance(flags, (list, str)) and len(flags) > 0:
         status = "blocking"
     return dict(overall_status=status, stage_readiness=stage_readiness(snapshot),
                 issues=issues, errors=partitions["error"], warnings=partitions["warning"],
