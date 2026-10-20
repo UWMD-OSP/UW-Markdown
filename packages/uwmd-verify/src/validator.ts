@@ -3240,8 +3240,22 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
           message: `Section ${sectionId} provenance.resolution is outside the closed resolution vocabulary.`,
         });
       }
-      const src = block.meta?.provenance?.source;
-      if (typeof src !== 'string' || src.length === 0) continue; // absence is META/DQ territory
+      const provenance = block.meta?.provenance as unknown as Record<string, unknown> | undefined;
+      const src: unknown = provenance?.['source'];
+      if (src === undefined) continue; // absence is META/DQ territory
+      // Any present value outside the grammar is SRC-01, including a non-string,
+      // the empty string and null (RFC 0101); null also keeps its existing
+      // META_FIELD_MISSING_SOURCE warning.
+      if (typeof src !== 'string' || src.length === 0) {
+        issues.push({
+          code: 'SRC-01',
+          severity,
+          section: sectionId,
+          field: '_meta.provenance.source',
+          message: `Section ${sectionId} _meta.provenance.source must be 'manual' or '<namespace>/<id>'; got ${JSON.stringify(src)}.`,
+        });
+        continue;
+      }
 
       if (RESOLUTION_TAG_SET.has(src)) {
         issues.push({
