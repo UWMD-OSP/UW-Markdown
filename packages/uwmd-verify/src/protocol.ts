@@ -1637,6 +1637,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'DQ', description: 'Data quality / incomplete data', capabilities: ['validate'] },
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
+  { prefix: 'DS', description: 'Debt structure field admission (RFC 0098)', capabilities: ['validate'] },
   { prefix: 'REC', description: 'Lease recovery admission and reconciliation (RFC 0058, RFC0096)', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
   { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['calc-evaluate'] },
@@ -1770,6 +1771,20 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: 'UW_FORMAT_SPEC.md §4.24 CS-03',
   },
   {
+    code: 'CS-04', severity: 'error',
+    title: 'Capital stack states no point in time',
+    description: 'capital_stack (or a component stack) omits point_in_time, or states a value other than "closing" or "stabilization" (RFC 0098).',
+    remediation: 'State point_in_time: "stabilization" for the stabilized (permanent) stack, or "closing" for the capitalization funded at closing. The stack describes exactly one point (RFC 0033).',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.24 CS-04',
+  },
+  {
+    code: 'DS-01', severity: 'error',
+    title: 'Invalid debt_structure point in time',
+    description: 'A debt_structure block states point_in_time with a value other than "closing" or "stabilization" (RFC 0098).',
+    remediation: 'State "closing" for a facility retired before stabilization, "stabilization" for one first funded after closing, or omit point_in_time for a loan outstanding at both points.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.7 DS-01',
+  },
+  {
     code: 'WF-16', severity: 'error',
     title: 'Malformed waterfall claim',
     description: 'Stated outcomes, schedule or unselected clawback leaves violate their closed structural contract.',
@@ -1861,8 +1876,8 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'CC-03', severity: 'error',
     title: 'Senior loan does not reconcile',
-    description: 'sources_uses.sources.loan_amount, debt_structure.loan_amount and (when present) the capital_stack senior_debt tranche do not agree within $100.',
-    remediation: 'State the senior loan once and make every surface agree — sources_uses, debt_structure and the capital_stack senior_debt tranche MUST carry the same amount (RFC 0026 §4.24).',
+    description: 'At one point in time, the senior loan does not agree within $100: sources_uses (the closing statement) against the senior debt_structure outstanding at closing, or the capital_stack senior_debt tranche against the senior outstanding at the stack’s point_in_time (RFC 0098).',
+    remediation: 'State each senior loan once per point and make like-dated figures agree. A debt_structure block states point_in_time when it exists at only one point (a construction facility at closing, a takeout at stabilization); the stack states its own point (RFC 0026 §4.24, RFC 0098).',
     spec_ref: '§5.3 CC-03',
   },
   {

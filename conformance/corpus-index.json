@@ -2563,6 +2563,46 @@
     },
     {
       "suite": "capital-stack",
+      "scenario": "point-in-time-closing-leg",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-construction-takeout",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-debt-unknown",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-no-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-same-point-collision",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-single-loan",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-stack-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-stack-unknown",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
       "scenario": "pref-cash-vs-accrued",
       "target": "verifier"
     },
@@ -4665,6 +4705,21 @@
       "suite": "source",
       "scenario": "05-custom-policies-no-catchall",
       "target": "starter-products"
+    },
+    {
+      "suite": "source",
+      "scenario": "06-empty-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "source",
+      "scenario": "07-null-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "source",
+      "scenario": "08-nonstring-source",
+      "target": "verifier"
     },
     {
       "suite": "scenario",

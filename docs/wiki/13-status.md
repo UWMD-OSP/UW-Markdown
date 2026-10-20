@@ -8,6 +8,21 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Implemented RFC0098 — capital point in time (owner acceptance 2026-10-19).**
+[RFC0098](../rfcs/0098-capital-point-in-time.md): `capital_stack.point_in_time`
+is required (`closing`|`stabilization`, `CS-04`); `debt_structure.point_in_time`
+is optional, absent meaning outstanding at both points (`DS-01` for an unknown
+value); `sources_uses` is the closing statement; `CC-03` selects one senior per
+point and compares like-dated figures (coverage evidence keys
+`debt_structure@<point>`). Corpus and example stacks state `stabilization`.
+The TypeScript reference is complete; the Python validator update rides the
+Issue354 WIP, which is not on main. Other senior-preferring checks keep their
+single selection (RFC0098 Unresolved questions).
+
+**Reader canonical block — Issue #404.** The last non-superseded block of a
+section (or variant key) is canonical, per Format §2.7; the overwritten block
+stays retained under `superseded`.
+
 **Reader variant routing — Issue #395.** Actual block shape distinguishes a
 single block from a map of lawful variant labels. Current peers named
 `annotation`, `content` or a prototype member retain exact selection and history;

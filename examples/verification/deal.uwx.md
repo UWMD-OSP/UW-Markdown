@@ -344,6 +344,7 @@ same senior loan for single-loan consumers.
     }
   },
   "_notes": "The stack foots: 24.0 + 4.5 + 3.5 + 16.0 = 48.0M = total sources = total uses. Every sizing value below is the correctly-rounded recomputation from the tranche terms (verifyCapitalStack agrees at each figure's quantum). The pref is current-pay, so its 297,500 return sits inside the blended coverage denominator; had it been accrued, combined_dscr_thru_pref would rise to the thru-mezz figure and debt_yield_thru_mezz would not move.",
+  "point_in_time": "stabilization",
   "tranches": [
     {
       "id": "senior",
