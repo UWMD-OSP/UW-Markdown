@@ -10,6 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept and implement RFC0101 (#413): every present `_meta.provenance.source`
+  outside the §2.6 actor grammar is `SRC-01`, including `""`, non-strings and
+  `null`; a `null` source keeps its `META_FIELD_MISSING_SOURCE` warning. The
+  reference previously validated these clean. Three `conformance/source` cases.
+
 - Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
   required `capital_stack.point_in_time` (`closing` | `stabilization`), an
   optional `debt_structure.point_in_time` (absent = outstanding at both points),

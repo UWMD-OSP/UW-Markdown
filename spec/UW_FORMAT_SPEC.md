@@ -661,7 +661,7 @@ transport and resulting validation/receipt-policy accounting.
 
 ### 2.6 Source Identifiers
 
-`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); a resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
+`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); any present value outside this grammar is out of grammar, including a non-string, the empty string and `null` (RFC 0101). A `null` source also keeps its existing `META_FIELD_MISSING_SOURCE` warning; an absent source is not `SRC-01`. A resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
 
 `_meta.provenance.resolution` is OPTIONAL and describes how values were resolved. It MUST be one member of this closed vocabulary; any other value is `SRC-03` (error). `manual` is actor-only; human-typed values use `user_input`.
 

@@ -4667,6 +4667,21 @@
       "target": "starter-products"
     },
     {
+      "suite": "source",
+      "scenario": "06-empty-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "source",
+      "scenario": "07-null-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "source",
+      "scenario": "08-nonstring-source",
+      "target": "verifier"
+    },
+    {
       "suite": "scenario",
       "scenario": "01-stabilized_acquisition",
       "target": "verifier"
