@@ -87,6 +87,7 @@ deal_id: rfc0096-authored-control
       "superseded": false
     }
   },
+  "point_in_time": "stabilization",
   "tranches": [],
   "sizing": []
 }

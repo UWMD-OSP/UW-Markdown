@@ -10,6 +10,29 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept and implement RFC0101 (#413): every present `_meta.provenance.source`
+  outside the §2.6 actor grammar is `SRC-01`, including `""`, non-strings and
+  `null`; a `null` source keeps its `META_FIELD_MISSING_SOURCE` warning. The
+  reference previously validated these clean. Three `conformance/source` cases.
+
+- Implement accepted RFC0098 (#403): `capital_stack.point_in_time` is required
+  (`closing` | `stabilization`; `CS-04` when absent or unknown, including on a
+  mixed-use component stack); `debt_structure.point_in_time` is optional and
+  absent means outstanding at both points (`DS-01` for an unknown value, new
+  `DS` family); `sources_uses` is the closing statement; `CC-03` selects one
+  senior per point by the unchanged §5.3 order and compares like-dated figures,
+  recording `debt_structure@closing`/`@stabilization` evidence. Schema, Format,
+  Protocol, eight conformance cases, corpus and examples updated. Breaking for
+  documents with a `capital_stack` that state no point.
+
+- Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
+  required `capital_stack.point_in_time` (`closing` | `stabilization`), an
+  optional `debt_structure.point_in_time` (absent = outstanding at both points),
+  `sources_uses` defined as the closing statement, and `CC-03` reconciled per
+  point (`CS-04`, `DS-01`). Breaking for documents that carry a `capital_stack`.
+  This docs-only acceptance changes no runtime; the synchronized
+  implementation follows.
+
 - Reader: the canonical block of a section (or of a variant key) is the
   **last** non-superseded block, as Format §2.7 states, not the highest
   revision (#404). Two non-superseded blocks at the same revision kept the

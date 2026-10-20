@@ -123,6 +123,8 @@ and how it gets accepted.
 | [0095](./0095-optional-metadata-and-provenance-references.md) | Allocate bounded optional metadata and provenance-reference diagnostics | accepted | format, protocol, core, conformance, tooling |
 | [0096](./0096-bounded-stated-payload-admission.md) | Allocate bounded stated-payload admission diagnostics | accepted | format, protocol, core, conformance, tooling |
 | [0097](./0097-institution-config-refusal.md) | Refuse invalid selected institution configuration before validation | accepted | format, protocol, core, conformance, tooling |
+| [0098](./0098-capital-point-in-time.md) | Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point | accepted | format, protocol, core, conformance, tooling |
+| [0101](./0101-present-invalid-source.md) | Refuse every present source value outside the actor grammar | accepted | format, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

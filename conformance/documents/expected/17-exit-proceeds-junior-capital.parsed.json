@@ -69,6 +69,7 @@
         }
       },
       "content": {
+        "point_in_time": "stabilization",
         "tranches": [
           {
             "id": "senior",

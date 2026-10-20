@@ -109,6 +109,7 @@ The `capital_stack` senior_debt tranche states 24,500,000 where
     }
   },
   "_notes": null,
+  "point_in_time": "stabilization",
   "tranches": [
     {
       "id": "senior",

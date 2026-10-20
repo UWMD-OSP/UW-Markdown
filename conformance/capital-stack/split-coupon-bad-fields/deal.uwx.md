@@ -27,6 +27,7 @@ asset_class: multifamily
       "superseded": false
     }
   },
+  "point_in_time": "stabilization",
   "tranches": [
     {
       "id": "debt",

@@ -4310,6 +4310,20 @@ async function runSource() {
     record('source', id, ok ? 'pass' : 'fail',
       ok ? undefined : `edit ${edit.ok ? 'succeeded' : edit.error?.code} != refused ${expected.edit_refused}`);
   }
+  // 06+ — present values outside the §2.6 grammar (RFC 0101): the SRC codes are
+  // exact, and any `also_codes` (a retained completeness warning) must appear.
+  for (const id of readdirSync(SOURCE_DIR).filter((name) => /^(0[6-9]|[1-9]\d)-/.test(name)).sort()) {
+    const expected = expectedOf(id);
+    const { parsed } = load(id);
+    const problems = [];
+    const codes = srcCodes(parsed);
+    if (codes.join(',') !== [...expected.src_codes].sort().join(',')) {
+      problems.push(`SRC codes [${codes.join(', ')}] != [${expected.src_codes.join(', ')}]`);
+    }
+    const emitted = validateUWFile(parsed).issues.map((i) => i.code);
+    for (const code of expected.also_codes ?? []) if (!emitted.includes(code)) problems.push(`missing ${code}`);
+    record('source', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
