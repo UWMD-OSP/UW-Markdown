@@ -45,7 +45,7 @@ describe('RFC0096 executable registry and five synchronized schemas', () => {
     expect(trueUp([{ period_start: '2025-01-01', period_end: '2025-12-31', pool_actual: -1 }])).toBe(false);
   });
   it('asserts sizing selector union without interpreting financial selector association', () => {
-    const base = { tranches: [{ id: 's', class: 'senior_debt', position: 1, amount: 1, rate: .05 }], sizing: [{ id: 'x', fn: 'coverage', over: 'absent', value: -1 }] };
+    const base = { point_in_time: 'stabilization', tranches: [{ id: 's', class: 'senior_debt', position: 1, amount: 1, rate: .05 }], sizing: [{ id: 'x', fn: 'coverage', over: 'absent', value: -1 }] };
     expect(stack(base)).toBe(true);
     expect(stack({ ...base, sizing: [{ ...base.sizing[0], through: 1 }] })).toBe(false);
     expect(stack({ ...base, sizing: null })).toBe(false);
