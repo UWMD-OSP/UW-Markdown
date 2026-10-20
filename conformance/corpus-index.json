@@ -5757,6 +5757,11 @@
       "target": "verifier"
     },
     {
+      "suite": "documents",
+      "scenario": "malformed/50-tilde-fenced-block",
+      "target": "verifier"
+    },
+    {
       "suite": "recoveries",
       "scenario": "reject-inherited-cash-flow-variant",
       "target": "verifier"

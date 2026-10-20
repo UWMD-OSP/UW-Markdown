@@ -64,12 +64,15 @@ class SourceTests(unittest.TestCase):
             self.assertEqual(token.span.extract(source), lexeme)
             self.assertTrue(block.fence_span.extract(source).endswith(b"```\r\n"))
 
-    def test_generic_fenced_examples_cannot_inject_blocks(self):
+    def test_only_the_backtick_line_rule_opens_a_block(self):
+        # Format 2.4 (RFC 0102): a line that begins exactly ```json uw:... opens a
+        # block wherever it appears; tilde and indented fences are ordinary Markdown.
         source = (b"---\nuw_version: '3.0'\n---\n````markdown\n"
                   b"```json uw:section=property\n{}\n```\n````\n"
-                  b"~~~json uw:section=x_real\n{\"a\":1}\n~~~\n")
+                  b"~~~json uw:section=x_tilde\n{\"a\":1}\n~~~\n"
+                  b"   ```json uw:section=x_indented\n{}\n```\n")
         parsed = scan_source(source)
-        self.assertEqual([block.section for block in parsed.blocks], ["x_real"])
+        self.assertEqual([block.section for block in parsed.blocks], ["property"])
 
     def test_incomplete_or_ambiguous_sources_refuse(self):
         for source in [b"", b"no frontmatter", b"---\nuw_version: '3.0'",
