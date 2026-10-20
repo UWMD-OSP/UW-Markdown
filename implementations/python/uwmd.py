@@ -164,7 +164,7 @@ def main(arguments):
             raw=path.read_bytes()
             # Fatal actual-source admission precedes config preflight. Validate
             # this fresh parse with SOURCE ordering after admission succeeds.
-            document=parse(raw,filename=path.name)
+            document=parse(raw,filename=path.name,require_structured=True)
             from uwmd_institution import load_institution_thresholds
             thresholds=load_institution_thresholds(path,explicit)
             return _validation_response(asyncio.run(
@@ -257,7 +257,7 @@ def main(arguments):
     if len(arguments) == 2 and arguments[0] == "parse":
         try:
             path = Path(arguments[1])
-            return parse(path.read_bytes(), filename=path.name).projection(), 0
+            return parse(path.read_bytes(), filename=path.name, require_structured=True).projection(), 0
         except SourceError as error:
             # Uncoded errors stay local diagnostics rather than invented
             # registered Protocol codes or structural validation verdicts.

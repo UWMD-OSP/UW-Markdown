@@ -86,7 +86,8 @@ class ValidationTests(unittest.TestCase):
         self.assertNotIn(("META_FIELD_MISSING_CONFIDENCE","warning"),codes(result))
         malformed = validate(parse(HEADER + block("property", {"_meta":None})))
         self.assertIn(("META-01","error"),codes(malformed))
-        self.assertNotIn(("META_MISSING","warning"),codes(malformed))
+        # The reference also reads a null _meta as missing metadata.
+        self.assertIn(("META_MISSING","warning"),codes(malformed))
 
     def test_stage_overlays_share_readiness_and_declared_gaps(self):
         for asset in ("multifamily","land","mixed_use","data_center","unknown"):

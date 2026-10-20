@@ -208,13 +208,14 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         body, section = block.parsed.value, block.section
         emit = id(block) in current
         meta = body.get("_meta")
-        if "_meta" not in body:
+        # The reference reads a non-object or empty _meta as no metadata, so the
+        # completeness warning stands beside any present-invalid META-01.
+        if "_meta" not in body or not isinstance(meta, dict) or not meta:
             if emit:
                 ledger.issue("META_MISSING", "warning", section, "_meta", "Block provenance metadata is absent")
-            missing_meta_blocks.add(physical[id(block)])
+            if "_meta" not in body:
+                missing_meta_blocks.add(physical[id(block)])
             continue
-        if not isinstance(meta, dict):
-            continue  # Present malformed shape already has the registered META-01.
         required = (("SECTION", "section"), ("VERSION", "lifecycle.revision"),
                     ("SOURCE", "provenance.source"), ("TIMESTAMP", "provenance.timestamp"),
                     ("CONFIDENCE", "quality.confidence"))

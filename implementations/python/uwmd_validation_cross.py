@@ -121,7 +121,7 @@ def cross_checks(ledger, *, defer_summaries=False):
     debt, valuation = read("CC-02", "debt_structure", preferred_role="senior"), read("CC-02", "valuation")
     loan, value = number(debt, "loan_amount"), number(valuation, "underwritten_value", "purchase_price")
     expected = loan / value if finite(loan) and finite(value) and value != 0 else None
-    compare("CC-02", number(debt, "ltv", "sizing_metrics.ltv"), expected, .005, section="debt_structure", path="ltv")
+    compare("CC-02", number(debt, "ltv"), expected, .005, section="debt_structure", path="ltv")
     cc03(ledger)
     s = read("CC-04", "sources_uses")
     compare("CC-04", number(s, "total_sources"), number(s, "total_uses"), 1, section="sources_uses", path="total_sources")
@@ -150,16 +150,34 @@ def cross_checks(ledger, *, defer_summaries=False):
                  detail="Components section is absent")
     if component_presence and fm.get("asset_class") != "mixed_use":
         ledger.issue("CC-11", "error", "components", "", "Components are only admitted for mixed-use records")
+    # CC-12 (Format §5.3) as the reference applies it: only under mixed use,
+    # over admissible components, every one stating a numeric NOI, within $1.
     c, n = read("CC-12", "components"), read("CC-12", "noi_model")
-    values = [v.get("net_operating_income") for k, v in (c or {}).items()
-              if not k.startswith("_") and isinstance(v, dict)]
-    usable = bool(values) and all(finite(v) for v in values)
-    total = 0.0
-    if usable:
-        for value in values:
-            total += value
-    compare("CC-12", number(n, "net_operating_income"), total if usable and finite(total) else None,
-            0, section="noi_model", path="net_operating_income")
+    admissible_classes = tuple(k for k in BUILTINS if k not in ("mixed_use", "land"))
+    if c is not None and fm.get("asset_class") != "mixed_use":
+        ledger.cover("CC-12", reason="not_applicable", detail="CC-11 fired")
+    elif c is None:
+        ledger.cover("CC-12")
+    elif n is None:
+        ledger.cover("CC-12", reason="section_absent", detail="noi_model")
+    else:
+        admissible = [v for k, v in c.items() if not k.startswith("_") and k in admissible_classes]
+        nois = [v.get("net_operating_income") for v in admissible
+                if isinstance(v, dict) and finite(v.get("net_operating_income"))
+                and not isinstance(v.get("net_operating_income"), bool)]
+        property_noi = number(n, "net_operating_income")
+        if property_noi is None:
+            ledger.cover("CC-12", reason="field_absent", detail="noi_model.net_operating_income")
+        elif not admissible or len(nois) != len(admissible):
+            ledger.cover("CC-12", reason="field_absent", detail="components[*].net_operating_income")
+        else:
+            ledger.cover("CC-12", True)
+            total = 0.0
+            for value in nois:
+                total += value
+            if abs(total - property_noi) > 1:
+                ledger.issue("CC-12", "error", "noi_model", "net_operating_income",
+                             "Property NOI must equal the sum of component NOIs", value=abs(total - property_noi))
     profile = fm.get("document_profile")
     nondeal = profile is not None and profile != "deal-record-v1"
     property_blocks = active_blocks(document, "property")

@@ -70,7 +70,7 @@ class Document:
         return output
 
 
-def parse(raw: bytes, *, filename: str | None = None) -> Document:
+def parse(raw: bytes, *, filename: str | None = None, require_structured: bool = False) -> Document:
     if re.match(rb"---(?:\r\n|\r|\n|$)", raw.removeprefix(b"\xef\xbb\xbf")) is None:
         raise ReaderError("UNSUPPORTED_FORMAT_VERSION", "declared uw_version is absent; supported value is '3.0'")
     source = scan_source(raw)
@@ -82,4 +82,8 @@ def parse(raw: bytes, *, filename: str | None = None) -> Document:
                           + "; supported value is '3.0'")
     if filename is not None and filename.endswith(".uw.md") and source.blocks:
         raise ReaderError("SOURCE_CONTENT_MISMATCH", "structured records require .uwx.md")
+    # The reference's parse and validate commands refuse a .uwx.md with no
+    # structured fence; its other commands read it. Callers opt in.
+    if require_structured and filename is not None and filename.lower().endswith(".uwx.md") and not source.blocks:
+        raise ReaderError("SOURCE_CONTENT_MISMATCH", "a .uwx.md file must contain UWX structured section fences")
     return Document(source, frontmatter)
