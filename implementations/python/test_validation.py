@@ -89,6 +89,15 @@ class ValidationTests(unittest.TestCase):
         # The reference also reads a null _meta as missing metadata.
         self.assertIn(("META_MISSING","warning"),codes(malformed))
 
+    def test_bed_rules_apply_to_what_any_class_states(self):
+        # Format §4.3: stating the bed fields is no issue for a non-student
+        # class, but the BED rules still judge what it states.
+        raw = (HEADER + well_formed("property", total_units=4, total_beds=2)
+               + well_formed("rent_roll", occupied_beds=5))
+        found = codes(validate(parse(raw)))
+        self.assertIn(("BED-02", "error"), found)
+        self.assertIn(("BED-03", "error"), found)
+
     def test_stage_overlays_share_readiness_and_declared_gaps(self):
         for asset in ("multifamily","land","mixed_use","data_center","unknown"):
             raw = HEADER.replace(b"asset_class: multifamily", ("asset_class: "+asset).encode())

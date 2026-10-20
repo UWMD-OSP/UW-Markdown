@@ -192,7 +192,7 @@ def waterfall_rules(ledger):
         series = cash.get(variant) if isinstance(variant, str) else None
         if series is None:
             issue("WF-02", "cash_flow_ref", "Waterfall must reference a current exact cash-flow variant")
-            rows = []
+            rows = None  # No series resolves, so WF-15 has no distribution to judge.
         elif is_externalized(series):
             rows = None  # Identity exists; contribution/distribution facts are unresolved.
         else:

@@ -70,8 +70,22 @@ class Document:
         return output
 
 
+_UWX_FENCE = re.compile(rb"(?:^|(?<=\r))```json[ \t]+uw:section=\S+", re.M)
+
+
 def parse(raw: bytes, *, filename: str | None = None, require_structured: bool = False) -> Document:
-    if re.match(rb"---(?:\r\n|\r|\n|$)", raw.removeprefix(b"\xef\xbb\xbf")) is None:
+    # The representation is decided before the version, as the reference
+    # decides it, from a structured fence opening any line of the source.
+    body = raw.removeprefix(b"\xef\xbb\xbf")
+    name = filename.lower() if filename is not None else None
+    structured = _UWX_FENCE.search(body) is not None
+    if name is not None and name.endswith(".uw.md") and structured:
+        raise ReaderError("SOURCE_CONTENT_MISMATCH", "structured records require .uwx.md")
+    # The reference's parse and validate commands refuse a .uwx.md with no
+    # structured fence; its other commands read it. Callers opt in.
+    if require_structured and name is not None and name.endswith(".uwx.md") and not structured:
+        raise ReaderError("SOURCE_CONTENT_MISMATCH", "a .uwx.md file must contain UWX structured section fences")
+    if re.match(rb"---(?:\r\n|\r|\n|$)", body) is None:
         raise ReaderError("UNSUPPORTED_FORMAT_VERSION", "declared uw_version is absent; supported value is '3.0'")
     source = scan_source(raw)
     frontmatter = parse_frontmatter(source.frontmatter_span.extract(raw),
@@ -80,10 +94,4 @@ def parse(raw: bytes, *, filename: str | None = None, require_structured: bool =
         raise ReaderError("UNSUPPORTED_FORMAT_VERSION",
                           "declared uw_version is " + repr(frontmatter.value.get("uw_version"))
                           + "; supported value is '3.0'")
-    if filename is not None and filename.endswith(".uw.md") and source.blocks:
-        raise ReaderError("SOURCE_CONTENT_MISMATCH", "structured records require .uwx.md")
-    # The reference's parse and validate commands refuse a .uwx.md with no
-    # structured fence; its other commands read it. Callers opt in.
-    if require_structured and filename is not None and filename.lower().endswith(".uwx.md") and not source.blocks:
-        raise ReaderError("SOURCE_CONTENT_MISMATCH", "a .uwx.md file must contain UWX structured section fences")
     return Document(source, frontmatter)

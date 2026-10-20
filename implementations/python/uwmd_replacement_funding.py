@@ -12,7 +12,7 @@ from uwmd_binding_sources import cash_source_issues, finite
 from uwmd_jcs import CanonicalizationError, canonicalize
 from uwmd_numeric import calendar_date
 from uwmd_source_lifecycle import source_superseded
-from uwmd_text import nonblank
+from uwmd_text import nonblank, trim
 
 
 _ROLES = ("primary", "senior", "junior", "summary", "detail", "component")
@@ -96,29 +96,43 @@ def _escrows(sources, issues):
     if not isinstance(value, list) or not value:
         issues.append(_issue("ESC-01", "sources_uses", "uses.escrows", "A nonempty escrow array is required."))
         return False
-    seen, replacement = set(), False
+    seen, labels, replacement = set(), set(), False
     for index, entry in enumerate(value):
         field = "uses.escrows[" + str(index) + "]"
         if not isinstance(entry, dict):
             issues.append(_issue("ESC-01", "sources_uses", field, "An escrow object is required."))
             continue
+        # Format 4.8: ESC-01 judges the closed name and the funding amounts;
+        # label lawfulness and uniqueness are ESC-02. Other members are inert.
         name, label = entry.get("name"), entry.get("label")
+        if not isinstance(name, str) or name not in _ESCROWS:
+            issues.append(_issue("ESC-01", "sources_uses", field + ".name", "Escrow name is outside the closed set."))
+            continue
         replacement = replacement or name == "rate_cap_replacement"
-        invalid = (name not in _ESCROWS or any(k not in ("name", "label", "upfront", "monthly", "lender_required") for k in entry)
-                   or all(entry.get(k) is None for k in ("upfront", "monthly"))
-                   or any(entry.get(k) is not None and (not finite(entry[k]) or entry[k] < 0) for k in ("upfront", "monthly"))
-                   or entry.get("lender_required") is not None and not isinstance(entry["lender_required"], bool)
-                   or label is not None and not isinstance(label, str))
-        if invalid:
-            issues.append(_issue("ESC-01", "sources_uses", field, "Invalid closed escrow data or funding amount."))
-        identity = (name, label) if name == "other" else (name,)
-        try:
-            duplicate = identity in seen
-            seen.add(identity)
-        except TypeError:
-            duplicate = False  # malformed data already has ESC-01
-        if duplicate or (name == "other" and not nonblank(label)) or (name != "other" and label is not None):
-            issues.append(_issue("ESC-02", "sources_uses", field, "Escrow identity/label is not lawful and unique."))
+        if name == "other":
+            if not nonblank(label):
+                issues.append(_issue("ESC-02", "sources_uses", field + ".label", "An other escrow requires a nonempty label."))
+            elif trim(label) in labels:
+                issues.append(_issue("ESC-02", "sources_uses", field + ".label", "Other escrow labels must be unique."))
+            else:
+                labels.add(trim(label))
+        else:
+            if label is not None:
+                issues.append(_issue("ESC-02", "sources_uses", field + ".label", "Only an other escrow carries a label."))
+            if name in seen:
+                issues.append(_issue("ESC-02", "sources_uses", field + ".name", "Escrow names must be unique."))
+        seen.add(name)
+        stated = 0
+        for key in ("upfront", "monthly"):
+            amount = entry.get(key)
+            if amount is None:
+                continue
+            if not finite(amount) or amount < 0:
+                issues.append(_issue("ESC-01", "sources_uses", field + "." + key, "Escrow funding must be a finite nonnegative amount."))
+                continue
+            stated += 1
+        if stated == 0:
+            issues.append(_issue("ESC-01", "sources_uses", field, "An escrow must fund at close or monthly."))
     return replacement
 
 

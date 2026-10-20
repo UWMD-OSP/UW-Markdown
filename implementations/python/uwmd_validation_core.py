@@ -208,8 +208,9 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         body, section = block.parsed.value, block.section
         emit = id(block) in current
         meta = body.get("_meta")
-        # The reference reads a non-object or empty _meta as no metadata, so the
-        # completeness warning stands beside any present-invalid META-01.
+        # A non-object or empty _meta is "no _meta object" (Protocol XI), so the
+        # completeness warning stands beside any present-invalid META-01. The
+        # reference departs for a non-empty string or array (#429).
         if "_meta" not in body or not isinstance(meta, dict) or not meta:
             if emit:
                 ledger.issue("META_MISSING", "warning", section, "_meta", "Block provenance metadata is absent")
@@ -241,6 +242,10 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
             isinstance(entry,dict) and entry.get("confidence")=="low" for entry in overrides)
         if emit and (quality.get("confidence") == "low" or low_leaf) and quality.get("human_review_required") is not True:
             ledger.issue("META_LOW_CONFIDENCE_NO_REVIEW_FLAG", "info", section, "_meta.quality.human_review_required", "Low confidence requires a review disclosure")
+        # DQ-01/02/03 judge the same current population as the completeness
+        # warnings: a block a later one overwrites (Format 2.7) is not current.
+        if not emit:
+            continue
         if quality.get("partial") is True and not (isinstance(body.get("_overrides"), list) and body["_overrides"]):
             ledger.issue("DQ-03", "warning", section, "_overrides", "Partial data requires a field annotation inventory")
         if quality.get("provisional") is True:
