@@ -16,6 +16,9 @@ def _unit(value):
 def _stack(ledger, payload, section, root):
     def issue(code, path, message):
         ledger.issue(code, "error", section, root + ("." if root and path else "") + path, message)
+    if isinstance(payload, dict) and payload.get("point_in_time") not in ("closing", "stabilization"):
+        # RFC 0098: the stack names its one point in time.
+        issue("CS-04", "point_in_time", "Capital stack must state point_in_time as closing or stabilization")
     if not isinstance(payload, dict) or not isinstance(payload.get("tranches"), list) or not payload["tranches"]:
         issue("CS-01", "tranches", "Capital stack must state nonempty tranches")
         return
@@ -111,6 +114,12 @@ def composition_rules(ledger):
                 ledger.issue("MU-05", "error", "components", "allocation_pct", "Stated allocations must be complete and sum to one within 0.0001")
     for block in current_blocks(document, "capital_stack"):
         _stack(ledger, block.parsed.value, "capital_stack", "")
+    # RFC 0098 DS-01: a stated debt_structure point_in_time outside the vocabulary.
+    for block in current_blocks(document, "debt_structure", include_external=True):
+        body = block.parsed.value
+        if isinstance(body, dict) and "point_in_time" in body and body["point_in_time"] not in ("closing", "stabilization"):
+            ledger.issue("DS-01", "error", "debt_structure", "point_in_time",
+                         "debt_structure point_in_time must be closing or stabilization", value=body["point_in_time"])
 
 
 def waterfall_rules(ledger):

@@ -16,7 +16,7 @@ from uwmd_reader import parse
 
 
 def stack(sizing):
-    return dict(tranches=[dict(id="senior",position=1,amount=1000,rate=.05,
+    return dict(point_in_time="stabilization",tranches=[dict(id="senior",position=1,amount=1000,rate=.05,
                                **{"class":"senior_debt"})],sizing=sizing)
 
 

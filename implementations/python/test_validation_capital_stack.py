@@ -28,7 +28,7 @@ def findings(report):
 
 
 def source(rows):
-    return property_source() + well_formed("capital_stack", tranches=rows)
+    return property_source() + well_formed("capital_stack", point_in_time="stabilization", tranches=rows)
 
 
 class CapitalStackAdmissionTests(unittest.TestCase):
@@ -63,14 +63,14 @@ class CapitalStackAdmissionTests(unittest.TestCase):
         # The independent component stack may reuse the top-level identities.
         raw = source([tranche()]) + well_formed("components",
             retail=dict(component_class="retail", net_operating_income=1,
-                        capital_stack=dict(tranches=[tranche()])),
+                        capital_stack=dict(point_in_time="stabilization", tranches=[tranche()])),
             office=dict(component_class="office", net_operating_income=1))
         self.assertEqual(findings(self.assess(raw)[1]), [])
 
     def test_component_field_prefix_and_independent_error_order(self):
         raw = property_source() + well_formed("components",
             retail=dict(component_class="retail", net_operating_income=1,
-                        capital_stack=dict(tranches=[tranche(position="1", amount=-1)])),
+                        capital_stack=dict(point_in_time="stabilization", tranches=[tranche(position="1", amount=-1)])),
             office=dict(component_class="office", net_operating_income=1))
         self.assertEqual(findings(self.assess(raw)[1]), [
             ("CS-01", "components", "retail.capital_stack.senior.position"),
@@ -111,8 +111,8 @@ class CapitalStackAdmissionTests(unittest.TestCase):
         self.assertEqual(findings(self.assess(source([pref]))[1]), [])
 
     def test_current_physical_history_and_exact_peer_selection_are_unchanged(self):
-        bad = well_formed("capital_stack", tranches=[{}])
-        good = well_formed("capital_stack", tranches=[tranche()])
+        bad = well_formed("capital_stack", point_in_time="stabilization", tranches=[{}])
+        good = well_formed("capital_stack", point_in_time="stabilization", tranches=[tranche()])
         # Ordinary singleton validation owns the latest current stack.
         self.assertEqual(findings(self.assess(property_source() + bad + good)[1]), [])
         historical = bad.replace(b"uw:section=capital_stack",

@@ -48,8 +48,11 @@ def current_blocks(document, section, *, include_external=False):
 
 
 def select_section(document, section, *, preferred_key=None, preferred_role=None,
-                   lease_up_base=False):
+                   lease_up_base=False, block_filter=None):
     blocks = current_blocks(document, section, include_external=True)
+    if block_filter is not None:
+        # RFC 0098: CC-03 resolves among the blocks outstanding at one point.
+        blocks = tuple(block for block in blocks if block_filter(block))
     if not blocks:
         return Selection(reason="section_absent", detail=section + " is absent")
     role_bearing = any("_role" in b.parsed.value for b in blocks)

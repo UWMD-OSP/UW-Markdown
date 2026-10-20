@@ -10,8 +10,9 @@ from test_validation_external import external
 from uwmd_reader import parse
 
 
-def stack(amount=1000, rate=.0625):
-    return {"tranches": [dict(id="senior", position=1, amount=amount,
+def stack(amount=1000, rate=.0625, point="stabilization"):
+    # RFC 0098: every stack states its point in time.
+    return {"point_in_time": point, "tranches": [dict(id="senior", position=1, amount=amount,
                              rate=rate, **{"class": "senior_debt"})]}
 
 
@@ -35,7 +36,7 @@ class ValidationCrossTests(unittest.TestCase):
                 self.assertEqual(result["coverage"]["CC-03"]["status"], "evaluated")
                 if mismatch:
                     self.assertEqual(issues[0]["severity"], "error")
-                    self.assertEqual(issues[0]["value"], dict(stated=.0625, comparison=.07))
+                    self.assertEqual(issues[0]["value"], abs(.0625 - .07))
 
     def test_missing_null_and_wrong_type_do_not_fall_back_or_become_zero(self):
         for payload in ({}, {"interest_rate": None}, {"interest_rate": False},
@@ -71,26 +72,31 @@ class ValidationCrossTests(unittest.TestCase):
                 result, issues = report(raw)
                 self.assertEqual(len(issues), int(mismatch))
                 self.assertEqual(result["coverage"]["CC-03"]["status"], "evaluated")
-        # No debt statement: a usable stack/sources leg still evaluates.
+        # No debt statement: a closing stack's fallback to the closing
+        # statement still evaluates (RFC 0098); a stabilization stack never does.
         raw = HEADER + block("sources_uses", dict(sources={"loan_amount": 1200}))
-        result, issues = report(raw + block("capital_stack", stack()))
+        result, issues = report(raw + block("capital_stack", stack(point="closing")))
         self.assertEqual(len(issues), 1)
         self.assertEqual(result["coverage"]["CC-03"]["status"], "evaluated")
-        self.assertEqual(issues[0]["value"], dict(stated=1000, comparison=1200))
+        self.assertEqual(issues[0]["value"], 200)
+        result, issues = report(raw + block("capital_stack", stack()))
+        self.assertEqual(issues, [])
 
     def test_exact_senior_role_and_collision_keep_other_usable_legs(self):
         raw = HEADER + block("debt_structure", dict(interest_rate=.9), variant="component", role="component")
         raw += block("debt_structure", dict(interest_rate=.0625), variant="selected", role="senior")
-        raw += block("capital_stack", stack())
+        raw += block("capital_stack", stack(point="closing"))
         result, issues = report(raw)
         self.assertEqual(issues, [])
-        evidence = result["coverage"]["CC-03"]["resolutions"]["debt_structure"]
-        self.assertEqual(evidence, dict(variant="selected", via="role"))
+        # RFC 0098: one selection per point, both outstanding (no point stated).
+        resolutions = result["coverage"]["CC-03"]["resolutions"]
+        for point in ("closing", "stabilization"):
+            self.assertEqual(resolutions["debt_structure@" + point], dict(variant="selected", via="role"))
         raw += block("debt_structure", dict(interest_rate=.99), variant="collision", role="senior")
         raw += block("sources_uses", dict(sources={"loan_amount": 1200}))
         result, issues = report(raw)
-        self.assertEqual(len(issues), 1)  # Stack/sources; no guessed debt-rate leg.
-        self.assertEqual(issues[0]["value"], dict(stated=1000, comparison=1200))
+        self.assertEqual(len(issues), 1)  # Closing stack/sources; no guessed debt-rate leg.
+        self.assertEqual(issues[0]["value"], 200)
         self.assertEqual(result["coverage"]["CC-03"]["status"], "evaluated")
         self.assertTrue(any(i["code"] == "CC-16" and i["section"] == "debt_structure"
                             for i in result["issues"]))
@@ -103,7 +109,7 @@ class ValidationCrossTests(unittest.TestCase):
         # A present selected external debt statement has no available coupon.
         raw = HEADER + external("debt_structure")
         raw += block("sources_uses", dict(sources={"loan_amount": 1000}))
-        result, issues = report(raw + block("capital_stack", stack()))
+        result, issues = report(raw + block("capital_stack", stack(point="closing")))
         self.assertEqual(issues, [])
         self.assertEqual(result["coverage"]["CC-03"]["status"], "evaluated")
         self.assertEqual(result["composition_assessment"]["status"], "unresolved")

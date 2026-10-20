@@ -87,7 +87,11 @@ class CompletenessOwnershipTests(unittest.TestCase):
                         self.assertNotIn("_meta." + path, fields)
                         self.assertEqual([(i["code"], i["field"]) for i in result["errors"]],
                                          [("META-04", "_meta." + path)])
-                    self.assertNotIn("META_FIELD_MISSING_" + suffix, [i["code"] for i in result["issues"]])
+                    # A null is also read as missing, so its existing completeness
+                    # warning is retained beside the present-invalid code (RFC 0094,
+                    # RFC 0101); other invalid values are not absence.
+                    warned = "META_FIELD_MISSING_" + suffix in [i["code"] for i in result["issues"]]
+                    self.assertEqual(warned, value is None)
 
     def test_exact_physical_owner_does_not_consume_same_path_on_another_block(self):
         absent, null = body(), body()

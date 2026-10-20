@@ -46,9 +46,9 @@ class Ledger:
         item.update(copy.deepcopy(evidence))
         self.issues.append(item)
 
-    def read(self, check, section, **selection):
+    def read(self, check, section, key=None, **selection):
         result = select_section(self.document, section, **selection)
-        self._reads.setdefault(check, []).append((section, result))
+        self._reads.setdefault(check, []).append((key or section, result))
         if result.reason == "variant_unresolvable":
             self._unresolved.setdefault(section, set()).add(check)
         return result.block.parsed.value if result.block is not None else None
@@ -194,11 +194,23 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     gaps = field(gap_selection.block.parsed.value, "items") if gap_selection.block is not None else []
     gaps = gaps if isinstance(gaps, list) else []
     stage = fm.get("deal_stage")
+    # Completeness warnings keep their unchanged population (Protocol III.6a;
+    # RFC 0093/0094 "absence warnings remain unchanged"): the current block of
+    # each standard section and each current variant, as the reference reads
+    # it. An earlier block a later one overwrites (Format 2.7), extensions and
+    # append-only entries are not current, so they draw no warning. Ownership
+    # bookkeeping still spans every active block, so their shape findings stay
+    # attributed rather than becoming unallocated.
+    standard = list(dict.fromkeys(b.section for b in document.source.blocks
+                                  if b.section not in APPEND and not b.section.startswith("x_")))
+    current = {id(b) for name in standard for b in current_blocks(document, name, include_external=True)}
     for block in active_blocks(document):
         body, section = block.parsed.value, block.section
+        emit = id(block) in current
         meta = body.get("_meta")
         if "_meta" not in body:
-            ledger.issue("META_MISSING", "warning", section, "_meta", "Block provenance metadata is absent")
+            if emit:
+                ledger.issue("META_MISSING", "warning", section, "_meta", "Block provenance metadata is absent")
             missing_meta_blocks.add(physical[id(block)])
             continue
         if not isinstance(meta, dict):
@@ -209,13 +221,16 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         for suffix, path in required:
             cursor, exists = meta, True
             for part in path.split("."):
-                if not isinstance(cursor, dict) or part not in cursor:
+                # Absent or null is missing, as the reference reads it; RFC 0094
+                # and RFC 0101 retain this warning beside any present-invalid code.
+                if not isinstance(cursor, dict) or cursor.get(part) is None:
                     exists = False
                     break
                 cursor = cursor[part]
             if not exists:
                 code, canonical = "META_FIELD_MISSING_" + suffix, "_meta." + path
-                ledger.issue(code, "warning", section, canonical, "Required provenance field is absent")
+                if emit:
+                    ledger.issue(code, "warning", section, canonical, "Required provenance field is absent")
                 missing_field_owners.append((physical[id(block)], canonical, code))
         quality = meta.get("quality")
         if not isinstance(quality, dict):
@@ -223,7 +238,7 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         overrides = body.get("_overrides")
         low_leaf = isinstance(overrides,list) and any(
             isinstance(entry,dict) and entry.get("confidence")=="low" for entry in overrides)
-        if (quality.get("confidence") == "low" or low_leaf) and quality.get("human_review_required") is not True:
+        if emit and (quality.get("confidence") == "low" or low_leaf) and quality.get("human_review_required") is not True:
             ledger.issue("META_LOW_CONFIDENCE_NO_REVIEW_FLAG", "info", section, "_meta.quality.human_review_required", "Low confidence requires a review disclosure")
         if quality.get("partial") is True and not (isinstance(body.get("_overrides"), list) and body["_overrides"]):
             ledger.issue("DQ-03", "warning", section, "_overrides", "Partial data requires a field annotation inventory")

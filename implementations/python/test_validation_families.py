@@ -150,12 +150,12 @@ class ValidationFamilyTests(unittest.TestCase):
     def test_split_coupon_exact_reconciliation_and_no_unstated_positivity_rule(self):
         tranche=dict(id="pref",position=1,**{"class":"preferred_equity"},amount=1,rate=0,
                      accrual="split",cash_rate=-.01,accrued_rate=.01)
-        self.assertEqual(selected_codes(validate(document(capital_stack={"tranches":[tranche]})),("CS-",)),[])
+        self.assertEqual(selected_codes(validate(document(capital_stack={"point_in_time":"stabilization","tranches":[tranche]})),("CS-",)),[])
         for alteration,code in (({"cash_rate":None},"CS-02b"),({"term_months":True},"CS-01"),
                                  ({"rate":.001},"CS-02b"),({"accrual":"unknown"},"CS-01")):
             with self.subTest(alteration=alteration):
                 body=tranche|alteration
-                self.assertIn(code,selected_codes(validate(document(capital_stack={"tranches":[body]})),("CS-",)))
+                self.assertIn(code,selected_codes(validate(document(capital_stack={"point_in_time":"stabilization","tranches":[body]})),("CS-",)))
 
     def test_terminal_tax_requires_assessment_but_normal_g1_trigger_remains_valid(self):
         normal=document(noi_model={"expenses":{"real_estate_taxes":{"value":1,"reassessment":{"trigger":"sale"}}}})
@@ -202,6 +202,7 @@ class CapitalStackAdmissionTests(unittest.TestCase):
                     **{"class":"senior_debt"},**extra)
 
     def source(self, scope, stack):
+        stack={"point_in_time":"stabilization",**stack}  # RFC 0098
         if scope=="top_level":
             return HEADER+well_formed("capital_stack",**stack)
         header=HEADER.replace(b"asset_class: multifamily",b"asset_class: mixed_use")

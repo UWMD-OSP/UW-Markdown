@@ -30,11 +30,13 @@ class SourceOwnershipTests(unittest.TestCase):
                 parsed = document(value); before = copy.deepcopy(parsed)
                 inventory = inspect_source_roles(parsed)
                 result = validate(parsed)
+                # RFC 0101: null also keeps its completeness warning.
+                retained = [("META_FIELD_MISSING_SOURCE", "warning", FIELD)] if value is None else []
                 self.assertEqual([(i["code"], i["severity"], i["field"]) for i in result["issues"]],
-                                 [("SRC-01", "error", FIELD)])
-                self.assertEqual(result["issues"], inventory["issues"])
-                self.assertEqual(result["errors"], result["issues"])
-                self.assertEqual((result["warnings"], result["info"]), ([], []))
+                                 [("SRC-01", "error", FIELD)] + retained)
+                self.assertEqual(result["errors"], inventory["issues"])
+                self.assertEqual([(i["code"], i["field"]) for i in result["warnings"]], [(c, f) for c, _, f in retained])
+                self.assertEqual(result["info"], [])
                 self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
                 handled = result["metadata_assessment"]["handled_shape_findings"]
                 self.assertEqual([(f["field"], f["registered_code"], f["disposition"]) for f in handled],

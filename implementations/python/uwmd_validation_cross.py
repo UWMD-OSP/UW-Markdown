@@ -8,7 +8,7 @@ from pathlib import Path
 
 from uwmd_binding_sources import finite
 from uwmd_validation_core import BUILTINS
-from uwmd_validation_selection import active_blocks, field
+from uwmd_validation_selection import active_blocks, current_blocks, field
 
 
 def number(payload, *paths):
@@ -17,6 +17,87 @@ def number(payload, *paths):
         if value is not None:
             return value if finite(value) else None
     return None
+
+
+POINTS = ("closing", "stabilization")
+
+
+def _outstanding_at(point):
+    """RFC 0098: a debt_structure block stating `point`, or no point (both)."""
+    def keep(block):
+        body = block.parsed.value
+        return "point_in_time" not in body or body["point_in_time"] == point
+    return keep
+
+
+def cc03(ledger):
+    """Format §5.3 CC-03 per point (RFC 0098): closing leg and stack leg."""
+    sources = ledger.read("CC-03", "sources_uses")
+    debt = {point: ledger.read("CC-03", "debt_structure", key="debt_structure@" + point,
+                               preferred_role="senior", block_filter=_outstanding_at(point))
+            for point in POINTS}
+    reads = dict(ledger._reads.get("CC-03", ()))
+    stack = ledger.read("CC-03", "capital_stack")
+    su_loan = number(sources, "sources.loan_amount", "sources.debt_proceeds")
+    evaluated = False
+    closing_loan = number(debt["closing"], "loan_amount")
+    if finite(su_loan) and finite(closing_loan):
+        evaluated = True
+        if abs(su_loan - closing_loan) > 100:
+            ledger.issue("CC-03", "error", "sources_uses", "sources.loan_amount",
+                         "Closing statement disagrees with the closing senior loan",
+                         value=abs(su_loan - closing_loan))
+    tranches = field(stack, "tranches")
+    tranche = next((t for t in tranches if isinstance(t, dict) and t.get("class") == "senior_debt"), None) \
+        if isinstance(tranches, list) else None
+    point = stack.get("point_in_time") if isinstance(stack, dict) else None
+    point = point if point in POINTS else None
+    if tranche is not None and point is not None:
+        amount = tranche.get("amount") if finite(tranche.get("amount")) else None
+        reference = number(debt[point], "loan_amount")
+        if reference is None and point == "closing":
+            reference = su_loan
+        if amount is not None and finite(reference):
+            evaluated = True
+            if abs(amount - reference) > 100:
+                ledger.issue("CC-03", "error", "capital_stack", "tranches.senior_debt.amount",
+                             "Senior tranche disagrees with the senior loan at the stack's point",
+                             value=abs(amount - reference))
+        # Same rate (§4.24): exact, no tolerance (#406); no closing-statement fallback.
+        rate, loan_rate = tranche.get("rate"), number(debt[point], "interest_rate")
+        if finite(rate) and finite(loan_rate):
+            evaluated = True
+            if rate != loan_rate:
+                ledger.issue("CC-03", "error", "capital_stack", "tranches.senior_debt.rate",
+                             "Senior tranche rate does not equal the senior loan interest_rate",
+                             value=abs(rate - loan_rate))
+    if evaluated:
+        ledger.cover("CC-03", True)
+        return
+    su_sel = reads.get("sources_uses")
+    debt_sel = {p: reads.get("debt_structure@" + p) for p in POINTS}
+    stack_sel = dict(ledger._reads.get("CC-03", ())).get("capital_stack")
+    def unresolvable(sel):
+        return sel is not None and sel.reason == "variant_unresolvable"
+    def absent(sel):
+        return sel is None or sel.reason == "section_absent"
+    if unresolvable(su_sel):
+        ledger.cover("CC-03", reason="variant_unresolvable", detail="sources_uses")
+    elif any(unresolvable(sel) for sel in debt_sel.values()):
+        ledger.cover("CC-03", reason="variant_unresolvable", detail="debt_structure")
+    elif unresolvable(stack_sel):
+        ledger.cover("CC-03", reason="variant_unresolvable", detail="capital_stack")
+    elif absent(su_sel):
+        ledger.cover("CC-03", reason="section_absent", detail="sources_uses")
+    elif not current_blocks(ledger.document, "debt_structure", include_external=True):
+        ledger.cover("CC-03", reason="section_absent", detail="debt_structure")
+    elif point is not None and tranche is not None and absent(debt_sel[point]):
+        ledger.cover("CC-03", reason="not_applicable", detail="no " + point + " senior debt_structure")
+    elif tranche is None and absent(debt_sel["closing"]):
+        ledger.cover("CC-03", reason="not_applicable", detail="no closing senior debt_structure")
+    else:
+        ledger.cover("CC-03", reason="field_absent",
+                     detail="sources_uses.sources.loan_amount" if su_loan is None else "debt_structure.loan_amount")
 
 
 def cross_checks(ledger, *, defer_summaries=False):
@@ -41,31 +122,7 @@ def cross_checks(ledger, *, defer_summaries=False):
     loan, value = number(debt, "loan_amount"), number(valuation, "underwritten_value", "purchase_price")
     expected = loan / value if finite(loan) and finite(value) and value != 0 else None
     compare("CC-02", number(debt, "ltv", "sizing_metrics.ltv"), expected, .005, section="debt_structure", path="ltv")
-    debt, sources, stack = (read("CC-03", "debt_structure", preferred_role="senior"),
-                           read("CC-03", "sources_uses"), read("CC-03", "capital_stack"))
-    loan, senior = number(debt, "loan_amount"), number(sources, "sources.loan_amount")
-    comparisons = []
-    if finite(loan) and finite(senior):
-        comparisons.append((loan, senior, "loan_amount", 100))
-    tranches = field(stack, "tranches")
-    if isinstance(tranches, list):
-        senior_tranches = [t for t in tranches if isinstance(t, dict) and t.get("class") == "senior_debt"]
-        if len(senior_tranches) == 1:
-            tranche = senior_tranches[0]
-            for other, path in ((loan, "loan_amount"), (senior, "sources.loan_amount")):
-                if finite(other) and finite(tranche.get("amount")):
-                    comparisons.append((tranche["amount"], other, path, 100))
-            # Format 4.7 / RFC 0026: the senior loan's canonical coupon.
-            # Exact rate agreement is distinct from the published $100 amount
-            # tolerance; unknown payload named rate_pct is not an alias.
-            rate = number(debt, "interest_rate")
-            if finite(rate) and finite(tranche.get("rate")):
-                comparisons.append((tranche["rate"], rate, "rate", 0))
-    ledger.cover("CC-03", bool(comparisons))
-    for left, right, path, tolerance in comparisons:
-        if abs(left - right) > tolerance:
-            ledger.issue("CC-03", "error", "capital_stack" if path == "rate" else "debt_structure",
-                         path, "Senior capital statements disagree", value={"stated": left, "comparison": right})
+    cc03(ledger)
     s = read("CC-04", "sources_uses")
     compare("CC-04", number(s, "total_sources"), number(s, "total_uses"), 1, section="sources_uses", path="total_sources")
     n, d = read("CC-05", "noi_model"), read("CC-05", "debt_structure", preferred_role="senior")
