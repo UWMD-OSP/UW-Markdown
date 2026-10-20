@@ -614,7 +614,11 @@ reaches no core module.
 
 `verifyStatedMetrics(parsed, options?)` (`metric-verification.ts`) checks every
 numeric statement of the document's dictionary metrics and returns one
-`verified`, `failed` or `unverifiable` result per statement. Stated precision
+`verified`, `failed` or `unverifiable` result per statement. Where a document
+states a metric is the dictionary's closed `statement_bindings` registry
+(RFC 0099): `quick_metrics.<id>`, `<id>` at each output section root, and each
+alias path (`valuation.going_in_cap_rate`, `debt_structure.sizing_metrics.dscr_underwritten`,
+…). Every bound address is checked and counted separately. Stated precision
 (RFC 0079) comes from the source: each block's `rawJson` and the frontmatter
 text. A document decoded from an envelope or another representation
 (`fromUWEnvelope`) has neither, so pass `options.statedDecimals` (keyed by

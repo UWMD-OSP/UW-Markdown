@@ -10,6 +10,17 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC0099 (#416): the metric dictionary (`spec/metrics/builtin.json`,
+  schema-required) carries the closed `statement_bindings` registry, and
+  `verifyStatedMetrics` / `uwmd verify` check every bound home of each metric by
+  default: `quick_metrics`, the metric id at each output section root, and the
+  eleven aliases (`valuation.going_in_cap_rate`, `valuation.price_per_sf`,
+  `debt_structure.sizing_metrics.dscr_underwritten`, …). A +10% error in a section
+  copy now fails verification. `conformance/metrics/statement-bindings.json` is
+  deleted (one source); its Lite section map moves to `lite-input-sections.json`.
+  New `conformance/metrics/statement-homes/` cases (21). Format §4.1/4.3/4.5/4.6/4.7/4.23
+  name the verified fields; Protocol §II.2 states the rule.
+
 - Certify the independent Python implementation (Issue #354): its discovery
   manifest claims the Reader tier plus `calc-evaluate`, and CI proves the claim
   with the RFC 0004 runner on Windows, Linux and macOS (17 Reader and 184

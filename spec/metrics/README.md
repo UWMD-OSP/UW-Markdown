@@ -8,6 +8,19 @@ of any starter engine, defaults, underwriting workflow, or Excel layout.
 |---|---|---|
 | [builtin.json](builtin.json) | 171 class-scoped calculations and eleven primary-size selectors | [metric-dictionary.schema.json](../schemas/metric-dictionary.schema.json) |
 
+## Statement bindings (RFC 0099)
+
+`statement_bindings` is the closed registry of where a document states each
+metric, beyond frontmatter `quick_metrics.<id>`. A metric's own id at each
+`output_sections` root is a statement of it, and so is each `section.path` in
+`aliases[<id>]` (for example `valuation.going_in_cap_rate` for `cap_rate` and
+`debt_structure.sizing_metrics.dscr_underwritten` for `dscr`). An alias applies
+to every class whose entries carry that id. A Verifier checks every statement at
+every bound address, each counted separately, so agreeing and disagreeing
+copies both stay visible
+([Protocol §II.2](../UW_PROTOCOL.md#ii-2-verifier)). No binding is inferred from
+a field name; a new statement home is a dictionary change.
+
 ## Calculation entries
 
 Select a `calculations` entry by **asset class and id**, never by id alone.

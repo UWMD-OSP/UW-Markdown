@@ -1033,6 +1033,8 @@ Field notes:
   per bed and also states units. Both figures are legitimate; Protocol §XIII.1
   says which one is the denominator.
 
+**Verified statements (RFC 0099).** `property.occupancy_pct`, when stated, is a statement of the dictionary metric `occupancy`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
+
 ---
 
 ### § 4.2 — Ownership & Acquisition
@@ -1099,6 +1101,8 @@ Field notes:
 **Variants:** `multifamily` (default), `commercial`  
 **Required for pipeline stage:** Screening and beyond  
 **Dependencies:** `property`
+
+**Verified statements (RFC 0099).** `rent_roll.occupancy_pct`, when stated, is a statement of the dictionary metric `occupancy`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
 #### Multifamily Variant
 
@@ -1861,6 +1865,8 @@ The schedule documents and verifies the stated tax line; it does not project it.
 No per-period expense rows are generated, and no jurisdiction rules are inferred
 from `jurisdiction`, which is a label.
 
+**Verified statements (RFC 0099).** `noi_model.noi_per_sf` states the dictionary metric `noi_per_sqft`, and `noi_model.revpor_monthly` states `revpor`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
+
 ---
 
 ### § 4.6 — Valuation
@@ -1923,6 +1929,8 @@ from `jurisdiction`, which is a label.
   "value_used_for_ltv_basis": "appraised | underwritten | lesser_of | purchase_price"
 }
 ```
+
+**Verified statements (RFC 0099).** `valuation.going_in_cap_rate` states the dictionary metric `cap_rate`; `valuation.purchase_price_per_unit` states `price_per_unit`; `valuation.price_per_sf` and `valuation.purchase_price_per_sqft` state `price_per_sqft`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
 ---
 
@@ -2089,6 +2097,8 @@ See Protocol §V.12 for exact commitment bytes and separate verification states.
 `notional` is the member that makes partial hedging legible. A $40M loan with a
 $30M notional is 75% hedged; without it, that deal and a fully hedged one read
 identically.
+
+**Verified statements (RFC 0099).** `debt_structure.sizing_metrics.dscr_underwritten`, `.ltv` and `.debt_yield` state the dictionary metrics `dscr`, `ltv` and `debt_yield`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
 ---
 
@@ -3657,6 +3667,8 @@ The section is a **bounded map keyed by the component's own asset class**, not a
 ```
 
 In this example property NOI is `1300000 + 372000 = 1672000`, which `noi_model.net_operating_income` MUST equal, and the allocations sum to `1.0`.
+
+**Verified statements (RFC 0099).** `components.hospitality.gross_operating_profit` and `components.senior_housing.total_labor_expense` state the mixed-use dictionary metrics `hospitality_gross_operating_profit` and `senior_housing_total_labor_expense`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
 ---
 

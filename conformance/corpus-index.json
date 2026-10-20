@@ -5417,6 +5417,111 @@
       "target": "verifier"
     },
     {
+      "suite": "metrics",
+      "scenario": "statement-home-cap_rate-going-in-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-cap_rate-going-in-disagrees-quick-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-cap_rate-unbound-look-alike-is-not-a-statement",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_unit-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_unit-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_sqft-price-per-sf-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_sqft-price-per-sf-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_sqft-purchase-price-per-sqft-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_sqft-purchase-price-per-sqft-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-noi_per_sqft-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-noi_per_sqft-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-occupancy-property-disagrees-rent-roll-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-occupancy-rent-roll-disagrees-property-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-revpor-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-revpor-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-sizing-metrics-agree",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-dscr-sizing-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-ltv-sizing-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-debt_yield-sizing-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-hospitality-gop-component-identity-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-senior-housing-labor-component-identity-agrees",
+      "target": "verifier"
+    },
+    {
       "suite": "starter-agent",
       "scenario": "l0a-scope-deterministic",
       "target": "starter-products"
