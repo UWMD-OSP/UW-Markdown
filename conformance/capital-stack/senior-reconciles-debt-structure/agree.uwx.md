@@ -109,6 +109,7 @@ NOT fire: one senior view, stated once, agreeing everywhere.
     }
   },
   "_notes": null,
+  "point_in_time": "stabilization",
   "tranches": [
     {
       "id": "senior",

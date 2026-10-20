@@ -53,6 +53,7 @@ must be refused with the typed CS-WATERFALL-UNSUPPORTED pointing at
     }
   },
   "_notes": null,
+  "point_in_time": "stabilization",
   "tranches": [
     {
       "id": "senior",

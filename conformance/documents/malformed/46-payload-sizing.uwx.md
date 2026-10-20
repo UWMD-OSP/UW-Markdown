@@ -22,6 +22,7 @@ deal_id: rfc0096-authored-control
       "superseded": false
     }
   },
+  "point_in_time": "stabilization",
   "tranches": [
     {
       "id": "senior",
@@ -66,6 +67,7 @@ deal_id: rfc0096-authored-control
   "multifamily": {
     "component_class": "multifamily",
     "capital_stack": {
+      "point_in_time": "stabilization",
       "sizing": false
     }
   }
