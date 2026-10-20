@@ -8,6 +8,17 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Reader variant routing — Issue #395.** Actual block shape distinguishes a
+single block from a map of lawful variant labels. Current peers named
+`annotation`, `content` or a prototype member retain exact selection and history;
+parser routing consults own keys only. Envelope, receipt/document-signature
+subject construction and existing consumers use the same shape distinction.
+Synthetic controls cover both source orders, current/history accounting, parts,
+role-opted sections, malformed blocks, source bytes and real signature tampering.
+This corrects existing Format2.8/RFC0040/0066 behavior; it changes no schema,
+Envelope representation, financial procedure, receipt rule or capability claim.
+Issue365/RFC0089's extension representation remains separate.
+
 **Accepted RFC0097 — owner decision2026-10-19 at4a31eb3c.**
 [RFC0097](../rfcs/0097-institution-config-refusal.md) allocates two typed
 validate-operation errors for unreadable/malformed selected configuration,

@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // .uw.md renderer — converts a ParsedUWFile to output formats
 // Formats: json | csv | chat | summary
 // PDF and DOCX require dedicated external rendering pipelines.
@@ -743,5 +744,5 @@ Key Risks: ${((deepGet(c, 'key_risks') as string[] | undefined) ?? []).slice(0, 
 
 function isVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
-  return !('annotation' in (val as object));
+  return !hasBlockShape(val);
 }

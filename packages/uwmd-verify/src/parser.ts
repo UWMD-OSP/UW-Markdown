@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // .uw.md parser — extracts frontmatter, section blocks, prose, and pipeline log
 // Spec: UW_FORMAT_SPEC.md §2.4 (annotation syntax), §2.7 (update semantics), §2.8 (multi-variant)
 
@@ -527,10 +528,10 @@ function routeBlock(
       result.sections[sectionId] = { [variant]: block };
     } else {
       const variantMap = existing as { [v: string]: UWBlock };
-      const current = variantMap[variant];
+      const current = Object.hasOwn(variantMap, variant) ? variantMap[variant] : undefined;
 
       if (!current) {
-        variantMap[variant] = block;
+        defineVariant(variantMap, variant, block);
       } else {
         // Replace if newer version
         const currentV = current.annotation.v ?? current.meta?.lifecycle?.revision ?? 1;
@@ -538,7 +539,7 @@ function routeBlock(
         if (newV > currentV) {
           if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
           result.superseded[sectionId].push(current);
-          variantMap[variant] = block;
+          defineVariant(variantMap, variant, block);
         } else {
           if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
           result.superseded[sectionId].push(block);
@@ -574,10 +575,19 @@ function routeBlock(
   }
 }
 
+/**
+ * Add or replace a variant peer as an own member. Plain assignment of a variant
+ * named `__proto__` would replace the map's prototype and lose the peer; the
+ * `{ [variant]: block }` literal that starts a map already defines it.
+ */
+function defineVariant(map: { [v: string]: UWBlock }, variant: string, block: UWBlock): void {
+  Object.defineProperty(map, variant, { value: block, writable: true, enumerable: true, configurable: true });
+}
+
 function isMultiVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
   // A UWBlock has annotation, meta, content — a variant map has string keys pointing to blocks
-  return !('annotation' in (val as object));
+  return !hasBlockShape(val);
 }
 
 // ─── Convenience: get current block for a section ─────────────────────────────
@@ -612,7 +622,7 @@ export function getSectionVariant(
 ): UWBlock | null {
   const entry = parsed.sections[sectionId];
   if (!entry || !isMultiVariantMap(entry)) return null;
-  return (entry as { [v: string]: UWBlock })[variant] ?? null;
+  return Object.hasOwn(entry, variant) ? (entry as { [v: string]: UWBlock })[variant] ?? null : null;
 }
 
 // ─── Path segment safety ─────────────────────────────────────────────────────

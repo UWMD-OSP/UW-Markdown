@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 import type { BlockRole, CrossCheckResolutionEvidence, UWBlock } from './types.js';
 import { BLOCK_ROLES, CROSS_CHECK_ROLE_PREFERENCE } from './protocol.js';
 
@@ -30,7 +31,7 @@ export function resolveRoleBlock(
   declaredRole?: BlockRole,
 ): RoleResolution {
   if (!entry) return { state: 'absent', block: null };
-  const single = 'annotation' in entry;
+  const single = hasBlockShape(entry);
   const candidates: Array<[string | undefined, UWBlock]> = single
     ? [[undefined, entry as UWBlock]] : Object.entries(entry as Record<string, UWBlock>);
   const roleBearing = candidates.some(([, block]) => hasBlockRole(block));

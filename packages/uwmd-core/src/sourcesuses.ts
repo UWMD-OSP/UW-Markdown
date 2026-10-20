@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // Deterministic sources-&-uses footing — the individual source and use line
 // items are the inputs; the sources total, uses total, nested closing-costs
 // total, and the top-level project-cost mirrors foot from them. One source of
@@ -81,7 +82,7 @@ export function deriveSourcesUses(content: Row, parsed: ParsedUWFile): SourcesUs
       if (isObj(escrow) && ['interest', 'operating'].includes(String(escrow['name']))) usesTotal += num(escrow['upfront']) ?? 0;
     }
     const debt = parsed.sections.debt_structure;
-    const blocks = !debt ? [] : 'annotation' in debt ? [debt as UWBlock] : Object.values(debt as Record<string, UWBlock>);
+    const blocks = !debt ? [] : hasBlockShape(debt) ? [debt as UWBlock] : Object.values(debt as Record<string, UWBlock>);
     for (const block of blocks) {
       const hedge = (blockPayload(block) as Row)['rate_hedge'];
       if (isObj(hedge)) usesTotal += num(hedge['premium']) ?? 0;

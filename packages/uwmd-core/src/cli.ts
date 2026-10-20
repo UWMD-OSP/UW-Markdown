@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { hasBlockShape } from './block-kind.js';
 import {
   verifyReserveDrawBindings,
   verifyReserveAccounts,
@@ -189,7 +190,7 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
     return { meta: (_meta as Record<string, unknown> | undefined) ?? {}, content: rest };
   };
   const isBlock = (v: unknown): v is UWBlock =>
-    typeof v === 'object' && v !== null && 'rawJson' in v && 'meta' in v;
+    hasBlockShape(v);
   const projectEntry = (entry: UWBlock | { [variant: string]: UWBlock }) =>
     isBlock(entry)
       ? projectBlock(entry)

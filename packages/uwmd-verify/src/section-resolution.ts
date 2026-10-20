@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // Section selection for section-rooted reads — Protocol §VIII.2 (RFC 0066).
 //
 // One block per read, chosen the way §VIII.2a's "Section context" already
@@ -22,7 +23,7 @@ export interface SectionSelectionOptions {
 type SectionEntry = UWBlock | Record<string, UWBlock>;
 
 function isStandalone(entry: SectionEntry): entry is UWBlock {
-  return 'annotation' in entry;
+  return hasBlockShape(entry);
 }
 
 /**
