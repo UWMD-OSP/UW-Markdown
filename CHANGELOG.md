@@ -16,6 +16,12 @@ protocol, and each package each carry an independent semver).
   required (owner ruling: exact, no tolerance). The reference compared amounts
   only. New `capital-stack/senior-rate-disagrees` case.
 
+- Accept RFC0102 (#405): a structured block opens only on a line beginning
+  exactly ```` ```json ```` + the `uw:section=` annotation and closes on a line of
+  three backticks; tilde, indented and longer fences are ordinary Markdown. The
+  reference already behaved this way; the independent Python reader aligns.
+  New `documents/malformed/50-tilde-fenced-block`.
+
 - `uwmd init` scaffolds only class sections a blank stub can satisfy (#414):
   hospitality now scaffolds with no errors (no `rent_roll` stub, which must carry
   `available_room_nights` once stated); data center and manufactured housing no

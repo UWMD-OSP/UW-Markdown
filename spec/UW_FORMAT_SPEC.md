@@ -360,7 +360,7 @@ The anchor (e.g., `{#property}`) is the section ID used for internal linking and
 
 ### 2.4 Data Block Annotation Syntax
 
-Every data block is a fenced JSON code block. The opening fence carries a structured annotation:
+Every data block is a fenced JSON code block. The opening fence carries a structured annotation. A structured block opens on a line that begins, at the first column, with exactly three backticks immediately followed by `json`, whitespace and the `uw:section=` annotation; it closes on the next line that is exactly three backticks, optionally followed by spaces or tabs (RFC 0102). Nothing else opens a block: a tilde fence (`~~~json`), an indented fence or a longer backtick run is ordinary Markdown, as is any other code fence. The rule is line-based, so such a line opens a block even inside another Markdown code fence:
 
 ```
 ```json uw:section=<section_id> [key=value ...]
