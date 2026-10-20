@@ -595,6 +595,18 @@ function checkCrossSectionConsistency(
           issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.amount', message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the ${senior.point} senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
         }
       }
+      // Same rate (§4.24): the tranche's rate equals the interest_rate of the
+      // senior at the stack's point, exactly, with no tolerance (owner ruling on
+      // #406). sources_uses states no rate, so a closing stack has no fallback.
+      const seniorRate = num(senior.tranche['rate']);
+      const atPoint = debt[senior.point].block;
+      const loanRate = atPoint ? num(deepGet(atPoint.content, 'interest_rate')) : undefined;
+      if (seniorRate != null && loanRate != null) {
+        evaluated = true;
+        if (seniorRate !== loanRate) {
+          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.rate', message: `CC-03: the capital_stack senior_debt tranche rate (${seniorRate}) does not equal the ${senior.point} senior loan interest_rate (${loanRate})`, value: Math.abs(seniorRate - loanRate) });
+        }
+      }
     }
 
     const noSeniorAt = (point: CapitalPoint): boolean => debt[point].state === 'absent';

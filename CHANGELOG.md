@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- `CC-03` checks the senior rate (#406): the `capital_stack` `senior_debt`
+  tranche `rate` must equal the `interest_rate` of the senior `debt_structure` at
+  the stack's point exactly, as Format §4.24's "same amount, same rate" already
+  required (owner ruling: exact, no tolerance). The reference compared amounts
+  only. New `capital-stack/senior-rate-disagrees` case.
+
 - Accept RFC0102 (#405): a structured block opens only on a line beginning
   exactly ```` ```json ```` + the `uw:section=` annotation and closes on a line of
   three backticks; tilde, indented and longer fences are ordinary Markdown. The
