@@ -1,0 +1,13 @@
+{
+  "args": [
+    "record.uwx.md",
+    "--json"
+  ],
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 0,
+    "project": "issue-code-severity-set"
+  },
+  "note": "Frozen minimal source copied byte-for-byte only to isolate its lexical directory; no automatic sidecar exists."
+}

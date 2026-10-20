@@ -519,6 +519,38 @@ Implementation gates remain:
    obligation on Windows/Linux/macOS. Discovery remains parse-only until that
    entire capability gate passes. This docs-only acceptance activates no code.
 
+## Synchronized implementation disposition
+
+The implementation synchronizes the Format/Protocol, registry/remediation and
+five affected schemas with independent TypeScript and private Python predicates.
+Current canonical/current variants and eligible component payloads use assembled
+model authority. Physical history is not added to this pass. Parent admission,
+existing issue owners, lexical dates and nullable recovery qualification remain
+as accepted; financial selector/result expressions and procedures are unchanged.
+The Python helper itself adds no CLI command or advertised capability.
+
+Eight new native controls are attributed without changing any existing source:
+
+| Controls | Approved requirement exercised | Expected projection |
+|---|---|---|
+| malformed44 | Closed lease-up carrier/target and declared grammar |8 ordered LU-05 rows |
+| malformed45 | Recovery types, unknown members and nullable companion ownership |6 ordered REC-11 rows |
+| malformed46 | Eligible component sizing declarations and bounds |7 ordered CS-03 rows |
+| malformed47 | Closed waterfall declarations and lexical date shape |14 ordered WF-16 rows |
+| malformed48 | Lawful nullable/empty declarations and lexical-only date boundary |0 new-code rows |
+| malformed49 | Current canonical/current variant scope, overwritten and historical exclusion |2 ordered LU-05 rows |
+| recoveries/reject-inherited-cash-flow-variant | Exact own variant existence; prototype names are not sources |3 REC-09 rows |
+| recoveries/accept-own-prototype-named-variant | Actual own prototype-named variant remains selectable |0 recovery rows |
+
+The sole existing expectation change is
+`conformance/recoveries/reject-member-without-method/expected.json`: two REC-02
+findings become one. With M=false and P=true, the accepted table requires the
+missing-method finding but no missing-cap-accumulation finding. The source hash
+remains `e0a45b9b84c2fe0724751634d979f1ed7e78695814acfa80c182399f6e82fe05`.
+All other existing expectations and portable cases remain unchanged. Independent
+review and exact-head/main CI evidence belong to the implementation PR; this
+record does not assert complete Python validation or Verifier certification.
+
 ## Prior art
 
 RFCs0090–0095 establish bounded diagnostic allocation, exact shape precedence,

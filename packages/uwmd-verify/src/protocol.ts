@@ -1561,7 +1561,10 @@ export interface ProtocolError {
   category: ProtocolErrorCategory;
   code: string;                     // e.g. "PROTO-EDIT-001"
   message: string;
-  /** Path into the file (section.field or frontmatter.path). */
+  /** Path into the owning input. For VAL-INSTITUTION-CONFIG-UNREADABLE and
+   * VAL-INSTITUTION-CONFIG-MALFORMED this is the selected configuration,
+   * not the underwriting document (RFC0097, Protocol VI.3). Other codes retain
+   * their own section.field or frontmatter.path authority. */
   pointer?: string;
   /** Suggested remediation text. */
   remediation?: string;
@@ -1634,6 +1637,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'DQ', description: 'Data quality / incomplete data', capabilities: ['validate'] },
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
+  { prefix: 'REC', description: 'Lease recovery admission and reconciliation (RFC 0058, RFC0096)', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
   { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['calc-evaluate'] },
   { prefix: 'RSV', description: 'Property custody structure and separate balance identity verification (RFC 0064)', capabilities: ['validate'] },
@@ -1743,6 +1747,35 @@ export const DEFAULT_RETURN_TAX_BASIS = 'pre_tax' as const;
  * every conforming implementation.
  */
 export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
+  // RFC0096: closed stated-payload admission; financial result rules are separate.
+  {
+    code: 'LU-05', severity: 'error',
+    title: 'Malformed lease-up payload',
+    description: 'A current lease-up payload violates its closed model, target, carrier or numeric declaration contract.',
+    remediation: 'State only the declared model, cadence-qualified target and admitted typed lease-up fields; do not infer missing figures.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.25 LU-05',
+  },
+  {
+    code: 'REC-11', severity: 'error',
+    title: 'Malformed recovery declaration',
+    description: 'A current recovery terms, cap or true-up row violates its remaining typed-leaf or closed-member contract.',
+    remediation: 'State admitted recovery leaves and closed members; retain the existing conditional method and accumulation requirements without defaults.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.3 REC-11',
+  },
+  {
+    code: 'CS-03', severity: 'error',
+    title: 'Malformed capital-stack sizing claim',
+    description: 'A sizing claim has an invalid carrier, identity, function, selector union, value or extra member.',
+    remediation: 'State each sizing identity, registered function, exactly one valid over/through selector and finite value without inventing a result.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.24 CS-03',
+  },
+  {
+    code: 'WF-16', severity: 'error',
+    title: 'Malformed waterfall claim',
+    description: 'Stated outcomes, schedule or unselected clawback leaves violate their closed structural contract.',
+    remediation: 'State only admitted finite claims, lexical schedule dates and typed tier rows; preserve the selected-floor requirements and do not infer distributions.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.27 WF-16',
+  },
   { code: 'UNSUPPORTED_FORMAT_VERSION', severity: 'error', title: 'Unsupported format version', description: 'uw_version is absent or differs from 3.0.', remediation: 'State a Format 3.0 document; no other format version is admitted.', spec_ref: 'UW_FORMAT_SPEC.md §2.2 / UW_PROTOCOL.md §XII.3' },
   { code: 'META-01', severity: 'error', title: 'Block is not in the Format 3.0 shape', description: 'A block uses a section_id wrapper member, lacks nested provenance and lifecycle, its canonical provenance.actor is absent, null, empty, or non-string; or admitted canonical _meta is misplaced, its present section is invalid/mismatched, or its required quality is absent/nonobject (RFC0093).', remediation: 'State the bare payload with inline nested _meta and _meta.section matching the fence, state canonical _meta first, provide its required quality object with explicit members, and state the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor or other metadata.', spec_ref: 'UW_FORMAT_SPEC.md §2.4–§2.5' },
   { code: 'META-02', severity: 'error', title: 'Required review flag is not boolean', description: 'An admitted canonical quality object lacks a boolean human_review_required.', remediation: 'State _meta.quality.human_review_required explicitly as true or false; do not infer a flag.', spec_ref: 'UW_FORMAT_SPEC.md §2.5c' },

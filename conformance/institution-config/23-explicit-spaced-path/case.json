@@ -1,0 +1,15 @@
+{
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "policy with spaces.input",
+    "--json"
+  ],
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 0,
+    "project": "issue-code-severity-set"
+  },
+  "note": ""
+}

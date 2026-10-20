@@ -1,0 +1,13 @@
+{
+  "args": [
+    "record.uwx.md",
+    "--json"
+  ],
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 0,
+    "project": "issue-code-severity-set"
+  },
+  "note": "Frozen full source copied byte-for-byte only for directory isolation; three explicit warning overrides are applied."
+}

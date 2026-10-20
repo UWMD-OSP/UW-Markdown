@@ -1,0 +1,20 @@
+{
+  "id": "verifier__institution-config__03-selected-directory__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "conformance/institution-config/03-selected-directory",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/03-selected-directory",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/03-selected-directory/expected.json",
+    "exit_code": 1
+  }
+}

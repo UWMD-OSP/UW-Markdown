@@ -5670,6 +5670,191 @@
       "suite": "documents",
       "scenario": "malformed/43-meta-reference-calendar",
       "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/44-payload-lease-up",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/45-payload-recovery",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/46-payload-sizing",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/47-payload-waterfall",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/48-payload-lawful",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/49-payload-current-peers",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-inherited-cash-flow-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "accept-own-prototype-named-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "01-automatic-absence",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "02-explicit-missing",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "03-selected-directory",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "04-invalid-utf8",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "05-leading-bom",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "06-trailing-json",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "07-decoded-duplicate-root",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "08-decoded-duplicate-opaque",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "09-lone-surrogate-value",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "10-lone-surrogate-key",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "11-nonobject-root",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "12-forbidden-root-priority",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "13-invalid-carrier",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "14-null-dscr",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "15-boolean-ltv",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "16-string-debt-yield",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "17-recognized-overflow",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "18-fixed-leaf-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "19-atomic-sibling-refusal",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "20-empty-carrier",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "21-opaque-overflow-paired-scalar",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "22-three-flat-overrides",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "23-explicit-spaced-path",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "24-automatic-adjacent",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "25-automatic-malformed",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "26-explicit-suppresses-adjacent",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "27-explicit-failure-no-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "28-nested-lookalike-opaque",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "29-json-whitespace",
+      "target": "verifier"
     }
   ]
 }

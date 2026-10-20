@@ -6,3 +6,6 @@
 # Digest-pinned package fixtures: manifest.json records a sha256 over the exact
 # bytes on disk, so these payloads must never be EOL-translated on checkout.
 examples/standalone/package/** -text
+
+# Strict JSON/UTF8 config controls exercise the exact authored octets.
+conformance/institution-config/**/*.input -text

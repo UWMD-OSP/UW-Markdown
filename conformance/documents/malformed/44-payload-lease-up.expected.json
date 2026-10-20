@@ -1,0 +1,57 @@
+{
+  "description": "Authored accepted RFC0096 predicates; manually attributed ordered new-code projection only, not a whole-document positive-validation claim.",
+  "must_parse": true,
+  "expected_codes": [
+    "LU-05"
+  ],
+  "payload_issues": [
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "model_type"
+    },
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "stabilization_target"
+    },
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "assumptions.monthly_turnover_rate"
+    },
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "assumptions.extra"
+    },
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "schedule[0].occupied_sf"
+    },
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "schedule[0].vacancy_rate"
+    },
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "stabilized_summary"
+    },
+    {
+      "code": "LU-05",
+      "severity": "error",
+      "section": "lease_up_schedule",
+      "field": "extra"
+    }
+  ]
+}

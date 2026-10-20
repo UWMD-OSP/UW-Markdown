@@ -1,0 +1,7 @@
+{
+  "error": {
+    "category": "validate",
+    "code": "VAL-INSTITUTION-CONFIG-UNREADABLE",
+    "message": "Selected institution config could not be read."
+  }
+}

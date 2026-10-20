@@ -1,0 +1,19 @@
+{
+  "id": "verifier__institution-config__01-automatic-absence__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "record.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/01-automatic-absence",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/01-automatic-absence/expected.json",
+    "exit_code": 0,
+    "project": "issue-code-severity-set"
+  }
+}

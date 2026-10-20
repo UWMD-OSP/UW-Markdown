@@ -1,0 +1,8 @@
+{
+  "error": {
+    "category": "validate",
+    "code": "VAL-INSTITUTION-CONFIG-MALFORMED",
+    "message": "Selected institution config is malformed.",
+    "pointer": "validation_overrides.debt_yield_warning_below"
+  }
+}
