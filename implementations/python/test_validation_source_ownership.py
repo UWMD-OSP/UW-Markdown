@@ -104,10 +104,11 @@ class SourceOwnershipTests(unittest.TestCase):
         good["_meta"]["provenance"]["timestamp"] = False
         parsed = parse(HEADER + block("property", bad) + block("property", good))
         result = validate(parsed)
-        self.assertEqual([(f["context"]["block_index"], f["field"]) for f in
-                         result["metadata_assessment"]["shape_findings"]], [(1, "_meta.provenance.timestamp")])
-        self.assertEqual([(f["context"]["block_index"], f["registered_code"]) for f in
-                         result["metadata_assessment"]["handled_shape_findings"]], [(0, "SRC-01")])
+        # Format 2.7 makes the later block current (#404); SRC covers current
+        # blocks only, and RFC0094 now owns the timestamp leaf as META-04.
+        self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
+        self.assertEqual([(i["code"], i["field"], i["context"]["block_index"]) for i in result["issues"]],
+                         [("META-04", "_meta.provenance.timestamp", 1)])
         good = body(); good["_overrides"] = [{"path": "units", "source": []}]
         result = validate(parse(HEADER + block("property", good)))
         self.assertEqual([(i["code"], i["field"]) for i in result["issues"]],
