@@ -15,8 +15,7 @@ affects:
 # RFC 0098: Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point
 
 > **Draft for owner acceptance.** Jared approved the direction of issue
-> [#403](https://github.com/UWMD-OSP/UW-Markdown/issues/403) (StackUW's filing; first
-> filed on its behalf as #401) on 2026-10-19 and
+> [#403](https://github.com/UWMD-OSP/UW-Markdown/issues/403) on 2026-10-19 and
 > waived any backward-compatibility constraint before 5.0. This RFC is a breaking
 > format change (a newly required field), so under PROCESS it opens alone as a
 > draft. Implementation follows acceptance. Merging nothing here accepts it.
