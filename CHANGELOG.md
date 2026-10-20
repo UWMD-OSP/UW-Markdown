@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept RFC0102 (#405): a structured block opens only on a line beginning
+  exactly ```` ```json ```` + the `uw:section=` annotation and closes on a line of
+  three backticks; tilde, indented and longer fences are ordinary Markdown. The
+  reference already behaved this way; the independent Python reader aligns.
+  New `documents/malformed/50-tilde-fenced-block`.
+
 - Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
   required `capital_stack.point_in_time` (`closing` | `stabilization`), an
   optional `debt_structure.point_in_time` (absent = outstanding at both points),
