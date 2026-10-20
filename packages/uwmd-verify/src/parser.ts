@@ -528,23 +528,14 @@ function routeBlock(
       result.sections[sectionId] = { [variant]: block };
     } else {
       const variantMap = existing as { [v: string]: UWBlock };
-      const current = Object.hasOwn(variantMap, variant) ? variantMap[variant] : undefined;
-
-      if (!current) {
-        defineVariant(variantMap, variant, block);
-      } else {
-        // Replace if newer version
-        const currentV = current.annotation.v ?? current.meta?.lifecycle?.revision ?? 1;
-        const newV = annotation.v ?? block.meta?.lifecycle?.revision ?? 1;
-        if (newV > currentV) {
-          if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-          result.superseded[sectionId].push(current);
-          defineVariant(variantMap, variant, block);
-        } else {
-          if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-          result.superseded[sectionId].push(block);
-        }
+      // Format §2.7: the last non-superseded block is canonical, whatever its
+      // revision. The block it overwrites stays retained in `superseded`, so
+      // integrity and subject accounting still see every physical block.
+      if (Object.hasOwn(variantMap, variant)) {
+        if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
+        result.superseded[sectionId].push(variantMap[variant]!);
       }
+      defineVariant(variantMap, variant, block);
     }
     if (!result.prose[sectionId]) result.prose[sectionId] = prose;
     return;
@@ -559,20 +550,12 @@ function routeBlock(
     return;
   }
 
-  // Resolve version conflict: keep higher version as current
-  const existingBlock = existing as UWBlock;
-  const existingV = existingBlock.annotation.v ?? existingBlock.meta?.lifecycle?.revision ?? 1;
-  const newV = annotation.v ?? block.meta?.lifecycle?.revision ?? 1;
-
-  if (newV > existingV) {
-    if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-    result.superseded[sectionId].push(existingBlock);
-    result.sections[sectionId] = block;
-    result.prose[sectionId] = prose;
-  } else {
-    if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-    result.superseded[sectionId].push(block);
-  }
+  // Format §2.7: the last non-superseded block is canonical, whatever its
+  // revision; the block it overwrites stays retained (see above).
+  if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
+  result.superseded[sectionId].push(existing);
+  result.sections[sectionId] = block;
+  result.prose[sectionId] = prose;
 }
 
 /**

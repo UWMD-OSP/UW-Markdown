@@ -49,9 +49,11 @@ describe('lawful variant labels and complete subject accounting', () => {
     const changed = raw.replace('"value":222', '"value":223');
     expect((await resolveReceiptSubject(changed)).subject.digest).not.toBe((await resolveReceiptSubject(raw)).subject.digest);
     expect((await resolveDocumentSigningSubject(changed)).digest).not.toBe((await resolveDocumentSigningSubject(raw)).digest);
+    // Format 2.7: a later non-superseded block with the same key is canonical;
+    // the one it overwrites stays retained.
     const duplicated = parseUWFile(raw + section(variant, 333));
-    expect(getSectionVariant(duplicated, 'operating_statement', variant)?.content.value).toBe(222);
-    expect(duplicated.superseded.operating_statement.map(block => block.content.value)).toEqual([333]);
+    expect(getSectionVariant(duplicated, 'operating_statement', variant)?.content.value).toBe(333);
+    expect(duplicated.superseded.operating_statement.map(block => block.content.value)).toEqual([222]);
     await expect(resolveDocumentSigningSubject(raw + section(variant, 333))).rejects.toThrow(/Duplicate active/);
     expect(parsed.raw).toBe(raw);
   });
@@ -79,8 +81,8 @@ describe('lawful variant labels and complete subject accounting', () => {
   it('preserves same-key superseded history and concurrent current peers', async () => {
     const raw = FRONT + section('annotation', 1, true) + section('annotation', 2) + section('annotation', 3) + section('z', 4);
     const parsed = parseUWFile(raw);
-    expect(getSectionVariant(parsed, 'operating_statement', 'annotation')?.content.value).toBe(2);
-    expect(parsed.superseded.operating_statement.map(b => b.content.value)).toEqual([1, 3]);
+    expect(getSectionVariant(parsed, 'operating_statement', 'annotation')?.content.value).toBe(3);
+    expect(parsed.superseded.operating_statement.map(b => b.content.value)).toEqual([1, 2]);
     const envelope = toUWEnvelope(parsed);
     expect(envelope.superseded.operating_statement).toHaveLength(2);
     expect(await computeEnvelopeDigest(envelope)).not.toBe(await computeEnvelopeDigest(toUWEnvelope(parseUWFile(raw.replace('"value":1', '"value":9')))));
