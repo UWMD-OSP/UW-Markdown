@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Correct Issue #395: distinguish actual block wrappers from variant maps by
+  shape, and route current peers through own keys. Lawful labels such as
+  `annotation`, `content` and `toString` retain their current/history identity
+  across parsing, selection, Envelope/signature subjects and existing consumers.
+  Add synthetic source-order, digest, real-signing and consumer regressions;
+  no label is newly reserved and no normative representation is changed.
+
 - Implement accepted RFC0097 selected institution-config admission in the
   reference CLI and an independent private Python helper: strict UTF8/JSON/
   decoded-name/Unicode checks, exact lexical selection, atomic three-key mapping

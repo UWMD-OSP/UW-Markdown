@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // Gaps inference + summarization — Format Spec §4.22
 //
 // A "gap" is an open data deficiency that may block stage advancement or
@@ -72,7 +73,7 @@ export interface InferGapsOptions {
 function blockOf(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
   const entry = parsed.sections[sectionId];
   if (!entry) return null;
-  if ('annotation' in (entry as object)) return entry as UWBlock;
+  if (hasBlockShape(entry)) return entry as UWBlock;
   // Multi-variant sections: take the first variant for inference purposes.
   // Variant-specific gap inference is left to RFC 0009.
   const variants = Object.values(entry as Record<string, UWBlock>);

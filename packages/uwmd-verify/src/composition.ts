@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // Composable UWX documents (RFC 0021) — fragments and section externalization.
 //
 // One invariant carries the whole design:
@@ -137,7 +138,7 @@ export function parseUWPart(parsed: ParsedUWFile, opts: ParseUWPartOptions = {})
 
   const blocks: UWBlock[] = [];
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
-    const found = isRecord(entry) && 'annotation' in entry
+    const found = hasBlockShape(entry)
       ? [entry as unknown as UWBlock]
       : Object.values(entry as Record<string, UWBlock>);
     // A fragment must not contribute to two sections — that is what two
@@ -296,7 +297,7 @@ function inlineAnnotation(annotation: UWFenceAnnotation): UWFenceAnnotation {
 }
 
 function sectionBlocks(entry: unknown): UWBlock[] {
-  return isRecord(entry) && 'annotation' in entry
+  return hasBlockShape(entry)
     ? [entry as unknown as UWBlock]
     : Object.values(entry as Record<string, UWBlock>);
 }

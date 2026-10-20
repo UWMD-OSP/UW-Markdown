@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // RFC 0070 structural binding checks. No hashing, financial math or writes.
 import type { ParsedUWFile, ValidationMessage, UWBlock } from './types.js';
 import type { ReplacementCashFlowRef, ReplacementFundingBindingContext } from './protocol.js';
@@ -19,7 +20,7 @@ export const isBindingDigest = (v: unknown): v is string =>
 export function sectionBlocks(entry: ParsedUWFile['sections'][string] | undefined): UWBlock[] {
   return !entry
     ? []
-    : 'annotation' in entry
+    : hasBlockShape(entry)
       ? [entry as UWBlock]
       : Object.values(entry as Record<string, UWBlock>);
 }

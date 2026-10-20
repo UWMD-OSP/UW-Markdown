@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 import type { ParsedUWFile, UWBlock, ValidationMessage } from './types.js';
 import { PERIOD_SERIES } from './protocol.js';
 import { getPathSegment } from './parser.js';
@@ -12,7 +13,7 @@ export function checkPeriodSeries(parsed: ParsedUWFile, issues: ValidationMessag
     const [section, ...segments] = entry.path.split('.');
     const stored = parsed.sections[section!];
     if (!stored) continue;
-    const blocks: UWBlock[] = 'annotation' in stored ? [stored as UWBlock] : Object.values(stored);
+    const blocks: UWBlock[] = hasBlockShape(stored) ? [stored as UWBlock] : Object.values(stored);
     for (const block of blocks) {
       const payload = periodPayload(block);
       let series: unknown = payload;

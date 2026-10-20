@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // Integrity layer: content_hash + parent_hash chains, provenance verification
 // Protocol §V.9 / §V.10 — "Block integrity"
 //
@@ -472,7 +473,7 @@ function* everyBlock(parsed: ParsedUWFile): Generator<[string, UWBlock]> {
   }
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     if (!entry) continue;
-    if ('annotation' in (entry as object)) {
+    if (hasBlockShape(entry)) {
       yield [sectionId, entry as UWBlock];
       continue;
     }
@@ -551,7 +552,7 @@ export function verifyProvenance(
 function currentBlock(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
   const entry = parsed.sections[sectionId];
   if (!entry) return null;
-  if ('annotation' in (entry as object)) return entry as UWBlock;
+  if (hasBlockShape(entry)) return entry as UWBlock;
   // Multi-variant sections: integrity is per-variant; pick the first variant
   // for now. Fuller treatment is RFC 0009.
   const variants = Object.values(entry as Record<string, UWBlock>);
