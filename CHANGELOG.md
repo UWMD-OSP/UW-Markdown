@@ -10,6 +10,16 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC0098 (#403): `capital_stack.point_in_time` is required
+  (`closing` | `stabilization`; `CS-04` when absent or unknown, including on a
+  mixed-use component stack); `debt_structure.point_in_time` is optional and
+  absent means outstanding at both points (`DS-01` for an unknown value, new
+  `DS` family); `sources_uses` is the closing statement; `CC-03` selects one
+  senior per point by the unchanged §5.3 order and compares like-dated figures,
+  recording `debt_structure@closing`/`@stabilization` evidence. Schema, Format,
+  Protocol, eight conformance cases, corpus and examples updated. Breaking for
+  documents with a `capital_stack` that state no point.
+
 - Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
   required `capital_stack.point_in_time` (`closing` | `stabilization`), an
   optional `debt_structure.point_in_time` (absent = outstanding at both points),
