@@ -1,0 +1,20 @@
+{
+  "id": "verifier__institution-config__14-null-dscr__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "policy.input",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/14-null-dscr",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/14-null-dscr/expected.json",
+    "exit_code": 1
+  }
+}

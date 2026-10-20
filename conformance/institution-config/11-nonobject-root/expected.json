@@ -1,0 +1,7 @@
+{
+  "error": {
+    "category": "validate",
+    "code": "VAL-INSTITUTION-CONFIG-MALFORMED",
+    "message": "Selected institution config is malformed."
+  }
+}

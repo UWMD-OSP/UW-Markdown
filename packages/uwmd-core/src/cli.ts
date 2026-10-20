@@ -39,7 +39,6 @@ import {
   inspectPropertyCashFlowInputs,
   type AssetClass,
   type DealStage,
-  type InstitutionConfig,
   parseUWPart,
   resolveComposition,
   externalizeSection,
@@ -77,6 +76,7 @@ import { issueReceipt } from './receipt-engine.js';
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
+import { InstitutionConfigError, loadInstitutionThresholds } from './institution-config.js';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { render } from './renderer.js';
@@ -136,14 +136,17 @@ function readFile(path: string): string {
   return readFileSync(resolved, 'utf-8');
 }
 
-function loadInstitutionConfig(path: string | undefined): InstitutionConfig | undefined {
-  if (!path) return undefined;
-  try {
-    return JSON.parse(readFileSync(resolve(path), 'utf-8')) as InstitutionConfig;
-  } catch {
-    console.error(`Warning: could not load institution config: ${path}`);
-    return undefined;
+function institutionFailure(error: unknown, json: boolean): void {
+  // Only failures in the new config preflight get this internal-error boundary.
+  // Other CLI commands retain their existing refusal transport unchanged.
+  if (!(error instanceof InstitutionConfigError)) {
+    console.error(error);
+    process.exitCode = 2;
+    return;
   }
+  if (json) console.log(JSON.stringify({ error: error.proto }, null, 2));
+  else console.error(`uwmd: ${error.code}: ${error.message}${error.proto.pointer ? ` [${error.proto.pointer}]` : ''}`);
+  process.exitCode = 1;
 }
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
@@ -219,11 +222,18 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
     console.error(stageRequest.message);
     process.exit(1);
   }
+  if (flags['institution'] !== undefined && typeof flags['institution'] !== 'string') {
+    console.error('--institution requires a path.'); process.exit(1);
+  }
   const content = readFile(file);
   const detection = detectUWSourceRepresentation(content, file);
   if (detection.representation !== UWX_REPRESENTATION_ID) {
     if (stageRequest?.ok) console.error(`uwmd validate: --stage ${stageRequest.stage}: readiness is not checked for UW Lite.`);
     const lite = parseUWLite(content);
+    try { loadInstitutionThresholds(file, flags['institution'] as string | undefined); }
+    catch (error) {
+      institutionFailure(error, flags['json'] === true); return;
+    }
     const errors = lite.issues.filter((issue) => issue.severity === 'error');
     const warnings = lite.issues.filter((issue) => issue.severity === 'warning');
     const result = {
@@ -258,8 +268,12 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content);
-  const instCfg = loadInstitutionConfig(flags['institution'] as string | undefined);
-  const structural = validateUWFile(content, instCfg?.thresholds);
+  let thresholds: ReturnType<typeof loadInstitutionThresholds>;
+  try { thresholds = loadInstitutionThresholds(file, flags['institution'] as string | undefined); }
+  catch (error) {
+    institutionFailure(error, flags['json'] === true); return;
+  }
+  const structural = validateUWFile(content, thresholds);
   const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
   const result = { ...structural, replacement_funding_verification };
   const fundingRefuses = replacement_funding_verification.state !== 'verified'
@@ -411,21 +425,35 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     replacement_funding_verification: { state: 'not_checked', reason: 'not_invoked', issues: [] },
   };
   let hadError = false;
+  let configError: InstitutionConfigError | undefined;
 
   if (runAll || onlyValidate) {
-    const v = validateUWFile(content, undefined, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
-    sections['validation'] = v;
-    const funding = await verifyReplacementFundingBindings(parsed);
-    sections['replacement_funding_verification'] = funding;
-    if (v.errors.length > 0 || (funding.state !== 'verified'
-      && !(funding.state === 'not_checked' && funding.reason === 'not_applicable'))) hadError = true;
-    // Protocol §II.2 item 2: a stated metric that disagrees with its
-    // recomputation is a verification failure. One whose inputs are absent is
-    // `unverifiable`, which is reported but is not a failure. Through 4.2.0 this
-    // check never ran here, so a wrong stated cap rate printed `OK`.
-    const metrics = verifyStatedMetrics(parsed);
-    sections['stated_metrics'] = metrics;
-    if (metrics.counts.failed > 0) hadError = true;
+    let thresholds: ReturnType<typeof loadInstitutionThresholds>;
+    try { thresholds = loadInstitutionThresholds(file); }
+    catch (error) {
+      if (!(error instanceof InstitutionConfigError)) {
+        institutionFailure(error, flags['json'] === true); return;
+      }
+      configError = error;
+      hadError = true;
+      sections['validation'] = { error: error.proto };
+      delete sections['replacement_funding_verification'];
+    }
+    if (configError === undefined) {
+      const v = validateUWFile(content, thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
+      sections['validation'] = v;
+      const funding = await verifyReplacementFundingBindings(parsed);
+      sections['replacement_funding_verification'] = funding;
+      if (v.errors.length > 0 || (funding.state !== 'verified'
+        && !(funding.state === 'not_checked' && funding.reason === 'not_applicable'))) hadError = true;
+      // Protocol §II.2 item 2: a stated metric that disagrees with its
+      // recomputation is a verification failure. One whose inputs are absent is
+      // `unverifiable`, which is reported but is not a failure. Through 4.2.0 this
+      // check never ran here, so a wrong stated cap rate printed `OK`.
+      const metrics = verifyStatedMetrics(parsed);
+      sections['stated_metrics'] = metrics;
+      if (metrics.counts.failed > 0) hadError = true;
+    }
   }
   let chain: IntegrityResult | undefined;
   let prov: IntegrityResult | undefined;
@@ -444,7 +472,8 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     console.log(JSON.stringify({ ok: !hadError, ...sections }, null, 2));
   } else {
     console.log(`\n${hadError ? '✗' : '✓'}  ${hadError ? 'FAIL' : 'OK'} — ${basename(file)}\n`);
-    if ('validation' in sections) {
+    if (configError) institutionFailure(configError, false);
+    if ('validation' in sections && configError === undefined) {
       const v = sections['validation'] as ReturnType<typeof validateUWFile>;
       console.log(`Structural validation: ${v.overall_status} (${v.issues.length} issue${v.issues.length === 1 ? '' : 's'})`);
       for (const issue of v.issues) {
@@ -455,7 +484,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     }
     const metrics = sections['stated_metrics'] as ReturnType<typeof verifyStatedMetrics> | undefined;
     if (!metrics) {
-      console.log('Stated metrics: not checked (validation not requested)');
+      if (!configError) console.log('Stated metrics: not checked (validation not requested)');
     } else if (metrics.evidence.length === 0) {
       console.log(`Stated metrics: none stated for asset class '${metrics.asset_class}'`);
     } else {
@@ -466,10 +495,12 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
         else if (item.state === 'unverifiable') console.log(`  [UNVERIFIABLE] ${item.path}: ${item.reason ?? 'not checkable'}`);
       }
     }
-    const funding = sections['replacement_funding_verification'] as Awaited<ReturnType<typeof verifyReplacementFundingBindings>>;
-    console.log(`Replacement funding verification: ${funding.state}${'reason' in funding ? ` / ${funding.reason}` : ''}`);
-    for (const issue of funding.issues) console.log(issue.message);
-    if (funding.state === 'not_checked' && funding.reason === 'not_invoked') console.log('Validation not requested; no complete binding verification claim.');
+    const funding = sections['replacement_funding_verification'] as Awaited<ReturnType<typeof verifyReplacementFundingBindings>> | undefined;
+    if (funding) {
+      console.log(`Replacement funding verification: ${funding.state}${'reason' in funding ? ` / ${funding.reason}` : ''}`);
+      for (const issue of funding.issues) console.log(issue.message);
+      if (funding.state === 'not_checked' && funding.reason === 'not_invoked') console.log('Validation not requested; no complete binding verification claim.');
+    }
     if (chain) {
       const document = chain.document_signature;
       console.log(`Document snapshot authentication: ${document ? document.state : 'not checked'}`);
@@ -2126,7 +2157,7 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   --issued-at <iso>  Fix the receipt issuance timestamp (receipt issue)
   --tier <tier>      Module host conformance tier: reader | verifier (modules; default verifier)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
-  --institution <f>  Path to .uw.institution.json config (validate)
+  --institution <f>  Path to .uw.institution.json config (validate; otherwise adjacent sidecar)
   --name <n>         Deal name (init)
   --address <a>      Property address (init)
   --city <c>         City (init)

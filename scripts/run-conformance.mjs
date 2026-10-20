@@ -29,6 +29,7 @@ import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSy
 import { resolve, join, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 
 import {
   parseUWFile,
@@ -2559,6 +2560,47 @@ const RECOVERIES_DIR = join(CONFORMANCE_DIR, 'recoveries');
 // RFC 0058 expense recoveries and the CAM true-up. Its own tier rather than a
 // guest in `lease`: that suite pins LSE-* exactly, so a REC-* code emitted
 // there would be filtered out and a broken fixture would read as passing.
+// RFC0097 tests the actual filesystem CLI adapter, not a second validator.
+async function runInstitutionConfig() {
+  const base = join(CONFORMANCE_DIR, 'institution-config');
+  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
+  const admitError = new Ajv2020({ strict: true, validateFormats: false }).compile(
+    JSON.parse(readFileSync(join(ROOT, 'spec/schemas/protocol-error.schema.json'), 'utf8')));
+  for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a,b) => a.name.localeCompare(b.name))) {
+    const dir = join(base, entry.name);
+    try {
+      const descriptor = readCase(dir, 'case.json');
+      const expected = readCase(dir, descriptor.expect.file);
+      const args = descriptor.args.map(arg => {
+        const candidate = resolve(dir, arg);
+        return existsSync(candidate) && statSync(candidate).isFile() ? candidate : arg;
+      });
+      const inputs = [join(dir, 'case.json'), join(dir, descriptor.expect.file),
+        ...args.filter(arg => existsSync(arg) && statSync(arg).isFile()),
+        ...(existsSync(join(dir, '.uw.institution.json')) ? [join(dir, '.uw.institution.json')] : [])];
+      const hashes = inputs.map(path => createHash('sha256').update(readFileSync(path)).digest('hex'));
+      const actualProcess = spawnSync(process.execPath, [join(ROOT, 'packages/uwmd-cli/bin/uwmd.mjs'), 'validate', ...args],
+        { cwd: ROOT, encoding: 'utf8', timeout: 60_000, maxBuffer: 4 * 1024 * 1024 });
+      if (actualProcess.error) throw actualProcess.error;
+      if (actualProcess.status !== descriptor.expect.exit_code) throw new Error(`exit ${actualProcess.status}, expected ${descriptor.expect.exit_code}: ${actualProcess.stderr}`);
+      const actual = JSON.parse(actualProcess.stdout);
+      if (expected.error) {
+        if (!deepEqual(Object.keys(actual), ['error']) || !admitError(actual.error)) throw new Error('Not an error-only ProtocolError response');
+        for (const member of ['category', 'code', 'message', 'pointer']) {
+          if (actual.error[member] !== expected.error[member]) throw new Error(`Error ${member} differs from the accepted contract`);
+        }
+      } else {
+        if (actual.error || !Array.isArray(actual.issues) || !Array.isArray(actual.errors) || !Array.isArray(actual.warnings)) throw new Error('Expected an ordinary validation result');
+        const seen = new Map(actual.issues.map(issue => [JSON.stringify([issue.code, issue.severity]), { code: issue.code, severity: issue.severity }]));
+        const projected = { overall_status: actual.overall_status, issues: [...seen.values()].sort((a,b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity)) };
+        if (!deepEqual(projected, expected)) throw new Error(`Validation projection differs: ${JSON.stringify(projected)}`);
+      }
+      if (!hashes.every((hash, i) => hash === createHash('sha256').update(readFileSync(inputs[i])).digest('hex'))) throw new Error('Source/config/case/expectation bytes changed');
+      record('institution-config', entry.name, 'pass', actual.error?.code ?? actual.overall_status);
+    } catch (error) { record('institution-config', entry.name, 'fail', error.message); }
+  }
+}
+
 async function runRecoveries() {
   if (!existsSync(RECOVERIES_DIR)) {
     record('recoveries', '(none)', 'pass', 'no recovery fixtures');
@@ -4289,6 +4331,7 @@ const dispatch = {
   'tax': async () => { await runTax(); },
   'lease': async () => { await runLease(); },
   'recoveries': async () => { await runRecoveries(); },
+  'institution-config': async () => { await runInstitutionConfig(); },
   'reserve-draw-bindings': async () => {
     const base = join(CONFORMANCE_DIR, 'reserve-draw-bindings');
     for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a,b) => a.name.localeCompare(b.name))) {

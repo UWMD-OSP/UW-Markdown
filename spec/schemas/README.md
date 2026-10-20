@@ -16,6 +16,7 @@ files live in this directory pending publication on `uwmd.org`.
 | [uw-document-envelope.xsd](uw-document-envelope.xsd) | Structural UW XML 1.0 tooling schema | [UW XML Mapping 1.0](../UW_XML_MAPPING.md) |
 | [`edit-operation.schema.json`](edit-operation.schema.json) | `EditOperation` (discriminated union) | Protocol §V |
 | [`protocol-error.schema.json`](protocol-error.schema.json) | `ProtocolError` | Protocol §XI |
+| [institution-config.schema.json](institution-config.schema.json) | Canonical institution config wire object | Format C.6 / Protocol VI.3 / RFC0097 |
 | [`implementation-manifest.schema.json`](implementation-manifest.schema.json) | `ImplementationManifest` | Protocol §I.4 |
 | [`metric-dictionary.schema.json`](metric-dictionary.schema.json) | `MetricDictionary` | [Metric dictionary](../metrics/README.md) / RFC 0078 Phase 2 |
 | [`conformance-case.schema.json`](conformance-case.schema.json) | Portable case with one `ConformanceTarget` | Protocol §II.6a.4 / RFC 0078 Phase 3 |

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/institution-config.schema.json",
+  "title": "UW institution configuration",
+  "description": "Minimum selected-config wire shape (Format C.6, Protocol VI.3, RFC0097). Strict byte/JSON/decoded-name/Unicode admission, finite binary64 conversion, atomic mapping and filesystem selection require independent runtime checks. Opaque extras are never claimed applied. No financial ranges are added.",
+  "type": "object",
+  "properties": {
+    "thresholds": false,
+    "validation_overrides": {
+      "type": "object",
+      "properties": {
+        "dscr_warning_below": {
+          "type": "number",
+          "description": "Optional own finite binary64 number after runtime admission; no coercion or additional financial range."
+        },
+        "ltv_warning_above": {
+          "type": "number",
+          "description": "Optional own finite binary64 number after runtime admission; no coercion or additional financial range."
+        },
+        "debt_yield_warning_below": {
+          "type": "number",
+          "description": "Optional own finite binary64 number after runtime admission; no coercion or additional financial range."
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "examples": [
+    {},
+    {
+      "validation_overrides": {}
+    },
+    {
+      "validation_overrides": {
+        "dscr_warning_below": 1.25,
+        "ltv_warning_above": 0.7,
+        "debt_yield_warning_below": 0.09
+      },
+      "institution_id": "example"
+    }
+  ]
+}
