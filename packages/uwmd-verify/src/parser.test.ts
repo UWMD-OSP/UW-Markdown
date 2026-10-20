@@ -256,6 +256,21 @@ ${makeBlock(2, false)}
     expect(parsed.superseded['property']?.[0]?.meta.lifecycle?.revision).toBe(1);
   });
 
+  // Format §2.7: the canonical block is the last non-superseded one, not the
+  // highest revision (#404). The block it overwrites stays retained.
+  it.each([
+    ['a revision tie', 1, 1],
+    ['a later lower revision', 2, 1],
+  ])('makes the last non-superseded block canonical on %s', (_label, first, second) => {
+    const block = (revision: number, units: number) => `
+\`\`\`json uw:section=property
+{ "_meta": { "section": "property", "provenance": { "source": "manual", "actor": "user", "timestamp": "2026-01-01T00:00:00Z" }, "quality": { "confidence": "high", "human_review_required": false }, "lifecycle": { "revision": ${revision}, "superseded": false } }, "total_units": ${units} }
+\`\`\``;
+    const parsed = parseUWFile(`---\nuw_version: "3.0"\ndeal_id: "x"\nasset_class: multifamily\n---\n${block(first, 10)}\n${block(second, 20)}\n`);
+    expect(getSection(parsed, 'property')?.content.total_units).toBe(20);
+    expect(parsed.superseded['property']?.map(b => b.content.total_units)).toEqual([10]);
+  });
+
   it('parses fence annotation key-value pairs', () => {
     const content = `---
 uw_version: "3.0"
