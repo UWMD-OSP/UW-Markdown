@@ -133,8 +133,8 @@ class SourcePopulationTests(unittest.TestCase):
         current=part("whole",value("rent_roll",bad=True),collection=False)
         # Author the negative control into actual bytes for SOURCE as well as
         # the independently supplied MODEL; stale raw must not erase the test.
-        raw=HEADER+b"~~~json uw:section=rent_roll external=true\n"
-        raw+=json.dumps(root.source.blocks[0].parsed.value).encode()+b"\n~~~\n"
+        raw=HEADER+b"```json uw:section=rent_roll external=true\n"
+        raw+=json.dumps(root.source.blocks[0].parsed.value).encode()+b"\n```\n"
         raw+=fence(value("x_population",bad=True),section="x_population")
         raw+=fence(value("pipeline_log",bad=True),section="pipeline_log")
         root=parse(raw)

@@ -27,8 +27,8 @@ def body():
 
 
 def fence(value, section="property", annotation=""):
-    return (("~~~json uw:section=" + section + annotation + "\n")
-            + json.dumps(value, ensure_ascii=True) + "\n~~~\n").encode()
+    return (("```json uw:section=" + section + annotation + "\n")
+            + json.dumps(value, ensure_ascii=True) + "\n```\n").encode()
 
 
 def reference(kind):
@@ -326,7 +326,7 @@ class MetadataAdmissionTests(unittest.TestCase):
                 if kind == "rationale": expected.append("_meta.provenance.market_data_ref.rationale")
                 self.assertEqual(fields, expected)
         manifest, status = main(["manifest"])
-        self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse"], []))
+        self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse", "validate", "calc-evaluate"], []))
 
 
 if __name__ == "__main__":

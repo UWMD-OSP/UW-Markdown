@@ -54,8 +54,11 @@ jobs:
           name: isolated-python-fdlibm-${{ matrix.os }}
           path: ${{ runner.temp }}/python-fdlibm-observations.json
           if-no-files-found: error
-      - name: Portable Reader projections (no capability skips)
-        run: python conformance/runner/runner.py --impl "python implementations/python/uwmd.py" --tier reader --no-skip --manifest-out python-reader-conformance.json
+      # Certification (Issue #354): the claimed Reader tier plus validate and
+      # calc-evaluate. --tier verifier selects Reader and Verifier cases; any
+      # case needing an unclaimed capability fails under --no-skip.
+      - name: Portable Reader + validate + calc-evaluate (no capability skips)
+        run: python conformance/runner/runner.py --impl "python implementations/python/uwmd.py" --tier verifier --no-skip --manifest-out python-reader-conformance.json
       - uses: actions/upload-artifact@v6
         if: always()
         with:

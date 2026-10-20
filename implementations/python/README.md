@@ -6,8 +6,16 @@ Format and Protocol. It uses Python's standard library and has no Node runtime,
 external packages, hosted services, production fixture lookup, or TypeScript
 translation. No PyPI name, supported Python floor or publication is decided.
 
-The discovery manifest advertises only `parse`, **no Reader/Verifier tier,
-full-validation, expression-calculation, signature, receipt or optional-profile capability**.
+**Certified 2026-10-20 (Issue #354):** the discovery manifest claims the
+**Reader tier** and the capabilities `parse`, `validate` and `calc-evaluate`. CI
+proves each claim with the RFC 0004 runner, `--tier verifier --no-skip`, on
+Windows, Linux and macOS: every portable case those capabilities select passes,
+with zero skips. It does **not** claim the Verifier tier. Protocol §II.2 also
+requires metric-dictionary reproduction, the stated-figure verifiers (cash
+flows/IRR, property cash-flow assembly, waterfalls) and receipt verification,
+which this implementation does not provide (§II.5: publish capabilities rather
+than round up). No signature, receipt or optional-profile capability is claimed.
+Statements below that discovery "stays parse-only" are dated checkpoint history.
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
 reserve accounts, explicit reserve-draw plans and replacement-funding commitments.
 It also executes accepted expressions through the read-only `calc` command.

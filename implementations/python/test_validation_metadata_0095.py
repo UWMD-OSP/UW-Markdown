@@ -86,7 +86,9 @@ class Metadata0095ValidationTests(unittest.TestCase):
         _, report, (wire, status) = assess({"_overrides": [None]})
         self.assertEqual((status, report["metadata_assessment"]["shape_findings"]), (1, []))
         self.assertEqual(allocated(wire), [("META-05", "_overrides[0]")])
-        self.assertIn("META_MISSING", [i["code"] for i in wire["issues"]])
+        # The block is an extension (x_), outside the completeness-warning
+        # population, as in the reference.
+        self.assertNotIn("META_MISSING", [i["code"] for i in wire["issues"]])
         value = body(); value["_notes"] = {"never": [None]}; value["_meta"]["integrity"] = {"opaque": False}
         self.assertEqual(assess(value)[2][1], 0)
 
@@ -121,7 +123,7 @@ class Metadata0095ValidationTests(unittest.TestCase):
                 self.assertEqual(path.read_bytes(), raw)
             manifest = subprocess.run([sys.executable, "-B", str(ROOT / "implementations/python/uwmd.py"), "manifest"],
                 capture_output=True, encoding="utf8", timeout=30)
-            self.assertEqual(json.loads(manifest.stdout)["capabilities"], ["parse"])
+            self.assertEqual(json.loads(manifest.stdout)["capabilities"], ["parse", "validate", "calc-evaluate"])
 
 
 if __name__ == "__main__":

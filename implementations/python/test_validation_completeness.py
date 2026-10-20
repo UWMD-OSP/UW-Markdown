@@ -38,7 +38,7 @@ class CompletenessOwnershipTests(unittest.TestCase):
     def assess(self, authored):
         # Serialize the authored member order directly: block() intentionally
         # places _meta first and cannot exercise the late-metadata control.
-        raw = ("~~~json uw:section=property\n" + json.dumps(authored) + "\n~~~\n").encode()
+        raw = ("```json uw:section=property\n" + json.dumps(authored) + "\n```\n").encode()
         document = parse(HEADER + raw)
         before = copy.deepcopy(document)
         result = validate(document)

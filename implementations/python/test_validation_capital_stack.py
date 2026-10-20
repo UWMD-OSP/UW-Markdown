@@ -175,7 +175,7 @@ class CapitalStackAdmissionTests(unittest.TestCase):
                     self.assertEqual(set(report["stage_readiness"].values()), {True, False})
                     self.assertEqual(path.read_bytes(), raw)
         manifest, status = main(["manifest"])
-        self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse"], []))
+        self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse", "validate", "calc-evaluate"], []))
 
 
 if __name__ == "__main__":

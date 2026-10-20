@@ -27,8 +27,8 @@ def body():
 
 
 def fence(value, *, section="property", annotation=""):
-    return (("~~~json uw:section=" + section + annotation + "\n")
-            + json.dumps(value, ensure_ascii=True) + "\n~~~\n").encode()
+    return (("```json uw:section=" + section + annotation + "\n")
+            + json.dumps(value, ensure_ascii=True) + "\n```\n").encode()
 
 
 def shapes(report):
@@ -161,7 +161,7 @@ class MetadataShape0093Tests(unittest.TestCase):
                         self.assertEqual(len(report["coverage"]), 15)
                         for member, severity in (("errors", "error"), ("warnings", "warning"), ("info", "info")):
                             self.assertEqual(report[member], [i for i in report["issues"] if i["severity"] == severity])
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "validate", "calc-evaluate"])
 
 
 if __name__ == "__main__":

@@ -198,7 +198,7 @@ class ExpressionTests(unittest.TestCase):
     def test_discovery_stays_parse_only_without_an_evaluator_command(self):
         manifest, status = main(["manifest"])
         self.assertEqual(status, 0)
-        self.assertEqual(manifest["capabilities"], ["parse"])
+        self.assertEqual(manifest["capabilities"], ["parse", "validate", "calc-evaluate"])
         self.assertEqual(manifest["profiles"], [])
         self.assertNotIn("tier", manifest)
         self.assertNotEqual(main(["calc", "unused"])[1], 0)

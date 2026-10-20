@@ -18,7 +18,7 @@ FIXTURES = ROOT / "conformance/composition"
 
 
 def fence(section, value, attrs=""):
-    return ("~~~json uw:section=" + section + attrs + "\n" + json.dumps(value, ensure_ascii=True) + "\n~~~\n").encode()
+    return ("```json uw:section=" + section + attrs + "\n" + json.dumps(value, ensure_ascii=True) + "\n```\n").encode()
 
 
 def part(identity, value, section="rent_roll", collection=True):

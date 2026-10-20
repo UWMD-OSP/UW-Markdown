@@ -74,7 +74,7 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(document, original)
 
     def test_registered_metadata_domains_and_warning_info_severities(self):
-        missing = parse(HEADER + b'~~~json uw:section=property\n{"value":1}\n~~~\n')
+        missing = parse(HEADER + b'```json uw:section=property\n{"value":1}\n```\n')
         result = validate(missing)
         self.assertIn(("META_MISSING", "warning"), codes(result))
         self.assertNotIn(("META-01", "error"), codes(result))

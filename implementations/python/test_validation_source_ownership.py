@@ -90,16 +90,17 @@ class SourceOwnershipTests(unittest.TestCase):
         authored["_meta"]["quality"] = None
         authored["_overrides"] = [{"path": "units", "confidence": "invalid"}]
         authored = {"payload_first": 1, **authored}
-        raw = ("~~~json uw:section=property\n" + json.dumps(authored) + "\n~~~\n").encode()
-        parsed = parse(HEADER + raw); inventory = inspect_source_roles(parsed)
-        without_owner = copy.deepcopy(inventory); without_owner["issues"] = []
-        local = metadata_assessment(parsed, without_owner)["shape_findings"]
+        raw = ("```json uw:section=property\n" + json.dumps(authored) + "\n```\n").encode()
+        parsed = parse(HEADER + raw)
         result = validate(parsed)
-        self.assertEqual(result["metadata_assessment"]["shape_findings"],
-                         [f for f in local if f["field"] != FIELD])
-        self.assertEqual({f["field"] for f in result["metadata_assessment"]["shape_findings"]},
-                         {"_meta", "_meta.quality", "_meta.provenance.timestamp", "_overrides[0].confidence"})
-        self.assertEqual([i["code"] for i in result["errors"]], ["SRC-01"])
+        # RFCs 0093-0095 own every one of these conditions with a registered
+        # code, so none is left unallocated and SRC-01 consumes none of them.
+        # This is the reference's result for the same input.
+        self.assertEqual(result["metadata_assessment"]["shape_findings"], [])
+        self.assertEqual(sorted((i["code"], i["field"]) for i in result["errors"]),
+                         [("META-01", "_meta"), ("META-01", "_meta.quality"),
+                          ("META-04", "_meta.provenance.timestamp"), ("META-05", "_overrides[0].confidence"),
+                          ("SRC-01", FIELD)])
 
     def test_other_block_leaf_and_history_populations_are_not_redirected(self):
         bad, good = body(), body(); bad["_meta"]["provenance"]["source"] = []
@@ -123,24 +124,22 @@ class SourceOwnershipTests(unittest.TestCase):
     def test_real_cli_uses_existing_src_error_and_retains_independent_partial_boundary(self):
         with tempfile.TemporaryDirectory(prefix="uwmd-src-owner-cli-") as folder:
             path = Path(folder) / "input.uwx.md"
-            for value, quality_bad, expected in (("manual", False, None),
-                    (0, False, "SRC-01"), ("user_input", False, "SRC-02"), (None, True, "SRC-01")):
+            for value, quality_bad, expected in (("manual", False, []),
+                    (0, False, ["SRC-01"]), ("user_input", False, ["SRC-02"]),
+                    (None, True, ["META-01", "SRC-01"])):
                 authored = body(); authored["_meta"]["provenance"]["source"] = value
                 if quality_bad: authored["_meta"]["quality"] = None
                 raw = HEADER + block("property", authored); path.write_bytes(raw)
                 process = subprocess.run([sys.executable, "-B", str(ROOT / "implementations/python/uwmd.py"),
                     "validate", str(path), "--json"], capture_output=True, encoding="utf8", timeout=30)
                 result = json.loads(process.stdout)
-                self.assertEqual((process.returncode, process.stderr), (int(expected is not None), ""))
+                self.assertEqual((process.returncode, process.stderr), (int(bool(expected)), ""))
                 self.assertEqual(path.read_bytes(), raw)
-                structural = result["partial_validation_result"] if quality_bad else result
-                self.assertEqual([i["code"] for i in structural["errors"]], [expected] if expected else [])
-                if quality_bad:
-                    self.assertNotIn("code", result["error"])
-                    self.assertEqual([f["field"] for f in result["metadata_assessment"]["shape_findings"]], ["_meta.quality"])
-                else:
-                    self.assertNotIn("error", result)
-                    self.assertEqual((len(result["stage_readiness"]), len(result["coverage"])), (7, 15))
+                # A null quality container is META-01 (RFC 0093), so the result
+                # is complete rather than partial, as in the reference.
+                self.assertEqual(sorted(i["code"] for i in result["errors"]), expected)
+                self.assertNotIn("error", result)
+                self.assertEqual((len(result["stage_readiness"]), len(result["coverage"])), (7, 15))
 
 
 if __name__ == "__main__":

@@ -141,7 +141,7 @@ class ValidationCompositionTests(unittest.TestCase):
             self.assertEqual(self.cli("resolve",folder/"record.uwx.md",*flags),(0,expected))
         self.assertEqual({p:hashlib.sha256(p.read_bytes()).hexdigest() for p in retained},retained)
         manifest = self.cli("manifest")[1]
-        self.assertEqual((manifest["capabilities"],manifest["profiles"]),(["parse"],[]))
+        self.assertEqual((manifest["capabilities"],manifest["profiles"]),(["parse", "validate", "calc-evaluate"],[]))
 
     def test_actual_cli_existing_refusals_and_closed_validate_flags(self):
         for group,name,code in (("unresolved","missing-part","COMP-UNRESOLVED"),("reject","count-mismatch","COMP-COUNT-MISMATCH"),

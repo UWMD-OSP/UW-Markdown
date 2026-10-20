@@ -30,8 +30,8 @@ def replace_source_block(document, target, *, externalize=False, body=None):
     if externalize:
         payload={k:v for k,v in payload.items() if k.startswith("_")}
         payload["external"]=copy.deepcopy(DIRECTIVE)
-    raw=("~~~json "+" ".join(k+"="+v for k,v in attrs.items())+"\n"
-         +json.dumps(payload)+"\n~~~\n").encode()
+    raw=("```json "+" ".join(k+"="+v for k,v in attrs.items())+"\n"
+         +json.dumps(payload)+"\n```\n").encode()
     original=document.source.raw
     return parse(original[:target.fence_span.start]+raw+original[target.fence_span.end:])
 

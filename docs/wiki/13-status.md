@@ -8,6 +8,14 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Python certified — Issue #354 (2026-10-20).** The independent Python
+implementation's manifest claims the Reader tier plus `validate` and
+`calc-evaluate`; CI runs `--tier verifier --no-skip` (341 portable cases) on three
+OSes. Not the Verifier tier: dictionary reproduction, stated-figure verifiers and
+receipts are not implemented in Python (Protocol §II.2/§II.5). Divergences found
+while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
+(spec-ambiguity, non-portable).
+
 **Implemented RFC0098 — capital point in time (owner acceptance 2026-10-19).**
 [RFC0098](../rfcs/0098-capital-point-in-time.md): `capital_stack.point_in_time`
 is required (`closing`|`stabilization`, `CS-04`); `debt_structure.point_in_time`

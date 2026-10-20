@@ -21,8 +21,8 @@ from uwmd_validation_provenance import metadata_assessment
 
 
 def fence(body, *, historical=False):
-    annotation="~~~json uw:section=property"+(" superseded=true" if historical else "")
-    return (annotation+"\n"+json.dumps(body,ensure_ascii=True)+"\n~~~\n").encode()
+    annotation="```json uw:section=property"+(" superseded=true" if historical else "")
+    return (annotation+"\n"+json.dumps(body,ensure_ascii=True)+"\n```\n").encode()
 
 
 def property_source():
@@ -56,7 +56,7 @@ class ValidationCLITests(unittest.TestCase):
         self.assertNotIn("metadata_assessment",result)
         self.assertNotIn("error",result)
         manifest,status=main(["manifest"])
-        self.assertEqual((status,manifest["capabilities"],manifest["profiles"]),(0,["parse"],[]))
+        self.assertEqual((status,manifest["capabilities"],manifest["profiles"]),(0,["parse", "validate", "calc-evaluate"],[]))
 
     def test_registered_whole_missing_metadata_warning_is_consumed_not_suppressed(self):
         body=dict(address="A",asset_class="multifamily",units=12,total_units=12)
@@ -86,7 +86,10 @@ class ValidationCLITests(unittest.TestCase):
         local=metadata_assessment(source,inventory,missing_meta_blocks=(0,1,2))["shape_findings"]
         self.assertEqual(local,[])
         integrated=validate(source)
-        self.assertEqual(sum(i["code"]=="META_MISSING" for i in integrated["issues"]),1)
+        # Block 0 is overwritten by block 1 (Format 2.7), so it draws no
+        # completeness warning; its missing metadata stays attributed, not
+        # unallocated (the reference's population, RFC0093/0094).
+        self.assertEqual(sum(i["code"]=="META_MISSING" for i in integrated["issues"]),0)
         self.assertEqual(integrated["metadata_assessment"]["shape_findings"], [])
         self.assertEqual([(i["code"],i["context"]["block_index"],i["field"]) for i in
                           integrated["errors"]], [("META-01",1,"_meta")])

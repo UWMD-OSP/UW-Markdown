@@ -63,7 +63,14 @@ def main(arguments):
     if arguments == ["manifest"]:
         return {"id": "org.uwmd.python", "name": "Independent Python structured reader foundation",
                 "version": "0.0.0-dev", "format_version": "3.0", "protocol_version": "4.1.0",
-                "capabilities": ["parse"], "profiles": []}, 0
+                # Certified by the RFC 0004 runner (Issue #354): the Reader tier,
+                # plus validate and calc-evaluate, each proven case by case with
+                # --no-skip. Not the Verifier tier: Protocol II.2 also requires
+                # dictionary reproduction, the stated-figure verifiers and
+                # receipts, which this implementation does not provide (II.5:
+                # publish capabilities rather than round up).
+                "tier": "reader", "capabilities": ["parse", "validate", "calc-evaluate"],
+                "profiles": []}, 0
     if arguments and arguments[0] == "resolve":
         # Existing accepted spelling only; no invented validate resolution flag.
         # This bounded read-only transport never writes a resolved artifact.

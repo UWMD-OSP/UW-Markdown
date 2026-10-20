@@ -249,7 +249,7 @@ class ReaderTests(unittest.TestCase):
     def test_manifest_is_explicitly_partial_and_missing_commands_do_not_pass(self):
         manifest, status = main(["manifest"])
         self.assertEqual(status, 0)
-        self.assertEqual(manifest["capabilities"], ["parse"])
+        self.assertEqual(manifest["capabilities"], ["parse", "validate", "calc-evaluate"])
         self.assertEqual(manifest["profiles"], [])
         self.assertNotIn("tier", manifest)
         for arguments in [["validate", "x"], ["calc", "x"], ["render", "x"]]:
