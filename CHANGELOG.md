@@ -10,6 +10,25 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- `CC-03` checks the senior rate (#406): the `capital_stack` `senior_debt`
+  tranche `rate` must equal the `interest_rate` of the senior `debt_structure` at
+  the stack's point exactly, as Format §4.24's "same amount, same rate" already
+  required (owner ruling: exact, no tolerance). The reference compared amounts
+  only. New `capital-stack/senior-rate-disagrees` case.
+
+- Accept RFC0102 (#405): a structured block opens only on a line beginning
+  exactly ```` ```json ```` + the `uw:section=` annotation and closes on a line of
+  three backticks; tilde, indented and longer fences are ordinary Markdown. The
+  reference already behaved this way; the independent Python reader aligns.
+  New `documents/malformed/50-tilde-fenced-block`.
+
+- `uwmd init` scaffolds only class sections a blank stub can satisfy (#414):
+  hospitality now scaffolds with no errors (no `rent_roll` stub, which must carry
+  `available_room_nights` once stated); data center and manufactured housing no
+  longer write empty `dc_*`/`mhc_sites` stubs that owed `CLS-04` on every required
+  field, and report the one missing required section (`CLS-03`) instead. The
+  scaffold's section labels now match the Format's section numbers.
+
 - Accept and implement RFC0101 (#413): every present `_meta.provenance.source`
   outside the §2.6 actor grammar is `SRC-01`, including `""`, non-strings and
   `null`; a `null` source keeps its `META_FIELD_MISSING_SOURCE` warning. The

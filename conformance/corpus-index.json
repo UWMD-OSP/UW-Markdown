@@ -2623,6 +2623,11 @@
     },
     {
       "suite": "capital-stack",
+      "scenario": "senior-rate-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
       "scenario": "sizing-disagrees",
       "target": "verifier"
     },
@@ -5754,6 +5759,11 @@
     {
       "suite": "documents",
       "scenario": "malformed/49-payload-current-peers",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/50-tilde-fenced-block",
       "target": "verifier"
     },
     {

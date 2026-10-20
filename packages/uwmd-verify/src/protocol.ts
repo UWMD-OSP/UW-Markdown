@@ -1876,7 +1876,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'CC-03', severity: 'error',
     title: 'Senior loan does not reconcile',
-    description: 'At one point in time, the senior loan does not agree within $100: sources_uses (the closing statement) against the senior debt_structure outstanding at closing, or the capital_stack senior_debt tranche against the senior outstanding at the stack’s point_in_time (RFC 0098).',
+    description: 'At one point in time, the senior loan does not agree within $100: sources_uses (the closing statement) against the senior debt_structure outstanding at closing, or the capital_stack senior_debt tranche against the senior outstanding at the stack’s point_in_time (RFC 0098); the tranche rate must also equal that senior’s interest_rate exactly.',
     remediation: 'State each senior loan once per point and make like-dated figures agree. A debt_structure block states point_in_time when it exists at only one point (a construction facility at closing, a takeout at stabilization); the stack states its own point (RFC 0026 §4.24, RFC 0098).',
     spec_ref: '§5.3 CC-03',
   },

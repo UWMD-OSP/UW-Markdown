@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parse as parseYaml } from 'yaml';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
-import { parseUWFile, type UWBlock, type UWFrontmatter } from '@uwmd/verify';
+import { parseUWFile, validateUWFile, type UWBlock, type UWFrontmatter } from '@uwmd/verify';
 import { resolvePolicy } from './editor.js';
 
 describe('generateBlankUWFile', () => {
@@ -310,3 +310,37 @@ describe('generateBlankUWFile', () => {
     expect(Object.keys(parsed.sections).length).toBeGreaterThanOrEqual(20);
   });
 });
+
+// #414: a blank scaffold never states a class section it cannot fill.
+describe('generateBlankUWFile — class scaffolds satisfy their contracts', () => {
+  const ALL = ['multifamily', 'office', 'retail', 'industrial', 'self_storage', 'hospitality', 'senior_housing',
+    'student_housing', 'land', 'data_center', 'manufactured_housing', 'mixed_use'] as const;
+  const errors = (assetClass: (typeof ALL)[number]) =>
+    validateUWFile(parseUWFile(generateBlankUWFile({ assetClass }))).issues.filter((i) => i.severity === 'error').map((i) => i.code);
+
+  it.each(ALL.filter((c) => c !== 'data_center' && c !== 'manufactured_housing'))('%s scaffolds with no errors', (assetClass) => {
+    expect(errors(assetClass)).toEqual([]);
+  });
+
+  it.each([['data_center', 'dc_capacity'], ['manufactured_housing', 'mhc_sites']] as const)(
+    '%s reports only that its required %s is missing, never an empty stub', (assetClass, section) => {
+      expect(errors(assetClass)).toEqual(['CLS-03']);
+      expect(parseUWFile(generateBlankUWFile({ assetClass })).sections[section]).toBeUndefined();
+    });
+
+  it('omits the hospitality rent roll and keeps the hotel sections with no required facts', () => {
+    const parsed = parseUWFile(generateBlankUWFile({ assetClass: 'hospitality' }));
+    expect(parsed.sections['rent_roll']).toBeUndefined();
+    for (const id of ['hotel_metrics', 'hotel_brand', 'hotel_food_beverage']) expect(parsed.sections[id], id).toBeDefined();
+  });
+
+  it('labels each standard section with its Format number', () => {
+    const text = generateBlankUWFile();
+    for (const [header, label] of [['Valuation', '§4.6'], ['Debt Structure', '§4.7'], ['Sources & Uses', '§4.8'],
+      ['Due Diligence', '§4.13'], ['Risk Assessment', '§4.14'], ['Flags & Validation', '§4.17'],
+      ['Custom Calculations', '§4.19'], ['Custom Scenarios', '§4.20']]) {
+      expect(text, header).toMatch(new RegExp(`## ${header.replace('&', '\\&')} \\{#\\w+\\}\\s+_${label} —`));
+    }
+  });
+});
+

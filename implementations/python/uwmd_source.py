@@ -61,7 +61,12 @@ class ScannedSource:
 
 _NUMBER = re.compile(r"-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?")
 _SPACE = re.compile(r"[ \t\r\n]*")
-_FENCE = re.compile(rb" {0,3}(`{3,}|~{3,})([^\r\n]*)")
+# Format §2.4 (RFC 0102): a structured block opens on a line that begins with
+# exactly three backticks, `json`, whitespace and the `uw:` annotation, and
+# closes on the next line of exactly three backticks. Tilde, indented or longer
+# fences are ordinary Markdown, as in the reference.
+_UW_OPEN = re.compile(rb"```json[ \t]+(uw:section=[^\r\n]*)")
+_UW_CLOSE = re.compile(rb"```[ \t]*")
 _ATTRIBUTE = re.compile(r"([^\s=]+)=([^\s=]+)")
 
 
@@ -186,8 +191,8 @@ def scan_source(raw: bytes) -> ScannedSource:
     Frontmatter is retained, not interpreted. No format/version/extension or
     required-field check is claimed here. Unknown sections and all historical
     blocks are retained in physical order; section routing is a later layer.
-    Generic fenced examples are opaque so nested apparent UW fences inside
-    them cannot become actual data blocks.
+    Only the Format §2.4 line rule opens a block (RFC 0102); other Markdown,
+    including tilde or generic code fences, is not interpreted.
     """
     if not isinstance(raw, bytes):
         raise TypeError("scan_source requires original bytes")
@@ -214,37 +219,29 @@ def scan_source(raw: bytes) -> ScannedSource:
     index = closing + 1
     while index < len(lines):
         line = lines[index].rstrip(b"\r\n")
-        opening = _FENCE.fullmatch(line)
+        opening = _UW_OPEN.fullmatch(line)
         if opening is None:
             index += 1
             continue
-        marker, info = opening.groups()
-        # Backticks in the info string cannot open a backtick fence.
-        if marker.startswith(b"`") and b"`" in info:
-            index += 1
-            continue
-        ending = re.compile(rb" {0,3}" + re.escape(marker[:1])
-                            + rb"{" + str(len(marker)).encode("ascii") + rb",}[ \t]*")
         end = next((i for i in range(index + 1, len(lines))
-                    if ending.fullmatch(lines[i].rstrip(b"\r\n"))), None)
+                    if _UW_CLOSE.fullmatch(lines[i].rstrip(b"\r\n"))), None)
         if end is None:
             raise SourceError("unclosed Markdown fence")
-        words = info.decode("utf-8").strip().split()
-        if words and words[0] == "json" and any(word.startswith("uw:section=") for word in words[1:]):
-            attributes = {}
-            for word in words[1:]:
-                attribute = _ATTRIBUTE.fullmatch(word)
-                if attribute is None:
-                    raise SourceError("unsupported fence annotation")
-                key, item = attribute.groups()
-                if key in attributes:
-                    raise SourceError("repeated fence annotation key")
-                attributes[key] = item
-            body = Span(offsets[index + 1], offsets[end])
-            parsed = parse_json_source(body.extract(raw), byte_offset=body.start)
-            if not isinstance(parsed.value, dict):
-                raise SourceError("UW structured block body is not an object")
-            blocks.append(StructuredBlock(attributes["uw:section"], tuple(attributes.items()),
-                                          Span(offsets[index], offsets[end + 1]), body, parsed))
+        words = opening.group(1).decode("utf-8").split()
+        attributes = {}
+        for word in words:
+            attribute = _ATTRIBUTE.fullmatch(word)
+            if attribute is None:
+                raise SourceError("unsupported fence annotation")
+            key, item = attribute.groups()
+            if key in attributes:
+                raise SourceError("repeated fence annotation key")
+            attributes[key] = item
+        body = Span(offsets[index + 1], offsets[end])
+        parsed = parse_json_source(body.extract(raw), byte_offset=body.start)
+        if not isinstance(parsed.value, dict):
+            raise SourceError("UW structured block body is not an object")
+        blocks.append(StructuredBlock(attributes["uw:section"], tuple(attributes.items()),
+                                      Span(offsets[index], offsets[end + 1]), body, parsed))
         index = end + 1
     return ScannedSource(raw, frontmatter, tuple(blocks))

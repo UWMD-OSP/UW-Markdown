@@ -360,7 +360,7 @@ The anchor (e.g., `{#property}`) is the section ID used for internal linking and
 
 ### 2.4 Data Block Annotation Syntax
 
-Every data block is a fenced JSON code block. The opening fence carries a structured annotation:
+Every data block is a fenced JSON code block. The opening fence carries a structured annotation. A structured block opens on a line that begins, at the first column, with exactly three backticks immediately followed by `json`, whitespace and the `uw:section=` annotation; it closes on the next line that is exactly three backticks, optionally followed by spaces or tabs (RFC 0102). Nothing else opens a block: a tilde fence (`~~~json`), an indented fence or a longer backtick run is ordinary Markdown, as is any other code fence. The rule is line-based, so such a line opens a block even inside another Markdown code fence:
 
 ```
 ```json uw:section=<section_id> [key=value ...]
@@ -4349,7 +4349,7 @@ Tools MUST run these after each section write:
 |---|---|---|
 | `CC-01` | Rent roll GPR must match OS GPR within 3% | `rent_roll`, `operating_statement` |
 | `CC-02` | UW value in `valuation` must match value used for LTV in `debt_structure` | `valuation`, `debt_structure` |
-| `CC-03` | Senior loan reconciles at each point in time (RFC 0098): the `sources_uses` senior bucket (a closing figure) matches the `loan_amount` of the senior `debt_structure` outstanding at `closing`; when present, the `capital_stack` `senior_debt` tranche matches the senior outstanding at the stack's `point_in_time`, falling back to `sources_uses` only for a `closing` stack. One senior is selected per point by the §5.3 order applied to the blocks whose `point_in_time` is that point or absent. A leg with no senior or no figure at its point does not apply | `sources_uses`, `debt_structure`, `capital_stack` |
+| `CC-03` | Senior loan reconciles at each point in time (RFC 0098): the `sources_uses` senior bucket (a closing figure) matches the `loan_amount` of the senior `debt_structure` outstanding at `closing`; when present, the `capital_stack` `senior_debt` tranche matches the senior outstanding at the stack's `point_in_time` in amount (falling back to `sources_uses` only for a `closing` stack) and in rate (the tranche `rate` equals that senior's `interest_rate` exactly, with no tolerance). One senior is selected per point by the §5.3 order applied to the blocks whose `point_in_time` is that point or absent. A leg with no senior or no figure at its point does not apply | `sources_uses`, `debt_structure`, `capital_stack` |
 | `CC-04` | Sources must equal uses in `sources_uses` | `sources_uses` |
 | `CC-05` | NOI used for DSCR must match `noi_model.net_operating_income` within 1% | `noi_model`, `debt_structure` |
 | `CC-06` | DCF Year 1 NOI must be consistent with `noi_model` projections | `noi_model`, `dcf` |
