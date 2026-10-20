@@ -55,6 +55,27 @@ describe('lawful variant labels and complete subject accounting', () => {
     await expect(resolveDocumentSigningSubject(raw + section(variant, 333))).rejects.toThrow(/Duplicate active/);
     expect(parsed.raw).toBe(raw);
   });
+  it.each(['__proto__', 'constructor', 'prototype'].flatMap(variant =>
+    [false, true].map(reverse => ({ variant, reverse }))))('keeps blocked-segment variant $variant as an own peer in both source orders (reverse=$reverse)', async ({ variant, reverse }) => {
+    const peers = [section('z', 111), section(variant, 222)];
+    const raw = FRONT + (reverse ? peers.reverse() : peers).join('');
+    const parsed = parseUWFile(raw);
+    const map = parsed.sections.operating_statement as Record<string, UWBlock>;
+    expect(Object.getPrototypeOf(map)).toBe(Object.prototype);
+    expect(Object.keys(map).sort()).toEqual([variant, 'z'].sort());
+    expect(getSectionVariant(parsed, 'operating_statement', variant)?.content.value).toBe(222);
+    expect(parsed.superseded).toEqual({});
+    const changed = raw.replace('"value":222', '"value":223');
+    expect((await resolveReceiptSubject(changed)).subject.digest).not.toBe((await resolveReceiptSubject(raw)).subject.digest);
+    // Signing keeps refusing these selection keys outright.
+    await expect(resolveDocumentSigningSubject(raw)).rejects.toThrow(/Unsafe section or variant selection key/);
+  });
+  it('selects only own variant peers', () => {
+    const parsed = parseUWFile(source());
+    for (const absent of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) {
+      expect(getSectionVariant(parsed, 'operating_statement', absent)).toBeNull();
+    }
+  });
   it('preserves same-key superseded history and concurrent current peers', async () => {
     const raw = FRONT + section('annotation', 1, true) + section('annotation', 2) + section('annotation', 3) + section('z', 4);
     const parsed = parseUWFile(raw);
