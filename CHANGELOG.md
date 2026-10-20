@@ -10,6 +10,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Draft RFC0099 (#416): a closed statement-binding registry in the metric
+  dictionary (today's conformance alias table, moved), so a Verifier checks each
+  dictionary metric at every place a document states it (`valuation.going_in_cap_rate`,
+  `valuation.price_per_sf`, `debt_structure.sizing_metrics.*`, …), not only in
+  `quick_metrics`. Docs-only draft for owner acceptance.
+
 - Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
   required `capital_stack.point_in_time` (`closing` | `stabilization`), an
   optional `debt_structure.point_in_time` (absent = outstanding at both points),
