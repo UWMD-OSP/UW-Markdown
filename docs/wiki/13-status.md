@@ -9,10 +9,12 @@ Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
 **Python certified — Issue #354 (2026-10-20).** The independent Python
-implementation's manifest claims the Reader tier plus `validate` and
-`calc-evaluate`; CI runs `--tier verifier --no-skip` (341 portable cases) on three
-OSes. Not the Verifier tier: dictionary reproduction, stated-figure verifiers and
-receipts are not implemented in Python (Protocol §II.2/§II.5). Divergences found
+implementation's manifest claims the Reader tier plus `calc-evaluate`; CI runs the
+portable Verifier-tier corpus on three OSes and allows only the unclaimed
+`validate` cases to skip. `validate` passes the corpus but waits on its
+differences from the reference outside it (#425 review). Not the Verifier tier:
+dictionary reproduction, stated-figure verifiers and receipts are not implemented
+in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 

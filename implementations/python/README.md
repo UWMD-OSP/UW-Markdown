@@ -7,10 +7,14 @@ external packages, hosted services, production fixture lookup, or TypeScript
 translation. No PyPI name, supported Python floor or publication is decided.
 
 **Certified 2026-10-20 (Issue #354):** the discovery manifest claims the
-**Reader tier** and the capabilities `parse`, `validate` and `calc-evaluate`. CI
-proves each claim with the RFC 0004 runner, `--tier verifier --no-skip`, on
-Windows, Linux and macOS: every portable case those capabilities select passes,
-with zero skips. It does **not** claim the Verifier tier. Protocol §II.2 also
+**Reader tier** and the capabilities `parse` and `calc-evaluate`. CI proves the
+claim with the RFC 0004 runner on Windows, Linux and macOS: every Reader and
+`calc-evaluate` case passes, and the only skipped cases are the `validate` ones.
+`validate` is **not claimed yet**: the command passes all 140 portable validate
+cases, but an independent differential review found it diverging from the
+reference on lawful documents outside the corpus (#425), and the claim waits
+for those divergences to be fixed or dispositioned. It does **not** claim the
+Verifier tier. Protocol §II.2 also
 requires metric-dictionary reproduction, the stated-figure verifiers (cash
 flows/IRR, property cash-flow assembly, waterfalls) and receipt verification,
 which this implementation does not provide (§II.5: publish capabilities rather

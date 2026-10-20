@@ -11,11 +11,13 @@ protocol, and each package each carry an independent semver).
 ### Changed
 
 - Certify the independent Python implementation (Issue #354): its discovery
-  manifest claims the Reader tier plus `validate` and `calc-evaluate`, and CI
-  proves each claim with the RFC 0004 runner (`--tier verifier --no-skip`, 341
-  portable cases) on Windows, Linux and macOS. The Verifier tier is not claimed:
-  Python has no metric-dictionary reproduction, stated-figure verifiers or
-  receipt verification (Protocol §II.2, §II.5). Python also gains RFC 0098
+  manifest claims the Reader tier plus `calc-evaluate`, and CI proves the claim
+  with the RFC 0004 runner on Windows, Linux and macOS (17 Reader and 184
+  `calc-evaluate` cases pass; only the 140 `validate` cases may skip). `validate`
+  passes the portable corpus but is not claimed until its differences from the
+  reference outside the corpus are resolved (#425 review). The Verifier tier is
+  not claimed: Python has no metric-dictionary reproduction, stated-figure
+  verifiers or receipt verification (Protocol §II.2, §II.5). Python also gains RFC 0098
   (per-point CC-03, CS-04, DS-01), RFC 0101 null-source retention and the
   reference's completeness-warning population; its unit suite is 527/527.
 
