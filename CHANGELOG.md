@@ -10,6 +10,14 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
+  required `capital_stack.point_in_time` (`closing` | `stabilization`), an
+  optional `debt_structure.point_in_time` (absent = outstanding at both points),
+  `sources_uses` defined as the closing statement, and `CC-03` reconciled per
+  point (`CS-04`, `DS-01`). Breaking for documents that carry a `capital_stack`.
+  This docs-only acceptance changes no runtime; the synchronized
+  implementation follows.
+
 - Reader: the canonical block of a section (or of a variant key) is the
   **last** non-superseded block, as Format §2.7 states, not the highest
   revision (#404). Two non-superseded blocks at the same revision kept the
