@@ -265,8 +265,10 @@ ${JSON.stringify(content, null, 2)}
     expect(tranches(['a', unhedged('senior')], ['b', badHedge('junior')])).toEqual([]);
   });
 
-  it('leaves role-free documents on RFC 0040 key order', () => {
-    expect(tranches(['base', debt({}, { strike_rate: 3.5 })], ['mezz', { rate_type: 'floating' }])).toEqual(['HDG-01']);
+  it('routes role-free blocks as one section, whose last block is canonical (Format 2.7, 2.8)', () => {
+    // Without a role, `variant=` does not opt a debt_structure into a variant map.
+    expect(tranches(['mezz', { rate_type: 'floating' }], ['base', debt({}, { strike_rate: 3.5 })])).toEqual(['HDG-01']);
+    expect(tranches(['base', debt({}, { strike_rate: 3.5 })], ['mezz', { rate_type: 'floating' }])).toEqual([]);
   });
 });
 

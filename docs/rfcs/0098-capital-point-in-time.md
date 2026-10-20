@@ -1,7 +1,7 @@
 ---
 rfc: 0098
 title: Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point
-status: draft
+status: accepted
 author: claude-code
 created: 2026-10-19
 affects:
@@ -14,11 +14,11 @@ affects:
 
 # RFC 0098: Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point
 
-> **Draft for owner acceptance.** Jared approved the direction of issue
-> [#403](https://github.com/UWMD-OSP/UW-Markdown/issues/403) on 2026-10-19 and
-> waived any backward-compatibility constraint before 5.0. This RFC is a breaking
-> format change (a newly required field), so under PROCESS it opens alone as a
-> draft. Implementation follows acceptance. Merging nothing here accepts it.
+> **Accepted by the owner, 2026-10-19, as drafted** (Jared: "RFC 0098 (#402) is
+> accepted as drafted; implement it"). The Decisions table D1–D9 stands as
+> written. This is a breaking format change (a newly required field); it opened
+> alone as a draft under PROCESS, and the synchronized implementation follows in
+> its own PR.
 
 ## Summary
 
@@ -305,7 +305,7 @@ to it by the same corpus.
 - **Points beyond two.** As-is / as-stabilized dual sizing and draw-period points
   stay with the Phase 2 multi-period spine (RFC 0026 § D; RFC 0033).
 
-## Decisions proposed for owner review
+## Decisions (accepted)
 
 | # | Question | Proposal | Why (precedent) |
 |---|---|---|---|
