@@ -20,6 +20,12 @@ protocol, and each package each carry an independent semver).
   deleted (one source); its Lite section map moves to `lite-input-sections.json`.
   New `conformance/metrics/statement-homes/` cases (21). Format §4.1/4.3/4.5/4.6/4.7/4.23
   name the verified fields; Protocol §II.2 states the rule.
+- Accept RFC0099 (#416, owner 2026-10-20, as drafted): the metric dictionary
+  carries a closed statement-binding registry (today's conformance alias table,
+  moved), so a Verifier checks each dictionary metric at every place a document
+  states it (`valuation.going_in_cap_rate`, `valuation.price_per_sf`,
+  `debt_structure.sizing_metrics.*`, …), not only in `quick_metrics`. The
+  synchronized implementation follows in its own PR.
 
 - Certify the independent Python implementation (Issue #354): its discovery
   manifest claims the Reader tier plus `calc-evaluate`, and CI proves the claim
