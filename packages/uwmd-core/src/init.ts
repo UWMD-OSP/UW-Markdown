@@ -2,6 +2,7 @@
 // Spec: UW_FORMAT_SPEC.md §6 toolchain interface
 
 import {
+  BUILTIN_CLASS_CONTENT,
   buildMeta,
   stampMetaIntoBlockContent,
   type AssetClass,
@@ -206,26 +207,35 @@ source_documents: []
     { id: 'rent_roll', header: 'Rent Roll', label: '§4.3' },
     { id: 'operating_statement', header: 'Operating Statement', label: '§4.4' },
     { id: 'noi_model', header: 'NOI Model', label: '§4.5' },
-    { id: 'debt_structure', header: 'Debt Structure', label: '§4.6' },
-    { id: 'sources_uses', header: 'Sources & Uses', label: '§4.7' },
-    { id: 'valuation', header: 'Valuation', label: '§4.8' },
+    { id: 'valuation', header: 'Valuation', label: '§4.6' },
+    { id: 'debt_structure', header: 'Debt Structure', label: '§4.7' },
+    { id: 'sources_uses', header: 'Sources & Uses', label: '§4.8' },
     { id: 'dcf', header: 'DCF & Hold Period Analysis', label: '§4.9' },
     { id: 'stress_tests', header: 'Stress Tests', label: '§4.10' },
     { id: 'market_analysis', header: 'Market Analysis', label: '§4.11' },
     { id: 'borrower_sponsor', header: 'Borrower / Sponsor', label: '§4.12' },
-    { id: 'lease_schedule', header: 'Lease Schedule', label: '§4.13' },
-    { id: 'due_diligence', header: 'Due Diligence', label: '§4.14' },
+    { id: 'lease_schedule', header: 'Lease Schedule', label: 'L0 agent section' },
+    { id: 'due_diligence', header: 'Due Diligence', label: '§4.13' },
+    { id: 'risk_assessment', header: 'Risk Assessment', label: '§4.14' },
     { id: 'compliance', header: 'Compliance', label: '§4.15' },
     { id: 'assumptions', header: 'Assumptions', label: '§4.16' },
-    { id: 'preliminary_sizing', header: 'Preliminary Sizing', label: '§4.17' },
-    { id: 'risk_assessment', header: 'Risk Assessment', label: '§4.18' },
-    { id: 'validation', header: 'Flags & Validation', label: '§4.19' },
-    { id: 'custom_calculations', header: 'Custom Calculations', label: '§4.20' },
-    { id: 'custom_scenarios', header: 'Custom Scenarios', label: '§4.21' },
-  ];
+    { id: 'preliminary_sizing', header: 'Preliminary Sizing', label: 'L1 agent section' },
+    { id: 'validation', header: 'Flags & Validation', label: '§4.17' },
+    { id: 'custom_calculations', header: 'Custom Calculations', label: '§4.19' },
+    { id: 'custom_scenarios', header: 'Custom Scenarios', label: '§4.20' },
+  ].filter((s) => !(assetClass === 'hospitality' && s.id === 'rent_roll'));
+  // A hospitality rent_roll, once stated, must carry available_room_nights
+  // (Format §4.3, CLS-04), which a blank scaffold cannot state without
+  // inventing it. The roll is stage-required later, so it is left out.
 
-  const officialSections = assetClass === 'data_center' ? ['dc_capacity', 'dc_power', 'dc_revenue']
-    : assetClass === 'manufactured_housing' ? ['mhc_sites'] : assetClass === 'hospitality' ? ['hotel_metrics', 'hotel_brand', 'hotel_food_beverage'] : [];
+  // Class sections are scaffolded only when a blank stub satisfies their
+  // contract. One that requires stated facts (dc_capacity, dc_power,
+  // dc_revenue, mhc_sites) is left out rather than written empty: an empty
+  // stub would fail CLS-04 on every required field, and filling it would
+  // invent facts. A class-required one then reports CLS-03 once.
+  const officialSections = (BUILTIN_CLASS_CONTENT[assetClass]?.sections ?? [])
+    .filter((section) => !((section.schema as { required?: string[] }).required?.length))
+    .map((section) => section.id);
   sections.push(...officialSections.map(id => ({ id, header: id.replace(/_/g, ' '), label: 'RFC 0080' })));
   const sectionBlocks = sections.map(s => `
 ## ${s.header} {#${s.id}}
