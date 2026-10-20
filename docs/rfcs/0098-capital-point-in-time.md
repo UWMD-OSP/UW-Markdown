@@ -15,7 +15,8 @@ affects:
 # RFC 0098: Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point
 
 > **Draft for owner acceptance.** Jared approved the direction of issue
-> [#401](https://github.com/UWMD-OSP/UW-Markdown/issues/401) on 2026-10-19 and
+> [#403](https://github.com/UWMD-OSP/UW-Markdown/issues/403) (StackUW's filing; first
+> filed on its behalf as #401) on 2026-10-19 and
 > waived any backward-compatibility constraint before 5.0. This RFC is a breaking
 > format change (a newly required field), so under PROCESS it opens alone as a
 > draft. Implementation follows acceptance. Merging nothing here accepts it.
@@ -37,7 +38,7 @@ tolerance do not change.
 
 ## Motivation
 
-Issue #401, filed for StackUW (its tracker id UPSTREAM-030), reports a correct
+Issue #403, filed by StackUW (its tracker id UPSTREAM-030), reports a correct
 construction-to-permanent record that fails `CC-03` with an error:
 
 - `capital_stack` is one point in time. [RFC 0033](./0033-capital-stack-point-in-time.md)
@@ -140,7 +141,7 @@ amount, same rate") with:
 > `section_absent`, `field_absent`, or `not_applicable` with a detail naming the
 > point (for example `no stabilization senior debt_structure`).
 
-A role collision is now judged within one point's candidates. In #401's record,
+A role collision is now judged within one point's candidates. In #403's record,
 the construction facility (`closing`) and the takeout (`stabilization`) are each
 the sole `senior` candidate at their point, so neither collides. Two senior blocks
 at the same point (or two that omit the field) still collide, exactly as today.
@@ -219,7 +220,7 @@ Existing inputs updated (expected findings unchanged unless noted):
 
 New cases, under `conformance/capital-stack/`, all synthetic with round amounts:
 
-1. `construction-takeout-reconciles`: #401's example. A `stabilization` stack
+1. `construction-takeout-reconciles`: #403's example. A `stabilization` stack
    (senior 18,000,000, mezzanine 2,000,000), a `closing` construction block with
    no `loan_amount`, a `stabilization` takeout at 18,000,000, and `sources_uses`
    `sources.loan_amount` 0. Expect no `CC-03`, `CC-03` `evaluated`, no `CC-16`
@@ -255,12 +256,12 @@ to it by the same corpus.
   changes there; it shows `CS-04`/`DS-01` through its existing per-section issue
   list. Excel output is unchanged.
 - **Tests:** a `validator.capital-stack.test.ts` block per new case, and a negative
-  control showing that removing the per-point filter reproduces #401's false
+  control showing that removing the per-point filter reproduces #403's false
   error.
 
 ## Alternatives considered
 
-- **Additive and optional on both sections (#401's own shape).** Absent on the
+- **Additive and optional on both sections (#403's own shape).** Absent on the
   stack would mean "behave as today". It is equally sound for `CC-03`, but it
   keeps RFC 0033's one-point rule uncheckable for every stack that omits the
   field, and it adds a second, undated way to state a stack. With compatibility
@@ -282,7 +283,7 @@ to it by the same corpus.
   would read as a pipeline milestone. `point_in_time` is RFC 0033's own term for
   exactly this property.
 - **Skip the `sources_uses` leg when the stack is stabilized.** `CC-03` would stop
-  comparing instead of comparing like with like (rejected in #401).
+  comparing instead of comparing like with like (rejected in #403).
 - **Per-tranche dating (`active_from`/`retired_by`) or one stack per phase.** This
   is RFC 0033's deferred Phase 2 design. It needs the multi-period spine to verify
   sizing per phase. This RFC dates whole sections at two named points, which needs

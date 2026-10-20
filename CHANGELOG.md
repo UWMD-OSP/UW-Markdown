@@ -10,7 +10,7 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- Draft RFC0098 (#401, StackUW): a required `capital_stack.point_in_time`
+- Draft RFC0098 (#403, StackUW): a required `capital_stack.point_in_time`
   (`closing` | `stabilization`), an optional `debt_structure.point_in_time`
   (absent = outstanding at both points), `sources_uses` defined as the closing
   statement, and `CC-03` reconciled per point. Breaking for documents that carry
