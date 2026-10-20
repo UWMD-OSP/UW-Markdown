@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- `uwmd init` scaffolds only class sections a blank stub can satisfy (#414):
+  hospitality now scaffolds with no errors (no `rent_roll` stub, which must carry
+  `available_room_nights` once stated); data center and manufactured housing no
+  longer write empty `dc_*`/`mhc_sites` stubs that owed `CLS-04` on every required
+  field, and report the one missing required section (`CLS-03`) instead. The
+  scaffold's section labels now match the Format's section numbers.
+
 - Accept and implement RFC0101 (#413): every present `_meta.provenance.source`
   outside the §2.6 actor grammar is `SRC-01`, including `""`, non-strings and
   `null`; a `null` source keeps its `META_FIELD_MISSING_SOURCE` warning. The
