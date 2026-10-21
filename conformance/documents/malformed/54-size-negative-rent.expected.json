@@ -1,0 +1,8 @@
+{
+  "description": "A negative rent (`rent_roll.units[1].monthly_rent: -1200`) is SIZE-01 at that element (Format §5.5, RFC 0100). Signed amounts such as concessions are outside the table.",
+  "must_parse": true,
+  "expected_codes": [
+    "SIZE-01"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §5.5 (RFC 0100)"
+}

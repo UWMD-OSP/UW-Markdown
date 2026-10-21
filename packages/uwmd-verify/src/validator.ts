@@ -1,5 +1,6 @@
 import { hasBlockShape } from './block-kind.js';
 import { checkPayloadAdmission, currentPayloadBlocks } from './payload-admission.js';
+import { checkSizeContract } from './size-contract.js';
 import { pinnedPow } from './calc/pinned-numerics.js';
 import { checkBuiltinClassContent } from './builtin-class-validation.js';
 import { isScenarioId } from './scenario.js';
@@ -140,6 +141,7 @@ export function validateUWFile(
   checkTaxBasis(parsed, issues);
   checkLeaseClauses(parsed, issues);
   checkStudentBedCounts(parsed, issues);
+  checkSizeContract(parsed, issues);
   checkHedgesAndEscrows(parsed, issues);
   checkRenovationDraw(parsed, issues);
   issues.push(...checkReserveAccountsStructure(parsed).issues);

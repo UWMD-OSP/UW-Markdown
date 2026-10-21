@@ -1,0 +1,8 @@
+{
+  "description": "The generic twin of a class-checked field: `rent_roll.total_sites: -200` beside a valid `mhc_sites.total_sites: 200` is SIZE-01 (Format §5.5, RFC 0100). The mhc_sites contract alone did not police it (#415).",
+  "must_parse": true,
+  "expected_codes": [
+    "SIZE-01"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §5.5 (RFC 0100)"
+}

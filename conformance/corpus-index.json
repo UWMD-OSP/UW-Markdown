@@ -5418,6 +5418,11 @@
     },
     {
       "suite": "metrics",
+      "scenario": "negative-size-denominator-is-unverifiable",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
       "scenario": "statement-home-cap_rate-going-in-agrees",
       "target": "verifier"
     },
@@ -5869,6 +5874,36 @@
     {
       "suite": "documents",
       "scenario": "malformed/50-tilde-fenced-block",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/51-size-negative-count",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/52-size-negative-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/53-size-negative-capacity",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/54-size-negative-rent",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/55-size-fractional-count",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/56-size-negative-twin",
       "target": "verifier"
     },
     {

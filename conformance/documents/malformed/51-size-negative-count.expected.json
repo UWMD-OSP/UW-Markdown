@@ -1,0 +1,8 @@
+{
+  "description": "A negative count (`property.total_units: -50`) breaks the size contract: SIZE-01 at the field (Format §5.5, RFC 0100).",
+  "must_parse": true,
+  "expected_codes": [
+    "SIZE-01"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §5.5 (RFC 0100)"
+}

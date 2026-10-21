@@ -10,6 +10,7 @@ import {
   jsonNumericTokens,
   jsonStatedDecimals,
   quickMetricDecimals,
+  sizeDenominators,
   verifyStatedMetric,
   verifyStatedMetrics,
   type StatedMetricBindings,
@@ -131,6 +132,20 @@ describe('verifyStatedMetric — one statement', () => {
     verifyStatedMetrics(p);
     verifyStatedMetric(m, p, 2, undefined, 4);
     expect(JSON.stringify({ m, p })).toBe(before);
+  });
+});
+
+describe('sizeDenominators — RFC 0100', () => {
+  it('finds a registered size the formula divides by directly, for the class', () => {
+    expect(sizeDenominators('valuation.purchase_price / property.total_units', ['multifamily'])).toEqual(['property.total_units']);
+    expect(sizeDenominators('valuation.purchase_price / property.total_nra_sqft', ['multifamily'])).toEqual(['property.total_nra_sqft']);
+    expect(sizeDenominators('round(noi_model.income.rooms_revenue, 2) / property.keys', ['hospitality'])).toEqual(['property.keys']);
+  });
+
+  it('ignores sizes another class registers, numerators and non-size divisors', () => {
+    expect(sizeDenominators('valuation.purchase_price / property.keys', ['multifamily'])).toEqual([]);
+    expect(sizeDenominators('property.total_units * 12', ['multifamily'])).toEqual([]);
+    expect(sizeDenominators('noi_model.net_operating_income / debt_structure.annual_debt_service', ['multifamily'])).toEqual([]);
   });
 });
 

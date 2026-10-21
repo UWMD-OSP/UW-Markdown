@@ -12,11 +12,11 @@
 // semantics are that fixture's, unchanged. Browser-safe; performs no I/O.
 
 import { evaluateDeclared } from './calc/evaluator.js';
-import { parseExpression } from './calc/parser.js';
+import { parseExpression, type Expr } from './calc/parser.js';
 import { compareStatedMetric, getStatedDecimals } from './calc/stated-precision.js';
 import { BUILTIN_METRIC_DICTIONARY } from './metric-dictionary.js';
 import { blockPayload } from './parser.js';
-import type { MetricDictionary, MetricDictionaryCalculation, MetricDictionarySize } from './protocol.js';
+import { SIZE_INTENSIVES, type MetricDictionary, type MetricDictionaryCalculation, type MetricDictionarySize } from './protocol.js';
 import { resolveSectionBlock } from './section-resolution.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 import { readYamlScalar } from './yaml-scalar.js';
@@ -127,6 +127,35 @@ export function verifyStatedMetric(
 }
 
 /**
+ * RFC 0100: the registered `property` sizes (Protocol §XIII, primary and
+ * secondary) a formula divides by directly, for the given classes. A metric with
+ * one is `positive_size_denominator`. Module-level, not part of the public surface.
+ */
+export function sizeDenominators(formula: string, assetClasses: readonly string[]): string[] {
+  const sizes = new Set(assetClasses.flatMap((cls) => {
+    const size = SIZE_INTENSIVES[cls];
+    return size ? [size.path, ...size.secondary] : [];
+  }));
+  const found = new Set<string>();
+  const walk = (expr: Expr): void => {
+    switch (expr.kind) {
+      case 'binary':
+        if (expr.op === '/' && expr.right.kind === 'path' && expr.right.head === 'property'
+          && expr.right.segments.length === 1 && sizes.has(expr.right.segments[0]!)) {
+          found.add(`property.${expr.right.segments[0]}`);
+        }
+        walk(expr.left); walk(expr.right); return;
+      case 'unary': walk(expr.operand); return;
+      case 'cond': walk(expr.test); walk(expr.consequent); walk(expr.else); return;
+      case 'call': for (const arg of expr.args) walk(arg); return;
+      default: return;
+    }
+  };
+  walk(parseExpression(formula));
+  return [...found];
+}
+
+/**
  * `missingPrecision` says what an absent `statedDecimals` means for a rounded
  * metric: a caller error at the comparison API (RFC 0079, `CALC-TYPE-001`), or
  * a document whose source tokens are unavailable (`missing_stated_precision`).
@@ -145,6 +174,17 @@ function checkStatement(
       const raw = block ? get(blockPayload(block), metric.path) : undefined;
       if (typeof raw !== 'number' || !Number.isFinite(raw)) {
         return { state: 'unverifiable', reason: 'missing_or_invalid_size', computed: null };
+      }
+    }
+    if (metric.null_semantics === 'positive_size_denominator') {
+      // RFC 0100: no Verifier confirms a figure against an impossible size.
+      const block = resolveSectionBlock(parsed, 'property', { sectionVariants });
+      const payload = block ? blockPayload(block) : undefined;
+      for (const path of sizeDenominators(metric.formula, metric.asset_classes)) {
+        const size = get(payload, path.slice('property.'.length));
+        if (typeof size === 'number' && size < 0) {
+          return { state: 'unverifiable', reason: 'negative_size_denominator', computed: null };
+        }
       }
     }
     const value = evaluateDeclared(parseExpression(metric.formula), {
