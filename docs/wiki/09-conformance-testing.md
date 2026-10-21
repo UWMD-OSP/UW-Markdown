@@ -196,7 +196,8 @@ counts. Only content names are accepted as fixture-family addresses.
   flip on an existing one are both visible diffs now.
 - `malformed/<id>.uw.md` + `<id>.expected.json` — negative tests. `expected.json`
   declares `expected_codes[]` the validator MUST surface (extra codes allowed) and
-  optional `must_parse`. INT-/POL- expectations also exercise
+  optional `must_parse`. An optional `field_issues[]` pins `{code, section, field}`
+  rows that MUST appear, compared as a multiset (RFC 0104). INT-/POL- expectations also exercise
   `verifyChain`/`verifyProvenance`; an optional `<id>.policies.json` supplies
   custom policies.
 - `malformed/<id>.validation.json` (06 and 07 only) freezes the Verifier

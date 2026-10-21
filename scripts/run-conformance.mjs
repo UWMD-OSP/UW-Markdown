@@ -530,6 +530,23 @@ async function runMalformedDocuments() {
       }
     }
 
+    // RFC 0104: authored rows pin `field` spellings. Each row must appear among
+    // the issues, compared as a multiset; order and extra issues are free.
+    if (Array.isArray(expected.field_issues)) {
+      const remaining = validation.issues.map(({ code, section, field }) => ({ code, section, field }));
+      const missing = expected.field_issues.filter((row) => {
+        const at = remaining.findIndex((i) => isDeepStrictEqual(i, { code: row.code, section: row.section, field: row.field }));
+        if (at < 0) return true;
+        remaining.splice(at, 1);
+        return false;
+      });
+      if (missing.length > 0) {
+        const seen = validation.issues.map(({ code, section, field }) => `${code}@${section}:${field}`).join(', ');
+        record('documents', `malformed/${id}`, 'fail', `field rows not found: ${JSON.stringify(missing)}; saw ${seen}`);
+        continue;
+      }
+    }
+
     const actualCodes = new Set((validation.issues ?? []).map((m) => m.code));
 
     // If any expected code is INT-* or POL-*, also exercise the integrity

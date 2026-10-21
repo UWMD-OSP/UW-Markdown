@@ -1,0 +1,33 @@
+{
+  "description": "RFC 0104: an issue's field is the dotted path from the block payload root, with array elements by index, and a missing object is named by itself. Each row must appear; order is not compared.",
+  "must_parse": true,
+  "expected_codes": [
+    "META_FIELD_MISSING_SOURCE",
+    "SRC-01",
+    "CS-01",
+    "META_MISSING"
+  ],
+  "field_issues": [
+    {
+      "code": "META_FIELD_MISSING_SOURCE",
+      "section": "noi_model",
+      "field": "_meta.provenance.source"
+    },
+    {
+      "code": "SRC-01",
+      "section": "valuation",
+      "field": "_meta.provenance.source"
+    },
+    {
+      "code": "CS-01",
+      "section": "capital_stack",
+      "field": "tranches[1].position"
+    },
+    {
+      "code": "META_MISSING",
+      "section": "risk_assessment",
+      "field": "_meta"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md \u00a7III.6a"
+}

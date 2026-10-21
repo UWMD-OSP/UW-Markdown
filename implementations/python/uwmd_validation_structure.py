@@ -34,8 +34,8 @@ def _stack(ledger, payload, section, root):
         identity, position, kind, amount = (tranche.get(k) for k in ("id", "position", "class", "amount"))
         # Format 4.24 / RFC0026: independent malformed/duplicate members
         # retain reference field attribution and order, not one tranche flag.
+        # RFC 0104 D3: a tranche is addressed by its index, never its id.
         physical_path = path
-        path = identity if isinstance(identity, str) and identity else path
         if not isinstance(identity, str) or not identity:
             issue("CS-01", path + ".id", "Tranche must state a nonempty string id")
         elif identity in ids:

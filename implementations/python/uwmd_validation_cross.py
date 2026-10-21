@@ -48,8 +48,9 @@ def cc03(ledger):
                          "Closing statement disagrees with the closing senior loan",
                          value=abs(su_loan - closing_loan))
     tranches = field(stack, "tranches")
-    tranche = next((t for t in tranches if isinstance(t, dict) and t.get("class") == "senior_debt"), None) \
+    index = next((i for i, t in enumerate(tranches) if isinstance(t, dict) and t.get("class") == "senior_debt"), None) \
         if isinstance(tranches, list) else None
+    tranche = tranches[index] if index is not None else None
     point = stack.get("point_in_time") if isinstance(stack, dict) else None
     point = point if point in POINTS else None
     if tranche is not None and point is not None:
@@ -60,7 +61,7 @@ def cc03(ledger):
         if amount is not None and finite(reference):
             evaluated = True
             if abs(amount - reference) > 100:
-                ledger.issue("CC-03", "error", "capital_stack", "tranches.senior_debt.amount",
+                ledger.issue("CC-03", "error", "capital_stack", "tranches[" + str(index) + "].amount",
                              "Senior tranche disagrees with the senior loan at the stack's point",
                              value=abs(amount - reference))
         # Same rate (§4.24): exact, no tolerance (#406); no closing-statement fallback.
@@ -68,7 +69,7 @@ def cc03(ledger):
         if finite(rate) and finite(loan_rate):
             evaluated = True
             if rate != loan_rate:
-                ledger.issue("CC-03", "error", "capital_stack", "tranches.senior_debt.rate",
+                ledger.issue("CC-03", "error", "capital_stack", "tranches[" + str(index) + "].rate",
                              "Senior tranche rate does not equal the senior loan interest_rate",
                              value=abs(rate - loan_rate))
     if evaluated:

@@ -50,16 +50,16 @@ class CapitalStackAdmissionTests(unittest.TestCase):
                     for field in ("id", "class", "position", "amount")])
         _, report = self.assess(source([tranche(position=True, amount=False)]))
         self.assertEqual(findings(report), [
-            ("CS-01", "capital_stack", "senior.position"),
-            ("CS-01", "capital_stack", "senior.amount")])
+            ("CS-01", "capital_stack", "tranches[0].position"),
+            ("CS-01", "capital_stack", "tranches[0].amount")])
 
     def test_duplicate_id_and_position_are_independent_and_stack_local(self):
         rows = [tranche(), tranche(amount=0), tranche(id="third", position=1)]
         _, report = self.assess(source(rows))
         self.assertEqual(findings(report), [
-            ("CS-01", "capital_stack", "senior.id"),
-            ("CS-01", "capital_stack", "senior.position"),
-            ("CS-01", "capital_stack", "third.position")])
+            ("CS-01", "capital_stack", "tranches[1].id"),
+            ("CS-01", "capital_stack", "tranches[1].position"),
+            ("CS-01", "capital_stack", "tranches[2].position")])
         # The independent component stack may reuse the top-level identities.
         raw = source([tranche()]) + well_formed("components",
             retail=dict(component_class="retail", net_operating_income=1,
@@ -73,30 +73,30 @@ class CapitalStackAdmissionTests(unittest.TestCase):
                         capital_stack=dict(point_in_time="stabilization", tranches=[tranche(position="1", amount=-1)])),
             office=dict(component_class="office", net_operating_income=1))
         self.assertEqual(findings(self.assess(raw)[1]), [
-            ("CS-01", "components", "retail.capital_stack.senior.position"),
-            ("CS-01", "components", "retail.capital_stack.senior.amount")])
+            ("CS-01", "components", "retail.capital_stack.tranches[0].position"),
+            ("CS-01", "components", "retail.capital_stack.tranches[0].amount")])
 
     def test_split_component_findings_are_typed_independent_and_ordered(self):
         body = tranche(accrual="split", cash_rate=None, accrued_rate=False)
         self.assertEqual(findings(self.assess(source([body]))[1]), [
-            ("CS-02b", "capital_stack", "senior.accrual"),
-            ("CS-02b", "capital_stack", "senior.cash_rate"),
-            ("CS-02b", "capital_stack", "senior.accrued_rate")])
+            ("CS-02b", "capital_stack", "tranches[0].accrual"),
+            ("CS-02b", "capital_stack", "tranches[0].cash_rate"),
+            ("CS-02b", "capital_stack", "tranches[0].accrued_rate")])
         body = tranche(**{"class": "preferred_equity"}, accrual="split")
         del body["rate"]
         self.assertEqual(findings(self.assess(source([body]))[1]), [
-            ("CS-02", "capital_stack", "senior.rate"),
-            ("CS-02b", "capital_stack", "senior.cash_rate"),
-            ("CS-02b", "capital_stack", "senior.accrued_rate")])
+            ("CS-02", "capital_stack", "tranches[0].rate"),
+            ("CS-02b", "capital_stack", "tranches[0].cash_rate"),
+            ("CS-02b", "capital_stack", "tranches[0].accrued_rate")])
         body.update(cash_rate=0, accrued_rate=0)
         self.assertEqual(findings(self.assess(source([body]))[1]),
-                         [("CS-02", "capital_stack", "senior.rate")])
+                         [("CS-02", "capital_stack", "tranches[0].rate")])
         body.update(rate=0.1)
         self.assertEqual(findings(self.assess(source([body]))[1]),
-                         [("CS-02b", "capital_stack", "senior.rate")])
+                         [("CS-02b", "capital_stack", "tranches[0].rate")])
         body = tranche(cash_rate=0)
         self.assertEqual(findings(self.assess(source([body]))[1]),
-                         [("CS-02b", "capital_stack", "senior.accrual")])
+                         [("CS-02b", "capital_stack", "tranches[0].accrual")])
 
     def test_valid_boundary_terms_do_not_gain_financial_conventions(self):
         for kind in ("senior_debt", "mezzanine_debt", "preferred_equity",
@@ -139,12 +139,12 @@ class CapitalStackAdmissionTests(unittest.TestCase):
         document.source.blocks[-1].parsed.value["tranches"][0]["amount"] = "bad"
         before = copy.deepcopy(document)
         report = validate(document)
-        self.assertEqual(findings(report), [("CS-01", "capital_stack", "senior.amount")])
+        self.assertEqual(findings(report), [("CS-01", "capital_stack", "tranches[0].amount")])
         report["errors"][-1]["field"] = "caller-change"
         self.assertEqual(document, before)
         self.assertEqual(document.source.raw, raw)
         self.assertEqual(findings(validate(document)),
-                         [("CS-01", "capital_stack", "senior.amount")])
+                         [("CS-01", "capital_stack", "tranches[0].amount")])
 
     def test_real_cli_reports_all_fields_partitions_exit_and_parse_only_discovery(self):
         cases = [
@@ -153,7 +153,7 @@ class CapitalStackAdmissionTests(unittest.TestCase):
              [("CS-01", "capital_stack", "tranches[0]." + f)
               for f in ("id", "class", "position", "amount")], 1),
             (source([tranche(accrual="split")]),
-             [("CS-02b", "capital_stack", "senior." + f)
+             [("CS-02b", "capital_stack", "tranches[0]." + f)
               for f in ("accrual", "cash_rate", "accrued_rate")], 1),
         ]
         with tempfile.TemporaryDirectory(prefix="uwmd-python-cs-fields-") as folder:

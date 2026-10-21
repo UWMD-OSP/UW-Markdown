@@ -10,6 +10,16 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0104 (#424): an issue's `field` is the dotted path from
+  the block payload root (or the frontmatter root), with array elements by index
+  (Protocol §III.6a). `META_MISSING` now names `_meta`; `META_FIELD_MISSING_*`,
+  `META_LOW_CONFIDENCE_NO_REVIEW_FLAG`, `SRC-01`–`03` and `DQ-01`–`03` name their
+  `_meta` member; `DQ-05` reports the stale gaps item; capital-stack `CS-*` and
+  `CC-03` address tranches as `tranches[i]`, not by id, in both implementations.
+  Issue order is not normative outside the metadata and payload passes that fix
+  it. New `documents/malformed/66-issue-field-paths` and a `field_issues`
+  expectation in the documents runner.
+
 - Implement accepted RFC 0106 (#432): a structured block body must be one I-JSON
   object (Format §2.4). A syntax error or empty body, trailing content, a `null`,
   scalar or array root, a duplicate member name (after escape decoding), a number

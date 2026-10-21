@@ -594,7 +594,7 @@ function checkCrossSectionConsistency(
       if (seniorAmount != null && reference != null) {
         evaluated = true;
         if (Math.abs(seniorAmount - reference) > 100) {
-          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.amount', message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the ${senior.point} senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
+          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: `tranches[${senior.index}].amount`, message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the ${senior.point} senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
         }
       }
       // Same rate (§4.24): the tranche's rate equals the interest_rate of the
@@ -606,7 +606,7 @@ function checkCrossSectionConsistency(
       if (seniorRate != null && loanRate != null) {
         evaluated = true;
         if (seniorRate !== loanRate) {
-          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.rate', message: `CC-03: the capital_stack senior_debt tranche rate (${seniorRate}) does not equal the ${senior.point} senior loan interest_rate (${loanRate})`, value: Math.abs(seniorRate - loanRate) });
+          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: `tranches[${senior.index}].rate`, message: `CC-03: the capital_stack senior_debt tranche rate (${seniorRate}) does not equal the ${senior.point} senior loan interest_rate (${loanRate})`, value: Math.abs(seniorRate - loanRate) });
         }
       }
     }
@@ -2317,18 +2317,19 @@ const WATERFALL_MARKERS = [
 ];
 
 /** The capital_stack `senior_debt` tranche, if the section and tranche exist. */
-function seniorDebtTranche(parsed: ParsedUWFile, ledger: CoverageLedger): { tranche: Record<string, unknown>; point: CapitalPoint | null } | null {
+function seniorDebtTranche(parsed: ParsedUWFile, ledger: CoverageLedger): { tranche: Record<string, unknown>; index: number; point: CapitalPoint | null } | null {
   const cs = roleAwareDirectRead(parsed, 'capital_stack', 'CC-03', ledger);
   if (!cs) return null;
   const content = cs.content as Record<string, unknown>;
   const tranches = content['tranches'];
   if (!Array.isArray(tranches)) return null;
-  const senior = tranches.find(
+  const index = tranches.findIndex(
     (t) => t && typeof t === 'object' && (t as Record<string, unknown>)['class'] === 'senior_debt',
   );
-  if (!senior || typeof senior !== 'object') return null;
+  if (index < 0) return null;
+  const senior = tranches[index] as Record<string, unknown>;
   // An absent or invalid point is CS-04; the stack leg then has no point to read.
-  return { tranche: senior as Record<string, unknown>, point: isCapitalPoint(content['point_in_time']) ? content['point_in_time'] : null };
+  return { tranche: senior, index, point: isCapitalPoint(content['point_in_time']) ? content['point_in_time'] : null };
 }
 
 // Validates one capital-stack payload's structure: CS-01 (well-formed, unique
@@ -2382,35 +2383,35 @@ function checkStackContent(
 
     // CS-01: structural — id, class, position, amount present and well-typed; id and position unique.
     if (typeof id !== 'string' || id.length === 0) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.id`, message: `CS-01: tranche ${label} must state a non-empty string id` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].id`, message: `CS-01: tranche ${label} must state a non-empty string id` });
     } else if (seenIds.has(id)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.id`, message: `CS-01: duplicate tranche id "${id}"; ids must be unique within the stack` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].id`, message: `CS-01: duplicate tranche id "${id}"; ids must be unique within the stack` });
     } else {
       seenIds.add(id);
     }
     if (typeof cls !== 'string' || !TRANCHE_CLASSES.has(cls)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
     }
     // Format §4.24: `position` is an integer, 1 = most senior (schema minimum 1, #430).
     if (typeof position !== 'number' || !Number.isInteger(position) || position < 1) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position of 1 or more (1 = most senior)` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].position`, message: `CS-01: tranche ${label} must state an integer position of 1 or more (1 = most senior)` });
     } else if (seenPositions.has(position)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
     } else {
       seenPositions.add(position);
     }
     if (typeof amount !== 'number') {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.amount`, message: `CS-01: tranche ${label} must state a numeric amount` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].amount`, message: `CS-01: tranche ${label} must state a numeric amount` });
     }
 
     // CS-02: a rate where the class requires one, and none on common equity.
     const hasRate = t['rate'] !== undefined && t['rate'] !== null;
     if (typeof cls === 'string') {
       if (RATE_BEARING_CLASSES.has(cls) && !hasRate) {
-        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02: tranche ${label} (${cls}) must state a rate` });
+        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}tranches[${i}].rate`, message: `CS-02: tranche ${label} (${cls}) must state a rate` });
       }
       if (cls === 'common_equity' && hasRate) {
-        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02: common_equity tranche ${label} must not state a rate` });
+        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}tranches[${i}].rate`, message: `CS-02: common_equity tranche ${label} must not state a rate` });
       }
     }
 
@@ -2422,26 +2423,26 @@ function checkStackContent(
     const hasAccruedRate = Object.prototype.hasOwnProperty.call(t, 'accrued_rate');
     if (t['accrual'] === 'split') {
       if (cls !== 'preferred_equity') {
-        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrual`, message: `CS-02b: split accrual is supported only for preferred_equity tranche ${label}` });
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].accrual`, message: `CS-02b: split accrual is supported only for preferred_equity tranche ${label}` });
       }
       if (!hasCashRate || !Number.isFinite(t['cash_rate'])) {
-        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.cash_rate`, message: `CS-02b: split tranche ${label} must state a numeric cash_rate` });
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].cash_rate`, message: `CS-02b: split tranche ${label} must state a numeric cash_rate` });
       }
       if (!hasAccruedRate || !Number.isFinite(t['accrued_rate'])) {
-        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrued_rate`, message: `CS-02b: split tranche ${label} must state a numeric accrued_rate` });
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].accrued_rate`, message: `CS-02b: split tranche ${label} must state a numeric accrued_rate` });
       }
       if (hasRate && Number.isFinite(t['cash_rate']) && Number.isFinite(t['accrued_rate'])
         && t['rate'] !== (t['cash_rate'] as number) + (t['accrued_rate'] as number)) {
-        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02b: split tranche ${label}.rate must equal cash_rate + accrued_rate` });
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].rate`, message: `CS-02b: split tranche ${label}.rate must equal cash_rate + accrued_rate` });
       }
     } else if (hasCashRate || hasAccruedRate) {
-      issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrual`, message: `CS-02b: cash_rate and accrued_rate are permitted only when tranche ${label} uses accrual: "split"` });
+      issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].accrual`, message: `CS-02b: cash_rate and accrued_rate are permitted only when tranche ${label} uses accrual: "split"` });
     }
 
     // A waterfall smuggled in at the tranche level (promote/hurdle/catch-up).
     for (const key of Object.keys(t)) {
       if (WATERFALL_MARKERS.includes(key)) {
-        issues.push({ code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section, field: `${prefix}${label}.${key}`, message: `CS-WATERFALL-UNSUPPORTED: tranche ${label} carries waterfall field "${key}"; distributions are out of scope for this version (RFC 0026 §E)` });
+        issues.push({ code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section, field: `${prefix}tranches[${i}].${key}`, message: `CS-WATERFALL-UNSUPPORTED: tranche ${label} carries waterfall field "${key}"; distributions are out of scope for this version (RFC 0026 §E)` });
       }
     }
   }
@@ -3210,6 +3211,11 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
 
 function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const REQUIRED_META_FIELDS = ['section', 'version', 'source', 'timestamp', 'confidence'];
+  // RFC 0104: `field` is the member's path from the block payload root.
+  const META_FIELD_PATHS: Record<string, string> = {
+    section: '_meta.section', version: '_meta.lifecycle.revision', source: '_meta.provenance.source',
+    timestamp: '_meta.provenance.timestamp', confidence: '_meta.quality.confidence',
+  };
 
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     const blocks = isVariantMap(entry)
@@ -3221,13 +3227,13 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       // is none, whatever its length (#429); it is not five missing fields.
       const meta: unknown = block.meta;
       if (meta === null || typeof meta !== 'object' || Array.isArray(meta) || Object.keys(meta).length === 0) {
-        issues.push({ code: 'META_MISSING', severity: 'warning', section: sectionId, message: `Section ${sectionId} is missing _meta object` });
+        issues.push({ code: 'META_MISSING', severity: 'warning', section: sectionId, field: '_meta', message: `Section ${sectionId} is missing _meta object` });
         continue;
       }
 
       for (const field of REQUIRED_META_FIELDS) {
         if (({ section: block.meta.section, version: block.meta.lifecycle?.revision, source: block.meta.provenance?.source, timestamp: block.meta.provenance?.timestamp, confidence: block.meta.quality?.confidence } as Record<string, unknown>)[field] == null) {
-          issues.push({ code: `META_FIELD_MISSING_${field.toUpperCase()}`, severity: 'warning', section: sectionId, field, message: `Section ${sectionId} _meta is missing required field: ${field}` });
+          issues.push({ code: `META_FIELD_MISSING_${field.toUpperCase()}`, severity: 'warning', section: sectionId, field: META_FIELD_PATHS[field], message: `Section ${sectionId} _meta is missing required field: ${field}` });
         }
       }
 
@@ -3238,7 +3244,7 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       // This emission is therefore informational only; do not promote it to a
       // warning without changing the spec.
       if (block.meta.quality?.confidence === 'low' && !block.meta.quality?.human_review_required) {
-        issues.push({ code: 'META_LOW_CONFIDENCE_NO_REVIEW_FLAG', severity: 'info', section: sectionId, message: `Section ${sectionId} has low confidence but human_review_required is not set to true` });
+        issues.push({ code: 'META_LOW_CONFIDENCE_NO_REVIEW_FLAG', severity: 'info', section: sectionId, field: '_meta.quality.human_review_required', message: `Section ${sectionId} has low confidence but human_review_required is not set to true` });
       }
     }
   }
@@ -3269,6 +3275,7 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
           code: 'SRC-03',
           severity: 'error',
           section: sectionId,
+          field: '_meta.provenance.resolution',
           message: `Section ${sectionId} provenance.resolution is outside the closed resolution vocabulary.`,
         });
       }
@@ -3294,6 +3301,7 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
           code: 'SRC-02',
           severity,
           section: sectionId,
+          field: '_meta.provenance.source',
           message: `Section ${sectionId} _meta.provenance.source is '${src}', a resolution tag in the actor field. Move it to _meta.provenance.resolution and state the actor.`,
         });
         continue;
@@ -3304,6 +3312,7 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
           code: 'SRC-01',
           severity,
           section: sectionId,
+          field: '_meta.provenance.source',
           message: `Section ${sectionId} _meta.provenance.source '${src}' is not 'manual' or '<namespace>/<id>' with a registered actor namespace (${['agent', 'document', 'system', 'institution'].join(', ')}).`,
         });
       }
@@ -3790,6 +3799,7 @@ export function checkDataQuality(
             code: 'DQ-01',
             severity: 'warning',
             section: sectionId,
+            field: '_meta.quality.provisional',
             message: `Block ${sectionId} is provisional but no gaps entry references it.`,
           });
         }
@@ -3801,6 +3811,7 @@ export function checkDataQuality(
             code: 'DQ-02',
             severity: 'error',
             section: sectionId,
+            field: '_meta.quality.provisional',
             message: `Provisional ${sectionId} cannot be consumed at stage '${stage}' (policy: halt).`,
           });
         }
@@ -3812,6 +3823,7 @@ export function checkDataQuality(
           code: 'DQ-03',
           severity: 'warning',
           section: sectionId,
+          field: '_overrides',
           message: `Block ${sectionId} is marked partial but has no _overrides[] enumeration.`,
         });
       }
@@ -3824,7 +3836,7 @@ export function checkDataQuality(
   if (gaps) {
     const now = opts.now ? Date.parse(opts.now) : Date.now();
     const thresholdMs = (opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS) * 86_400_000;
-    for (const item of gaps.items) {
+    for (const [index, item] of gaps.items.entries()) {
       if (!item.last_checked) continue;
       const last = Date.parse(item.last_checked);
       if (Number.isNaN(last)) continue;
@@ -3832,9 +3844,9 @@ export function checkDataQuality(
         issues.push({
           code: 'DQ-05',
           severity: 'info',
-          section: item.section,
-          field: item.field_path,
-          message: `Gap last checked ${item.last_checked}; exceeds staleness threshold (${opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS}d).`,
+          section: 'gaps',
+          field: `items[${index}].last_checked`,
+          message: `Gap for ${item.section}${item.field_path ? `.${item.field_path}` : ''} last checked ${item.last_checked}; exceeds staleness threshold (${opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS}d).`,
         });
       }
     }
