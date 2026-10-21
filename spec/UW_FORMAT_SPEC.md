@@ -939,6 +939,8 @@ frontmatter fallback. Other free values are unchanged.
 **Required for pipeline stage:** All stages  
 **Dependencies:** None
 
+**Size contract (RFC 0100).** A stated size, count or area in this section is in the §5.5 size contract table: it MUST be a finite number ≥ 0, and a count MUST also be an integer. A stated value that breaks this is `SIZE-01` (error) at that field.
+
 ```json
 {
   "_meta": {
@@ -1101,6 +1103,8 @@ Field notes:
 **Variants:** `multifamily` (default), `commercial`  
 **Required for pipeline stage:** Screening and beyond  
 **Dependencies:** `property`
+
+**Size contract (RFC 0100).** The roll's counts, areas and rents listed in the §5.5 size contract table MUST be finite numbers ≥ 0 when stated, and counts MUST also be integers (`SIZE-01`, error). Concessions, credits, loss-to-lease and cash-flow lines are signed and outside the table.
 
 **Verified statements (RFC 0099).** `rent_roll.occupancy_pct`, when stated, is a statement of the dictionary metric `occupancy`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
@@ -4531,6 +4535,35 @@ These diagnostics MUST be warnings, never errors.
 
 Other free subtype values add no diagnostics. These checks do not alter
 calculations, default resolution, packs, financial validation or stage readiness.
+
+### 5.5 Size Contract (RFC 0100)
+
+A stated value of a field in the **size contract table** MUST be a finite JSON
+number ≥ 0; a field marked *count* MUST also be an integer (a JSON number with no
+fractional part; `1.0` and `1e0` are integer 1, as RFC 0094 reads revisions). A
+stated value that breaks this is `SIZE-01` (error) at that field, in every current
+block. `null` and absence keep their existing meaning: absence is not a finding,
+and stage readiness owns missing facts (§5.1). Zero is admissible: a land or
+pre-development deal can state zero units. A path segment `[]` applies to every
+element of that array.
+
+| Field | Kind |
+|---|---|
+| `property.total_units`, `property.keys`, `property.total_beds`, `property.total_sites`, `property.rentable_units`, `property.entitled_units`, `property.parking_spaces` | count |
+| `property.total_nra_sqft`, `property.rentable_square_feet`, `property.gross_leasable_area`, `property.net_rentable_square_feet`, `property.critical_it_load_kw`, `property.gross_acres`, `property.usable_acres`, `property.land_area_sqft`, `property.land_area_acres`, `property.site_acres` | area / capacity |
+| `rent_roll.total_units`, `occupied_units`, `vacant_units`, `notice_units`, `model_units`, `down_units`, `month_to_month_units` | count |
+| `rent_roll.total_sites`, `occupied_sites`, `vacant_sites`, `park_owned_homes` | count |
+| `rent_roll.total_beds`, `unit_mix[].units`, `unit_mix[].beds`, `unit_mix[].occupied_beds` | count |
+| `rent_roll.unit_mix_summary[].count`, `lease_expiration_schedule[].expiring_count` | count |
+| `rent_roll.total_rentable_sf`, `occupied_sf`, `vacant_sf`, `tenants[].leased_sf`, `units[].sqft`, `unit_mix_summary[].avg_sqft` | area |
+| `rent_roll.weighted_avg_rent_psf`, `tenants[].rent_psf`, `units[].monthly_rent`, `units[].market_rent` | rent |
+
+The table is **closed**; each field keeps its existing path and meaning. A
+class's own contract (`mhc_sites`, `dc_capacity`, `BED-*`, `keys`) is unchanged and
+keeps its own code. Where a class rule also reports the same field, both findings
+stand. A dictionary metric that divides by a registered size is `unverifiable`
+when that size is ≤ 0 (`null_semantics: positive_size_denominator`, Protocol
+§II.2), so no Verifier confirms a figure against an impossible size.
 
 ## Part VI — Toolchain Interface
 

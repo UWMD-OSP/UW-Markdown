@@ -1263,7 +1263,12 @@ export interface MetricDictionaryCalculation {
   /** RFC 0079 comparison floor in stored units; coarse statements are checked at this precision. */
   readonly minimum_stated_decimals: number;
   readonly section_roles: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
-  readonly null_semantics: 'expression';
+  /**
+   * `expression`: Protocol §VIII.2 semantics. `positive_size_denominator`
+   * (RFC 0100): the same, and the metric is unverifiable when a registered size
+   * it divides by is stated below zero (zero already refuses as a division).
+   */
+  readonly null_semantics: 'expression' | 'positive_size_denominator';
   readonly deterministic: true;
 }
 
@@ -1649,6 +1654,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
   { prefix: 'DS', description: 'Debt structure field admission (RFC 0098)', capabilities: ['validate'] },
+  { prefix: 'SIZE', description: 'Generic size, count, area and rent contract (RFC 0100)', capabilities: ['validate'] },
   { prefix: 'REC', description: 'Lease recovery admission and reconciliation (RFC 0058, RFC0096)', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
   { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['calc-evaluate'] },
@@ -1794,6 +1800,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A debt_structure block states point_in_time with a value other than "closing" or "stabilization" (RFC 0098).',
     remediation: 'State "closing" for a facility retired before stabilization, "stabilization" for one first funded after closing, or omit point_in_time for a loan outstanding at both points.',
     spec_ref: 'UW_FORMAT_SPEC.md §4.7 DS-01',
+  },
+  {
+    code: 'SIZE-01', severity: 'error',
+    title: 'Size, count, area or rent breaks its contract',
+    description: 'A stated field in the Format §5.5 size contract table is negative or non-finite, or, for a count, not an integer (RFC 0100).',
+    remediation: 'State the size as a finite number of zero or more, and a count as a whole number. Signed amounts such as concessions and credits belong in their own fields.',
+    spec_ref: 'UW_FORMAT_SPEC.md §5.5 SIZE-01',
   },
   {
     code: 'WF-16', severity: 'error',

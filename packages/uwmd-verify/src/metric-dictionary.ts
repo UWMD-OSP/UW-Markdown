@@ -112,7 +112,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -132,7 +132,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -152,7 +152,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -289,7 +289,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -309,7 +309,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -327,7 +327,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -500,7 +500,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -520,7 +520,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -538,7 +538,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -729,7 +729,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -749,7 +749,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -767,7 +767,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -958,7 +958,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -978,7 +978,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -996,7 +996,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1052,7 +1052,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1187,7 +1187,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1207,7 +1207,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1225,7 +1225,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1370,7 +1370,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1989,7 +1989,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2009,7 +2009,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2027,7 +2027,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2083,7 +2083,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2254,7 +2254,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2274,7 +2274,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2292,7 +2292,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2348,7 +2348,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2366,7 +2366,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2384,7 +2384,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2420,7 +2420,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2438,7 +2438,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2456,7 +2456,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2474,7 +2474,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2492,7 +2492,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 4,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2553,7 +2553,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2571,7 +2571,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2607,7 +2607,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2977,7 +2977,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2995,7 +2995,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -3015,7 +3015,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -3224,7 +3224,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -3242,7 +3242,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -3262,7 +3262,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     }
   ],

@@ -18,6 +18,13 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Implemented RFC0100 — refuse negative sizes (owner acceptance 2026-10-20, D2 = SIZE-01).**
+[RFC0100](../rfcs/0100-nonnegative-sizes.md): Format §5.5's closed size contract
+(`SIZE-01`, error) in TS and Python; per-size dictionary metrics are
+`positive_size_denominator` (a negative size is unverifiable). The corpus measured
+two existing documents that now also draw `SIZE-01` (MHC class fixtures 28/29,
+negative and fractional `total_sites`); both keep their class findings.
+
 **Implemented RFC0103 — four metric dictionary corrections (owner decisions 2026-10-20).**
 [RFC0103](../rfcs/0103-metric-dictionary-corrections.md): USALI F&B gross margin
 (no labor); data-center `mark_to_market` replaces `rent_index`; drawn power

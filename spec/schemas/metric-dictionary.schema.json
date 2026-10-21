@@ -152,7 +152,11 @@
           "maximum": 12
         },
         "null_semantics": {
-          "const": "expression"
+          "description": "expression: Protocol VIII.2 semantics. positive_size_denominator (RFC 0100): the same, and unverifiable when a registered size the formula divides by is stated below zero.",
+          "enum": [
+            "expression",
+            "positive_size_denominator"
+          ]
         },
         "deterministic": {
           "const": true

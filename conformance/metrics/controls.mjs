@@ -159,6 +159,19 @@ export function controls(root) {
       p.sections.sources_uses = block('sources_uses', { uses: { total: 124615.3846153846 } });
       assert.equal(verifyWithPrecision(metric('ltc', 'office'), p, 0.6, undefined, 1).state, 'verified');
     }],
+    ['negative-size-denominator-is-unverifiable', () => {
+      // RFC 0100 D5: price per unit over total_units -1 is not confirmed; zero
+      // already refuses as a division; a positive size verifies as before.
+      const m = metric('price_per_unit');
+      assert.equal(m.null_semantics, 'positive_size_denominator');
+      const p = simple();
+      assert.equal(verifyStatedMetric(m, p, 100000.21).state, 'verified');
+      p.sections.property.content.total_units = -1;
+      assert.deepEqual(verifyStatedMetric(m, p, -100000.21), { state: 'unverifiable', reason: 'negative_size_denominator', computed: null });
+      p.sections.property.content.total_units = 0;
+      assert.equal(verifyStatedMetric(m, p, 0).reason, 'CALC-DIV-ZERO');
+      assert.equal(metric('dscr').null_semantics, 'expression');
+    }],
     ['all-class-LTV-uses-underwritten-value-with-lazy-price-fallback', () => {
       for (const cls of d.calculations.filter(m => m.id === 'ltv').flatMap(m => m.asset_classes)) {
         const p = simple(); p.sections.valuation.content.underwritten_value = 120000;

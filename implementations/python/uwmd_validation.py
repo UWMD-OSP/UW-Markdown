@@ -10,6 +10,7 @@ from uwmd_replacement_funding import _check as _binding_check, _verify as _bindi
 from uwmd_validation_core import Ledger, basic_rules, stage_readiness
 from uwmd_validation_cross import cross_checks, financial_thresholds
 from uwmd_validation_series import series_rules, bed_rules
+from uwmd_size_contract import size_rules
 from uwmd_validation_tax_capex import tax_rules, capex_rules
 from uwmd_validation_lease import lease_rules
 from uwmd_validation_structure import composition_rules, waterfall_rules
@@ -60,6 +61,7 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
     financial_thresholds(ledger, thresholds)
     lease_up = series_rules(ledger)
     bed_rules(ledger)
+    size_rules(ledger)
     tax_rules(ledger)
     capex_rules(ledger)
     recovery_shapes = lease_rules(ledger)

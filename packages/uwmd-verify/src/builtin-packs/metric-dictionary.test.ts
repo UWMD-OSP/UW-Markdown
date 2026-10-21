@@ -9,6 +9,7 @@ import { parseExpression } from '../calc/parser.js';
 import { evaluateCalc } from '../calc/index.js';
 import { parseUWFile } from '../parser.js';
 import { resolveRoundTo } from '../calc/quantize.js';
+import { sizeDenominators } from '../metric-verification.js';
 import { getPackForAssetClass } from './index.js';
 
 const readJson = (path: string) => JSON.parse(readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8'));
@@ -24,7 +25,9 @@ function extractedCalculations(): Omit<MetricDictionary['calculations'][number],
       id: c.id, label: c.label!, asset_classes: [assetClass], formula: c.formula,
       input_paths: getExprDependencies(parseExpression(c.formula)), unit: c.unit!,
       round_to: resolveRoundTo(c), section_roles: c.section_roles ?? {},
-      null_semantics: 'expression' as const, deterministic: c.deterministic as true,
+      // RFC 0100: a per-size metric is positive_size_denominator.
+      null_semantics: sizeDenominators(c.formula, [assetClass]).length > 0 ? 'positive_size_denominator' as const : 'expression' as const,
+      deterministic: c.deterministic as true,
     }));
   });
 }

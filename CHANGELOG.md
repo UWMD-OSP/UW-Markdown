@@ -10,6 +10,15 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC0100 (#415): a closed size contract (Format §5.5) refuses a
+  stated negative or non-finite size, count, area or rent, or a fractional count,
+  as `SIZE-01` (error; new `SIZE-NN` family) in every current `property` and
+  `rent_roll` block; zero, null and absence are admitted, signed amounts are out of
+  scope, and class contracts keep their own codes. The 44 per-size dictionary
+  metrics are `null_semantics: positive_size_denominator`: a negative size makes
+  them unverifiable (`negative_size_denominator`). TS and Python validators share
+  the table. New `documents/malformed/51`–`56` and a metrics control.
+
 - Implement RFC0103 (owner's four metric decisions, 2026-10-20). `fb_gross_margin`
   is USALI gross margin, (F&B revenue − cost of sales) ÷ revenue, with no labor.
   Data center: `mark_to_market` = (market − in-place) ÷ in-place replaces

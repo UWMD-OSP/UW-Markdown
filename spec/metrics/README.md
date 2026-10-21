@@ -81,6 +81,14 @@ fallback exactly as written. Zero divisors, invalid operand types and unresolved
 section selection retain the existing calc refusals. A null or refused result
 is **unverifiable**, not an inferred zero or a disagreement. A finite numeric
 result that disagrees at the stated precision is **failed**.
+`null_semantics: "positive_size_denominator"` (RFC 0100) is the same expression
+semantics for a metric whose formula divides by a registered `property` size
+(primary or secondary, Protocol §XIII) of its class: price, loan or NOI per unit,
+square foot, key, bed, acre, site or kW, and the size-based ratios. When that size
+is stated below zero the statement is **unverifiable**
+(`negative_size_denominator`), so no Verifier confirms a figure against an
+impossible size; zero already refuses as a division. Format §5.5 refuses the
+negative size itself (`SIZE-01`).
 `deterministic: true` preserves the existing declarations' deterministic contract.
 
 RFC 0079 unifies all nine `cash_on_cash` definitions of its time, and RFC 0080's
