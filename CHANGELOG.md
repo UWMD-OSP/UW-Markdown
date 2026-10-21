@@ -25,6 +25,13 @@ protocol, and each package each carry an independent semver).
   dictionary README cites the outside authorities (USALI, The Green Grid WP #49,
   OCC Comptroller's Handbook, EPRA BPR).
 
+- Accept RFC0100 (#415, owner 2026-10-20): a closed size contract (registered
+  primary/secondary sizes plus §4.3 rent-roll counts, areas and rents) refuses
+  negative values and fractional counts under a new error code `SIZE-01` (owner
+  D2; not `CLS-04`), zero stays admissible (D3), and per-size dictionary metrics
+  are `unverifiable` when their size is ≤ 0. The synchronized implementation
+  follows in its own PR.
+
 - Implement accepted RFC0099 (#416): the metric dictionary (`spec/metrics/builtin.json`,
   schema-required) carries the closed `statement_bindings` registry, and
   `verifyStatedMetrics` / `uwmd verify` check every bound home of each metric by
@@ -380,6 +387,7 @@ protocol, and each package each carry an independent semver).
   normative/tier guidance. The generic editor and initializer now import
   `buildMeta` directly from `@uwmd/verify`; runner re-exports, all 4.x APIs,
   CLI behavior and normative contracts remain unchanged.
+
 - Post4.3.0 financial follow-up records the held DCF-label baseline proposal,
   compaction authority/projection recommendation and draft86/87 source/basis
   decisions. No metric, validation rule, baseline or RFC acceptance changes.
