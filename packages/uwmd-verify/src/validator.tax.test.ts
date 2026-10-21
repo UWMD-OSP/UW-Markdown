@@ -103,6 +103,15 @@ describe('RFC 0053 reassessment basis', () => {
   it('TAX-03 accepts an exact value at the default currency quantum', () => {
     expect(taxCodes(withBasis({ round_to_decimals: undefined }, { value: 57960 }))).toEqual([]);
   });
+  // #431: Format §4.5, a member stated as null is not stated (the section's
+  // own example writes round_to_decimals: null).
+  it('reads a null round_to_decimals as omitted: the currency quantum, no integer refusal', () => {
+    expect(taxCodes(withBasis({ round_to_decimals: null }, { value: 57960 }))).toEqual([]);
+    expect(taxCodes(withBasis({ round_to_decimals: null }))).toEqual(taxCodes(withBasis({ round_to_decimals: undefined })));
+  });
+  it('reads a null value_basis or assessment_ratio as not stated', () => {
+    expect(taxCodes(withBasis({ value_basis: null, assessment_ratio: null, round_to_decimals: undefined }, { value: 57960 }))).toEqual([]);
+  });
   it('TAX-03 accepts a stated cent rounded from a half-cent indicated tax', () => {
     expect(taxCodes(withBasis({
       value_basis: 100.5, assessment_ratio: 1, assessed_value: 100.5,

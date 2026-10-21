@@ -858,7 +858,8 @@ function checkReassessment(
   // TAX-01: the assessed value follows from the basis and ratio when both are stated.
   const basis = r['value_basis'];
   const ratio = r['assessment_ratio'];
-  if (basis !== undefined || ratio !== undefined) {
+  // Format §4.5: a member stated as null is not stated (#431).
+  if (basis != null || ratio != null) {
     if (!finiteNum(basis) || !finiteNum(ratio)) {
       taxIssue(issues, 'TAX-01', section, `${base}.assessment_ratio`,
         'TAX-01: value_basis and assessment_ratio are stated together or not at all');
@@ -877,12 +878,12 @@ function checkReassessment(
   }
 
   const round = r['round_to_decimals'];
-  if (round !== undefined && !Number.isSafeInteger(round)) {
+  if (round != null && !Number.isSafeInteger(round)) {
     taxIssue(issues, 'TAX-03', section, `${base}.round_to_decimals`,
       'TAX-03: round_to_decimals must be an integer; it may be negative to round to a magnitude', round);
     return null;
   }
-  return round === undefined ? CURRENCY_DP : (round as number);
+  return round == null ? CURRENCY_DP : (round as number);
 }
 
 function checkAbatement(
