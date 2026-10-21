@@ -31,7 +31,7 @@ class ReaderTests(unittest.TestCase):
         index = json.loads((root / "conformance/corpus-index.json").read_text(encoding="utf-8"))
         cases = [case for case in index["cases"] if case["target"] == "reader"
                  and case["suite"] == "documents" and case["scenario"].startswith("malformed/")]
-        self.assertEqual(len(cases), 9)
+        self.assertEqual(len(cases), 15)
         for case in cases:
             prefix = root / "conformance/documents" / case["scenario"]
             expected = json.loads(Path(str(prefix) + ".expected.json").read_text(encoding="utf-8"))
@@ -40,7 +40,8 @@ class ReaderTests(unittest.TestCase):
                 self.assertIs(expected["must_parse"], False)
                 self.assertTrue(expected["expected_codes"])
                 self.assertLessEqual(set(expected["expected_codes"]),
-                                     {"UNSUPPORTED_YAML_FEATURE", "UNSUPPORTED_FORMAT_VERSION"})
+                                     {"UNSUPPORTED_YAML_FEATURE", "UNSUPPORTED_FORMAT_VERSION",
+                                      "SOURCE_BLOCK_MALFORMED"})
                 with self.assertRaises(SourceError) as caught:
                     parse(source.read_bytes(), filename=source.name)
                 self.assertIn(getattr(caught.exception, "code", None), expected["expected_codes"])

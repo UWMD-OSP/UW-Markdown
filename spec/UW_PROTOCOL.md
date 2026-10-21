@@ -649,6 +649,7 @@ capability is unconditional: every implementation owes it.
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
 | `CALC-*` | Calc engine (§VIII). | `calc-evaluate` | `error` |
 | `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (format Appendix D). | `parse` | `error` |
+| `SOURCE_BLOCK_MALFORMED` | A structured block body is not one I-JSON object (format §2.4, RFC 0106). | `parse` | `error` |
 | `UNSUPPORTED_FORMAT_VERSION` | Absent or non-3.0 document version (RFC 0081). | `parse` | `error` |
 | `PROTO-*` | Protocol-level refusal — a malformed request. | *(none)* | `error` |
 | `RCP-*` | Verification receipt (§XI). | *(none)* | `error` |
@@ -4121,6 +4122,19 @@ The `ProtocolError.pointer` authority for these two codes is the selected config
 not a document field. This does not change other codes' pointer authority or the
 ProtocolError DTO. Optional cause/remediation may not expose config bytes. Receipts
 retain their own input/policy/authentication rules; §VI.3 adds no config dependency.
+
+### XI.2 Malformed structured block (RFC 0106)
+
+A Reader MUST refuse, at parse stage, a document containing a structured block
+whose body is not one I-JSON object (Format §2.4): a syntax error or empty body,
+trailing content, a `null`, scalar or array root, a member name repeated after
+escape decoding, a number outside finite binary64, or an unpaired surrogate. The
+refusal is a `ProtocolError` with category `parse` and code
+`SOURCE_BLOCK_MALFORMED`. Its message names the block's opening line and the
+defect. It applies to superseded blocks as to current ones, because a superseded
+block is still part of the record a signature covers. No partial parse result is
+returned, so no validation, verification or receipt operation runs over the
+document: `validate` reports the refusal instead of findings.
 
 ---
 

@@ -10,6 +10,15 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0106 (#432): a structured block body must be one I-JSON
+  object (Format §2.4). A syntax error or empty body, trailing content, a `null`,
+  scalar or array root, a duplicate member name (after escape decoding), a number
+  outside finite binary64 or an unpaired surrogate refuses the whole document with
+  `SOURCE_BLOCK_MALFORMED` (`parse`, Protocol §XI.2), current or superseded, in
+  strict and non-strict mode. Before, the reference dropped the block, kept the
+  last duplicate, read `Infinity` or crashed; Python now codes its refusals and
+  adds the surrogate check. New reader cases `documents/malformed/60`–`65`.
+
 - The frontmatter reader refuses an indented line under a scalar or `[]` value
   (`flags: []` followed by `  - …` lines, for example) with
   `UNSUPPORTED_YAML_FEATURE` instead of silently dropping it or reading it as a
