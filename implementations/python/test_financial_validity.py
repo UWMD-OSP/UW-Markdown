@@ -33,14 +33,13 @@ class FinancialValidityTests(unittest.TestCase):
         self.assertEqual(fv(validate(parse(raw))), [("FV-09", "error", "frontmatter", "quick_metrics.ltv")])
 
     def test_portable_case_rows_match_the_reference(self):
-        # The reference omits section for a frontmatter issue; Python names it.
         case = ROOT / "conformance/documents/malformed/67-financial-validity-homes"
         expected = json.loads(Path(str(case) + ".expected.json").read_text(encoding="utf-8"))
         seen = [(code, section, field) for code, _severity, section, field
                 in fv(validate(parse(Path(str(case) + ".uwx.md").read_bytes())))]
         for row in expected["field_issues"]:
             with self.subTest(row=row):
-                self.assertIn((row["code"], row.get("section", "frontmatter"), row["field"]), seen)
+                self.assertIn((row["code"], row["section"], row["field"]), seen)
 
     def test_fields_the_format_does_not_define_are_not_read(self):
         raw = (HEADER + well_formed("property", total_units=12)

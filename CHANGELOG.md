@@ -10,6 +10,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Owner rulings on RFC 0104 (2026-10-21): a frontmatter-scoped issue has
+  `section: "frontmatter"` in every implementation. The reference adds it to
+  `LOC-01`, `CUR-01`, `INVALID-ASSET-CLASS-*`, `MOD-DEPENDENCY-UNDECLARED` and the
+  `quick_metrics` FV homes, matching Python. Protocol §III.6a names the
+  RFC 0093–0096 metadata and payload pass order as the one normative exception
+  to non-normative issue order.
+
 - Implement accepted RFC 0105 (#428): Format §5.2 gives each financial-validity
   band its code (`FV-01`–`FV-14`, unchanged) and every home it is read from.
   Each finite value at a home is checked, and each home draws one issue at the

@@ -18,6 +18,11 @@ affects:
 > certifying the independent Python implementation (#354). It changes what a
 > validation result says, so it is normative. Implementation follows acceptance.
 
+> **Owner rulings, 2026-10-21.** D2 has one normative exception: the
+> RFC 0093–0096 metadata and payload passes keep their fixed order (Protocol
+> §III.6a). A frontmatter-scoped issue carries `section` `"frontmatter"` in
+> every implementation.
+
 ## Summary
 
 Protocol §III.6a defines a validation issue's `code`, `severity` and `section`,
