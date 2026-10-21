@@ -64,6 +64,12 @@ no calculations or defaults depend on them.
 > indicators inside quotes are content, and ` #` outside quotes starts a
 > comment. Both readers share this in `yaml-scalar.ts`.
 
+> **Block JSON is I-JSON (RFC 0106).** Each `uw:section` body must be one JSON
+> object with unique member names (after escape decoding), finite binary64
+> numbers and no unpaired surrogates. Anything else, in a current or a
+> superseded block, refuses the whole document with `SOURCE_BLOCK_MALFORMED`
+> (category `parse`), in strict and non-strict mode alike.
+
 ## The fence annotation
 
 The opening fence carries inline key=value metadata, parsed into

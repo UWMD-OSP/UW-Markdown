@@ -1,4 +1,5 @@
 """VIII.11 verification evidence, explicitly separate from capability certification."""
+from uwmd_source import BlockMalformedError
 import copy
 import importlib.util
 import json
@@ -57,20 +58,18 @@ class ReserveTests(unittest.TestCase):
         self.assertEqual(document, before)
 
     def test_absence_structure_digest_and_nonfinite_precedence(self):
-        absent = parse(HEADER + block("property", {"unrelated": "SURROGATE"}).replace(b'"SURROGATE"', b'"\\ud800"'))
+        absent = parse(HEADER + block("property", {"unrelated": "text"}))
         self.assertEqual(verify_reserve_accounts(absent), dict(state="not_checked", reason="not_applicable", source_digest=None, evidence=[], issues=[]))
         invalid = fixture("missing-source")
         with patch("uwmd_reserves.source_digest", side_effect=AssertionError("must not hash invalid structure")):
             self.assertEqual(verify_reserve_accounts(invalid)["reason"], "invalid_structure")
         valid = fixture()
-        # Unrelated data, including metadata/notes, must reach whole-envelope JCS.
+        # A lone surrogate anywhere, including metadata/notes, is now refused by
+        # the Reader (RFC 0106), so it never reaches whole-envelope JCS.
         for payload in ({"x": "SURROGATE"}, {"_notes": "SURROGATE"}, {"_meta": {"x": "SURROGATE"}}):
             encoded = block("x_opaque", payload).replace(b'"SURROGATE"', b'"\\ud800"')
-            changed = parse(valid.source.raw + encoded)
-            result = verify_reserve_accounts(changed)
-            self.assertEqual((result["state"], result["reason"]), ("unverifiable", "digest_unavailable"))
-            self.assertIsNone(result["source_digest"])
-            self.assertEqual(result["evidence"], [])
+            with self.assertRaises(BlockMalformedError):
+                parse(valid.source.raw + encoded)
         overflow = verify_reserve_accounts(fixture("overflow-then-finite-periods"))
         self.assertEqual((overflow["state"], overflow["reason"]), ("unverifiable", "nonfinite_arithmetic"))
         self.assertEqual([i["code"] for i in overflow["issues"]], ["RSV-08", "RSV-06"])

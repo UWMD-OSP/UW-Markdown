@@ -1,4 +1,5 @@
 """VIII.12 frozen/shared and adversarial evidence; no tier/calc capability claim."""
+from uwmd_source import BlockMalformedError
 import copy
 import importlib.util
 import json
@@ -106,10 +107,10 @@ class ReserveDrawTests(unittest.TestCase):
         self.assertEqual((stale["state"], stale["reason"]), ("failed", "stale_binding"))
         self.assertEqual([i["code"] for i in stale["issues"]], ["RDB-02"])
         self.assertEqual(stale["evidence"], [])
+        # A lone surrogate no longer reaches the digest: the Reader refuses it (RFC 0106).
         raw = document.source.raw + block("x_opaque", {"n": "SURROGATE"}).replace(b'"SURROGATE"', b'"\\ud800"')
-        unavailable = verify_reserve_draw_bindings(parse(raw), plan)
-        self.assertEqual((unavailable["state"], unavailable["reason"]), ("unverifiable", "digest_unavailable"))
-        self.assertEqual(unavailable["issues"], [])
+        with self.assertRaises(BlockMalformedError):
+            parse(raw)
 
     def test_exact_null_named_variant_and_active_ambiguity(self):
         document, plan = case()

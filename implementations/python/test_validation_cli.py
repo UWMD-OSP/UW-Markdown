@@ -258,14 +258,14 @@ class ValidationCLITests(unittest.TestCase):
         with patch("uwmd._validate_document",side_effect=ValidationUnavailable("Unallocated selection refusal")):
             result,status=main(["validate",str(self.path),"--json"])
             self.assertEqual((result,status),({"error":{"message":"Unallocated selection refusal"}},1))
-        # A real duplicate JSON member likewise retains its local source refusal,
-        # rather than receiving an invented parse/default code or result state.
+        # A real duplicate JSON member is the registered parse refusal (RFC 0106),
+        # never a validation result state.
         raw=property_source().replace(b'"address": "A"',b'"address": "A", "address": "B"')
         self.assertNotEqual(raw,property_source())
         result,status=self.command(raw)
         self.assertEqual(status,1)
         self.assertEqual(set(result),{"error"})
-        self.assertEqual(set(result["error"]),{"message"})
+        self.assertEqual((result["error"]["code"],result["error"]["category"]),("SOURCE_BLOCK_MALFORMED","parse"))
 
     def test_source_usage_io_and_internal_failures_are_not_validation_verdicts(self):
         result,status=self.command(property_source().replace(b'uw_version: "3.0"',b'uw_version: "2.0"'))

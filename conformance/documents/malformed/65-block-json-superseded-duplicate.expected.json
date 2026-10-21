@@ -1,0 +1,8 @@
+{
+  "description": "A superseded block is still part of the record, so a malformed one refuses the document too (RFC 0106 D4).",
+  "must_parse": false,
+  "expected_codes": [
+    "SOURCE_BLOCK_MALFORMED"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §2.4"
+}

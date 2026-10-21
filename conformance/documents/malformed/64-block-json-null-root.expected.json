@@ -1,0 +1,8 @@
+{
+  "description": "A block body must be a JSON object; a null root used to crash validate.",
+  "must_parse": false,
+  "expected_codes": [
+    "SOURCE_BLOCK_MALFORMED"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §2.4"
+}

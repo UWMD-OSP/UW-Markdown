@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import unittest
 
-from uwmd_source import SourceError, parse_json_source, scan_source
+from uwmd_source import BlockMalformedError, SourceError, parse_json_source, scan_source
 
 
 class SourceTests(unittest.TestCase):
@@ -82,6 +82,28 @@ class SourceTests(unittest.TestCase):
                        b"---\n---\n```json uw:section=a invalid\n{}\n```\n"]:
             with self.subTest(source=source), self.assertRaises(SourceError):
                 scan_source(source)
+
+    def test_malformed_block_bodies_refuse_with_the_registered_code(self):
+        # RFC 0106: one coded refusal for every block, current or superseded.
+        head = b'---\nuw_version: "3.0"\n---\n'
+        for fence, body in [
+            (b"```json uw:section=x_a", b'{"a":}'),
+            (b"```json uw:section=x_a", b""),
+            (b"```json uw:section=x_a", b"null"),
+            (b"```json uw:section=x_a", b"[1]"),
+            (b"```json uw:section=x_a", b'{"a":1,"\\u0061":2}'),
+            (b"```json uw:section=x_a", b'{"a":1e999}'),
+            (b"```json uw:section=x_a", b'{"a":"\\ud800"}'),
+            (b"```json uw:section=x_a", b'{"\\udc00":1}'),
+            (b"```json uw:section=x_a superseded=true", b'{"a":1,"a":2}'),
+        ]:
+            source = head + fence + b"\n" + body + b"\n```\n"
+            with self.subTest(source=source), self.assertRaises(BlockMalformedError) as caught:
+                scan_source(source)
+            self.assertEqual(caught.exception.code, "SOURCE_BLOCK_MALFORMED")
+            self.assertIn("block at line 4", str(caught.exception))
+        paired = head + b'```json uw:section=x_a\n{"a":"\\ud83d\\ude00"}\n```\n'
+        self.assertEqual(scan_source(paired).blocks[0].parsed.value["a"], "\U0001F600")
 
     def test_bounded_depth_refuses_instead_of_truncating(self):
         with self.assertRaises(SourceError):

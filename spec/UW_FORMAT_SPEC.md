@@ -391,6 +391,21 @@ Every data block is a fenced JSON code block. The opening fence carries a struct
 
 A Format 3.0 block body is an object containing section payload fields and reserved members. `_meta` is REQUIRED and MUST be the first key; `_role`, `_overrides` and `_notes` are OPTIONAL. Every other member is payload, including a member named `content`. The section id is stated in the fence annotation and `_meta.section`, never as a block member. A top-level `section_id` is refused with `META-01`.
 
+**Block JSON (RFC 0106).** The text between a structured block's fences MUST be
+exactly one JSON value (RFC 8259) that is an object and is I-JSON (RFC 7493 §2):
+
+- member names are unique within each object, compared after escape decoding
+  (`"a"` and `"\u0061"` are the same name), at every depth;
+- no string and no member name contains an unpaired surrogate, escaped or not;
+- every number, read as an IEEE 754 binary64 value, is finite. A number that
+  rounds to a finite value (a long integer, for example) is admitted; its
+  authored lexeme is what §VIII.5.1 precision reads.
+
+An empty body, a syntax error, trailing content, or a `null`, scalar or array
+root is malformed. A Reader MUST refuse a document that contains such a block,
+current or superseded, with `SOURCE_BLOCK_MALFORMED` (Protocol §XI.2). It returns
+no partial result and never repairs, drops or re-reads the block.
+
 The Document Envelope has a separate block structure: `{ annotation, content, prose? }`, where `content` is the complete fenced object. Conversion is mechanical because the annotation carries the section id.
 
 ### 2.5 The `_meta` Object

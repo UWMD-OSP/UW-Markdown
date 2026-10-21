@@ -18,6 +18,15 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Implemented RFC0106 — refuse malformed block JSON (owner acceptance 2026-10-20, as drafted).**
+[RFC0106](../rfcs/0106-malformed-block-json.md): Format §2.4 requires each
+structured block body to be one I-JSON object, and Protocol §XI.2 registers
+`SOURCE_BLOCK_MALFORMED` (`parse`). The reference no longer drops a block with
+a syntax error, keeps the last of duplicate names, reads `1e999` as `Infinity`,
+admits a lone surrogate, or crashes on a `null` root; Python now codes the
+refusals it already made and adds the surrogate check. Superseded blocks are
+refused too. Portable reader cases `documents/malformed/60`–`65` (#432).
+
 **Implemented RFC0100 — refuse negative sizes (owner acceptance 2026-10-20, D2 = SIZE-01).**
 [RFC0100](../rfcs/0100-nonnegative-sizes.md): Format §5.5's closed size contract
 (`SIZE-01`, error) in TS and Python; per-size dictionary metrics are
