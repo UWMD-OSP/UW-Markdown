@@ -47,6 +47,7 @@ const WORKSPACES = [
   'packages/uwmd-batch',
   'packages/uwmd-lake',
   'packages/uwmd-signing',
+  'packages/uwmd-mcp',
 ];
 
 const declaredVersion = new Map();
