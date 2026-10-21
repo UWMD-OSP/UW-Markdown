@@ -16,6 +16,7 @@ protocol, and each package each carry an independent semver).
   D2; not `CLS-04`), zero stays admissible (D3), and per-size dictionary metrics
   are `unverifiable` when their size is ≤ 0. The synchronized implementation
   follows in its own PR.
+
 - Implement accepted RFC0099 (#416): the metric dictionary (`spec/metrics/builtin.json`,
   schema-required) carries the closed `statement_bindings` registry, and
   `verifyStatedMetrics` / `uwmd verify` check every bound home of each metric by
