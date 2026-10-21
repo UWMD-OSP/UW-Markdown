@@ -76,6 +76,8 @@ describe('validateUWFile — FV financial validity', () => {
     { code: 'FV-11', severity: 'warning', section: 'noi_model', field: 'expenses.expense_ratio', trigger: sec('noi_model', at('expenses.expense_ratio', DEFAULT_THRESHOLDS.opex_ratio.warning_above + 0.001)), boundary: sec('noi_model', at('expenses.expense_ratio', DEFAULT_THRESHOLDS.opex_ratio.warning_above)) },
     { code: 'FV-12', severity: 'warning', section: 'dcf', field: 'assumptions.revenue_growth_rate', trigger: sec('dcf', at('assumptions.revenue_growth_rate', DEFAULT_THRESHOLDS.annual_rent_growth.warning_above + 0.001)), boundary: sec('dcf', at('assumptions.revenue_growth_rate', DEFAULT_THRESHOLDS.annual_rent_growth.warning_above)) },
     { code: 'FV-13', severity: 'warning', section: 'noi_model', field: 'income.vacancy_credit_loss.rate_applied', trigger: sec('noi_model', at('income.vacancy_credit_loss.rate_applied', DEFAULT_THRESHOLDS.vacancy_rate.warning_below - 0.001)), boundary: sec('noi_model', at('income.vacancy_credit_loss.rate_applied', DEFAULT_THRESHOLDS.vacancy_rate.warning_below)) },
+    { code: 'FV-15', severity: 'warning', field: 'quick_metrics.ltc', trigger: () => file({ ltc: DEFAULT_THRESHOLDS.ltc.warning_above + 0.001 }), boundary: () => file({ ltc: DEFAULT_THRESHOLDS.ltc.warning_above }) },
+    { code: 'FV-15', severity: 'warning', section: 'sources_uses', field: 'equity_metrics.loan_to_cost', trigger: sec('sources_uses', at('equity_metrics.loan_to_cost', DEFAULT_THRESHOLDS.ltc.warning_above + 0.001)), boundary: sec('sources_uses', at('equity_metrics.loan_to_cost', DEFAULT_THRESHOLDS.ltc.warning_above)) },
     { code: 'FV-14', severity: 'warning', section: 'noi_model', field: 'income.vacancy_credit_loss.rate_applied', trigger: sec('noi_model', at('income.vacancy_credit_loss.rate_applied', DEFAULT_THRESHOLDS.vacancy_rate.warning_above + 0.001)), boundary: sec('noi_model', at('income.vacancy_credit_loss.rate_applied', DEFAULT_THRESHOLDS.vacancy_rate.warning_above)) },
   ];
 
@@ -123,6 +125,18 @@ describe('validateUWFile — FV financial validity', () => {
       ['frontmatter', 'quick_metrics.dscr', 'error'],
       ['debt_structure', 'sizing_metrics.dscr_underwritten', 'warning'],
     ]);
+  });
+
+  it('crosses the LTC error band at each home, whatever the loan purpose (RFC 0107)', () => {
+    const parsed = file({ ltc: 0.95 }, {
+      sources_uses: block('sources_uses', at('equity_metrics.loan_to_cost', 0.85)),
+      debt_structure: block('debt_structure', { loan_purpose: 'acquisition' }),
+    });
+    expect(flags(parsed, 'FV-15').map((flag) => [flag.section, flag.field, flag.band, flag.threshold])).toEqual([
+      ['frontmatter', 'quick_metrics.ltc', 'error', { max: 0.9 }],
+      ['sources_uses', 'equity_metrics.loan_to_cost', 'warning', { max: 0.8 }],
+    ]);
+    expect(flags(file({ ltc: DEFAULT_THRESHOLDS.ltc.error_above }), 'FV-15').map((flag) => flag.band)).toEqual(['warning']);
   });
 
   it('never lets a weak deal read as a broken record (RFC 0109)', () => {

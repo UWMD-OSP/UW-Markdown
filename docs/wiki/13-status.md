@@ -18,6 +18,14 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Implemented RFC0107 — the LTC band's homes and code (owner acceptance 2026-10-21, D2 adds `quick_metrics.ltc`, D3 every stated value).**
+[RFC0107](../rfcs/0107-ltc-financial-validity-home.md): Format §5.2's LTC row
+reads `quick_metrics.ltc` (new, beside `ltv`) and
+`sources_uses.equity_metrics.loan_to_cost`, as `FV-15` (warning above 0.80, error
+above 0.90), for every stated value whatever the loan purpose. It is a deal flag
+like every FV code (RFC 0109) and can be escalated by institutions. Both
+implementations; portable cases `documents/malformed/68`–`69`.
+
 **Implemented RFC0109 — financial-validity findings are deal flags (owner acceptance 2026-10-21, D1 separate list, D3 per-code).**
 [RFC0109](../rfcs/0109-financial-validity-deal-flags.md): `FV-NN` findings leave
 `issues` for a new, always-present `ValidationResult.deal_flags` (`band`, no

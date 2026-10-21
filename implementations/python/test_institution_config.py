@@ -95,12 +95,12 @@ class InstitutionConfigTests(unittest.TestCase):
             with self.subTest(value=value):self.refused(config(value),pointer)
         for value in ('[1]','[null]','[true]','[["FV-04"]]','[{"code":"FV-04"}]','["FV-04",4]'):
             with self.subTest(value=value):self.refused(config(value),pointer)
-        for code in ("FV-99","FV-00","FV-15","FV-4","fv-04","FV-04 ","CC-01",""):
+        for code in ("FV-99","FV-00","FV-16","FV-4","fv-04","FV-04 ","CC-01",""):
             with self.subTest(code=code):self.refused(config(json.dumps(["FV-04",code])),pointer)
         self.assertEqual(_parse_institution_config(config('[]')),dict(financial_validity_errors=[]))
         self.assertEqual(_parse_institution_config(config('["FV-04","FV-09","FV-04"]')),
                          dict(financial_validity_errors=["FV-04","FV-09","FV-04"]))
-        every=["FV-%02d"%n for n in range(1,15)]
+        every=["FV-%02d"%n for n in range(1,16)]
         self.assertEqual(_parse_institution_config(config(json.dumps(every))),dict(financial_validity_errors=every))
         # Governed order: a malformed numeric member is refused first.
         self.refused(b'{"validation_overrides":{"financial_validity_errors":"bad","debt_yield_warning_below":null}}',

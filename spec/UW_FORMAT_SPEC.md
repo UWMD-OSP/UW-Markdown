@@ -189,6 +189,7 @@ quick_metrics:
   noi_underwritten: null
   dscr: null
   ltv: null
+  ltc: null                         # loan-to-cost, a fraction (RFC 0107)
   debt_yield: null
   cap_rate: null
   irr_projected: null
@@ -4405,7 +4406,7 @@ as one. A warning-band finding of a listed code stays a deal flag.
 | Levered IRR | `FV-07` / `FV-08` | `quick_metrics.irr_projected`; `dcf.returns.levered_irr` | — | 5% | 40% | — |
 | Equity Multiple | `FV-05` / `FV-06` | `dcf.returns.equity_multiple` | — | 1.0x | 5.0x | — |
 | Annual Rent Growth | `FV-12` | `dcf.assumptions.revenue_growth_rate` | — | — | 8% | — |
-| LTC (construction) | — | — | — | — | 80% | 90% |
+| LTC | `FV-15` | `quick_metrics.ltc`; `sources_uses.equity_metrics.loan_to_cost` | — | — | 80% | 90% |
 
 **Reading the bands (RFC 0105).** Each finite number stated at a listed home is
 compared with its band. A home that is absent, `null` or not a number draws
@@ -4416,7 +4417,7 @@ band it crosses: a DSCR of 0.95 is `FV-04` in the error band, not also in the
 warning band. The finding's `field` is the home (Protocol §III.6a), and a frontmatter home's
 `section` is `"frontmatter"`: `quick_metrics.dscr` in section `frontmatter`, or
 `sizing_metrics.dscr_underwritten` in section `debt_structure`. A value stated at both homes is checked at both. The
-LTC band has no home and no code yet, so it is not checked.
+LTC band is checked for every stated value, whatever the loan purpose (RFC 0107).
 
 ### 5.3 Cross-Section Consistency Checks
 

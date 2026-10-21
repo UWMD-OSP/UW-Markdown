@@ -1,0 +1,14 @@
+{
+  "description": "RFC 0107: the LTC bands are strict. A value exactly at the 0.80 warning limit draws nothing; a value exactly at the 0.90 error limit is in the warning band only.",
+  "must_parse": true,
+  "expected_codes": [],
+  "deal_flags": [
+    {
+      "code": "FV-15",
+      "band": "warning",
+      "section": "sources_uses",
+      "field": "equity_metrics.loan_to_cost"
+    }
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md \u00a75.2"
+}

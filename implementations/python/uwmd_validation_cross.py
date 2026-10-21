@@ -231,6 +231,9 @@ _THRESHOLD_SPECS = (
     ("noi_model", ("expenses.expense_ratio",), "opex_ratio", .2, .7, None, None, "FV-10", "FV-11"),
     ("dcf", ("assumptions.revenue_growth_rate",), "annual_rent_growth", None, .08, None, None, None, "FV-12"),
     ("noi_model", ("income.vacancy_credit_loss.rate_applied",), "vacancy_rate", .02, .4, None, None, "FV-13", "FV-14"),
+    # RFC 0107: every stated LTC, whatever the loan purpose.
+    ("frontmatter", ("quick_metrics.ltc",), "ltc", None, .8, None, .9, None, "FV-15"),
+    ("sources_uses", ("equity_metrics.loan_to_cost",), "ltc", None, .8, None, .9, None, "FV-15"),
 )
 
 

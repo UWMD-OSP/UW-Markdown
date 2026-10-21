@@ -107,16 +107,31 @@ class FinancialValidityTests(unittest.TestCase):
                              for i in escalated["issues"][index + 1:]))
 
     def test_portable_case_rows_match_the_reference(self):
-        # RFC 0109: the case's FV rows live in a `deal_flags` expectation of
-        # {code, band, section, field}, compared as a multiset.
-        case = ROOT / "conformance/documents/malformed/67-financial-validity-homes"
-        expected = json.loads(Path(str(case) + ".expected.json").read_text(encoding="utf-8"))
-        result = validate(parse(Path(str(case) + ".uwx.md").read_bytes()))
-        self.assertIn("deal_flags", expected, "case expectation not yet migrated to RFC 0109 deal_flags")
-        rows = Counter((r["code"], r["band"], r["section"], r["field"]) for r in expected["deal_flags"])
-        self.assertEqual(Counter(fv(result)), rows)
-        self.assertFalse(any(r["code"].startswith("FV-") for r in expected.get("field_issues", [])))
-        self.assertEqual(fv_issues(result), [])
+        # RFC 0109: the cases' FV rows live in a `deal_flags` expectation of
+        # {code, band, section, field}, compared as a multiset. 68 and 69 are
+        # the RFC 0107 LTC homes and band edges.
+        for stem in ("67-financial-validity-homes", "68-ltc-homes", "69-ltc-boundaries"):
+            with self.subTest(case=stem):
+                case = ROOT / "conformance/documents/malformed" / stem
+                expected = json.loads(Path(str(case) + ".expected.json").read_text(encoding="utf-8"))
+                result = validate(parse(Path(str(case) + ".uwx.md").read_bytes()))
+                rows = Counter((r["code"], r["band"], r["section"], r["field"]) for r in expected["deal_flags"])
+                self.assertEqual(Counter(fv(result)), rows)
+                self.assertFalse(any(r["code"].startswith("FV-") for r in expected.get("field_issues", [])))
+                self.assertEqual(fv_issues(result), [])
+
+    def test_ltc_is_read_at_both_homes(self):
+        # RFC 0107: quick_metrics.ltc and sources_uses.equity_metrics.loan_to_cost,
+        # every stated value whatever the loan purpose.
+        raw = (with_quick_metrics(b"  ltc: 0.95\n")
+               + well_formed("property", total_units=12)
+               + well_formed("sources_uses", equity_metrics={"loan_to_cost": 0.85}))
+        result = validate(parse(raw))
+        self.assertEqual(fv(result), [
+            ("FV-15", "error", "frontmatter", "quick_metrics.ltc"),
+            ("FV-15", "warning", "sources_uses", "equity_metrics.loan_to_cost")])
+        self.assertEqual(result["deal_flags"][0]["threshold"], {"max": 0.9})
+        self.assertEqual(result["deal_flags"][1]["threshold"], {"max": 0.8})
 
     def test_fields_the_format_does_not_define_are_not_read(self):
         raw = (HEADER + well_formed("property", total_units=12)

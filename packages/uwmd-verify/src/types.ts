@@ -435,6 +435,8 @@ export interface UWQuickMetrics {
   noi_underwritten?: number | null;
   dscr?: number | null;
   ltv?: number | null;
+  /** Loan-to-cost, a fraction (RFC 0107); a Format §5.2 `FV-15` home. */
+  ltc?: number | null;
   debt_yield?: number | null;
   cap_rate?: number | null;
   irr_projected?: number | null;
@@ -565,10 +567,10 @@ export interface DealFlag {
   band: 'error' | 'warning';
 }
 
-/** The registered Format §5.2 financial-validity codes (RFC 0105, RFC 0109). */
+/** The registered Format §5.2 financial-validity codes (RFC 0105, RFC 0107, RFC 0109). */
 export const FINANCIAL_VALIDITY_CODES = [
   'FV-01', 'FV-02', 'FV-03', 'FV-04', 'FV-05', 'FV-06', 'FV-07',
-  'FV-08', 'FV-09', 'FV-10', 'FV-11', 'FV-12', 'FV-13', 'FV-14',
+  'FV-08', 'FV-09', 'FV-10', 'FV-11', 'FV-12', 'FV-13', 'FV-14', 'FV-15',
 ] as const;
 
 /** Validation policy an institution configuration supplies beyond thresholds. */

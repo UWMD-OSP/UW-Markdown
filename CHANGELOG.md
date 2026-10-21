@@ -10,6 +10,14 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0107: the Format §5.2 LTC band gets code `FV-15` and two
+  homes, `quick_metrics.ltc` (a new optional frontmatter member) and
+  `sources_uses.equity_metrics.loan_to_cost`. Every stated value is checked,
+  whatever the loan purpose (warning above 0.80, error above 0.90), and reported
+  as a deal flag (RFC 0109). `FINANCIAL_VALIDITY_CODES` and the institution
+  escalation list admit `FV-15`. Python matches. New
+  `documents/malformed/68-ltc-homes` and `69-ltc-boundaries`.
+
 - Implement accepted RFC 0109: Format §5.2 financial-validity findings are deal
   flags, not validation errors. `ValidationResult` gains `deal_flags`
   (`code`, `section`, `field`, `message`, `value`, `threshold`, `band`), always

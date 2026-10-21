@@ -99,11 +99,12 @@ describe('RFC 0109 financial_validity_errors admission', () => {
   it('admits a list of registered FV codes, empty and repeated entries included', () => {
     expect(policy('{"validation_overrides":{"financial_validity_errors":["FV-04","FV-09"]}}')).toEqual({ financial_validity_errors: ['FV-04', 'FV-09'] });
     expect(policy('{"validation_overrides":{"financial_validity_errors":[]}}')).toEqual({ financial_validity_errors: [] });
+    expect(policy('{"validation_overrides":{"financial_validity_errors":["FV-15"]}}')).toEqual({ financial_validity_errors: ['FV-15'] });
     expect(policy('{"validation_overrides":{"financial_validity_errors":["FV-04","FV-04"]}}')).toEqual({ financial_validity_errors: ['FV-04', 'FV-04'] });
     expect(policy('{"validation_overrides":{"dscr_warning_below":1.3,"financial_validity_errors":["FV-04"]}}'))
       .toEqual({ thresholds: { dscr: { ...DEFAULT_THRESHOLDS.dscr, warning_below: 1.3 } }, financial_validity_errors: ['FV-04'] });
   });
-  it.each(['null', 'true', '"FV-04"', '{}', '["FV-99"]', '["fv-04"]', '["FV-04",4]', '[null]', '["CC-01"]'])('refuses %s with the member pointer', raw => {
+  it.each(['null', 'true', '"FV-04"', '{}', '["FV-99"]', '["FV-16"]', '["fv-04"]', '["FV-04",4]', '[null]', '["CC-01"]'])('refuses %s with the member pointer', raw => {
     refusal(() => policy(`{"validation_overrides":{"financial_validity_errors":${raw}}}`), 'MALFORMED', pointer);
   });
   it('checks the numeric leaves first, in governed order', () => {
