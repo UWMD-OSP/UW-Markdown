@@ -1,7 +1,7 @@
 ---
 rfc: 0106
 title: Refuse a structured block whose JSON is not an I-JSON object
-status: draft
+status: accepted
 author: claude-code
 created: 2026-10-20
 affects:
@@ -13,7 +13,8 @@ affects:
 
 # RFC 0106: Refuse a structured block whose JSON is not an I-JSON object
 
-> **Draft for owner acceptance.** Origin:
+> **Accepted by the owner, 2026-10-20, as drafted** (Jared: "RFC 0106 accepted as drafted (D1 document refusal, D2 not a JSON object or not I-JSON, D3 new SOURCE_BLOCK_MALFORMED (parse), D4 superseded blocks also refused, D5 no version)").
+> Origin:
 > [#432](https://github.com/UWMD-OSP/UW-Markdown/issues/432), found while
 > certifying the independent Python implementation (#354). It adds a Reader
 > refusal, so it is normative.
@@ -72,7 +73,7 @@ Portable `documents/malformed` cases, one per row of the table, each owing
 - **Accept JavaScript `JSON.parse` semantics.** Last-duplicate-wins and lossy
   numbers are exactly the silent data changes Appendix D bans for frontmatter.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-20)
 
 | # | Question | Proposal | Why |
 |---|---|---|---|
