@@ -858,7 +858,8 @@ function checkReassessment(
   // TAX-01: the assessed value follows from the basis and ratio when both are stated.
   const basis = r['value_basis'];
   const ratio = r['assessment_ratio'];
-  if (basis !== undefined || ratio !== undefined) {
+  // Format §4.5: a member stated as null is not stated (#431).
+  if (basis != null || ratio != null) {
     if (!finiteNum(basis) || !finiteNum(ratio)) {
       taxIssue(issues, 'TAX-01', section, `${base}.assessment_ratio`,
         'TAX-01: value_basis and assessment_ratio are stated together or not at all');
@@ -877,12 +878,12 @@ function checkReassessment(
   }
 
   const round = r['round_to_decimals'];
-  if (round !== undefined && !Number.isSafeInteger(round)) {
+  if (round != null && !Number.isSafeInteger(round)) {
     taxIssue(issues, 'TAX-03', section, `${base}.round_to_decimals`,
       'TAX-03: round_to_decimals must be an integer; it may be negative to round to a magnitude', round);
     return null;
   }
-  return round === undefined ? CURRENCY_DP : (round as number);
+  return round == null ? CURRENCY_DP : (round as number);
 }
 
 function checkAbatement(
@@ -2390,8 +2391,9 @@ function checkStackContent(
     if (typeof cls !== 'string' || !TRANCHE_CLASSES.has(cls)) {
       issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
     }
-    if (typeof position !== 'number' || !Number.isInteger(position)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position` });
+    // Format §4.24: `position` is an integer, 1 = most senior (schema minimum 1, #430).
+    if (typeof position !== 'number' || !Number.isInteger(position) || position < 1) {
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position of 1 or more (1 = most senior)` });
     } else if (seenPositions.has(position)) {
       issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
     } else {
@@ -3215,7 +3217,10 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       : [entry as UWBlock];
 
     for (const block of blocks) {
-      if (!block.meta || Object.keys(block.meta).length === 0) {
+      // Protocol §XI: META_MISSING means no `_meta` object. A string or array
+      // is none, whatever its length (#429); it is not five missing fields.
+      const meta: unknown = block.meta;
+      if (meta === null || typeof meta !== 'object' || Array.isArray(meta) || Object.keys(meta).length === 0) {
         issues.push({ code: 'META_MISSING', severity: 'warning', section: sectionId, message: `Section ${sectionId} is missing _meta object` });
         continue;
       }

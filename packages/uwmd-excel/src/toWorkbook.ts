@@ -641,6 +641,8 @@ function writeMixedUseOperatingStatement(
     const egiCell = ws.getCell(`B${row}`);
     egiCell.value = compNumber(c, 'effective_gross_income');
     egiCell.numFmt = fmtFor('currency');
+    // Named so a reverse import reads the stated inputs by name (#411).
+    wb.definedNames.add(abs(ws.name, egiRow, 2), mixedUseName(`components.${cls}.effective_gross_income`));
     row++;
 
     const opexRow = row;
@@ -649,6 +651,7 @@ function writeMixedUseOperatingStatement(
     const opex = compNumber(c, 'operating_expenses');
     opexCell.value = opex === null ? null : -opex; // signed deduction, foots the SUM
     opexCell.numFmt = fmtFor('currency');
+    wb.definedNames.add(abs(ws.name, opexRow, 2), mixedUseName(`components.${cls}.operating_expenses`));
     row++;
 
     // NOI foots as a live formula; its named range is what the pack's NOI-share
