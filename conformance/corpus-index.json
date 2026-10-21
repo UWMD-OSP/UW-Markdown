@@ -2628,6 +2628,11 @@
     },
     {
       "suite": "capital-stack",
+      "scenario": "position-below-one",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
       "scenario": "sizing-disagrees",
       "target": "verifier"
     },
