@@ -16,7 +16,7 @@ record's text, not a path.
 
 | Tool | Input | Returns |
 |---|---|---|
-| `uwmd_validate` | `source`: the full `.uwx.md` text | `overall_status`, error and warning counts, `stage_readiness`, and every issue (`code`, `severity`, `section`, `field`, `message`) |
+| `uwmd_validate` | `source`: the full `.uwx.md` text | `overall_status`, error and warning counts, `stage_readiness`, every issue (`code`, `severity`, `section`, `field`, `message`), and `deal_flags`: the Format §5.2 bands the deal crosses (`code`, `band`, `section`, `field`, `message`), reported apart from issues (RFC 0109) |
 | `uwmd_verify` | `source` | `ok`, the validation summary, stated-metric counts with each `failed` statement (stated vs recomputed) and each `unverifiable` one (reason), hash-chain integrity, provenance, and replacement-funding verification |
 | `uwmd_explain_code` | `code`, for example `CC-03` | the code's severity, title, description, remediation and spec reference |
 

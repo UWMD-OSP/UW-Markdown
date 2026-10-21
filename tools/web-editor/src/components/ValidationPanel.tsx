@@ -7,6 +7,7 @@ export function ValidationPanel({ validation }: { validation: ValidationResult }
   const errors = validation.issues.filter((i) => i.severity === 'error').length;
   const warnings = validation.issues.filter((i) => i.severity === 'warning').length;
   const infos = validation.issues.length - errors - warnings;
+  const dealFlags = validation.deal_flags.length;
 
   const overall = validation.overall_status;
   const overallTone =
@@ -28,6 +29,7 @@ export function ValidationPanel({ validation }: { validation: ValidationResult }
         <span className="text-xs text-muted">
           {errors} error{errors === 1 ? '' : 's'} · {warnings} warning{warnings === 1 ? '' : 's'}
           {infos > 0 ? ` · ${infos} info` : ''}
+          {dealFlags > 0 ? ` · ${dealFlags} deal flag${dealFlags === 1 ? '' : 's'}` : ''}
         </span>
         <span className={`ml-auto rounded px-2 py-0.5 text-xs font-bold uppercase ${overallTone}`}>
           {overall}
@@ -71,6 +73,28 @@ export function ValidationPanel({ validation }: { validation: ValidationResult }
                 {issue.remediation && (
                   <div className="mt-0.5 text-xs text-muted">→ {issue.remediation}</div>
                 )}
+              </div>
+            </li>
+          ))}
+          {validation.deal_flags.length > 0 && (
+            <li className="bg-canvas px-4 py-1.5 text-xs font-semibold uppercase text-muted">
+              Deal flags · Format §5.2 bands the deal crosses, not record errors
+            </li>
+          )}
+          {validation.deal_flags.map((flag) => (
+            <li
+              key={`flag|${flag.code}|${flag.section}|${flag.field}`}
+              className="flex items-start gap-3 border-b border-rule px-4 py-2 text-sm"
+            >
+              <span className="mt-0.5 w-14 shrink-0 text-center text-[0.65rem] font-bold uppercase text-muted">
+                {flag.band} band
+              </span>
+              <code className="shrink-0 text-xs text-muted">{flag.code}</code>
+              <div className="min-w-0">
+                <span className="mr-1.5 rounded bg-accent-soft px-1.5 text-xs text-accent">
+                  {flag.section}.{flag.field}
+                </span>
+                {flag.message}
               </div>
             </li>
           ))}

@@ -19,6 +19,9 @@ _MESSAGES={_UNREADABLE:"Selected institution config could not be read.",
 _MEMBERS=(("dscr_warning_below","dscr","warning_below"),
           ("ltv_warning_above","ltv","warning_above"),
           ("debt_yield_warning_below","debt_yield","warning_below"))
+# The registered Format 5.2 codes, spelled here so admission imports no validator.
+_FV_ERRORS="financial_validity_errors"
+_FV_CODES=frozenset("FV-%02d"%number for number in range(1,15))
 
 
 class _InstitutionConfigError(ValueError):
@@ -93,6 +96,13 @@ def _parse_institution_config(raw):
         number=float(leaf.spelling)
         if not math.isfinite(number):raise _InstitutionConfigError(_MALFORMED,pointer)
         admitted[name]=number
+    # RFC 0109 D3: governed after the three numeric members. An empty array and
+    # duplicate entries are admitted; anything but registered FV codes is not.
+    if _FV_ERRORS in carrier:
+        leaf=carrier[_FV_ERRORS]
+        if not isinstance(leaf,list) or not all(isinstance(code,str) and code in _FV_CODES for code in leaf):
+            raise _InstitutionConfigError(_MALFORMED,"validation_overrides."+_FV_ERRORS)
+        admitted[_FV_ERRORS]=list(leaf)
     return admitted
 
 

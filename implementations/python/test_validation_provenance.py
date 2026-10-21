@@ -4,7 +4,7 @@ import json
 import unittest
 
 from test_reader import HEADER, block
-from test_validation import validate, well_formed, codes, ROOT
+from test_validation import validate, well_formed, codes, flags, ROOT
 from uwmd_reader import parse
 from uwmd_source_validation import inspect_source_roles
 from uwmd_validation_provenance import timestamp_shape, incomplete_policy
@@ -34,14 +34,15 @@ class ValidationProvenanceTests(unittest.TestCase):
         raw+=well_formed("dcf",assumptions={"revenue_growth_rate":.1})
         parsed=parse(raw);before=copy.deepcopy(parsed)
         result=validate(parsed)
-        self.assertTrue({("FV-10","warning"),("FV-14","warning"),("FV-12","warning")} <= set(codes(result)))
+        self.assertTrue({("FV-10","warning"),("FV-14","warning"),("FV-12","warning")} <= set(flags(result)))
         self.assertEqual(parsed,before)
         for value in (None,False,"0.1"):
             with self.subTest(value=value):
                 raw=HEADER+well_formed("noi_model",expenses={"expense_ratio":value},
                     expense_ratio=.1,income={"vacancy_credit_loss":{"rate_applied":value}},vacancy_rate=.8)
                 raw+=well_formed("dcf",assumptions={"revenue_growth_rate":value})
-                self.assertFalse(any(code.startswith("FV-") for code,_ in codes(validate(parse(raw)))))
+                result=validate(parse(raw))
+                self.assertFalse(any(code.startswith("FV-") for code,_ in codes(result)+flags(result)))
 
     def test_unreviewed_shortcut_paths_never_select_fv_behavior(self):
         raw=HEADER+well_formed("noi_model",expense_ratio=.1,vacancy_rate=.8,
@@ -50,7 +51,8 @@ class ValidationProvenanceTests(unittest.TestCase):
         raw+=well_formed("debt_structure",dscr=.1,ltv=.99,debt_yield=.001)
         raw+=well_formed("cash_flow_projection",rent_growth_rate=.99)
         parsed=parse(raw);before=copy.deepcopy(parsed)
-        self.assertFalse(any(code.startswith("FV-") for code,_ in codes(validate(parsed))))
+        result=validate(parsed)
+        self.assertFalse(any(code.startswith("FV-") for code,_ in codes(result)+flags(result)))
         self.assertEqual(parsed,before)
 
     def test_present_metadata_shapes_keep_exact_registered_or_local_owners(self):

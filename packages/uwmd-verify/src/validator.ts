@@ -14,6 +14,8 @@ import type {
   ValidationMessage,
   ValidationResult,
   FinancialThresholds,
+  DealFlag,
+  ValidationPolicy,
   StageReadiness,
   AssetClass,
   DealStage,
@@ -90,6 +92,7 @@ export function validateUWFile(
   input: ParsedUWFile | string,
   thresholdOverrides?: Partial<FinancialThresholds>,
   sourceOptions?: { parts: readonly string[] },
+  policy?: ValidationPolicy,
 ): ValidationResult {
   // String input is a fresh source operation. A supplied model stays a model,
   // even if it happens to retain parser evidence or stale raw source strings.
@@ -115,7 +118,8 @@ export function validateUWFile(
 
   const ledger = newCoverageLedger();
 
-  checkFinancialValidity(parsed, thresholds, issues);
+  const deal_flags: DealFlag[] = [];
+  checkFinancialValidity(parsed, thresholds, new Set(policy?.financial_validity_errors ?? []), issues, deal_flags);
   checkCrossSectionConsistency(parsed, issues, ledger);
   checkComponents(parsed, issues, ledger);
   checkCapitalStack(parsed, issues);
@@ -192,6 +196,7 @@ export function validateUWFile(
     errors,
     warnings,
     info,
+    deal_flags,
     coverage: orderedCoverage(ledger),
   };
 }
@@ -267,10 +272,16 @@ function financialValidityBlock(parsed: ParsedUWFile, sectionId: string): UWBloc
   return resolveRoleBlock(parsed.sections[sectionId], sectionId, [], undefined, declared).block;
 }
 
+/**
+ * Format §5.2 findings are deal flags (RFC 0109), never validation issues,
+ * unless the institution lists the code and the error band is crossed (D3, D4).
+ */
 function checkFinancialValidity(
   parsed: ParsedUWFile,
   t: FinancialThresholds,
+  escalated: ReadonlySet<string>,
   issues: ValidationMessage[],
+  flags: DealFlag[],
 ): void {
   for (const band of financialValidityBands(t)) {
     for (const home of band.homes) {
@@ -278,24 +289,25 @@ function checkFinancialValidity(
       if (root == null) continue;
       const value = deepGet(root as Record<string, unknown>, home.path);
       if (typeof value !== 'number' || !Number.isFinite(value)) continue;
-      // One issue per home and side, at the most severe band crossed (D2).
+      // One finding per home and side, at the most severe band crossed (RFC 0105 D2).
       for (const direction of ['below', 'above'] as const) {
         const side = band[direction];
         if (!side) continue;
         const crosses = (limit: number | undefined): limit is number =>
           limit !== undefined && (direction === 'below' ? value < limit : value > limit);
-        const severity = crosses(side.error) ? 'error' : crosses(side.warning) ? 'warning' : null;
-        if (severity === null) continue;
-        const limit = (severity === 'error' ? side.error : side.warning) as number;
-        issues.push({
+        const crossed = crosses(side.error) ? 'error' : crosses(side.warning) ? 'warning' : null;
+        if (crossed === null) continue;
+        const limit = (crossed === 'error' ? side.error : side.warning) as number;
+        const finding = {
           code: side.code,
-          severity,
           section: home.section ?? 'frontmatter',
           field: home.path,
-          message: `${band.metric} ${value} at ${home.section === undefined ? '' : `${home.section}.`}${home.path} is ${direction} the ${severity} threshold of ${limit}`,
+          message: `${band.metric} ${value} at ${home.section === undefined ? '' : `${home.section}.`}${home.path} is ${direction} the ${crossed} threshold of ${limit}`,
           value,
           threshold: direction === 'below' ? { min: limit } : { max: limit },
-        });
+        };
+        if (crossed === 'error' && escalated.has(side.code)) issues.push({ ...finding, severity: 'error' });
+        else flags.push({ ...finding, band: crossed });
       }
     }
   }

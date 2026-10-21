@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BUILTIN_REMEDIATIONS } from './protocol.js';
 import { validateUWFile } from './validator.js';
-import { DEFAULT_THRESHOLDS, type ParsedUWFile, type UWBlock, type ValidationMessage } from './types.js';
+import { DEFAULT_THRESHOLDS, FINANCIAL_VALIDITY_CODES, type DealFlag, type ParsedUWFile, type UWBlock } from './types.js';
 
 function block(section: string, content: Record<string, unknown>): UWBlock {
   return {
@@ -22,17 +22,16 @@ function file(
   };
 }
 
-function issues(parsed: ParsedUWFile, code: string): ValidationMessage[] {
-  return validateUWFile(parsed).issues.filter((issue) => issue.code === code);
+function flags(parsed: ParsedUWFile, code: string): DealFlag[] {
+  return validateUWFile(parsed).deal_flags.filter((flag) => flag.code === code);
 }
 
-function expectRegistered(issue: ValidationMessage, code: string, severity: ValidationMessage['severity'], field: string): void {
-  const remediation = BUILTIN_REMEDIATIONS.find((candidate) => candidate.code === code);
-  expect(remediation, code).toBeDefined();
-  expect(issue).toMatchObject({ code, severity, field });
-  expect(issue.title).toBe(remediation!.title);
-  expect(issue.remediation).toBe(remediation!.remediation);
-  expect(issue.spec_ref).toBe(remediation!.spec_ref);
+function expectRegistered(flag: DealFlag, code: string, band: DealFlag['band'], field: string): void {
+  expect(BUILTIN_REMEDIATIONS.some((candidate) => candidate.code === code), code).toBe(true);
+  expect((FINANCIAL_VALIDITY_CODES as readonly string[]).includes(code), code).toBe(true);
+  expect(flag).toMatchObject({ code, band, field });
+  // RFC 0109 D2: the flag's closed shape, with no `severity`.
+  expect(Object.keys(flag).sort()).toEqual(['band', 'code', 'field', 'message', 'section', 'threshold', 'value']);
 }
 
 describe('validateUWFile — FV financial validity', () => {
@@ -53,7 +52,7 @@ describe('validateUWFile — FV financial validity', () => {
   // and the section field, each checked on its own.
   const cases: Array<{
     code: string;
-    severity: ValidationMessage['severity'];
+    severity: DealFlag['band'];
     section?: string;
     field: string;
     trigger: () => ParsedUWFile;
@@ -81,47 +80,80 @@ describe('validateUWFile — FV financial validity', () => {
   ];
 
   for (const testCase of cases) {
-    it(`emits ${testCase.code} at ${testCase.field} past its configured boundary with canonical remediation`, () => {
-      const found = issues(testCase.trigger(), testCase.code);
+    it(`flags ${testCase.code} at ${testCase.field} past its configured boundary, as a deal flag (RFC 0109)`, () => {
+      const result = validateUWFile(testCase.trigger());
+      const found = result.deal_flags.filter((flag) => flag.code === testCase.code);
       expect(found, testCase.code).toHaveLength(1);
       expectRegistered(found[0]!, testCase.code, testCase.severity, testCase.field);
       expect(found[0]!.section).toBe(testCase.section ?? 'frontmatter');
+      expect(result.issues.filter((issue) => issue.code.startsWith('FV-'))).toEqual([]);
     });
 
-    it(`does not emit ${testCase.code} at ${testCase.field} exactly at its configured boundary`, () => {
-      expect(issues(testCase.boundary(), testCase.code)).toEqual([]);
+    it(`does not flag ${testCase.code} at ${testCase.field} exactly at its configured boundary`, () => {
+      expect(flags(testCase.boundary(), testCase.code)).toEqual([]);
     });
   }
 
-  it('escalates DSCR and LTV after their error thresholds', () => {
-    const dscr = issues(file({ dscr: DEFAULT_THRESHOLDS.dscr.error_below - 0.001 }), 'FV-04');
-    const ltv = issues(file({ ltv: DEFAULT_THRESHOLDS.ltv.error_above + 0.001 }), 'FV-09');
+  it('crosses the DSCR and LTV error bands after their error thresholds', () => {
+    const dscr = flags(file({ dscr: DEFAULT_THRESHOLDS.dscr.error_below - 0.001 }), 'FV-04');
+    const ltv = flags(file({ ltv: DEFAULT_THRESHOLDS.ltv.error_above + 0.001 }), 'FV-09');
 
-    expect(dscr.some((issue) => issue.severity === 'error')).toBe(true);
-    expect(ltv.some((issue) => issue.severity === 'error')).toBe(true);
+    expect(dscr.some((flag) => flag.band === 'error')).toBe(true);
+    expect(ltv.some((flag) => flag.band === 'error')).toBe(true);
   });
 
-  it('does not escalate DSCR or LTV exactly at their error thresholds', () => {
-    const dscr = issues(file({ dscr: DEFAULT_THRESHOLDS.dscr.error_below }), 'FV-04');
-    const ltv = issues(file({ ltv: DEFAULT_THRESHOLDS.ltv.error_above }), 'FV-09');
+  it('does not cross the DSCR or LTV error bands exactly at their error thresholds', () => {
+    const dscr = flags(file({ dscr: DEFAULT_THRESHOLDS.dscr.error_below }), 'FV-04');
+    const ltv = flags(file({ ltv: DEFAULT_THRESHOLDS.ltv.error_above }), 'FV-09');
 
-    expect(dscr.some((issue) => issue.severity === 'error')).toBe(false);
-    expect(ltv.some((issue) => issue.severity === 'error')).toBe(false);
+    expect(dscr.some((flag) => flag.band === 'error')).toBe(false);
+    expect(ltv.some((flag) => flag.band === 'error')).toBe(false);
   });
 
-  it('reports only the most severe band crossed, once per home (D2)', () => {
-    const dscr = issues(file({ dscr: 0.95 }), 'FV-04');
-    expect(dscr.map((issue) => issue.severity)).toEqual(['error']);
-    const ltv = issues(file({ ltv: 0.9 }), 'FV-09');
-    expect(ltv.map((issue) => issue.severity)).toEqual(['error']);
+  it('reports only the most severe band crossed, once per home (RFC 0105 D2)', () => {
+    const dscr = flags(file({ dscr: 0.95 }), 'FV-04');
+    expect(dscr.map((flag) => flag.band)).toEqual(['error']);
+    const ltv = flags(file({ ltv: 0.9 }), 'FV-09');
+    expect(ltv.map((flag) => flag.band)).toEqual(['error']);
   });
 
-  it('checks each stated home on its own (D1)', () => {
+  it('checks each stated home on its own (RFC 0105 D1)', () => {
     const parsed = file({ dscr: 0.95 }, { debt_structure: block('debt_structure', at('sizing_metrics.dscr_underwritten', 1.1)) });
-    expect(issues(parsed, 'FV-04').map((issue) => [issue.section, issue.field, issue.severity])).toEqual([
+    expect(flags(parsed, 'FV-04').map((flag) => [flag.section, flag.field, flag.band])).toEqual([
       ['frontmatter', 'quick_metrics.dscr', 'error'],
       ['debt_structure', 'sizing_metrics.dscr_underwritten', 'warning'],
     ]);
+  });
+
+  it('never lets a weak deal read as a broken record (RFC 0109)', () => {
+    const weak = file({ dscr: 0.95, ltv: 0.9 });
+    const strong = file({ dscr: 1.5, ltv: 0.6 });
+    const a = validateUWFile(weak);
+    const b = validateUWFile(strong);
+    expect(a.deal_flags.map((flag) => [flag.code, flag.band])).toEqual([['FV-04', 'error'], ['FV-09', 'error']]);
+    expect(b.deal_flags).toEqual([]);
+    expect(a.overall_status).toBe(b.overall_status);
+    expect(a.errors).toEqual(b.errors);
+    expect(a.warnings).toEqual(b.warnings);
+    expect(a.stage_readiness).toEqual(b.stage_readiness);
+  });
+
+  it('raises an error band to an error issue only for a listed code (RFC 0109 D3)', () => {
+    const weak = file({ dscr: 0.95, ltv: 0.9 });
+    const result = validateUWFile(weak, undefined, undefined, { financial_validity_errors: ['FV-04'] });
+    const fv04 = result.issues.filter((issue) => issue.code === 'FV-04');
+    expect(fv04).toHaveLength(1);
+    expect(fv04[0]).toMatchObject({ code: 'FV-04', severity: 'error', section: 'frontmatter', field: 'quick_metrics.dscr', value: 0.95, threshold: { min: 1 } });
+    expect(fv04[0]!.title).toBe(BUILTIN_REMEDIATIONS.find((r) => r.code === 'FV-04')!.title);
+    expect(result.errors).toContainEqual(fv04[0]);
+    expect(result.overall_status).toBe('errors');
+    expect(result.deal_flags.map((flag) => [flag.code, flag.band])).toEqual([['FV-09', 'error']]);
+  });
+
+  it('keeps the warning band of a listed code a deal flag (RFC 0109 D4)', () => {
+    const result = validateUWFile(file({ dscr: 1.1 }), undefined, undefined, { financial_validity_errors: ['FV-04'] });
+    expect(result.issues.filter((issue) => issue.code.startsWith('FV-'))).toEqual([]);
+    expect(result.deal_flags.map((flag) => [flag.code, flag.band])).toEqual([['FV-04', 'warning']]);
   });
 
   it('reads no field the Format does not define (D4)', () => {
@@ -129,19 +161,18 @@ describe('validateUWFile — FV financial validity', () => {
       noi_model: block('noi_model', { vacancy_rate: 0.5, effective_gross_income: 100, total_operating_expenses: 90 }),
       dcf: block('dcf', { levered_equity_multiple: 9, assumptions: { annual_rent_growth: 0.5 } }),
     });
-    const codes = validateUWFile(parsed).issues.map((issue) => issue.code).filter((code) => code.startsWith('FV-'));
-    expect(codes).toEqual([]);
+    expect(validateUWFile(parsed).deal_flags).toEqual([]);
   });
 
   it('skips an absent, null or non-numeric home', () => {
     const parsed = file({}, { debt_structure: block('debt_structure', { sizing_metrics: { dscr_underwritten: null, ltv: '0.95' } }) });
-    expect(validateUWFile(parsed).issues.filter((issue) => issue.code.startsWith('FV-'))).toEqual([]);
+    expect(validateUWFile(parsed).deal_flags).toEqual([]);
   });
 
   it('reads the senior debt_structure among role-bearing variants', () => {
     const senior = block('debt_structure', { _role: 'senior', sizing_metrics: { dscr_underwritten: 0.9 } });
     const mezz = block('debt_structure', { _role: 'mezzanine', sizing_metrics: { dscr_underwritten: 2 } });
     const parsed = file({}, { debt_structure: { senior, mezz } as unknown as UWBlock });
-    expect(issues(parsed, 'FV-04').map((issue) => issue.severity)).toEqual(['error']);
+    expect(flags(parsed, 'FV-04').map((flag) => flag.band)).toEqual(['error']);
   });
 });

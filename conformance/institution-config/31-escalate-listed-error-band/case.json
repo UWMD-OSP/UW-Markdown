@@ -1,0 +1,15 @@
+{
+  "args": [
+    "../../documents/malformed/67-financial-validity-homes.uwx.md",
+    "--institution",
+    "policy.input",
+    "--json"
+  ],
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "exit_code": 1,
+    "project": "issue-code-severity-set"
+  },
+  "note": "RFC 0109 D3/D4: a listed code's error band becomes an error issue and exit 1; its warning band and every unlisted code stay deal flags."
+}

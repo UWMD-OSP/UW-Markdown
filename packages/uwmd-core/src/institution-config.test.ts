@@ -3,10 +3,11 @@ import { tmpdir } from 'node:os';
 import { resolve, relative } from 'node:path';
 import { DEFAULT_THRESHOLDS, parseUWFile, validateUWFile } from '@uwmd/verify';
 import { describe, expect, it, vi } from 'vitest';
-import { InstitutionConfigError, loadInstitutionThresholds, parseInstitutionThresholds, type InstitutionFileIO } from './institution-config.js';
+import { InstitutionConfigError, loadInstitutionPolicy, parseInstitutionPolicy, type InstitutionFileIO } from './institution-config.js';
 
 const bytes = (text: string) => new TextEncoder().encode(text);
-const parse = (text: string) => parseInstitutionThresholds(bytes(text));
+const parse = (text: string) => parseInstitutionPolicy(bytes(text))?.thresholds;
+const policy = (text: string) => parseInstitutionPolicy(bytes(text));
 function refusal(run: () => unknown, code = 'MALFORMED', pointer?: string): void {
   let observed: unknown;
   try { run(); } catch (error) { observed = error; }
@@ -26,7 +27,7 @@ describe('RFC0097 whole-byte and whole-JSON profile', () => {
   it.each([
     [0xef, 0xbb, 0xbf, 0x7b, 0x7d], [0xff], [0xc0, 0xaf], [0xed, 0xa0, 0x80],
     [0xf4, 0x90, 0x80, 0x80], [0xe2, 0x82], [0x7b, 0x22, 0xff, 0x22, 0x3a, 0x31, 0x7d],
-  ].map(octets => ({ octets })))('refuses BOM/invalid UTF8 bytes (%#)', ({ octets }) => refusal(() => parseInstitutionThresholds(Uint8Array.from(octets))));
+  ].map(octets => ({ octets })))('refuses BOM/invalid UTF8 bytes (%#)', ({ octets }) => refusal(() => parseInstitutionPolicy(Uint8Array.from(octets))));
   it.each([
     '{"a":1,"a":2}', String.raw`{"a":1,"\u0061":2}`, '{"opaque":[{"x":1,"x":2}]}',
     String.raw`{"validation_overrides":{"dscr_warning_below":1,"\u0064scr_warning_below":2}}`,
@@ -93,40 +94,57 @@ describe('RFC0097 closed atomic shape and precedence', () => {
   });
 });
 
+describe('RFC 0109 financial_validity_errors admission', () => {
+  const pointer = 'validation_overrides.financial_validity_errors';
+  it('admits a list of registered FV codes, empty and repeated entries included', () => {
+    expect(policy('{"validation_overrides":{"financial_validity_errors":["FV-04","FV-09"]}}')).toEqual({ financial_validity_errors: ['FV-04', 'FV-09'] });
+    expect(policy('{"validation_overrides":{"financial_validity_errors":[]}}')).toEqual({ financial_validity_errors: [] });
+    expect(policy('{"validation_overrides":{"financial_validity_errors":["FV-04","FV-04"]}}')).toEqual({ financial_validity_errors: ['FV-04', 'FV-04'] });
+    expect(policy('{"validation_overrides":{"dscr_warning_below":1.3,"financial_validity_errors":["FV-04"]}}'))
+      .toEqual({ thresholds: { dscr: { ...DEFAULT_THRESHOLDS.dscr, warning_below: 1.3 } }, financial_validity_errors: ['FV-04'] });
+  });
+  it.each(['null', 'true', '"FV-04"', '{}', '["FV-99"]', '["fv-04"]', '["FV-04",4]', '[null]', '["CC-01"]'])('refuses %s with the member pointer', raw => {
+    refusal(() => policy(`{"validation_overrides":{"financial_validity_errors":${raw}}}`), 'MALFORMED', pointer);
+  });
+  it('checks the numeric leaves first, in governed order', () => {
+    refusal(() => policy('{"validation_overrides":{"financial_validity_errors":["FV-99"],"debt_yield_warning_below":"bad"}}'), 'MALFORMED', 'validation_overrides.debt_yield_warning_below');
+  });
+});
+
 describe('RFC0097 read selection and absence', () => {
   const file = resolve(tmpdir(), 'records', 'link.uwx.md');
   it('reads first and defaults only for actual automatic ENOENT plus absent entry', () => {
     const calls: string[] = [];
     const io: InstitutionFileIO = { read: path => { calls.push(`read:${path}`); throw fsError('ENOENT'); }, lstat: path => { calls.push(`lstat:${path}`); throw fsError('ENOENT'); } };
-    expect(loadInstitutionThresholds(file, undefined, io)).toBeUndefined();
+    expect(loadInstitutionPolicy(file, undefined, io)).toBeUndefined();
     const selected = resolve(tmpdir(), 'records', '.uw.institution.json');
     expect(calls).toEqual([`read:${selected}`, `lstat:${selected}`]);
   });
   it.each(['EACCES', 'EPERM', 'EISDIR', 'EIO', 'ENOTDIR', 'ELOOP'])('classifies actual %s read failure without absence fallback', code => {
     const io: InstitutionFileIO = { read: () => { throw fsError(code); }, lstat: () => { throw new Error('must not inspect'); } };
-    refusal(() => loadInstitutionThresholds(file, undefined, io), 'UNREADABLE');
+    refusal(() => loadInstitutionPolicy(file, undefined, io), 'UNREADABLE');
   });
   it('explicit missing path never falls back or inspects adjacency', () => {
     const selected: string[] = [];
     const io: InstitutionFileIO = { read: path => { selected.push(path); throw fsError('ENOENT'); }, lstat: () => { throw new Error('must not inspect explicit absence'); } };
-    refusal(() => loadInstitutionThresholds(file, 'relative config.json', io), 'UNREADABLE');
+    refusal(() => loadInstitutionPolicy(file, 'relative config.json', io), 'UNREADABLE');
     expect(selected).toEqual([resolve('relative config.json')]);
   });
   it('rejects automatic dangling link/present entry after ENOENT and inspection denial', () => {
     for (const outcome of [{ isSymbolicLink: () => true }, { isSymbolicLink: () => false }]) {
-      refusal(() => loadInstitutionThresholds(file, undefined, { read: () => { throw fsError('ENOENT'); }, lstat: () => outcome }), 'UNREADABLE');
+      refusal(() => loadInstitutionPolicy(file, undefined, { read: () => { throw fsError('ENOENT'); }, lstat: () => outcome }), 'UNREADABLE');
     }
-    refusal(() => loadInstitutionThresholds(file, undefined, { read: () => { throw fsError('ENOENT'); }, lstat: () => { throw fsError('EACCES'); } }), 'UNREADABLE');
+    refusal(() => loadInstitutionPolicy(file, undefined, { read: () => { throw fsError('ENOENT'); }, lstat: () => { throw fsError('EACCES'); } }), 'UNREADABLE');
   });
   it('uses successful bytes without a racy pre-check or post-read re-selection', () => {
     const paths: string[] = [];
     const io: InstitutionFileIO = { read: path => { paths.push(path); return bytes('{"validation_overrides":{"dscr_warning_below":1.3}}'); }, lstat: () => { throw new Error('must not inspect successful read'); } };
-    expect(loadInstitutionThresholds(resolve(tmpdir(), 'records', '..', 'deal.uwx.md'), undefined, io)?.dscr?.warning_below).toBe(1.3);
+    expect(loadInstitutionPolicy(resolve(tmpdir(), 'records', '..', 'deal.uwx.md'), undefined, io)?.thresholds?.dscr?.warning_below).toBe(1.3);
     expect(paths).toEqual([resolve(tmpdir(), '.uw.institution.json')]);
   });
   it('lets unrelated adapter bugs retain their own error boundary', () => {
     const bug = new RangeError('programming defect');
-    expect(() => loadInstitutionThresholds(file, undefined, { read: () => { throw bug; }, lstat: () => undefined })).toThrow(bug);
+    expect(() => loadInstitutionPolicy(file, undefined, { read: () => { throw bug; }, lstat: () => undefined })).toThrow(bug);
   });
   it('selects one explicit or adjacent real file and leaves sources/config bytes unchanged', () => {
     const directory = mkdtempSync(resolve(tmpdir(), 'uwmd institution0097 '));
@@ -134,15 +152,15 @@ describe('RFC0097 read selection and absence', () => {
     const explicit = resolve(directory, 'explicit config.json');
     const source = resolve(directory, 'deal.uwx.md');
     try {
-      expect(loadInstitutionThresholds(source)).toBeUndefined();
+      expect(loadInstitutionPolicy(source)).toBeUndefined();
       const a = '{"validation_overrides":{"dscr_warning_below":1.3}}';
       const e = '{"validation_overrides":{"ltv_warning_above":0.7}}';
       writeFileSync(adjacent, a); writeFileSync(explicit, e); writeFileSync(source, 'source sentinel');
-      expect(loadInstitutionThresholds(source)?.dscr?.warning_below).toBe(1.3);
-      expect(loadInstitutionThresholds(source, relative(process.cwd(), explicit))).toEqual({ ltv: { ...DEFAULT_THRESHOLDS.ltv, warning_above: .7 } });
+      expect(loadInstitutionPolicy(source)?.thresholds?.dscr?.warning_below).toBe(1.3);
+      expect(loadInstitutionPolicy(source, relative(process.cwd(), explicit))).toEqual({ thresholds: { ltv: { ...DEFAULT_THRESHOLDS.ltv, warning_above: .7 } } });
       expect(readFileSync(adjacent, 'utf8')).toBe(a); expect(readFileSync(explicit, 'utf8')).toBe(e);
       expect(readFileSync(source, 'utf8')).toBe('source sentinel');
-      refusal(() => loadInstitutionThresholds(source, directory), 'UNREADABLE');
+      refusal(() => loadInstitutionPolicy(source, directory), 'UNREADABLE');
     } finally { rmSync(directory, { recursive: true, force: true }); }
   });
   it('rejects a real automatic dangling symbolic link where supported', ({ skip }) => {
@@ -150,7 +168,7 @@ describe('RFC0097 read selection and absence', () => {
     try {
       try { symlinkSync(resolve(directory, 'absent.json'), resolve(directory, '.uw.institution.json'), 'file'); }
       catch (error) { if (['EPERM', 'EACCES', 'ENOSYS'].includes((error as NodeJS.ErrnoException).code ?? '')) { skip(); return; } throw error; }
-      refusal(() => loadInstitutionThresholds(resolve(directory, 'deal.uwx.md')), 'UNREADABLE');
+      refusal(() => loadInstitutionPolicy(resolve(directory, 'deal.uwx.md')), 'UNREADABLE');
     } finally { rmSync(directory, { recursive: true, force: true }); }
   });
   it('preserves pure SOURCE/MODEL nested parameters and later defaults without hidden I/O', () => {
@@ -159,8 +177,8 @@ describe('RFC0097 read selection and absence', () => {
     const before = structuredClone(model);
     const caller = { dscr: { ...DEFAULT_THRESHOLDS.dscr, warning_below: 1.3 } };
     const callerBefore = structuredClone(caller);
-    expect(validateUWFile(model, caller).issues.some(i => i.code === 'FV-04')).toBe(true);
-    expect(validateUWFile(source).issues.some(i => i.code === 'FV-04')).toBe(false);
+    expect(validateUWFile(model, caller).deal_flags.some(f => f.code === 'FV-04')).toBe(true);
+    expect(validateUWFile(source).deal_flags.some(f => f.code === 'FV-04')).toBe(false);
     expect(model).toEqual(before); expect(caller).toEqual(callerBefore);
     expect(DEFAULT_THRESHOLDS.dscr).toEqual({ error_below: 1, warning_below: 1.2 });
   });

@@ -504,12 +504,15 @@ describe('Parkview example file', () => {
     expect(parsed.extensions['x_lender_matrix']).toBeDefined();
   });
 
-  it.skipIf(!exampleContent)('validation produces issues (DSCR warning expected)', () => {
+  it.skipIf(!exampleContent)('validation flags the deal (DSCR warning band expected)', () => {
     const parsed = parseUWFile(exampleContent);
     const result = validateUWFile(parsed);
-    // The Parkview example has a known DSCR warning (1.109x < 1.20x warning threshold).
-    const dscrIssues = result.issues.filter(i => i.code === 'FV-04');
-    expect(dscrIssues.length).toBeGreaterThan(0);
+    // The Parkview example has a known DSCR in the warning band (1.109x < 1.20x),
+    // reported as a deal flag, not an issue (RFC 0109).
+    const dscrFlags = result.deal_flags.filter(f => f.code === 'FV-04');
+    expect(dscrFlags.length).toBeGreaterThan(0);
+    expect(dscrFlags.every(f => f.band === 'warning')).toBe(true);
+    expect(result.issues.filter(i => i.code === 'FV-04')).toEqual([]);
   });
 });
 

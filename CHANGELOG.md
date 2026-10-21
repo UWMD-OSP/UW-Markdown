@@ -10,6 +10,21 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0109: Format §5.2 financial-validity findings are deal
+  flags, not validation errors. `ValidationResult` gains `deal_flags`
+  (`code`, `section`, `field`, `message`, `value`, `threshold`, `band`), always
+  present; `FV-NN` no longer appears in `issues` and never affects
+  `overall_status`, the `validate` exit status, stage readiness or receipt
+  counts. The institution config gains
+  `validation_overrides.financial_validity_errors`, an array of registered
+  `FV-NN` codes whose error band is reported as an `error` issue (warning bands
+  stay flags); a bad value is `VAL-INSTITUTION-CONFIG-MALFORMED`. The CLI, chat
+  and summary renders, the MCP connector, the web editor and VS Code show deal
+  flags apart from issues. `validateUWFile` takes an optional fourth `policy`
+  argument; the CLI-internal `loadInstitutionThresholds` becomes
+  `loadInstitutionPolicy`. Python matches. New
+  `institution-config/30`–`33`; case 67 and six FV baselines re-derived.
+
 - Owner rulings on RFC 0104 (2026-10-21): a frontmatter-scoped issue has
   `section: "frontmatter"` in every implementation. The reference adds it to
   `LOC-01`, `CUR-01`, `INVALID-ASSET-CLASS-*`, `MOD-DEPENDENCY-UNDECLARED` and the

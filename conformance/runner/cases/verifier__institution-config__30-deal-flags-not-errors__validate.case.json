@@ -1,0 +1,21 @@
+{
+  "id": "verifier__institution-config__30-deal-flags-not-errors__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "../../documents/malformed/67-financial-validity-homes.uwx.md",
+    "--institution",
+    "policy.input",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/30-deal-flags-not-errors",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/30-deal-flags-not-errors/expected.json",
+    "exit_code": 0,
+    "project": "issue-code-severity-set"
+  }
+}

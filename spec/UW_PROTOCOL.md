@@ -420,7 +420,8 @@ or `edit-*` capabilities they need has those cases skipped (§II.6a.5).
 - **Exit `0`** — the operation succeeded.
 - **Exit `1`** — the operation failed in a way the protocol describes: a
   validation error, a refused edit, a calc that could not evaluate.
-  stdout is still a parseable response.
+  stdout is still a parseable response. A Format §5.2 deal flag is not a
+  validation error and never sets exit `1` (RFC 0109).
 - **Exit `2`** — unrecoverable internal error. stdout is not required to
   be anything.
 
@@ -613,7 +614,7 @@ capability is unconditional: every implementation owes it.
 | Prefix | Family | Owning capability | Default severity |
 |---|---|---|---|
 | `CC-NN` | Cross-section consistency — two or more sections disagree about the same fact. NN is a two-digit integer registered in this spec. | `validate` | `warning` or `error` per check |
-| `FV-NN` | Single-section financial validity — a value falls outside a registered plausibility threshold. | `validate` | typically `warning` |
+| `FV-NN` | Single-section financial validity — a value falls outside a registered plausibility threshold. Reported in `ValidationResult.deal_flags` with a `band`, never in `issues`, unless the selected institution configuration escalates the code (Format §5.2, RFC 0109). | `validate` | none (a deal flag); `error` when escalated |
 | `DQ-NN` | Data quality — a required value is missing, provisional, or below a stage threshold. | `validate` | `warning` or `error` |
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
 | `CS-*` | Capital stack (§XIII); RFC0096 adds CS-03 sizing-declaration admission; RFC 0050 registers `CS-02b` for malformed split preferred-equity coupons; RFC 0098 adds CS-04 for an absent or invalid `point_in_time`. | `validate` | `warning` or `error` |
@@ -1901,6 +1902,13 @@ numbers when present; null, booleans and strings are invalid, with no coercion:
 | ltv_warning_above | ltv.warning_above |
 | debt_yield_warning_below | debt_yield.warning_below |
 
+A fourth recognized optional own member, `financial_validity_errors` (RFC 0109),
+MUST be an array whose every element is a string equal to a registered `FV-NN`
+code (Format §5.2); empty and repeated entries are admitted. It maps to the
+validation policy's `financial_validity_errors`: for a listed code an error-band
+finding is an `error` issue rather than a deal flag. A warning-band finding of a
+listed code stays a deal flag.
+
 This adds no numeric bounds, threshold defaults, rounding or comparisons.
 Negative values, zero and finite fractional values are admitted as configuration
 numbers; the existing validation comparison procedures remain unchanged.
@@ -1959,8 +1967,8 @@ Return exactly one primary config error:
 4. Own root `thresholds`: malformed; pointer `thresholds`.
 5. Invalid canonical carrier: malformed; pointer `validation_overrides`.
 6. Invalid recognized leaves: first in the fixed order dscr_warning_below,
-   ltv_warning_above, debt_yield_warning_below; pointer is the exact
-   `validation_overrides.<member>` path.
+   ltv_warning_above, debt_yield_warning_below, financial_validity_errors;
+   pointer is the exact `validation_overrides.<member>` path.
 
 No document-field issue or lower-priority config error cascades. Opaque members
 have no admission pass beyond the whole-JSON rules. A caller MAY receive optional

@@ -37,6 +37,8 @@ describe('RFC0097 actual standalone CLI admission', () => {
     ['atomic siblings', '{"validation_overrides":{"dscr_warning_below":1.108,"ltv_warning_above":"bad"}}', 'validation_overrides.ltv_warning_above'],
     ['fixed order', '{"validation_overrides":{"debt_yield_warning_below":null,"ltv_warning_above":null,"dscr_warning_below":null}}', 'validation_overrides.dscr_warning_below'],
     ['profile before shape', String.raw`{"thresholds":true,"opaque":"\udfff"}`, undefined],
+    ['unregistered escalation code', '{"validation_overrides":{"financial_validity_errors":["FV-99"]}}', 'validation_overrides.financial_validity_errors'],
+    ['escalation not an array', '{"validation_overrides":{"financial_validity_errors":"FV-04"}}', 'validation_overrides.financial_validity_errors'],
   ])('%s yields only typed error/exit1 and preserves source/config bytes', async (_name, text, pointer) => {
     const { file, config } = setup(); writeFileSync(config, text!);
     const before = readFileSync(config);
@@ -60,10 +62,33 @@ describe('RFC0097 actual standalone CLI admission', () => {
     const result = await run(['validate', file, '--json']);
     expect(result.status).toBe(0);
     const output = JSON.parse(result.stdout);
-    expect(output.issues.some((issue: { code: string }) => issue.code === code)).toBe(expected);
+    expect(output.deal_flags.some((flag: { code: string }) => flag.code === code)).toBe(expected);
     expect(output.errors).toEqual(output.issues.filter((issue: { severity: string }) => issue.severity === 'error'));
     expect(output.replacement_funding_verification.state).toBe('not_checked');
     expect(readFileSync(file, 'utf8')).toBe(SOURCE); expect(readFileSync(config, 'utf8')).toBe(text);
+  });
+  it('raises a listed code\'s error band to a validation error and exit 1 (RFC 0109 D3)', async () => {
+    const { file, config } = setup();
+    writeFileSync(file, SOURCE.replace('  dscr: 1.25', '  dscr: 0.95'));
+    const unlisted = await run(['validate', file, '--json']);
+    expect(unlisted.status).toBe(0);
+    const flagged = JSON.parse(unlisted.stdout);
+    expect(flagged.issues.some((i: { code: string }) => i.code === 'FV-04')).toBe(false);
+    expect(flagged.deal_flags).toContainEqual(expect.objectContaining({ code: 'FV-04', band: 'error', section: 'frontmatter', field: 'quick_metrics.dscr' }));
+    writeFileSync(config, '{"validation_overrides":{"financial_validity_errors":["FV-04"]}}');
+    const listed = await run(['validate', file, '--json']);
+    expect(listed.status).toBe(1);
+    const escalated = JSON.parse(listed.stdout);
+    expect(escalated.overall_status).toBe('errors');
+    expect(escalated.errors).toContainEqual(expect.objectContaining({ code: 'FV-04', severity: 'error', field: 'quick_metrics.dscr' }));
+    expect(escalated.deal_flags.some((f: { code: string }) => f.code === 'FV-04')).toBe(false);
+    const human = await run(['validate', file]);
+    expect(human.status).toBe(1);
+    writeFileSync(config, '{}');
+    const plain = await run(['validate', file]);
+    expect(plain.status).toBe(0);
+    expect(plain.stdout).toContain('Deal flags (1; Format §5.2 bands, not validation errors):');
+    expect(plain.stdout).toContain('[ERROR BAND] [frontmatter.quick_metrics.dscr] FV-04:');
   });
   it('accepts opaque overflow/paired Unicode and leaves unknown data unapplied', async () => {
     const { file, config } = setup();
@@ -77,7 +102,7 @@ describe('RFC0097 actual standalone CLI admission', () => {
     writeFileSync(config, '{'); writeFileSync(resolve(directory, '.uw.institution.json'), '{');
     const explicit = resolve(directory, 'explicit config.json'); writeFileSync(explicit, '{"validation_overrides":{"dscr_warning_below":1.3}}');
     const result = await run(['validate', file, '--institution', relative(directory, explicit), '--json'], directory);
-    expect(result.status).toBe(0); expect(JSON.parse(result.stdout).issues.some((i: { code: string }) => i.code === 'FV-04')).toBe(true);
+    expect(result.status).toBe(0); expect(JSON.parse(result.stdout).deal_flags.some((f: { code: string }) => f.code === 'FV-04')).toBe(true);
     const missing = await run(['validate', file, '--institution=absent.json', '--json'], directory);
     expect(missing.status).toBe(1); expect(JSON.parse(missing.stdout)).toEqual({ error: errorObject('UNREADABLE') });
   });
@@ -88,7 +113,7 @@ describe('RFC0097 actual standalone CLI admission', () => {
     expect(defaults.status).toBe(0); expect(JSON.parse(defaults.stdout).error).toBeUndefined();
     writeFileSync(config, '{"validation_overrides":{"dscr_warning_below":1.3}}');
     const selected = await run(['validate', relative(directory, file), '--json'], directory);
-    expect(selected.status).toBe(0); expect(JSON.parse(selected.stdout).issues.some((i: { code: string }) => i.code === 'FV-04')).toBe(true);
+    expect(selected.status).toBe(0); expect(JSON.parse(selected.stdout).deal_flags.some((f: { code: string }) => f.code === 'FV-04')).toBe(true);
   });
   it('uses invocation-path sidecar for a document symlink where supported', async ({ skip }) => {
     const { directory, documents, file, config } = setup();
@@ -97,7 +122,7 @@ describe('RFC0097 actual standalone CLI admission', () => {
     catch (error) { if (['EPERM', 'EACCES', 'ENOSYS'].includes((error as NodeJS.ErrnoException).code ?? '')) { skip(); return; } throw error; }
     writeFileSync(config, '{'); writeFileSync(resolve(directory, '.uw.institution.json'), '{"validation_overrides":{"dscr_warning_below":1.3}}');
     const result = await run(['validate', alias, '--json'], documents);
-    expect(result.status).toBe(0); expect(JSON.parse(result.stdout).issues.some((i: { code: string }) => i.code === 'FV-04')).toBe(true);
+    expect(result.status).toBe(0); expect(JSON.parse(result.stdout).deal_flags.some((f: { code: string }) => f.code === 'FV-04')).toBe(true);
     expect(readFileSync(file, 'utf8')).toBe(SOURCE);
   });
   it('selected directory is unreadable, not malformed or absent', async () => {

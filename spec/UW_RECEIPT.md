@@ -84,6 +84,11 @@ conventional sidecar spelling is `<record>.receipt.json`.
 The JSON Schema is normative for structure; this document is normative for
 behavior.
 
+`policy.validation` counts the validation result's `errors` and `warnings`. Format
+§5.2 deal flags are not issues and are not counted (RFC 0109); an institution
+escalation does not apply, since receipt issuance loads no institution
+configuration.
+
 ### 3.1 Canonicalizations
 
 `subject.canonicalization` names the canonical form the digest covers. Version

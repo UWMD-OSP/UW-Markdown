@@ -6120,6 +6120,26 @@
       "suite": "institution-config",
       "scenario": "29-json-whitespace",
       "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "30-deal-flags-not-errors",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "31-escalate-listed-error-band",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "32-escalate-warning-band-stays-flag",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "33-escalation-unregistered-code",
+      "target": "verifier"
     }
   ]
 }

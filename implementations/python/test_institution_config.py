@@ -85,6 +85,32 @@ class InstitutionConfigTests(unittest.TestCase):
         self.assertEqual(defaults,before);self.assertEqual(admitted,prior)
         self.assertEqual(_institution_threshold_map({},defaults),{})
 
+    def test_financial_validity_errors_strict_admission(self):
+        # RFC 0109 D3: an array of registered FV-NN codes, governed after the
+        # three numeric members; any other present value is MALFORMED.
+        pointer="validation_overrides.financial_validity_errors"
+        def config(value):
+            return ('{"validation_overrides":{"financial_validity_errors":'+value+'}}').encode()
+        for value in ('"FV-04"','null','false','1','{}','{"FV-04":true}'):
+            with self.subTest(value=value):self.refused(config(value),pointer)
+        for value in ('[1]','[null]','[true]','[["FV-04"]]','[{"code":"FV-04"}]','["FV-04",4]'):
+            with self.subTest(value=value):self.refused(config(value),pointer)
+        for code in ("FV-99","FV-00","FV-15","FV-4","fv-04","FV-04 ","CC-01",""):
+            with self.subTest(code=code):self.refused(config(json.dumps(["FV-04",code])),pointer)
+        self.assertEqual(_parse_institution_config(config('[]')),dict(financial_validity_errors=[]))
+        self.assertEqual(_parse_institution_config(config('["FV-04","FV-09","FV-04"]')),
+                         dict(financial_validity_errors=["FV-04","FV-09","FV-04"]))
+        every=["FV-%02d"%n for n in range(1,15)]
+        self.assertEqual(_parse_institution_config(config(json.dumps(every))),dict(financial_validity_errors=every))
+        # Governed order: a malformed numeric member is refused first.
+        self.refused(b'{"validation_overrides":{"financial_validity_errors":"bad","debt_yield_warning_below":null}}',
+                     "validation_overrides.debt_yield_warning_below")
+        self.refused(b'{"validation_overrides":{"financial_validity_errors":["FV-99"],"dscr_warning_below":1.1}}',pointer)
+        self.assertEqual(_parse_institution_config(b'{"validation_overrides":{"financial_validity_errors":["FV-04"],"dscr_warning_below":1.1}}'),
+                         dict(dscr_warning_below=1.1,financial_validity_errors=["FV-04"]))
+        # The codes are not a threshold band.
+        self.assertEqual(_institution_threshold_map(dict(financial_validity_errors=["FV-04"]),{}),{})
+
     def test_pure_admission_does_not_read_files_and_runtime_errors_are_not_malformed(self):
         with patch("uwmd_institution_config.Path.read_bytes",side_effect=AssertionError("no I/O")):
             self.assertEqual(_parse_institution_config(b'{}'),{})

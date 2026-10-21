@@ -1,0 +1,47 @@
+{
+  "overall_status": "errors",
+  "issues": [
+    {
+      "code": "DQ-06",
+      "severity": "info"
+    },
+    {
+      "code": "FV-04",
+      "severity": "error"
+    }
+  ],
+  "deal_flags": [
+    {
+      "code": "FV-02",
+      "band": "warning"
+    },
+    {
+      "code": "FV-04",
+      "band": "warning"
+    },
+    {
+      "code": "FV-05",
+      "band": "warning"
+    },
+    {
+      "code": "FV-08",
+      "band": "warning"
+    },
+    {
+      "code": "FV-09",
+      "band": "error"
+    },
+    {
+      "code": "FV-10",
+      "band": "warning"
+    },
+    {
+      "code": "FV-12",
+      "band": "warning"
+    },
+    {
+      "code": "FV-14",
+      "band": "warning"
+    }
+  ]
+}

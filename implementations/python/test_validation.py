@@ -22,6 +22,13 @@ def codes(result):
     return [(i["code"], i["severity"]) for i in result["issues"]]
 
 
+def flags(result):
+    """RFC 0109 deal flags as (code, band); they carry no severity member."""
+    for flag in result["deal_flags"]:
+        assert "severity" not in flag and flag["band"] in ("error", "warning"), flag
+    return [(f["code"], f["band"]) for f in result["deal_flags"]]
+
+
 def well_formed(section, **payload):
     meta = dict(section=section, provenance=dict(source="manual", actor="tester",
                 timestamp="2026-01-01T00:00:00Z"),
@@ -35,12 +42,13 @@ class ValidationTests(unittest.TestCase):
         spec = importlib.util.spec_from_file_location("shared_validation_comparison", ROOT / "conformance/runner/runner.py")
         driver = importlib.util.module_from_spec(spec); spec.loader.exec_module(driver)
         every = sorted((ROOT / "conformance/runner/cases").glob("*__validate.case.json"))
-        # RFC0097's 29 institution-config cases (#398) are CLI operation cases:
+        # RFC0097's 29 institution-config cases (#398), and RFC 0109's four (30-33),
+        # are CLI operation cases:
         # sidecar discovery, --institution paths and operation refusals, which
         # the direct API cannot express. The runner covers them through the CLI.
         config = [p for p in every if "__institution-config__" in p.name]
         paths = [p for p in every if p not in config]
-        self.assertEqual((len(paths), len(config)), (111, 29))
+        self.assertEqual((len(paths), len(config)), (111, 33))
         for path in paths:
             case = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(case["requires_capabilities"], ["validate"])
@@ -161,10 +169,13 @@ class ValidationTests(unittest.TestCase):
             ("dcf", {"assumptions":{"revenue_growth_rate":.1}}, "FV-12", "warning"),
             ("noi_model", {"income":{"vacancy_credit_loss":{"rate_applied":.01}}}, "FV-13", "warning"),
             ("noi_model", {"income":{"vacancy_credit_loss":{"rate_applied":.5}}}, "FV-14", "warning"))
-        for section,payload,code,severity in cases:
+        for section,payload,code,band in cases:
             with self.subTest(code=code):
                 parsed=parse(HEADER+well_formed(section,**payload));before=copy.deepcopy(parsed)
-                self.assertIn((code,severity),codes(validate(parsed)))
+                result=validate(parsed)
+                # RFC 0109: a deal flag, never an issue, whichever band.
+                self.assertIn((code,band),flags(result))
+                self.assertFalse(any(c.startswith("FV-") for c,_ in codes(result)))
                 self.assertEqual(parsed,before)
         # These exercise accepted canonical paths and thresholds; no financial
         # metric or model is recomputed to perform plausibility validation.
@@ -174,11 +185,12 @@ class ValidationTests(unittest.TestCase):
                                (None,None),(False,None),("0.1",None)):
             with self.subTest(value=value):
                 parsed=parse(HEADER+well_formed("debt_structure",sizing_metrics={"dscr_underwritten":value}))
-                emitted=[c for c in codes(validate(parsed)) if c[0].startswith("FV-")]
-                self.assertEqual(emitted,[expected] if expected else [])
+                result=validate(parsed)
+                self.assertEqual(flags(result),[expected] if expected else [])
+                self.assertFalse(any(c.startswith("FV-") for c,_ in codes(result)))
         parsed=parse(HEADER+well_formed("debt_structure",sizing_metrics={"dscr_underwritten":1.2}))
         result=validate(parsed,thresholds={"dscr":{"warning_below":1.3,"error_below":1.1}})
-        self.assertIn(("FV-04","warning"),codes(result))
+        self.assertIn(("FV-04","warning"),flags(result))
         self.assertEqual(parsed.source.blocks[0].parsed.value["sizing_metrics"]["dscr_underwritten"],1.2)
 
     def test_separate_async_v12_mismatch_never_becomes_structural_hdg09(self):

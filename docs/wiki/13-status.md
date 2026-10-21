@@ -18,6 +18,17 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Implemented RFC0109 — financial-validity findings are deal flags (owner acceptance 2026-10-21, D1 separate list, D3 per-code).**
+[RFC0109](../rfcs/0109-financial-validity-deal-flags.md): `FV-NN` findings leave
+`issues` for a new, always-present `ValidationResult.deal_flags` (`band`, no
+`severity`). They never set `overall_status`, the exit status, stage readiness or
+receipt counts, so a weak deal reads as a valid record. An institution config's
+`validation_overrides.financial_validity_errors` (strictly admitted) raises a
+listed code's error band to an `error` issue; its warning band stays a flag.
+CLI, renders, MCP, web editor and VS Code show flags apart from issues. Python
+matches. New portable cases `institution-config/30`–`33`; case 67 and the FV
+baselines re-derived. Parkview (`02-full-multifamily`) now reads `clean`.
+
 **Owner rulings 2026-10-21 on RFC0104 implemented.** Protocol §III.6a names the
 RFC 0093–0096 pass order as the one normative exception to non-normative issue
 order. Frontmatter-scoped issues carry `section: "frontmatter"` in both

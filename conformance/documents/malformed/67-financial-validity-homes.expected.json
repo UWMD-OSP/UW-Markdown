@@ -1,59 +1,59 @@
 {
-  "description": "RFC 0105: each Format \u00a75.2 band is read at every Format-defined home, frontmatter quick_metrics and the section field, and each home draws one issue at the most severe band it crosses. A frontmatter row has section \"frontmatter\".",
+  "description": "RFC 0105 / RFC 0109: each Format \u00a75.2 band is read at every Format-defined home, frontmatter quick_metrics and the section field, and each home draws one deal flag at the most severe band it crosses. A frontmatter row has section \"frontmatter\". The findings are deal flags, never validation issues: the record itself stays valid.",
   "must_parse": true,
-  "expected_codes": [
-    "FV-02",
-    "FV-04",
-    "FV-05",
-    "FV-08",
-    "FV-09",
-    "FV-10",
-    "FV-12",
-    "FV-14"
-  ],
-  "field_issues": [
+  "expected_codes": [],
+  "deal_flags": [
     {
       "code": "FV-04",
+      "band": "error",
       "section": "frontmatter",
       "field": "quick_metrics.dscr"
     },
     {
       "code": "FV-04",
+      "band": "warning",
       "section": "debt_structure",
       "field": "sizing_metrics.dscr_underwritten"
     },
     {
       "code": "FV-09",
+      "band": "error",
       "section": "debt_structure",
       "field": "sizing_metrics.ltv"
     },
     {
       "code": "FV-02",
+      "band": "warning",
       "section": "valuation",
       "field": "going_in_cap_rate"
     },
     {
       "code": "FV-14",
+      "band": "warning",
       "section": "noi_model",
       "field": "income.vacancy_credit_loss.rate_applied"
     },
     {
       "code": "FV-10",
+      "band": "warning",
       "section": "noi_model",
       "field": "expenses.expense_ratio"
     },
     {
       "code": "FV-12",
+      "band": "warning",
       "section": "dcf",
       "field": "assumptions.revenue_growth_rate"
     },
     {
       "code": "FV-08",
+      "band": "warning",
       "section": "dcf",
       "field": "returns.levered_irr"
     },
     {
       "code": "FV-05",
+      "band": "warning",
       "section": "dcf",
       "field": "returns.equity_multiple"
     }
