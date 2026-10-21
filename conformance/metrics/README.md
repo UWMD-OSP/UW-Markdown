@@ -3,8 +3,8 @@
 `verifier.mjs` verifies through `@uwmd/verify`'s `verifyStatedMetrics`
 (`metric-verification.ts`, RFC 0083 §2), which uses only the UWX reader,
 section resolver, safe-expression evaluator and shared §VIII.5 quantizer. The
-fixture keeps the plumbing: example discovery, the Lite anchor view and the
-statement bindings, and it passes the normative
+fixture keeps the plumbing: example discovery and the Lite anchor view, and
+it passes the normative
 [metric dictionary](../../spec/metrics/README.md) read from `spec/`. It imports
 `@uwmd/verify`'s built package entry (and, for the single-metric comparison,
 the same build's `metric-verification.js`) and nothing of `@uwmd/core`: no
@@ -23,13 +23,16 @@ superseded blocks, prose, scenarios, forecasts and market observations are not
 current metric claims. A numeric statement is counted separately at each address,
 so agreeing/disagreeing copies in frontmatter and sections remain visible.
 
-`statement-bindings.json` enumerates fixture-only aliases such as
-`valuation.going_in_cap_rate`, `valuation.price_per_sf` and
-`debt_structure.sizing_metrics.dscr_underwritten`. Canonical metric ids at the
-listed current output section roots are also found automatically. These are
-bindings to existing example fields, not a new normative alias contract. Lite
-anchors map only their explicitly stated input sections, using the published
-bridge's section mapping without any bridge defaults. Primary-size statements
+Where a document states each metric is the dictionary's normative
+`statement_bindings` (RFC 0099): canonical ids at the output section roots, plus
+aliases such as `valuation.going_in_cap_rate`, `valuation.price_per_sf` and
+`debt_structure.sizing_metrics.dscr_underwritten`. `verifyStatedMetrics` reads
+it from the dictionary, so the fixture holds no copy. `statement-homes/cases.json`
+proves each alias: a +10% tamper at a section home fails at that address while
+its `quick_metrics` copy keeps its own outcome, and an unbound look-alike field
+is no statement. Lite anchors map only their explicitly stated input sections
+(`lite-input-sections.json`), using the published bridge's section mapping
+without any bridge defaults. Primary-size statements
 are also checked as unrounded raw finite selectors. The two new builtin examples state cash-on-cash outputs; controls exercise the
 shared definition in every income class.
 

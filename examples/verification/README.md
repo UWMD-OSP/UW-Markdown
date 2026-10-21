@@ -6,7 +6,7 @@ exits 0 when the verifier reports what the scenario expects.
 
 | Script | Scenario | Expected result |
 |---|---|---|
-| [`01-valid-document.mjs`](01-valid-document.mjs) | [`deal.uwx.md`](deal.uwx.md) as published | Validation clean; 8 stated metrics `verified` |
+| [`01-valid-document.mjs`](01-valid-document.mjs) | [`deal.uwx.md`](deal.uwx.md) as published | Validation clean; 9 stated metrics `verified` (`valuation.going_in_cap_rate` included, RFC 0099) |
 | [`02-incorrect-stated-metric.mjs`](02-incorrect-stated-metric.mjs) | [`deal.wrong-cap-rate.uwx.md`](deal.wrong-cap-rate.uwx.md): stated cap rate 0.0600 where the record gives 0.0542 | `quick_metrics.cap_rate` `failed` (Protocol §II.2 item 2) |
 | [`03-tampered-receipt.mjs`](03-tampered-receipt.mjs) | A receipt issued for `deal.uwx.md`, then a result edited, then the record changed | `verified`; `failed` with `RCP-03`; `failed` with `RCP-01` ([UW Receipt](../../spec/UW_RECEIPT.md) §5.1) |
 | [`04-document-signature-failure.mjs`](04-document-signature-failure.mjs) | A detached document signature over `deal.uwx.md` (RFC 0084) | `verified`; a changed document `failed` (`subject_mismatch`, `INT-11`); an untrusted key `unverifiable` (`unknown_kid`, `INT-13`) |

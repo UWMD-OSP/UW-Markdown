@@ -1283,6 +1283,17 @@ export interface MetricDictionary {
   readonly $schema: 'https://uwmd.org/schemas/metric-dictionary.schema.json';
   readonly calculations: readonly MetricDictionaryCalculation[];
   readonly size_intensives: readonly MetricDictionarySize[];
+  /**
+   * RFC 0099: the closed registry of where a document states each metric,
+   * beyond frontmatter `quick_metrics.<id>`. A Verifier checks every bound
+   * statement; a field the registry does not bind is not a statement.
+   */
+  readonly statement_bindings: {
+    /** Section roots at which a metric's own id is a statement of it. */
+    readonly output_sections: readonly string[];
+    /** Further addresses (`section.path`) that state a metric, by metric id. */
+    readonly aliases: Readonly<Record<string, readonly string[]>>;
+  };
 }
 
 // ─── Size-intensive registry (PROTOCOL §XIII, RFC 0027) ──────────────────────
