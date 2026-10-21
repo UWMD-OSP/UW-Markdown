@@ -10,10 +10,9 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- A reassessment member stated as `null` is not stated (Format §4.5, #431): a null
-  `round_to_decimals` no longer draws `TAX-03` and uses the currency quantum, as
-  the section's own example intends, and a null `value_basis` or
-  `assessment_ratio` no longer counts toward the pair rule.
+- Remove the CLI's three deprecated 4.2.0 aliases (#412): `validate --stage`,
+  `export --compact` and `compose --parts` are now unknown flags, refused with
+  exit 1 like any other. Use `stage_readiness`, `--no-superseded` and `--out-dir`.
 
 - Launch playbooks in `docs/playbooks/`: adding an official asset class
   (the full RFC 0080 kit, as a checklist of the files a class touches),
