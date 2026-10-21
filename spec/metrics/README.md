@@ -174,3 +174,24 @@ Four definitions follow a published outside authority:
 | `mark_to_market` (data center) | (market − in-place rent) ÷ in-place; positive = under-rented upside | Broker and lender convention; no standard defines the percentage. EPRA *Best Practices Recommendations* (2024) §4.3 discloses its inputs (rent passing and ERV) |
 | `annual_facility_kwh`, `annual_power_cost`, `power_cost_per_kw_month` | Metered kWh, else contracted kW × explicit draw × PUE (measured before design) × 8,760; zero landlord cost under metered pass-through; null with no draw | The Green Grid, *White Paper #49: PUE — A Comprehensive Examination of the Metric* (PUE over a year of measured energy; energy = power × time) |
 | `total_room_revenue`, `room_revenue_per_key` | Stated booked rooms revenue, and ÷ keys; ADR × occupancy × nights only as the 1% `CC-HOSP-05` cross-check | OCC *Comptroller's Handbook: Commercial Real Estate Lending*, Hotels (ADR and RevPAR identities on paid rooms); HFTP USALI FAQ, Rooms Department (contents of rooms revenue) |
+
+## Variants in use
+
+Where practice computes a metric more than one way, these are the forms the
+dictionary uses today. This section describes the existing definitions; it
+changes none of them.
+
+| Metric | UWMD computes | Practice and authority | What differs |
+|---|---|---|---|
+| `price_per_kw`, `price_per_commissioned_kw` (data center) | Price ÷ commissioned critical IT kW. `price_per_kw` reads `valuation.purchase_price` and `property.critical_it_load_kw`; `price_per_commissioned_kw` reads `quick_metrics.purchase_price` and `dc_capacity.critical_it_load_kw` | CMBS offering documents quote the same ratio per MW of critical IT load (BBCMS 2023-C20 prospectus, Annex A-3, comparable data-center sales) | Per kW, not per MW. The two kW fields must agree (`CC-DC-08`); the two price fields are not cross-checked |
+| `revpar_index` (hospitality) | Property RevPAR, rounded to cents, ÷ `hotel_metrics.market_revpar` (comp-set RevPAR for the same period): a plain ratio, 1.00 = fair share | STR's RevPAR Index (RGI) is the same ratio × 100 | Scale (1.17 vs 117) and the inner cent rounding |
+| `revpor` (senior housing) | EGI ÷ (occupied units on the rent-roll date × 12) | Operators report resident fees and services ÷ average occupied units over the period (for example Welltower's non-GAAP RevPOR definition, 8-K earnings release) | The numerator is all EGI, and the denominator is a point-in-time count |
+| `adr`, `occupancy` (hospitality) | Rooms revenue ÷ `rent_roll.occupied_room_nights`; occupied ÷ available room nights | USALI and the OCC *Comptroller's Handbook: Commercial Real Estate Lending* (Hotels): paid rooms sold, excluding complimentary and house-use rooms | None when `occupied_room_nights` (the schema's "room nights sold") counts paid rooms only; a count that includes complimentary rooms understates ADR. Whether to define the field as paid rooms is open |
+| `gop_margin` (hospitality) | Gross operating profit ÷ `noi_model.income.effective_gross_income` | USALI: gross operating profit ÷ total operating revenue | None for a hotel, where EGI is total operating revenue (no vacancy deduction); a model whose EGI is net of anything drifts |
+| `price_per_sqft`, `price_per_nrsf` and the other per-area ids | Purchase price ÷ the class's primary size: rentable SF (office, industrial), gross leasable area (retail), net rentable SF (self storage) | OCC *Comptroller's Handbook*, appraisal review units of comparison; CMBS documents quote appraised value per SF | Always purchase price, never appraised value; the area measurement standard (BOMA, REBNY, IPMS) is not recorded |
+| `economic_occupancy` (self storage) | EGI ÷ gross potential rent | Economic occupancy is GPR less physical vacancy, concessions and credit loss, ÷ GPR (the complement of economic vacancy in the Fannie Mae DUS Guide, Part II, Ch. 2, §203.01) | EGI includes other income, so the ratio can exceed 1 |
+| `cash_on_cash` (all income classes) | Year-1 levered net cash flow from the DCF ÷ total equity, falling back to NOI − annual debt service; `null` without stated equity | The equity dividend rate: (NOI − annual debt service) ÷ equity (California State Board of Equalization, *The Income Approach to Value*) | The primary path is after capital items and reserves; the fallback is the textbook form |
+
+Open questions, for a decision before any change: whether to cross-check the two
+data-center price fields, whether to record the area measurement standard, and
+whether to define `occupied_room_nights` as paid rooms sold.
