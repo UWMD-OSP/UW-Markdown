@@ -2390,8 +2390,9 @@ function checkStackContent(
     if (typeof cls !== 'string' || !TRANCHE_CLASSES.has(cls)) {
       issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
     }
-    if (typeof position !== 'number' || !Number.isInteger(position)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position` });
+    // Format §4.24: `position` is an integer, 1 = most senior (schema minimum 1, #430).
+    if (typeof position !== 'number' || !Number.isInteger(position) || position < 1) {
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position of 1 or more (1 = most senior)` });
     } else if (seenPositions.has(position)) {
       issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
     } else {

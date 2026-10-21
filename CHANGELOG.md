@@ -10,6 +10,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- `CS-01` refuses a capital-stack tranche `position` below 1 (#430). Format §4.24
+  makes 1 the most senior and the section schema's minimum is 1; zero and
+  negative positions passed before. New `capital-stack/position-below-one`.
+
 - Launch playbooks in `docs/playbooks/`: adding an official asset class
   (the full RFC 0080 kit, as a checklist of the files a class touches),
   adding or changing a metric (authority, vectors, statement homes, and new ids
