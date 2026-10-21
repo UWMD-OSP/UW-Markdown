@@ -74,4 +74,21 @@ describe('validateUWFile — issue field paths (RFC 0104)', () => {
     expect(stale.map((i) => [i.section, i.field])).toEqual([['gaps', 'items[0].last_checked']]);
     expect(stale[0]!.message).toContain('noi_model.expense_ratio');
   });
+
+  it('gives every frontmatter-scoped issue section "frontmatter" (owner ruling 2026-10-21)', () => {
+    const frontmatter = (lines: string) =>
+      validateUWFile(parseUWFile(`---\nuw_version: "3.0"\ndeal_id: "rfc0104"\n${lines}---\n\n`)).issues;
+    const pairs = (list: ValidationMessage[], codes: string[]) =>
+      list.filter((i) => codes.includes(i.code)).map((i) => [i.code, i.section, i.field]);
+    expect(pairs(frontmatter('asset_class: true\nlocale: xx-XX\ncurrency_code: usd\n'), ['INVALID-ASSET-CLASS-001', 'LOC-01', 'CUR-01']))
+      .toEqual(expect.arrayContaining([
+        ['INVALID-ASSET-CLASS-001', 'frontmatter', 'asset_class'],
+        ['LOC-01', 'frontmatter', 'locale'],
+        ['CUR-01', 'frontmatter', 'currency_code'],
+      ]));
+    expect(pairs(frontmatter('asset_class: com.example.custom.widget\n'), ['MOD-DEPENDENCY-UNDECLARED']))
+      .toEqual([['MOD-DEPENDENCY-UNDECLARED', 'frontmatter', 'modules']]);
+    expect(pairs(frontmatter('quick_metrics:\n  dscr: 0.9\n'), ['FV-04']))
+      .toEqual([['FV-04', 'frontmatter', 'quick_metrics.dscr']]);
+  });
 });

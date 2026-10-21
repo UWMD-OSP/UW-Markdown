@@ -658,17 +658,19 @@ capability is unconditional: every implementation owes it.
 
 1. **`field`** is the dotted path to the offending member. For an issue with a
    `section` it starts at the block payload root, the whole fenced object
-   (`_meta.provenance.source`, `units[3].sqft`). For a frontmatter issue it
-   starts at the frontmatter root (`asset_class`, `quick_metrics.dscr`). Each
+   (`_meta.provenance.source`, `units[3].sqft`). A frontmatter issue has
+   `section` `"frontmatter"`, and its `field` starts at the frontmatter root
+   (`asset_class`, `quick_metrics.dscr`). Each
    step is a member name, and an array element is its index in brackets
    (`tranches[2].position`), never an element's `id`. An issue about a missing
    object names that object (`META_MISSING` → `_meta`). An issue about a whole
    block or section, or about a relation among several members, has no `field`.
-2. **Order.** Outside the passes whose order this section fixes (the
-   `META-01`…`META-06` metadata passes of RFCs 0093–0095 and the RFC 0096 payload
-   pass), the order of `issues` carries no meaning. A consumer that needs a
-   stable order sorts by `(section, field, code)`, and conformance compares those
-   issues as multisets.
+2. **Order.** The order of `issues` carries no meaning, with one normative
+   exception: the `META-01`…`META-06` metadata passes (RFCs 0093–0095) and the
+   RFC 0096 payload pass keep the order this section fixes for them, and
+   conformance pins that order. Every other issue may appear in any order. A
+   consumer that needs a stable order sorts by `(section, field, code)`, and
+   conformance compares those issues as multisets.
 
 **Coverage (RFC 0037).** Beside its issues, a conforming validator reports
 a per-check coverage record for the `CC-NN` family — `evaluated`, or

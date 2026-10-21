@@ -1,5 +1,5 @@
 {
-  "description": "RFC 0105: each Format \u00a75.2 band is read at every Format-defined home, frontmatter quick_metrics and the section field, and each home draws one issue at the most severe band it crosses. A frontmatter row has no section.",
+  "description": "RFC 0105: each Format \u00a75.2 band is read at every Format-defined home, frontmatter quick_metrics and the section field, and each home draws one issue at the most severe band it crosses. A frontmatter row has section \"frontmatter\".",
   "must_parse": true,
   "expected_codes": [
     "FV-02",
@@ -14,6 +14,7 @@
   "field_issues": [
     {
       "code": "FV-04",
+      "section": "frontmatter",
       "field": "quick_metrics.dscr"
     },
     {

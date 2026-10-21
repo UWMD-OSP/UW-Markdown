@@ -85,7 +85,7 @@ describe('validateUWFile — FV financial validity', () => {
       const found = issues(testCase.trigger(), testCase.code);
       expect(found, testCase.code).toHaveLength(1);
       expectRegistered(found[0]!, testCase.code, testCase.severity, testCase.field);
-      expect(found[0]!.section).toBe(testCase.section);
+      expect(found[0]!.section).toBe(testCase.section ?? 'frontmatter');
     });
 
     it(`does not emit ${testCase.code} at ${testCase.field} exactly at its configured boundary`, () => {
@@ -119,7 +119,7 @@ describe('validateUWFile — FV financial validity', () => {
   it('checks each stated home on its own (D1)', () => {
     const parsed = file({ dscr: 0.95 }, { debt_structure: block('debt_structure', at('sizing_metrics.dscr_underwritten', 1.1)) });
     expect(issues(parsed, 'FV-04').map((issue) => [issue.section, issue.field, issue.severity])).toEqual([
-      [undefined, 'quick_metrics.dscr', 'error'],
+      ['frontmatter', 'quick_metrics.dscr', 'error'],
       ['debt_structure', 'sizing_metrics.dscr_underwritten', 'warning'],
     ]);
   });

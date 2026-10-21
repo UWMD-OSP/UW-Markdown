@@ -290,7 +290,7 @@ function checkFinancialValidity(
         issues.push({
           code: side.code,
           severity,
-          ...(home.section === undefined ? {} : { section: home.section }),
+          section: home.section ?? 'frontmatter',
           field: home.path,
           message: `${band.metric} ${value} at ${home.section === undefined ? '' : `${home.section}.`}${home.path} is ${direction} the ${severity} threshold of ${limit}`,
           value,
@@ -3044,7 +3044,7 @@ function checkLocale(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   if (declared == null) return; // absent = en-US
   if (isSupportedLocale(declared)) return;
   issues.push({
-    code: 'LOC-01', severity: 'error', field: 'locale',
+    code: 'LOC-01', severity: 'error', section: 'frontmatter', field: 'locale',
     message: `LOC-01: locale ${JSON.stringify(declared)} is not a registered display locale; display renders are refused rather than silently produced in a different locale`,
     value: String(declared),
   });
@@ -3057,7 +3057,7 @@ function checkCurrencyIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]
   if (declared == null) return; // absent preserves legacy symbol behavior
   if (isCurrencyCode(declared)) return;
   issues.push({
-    code: 'CUR-01', severity: 'error', field: 'currency_code',
+    code: 'CUR-01', severity: 'error', section: 'frontmatter', field: 'currency_code',
     message: `CUR-01: currency_code ${JSON.stringify(declared)} is not three uppercase ASCII letters; currency identity is never inferred from locale or a display symbol`,
     value: declared,
   });
@@ -3082,6 +3082,7 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     issues.push({
       code: 'MOD-DEPENDENCY-UNDECLARED',
       severity: 'warning',
+      section: 'frontmatter',
       field: `modules[${entry.index}]`,
       message: `modules[${entry.index}] is not an object with an 'id', so it declares no module dependency.`,
       value: entry.value,
@@ -3096,6 +3097,7 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     issues.push({
       code: 'INVALID-ASSET-CLASS-001',
       severity: 'error',
+      section: 'frontmatter',
       field: 'asset_class',
       message: `asset_class must be a builtin class or a namespaced identifier string, not ${JSON.stringify(raw)}.`,
       value: raw,
@@ -3109,6 +3111,7 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     issues.push({
       code: identity.error.code,
       severity: 'error',
+      section: 'frontmatter',
       field: 'asset_class',
       message: identity.error.message,
       value: raw,
@@ -3127,6 +3130,7 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     issues.push({
       code: 'MOD-DEPENDENCY-UNDECLARED',
       severity: 'warning',
+      section: 'frontmatter',
       field: 'modules',
       message: `asset_class '${raw}' is module-declared, but frontmatter names no 'modules' to load.`,
       value: raw,

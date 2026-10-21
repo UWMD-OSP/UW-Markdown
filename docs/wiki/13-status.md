@@ -18,6 +18,13 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Owner rulings 2026-10-21 on RFC0104 implemented.** Protocol §III.6a names the
+RFC 0093–0096 pass order as the one normative exception to non-normative issue
+order. Frontmatter-scoped issues carry `section: "frontmatter"` in both
+implementations: the reference adds it to `LOC-01`, `CUR-01`,
+`INVALID-ASSET-CLASS-*`, `MOD-DEPENDENCY-UNDECLARED` and the `quick_metrics` FV
+homes (Python already did).
+
 **Implemented RFC0105 — financial-validity homes (owner acceptance 2026-10-20, as drafted).**
 [RFC0105](../rfcs/0105-financial-validity-homes.md): Format §5.2 now names the
 code and the homes of each band. Both implementations read every

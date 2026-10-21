@@ -4400,9 +4400,9 @@ nothing, and no field outside the table is read. A section home is read from the
 one block the §5.3 selection order picks, preferring the `senior` role for
 `debt_structure`. Each home draws at most one issue per side, at the most severe
 band it crosses: a DSCR of 0.95 is `FV-04`/error, not also `FV-04`/warning. The
-issue's `field` is the home (Protocol §III.6a), with no `section` for a
-frontmatter home: `quick_metrics.dscr`, or `sizing_metrics.dscr_underwritten` in
-section `debt_structure`. A value stated at both homes is checked at both. The
+issue's `field` is the home (Protocol §III.6a), and a frontmatter home's
+`section` is `"frontmatter"`: `quick_metrics.dscr` in section `frontmatter`, or
+`sizing_metrics.dscr_underwritten` in section `debt_structure`. A value stated at both homes is checked at both. The
 LTC band has no home and no code yet, so it is not checked.
 
 ### 5.3 Cross-Section Consistency Checks
