@@ -125,6 +125,7 @@ and how it gets accepted.
 | [0097](./0097-institution-config-refusal.md) | Refuse invalid selected institution configuration before validation | accepted | format, protocol, core, conformance, tooling |
 | [0098](./0098-capital-point-in-time.md) | Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point | accepted | format, protocol, core, conformance, tooling |
 | [0099](./0099-verify-every-stated-home.md) | Verify each dictionary metric wherever the document states it | accepted | format, protocol, core, conformance, tooling |
+| [0100](./0100-nonnegative-sizes.md) | Refuse negative sizes, counts, areas and rents | accepted | format, protocol, core, conformance, tooling |
 | [0101](./0101-present-invalid-source.md) | Refuse every present source value outside the actor grammar | accepted | format, core, conformance |
 | [0102](./0102-backtick-fences-only.md) | A structured block opens only on a three-backtick json line | accepted | format, conformance, tooling |
 
