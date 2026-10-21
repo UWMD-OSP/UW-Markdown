@@ -10,6 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- A non-object `_meta` (a string, array, number or boolean) draws `META_MISSING`,
+  as Protocol §XI defines it ("no `_meta` object"), instead of five
+  `META_FIELD_MISSING_*` warnings when it happened to be a non-empty string or
+  array (#429). Python already read it this way.
+
 - Launch playbooks in `docs/playbooks/`: adding an official asset class
   (the full RFC 0080 kit, as a checklist of the files a class touches),
   adding or changing a metric (authority, vectors, statement homes, and new ids
