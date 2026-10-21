@@ -3203,7 +3203,10 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       : [entry as UWBlock];
 
     for (const block of blocks) {
-      if (!block.meta || Object.keys(block.meta).length === 0) {
+      // Protocol §XI: META_MISSING means no `_meta` object. A string or array
+      // is none, whatever its length (#429); it is not five missing fields.
+      const meta: unknown = block.meta;
+      if (meta === null || typeof meta !== 'object' || Array.isArray(meta) || Object.keys(meta).length === 0) {
         issues.push({ code: 'META_MISSING', severity: 'warning', section: sectionId, message: `Section ${sectionId} is missing _meta object` });
         continue;
       }
