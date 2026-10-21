@@ -549,7 +549,9 @@ Metered pass-through: tenants pay their own metered power at cost, so the landlo
   "utility_rate_per_kwh": 0.08,
   "billing": "metered_pass_through",
   "power_margin": null,
-  "stated_annual_power_cost": null
+  "stated_annual_power_cost": null,
+  "metered_annual_kwh": null,
+  "draw_factor": 0.65
 }
 ```
 
