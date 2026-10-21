@@ -129,11 +129,8 @@ and how it gets accepted.
 | [0101](./0101-present-invalid-source.md) | Refuse every present source value outside the actor grammar | accepted | format, core, conformance |
 | [0102](./0102-backtick-fences-only.md) | A structured block opens only on a three-backtick json line | accepted | format, conformance, tooling |
 | [0103](./0103-metric-dictionary-corrections.md) | Four metric dictionary corrections — USALI F&B gross margin, data-center mark-to-market and drawn power, booked rooms revenue | accepted | format, core, conformance, tooling |
-<<<<<<< HEAD
 | [0104](./0104-issue-field-paths-and-order.md) | Validation issue field paths are dotted paths from the payload root; issue order is not normative | accepted | protocol, core, conformance |
-=======
 | [0106](./0106-malformed-block-json.md) | Refuse a structured block whose JSON is not an I-JSON object | draft | format, protocol, core, conformance |
->>>>>>> origin/main
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
