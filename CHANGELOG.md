@@ -10,6 +10,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Remove the CLI's three deprecated 4.2.0 aliases (#412): `validate --stage`,
+  `export --compact` and `compose --parts` are now unknown flags, refused with
+  exit 1 like any other. Use `stage_readiness`, `--no-superseded` and `--out-dir`.
+
 - Launch playbooks in `docs/playbooks/`: adding an official asset class
   (the full RFC 0080 kit, as a checklist of the files a class touches),
   adding or changing a metric (authority, vectors, statement homes, and new ids
