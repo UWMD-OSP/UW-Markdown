@@ -1,7 +1,7 @@
 ---
 rfc: 0108
 title: Align the §4.17 validation section's vocabulary with the validation result
-status: draft
+status: accepted
 author: claude-code
 created: 2026-10-21
 affects:
@@ -11,7 +11,8 @@ affects:
 
 # RFC 0108: Align the §4.17 validation section's vocabulary with the validation result
 
-> **Draft for owner acceptance.** Origin: owner ruling of 2026-10-21 (4): align
+> **Accepted by the owner, 2026-10-21, with D2 and D3** (Jared: "Owner rulings, 2026-10-21. RFC 0107 (#460) accepted with D2 = yes, add quick_metrics.ltc as a second home; D3 = check every stated LTC, not construction only. RFC 0108 (#461) accepted with D2 = yes, align completeness.severity; D3 = yes, replace the four stage names with the seven deal_stage values. RFC 0109 (#462) accepted with D1 = a separate deal_flags list; D3 = institutions list codes one by one in validation_overrides.financial_validity_errors. All other decisions as drafted.").
+> Origin: owner ruling of 2026-10-21 (4): align
 > the §4.17 `validation` vocabulary with the CLI result before 5.0. It changes a
 > section's closed vocabulary, so it is normative.
 
@@ -21,8 +22,9 @@ A record's stored `validation` section (Format §4.17) and a validator's result
 (Format §6.2, Protocol §III.6a) describe the same thing in different words. The
 section says `warnings_only` and `errors_present`; the result says `warnings` and
 `errors`. This RFC makes the section use the result's words, so a stored health
-signal and a fresh `uwmd validate` read the same way. Two smaller mismatches in
-the same section are offered as separate decisions.
+signal and a fresh `uwmd validate` read the same way. The owner also ruled to
+align the two smaller mismatches in the same section: completeness severities
+(D2) and stage names (D3).
 
 ## Motivation
 
@@ -52,9 +54,12 @@ the same section are offered as separate decisions.
 2. **`completeness[].severity`** (D2) becomes `error | warning | info`. A
    completeness item that halts the pipeline is recorded as a `blocking_flags`
    entry (Format §3.3), as it is everywhere else.
-3. **`completeness[].required_for_stage`** (D3) takes the `deal_stage` vocabulary
-   of §2.2.
-4. **Corpus.** The six files above change `warnings_only` to `warnings`.
+3. **`completeness[].required_for_stage`** (D3) takes the seven `deal_stage`
+   values of §2.2. The retired `underwriting` corresponds to `full_underwrite`;
+   `screening`, `credit_approval` and `closing` are unchanged.
+4. **Corpus.** The six files above change `warnings_only` to `warnings`, and any
+   `completeness[]` entry using a retired severity or stage name is rewritten.
+   The documents baseline `02-full-multifamily.parsed.json` follows its fixture.
 
 ## Compatibility analysis
 
@@ -70,9 +75,9 @@ consistent.
 
 ## Conformance impact
 
-The six files above. No expected output changes: the section is surfaced as
-data and no check reads it. Optionally, a structural rule could refuse a
-retired spelling (D5).
+The six files above, and `documents/expected/02-full-multifamily.parsed.json`,
+which surfaces the fixture's section as data. No other expected output changes:
+no check reads the section. A retired spelling is not refused (D5).
 
 ## Reference implementation
 
@@ -94,14 +99,14 @@ retired spelling (D5).
 - Whether the section should be fully generated from a `ValidationResult` (one
   mapping, no hand-written fields). Not proposed here.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-21)
 
 | # | Question | Proposal | Why |
 |---|---|---|---|
 | D1 | `overall_status` values | `clean \| warnings \| errors \| blocking`, as §6.2 | The ruling; the result is the wire contract |
-| D2 | `completeness[].severity` | `error \| warning \| info`; halting goes to `blocking_flags` | One severity vocabulary; alternative: leave it |
-| D3 | `completeness[].required_for_stage` | The §2.2 `deal_stage` values | `underwriting` names no stage; alternative: leave it |
-| D4 | Interplay with RFC 0109 | The section's status means exactly what the result's status means | One meaning, whichever way 0109 lands |
+| D2 | `completeness[].severity` | **Ruled: yes**, `error \| warning \| info`; halting goes to `blocking_flags` | One severity vocabulary |
+| D3 | `completeness[].required_for_stage` | **Ruled: yes**, the seven §2.2 `deal_stage` values | `underwriting` names no stage |
+| D4 | Interplay with RFC 0109 | The section's status means exactly what the result's status means | One meaning; with 0109 accepted, both exclude deal flags |
 | D5 | Retired spellings | Not refused; the corpus is rewritten | No reader depends on them; alternative: a `DQ` warning |
 | D6 | Versions | None allocated; prelaunch 4.x | RFC 0091 D6 |
 
