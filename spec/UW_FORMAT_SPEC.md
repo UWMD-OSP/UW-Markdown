@@ -3163,7 +3163,7 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
       "superseded": false
     }
   },
-  "overall_status": "clean | warnings_only | errors_present | blocking",
+  "overall_status": "clean | warnings | errors | blocking",
   "financial_validity": [
     {
       "flag_id": "string",
@@ -3184,8 +3184,8 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
     {
       "section": "string",
       "field": "string",
-      "required_for_stage": "screening | underwriting | credit_approval | closing",
-      "severity": "blocking | warning | info",
+      "required_for_stage": "scope | screening | term_sheet | full_underwrite | credit_approval | closing | monitoring",
+      "severity": "error | warning | info",
       "message": "string"
     }
   ],
@@ -3230,6 +3230,18 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
   }
 }
 ```
+
+**Vocabulary (RFC 0108).** The section uses the validation result's words.
+`overall_status` takes the values of §6.2 with the meaning §6.2 gives each, and
+a producer that writes the section SHOULD copy the status of the validation run
+it records; like the result's, it excludes the §5.2 deal flags recorded in
+`financial_validity[]` (RFC 0109). `completeness[].severity` is
+`error | warning | info`: a completeness item that halts the pipeline is
+recorded as a `blocking_flags` entry (§3.3), not as a severity.
+`completeness[].required_for_stage` takes the seven `deal_stage` values of §2.2;
+the retired `underwriting` corresponds to `full_underwrite`. The retired
+spellings `warnings_only`, `errors_present` and the `blocking` severity are not
+refused (no implementation reads the section's contents).
 
 ---
 

@@ -2170,7 +2170,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
     }
   },
   "_notes": null,
-  "overall_status": "warnings_only",
+  "overall_status": "warnings",
   "financial_validity": [
     {
       "flag_id": "FV-001",
@@ -2206,21 +2206,21 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
       "section": "due_diligence",
       "field": "appraisal.received",
       "required_for_stage": "credit_approval",
-      "severity": "blocking",
+      "severity": "error",
       "message": "Appraisal not yet received. Required before credit approval."
     },
     {
       "section": "due_diligence",
       "field": "environmental.phase1_received",
       "required_for_stage": "credit_approval",
-      "severity": "blocking",
+      "severity": "error",
       "message": "Phase I environmental not yet received."
     },
     {
       "section": "risk_assessment",
       "field": "composite_score",
       "required_for_stage": "credit_approval",
-      "severity": "blocking",
+      "severity": "error",
       "message": "L6 risk rating agents have not run. Required before credit submission."
     },
     {
