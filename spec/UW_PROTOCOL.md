@@ -256,6 +256,18 @@ A Verifier MUST satisfy all Reader requirements, and additionally:
    A metric whose inputs are absent is `unverifiable`, not failed. The
    definitions are written in the expression notation of
    §VIII.1–VIII.3 and published in the normative [metric dictionary](metrics/README.md), including class-scoped formulas, input paths, minimum stated precision, round_to and null semantics.
+   **Where a document states a metric (RFC 0099).** A statement of metric
+   *m* is a finite JSON number at frontmatter `quick_metrics.m`, at `S.m`
+   for each section `S` in the dictionary's
+   `statement_bindings.output_sections`, or at each path in
+   `statement_bindings.aliases[m]`, in every current block variant. It
+   applies to every class whose dictionary has an entry with id *m*. The
+   registry is closed: a field it does not bind is not a statement, and no
+   binding is inferred from a field name. A Verifier MUST check every
+   statement it finds, each address separately, with the entry's formula,
+   `round_to` and comparison precision; a `failed` statement at any address
+   fails verification. A non-numeric value at a bound address is not a
+   statement.
 3. Implement the stated-figure verifiers and apply them to the figures
    a document states: calendar-anchored cash flows, including the IRR
    procedure (§VIII.9); property cash-flow assembly (§VIII.9.6);

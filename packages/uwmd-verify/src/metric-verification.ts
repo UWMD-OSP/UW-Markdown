@@ -82,7 +82,10 @@ export interface StatedMetricBindings {
 export interface VerifyStatedMetricsOptions {
   /** The dictionary to verify against. Defaults to the builtin dictionary. */
   dictionary?: MetricDictionary;
-  /** Where statements live. Defaults to the canonical id at the builtin output section roots. */
+  /**
+   * Where statements live. Defaults to the dictionary's `statement_bindings`
+   * (RFC 0099), so every bound home of a metric is checked.
+   */
   bindings?: StatedMetricBindings;
   /**
    * Source decimals by unvaried address (`section.path`, or
@@ -97,18 +100,12 @@ export interface VerifyStatedMetricsOptions {
 }
 
 /**
- * The output section roots searched by default: the sections where the
- * builtin examples state dictionary metrics under their canonical ids
- * (`conformance/metrics/statement-bindings.json`; a test pins the two equal).
- * No aliases by default; the conformance aliases bind existing example fields
- * only. Module-level, not part of the public surface.
+ * The builtin dictionary's normative statement-binding registry (RFC 0099):
+ * each metric's own id at the output section roots, plus its aliases. It is
+ * closed; no binding is inferred from a field name. Module-level, not part of
+ * the public surface.
  */
-export const DEFAULT_STATED_METRIC_BINDINGS: StatedMetricBindings = Object.freeze({
-  output_sections: Object.freeze([
-    'valuation', 'debt_structure', 'noi_model', 'rent_roll', 'property', 'components',
-    'dc_capacity', 'dc_power', 'dc_revenue', 'mhc_sites', 'hotel_metrics', 'hotel_food_beverage',
-  ]),
-});
+export const DEFAULT_STATED_METRIC_BINDINGS: StatedMetricBindings = BUILTIN_METRIC_DICTIONARY.statement_bindings;
 
 // ─── Verification ────────────────────────────────────────────────────────────
 
@@ -189,7 +186,9 @@ export function verifyStatedMetrics(
   options: VerifyStatedMetricsOptions = {},
 ): StatedMetricsReport {
   const dictionary = options.dictionary ?? BUILTIN_METRIC_DICTIONARY;
-  const bindings = options.bindings ?? DEFAULT_STATED_METRIC_BINDINGS;
+  // A dictionary carries its own registry (RFC 0099); a module dictionary without one
+  // is checked at the builtin homes.
+  const bindings = options.bindings ?? dictionary.statement_bindings ?? DEFAULT_STATED_METRIC_BINDINGS;
   const precision = options.statedDecimals;
   const source = parsed.raw;
   // Each block's source JSON is tokenized once, however many statements it holds.

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import { getStatedDecimals, parseUWFile } from '../../packages/uwmd-verify/dist/index.js';
-import { verifyExample, verifyStatedMetric as verifyWithPrecision } from './verifier.mjs';
+import { readLiteSections, verifyExample, verifyStatedMetric as verifyWithPrecision, verifyStatementHome } from './verifier.mjs';
 import { jsonNumericTokens, jsonStatedDecimals, quickMetricDecimals } from './numeric-tokens.mjs';
 
 // Synthetic controls explicitly declare the full dictionary output precision.
@@ -174,9 +174,9 @@ export function controls(root) {
       }
     }],
     ['Lite-ratio-token-retains-stated-precision', () => {
-      const bindings = JSON.parse(readFileSync(join(root, 'conformance/metrics/statement-bindings.json'), 'utf8'));
+      const liteSections = readLiteSections(root);
       const source = '---\nuw_lite_version: 1.0\nasset_class: multifamily\n---\n- NOI: $120 <!-- uw:noi.net_operating_income -->\n- Debt service: $100 <!-- uw:debt.annual_debt_service -->\n- DSCR: 1.20x <!-- uw:debt.dscr -->\n';
-      const result = verifyExample(source, d, bindings);
+      const result = verifyExample(source, d, liteSections);
       assert.deepEqual(result.counts, { verified: 1, failed: 0, unverifiable: 0 });
       assert.equal(result.evidence[0].stated_decimals, 2);
     }],
@@ -187,5 +187,23 @@ export function controls(root) {
       verifyStatedMetric(m, p, 2);
       assert.equal(JSON.stringify({ m, p }), before);
     }],
+    ...statementHomes(root),
   ];
+}
+
+// RFC 0099: every bound home of a metric is checked, each address on its own.
+function statementHomes(root) {
+  const { cases } = JSON.parse(readFileSync(join(root, 'conformance/metrics/statement-homes/cases.json'), 'utf8'));
+  return cases.map(testCase => [`statement-home-${testCase.name}`, () => {
+    const report = verifyStatementHome(root, testCase);
+    for (const { path, state } of testCase.expect) {
+      const found = report.evidence.filter(e => e.path === path);
+      assert.equal(found.length, 1, `${path} is stated once`);
+      assert.equal(found[0].state, state, `${path}: ${JSON.stringify(found[0])}`);
+    }
+    for (const path of testCase.absent ?? []) {
+      assert.ok(!report.evidence.some(e => e.path === path), `${path} is not a statement`);
+    }
+    if (testCase.failed !== undefined) assert.equal(report.counts.failed, testCase.failed);
+  }]);
 }

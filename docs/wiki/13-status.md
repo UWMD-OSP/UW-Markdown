@@ -18,6 +18,16 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Implemented RFC0099 — verify every stated home (owner acceptance 2026-10-20).**
+[RFC0099](../rfcs/0099-verify-every-stated-home.md): the metric dictionary carries
+a closed `statement_bindings` registry (output sections plus eleven aliases, the
+former `conformance/metrics/statement-bindings.json`, now deleted). `uwmd verify`
+and `verifyStatedMetrics` check every bound home, so a wrong
+`valuation.going_in_cap_rate`, `price_per_sf` or sizing DSCR fails even when
+`quick_metrics` is right (#416). `conformance/metrics/statement-homes/` proves
+each alias. The Python implementation has no metric verifier yet, so it has
+nothing to adopt.
+
 **Implemented RFC0098 — capital point in time (owner acceptance 2026-10-19).**
 [RFC0098](../rfcs/0098-capital-point-in-time.md): `capital_stack.point_in_time`
 is required (`closing`|`stabilization`, `CS-04`); `debt_structure.point_in_time`
