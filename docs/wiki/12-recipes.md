@@ -56,9 +56,11 @@ new inputs).
 
 ## Add an asset-class calc pack
 
-See the scaffold in [05 — Calc packs › new asset-class pack](05-calc-packs.md).
-Touches verify's `builtin-packs/` and `src/index.ts` (core's `packs/` re-exports), core's `defaults.ts`, Excel layout, conformance.
-RFC: **yes** (`docs/rfcs/0003-module-asset-classes.md`).
+A new official class is a full builtin, not just a pack: follow the
+[asset-class playbook](../playbooks/ADD_ASSET_CLASS.md) (RFC 0080). The pack
+scaffold is in [05 — Calc packs › new asset-class pack](05-calc-packs.md). A
+third-party class is a module ([playbook](../playbooks/THIRD_PARTY_MODULE.md)).
+RFC: **yes**.
 
 ## Add a Bancroft agent layer
 

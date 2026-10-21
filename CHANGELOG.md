@@ -10,6 +10,15 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Launch playbooks in `docs/playbooks/`: adding an official asset class
+  (the full RFC 0080 kit, as a checklist of the files a class touches),
+  adding or changing a metric (authority, vectors, statement homes, and new ids
+  rather than silent redefinition after launch), third-party modules (identity,
+  resolution, the deliberate limits, signing), and release rules after launch
+  (lockstep semver, comment windows, keys, disclosure; deprecation window and key
+  policy marked proposed). Linked from CONTRIBUTING and the wiki; the docs-site
+  pages come with the launch-day site update.
+
 - Implement accepted RFC0100 (#415): a closed size contract (Format §5.5) refuses a
   stated negative or non-finite size, count, area or rent, or a fractional count,
   as `SIZE-01` (error; new `SIZE-NN` family) in every current `property` and

@@ -48,6 +48,7 @@ Add/run tests or conformance fixtures | [09 — Conformance & testing](09-confor
 Know the rules you must not break | [10 — Conventions & invariants](10-conventions-invariants.md)
 Build, version, or release | [11 — Build, release & governance](11-build-release-governance.md)
 Do a specific common task | [12 — Recipes](12-recipes.md)
+Add a class or metric, ship a module, or release after launch | [Playbooks](../playbooks/README.md)
 See what's built vs. what needs work | [13 — Build status (living)](13-status.md)
 
 ## The fastest possible orientation
