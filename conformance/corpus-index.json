@@ -5907,6 +5907,11 @@
       "target": "verifier"
     },
     {
+      "suite": "documents",
+      "scenario": "malformed/57-yaml-nested-under-scalar",
+      "target": "verifier"
+    },
+    {
       "suite": "recoveries",
       "scenario": "reject-inherited-cash-flow-variant",
       "target": "verifier"

@@ -246,6 +246,17 @@ function parseYamlFrontmatter(text: string, onMember?: ParseOptions['onFrontmatt
       }
       if (keep) result[key] = nested;
     } else {
+      // Appendix D nests only under a `key:` line with no inline value. An
+      // indented line under a scalar or `[]` would otherwise be dropped (or read
+      // as a top-level key), so it is refused rather than lost (#426).
+      let next = i + 1;
+      while (next < lines.length && (lines[next].trim() === '' || lines[next].trim().startsWith('#'))) next++;
+      if (next < lines.length && /^[ \t]/.test(lines[next])) {
+        const feature = 'a scalar entry that also contains nested entries';
+        throw new UWMDParseError('UNSUPPORTED_YAML_FEATURE',
+          `Frontmatter line ${next + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D).`,
+          { line: next + 1, feature });
+      }
       if (keep) result[key] = scalar.value;
       i++;
     }
