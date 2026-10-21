@@ -952,7 +952,8 @@ describe('JCS Unicode admission at receipt boundaries', () => {
     expect(result.issues.map(issue => issue.code)).toEqual(['RCP-09']);
     expect(calls).toBe(0);
     expect(JSON.stringify(receipt)).toBe(before);
-    await expect(resolveReceiptSubject(invalid, { filename: 'unicode.uwx.md' })).rejects.toBeInstanceOf(TypeError);
+    // RFC 0106: the Reader refuses the unpaired surrogate before canonicalization.
+    await expect(resolveReceiptSubject(invalid, { filename: 'unicode.uwx.md' })).rejects.toThrow(/SOURCE_BLOCK_MALFORMED/);
   });
 
   it('preserves the existing valid receipt subject and results without rebaselining', async () => {

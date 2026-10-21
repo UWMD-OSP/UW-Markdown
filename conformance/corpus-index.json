@@ -478,6 +478,36 @@
     },
     {
       "suite": "documents",
+      "scenario": "malformed/60-block-json-syntax-error",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/61-block-json-duplicate-member",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/62-block-json-number-overflow",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/63-block-json-lone-surrogate",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/64-block-json-null-root",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/65-block-json-superseded-duplicate",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
       "scenario": "malformed/20-flat-meta",
       "target": "verifier"
     },

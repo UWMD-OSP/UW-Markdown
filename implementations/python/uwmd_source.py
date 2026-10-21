@@ -4,7 +4,8 @@ Format 2.1/2.4 describes the structured Markdown carrier; Protocol VIII.5.1
 requires retaining authored numeric precision. This module preserves the UTF-8
 source and JSON number lexemes before float conversion. It does not parse YAML,
 route variants, validate records, compute hashes, or claim ``parse`` conformance.
-Errors here are implementation-local exceptions, not new Protocol error codes.
+Errors here are implementation-local exceptions, except one: a block body that
+is not an I-JSON object is the registered ``SOURCE_BLOCK_MALFORMED`` (RFC 0106).
 """
 from dataclasses import dataclass
 import json
@@ -15,6 +16,27 @@ from typing import Any
 
 class SourceError(ValueError):
     """Source cannot be scanned without guessing or losing distinctions."""
+
+
+class BlockMalformedError(SourceError):
+    """A structured block body is not an I-JSON object (Format 2.4, RFC 0106)."""
+
+    code = "SOURCE_BLOCK_MALFORMED"
+
+
+def _lone_surrogate(value: Any) -> bool:
+    """True if any decoded string or member name holds an unpaired surrogate.
+
+    Python's JSON decoder joins an escaped surrogate pair into one code point,
+    so any surviving code point in U+D800..U+DFFF is unpaired.
+    """
+    if isinstance(value, str):
+        return any(0xD800 <= ord(character) <= 0xDFFF for character in value)
+    if isinstance(value, dict):
+        return any(_lone_surrogate(key) or _lone_surrogate(item) for key, item in value.items())
+    if isinstance(value, list):
+        return any(_lone_surrogate(item) for item in value)
+    return False
 
 
 @dataclass(frozen=True)
@@ -238,9 +260,19 @@ def scan_source(raw: bytes) -> ScannedSource:
                 raise SourceError("repeated fence annotation key")
             attributes[key] = item
         body = Span(offsets[index + 1], offsets[end])
-        parsed = parse_json_source(body.extract(raw), byte_offset=body.start)
+        where = "block at line " + str(index + 1)
+        try:
+            parsed = parse_json_source(body.extract(raw), byte_offset=body.start)
+        except SourceError as error:
+            # A local resource limit is this seed's refusal, not a defect of
+            # the source, so it keeps its own uncoded diagnostic.
+            if "resource" in str(error):
+                raise
+            raise BlockMalformedError(where + ": " + str(error)) from error
         if not isinstance(parsed.value, dict):
-            raise SourceError("UW structured block body is not an object")
+            raise BlockMalformedError(where + ": UW structured block body is not an object")
+        if _lone_surrogate(parsed.value):
+            raise BlockMalformedError(where + ": unpaired surrogate")
         blocks.append(StructuredBlock(attributes["uw:section"], tuple(attributes.items()),
                                       Span(offsets[index], offsets[end + 1]), body, parsed))
         index = end + 1

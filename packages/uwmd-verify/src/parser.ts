@@ -43,6 +43,59 @@ function firstJSONMember(json: string): string | undefined {
   return undefined;
 }
 
+/**
+ * Admit one structured block body (Format §2.4, RFC 0106): exactly one JSON
+ * object that is I-JSON. `JSON.parse` proves the syntax; the lexical walk then
+ * finds what it hides: a duplicate member name after escape decoding (it keeps
+ * the last), an unpaired surrogate, and a number that overflows binary64 (it
+ * reads `Infinity`). Any defect refuses the whole document.
+ */
+function admitBlockJson(rawJson: string, sectionId: string, line: number): Record<string, unknown> {
+  const refuse = (defect: string): never => {
+    throw new UWMDParseError('SOURCE_BLOCK_MALFORMED',
+      `Section '${sectionId}' block at line ${line} ${defect}.`, { line });
+  };
+  let value: unknown;
+  try {
+    value = JSON.parse(rawJson);
+  } catch (err) {
+    if (!(err instanceof SyntaxError)) throw err;
+    return refuse(`is not valid JSON (${err.message})`);
+  }
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return refuse('is not a JSON object');
+  }
+  const stack: (Set<string> | null)[] = [];
+  const tokens = /"(?:\\.|[^"\\])*"|[{}[\]]|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
+  for (const match of rawJson.matchAll(tokens)) {
+    const token = match[0];
+    if (token === '{') stack.push(new Set());
+    else if (token === '[') stack.push(null);
+    else if (token === '}' || token === ']') stack.pop();
+    else if (token[0] !== '"') {
+      if (!Number.isFinite(Number(token))) refuse(`has a number outside finite binary64 (${token})`);
+    } else {
+      const decoded = JSON.parse(token) as string;
+      for (let k = 0; k < decoded.length; k++) {
+        const code = decoded.charCodeAt(k);
+        if (code >= 0xd800 && code <= 0xdbff) {
+          const next = decoded.charCodeAt(k + 1);
+          if (next >= 0xdc00 && next <= 0xdfff) { k++; continue; }
+          refuse('has an unpaired surrogate');
+        } else if (code >= 0xdc00 && code <= 0xdfff) refuse('has an unpaired surrogate');
+      }
+      let after = match.index + token.length;
+      while (after < rawJson.length && ' \t\r\n'.includes(rawJson[after]!)) after++;
+      if (rawJson[after] === ':') {
+        const names = stack.at(-1);
+        if (names?.has(decoded)) refuse(`has a duplicate member name ${JSON.stringify(decoded)}`);
+        names?.add(decoded);
+      }
+    }
+  }
+  return value as Record<string, unknown>;
+}
+
 /** Internal only: deliberately absent from the package's public barrels. */
 export function parsedPhysicalBlocks(parsed: ParsedUWFile): readonly UWBlock[] {
   return retainedPhysicalBlocks.get(parsed) ?? [];
@@ -450,18 +503,9 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
     i++; // move past closing ```
 
     const rawJson = jsonLines.join('\n');
-    let parsed: Record<string, unknown>;
-    let firstMember: string | undefined;
-
-    try {
-      parsed = JSON.parse(rawJson) as Record<string, unknown>;
-      firstMember = firstJSONMember(rawJson);
-    } catch (err) {
-      if (strict) {
-        throw new Error(`JSON parse error in section ${sectionId} at line ${lineStart}: ${err}`);
-      }
-      parsed = { _parse_error: String(err), _raw: rawJson };
-    }
+    // Every block, current or superseded, in strict mode or not (RFC 0106).
+    const parsed = admitBlockJson(rawJson, sectionId, lineStart);
+    const firstMember = firstJSONMember(rawJson);
 
     const meta = (parsed['_meta'] ?? {}) as UWMeta;
 

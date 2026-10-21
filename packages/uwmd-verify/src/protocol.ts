@@ -1691,6 +1691,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
     description: 'Frontmatter YAML subset violation',
     capabilities: ['parse'],
   },
+  { prefix: 'SOURCE_BLOCK_MALFORMED', description: 'Structured block body is not an I-JSON object (RFC 0106)', capabilities: ['parse'] },
   // Protocol-level refusals are owed by every implementation: they report that a
   // request was malformed, which is not a capability one can decline to have.
   { prefix: 'UNSUPPORTED_FORMAT_VERSION', description: 'Unsupported or absent document version (RFC 0081)', capabilities: ['parse'] },
@@ -2585,6 +2586,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'Frontmatter uses a YAML feature outside the .uw.md subset (anchors, tags, block scalars, complex keys, or directives).',
     remediation: 'Rewrite the frontmatter using only the YAML subset documented in UW_FORMAT_SPEC.md Appendix D — scalars, simple mappings, and dash-prefixed sequences.',
     spec_ref: 'UW_FORMAT_SPEC.md Appendix D',
+  },
+  {
+    code: 'SOURCE_BLOCK_MALFORMED', severity: 'error',
+    title: 'Structured block is not an I-JSON object',
+    description: 'A uw:section block body is not one JSON object, or is JSON a reader cannot read faithfully: a syntax error or empty body, a duplicate member name, a number outside finite binary64, or an unpaired surrogate. The document is refused, including when the block is superseded.',
+    remediation: 'Fix the block at the reported line so its body is a single JSON object with unique member names, finite numbers and well-formed strings. Do not drop the block: a superseded block is still part of the record.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.4',
   },
 ]);
 

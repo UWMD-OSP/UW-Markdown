@@ -780,3 +780,55 @@ describe('quoted frontmatter mapping keys', () => {
     }
   });
 });
+
+// ─── Structured block JSON admission (RFC 0106) ──────────────────────────────
+
+describe('structured block JSON admission (RFC 0106)', () => {
+  const META = '"_meta":{"section":"x_probe","provenance":{"source":"manual","actor":"test","timestamp":"2026-10-20T00:00:00Z"},"quality":{"confidence":"high","human_review_required":false},"lifecycle":{"revision":1,"superseded":false}}';
+  const doc = (body: string, fence = '```json uw:section=x_probe') =>
+    `---\nuw_version: "3.0"\ndeal_id: "rfc0106"\n---\n\n${fence}\n${body}\n\`\`\`\n`;
+  const refusal = (content: string, defect: RegExp, strict = false) => {
+    let caught: unknown;
+    try { parseUWFile(content, { strict }); } catch (error) { caught = error; }
+    expect(caught).toBeInstanceOf(UWMDParseError);
+    expect((caught as UWMDParseError).code).toBe('SOURCE_BLOCK_MALFORMED');
+    expect((caught as UWMDParseError).line).toBe(6);
+    expect((caught as Error).message).toMatch(defect);
+  };
+
+  it.each([
+    ['a syntax error', `{${META},"value":}`, /not valid JSON/],
+    ['an empty body', '', /not valid JSON/],
+    ['a trailing value', `{${META}} {}`, /not valid JSON/],
+    ['a null root', 'null', /not a JSON object/],
+    ['a scalar root', '42', /not a JSON object/],
+    ['an array root', `[{${META}}]`, /not a JSON object/],
+    ['a duplicate member', `{${META},"value":1,"value":2}`, /duplicate member name "value"/],
+    ['a duplicate after escape decoding', String.raw`{${META},"value":1,"value":2}`, /duplicate member name "value"/],
+    ['a nested duplicate', `{${META},"inner":{"a":1,"a":2}}`, /duplicate member name "a"/],
+    ['an overflowing number', `{${META},"value":1e999}`, /outside finite binary64 \(1e999\)/],
+    ['an overflowing negative number', `{${META},"value":-1e400}`, /outside finite binary64/],
+    ['an escaped lone high surrogate', String.raw`{${META},"value":"\ud800"}`, /unpaired surrogate/],
+    ['an escaped lone low surrogate', String.raw`{${META},"value":"\udc00"}`, /unpaired surrogate/],
+    ['a lone surrogate in a member name', String.raw`{${META},"\ud801":"kept"}`, /unpaired surrogate/],
+  ])('refuses %s, in non-strict and strict mode', (_label, body, defect) => {
+    refusal(doc(body), defect);
+    refusal(doc(body), defect, true);
+  });
+
+  it('refuses a malformed superseded block too (D4)', () => {
+    refusal(doc(`{${META},"value":1,"value":2}`, '```json uw:section=x_probe superseded=true'), /duplicate member name/);
+  });
+
+  it('admits the same names in sibling objects, paired surrogates and large finite numbers', () => {
+    const body = String.raw`{${META},"a":{"id":1},"b":{"id":2},"rows":[{"id":1},{"id":2}],"emoji":"😀","raw":"😀","big":1.7976931348623157e308,"long":12345678901234567890,"text":"a \"quoted\" : name"}`;
+    const parsed = parseUWFile(doc(body));
+    const block = parsed.extensions['x_probe'] as { content: Record<string, unknown> };
+    expect(block.content['emoji']).toBe('😀');
+    expect(block.content['big']).toBe(1.7976931348623157e308);
+  });
+
+  it('does not read a member-like string value as a member name', () => {
+    expect(() => parseUWFile(doc(`{${META},"note":"value","value":1}`))).not.toThrow();
+  });
+});

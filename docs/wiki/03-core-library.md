@@ -173,6 +173,9 @@ walks a dot-path into a content object.
 - `DQ-07..DQ-09` — scenario vocabulary, BTR subtype agreement and class scope
   (RFC 0072); warnings in both format generations, no stage or math changes.
 - `UNSUPPORTED_YAML_FEATURE` — frontmatter outside the YAML subset.
+- `SOURCE_BLOCK_MALFORMED` — a structured block body that is not one I-JSON
+  object (RFC 0106); `parseUWFile` throws it as a `UWMDParseError` with the
+  block's line, so a non-strict parse no longer keeps a `_parse_error` block.
 
 ## editor.ts (starter editor)
 

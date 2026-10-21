@@ -105,7 +105,8 @@ def main(arguments):
             diagnostic = {"message": str(error)}
             if hasattr(error, "code"):
                 diagnostic["code"] = error.code
-                if error.code in ("UNSUPPORTED_FORMAT_VERSION", "UNSUPPORTED_YAML_FEATURE", "SOURCE_CONTENT_MISMATCH"):
+                if error.code in ("UNSUPPORTED_FORMAT_VERSION", "UNSUPPORTED_YAML_FEATURE", "SOURCE_CONTENT_MISMATCH",
+                                  "SOURCE_BLOCK_MALFORMED"):
                     diagnostic["category"] = "parse"
             return {"error": diagnostic}, 1
         except OSError as error:
@@ -179,7 +180,7 @@ def main(arguments):
                 # parse errors even when reached through validate. Uncoded
                 # local failures do not acquire a fabricated fallback code.
                 if error.code in ("UNSUPPORTED_FORMAT_VERSION", "UNSUPPORTED_YAML_FEATURE",
-                                  "SOURCE_CONTENT_MISMATCH"):
+                                  "SOURCE_CONTENT_MISMATCH", "SOURCE_BLOCK_MALFORMED"):
                     diagnostic["category"] = "parse"
             return {"error": diagnostic}, 1
         except ValidationUnavailable as error:
