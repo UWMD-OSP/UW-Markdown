@@ -214,7 +214,14 @@ def cross_checks(ledger, *, defer_summaries=False):
     ledger.finish_coverage(summaries=not defer_summaries)
 
 
+# Format 5.2 (RFC 0105): every Format-defined home of each band, including the
+# denormalized frontmatter quick_metrics; one issue per home at the worst band.
 _THRESHOLD_SPECS = (
+    ("frontmatter", ("quick_metrics.cap_rate",), "cap_rate", .03, .15, None, None, "FV-01", "FV-02"),
+    ("frontmatter", ("quick_metrics.debt_yield",), "debt_yield", .07, None, None, None, "FV-03", None),
+    ("frontmatter", ("quick_metrics.dscr",), "dscr", 1.2, None, 1.0, None, "FV-04", None),
+    ("frontmatter", ("quick_metrics.ltv",), "ltv", None, .75, None, .85, None, "FV-09"),
+    ("frontmatter", ("quick_metrics.irr_projected",), "irr", .05, .4, None, None, "FV-07", "FV-08"),
     ("valuation", ("going_in_cap_rate",), "cap_rate", .03, .15, None, None, "FV-01", "FV-02"),
     ("debt_structure", ("sizing_metrics.debt_yield",), "debt_yield", .07, None, None, None, "FV-03", None),
     ("debt_structure", ("sizing_metrics.dscr_underwritten",), "dscr", 1.2, None, 1.0, None, "FV-04", None),
@@ -241,10 +248,13 @@ def financial_thresholds(ledger, thresholds=None):
     document = ledger.document
     from uwmd_validation_selection import select_section
     for section, paths, key, low, high, error_low, error_high, low_code, high_code in _THRESHOLD_SPECS:
-        selected = select_section(document, section, preferred_role="senior" if section == "debt_structure" else None)
-        if selected.block is None:
-            continue
-        payload = selected.block.parsed.value
+        if section == "frontmatter":
+            payload = document.frontmatter.value
+        else:
+            selected = select_section(document, section, preferred_role="senior" if section == "debt_structure" else None)
+            if selected.block is None:
+                continue
+            payload = selected.block.parsed.value
         value = number(payload, *paths)
         if not finite(value):
             continue

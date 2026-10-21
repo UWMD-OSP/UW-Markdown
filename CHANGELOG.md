@@ -10,6 +10,17 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0105 (#428): Format §5.2 gives each financial-validity
+  band its code (`FV-01`–`FV-14`, unchanged) and every home it is read from.
+  Each finite value at a home is checked, and each home draws one issue at the
+  most severe band it crosses (a DSCR of 0.95 is `FV-04`/error only). The
+  reference now reads `debt_structure.sizing_metrics.*`,
+  `valuation.going_in_cap_rate`, `dcf.returns.*`,
+  `dcf.assumptions.revenue_growth_rate`, `noi_model.expenses.expense_ratio` and
+  `noi_model.income.vacancy_credit_loss.rate_applied` beside `quick_metrics`, and
+  stops reading three fields the Format never defined. Python adds the
+  `quick_metrics` homes. New `documents/malformed/67-financial-validity-homes`.
+
 - Implement accepted RFC 0104 (#424): an issue's `field` is the dotted path from
   the block payload root (or the frontmatter root), with array elements by index
   (Protocol §III.6a). `META_MISSING` now names `_meta`; `META_FIELD_MISSING_*`,

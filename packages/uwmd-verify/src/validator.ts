@@ -67,19 +67,6 @@ function enrichWithRemediation(msg: ValidationMessage): ValidationMessage {
   };
 }
 
-// ─── Financial-validity codes (Protocol §III.6a) ────────────────────────────
-
-/** The `FV-NN` code for each frontmatter threshold check, by metric and direction. */
-const FV_THRESHOLD_CODES: Readonly<Record<string, string>> = Object.freeze({
-  'cap_rate:below':      'FV-01',
-  'cap_rate:above':      'FV-02',
-  'debt_yield:below':    'FV-03',
-  'dscr:below':          'FV-04',
-  'irr_projected:below': 'FV-07',
-  'irr_projected:above': 'FV-08',
-  'ltv:above':           'FV-09',
-});
-
 /**
  * Resolve a dot-notated path of the form `<section>.<field>...` against
  * the parsed file's content blocks. Returns `undefined` when any segment
@@ -239,135 +226,76 @@ function checkScenarioIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]
   }
 }
 
-// ─── §5.2 Financial validity thresholds ──────────────────────────────────────
+// ─── §5.2 Financial validity thresholds (RFC 0105) ───────────────────────────
+
+/** A Format-defined home: a frontmatter path, or a path in one section's payload. */
+interface FvHome { readonly section?: string; readonly path: string }
+interface FvSide { readonly code: string; readonly error?: number; readonly warning?: number }
+interface FvBand { readonly metric: string; readonly homes: readonly FvHome[]; readonly below?: FvSide; readonly above?: FvSide }
+
+/**
+ * Format §5.2's bands, the code for each side and every home each is read from.
+ * A home that is absent or not a finite number draws nothing; fields the Format
+ * does not define are never read (D4).
+ */
+function financialValidityBands(t: FinancialThresholds): readonly FvBand[] {
+  return [
+    { metric: 'DSCR', homes: [{ path: 'quick_metrics.dscr' }, { section: 'debt_structure', path: 'sizing_metrics.dscr_underwritten' }],
+      below: { code: 'FV-04', error: t.dscr.error_below, warning: t.dscr.warning_below } },
+    { metric: 'LTV', homes: [{ path: 'quick_metrics.ltv' }, { section: 'debt_structure', path: 'sizing_metrics.ltv' }],
+      above: { code: 'FV-09', error: t.ltv.error_above, warning: t.ltv.warning_above } },
+    { metric: 'Debt yield', homes: [{ path: 'quick_metrics.debt_yield' }, { section: 'debt_structure', path: 'sizing_metrics.debt_yield' }],
+      below: { code: 'FV-03', warning: t.debt_yield.warning_below } },
+    { metric: 'Going-in cap rate', homes: [{ path: 'quick_metrics.cap_rate' }, { section: 'valuation', path: 'going_in_cap_rate' }],
+      below: { code: 'FV-01', warning: t.cap_rate.warning_below }, above: { code: 'FV-02', warning: t.cap_rate.warning_above } },
+    { metric: 'Vacancy rate', homes: [{ section: 'noi_model', path: 'income.vacancy_credit_loss.rate_applied' }],
+      below: { code: 'FV-13', warning: t.vacancy_rate.warning_below }, above: { code: 'FV-14', warning: t.vacancy_rate.warning_above } },
+    { metric: 'OpEx ratio', homes: [{ section: 'noi_model', path: 'expenses.expense_ratio' }],
+      below: { code: 'FV-10', warning: t.opex_ratio.warning_below }, above: { code: 'FV-11', warning: t.opex_ratio.warning_above } },
+    { metric: 'Levered IRR', homes: [{ path: 'quick_metrics.irr_projected' }, { section: 'dcf', path: 'returns.levered_irr' }],
+      below: { code: 'FV-07', warning: t.irr.warning_below }, above: { code: 'FV-08', warning: t.irr.warning_above } },
+    { metric: 'Equity multiple', homes: [{ section: 'dcf', path: 'returns.equity_multiple' }],
+      below: { code: 'FV-05', warning: t.equity_multiple.warning_below }, above: { code: 'FV-06', warning: t.equity_multiple.warning_above } },
+    { metric: 'Annual rent growth', homes: [{ section: 'dcf', path: 'assumptions.revenue_growth_rate' }],
+      above: { code: 'FV-12', warning: t.annual_rent_growth.warning_above } },
+  ];
+}
+
+/** The one block a section home is read from: role-aware, senior debt preferred. */
+function financialValidityBlock(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
+  const declared = sectionId === 'debt_structure' ? 'senior' as const : undefined;
+  return resolveRoleBlock(parsed.sections[sectionId], sectionId, [], undefined, declared).block;
+}
 
 function checkFinancialValidity(
   parsed: ParsedUWFile,
   t: FinancialThresholds,
   issues: ValidationMessage[],
 ): void {
-  const qm = parsed.frontmatter.quick_metrics ?? {};
-
-  const checks: Array<{
-    metric: string;
-    value: number | null | undefined;
-    section?: string;
-    field?: string;
-    rules: Array<{ type: 'error' | 'warning'; direction: 'below' | 'above'; limit: number }>;
-  }> = [
-    {
-      metric: 'dscr',
-      value: qm.dscr,
-      section: 'debt_structure',
-      rules: [
-        { type: 'error',   direction: 'below', limit: t.dscr.error_below },
-        { type: 'warning', direction: 'below', limit: t.dscr.warning_below },
-      ],
-    },
-    {
-      metric: 'ltv',
-      value: qm.ltv,
-      section: 'debt_structure',
-      rules: [
-        { type: 'warning', direction: 'above', limit: t.ltv.warning_above },
-        { type: 'error',   direction: 'above', limit: t.ltv.error_above },
-      ],
-    },
-    {
-      metric: 'debt_yield',
-      value: qm.debt_yield,
-      section: 'debt_structure',
-      rules: [
-        { type: 'warning', direction: 'below', limit: t.debt_yield.warning_below },
-      ],
-    },
-    {
-      metric: 'cap_rate',
-      value: qm.cap_rate,
-      section: 'valuation',
-      rules: [
-        { type: 'warning', direction: 'below', limit: t.cap_rate.warning_below },
-        { type: 'warning', direction: 'above', limit: t.cap_rate.warning_above },
-      ],
-    },
-    {
-      metric: 'irr_projected',
-      value: qm.irr_projected,
-      section: 'dcf',
-      rules: [
-        { type: 'warning', direction: 'below', limit: t.irr.warning_below },
-        { type: 'warning', direction: 'above', limit: t.irr.warning_above },
-      ],
-    },
-  ];
-
-  for (const check of checks) {
-    if (check.value == null) continue;
-    for (const rule of check.rules) {
-      const hit = rule.direction === 'below'
-        ? check.value < rule.limit
-        : check.value > rule.limit;
-
-      if (hit) {
+  for (const band of financialValidityBands(t)) {
+    for (const home of band.homes) {
+      const root = home.section === undefined ? parsed.frontmatter : financialValidityBlock(parsed, home.section)?.content;
+      if (root == null) continue;
+      const value = deepGet(root as Record<string, unknown>, home.path);
+      if (typeof value !== 'number' || !Number.isFinite(value)) continue;
+      // One issue per home and side, at the most severe band crossed (D2).
+      for (const direction of ['below', 'above'] as const) {
+        const side = band[direction];
+        if (!side) continue;
+        const crosses = (limit: number | undefined): limit is number =>
+          limit !== undefined && (direction === 'below' ? value < limit : value > limit);
+        const severity = crosses(side.error) ? 'error' : crosses(side.warning) ? 'warning' : null;
+        if (severity === null) continue;
+        const limit = (severity === 'error' ? side.error : side.warning) as number;
         issues.push({
-          code: FV_THRESHOLD_CODES[`${check.metric}:${rule.direction}`] as string,
-          severity: rule.type,
-          section: check.section,
-          field: check.metric,
-          message: `${check.metric.toUpperCase()} ${check.value.toFixed(4)} is ${rule.direction} ${rule.type} threshold of ${rule.limit}`,
-          value: check.value,
-          threshold: rule.direction === 'below'
-            ? { min: rule.limit }
-            : { max: rule.limit },
+          code: side.code,
+          severity,
+          ...(home.section === undefined ? {} : { section: home.section }),
+          field: home.path,
+          message: `${band.metric} ${value} at ${home.section === undefined ? '' : `${home.section}.`}${home.path} is ${direction} the ${severity} threshold of ${limit}`,
+          value,
+          threshold: direction === 'below' ? { min: limit } : { max: limit },
         });
-      }
-    }
-  }
-
-  // Vacancy and OpEx ratio come from noi_model content, not quick_metrics
-  const noiBlock = getSection(parsed, 'noi_model');
-  if (noiBlock) {
-    const vacancyRate = deepGet(noiBlock.content, 'vacancy_rate') as number | undefined;
-    const egi = deepGet(noiBlock.content, 'effective_gross_income') as number | undefined;
-    const opex = deepGet(noiBlock.content, 'total_operating_expenses') as number | undefined;
-
-    if (vacancyRate != null) {
-      if (vacancyRate < t.vacancy_rate.warning_below) {
-        issues.push({ code: 'FV-13', severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually low (below ${(t.vacancy_rate.warning_below * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { min: t.vacancy_rate.warning_below } });
-      }
-      if (vacancyRate > t.vacancy_rate.warning_above) {
-        issues.push({ code: 'FV-14', severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually high (above ${(t.vacancy_rate.warning_above * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { max: t.vacancy_rate.warning_above } });
-      }
-    }
-
-    if (egi != null && opex != null && egi > 0) {
-      const opexRatio = opex / egi;
-      if (opexRatio < t.opex_ratio.warning_below) {
-        issues.push({ code: 'FV-10', severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is suspiciously low (below ${(t.opex_ratio.warning_below * 100).toFixed(0)}%)`, value: opexRatio, threshold: { min: t.opex_ratio.warning_below } });
-      }
-      if (opexRatio > t.opex_ratio.warning_above) {
-        issues.push({ code: 'FV-11', severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is unusually high (above ${(t.opex_ratio.warning_above * 100).toFixed(0)}%)`, value: opexRatio, threshold: { max: t.opex_ratio.warning_above } });
-      }
-    }
-  }
-
-  // Annual rent growth from dcf assumptions
-  const dcfBlock = getSection(parsed, 'dcf');
-  if (dcfBlock) {
-    const rentGrowth = deepGet(dcfBlock.content, 'assumptions.annual_rent_growth') as number | undefined
-      ?? deepGet(dcfBlock.content, 'rent_growth_assumption') as number | undefined;
-    if (rentGrowth != null && rentGrowth > t.annual_rent_growth.warning_above) {
-      issues.push({ code: 'FV-12', severity: 'warning', section: 'dcf', field: 'annual_rent_growth', message: `Annual rent growth assumption ${(rentGrowth * 100).toFixed(1)}% is above the ${(t.annual_rent_growth.warning_above * 100).toFixed(0)}% warning threshold`, value: rentGrowth, threshold: { max: t.annual_rent_growth.warning_above } });
-    }
-
-    const equityMultiple = deepGet(dcfBlock.content, 'levered_equity_multiple') as number | undefined
-      ?? deepGet(dcfBlock.content, 'summary.equity_multiple') as number | undefined;
-    if (equityMultiple != null) {
-      if (equityMultiple < t.equity_multiple.warning_below) {
-        issues.push({ code: 'FV-05', severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is below ${t.equity_multiple.warning_below}x warning threshold`, value: equityMultiple, threshold: { min: t.equity_multiple.warning_below } });
-      }
-      if (equityMultiple > t.equity_multiple.warning_above) {
-        issues.push({ code: 'FV-06', severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is above ${t.equity_multiple.warning_above}x warning threshold`, value: equityMultiple, threshold: { max: t.equity_multiple.warning_above } });
       }
     }
   }
