@@ -115,9 +115,7 @@ import {
   parseFlags,
   extractPositionals,
   composeOutDir,
-  deprecatedFlagWarnings,
   flagVocabulary,
-  requestedStage,
   unknownFlagMessage,
   signingLoadFailureMessage,
   replaceUWExtension,
@@ -215,21 +213,12 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
 }
 
 async function cmdValidate(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  // Deprecated `--stage` (see DEPRECATED_FLAGS): report one stage's readiness.
-  // Readiness is workflow completeness, never a validation failure (Format
-  // §5.1), so it changes neither the result nor the exit status.
-  const stageRequest = flags['stage'] === undefined ? undefined : requestedStage(flags['stage']);
-  if (stageRequest !== undefined && !stageRequest.ok) {
-    console.error(stageRequest.message);
-    process.exit(1);
-  }
   if (flags['institution'] !== undefined && typeof flags['institution'] !== 'string') {
     console.error('--institution requires a path.'); process.exit(1);
   }
   const content = readFile(file);
   const detection = detectUWSourceRepresentation(content, file);
   if (detection.representation !== UWX_REPRESENTATION_ID) {
-    if (stageRequest?.ok) console.error(`uwmd validate: --stage ${stageRequest.stage}: readiness is not checked for UW Lite.`);
     const lite = parseUWLite(content);
     try { loadInstitutionThresholds(file, flags['institution'] as string | undefined); }
     catch (error) {
@@ -280,11 +269,7 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   const fundingRefuses = replacement_funding_verification.state !== 'verified'
     && !(replacement_funding_verification.state === 'not_checked' && replacement_funding_verification.reason === 'not_applicable');
 
-  const stageLine = stageRequest?.ok
-    ? `--stage ${stageRequest.stage}: ${result.stage_readiness[stageRequest.stage] ? 'complete' : 'incomplete'} (reported only; it does not change the result or exit status)`
-    : undefined;
   if (flags['json']) {
-    if (stageLine !== undefined) console.error(`uwmd validate: ${stageLine}`);
     console.log(JSON.stringify(result, null, 2));
     // §II.6a.2: exit 1 on a validation error, in every output mode. This
     // branch returned before the exit line below, so `--json` exited 0 on a
@@ -311,7 +296,6 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   for (const [stage, ready] of Object.entries(result.stage_readiness)) {
     console.log(`  ${stage}: ${ready ? 'complete' : 'incomplete'}`);
   }
-  if (stageLine !== undefined) console.log(`  Requested with ${stageLine}`);
 
   // §5.3 coverage (RFC 0037): "checked and clean" is not "never looked".
   const coverage = Object.values(result.coverage);
@@ -677,8 +661,7 @@ function cmdSummary(file: string): void {
 }
 
 async function cmdExport(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  // `--compact` is 4.2.0's deprecated alias (DEPRECATED_FLAGS).
-  const includeSuperseded = flags['no-superseded'] !== true && flags['compact'] !== true;
+  const includeSuperseded = flags['no-superseded'] !== true;
   // --resolved exports the assembled record. Exporting the directive instead
   // would ship a document whose rent roll is a list of filenames.
   const loaded = flags['resolved']
@@ -1292,9 +1275,6 @@ const positional = extractPositionals(args);
     console.error(refusal);
     process.exit(1);
   }
-  // Flags kept only because 4.2.0 offered them (`DEPRECATED_FLAGS`) still
-  // work, with a warning on stderr so `--json` output stays clean.
-  if (vocabulary !== undefined) for (const warning of deprecatedFlagWarnings(vocabulary.command, flags)) console.error(warning);
 }
 
 
@@ -1328,7 +1308,6 @@ function cmdCompose(file: string, flags: Record<string, string | boolean>): void
   }
   const collectionKey = (flags['collection-key'] as string) ?? 'unit_id';
   const collectionPath = (flags['collection-path'] as string) ?? 'units';
-  // `--parts` is the deprecated alias of `--out-dir` (DEPRECATED_FLAGS).
   const out = composeOutDir(file, flags);
   if (!out.ok) {
     console.error(out.message);
@@ -2139,7 +2118,7 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   --calc-context <f> JSON sectionVariants/overrides (calc, refine; refine: period overrides only)
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
-  --no-superseded    Drop append-only history from the .uw.json export (export; --compact is a deprecated alias)
+  --no-superseded    Drop append-only history from the .uw.json export (export)
   --resolved         Resolve externalized sections first (verify, export)
   --signing          Check _meta.integrity.signature on every block (verify; requires --keystore)
   --keystore <path>  JSON key store mapping kid to public key (verify --signing, --document-signature)
