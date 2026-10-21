@@ -10,11 +10,9 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- The frontmatter reader refuses an indented line under a scalar or `[]` value
-  (`flags: []` followed by `  - …` lines, for example) with
-  `UNSUPPORTED_YAML_FEATURE` instead of silently dropping it or reading it as a
-  top-level key (#426, Format Appendix D). The independent Python reader already
-  refused it. New `documents/malformed/57-yaml-nested-under-scalar`.
+- Remove the CLI's three deprecated 4.2.0 aliases (#412): `validate --stage`,
+  `export --compact` and `compose --parts` are now unknown flags, refused with
+  exit 1 like any other. Use `stage_readiness`, `--no-superseded` and `--out-dir`.
 
 - Launch playbooks in `docs/playbooks/`: adding an official asset class
   (the full RFC 0080 kit, as a checklist of the files a class touches),
