@@ -1,7 +1,7 @@
 ---
 rfc: 0104
 title: Validation issue field paths are dotted paths from the payload root; issue order is not normative
-status: draft
+status: accepted
 author: claude-code
 created: 2026-10-20
 affects:
@@ -12,7 +12,8 @@ affects:
 
 # RFC 0104: Validation issue field paths and issue order
 
-> **Draft for owner acceptance.** Origin:
+> **Accepted by the owner, 2026-10-20, as drafted** (Jared: "RFC 0104 accepted as drafted (D1 dotted paths from the payload/frontmatter root, D2 issue order not normative, D3 array elements by index, D4 no version allocated)").
+> Origin:
 > [#424](https://github.com/UWMD-OSP/UW-Markdown/issues/424), found while
 > certifying the independent Python implementation (#354). It changes what a
 > validation result says, so it is normative. Implementation follows acceptance.
@@ -85,7 +86,7 @@ Python already follows rule 1 for the codes in the table.
 - **Make order normative.** It would freeze implementation details for no
   consumer benefit.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-20)
 
 | # | Question | Proposal | Why |
 |---|---|---|---|

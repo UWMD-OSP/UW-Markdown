@@ -1,0 +1,56 @@
+{
+  "name": "@uwmd/mcp",
+  "version": "4.3.0",
+  "private": true,
+  "description": "A Model Context Protocol connector that validates and verifies UW Markdown (.uwx.md) records with @uwmd/verify. Read-only tools; no financial math is done by the model.",
+  "mcpName": "org.uwmd/uwmd",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UWMD-OSP/UW-Markdown.git",
+    "directory": "packages/uwmd-mcp"
+  },
+  "homepage": "https://uwmd.org",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "uwmd-mcp": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "server.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "@uwmd/verify": "0.2.1",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^3.2.6"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "uwmd",
+    "underwriting",
+    "commercial-real-estate",
+    "mcp",
+    "model-context-protocol",
+    "validation"
+  ]
+}

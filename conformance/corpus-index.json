@@ -2628,6 +2628,11 @@
     },
     {
       "suite": "capital-stack",
+      "scenario": "position-below-one",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
       "scenario": "sizing-disagrees",
       "target": "verifier"
     },
@@ -5904,6 +5909,21 @@
     {
       "suite": "documents",
       "scenario": "malformed/56-size-negative-twin",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/57-yaml-nested-under-scalar",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/58-asset-class-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/59-asset-class-empty",
       "target": "verifier"
     },
     {
