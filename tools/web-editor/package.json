@@ -2,13 +2,14 @@
   "name": "@uwmd/web-editor",
   "private": true,
   "version": "0.8.0",
-  "description": "Calc-aware web editor for .uw.md files. Embeds the @uwmd/core parser, validator, Tier-2 dispatcher, Tier-3 calc engine, and the §7.1/§7.2 report renderer in the browser so derived values never drift from inputs and the lender package is always one tab away.",
+  "description": "Calc-aware web editor for .uw.md files. Embeds the @uwmd/core parser, validator, Tier-2 dispatcher, Tier-3 calc engine, and the \u00a77.1/\u00a77.2 report renderer in the browser so derived values never drift from inputs and the lender package is always one tab away.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:validator": "tsc --noEmit && vite build --config vite.validator.config.ts"
   },
   "dependencies": {
     "@uwmd/core": "file:../../packages/uwmd-core",
