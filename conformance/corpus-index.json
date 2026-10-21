@@ -5907,6 +5907,16 @@
       "target": "verifier"
     },
     {
+      "suite": "documents",
+      "scenario": "malformed/58-asset-class-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/59-asset-class-empty",
+      "target": "verifier"
+    },
+    {
       "suite": "recoveries",
       "scenario": "reject-inherited-cash-flow-variant",
       "target": "verifier"

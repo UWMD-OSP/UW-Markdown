@@ -10,6 +10,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- A present `asset_class` that is not a non-empty string (`true`, `0`, `[]`, `""`)
+  is `INVALID-ASSET-CLASS-001` (#427); before, it validated clean and every
+  class-scoped rule and metric was skipped. `null` and absence are unchanged. New
+  `documents/malformed/58-asset-class-boolean` and `59-asset-class-empty`.
+
 - Launch playbooks in `docs/playbooks/`: adding an official asset class
   (the full RFC 0080 kit, as a checklist of the files a class touches),
   adding or changing a metric (authority, vectors, statement homes, and new ids
