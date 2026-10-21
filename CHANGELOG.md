@@ -10,6 +10,14 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0108: Format §4.17's stored `validation` section uses
+  the validation result's vocabulary. `overall_status` is
+  `clean | warnings | errors | blocking`; `completeness[].severity` is
+  `error | warning | info`, with a halting item recorded in `blocking_flags`;
+  `completeness[].required_for_stage` takes the seven `deal_stage` values. The
+  examples and fixtures that stated the section are rewritten (`warnings_only` →
+  `warnings`, completeness `blocking` → `error`); no implementation reads it.
+
 - Implement accepted RFC 0107: the Format §5.2 LTC band gets code `FV-15` and two
   homes, `quick_metrics.ltc` (a new optional frontmatter member) and
   `sources_uses.equity_metrics.loan_to_cost`. Every stated value is checked,

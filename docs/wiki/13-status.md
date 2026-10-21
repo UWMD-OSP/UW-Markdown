@@ -18,6 +18,16 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Implemented RFC0108 — the §4.17 validation section's vocabulary (owner acceptance 2026-10-21, D2 and D3).**
+[RFC0108](../rfcs/0108-validation-section-vocabulary.md): a stored `validation`
+section now speaks the validation result's words: `overall_status`
+`clean | warnings | errors | blocking`, `completeness[].severity`
+`error | warning | info` (a halting item goes to `blocking_flags`), and
+`required_for_stage` the seven `deal_stage` values (`underwriting` →
+`full_underwrite`). Spec and corpus only; nothing reads the section. Six corpus
+files rewritten (`warnings_only` → `warnings`, completeness `blocking` →
+`error`) and the `02-full-multifamily` parse baseline follows.
+
 **Implemented RFC0107 — the LTC band's homes and code (owner acceptance 2026-10-21, D2 adds `quick_metrics.ltc`, D3 every stated value).**
 [RFC0107](../rfcs/0107-ltc-financial-validity-home.md): Format §5.2's LTC row
 reads `quick_metrics.ltc` (new, beside `ltv`) and

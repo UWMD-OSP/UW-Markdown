@@ -689,7 +689,7 @@ Financial-validity engine run over the sections above.
       "superseded": false
     }
   },
-  "overall_status": "warnings_only",
+  "overall_status": "warnings",
   "financial_validity": [
     {
       "flag_id": "FV-001",
