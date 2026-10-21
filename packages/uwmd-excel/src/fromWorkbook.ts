@@ -58,6 +58,16 @@ function scalarNumberOrNull(cell: ExcelJS.Cell, description: string): number | n
   );
 }
 
+function scalarTextOrNull(cell: ExcelJS.Cell, description: string): string | null {
+  const value = cell.value;
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'string') return value;
+  throw new WorkbookImportError(
+    'WORKBOOK-IMPORT-NAMED-RANGE',
+    `${description} must resolve to text or a blank cell.`,
+  );
+}
+
 function formulaAt(cell: ExcelJS.Cell): string | null {
   const value = cell.value;
   if (value && typeof value === 'object' && 'formula' in value && typeof value.formula === 'string') {
@@ -225,7 +235,9 @@ export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
   const sections: Record<string, Record<string, unknown>> = {};
   for (const input of layout.namedInputs) {
     const section = sectionFor(sections, input.source.section);
-    setPath(section, input.source.path, scalarNumberOrNull(namedCell(wb, input.name), input.name));
+    const cell = namedCell(wb, input.name);
+    setPath(section, input.source.path,
+      input.format === 'text' ? scalarTextOrNull(cell, input.name) : scalarNumberOrNull(cell, input.name));
   }
 
   const operatingStatement = wb.getWorksheet('Operating Statement')!;

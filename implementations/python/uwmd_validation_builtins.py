@@ -27,8 +27,8 @@ _SCHEMAS = {
 # not an invitation to report unrelated metric errors during class validation.
 _CALCULATIONS = {
     "data_center": frozenset(("utilization", "commissioned_share", "facility_load_kw",
-        "annual_facility_kwh_at_contract", "annual_power_cost", "power_cost_per_kw_month",
-        "annual_rent_revenue", "blended_revenue_per_kw_month", "rent_index",
+        "annual_facility_kwh", "annual_power_cost", "power_cost_per_kw_month",
+        "annual_rent_revenue", "blended_revenue_per_kw_month", "mark_to_market",
         "price_per_commissioned_kw", "noi_per_commissioned_kw")),
     "hospitality": frozenset(("revpar", "total_room_revenue", "room_revenue_per_key",
         "revpar_index", "fb_gross_margin")),
@@ -43,12 +43,13 @@ _RULES = {
         ("CC-DC-04","warning","dc_capacity.contracted_it_load_kw <= dc_capacity.critical_it_load_kw"),
         ("CC-DC-05","warning","facility_load_kw <= dc_capacity.utility_feed_kw"),
         ("CC-DC-06","warning","dc_capacity.measured_pue == null || dc_capacity.measured_pue <= dc_capacity.design_pue * 1.15"),
-        ("CC-DC-07","warning","dc_revenue.market_rent_per_kw_month == null || rent_index >= 0.85"),
+        ("CC-DC-07","warning","dc_revenue.market_rent_per_kw_month == null || mark_to_market <= round(1 / 0.85 - 1, 4)"),
     ),
     "hospitality": (
         ("CC-HOSP-01","warning","hotel_metrics.market_revpar == null || revpar >= hotel_metrics.market_revpar * 0.85"),
         ("CC-HOSP-02","error","rent_roll.occupancy == null || (rent_roll.occupancy >= 0 && rent_roll.occupancy <= 1)"),
         ("CC-HOSP-03","warning","hotel_brand.franchise_fee_pct_of_rooms + hotel_brand.marketing_fund_pct + hotel_brand.loyalty_program_pct <= 0.13"),
+        ("CC-HOSP-05","warning","rent_roll.adr == null || rent_roll.occupancy == null || rent_roll.available_room_nights == null || noi_model.income.rooms_revenue == null || noi_model.income.rooms_revenue == 0 || abs(rent_roll.adr * rent_roll.occupancy * rent_roll.available_room_nights - noi_model.income.rooms_revenue) <= 0.01 * abs(noi_model.income.rooms_revenue)"),
     ),
     "manufactured_housing": (
         ("CC-MH-01","error","mhc_sites == null || (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)"),
@@ -95,8 +96,12 @@ def _evaluate(node, resolve):
             return None if value is None else not _logical(value)
         return None if value is None else -_number(value)
     if kind == "call":
+        # abs (RFC 0103 CC-HOSP-05) propagates null as Protocol VIII.3 does.
+        if node[1] == "abs" and len(node[2]) == 1:
+            value = _evaluate(node[2][0], resolve)
+            return None if value is None else abs(_number(value))
         if node[1] != "round" or len(node[2]) != 2:
-            raise _OperationError("CALC-TYPE-001", "Only reviewed builtin round calls are admitted here")
+            raise _OperationError("CALC-TYPE-001", "Only reviewed builtin round and abs calls are admitted here")
         value, places = (_evaluate(n, resolve) for n in node[2])
         if value is None:return None
         _number(value);_number(places)

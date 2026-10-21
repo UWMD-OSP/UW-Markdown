@@ -739,33 +739,33 @@
         "comparison_decimals": 0
       },
       {
-        "id": "annual_facility_kwh_at_contract",
-        "path": "valuation.annual_facility_kwh_at_contract",
-        "stated": 120450000,
+        "id": "annual_facility_kwh",
+        "path": "valuation.annual_facility_kwh",
+        "stated": 82676880,
         "stated_decimals": 0,
         "state": "verified",
-        "computed": 120450000,
-        "comparison": 120450000,
+        "computed": 82676880,
+        "comparison": 82676880,
         "comparison_decimals": 0
       },
       {
         "id": "annual_power_cost",
         "path": "valuation.annual_power_cost",
-        "stated": 9636000,
+        "stated": 0,
         "stated_decimals": 0,
         "state": "verified",
-        "computed": 9636000,
-        "comparison": 9636000,
+        "computed": 0,
+        "comparison": 0,
         "comparison_decimals": 0
       },
       {
         "id": "power_cost_per_kw_month",
         "path": "valuation.power_cost_per_kw_month",
-        "stated": 73,
+        "stated": 0,
         "stated_decimals": 0,
         "state": "verified",
-        "computed": 73,
-        "comparison": 73,
+        "computed": 0,
+        "comparison": 0,
         "comparison_decimals": 0
       },
       {
@@ -789,13 +789,13 @@
         "comparison_decimals": 0
       },
       {
-        "id": "rent_index",
-        "path": "valuation.rent_index",
-        "stated": 0.8,
-        "stated_decimals": 1,
+        "id": "mark_to_market",
+        "path": "valuation.mark_to_market",
+        "stated": 0.25,
+        "stated_decimals": 2,
         "state": "verified",
-        "computed": 0.8,
-        "comparison": 0.8,
+        "computed": 0.25,
+        "comparison": 0.25,
         "comparison_decimals": 2
       },
       {

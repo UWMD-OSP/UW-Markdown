@@ -127,11 +127,42 @@ describe('Every class follows the same rules (RFC 0081 §5)', () => {
 
   // No calculation is exempt for having predated the builtin, and no
   // `modules` entry changes a severity.
+  // RFC 0103: room revenue per key reads the stated rooms revenue, so a string
+  // revenue fails it as well as RevPAR; zero room nights fails only RevPAR.
   it.each([
-    ['zero available room nights', '"available_room_nights": 51830', '"available_room_nights": 0'],
-    ['string rooms revenue', '"rooms_revenue": 6080000', '"rooms_revenue": "6080000"'],
-  ])('a hospitality record with %s reports the failed calculation as MOD-CALC-ERROR', (_label, from, to) => {
-    expect(calcErrors(mutate(saguaro, from, to)).map(i => [i.severity, i.message.includes('revpar')])).toEqual([['error', true]]);
+    ['zero available room nights', '"available_room_nights": 51830', '"available_room_nights": 0', ['revpar']],
+    ['string rooms revenue', '"rooms_revenue": 6080000', '"rooms_revenue": "6080000"', ['revpar', 'room_revenue_per_key']],
+  ])('a hospitality record with %s reports the failed calculation as MOD-CALC-ERROR', (_label, from, to, ids) => {
+    const errors = calcErrors(mutate(saguaro, from, to));
+    expect(errors.map(i => i.severity)).toEqual(ids.map(() => 'error'));
+    expect(errors.map(i => /calculation (\w+) failed/.exec(i.message)?.[1])).toEqual(ids);
+  });
+
+  // RFC 0103 CC-HOSP-05: stated rooms revenue is the value; ADR x occupancy x
+  // available nights (180 x 0.72 x 29,200 = 3,784,320) is a 1% cross-check.
+  it.each([
+    ['agrees exactly', '3784320', false],
+    ['within 1%', '3803240', false],
+    ['outside 1%', '3860000', true],
+  ])('CC-HOSP-05: stated rooms revenue that %s', (_label, revenue, fires) => {
+    const codes = classIssues(mutate(hotel, '"rooms_revenue": 3784320', `"rooms_revenue": ${revenue}`)).map(i => i.code);
+    expect(codes.includes('CC-HOSP-05')).toBe(fires);
+  });
+
+  it('CC-HOSP-05 is silent when an input is absent; nothing is inferred', () => {
+    const codes = classIssues(mutate(mutate(hotel, '"rooms_revenue": 3784320', '"rooms_revenue": 3860000'), '"adr": 180,', '')).map(i => i.code);
+    expect(codes).not.toContain('CC-HOSP-05');
+  });
+
+  // RFC 0103 CC-DC-07: in-place more than 15% below market, re-expressed as
+  // mark_to_market <= 1/0.85 - 1 at its 4-dp precision. Exactly 85% is silent.
+  it.each([
+    ['85.00 vs 100 (exactly 85%)', '85', false],
+    ['84.90 vs 100', '84.9', true],
+  ])('CC-DC-07 boundary: in-place %s', (_label, rent, fires) => {
+    const source = mutate(mutate(readFileSync(resolve(corpus, '06-data-center-fixture/deal.uwx.md'), 'utf8'),
+      '"rent_per_kw_month": 150,', `"rent_per_kw_month": ${rent},`), '"market_rent_per_kw_month": 187.5', '"market_rent_per_kw_month": 100');
+    expect(classIssues(source).map(i => i.code).includes('CC-DC-07')).toBe(fires);
   });
 
   it('reports a failed class calculation as an error whatever the modules list says', () => {

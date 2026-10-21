@@ -42,7 +42,8 @@ export interface NamedInput {
   label: string;
   /** Source field path on the parsed UW file. */
   source: { section: string; path: string };
-  format: 'currency' | 'count' | 'ratio' | 'decimal';
+  /** `text` holds a stated string (an enum such as `dc_power.billing`), never a number. */
+  format: 'currency' | 'count' | 'ratio' | 'decimal' | 'text';
 }
 
 /**

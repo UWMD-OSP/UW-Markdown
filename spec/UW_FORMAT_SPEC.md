@@ -1570,7 +1570,7 @@ escalated, no break is taken, no remedy is applied and no balance is amortized.
 
 **Normative schema:** [rent-roll-hospitality.schema.json](schemas/rent-roll-hospitality.schema.json) (the class contract for a hospitality `rent_roll`; other members of the section are unconstrained by it).
 
-Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `rent_roll` is stage-required (§5.1); when stated it MUST contain `available_room_nights` (integer ≥ 0), otherwise `CLS-04`. Optional fields: `occupied_room_nights` (integer ≥ 0), `adr` (number ≥ 0), and `occupancy` (fraction in [0,1]). `rent_roll.keys` is not admitted. `hotel_metrics` (§4.32) is optional and holds only market_revpar. No hotel class-required section is added. RevPAR stays rooms_revenue / available_room_nights. ADR, occupancy and available room nights also feed total_room_revenue; room_revenue_per_key divides its 2dp rounded total by property.keys. The dictionary supplies the unchanged null guards, units and round_to.
+Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `rent_roll` is stage-required (§5.1); when stated it MUST contain `available_room_nights` (integer ≥ 0), otherwise `CLS-04`. Optional fields: `occupied_room_nights` (integer ≥ 0), `adr` (number ≥ 0), and `occupancy` (fraction in [0,1]). `rent_roll.keys` is not admitted. `hotel_metrics` (§4.32) is optional and holds only market_revpar. No hotel class-required section is added. RevPAR stays rooms_revenue / available_room_nights. Total room revenue is the stated booked rooms revenue, `noi_model.income.rooms_revenue`, and room_revenue_per_key divides it by property.keys (RFC 0103). ADR × occupancy × available room nights is never their value; it is the `CC-HOSP-05` cross-check. The dictionary supplies the unchanged null guards, units and round_to.
 
 ### § 4.4 — Operating Statement
 
@@ -4180,6 +4180,20 @@ These additive sections use the same bare block body and role/variant resolution
 | `billing` | string; {'enum': ['metered_pass_through', 'all_in', 'breakered']} |
 | `power_margin` | ['number', 'null']; {'minimum': 0} |
 | `stated_annual_power_cost` | ['number', 'null']; {'minimum': 0} |
+| `metered_annual_kwh` | ['number', 'null']; {'minimum': 0} |
+| `draw_factor` | ['number', 'null']; {'minimum': 0, 'maximum': 1} |
+
+**Power cost never assumes full draw (RFC 0103).** `annual_facility_kwh` is
+`metered_annual_kwh` when stated. Otherwise it is
+`contracted_it_load_kw × draw_factor × PUE × 8,760`, where PUE is
+`dc_capacity.measured_pue` when stated and `design_pue` otherwise (The Green Grid
+WP #49 reports PUE over a year of measured energy). With neither metered kWh nor
+a draw factor, the energy and the power-cost metrics are `null`; no draw is
+inferred. Under `billing: metered_pass_through`, tenants pay their metered power
+at cost, so the landlord's `annual_power_cost` and `power_cost_per_kw_month` are
+`0`. Otherwise a stated `stated_annual_power_cost` takes precedence over
+energy × `utility_rate_per_kwh`.
+
 ### 4.31 Revenue
 
 **ID:** `dc_revenue`
@@ -4235,6 +4249,13 @@ These additive sections use the same bare block body and role/variant resolution
 | `fb_cogs` | number; {'minimum': 0} |
 | `fb_labor` | number; {'minimum': 0} |
 | `complimentary_breakfast_cost_per_occupied_room` | number; {'minimum': 0} |
+
+**F&B gross margin is USALI gross profit (RFC 0103).** `fb_gross_margin` is
+`(fb_revenue − fb_cogs) ÷ fb_revenue`: revenue less cost of sales, the Gross
+Profit line of the USALI Food and Beverage Department schedule. `fb_labor` is a
+stated fact and is not part of it. Departmental profit, which also deducts
+labor and other departmental expenses, is a different metric.
+
 ### 4.35 Manufactured Housing Sites
 
 **ID:** `mhc_sites`
@@ -4266,11 +4287,12 @@ Rules use Protocol §VIII.1 safe expressions. A false result emits the listed fi
 | `CC-DC-04` | warning | `dc_capacity.contracted_it_load_kw <= dc_capacity.critical_it_load_kw` |
 | `CC-DC-05` | warning | `facility_load_kw <= dc_capacity.utility_feed_kw` |
 | `CC-DC-06` | warning | `dc_capacity.measured_pue == null &#124;&#124; dc_capacity.measured_pue <= dc_capacity.design_pue * 1.15` |
-| `CC-DC-07` | warning | `dc_revenue.market_rent_per_kw_month == null &#124;&#124; rent_index >= 0.85` |
+| `CC-DC-07` | warning | `dc_revenue.market_rent_per_kw_month == null &#124;&#124; mark_to_market <= round(1 / 0.85 - 1, 4)`: in-place rent more than 15% below market. `mark_to_market` is `(market − in-place) ÷ in-place`, positive meaning upside (RFC 0103). |
 | `CC-HOSP-01` | warning | `hotel_metrics.market_revpar == null &#124;&#124; revpar >= hotel_metrics.market_revpar * 0.85` |
 | `CC-HOSP-02` | error | `rent_roll.occupancy == null &#124;&#124; (rent_roll.occupancy >= 0 && rent_roll.occupancy <= 1)` |
 | `CC-HOSP-03` | warning | `hotel_brand.franchise_fee_pct_of_rooms + hotel_brand.marketing_fund_pct + hotel_brand.loyalty_program_pct <= 0.13` |
 | `CC-HOSP-04` | warning | `hotel_metrics.market_revpar` is stated but RevPAR (`noi_model.income.rooms_revenue / rent_roll.available_room_nights`) is uncomputable, so `CC-HOSP-01` is not evaluated. The finding names the missing canonical inputs; RevPAR is never inferred from ADR × occupancy. |
+| `CC-HOSP-05` | warning | `rent_roll.adr`, `rent_roll.occupancy`, `rent_roll.available_room_nights` and `noi_model.income.rooms_revenue` are all stated, rooms revenue is nonzero, and `abs(adr × occupancy × available_room_nights − rooms_revenue) > 0.01 × abs(rooms_revenue)`. The stated revenue stays the value; the identity is only a cross-check, and it holds only on one paid-rooms basis and period (RFC 0103). |
 | `CC-MH-01` | error | `mhc_sites == null &#124;&#124; (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` |
 | `CC-MH-02` | error | `mhc_sites == null &#124;&#124; (mhc_sites.occupied_sites != null && mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites)` |
 | `CC-MH-03` | error | `mhc_sites == null &#124;&#124; (mhc_sites.park_owned_homes != null && mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites)` |

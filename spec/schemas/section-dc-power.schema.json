@@ -36,7 +36,24 @@
         "null"
       ],
       "minimum": 0,
-      "description": "The operator's stated annual utility bill, when known. Takes precedence over the computed figure."
+      "description": "The operator's stated annual utility bill, when known. Takes precedence over the computed figure, except under metered_pass_through, where the landlord's power cost is zero."
+    },
+    "metered_annual_kwh": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Metered or measured annual facility consumption, in kWh. When stated it is the energy the power-cost metrics use; never inferred."
+    },
+    "draw_factor": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Average share of contracted IT load the tenants draw, a FRACTION. Required to compute power cost without metered kWh; the metrics never assume full draw."
     }
   }
 }

@@ -7,17 +7,20 @@ import { toWorkbook } from './toWorkbook.js';
 import { getLayoutForAssetClass } from './layouts.js';
 import { buildNamedRangeMap } from './layout.js';
 const root = resolve(__dirname, '../../..');
-function named(wb: ExcelJS.Workbook, name: string): number | null {
+function named(wb: ExcelJS.Workbook, name: string): number | string | null {
   const range = wb.definedNames.getRanges(name).ranges[0]!;
   const match = range.match(/(?:'([^']+)'|([^!]+))!\$([A-Z]+)\$(\d+)/)!;
   const value = wb.getWorksheet((match[1] ?? match[2])!)!.getCell(match[3]! + match[4]!).value;
-  return typeof value === 'number' ? value : null;
+  return typeof value === 'number' || typeof value === 'string' ? value : null;
 }
-function runFormula(formula: string, values: Record<string, number | null>): number | null {
-  let text = formula.replace(/<>""/g, '!==null').replace(/=""/g, '===null').replace(/""/g, 'null');
-  for (const [name, value] of Object.entries(values).sort((a,b) => b[0].length-a[0].length)) text = text.replace(new RegExp(`\\b${name}\\b`,'g'), String(value));
-  expect(/^[0-9.eE +*/(),!<>=\-nullIFROUND]+$/.test(text), text).toBe(true);
-  return new Function('IF','ROUND', `return (${text});`)((test: boolean, yes: unknown, no: unknown)=>test?yes:no,quantizeDecimal) as number | null;
+function runFormula(formula: string, values: Record<string, number | string | null>): number | null {
+  let text = formula.replace(/<>""/g, '!==null').replace(/=""/g, '===null').replace(/""/g, 'null')
+    .replace(/<>/g, '!==').replace(/(?<![<>!=])=(?!=)/g, '===');
+  for (const [name, value] of Object.entries(values).sort((a,b) => b[0].length-a[0].length)) text = text.replace(new RegExp(`\\b${name}\\b`,'g'), typeof value === 'string' ? JSON.stringify(value) : String(value));
+  // Text cells (an enum such as dc_power.billing) compare as quoted strings.
+  expect(/^[0-9.eE +*/(),!<>=\-nullIFROUNDORAND]+$/.test(text.replace(/"[a-z_]*"/g, '')), text).toBe(true);
+  return new Function('IF','ROUND','OR','AND', `return (${text});`)((test: boolean, yes: unknown, no: unknown)=>test?yes:no,quantizeDecimal,
+    (...tests: boolean[]) => tests.some(Boolean), (...tests: boolean[]) => tests.every(Boolean)) as number | null;
 }
 for (const [cls,file] of [['data_center','Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md'],['manufactured_housing','Desert-Palms-MHC-Apache-Junction-AZ.uwx.md']] as const) {
   describe(`${cls} complete workbook starter`,()=> {
@@ -27,7 +30,7 @@ for (const [cls,file] of [['data_center','Mesa-Gateway-Data-Center-Mesa-AZ.uwx.m
       const workbook = await toWorkbook(parsed);
       const bytes = await workbook.xlsx.writeBuffer(); const wb = new ExcelJS.Workbook(); await wb.xlsx.load(bytes);
       const map=buildNamedRangeMap(layout);
-      const values: Record<string, number | null> = {};
+      const values: Record<string, number | string | null> = {};
       const noi=blockPayload(parsed.sections.noi_model as import('@uwmd/core').UWBlock) as Record<string, any>;
       for(const input of layout.namedInputs) values[input.name]=named(wb,input.name);
       values.noi=noi.net_operating_income; values.effective_gross_income=noi.income.effective_gross_income; values.total_operating_expenses=noi.expenses.total_operating_expenses;

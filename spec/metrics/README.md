@@ -154,4 +154,15 @@ they do not change the dictionary or the examples.
 
 ## RFC 0081 Phase 2 hospitality addresses
 
-The dictionary describes the final single-home hotel fields: `rent_roll.adr`, `rent_roll.occupancy`, `rent_roll.available_room_nights`, and `property.keys`. Only `total_room_revenue` and `room_revenue_per_key` move input addresses; their arithmetic, null guards, units and rounding are unchanged. The hospitality pack reads the same addresses, and the dictionary/pack parity test compares them directly.
+The dictionary describes the final single-home hotel fields: `rent_roll.adr`, `rent_roll.occupancy`, `rent_roll.available_room_nights`, and `property.keys`. Since RFC 0103, `total_room_revenue` and `room_revenue_per_key` read the stated booked rooms revenue (`noi_model.income.rooms_revenue`) rather than ADR × occupancy × nights. The hospitality pack reads the same addresses, and the dictionary/pack parity test compares them directly.
+
+## Definitions and authorities (RFC 0103)
+
+Four definitions follow a published outside authority:
+
+| Metric | Definition | Authority |
+|---|---|---|
+| `fb_gross_margin` | (F&B revenue − cost of sales) ÷ revenue; no labor | USALI (HFTP, AHLA and the Global Finance Committee), Food and Beverage Department schedule, Gross Profit; HFTP *USALI Frequently Asked Questions*, Food and Beverage Department |
+| `mark_to_market` (data center) | (market − in-place rent) ÷ in-place; positive = under-rented upside | Broker and lender convention; no standard defines the percentage. EPRA *Best Practices Recommendations* (2024) §4.3 discloses its inputs (rent passing and ERV) |
+| `annual_facility_kwh`, `annual_power_cost`, `power_cost_per_kw_month` | Metered kWh, else contracted kW × explicit draw × PUE (measured before design) × 8,760; zero landlord cost under metered pass-through; null with no draw | The Green Grid, *White Paper #49: PUE — A Comprehensive Examination of the Metric* (PUE over a year of measured energy; energy = power × time) |
+| `total_room_revenue`, `room_revenue_per_key` | Stated booked rooms revenue, and ÷ keys; ADR × occupancy × nights only as the 1% `CC-HOSP-05` cross-check | OCC *Comptroller's Handbook: Commercial Real Estate Lending*, Hotels (ADR and RevPAR identities on paid rooms); HFTP USALI FAQ, Rooms Department (contents of rooms revenue) |
