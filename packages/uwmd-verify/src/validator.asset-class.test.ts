@@ -91,10 +91,20 @@ describe('validateUWFile — asset-class identifiers (RFC 0003)', () => {
     expect(find(parsed, 'MOD-DEPENDENCY-UNDECLARED')).toBeUndefined();
   });
 
-  it('ignores a missing or non-string asset_class rather than reporting a syntax error', () => {
+  it('ignores a missing or null asset_class rather than reporting a syntax error', () => {
     // Absence is a different defect, reported by the frontmatter checks. A
     // syntax complaint about a field that is not there would be noise.
     expect(find(file(undefined), 'INVALID-ASSET-CLASS-001')).toBeUndefined();
-    expect(find(file(42), 'INVALID-ASSET-CLASS-001')).toBeUndefined();
+    expect(find(file(null), 'INVALID-ASSET-CLASS-001')).toBeUndefined();
+  });
+
+  it('reports a present non-string or empty asset_class (#427)', () => {
+    // A value that is there but is no identifier would otherwise validate
+    // clean while every class-scoped rule and metric is skipped.
+    for (const value of [42, 1.5, true, false, [], {}, '']) {
+      const issue = find(file(value), 'INVALID-ASSET-CLASS-001');
+      expect(issue?.severity, JSON.stringify(value)).toBe('error');
+      expect(issue?.value, JSON.stringify(value)).toEqual(value);
+    }
   });
 });

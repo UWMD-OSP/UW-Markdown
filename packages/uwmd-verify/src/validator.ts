@@ -19,7 +19,7 @@ import type {
   DealStage,
   CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
-import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
+import { ASSET_CLASSES, DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks, parseUWFile, parsedFirstSourceMember } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
@@ -3159,8 +3159,21 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
       remediation: "Write each modules entry as an object: '- id: <module id>' with an optional 'version' range (Format §2.2a).",
     });
   }
-  const raw = parsed.frontmatter?.asset_class;
-  if (typeof raw !== 'string' || raw.length === 0) return;
+  const raw: unknown = parsed.frontmatter?.asset_class;
+  if (raw === undefined || raw === null) return;
+  // A present value that is not a non-empty string is no identifier at all
+  // (#427): without this, every class-scoped rule and metric is skipped silently.
+  if (typeof raw !== 'string' || raw.length === 0) {
+    issues.push({
+      code: 'INVALID-ASSET-CLASS-001',
+      severity: 'error',
+      field: 'asset_class',
+      message: `asset_class must be a builtin class or a namespaced identifier string, not ${JSON.stringify(raw)}.`,
+      value: raw,
+      remediation: `Use one of ${ASSET_CLASSES.join(', ')}, or a reverse-DNS identifier of at least three lower-snake-case segments (Format §2.2a).`,
+    });
+    return;
+  }
 
   const identity = parseAssetClass(raw);
   if (!identity.ok) {

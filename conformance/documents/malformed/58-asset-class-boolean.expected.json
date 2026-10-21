@@ -1,0 +1,8 @@
+{
+  "description": "`asset_class` is a boolean: no identifier at all, so INVALID-ASSET-CLASS-001 rather than a clean result with every class-scoped rule skipped (#427).",
+  "must_parse": true,
+  "expected_codes": [
+    "INVALID-ASSET-CLASS-001"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §2.2a"
+}
