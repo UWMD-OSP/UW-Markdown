@@ -152,12 +152,22 @@ function lineOfField(parsed: ParsedUWLite, path: string | undefined): number | u
 function analyzeStructured(text: string): UWDiagnostic[] {
   try {
     const parsed = parseUWFile(text, { strict: false });
-    return validateUWFile(parsed).issues.map((message) => ({
+    const validation = validateUWFile(parsed);
+    const issues = validation.issues.map((message) => ({
       code: message.code,
       severity: toSeverity(message.severity),
       message: formatValidation(message),
       ...atLine(lineOfSection(parsed.sections[message.section ?? ''])),
     }));
+    // Format §5.2 deal flags (RFC 0109) describe the deal, not a defect in the
+    // record: shown as information, whatever band they cross.
+    const flags = validation.deal_flags.map((flag) => ({
+      code: flag.code,
+      severity: 'info' as const,
+      message: `Deal flag (${flag.band} band): ${flag.message}`,
+      ...atLine(flag.section === 'frontmatter' ? 0 : lineOfSection(parsed.sections[flag.section])),
+    }));
+    return [...issues, ...flags];
   } catch (error) {
     return [
       { code: 'PARSE-001', severity: 'error', message: `Parse error: ${messageOf(error)}`, line: 0, endLine: 0 },

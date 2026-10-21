@@ -88,7 +88,7 @@ describe('validateUWFile — issue field paths (RFC 0104)', () => {
       ]));
     expect(pairs(frontmatter('asset_class: com.example.custom.widget\n'), ['MOD-DEPENDENCY-UNDECLARED']))
       .toEqual([['MOD-DEPENDENCY-UNDECLARED', 'frontmatter', 'modules']]);
-    expect(pairs(frontmatter('quick_metrics:\n  dscr: 0.9\n'), ['FV-04']))
-      .toEqual([['FV-04', 'frontmatter', 'quick_metrics.dscr']]);
+    expect(validateUWFile(parseUWFile('---\nuw_version: "3.0"\ndeal_id: "rfc0104"\nquick_metrics:\n  dscr: 0.9\n---\n\n')).deal_flags
+      .map((f) => [f.code, f.section, f.field])).toEqual([['FV-04', 'frontmatter', 'quick_metrics.dscr']]);
   });
 });

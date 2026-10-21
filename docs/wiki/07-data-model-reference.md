@@ -153,8 +153,10 @@ reads `.value`; a hint on the object itself formats as `n/a`.
 
 ## Financial validity thresholds (`DEFAULT_THRESHOLDS` in `types.ts`)
 
-The validator compares computed metrics against these (FV-NN codes). Institutions
-override via `.uw.institution.json` (`InstitutionConfig.thresholds`).
+The validator compares stated metrics against these (FV-NN codes) and reports
+each band crossed as a deal flag (RFC 0109). Institutions override three warning
+limits and choose codes to escalate via `.uw.institution.json`
+(`validation_overrides`, Format C.6).
 
 Metric | Thresholds
 ---|---
@@ -191,8 +193,16 @@ interface ValidationResult {
   stage_readiness: StageReadiness;            // per DealStage boolean
   issues: ValidationMessage[];
   errors: ValidationMessage[]; warnings: ValidationMessage[]; info: ValidationMessage[];
+  deal_flags: DealFlag[];                     // Format §5.2 bands, RFC 0109
+  coverage: Record<string, CrossCheckCoverage>;
 }
 ```
+
+`DealFlag`: `{ code, section, field, message, value, threshold, band }`, with
+`band` `'error' | 'warning'` and no `severity`. Flags never enter `issues` and
+never change `overall_status`, the exit status or receipt counts. An institution
+config's `validation_overrides.financial_validity_errors` lists codes whose
+error band is reported as an `error` issue instead.
 
 `ValidationMessage`: `{ code, severity, section?, field?, message, value?,
 threshold?, title?, remediation?, spec_ref? }` — `title`/

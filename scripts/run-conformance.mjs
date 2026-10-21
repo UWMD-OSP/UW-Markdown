@@ -241,6 +241,17 @@ function hasValidateCase(suite, scenario) {
   return index.has(key(suite, `${scenario} [validate]`));
 }
 
+// RFC 0109: Format §5.2 findings are deal flags, beside the issues and never in
+// them. A baseline names their (code, band) pairs only when there are any, so a
+// record without flags keeps its baseline unchanged.
+function dealFlagPairs(validation) {
+  const flags = validation.deal_flags ?? [];
+  if (flags.length === 0) return {};
+  const pairs = [...new Map(flags.map((f) => [`${f.code} ${f.band}`, { code: f.code, band: f.band }])).values()]
+    .sort((a, b) => a.code.localeCompare(b.code) || a.band.localeCompare(b.band));
+  return { deal_flags: pairs };
+}
+
 function recordValidationOnly(suite, scenario, baselinePath, parsed, requiredCodes, provenanceIssues, source) {
   const id = `${scenario} [validate]`;
   let validation;
@@ -263,7 +274,7 @@ function recordValidationOnly(suite, scenario, baselinePath, parsed, requiredCod
   }
   // `overall_status` stays the validator's own verdict; provenance findings
   // (§V.3) are reported beside it rather than folded into it.
-  const actual = `${JSON.stringify({ overall_status: validation.overall_status, issues, ...(provenance ? { provenance } : {}) }, null, 2)}\n`;
+  const actual = `${JSON.stringify({ overall_status: validation.overall_status, issues, ...dealFlagPairs(validation), ...(provenance ? { provenance } : {}) }, null, 2)}\n`;
   if (UPDATE) {
     writeFileSync(baselinePath, actual);
     record(suite, id, 'updated');
@@ -373,7 +384,7 @@ function runDocuments() {
     const issuePairs = [...new Map(
       (validation.issues ?? []).map((i) => [`${i.code} ${i.severity}`, { code: i.code, severity: i.severity }])
     ).values()].sort((a, b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity));
-    const actualValidationStr = `${JSON.stringify({ overall_status: validation.overall_status, issues: issuePairs }, null, 2)}\n`;
+    const actualValidationStr = `${JSON.stringify({ overall_status: validation.overall_status, issues: issuePairs, ...dealFlagPairs(validation) }, null, 2)}\n`;
     const expectedValidationPath = join(expectedDir, `${id}.validation.json`);
 
     if (UPDATE) {
@@ -456,7 +467,7 @@ async function runMalformedDocuments() {
 
     const mustParse = expected.must_parse !== false;
     const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
-    if (expectedCodes.length === 0 && !(expected.must_parse === true && (Array.isArray(expected.metadata_issues) || Array.isArray(expected.payload_issues)))) {
+    if (expectedCodes.length === 0 && !(expected.must_parse === true && (Array.isArray(expected.metadata_issues) || Array.isArray(expected.payload_issues) || Array.isArray(expected.deal_flags)))) {
       record('documents', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
       continue;
     }
@@ -543,6 +554,24 @@ async function runMalformedDocuments() {
       if (missing.length > 0) {
         const seen = validation.issues.map(({ code, section, field }) => `${code}@${section}:${field}`).join(', ');
         record('documents', `malformed/${id}`, 'fail', `field rows not found: ${JSON.stringify(missing)}; saw ${seen}`);
+        continue;
+      }
+    }
+
+    // RFC 0109: authored deal-flag rows, compared as a multiset; no FV code may
+    // remain among the issues.
+    if (Array.isArray(expected.deal_flags)) {
+      const remaining = validation.deal_flags.map(({ code, band, section, field }) => ({ code, band, section, field }));
+      const missing = expected.deal_flags.filter((row) => {
+        const at = remaining.findIndex((f) => isDeepStrictEqual(f, { code: row.code, band: row.band, section: row.section, field: row.field }));
+        if (at < 0) return true;
+        remaining.splice(at, 1);
+        return false;
+      });
+      const leaked = validation.issues.filter((i) => i.code.startsWith('FV-')).map((i) => i.code);
+      if (missing.length > 0 || remaining.length > 0 || leaked.length > 0) {
+        const seen = validation.deal_flags.map(({ code, band, section, field }) => `${code}/${band}@${section}:${field}`).join(', ');
+        record('documents', `malformed/${id}`, 'fail', `deal flags differ: missing ${JSON.stringify(missing)}, extra ${JSON.stringify(remaining)}, FV issues ${leaked.join(', ') || 'none'}; saw ${seen}`);
         continue;
       }
     }
@@ -2609,7 +2638,7 @@ async function runInstitutionConfig() {
       } else {
         if (actual.error || !Array.isArray(actual.issues) || !Array.isArray(actual.errors) || !Array.isArray(actual.warnings)) throw new Error('Expected an ordinary validation result');
         const seen = new Map(actual.issues.map(issue => [JSON.stringify([issue.code, issue.severity]), { code: issue.code, severity: issue.severity }]));
-        const projected = { overall_status: actual.overall_status, issues: [...seen.values()].sort((a,b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity)) };
+        const projected = { overall_status: actual.overall_status, issues: [...seen.values()].sort((a,b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity)), ...dealFlagPairs(actual) };
         if (!deepEqual(projected, expected)) throw new Error(`Validation projection differs: ${JSON.stringify(projected)}`);
       }
       if (!hashes.every((hash, i) => hash === createHash('sha256').update(readFileSync(inputs[i])).digest('hex'))) throw new Error('Source/config/case/expectation bytes changed');

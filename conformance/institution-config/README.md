@@ -1,6 +1,6 @@
 # Selected institution configuration (RFC0097)
 
-These29 authored document/config operation controls belong to Verifier/validate.
+These33 authored document/config operation controls belong to Verifier/validate.
 They allocate no document issue or financial procedure. The original111 portable
 validation cases, their sources and their expectations remain unchanged.
 
@@ -22,5 +22,10 @@ Portable cases cover explicit selection, automatic absence/adjacency, no fallbac
 strict UTF8/BOM/JSON/decoded duplicate/Unicode rules, opaque overflow/paired
 scalars, root/carrier/leaf types, atomicity and fixed pointer precedence. Permission,
 symlink/race, internal-error exit2, pure API, aggregate and receipt boundaries are
-also required independent runtime/subprocess controls; these29 are not the whole
+also required independent runtime/subprocess controls; these33 are not the whole
 capability gate. Discovery is not promoted by passing them.
+
+Cases 30–33 (RFC 0109) pin financial-validity findings as deal flags: a weak
+deal is clean and exits 0, `validation_overrides.financial_validity_errors` raises
+a listed code's error band (never its warning band) to an error, and a list naming
+an unregistered code is refused.

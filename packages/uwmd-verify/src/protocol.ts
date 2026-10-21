@@ -2480,8 +2480,10 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   },
 
   // ─── Financial validity (FV-NN) — renamed from FV_* in v1.1 ────────────────
-  // Severity is the *highest* severity any emission of this code can carry
-  // (e.g. FV-04 may be warning OR error depending on threshold).
+  // Reported as deal flags (ValidationResult.deal_flags, RFC 0109), not issues.
+  // Severity is the *highest* band the code can cross (e.g. FV-04 has a warning
+  // and an error band); it is an issue severity only when an institution
+  // configuration escalates the code (validation_overrides.financial_validity_errors).
   {
     code: 'FV-01', severity: 'warning',
     title: 'Cap rate below threshold',

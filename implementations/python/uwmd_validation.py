@@ -23,10 +23,11 @@ from uwmd_validation_lease_up import _lease_up_assessment
 
 
 async def validate_document(document, *, now=None, gap_staleness_days=14,
-                            incomplete_policies=(), thresholds=None):
+                            incomplete_policies=(), thresholds=None, financial_validity_errors=()):
     """Assess the current canonical Document model, never stale source bytes."""
     return await _validate_document(document, now=now, gap_staleness_days=gap_staleness_days,
-        incomplete_policies=incomplete_policies, thresholds=thresholds)
+        incomplete_policies=incomplete_policies, thresholds=thresholds,
+        financial_validity_errors=financial_validity_errors)
 
 
 async def _validate_source(raw, *, filename=None, parts=None, **options):
@@ -46,7 +47,8 @@ async def _validate_source(raw, *, filename=None, parts=None, **options):
 
 
 async def _validate_document(document, *, now=None, gap_staleness_days=14,
-                             incomplete_policies=(), thresholds=None, _source_order=False):
+                             incomplete_policies=(), thresholds=None, financial_validity_errors=(),
+                             _source_order=False):
     """Snapshot once before any await; return detached structural/binding results.
 
     Existing standalone reports retain their own scopes. Integration selects
@@ -58,7 +60,9 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
     metadata = basic_rules(ledger, now=now, gap_staleness_days=gap_staleness_days,
                 incomplete_policies=incomplete_policies, _source_order=_source_order)
     cross_checks(ledger,defer_summaries=True)
-    financial_thresholds(ledger, thresholds)
+    # RFC 0109: Format 5.2 findings are deal flags, never issues, unless an
+    # institution escalates a code's error band; they never affect the status.
+    deal_flags = financial_thresholds(ledger, thresholds, financial_validity_errors)
     lease_up = series_rules(ledger)
     bed_rules(ledger)
     size_rules(ledger)
@@ -91,7 +95,8 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
         status = "blocking"
     return dict(overall_status=status, stage_readiness=stage_readiness(snapshot),
                 issues=issues, errors=partitions["error"], warnings=partitions["warning"],
-                info=partitions["info"], coverage=copy.deepcopy(ledger.coverage),
+                info=partitions["info"], deal_flags=copy.deepcopy(deal_flags),
+                coverage=copy.deepcopy(ledger.coverage),
                 replacement_funding_verification=copy.deepcopy(binding),
                 composition_assessment=copy.deepcopy(composition),
                 metadata_assessment=copy.deepcopy(metadata),

@@ -540,8 +540,45 @@ export interface ValidationResult {
   errors: ValidationMessage[];
   warnings: ValidationMessage[];
   info: ValidationMessage[];
+  /**
+   * Format §5.2 financial-validity findings (RFC 0109). They describe the deal,
+   * not the record: never in `issues`, never counted in `overall_status`.
+   * Always present, possibly empty.
+   */
+  deal_flags: DealFlag[];
   /** One entry per registered `CC-NN` rule (`CROSS_CHECK_RULE_IDS`), RFC 0037. */
   coverage: Record<string, CrossCheckCoverage>;
+}
+
+/**
+ * One Format §5.2 band crossed at one home (RFC 0109). `band` names the column
+ * crossed; there is deliberately no `severity`, so no reader counts a weak deal
+ * as a defective record.
+ */
+export interface DealFlag {
+  code: string;
+  section: string;
+  field: string;
+  message: string;
+  value: number;
+  threshold: { min?: number; max?: number };
+  band: 'error' | 'warning';
+}
+
+/** The registered Format §5.2 financial-validity codes (RFC 0105, RFC 0109). */
+export const FINANCIAL_VALIDITY_CODES = [
+  'FV-01', 'FV-02', 'FV-03', 'FV-04', 'FV-05', 'FV-06', 'FV-07',
+  'FV-08', 'FV-09', 'FV-10', 'FV-11', 'FV-12', 'FV-13', 'FV-14',
+] as const;
+
+/** Validation policy an institution configuration supplies beyond thresholds. */
+export interface ValidationPolicy {
+  /**
+   * `validation_overrides.financial_validity_errors` (RFC 0109 D3): for each
+   * listed code an error-band finding is reported as an `error` issue instead
+   * of a deal flag. A warning-band finding stays a flag (D4).
+   */
+  financial_validity_errors?: readonly string[];
 }
 
 // Default financial validity thresholds (spec §5.2)
@@ -590,6 +627,8 @@ export interface InstitutionConfig {
     dscr_warning_below?: number;
     ltv_warning_above?: number;
     debt_yield_warning_below?: number;
+    /** `FV-NN` codes whose error band fails validation (RFC 0109 D3). */
+    financial_validity_errors?: string[];
     /** Other data is opaque and is never claimed applied. */
     [member: string]: unknown;
   };

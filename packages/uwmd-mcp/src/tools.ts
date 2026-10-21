@@ -15,6 +15,7 @@ import {
   verifyReplacementFundingBindings,
   verifyStatedMetrics,
   type ParsedUWFile,
+  type DealFlag,
   type ValidationMessage,
 } from '@uwmd/verify';
 
@@ -38,12 +39,23 @@ export interface CompactIssue {
   message: string;
 }
 
+/** A Format §5.2 deal flag (RFC 0109): the deal crosses a band; not a record defect. */
+export interface CompactDealFlag {
+  code: string;
+  band: 'error' | 'warning';
+  section: string;
+  field: string;
+  message: string;
+}
+
 export interface ValidateResult {
   overall_status: string;
   error_count: number;
   warning_count: number;
   stage_readiness: Record<string, boolean>;
   issues: CompactIssue[];
+  /** Financial-validity findings, apart from `issues` and never counted in them (RFC 0109). */
+  deal_flags: CompactDealFlag[];
 }
 
 export interface VerifyResult {
@@ -81,6 +93,10 @@ function parse(source: string): ParsedUWFile {
   }
 }
 
+function compactFlag(flag: DealFlag): CompactDealFlag {
+  return { code: flag.code, band: flag.band, section: flag.section, field: flag.field, message: flag.message };
+}
+
 function compact(issue: ValidationMessage): CompactIssue {
   return {
     code: issue.code,
@@ -102,6 +118,7 @@ export function validateSource(source: unknown): ValidateResult {
     warning_count: result.warnings.length,
     stage_readiness: { ...result.stage_readiness } as unknown as Record<string, boolean>,
     issues: result.issues.map(compact),
+    deal_flags: result.deal_flags.map(compactFlag),
   };
 }
 
@@ -128,6 +145,7 @@ export async function verifySource(source: unknown): Promise<VerifyResult> {
       error_count: validation.errors.length,
       warning_count: validation.warnings.length,
       issues: validation.issues.map(compact),
+      deal_flags: validation.deal_flags.map(compactFlag),
     },
     stated_metrics: {
       counts: metrics.counts,

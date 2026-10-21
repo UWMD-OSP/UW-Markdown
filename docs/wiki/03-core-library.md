@@ -157,9 +157,12 @@ walks a dot-path into a content object.
 
 ## validator.ts
 
-`validateUWFile(parsed, thresholds?) → ValidationResult`. Returns
+`validateUWFile(parsed, thresholds?, sourceOptions?, policy?) → ValidationResult`. Returns
 `overall_status` (`clean`|`warnings`|`errors`|`blocking`), `stage_readiness`
-(per `DealStage`), and `issues` split into `errors`/`warnings`/`info`. Each
+(per `DealStage`), `issues` split into `errors`/`warnings`/`info`, and
+`deal_flags`: the Format §5.2 bands the deal crosses, which never count toward
+the status (RFC 0109). `policy.financial_validity_errors` (from an institution
+config) raises a listed code's error band to an `error` issue. Each
 `ValidationMessage` carries a `code` and (when a registry entry exists) a `title`,
 `remediation`, and `spec_ref` pulled from `BUILTIN_REMEDIATIONS` via
 `lookupRemediation`.
@@ -177,7 +180,9 @@ order.
 - `POL-01..POL-02` — provenance/policy (unauthorized actor, replace-where-supersede).
 - `FV-01..FV-14` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex…),
   read at every Format §5.2 home (`quick_metrics` and the section field), one
-  issue per home at the worst band crossed (RFC 0105).
+  finding per home at the worst band crossed (RFC 0105). Reported as
+  `deal_flags` with a `band`, not as issues, unless an institution escalates
+  the code (RFC 0109).
 - `DQ-07..DQ-09` — scenario vocabulary, BTR subtype agreement and class scope
   (RFC 0072); warnings in both format generations, no stage or math changes.
 - `UNSUPPORTED_YAML_FEATURE` — frontmatter outside the YAML subset.

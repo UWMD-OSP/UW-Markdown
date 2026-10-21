@@ -174,6 +174,12 @@ lexical numbers, avoiding host integer limits. Only the three recognized leaves
 are converted to finite binary64. No new numeric ranges or depth limits apply.
 Resource/runtime failures remain internal errors, not invented malformed inputs.
 
+RFC 0109 adds `validation_overrides.financial_validity_errors`, admitted after the
+three numeric leaves: a present value must be an array whose every element is one
+of the strings `FV-01`..`FV-14` (empty and duplicates admitted), otherwise
+MALFORMED with that pointer. `load_institution_policy` returns the bands and the
+listed codes; the CLI passes both to validation.
+
 Selection is lexical abspath, not symlink realpath. Read first; automatic read
 ENOENT defaults only when lstat also establishes no entry. Explicit absence,
 directory, denied read, dangling link or inability to inspect is UNREADABLE.
@@ -461,6 +467,15 @@ new full-suite run at 7178f177. No JavaScript full suite was run in this lane.
 [Format 5.2](../../spec/UW_FORMAT_SPEC.md) fixes defaults, institution overrides
 and strict below/above comparisons. The current code reads stated values and
 does not reproduce DSCR/IRR or another model to perform these plausibility checks.
+
+**RFC 0109:** these findings are deal flags, not validation issues. They go in the
+result's always-present `deal_flags` list as `{code, section, field, message,
+value, threshold, band}` (no `severity`; `band` is the column crossed below) and
+never reach `issues`/`errors`/`warnings`/`info`, `overall_status` or the exit
+status. Only an error-band finding of a code listed in the institution's
+`financial_validity_errors` becomes an ordinary `error` issue, in the FV position.
+The Python CLI prints the result as JSON with or without `--json`, so `deal_flags`
+appears in both.
 
 | Codes | Condition and severity | Implemented source / remaining gate |
 |---|---|---|

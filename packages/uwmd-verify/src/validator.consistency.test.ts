@@ -38,7 +38,7 @@ function file(
 }
 
 describe('financial-validity checks', () => {
-  it('emits stable FV-NN codes for out-of-range underwriting metrics', () => {
+  it('flags stable FV-NN codes for out-of-range underwriting metrics', () => {
     const parsed = file(
       {
         noi_model: block('noi_model', {
@@ -59,7 +59,7 @@ describe('financial-validity checks', () => {
       },
     );
 
-    const codes = new Set(validateUWFile(parsed).issues.map((issue) => issue.code));
+    const codes = new Set(validateUWFile(parsed).deal_flags.map((flag) => flag.code));
 
     for (const code of ['FV-01', 'FV-03', 'FV-04', 'FV-05', 'FV-07', 'FV-09', 'FV-10', 'FV-12', 'FV-13']) {
       expect(codes, code).toContain(code);

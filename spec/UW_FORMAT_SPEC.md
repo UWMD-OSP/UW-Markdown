@@ -3139,7 +3139,7 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 
 **ID:** `validation`  
 **Header:** `## Flags & Validation {#validation}`  
-**Purpose:** All warnings, errors, policy flags, and cross-section consistency checks. This section is the machine-readable deal health signal.  
+**Purpose:** All warnings, errors, policy flags, and cross-section consistency checks. This section is the machine-readable deal health signal. Its `financial_validity[]` array records the §5.2 deal flags (RFC 0109); `overall_status` means what the validation result's status means, so it excludes them.  
 **Written by:** `system/financialValidityChecker`  
 **Required for pipeline stage:** All stages  
 **Dependencies:** All sections (reads everything)
@@ -4381,6 +4381,19 @@ class (`CLS-03`), never substituted for `rent_roll`.
 
 These are the default thresholds. Institution configs may override.
 
+**Findings are deal flags (RFC 0109).** A band crossed here describes the deal,
+not the record: an honest underwriting of a weak deal is still a valid record.
+A validator MUST report each `FV-NN` finding in the result's `deal_flags` list
+(§6.2) and MUST NOT place it in `issues`, `errors`, `warnings` or `info`. A deal
+flag MUST NOT affect `overall_status`, the exit status, `stage_readiness` or a
+receipt's `validation` counts. A flag carries `code`, `section`, `field`,
+`message`, `value`, `threshold` and `band`, where `band` is `"error"` or
+`"warning"` and names the column crossed; it has no `severity`. The one
+exception is institution escalation (Appendix C.6): for a code the selected
+configuration lists in `validation_overrides.financial_validity_errors`, an
+error-band finding is reported as an ordinary `error` issue instead, and counts
+as one. A warning-band finding of a listed code stays a deal flag.
+
 | Metric | Code (below / above) | Read from | Error Below | Warning Below | Warning Above | Error Above |
 |---|---|---|---|---|---|---|
 | DSCR | `FV-04` | `quick_metrics.dscr`; `debt_structure.sizing_metrics.dscr_underwritten` | 1.00x | 1.20x | — | — |
@@ -4398,9 +4411,9 @@ These are the default thresholds. Institution configs may override.
 compared with its band. A home that is absent, `null` or not a number draws
 nothing, and no field outside the table is read. A section home is read from the
 one block the §5.3 selection order picks, preferring the `senior` role for
-`debt_structure`. Each home draws at most one issue per side, at the most severe
-band it crosses: a DSCR of 0.95 is `FV-04`/error, not also `FV-04`/warning. The
-issue's `field` is the home (Protocol §III.6a), and a frontmatter home's
+`debt_structure`. Each home draws at most one finding per side, at the most severe
+band it crosses: a DSCR of 0.95 is `FV-04` in the error band, not also in the
+warning band. The finding's `field` is the home (Protocol §III.6a), and a frontmatter home's
 `section` is `"frontmatter"`: `quick_metrics.dscr` in section `frontmatter`, or
 `sizing_metrics.dscr_underwritten` in section `debt_structure`. A value stated at both homes is checked at both. The
 LTC band has no home and no code yet, so it is not checked.
@@ -4637,9 +4650,14 @@ Runs all validation rules (Part V) and returns, with `--json`:
     "monitoring": false
   },
   "issues": [ "...ValidationIssue objects..." ],
+  "deal_flags": [ "...DealFlag objects (§5.2), possibly empty..." ],
   "...": "plus errors, warnings, info, coverage and replacement_funding_verification"
 }
 ```
+
+`deal_flags` is always present. Deal flags are not issues: `overall_status`, the
+partitions and the exit status ignore them (§5.2, RFC 0109). Human-readable output
+lists them under their own heading after the validation issues.
 
 Readiness is reported for every `deal_stage` (§2.2). The CLI takes no
 `--stage` flag; read one stage's readiness from `stage_readiness`.
@@ -4843,7 +4861,8 @@ The `.uw.institution.json` sidecar file (same directory as the `.uwx.md` file) c
   "validation_overrides": {
     "dscr_warning_below": 1.25,
     "ltv_warning_above": 0.70,
-    "debt_yield_warning_below": 0.09
+    "debt_yield_warning_below": 0.09,
+    "financial_validity_errors": ["FV-04", "FV-09"]
   },
   "required_sections_overrides": {},
   "render_template_overrides": {}
@@ -4867,6 +4886,16 @@ config before applying any leaf. The root member `thresholds` is forbidden;
 the pure API's nested threshold map is a separate input. Other members remain
 opaque and are not claimed applied. Unknown overflow number spellings remain
 opaque; malformed Unicode or duplicate decoded names anywhere are refused.
+
+**Escalating deal flags (RFC 0109).** The optional own leaf
+`financial_validity_errors` is an array of registered `FV-NN` codes (§5.2). It
+is admitted after the three numeric leaves; a present value that is not an array
+whose every element is a registered code string is malformed, with pointer
+`validation_overrides.financial_validity_errors`. Empty and repeated entries are
+admitted. For each listed code an error-band finding is reported as an `error`
+issue instead of a deal flag; its warning band, and every unlisted code, stay
+deal flags. Codes are listed one by one: an institution that hard-stops on DSCR
+need not hard-stop on cap rate.
 
 Admitted overrides replace only their named warning limits in fresh affected
 default bands. Existing error limits, unrelated bands and financial comparisons

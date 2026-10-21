@@ -242,9 +242,16 @@ def _default_threshold_bands():
             for _,_,key,low,high,error_low,error_high,_,_ in _THRESHOLD_SPECS}
 
 
-def financial_thresholds(ledger, thresholds=None):
-    """Published Format 5.2 thresholds; compare stated values, never solve inputs."""
+def financial_thresholds(ledger, thresholds=None, financial_validity_errors=()):
+    """Published Format 5.2 thresholds; compare stated values, never solve inputs.
+
+    RFC 0109: each finding is a deal flag, returned in production order and never
+    placed in the ledger's issues, unless the institution lists its code and the
+    error band is crossed; only then is it an ordinary error issue (D3, D4).
+    """
     thresholds = thresholds or {}
+    escalated = frozenset(financial_validity_errors or ())
+    flags = []
     document = ledger.document
     from uwmd_validation_selection import select_section
     for section, paths, key, low, high, error_low, error_high, low_code, high_code in _THRESHOLD_SPECS:
@@ -261,9 +268,22 @@ def financial_thresholds(ledger, thresholds=None):
         configured = thresholds.get(key, {})
         low, high = configured.get("warning_below", low), configured.get("warning_above", high)
         error_low, error_high = configured.get("error_below", error_low), configured.get("error_above", error_high)
-        if low_code and ((finite(low) and value < low) or (finite(error_low) and value < error_low)):
-            ledger.issue(low_code, "error" if finite(error_low) and value < error_low else "warning",
-                         section, paths[0], "Stated value is below its registered threshold", value=value)
-        if high_code and ((finite(high) and value > high) or (finite(error_high) and value > error_high)):
-            ledger.issue(high_code, "error" if finite(error_high) and value > error_high else "warning",
-                         section, paths[0], "Stated value is above its registered threshold", value=value)
+        for code, side, warning, error, crosses in (
+                (low_code, "below", low, error_low, lambda limit: value < limit),
+                (high_code, "above", high, error_high, lambda limit: value > limit)):
+            if not code:
+                continue
+            # One finding per home and side, at the most severe band crossed.
+            band = ("error" if finite(error) and crosses(error) else
+                    "warning" if finite(warning) and crosses(warning) else None)
+            if band is None:
+                continue
+            limit = error if band == "error" else warning
+            threshold = {"min": limit} if side == "below" else {"max": limit}
+            message = "Stated value is " + side + " its registered threshold"
+            if band == "error" and code in escalated:
+                ledger.issue(code, "error", section, paths[0], message, value=value, threshold=threshold)
+            else:
+                flags.append(dict(code=code, section=section, field=paths[0], message=message,
+                                  value=value, threshold=threshold, band=band))
+    return flags

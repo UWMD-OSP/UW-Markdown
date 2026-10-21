@@ -33,7 +33,7 @@ export function createServer(): McpServer {
 
   server.registerTool('uwmd_validate', {
     title: 'Validate a UW Markdown record',
-    description: 'Check a .uwx.md underwriting record against the UW Markdown Format rules. Returns the overall status, stage readiness and every issue (code, severity, section, field, message). Use uwmd_explain_code for what a code means.',
+    description: 'Check a .uwx.md underwriting record against the UW Markdown Format rules. Returns the overall status, stage readiness, every issue (code, severity, section, field, message) and, separately, deal flags: Format §5.2 financial-validity bands the deal crosses (code, band, section, field, message), which describe the deal, not a defect in the record. Use uwmd_explain_code for what a code means.',
     inputSchema: { source: SOURCE },
     annotations: READ_ONLY,
   }, async ({ source }) => {

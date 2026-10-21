@@ -166,10 +166,12 @@ def main(arguments):
             # Fatal actual-source admission precedes config preflight. Validate
             # this fresh parse with SOURCE ordering after admission succeeds.
             document=parse(raw,filename=path.name,require_structured=True)
-            from uwmd_institution import load_institution_thresholds
-            thresholds=load_institution_thresholds(path,explicit)
+            from uwmd_institution import load_institution_policy
+            policy=load_institution_policy(path,explicit)
+            # RFC 0109: deal flags travel in the result and never set the exit.
             return _validation_response(asyncio.run(
-                _validate_document(document,_source_order=True,thresholds=thresholds)))
+                _validate_document(document,_source_order=True,thresholds=policy["thresholds"],
+                                   financial_validity_errors=policy["financial_validity_errors"])))
         except _InstitutionConfigError as error:
             return {"error":error.projection()},1
         except SourceError as error:

@@ -39,6 +39,7 @@ import {
   PropertyCashFlowAssemblyError,
   inspectPropertyCashFlowInputs,
   type AssetClass,
+  type DealFlag,
   type DealStage,
   parseUWPart,
   resolveComposition,
@@ -77,7 +78,7 @@ import { issueReceipt } from './receipt-engine.js';
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
-import { InstitutionConfigError, loadInstitutionThresholds } from './institution-config.js';
+import { InstitutionConfigError, loadInstitutionPolicy } from './institution-config.js';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { render } from './renderer.js';
@@ -220,7 +221,7 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   const detection = detectUWSourceRepresentation(content, file);
   if (detection.representation !== UWX_REPRESENTATION_ID) {
     const lite = parseUWLite(content);
-    try { loadInstitutionThresholds(file, flags['institution'] as string | undefined); }
+    try { loadInstitutionPolicy(file, flags['institution'] as string | undefined); }
     catch (error) {
       institutionFailure(error, flags['json'] === true); return;
     }
@@ -258,12 +259,12 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content);
-  let thresholds: ReturnType<typeof loadInstitutionThresholds>;
-  try { thresholds = loadInstitutionThresholds(file, flags['institution'] as string | undefined); }
+  let institution: ReturnType<typeof loadInstitutionPolicy>;
+  try { institution = loadInstitutionPolicy(file, flags['institution'] as string | undefined); }
   catch (error) {
     institutionFailure(error, flags['json'] === true); return;
   }
-  const structural = validateUWFile(content, thresholds);
+  const structural = validateUWFile(content, institution?.thresholds, undefined, institution);
   const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
   const result = { ...structural, replacement_funding_verification };
   const fundingRefuses = replacement_funding_verification.state !== 'verified'
@@ -320,9 +321,22 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   } else {
     console.log('\nNo issues found.');
   }
+  printDealFlags(result.deal_flags);
   console.log('');
 
   process.exit(result.errors.length > 0 || fundingRefuses ? 1 : 0);
+}
+
+/**
+ * Format §5.2 deal flags (RFC 0109), under their own heading after the issues:
+ * they describe the deal, not the record, and never change the exit status.
+ */
+function printDealFlags(flags: readonly DealFlag[]): void {
+  if (flags.length === 0) return;
+  console.log(`\nDeal flags (${flags.length}; Format §5.2 bands, not validation errors):`);
+  for (const flag of flags) {
+    console.log(`  [${flag.band === 'error' ? 'ERROR BAND' : 'WARN BAND'}] [${flag.section}.${flag.field}] ${flag.code}: ${flag.message}`);
+  }
 }
 
 /**
@@ -413,8 +427,8 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   let configError: InstitutionConfigError | undefined;
 
   if (runAll || onlyValidate) {
-    let thresholds: ReturnType<typeof loadInstitutionThresholds>;
-    try { thresholds = loadInstitutionThresholds(file); }
+    let institution: ReturnType<typeof loadInstitutionPolicy>;
+    try { institution = loadInstitutionPolicy(file); }
     catch (error) {
       if (!(error instanceof InstitutionConfigError)) {
         institutionFailure(error, flags['json'] === true); return;
@@ -425,7 +439,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
       delete sections['replacement_funding_verification'];
     }
     if (configError === undefined) {
-      const v = validateUWFile(content, thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
+      const v = validateUWFile(content, institution?.thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) }, institution);
       sections['validation'] = v;
       const funding = await verifyReplacementFundingBindings(parsed);
       sections['replacement_funding_verification'] = funding;
@@ -466,6 +480,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
         const loc = issue.section ? ` [${issue.section}${issue.field ? `.${issue.field}` : ''}]` : '';
         console.log(`  ${tag}${loc} ${issue.code ? `${issue.code}: ` : ''}${issue.message}`);
       }
+      printDealFlags(v.deal_flags);
     }
     const metrics = sections['stated_metrics'] as ReturnType<typeof verifyStatedMetrics> | undefined;
     if (!metrics) {

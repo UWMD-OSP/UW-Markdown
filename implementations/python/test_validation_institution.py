@@ -9,12 +9,13 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from uwmd_institution import load_institution_thresholds
+from uwmd_institution import load_institution_policy,load_institution_thresholds
 from uwmd_reader import parse
 from uwmd_validation import _validate_source,validate_document
 from uwmd_validation_cross import _default_threshold_bands
 from uwmd_institution_config import _InstitutionConfigError
 from uwmd import main
+from test_financial_validity import weak_deal
 
 ROOT=Path(__file__).resolve().parents[2]
 FIXTURE=ROOT/"conformance/documents/fixtures/02-full-multifamily.uwx.md"
@@ -68,27 +69,30 @@ class InstitutionThresholdTests(unittest.TestCase):
                 with self.subTest(key=key,bound=bound):
                     self.config({key:bound});result,status=self.command()
                     self.assertEqual(status,0)
-                    found=[i for i in result["issues"] if i["code"]==code]
+                    # RFC 0109: a deal flag, never an issue, at the warning band.
+                    self.assertFalse(any(i["code"]==code for i in result["issues"]))
+                    found=[f for f in result["deal_flags"] if f["code"]==code]
                     self.assertEqual(bool(found),expected)
-                    self.assertTrue(all(i["severity"]=="warning" for i in found))
+                    self.assertTrue(all(f["band"]=="warning" for f in found))
 
     def test_actual_cli_explicit_path_is_cwd_relative_and_overrides_adjacent_file(self):
         self.config(dict(dscr_warning_below=1.110))
         selected=self.config(dict(dscr_warning_below=1.108),self.folder/"selected.json")
-        self.assertTrue(any(i["code"]=="FV-04" for i in self.command()[0]["issues"]))
+        self.assertTrue(any(i["code"]=="FV-04" for i in self.command()[0]["deal_flags"]))
         for flags in (("--institution",selected.name),("--institution="+selected.name,)):
             result,status=self.command(*flags)
             self.assertEqual(status,0)
-            self.assertFalse(any(i["code"]=="FV-04" for i in result["issues"]))
+            self.assertFalse(any(i["code"]=="FV-04" for i in result["deal_flags"]))
         # Discovery uses the actual document directory, not cwd.
         self.config(dict(dscr_warning_below=1.110),self.folder/".uw.institution.json")
         self.config(dict(dscr_warning_below=1.108))
-        self.assertFalse(any(i["code"]=="FV-04" for i in self.command()[0]["issues"]))
+        self.assertFalse(any(i["code"]=="FV-04" for i in self.command()[0]["deal_flags"]))
 
     def test_auto_absence_keeps_defaults_and_supplied_missing_never_falls_back(self):
         self.assertEqual(load_institution_thresholds(self.document),{})
         result,status=self.command();self.assertEqual(status,0)
-        self.assertTrue(any(i["code"]=="FV-04" for i in result["warnings"]))
+        self.assertTrue(any(f["code"]=="FV-04" and f["band"]=="warning" for f in result["deal_flags"]))
+        self.assertFalse(any(i["code"]=="FV-04" for i in result["warnings"]))
         self.config(dict(dscr_warning_below=1.108))
         response,status=self.command("--institution","missing.json")
         self.assertEqual(status,1)
@@ -100,6 +104,9 @@ class InstitutionThresholdTests(unittest.TestCase):
                        dict(validation_overrides=dict(dscr_warning_below=None)),
                        dict(validation_overrides=dict(ltv_warning_above=True)),
                        dict(validation_overrides=dict(debt_yield_warning_below=".09")),
+                       dict(validation_overrides=dict(financial_validity_errors="FV-04")),
+                       dict(validation_overrides=dict(financial_validity_errors=[4])),
+                       dict(validation_overrides=dict(financial_validity_errors=["FV-04","FV-99"])),
                        dict(thresholds=dict(dscr=dict(warning_below=1))),
                        dict(validation_overrides={},thresholds={})):
             with self.subTest(config=config):
@@ -131,11 +138,11 @@ class InstitutionThresholdTests(unittest.TestCase):
         self.sidecar.write_text("{ invalid JSON",encoding="utf8")
         document=parse(self.raw);before=copy.deepcopy(document)
         thresholds=dict(dscr=dict(warning_below=1.108,error_below=1.0));prior=copy.deepcopy(thresholds)
-        with patch("uwmd_institution.load_institution_thresholds",side_effect=AssertionError("pure API must not load config")):
+        with patch("uwmd_institution.load_institution_policy",side_effect=AssertionError("pure API must not load config")):
             model=asyncio.run(validate_document(document,thresholds=thresholds))
             source=asyncio.run(_validate_source(self.raw,filename=str(self.document),thresholds=thresholds))
         for result in (model,source):
-            self.assertFalse(any(i["code"]=="FV-04" for i in result["issues"]))
+            self.assertFalse(any(i["code"]=="FV-04" for i in result["issues"]+result["deal_flags"]))
         self.assertEqual(document,before);self.assertEqual(thresholds,prior)
         self.assertEqual(self.document.read_bytes(),self.raw)
 
@@ -157,7 +164,7 @@ class InstitutionThresholdTests(unittest.TestCase):
                     self.raw.replace(b'asset_class: "multifamily"',b'asset_class: &anchor value')):
             self.assertNotEqual(raw,self.raw)
             self.document.write_bytes(raw)
-            with patch("uwmd_institution.load_institution_thresholds",side_effect=AssertionError("config must wait for fatal parse")):
+            with patch("uwmd_institution.load_institution_policy",side_effect=AssertionError("config must wait for fatal parse")):
                 value,status=main(["validate",str(self.document),"--json"])
             self.assertEqual(status,1);self.assertEqual(value["error"]["category"],"parse")
             self.assertNotIn("INSTITUTION",value["error"]["code"])
@@ -173,7 +180,7 @@ class InstitutionThresholdTests(unittest.TestCase):
     def test_actual_cli_opaque_overflow_unicode_and_atomic_failure(self):
         self.sidecar.write_bytes(b'{"opaque":1e309,"unknown":"\\ud83d\\ude00","validation_overrides":{"dscr_warning_below":1.108}}')
         value,status=self.command()
-        self.assertEqual(status,0);self.assertNotIn("FV-04",[i["code"] for i in value["issues"]])
+        self.assertEqual(status,0);self.assertNotIn("FV-04",[i["code"] for i in value["deal_flags"]])
         for raw in (b'{"opaque":"\\ud800","validation_overrides":{"dscr_warning_below":1.108}}',
                     b'{"opaque":{"x":1,"\\u0078":2}}'):
             self.sidecar.write_bytes(raw);value,status=self.command()
@@ -205,12 +212,12 @@ class InstitutionThresholdTests(unittest.TestCase):
     def test_configured_then_default_same_process_and_nonvalidation_io_isolation(self):
         self.config(dict(dscr_warning_below=1.108))
         configured,status=main(["validate",str(self.document),"--json"])
-        self.assertEqual(status,0);self.assertNotIn("FV-04",[i["code"] for i in configured["issues"]])
+        self.assertEqual(status,0);self.assertNotIn("FV-04",[i["code"] for i in configured["deal_flags"]])
         self.sidecar.unlink()
         default,status=main(["validate",str(self.document),"--json"])
-        self.assertEqual(status,0);self.assertIn("FV-04",[i["code"] for i in default["issues"]])
+        self.assertEqual(status,0);self.assertIn("FV-04",[i["code"] for i in default["deal_flags"]])
         self.sidecar.write_bytes(b'{ invalid selected config }')
-        with patch("uwmd_institution.load_institution_thresholds",side_effect=AssertionError("not a validation operation")):
+        with patch("uwmd_institution.load_institution_policy",side_effect=AssertionError("not a validation operation")):
             for args in (["parse",str(self.document)],["calc",str(self.document),"1+1","--json"],
                          ["verify-reserve-accounts",str(self.document),"--json"]):
                 result,status=main(args);self.assertEqual(status,0)
@@ -227,8 +234,61 @@ class InstitutionThresholdTests(unittest.TestCase):
             cwd=self.folder,capture_output=True,encoding="utf8",timeout=30)
         value=json.loads(process.stdout)
         self.assertEqual(process.returncode,0);self.assertEqual(process.stderr,"")
-        self.assertNotIn("FV-04",[i["code"] for i in value["issues"]])
+        self.assertNotIn("FV-04",[i["code"] for i in value["deal_flags"]])
         self.assertEqual(selected.read_bytes(),before);self.assertEqual(self.document.read_bytes(),self.raw)
+
+
+class DealFlagEscalationTests(unittest.TestCase):
+    """RFC 0109: a weak deal is clean and exits 0 unless an institution escalates."""
+    def setUp(self):
+        self.temporary=tempfile.TemporaryDirectory(prefix="uwmd-deal-flags-0109-")
+        self.addCleanup(self.temporary.cleanup)
+        self.folder=Path(self.temporary.name)
+        self.document=self.folder/"deal.uwx.md";self.document.write_bytes(weak_deal())
+        self.sidecar=self.folder/".uw.institution.json"
+
+    def run_cli(self,*flags):
+        process=subprocess.run([sys.executable,"-B",str(CLI),"validate",str(self.document),*flags],
+            cwd=self.folder,capture_output=True,encoding="utf8",timeout=30)
+        self.assertEqual(process.stderr,"")
+        return json.loads(process.stdout),process.returncode
+
+    def test_weak_deal_is_clean_and_exits_zero_with_flags_in_json(self):
+        for flags in (("--json",),()):
+            with self.subTest(flags=flags):
+                value,status=self.run_cli(*flags)
+                self.assertEqual(status,0);self.assertEqual(value["overall_status"],"clean")
+                self.assertEqual(value["errors"],[])
+                self.assertEqual([(f["code"],f["band"],f["section"],f["field"]) for f in value["deal_flags"]],[
+                    ("FV-04","error","frontmatter","quick_metrics.dscr"),
+                    ("FV-09","error","frontmatter","quick_metrics.ltv"),
+                    ("FV-04","warning","debt_structure","sizing_metrics.dscr_underwritten")])
+                self.assertTrue(all("severity" not in f for f in value["deal_flags"]))
+
+    def test_listed_code_error_band_fails_validation(self):
+        self.sidecar.write_text(json.dumps(dict(validation_overrides=dict(financial_validity_errors=["FV-04"]))),encoding="utf8")
+        value,status=self.run_cli("--json")
+        self.assertEqual(status,1);self.assertEqual(value["overall_status"],"errors")
+        self.assertEqual([(i["code"],i["field"]) for i in value["errors"]],[("FV-04","quick_metrics.dscr")])
+        self.assertEqual(value["errors"][0]["threshold"],{"min":1.0})
+        self.assertEqual([(f["code"],f["band"]) for f in value["deal_flags"]],[("FV-09","error"),("FV-04","warning")])
+        self.assertEqual(load_institution_policy(self.document),dict(thresholds={},financial_validity_errors=("FV-04",)))
+
+    def test_empty_or_warning_only_listing_keeps_exit_zero(self):
+        for codes in ([],["FV-03","FV-01"]):
+            with self.subTest(codes=codes):
+                self.sidecar.write_text(json.dumps(dict(validation_overrides=dict(financial_validity_errors=codes))),encoding="utf8")
+                value,status=self.run_cli("--json")
+                self.assertEqual(status,0);self.assertEqual(value["overall_status"],"clean")
+                self.assertEqual(len(value["deal_flags"]),3)
+
+    def test_unregistered_code_is_refused_before_validation(self):
+        self.sidecar.write_text(json.dumps(dict(validation_overrides=dict(financial_validity_errors=["FV-99"]))),encoding="utf8")
+        with patch("uwmd._validate_document",side_effect=AssertionError("validation must not start")):
+            value,status=main(["validate",str(self.document),"--json"])
+        self.assertEqual((status,value),(1,dict(error=dict(category="validate",
+            code="VAL-INSTITUTION-CONFIG-MALFORMED",message="Selected institution config is malformed.",
+            pointer="validation_overrides.financial_validity_errors"))))
 
 
 if __name__=="__main__":

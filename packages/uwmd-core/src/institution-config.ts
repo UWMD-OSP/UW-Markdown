@@ -2,7 +2,7 @@
 // pure SOURCE/MODEL validation APIs never discover institution files.
 import { lstatSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { DEFAULT_THRESHOLDS, type FinancialThresholds, type ProtocolError } from '@uwmd/verify';
+import { DEFAULT_THRESHOLDS, FINANCIAL_VALIDITY_CODES, type FinancialThresholds, type ProtocolError, type ValidationPolicy } from '@uwmd/verify';
 
 type Failure = 'UNREADABLE' | 'MALFORMED';
 export class InstitutionConfigError extends Error {
@@ -58,8 +58,13 @@ function jsonProfile(text: string): void {
   }
 }
 
+/** What an admitted institution configuration applies: thresholds and RFC 0109 escalation. */
+export interface InstitutionPolicy extends ValidationPolicy {
+  thresholds?: Partial<FinancialThresholds>;
+}
+
 /** Strict whole-byte/whole-JSON admission precedes closed shape/key admission. */
-export function parseInstitutionThresholds(bytes: Uint8Array): Partial<FinancialThresholds> | undefined {
+export function parseInstitutionPolicy(bytes: Uint8Array): InstitutionPolicy | undefined {
   if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) malformed();
   let text: string;
   try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
@@ -81,10 +86,24 @@ export function parseInstitutionThresholds(bytes: Uint8Array): Partial<Financial
       malformed(`validation_overrides.${key}`);
     }
   }
-  const result: Partial<FinancialThresholds> = {};
-  if (Object.hasOwn(overrides, keys[0])) result.dscr = { ...DEFAULT_THRESHOLDS.dscr, warning_below: overrides[keys[0]] as number };
-  if (Object.hasOwn(overrides, keys[1])) result.ltv = { ...DEFAULT_THRESHOLDS.ltv, warning_above: overrides[keys[1]] as number };
-  if (Object.hasOwn(overrides, keys[2])) result.debt_yield = { ...DEFAULT_THRESHOLDS.debt_yield, warning_below: overrides[keys[2]] as number };
+  // RFC 0109 D3: an array of registered FV-NN codes, checked after the three
+  // numeric leaves. Empty and repeated entries are admitted.
+  const escalation = 'financial_validity_errors';
+  const registered: readonly string[] = FINANCIAL_VALIDITY_CODES;
+  if (Object.hasOwn(overrides, escalation)) {
+    const codes = overrides[escalation];
+    if (!Array.isArray(codes) || !codes.every(code => typeof code === 'string' && registered.includes(code))) {
+      malformed(`validation_overrides.${escalation}`);
+    }
+  }
+  const thresholds: Partial<FinancialThresholds> = {};
+  if (Object.hasOwn(overrides, keys[0])) thresholds.dscr = { ...DEFAULT_THRESHOLDS.dscr, warning_below: overrides[keys[0]] as number };
+  if (Object.hasOwn(overrides, keys[1])) thresholds.ltv = { ...DEFAULT_THRESHOLDS.ltv, warning_above: overrides[keys[1]] as number };
+  if (Object.hasOwn(overrides, keys[2])) thresholds.debt_yield = { ...DEFAULT_THRESHOLDS.debt_yield, warning_below: overrides[keys[2]] as number };
+  const result: InstitutionPolicy = {
+    ...(Object.keys(thresholds).length ? { thresholds } : {}),
+    ...(Object.hasOwn(overrides, escalation) ? { financial_validity_errors: [...overrides[escalation] as string[]] } : {}),
+  };
   return Object.keys(result).length ? result : undefined;
 }
 
@@ -101,9 +120,9 @@ function ioFailure(error: unknown): error is NodeJS.ErrnoException {
 }
 
 /** Select one lexical path. Only a genuinely missing automatic sidecar defaults. */
-export function loadInstitutionThresholds(
+export function loadInstitutionPolicy(
   file: string, explicitPath?: string, io: InstitutionFileIO = FILE_IO,
-): Partial<FinancialThresholds> | undefined {
+): InstitutionPolicy | undefined {
   const automatic = explicitPath === undefined;
   const selected = automatic ? resolve(dirname(resolve(file)), '.uw.institution.json') : resolve(explicitPath);
   let bytes: Uint8Array;
@@ -121,5 +140,5 @@ export function loadInstitutionThresholds(
     }
     throw new InstitutionConfigError('UNREADABLE');
   }
-  return parseInstitutionThresholds(bytes);
+  return parseInstitutionPolicy(bytes);
 }
