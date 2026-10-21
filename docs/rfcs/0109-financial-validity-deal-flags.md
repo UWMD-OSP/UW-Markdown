@@ -1,7 +1,7 @@
 ---
 rfc: 0109
 title: Report financial-validity findings as deal flags, not record errors
-status: draft
+status: accepted
 author: claude-code
 created: 2026-10-21
 affects:
@@ -14,7 +14,8 @@ affects:
 
 # RFC 0109: Report financial-validity findings as deal flags, not record errors
 
-> **Draft for owner acceptance.** Origin: owner ruling of 2026-10-21 (5). The
+> **Accepted by the owner, 2026-10-21, as drafted** (Jared: "Owner rulings, 2026-10-21. RFC 0107 (#460) accepted with D2 = yes, add quick_metrics.ltc as a second home; D3 = check every stated LTC, not construction only. RFC 0108 (#461) accepted with D2 = yes, align completeness.severity; D3 = yes, replace the four stage names with the seven deal_stage values. RFC 0109 (#462) accepted with D1 = a separate deal_flags list; D3 = institutions list codes one by one in validation_overrides.financial_validity_errors. All other decisions as drafted.").
+> Origin: owner ruling of 2026-10-21 (5). The
 > owner's reason: an honest underwriting of a weak deal must not read as a broken
 > record to the party receiving it. It changes what fails validation, so it is
 > normative.
@@ -148,13 +149,13 @@ No compatibility path (prelaunch; no 5.0 before launch).
 - **Keep FV in `issues` with a `category: "deal"` member** and exclude that
   category from `overall_status`. That is less disruptive for consumers, but every
   existing reader of `errors` still counts the finding unless it learns the new
-  member. That is exactly the misreading the ruling is about. Listed as D1's
-  alternative.
+  member. That is exactly the misreading the ruling is about. Rejected by the
+  owner's D1 ruling.
 - **A separate `uwmd assess` command for deal flags.** It splits one read of the
   record into two, and a host that runs only `validate` would never see them.
 - **Escalate by band, not by code** (`financial_validity_errors: true` raises
   every error band). Simpler, but an institution that hard-stops on DSCR seldom
-  does so on cap rate. Listed as D3's alternative.
+  does so on cap rate. Rejected by the owner's D3 ruling.
 
 ## Unresolved questions
 
@@ -164,13 +165,13 @@ No compatibility path (prelaunch; no 5.0 before launch).
 - Whether the starter pipeline should still raise a `blocking_flags` entry for a
   chosen deal flag. That is host policy, unchanged by this RFC.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-21)
 
 | # | Question | Proposal | Why |
 |---|---|---|---|
-| D1 | Where FV findings go | A separate `deal_flags` list, out of `issues` | A reader of `errors` cannot miscount what is not there; alternative: stay in `issues` with `category: "deal"` |
+| D1 | Where FV findings go | **Ruled: a separate `deal_flags` list**, out of `issues` | A reader of `errors` cannot miscount what is not there |
 | D2 | Flag shape | `band: "error" \| "warning"` and no `severity` | Keeps §5.2's two bands without the word that means "defect" |
-| D3 | Escalation | `validation_overrides.financial_validity_errors: ["FV-04", …]`, error band only | Per-code, as institutions set hard stops; alternative: one boolean for all error bands |
+| D3 | Escalation | **Ruled: codes listed one by one** in `validation_overrides.financial_validity_errors: ["FV-04", …]`, error band only | Per-code, as institutions set hard stops |
 | D4 | Escalated warning band | Stays a deal flag | The ruling raises findings "to errors"; a warning band is not one |
 | D5 | Receipts | Counts exclude deal flags; no new member | Receipts already do not block; no new wire member needed |
 | D6 | Stored §4.17 status | Excludes deal flags, like the result | One meaning (RFC 0108 D4) |
