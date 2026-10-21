@@ -132,6 +132,7 @@ and how it gets accepted.
 | [0104](./0104-issue-field-paths-and-order.md) | Validation issue field paths are dotted paths from the payload root; issue order is not normative | accepted | protocol, core, conformance |
 | [0105](./0105-financial-validity-homes.md) | Name the field each financial-validity threshold reads, and check each stated home | accepted | format, core, conformance |
 | [0106](./0106-malformed-block-json.md) | Refuse a structured block whose JSON is not an I-JSON object | accepted | format, protocol, core, conformance |
+| [0107](./0107-ltc-financial-validity-home.md) | Give the LTC band a Format-defined home and an FV code | accepted | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
