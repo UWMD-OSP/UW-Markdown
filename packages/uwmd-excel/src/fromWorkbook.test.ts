@@ -164,3 +164,44 @@ describe('fromWorkbook', () => {
     }));
   });
 });
+
+describe('fromWorkbook — mixed_use per-component statements (#411)', () => {
+  const FILE = 'Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md';
+  async function exported(): Promise<{ wb: ExcelJS.Workbook; components: Record<string, Record<string, unknown>> }> {
+    const parsed = parseUWFile(await readFile(resolve(EXAMPLES, FILE), 'utf8'));
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(await (await toWorkbook(parsed)).xlsx.writeBuffer());
+    const block = parsed.sections.components as { content: Record<string, Record<string, unknown>> };
+    return { wb, components: block.content };
+  }
+
+  it('recovers each component\'s stated inputs, and never a formula-derived NOI', async () => {
+    const { wb, components } = await exported();
+    const imported = fromWorkbook(wb);
+    expect(imported.asset_class).toBe('mixed_use');
+    const got = imported.sections.components as Record<string, Record<string, unknown>>;
+    expect(Object.keys(got).sort()).toEqual(['hospitality', 'multifamily', 'retail']);
+    for (const [cls, comp] of Object.entries(got)) {
+      expect(comp.net_operating_income, cls).toBeUndefined();
+      for (const [field, value] of Object.entries(comp)) expect(value, `${cls}.${field}`).toBe(components[cls]![field]);
+    }
+    expect(got.hospitality!.gross_operating_profit).toBe(1400000);
+    expect(imported.sections.valuation).toEqual({ purchase_price: 40000000, underwritten_value: 40000000 });
+  });
+
+  it('refuses a workbook whose component NOI footing was altered', async () => {
+    const { wb } = await exported();
+    const range = wb.definedNames.getRanges('components_retail_net_operating_income').ranges[0]!;
+    const [, ref] = range.split('!');
+    wb.getWorksheet('Operating Statement')!.getCell(ref!.replace(/\$/g, '')).value = 500000;
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({ code: 'WORKBOOK-IMPORT-SUBTOTAL' }));
+  });
+
+  it('refuses a workbook whose consolidated NOI was altered', async () => {
+    const { wb } = await exported();
+    const range = wb.definedNames.getRanges('noi_model_net_operating_income').ranges[0]!;
+    const [, ref] = range.split('!');
+    wb.getWorksheet('Operating Statement')!.getCell(ref!.replace(/\$/g, '')).value = { formula: 'components_retail_net_operating_income', result: undefined };
+    expect(() => fromWorkbook(wb)).toThrow(WorkbookImportError);
+  });
+});

@@ -259,8 +259,10 @@ block** whose SUM of the component NOI named ranges is the property NOI (the §3
 foot, live in the sheet). Metrics are emitted **per deal** — a metric is written
 only when it evaluates non-null for that document, so a component absent from the
 file, or an intensive lacking its user-supplied `allocation_pct`, simply
-contributes no row (RFC 0019 §4). Reverse import (`fromWorkbook`) refuses
-`mixed_use` with `WORKBOOK-IMPORT-UNSUPPORTED-SHAPE`; export is fully supported.
+contributes no row (RFC 0019 §4). Reverse import (`fromWorkbook`) reads the
+property inputs and each component's named inputs (EGI, operating expenses,
+intermediate, allocation, denominator) back; NOIs are formula-derived and never
+imported, and an altered footing is `WORKBOOK-IMPORT-SUBTOTAL` (#411).
 
 Layout:
 - **Underwriting** sheet — header (deal name/address) + an inputs block (each
