@@ -69,7 +69,7 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
         }),
       });
       const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-01');
-      expect(issue?.field, String(position)).toBe('common.position');
+      expect(issue?.field, String(position)).toBe('tranches[1].position');
     }
   });
 
@@ -118,7 +118,7 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
     });
     const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-02');
     expect(issue).toBeDefined();
-    expect(issue!.field).toBe('senior.rate');
+    expect(issue!.field).toBe('tranches[0].rate');
   });
 
   it('CS-02: a common-equity tranche states a rate', () => {
@@ -143,7 +143,7 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
     });
     const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-02b');
     expect(issue).toBeDefined();
-    expect(issue!.field).toBe('pref.rate');
+    expect(issue!.field).toBe('tranches[0].rate');
   });
 
   it('CS-02b: split component fields are forbidden on another accrual mode', () => {
@@ -156,7 +156,7 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
     });
     const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-02b');
     expect(issue).toBeDefined();
-    expect(issue!.field).toBe('pref.accrual');
+    expect(issue!.field).toBe('tranches[0].accrual');
   });
 
   it('CS-WATERFALL-UNSUPPORTED: a section-level distribution waterfall is refused', () => {
@@ -185,7 +185,7 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
     });
     const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-WATERFALL-UNSUPPORTED');
     expect(issue).toBeDefined();
-    expect(issue!.field).toBe('pref.catch_up');
+    expect(issue!.field).toBe('tranches[1].catch_up');
   });
 
   it('CC-03: the senior tranche must reconcile with debt_structure', () => {
@@ -269,7 +269,7 @@ describe('validateUWFile — component-level capital stacks (§4.23)', () => {
     const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-01');
     expect(issue).toBeDefined();
     expect(issue!.section).toBe('components');
-    expect(issue!.field).toBe('retail.capital_stack.b.position');
+    expect(issue!.field).toBe('retail.capital_stack.tranches[1].position');
   });
 
   it('a waterfall in a component stack is refused like a top-level one', () => {
@@ -355,7 +355,7 @@ describe('validateUWFile — capital point in time (RFC 0098)', () => {
 
   it('compares the stack with the senior at its own point', () => {
     const issues = cc03(constructionToPerm(18_500_000));
-    expect(issues.map((i) => [i.section, i.field])).toEqual([['capital_stack', 'tranches.senior_debt.amount']]);
+    expect(issues.map((i) => [i.section, i.field])).toEqual([['capital_stack', 'tranches[0].amount']]);
   });
 
   it('compares the closing statement with the closing senior only', () => {
@@ -445,10 +445,10 @@ describe('validateUWFile — CC-03 senior rate (#406)', () => {
     expect(rateIssues(withRate(0.0625, 0.0625))).toEqual([]);
   });
   it('fails unequal rates at the tranche rate', () => {
-    expect(rateIssues(withRate(0.0999, 0.0625))).toEqual(['tranches.senior_debt.rate']);
+    expect(rateIssues(withRate(0.0999, 0.0625))).toEqual(['tranches[0].rate']);
   });
   it('has no tolerance', () => {
-    expect(rateIssues(withRate(0.0625 + 1e-9, 0.0625))).toEqual(['tranches.senior_debt.rate']);
+    expect(rateIssues(withRate(0.0625 + 1e-9, 0.0625))).toEqual(['tranches[0].rate']);
   });
   it('does not compare when the loan states no rate', () => {
     expect(rateIssues(withRate(0.0999, undefined))).toEqual([]);

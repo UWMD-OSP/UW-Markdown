@@ -5957,6 +5957,11 @@
       "target": "verifier"
     },
     {
+      "suite": "documents",
+      "scenario": "malformed/66-issue-field-paths",
+      "target": "verifier"
+    },
+    {
       "suite": "recoveries",
       "scenario": "reject-inherited-cash-flow-variant",
       "target": "verifier"

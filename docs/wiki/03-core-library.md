@@ -163,6 +163,11 @@ walks a dot-path into a content object.
 `ValidationMessage` carries a `code` and (when a registry entry exists) a `title`,
 `remediation`, and `spec_ref` pulled from `BUILTIN_REMEDIATIONS` via
 `lookupRemediation`.
+Its `field` is the dotted path from the block payload root (or the frontmatter
+root), with array elements by index: `_meta.provenance.source`,
+`tranches[1].position` (Protocol §III.6a, RFC 0104). Issue order is not part of
+the contract, except inside the metadata and payload passes whose order the
+Protocol fixes.
 
 **Validation code families** (all defined with copy in `BUILTIN_REMEDIATIONS`):
 - `CC-01..CC-10` — cross-section consistency (NOI/DSCR/LTV/cap/sources-uses/…).

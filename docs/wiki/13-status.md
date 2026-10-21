@@ -18,6 +18,17 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Implemented RFC0104 — issue field paths (owner acceptance 2026-10-20, as drafted).**
+[RFC0104](../rfcs/0104-issue-field-paths-and-order.md): Protocol §III.6a defines
+`field` as the dotted path from the payload (or frontmatter) root, with array
+elements by index, and makes issue order non-normative outside the metadata
+and payload passes whose order it already fixes. The reference now names
+`_meta` paths for `META_MISSING`, `META_FIELD_MISSING_*`,
+`META_LOW_CONFIDENCE_NO_REVIEW_FLAG`, `SRC-01`–`03` and `DQ-01`–`03`; reports
+`DQ-05` on the gaps item (`gaps`, `items[i].last_checked`); and addresses
+capital-stack tranches by index in `CS-*` and `CC-03`, as Python now does too.
+Portable case `documents/malformed/66` pins the spellings (#424).
+
 **Implemented RFC0106 — refuse malformed block JSON (owner acceptance 2026-10-20, as drafted).**
 [RFC0106](../rfcs/0106-malformed-block-json.md): Format §2.4 requires each
 structured block body to be one I-JSON object, and Protocol §XI.2 registers
