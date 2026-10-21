@@ -1,0 +1,8 @@
+{
+  "description": "`flags: []` followed by indented list lines: a scalar entry that also contains nested entries is outside the Appendix D subset, so the reader refuses rather than silently dropping the entries (#426).",
+  "must_parse": false,
+  "expected_codes": [
+    "UNSUPPORTED_YAML_FEATURE"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md Appendix D"
+}

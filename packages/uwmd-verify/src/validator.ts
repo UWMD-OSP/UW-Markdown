@@ -19,7 +19,7 @@ import type {
   DealStage,
   CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
-import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
+import { ASSET_CLASSES, DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks, parseUWFile, parsedFirstSourceMember } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
@@ -858,7 +858,8 @@ function checkReassessment(
   // TAX-01: the assessed value follows from the basis and ratio when both are stated.
   const basis = r['value_basis'];
   const ratio = r['assessment_ratio'];
-  if (basis !== undefined || ratio !== undefined) {
+  // Format §4.5: a member stated as null is not stated (#431).
+  if (basis != null || ratio != null) {
     if (!finiteNum(basis) || !finiteNum(ratio)) {
       taxIssue(issues, 'TAX-01', section, `${base}.assessment_ratio`,
         'TAX-01: value_basis and assessment_ratio are stated together or not at all');
@@ -877,12 +878,12 @@ function checkReassessment(
   }
 
   const round = r['round_to_decimals'];
-  if (round !== undefined && !Number.isSafeInteger(round)) {
+  if (round != null && !Number.isSafeInteger(round)) {
     taxIssue(issues, 'TAX-03', section, `${base}.round_to_decimals`,
       'TAX-03: round_to_decimals must be an integer; it may be negative to round to a magnitude', round);
     return null;
   }
-  return round === undefined ? CURRENCY_DP : (round as number);
+  return round == null ? CURRENCY_DP : (round as number);
 }
 
 function checkAbatement(
@@ -2390,8 +2391,9 @@ function checkStackContent(
     if (typeof cls !== 'string' || !TRANCHE_CLASSES.has(cls)) {
       issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
     }
-    if (typeof position !== 'number' || !Number.isInteger(position)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position` });
+    // Format §4.24: `position` is an integer, 1 = most senior (schema minimum 1, #430).
+    if (typeof position !== 'number' || !Number.isInteger(position) || position < 1) {
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position of 1 or more (1 = most senior)` });
     } else if (seenPositions.has(position)) {
       issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
     } else {
@@ -3157,8 +3159,21 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
       remediation: "Write each modules entry as an object: '- id: <module id>' with an optional 'version' range (Format §2.2a).",
     });
   }
-  const raw = parsed.frontmatter?.asset_class;
-  if (typeof raw !== 'string' || raw.length === 0) return;
+  const raw: unknown = parsed.frontmatter?.asset_class;
+  if (raw === undefined || raw === null) return;
+  // A present value that is not a non-empty string is no identifier at all
+  // (#427): without this, every class-scoped rule and metric is skipped silently.
+  if (typeof raw !== 'string' || raw.length === 0) {
+    issues.push({
+      code: 'INVALID-ASSET-CLASS-001',
+      severity: 'error',
+      field: 'asset_class',
+      message: `asset_class must be a builtin class or a namespaced identifier string, not ${JSON.stringify(raw)}.`,
+      value: raw,
+      remediation: `Use one of ${ASSET_CLASSES.join(', ')}, or a reverse-DNS identifier of at least three lower-snake-case segments (Format §2.2a).`,
+    });
+    return;
+  }
 
   const identity = parseAssetClass(raw);
   if (!identity.ok) {
@@ -3202,7 +3217,10 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       : [entry as UWBlock];
 
     for (const block of blocks) {
-      if (!block.meta || Object.keys(block.meta).length === 0) {
+      // Protocol §XI: META_MISSING means no `_meta` object. A string or array
+      // is none, whatever its length (#429); it is not five missing fields.
+      const meta: unknown = block.meta;
+      if (meta === null || typeof meta !== 'object' || Array.isArray(meta) || Object.keys(meta).length === 0) {
         issues.push({ code: 'META_MISSING', severity: 'warning', section: sectionId, message: `Section ${sectionId} is missing _meta object` });
         continue;
       }

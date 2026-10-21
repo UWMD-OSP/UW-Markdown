@@ -543,6 +543,24 @@ asset_class: multifamily`;
     }
   });
 
+  // #426: an indented line under a scalar or `[]` was dropped, or read as a
+  // top-level key. Appendix D nests only under a `key:` line with no value.
+  it.each([
+    ['an empty flow sequence with list lines', 'flags: []\n  - "dscr_warning_amortizing"'],
+    ['a number with list lines', 'source_documents: 0\n  - "om.pdf"'],
+    ['null with a nested mapping', 'pipeline_state: null\n  stage: screening'],
+    ['a string with nested lines after a blank line and a comment', 'quick_metrics: "x"\n\n  # note\n  dscr: 1.2'],
+  ])('rejects %s with UNSUPPORTED_YAML_FEATURE (#426)', (_label, extra) => {
+    expect(() => parseUWFile(withFrontmatterLine(extra))).toThrow(/UNSUPPORTED_YAML_FEATURE[\s\S]*nested entries/);
+  });
+
+  it('still reads a sequence and a nested mapping under a key with no inline value', () => {
+    const parsed = parseUWFile(withFrontmatterLine('flags:\n  - "a"\nquick_metrics:\n  dscr: 1.25\nblocking_flags: []'));
+    expect(parsed.frontmatter.flags).toEqual(['a']);
+    expect(parsed.frontmatter.quick_metrics).toEqual({ dscr: 1.25 });
+    expect(parsed.frontmatter.blocking_flags).toEqual([]);
+  });
+
   it('rejects YAML aliases with UNSUPPORTED_YAML_FEATURE', () => {
     const content = withFrontmatterLine('billing_address: *addr');
     expect(() => parseUWFile(content)).toThrow(/UNSUPPORTED_YAML_FEATURE/);

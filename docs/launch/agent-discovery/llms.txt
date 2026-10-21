@@ -1,0 +1,49 @@
+# UW Markdown
+
+> Open, vendor-neutral standard for commercial real-estate underwriting. A `.uwx.md` record keeps typed deal facts, underwriting assumptions, calculation inputs, narrative, and provenance in one plain-text file. AI extracts and explains; deterministic code calculates and verifies financial results.
+
+Canonical site: https://uwmd.org
+Repository: https://github.com/UWMD-OSP/UW-Markdown
+License: MIT
+Current versions: https://uwmd.org/about/versions
+
+## Start
+
+- Quickstart: https://uwmd.org/tutorials/quickstart
+- First record, by hand: https://uwmd.org/tutorials/your-first-uwmd-file
+- UWX and UW Lite: https://uwmd.org/guide/lite-and-uwx
+- Downloads: https://uwmd.org/downloads/
+- AI guide: https://uwmd.org/ai/
+
+## Tools for agents
+
+- Validator in the browser (nothing is uploaded): https://uwmd.org/validate/
+- MCP connector, read-only tools uwmd_validate, uwmd_verify and uwmd_explain_code: npm @uwmd/mcp (https://github.com/UWMD-OSP/UW-Markdown/tree/main/packages/uwmd-mcp)
+- Skill, write a UWMD record: https://github.com/UWMD-OSP/UW-Markdown/tree/main/skills/write-uwmd-record
+- Example records, one synthetic record per asset class: https://uwmd.org/examples/
+- CLI: npx @uwmd/cli validate <file.uwx.md>, then npx @uwmd/cli verify <file.uwx.md>
+
+## Contracts
+
+- Format specification (Format 3.0, the only admitted version): https://uwmd.org/spec/format
+- Protocol (4.0.0): https://uwmd.org/spec/protocol
+- UW Lite specification: https://uwmd.org/spec/lite
+- Schemas: https://uwmd.org/spec/schemas/
+- Conformance: https://uwmd.org/conformance/
+
+## Optional profiles
+
+- HTTP: https://uwmd.org/spec/http
+- OpenAPI: https://uwmd.org/spec/UW_HTTP_API_v1.openapi.json
+- MCP: https://uwmd.org/spec/mcp
+
+## Critical rules for AI
+
+- AI extracts facts and writes narrative; deterministic code performs financial math.
+- Preserve provenance and append-only supersede history.
+- Preserve bytes outside a scoped edit.
+- Rates are stored as fractions, not display percentages.
+- Do not invent missing deal data.
+- Verify before handing a record over: every stated metric is recomputed, and a wrong one fails.
+
+Expanded index: https://uwmd.org/llms-full.txt

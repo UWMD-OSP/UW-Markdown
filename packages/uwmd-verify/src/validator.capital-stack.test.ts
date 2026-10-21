@@ -57,6 +57,22 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
     expect(codes(parsed)).toContain('CS-01');
   });
 
+  it('CS-01: a position below 1 (#430; 1 is the most senior)', () => {
+    for (const position of [0, -3]) {
+      const parsed = file({
+        capital_stack: block('capital_stack', {
+          point_in_time: 'stabilization',
+          tranches: [
+            { id: 'senior', class: 'senior_debt', position: 1, amount: 20_000_000, rate: 0.05 },
+            { id: 'common', class: 'common_equity', position, amount: 5_000_000 },
+          ],
+        }),
+      });
+      const issue = validateUWFile(parsed).issues.find((i) => i.code === 'CS-01');
+      expect(issue?.field, String(position)).toBe('common.position');
+    }
+  });
+
   it('CS-01: duplicate ids and duplicate positions', () => {
     const dupId = file({
       capital_stack: block('capital_stack', {

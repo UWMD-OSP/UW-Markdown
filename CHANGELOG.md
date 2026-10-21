@@ -10,6 +10,53 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- The frontmatter reader refuses an indented line under a scalar or `[]` value
+  (`flags: []` followed by `  - …` lines, for example) with
+  `UNSUPPORTED_YAML_FEATURE` instead of silently dropping it or reading it as a
+  top-level key (#426, Format Appendix D). The independent Python reader already
+  refused it. New `documents/malformed/57-yaml-nested-under-scalar`.
+
+- A present `asset_class` that is not a non-empty string (`true`, `0`, `[]`, `""`)
+  is `INVALID-ASSET-CLASS-001` (#427); before, it validated clean and every
+  class-scoped rule and metric was skipped. `null` and absence are unchanged. New
+  `documents/malformed/58-asset-class-boolean` and `59-asset-class-empty`.
+
+- A non-object `_meta` (a string, array, number or boolean) draws `META_MISSING`,
+  as Protocol §XI defines it ("no `_meta` object"), instead of five
+  `META_FIELD_MISSING_*` warnings when it happened to be a non-empty string or
+  array (#429). Python already read it this way.
+
+- `CS-01` refuses a capital-stack tranche `position` below 1 (#430). Format §4.24
+  makes 1 the most senior and the section schema's minimum is 1; zero and
+  negative positions passed before. New `capital-stack/position-below-one`.
+
+- A reassessment member stated as `null` is not stated (Format §4.5, #431): a null
+  `round_to_decimals` no longer draws `TAX-03` and uses the currency quantum, as
+  the section's own example intends, and a null `value_basis` or
+  `assessment_ratio` no longer counts toward the pair rule.
+
+- `@uwmd/excel` imports a mixed-use workbook (#411), the last builtin class whose
+  round trip was missing. Export now names each component's EGI and operating-expense
+  cells; import reads the property inputs and every present component's stated inputs
+  back, never a formula-derived NOI, and refuses an altered footing
+  (`WORKBOOK-IMPORT-SUBTOTAL`).
+- The agent-discovery kit (launch criterion F), built and staged but not
+  published or listed. `packages/uwmd-mcp` is a private, read-only MCP connector
+  with three stateless tools (`uwmd_validate`, `uwmd_verify`, `uwmd_explain_code`)
+  and a registry manifest. `skills/write-uwmd-record` is a skill for writing a
+  record. `tools/web-editor` builds a zero-install validator page separately from
+  the site (`build:validator`). `docs/launch/agent-discovery/` holds a staged
+  `llms.txt`, an example gallery and the launch-day wiring checklist.
+
+- `spec/metrics/README.md` documents which variant UWMD uses for the eight metrics
+  where practice varies: `price_per_kw`, `revpar_index`, `revpor`, `adr` and
+  `occupancy`, `gop_margin`, the per-area ids, `economic_occupancy` and
+  `cash_on_cash`. It is editorial and changes no definition. Three open questions
+  are listed for a decision.
+
+- A playbook for a non-property subject (`docs/playbooks/NON_PROPERTY_SUBJECT.md`):
+  a document profile on RFC 0018, with RFC 0082 (draft) as the worked proposal.
+
 - Remove the CLI's three deprecated 4.2.0 aliases (#412): `validate --stage`,
   `export --compact` and `compose --parts` are now unknown flags, refused with
   exit 1 like any other. Use `stage_readiness`, `--no-superseded` and `--out-dir`.
