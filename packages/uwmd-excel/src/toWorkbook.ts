@@ -57,6 +57,7 @@ const NUMBER_FORMATS: Record<string, string> = {
   percent:  '0.00%',
   ratio:    '0.00"x"',
   count:    '#,##0',
+  text:     '@',
 };
 
 function fmtFor(kind: string): string {
@@ -194,6 +195,19 @@ class SectionReader {
     }
   }
 
+  /** A stated string at a path (an enum such as `dc_power.billing`); null when absent or not a string. */
+  text(section: string, path: string): string | null | Refusal {
+    const read = this.read(section);
+    if ('refused' in read) return read;
+    const sectionVariants = read.block?.annotation.variant ? { [section]: read.block.annotation.variant } : {};
+    try {
+      const v = evaluate(parseExpression(`${section}.${path}`), { parsed: this.parsed, prior_results: {}, locale: 'en-US', sectionVariants });
+      return typeof v === 'string' ? v : null;
+    } catch (e) {
+      return refusalOf(e);
+    }
+  }
+
   /**
    * Null when the workbook's formula for `decl` reads what evaluateCalc reads;
    * a refusal when evaluateCalc refuses one of its sections. Throws when the
@@ -300,7 +314,13 @@ function writeNamedInputRow(
 ): void {
   ws.getCell(`A${row}`).value = input.label;
   const valueCell = ws.getCell(`B${row}`);
-  writeInputValue(valueCell, reader.number(input.source.section, input.source.path));
+  if (input.format === 'text') {
+    const value = reader.text(input.source.section, input.source.path);
+    if (value !== null && typeof value === 'object') {
+      valueCell.value = { error: '#VALUE!' };
+      valueCell.note = value.refused;
+    } else valueCell.value = value;
+  } else writeInputValue(valueCell, reader.number(input.source.section, input.source.path));
   valueCell.numFmt = fmtFor(input.format);
   wb.definedNames.add(abs(ws.name, row, 2), input.name);
 }

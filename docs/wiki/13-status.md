@@ -25,6 +25,14 @@ while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 two existing documents that now also draw `SIZE-01` (MHC class fixtures 28/29,
 negative and fractional `total_sites`); both keep their class findings.
 
+**Implemented RFC0103 — four metric dictionary corrections (owner decisions 2026-10-20).**
+[RFC0103](../rfcs/0103-metric-dictionary-corrections.md): USALI F&B gross margin
+(no labor); data-center `mark_to_market` replaces `rent_index`; drawn power
+(metered kWh, else an explicit `draw_factor`, measured PUE before design; zero
+landlord cost under metered pass-through; null with no draw); stated booked
+rooms revenue with the `CC-HOSP-05` 1% cross-check. Authorities are cited in the
+metric dictionary README.
+
 **Implemented RFC0099 — verify every stated home (owner acceptance 2026-10-20).**
 [RFC0099](../rfcs/0099-verify-every-stated-home.md): the metric dictionary carries
 a closed `statement_bindings` registry (output sections plus eleven aliases, the

@@ -132,7 +132,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
     {
       "id": "total_room_revenue",
       "label": "Total Room Revenue",
-      "formula": "rent_roll.adr == null || rent_roll.occupancy == null || rent_roll.available_room_nights == null ? null : (rent_roll.adr * rent_roll.occupancy * rent_roll.available_room_nights)",
+      "formula": "noi_model.income.rooms_revenue",
       "unit": "$",
       "round_to": 2,
       "deterministic": true
@@ -140,7 +140,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
     {
       "id": "room_revenue_per_key",
       "label": "Room Revenue / Key",
-      "formula": "rent_roll.adr == null || rent_roll.occupancy == null || rent_roll.available_room_nights == null || property.keys == null ? null : (round((rent_roll.adr * rent_roll.occupancy * rent_roll.available_room_nights), 2) / property.keys)",
+      "formula": "noi_model.income.rooms_revenue / property.keys",
       "unit": "$",
       "round_to": 2,
       "deterministic": true
@@ -156,7 +156,7 @@ export const HOSPITALITY_PACK: ModuleManifest = {
     {
       "id": "fb_gross_margin",
       "label": "F&B Gross Margin",
-      "formula": "hotel_food_beverage.fb_revenue == null || hotel_food_beverage.fb_cogs == null || hotel_food_beverage.fb_labor == null ? null : ((hotel_food_beverage.fb_revenue - hotel_food_beverage.fb_cogs - hotel_food_beverage.fb_labor) / hotel_food_beverage.fb_revenue)",
+      "formula": "hotel_food_beverage.fb_revenue == null || hotel_food_beverage.fb_cogs == null ? null : ((hotel_food_beverage.fb_revenue - hotel_food_beverage.fb_cogs) / hotel_food_beverage.fb_revenue)",
       "unit": "%",
       "round_to": 4,
       "deterministic": true

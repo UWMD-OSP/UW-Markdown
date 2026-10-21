@@ -62,7 +62,7 @@ power billing, and rent per kW-month alongside the standard real-estate inputs.
 
 Like the hospitality fixture, it is deliberately **not** a clean deal: 1,000 kW
 of phase 2 is pre-leased ahead of commissioning (`CC-DC-04`), and the
-in-place rent runs 20% under the comp set (`CC-DC-07`). Both warnings fire
+in-place rent runs 20% under the comp set, a 25% mark-to-market (`CC-DC-07`). Both warnings fire
 on one file; nothing else does.
 
 ---
@@ -462,12 +462,12 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense an
   "utilization": 1.1,
   "commissioned_share": 0.8,
   "facility_load_kw": 12500,
-  "annual_facility_kwh_at_contract": 120450000,
-  "annual_power_cost": 9636000,
-  "power_cost_per_kw_month": 73,
+  "annual_facility_kwh": 82676880,
+  "annual_power_cost": 0,
+  "power_cost_per_kw_month": 0,
   "annual_rent_revenue": 19800000,
   "blended_revenue_per_kw_month": 157,
-  "rent_index": 0.8,
+  "mark_to_market": 0.25,
   "price_per_commissioned_kw": 16000,
   "noi_per_commissioned_kw": 1120,
   "price_per_kw": 16000,
@@ -680,7 +680,7 @@ Every figure is in **kW** — capacity is quoted in MW and rent in $/kW-month, a
 
 ## Power Economics {#dc_power}
 
-Metered pass-through: tenants pay their own metered power at cost, so the landlord earns no power margin and `power_margin` is null. No stated bill is carried; the annual power cost is computed from the contracted load at design PUE and the blended rate.
+Metered pass-through: tenants pay their own metered power at cost, so the landlord earns no power margin, `power_margin` is null, and the landlord's power cost is zero (RFC 0103). No metered facility total is carried; the operator's stated average draw of 65% of contracted load, at the trailing measured PUE of 1.32, gives the facility's annual energy. Full draw is never assumed.
 
 ```json uw:section=dc_power source=manual ts=2026-09-09T09:05:00Z v=1 confidence=high
 {
@@ -709,13 +709,15 @@ Metered pass-through: tenants pay their own metered power at cost, so the landlo
   "utility_rate_per_kwh": 0.08,
   "billing": "metered_pass_through",
   "power_margin": null,
-  "stated_annual_power_cost": null
+  "stated_annual_power_cost": null,
+  "metered_annual_kwh": null,
+  "draw_factor": 0.65
 }
 ```
 
 ## Revenue {#dc_revenue}
 
-Weighted-average contracted rent of $150/kW-month on the 11,000 kW contracted, against a $187.50 comp set — a 0.80 rent index, which is what fires `CC-DC-07` and is also the mark-to-market case at the anchor's 2029 roll.
+Weighted-average contracted rent of $150/kW-month on the 11,000 kW contracted, against a $187.50 comp set — a 25% mark-to-market (market above in-place: upside at the anchor's 2029 roll), which is what fires `CC-DC-07`.
 
 ```json uw:section=dc_revenue source=manual ts=2026-09-09T09:15:00Z v=1 confidence=high
 {

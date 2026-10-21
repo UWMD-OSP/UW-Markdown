@@ -19,6 +19,21 @@ protocol, and each package each carry an independent semver).
   them unverifiable (`negative_size_denominator`). TS and Python validators share
   the table. New `documents/malformed/51`–`56` and a metrics control.
 
+- Implement RFC0103 (owner's four metric decisions, 2026-10-20). `fb_gross_margin`
+  is USALI gross margin, (F&B revenue − cost of sales) ÷ revenue, with no labor.
+  Data center: `mark_to_market` = (market − in-place) ÷ in-place replaces
+  `rent_index` (positive = upside; `CC-DC-07` keeps its trigger). Power cost never
+  assumes full draw: `annual_facility_kwh` (replacing
+  `annual_facility_kwh_at_contract`) is metered kWh, else contracted kW × an
+  explicit `dc_power.draw_factor` × PUE (measured before design) × 8,760, and
+  `null` without one; under metered pass-through the landlord's power cost is 0.
+  Hotels: `total_room_revenue` / `room_revenue_per_key` read the stated rooms
+  revenue, and a new `CC-HOSP-05` warning checks ADR × occupancy × nights within
+  1%. Packs, dictionary, Excel (new text input for `billing`), Python
+  inventories, fixtures and the Mesa Gateway example are re-derived; the
+  dictionary README cites the outside authorities (USALI, The Green Grid WP #49,
+  OCC Comptroller's Handbook, EPRA BPR).
+
 - Accept RFC0100 (#415, owner 2026-10-20): a closed size contract (registered
   primary/secondary sizes plus §4.3 rent-roll counts, areas and rents) refuses
   negative values and fractional counts under a new error code `SIZE-01` (owner
