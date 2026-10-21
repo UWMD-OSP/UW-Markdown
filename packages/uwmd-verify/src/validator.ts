@@ -263,6 +263,9 @@ function financialValidityBands(t: FinancialThresholds): readonly FvBand[] {
       below: { code: 'FV-05', warning: t.equity_multiple.warning_below }, above: { code: 'FV-06', warning: t.equity_multiple.warning_above } },
     { metric: 'Annual rent growth', homes: [{ section: 'dcf', path: 'assumptions.revenue_growth_rate' }],
       above: { code: 'FV-12', warning: t.annual_rent_growth.warning_above } },
+    // RFC 0107: every stated LTC, whatever the loan purpose (D3).
+    { metric: 'LTC', homes: [{ path: 'quick_metrics.ltc' }, { section: 'sources_uses', path: 'equity_metrics.loan_to_cost' }],
+      above: { code: 'FV-15', error: t.ltc.error_above, warning: t.ltc.warning_above } },
   ];
 }
 

@@ -178,7 +178,7 @@ order.
 - `DQ-01..DQ-05` — data quality (provisional/partial blocks, scope readiness, stale gaps).
 - `INT-01..INT-04` — integrity (parent/content hash chain), `INT-05..INT-08` — block signatures (RFC 0010) — surfaced by `integrity.ts`.
 - `POL-01..POL-02` — provenance/policy (unauthorized actor, replace-where-supersede).
-- `FV-01..FV-14` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex…),
+- `FV-01..FV-15` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex, LTC…),
   read at every Format §5.2 home (`quick_metrics` and the section field), one
   finding per home at the worst band crossed (RFC 0105). Reported as
   `deal_flags` with a `band`, not as issues, unless an institution escalates

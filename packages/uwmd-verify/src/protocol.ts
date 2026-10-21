@@ -2583,6 +2583,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: '§5.2',
   },
   {
+    code: 'FV-15', severity: 'error',
+    title: 'Loan-to-cost above threshold',
+    description: 'Loan-to-cost is above the configured warning or error threshold (RFC 0107).',
+    remediation: 'Confirm the loan amount and total project cost in sources and uses; a high LTC leaves little sponsor equity at risk.',
+    spec_ref: '§5.2',
+  },
+  {
     code: 'UNSUPPORTED_YAML_FEATURE', severity: 'error',
     title: 'Unsupported YAML feature in frontmatter',
     description: 'Frontmatter uses a YAML feature outside the .uw.md subset (anchors, tags, block scalars, complex keys, or directives).',

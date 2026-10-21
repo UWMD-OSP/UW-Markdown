@@ -5967,6 +5967,16 @@
       "target": "verifier"
     },
     {
+      "suite": "documents",
+      "scenario": "malformed/68-ltc-homes",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/69-ltc-boundaries",
+      "target": "verifier"
+    },
+    {
       "suite": "recoveries",
       "scenario": "reject-inherited-cash-flow-variant",
       "target": "verifier"

@@ -21,7 +21,7 @@ _MEMBERS=(("dscr_warning_below","dscr","warning_below"),
           ("debt_yield_warning_below","debt_yield","warning_below"))
 # The registered Format 5.2 codes, spelled here so admission imports no validator.
 _FV_ERRORS="financial_validity_errors"
-_FV_CODES=frozenset("FV-%02d"%number for number in range(1,15))
+_FV_CODES=frozenset("FV-%02d"%number for number in range(1,16))
 
 
 class _InstitutionConfigError(ValueError):
