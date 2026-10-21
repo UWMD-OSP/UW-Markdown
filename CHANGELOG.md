@@ -10,12 +10,6 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
-- `@uwmd/excel` imports a mixed-use workbook (#411), the last builtin class whose
-  round trip was missing. Export now names each component's EGI and operating-expense
-  cells; import reads the property inputs and every present component's stated inputs
-  back, never a formula-derived NOI, and refuses an altered footing
-  (`WORKBOOK-IMPORT-SUBTOTAL`).
-
 - Remove the CLI's three deprecated 4.2.0 aliases (#412): `validate --stage`,
   `export --compact` and `compose --parts` are now unknown flags, refused with
   exit 1 like any other. Use `stage_readiness`, `--no-superseded` and `--out-dir`.
