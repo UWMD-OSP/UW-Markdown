@@ -33,7 +33,7 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   // Validation
   'validator.ts', 'payload-admission.ts', 'builtin-class-content.ts', 'builtin-class-validation.ts', 'asset-class.ts',
   'period-path.ts', 'periods.ts', 'period-validation.ts', 'lease-up-structure.ts',
-  'replacement-funding-structure.ts', 'reserve-accounts-structure.ts', 'gaps-content.ts',
+  'replacement-funding-structure.ts', 'reserve-accounts-structure.ts', 'gaps-content.ts', 'size-contract.ts',
   // Stated-figure verifiers
   'cash-flow-series.ts', 'lease-up.ts', 'lease-up-cash-flows.ts', 'property-cash-flows.ts',
   'waterfall.ts', 'reserve-accounts.ts', 'reserve-draw-bindings.ts', 'replacement-funding.ts',

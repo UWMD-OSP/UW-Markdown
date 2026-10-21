@@ -112,6 +112,7 @@ Module | Package | Responsibility | Key exports
 `defaults.ts` | core | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | core | Gap detection | `inferGaps`, `summarizeGaps`
 `gaps-content.ts` | verify | The `gaps` section's types and reader | `readGapsContent`, `GapsContent`
+`size-contract.ts` | verify | RFC 0100 size contract: `SIZE-01` for a negative or fractional size, count, area or rent | module-level `checkSizeContract`, `SIZE_CONTRACT`
 `refinement.ts` | core | Value-of-information gap ranking | `rankGaps`
 `asset-class.ts` | verify | Identifier grammar + resolution for module-declared classes (RFC 0003) | `parseAssetClass`, `resolveAssetClass`, `declaredAssetClasses`
 `module-runtime.ts` | verify | Running what a module declares (RFC 0006) | `evaluateModuleCalculations`, `validateAgainstModules`, `checkModuleSections`
