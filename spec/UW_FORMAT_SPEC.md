@@ -4630,9 +4630,8 @@ Runs all validation rules (Part V) and returns, with `--json`:
 }
 ```
 
-Readiness is reported for every `deal_stage` (§2.2). The reference CLI
-still accepts a deprecated `--stage <stage>` that repeats one stage's
-readiness; it changes neither the result nor the exit status.
+Readiness is reported for every `deal_stage` (§2.2). The CLI takes no
+`--stage` flag; read one stage's readiness from `stage_readiness`.
 
 ### 6.3 `uwmd run <file> --agent <agent_id>`
 
