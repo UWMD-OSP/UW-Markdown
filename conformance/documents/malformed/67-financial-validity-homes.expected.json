@@ -1,0 +1,61 @@
+{
+  "description": "RFC 0105: each Format \u00a75.2 band is read at every Format-defined home, frontmatter quick_metrics and the section field, and each home draws one issue at the most severe band it crosses. A frontmatter row has no section.",
+  "must_parse": true,
+  "expected_codes": [
+    "FV-02",
+    "FV-04",
+    "FV-05",
+    "FV-08",
+    "FV-09",
+    "FV-10",
+    "FV-12",
+    "FV-14"
+  ],
+  "field_issues": [
+    {
+      "code": "FV-04",
+      "field": "quick_metrics.dscr"
+    },
+    {
+      "code": "FV-04",
+      "section": "debt_structure",
+      "field": "sizing_metrics.dscr_underwritten"
+    },
+    {
+      "code": "FV-09",
+      "section": "debt_structure",
+      "field": "sizing_metrics.ltv"
+    },
+    {
+      "code": "FV-02",
+      "section": "valuation",
+      "field": "going_in_cap_rate"
+    },
+    {
+      "code": "FV-14",
+      "section": "noi_model",
+      "field": "income.vacancy_credit_loss.rate_applied"
+    },
+    {
+      "code": "FV-10",
+      "section": "noi_model",
+      "field": "expenses.expense_ratio"
+    },
+    {
+      "code": "FV-12",
+      "section": "dcf",
+      "field": "assumptions.revenue_growth_rate"
+    },
+    {
+      "code": "FV-08",
+      "section": "dcf",
+      "field": "returns.levered_irr"
+    },
+    {
+      "code": "FV-05",
+      "section": "dcf",
+      "field": "returns.equity_multiple"
+    }
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md \u00a75.2"
+}

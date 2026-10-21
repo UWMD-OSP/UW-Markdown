@@ -5962,6 +5962,11 @@
       "target": "verifier"
     },
     {
+      "suite": "documents",
+      "scenario": "malformed/67-financial-validity-homes",
+      "target": "verifier"
+    },
+    {
       "suite": "recoveries",
       "scenario": "reject-inherited-cash-flow-variant",
       "target": "verifier"

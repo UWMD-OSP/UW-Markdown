@@ -18,6 +18,18 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Implemented RFC0105 — financial-validity homes (owner acceptance 2026-10-20, as drafted).**
+[RFC0105](../rfcs/0105-financial-validity-homes.md): Format §5.2 now names the
+code and the homes of each band. Both implementations read every
+Format-defined home: `quick_metrics` and the section field for DSCR, LTV, debt
+yield, cap rate and IRR; `noi_model` rate_applied and expense_ratio; `dcf`
+revenue_growth_rate and equity_multiple. Each home draws one issue at its worst
+band. The reference no longer reads `noi_model.vacancy_rate`,
+`dcf.levered_equity_multiple` or `dcf.assumptions.annual_rent_growth`, and no
+longer computes the OpEx ratio from totals. Python adds the frontmatter homes.
+The LTC band still has no home or code. Portable case `documents/malformed/67`
+(#428).
+
 **Implemented RFC0104 — issue field paths (owner acceptance 2026-10-20, as drafted).**
 [RFC0104](../rfcs/0104-issue-field-paths-and-order.md): Protocol §III.6a defines
 `field` as the dotted path from the payload (or frontmatter) root, with array

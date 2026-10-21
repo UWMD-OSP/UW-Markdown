@@ -4381,18 +4381,29 @@ class (`CLS-03`), never substituted for `rent_roll`.
 
 These are the default thresholds. Institution configs may override.
 
-| Metric | Error Below | Warning Below | Warning Above | Error Above |
-|---|---|---|---|---|
-| DSCR | 1.00x | 1.20x | — | — |
-| LTV | — | — | 75% | 85% |
-| Debt Yield | — | 7% | — | — |
-| Going-in Cap Rate | — | 3% | 15% | — |
-| Vacancy Rate | — | 2% | 40% | — |
-| OpEx Ratio | — | 20% | 70% | — |
-| Levered IRR | — | 5% | 40% | — |
-| Equity Multiple | — | 1.0x | 5.0x | — |
-| Annual Rent Growth | — | — | 8% | — |
-| LTC (construction) | — | — | 80% | 90% |
+| Metric | Code (below / above) | Read from | Error Below | Warning Below | Warning Above | Error Above |
+|---|---|---|---|---|---|---|
+| DSCR | `FV-04` | `quick_metrics.dscr`; `debt_structure.sizing_metrics.dscr_underwritten` | 1.00x | 1.20x | — | — |
+| LTV | `FV-09` | `quick_metrics.ltv`; `debt_structure.sizing_metrics.ltv` | — | — | 75% | 85% |
+| Debt Yield | `FV-03` | `quick_metrics.debt_yield`; `debt_structure.sizing_metrics.debt_yield` | — | 7% | — | — |
+| Going-in Cap Rate | `FV-01` / `FV-02` | `quick_metrics.cap_rate`; `valuation.going_in_cap_rate` | — | 3% | 15% | — |
+| Vacancy Rate | `FV-13` / `FV-14` | `noi_model.income.vacancy_credit_loss.rate_applied` | — | 2% | 40% | — |
+| OpEx Ratio | `FV-10` / `FV-11` | `noi_model.expenses.expense_ratio` | — | 20% | 70% | — |
+| Levered IRR | `FV-07` / `FV-08` | `quick_metrics.irr_projected`; `dcf.returns.levered_irr` | — | 5% | 40% | — |
+| Equity Multiple | `FV-05` / `FV-06` | `dcf.returns.equity_multiple` | — | 1.0x | 5.0x | — |
+| Annual Rent Growth | `FV-12` | `dcf.assumptions.revenue_growth_rate` | — | — | 8% | — |
+| LTC (construction) | — | — | — | — | 80% | 90% |
+
+**Reading the bands (RFC 0105).** Each finite number stated at a listed home is
+compared with its band. A home that is absent, `null` or not a number draws
+nothing, and no field outside the table is read. A section home is read from the
+one block the §5.3 selection order picks, preferring the `senior` role for
+`debt_structure`. Each home draws at most one issue per side, at the most severe
+band it crosses: a DSCR of 0.95 is `FV-04`/error, not also `FV-04`/warning. The
+issue's `field` is the home (Protocol §III.6a), with no `section` for a
+frontmatter home: `quick_metrics.dscr`, or `sizing_metrics.dscr_underwritten` in
+section `debt_structure`. A value stated at both homes is checked at both. The
+LTC band has no home and no code yet, so it is not checked.
 
 ### 5.3 Cross-Section Consistency Checks
 
