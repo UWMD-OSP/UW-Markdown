@@ -122,9 +122,8 @@ def _scope_missing_fields(prop, document):
     if asset == "mixed_use":
         components = select_section(document, "components")
         body = components.block.parsed.value if components.block else {}
-        slots = ("multifamily.total_units", "retail.nra_sqft", "office.nra_sqft", "industrial.nra_sqft",
-                 "self_storage.nra_sqft", "student_housing.total_beds", "senior_housing.total_units",
-                 "data_center.critical_it_load_kw", "manufactured_housing.total_sites")
+        slots = (slot + "." + name for slot in sorted(set(BUILTINS) - {"land", "mixed_use"})
+                 for name in ("total_units", "total_beds", "total_sites", "nra_sqft", "critical_it_load_kw"))
         alternatives = [("components." + p, field(body, p)) for p in slots]
     alternatives.append(("valuation.purchase_price", price))
     if all(v is None or v == "" for _, v in alternatives):

@@ -3633,10 +3633,8 @@ function checkMetadataReferences(parsed: ParsedUWFile, issues: ValidationMessage
 // ─── Stage readiness ──────────────────────────────────────────────────────────
 
 /**
- * Variant-aware section presence, as stage readiness defines it: a
- * multi-variant `operating_statement` counts through its `t12` or `default`
- * variant. Shared by `computeStageReadiness` and the RFC 0028 checks
- * (`CC-14`, `DQ-06`) so "present" means one thing.
+ * RFC 0116 stated-content presence across current section variants.
+ * Readiness and DQ-06 share this definition; CC-14 checks block absence.
  */
 function hasStageSection(parsed: ParsedUWFile, id: string): boolean {
   const entry = parsed.sections[id];
@@ -3674,7 +3672,10 @@ function computeStageReadiness(parsed: ParsedUWFile): StageReadiness {
 
   let ready = true;
   return Object.fromEntries((Object.keys(STAGE_REQUIREMENTS) as DealStage[])
-    .map(stage => [stage, ready = ready && stageReady(stage)])) as unknown as StageReadiness;
+    .map(stage => {
+      ready = ready && stageReady(stage);
+      return [stage, ready];
+    })) as unknown as StageReadiness;
 }
 
 // ─── DQ-04: scope-stage readiness ────────────────────────────────────────────

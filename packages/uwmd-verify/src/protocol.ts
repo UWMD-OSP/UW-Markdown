@@ -1403,10 +1403,9 @@ export function stageOneOfFor(stage: DealStage, assetClass?: string): string[][]
   const builtin = assetClass && toBuiltinAssetClass(assetClass);
   const size = assetClass ? getSizeIntensive(assetClass) : null;
   const paths = size ? [`property.${size.path}`] : builtin === 'mixed_use'
-    ? ['multifamily.total_units', 'retail.nra_sqft', 'office.nra_sqft',
-       'industrial.nra_sqft', 'self_storage.nra_sqft', 'student_housing.total_beds',
-       'senior_housing.total_units', 'data_center.critical_it_load_kw',
-       'manufactured_housing.total_sites'].map(path => `components.${path}`)
+    ? Object.keys(SIZE_INTENSIVES).filter(id => id !== 'land').sort().flatMap(id =>
+      ['total_units', 'total_beds', 'total_sites', 'nra_sqft', 'critical_it_load_kw']
+        .map(field => `components.${id}.${field}`))
     : [];
   return [[...paths, 'valuation.purchase_price']];
 }
