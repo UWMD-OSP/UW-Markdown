@@ -6,7 +6,7 @@ import { resolveRenderMetrics } from './render-metrics.js';
 import { render } from './renderer.js';
 
 describe('rendered metric summaries', () => {
-  it.each(['Desert-Palms-MHC-Apache-Junction-AZ', 'Union-Yard-Mixed-Use-Phoenix-AZ'])('fills missing metrics for %s without editing the record', (name) => {
+  it.each(['Desert-Palms-MHC-Apache-Junction-AZ', 'Roosevelt-Row-MixedUse-Phoenix-AZ'])('fills missing metrics for %s without editing the record', (name) => {
     const parsed = parseUWFile(readFileSync(resolve('../../examples', `${name}.uwx.md`), 'utf8'));
     delete parsed.frontmatter.quick_metrics;
     const before = structuredClone(parsed);
@@ -16,8 +16,7 @@ describe('rendered metric summaries', () => {
       const content = render(parsed, { format }).content;
       expect(content).not.toMatch(/\$n\/a|n\/ax|n\/a yrs/);
       if (format === 'csv') {
-        const [headers, row] = content.trim().split('\n').map(line => line.split(','));
-        for (const key of ['dscr', 'ltv_pct', 'cap_rate_pct']) expect(row![headers!.indexOf(key)]).not.toBe('');
+        expect(content.split('\n')[1]).toMatch(/,\d+\.\d{3},-?\d+\.\d{2},-?\d+\.\d{2},/);
       }
     }
     expect(parsed).toEqual(before);
