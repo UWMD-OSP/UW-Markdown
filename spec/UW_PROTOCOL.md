@@ -697,7 +697,7 @@ capability is unconditional: every implementation owes it.
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
 | `CS-*` | Capital stack (§XIII); RFC0096 adds CS-03 sizing-declaration admission; RFC 0050 registers `CS-02b` for malformed split preferred-equity coupons; RFC 0098 adds CS-04 for an absent or invalid `point_in_time`. | `validate` | `warning` or `error` |
 | `DS-NN` | Debt structure field admission (format §4.7, RFC 0098): `DS-01` refuses a stated `point_in_time` outside `closing`/`stabilization`. | `validate` | `error` |
-| `SIZE-NN` | Generic size contract (format §5.5, RFC 0100): `SIZE-01` refuses a stated size, count, area or rent in the closed table that is negative or non-finite or, for a count, not an integer. `CLS-04` stays the class contracts' code. | `validate` | `error` |
+| `SIZE-NN` | Generic size contract (format §5.5, RFC 0100/0117): `SIZE-01` refuses a stated size, count, area or rent in the closed property, rent_roll and component-size table that is negative or non-finite or, for a count, not an integer. `CLS-04` stays the class contracts' code. | `validate` | `error` |
 | `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence and closed LU-05 payload admission (format spec §4.25, RFCs0008/0096). | `validate` | `warning` or `error` |
 | `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
 | `PS-NN` | Period-series shape and identity (RFC 0041). | `validate` | PS-01/03 warning; PS-02 error |

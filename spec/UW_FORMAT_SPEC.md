@@ -4623,6 +4623,8 @@ element of that array.
 | `rent_roll.unit_mix_summary[].count`, `lease_expiration_schedule[].expiring_count` | count |
 | `rent_roll.total_rentable_sf`, `occupied_sf`, `vacant_sf`, `tenants[].leased_sf`, `units[].sqft`, `unit_mix_summary[].avg_sqft` | area |
 | `rent_roll.weighted_avg_rent_psf`, `tenants[].rent_psf`, `units[].monthly_rent`, `units[].market_rent` | rent |
+| `components.<class>.total_units`, `total_beds`, `total_sites` (every admitted component slot) | count |
+| `components.<class>.nra_sqft`, `critical_it_load_kw` (every admitted component slot) | area / capacity |
 
 The table is **closed**; each field keeps its existing path and meaning. A
 class's own contract (`mhc_sites`, `dc_capacity`, `BED-*`, `keys`) is unchanged and

@@ -22,6 +22,13 @@ in TypeScript and Python. Invalid non-null values produce field-specific errors;
 readiness remains independent. Five invalid-value document fixtures pin Reader
 admission and Verifier refusal. Current positive fixture statuses use in_progress.
 
+**RFC 0117 implemented (owner acceptance, 2026-10-22 second set).** The
+component schema's three count and two area/capacity fields now participate in
+SIZE-01 on each admitted slot, in TypeScript and Python. The eight mixed-use
+per-size dictionary metrics reject a negative denominator as unverifiable.
+Negative, zero, positive and fractional controls cover the boundary; formulas
+and rounding are unchanged.
+
 **RFC 0116 implemented (owner acceptance, 2026-10-22 second set).** Stage
 readiness now requires a stated non-null leaf and is cumulative. Scope reads the
 class primary size or valuation price; mixed-use uses a component size. Missing

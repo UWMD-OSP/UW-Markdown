@@ -87,7 +87,9 @@ semantics for a metric whose formula divides by a registered `property` size
 square foot, key, bed, acre, site or kW, and the size-based ratios. When that size
 is stated below zero the statement is **unverifiable**
 (`negative_size_denominator`), so no Verifier confirms a figure against an
-impossible size; zero already refuses as a division. Format §5.5 refuses the
+impossible size; zero already refuses as a division. RFC 0117 applies the same
+rule to the eight mixed-use per-size metrics' registered `components` sizes.
+Format §5.5 refuses the
 negative size itself (`SIZE-01`).
 `deterministic: true` preserves the existing declarations' deterministic contract.
 

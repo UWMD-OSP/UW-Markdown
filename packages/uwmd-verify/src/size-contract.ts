@@ -19,7 +19,7 @@ export type SizeContractKind = 'count' | 'measure';
  * The closed size contract table, by section. A path segment ending in `[]`
  * applies to every element of that array.
  */
-export const SIZE_CONTRACT: Readonly<Record<'property' | 'rent_roll', Readonly<Record<string, SizeContractKind>>>> = Object.freeze({
+export const SIZE_CONTRACT: Readonly<Record<'property' | 'rent_roll' | 'components', Readonly<Record<string, SizeContractKind>>>> = Object.freeze({
   property: Object.freeze({
     total_units: 'count', keys: 'count', total_beds: 'count', total_sites: 'count',
     rentable_units: 'count', entitled_units: 'count', parking_spaces: 'count',
@@ -38,6 +38,13 @@ export const SIZE_CONTRACT: Readonly<Record<'property' | 'rent_roll', Readonly<R
     weighted_avg_rent_psf: 'measure', 'tenants[].rent_psf': 'measure',
     'units[].monthly_rent': 'measure', 'units[].market_rent': 'measure',
   }),
+  components: Object.freeze(Object.fromEntries(
+    ['multifamily', 'retail', 'office', 'industrial', 'self_storage', 'hospitality',
+      'senior_housing', 'student_housing', 'data_center', 'manufactured_housing']
+      .flatMap(slot => Object.entries({ total_units: 'count', total_beds: 'count', total_sites: 'count',
+        nra_sqft: 'measure', critical_it_load_kw: 'measure' } as const)
+        .map(([field, kind]) => [`${slot}.${field}`, kind])),
+  )),
 });
 
 /** Whether a stated value meets its contract. `null` and `undefined` are not stated. */

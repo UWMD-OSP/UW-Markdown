@@ -1652,7 +1652,7 @@
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1671,7 +1671,7 @@
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1690,7 +1690,7 @@
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1709,7 +1709,7 @@
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1728,7 +1728,7 @@
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1747,7 +1747,7 @@
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1818,7 +1818,7 @@
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1855,7 +1855,7 @@
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {

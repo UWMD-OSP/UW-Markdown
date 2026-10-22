@@ -65,8 +65,15 @@ describe('RFC 0100 size contract', () => {
   });
 
   it('is a closed table of property and rent_roll fields', () => {
-    expect(Object.keys(SIZE_CONTRACT)).toEqual(['property', 'rent_roll']);
+    expect(Object.keys(SIZE_CONTRACT)).toEqual(['property', 'rent_roll', 'components']);
     expect(Object.isFrozen(SIZE_CONTRACT.property)).toBe(true);
+  });
+
+  it('checks component sizes without broadening the closed slot or field vocabulary', () => {
+    expect(fields(doc('mixed_use', { components: { retail: { nra_sqft: -1 }, multifamily: { total_units: 1.5 } } })))
+      .toEqual(['components.multifamily.total_units', 'components.retail.nra_sqft']);
+    expect(fields(doc('mixed_use', { components: { retail: { nra_sqft: 0, total_sites: null, custom_size: -1 }, unknown: { total_units: -1 } } })))
+      .toEqual([]);
   });
 });
 

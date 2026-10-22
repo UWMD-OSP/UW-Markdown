@@ -1,0 +1,8 @@
+{
+  "description": "Negative declared component area is SIZE-01 (RFC 0117).",
+  "must_parse": true,
+  "expected_codes": [
+    "SIZE-01"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md \u00a75.5 (RFC 0117)"
+}

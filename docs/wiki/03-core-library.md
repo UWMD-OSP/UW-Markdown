@@ -711,3 +711,8 @@ Signing's `documents.ts` supplies `signDocument`,
 authentication, with nonzero exit for missing/unreadable/unchecked artifacts.
 `conformance/document-signatures/` and its generated portable cases test this
 optional Integrity-profile capability independently of financial computation.
+
+RFC 0117 extends the closed SIZE-01 table to declared mixed-use component
+sizes and applies positive_size_denominator to the eight component per-size
+metrics. Validation checks all current blocks; metric verification resolves
+the selected component block without defaults or aggregation.
