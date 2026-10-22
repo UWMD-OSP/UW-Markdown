@@ -20,6 +20,14 @@ const CONFORMANCE = join(ROOT, 'conformance');
 
 const cases = [];
 
+/**
+ * The Format version each case was written for (RFC 0111 D6, Protocol §XII.5):
+ * the rule set a Verifier must keep to owe the case. Every case today was
+ * written for Format 3.0, the one rule set. A case written for a later rule set
+ * will name that version; existing cases keep the one they were written for.
+ */
+const WRITTEN_FOR_FORMAT_VERSION = '3.0';
+
 const readFileText = (path) => readFileSync(path, 'utf8');
 
 /** Relative POSIX path from the repo root — case files must be portable. */
@@ -58,6 +66,7 @@ function add(caseKey, command, args, fixtureDir, expect, capabilities) {
   cases.push({
     id: `${target}__${suite}__${scenario}__${operation}`,
     target,
+    format_version: WRITTEN_FOR_FORMAT_VERSION,
     requires_capabilities: capabilities ?? capabilitiesFor(command, args),
     command,
     args,

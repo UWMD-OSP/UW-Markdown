@@ -8,7 +8,8 @@ User-facing tools built on `@uwmd/core` and `@uwmd/verify` (RFC 0083). Deep refe
 - `web-viewer/` — single-file `index.html` (<500 LOC), no build. Drag-drop
   Reader. Embeds a minimal parser + renderer.
 - `web-editor/` — React 18 + Tailwind 4 (Vite). Calc-aware editor (starter product) with
-  a live §7.1/§7.2 report-preview tab; `src/state.ts` (useDeal hook),
+  a live report-preview tab (the renderer reference, `docs/starter/rendering.md`
+  §7.1/§7.2); `src/state.ts` (useDeal hook),
   `src/edits.ts` (edit dispatch — the applyEdit chokepoint), `src/catalog.ts`
   (editable-field allow-lists), `src/components/*` (UI).
   Build: `npm run build` (tsc --noEmit + vite).

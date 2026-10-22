@@ -593,6 +593,57 @@ describe('verifyReceipt', () => {
   });
 });
 
+describe('rule sets (RFC 0111)', () => {
+  it('issues under the declared rule set of the record and names it', async () => {
+    const receipt = await issueReceipt(await parkview(), { filename: PARKVIEW, issued_at: ISSUED_AT });
+    expect(receipt.computation.rule_set).toBe('3.0');
+    const lite = await issueReceipt(await liteDeal(), { filename: LITE_DEAL, issued_at: ISSUED_AT });
+    expect(lite.computation.rule_set).toBe('3.0');
+  });
+
+  it('reports the rule set it applied', async () => {
+    const source = await parkview();
+    const receipt = await issueReceipt(source, { filename: PARKVIEW, issued_at: ISSUED_AT });
+    const result = await verifyReceipt(receipt, source, { filename: PARKVIEW });
+    expect(result).toMatchObject({ verdict: 'verified', rule_set: '3.0' });
+  });
+
+  it('fails a receipt naming a rule set its record does not declare (RCP-13)', async () => {
+    const source = await parkview();
+    const receipt = clone(await issueReceipt(source, { filename: PARKVIEW, issued_at: ISSUED_AT }));
+    receipt.computation.rule_set = '3.1';
+    let calls = 0;
+    const result = await verifyReceipt({ ...receipt, signature: { algorithm: 'ed25519', key_id: 'stub', value: 'AAAA' } }, source, {
+      filename: PARKVIEW, signatureVerifier: { verify: async () => { calls++; return true; } },
+    });
+    expect(result.verdict).toBe('failed');
+    expect(result.rule_set).toBe('3.0');
+    expect(result.issues).toEqual([expect.objectContaining({ code: 'RCP-13', expected: '3.0', actual: '3.1' })]);
+    // A preflight, like the subject digest: no signature call, no recomputation.
+    expect(calls).toBe(0);
+    expect(result.recomputed).toBeUndefined();
+  });
+
+  it('still lets a subject digest mismatch decide first', async () => {
+    const source = await parkview();
+    const receipt = clone(await issueReceipt(source, { filename: PARKVIEW, issued_at: ISSUED_AT }));
+    receipt.computation.rule_set = '3.1';
+    receipt.subject.digest = `sha256:${'0'.repeat(64)}`;
+    const result = await verifyReceipt(receipt, source, { filename: PARKVIEW });
+    expect(result.issues.map((issue) => issue.code)).toEqual(['RCP-01']);
+  });
+
+  it('refuses to read a receipt with no rule set or a malformed one', async () => {
+    const receipt = clone(await issueReceipt(await parkview(), { filename: PARKVIEW, issued_at: ISSUED_AT }));
+    for (const value of [undefined, '', '3', 'v3.0', 3]) {
+      const candidate = clone(receipt) as unknown as { computation: Record<string, unknown> };
+      if (value === undefined) delete candidate.computation['rule_set'];
+      else candidate.computation['rule_set'] = value;
+      expect(() => assertUWReceipt(candidate)).toThrow(/RCP_MALFORMED.*rule_set/);
+    }
+  });
+});
+
 describe('rollup receipts (RFC 0021 §6)', () => {
   const NOI = 'noi_model.net_operating_income';
   const agg = (over: Partial<UWRollupAggregate> = {}): UWRollupAggregate => ({

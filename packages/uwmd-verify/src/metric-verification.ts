@@ -17,6 +17,7 @@ import { compareStatedMetric, getStatedDecimals } from './calc/stated-precision.
 import { BUILTIN_METRIC_DICTIONARY } from './metric-dictionary.js';
 import { blockPayload } from './parser.js';
 import { SIZE_INTENSIVES, type MetricDictionary, type MetricDictionaryCalculation, type MetricDictionarySize } from './protocol.js';
+import { ruleSetFor } from './rule-sets.js';
 import { resolveSectionBlock } from './section-resolution.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 import { readYamlScalar } from './yaml-scalar.js';
@@ -66,6 +67,11 @@ export interface StatedMetricEvidence extends StatedMetricOutcome {
 
 /** Every numeric statement of the document's dictionary metrics, checked. */
 export interface StatedMetricsReport {
+  /**
+   * The rule set the statements were checked under: the record's declared
+   * Format version (`uw_version`), Protocol §XII.5 (RFC 0111 D5).
+   */
+  rule_set: string;
   asset_class: string;
   counts: { verified: number; failed: number; unverifiable: number };
   evidence: StatedMetricEvidence[];
@@ -80,7 +86,10 @@ export interface StatedMetricBindings {
 }
 
 export interface VerifyStatedMetricsOptions {
-  /** The dictionary to verify against. Defaults to the builtin dictionary. */
+  /**
+   * The dictionary to verify against. Defaults to the dictionary of the
+   * record's rule set (RFC 0111), the builtin dictionary for Format 3.0.
+   */
   dictionary?: MetricDictionary;
   /**
    * Where statements live. Defaults to the dictionary's `statement_bindings`
@@ -225,10 +234,13 @@ export function verifyStatedMetrics(
   parsed: ParsedUWFile,
   options: VerifyStatedMetricsOptions = {},
 ): StatedMetricsReport {
-  const dictionary = options.dictionary ?? BUILTIN_METRIC_DICTIONARY;
+  // RFC 0111: the declared Format version selects the rule set; an unkept
+  // version is refused, never checked under another one.
+  const ruleSet = ruleSetFor(parsed);
+  const dictionary = options.dictionary ?? ruleSet.metric_dictionary;
   // A dictionary carries its own registry (RFC 0099); a module dictionary without one
-  // is checked at the builtin homes.
-  const bindings = options.bindings ?? dictionary.statement_bindings ?? DEFAULT_STATED_METRIC_BINDINGS;
+  // is checked at the homes of the record's rule-set dictionary.
+  const bindings = options.bindings ?? dictionary.statement_bindings ?? ruleSet.metric_dictionary.statement_bindings;
   const precision = options.statedDecimals;
   const source = parsed.raw;
   // Each block's source JSON is tokenized once, however many statements it holds.
@@ -292,7 +304,7 @@ export function verifyStatedMetrics(
   }));
   const counts = { verified: 0, failed: 0, unverifiable: 0 };
   for (const item of evidence) counts[item.state]++;
-  return { asset_class, counts, evidence };
+  return { rule_set: ruleSet.format_version, asset_class, counts, evidence };
 }
 
 // ─── Source precision ────────────────────────────────────────────────────────

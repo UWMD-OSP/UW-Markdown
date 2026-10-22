@@ -1,6 +1,7 @@
 {
   "id": "verifier__calc__date-48-error-argument-propagates__calc",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -43,7 +43,8 @@ accepted RFC 0111 ([below](#verification-rule-sets)).
 
 ## Verification rule sets
 
-**RFC 0111, accepted 2026-10-21; in force from 5.0.0.** A record is verified
+**RFC 0111, accepted 2026-10-21; in force from 5.0.0; normative text in
+[Protocol §XII.5](../../spec/UW_PROTOCOL.md) ("Rule sets").** A record is verified
 under the rule set its declared Format version (`uw_version`) names. Every 5.x
 verifier keeps every earlier 5.x rule set. A fix that changes an outcome issues
 a new Format minor, so it applies to new records only. The one exception: a

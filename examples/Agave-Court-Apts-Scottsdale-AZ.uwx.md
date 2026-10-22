@@ -5,7 +5,7 @@ deal_name: "Agave Court Apartments — Scottsdale, AZ"
 created: "2026-08-21T09:00:00Z"
 last_modified: "2026-08-22T15:00:00Z"
 
-property_address: "7350 E Osborn Rd"
+property_address: "7350 E Agave Bloom Rd"
 city: "Scottsdale"
 state: "AZ"
 zip: "85251"

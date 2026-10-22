@@ -35,7 +35,8 @@ Statement** (income/expense, NOI as the `noi` named range), **Pipeline Log**.
   agree **exactly** (test in `@uwmd/core`'s `packs/packs.test.ts` and here).
   Formulas are emitted via `emitCalcExcelFormula`, which wraps them in
   `ROUND(expr, round_to)` so the cell quantizes the same way `evaluateCalc`
-  does (protocol §VIII.5). Use it, not the bare `emitExcelFormula`.
+  does (protocol §VIII.5), and renders the engine's null as `#N/A` instead of
+  Excel's blank-is-zero (#487). Use it, not the bare `emitExcelFormula`.
 - Adding a metric is a one-place change in `@uwmd/core`'s `builtin-packs/multifamily.ts`.
   It surfaces here automatically **only if** every input path has a named range
   (else `EXCEL-EMIT-PATH`) and its builtins map to Excel (else `EXCEL-EMIT-FN`).

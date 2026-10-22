@@ -1,6 +1,7 @@
 {
   "id": "reader__documents__14-student-bed-counts__parse",
   "target": "reader",
+  "format_version": "3.0",
   "requires_capabilities": [
     "parse"
   ],
