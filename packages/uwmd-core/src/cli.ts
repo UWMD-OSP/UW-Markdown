@@ -451,7 +451,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
       delete sections['replacement_funding_verification'];
     }
     if (configError === undefined) {
-      const v = validateUWFile(content, institution?.thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) }, institution);
+      const v = validateUWFile(parsed, institution?.thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) }, institution);
       sections['validation'] = v;
       const funding = await verifyReplacementFundingBindings(parsed);
       sections['replacement_funding_verification'] = funding;
