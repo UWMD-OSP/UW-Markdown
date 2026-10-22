@@ -801,6 +801,11 @@ export { checkBuiltinClassContent } from './builtin-class-validation.js';
 // The twelve builtin classes' section, rule and view-model declarations (RFC 0080). Pure data.
 export { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
 
+// Verification rule sets (RFC 0111, Protocol §XII.5): the declared Format
+// version selects the bands, dictionary and packs a record is verified under.
+export { RULE_SETS, getRuleSet, ruleSetFor } from './rule-sets.js';
+export type { UWRuleSet } from './rule-sets.js';
+
 // Stated-metric verification against the metric dictionary (RFC 0083 §2).
 export { verifyStatedMetrics } from './metric-verification.js';
 export type {

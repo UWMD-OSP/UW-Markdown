@@ -45,6 +45,8 @@ const STANDARD_MODULES: readonly string[] = Object.freeze([
   'calc/pinned-fdlibm/kernel.ts', 'calc/pinned-fdlibm/constants.ts', 'calc/pinned-fdlibm/words.ts',
   // Metric dictionary
   'metric-dictionary.ts', 'metric-verification.ts',
+  // Rule sets (RFC 0111)
+  'rule-sets.ts',
   // Receipts, integrity, modules
   'receipts.ts', 'integrity.ts', 'integrity-canonical.ts', 'module-signing.ts', 'modules.ts',
   'module-runtime.ts', 'document-signatures.ts',

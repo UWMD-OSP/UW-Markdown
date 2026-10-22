@@ -28,7 +28,7 @@ import { canonicalize, InvalidUnicodeError } from './integrity-canonical.js';
 import { sha256TextHex } from './integrity.js';
 import { canonicalizeUWLiteFinancial, parseUWLite } from './lite.js';
 import { compileUWLite } from './lite-bridge.js';
-import { getPackForAssetClass } from './builtin-packs/index.js';
+import { ruleSetFor, type UWRuleSet } from './rule-sets.js';
 import { parseUWFile } from './parser.js';
 import { PROTOCOL_VERSION } from './protocol.js';
 import type { CalcEvaluationContext, ModuleManifest, ProtocolError } from './protocol.js';
@@ -87,6 +87,8 @@ export const BUILTIN_POLICY_SET_VERSION = '1.0' as const;
 
 /** `sha256:<64 lowercase hex>` — the only digest spelling a receipt may carry. */
 const DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/;
+/** A rule set is named by its Format version (`major.minor`, RFC 0111). */
+const RULE_SET_PATTERN = /^\d+\.\d+$/;
 
 // ─── Receipt shape ───────────────────────────────────────────────────────────
 
@@ -134,6 +136,12 @@ export interface UWReceiptComputation {
    * protocol version is the one identifier every conforming issuer shares.
    */
   protocol_version?: string;
+  /**
+   * The rule set the issuer computed and validated under: the subject record's
+   * declared Format version (`uw_version`), Protocol §XII.5 (RFC 0111 D5).
+   * Required. A verifier checks it against the record (`RCP-13`).
+   */
+  rule_set: string;
   results: UWReceiptResult[];
   /** Cheap corruption check. A verifier MUST recompute rather than trust this. */
   results_digest: string;
@@ -261,6 +269,8 @@ export type UWReceiptIssueCode =
   | 'RCP-11'
   /** A referenced input resolved, but its digest disagrees. */
   | 'RCP-12'
+  /** The receipt names a rule set other than the one its record declares. */
+  | 'RCP-13'
   /**
    * A stated composite aggregate disagrees with recomputation (RFC 0021 §6).
    * Keeps its `COMP-` prefix rather than taking an `RCP-` number: the failure
@@ -280,6 +290,12 @@ export interface UWReceiptIssue {
 
 export interface UWReceiptVerification {
   verdict: UWReceiptVerdict;
+  /**
+   * The rule set this verifier applied: the record's declared Format version
+   * (RFC 0111 D5). Absent only when the record could not be canonicalized
+   * (`RCP-09`), so no rule set was selected.
+   */
+  rule_set?: string;
   issues: UWReceiptIssue[];
   /** What the verifier itself computed, when it got far enough to compute. */
   recomputed?: UWReceiptResult[];
@@ -497,7 +513,9 @@ export async function issueReceipt(
   options: ReceiptIssuanceOptions = {},
 ): Promise<UWReceipt> {
   const resolved = await resolveReceiptSubject(content, options);
-  const pack = resolvePack(resolved.parsed, options.pack);
+  // RFC 0111: the record's declared Format version selects the rule set.
+  const ruleSet = ruleSetFor(resolved.parsed);
+  const pack = resolvePack(resolved.parsed, ruleSet, options.pack);
   const results = computeReceiptResults(pack, resolved.parsed);
   const validation = validateUWFile(resolved.subject.representation === UWX_REPRESENTATION_ID ? content : resolved.parsed);
 
@@ -510,6 +528,7 @@ export async function issueReceipt(
       engine: options.engine ?? VERIFY_PACKAGE_NAME,
       engine_version: options.engine_version ?? VERIFY_VERSION,
       protocol_version: options.protocol_version ?? PROTOCOL_VERSION,
+      rule_set: ruleSet.format_version,
       results,
       results_digest: await computeResultsDigest(results).catch(error => {
         if (!(error instanceof InvalidUnicodeError)) throw error;
@@ -541,9 +560,9 @@ export async function issueReceipt(
   };
 }
 
-function resolvePack(parsed: ParsedUWFile, override?: ModuleManifest): ModuleManifest {
+function resolvePack(parsed: ParsedUWFile, ruleSet: UWRuleSet, override?: ModuleManifest): ModuleManifest {
   const assetClass = parsed.frontmatter.asset_class;
-  const pack = override ?? (assetClass ? getPackForAssetClass(assetClass) : null);
+  const pack = override ?? (assetClass ? ruleSet.packFor(assetClass) : null);
   if (!pack) {
     throw new ReceiptError(
       'RCP_PACK_UNRESOLVED',
@@ -611,6 +630,8 @@ export interface ReceiptVerificationOptions extends ReceiptSubjectOptions {
  *      `failed` (RCP-12). Placed here, above the indeterminate group, because a
  *      reference the verifier *does* hold and *can* compare is real evidence,
  *      and burying it under a later step would let an unknown pack mask it.
+ *      A receipt naming a rule set other than the one its record's declared
+ *      Format version selects misstates its subject: `failed` (RCP-13, RFC 0111).
  *   3. Otherwise, anything this verifier cannot decide (unknown pack, pack
  *      version it does not hold, a signature with no backend, or a referenced
  *      input it does not hold — RCP-11) → `unverifiable`.
@@ -636,11 +657,15 @@ export async function verifyReceipt(
 
   // The document must canonicalize before anything can be compared to it.
   let resolved: ReceiptSubjectResolution;
+  let ruleSet: UWRuleSet;
   try {
     resolved = await resolveReceiptSubject(content, {
       filename: options.filename,
       representation: options.representation ?? receipt.subject.representation,
     });
+    // RFC 0111: the record's declared Format version selects the rule set the
+    // verifier applies, whatever the receipt names.
+    ruleSet = ruleSetFor(resolved.parsed);
   } catch (e) {
     return {
       verdict: 'unverifiable',
@@ -662,6 +687,7 @@ export async function verifyReceipt(
   if (resolved.subject.digest !== receipt.subject.digest) {
     if (resolved.subject.canonicalization_version !== receipt.subject.canonicalization_version) {
       return {
+        rule_set: ruleSet.format_version,
         verdict: 'unverifiable',
         issues: [
           {
@@ -675,6 +701,7 @@ export async function verifyReceipt(
       };
     }
     return {
+      rule_set: ruleSet.format_version,
       verdict: 'failed',
       issues: [
         {
@@ -704,6 +731,7 @@ export async function verifyReceipt(
     }
     if (actual !== reference.digest) {
       return {
+        rule_set: ruleSet.format_version,
         verdict: 'failed',
         issues: [
           {
@@ -719,6 +747,26 @@ export async function verifyReceipt(
       };
     }
   }
+
+  // 2b — the rule set (RFC 0111 D5). The record's declared Format version
+  // selects it, so a receipt naming another one misstates its own subject: its
+  // results were not computed under the rules this record is verified by.
+  if (receipt.computation.rule_set !== ruleSet.format_version) {
+    return {
+      rule_set: ruleSet.format_version,
+      verdict: 'failed',
+      issues: [
+        {
+          code: 'RCP-13',
+          severity: 'failure',
+          message: `The receipt names rule set ${JSON.stringify(receipt.computation.rule_set)}; its record declares Format ${ruleSet.format_version}, which selects the rule set it is verified under.`,
+          expected: ruleSet.format_version,
+          actual: receipt.computation.rule_set,
+        },
+      ],
+    };
+  }
+
   for (const reference of unresolved) {
     issues.push({
       code: 'RCP-11',
@@ -731,7 +779,7 @@ export async function verifyReceipt(
   }
 
   // 3 — can this verifier decide at all?
-  const pack = lookupPack(receipt.computation.pack, options.packs);
+  const pack = lookupPack(receipt.computation.pack, ruleSet, options.packs);
   if (!pack) {
     issues.push({
       code: 'RCP-05',
@@ -758,7 +806,7 @@ export async function verifyReceipt(
   }
 
   if (issues.some((issue) => issue.severity === 'indeterminate')) {
-    return { verdict: 'unverifiable', issues };
+    return { rule_set: ruleSet.format_version, verdict: 'unverifiable', issues };
   }
 
   // 4 — authenticate before financial recomputation or any refusal (RFC 0088).
@@ -769,12 +817,13 @@ export async function verifyReceipt(
     } catch (error) {
       if (!(error instanceof InvalidUnicodeError)) throw error;
       // Receipt §5.1 step 4: an unencodable signed input cannot validate.
-      return { verdict: 'failed', issues: [{ code: 'RCP-01', severity: 'failure',
+      return { rule_set: ruleSet.format_version, verdict: 'failed', issues: [{ code: 'RCP-01', severity: 'failure',
         message: `The receipt signature input cannot be canonicalized: ${error.message}` }] };
     }
     const valid = await options.signatureVerifier.verify(receipt, payload);
     if (!valid) {
       return {
+        rule_set: ruleSet.format_version,
         verdict: 'failed',
         issues: [
           {
@@ -794,6 +843,7 @@ export async function verifyReceipt(
     recomputed = computeReceiptResults(resolvedPack, resolved.parsed);
   } catch (e) {
     return {
+      rule_set: ruleSet.format_version,
       verdict: 'failed',
       issues: [
         {
@@ -823,6 +873,7 @@ export async function verifyReceipt(
   if (disagreements.length > 0) {
     if (!engineMatches) {
       return {
+        rule_set: ruleSet.format_version,
         verdict: 'unverifiable',
         issues: [
           {
@@ -837,7 +888,7 @@ export async function verifyReceipt(
         recomputed,
       };
     }
-    return { verdict: 'failed', issues: disagreements, recomputed };
+    return { rule_set: ruleSet.format_version, verdict: 'failed', issues: disagreements, recomputed };
   }
 
   // Corruption check, reported but not decisive on its own — recomputation
@@ -848,11 +899,12 @@ export async function verifyReceipt(
   } catch (error) {
     if (!(error instanceof InvalidUnicodeError)) throw error;
     // Receipt §5.1 step 6: the stated result digest cannot recompute.
-    return { verdict: 'failed', issues: [{ code: 'RCP-04', severity: 'failure',
+    return { rule_set: ruleSet.format_version, verdict: 'failed', issues: [{ code: 'RCP-04', severity: 'failure',
       message: `results_digest cannot recompute: ${error.message}` }], recomputed };
   }
   if (expectedResultsDigest !== receipt.computation.results_digest) {
     return {
+      rule_set: ruleSet.format_version,
       verdict: 'failed',
       issues: [
         {
@@ -867,13 +919,13 @@ export async function verifyReceipt(
     };
   }
 
-  return { verdict: 'verified', issues: [], recomputed };
+  return { rule_set: ruleSet.format_version, verdict: 'verified', issues: [], recomputed };
 }
 
-function lookupPack(id: string, packs?: readonly ModuleManifest[]): ModuleManifest | null {
+function lookupPack(id: string, ruleSet: UWRuleSet, packs?: readonly ModuleManifest[]): ModuleManifest | null {
   if (packs) return packs.find((pack) => pack.id === id) ?? null;
   for (const assetClass of ASSET_CLASSES) {
-    const pack = getPackForAssetClass(assetClass);
+    const pack = ruleSet.packFor(assetClass);
     if (pack?.id === id) return pack;
   }
   return null;
@@ -1259,6 +1311,10 @@ export function assertUWReceipt(value: unknown): asserts value is UWReceipt {
   const c = computation as Record<string, unknown>;
   for (const key of ['pack', 'pack_version', 'engine', 'engine_version', 'results_digest']) {
     if (typeof c[key] !== 'string') fail(`receipt.computation.${key} must be a string.`);
+  }
+  // RFC 0111 D5: every receipt names the rule set it was computed under.
+  if (typeof c['rule_set'] !== 'string' || !RULE_SET_PATTERN.test(c['rule_set'])) {
+    fail('receipt.computation.rule_set must name a Format version, e.g. "3.0".');
   }
   if (!Array.isArray(c['results'])) fail('receipt.computation.results must be an array.');
   for (const entry of c['results'] as unknown[]) {

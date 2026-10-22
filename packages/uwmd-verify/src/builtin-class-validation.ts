@@ -5,12 +5,16 @@ import { toBuiltinAssetClass, type ParsedUWFile, type ValidationMessage } from '
 import { blockPayload } from './parser.js';
 import { resolveRoleBlock } from './block-roles.js';
 import { evaluateCalc } from './calc/index.js';
-import { getPackForAssetClass } from './builtin-packs/index.js';
+import { ruleSetFor, type UWRuleSet } from './rule-sets.js';
 
 interface FieldContract { type?: string | string[]; minimum?: number; maximum?: number; enum?: unknown[] }
 interface SectionContract { required?: string[]; properties?: Record<string, FieldContract> }
 
-export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessage[] {
+/**
+ * RFC 0080 class checks under the record's rule set (RFC 0111): `ruleSet`
+ * defaults to the one its declared `uw_version` names.
+ */
+export function checkBuiltinClassContent(parsed: ParsedUWFile, ruleSet?: UWRuleSet): ValidationMessage[] {
   const assetClass = toBuiltinAssetClass(parsed.frontmatter.asset_class);
   if (!assetClass) return [];
   const issues: ValidationMessage[] = [];
@@ -77,7 +81,7 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile): ValidationMessag
     }
   }
   const prior: Record<string, number | string | boolean | null> = {};
-  for (const decl of getPackForAssetClass(assetClass)?.calculations ?? []) {
+  for (const decl of (ruleSet ?? ruleSetFor(parsed)).packFor(assetClass)?.calculations ?? []) {
     const result = evaluateCalc(decl, { parsed, prior_results: {}, locale: 'en-US' });
     if (result.ok) { prior[decl.id] = result.value; continue; }
     if (!content.calculation_ids.includes(decl.id)) continue;
