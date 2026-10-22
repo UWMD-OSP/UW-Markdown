@@ -53,10 +53,9 @@ This is the standard's builtin data-center example (RFC 0080).
 Its three `dc_*` sections state capacity in **kilowatts**, PUE, redundancy,
 power billing, and rent per kW-month alongside the standard real-estate inputs.
 
-Like the hospitality fixture, it is deliberately **not** a clean deal: 1,000 kW
+The record carries two documented review conditions: 1,000 kW
 of phase 2 is pre-leased ahead of commissioning (`CC-DC-04`), and the
-in-place rent runs 20% under the comp set, a 25% mark-to-market (`CC-DC-07`). Both warnings fire
-on one file; nothing else does.
+in-place rent runs 20% under the comp set, a 25% mark-to-market (`CC-DC-07`). Both appear as warnings in the stored validation result and runtime output.
 
 ---
 
@@ -774,8 +773,28 @@ Financial-validity engine run over the sections above.
       "superseded": false
     }
   },
-  "overall_status": "clean",
+  "overall_status": "warnings",
   "financial_validity": [],
-  "completeness": []
+  "completeness": [],
+  "cross_section_consistency": [
+    {
+      "flag_id": "CC-DC-04",
+      "sections_involved": ["dc_capacity"],
+      "description": "Contracted load exceeds commissioned load — pre-leased phases; confirm the delivery schedule and any rent-commencement gaps.",
+      "severity": "warning",
+      "field_a": { "section": "dc_capacity", "field": "contracted_it_load_kw", "value": 11000 },
+      "field_b": { "section": "dc_capacity", "field": "critical_it_load_kw", "value": 10000 },
+      "variance": null
+    },
+    {
+      "flag_id": "CC-DC-07",
+      "sections_involved": ["dc_revenue"],
+      "description": "Contracted rent more than 15% below market — verify the comp set or the lease vintage.",
+      "severity": "warning",
+      "field_a": { "section": "dc_revenue", "field": "rent_per_kw_month", "value": 150 },
+      "field_b": { "section": "dc_revenue", "field": "market_rent_per_kw_month", "value": 187.5 },
+      "variance": null
+    }
+  ]
 }
 ```
