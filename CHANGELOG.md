@@ -34,6 +34,11 @@ protocol, and each package each carry an independent semver).
   `<python>` instead of machine-local absolute paths, with every pinned digest of
   a changed file repinned; the authored standalone kit's README describes the kit
   without owner process narrative.
+- Implement accepted RFC 0114: an optional `property.area_measurement` records
+  the standard behind a record's areas (`standard`: `boma`, `ipms`, `rebny`,
+  `rics` or `other`; free-text `edition`; optional `note`; no other member). A
+  malformed value is the new `SIZE-02` (error) in the §5.5 size contract. No
+  metric reads it and no area is converted. Malformed documents 70 and 71.
 
 - Implement accepted RFC 0086 (owner, 2026-10-22): `valuation.purchase_price`
   is the one purchase-price authority. **Affected metric:
