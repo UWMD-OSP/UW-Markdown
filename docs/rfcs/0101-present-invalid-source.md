@@ -2,7 +2,7 @@
 rfc: 0101
 title: Refuse every present source value outside the actor grammar
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-20
 affects:
   - format-spec
@@ -12,7 +12,7 @@ affects:
 
 # RFC 0101: Refuse every present source value outside the actor grammar
 
-> **Accepted by the owner, 2026-10-19** (Jared on #413: "accept your proposed
+> **Accepted by the owner, 2026-10-19** (owner on #413: "accept your proposed
 > disposition (any present value outside the §2.6 grammar is SRC-01; null is
 > SRC-01 plus the retained warning)"). The RFC, its decisions and the
 > implementation land together.

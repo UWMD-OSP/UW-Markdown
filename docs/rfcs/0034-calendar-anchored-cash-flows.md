@@ -73,7 +73,7 @@ Three concrete gaps, each already written down elsewhere in this repo:
    can say "$-14,250,000 on 2026-03-17, $+412,000 on 2026-09-30,
    $+19,800,000 on 2031-03-17." Real deals close mid-month, fund draws
    irregularly, and exit on anniversary dates. Every consumer that needs
-   this today (underwriter.cc's monthly engine, any Argus import) holds
+   this today (an adopter's monthly engine, any Argus import) holds
    it outside the record, where no receipt covers it.
 
 2. **`irr` is deterministic; annualized return on real dates is not
@@ -351,7 +351,7 @@ changes). Corpus grows by roughly 12–15 assertions.
    contiguity rule (`LU-02`, gap-free) is the *point* of a period
    schedule and is exactly wrong for irregular flows; forcing both
    through one section makes each rule conditional on the other's mode.
-3. **Leave it vendor-side (underwriter.cc computes XIRR, the document
+3. **Leave it vendor-side (the vendor computes XIRR, the document
    never states it).** Rejected: an unstated number cannot be receipt-
    verified, and cross-engine comparability of stated returns is the
    standard's core promise. The vendor keeps the *projection* freedom

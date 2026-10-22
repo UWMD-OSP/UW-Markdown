@@ -2,7 +2,7 @@
 rfc: 0093
 title: Close three metadata-shape diagnostic gaps
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-18
 affects:
   - format-spec
@@ -24,12 +24,12 @@ Assess every retained physical block, followed by model-only additions, using
 RFC0090/0091's operation boundaries. Place a separate bounded shape pass after
 existing wrapper/nested-shape findings and before actors and required booleans.
 
-**Accepted by the owner,2026-10-18, at reviewed head `0306d126`.** The docs-only
-acceptance merged in #384 at `0450ae57034d794a51dfa83fb41f9e0baaaa8019`.
-The synchronized Issue354 implementation applies this accepted contract in
-TypeScript/Python, Format/Protocol and registry/schema annotations. It adds no
-capability claim or release. The predicates and operation boundaries below are unchanged from
-the reviewed text.
+**Accepted by the owner, 2026-10-18,** in
+[#384](https://github.com/UWMD-OSP/UW-Markdown/pull/384). The synchronized
+Issue354 implementation ([#385](https://github.com/UWMD-OSP/UW-Markdown/pull/385))
+applies this accepted contract in TypeScript/Python, Format/Protocol and
+registry/schema annotations. It adds no capability claim. The predicates and
+operation boundaries below are unchanged from the reviewed text.
 
 > Owner, 2026-10-18: RFC 0093 (#384) is accepted as drafted at 0306d126: the three META-01 predicates exactly as listed, no generic fallback, META-02/03 unchanged.
 

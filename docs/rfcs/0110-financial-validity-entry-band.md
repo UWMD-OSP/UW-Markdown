@@ -2,7 +2,7 @@
 rfc: 0110
 title: Name the §4.17 financial_validity entry's band "band", as RFC 0109 does
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-21
 affects:
   - format-spec
@@ -11,7 +11,7 @@ affects:
 
 # RFC 0110: Name the §4.17 financial_validity entry's band "band"
 
-> **Accepted by the owner, 2026-10-21, as drafted** (Jared: "RFC 0110 (#466)
+> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0110 (#466)
 > accepted, including both proposals: add ltc to the metric list, and drop stored
 > entries marked info."). Origin: owner ruling of 2026-10-21 evening (1): rename
 > §4.17 `financial_validity[].severity` to `band`, matching RFC 0109. It changes a

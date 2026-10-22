@@ -14,8 +14,8 @@ affects:
 # RFC 0037: Cross-check resolution over variant maps, and a validation coverage channel
 
 > **Status note.** Accepted and implemented 2026-09-09 under owner-led
-> governance, in the same change as this document. Raised by underwriter.cc
-> as UPSTREAM-005 (2026-09-02) after a $15.2M senior-loan disagreement
+> governance, in the same change as this document. Raised by an adopter
+> (2026-09-02) after a $15.2M senior-loan disagreement
 > validated clean for weeks because every cross-check that would have caught
 > it had silently no-opped on a variant map.
 
@@ -46,7 +46,7 @@ threshold or severity.
   `sections` → `oneOf: [block, variantMap]`) admits a variant map on **any**
   section, so an envelope carrying a senior facility and a mezz sleeve as two
   `debt_structure` variants is conforming and loses `CC-02`, `CC-03`, `CC-05`
-  and `CC-09` with no diagnostic. On underwriter.cc's exports `debt_structure`
+  and `CC-09` with no diagnostic. On the adopter's exports `debt_structure`
   is a variant map on 100% of documents.
 - **There is no coverage channel.** `ValidationResult` distinguishes error /
   warning / info, but not "checked and clean" from "never evaluated". A

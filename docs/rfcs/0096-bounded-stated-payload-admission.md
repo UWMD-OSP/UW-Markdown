@@ -2,7 +2,7 @@
 rfc: 0096
 title: Allocate bounded stated-payload admission diagnostics
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-18
 affects:
   - format-spec
@@ -21,14 +21,7 @@ lease-up payloads (`LU-05`), recovery leaves (`REC-11`), capital-stack sizing
 claims (`CS-03`) and waterfall claims (`WF-16`). They validate stated structure,
 types and already specified bounds; they do not generate a model, recompute
 financial results, fetch unavailable sources or replace a financial verifier.
-**Accepted by the owner,2026-10-19, as reviewed at1926efe4.**
-
-> RFC 0096 (#394 at 1926efe4) is accepted as drafted, with the six dispositions in "Decisions proposed for owner review" exactly as written: LU-05, REC-11, CS-03 and WF-16 as validation-only errors, current canonical and current variants under assembled model authority, no broadening to physical history, target grammar on LU-05 only, recovery nulls unchanged, the existing lexical date shape for waterfalls, financial selector and result rules untouched. Mark ready, merge on green exact-main CI, record it in NOW.md with SHA and CI link, then implement in TS and Python together on the #354 lane with attributed conformance controls. No release, version, tag or publication.
-
-This docs-only acceptance records the approved contract. Synchronized
-Format/Protocol/schema, TypeScript/Python and attributed conformance implementation
-follows on Issue354. This PR changes no live runtime, schema, original source,
-frozen expectation or capability declaration.
+**Accepted by the owner, 2026-10-19.** See [Resolution](#resolution).
 
 This is governed preparation toward Issue354's complete `validate` capability.
 The independent Python checkpoint remains parse-only. Accepted RFC0095 is
@@ -491,37 +484,26 @@ reviewable. Financial procedures and their existing result states stay separate.
 | Waterfall date | Allocate only the existing exact lexical date shape; do not import as_of/T1B or silently tighten calendar admission |
 | Financial selector/result meaning | Leave accepted fn/selector, calendar comparison, result/refusal and arithmetic rules unchanged |
 
-The owner accepted all six dispositions above exactly as written at1926efe4.
+The owner accepted all six dispositions above exactly as written.
 Target allocation, nullable recovery qualification and lexical waterfall dates
 are settled within this bounded scope. Any further normative conflict discovered
 during implementation must be surfaced rather than resolved through an
 implementation convenience. No new numerical convention is introduced.
 
-## Acceptance record and remaining implementation gates
+## Resolution
 
-The owner accepted1926efe4 on2026-10-19. Independent review verified the closed
-predicates, existing owners, current-only authority, ordering and exact date/null
-boundaries; the four CLI reproductions and30 observations remain evidence with
-the stated limits. Reviewed-head CI39213718608 passed all17 ordinary jobs:
-https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39213718608 .
-Final administrative acceptance-head review and CI are recorded in PR394 before
-merge; exact-main CI and merge SHA are recorded in the existing maintainer status.
+Accepted by the owner, 2026-10-19, in
+[#394](https://github.com/UWMD-OSP/UW-Markdown/pull/394), with the six
+dispositions in [Accepted decisions from owner review](#accepted-decisions-from-owner-review):
 
-Implementation gates remain:
+> RFC 0096 (#394 at 1926efe4) is accepted as drafted, with the six dispositions in "Decisions proposed for owner review" exactly as written: LU-05, REC-11, CS-03 and WF-16 as validation-only errors, current canonical and current variants under assembled model authority, no broadening to physical history, target grammar on LU-05 only, recovery nulls unchanged, the existing lexical date shape for waterfalls, financial selector and result rules untouched. Mark ready, merge on green exact-main CI, […] then implement in TS and Python together on the #354 lane with attributed conformance controls. No release, version, tag or publication.
 
-1. Synchronized TypeScript/Python, Format/Protocol/schema, registry/remediation
-   changes, with a predicate-by-predicate attributed conformance inventory.
-2. Independent material-claim verification, including all30 observation
-   dispositions, current/model/composition scope, malformed parents, exact
-   ownership/order, transport and receipt policy-count controls.
-3. Green exact-final-head and exact-main required CI. A complete validation
-   claim separately needs all111 portable cases and every applicable nonportable
-   obligation on Windows/Linux/macOS. Discovery remains parse-only until that
-   entire capability gate passes. This docs-only acceptance activates no code.
+A complete validation claim separately needs all111 portable cases and every
+applicable nonportable obligation on Windows/Linux/macOS; discovery remains
+parse-only until that entire capability gate passes.
 
-## Synchronized implementation disposition
-
-The implementation synchronizes the Format/Protocol, registry/remediation and
+The implementation ([#397](https://github.com/UWMD-OSP/UW-Markdown/pull/397))
+synchronizes the Format/Protocol, registry/remediation and
 five affected schemas with independent TypeScript and private Python predicates.
 Current canonical/current variants and eligible component payloads use assembled
 model authority. Physical history is not added to this pass. Parent admission,
@@ -547,8 +529,7 @@ The sole existing expectation change is
 findings become one. With M=false and P=true, the accepted table requires the
 missing-method finding but no missing-cap-accumulation finding. The source hash
 remains `e0a45b9b84c2fe0724751634d979f1ed7e78695814acfa80c182399f6e82fe05`.
-All other existing expectations and portable cases remain unchanged. Independent
-review and exact-head/main CI evidence belong to the implementation PR; this
+All other existing expectations and portable cases remain unchanged. This
 record does not assert complete Python validation or Verifier certification.
 
 ## Prior art

@@ -2,7 +2,7 @@
 rfc: 0007
 title: Sensitivity tables as a first-class calc primitive
 status: implemented
-author: jared
+author: UWMD maintainers
 created: 2026-04-27
 affects:
   - protocol-spec

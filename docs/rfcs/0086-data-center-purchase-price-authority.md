@@ -2,7 +2,7 @@
 rfc: 0086
 title: Resolve data-center purchase-price authority and summary binding
 status: draft
-author: codex (Phase 2 financial verification proposal)
+author: UWMD maintainers
 created: 2026-10-15
 affects:
   - format-spec
@@ -97,7 +97,7 @@ scenario measure. Explicit binding preserves scenarios at a higher representatio
 cost. Disclosure alone preserves compatibility but offers no reconciliation
 guarantee. No alternative is represented as owner-approved or rejected.
 
-## Integrator recommendation for owner review — 2026-10-15
+## Recommended direction for owner review — 2026-10-15
 
 **Proposed direction, not an accepted decision:** prefer an explicit binding of
 the frontmatter summary to one valuation purchase-price assertion, with opt-in

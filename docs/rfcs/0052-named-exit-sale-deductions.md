@@ -3,7 +3,7 @@ rfc: 0052
 title: Name the deductions that turn a gross sale into net proceeds
 status: implemented
 accepted: 2026-09-15
-author: claude
+author: UWMD maintainers
 created: 2026-09-15
 affects:
   - protocol-spec
@@ -27,7 +27,7 @@ adds no new cash rows, no new economics, and no derived exit value.
 
 ## Motivation
 
-The StackUW protocol brief asks for named exit deductions. Today an engine
+An adopter's protocol brief asks for named exit deductions. Today an engine
 emitting `-412,500` at the disposition date can say only that it is a
 transaction cost. A reader cannot tell a 2.5% brokerage commission from a
 municipal transfer tax, cannot compare deduction load across deals, and cannot

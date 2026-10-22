@@ -2,7 +2,7 @@
 rfc: 0079
 title: 'Verify stated metrics at their stated precision; one cash-on-cash definition'
 status: implemented
-author: codex (owner direction, Jared 2026-10-10)
+author: UWMD maintainers
 created: 2026-10-10
 accepted: 2026-10-10
 affects:
@@ -33,14 +33,14 @@ The original RFC 0078 lender census exposed precision differences, a pair of
 incorrect Sonoran DSCR statements, and Agave's correct LTV under a denominator
 already used by CC-02 and capital-stack `ltv_through`. Review established that
 the first brief's purchase-price-only decision and refusal for coarse spelling
-would contradict those facts. Jared revised the directions below.
+would contradict those facts. The owner revised the directions below.
 
 Eight cash-on-cash definitions used sponsor contributions rather than aggregate
 equity. Their worked examples have an unambiguous single non-debt source, which
 can be explicitly recorded as aggregate equity without a financing convention.
 The runtime must still require that statement instead of inferring it.
 
-## Owner direction (Jared, 2026-10-10; revised after PR #301 review)
+## Owner direction (2026-10-10; revised after PR #301 review)
 
 These current directions supersede the original brief where revised. The reasons
 record the facts surfaced during review, not additional unresolved questions.
@@ -48,7 +48,7 @@ record the facts surfaced during review, not additional unresolved questions.
 | # | Revision / current direction | Reason |
 |---|---|---|
 | D1 — refined | Compare the unrounded dictionary value at `min(max(stated_decimals, minimum_stated_decimals), round_to)`, half away from zero (§VIII.5), with no double rounding. A coarse statement is checked at the minimum: exact `0.07` verifies, LTC `0.6` verifies raw `0.601852` at 1%, and DSCR `1.5` versus `1.7` fails. Remove the insufficient-precision/unverifiable branch. | Review showed that fewer written decimals do not make a correct stated number unknowable. The original minimum-as-admission rule produced unnecessary unverifiable findings and hid coarse wrong claims. |
-| D1 — minimum revision | `cap_rate`, `debt_yield` and `cash_on_cash` use 3 fractional decimals (0.1%). Other justified minimums stay as recorded in Decisions. | Jared revised the proposed 0.01% minimum to permit common coarser yield statements while retaining a comparison floor. |
+| D1 — minimum revision | `cap_rate`, `debt_yield` and `cash_on_cash` use 3 fractional decimals (0.1%). Other justified minimums stay as recorded in Decisions. | The owner revised the proposed 0.01% minimum to permit common coarser yield statements while retaining a comparison floor. |
 | D2 — revised | Every class's LTV is loan / `valuation.underwritten_value`, falling back to `valuation.purchase_price` when no underwritten value is stated. Restore Agave's `0.4938` and original notes. | CC-02 and capital-stack `ltv_through` already use this denominator; one definition repo-wide. Agave's 24M loan / 48.6M underwritten value proves its original figure was correct. |
 | D3 — retained | Every existing income-class cash-on-cash uses multifamily's stated Y1 levered flow / total equity, falling back to NOI minus debt service; absent total equity is null. | One deal-level return definition, independent of sponsor/LP allocations. |
 | D3 — example supplementation | State `sources_uses.equity_metrics.equity_total` in the eight examples whose sole non-debt source is one sponsor-equity line, equal to that line, and document the identity in each `_notes`. Agave stays null. Tell non-multifamily producers that they now need this field for cash-on-cash. | Each of the eight totals is an identity of explicit stated fields, not an inferred allocation. Agave's mezz/preferred/common stack makes the aggregate ambiguous. |
@@ -59,7 +59,7 @@ The receipt defect below is an independent **Fixed** item, not part of D1–D3.
 
 | Question | Decision | Precedent / justification |
 |---|---|---|
-| Cap rate, debt yield and cash-on-cash minimum | 3 stored fractional decimals: 0.1%, for every class-scoped entry with these ids. | Revised D1, Jared 2026-10-10. This is a comparison floor, not an admission requirement; more precisely stated values still compare more precisely. |
+| Cap rate, debt yield and cash-on-cash minimum | 3 stored fractional decimals: 0.1%, for every class-scoped entry with these ids. | Revised D1, owner 2026-10-10. This is a comparison floor, not an admission requirement; more precisely stated values still compare more precisely. |
 | Ratio (`x`) minimum | 2 decimals: 0.01x, including DSCR and the existing density ratio. | [Fannie Mae's conventional term sheet](https://multifamily.fanniemae.com/financing-options/conventional-properties-term-sheet) states DSCR to hundredths. Reuse the existing ratio unit family for density; its definition and 4-dp reporting ceiling remain unchanged. |
 | Other percentage minimum | 2 stored fractional decimals: 1%. Applies to LTV/LTC, occupancy/pre-lease rates, expense/recovery/labor/care/GOP ratios, component NOI shares and land ratios. | Fannie's term sheet uses whole-percent leverage and occupancy. The floor compares coarse claims at whole-percentage precision, including Riverside LTC `0.6`. |
 | Dollar-per-area minimum | 2 decimals for ids containing `sqft`, `psf` or `nrsf`, including mixed-use allocated area metrics. | Small area intensives need cents; [JLL Income Property Trust's per-SF operating disclosures](https://www.sec.gov/Archives/edgar/data/1314152/000162828026025755/jlliptapril2026posam.htm) illustrate cent precision. Retain §VIII.5's existing currency quantum as the ceiling. |
@@ -215,9 +215,6 @@ the dictionary, source readers, section resolver, expression evaluator and this
 comparison boundary. Pack expressions and Excel named inputs change together,
 including mixed-use property inputs. Full reporting quantization is unchanged.
 The receipt verifier separately removes the obsolete relative comparison.
-Release preparation paired it with Protocol 3.0.0 and core/CLI 3.0.0 under
-Format 2.1; the `v3.0.0` release published it (see
-[Publication and verification](#publication-and-verification-2026-10-11)).
 
 ## Alternatives considered
 
@@ -233,24 +230,17 @@ Format 2.1; the `v3.0.0` release published it (see
 None for this scope. Any remaining lender failures are recorded findings.
 Ambiguous equity assembly and future metrics remain separate contracts.
 
+## Resolution
+
+**Accepted 2026-10-10; implemented in PR #301; released in 3.0.0** with
+Protocol 3.0.0 (Stable), Format 2.1 and core/CLI 3.0.0 (release preparation
+PR #305). The decisions are the [owner direction](#owner-direction-2026-10-10-revised-after-pr-301-review)
+(D1–D3, as revised) and the [Decisions](#decisions) table; the receipt
+equality change is the independent [Fixed](#fixed) item.
+
 ## Prior art
 
 RFC 0078's independent verification boundary; RFC 0023's quantization contract;
 CC-02 and capital-stack LTV; Format §4.19 and multifamily's total-equity correction.
 The monetary/ratio minimums use the reporting examples linked in Decisions;
 these are UWMD policy choices, not standards imposed by those publishers.
-
-## Publication and verification (2026-10-11)
-
-Annotated `v3.0.0` targets the release-prepared merge
-`44ab7347a8a3054fc377e19e85f89ad6f1539dea` (PR #305).
-[Release run 38163964522](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38163964522)
-succeeded and published core/CLI 3.0.0, signing 0.2.26, batch 0.8.21, Excel
-0.9.14, report 0.8.26, lake 0.2.10 and both module packages 0.2.0, pairing
-Stable Protocol 3.0.0 with Format 2.1. Independent registry, provenance,
-published-file, delivered-CLI (332/332 portable cases, no skips) and consumer
-checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md).
-This RFC's status already read `implemented` from PR #301, before release
-preparation; the verified publication confirms it. The immutable release tag
-and every normative section above remain unchanged.

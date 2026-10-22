@@ -25,6 +25,17 @@ protocol, and each package each carry an independent semver).
   conformance suite reads each compiled UWX back (eight new `[uwx-read]` checks;
   1,238 checks in all).
 
+- Scrub RFC records for public launch: every RFC's `author` is now `UWMD maintainers`;
+  the owner's personal name, private adopter identifiers, branch names and
+  private-repository references leave RFC prose; owner and phase logs collapse
+  into one `## Resolution` section; Golden Deal citations are restated
+  generically; RFC 0068 is marked superseded by RFC 0080. No decision,
+  normative text, code or version changes.
+
+- Fix #410: `render --format chat` shows structured key risks as
+  `<severity>: <description>` (falling back to the risk's `id`) instead of
+  `[object Object]`; plain-text risks are unchanged.
+
 - Scrub spec wording for public launch (cleanup brief phase D): example actors
   in Format §2.5 and the `uwmd-block` and `edit-operation` schemas use
   `analyst@example.com`, and spec and schema references cite an RFC rather than

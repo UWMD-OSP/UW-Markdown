@@ -42,7 +42,7 @@ different proposal.
 This section exists because the repo's own rule was broken and the record should
 say so plainly.
 
-`CLAUDE.md` states that anything touching `spec/` is normative and requires an
+`AGENTS.md` states that anything touching `spec/` is normative and requires an
 RFC. `spec/UW_LITE_SPEC_v1.md` was published as a normative specification with
 **Status: implementation draft under accepted RFC 0015**. Three things were wrong:
 

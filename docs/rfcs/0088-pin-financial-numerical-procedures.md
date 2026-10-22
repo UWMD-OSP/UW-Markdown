@@ -2,7 +2,7 @@
 rfc: 0088
 title: Resolve financial power and transcendental reproducibility
 status: accepted
-author: UW Markdown Working Group
+author: UWMD maintainers
 created: 2026-10-15
 accepted: 2026-10-18
 affects:
@@ -19,9 +19,8 @@ affects:
 > RFC 0088 accepted: architecture A, one exact pinned fdlibm procedure for pow, exp and log across every exponent class, with authenticate-first receipt precedence, as drafted at 86a20fe5.
 
 The owner also accepts the measured spreadsheet-parity findings as export-contract
-limits. This PR activates the accepted contract in the standard, reference
-implementation and conformance. It assigns no package/specification version and
-authorizes no release, tag or publication. Issue #356 is resolved by the exact
+limits. The accepted contract is active in the standard, reference
+implementation and conformance. Issue #356 is resolved by the exact
 procedure, rather than a host-libm name, runtime selector or separate integer
 power algorithm. Architecture B is not selected. Stability rearrangements using
 log1p/expm1 remain outside this acceptance.
@@ -191,10 +190,8 @@ refusal and a spreadsheet error remain distinct outcomes.
 
 ## Evidence and conformance
 
-The accepted draft checkpoint is86a20fe5f95f56bad5766f559817b6f7ef102b2c:
-[ordinary CI](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39108903528)
-and [numerical research](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/39108903513).
-Its independent native/Python/TypeScript raw procedures, word/constants/resource
+The accepted draft checkpoint is commit
+86a20fe5f95f56bad5766f559817b6f7ef102b2c. Its independent native/Python/TypeScript raw procedures, word/constants/resource
 proofs, mathematical controls, composed financial/refusal/quantizer trajectories,
 current1106-case impact, real-signature precedence matrix, browser and named-engine
 spreadsheet observations remain scoped evidence, not a universal accuracy claim.
@@ -206,8 +203,8 @@ Current activation conformance adds direct production primitive/refusal/IRR
 controls and authenticate-first state coverage. Direct unmodified production
 financial results are compared with the separately implemented Python reference;
 old host-substitution/AST-relocation probes are not activation evidence.
-No unrelated frozen expectation is changed to obtain a pass. Final integration
-uses exact-head and exact-main CI, recorded in PR #357.
+No unrelated frozen expectation is changed to obtain a pass. The implementation
+is [#357](https://github.com/UWMD-OSP/UW-Markdown/pull/357).
 
 Research inputs and reproducible commands remain in
 [the numerical review](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-numerical-determinism-356.md) and
