@@ -17,6 +17,11 @@ Parkview example is `parkview-reviewed.uwx.md` and its narrative key is
 
 ## `uwmd` CLI — `packages/uwmd-cli`
 
+Summary, chat and CSV fill absent quick-metric summaries through the existing
+class pack and canonical statement homes. Authored values (including explicit
+nulls) win, and rendering never writes the record. Missing values carry no
+currency/unit suffix; CSV uses two decimal percent and three decimal DSCR display.
+
 Reading commands use core's Node-only `loadUWSourceFile`: UWX keeps its raw
 bytes, Lite compiles through its bridge, and JSON/XML/CSV decode through the
 codec registry. CSV reconstruction preserves own JSON content members, including
