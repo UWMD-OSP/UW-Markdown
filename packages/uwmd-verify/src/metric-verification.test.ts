@@ -142,6 +142,18 @@ describe('verifyStatedMetric — one statement', () => {
 });
 
 describe('sizeDenominators — RFC 0100', () => {
+  it('checks only the selected component variant (RFC 0117)', () => {
+    const definition = metric('retail_price_psf', 'mixed_use');
+    const p = simple();
+    p.frontmatter.asset_class = 'mixed_use';
+    p.sections.components = {
+      base: { ...block('components', { retail: { nra_sqft: 1, allocation_pct: 1 } }), annotation: { section: 'components', variant: 'base' } },
+      downside: { ...block('components', { retail: { nra_sqft: -1, allocation_pct: 1 } }), annotation: { section: 'components', variant: 'downside' } },
+    };
+    expect(verifyStatedMetric(definition, p, 123, { components: 'base' }, 2).state).toBe('failed');
+    expect(verifyStatedMetric(definition, p, 123, { components: 'downside' }, 2).reason).toBe('negative_size_denominator');
+  });
+
   it('guards all eight mixed-use size denominators (RFC 0117)', () => {
     for (const id of ['multifamily_price_per_unit', 'retail_price_psf', 'office_price_psf',
       'industrial_price_psf', 'self_storage_price_psf', 'student_housing_price_per_bed',
