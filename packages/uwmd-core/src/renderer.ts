@@ -47,12 +47,14 @@ export interface RenderResult {
 
 export class UnsupportedRenderFormatError extends Error {
   readonly code = 'UNSUPPORTED_RENDER_FORMAT';
-  readonly format: 'pdf' | 'docx';
+  readonly format: string;
 
-  constructor(format: 'pdf' | 'docx') {
+  constructor(format: string) {
     const guidance = format === 'pdf'
       ? 'Use @uwmd/report to generate PDF output.'
-      : 'DOCX output is not implemented; use summary, HTML, or PDF output instead.';
+      : format === 'docx'
+        ? 'DOCX output is not implemented; use summary, HTML, or PDF output instead.'
+        : 'Supported formats: json, csv, chat, summary.';
     super(`The core renderer does not support '${format}' output. ${guidance}`);
     this.name = 'UnsupportedRenderFormatError';
     this.format = format;
@@ -119,7 +121,8 @@ export function render(parsed: ParsedUWFile, opts: RenderOptions): RenderResult 
     case 'docx':
       throw new UnsupportedRenderFormatError(opts.format);
     default:
-      throw new Error(`Unknown render format: ${opts.format}`);
+      // A typed refusal, so the CLI prints it without a stack (#494).
+      throw new UnsupportedRenderFormatError(String(opts.format));
   }
 }
 

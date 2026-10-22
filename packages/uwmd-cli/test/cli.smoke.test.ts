@@ -68,6 +68,18 @@ describe('uwmd CLI', () => {
     expect(r.stdout).toMatch(/uwmd/i);
   });
 
+  // Issue #494: help advertised removed flags and hid init --zip; an unknown
+  // render format printed a stack trace.
+  it('documents only flags it accepts, and refuses an unknown render format without a stack', async () => {
+    const help = (await runCli(['--help'])).stdout;
+    expect(help).not.toMatch(/deprecated/i);
+    expect(help).toMatch(/--zip <z>\s+ZIP or postal code \(init\)/);
+    const r = await runCli(['render', FIXTURE, '--format', 'bogus']);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain('uwmd: The core renderer does not support \'bogus\' output.');
+    expect(r.stderr).not.toMatch(/^\s+at /m);
+  });
+
   it('parses the bundled Parkview fixture to JSON on stdout', async () => {
     const r = await runCli(['parse', FIXTURE]);
     expect(r.status).toBe(0);

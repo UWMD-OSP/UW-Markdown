@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { evaluateCalc, parseUWFile, validateUWFile } from '@uwmd/verify';
 import type { UWBlock } from '@uwmd/verify';
-import { render, UnsupportedRenderFormatError } from './renderer.js';
+import { render, UnsupportedRenderFormatError, type RenderOptions } from './renderer.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = resolve(
@@ -276,6 +276,15 @@ asset_class: multifamily
     expect(result.truncated).toBe(true);
     expect(result.content).toContain('[TRUNCATED');
     expect(result.estimatedTokens).toBeGreaterThan(40);
+  });
+
+  // Issue #494: an unknown format was a bare Error, printed as a stack trace.
+  it('refuses an unknown format with the typed error', () => {
+    const format = 'bogus' as unknown as RenderOptions['format'];
+    expect(() => render(loadFixture(), { format })).toThrowError(
+      expect.objectContaining({ code: 'UNSUPPORTED_RENDER_FORMAT', format: 'bogus' }),
+    );
+    expect(() => render(loadFixture(), { format })).toThrowError(/Supported formats: json, csv, chat, summary/);
   });
 
   it('fails explicitly for formats that require dedicated pipelines', () => {
