@@ -29,6 +29,9 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #489: `render --format csv` quotes and escapes fields per RFC 4180, so a
+  comma or quote in a value no longer shifts the columns. The text columns that
+  were always quoted stay quoted, with embedded quotes doubled.
 - Implement accepted RFC 0114: an optional `property.area_measurement` records
   the standard behind a record's areas (`standard`: `boma`, `ipms`, `rebny`,
   `rics` or `other`; free-text `edition`; optional `note`; no other member). A
