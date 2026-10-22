@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__22-invalid-declared-recommendation__render-summary",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "22-invalid-declared-recommendation.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/22-invalid-declared-recommendation.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

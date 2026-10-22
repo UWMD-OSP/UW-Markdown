@@ -31,6 +31,12 @@ BUILTINS = ("multifamily", "office", "retail", "industrial", "self_storage", "ho
             "mixed_use", "senior_housing", "student_housing", "land", "data_center", "manufactured_housing")
 SCENARIOS = ("stabilized_acquisition", "ground_up_development", "value_add", "lease_up",
              "house_flip", "commercial_flip", "property_conversion", "land_banking")
+FRONTMATTER_VOCABULARIES = {
+    "deal_stage": (STAGES, "INVALID-DEAL-STAGE-001"),
+    "tier": (("screener", "analyst"), "INVALID-TIER-001"),
+    "status": (("draft", "in_progress", "complete", "flagged", "archived"), "INVALID-STATUS-001"),
+    "recommendation": (("pending", "approve", "approve_with_conditions", "decline"), "INVALID-RECOMMENDATION-001"),
+}
 NAMESPACE = re.compile(r"[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*){2,}\Z")
 # CC-16 is the unresolvable-section diagnostic, not a check; CC-17 is RFC 0086.
 CC_IDS = tuple("CC-" + str(i).zfill(2) for i in range(1, 16)) + ("CC-17",)
@@ -201,6 +207,10 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     if "locale" in fm and fm["locale"] not in ("en-US", "en-GB", "de-DE", "fr-FR", "ja-JP", "zh-CN"):
         ledger.issue("LOC-01", "error", "frontmatter", "locale", "Locale is outside the registered vocabulary", value=fm["locale"])
     asset = fm.get("asset_class")
+    for name, (values, code) in FRONTMATTER_VOCABULARIES.items():
+        value = fm.get(name)
+        if value is not None and (not isinstance(value, str) or value not in values):
+            ledger.issue(code, "error", "frontmatter", name, "Declared value is outside its closed Format vocabulary", value=value)
     if asset is not None and asset not in BUILTINS:
         if not isinstance(asset, str) or NAMESPACE.fullmatch(asset) is None:
             ledger.issue("INVALID-ASSET-CLASS-001", "error", "frontmatter", "asset_class", "Invalid asset-class identifier", value=asset)

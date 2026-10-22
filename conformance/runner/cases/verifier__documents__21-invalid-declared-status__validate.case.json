@@ -1,0 +1,20 @@
+{
+  "id": "verifier__documents__21-invalid-declared-status__validate",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "21-invalid-declared-status.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/21-invalid-declared-status.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 1
+  }
+}
