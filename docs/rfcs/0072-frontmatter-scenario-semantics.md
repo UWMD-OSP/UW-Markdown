@@ -3,7 +3,7 @@ rfc: 0072
 title: Give frontmatter `scenario` a defined meaning
 status: implemented
 implemented: 2026-10-10
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-04
 affects:
   - format-spec
@@ -24,13 +24,7 @@ program and acquisition circumstance are separate axes. Single-site BTR is
 `asset_class: multifamily` and `asset_subtype: build_to_rent`, paired with its
 actual plan (for example `stabilized_acquisition`).
 
-**Implemented; released and independently verified.** This RFC and its
-implementation landed in one pull request. The owner accepted it by merging
-that pull request, PR #285, on 2026-10-09. Format stays 2.0. Release
-preparation paired it with Protocol 2.24.0 and core/CLI 2.20.0. The `v2.20.0`
-release published it in core/CLI 2.20.0 with Stable Protocol 2.24.0, and
-independent publication verification passed (see
-[Publication and verification](#publication-and-verification-2026-10-10)). All new
+**Implemented; released in 2.20.0.** See [Resolution](#resolution). All new
 identity diagnostics are warnings in both format generations: existing valid
 documents gain no errors. No calculation, default, pack or underwriting
 behavior depends on either label.
@@ -50,7 +44,7 @@ These owner decisions bind the RFC. The merge of this RFC and its implementation
 
 ## Motivation and existing evidence
 
-Issue #255 (StackUW `UPSTREAM-022`) needs a defined single-site BTR identity.
+Issue #255, an adopter report, needs a defined single-site BTR identity.
 The original twelve-value scenario list mixed plans with product/lease form
 (`build_to_rent`, `nnn_single_tenant`), regulatory/capital program
 (`lihtc_section8`) and acquisition circumstance (`distressed_reo`). It defined
@@ -73,7 +67,7 @@ carrier or changing rendering.
 | R2 — Extensions | Accept reverse-DNS identifiers using Format §2.2a's three-or-more lowercase segment grammar. No module declaration, label field or bare `other` is added. | §2.2a fixes namespace ownership. Unlike an asset class, a descriptive plan needs no module-provided calculations or resolution. RFC 0052's `other` requires a label-bearing object; adding that structure to this scalar is unnecessary. |
 | R3 — Unlisted and retired values | `DQ-07` warning for any non-null value outside the standard vocabulary and extension grammar, including malformed types and all four retired values, in both 1.x and 2.x. Absence/null stays valid. Preserve bytes; no escalation or automatic migration. `entitled_land_acquisition` remains unlisted and warns; an author may deliberately restate it as a namespaced plan. | Existing `DQ-NN` family covers data-quality guidance; RFC 0031 warns on legacy vocabulary and preserves raw bytes. Its later major-boundary escalation is deliberately not adopted: this RFC must preserve today's valid documents. |
 | R4 — Subtype carrier | Keep both `asset_subtype` carriers open and optional. Define only `build_to_rent`, scoped to frontmatter `asset_class: multifamily`. Frontmatter governs identity; property is a fallback when frontmatter is absent/null. If either carrier states BTR and both non-null carriers differ, warn `DQ-08`; BTR outside multifamily warns `DQ-09`. No checks or migrations for other free subtype values. | D4; existing Format §2.2/§4.1 carriers suffice. RFC 0052's opt-in additions preserve absent-field behavior. A closed subtype taxonomy would exceed the evidence and disturb the 28 existing free-value corpus files. |
-| R5 — BTR definition | A community of detached or attached homes purpose-built to be leased by the home, on one site and under one loan. Scattered-site single-family portfolios are outside this defined identity. The label asserts identity only; no loan-count or financial cross-check is added. | Issue #255 (StackUW UPSTREAM-022) supplies the product boundary; D4 retains multifamily and D5 forbids underwriting behavior driven by the label. |
+| R5 — BTR definition | A community of detached or attached homes purpose-built to be leased by the home, on one site and under one loan. Scattered-site single-family portfolios are outside this defined identity. The label asserts identity only; no loan-count or financial cross-check is added. | Issue #255 (an adopter report) supplies the product boundary; D4 retains multifamily and D5 forbids underwriting behavior driven by the label. |
 | R6 — Retired values' homes | Retire `build_to_rent`, `nnn_single_tenant`, `lihtc_section8`, `distressed_reo` from the standard plan list. BTR uses the defined subtype. The other facts may remain in existing lease, compliance and acquisition narratives; do not invent new canonical carriers or lossless automatic mappings. | D1 separates lease/product, program and acquisition circumstance from execution. RFC 0031 documents retired vocabulary and refuses to guess a migration; a new carrier needs adopter evidence. |
 | R7 — Default wording | Add narrow disclaimers to Appendix B and `scenario_default`: neither refers to frontmatter `scenario` or selects defaults from it. Leave the vestigial file reference and wider repair for a separate RFC/PR. | D5–D6; Protocol §V.7 already keys published defaults by asset class, not frontmatter business plan. |
 | R8 — Version | Format stays 2.0. Adding normative Protocol remediation entries and `BUILTIN_REMEDIATIONS` codes requires the Protocol label to advance to the next minor at release preparation, following released 2.23.0. This PR does not bump `PROTOCOL_VERSION` or the current version matrix. | The CHANGELOG “Protocol 2.13.0 → 2.15.0” correction records RFC 0055's unlabelled code-table additions as drift. RFCs 0075–0076 assigned their Protocol label at release preparation; independent surface versioning leaves Format unchanged. |
@@ -201,22 +195,18 @@ solely to close otherwise open metadata.
 - Full repair of Appendix B's vestigial `scenario_defaults.json` and the broader
   `scenario_default` terminology remains separate under D6.
 
+## Resolution
+
+**Accepted 2026-10-09; implemented 2026-10-10; released in core/CLI 2.20.0
+with Protocol 2.24.0 and Format 2.0.** This RFC and its implementation landed
+in one pull request; the owner accepted it by merging PR #285 on 2026-10-09.
+The owner decisions D1-D6 and the [Decisions](#decisions) table R1-R8 are the
+accepted contract. Under R8, the Protocol label advanced to 2.24.0 at release
+preparation; Format stays 2.0.
+
 ## Prior art
 
 Format §2.2a / RFC 0003 fixes namespace ownership; RFC 0052 supplies the
 label-bearing `other` alternative; RFC 0031 demonstrates explicit vocabulary
 retirement and preservation of raw legacy bytes; RFC 0060 keeps independent
 semantic axes separate. None requires this descriptive identity to drive math.
-
-## Publication and verification (2026-10-10)
-
-Annotated `v2.20.0` targets the release-prepared merge
-`020e8b088307ac53a0023bfc0b881c31fb40db91` (PR #292).
-[Release run 38064763014](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014)
-succeeded and published core/CLI 2.20.0, signing 0.2.24, batch 0.8.19 and
-both modules 0.1.12. Independent registry, provenance, published-file,
-delivered-CLI (279/279) and module-consumer checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.20.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section above
-remain unchanged.

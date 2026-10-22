@@ -3,7 +3,7 @@ rfc: 0054
 title: Where per-lease economics live — a decision, not a container
 status: decided
 accepted: 2026-09-15
-author: claude
+author: UWMD maintainers
 created: 2026-09-15
 depends_on:
   - 0008

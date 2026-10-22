@@ -83,7 +83,7 @@ point:
 - The status doc's absent **L9/L10 layers** (portfolio, relationship)
   are blocked on exactly this data surface existing.
 - Downstream, every data-lake and portfolio consumer (the batch
-  indexer, underwriter.cc's portfolio views) needs cross-deal identity
+  indexer, an adopter's portfolio views) needs cross-deal identity
   and edges as *interchange*, not as a private table.
 
 ## Proposed change

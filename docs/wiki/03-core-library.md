@@ -28,14 +28,12 @@ else in the repo depends on one or both:
   has no peers. Versions independently from 0.1.0.
 - **`packages/uwmd-core` — `@uwmd/core`**, the starter toolkit on top: editor,
   runner, renderer, report, defaults and cascade, refinement, display
-  formatting, the Excel emitter, the agents and the CLI. It depends on
-  `@uwmd/verify` at an exact version and **re-exports its whole surface**, so
-  consumers use the current standard surface through either package.
-  `@anthropic-ai/sdk` is an **optional peer dependency**: only the reference
-  Anthropic provider needs it, it is loaded dynamically on the first request,
-  and it is excluded from the browser entry. A host that brings its own
-  `AgentProvider` — or never runs a Bancroft agent — does not install it, and
-  importing `@uwmd/core` works without it.
+  formatting, the Excel emitter, the Bancroft layer registry with its context
+  builders, and the CLI. It depends on `@uwmd/verify` at an exact version and
+  **re-exports its whole surface**, so consumers use the current standard
+  surface through either package. Core hosts no agents and takes no vendor
+  SDK: a host that runs its own agents writes their records through
+  `writeAgentBlock`/`writeErrorEntry` or the edit API.
 
 - **Packages:** ESM (`"type": "module"`), TypeScript ES2022 / NodeNext.
 - **Public API:** [`uwmd-verify/src/index.ts`](../../packages/uwmd-verify/src/index.ts)
@@ -49,9 +47,10 @@ else in the repo depends on one or both:
 - **Entry points (`package.json` `exports`):**
   - `@uwmd/verify` `.` and `./browser` → the same surface (verify has no
     Node-only export; `browser.test.ts` holds them equal)
-  - `@uwmd/core` `.` → `dist/index.js` (full library, including the starter agent host)
-  - `@uwmd/core/browser` → `dist/browser.js` (everything **except** the agent
-    host and `@anthropic-ai/sdk` — for web bundling)
+  - `@uwmd/core` `.` → `dist/index.js` (full library)
+  - `@uwmd/core/browser` → `dist/browser.js` (everything **except**
+    `applyEditAsync`, `buildContext`, `CASCADE_ORDER` and
+    `REFERENCE_IMPLEMENTATION_MANIFEST` — for web bundling)
   - `@uwmd/core/cli` → `dist/cli.js` (the CLI program; `uwmd-cli` just imports this)
 - **Build:** `tsc` per package, verify before core (the root `workspaces`
   order). **Test:** `vitest run`. Coverage: `vitest run --coverage`, each
@@ -102,10 +101,10 @@ Module | Package | Responsibility | Key exports
 `init.ts` | core | Scaffold a blank `.uw.md` | `generateBlankUWFile`
 `cli.ts` | core | The `uwmd` command program | (default program; routes subcommands)
 `protocol.ts` | verify | Executable protocol contract + BUILTIN_* tables | see [§ protocol](#protocol-the-contract-surface)
-`starter-protocol.ts` | core | Starter-product protocol tables (RFC 0083) | `DEFAULT_NUMBER_FORMAT`, `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`, `AgentHostCapability`, `CapabilityVerifier`, …
+`starter-protocol.ts` | core | Starter-product protocol tables (RFC 0083) | `DEFAULT_NUMBER_FORMAT`, `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`, `CapabilityVerifier`, …
 `types.ts` | verify | Format type definitions | `UWBlock`, `UWMeta`, `UWFrontmatter`, `ParsedUWFile`, `DEFAULT_THRESHOLDS`, …
 `format.ts` | core | Field-level display formatters | `formatCurrency`, `formatPercent`, `formatRatio`, `formatCount`, `formatDate`, `formatValue`, …
-`context.ts` | core | Optional Bancroft reference-layer defs + agent context builder | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
+`context.ts` | core | Bancroft layer registry + agent context and prompt builders (no execution) | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
 `context-profiles.ts` | core | Normative context payloads (Protocol §XI) | `buildContext` (+ `ContextProfile`)
 `cascade.ts` | core | Fallback-cascade value resolver | `resolveValue`, `readInFile` (browser-exported)
 `section-resolution.ts` | verify | One block per section-rooted read (§VIII.2, RFC 0066) | `resolveSectionBlock` (browser-exported)
@@ -130,7 +129,7 @@ Module | Package | Responsibility | Key exports
 `metric-dictionary.ts` | verify | `spec/metrics/builtin.json` as package data (generated) | `BUILTIN_METRIC_DICTIONARY` (internal)
 `builtin-packs/` | verify | The twelve builtin pack manifests and their registry | see [05 — Calc packs](05-calc-packs.md)
 `packs/` | core | Re-exports the builtin packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
-`agents/` | core | Optional Bancroft reference agent host (starter product; Protocol 2.x Tier-4) | see [06 — Bancroft agents](06-bancroft-agents.md)
+`agents/L0b-prompt.md` | core | The L0b layer's prompt text (no code; the toolkit hosts no agents) | see [06 — Bancroft layers](06-bancroft-agents.md)
 
 ## parser.ts
 
@@ -284,10 +283,11 @@ CLI: `uwmd export <file.uw.md>` writes a digested `.uw.json` (`--no-superseded` 
 > adapter.
 ## runner.ts
 
-The low-level write path used by the agent host and CLI. `buildMeta(...)`
-constructs a `_meta`; `writeAgentBlock(...)` writes a section block (superseding
-the prior version, bumping `version`, updating pipeline state, appending a
-`pipeline_log` entry); `writeErrorEntry(...)` records a failed agent run.
+The generic write path for any producer, including a host that runs its own
+agents (the toolkit runs none). `buildMeta(...)` constructs a `_meta`;
+`writeAgentBlock(...)` writes a section block (superseding the prior version,
+bumping `version`, updating pipeline state, appending a `pipeline_log` entry);
+`writeErrorEntry(...)` records a failed agent run.
 
 ## cascade.ts + defaults.ts
 
@@ -573,8 +573,8 @@ tables every conforming tool references:
 `starter-protocol.ts` holds the tables that serve the starter products, not
 verification (RFC 0078 D10/D11, RFC 0083): `DEFAULT_NUMBER_FORMAT`,
 `DEFAULT_DATE_FORMAT`, `NumberFormatRules`, `DateFormatRules`, the badge types,
-`ViewModelRegistry` and `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`,
-`AgentHostCapability` and the capability-token types (`CapabilityVerifier`, …).
+`ViewModelRegistry` and `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER` and the
+capability-token types (`CapabilityVerifier`, …).
 `index.ts` and `browser.ts` export them under the same names. `protocol.ts`
 (in `@uwmd/verify`) never imports it. `REFERENCE_IMPLEMENTATION_MANIFEST`,
 which names `org.uwmd.core` and claims the starter capabilities, is core's
@@ -585,8 +585,8 @@ and profile vocabularies stay in `protocol.ts`.
 > `ModuleManifest` interface explicitly mirrors `module-manifest.schema.json`.
 >
 > For modules that lockstep is now **checked**, not merely requested. Core
-> cannot carry a JSON Schema validator — the layering invariant admits only the
-> Anthropic SDK — so `modules.ts` re-implements the schema by hand, and a
+> cannot carry a JSON Schema validator — the layering invariant admits no
+> such dependency — so `modules.ts` re-implements the schema by hand, and a
 > hand-written mirror drifts. It had: `sections`, `view_models`, and
 > `agent_layers` were declared in the schema and validated nowhere, unknown keys
 > were accepted at every level, and the schema's `deal_stages` enum had gone
@@ -608,7 +608,7 @@ profiles, the read side of `bindings.ts`, and `protocol.ts`. Everything else
 (editor, runner, cascade, defaults, refinement, `gaps.ts`, display formatting
 and `calc-display.ts`, `starter-protocol.ts`, `bindings-edit.ts`,
 `receipt-engine.ts`, `reference-implementation.ts`, the Excel emitter,
-renderer, report, agents, CLI) is the starter toolkit in `@uwmd/core`.
+renderer, report, layer context, CLI) is the starter toolkit in `@uwmd/core`.
 
 Verify's `src/standard-closure.test.ts` keeps the package closed. It lists the
 standard set as file paths (every source file must be on the list or be one of
@@ -654,7 +654,7 @@ Parser bug | `parser.ts` + `parser.test.ts`
 New validator check | `validator.ts` (register copy in `BUILTIN_REMEDIATIONS`)
 New calc builtin | `calc/builtins.ts` + `calc.test.ts`, then `packs/excel-emit.ts`
 New derived metric | the relevant file in `builtin-packs/` (one place, all tools pick it up), after its `spec/metrics/` entry
-New agent layer | `context.ts` (`BANCROFT_LAYERS`) + `agents/`
+New agent layer | `context.ts` (`BANCROFT_LAYERS`)
 New edit semantics | `editor.ts` + `protocol.ts` (`EditOperation`/policy)
 New display formatter | `format.ts` + the relevant `BUILTIN_VIEW_MODELS` entry
 

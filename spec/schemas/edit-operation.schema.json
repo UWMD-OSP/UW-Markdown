@@ -128,7 +128,7 @@
       "kind": "section_replace",
       "section_id": "property",
       "content": { "total_units": 100, "year_built": 2005, "building_class": "B+" },
-      "meta": { "provenance": { "actor": "jared@example.com" }, "quality": { "confidence": "high" } }
+      "meta": { "provenance": { "actor": "analyst@example.com" }, "quality": { "confidence": "high" } }
     },
     {
       "kind": "section_supersede",

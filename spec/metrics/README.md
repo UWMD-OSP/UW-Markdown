@@ -160,7 +160,7 @@ checks example statements from dictionary expressions without importing packs,
 defaults or cascade. Known example disagreements are recorded as findings;
 they do not change the dictionary or the examples.
 
-## RFC 0081 Phase 2 hospitality addresses
+## RFC 0081 hospitality addresses
 
 The dictionary describes the final single-home hotel fields: `rent_roll.adr`, `rent_roll.occupancy`, `rent_roll.available_room_nights`, and `property.keys`. Since RFC 0103, `total_room_revenue` and `room_revenue_per_key` read the stated booked rooms revenue (`noi_model.income.rooms_revenue`) rather than ADR × occupancy × nights. The hospitality pack reads the same addresses, and the dictionary/pack parity test compares them directly.
 

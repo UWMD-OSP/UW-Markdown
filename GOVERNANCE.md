@@ -29,9 +29,15 @@ Every external pull request requires owner review before merge. The owner may
 request changes, accept the contribution, or decline it. Contributors agree that
 merged work is licensed under the repository's MIT License.
 
-The collaborative rules below activate automatically after the first external
-pull request is merged. The owner may activate them earlier by updating this
-file.
+The project launches in owner-led mode. The collaborative rules below begin when
+the first RFC or pull request from an outside contributor arrives. The owner
+then announces the change here, under "Mode", with the date and the
+contribution that began it. The owner may begin collaborative mode earlier by
+the same announcement.
+
+## Mode
+
+Owner-led. Collaborative mode has not begun.
 
 ## Collaborative mode
 

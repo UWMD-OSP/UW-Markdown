@@ -5,7 +5,9 @@
 // implementation of the standard (RFC 0083). It re-exports verify's whole
 // surface, so every 4.0.x name stays importable from here, and adds the starter
 // products below: editor, runner, renderer, report, defaults and cascade,
-// refinement, display formatting, the Excel emitter and the agents.
+// refinement, display formatting, the Excel emitter, and the Bancroft layer
+// registry with its context and prompt builders. It hosts no agent execution:
+// any host writes its records through the generic writers and edit API.
 //
 // Three names override verify's under the same name: `evaluateCalc` and
 // `evaluateModuleCalculations` add the starter `display` string, and
@@ -50,32 +52,6 @@ export {
 } from './context.js';
 export type { AgentContext, BancroftPrompt, LayerDefinition } from './context.js';
 
-export { runBancroftAgent, runBancroftAgentStreaming } from './agents/bancroft.js';
-export type { BancroftRunOptions, BancroftRunResult, ProgressEvent } from './agents/bancroft.js';
-export { WRITE_UW_SECTION_TOOL, WRITE_MULTIPLE_SECTIONS_TOOL, MULTI_SECTION_LAYERS } from './agents/schemas.js';
-export type { ToolOutput } from './agents/schemas.js';
-// The provider seam (RFC-free, additive). Deliberately NOT re-exported from
-// browser.ts: `createAnthropicProvider` reaches `@anthropic-ai/sdk`, and the
-// browser entry must never pull it in.
-export { AgentProviderError } from './agents/provider.js';
-export type {
-  AgentProvider,
-  AgentRequest,
-  AgentCompletion,
-  AgentToolCall,
-  AgentToolSchema,
-  AgentMessage,
-} from './agents/provider.js';
-export { createAnthropicProvider } from './agents/providers/anthropic.js';
-export type { AnthropicProviderOptions } from './agents/providers/anthropic.js';
-export {
-  createReplayProvider,
-  createRecordingProvider,
-  parseAgentCassette,
-  agentRequestFingerprint,
-  CASSETTE_VERSION,
-} from './agents/providers/replay.js';
-export type { AgentCassette, RecordedExchange, RecordingProvider } from './agents/providers/replay.js';
 export { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
 
 // ─── Section footing (line items → section totals) ────────────────────────────
@@ -170,7 +146,6 @@ export type {
   SourceBadge,
   FlagSeverity,
   ViewModelRegistry,
-  AgentHostCapability,
 } from './starter-protocol.js';
 
 // Convenience re-export: diff result type

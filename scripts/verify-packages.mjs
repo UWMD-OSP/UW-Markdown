@@ -136,16 +136,11 @@ try {
   installThirdParty(typeConsumer);
   assert.equal(existsSync(join(typeConsumer, 'node_modules/@anthropic-ai/sdk')), false);
   assert.equal(existsSync(join(typeConsumer, 'node_modules/@uwmd/signing')), false);
-  compileConsumer(typeConsumer, `import { parseUWFile, createAnthropicProvider } from '@uwmd/core';
-import { parseUWFile as parseBrowser } from '@uwmd/core/browser';
+  compileConsumer(typeConsumer, `import { parseUWFile, writeAgentBlock, type RunResult } from '@uwmd/core';
+import { parseUWFile as parseBrowser, writeAgentBlock as writeBrowser } from '@uwmd/core/browser';
 export const parsers = [parseUWFile, parseBrowser];
-createAnthropicProvider({
-  apiKey: 'unused',
-  client: { messages: {
-    create: async () => ({ content: [], usage: { input_tokens: 0, output_tokens: 0 } }),
-    stream: () => ({ finalMessage: async () => ({ content: [], usage: { input_tokens: 0, output_tokens: 0 } }) }),
-  } },
-});
+export const writers = [writeAgentBlock, writeBrowser];
+export type Written = RunResult;
 `);
   console.log('[PASS] @uwmd/core strict root/browser declarations compile without optional peers');
 } finally {

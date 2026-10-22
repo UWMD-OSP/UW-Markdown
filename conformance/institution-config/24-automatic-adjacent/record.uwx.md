@@ -2181,7 +2181,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
         "min": null,
         "max": 0.69
       },
-      "severity": "warning",
+      "band": "warning",
       "message": "LTV 0.7 at quick_metrics.ltv is above the warning threshold of 0.69",
       "suppressed": false,
       "suppress_reason": null
@@ -2195,7 +2195,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
         "min": null,
         "max": 0.69
       },
-      "severity": "warning",
+      "band": "warning",
       "message": "LTV 0.7 at debt_structure.sizing_metrics.ltv is above the warning threshold of 0.69",
       "suppressed": false,
       "suppress_reason": null
@@ -2209,7 +2209,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
         "min": 0.08,
         "max": null
       },
-      "severity": "warning",
+      "band": "warning",
       "message": "Debt yield 0.0787 at quick_metrics.debt_yield is below the warning threshold of 0.08",
       "suppressed": false,
       "suppress_reason": null
@@ -2223,7 +2223,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
         "min": 0.08,
         "max": null
       },
-      "severity": "warning",
+      "band": "warning",
       "message": "Debt yield 0.0787 at debt_structure.sizing_metrics.debt_yield is below the warning threshold of 0.08",
       "suppressed": false,
       "suppress_reason": null

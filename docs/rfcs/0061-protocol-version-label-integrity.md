@@ -3,7 +3,7 @@ rfc: 0061
 title: Keep protocol version labels synchronized
 status: implemented
 accepted: 2026-09-21
-author: codex
+author: UWMD maintainers
 created: 2026-09-21
 affects:
   - protocol-spec

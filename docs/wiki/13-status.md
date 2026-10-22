@@ -8,6 +8,18 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Agent execution removed from the toolkit (owner decision, 2026-10-21).**
+`@uwmd/core` and the CLI host no agents: the runner, tool schemas, provider
+seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
+`uwmd run` and core's `agent-host` manifest claim are gone, with the
+`@anthropic-ai/sdk` peer and the four starter checks that needed an agent run
+(1,226 indexed checks now, starter products 102). An unknown command exits 1
+before any I/O. Kept until draft RFC 0112 removes the layer vocabulary:
+`BANCROFT_LAYERS`, the context/prompt builders, `uwmd layers` and the
+layer-profile check (Format §2.2 `pipeline_state` names its keys after the
+layers, and §6.3 still describes `uwmd run`). The generic writers,
+`buildContext` and `uwmd edit` attribution stay.
+
 **Python certified — Issue #354 (2026-10-20).** The independent Python
 implementation's manifest claims the Reader tier plus `calc-evaluate`; CI runs the
 portable Verifier-tier corpus on three OSes and allows only the unclaimed
@@ -18,17 +30,34 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Release rules after launch ratified (owner, 2026-10-21).**
+[RELEASE_RULES](../playbooks/RELEASE_RULES.md) now records the owner's rulings:
+one public number ("UWMD 5.x") while records keep their Format version,
+result-changing fixes as minor releases, a monthly minor train, standing approval
+for green patch releases, the deprecation window, code reservation and key
+rotation. GOVERNANCE.md starts owner-led and switches to collaborative mode when
+the first outside RFC or PR arrives. The verifier rule-set rule waits on draft
+RFC 0111. The lender acceptance kit moves to a post-launch 5.x milestone.
+
 **uwmd.org is hosted on Cloudflare Workers (2026-10-21).** The owner moved the
 site to the Worker `uwmd-org` after #391 merged and disconnected Vercel. The
 repository's Vercel configuration (`vercel.json`, `scripts/vercel-ignore-build.sh`)
 is removed; `tools/docs-site/README.md` describes the Cloudflare host and its
 project settings.
 
+**Implemented RFC0110 — the stored deal flag's `band` (owner acceptance 2026-10-21, D2 and D3).**
+[RFC0110](../rfcs/0110-financial-validity-entry-band.md): a §4.17
+`financial_validity[]` entry carries `band: "error" | "warning"` in place of
+`severity`, `metric` includes `ltc`, and an entry that crosses no band is not
+recorded. Spec and corpus only; nothing reads the section. Sixteen hand-written
+sections held only `pass` entries and now store `[]`; every changed record's
+stored flags equal a fresh validate's `deal_flags`.
+
 **Stored validation sections regenerated (owner ruling 2026-10-21 evening).**
 The six examples and fixtures that state a §4.17 `validation` section now store
 what a fresh `uwmd validate` reports, not the renamed old run: `clean`, the deal
 flags in `financial_validity[]` (`flag_id` the FV code, the band in `severity`
-until draft RFC 0110), completeness from `DQ-04`/`DQ-06`, cross-section entries
+until RFC 0110), completeness from `DQ-04`/`DQ-06`, cross-section entries
 from `CC-*` issues, and the thresholds used. `policy_flags` and
 `human_review_items` are kept: validation does not produce them. Record 24 is
 regenerated with its adjacent institution config; fixture 57, which the reader

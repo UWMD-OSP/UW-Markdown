@@ -75,7 +75,7 @@ Protocol 2.2.0 → 2.3.0 (new §VIII.10, the allocation procedure).
   before RFC 0034 — two conforming engines handed the same terms today
   would disagree, because waterfall semantics have as many dialects as
   day counts do.
-- **Argus-parity for underwriter.cc**: promote structures are the
+- **Argus-parity for adopters**: promote structures are the
   partnership half of parity; the vendor computes them already, and the
   standard's job is to verify the stated result deterministically (the
   RFC 0034 division of labor, unchanged).
