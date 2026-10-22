@@ -1,8 +1,8 @@
 ---
-title: "Your first UW Markdown file"
+title: "Your first record, by hand"
 ---
 
-# Your first UW Markdown file
+# Your first record, by hand
 
 This walks you from a blank file to a parseable, validatable deal in
 about ten minutes. No prior CRE knowledge required.

@@ -2,7 +2,7 @@
 rfc: 0018
 title: Define composable document profiles and deal packages
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-11
 accepted: 2026-08-13
 affects:

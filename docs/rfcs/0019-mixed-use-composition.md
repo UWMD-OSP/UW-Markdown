@@ -2,7 +2,7 @@
 rfc: 0019
 title: Define mixed-use composition as a document shape, not a pack shape
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-13
 affects:
   - format-spec

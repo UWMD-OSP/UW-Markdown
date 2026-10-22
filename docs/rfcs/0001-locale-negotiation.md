@@ -2,7 +2,7 @@
 rfc: 0001
 title: Locale negotiation
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-26
 revised: 2026-09-01
 affects:

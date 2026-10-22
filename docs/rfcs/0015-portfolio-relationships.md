@@ -2,7 +2,7 @@
 rfc: 0015
 title: Add portfolio and relationship profiles
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-05
 revised: 2026-09-02
 accepted: 2026-09-02

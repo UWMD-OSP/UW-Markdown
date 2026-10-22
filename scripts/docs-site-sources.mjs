@@ -43,6 +43,7 @@ export function docsVersions(repoRoot) {
     format,
     protocol,
     core,
+    receipt: read(source('receipts.ts'), 'UW_RECEIPT_VERSION', "'([^']+)'"),
     specFormat: supported(source('types.ts'), 'SUPPORTED_FORMAT_VERSIONS'),
     specProtocol: supported(protocolSource, 'SUPPORTED_PROTOCOL_VERSIONS'),
   };

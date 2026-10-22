@@ -2,7 +2,7 @@
 rfc: 0031
 title: Reconcile the source vocabularies and close the unpoliced-write path
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-30
 affects:
   - format-spec

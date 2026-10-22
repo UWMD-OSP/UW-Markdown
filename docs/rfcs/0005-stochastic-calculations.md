@@ -2,7 +2,7 @@
 rfc: 0005
 title: Stochastic calculations
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-26
 affects:
   - protocol-spec

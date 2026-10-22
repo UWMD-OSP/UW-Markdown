@@ -2,7 +2,7 @@
 rfc: 0040
 title: Variant roles — resolve cross-checks by a declared role, not a key name
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-09
 accepted: 2026-09-11
 affects:

@@ -43,19 +43,19 @@ change `asset_class` when appropriate.
 ## Programs
 
 - **npm packages.** Published in release {{ versions.published }}: <span v-for="(name, i) in versions.npm" :key="name"><code>{{ name }}</code><template v-if="i < versions.npm.length - 1">, </template></span>. See [tools and packages](/guide/tools) for what
-  each one does and which packages are source-only.
+  each one does.
 - <a href="/downloads/programs/uwmd-viewer.html" download="uwmd-viewer.html">Download the browser viewer (<code>.html</code>)</a>
   — save it, open it in a browser, and drop a `.uwx.md` record onto the page.
 - [Download all source code (`.zip`)](https://github.com/UWMD-OSP/UW-Markdown/archive/refs/heads/main.zip)
-  — includes the Excel exporter, report renderer and lake adapter (on npm
-  from release 3.0.0), the web tools and VS Code extension, plus schemas and
-  tests.
+  — includes every package, the web tools and VS Code extension, plus schemas
+  and tests.
 - [GitHub releases](https://github.com/UWMD-OSP/UW-Markdown/releases) — tagged
   release notes.
 
 ## Example deals
 
 - [Multifamily](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Parkview-Apts-Glendale-AZ.uwx.md)
+- [Multifamily, UW Lite summary (`.uw.md`)](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Parkview-Apts-Glendale-AZ.uw.md)
 - [Office](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Riverside-Office-Phoenix-AZ.uwx.md)
 - [Retail](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Cactus-Crossing-Retail-Mesa-AZ.uwx.md)
 - [Industrial](https://raw.githubusercontent.com/UWMD-OSP/UW-Markdown/main/examples/Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md)

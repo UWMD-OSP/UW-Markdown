@@ -2,7 +2,7 @@
 rfc: 0014
 title: Define extensible multi-format interchange
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-07-25
 accepted: 2026-07-26
 implemented: 2026-09-03

@@ -8,7 +8,18 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Prepare Cloudflare Workers static hosting for the refreshed docs site, with a
+  pinned Node runtime, asset headers, real 404 responses and owner-configured
+  docs-only build watch paths. Vercel remains unchanged pending owner cutover.
+
 ### Changed
+
+- Refresh uwmd.org with the owner-approved direction C: document-version card,
+  page classification and normative navigation markers, compact mobile landing,
+  complete guide sidebars, favicon and the approved public-copy sweep. Keep
+  the standard and current starter tools distinct. Coordinate go-live with the
+  Cloudflare hosting branch after the independent contrast fix lands on main.
+  No normative contract, package version or release change.
 
 - Regenerate the stored §4.17 `validation` sections of the six examples and
   fixtures from a fresh `uwmd validate` (owner ruling, 2026-10-21): they now show

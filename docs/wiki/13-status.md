@@ -199,6 +199,15 @@ The separate complete-validation WIP still requires composition, full admission,
 applicable native/platform evidence and actual certification. Discovery remains
 parse-only; receipt subject/authentication rules and release state are unchanged.
 
+**uwmd.org refresh — owner direction C,2026-10-18.** The approved refresh
+leads with document versions, identifies normative versus guide/starter/project
+pages, keeps the current starter host described accurately and applies the
+approved public-identity/copy sweep. The contrast prerequisite merged as
+`fa9a9ea37d31b918f5993eae4276b159f31719f3`; its main CI is recorded separately.
+The remaining refresh belongs with the Cloudflare migration, not an independent
+site cutover. No normative text removal, accepted RFC change, package version,
+release, tag or publication is authorized by this presentation work.
+
 **Python expression execution — Issue354.** A coherent read-only `calc` CLI
 implements the accepted expression grammar, all21 builtins, exact source/variant/
 role/period selection, scalar/null overrides and quantized result/refusal transport.
@@ -2037,3 +2046,10 @@ invariants move to Representations, and five new validate-only Verifier checks
 (`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
 1,061 (Verifier 679 / 280 portable, Module 68 / 1). Release: published in
 core/CLI 3.0.0 with Stable Protocol 3.0.0.
+
+### Cloudflare static-host preparation
+
+The owner-directed `codex/site-cloudflare-migration` branch contains direction C
+first, then Workers static-asset configuration. `tools/docs-site/README.md` gives
+the exact build, watch-path and owner project/cutover settings. Vercel stays in
+place; this preparation does not change credentials, DNS or active hosting.

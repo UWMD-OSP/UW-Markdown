@@ -2,7 +2,7 @@
 rfc: 0047
 title: Property cash-flow input inventory
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-13
 accepted: 2026-09-13
 affects:

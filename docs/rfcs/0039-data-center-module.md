@@ -2,7 +2,7 @@
 rfc: 0039
 title: Data-center module — the first product module on a module-declared asset class
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-09
 affects:
   - core-library

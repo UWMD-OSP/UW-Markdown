@@ -9,7 +9,9 @@ const siteRoot = resolve(scriptDir, '..');
 const repoRoot = resolve(siteRoot, '..', '..');
 
 const files = [
+  ['tools/docs-site/static/_headers', '_headers'],
   ['docs/site-assets/og-v2.png', 'og-v2.png'],
+  ['docs/site-assets/favicon.svg', 'favicon.svg'],
   ['tools/web-viewer/index.html', 'viewer/app/index.html'],
   ['examples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md', 'viewer/samples/Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md'],
   ['examples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md', 'viewer/samples/Desert-Palms-MHC-Apache-Junction-AZ.uwx.md'],

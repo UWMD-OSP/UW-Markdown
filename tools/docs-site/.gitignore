@@ -9,3 +9,6 @@ about/
 guide/
 public/
 starter/
+
+# Local Workers development state.
+.wrangler/

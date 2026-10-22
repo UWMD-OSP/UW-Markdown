@@ -2,7 +2,7 @@
 rfc: 0009
 title: _meta v2 sub-object reorganization
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-27
 revised: 2026-09-01
 affects:

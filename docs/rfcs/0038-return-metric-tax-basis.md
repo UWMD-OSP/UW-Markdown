@@ -2,7 +2,7 @@
 rfc: 0038
 title: Tax basis on stated return metrics
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-09
 affects:
   - format-spec

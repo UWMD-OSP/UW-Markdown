@@ -2,7 +2,7 @@
 rfc: 0042
 title: Stated period inputs in refinement
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-12
 affects:
   - protocol-spec

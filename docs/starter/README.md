@@ -11,8 +11,8 @@ project gives away so the standard spreads: a calc engine, a web editor, a
 report viewer, an Excel exporter, default assumptions and AI agents.
 
 [RFC 0078](../rfcs/0078-protocol-is-verification.md) separated the two.
-The test for the boundary: *if Argus, an Excel model or StackUW exported a
-`.uw.md`, a lender could verify it using only the standard, with none of
+The test for the boundary: *if Argus, an Excel model or another producer exported a
+`.uwx.md`, a lender could verify it using only the standard, with none of
 the project's tools.* Anything a verifier needs stays in the Protocol.
 Anything only a producing, editing or displaying tool needs is described
 here.

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress';
 import { fileURLToPath } from 'node:url';
 import { docsVersions } from '../../../scripts/docs-site-sources.mjs';
+import { markNormative, siteSidebars } from './page-status.mjs';
 
 const versions = docsVersions(fileURLToPath(new URL('../../../', import.meta.url)));
 const SITE_DESCRIPTION =
@@ -16,6 +17,7 @@ export default defineConfig({
   srcExclude: ['README.md'],
 
   head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { name: 'theme-color', content: '#315f4b' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'UW Markdown' }],
@@ -40,18 +42,13 @@ export default defineConfig({
     nav: [
       { text: 'Why UWMD', link: '/about/', activeMatch: '^/about/$' },
       {
-        text: 'Examples',
-        items: [
-          { text: 'Open a deal in the viewer', link: '/viewer/' },
-          { text: 'Edit a deal in the reference editor', link: 'https://www.uwmd.org/editor/', target: '_self' },
-          { text: 'All example records (GitHub)', link: 'https://github.com/UWMD-OSP/UW-Markdown/tree/main/examples' },
-        ],
-      },
-      {
         text: 'Get started',
-        activeMatch: '^/(tutorials|downloads)/',
+        activeMatch: '^/(tutorials|downloads|viewer)/',
         items: [
           { text: 'Quickstart', link: '/tutorials/quickstart' },
+          { text: 'Open a deal in the viewer', link: '/viewer/' },
+          { text: 'Example deals (GitHub)', link: 'https://github.com/UWMD-OSP/UW-Markdown/tree/main/examples' },
+          { text: 'Reference editor', link: 'https://www.uwmd.org/editor/', target: '_self' },
           { text: 'Your first record, by hand', link: '/tutorials/your-first-uwmd-file' },
           { text: 'Templates and downloads', link: '/downloads/' },
           { text: 'UWX and UW Lite', link: '/guide/lite-and-uwx' },
@@ -64,7 +61,7 @@ export default defineConfig({
         // lender needs to check a record with none of the project's tools.
         text: 'Standard',
         activeMatch: '^/(spec|conformance)/',
-        items: [
+        items: markNormative([
           {
             text: 'The standard (normative)',
             items: [
@@ -86,14 +83,15 @@ export default defineConfig({
               { text: 'Schemas', link: '/spec/schemas/' },
             ],
           },
-        ],
+        ]),
       },
       {
         // Non-normative reference tools, given away so the standard spreads.
-        text: 'Starter products',
+        text: 'Tools',
         activeMatch: '^/(starter|guide|ai)/',
         items: [
           {
+            text: 'Starter products (non-normative)',
             items: [
               { text: 'Starter products guide', link: '/starter/' },
               { text: 'Tools and packages', link: '/guide/tools' },
@@ -144,7 +142,7 @@ export default defineConfig({
       },
     ],
 
-    sidebar: {
+    sidebar: siteSidebars({
       '/tutorials/': [
         {
           text: 'Get started',
@@ -234,7 +232,7 @@ export default defineConfig({
             { text: `Format spec (${versions.specFormat})`, link: '/spec/format' },
             { text: `Protocol — verification (${versions.specProtocol})`, link: '/spec/protocol' },
             { text: 'Metric dictionary', link: '/spec/metrics/' },
-            { text: 'Verification receipt (v1.0)', link: '/spec/receipt' },
+            { text: `Verification receipt (${versions.receipt})`, link: '/spec/receipt' },
             { text: 'Module system', link: '/spec/protocol#vii-module-system' },
             { text: 'Conformance corpus', link: '/conformance/' },
             { text: 'Metric verification', link: '/conformance/metrics' },
@@ -332,15 +330,8 @@ export default defineConfig({
             { text: 'Template', link: '/about/rfcs/template' },
           ],
         },
-        {
-          text: 'Release Plans',
-          collapsed: false,
-          items: [
-            { text: '1.1+ — Machine interchange', link: '/about/releases/1.1-plus-interchange' },
-          ],
-        },
       ],
-    },
+    }),
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/UWMD-OSP/UW-Markdown' },

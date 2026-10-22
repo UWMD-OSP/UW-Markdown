@@ -25,18 +25,59 @@ describe content; they do not confer a tier claim.
 | Starter products | 106 | 37 |
 | **Total** | **1,134** | **364** |
 
+## How to self-certify
+
+1. Implement (or update) your tool against the published
+   [`UW_PROTOCOL.md`](../spec/UW_PROTOCOL.md).
+2. Select your tier and explicitly claimed profiles; run their indexed cases through your tool.
+3. Compare your output to the corresponding `expected/` output.
+
+Frozen comparisons retain their existing subset, exact, normalized-byte or
+shape rules; re-tiering changes ownership, never an assertion. Publish the
+capability/profile claims and all skipped/unverifiable counts with the result.
+Starter-product results are separate compatibility claims, not conformance.
+
+## Running the reference test runner
+
+The reference implementation ships a runner at
+[`scripts/run-conformance.mjs`](../scripts/run-conformance.mjs) that exercises
+the corpus against `@uwmd/core`. CI runs all indexed checks on every PR.
+
+```bash
+# Default: every indexed standard and starter check
+node scripts/run-conformance.mjs
+
+# Reader + Verifier, plus the Module profile
+node scripts/run-conformance.mjs --tier=verifier --profile=module
+
+# Agent starter checks (lint-only — does not invoke an LLM)
+node scripts/run-conformance.mjs --starter-products --suite=starter-agent
+
+# Bootstrap / refresh expected outputs from the current library
+node scripts/run-conformance.mjs --update
+
+# Machine-readable output
+node scripts/run-conformance.mjs --json
+```
+
+Volatile fields stripped before byte comparison: `last_modified`,
+`_meta.provenance.timestamp`, `ts=` fence attributes, and `_meta.integrity.content_hash`
+values (hashes canonicalize over the timestamp, so they vary per run
+even when content is stable). These change every run and are not
+normative.
+
 Current counts come from the runtime ownership index and generated CLI cases.
-Accepted RFC0088 adds14 Verifier calc cases to the prior1106 default checks,
+Accepted RFC 0088 adds 14 Verifier calc cases to the prior 1,106 default checks,
 with unchanged original expectations. They pin the selected primitive procedure,
-public versus internal exceptional values and retained IRR behavior. All14 also
+public versus internal exceptional values and retained IRR behavior. All 14 also
 run through actual CLI subprocesses. Portable cases project a subset of the same
-checks, so364 is not an additional corpus. The index and generated cases are
+checks, so 364 is not an additional corpus. The index and generated cases are
 checked for exact ownership, missing/duplicate results and generation drift.
 
-Accepted RFC0093 and RFC0094 each add four authored native Verifier cases.
-RFC0094 pins all60 accepted T1B vectors, present leaf types versus absence,
+Accepted RFC 0093 and RFC 0094 each add four authored native Verifier cases.
+RFC 0094 pins all 60 accepted T1B vectors, present leaf types versus absence,
 parent suppression, complete pass ordering and retained physical peers. Exact
-metadata assertions include META-01 through META-06. RFC0095 adds six authored
+metadata assertions include META-01 through META-06. RFC 0095 adds six authored
 native controls for optional values, symmetric references, parent/pass ordering,
 retained peers, lawful unknown data and strict date-only calendars. The portable case count
 is unchanged; existing source and expectation assertions are not rebaselined.
@@ -57,6 +98,9 @@ manifests, the registry and custom declarations (the ADR × occupancy
 `revpar-basic` fixture). UW Lite compilation and projection
 (Lite spec §8) and the deal-package encodings (RFC 0018) belong to
 Representations.
+
+<details>
+<summary>Fixture source layout</summary>
 
 The following tree describes **fixture storage**. Owners come from the
 index; directory and suite names describe content:
@@ -294,6 +338,8 @@ conformance/
                           entire policy distinction
 ```
 
+</details>
+
 The `lite`, `receipts`, `market-data`, `modules`, `packages`, `composition`,
 `capital-stack`, `lease-up`, `cash-flow`, `waterfall`, `portfolio-relationships`,
 `standalone`, `capability`, `locale`, `size-intensive`, `signing`, `sensitivity`,
@@ -351,47 +397,6 @@ hold for any conforming implementation regardless of frozen output:
 Digests are computed by the runner with stock `node:crypto` rather than the
 library's own hash helper, so a frozen digest is meaningful evidence to a
 third-party implementer rather than a restatement of our implementation.
-
-## How to self-certify
-
-1. Implement (or update) your tool against the published
-   [`UW_PROTOCOL.md`](../spec/UW_PROTOCOL.md).
-2. Select your tier and explicitly claimed profiles; run their indexed cases through your tool.
-3. Compare your output to the corresponding `expected/` output.
-
-Frozen comparisons retain their existing subset, exact, normalized-byte or
-shape rules; re-tiering changes ownership, never an assertion. Publish the
-capability/profile claims and all skipped/unverifiable counts with the result.
-Starter-product results are separate compatibility claims, not conformance.
-
-## Running the reference test runner
-
-The reference implementation ships a runner at
-[`scripts/run-conformance.mjs`](../scripts/run-conformance.mjs) that exercises
-the corpus against `@uwmd/core`. CI runs all indexed checks on every PR.
-
-```bash
-# Default: every indexed standard and starter check
-node scripts/run-conformance.mjs
-
-# Reader + Verifier, plus the Module profile
-node scripts/run-conformance.mjs --tier=verifier --profile=module
-
-# Agent starter checks (lint-only — does not invoke an LLM)
-node scripts/run-conformance.mjs --starter-products --suite=starter-agent
-
-# Bootstrap / refresh expected outputs from the current library
-node scripts/run-conformance.mjs --update
-
-# Machine-readable output
-node scripts/run-conformance.mjs --json
-```
-
-Volatile fields stripped before byte comparison: `last_modified`,
-`_meta.provenance.timestamp`, `ts=` fence attributes, and `_meta.integrity.content_hash`
-values (hashes canonicalize over the timestamp, so they vary per run
-even when content is stable). These change every run and are not
-normative.
 
 ## Adding a fixture
 
@@ -468,7 +473,7 @@ to 2.17.1; engine/package versions are unchanged. Run the focused suites with:
 npm run conformance -- --suite=cash-flow,property-cash-flow-assembly
 ```
 
-## RFC 0070 replacement funding (Protocol 2.21.0)
+## RFC 0070 replacement funding
 
 `hedge/0070-*` adds 57 cases: legacy/explicit escrow, outright/zero payments,
 same-day identity, expiration-independent timing, malformed or ambiguous references,

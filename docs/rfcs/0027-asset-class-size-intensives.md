@@ -2,7 +2,7 @@
 rfc: 0027
 title: Declare every asset class's size intensive, once
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-23
 affects:
   - format-spec
