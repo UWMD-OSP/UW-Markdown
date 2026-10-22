@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
-import { areEnvelopesEquivalent, toUWEnvelope } from './envelope.js';
+import { areEnvelopesEquivalent, fromUWEnvelope, toUWEnvelope } from './envelope.js';
+import { validateUWFile } from './validator.js';
 import { parseUWFile } from './parser.js';
 import {
   decodeUWCSVBundle,
@@ -43,6 +44,8 @@ describe('UW CSV Bundle 1.0', () => {
     const decoded = await decodeUWCSVBundle(bundle);
     expect(areEnvelopesEquivalent(decoded, envelope)).toBe(true);
     expect(decoded.semantic_digest).toMatch(/^sha256:[0-9a-f]{64}$/);
+    expect(validateUWFile(fromUWEnvelope(decoded)).issues.filter(issue =>
+      issue.code === 'META-01' && issue.message.includes('first member'))).toEqual([]);
   });
 
   it('creates deterministic ZIP bytes and decodes them safely', async () => {
