@@ -834,3 +834,13 @@ this ordinary implementation decision needs no owner approval. Missing `_meta`
 is locally diagnosed without manufacturing META-01; the partial inventory does
 not implement the full completeness family. Discovery remains
 parse-only until the whole claimed capability is demonstrated.
+
+## Independent SOURCE diagnostic comparison
+
+`npm run verify-python-validation-parity` compares the reference and Python
+SOURCE validators over all tracked structured conformance documents. It retains
+finding multiplicity and checks code, severity, section and field (missing/empty
+optional locations agree), plus typed parser-refusal codes. Both sides share a
+fixed test clock. CI runs it on Node 20 with the existing Python runtime. This
+is development evidence alongside the portable CLI driver; messages, evidence
+payloads, issue order, institution configuration and tier claims are outside it.

@@ -29,6 +29,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #517: Python validation diagnostics agree with the reference across the
+  tracked structured corpus, including finding counts and precise field paths.
+  Add a read-only cross-implementation CI check; advertised capabilities stay
+  grounded in the portable conformance driver.
+
 - Fix #494: an unknown `render --format` is a typed refusal
   (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
   longer advertises flags removed by #412 and lists `init --zip`.

@@ -54,7 +54,7 @@ fields and counts for each.
 | CS-02 | A stated `null` rate is not a rate, on common equity or elsewhere. | Spec silent on null; schema admits null; matches reference |
 | CS-WATERFALL-UNSUPPORTED | Ten marker keys, one finding per key at the stack or tranche. | Spec names concepts, not keys; matches reference |
 | CS-01 | The four required members (one finding per member, also for a non-object tranche) and the two uniqueness rules. No finding for an absent `tranches`, a negative amount, an `accrual` outside the vocabulary or non-integer month terms. | Format §4.24 names only these; matches reference |
-| CC-05 / CC-06 / CC-07 | `noi_used_for_dscr` fallback; NOI ≤ 0 skipped as `field_absent`; `annual_cash_flows[0].noi` is the CC-06 field; `dcf.exit_cap_rate` fallback. A malformed first carrier falls through to the next. | Format §5.3 fixes the tolerance only; matches reference |
+| CC-05 / CC-06 / CC-07 | `noi_used_for_dscr` fallback; NOI ≤ 0 evaluated against the accepted $500 absolute tolerance (RFC 0119); `annual_cash_flows[0].noi` is the CC-06 field; `dcf.exit_cap_rate` fallback. A malformed first carrier falls through to the next. | Format §5.3 fixes the tolerance only; matches reference |
 | CC-01 | `totals.gross_potential_rent` is the rent-roll fallback carrier, not `gross_potential_rent_annual`. | Spec silent; matches reference |
 | CC-15 | A base or default scenario that is not eligible (a `component` role) is `variant_unresolvable`; no other scenario is chosen. Drift is divided by the absolute NOI. | Format §5.3 ("roles cannot choose another scenario") |
 | WF-02 / WF-03 | A non-array `series` raises neither WF-03 nor WF-15 (it is CF-02's defect); WF-03 and an unresolved WF-02 report `cash_flow_ref.variant`. | Spec silent; matches reference |
@@ -62,13 +62,23 @@ fields and counts for each.
 | DQ-05 | `last_checked` is read as ECMAScript `Date.parse` reads it: date-only is UTC midnight, a date-time without an offset is local time (`uwmd_instant.py`). | Format §4.22 silent; matches reference |
 | HDG-01 | One finding per stated defect at its member, plus the group finding for a partial terms group; HDG-03 at `rate_type`. Unknown hedge members and the counterparty type are not HDG-01. | Format §4.7's HDG-01 list |
 
-**Still different from the reference** (outside the #425 list; corpus-wide
-comparison of 811 documents, 113 differ): field paths for PS-01/PS-02 pointers,
-WF-01, TAX-01/05/06, CAPX, REC, RSV, LSE, MU-01 and the builtin-class `CC-*`
-rules; the count of WF-01 findings (the reference reports more than one per
-ladder); CC-08's section; three MHC type cases where Python adds
-`MOD-RULE-ERROR`; and UW Lite sources, which Python does not read as a
-representation.
+**Corpus diagnostic parity (#517, 2026-10-22).** The development check
+`npm run verify-python-validation-parity` compares the SOURCE validator APIs on
+every tracked `conformance/**/*.uwx.md` file. It preserves duplicate findings
+and compares code, severity, section and field as a multiset, treating an absent
+optional location like an empty location. Typed parser refusals are compared by
+code. Both sides use one fixed test clock and read the same unmodified sources.
+CI runs it after building the reference and setting up Python.
+
+The original differences were Python corrections: precise owning-field paths,
+independent WF-01 findings, strict typed equality through the existing Python
+calculator, the documented compiled-Lite CC-13/14 exemptions, and the bounded
+CC/MU preconditions. Recovery and clawback shape ownership follows the corrected
+registered finding fields while retaining exact predicates and physical-block
+identity. Messages, evidence payloads, issue order and institution configuration
+are outside this comparison. The portable driver still proves the advertised
+CLI capabilities; this development check adds no capability or tier claim.
+
 The adapter reads structured Format 3.0 Markdown and separately verifies stated
 reserve accounts, explicit reserve-draw plans and replacement-funding commitments.
 It also executes accepted expressions through the read-only `calc` command.
