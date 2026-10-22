@@ -44,7 +44,12 @@ class SizeContractTests(unittest.TestCase):
         self.assertEqual(size_fields(document("multifamily", rent_roll={"concessions_monthly": -5400})), [])
 
     def test_closed_table(self):
-        self.assertEqual(list(SIZE_CONTRACT), ["property", "rent_roll"])
+        self.assertEqual(list(SIZE_CONTRACT), ["property", "rent_roll", "components"])
+
+    def test_component_sizes(self):
+        self.assertEqual(size_fields(document("mixed_use", components={"retail": {"nra_sqft": -1}, "multifamily": {"total_units": 1.5}})),
+                         ["components.multifamily.total_units", "components.retail.nra_sqft"])
+        self.assertEqual(size_fields(document("mixed_use", components={"retail": {"nra_sqft": 0, "total_sites": None, "custom_size": -1}, "unknown": {"total_units": -1}})), [])
 
 
 if __name__ == "__main__":

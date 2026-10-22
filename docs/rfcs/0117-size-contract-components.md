@@ -1,7 +1,7 @@
 ---
 rfc: 0117
 title: Extend the size contract to mixed-use component sizes and guard the per-size component metrics
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,7 +13,7 @@ affects:
 
 # RFC 0117: Extend the size contract to mixed-use component sizes and guard the per-size component metrics
 
-> **Draft for owner acceptance.** Origin: owner ruling of 2026-10-22 (5), taking
+> **Accepted by the owner, 2026-10-22 (second set), as drafted.** Origin: owner ruling of 2026-10-22 (5), taking
 > option 1 on bug bash finding #490 (a residual of #415 / RFC 0100). It extends
 > a closed table and changes when dictionary metrics are verifiable, so it is
 > normative.
@@ -31,7 +31,7 @@ computes `retail_price_psf = -333.33`. This RFC adds the component size fields
 to the table and marks the eight component per-size metrics
 `positive_size_denominator`.
 
-## Proposed change
+## Change
 
 1. **Format §5.5 table gains one row** for the `components` section, on every
    component slot (`components.<class>.` for each admissible class key):
@@ -66,9 +66,9 @@ to the table and marks the eight component per-size metrics
    They are a producer's own fields. The closed table lists Format fields only,
    so a producer that wants them checked proposes them as Format fields first.
 
-## Compatibility analysis
+## Validation impact
 
-No compatibility path (prelaunch; the owner rule). A record with a negative
+A record with a negative
 component size gains `SIZE-01`, and its component per-size metrics become
 `unverifiable` instead of computing a negative price. No record with lawful
 sizes changes outcome.
@@ -101,7 +101,7 @@ expansion); the metric verifier's denominator registry; the cases.
   is a schema-only rule with no validation code, and it breaks the single
   `SIZE-01` story. Rejected.
 
-## Decisions proposed for owner review
+## Decisions
 
 | # | Question | Proposal | Why / alternative |
 |---|---|---|---|

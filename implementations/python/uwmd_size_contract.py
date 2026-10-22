@@ -30,6 +30,15 @@ SIZE_CONTRACT = {
     },
 }
 
+# RFC 0117: every declared component slot has the same closed size fields.
+SIZE_CONTRACT["components"] = {
+    slot + "." + field: kind
+    for slot in ("multifamily", "retail", "office", "industrial", "self_storage", "hospitality",
+                 "senior_housing", "student_housing", "data_center", "manufactured_housing")
+    for field, kind in (("total_units", COUNT), ("total_beds", COUNT), ("total_sites", COUNT),
+                        ("nra_sqft", MEASURE), ("critical_it_load_kw", MEASURE))
+}
+
 
 def meets(value, kind):
     """Whether a stated value meets its contract; None is not stated."""
