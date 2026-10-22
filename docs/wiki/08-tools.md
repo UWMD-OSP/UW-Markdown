@@ -22,6 +22,12 @@ class pack and canonical statement homes. Authored values (including explicit
 nulls) win, and rendering never writes the record. Missing values carry no
 currency/unit suffix; CSV uses two decimal percent and three decimal DSCR display.
 
+Reading commands use core's Node-only `loadUWSourceFile`: UWX keeps its raw
+bytes, Lite compiles through its bridge, and JSON/XML/CSV decode through the
+codec registry. Byte-preserving source writers require UWX and report
+`SOURCE_EDIT_UNSUPPORTED` otherwise. Document signatures authenticate only the
+original UWX source; other representations receive `INT-14`.
+
 A thin npm package whose `bin/uwmd.mjs` is one line: `import '@uwmd/core/cli'`.
 All logic is in `@uwmd/core`'s [`src/cli.ts`](../../packages/uwmd-core/src/cli.ts).
 
