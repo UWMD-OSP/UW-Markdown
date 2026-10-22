@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/conformance-case.schema.json",
-  "title": "Conformance CLI case (RFC 0078 Phase 3)",
+  "title": "Conformance CLI case (RFC 0078)",
   "type": "object",
   "required": [
     "id",
