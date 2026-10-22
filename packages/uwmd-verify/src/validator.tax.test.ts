@@ -210,6 +210,9 @@ describe('RFC 0053 abatement schedule', () => {
   it('omitting stabilized_period leaves the snapshot unconnected and valid', () => {
     expect(taxCodes(withAbatement({}, 12345))).toEqual([]);
   });
+  it('treats a null stabilized_period as unstated', () => {
+    expect(taxCodes(withAbatement({ stabilized_period: null }, 12345))).toEqual([]);
+  });
 });
 
 describe('RFC 0053 terminal tax', () => {

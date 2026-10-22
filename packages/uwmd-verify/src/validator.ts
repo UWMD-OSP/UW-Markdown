@@ -598,13 +598,20 @@ function checkCrossSectionConsistency(
       const debtStructure = got['debt_structure']!.block;
       const modelNOI = num(deepGet(noiModel.content, 'net_operating_income'));
       const debtNOI = num(deepGet(debtStructure.content, 'underwritten_noi')) ?? num(deepGet(debtStructure.content, 'noi_used_for_dscr'));
-      if (modelNOI == null || modelNOI <= 0) markSkipped(ledger, 'CC-05', 'field_absent', 'noi_model.net_operating_income');
+      if (modelNOI == null) markSkipped(ledger, 'CC-05', 'field_absent', 'noi_model.net_operating_income');
       else if (debtNOI == null) markSkipped(ledger, 'CC-05', 'field_absent', 'debt_structure.underwritten_noi');
       else {
         markEvaluated(ledger, 'CC-05');
-        const pctDiff = Math.abs(modelNOI - debtNOI) / modelNOI;
-        if (pctDiff > 0.01) {
-          issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}% (threshold: 1%)`, value: pctDiff });
+        if (modelNOI <= 0) {
+          const difference = Math.abs(modelNOI - debtNOI);
+          if (difference > 500) {
+            issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by $${difference.toLocaleString()} (threshold: $500; RFC 0119)`, value: difference });
+          }
+        } else {
+          const pctDiff = Math.abs(modelNOI - debtNOI) / modelNOI;
+          if (pctDiff > 0.01) {
+            issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}% (threshold: 1%)`, value: pctDiff });
+          }
         }
       }
     }
@@ -618,13 +625,20 @@ function checkCrossSectionConsistency(
       const dcf = got['dcf']!.block;
       const modelNOI = num(deepGet(noiModel.content, 'net_operating_income'));
       const dcfY1NOI = num(deepGet(dcf.content, 'annual_cash_flows[0].noi')) ?? num(deepGet(dcf.content, 'annual_cash_flows[0].net_operating_income'));
-      if (modelNOI == null || modelNOI <= 0) markSkipped(ledger, 'CC-06', 'field_absent', 'noi_model.net_operating_income');
+      if (modelNOI == null) markSkipped(ledger, 'CC-06', 'field_absent', 'noi_model.net_operating_income');
       else if (dcfY1NOI == null) markSkipped(ledger, 'CC-06', 'field_absent', 'dcf.annual_cash_flows[0].net_operating_income');
       else {
         markEvaluated(ledger, 'CC-06');
-        const pctDiff = Math.abs(modelNOI - dcfY1NOI) / modelNOI;
-        if (pctDiff > 0.02) {
-          issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) deviates from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}%`, value: pctDiff });
+        if (modelNOI <= 0) {
+          const difference = Math.abs(modelNOI - dcfY1NOI);
+          if (difference > 500) {
+            issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by $${difference.toLocaleString()} (threshold: $500; RFC 0119)`, value: difference });
+          }
+        } else {
+          const pctDiff = Math.abs(modelNOI - dcfY1NOI) / modelNOI;
+          if (pctDiff > 0.02) {
+            issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) deviates from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}%`, value: pctDiff });
+          }
         }
       }
     }
@@ -933,7 +947,7 @@ function checkAbatement(
 
   // TAX-07: the stabilized snapshot ties to one named period of the schedule.
   const stabilized = a['stabilized_period'];
-  if (stabilized === undefined) return;
+  if (stabilized == null) return;
   if (typeof stabilized !== 'string') {
     taxIssue(issues, 'TAX-07', section, `${base}.stabilized_period`,
       'TAX-07: stabilized_period must be a period selector naming a schedule entry', stabilized);
@@ -2654,12 +2668,11 @@ function checkLeaseUpSchedule(parsed: ParsedUWFile, issues: ValidationMessage[],
   // within LEASE_UP_STABILIZED_TOLERANCE. Tolerance-checked, not exact: the
   // trajectory endpoint and the stabilized-year projection are two different
   // models of stabilization (RFC 0008).
-  // CC-15 reads the base variant ONLY (RFC 0008: non-base variants are
-  // exempt by design — a downside is supposed to disagree). So the §5.3
-  // lone-variant fallback does not apply here, and a map with no base or
-  // default is `not_applicable`, not unresolvable: nothing was silenced.
+  // Format §5.3 falls back to default or a sole variant when base is absent.
+  // Multiple non-base scenarios remain exempt; roles cannot choose one.
   const base = isVariantMap(entry)
-    ? ((entry as Record<string, UWBlock>)['base'] ?? (entry as Record<string, UWBlock>)['default'])
+    ? ((entry as Record<string, UWBlock>)['base'] ?? (entry as Record<string, UWBlock>)['default']
+      ?? (Object.keys(entry).length === 1 ? Object.values(entry)[0] as UWBlock : undefined))
     : (entry as UWBlock);
   if (base && hasBlockRole(base)) {
     const r = resolveRoleBlock(base, 'lease_up_schedule');

@@ -122,13 +122,20 @@ def cross_checks(ledger, *, defer_summaries=False):
                 ledger.issue(rule, severity, section, path, "Stated figures exceed the registered reconciliation tolerance",
                              value=dict(stated=left, comparison=right), threshold={"max": limit})
         return usable
-    def ratio(rule, stated, base, tolerance, section, path, *, positive=False, nonzero=False):
+    def ratio(rule, stated, base, tolerance, section, path, *, positive=False, nonzero=False, nonpositive_absolute=None):
         """|stated - base| / base against a published relative tolerance.
 
         Format §5.3 fixes the percentage, not the operand carriers, the skip
         conditions or the arithmetic; these follow the reference (positive:
         base <= 0 is skipped; nonzero: |base| is the denominator).
         """
+        if nonpositive_absolute is not None and stated is not None and base is not None and base <= 0:
+            ledger.cover(rule, True)
+            difference = abs(stated - base)
+            if difference > nonpositive_absolute:
+                ledger.issue(rule, "warning", section, path, "Non-positive model NOI restatement exceeds the absolute tolerance (RFC 0119)",
+                             value=difference, threshold={"max": nonpositive_absolute})
+            return
         usable = (stated is not None and base is not None
                   and (base > 0 if positive else base != 0))
         ledger.cover(rule, usable)
@@ -150,12 +157,12 @@ def cross_checks(ledger, *, defer_summaries=False):
     compare("CC-04", number(s, "total_sources"), number(s, "total_uses"), 1, section="sources_uses", path="total_sources")
     n, d = read("CC-05", "noi_model"), read("CC-05", "debt_structure", preferred_role="senior")
     ratio("CC-05", first_finite(d, "underwritten_noi", "noi_used_for_dscr"), first_finite(n, "net_operating_income"),
-          .01, "debt_structure", "underwritten_noi", positive=True)
+          .01, "debt_structure", "underwritten_noi", positive=True, nonpositive_absolute=500)
     n, d = read("CC-06", "noi_model"), read("CC-06", "dcf")
     rows = field(d, "annual_cash_flows")
     first = rows[0] if isinstance(rows, list) and rows else None
     ratio("CC-06", first_finite(first, "noi", "net_operating_income"), first_finite(n, "net_operating_income"),
-          .02, "dcf", "annual_cash_flows[0].noi", positive=True)
+          .02, "dcf", "annual_cash_flows[0].noi", positive=True, nonpositive_absolute=500)
     d, stress = read("CC-07", "dcf"), read("CC-07", "stress_tests")
     compare("CC-07", first_finite(d, "assumptions.exit_cap_rate", "exit_cap_rate"), first_finite(stress, "base_case.exit_cap_rate"),
             .005, section="stress_tests", path="base_case.exit_cap_rate")

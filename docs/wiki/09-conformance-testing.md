@@ -137,13 +137,14 @@ cases from existing fixtures. RFC 0086 added the `cross-checks` suite (six
 seven readiness values. RFC 0117 adds two component-size cases and three portable
 metric-boundary cases. RFC 0118 adds five invalid frontmatter documents
 (20 reference and portable cases), keeping Reader admission separate from
-Verifier vocabulary refusal. The index now holds **1,304** reference checks and **614**
+Verifier vocabulary refusal. RFC 0119 adds sixteen paired NOI boundary/coverage
+records and 32 portable validate/coverage cases. The index now holds **1,320** reference checks and **646**
 portable CLI projections:
 
 | Owner | Reference | Portable |
 |---|---:|---:|
 | reader | 42 | 27 |
-| verifier | 844 | 515 |
+| verifier | 860 | 547 |
 | module | 76 | 1 |
 | integrity | 32 | 14 |
 | representations | 150 | 0 |
@@ -151,7 +152,7 @@ portable CLI projections:
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
 | starter-products | 134 | 57 |
-| **Total** | **1,304** | **614** |
+| **Total** | **1,320** | **646** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -308,11 +309,11 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,304 indexed checks across its suites, and most of what has been added
+runs all 1,320 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable
-driver checks its 614-case subset using shared comparison logic, while the
+driver checks its 646-case subset using shared comparison logic, while the
 reference runner checks the full indexed corpus. A result claims only the
 checks actually run. Replacing one with the other would
 trade breadth for portability.

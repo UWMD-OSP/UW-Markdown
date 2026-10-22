@@ -311,10 +311,10 @@ class ReferenceAlignmentTests(unittest.TestCase):
         self.assertEqual(len(notes), 1)
         self.assertIn("CC-17", notes[0]["message"])
 
-    def test_cc05_cc06_nonpositive_noi_is_field_absent(self):
+    def test_cc05_cc06_nonpositive_noi_is_evaluated(self):
         coverage = validate(CASES["cc05-cc06-nonpositive-noi"][0])["coverage"]
         for check in ("CC-05", "CC-06"):
-            self.assertEqual((coverage[check]["status"], coverage[check]["reason"]), ("skipped", "field_absent"))
+            self.assertEqual(coverage[check]["status"], "evaluated")
 
 
 class SpecDataLocationTests(unittest.TestCase):
