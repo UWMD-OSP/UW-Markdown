@@ -5,7 +5,7 @@ deal_name: "Cactus Crossing — Grocery-Anchored Retail, Mesa, AZ"
 created: "2026-05-18T09:00:00Z"
 last_modified: "2026-05-20T15:30:00Z"
 
-property_address: "2150 S Power Rd"
+property_address: "2150 S Crossing Plaza Dr"
 city: "Mesa"
 state: "AZ"
 zip: "85209"

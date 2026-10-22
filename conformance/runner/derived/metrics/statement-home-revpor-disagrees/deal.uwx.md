@@ -5,7 +5,7 @@ deal_name: "Ocotillo Senior Living - Chandler, AZ"
 created: "2026-08-12T09:00:00Z"
 last_modified: "2026-08-12T09:00:00Z"
 
-property_address: "3340 S Alma School Rd"
+property_address: "3340 S Quailbrush Rd"
 city: "Chandler"
 state: "AZ"
 zip: "85248"
