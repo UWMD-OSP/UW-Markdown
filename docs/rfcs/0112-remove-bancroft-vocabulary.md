@@ -1,7 +1,7 @@
 ---
 rfc: 0112
 title: Remove the Bancroft layer vocabulary from the standard
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-21
 affects:
@@ -14,7 +14,8 @@ affects:
 
 # RFC 0112: Remove the Bancroft layer vocabulary from the standard
 
-> **Draft for owner acceptance.** Origin: owner decision D1 of 2026-10-12
+> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0112 (#474) accepted as drafted, including D2: keep the generic agent/<id> source with agent_id and agent_version.").
+> Origin: owner decision D1 of 2026-10-12
 > ("Remove Bancroft entirely. Don't move it."), carried out as phase C of the
 > public cleanup brief on the owner's instruction of 2026-10-21. The starter
 > half, the agent runtime, providers and `uwmd run`, is removed separately
@@ -134,12 +135,12 @@ corpus regeneration; the Python implementation's manifest and module reader.
   moving it into Part III as a SHOULD for every producer, but it could also be
   dropped as a product rule.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-21)
 
 | # | Question | Proposal | Why / alternative |
 |---|---|---|---|
 | D1 | Scope | §1.2 sentence, §1.3, `pipeline_state`, Written-by lines, Part VI, Part VII, `agent_layers`, `agent-host`, the layer registry | Every place the standard names the removed suite |
-| D2 | Agent identity in provenance | **Keep** `agent/<id>` with `agent_id`/`agent_version`; `actor` stays free-form; layer ids leave the examples | AGENTS.md keeps agent identities. Alternative: fully free-form sources, as the brief worded it |
+| D2 | Agent identity in provenance | **Ruled:** **Keep** `agent/<id>` with `agent_id`/`agent_version`; `actor` stays free-form; layer ids leave the examples | AGENTS.md keeps agent identities. Alternative: fully free-form sources, as the brief worded it |
 | D3 | Written-by prohibitions | Restated as **Source rules** for any non-user source | Keeps "MUST NOT invent" rules that protect verification |
 | D4 | A record that still carries `pipeline_state` | Not refused; ignored | RFC 0108 D5 (retired spellings not refused). Alternative: refuse it as an unknown member |
 | D5 | §6.8 obligations | 2–5 (schema, `_meta` first, revision, `superseded: false`) move into Part III; 7 becomes a Part III SHOULD; 1, 6 and 8 (read state, layer scope, `awaiting_input` reply) are dropped as product mechanics | Producer invariants stay; product request/response goes |
