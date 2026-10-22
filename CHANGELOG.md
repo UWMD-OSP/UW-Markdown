@@ -18,6 +18,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0113: hospitality `rent_roll.occupied_room_nights` is
+  paid room nights sold in the period `rooms_revenue` covers (complimentary and
+  house-use nights excluded; package nights that include the room count as
+  sold), the basis `adr` and `occupancy` read. An optional
+  `complimentary_room_nights` (integer ≥ 0, CLS-04 contract) records the excluded
+  nights; no metric reads it. Builtin-class controls 62 and 63.
+
 - Fix #497 (erratum): the Format §4.1 `property.asset_class` example lists all
   twelve builtin classes, adding `data_center` and `manufactured_housing` as the
   frontmatter list (§2.2) and RFC 0080 already do.

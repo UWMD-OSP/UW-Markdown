@@ -2273,6 +2273,16 @@
     },
     {
       "suite": "modules",
+      "scenario": "builtin/62-hospitality-paid-room-nights",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
+      "scenario": "builtin/63-hospitality-complimentary-negative",
+      "target": "verifier"
+    },
+    {
+      "suite": "modules",
       "scenario": "registry/01-section-unrelated",
       "target": "module"
     },
