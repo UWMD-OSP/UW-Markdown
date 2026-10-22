@@ -32,6 +32,8 @@ protocol, and each package each carry an independent semver).
 - Reconcile the Mesa and Sundance examples with runtime validation: retain
   Mesa's documented review conditions and store its warnings, and describe
   Sundance's horizontal development under the standard development scenario.
+- Use an obviously fictional editor address and neutral reviewed-example naming;
+  retain neighborhood/area names and the RFC 0006 Marriott reference.
 - Fix #516's four reference departures: null tax/hedge terms are unstated,
   CC-15 uses the documented sole-variant fallback, and unresolved replacement
   sources take precedence over malformed reference values.
