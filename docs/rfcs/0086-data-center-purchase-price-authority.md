@@ -1,7 +1,7 @@
 ---
 rfc: 0086
 title: One purchase-price authority for data-center metrics, with the summary cross-checked
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-15
 affects:
@@ -14,8 +14,9 @@ affects:
 
 # RFC 0086: One purchase-price authority for data-center metrics, with the summary cross-checked
 
-> **Draft for owner acceptance, rewritten 2026-10-21** with a recommendation and
-> its StackUW impact (owner request, 2026-10-21 night). Origin: issue #343
+> **Accepted by the owner, 2026-10-22, as drafted** (owner: "RFC 0086 (#500)
+> accepted as drafted."). Rewritten 2026-10-21 with a recommendation and its
+> StackUW impact on the owner's request. Origin: issue #343
 > finding M04 and bug bash finding #493. It changes a dictionary formula and adds
 > a cross-check, so it is normative.
 
@@ -159,7 +160,7 @@ The Python implementation adds CC-17.
   prices are compared, so a second rule for the same comparison would be a new
   convention. Not proposed.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-22)
 
 | # | Question | Recommendation | Alternative |
 |---|---|---|---|
