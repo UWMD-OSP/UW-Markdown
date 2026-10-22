@@ -18,6 +18,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Scrub leftovers for public launch (cleanup phase D, owner ruling 2026-10-22):
+  the `experiments/numerical-0088` evidence manifests record `<repo>` and
+  `<python>` instead of machine-local absolute paths, with every pinned digest of
+  a changed file repinned; the authored standalone kit's README describes the kit
+  without owner process narrative.
+
 - Implement accepted RFC 0113: hospitality `rent_roll.occupied_room_nights` is
   paid room nights sold in the period `rooms_revenue` covers (complimentary and
   house-use nights excluded; package nights that include the room count as

@@ -77,7 +77,7 @@ binding check, not a new JCS implementation or financial oracle.
 The manifest was emitted as ordinary Windows text: its original working CRLF
 bytes hash to `0c9cdaeaa11e905ebd0a8fd9335f033757ccdebdc3022d98ecca144e6482a23a`;
 the Git LF text blob hashes to
-`92f9dd0cad83ffef22471e9c8db2951ec105500bfbd13524610711ddbcddd7ac`.
+`c03b2565566923e25b518506101484d46904745e574428f4df97ff7305ffa472`.
 This text packaging distinction changes no parsed provenance field. Every full
 raw observation remains in a compressed artifact with its original raw-byte
 hash and length; those artifacts receive no text conversion.

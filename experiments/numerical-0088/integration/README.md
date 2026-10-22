@@ -15,7 +15,7 @@ original byte-pinned observations. No wildcard, automatic hash refresh, old
 production loading or expected-answer overwrite is used.
 
 The frozen trajectory manifest remains byte-exact at SHA-256
-`53a79745035278e22f01322d7f851293762a41f1e1e7dad1cb1a9efd11d22c08`.
+`ceeba51bd8dcab6384ec47d8bf35e1cf7ceaa3d582ca5b4f27ac173accbdd883`.
 Within that manifest's full source closure, only `spec/UW_PROTOCOL.md` differs:
 
 | Identity | SHA-256 |
