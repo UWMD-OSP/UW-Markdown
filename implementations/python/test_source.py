@@ -112,7 +112,7 @@ class SourceTests(unittest.TestCase):
     def test_all_portable_reader_sources_scan_without_fixture_output_lookup(self):
         root = Path(__file__).resolve().parents[2]
         cases = sorted((root / "conformance/runner/cases").glob("reader__*__parse.case.json"))
-        self.assertEqual(len(cases), 22)
+        self.assertEqual(len(cases), 27)
         total_blocks = total_numbers = 0
         for case_path in cases:
             case = json.loads(case_path.read_text(encoding="utf-8"))

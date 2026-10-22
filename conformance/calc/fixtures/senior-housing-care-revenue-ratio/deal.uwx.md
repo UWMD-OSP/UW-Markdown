@@ -10,7 +10,7 @@ state: "AZ"
 zip: "85224"
 asset_class: senior_housing
 deal_stage: full_underwrite
-status: under_review
+status: in_progress
 recommendation: pending
 flags: []
 blocking_flags: []

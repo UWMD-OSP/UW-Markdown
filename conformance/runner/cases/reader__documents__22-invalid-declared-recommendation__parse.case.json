@@ -1,0 +1,17 @@
+{
+  "id": "reader__documents__22-invalid-declared-recommendation__parse",
+  "target": "reader",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "22-invalid-declared-recommendation.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/22-invalid-declared-recommendation.parsed.json"
+  }
+}

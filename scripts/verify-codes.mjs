@@ -41,8 +41,8 @@ const checks = [];
 
 const read = (p) => readFileSync(resolve(root, p), 'utf8');
 
-/** Standard numeric sequences, including RFC 0080 class families; `REC-09`, `CS-02b`, `WF-10` — a family prefix, a number, an optional suffix. */
-const CODE = /(?:[A-Z][A-Z0-9]*|CC-(?:DC|MH|HOSP))-[0-9]+[a-z]?/;
+/** Numeric sequences, including class and closed-frontmatter identifier families. */
+const CODE = /(?:[A-Z][A-Z0-9]*|CC-(?:DC|MH|HOSP)|INVALID-(?:[A-Z][A-Z0-9]*-)*[A-Z][A-Z0-9]*)-[0-9]+[a-z]?/;
 
 // ── What the library can emit ────────────────────────────────────────────────
 //

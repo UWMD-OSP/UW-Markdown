@@ -10,7 +10,7 @@ state: AZ # two-letter code; the comment is not part of the value
 zip: '85001' # quoted, then a comment
 asset_class: multifamily
 deal_stage: screening
-status: under_review
+status: in_progress
 recommendation: pending
 quick_metrics:
   purchase_price: 10000000

@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__21-invalid-declared-status__render-summary",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "21-invalid-declared-status.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/21-invalid-declared-status.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

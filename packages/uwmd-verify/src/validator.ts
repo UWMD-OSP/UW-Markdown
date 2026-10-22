@@ -25,7 +25,7 @@ import { ASSET_CLASSES, SOURCE_TAGS } from './types.js';
 import { ruleSetFor } from './rule-sets.js';
 import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks, parseUWFile, parsedFirstSourceMember } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
-  CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS, stageOneOfFor,
+  CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS, FRONTMATTER_VOCABULARIES, stageOneOfFor,
 } from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY, CompositionError, parseUWPart, resolveComposition } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
@@ -143,6 +143,7 @@ export function validateUWFile(
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
+  checkFrontmatterVocabularies(parsed, issues);
   issues.push(...checkBuiltinClassContent(parsed, ruleSet));
   checkScenarioIdentity(parsed, issues);
   checkMetaIntegrity(parsed, issues);
@@ -2535,7 +2536,7 @@ function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]
   // No stage declared → no claim to check (same posture as DQ-04). The
   // property entry is suppressed when CC-14 fired: one defect, one diagnostic.
   const stage = parsed.frontmatter.deal_stage;
-  if (!stage || !(stage in STAGE_REQUIREMENTS)) return;
+  if (typeof stage !== 'string' || !Object.hasOwn(STAGE_REQUIREMENTS, stage)) return;
   for (const sectionId of requiredSectionsFor(stage, parsed.frontmatter.asset_class)) {
     if (sectionId === 'property' && cc14Fired) continue;
     if (hasStageSection(parsed, sectionId)) continue;
@@ -3718,6 +3719,22 @@ function checkScopeReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]):
 function isVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
   return !hasBlockShape(val);
+}
+
+/** RFC 0118: report each stated invalid enum without choosing a replacement. */
+function checkFrontmatterVocabularies(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  for (const { field, code } of [
+    { field: 'deal_stage', code: 'INVALID-DEAL-STAGE-001' },
+    { field: 'tier', code: 'INVALID-TIER-001' },
+    { field: 'status', code: 'INVALID-STATUS-001' },
+    { field: 'recommendation', code: 'INVALID-RECOMMENDATION-001' },
+  ] as const) {
+    const value: unknown = parsed.frontmatter[field];
+    if (value == null) continue;
+    if (typeof value === 'string' && FRONTMATTER_VOCABULARIES[field].includes(value)) continue;
+    issues.push({ code, severity: 'error', section: 'frontmatter', field, value,
+      message: `${field} must use its closed Format vocabulary: ${FRONTMATTER_VOCABULARIES[field].join(', ')}.` });
+  }
 }
 
 // ─── DQ-01..03 / DQ-05: data quality checks ──────────────────────────────────

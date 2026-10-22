@@ -195,6 +195,14 @@ past `scope` requires real documents, not better assumptions —
 producers MUST re-stamp defaulted blocks with observed data before
 setting `deal_stage: screening` or later.
 
+The non-null `deal_stage`, `tier`, `status` and `recommendation` values are
+closed vocabularies (RFC 0118). A value outside the enumerated strings,
+including a non-string, is respectively `INVALID-DEAL-STAGE-001`,
+`INVALID-TIER-001`, `INVALID-STATUS-001` or `INVALID-RECOMMENDATION-001` (**error**)
+at that frontmatter field. Absence and null are unstated, not findings. Do not
+trim, coerce or infer values. Readiness still computes independently; an invalid
+declared stage produces no `DQ-06` gap list.
+
 ### 2.2a Asset-class identifiers (RFC 0003)
 
 `asset_class` is one of the twelve official builtin values **or** a
@@ -4495,6 +4503,10 @@ consistency checks would misfile them for anyone filtering by prefix.
 
 | Code | Severity | Rule |
 |---|---|---|
+| `INVALID-DEAL-STAGE-001` | error | A stated non-null `deal_stage` is outside its closed vocabulary (§2.2, RFC 0118). |
+| `INVALID-TIER-001` | error | A stated non-null `tier` is outside its closed vocabulary (§2.2, RFC 0118). |
+| `INVALID-STATUS-001` | error | A stated non-null `status` is outside its closed vocabulary (§2.2, RFC 0118). |
+| `INVALID-RECOMMENDATION-001` | error | A stated non-null `recommendation` is outside its closed vocabulary (§2.2, RFC 0118). |
 | `INVALID-ASSET-CLASS-001` | error | `asset_class` is neither a builtin nor a well-formed namespaced identifier (§2.2a). |
 | `INVALID-ASSET-CLASS-002` | error | A namespaced identifier whose final segment shadows a builtin name (§2.2a). |
 | `MOD-DEPENDENCY-UNDECLARED` | warning | A namespaced `asset_class` with no frontmatter `modules` list naming what declares it, or a `modules` entry that is not an object with an `id` (§2.2a). |
