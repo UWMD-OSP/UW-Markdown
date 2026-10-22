@@ -985,7 +985,7 @@ frontmatter fallback. Other free values are unchanged.
     "legal_description": "string | null",
     "coordinates": { "lat": 0.0, "lng": 0.0 }
   },
-  "asset_class": "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land",
+  "asset_class": "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land | data_center | manufactured_housing",
   "asset_subtype": "string | null",
   "year_built": 0,
   "year_renovated": null,
@@ -1590,7 +1590,7 @@ escalated, no break is taken, no remedy is applied and no balance is amortized.
 
 **Normative schema:** [rent-roll-hospitality.schema.json](schemas/rent-roll-hospitality.schema.json) (the class contract for a hospitality `rent_roll`; other members of the section are unconstrained by it).
 
-Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `rent_roll` is stage-required (§5.1); when stated it MUST contain `available_room_nights` (integer ≥ 0), otherwise `CLS-04`. Optional fields: `occupied_room_nights` (integer ≥ 0), `adr` (number ≥ 0), and `occupancy` (fraction in [0,1]). `rent_roll.keys` is not admitted. `hotel_metrics` (§4.32) is optional and holds only market_revpar. No hotel class-required section is added. RevPAR stays rooms_revenue / available_room_nights. Total room revenue is the stated booked rooms revenue, `noi_model.income.rooms_revenue`, and room_revenue_per_key divides it by property.keys (RFC 0103). ADR × occupancy × available room nights is never their value; it is the `CC-HOSP-05` cross-check. The dictionary supplies the unchanged null guards, units and round_to.
+Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `rent_roll` is stage-required (§5.1); when stated it MUST contain `available_room_nights` (integer ≥ 0), otherwise `CLS-04`. Optional fields: `occupied_room_nights` (integer ≥ 0), `complimentary_room_nights` (integer ≥ 0), `adr` (number ≥ 0), and `occupancy` (fraction in [0,1]). `occupied_room_nights` is the number of room nights sold for revenue in the period `noi_model.income.rooms_revenue` covers: complimentary and house-use room nights are excluded, and a room night in a package or contract whose price includes the room counts as sold (RFC 0113, the USALI basis). `adr` and `occupancy` read it. A producer MAY state the excluded nights as `complimentary_room_nights`; no metric reads it. `rent_roll.keys` is not admitted. `hotel_metrics` (§4.32) is optional and holds only market_revpar. No hotel class-required section is added. RevPAR stays rooms_revenue / available_room_nights. Total room revenue is the stated booked rooms revenue, `noi_model.income.rooms_revenue`, and room_revenue_per_key divides it by property.keys (RFC 0103). ADR × occupancy × available room nights is never their value; it is the `CC-HOSP-05` cross-check. The dictionary supplies the unchanged null guards, units and round_to.
 
 ### § 4.4 — Operating Statement
 

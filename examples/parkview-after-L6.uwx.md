@@ -51,6 +51,8 @@ source_documents:
   - "parkview_t12_2025.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Parkview Apartments — Glendale, AZ
 
 > **Deal ID:** uw_2026_a3f9b1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress — Full Underwrite  
@@ -72,7 +74,7 @@ The owner is motivated — estate sale situation, wants a clean close. LOI accep
     "section": "deal_context",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "user",
       "agent_version": null,
       "timestamp": "2026-04-24T09:15:00Z",
@@ -170,7 +172,7 @@ The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, wi
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "wizard",
       "agent_version": "4.0.0",
       "timestamp": "2026-04-24T09:05:00Z",
@@ -247,7 +249,7 @@ Current owner is the Hartwell Family Trust, administered by an out-of-state exec
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "wizard",
       "agent_version": "4.0.0",
       "timestamp": "2026-04-24T09:08:00Z",
@@ -603,7 +605,7 @@ Underwriting applies three key adjustments to the T-12: (1) vacancy normalized t
       "source": "underwritten",
       "vs_t12_actual": 0.05,
       "vs_submarket_avg": 0.048,
-      "rationale": "Normalized to 7% — T-12 actual of 5% reflects owner's aggressive management; submarket avg 4.8% per CoStar Q1 2026; underwrite to 7% to cushion for management transition turnover"
+      "rationale": "Normalized to 7% — T-12 actual of 5% reflects owner's aggressive management; submarket avg 4.8% per Mesquite Market Data Q1 2026; underwrite to 7% to cushion for management transition turnover"
     },
     "concessions": {
       "value": 0,
@@ -803,7 +805,7 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "wizard",
       "agent_version": "4.0.0",
       "timestamp": "2026-04-24T09:45:00Z",
@@ -823,7 +825,7 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
       "superseded": false
     }
   },
-  "_notes": "Ask First Western Bank about 24mo IO — their current sheet shows 24mo IO available on multifamily <$7.5M. Would push amortizing DSCR risk past year 2 rent growth.",
+  "_notes": "Ask Javelina Commercial Bank about 24mo IO — their current sheet shows 24mo IO available on multifamily <$7.5M. Would push amortizing DSCR risk past year 2 rent growth.",
   "loan_amount": 5040000,
   "loan_purpose": "acquisition",
   "loan_type": "conventional",
@@ -843,7 +845,7 @@ Conventional permanent loan at 70% LTV. Rate locked at 5.875% fixed for 5-year t
   "prepayment_schedule": "5-4-3-2-1",
   "origination_fee_pct": 0.01,
   "exit_fee_pct": null,
-  "lender_name": "First Western Bank",
+  "lender_name": "Javelina Commercial Bank",
   "lender_type": "bank",
   "annual_debt_service": 357612,
   "monthly_debt_service": 29801,
@@ -1317,7 +1319,7 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
       "agent_id": "L2-CRE-07",
       "agent_version": "1.0.0",
       "timestamp": "2026-04-24T12:30:00Z",
-      "notes": "Market data from web search; CoStar data not connected. Recommend CoStar validation before credit committee."
+      "notes": "Market data from web search; Mesquite Market Data feed not connected. Recommend Mesquite Market Data validation before credit committee."
     },
     "quality": {
       "confidence": "medium",
@@ -1337,16 +1339,16 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
   "market_tier": "2",
   "data_as_of": "2026-04-01",
   "data_sources": [
-    "CoStar Q1 2026 Phoenix Market Report (secondary)",
-    "CBRE Phoenix Multifamily Outlook 2026",
-    "Marcus & Millichap Phoenix Multifamily 2026"
+    "Mesquite Market Data Q1 2026 Phoenix Market Report (secondary)",
+    "Saguaro Capital Advisors Phoenix Multifamily Outlook 2026",
+    "Palo Verde Brokerage Phoenix Multifamily 2026"
   ],
   "vacancy": {
     "current_rate": 0.048,
     "prior_year_rate": 0.051,
     "yoy_change_bps": -30,
     "trend": "improving",
-    "source": "CoStar Q1 2026"
+    "source": "Mesquite Market Data Q1 2026"
   },
   "rents": {
     "avg_asking_per_unit": 1195,
@@ -1399,7 +1401,7 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
     "range_mid": 0.0551,
     "range_high": 0.06,
     "trend": "stable",
-    "source": "CBRE / Marcus & Millichap Q1 2026"
+    "source": "Saguaro Capital Advisors / Palo Verde Brokerage Q1 2026"
   },
   "comparable_sales": [
     {
@@ -1486,7 +1488,7 @@ Single-principal LLC, 14 years of CRE experience, 6 assets under management. Fin
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "wizard",
       "agent_version": "4.0.0",
       "timestamp": "2026-04-24T09:30:00Z",
@@ -1579,7 +1581,7 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
     "section": "due_diligence",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "user",
       "agent_version": null,
       "timestamp": "2026-04-24T09:50:00Z",
@@ -1653,7 +1655,7 @@ Due diligence in process. Appraisal and Phase I ordered. Title commitment receiv
   "title": {
     "commitment_received": true,
     "effective_date": "2026-04-20",
-    "title_company": "Arizona Title & Trust",
+    "title_company": "Copper Basin Title Agency",
     "commitment_amount": 7200000,
     "existing_liens": [],
     "schedule_b_exceptions": [
@@ -1747,7 +1749,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
     "section": "risk_assessment",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "user",
       "agent_version": null,
       "timestamp": "2026-04-24T14:00:00Z",
@@ -2036,7 +2038,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
       "value": 0.03,
       "unit": "pct",
       "source": "market_data",
-      "source_detail": "CoStar Q1 2026 Phoenix submarket rent growth 2.9%; rounded to 3%",
+      "source_detail": "Mesquite Market Data Q1 2026 Phoenix submarket rent growth 2.9%; rounded to 3%",
       "agent": "L2-CRE-07",
       "timestamp": "2026-04-24T12:30:00Z",
       "confidence": "medium",
@@ -2241,7 +2243,7 @@ Two supplemental metrics: true all-in yield (accounts for closing costs and rese
     "section": "custom_calculations",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "user",
       "agent_version": null,
       "timestamp": "2026-04-24T14:10:00Z",
@@ -2369,7 +2371,7 @@ Scenario: what if the lender grants 24-month IO (instead of 12-month)? Also a se
     "section": "custom_scenarios",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": "user",
       "agent_version": null,
       "timestamp": "2026-04-24T14:20:00Z",
@@ -2476,7 +2478,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
     "section": "x_lender_matrix",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-04-24T10:00:00Z",
@@ -2508,7 +2510,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
   "content": {
     "lenders": [
       {
-        "name": "First Western Bank",
+        "name": "Javelina Commercial Bank",
         "contact": "Sarah M., CRE Lending",
         "status": "term_sheet_verbal",
         "loan_amount_quoted": 5040000,
@@ -2524,7 +2526,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
         "last_contact": "2026-04-22"
       },
       {
-        "name": "Western Alliance Bank",
+        "name": "Desert Plains Bank",
         "contact": "Mike T., Commercial RE",
         "status": "indicative_terms_received",
         "loan_amount_quoted": 5040000,
@@ -2536,11 +2538,11 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
         "recourse": "full",
         "origination_fee": "0.75%",
         "notes": "Higher rate, no IO, full recourse. Less competitive. Keep as backup.",
-        "next_step": "Hold — only engage if First Western falls through",
+        "next_step": "Hold — only engage if Javelina Commercial falls through",
         "last_contact": "2026-04-20"
       },
       {
-        "name": "Triumph Bank",
+        "name": "Copperline Community Bank",
         "contact": "Direct outreach, no response yet",
         "status": "outreach_sent",
         "loan_amount_quoted": null,
@@ -2850,7 +2852,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "e003",
       "timestamp": "2026-04-24T09:15:00Z",
       "event_type": "user_edit",
-      "agent_or_actor": "user:jared",
+      "agent_or_actor": "user:analyst",
       "section_affected": "deal_context",
       "status": "success",
       "input_sections": [],
@@ -2916,7 +2918,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "e006",
       "timestamp": "2026-04-24T11:05:00Z",
       "event_type": "engine_run",
-      "agent_or_actor": "engine:calculations.ts",
+      "agent_or_actor": "engine:calculations",
       "section_affected": "noi_model",
       "status": "success",
       "input_sections": [
@@ -2939,7 +2941,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "e007",
       "timestamp": "2026-04-24T11:10:00Z",
       "event_type": "engine_run",
-      "agent_or_actor": "engine:dcfEngine.ts",
+      "agent_or_actor": "engine:dcf",
       "section_affected": "dcf",
       "status": "success",
       "input_sections": [
@@ -2965,7 +2967,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "e008",
       "timestamp": "2026-04-24T11:16:00Z",
       "event_type": "validation",
-      "agent_or_actor": "engine:financialValidityChecker",
+      "agent_or_actor": "engine:validation",
       "section_affected": "validation",
       "status": "success",
       "input_sections": [
@@ -3008,13 +3010,13 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "output_hash": null,
       "error_code": null,
       "error_message": null,
-      "notes": "Market data via web search — CoStar not connected"
+      "notes": "Market data via web search — Mesquite Market Data not connected"
     },
     {
       "entry_id": "e010",
       "timestamp": "2026-04-24T14:10:00Z",
       "event_type": "user_edit",
-      "agent_or_actor": "user:jared",
+      "agent_or_actor": "user:analyst",
       "section_affected": "custom_calculations",
       "status": "success",
       "input_sections": [
@@ -3039,7 +3041,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "entry_id": "e011",
       "timestamp": "2026-04-24T14:20:00Z",
       "event_type": "user_edit",
-      "agent_or_actor": "user:jared",
+      "agent_or_actor": "user:analyst",
       "section_affected": "custom_scenarios",
       "status": "success",
       "input_sections": [
@@ -3118,7 +3120,7 @@ Sizing against the three standard constraints. The proposed $5.04M loan fits the
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
