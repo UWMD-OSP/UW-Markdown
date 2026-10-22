@@ -22,6 +22,13 @@ protocol, and each package each carry an independent semver).
   twelve builtin classes, adding `data_center` and `manufactured_housing` as the
   frontmatter list (§2.2) and RFC 0080 already do.
 
+- Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
+  for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
+  `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.
+  Lite markers are now sought only outside UWX structured fences. The Lite
+  conformance suite reads each compiled UWX back (eight new `[uwx-read]`
+  checks).
+
 - Fix #409: the UWX -> Lite projection omits a stated `null` under a
   unit-bearing field (land's `valuation.going_in_cap_rate`) and reports it in
   `omitted_paths`, so the projection compiles back; a failed Lite compile in the
