@@ -24,11 +24,12 @@ export function diagnosticsAgree(left, right) {
 }
 
 async function main() {
-  const files = execFileSync('git', ['-c', 'core.fsmonitor=false', 'ls-files', 'conformance'], { cwd: ROOT, encoding: 'utf8' })
-    .split(/\r?\n/).filter(file => file.endsWith('.uwx.md'));
+  const files = execFileSync('git', ['-c', 'core.fsmonitor=false', 'ls-files', '-z', 'conformance'], { cwd: ROOT, encoding: 'utf8' })
+    .split('\0').filter(file => file.endsWith('.uwx.md'));
   if (!files.length) throw new TypeError('No tracked structured fixtures found');
   const child = spawnSync(process.env.PYTHON ?? 'python', ['-B', join(ROOT, 'scripts/python-validation-diagnostics.py')], {
     cwd: ROOT, input: JSON.stringify(files), encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
+    env: { ...process.env, PYTHONUTF8: '1' },
   });
   if (child.error) throw child.error;
   if (child.status !== 0) throw new TypeError(`Python diagnostic adapter failed: ${child.stderr}`);
