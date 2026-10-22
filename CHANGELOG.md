@@ -18,6 +18,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0113: hospitality `rent_roll.occupied_room_nights` is
+  paid room nights sold in the period `rooms_revenue` covers (complimentary and
+  house-use nights excluded; package nights that include the room count as
+  sold), the basis `adr` and `occupancy` read. An optional
+  `complimentary_room_nights` (integer ≥ 0, CLS-04 contract) records the excluded
+  nights; no metric reads it. Builtin-class controls 62 and 63.
+
 - Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
   for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
   `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.
