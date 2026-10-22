@@ -21,6 +21,7 @@ import { ruleSetFor } from './rule-sets.js';
 import { resolveSectionBlock } from './section-resolution.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 import { readYamlScalar } from './yaml-scalar.js';
+import { SIZE_CONTRACT } from './size-contract.js';
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
@@ -153,6 +154,10 @@ export function sizeDenominators(formula: string, assetClasses: readonly string[
           && expr.right.segments.length === 1 && sizes.has(expr.right.segments[0]!)) {
           found.add(`property.${expr.right.segments[0]}`);
         }
+        if (expr.op === '/' && expr.right.kind === 'path' && expr.right.head === 'components'
+          && assetClasses.includes('mixed_use') && Object.hasOwn(SIZE_CONTRACT.components, expr.right.segments.join('.'))) {
+          found.add(`components.${expr.right.segments.join('.')}`);
+        }
         walk(expr.left); walk(expr.right); return;
       case 'unary': walk(expr.operand); return;
       case 'cond': walk(expr.test); walk(expr.consequent); walk(expr.else); return;
@@ -187,10 +192,10 @@ function checkStatement(
     }
     if (metric.null_semantics === 'positive_size_denominator') {
       // RFC 0100: no Verifier confirms a figure against an impossible size.
-      const block = resolveSectionBlock(parsed, 'property', { sectionVariants });
-      const payload = block ? blockPayload(block) : undefined;
       for (const path of sizeDenominators(metric.formula, metric.asset_classes)) {
-        const size = get(payload, path.slice('property.'.length));
+        const [section, ...segments] = path.split('.');
+        const block = resolveSectionBlock(parsed, section!, { sectionVariants });
+        const size = get(block ? blockPayload(block) : undefined, segments.join('.'));
         if (typeof size === 'number' && size < 0) {
           return { state: 'unverifiable', reason: 'negative_size_denominator', computed: null };
         }

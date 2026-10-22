@@ -142,6 +142,42 @@ describe('verifyStatedMetric — one statement', () => {
 });
 
 describe('sizeDenominators — RFC 0100', () => {
+  it('checks only the selected component variant (RFC 0117)', () => {
+    const definition = metric('retail_price_psf', 'mixed_use');
+    const p = simple();
+    p.frontmatter.asset_class = 'mixed_use';
+    p.sections.components = {
+      base: { ...block('components', { retail: { nra_sqft: 1, allocation_pct: 1 } }), annotation: { section: 'components', variant: 'base' } },
+      downside: { ...block('components', { retail: { nra_sqft: -1, allocation_pct: 1 } }), annotation: { section: 'components', variant: 'downside' } },
+    };
+    expect(verifyStatedMetric(definition, p, 123, { components: 'base' }, 2).state).toBe('failed');
+    expect(verifyStatedMetric(definition, p, 123, { components: 'downside' }, 2).reason).toBe('negative_size_denominator');
+  });
+
+  it('guards all eight mixed-use size denominators (RFC 0117)', () => {
+    for (const id of ['multifamily_price_per_unit', 'retail_price_psf', 'office_price_psf',
+      'industrial_price_psf', 'self_storage_price_psf', 'student_housing_price_per_bed',
+      'data_center_price_per_kw', 'manufactured_housing_price_per_site']) {
+      const definition = metric(id, 'mixed_use');
+      const [path] = sizeDenominators(definition.formula, ['mixed_use']);
+      expect(path).toBeDefined();
+      const [, slot, field] = path!.split('.');
+      const p = simple();
+      p.frontmatter.asset_class = 'mixed_use';
+      p.sections.components = block('components', { [slot!]: { [field!]: -1, allocation_pct: 1 } });
+      const before = JSON.stringify(p);
+      expect(verifyStatedMetric(definition, p, 123, undefined, 2))
+        .toEqual({ state: 'unverifiable', reason: 'negative_size_denominator', computed: null });
+      expect(JSON.stringify(p)).toBe(before);
+      (p.sections.components as UWBlock).content = { [slot!]: { [field!]: 0, allocation_pct: 1 } };
+      expect(verifyStatedMetric(definition, p, 123, undefined, 2).reason).toBe('CALC-DIV-ZERO');
+      (p.sections.components as UWBlock).content = { [slot!]: { [field!]: 1, allocation_pct: 1 } };
+      expect(verifyStatedMetric(definition, p, 123, undefined, 2).state).toBe('failed');
+    }
+    expect(sizeDenominators('1 / components.retail.custom_size', ['mixed_use'])).toEqual([]);
+    expect(sizeDenominators('1 / components.retail.nra_sqft', ['office'])).toEqual([]);
+  });
+
   it('finds a registered size the formula divides by directly, for the class', () => {
     expect(sizeDenominators('valuation.purchase_price / property.total_units', ['multifamily'])).toEqual(['property.total_units']);
     expect(sizeDenominators('valuation.purchase_price / property.total_nra_sqft', ['multifamily'])).toEqual(['property.total_nra_sqft']);

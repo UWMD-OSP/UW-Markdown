@@ -634,6 +634,12 @@ protocol, and each package each carry an independent semver).
   verification gates remain, with no numerical/design acceptance or publication.
   Reconcile live contributor/version/roadmap and agent-retirement guidance.
 
+- Implement accepted RFC 0117: extend SIZE-01 to the five declared component
+  size fields on every admitted mixed-use slot; the eight component per-size
+  metrics refuse negative size denominators as unverifiable. TypeScript and
+  Python validators share the table. Formulas, quantization and lawful sizes
+  are unchanged.
+
 - Implement accepted RFC 0116: stage readiness requires stated non-null content
   and is cumulative; scope uses the class primary size or valuation price.
   Missing data-center capacity and manufactured-housing sites are screening
