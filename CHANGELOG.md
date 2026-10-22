@@ -21,6 +21,314 @@ protocol, and each package each carry an independent semver).
   Cloudflare hosting branch after the independent contrast fix lands on main.
   No normative contract, package version or release change.
 
+- Implement accepted RFC 0108: Format §4.17's stored `validation` section uses
+  the validation result's vocabulary. `overall_status` is
+  `clean | warnings | errors | blocking`; `completeness[].severity` is
+  `error | warning | info`, with a halting item recorded in `blocking_flags`;
+  `completeness[].required_for_stage` takes the seven `deal_stage` values. The
+  examples and fixtures that stated the section are rewritten (`warnings_only` →
+  `warnings`, completeness `blocking` → `error`); no implementation reads it.
+
+- Implement accepted RFC 0107: the Format §5.2 LTC band gets code `FV-15` and two
+  homes, `quick_metrics.ltc` (a new optional frontmatter member) and
+  `sources_uses.equity_metrics.loan_to_cost`. Every stated value is checked,
+  whatever the loan purpose (warning above 0.80, error above 0.90), and reported
+  as a deal flag (RFC 0109). `FINANCIAL_VALIDITY_CODES` and the institution
+  escalation list admit `FV-15`. Python matches. New
+  `documents/malformed/68-ltc-homes` and `69-ltc-boundaries`.
+
+- Implement accepted RFC 0109: Format §5.2 financial-validity findings are deal
+  flags, not validation errors. `ValidationResult` gains `deal_flags`
+  (`code`, `section`, `field`, `message`, `value`, `threshold`, `band`), always
+  present; `FV-NN` no longer appears in `issues` and never affects
+  `overall_status`, the `validate` exit status, stage readiness or receipt
+  counts. The institution config gains
+  `validation_overrides.financial_validity_errors`, an array of registered
+  `FV-NN` codes whose error band is reported as an `error` issue (warning bands
+  stay flags); a bad value is `VAL-INSTITUTION-CONFIG-MALFORMED`. The CLI, chat
+  and summary renders, the MCP connector, the web editor and VS Code show deal
+  flags apart from issues. `validateUWFile` takes an optional fourth `policy`
+  argument; the CLI-internal `loadInstitutionThresholds` becomes
+  `loadInstitutionPolicy`. Python matches. New
+  `institution-config/30`–`33`; case 67 and six FV baselines re-derived.
+
+- Owner rulings on RFC 0104 (2026-10-21): a frontmatter-scoped issue has
+  `section: "frontmatter"` in every implementation. The reference adds it to
+  `LOC-01`, `CUR-01`, `INVALID-ASSET-CLASS-*`, `MOD-DEPENDENCY-UNDECLARED` and the
+  `quick_metrics` FV homes, matching Python. Protocol §III.6a names the
+  RFC 0093–0096 metadata and payload pass order as the one normative exception
+  to non-normative issue order.
+
+- Implement accepted RFC 0105 (#428): Format §5.2 gives each financial-validity
+  band its code (`FV-01`–`FV-14`, unchanged) and every home it is read from.
+  Each finite value at a home is checked, and each home draws one issue at the
+  most severe band it crosses (a DSCR of 0.95 is `FV-04`/error only). The
+  reference now reads `debt_structure.sizing_metrics.*`,
+  `valuation.going_in_cap_rate`, `dcf.returns.*`,
+  `dcf.assumptions.revenue_growth_rate`, `noi_model.expenses.expense_ratio` and
+  `noi_model.income.vacancy_credit_loss.rate_applied` beside `quick_metrics`, and
+  stops reading three fields the Format never defined. Python adds the
+  `quick_metrics` homes. New `documents/malformed/67-financial-validity-homes`.
+
+- Implement accepted RFC 0104 (#424): an issue's `field` is the dotted path from
+  the block payload root (or the frontmatter root), with array elements by index
+  (Protocol §III.6a). `META_MISSING` now names `_meta`; `META_FIELD_MISSING_*`,
+  `META_LOW_CONFIDENCE_NO_REVIEW_FLAG`, `SRC-01`–`03` and `DQ-01`–`03` name their
+  `_meta` member; `DQ-05` reports the stale gaps item; capital-stack `CS-*` and
+  `CC-03` address tranches as `tranches[i]`, not by id, in both implementations.
+  Issue order is not normative outside the metadata and payload passes that fix
+  it. New `documents/malformed/66-issue-field-paths` and a `field_issues`
+  expectation in the documents runner.
+
+- Implement accepted RFC 0106 (#432): a structured block body must be one I-JSON
+  object (Format §2.4). A syntax error or empty body, trailing content, a `null`,
+  scalar or array root, a duplicate member name (after escape decoding), a number
+  outside finite binary64 or an unpaired surrogate refuses the whole document with
+  `SOURCE_BLOCK_MALFORMED` (`parse`, Protocol §XI.2), current or superseded, in
+  strict and non-strict mode. Before, the reference dropped the block, kept the
+  last duplicate, read `Infinity` or crashed; Python now codes its refusals and
+  adds the surrogate check. New reader cases `documents/malformed/60`–`65`.
+
+- The frontmatter reader refuses an indented line under a scalar or `[]` value
+  (`flags: []` followed by `  - …` lines, for example) with
+  `UNSUPPORTED_YAML_FEATURE` instead of silently dropping it or reading it as a
+  top-level key (#426, Format Appendix D). The independent Python reader already
+  refused it. New `documents/malformed/57-yaml-nested-under-scalar`.
+
+- A present `asset_class` that is not a non-empty string (`true`, `0`, `[]`, `""`)
+  is `INVALID-ASSET-CLASS-001` (#427); before, it validated clean and every
+  class-scoped rule and metric was skipped. `null` and absence are unchanged. New
+  `documents/malformed/58-asset-class-boolean` and `59-asset-class-empty`.
+
+- A non-object `_meta` (a string, array, number or boolean) draws `META_MISSING`,
+  as Protocol §XI defines it ("no `_meta` object"), instead of five
+  `META_FIELD_MISSING_*` warnings when it happened to be a non-empty string or
+  array (#429). Python already read it this way.
+
+- `CS-01` refuses a capital-stack tranche `position` below 1 (#430). Format §4.24
+  makes 1 the most senior and the section schema's minimum is 1; zero and
+  negative positions passed before. New `capital-stack/position-below-one`.
+
+- A reassessment member stated as `null` is not stated (Format §4.5, #431): a null
+  `round_to_decimals` no longer draws `TAX-03` and uses the currency quantum, as
+  the section's own example intends, and a null `value_basis` or
+  `assessment_ratio` no longer counts toward the pair rule.
+
+- `@uwmd/excel` imports a mixed-use workbook (#411), the last builtin class whose
+  round trip was missing. Export now names each component's EGI and operating-expense
+  cells; import reads the property inputs and every present component's stated inputs
+  back, never a formula-derived NOI, and refuses an altered footing
+  (`WORKBOOK-IMPORT-SUBTOTAL`).
+- The agent-discovery kit (launch criterion F), built and staged but not
+  published or listed. `packages/uwmd-mcp` is a private, read-only MCP connector
+  with three stateless tools (`uwmd_validate`, `uwmd_verify`, `uwmd_explain_code`)
+  and a registry manifest. `skills/write-uwmd-record` is a skill for writing a
+  record. `tools/web-editor` builds a zero-install validator page separately from
+  the site (`build:validator`). `docs/launch/agent-discovery/` holds a staged
+  `llms.txt`, an example gallery and the launch-day wiring checklist.
+
+- `spec/metrics/README.md` documents which variant UWMD uses for the eight metrics
+  where practice varies: `price_per_kw`, `revpar_index`, `revpor`, `adr` and
+  `occupancy`, `gop_margin`, the per-area ids, `economic_occupancy` and
+  `cash_on_cash`. It is editorial and changes no definition. Three open questions
+  are listed for a decision.
+
+- A playbook for a non-property subject (`docs/playbooks/NON_PROPERTY_SUBJECT.md`):
+  a document profile on RFC 0018, with RFC 0082 (draft) as the worked proposal.
+
+- Remove the CLI's three deprecated 4.2.0 aliases (#412): `validate --stage`,
+  `export --compact` and `compose --parts` are now unknown flags, refused with
+  exit 1 like any other. Use `stage_readiness`, `--no-superseded` and `--out-dir`.
+
+- Launch playbooks in `docs/playbooks/`: adding an official asset class
+  (the full RFC 0080 kit, as a checklist of the files a class touches),
+  adding or changing a metric (authority, vectors, statement homes, and new ids
+  rather than silent redefinition after launch), third-party modules (identity,
+  resolution, the deliberate limits, signing), and release rules after launch
+  (lockstep semver, comment windows, keys, disclosure; deprecation window and key
+  policy marked proposed). Linked from CONTRIBUTING and the wiki; the docs-site
+  pages come with the launch-day site update.
+
+- Implement accepted RFC0100 (#415): a closed size contract (Format §5.5) refuses a
+  stated negative or non-finite size, count, area or rent, or a fractional count,
+  as `SIZE-01` (error; new `SIZE-NN` family) in every current `property` and
+  `rent_roll` block; zero, null and absence are admitted, signed amounts are out of
+  scope, and class contracts keep their own codes. The 44 per-size dictionary
+  metrics are `null_semantics: positive_size_denominator`: a negative size makes
+  them unverifiable (`negative_size_denominator`). TS and Python validators share
+  the table. New `documents/malformed/51`–`56` and a metrics control.
+
+- Implement RFC0103 (owner's four metric decisions, 2026-10-20). `fb_gross_margin`
+  is USALI gross margin, (F&B revenue − cost of sales) ÷ revenue, with no labor.
+  Data center: `mark_to_market` = (market − in-place) ÷ in-place replaces
+  `rent_index` (positive = upside; `CC-DC-07` keeps its trigger). Power cost never
+  assumes full draw: `annual_facility_kwh` (replacing
+  `annual_facility_kwh_at_contract`) is metered kWh, else contracted kW × an
+  explicit `dc_power.draw_factor` × PUE (measured before design) × 8,760, and
+  `null` without one; under metered pass-through the landlord's power cost is 0.
+  Hotels: `total_room_revenue` / `room_revenue_per_key` read the stated rooms
+  revenue, and a new `CC-HOSP-05` warning checks ADR × occupancy × nights within
+  1%. Packs, dictionary, Excel (new text input for `billing`), Python
+  inventories, fixtures and the Mesa Gateway example are re-derived; the
+  dictionary README cites the outside authorities (USALI, The Green Grid WP #49,
+  OCC Comptroller's Handbook, EPRA BPR).
+
+- Accept RFC0100 (#415, owner 2026-10-20): a closed size contract (registered
+  primary/secondary sizes plus §4.3 rent-roll counts, areas and rents) refuses
+  negative values and fractional counts under a new error code `SIZE-01` (owner
+  D2; not `CLS-04`), zero stays admissible (D3), and per-size dictionary metrics
+  are `unverifiable` when their size is ≤ 0. The synchronized implementation
+  follows in its own PR.
+
+- Implement accepted RFC0099 (#416): the metric dictionary (`spec/metrics/builtin.json`,
+  schema-required) carries the closed `statement_bindings` registry, and
+  `verifyStatedMetrics` / `uwmd verify` check every bound home of each metric by
+  default: `quick_metrics`, the metric id at each output section root, and the
+  eleven aliases (`valuation.going_in_cap_rate`, `valuation.price_per_sf`,
+  `debt_structure.sizing_metrics.dscr_underwritten`, …). A +10% error in a section
+  copy now fails verification. `conformance/metrics/statement-bindings.json` is
+  deleted (one source); its Lite section map moves to `lite-input-sections.json`.
+  New `conformance/metrics/statement-homes/` cases (21). Format §4.1/4.3/4.5/4.6/4.7/4.23
+  name the verified fields; Protocol §II.2 states the rule.
+
+- Accept RFC0099 (#416, owner 2026-10-20, as drafted): the metric dictionary
+  carries a closed statement-binding registry (today's conformance alias table,
+  moved), so a Verifier checks each dictionary metric at every place a document
+  states it (`valuation.going_in_cap_rate`, `valuation.price_per_sf`,
+  `debt_structure.sizing_metrics.*`, …), not only in `quick_metrics`. The
+  synchronized implementation follows in its own PR.
+
+- Certify the independent Python implementation (Issue #354): its discovery
+  manifest claims the Reader tier plus `calc-evaluate`, and CI proves the claim
+  with the RFC 0004 runner on Windows, Linux and macOS (17 Reader and 184
+  `calc-evaluate` cases pass; only the 140 `validate` cases may skip). `validate`
+  passes the portable corpus but is not claimed until its differences from the
+  reference outside the corpus are resolved (#425 review). The Verifier tier is
+  not claimed: Python has no metric-dictionary reproduction, stated-figure
+  verifiers or receipt verification (Protocol §II.2, §II.5). Python also gains RFC 0098
+  (per-point CC-03, CS-04, DS-01), RFC 0101 null-source retention and the
+  reference's completeness-warning population; its unit suite is 527/527.
+
+- `CC-03` checks the senior rate (#406): the `capital_stack` `senior_debt`
+  tranche `rate` must equal the `interest_rate` of the senior `debt_structure` at
+  the stack's point exactly, as Format §4.24's "same amount, same rate" already
+  required (owner ruling: exact, no tolerance). The reference compared amounts
+  only. New `capital-stack/senior-rate-disagrees` case.
+
+- Accept RFC0102 (#405): a structured block opens only on a line beginning
+  exactly ```` ```json ```` + the `uw:section=` annotation and closes on a line of
+  three backticks; tilde, indented and longer fences are ordinary Markdown. The
+  reference already behaved this way; the independent Python reader aligns.
+  New `documents/malformed/50-tilde-fenced-block`.
+
+- `uwmd init` scaffolds only class sections a blank stub can satisfy (#414):
+  hospitality now scaffolds with no errors (no `rent_roll` stub, which must carry
+  `available_room_nights` once stated); data center and manufactured housing no
+  longer write empty `dc_*`/`mhc_sites` stubs that owed `CLS-04` on every required
+  field, and report the one missing required section (`CLS-03`) instead. The
+  scaffold's section labels now match the Format's section numbers.
+
+- Accept and implement RFC0101 (#413): every present `_meta.provenance.source`
+  outside the §2.6 actor grammar is `SRC-01`, including `""`, non-strings and
+  `null`; a `null` source keeps its `META_FIELD_MISSING_SOURCE` warning. The
+  reference previously validated these clean. Three `conformance/source` cases.
+
+- Implement accepted RFC0098 (#403): `capital_stack.point_in_time` is required
+  (`closing` | `stabilization`; `CS-04` when absent or unknown, including on a
+  mixed-use component stack); `debt_structure.point_in_time` is optional and
+  absent means outstanding at both points (`DS-01` for an unknown value, new
+  `DS` family); `sources_uses` is the closing statement; `CC-03` selects one
+  senior per point by the unchanged §5.3 order and compares like-dated figures,
+  recording `debt_structure@closing`/`@stabilization` evidence. Schema, Format,
+  Protocol, eight conformance cases, corpus and examples updated. Breaking for
+  documents with a `capital_stack` that state no point.
+
+- Accept RFC0098 (#403, StackUW) under the owner's 2026-10-19 decision: a
+  required `capital_stack.point_in_time` (`closing` | `stabilization`), an
+  optional `debt_structure.point_in_time` (absent = outstanding at both points),
+  `sources_uses` defined as the closing statement, and `CC-03` reconciled per
+  point (`CS-04`, `DS-01`). Breaking for documents that carry a `capital_stack`.
+  This docs-only acceptance changes no runtime; the synchronized
+  implementation follows.
+
+- Reader: the canonical block of a section (or of a variant key) is the
+  **last** non-superseded block, as Format §2.7 states, not the highest
+  revision (#404). Two non-superseded blocks at the same revision kept the
+  first, and a later lower revision was archived. The block a later one
+  overwrites stays retained in `superseded`, so integrity and subject
+  accounting are unchanged.
+
+- Correct Issue #395: distinguish actual block wrappers from variant maps by
+  shape, and route current peers through own keys. Lawful labels such as
+  `annotation`, `content` and `toString` retain their current/history identity
+  across parsing, selection, Envelope/signature subjects and existing consumers.
+  Add synthetic source-order, digest, real-signing and consumer regressions;
+  no label is newly reserved and no normative representation is changed.
+
+- Implement accepted RFC0097 selected institution-config admission in the
+  reference CLI and an independent private Python helper: strict UTF8/JSON/
+  decoded-name/Unicode checks, exact lexical selection, atomic three-key mapping
+  and typed operation refusals. Standalone JSON is error-only/exit1; aggregate
+  verification preserves independent branches and omits refused financial work.
+  Synchronize public wire type, Format/Protocol/schema/pointer authority and29
+  paired conformance controls. Existing financial comparisons, pure API maps and
+  receipt config isolation remain unchanged. Config preflight keeps described
+  refusals at exit1 and unexpected adapter defects at exit2. Python discovery stays
+  parse-only; complete validation certification remains separately gated.
+
+- Accept RFC0097 under the owner's2026-10-19 decision at4a31eb3c: two closed
+  institution-config operation errors, error-only JSON/exit1, exact lexical
+  selection, strict JSON admission and atomic three-key application. Genuine
+  automatic absence still defaults. Synchronized TS/Python/spec/schema/type and
+  conformance implementation follows on Issue354; this docs-only acceptance
+  changes no runtime, threshold procedure, receipt rule or capability.
+
+- Implement accepted RFC0096 in TypeScript and an independent private Python
+  admission helper: closed LU-05/REC-11/CS-03/WF-16 errors on assembled current
+  payloads, synchronized Format/Protocol/schema/remediation and eight authored
+  conformance controls. Correct existing structural recovery own-member checks;
+  preserve financial selection, arithmetic and result rules. Attribute the sole
+  existing expectation change (two REC-02 findings become one) to the accepted
+  recovery presence table. Python discovery remains parse-only; complete
+  validation is a separate implementation and certification gate.
+
+
+- Accept RFC0096 under the owner's2026-10-19 decision at1926efe4: closed
+  LU-05/REC-11/CS-03/WF-16 validation errors, assembled current-payload authority,
+  exact target/recovery-null/lexical-date dispositions and unchanged financial
+  selectors/results. Synchronized TS/Python implementation and attributed
+  conformance follow on Issue354. Documentation only; no runtime, schema,
+  expectation or capability activation.
+
+- Correct RFC0095's ECMAScript end-anchor explanation and validator comments;
+  unflagged `$` already requires input end. Add public parser/schema controls for
+  five valid actors and35 rejected suffixes. Accepted predicates, schemas,
+  frozen evidence and runtime behavior remain unchanged.
+
+
+- Implement accepted RFC0095 in TypeScript and independent Python source validation:
+  ordered META-05/06, readiness-only DQ-06/info, symmetric stated-reference
+  assertions and exact Gregorian as_of admission. Synchronize Format/Protocol,
+  registry/remediation and schema with six authored conformance controls and
+  frozen cross-runtime calendar vectors. Bound override SRC checks to existing
+  current sections/variants. Discovery stays parse-only; no complete validation
+  or Verifier claim and no change to receipt subject/authentication procedures.
+
+
+- Accept RFC0095 under the owner's2026-10-18 decision atc551e956: closed
+  META-05/06 allocations, readiness-only DQ-06/info, symmetric stated-assertion
+  reference triggers and strict Gregorian date-only as_of admission. Freeze the
+  reviewed89-reference activation baseline and independent TS/Python calendar
+  controls. Documentation only; synchronized implementation follows on Issue354.
+  No live schema, conformance expectation, capability or release change.
+
+- Implement accepted RFC0094 in TypeScript and Python: META-04/error for exactly
+  present-invalid canonical confidence, revision and exact T1B UTC-Z timestamps.
+  Preserve absence warnings, META-01/02/03, physical/model source accounting and
+  issue ordering. Synchronize Format, Protocol, registry and schema assertions;
+  authored conformance controls preserve existing sources and expectations.
+  Python discovery remains parse-only pending complete capability certification.
+
 - Implement accepted RFC0093 in TypeScript and Python: exact META-01 placement,
   present section and required quality admission, ordered physical/model passes,
   fresh structured-source and composed root/part accounting. Synchronize Format,

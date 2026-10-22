@@ -1,3 +1,6 @@
+import { hasBlockShape } from './block-kind.js';
+import { checkPayloadAdmission, currentPayloadBlocks } from './payload-admission.js';
+import { checkSizeContract } from './size-contract.js';
 import { pinnedPow } from './calc/pinned-numerics.js';
 import { checkBuiltinClassContent } from './builtin-class-validation.js';
 import { isScenarioId } from './scenario.js';
@@ -11,12 +14,14 @@ import type {
   ValidationMessage,
   ValidationResult,
   FinancialThresholds,
+  DealFlag,
+  ValidationPolicy,
   StageReadiness,
   AssetClass,
   DealStage,
   CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
-import { DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
+import { ASSET_CLASSES, DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
 import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks, parseUWFile, parsedFirstSourceMember } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
@@ -64,19 +69,6 @@ function enrichWithRemediation(msg: ValidationMessage): ValidationMessage {
   };
 }
 
-// ─── Financial-validity codes (Protocol §III.6a) ────────────────────────────
-
-/** The `FV-NN` code for each frontmatter threshold check, by metric and direction. */
-const FV_THRESHOLD_CODES: Readonly<Record<string, string>> = Object.freeze({
-  'cap_rate:below':      'FV-01',
-  'cap_rate:above':      'FV-02',
-  'debt_yield:below':    'FV-03',
-  'dscr:below':          'FV-04',
-  'irr_projected:below': 'FV-07',
-  'irr_projected:above': 'FV-08',
-  'ltv:above':           'FV-09',
-});
-
 /**
  * Resolve a dot-notated path of the form `<section>.<field>...` against
  * the parsed file's content blocks. Returns `undefined` when any segment
@@ -100,6 +92,7 @@ export function validateUWFile(
   input: ParsedUWFile | string,
   thresholdOverrides?: Partial<FinancialThresholds>,
   sourceOptions?: { parts: readonly string[] },
+  policy?: ValidationPolicy,
 ): ValidationResult {
   // String input is a fresh source operation. A supplied model stays a model,
   // even if it happens to retain parser evidence or stale raw source strings.
@@ -125,7 +118,8 @@ export function validateUWFile(
 
   const ledger = newCoverageLedger();
 
-  checkFinancialValidity(parsed, thresholds, issues);
+  const deal_flags: DealFlag[] = [];
+  checkFinancialValidity(parsed, thresholds, new Set(policy?.financial_validity_errors ?? []), issues, deal_flags);
   checkCrossSectionConsistency(parsed, issues, ledger);
   checkComponents(parsed, issues, ledger);
   checkCapitalStack(parsed, issues);
@@ -138,6 +132,7 @@ export function validateUWFile(
   checkTaxBasis(parsed, issues);
   checkLeaseClauses(parsed, issues);
   checkStudentBedCounts(parsed, issues);
+  checkSizeContract(parsed, issues);
   checkHedgesAndEscrows(parsed, issues);
   checkRenovationDraw(parsed, issues);
   issues.push(...checkReserveAccountsStructure(parsed).issues);
@@ -151,11 +146,15 @@ export function validateUWFile(
   checkMetadataAdmission(parsed, issues, sourceOperation);
   checkProvenanceActors(parsed, issues);
   checkMetadataBooleans(parsed, issues);
+  checkMetadataLeaves(parsed, issues);
+  checkOptionalMetadata(parsed, issues);
+  checkMetadataReferences(parsed, issues);
   checkBlockRoles(parsed, issues);
   checkPeriodSeries(parsed, issues);
   checkSourceVocabulary(parsed, issues);
   checkScopeReadiness(parsed, issues);
   checkDataQuality(parsed, issues);
+  checkPayloadAdmission(parsed, issues, ADMISSIBLE_COMPONENT_CLASSES);
 
   // CC-16: one info issue per section that was present as a variant map no
   // cross-check could resolve (§5.3, RFC 0037). Emitted after every check has
@@ -197,6 +196,7 @@ export function validateUWFile(
     errors,
     warnings,
     info,
+    deal_flags,
     coverage: orderedCoverage(ledger),
   };
 }
@@ -231,135 +231,86 @@ function checkScenarioIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]
   }
 }
 
-// ─── §5.2 Financial validity thresholds ──────────────────────────────────────
+// ─── §5.2 Financial validity thresholds (RFC 0105) ───────────────────────────
 
+/** A Format-defined home: a frontmatter path, or a path in one section's payload. */
+interface FvHome { readonly section?: string; readonly path: string }
+interface FvSide { readonly code: string; readonly error?: number; readonly warning?: number }
+interface FvBand { readonly metric: string; readonly homes: readonly FvHome[]; readonly below?: FvSide; readonly above?: FvSide }
+
+/**
+ * Format §5.2's bands, the code for each side and every home each is read from.
+ * A home that is absent or not a finite number draws nothing; fields the Format
+ * does not define are never read (D4).
+ */
+function financialValidityBands(t: FinancialThresholds): readonly FvBand[] {
+  return [
+    { metric: 'DSCR', homes: [{ path: 'quick_metrics.dscr' }, { section: 'debt_structure', path: 'sizing_metrics.dscr_underwritten' }],
+      below: { code: 'FV-04', error: t.dscr.error_below, warning: t.dscr.warning_below } },
+    { metric: 'LTV', homes: [{ path: 'quick_metrics.ltv' }, { section: 'debt_structure', path: 'sizing_metrics.ltv' }],
+      above: { code: 'FV-09', error: t.ltv.error_above, warning: t.ltv.warning_above } },
+    { metric: 'Debt yield', homes: [{ path: 'quick_metrics.debt_yield' }, { section: 'debt_structure', path: 'sizing_metrics.debt_yield' }],
+      below: { code: 'FV-03', warning: t.debt_yield.warning_below } },
+    { metric: 'Going-in cap rate', homes: [{ path: 'quick_metrics.cap_rate' }, { section: 'valuation', path: 'going_in_cap_rate' }],
+      below: { code: 'FV-01', warning: t.cap_rate.warning_below }, above: { code: 'FV-02', warning: t.cap_rate.warning_above } },
+    { metric: 'Vacancy rate', homes: [{ section: 'noi_model', path: 'income.vacancy_credit_loss.rate_applied' }],
+      below: { code: 'FV-13', warning: t.vacancy_rate.warning_below }, above: { code: 'FV-14', warning: t.vacancy_rate.warning_above } },
+    { metric: 'OpEx ratio', homes: [{ section: 'noi_model', path: 'expenses.expense_ratio' }],
+      below: { code: 'FV-10', warning: t.opex_ratio.warning_below }, above: { code: 'FV-11', warning: t.opex_ratio.warning_above } },
+    { metric: 'Levered IRR', homes: [{ path: 'quick_metrics.irr_projected' }, { section: 'dcf', path: 'returns.levered_irr' }],
+      below: { code: 'FV-07', warning: t.irr.warning_below }, above: { code: 'FV-08', warning: t.irr.warning_above } },
+    { metric: 'Equity multiple', homes: [{ section: 'dcf', path: 'returns.equity_multiple' }],
+      below: { code: 'FV-05', warning: t.equity_multiple.warning_below }, above: { code: 'FV-06', warning: t.equity_multiple.warning_above } },
+    { metric: 'Annual rent growth', homes: [{ section: 'dcf', path: 'assumptions.revenue_growth_rate' }],
+      above: { code: 'FV-12', warning: t.annual_rent_growth.warning_above } },
+    // RFC 0107: every stated LTC, whatever the loan purpose (D3).
+    { metric: 'LTC', homes: [{ path: 'quick_metrics.ltc' }, { section: 'sources_uses', path: 'equity_metrics.loan_to_cost' }],
+      above: { code: 'FV-15', error: t.ltc.error_above, warning: t.ltc.warning_above } },
+  ];
+}
+
+/** The one block a section home is read from: role-aware, senior debt preferred. */
+function financialValidityBlock(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
+  const declared = sectionId === 'debt_structure' ? 'senior' as const : undefined;
+  return resolveRoleBlock(parsed.sections[sectionId], sectionId, [], undefined, declared).block;
+}
+
+/**
+ * Format §5.2 findings are deal flags (RFC 0109), never validation issues,
+ * unless the institution lists the code and the error band is crossed (D3, D4).
+ */
 function checkFinancialValidity(
   parsed: ParsedUWFile,
   t: FinancialThresholds,
+  escalated: ReadonlySet<string>,
   issues: ValidationMessage[],
+  flags: DealFlag[],
 ): void {
-  const qm = parsed.frontmatter.quick_metrics ?? {};
-
-  const checks: Array<{
-    metric: string;
-    value: number | null | undefined;
-    section?: string;
-    field?: string;
-    rules: Array<{ type: 'error' | 'warning'; direction: 'below' | 'above'; limit: number }>;
-  }> = [
-    {
-      metric: 'dscr',
-      value: qm.dscr,
-      section: 'debt_structure',
-      rules: [
-        { type: 'error',   direction: 'below', limit: t.dscr.error_below },
-        { type: 'warning', direction: 'below', limit: t.dscr.warning_below },
-      ],
-    },
-    {
-      metric: 'ltv',
-      value: qm.ltv,
-      section: 'debt_structure',
-      rules: [
-        { type: 'warning', direction: 'above', limit: t.ltv.warning_above },
-        { type: 'error',   direction: 'above', limit: t.ltv.error_above },
-      ],
-    },
-    {
-      metric: 'debt_yield',
-      value: qm.debt_yield,
-      section: 'debt_structure',
-      rules: [
-        { type: 'warning', direction: 'below', limit: t.debt_yield.warning_below },
-      ],
-    },
-    {
-      metric: 'cap_rate',
-      value: qm.cap_rate,
-      section: 'valuation',
-      rules: [
-        { type: 'warning', direction: 'below', limit: t.cap_rate.warning_below },
-        { type: 'warning', direction: 'above', limit: t.cap_rate.warning_above },
-      ],
-    },
-    {
-      metric: 'irr_projected',
-      value: qm.irr_projected,
-      section: 'dcf',
-      rules: [
-        { type: 'warning', direction: 'below', limit: t.irr.warning_below },
-        { type: 'warning', direction: 'above', limit: t.irr.warning_above },
-      ],
-    },
-  ];
-
-  for (const check of checks) {
-    if (check.value == null) continue;
-    for (const rule of check.rules) {
-      const hit = rule.direction === 'below'
-        ? check.value < rule.limit
-        : check.value > rule.limit;
-
-      if (hit) {
-        issues.push({
-          code: FV_THRESHOLD_CODES[`${check.metric}:${rule.direction}`] as string,
-          severity: rule.type,
-          section: check.section,
-          field: check.metric,
-          message: `${check.metric.toUpperCase()} ${check.value.toFixed(4)} is ${rule.direction} ${rule.type} threshold of ${rule.limit}`,
-          value: check.value,
-          threshold: rule.direction === 'below'
-            ? { min: rule.limit }
-            : { max: rule.limit },
-        });
-      }
-    }
-  }
-
-  // Vacancy and OpEx ratio come from noi_model content, not quick_metrics
-  const noiBlock = getSection(parsed, 'noi_model');
-  if (noiBlock) {
-    const vacancyRate = deepGet(noiBlock.content, 'vacancy_rate') as number | undefined;
-    const egi = deepGet(noiBlock.content, 'effective_gross_income') as number | undefined;
-    const opex = deepGet(noiBlock.content, 'total_operating_expenses') as number | undefined;
-
-    if (vacancyRate != null) {
-      if (vacancyRate < t.vacancy_rate.warning_below) {
-        issues.push({ code: 'FV-13', severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually low (below ${(t.vacancy_rate.warning_below * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { min: t.vacancy_rate.warning_below } });
-      }
-      if (vacancyRate > t.vacancy_rate.warning_above) {
-        issues.push({ code: 'FV-14', severity: 'warning', section: 'noi_model', field: 'vacancy_rate', message: `Vacancy rate ${(vacancyRate * 100).toFixed(1)}% is unusually high (above ${(t.vacancy_rate.warning_above * 100).toFixed(0)}%)`, value: vacancyRate, threshold: { max: t.vacancy_rate.warning_above } });
-      }
-    }
-
-    if (egi != null && opex != null && egi > 0) {
-      const opexRatio = opex / egi;
-      if (opexRatio < t.opex_ratio.warning_below) {
-        issues.push({ code: 'FV-10', severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is suspiciously low (below ${(t.opex_ratio.warning_below * 100).toFixed(0)}%)`, value: opexRatio, threshold: { min: t.opex_ratio.warning_below } });
-      }
-      if (opexRatio > t.opex_ratio.warning_above) {
-        issues.push({ code: 'FV-11', severity: 'warning', section: 'noi_model', field: 'total_operating_expenses', message: `OpEx ratio ${(opexRatio * 100).toFixed(1)}% of EGI is unusually high (above ${(t.opex_ratio.warning_above * 100).toFixed(0)}%)`, value: opexRatio, threshold: { max: t.opex_ratio.warning_above } });
-      }
-    }
-  }
-
-  // Annual rent growth from dcf assumptions
-  const dcfBlock = getSection(parsed, 'dcf');
-  if (dcfBlock) {
-    const rentGrowth = deepGet(dcfBlock.content, 'assumptions.annual_rent_growth') as number | undefined
-      ?? deepGet(dcfBlock.content, 'rent_growth_assumption') as number | undefined;
-    if (rentGrowth != null && rentGrowth > t.annual_rent_growth.warning_above) {
-      issues.push({ code: 'FV-12', severity: 'warning', section: 'dcf', field: 'annual_rent_growth', message: `Annual rent growth assumption ${(rentGrowth * 100).toFixed(1)}% is above the ${(t.annual_rent_growth.warning_above * 100).toFixed(0)}% warning threshold`, value: rentGrowth, threshold: { max: t.annual_rent_growth.warning_above } });
-    }
-
-    const equityMultiple = deepGet(dcfBlock.content, 'levered_equity_multiple') as number | undefined
-      ?? deepGet(dcfBlock.content, 'summary.equity_multiple') as number | undefined;
-    if (equityMultiple != null) {
-      if (equityMultiple < t.equity_multiple.warning_below) {
-        issues.push({ code: 'FV-05', severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is below ${t.equity_multiple.warning_below}x warning threshold`, value: equityMultiple, threshold: { min: t.equity_multiple.warning_below } });
-      }
-      if (equityMultiple > t.equity_multiple.warning_above) {
-        issues.push({ code: 'FV-06', severity: 'warning', section: 'dcf', field: 'equity_multiple', message: `Equity multiple ${equityMultiple.toFixed(2)}x is above ${t.equity_multiple.warning_above}x warning threshold`, value: equityMultiple, threshold: { max: t.equity_multiple.warning_above } });
+  for (const band of financialValidityBands(t)) {
+    for (const home of band.homes) {
+      const root = home.section === undefined ? parsed.frontmatter : financialValidityBlock(parsed, home.section)?.content;
+      if (root == null) continue;
+      const value = deepGet(root as Record<string, unknown>, home.path);
+      if (typeof value !== 'number' || !Number.isFinite(value)) continue;
+      // One finding per home and side, at the most severe band crossed (RFC 0105 D2).
+      for (const direction of ['below', 'above'] as const) {
+        const side = band[direction];
+        if (!side) continue;
+        const crosses = (limit: number | undefined): limit is number =>
+          limit !== undefined && (direction === 'below' ? value < limit : value > limit);
+        const crossed = crosses(side.error) ? 'error' : crosses(side.warning) ? 'warning' : null;
+        if (crossed === null) continue;
+        const limit = (crossed === 'error' ? side.error : side.warning) as number;
+        const finding = {
+          code: side.code,
+          section: home.section ?? 'frontmatter',
+          field: home.path,
+          message: `${band.metric} ${value} at ${home.section === undefined ? '' : `${home.section}.`}${home.path} is ${direction} the ${crossed} threshold of ${limit}`,
+          value,
+          threshold: direction === 'below' ? { min: limit } : { max: limit },
+        };
+        if (crossed === 'error' && escalated.has(side.code)) issues.push({ ...finding, severity: 'error' });
+        else flags.push({ ...finding, band: crossed });
       }
     }
   }
@@ -541,43 +492,77 @@ function checkCrossSectionConsistency(
     }
   }
 
-  // CC-03: the senior loan reconciles across sources_uses, debt_structure, and
-  // (when present) the capital_stack senior_debt tranche — one senior view stated
-  // once and agreeing everywhere (RFC 0026 §4.24). Two legs; the rule is
-  // evaluated when either leg compared.
+  // CC-03: the senior loan reconciles at each point in time (RFC 0098, which
+  // generalizes RFC 0026 §4.24). sources_uses is the closing statement; the
+  // capital_stack states its own point; a debt_structure block is outstanding at
+  // the point it states, or at both. One senior is selected per point by the
+  // §5.3 order applied to that point's candidates, so a construction facility
+  // and its takeout never collide. Two legs; the rule is evaluated when either
+  // leg compared.
   {
     const su = resolveCrossCheckSection(parsed, 'sources_uses', [], 'CC-03', ledger);
-    const ds = resolveCrossCheckSection(parsed, 'debt_structure', [], 'CC-03', ledger);
     if (su.state === 'unresolvable') noteUnresolvable(ledger, 'sources_uses', su.variants, 'CC-03', su.detail);
-    if (ds.state === 'unresolvable') noteUnresolvable(ledger, 'debt_structure', ds.variants, 'CC-03', ds.detail);
+    const debt = {
+      closing: seniorDebtAtPoint(parsed, 'closing', ledger),
+      stabilization: seniorDebtAtPoint(parsed, 'stabilization', ledger),
+    };
+    for (const point of CAPITAL_POINTS) {
+      const r = debt[point];
+      if (r.state === 'unresolvable') noteUnresolvable(ledger, 'debt_structure', r.variants, 'CC-03', r.detail ? `${point}: ${r.detail}` : point);
+    }
+    const debtUnresolvable = CAPITAL_POINTS.some((point) => debt[point].state === 'unresolvable');
+    const loanAt = (point: CapitalPoint): number | undefined => {
+      const block = debt[point].block;
+      return block ? num(deepGet(block.content, 'loan_amount')) : undefined;
+    };
     const suLoan = su.block ? (num(deepGet(su.block.content, 'sources.loan_amount')) ?? num(deepGet(su.block.content, 'sources.debt_proceeds'))) : undefined;
-    const dsLoan = ds.block ? num(deepGet(ds.block.content, 'loan_amount')) : undefined;
     let evaluated = false;
-    if (suLoan != null && dsLoan != null) {
+
+    // Closing leg: the closing statement against the senior outstanding at closing.
+    const closingLoan = loanAt('closing');
+    if (suLoan != null && closingLoan != null) {
       evaluated = true;
-      if (Math.abs(suLoan - dsLoan) > 100) {
-        issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', field: 'sources.loan_amount', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match Debt Structure loan amount ($${dsLoan.toLocaleString()})`, value: Math.abs(suLoan - dsLoan) });
+      if (Math.abs(suLoan - closingLoan) > 100) {
+        issues.push({ code: 'CC-03', severity: 'error', section: 'sources_uses', field: 'sources.loan_amount', message: `CC-03: Loan amount in Sources & Uses ($${suLoan.toLocaleString()}) does not match the closing senior Debt Structure loan amount ($${closingLoan.toLocaleString()})`, value: Math.abs(suLoan - closingLoan) });
       }
     }
 
+    // Stack leg: the senior tranche against the senior outstanding at the
+    // stack's point. Only a closing stack falls back to sources_uses, which is a
+    // closing figure.
     const senior = seniorDebtTranche(parsed, ledger);
-    if (senior) {
-      const seniorAmount = num(senior['amount']);
-      const reference = dsLoan ?? suLoan;
+    if (senior?.point) {
+      const seniorAmount = num(senior.tranche['amount']);
+      const reference = loanAt(senior.point) ?? (senior.point === 'closing' ? suLoan : undefined);
       if (seniorAmount != null && reference != null) {
         evaluated = true;
         if (Math.abs(seniorAmount - reference) > 100) {
-          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: 'tranches.senior_debt.amount', message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
+          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: `tranches[${senior.index}].amount`, message: `CC-03: the capital_stack senior_debt tranche ($${seniorAmount.toLocaleString()}) does not match the ${senior.point} senior loan amount ($${reference.toLocaleString()})`, value: Math.abs(seniorAmount - reference) });
+        }
+      }
+      // Same rate (§4.24): the tranche's rate equals the interest_rate of the
+      // senior at the stack's point, exactly, with no tolerance (owner ruling on
+      // #406). sources_uses states no rate, so a closing stack has no fallback.
+      const seniorRate = num(senior.tranche['rate']);
+      const atPoint = debt[senior.point].block;
+      const loanRate = atPoint ? num(deepGet(atPoint.content, 'interest_rate')) : undefined;
+      if (seniorRate != null && loanRate != null) {
+        evaluated = true;
+        if (seniorRate !== loanRate) {
+          issues.push({ code: 'CC-03', severity: 'error', section: 'capital_stack', field: `tranches[${senior.index}].rate`, message: `CC-03: the capital_stack senior_debt tranche rate (${seniorRate}) does not equal the ${senior.point} senior loan interest_rate (${loanRate})`, value: Math.abs(seniorRate - loanRate) });
         }
       }
     }
 
+    const noSeniorAt = (point: CapitalPoint): boolean => debt[point].state === 'absent';
     if (evaluated) markEvaluated(ledger, 'CC-03');
     else if (su.state === 'unresolvable') markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'sources_uses');
-    else if (ds.state === 'unresolvable') markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'debt_structure');
+    else if (debtUnresolvable) markSkipped(ledger, 'CC-03', 'variant_unresolvable', 'debt_structure');
     else if (ledger.coverage['CC-03']?.reason === 'variant_unresolvable') { /* A role-bearing capital stack could not resolve. */ }
     else if (su.state === 'absent') markSkipped(ledger, 'CC-03', 'section_absent', 'sources_uses');
-    else if (ds.state === 'absent') markSkipped(ledger, 'CC-03', 'section_absent', 'debt_structure');
+    else if (!parsed.sections['debt_structure']) markSkipped(ledger, 'CC-03', 'section_absent', 'debt_structure');
+    else if (senior?.point && noSeniorAt(senior.point)) markSkipped(ledger, 'CC-03', 'not_applicable', `no ${senior.point} senior debt_structure`);
+    else if (!senior && noSeniorAt('closing')) markSkipped(ledger, 'CC-03', 'not_applicable', 'no closing senior debt_structure');
     else markSkipped(ledger, 'CC-03', 'field_absent', suLoan == null ? 'sources_uses.sources.loan_amount' : 'debt_structure.loan_amount');
   }
 
@@ -816,7 +801,8 @@ function checkReassessment(
   // TAX-01: the assessed value follows from the basis and ratio when both are stated.
   const basis = r['value_basis'];
   const ratio = r['assessment_ratio'];
-  if (basis !== undefined || ratio !== undefined) {
+  // Format §4.5: a member stated as null is not stated (#431).
+  if (basis != null || ratio != null) {
     if (!finiteNum(basis) || !finiteNum(ratio)) {
       taxIssue(issues, 'TAX-01', section, `${base}.assessment_ratio`,
         'TAX-01: value_basis and assessment_ratio are stated together or not at all');
@@ -835,12 +821,12 @@ function checkReassessment(
   }
 
   const round = r['round_to_decimals'];
-  if (round !== undefined && !Number.isSafeInteger(round)) {
+  if (round != null && !Number.isSafeInteger(round)) {
     taxIssue(issues, 'TAX-03', section, `${base}.round_to_decimals`,
       'TAX-03: round_to_decimals must be an integer; it may be negative to round to a magnitude', round);
     return null;
   }
-  return round === undefined ? CURRENCY_DP : (round as number);
+  return round == null ? CURRENCY_DP : (round as number);
 }
 
 function checkAbatement(
@@ -1337,7 +1323,12 @@ function checkRecoveryTerms(
   t: Record<string, unknown>, issues: ValidationMessage[], at: string,
 ): number | null {
   const raw = t['recovery_terms'];
-  if (raw == null) return null;
+  // Keep REC06's existing financial operand selection separate from the
+  // structural own-member checks below; this batch does not redefine arithmetic.
+  const priorShare = raw !== null && typeof raw === 'object' && !Array.isArray(raw)
+    ? (raw as Record<string, unknown>)['pro_rata_share'] : undefined;
+  const shareValue = leaseNum(priorShare) && priorShare > 0 && priorShare <= 1 ? priorShare : null;
+  if (!Object.hasOwn(t, 'recovery_terms') || raw === null) return shareValue;
   const p = `${at}.recovery_terms`;
   if (typeof raw !== 'object' || Array.isArray(raw)) {
     recIssue(issues, 'REC-02', p, 'REC-02: recovery_terms must be an object stating a method', raw);
@@ -1348,21 +1339,19 @@ function checkRecoveryTerms(
   // REC-01: the share is a fraction, not a percent. 4.12 instead of 0.0412 is
   // the single most consequential typo available here — it multiplies every
   // recovery by a hundred.
-  const share = terms['pro_rata_share'];
-  let shareValue: number | null = null;
-  if (share != null) {
+  const share = Object.hasOwn(terms, 'pro_rata_share') ? terms['pro_rata_share'] : undefined;
+  if (Object.hasOwn(terms, 'pro_rata_share') && share !== null) {
     if (!(leaseNum(share) && share > 0 && share <= 1)) {
       recIssue(issues, 'REC-01', `${p}.pro_rata_share`,
         'REC-01: pro_rata_share must be a fraction in (0,1] — 0.0412 is 4.12%, not 4.12', share);
-    } else {
-      shareValue = share;
     }
   }
 
   // REC-02: a method without the input it needs. A lone `cap` is a complete
   // statement (RFC 0081 §7); any other member requires the method.
-  const method = terms['method'];
-  const methodRequired = Object.keys(terms).some(k => k !== 'cap');
+  const methodPresent = Object.hasOwn(terms, 'method');
+  const method = methodPresent ? terms['method'] : undefined;
+  const methodRequired = methodPresent || Object.keys(terms).some(k => k !== 'cap' && terms[k] !== null);
   if (methodRequired && (typeof method !== 'string' || !(RECOVERY_METHODS as readonly string[]).includes(method))) {
     recIssue(issues, 'REC-02', `${p}.method`,
       `REC-02: method must be one of ${RECOVERY_METHODS.join(', ')} — the vocabulary is closed`, method);
@@ -1373,15 +1362,15 @@ function checkRecoveryTerms(
       fixed_amount: 'fixed_recovery_annual',
     };
     const needs = REQUIRED[method];
-    if (needs && terms[needs] == null) {
+    if (needs && (!Object.hasOwn(terms, needs) || terms[needs] === null)) {
       recIssue(issues, 'REC-02', `${p}.${needs}`,
         `REC-02: method "${method}" requires ${needs}; without it the method states nothing`);
     }
   }
 
   // REC-03: a pool entry that names nothing recovers nothing, silently.
-  const pool = terms['recoverable_pool'];
-  if (pool != null) {
+  const pool = Object.hasOwn(terms, 'recoverable_pool') ? terms['recoverable_pool'] : undefined;
+  if (Object.hasOwn(terms, 'recoverable_pool') && pool !== null) {
     if (!Array.isArray(pool) || pool.length === 0) {
       recIssue(issues, 'REC-03', `${p}.recoverable_pool`,
         'REC-03: recoverable_pool must be a nonempty array of operating-statement expense keys', pool);
@@ -1397,20 +1386,20 @@ function checkRecoveryTerms(
 
   // The cap. Accumulation has no default: the three treatments diverge
   // materially within three years, so a silent choice is a wrong number.
-  const cap = terms['cap'];
-  if (cap != null) {
+  const cap = Object.hasOwn(terms, 'cap') ? terms['cap'] : undefined;
+  if (Object.hasOwn(terms, 'cap') && cap !== null) {
     const cp = `${p}.cap`;
     if (typeof cap !== 'object' || Array.isArray(cap)) {
       recIssue(issues, 'REC-02', cp, 'REC-02: cap must be an object', cap);
     } else {
       const c = cap as Record<string, unknown>;
-      const pct = c['pct'];
-      if (pct != null && !(leaseNum(pct) && pct > 0 && pct < 1)) {
+      const pct = Object.hasOwn(c, 'pct') ? c['pct'] : undefined;
+      if (Object.hasOwn(c, 'pct') && pct !== null && !(leaseNum(pct) && pct > 0 && pct < 1)) {
         recIssue(issues, 'REC-01', `${cp}.pct`,
           'REC-01: cap.pct must be a fraction in (0,1) — 0.05 is 5%, not 5', pct);
       }
-      if (pct != null && (methodRequired || Object.hasOwn(c, 'accumulation'))) {
-        const acc = c['accumulation'];
+      if (methodPresent && method !== null && Object.hasOwn(c, 'pct') && pct !== null) {
+        const acc = Object.hasOwn(c, 'accumulation') ? c['accumulation'] : undefined;
         if (typeof acc !== 'string' || !(RECOVERY_CAP_ACCUMULATIONS as readonly string[]).includes(acc)) {
           recIssue(issues, 'REC-02', `${cp}.accumulation`,
             `REC-02: a stated cap.pct requires cap.accumulation (${RECOVERY_CAP_ACCUMULATIONS.join(' | ')}) — there is no default, because the three disagree`, acc);
@@ -1429,20 +1418,22 @@ function checkRecoveryTerms(
  * claims the amount reached the cash flows, and nothing checks that it did.
  */
 function recoveryRefResolves(parsed: ParsedUWFile, variant: string): boolean {
-  const entry = parsed.sections['cash_flow_series'];
+  const entry = Object.hasOwn(parsed.sections, 'cash_flow_series') ? parsed.sections['cash_flow_series'] : undefined;
   if (!entry) return false;
   return isVariantMap(entry)
-    ? (entry as Record<string, UWBlock>)[variant] !== undefined
+    ? Object.hasOwn(entry, variant) && (entry as Record<string, UWBlock>)[variant] !== undefined
     : variant === 'default';
 }
 
 function checkRecoveryTrueUp(
   t: Record<string, unknown>, issues: ValidationMessage[], at: string,
-  share: number | null, asOf: string | null, parsed: ParsedUWFile,
+  share: number | null, asOf: string | null, parsed: ParsedUWFile, structuralOnly = false,
 ): void {
   const rows = t['recovery_true_up'];
-  if (rows == null) return;
+  const ownRows = Object.hasOwn(t, 'recovery_true_up');
+  if (rows === null || (!ownRows && structuralOnly)) return;
   if (!Array.isArray(rows)) {
+    if (!ownRows) return;
     recIssue(issues, 'REC-04', `${at}.recovery_true_up`,
       'REC-04: recovery_true_up must be an array of reconciliation rows', rows);
     return;
@@ -1450,28 +1441,33 @@ function checkRecoveryTrueUp(
   for (const [j, raw] of rows.entries()) {
     const p = `${at}.recovery_true_up[${j}]`;
     if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
-      recIssue(issues, 'REC-04', p, 'REC-04: each true-up entry must be an object', raw);
+      if (ownRows) recIssue(issues, 'REC-04', p, 'REC-04: each true-up entry must be an object', raw);
       continue;
     }
     const row = raw as Record<string, unknown>;
     const start = row['period_start'];
     const end = row['period_end'];
-    if (!isDate(start) || !isDate(end)) {
+    const ownStart = Object.hasOwn(row, 'period_start') ? start : undefined;
+    const ownEnd = Object.hasOwn(row, 'period_end') ? end : undefined;
+    let structuralRow = ownRows;
+    if (ownRows && (!isDate(ownStart) || !isDate(ownEnd))) {
       recIssue(issues, 'REC-04', `${p}.period_start`,
         'REC-04: a true-up states period_start and period_end as YYYY-MM-DD dates');
-      continue;
-    }
-    if (end < start) {
+      structuralRow = false;
+    } else if (ownRows && (ownEnd as string) < (ownStart as string)) {
       recIssue(issues, 'REC-04', `${p}.period_end`,
-        `REC-04: period_end (${end}) precedes period_start (${start})`, end);
-      continue;
+        `REC-04: period_end (${ownEnd}) precedes period_start (${ownStart})`, ownEnd);
+      structuralRow = false;
     }
 
+    // Preserve the selected financial procedure and its existing operand/date
+    // eligibility. Only REC01--04/09 structural member authority changes here.
+    if (isDate(start) && isDate(end) && end >= start) {
     // REC-05: a reconciliation of a period that has not ended is a forecast.
     // Anchored on the rent roll's own as_of_date — never on file metadata,
     // which is an edit timestamp and would refuse a legitimately re-saved
     // document. Skipped when the rent roll states no date.
-    if (asOf !== null && !(end < asOf)) {
+    if (!structuralOnly && asOf !== null && !(end < asOf)) {
       recIssue(issues, 'REC-05', `${p}.period_end`,
         `REC-05: the true-up period ends ${end}, on or after the rent roll as_of_date ${asOf} — a reconciliation of an open period is a forecast, and this section carries settled facts`, end);
     }
@@ -1483,7 +1479,7 @@ function checkRecoveryTrueUp(
     const trueUp = row['true_up_amount'];
 
     // REC-06: the one product a single document can check.
-    if (leaseNum(poolActual) && share !== null && leaseNum(uncapped)) {
+    if (!structuralOnly && leaseNum(poolActual) && share !== null && leaseNum(uncapped)) {
       const want = roundRec(poolActual * share);
       if (roundRec(uncapped) !== want) {
         recIssue(issues, 'REC-06', `${p}.tenant_share_uncapped`,
@@ -1493,13 +1489,13 @@ function checkRecoveryTrueUp(
 
     // REC-07: the cap can only reduce. The capped amount itself is stated,
     // not recomputed — see the section note.
-    if (leaseNum(uncapped) && leaseNum(capped) && roundRec(capped) > roundRec(uncapped)) {
+    if (!structuralOnly && leaseNum(uncapped) && leaseNum(capped) && roundRec(capped) > roundRec(uncapped)) {
       recIssue(issues, 'REC-07', `${p}.tenant_share_capped`,
         `REC-07: tenant_share_capped (${capped}) exceeds tenant_share_uncapped (${uncapped}) — a cap cannot increase a recovery`, capped);
     }
 
     // REC-08: the subtraction the whole row exists to record.
-    if (leaseNum(capped) && leaseNum(billed) && leaseNum(trueUp)) {
+    if (!structuralOnly && leaseNum(capped) && leaseNum(billed) && leaseNum(trueUp)) {
       const want = roundRec(capped - billed);
       if (roundRec(trueUp) !== want) {
         recIssue(issues, 'REC-08', `${p}.true_up_amount`,
@@ -1507,16 +1503,18 @@ function checkRecoveryTrueUp(
       }
     }
 
-    const settlement = row['settlement'];
-    if (settlement != null && !(typeof settlement === 'string' && (RECOVERY_SETTLEMENTS as readonly string[]).includes(settlement))) {
+    }
+    if (!structuralRow) continue;
+    const settlement = Object.hasOwn(row, 'settlement') ? row['settlement'] : undefined;
+    if (Object.hasOwn(row, 'settlement') && settlement !== null && !(typeof settlement === 'string' && (RECOVERY_SETTLEMENTS as readonly string[]).includes(settlement))) {
       recIssue(issues, 'REC-04', `${p}.settlement`,
         `REC-04: settlement must be one of ${RECOVERY_SETTLEMENTS.join(', ')}`, settlement);
     }
 
     // REC-09: the §4.26 handoff.
-    const ref = row['cash_flow_ref'];
-    if (ref != null) {
-      const variant = typeof ref === 'object' && !Array.isArray(ref)
+    const ref = Object.hasOwn(row, 'cash_flow_ref') ? row['cash_flow_ref'] : undefined;
+    if (Object.hasOwn(row, 'cash_flow_ref') && ref !== null) {
+      const variant = typeof ref === 'object' && ref !== null && !Array.isArray(ref) && Object.hasOwn(ref, 'variant')
         ? (ref as Record<string, unknown>)['variant']
         : undefined;
       if (typeof variant !== 'string' || variant.length === 0) {
@@ -1532,21 +1530,38 @@ function checkRecoveryTrueUp(
 
 function checkLeaseClauses(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const block = resolveCrossCheckSection(parsed, 'rent_roll').block;
-  if (!block) return;
-  const tenants = deepGet(block.content, 'tenants');
-  if (!Array.isArray(tenants)) return;
-  const rawAsOf = deepGet(block.content, 'as_of_date');
-  const asOf = isDate(rawAsOf) ? rawAsOf : null;
-  for (const [i, raw] of tenants.entries()) {
-    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
-    const t = raw as Record<string, unknown>;
-    const at = `tenants[${i}]`;
-    checkEscalationSchedule(t, issues, at);
-    checkTerminationOption(t, issues, at);
-    checkCoTenancy(t, issues, at);
-    checkLeasingCapital(t, issues, at);
-    const share = checkRecoveryTerms(t, issues, at);
-    checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
+  if (block) {
+    const tenants = deepGet(block.content, 'tenants');
+    if (Array.isArray(tenants)) {
+      const rawAsOf = deepGet(block.content, 'as_of_date');
+      const asOf = isDate(rawAsOf) ? rawAsOf : null;
+      for (const [i, raw] of tenants.entries()) {
+        if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
+        const t = raw as Record<string, unknown>;
+        const at = `tenants[${i}]`;
+        checkEscalationSchedule(t, issues, at);
+        checkTerminationOption(t, issues, at);
+        checkCoTenancy(t, issues, at);
+        checkLeasingCapital(t, issues, at);
+        const share = checkRecoveryTerms(t, issues, at);
+        checkRecoveryTrueUp(t, issues, at, share, asOf, parsed);
+      }
+    }
+  }
+  // Local recovery admission covers every current peer, independent of the
+  // financial role selection. Preserve selected financial/LSE checks above.
+  for (const [variant, peer] of currentPayloadBlocks(parsed, 'rent_roll')) {
+    if (peer === block) continue;
+    const tenants = Object.hasOwn(peer.content, 'tenants') ? peer.content['tenants'] : undefined;
+    if (!Array.isArray(tenants)) continue;
+    const start = issues.length;
+    for (const [i, raw] of tenants.entries()) {
+      if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) continue;
+      const tenant = raw as Record<string, unknown>; const at = `tenants[${i}]`;
+      const share = checkRecoveryTerms(tenant, issues, at);
+      checkRecoveryTrueUp(tenant, issues, at, share, null, parsed, true);
+    }
+    for (let i = start; i < issues.length; i++) issues[i].message += ` (variant "${variant}")`;
   }
 }
 
@@ -2245,15 +2260,19 @@ const WATERFALL_MARKERS = [
 ];
 
 /** The capital_stack `senior_debt` tranche, if the section and tranche exist. */
-function seniorDebtTranche(parsed: ParsedUWFile, ledger: CoverageLedger): Record<string, unknown> | null {
+function seniorDebtTranche(parsed: ParsedUWFile, ledger: CoverageLedger): { tranche: Record<string, unknown>; index: number; point: CapitalPoint | null } | null {
   const cs = roleAwareDirectRead(parsed, 'capital_stack', 'CC-03', ledger);
   if (!cs) return null;
-  const tranches = (cs.content as Record<string, unknown>)['tranches'];
+  const content = cs.content as Record<string, unknown>;
+  const tranches = content['tranches'];
   if (!Array.isArray(tranches)) return null;
-  const senior = tranches.find(
+  const index = tranches.findIndex(
     (t) => t && typeof t === 'object' && (t as Record<string, unknown>)['class'] === 'senior_debt',
   );
-  return senior && typeof senior === 'object' ? (senior as Record<string, unknown>) : null;
+  if (index < 0) return null;
+  const senior = tranches[index] as Record<string, unknown>;
+  // An absent or invalid point is CS-04; the stack leg then has no point to read.
+  return { tranche: senior, index, point: isCapitalPoint(content['point_in_time']) ? content['point_in_time'] : null };
 }
 
 // Validates one capital-stack payload's structure: CS-01 (well-formed, unique
@@ -2271,6 +2290,17 @@ function checkStackContent(
   prefix: string,
   issues: ValidationMessage[],
 ): void {
+  // CS-04 (RFC 0098): the stack names the one point in time it describes.
+  if (!isCapitalPoint(content['point_in_time'])) {
+    issues.push({
+      code: 'CS-04', severity: 'error', section, field: `${prefix}point_in_time`,
+      message: Object.hasOwn(content, 'point_in_time')
+        ? `CS-04: capital_stack point_in_time must be "closing" or "stabilization"`
+        : `CS-04: capital_stack must state point_in_time ("closing" or "stabilization")`,
+      ...(Object.hasOwn(content, 'point_in_time') ? { value: content['point_in_time'] } : {}),
+    });
+  }
+
   // CS-WATERFALL-UNSUPPORTED: a distribution waterfall at the stack level.
   for (const key of Object.keys(content)) {
     if (WATERFALL_MARKERS.includes(key)) {
@@ -2296,34 +2326,35 @@ function checkStackContent(
 
     // CS-01: structural — id, class, position, amount present and well-typed; id and position unique.
     if (typeof id !== 'string' || id.length === 0) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.id`, message: `CS-01: tranche ${label} must state a non-empty string id` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].id`, message: `CS-01: tranche ${label} must state a non-empty string id` });
     } else if (seenIds.has(id)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.id`, message: `CS-01: duplicate tranche id "${id}"; ids must be unique within the stack` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].id`, message: `CS-01: duplicate tranche id "${id}"; ids must be unique within the stack` });
     } else {
       seenIds.add(id);
     }
     if (typeof cls !== 'string' || !TRANCHE_CLASSES.has(cls)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].class`, message: `CS-01: tranche ${label} has an invalid class "${String(cls)}"` });
     }
-    if (typeof position !== 'number' || !Number.isInteger(position)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: tranche ${label} must state an integer position` });
+    // Format §4.24: `position` is an integer, 1 = most senior (schema minimum 1, #430).
+    if (typeof position !== 'number' || !Number.isInteger(position) || position < 1) {
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].position`, message: `CS-01: tranche ${label} must state an integer position of 1 or more (1 = most senior)` });
     } else if (seenPositions.has(position)) {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].position`, message: `CS-01: duplicate position ${position}; positions must be unique within the stack` });
     } else {
       seenPositions.add(position);
     }
     if (typeof amount !== 'number') {
-      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}${label}.amount`, message: `CS-01: tranche ${label} must state a numeric amount` });
+      issues.push({ code: 'CS-01', severity: 'error', section, field: `${prefix}tranches[${i}].amount`, message: `CS-01: tranche ${label} must state a numeric amount` });
     }
 
     // CS-02: a rate where the class requires one, and none on common equity.
     const hasRate = t['rate'] !== undefined && t['rate'] !== null;
     if (typeof cls === 'string') {
       if (RATE_BEARING_CLASSES.has(cls) && !hasRate) {
-        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02: tranche ${label} (${cls}) must state a rate` });
+        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}tranches[${i}].rate`, message: `CS-02: tranche ${label} (${cls}) must state a rate` });
       }
       if (cls === 'common_equity' && hasRate) {
-        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02: common_equity tranche ${label} must not state a rate` });
+        issues.push({ code: 'CS-02', severity: 'error', section, field: `${prefix}tranches[${i}].rate`, message: `CS-02: common_equity tranche ${label} must not state a rate` });
       }
     }
 
@@ -2335,26 +2366,26 @@ function checkStackContent(
     const hasAccruedRate = Object.prototype.hasOwnProperty.call(t, 'accrued_rate');
     if (t['accrual'] === 'split') {
       if (cls !== 'preferred_equity') {
-        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrual`, message: `CS-02b: split accrual is supported only for preferred_equity tranche ${label}` });
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].accrual`, message: `CS-02b: split accrual is supported only for preferred_equity tranche ${label}` });
       }
       if (!hasCashRate || !Number.isFinite(t['cash_rate'])) {
-        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.cash_rate`, message: `CS-02b: split tranche ${label} must state a numeric cash_rate` });
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].cash_rate`, message: `CS-02b: split tranche ${label} must state a numeric cash_rate` });
       }
       if (!hasAccruedRate || !Number.isFinite(t['accrued_rate'])) {
-        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrued_rate`, message: `CS-02b: split tranche ${label} must state a numeric accrued_rate` });
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].accrued_rate`, message: `CS-02b: split tranche ${label} must state a numeric accrued_rate` });
       }
       if (hasRate && Number.isFinite(t['cash_rate']) && Number.isFinite(t['accrued_rate'])
         && t['rate'] !== (t['cash_rate'] as number) + (t['accrued_rate'] as number)) {
-        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.rate`, message: `CS-02b: split tranche ${label}.rate must equal cash_rate + accrued_rate` });
+        issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].rate`, message: `CS-02b: split tranche ${label}.rate must equal cash_rate + accrued_rate` });
       }
     } else if (hasCashRate || hasAccruedRate) {
-      issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}${label}.accrual`, message: `CS-02b: cash_rate and accrued_rate are permitted only when tranche ${label} uses accrual: "split"` });
+      issues.push({ code: 'CS-02b', severity: 'error', section, field: `${prefix}tranches[${i}].accrual`, message: `CS-02b: cash_rate and accrued_rate are permitted only when tranche ${label} uses accrual: "split"` });
     }
 
     // A waterfall smuggled in at the tranche level (promote/hurdle/catch-up).
     for (const key of Object.keys(t)) {
       if (WATERFALL_MARKERS.includes(key)) {
-        issues.push({ code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section, field: `${prefix}${label}.${key}`, message: `CS-WATERFALL-UNSUPPORTED: tranche ${label} carries waterfall field "${key}"; distributions are out of scope for this version (RFC 0026 §E)` });
+        issues.push({ code: 'CS-WATERFALL-UNSUPPORTED', severity: 'error', section, field: `${prefix}tranches[${i}].${key}`, message: `CS-WATERFALL-UNSUPPORTED: tranche ${label} carries waterfall field "${key}"; distributions are out of scope for this version (RFC 0026 §E)` });
       }
     }
   }
@@ -2490,7 +2521,59 @@ function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]
   }
 }
 
+// ─── Points in time of the capital stack and senior loans (RFC 0098) ─────────
+
+const CAPITAL_POINTS = ['closing', 'stabilization'] as const;
+type CapitalPoint = typeof CAPITAL_POINTS[number];
+
+function isCapitalPoint(value: unknown): value is CapitalPoint {
+  return typeof value === 'string' && (CAPITAL_POINTS as readonly string[]).includes(value);
+}
+
+/** DS-01: a stated debt_structure point_in_time outside the closed vocabulary. */
+function checkDebtPointInTime(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const entry = parsed.sections['debt_structure'];
+  if (!entry) return;
+  for (const block of isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock]) {
+    const content = block.content as Record<string, unknown>;
+    if (!Object.hasOwn(content, 'point_in_time') || isCapitalPoint(content['point_in_time'])) continue;
+    const variant = block.annotation.variant;
+    issues.push({
+      code: 'DS-01', severity: 'error', section: 'debt_structure', field: 'point_in_time',
+      message: `DS-01: debt_structure${variant ? ` variant=${variant}` : ''} point_in_time must be "closing" or "stabilization"; omit it for a loan outstanding at both points`,
+      value: content['point_in_time'],
+    });
+  }
+}
+
+/**
+ * The debt_structure blocks outstanding at `point`: those stating that point or
+ * none (a loan for the hold). A block with an invalid point (DS-01) is outstanding
+ * at neither. Returns the section entry restricted to them, or undefined.
+ */
+function debtAtPoint(entry: ParsedUWFile['sections'][string] | undefined, point: CapitalPoint): ParsedUWFile['sections'][string] | undefined {
+  if (!entry) return undefined;
+  const outstanding = (block: UWBlock): boolean => {
+    const content = block.content as Record<string, unknown>;
+    return !Object.hasOwn(content, 'point_in_time') || content['point_in_time'] === point;
+  };
+  if (!isVariantMap(entry)) return outstanding(entry as UWBlock) ? entry : undefined;
+  const kept = Object.entries(entry as Record<string, UWBlock>).filter(([, block]) => outstanding(block));
+  return kept.length ? Object.fromEntries(kept) : undefined;
+}
+
+/** CC-03's senior at one point: §5.3 resolution applied to that point's candidates only. */
+function seniorDebtAtPoint(parsed: ParsedUWFile, point: CapitalPoint, ledger: CoverageLedger): CrossCheckResolution {
+  const r = resolveRoleBlock(debtAtPoint(parsed.sections['debt_structure'], point), 'debt_structure', [], 'CC-03');
+  if (r.state === 'resolved' && r.evidence) {
+    ledger.resolutions['CC-03'] ??= {};
+    ledger.resolutions['CC-03']![`debt_structure@${point}`] = r.evidence;
+  }
+  return r;
+}
+
 function checkCapitalStack(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  checkDebtPointInTime(parsed, issues);
   const cs = getSection(parsed, 'capital_stack');
   if (cs) checkStackContent(cs.content as Record<string, unknown>, 'capital_stack', '', issues);
 
@@ -2976,7 +3059,7 @@ function checkLocale(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   if (declared == null) return; // absent = en-US
   if (isSupportedLocale(declared)) return;
   issues.push({
-    code: 'LOC-01', severity: 'error', field: 'locale',
+    code: 'LOC-01', severity: 'error', section: 'frontmatter', field: 'locale',
     message: `LOC-01: locale ${JSON.stringify(declared)} is not a registered display locale; display renders are refused rather than silently produced in a different locale`,
     value: String(declared),
   });
@@ -2989,7 +3072,7 @@ function checkCurrencyIdentity(parsed: ParsedUWFile, issues: ValidationMessage[]
   if (declared == null) return; // absent preserves legacy symbol behavior
   if (isCurrencyCode(declared)) return;
   issues.push({
-    code: 'CUR-01', severity: 'error', field: 'currency_code',
+    code: 'CUR-01', severity: 'error', section: 'frontmatter', field: 'currency_code',
     message: `CUR-01: currency_code ${JSON.stringify(declared)} is not three uppercase ASCII letters; currency identity is never inferred from locale or a display symbol`,
     value: declared,
   });
@@ -3014,20 +3097,36 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     issues.push({
       code: 'MOD-DEPENDENCY-UNDECLARED',
       severity: 'warning',
+      section: 'frontmatter',
       field: `modules[${entry.index}]`,
       message: `modules[${entry.index}] is not an object with an 'id', so it declares no module dependency.`,
       value: entry.value,
       remediation: "Write each modules entry as an object: '- id: <module id>' with an optional 'version' range (Format §2.2a).",
     });
   }
-  const raw = parsed.frontmatter?.asset_class;
-  if (typeof raw !== 'string' || raw.length === 0) return;
+  const raw: unknown = parsed.frontmatter?.asset_class;
+  if (raw === undefined || raw === null) return;
+  // A present value that is not a non-empty string is no identifier at all
+  // (#427): without this, every class-scoped rule and metric is skipped silently.
+  if (typeof raw !== 'string' || raw.length === 0) {
+    issues.push({
+      code: 'INVALID-ASSET-CLASS-001',
+      severity: 'error',
+      section: 'frontmatter',
+      field: 'asset_class',
+      message: `asset_class must be a builtin class or a namespaced identifier string, not ${JSON.stringify(raw)}.`,
+      value: raw,
+      remediation: `Use one of ${ASSET_CLASSES.join(', ')}, or a reverse-DNS identifier of at least three lower-snake-case segments (Format §2.2a).`,
+    });
+    return;
+  }
 
   const identity = parseAssetClass(raw);
   if (!identity.ok) {
     issues.push({
       code: identity.error.code,
       severity: 'error',
+      section: 'frontmatter',
       field: 'asset_class',
       message: identity.error.message,
       value: raw,
@@ -3046,6 +3145,7 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
     issues.push({
       code: 'MOD-DEPENDENCY-UNDECLARED',
       severity: 'warning',
+      section: 'frontmatter',
       field: 'modules',
       message: `asset_class '${raw}' is module-declared, but frontmatter names no 'modules' to load.`,
       value: raw,
@@ -3058,6 +3158,11 @@ function checkAssetClassIdentifier(parsed: ParsedUWFile, issues: ValidationMessa
 
 function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
   const REQUIRED_META_FIELDS = ['section', 'version', 'source', 'timestamp', 'confidence'];
+  // RFC 0104: `field` is the member's path from the block payload root.
+  const META_FIELD_PATHS: Record<string, string> = {
+    section: '_meta.section', version: '_meta.lifecycle.revision', source: '_meta.provenance.source',
+    timestamp: '_meta.provenance.timestamp', confidence: '_meta.quality.confidence',
+  };
 
   for (const [sectionId, entry] of Object.entries(parsed.sections)) {
     const blocks = isVariantMap(entry)
@@ -3065,14 +3170,17 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       : [entry as UWBlock];
 
     for (const block of blocks) {
-      if (!block.meta || Object.keys(block.meta).length === 0) {
-        issues.push({ code: 'META_MISSING', severity: 'warning', section: sectionId, message: `Section ${sectionId} is missing _meta object` });
+      // Protocol §XI: META_MISSING means no `_meta` object. A string or array
+      // is none, whatever its length (#429); it is not five missing fields.
+      const meta: unknown = block.meta;
+      if (meta === null || typeof meta !== 'object' || Array.isArray(meta) || Object.keys(meta).length === 0) {
+        issues.push({ code: 'META_MISSING', severity: 'warning', section: sectionId, field: '_meta', message: `Section ${sectionId} is missing _meta object` });
         continue;
       }
 
       for (const field of REQUIRED_META_FIELDS) {
         if (({ section: block.meta.section, version: block.meta.lifecycle?.revision, source: block.meta.provenance?.source, timestamp: block.meta.provenance?.timestamp, confidence: block.meta.quality?.confidence } as Record<string, unknown>)[field] == null) {
-          issues.push({ code: `META_FIELD_MISSING_${field.toUpperCase()}`, severity: 'warning', section: sectionId, field, message: `Section ${sectionId} _meta is missing required field: ${field}` });
+          issues.push({ code: `META_FIELD_MISSING_${field.toUpperCase()}`, severity: 'warning', section: sectionId, field: META_FIELD_PATHS[field], message: `Section ${sectionId} _meta is missing required field: ${field}` });
         }
       }
 
@@ -3083,7 +3191,7 @@ function checkMetaIntegrity(parsed: ParsedUWFile, issues: ValidationMessage[]): 
       // This emission is therefore informational only; do not promote it to a
       // warning without changing the spec.
       if (block.meta.quality?.confidence === 'low' && !block.meta.quality?.human_review_required) {
-        issues.push({ code: 'META_LOW_CONFIDENCE_NO_REVIEW_FLAG', severity: 'info', section: sectionId, message: `Section ${sectionId} has low confidence but human_review_required is not set to true` });
+        issues.push({ code: 'META_LOW_CONFIDENCE_NO_REVIEW_FLAG', severity: 'info', section: sectionId, field: '_meta.quality.human_review_required', message: `Section ${sectionId} has low confidence but human_review_required is not set to true` });
       }
     }
   }
@@ -3114,17 +3222,33 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
           code: 'SRC-03',
           severity: 'error',
           section: sectionId,
+          field: '_meta.provenance.resolution',
           message: `Section ${sectionId} provenance.resolution is outside the closed resolution vocabulary.`,
         });
       }
-      const src = block.meta?.provenance?.source;
-      if (typeof src !== 'string' || src.length === 0) continue; // absence is META/DQ territory
+      const provenance = block.meta?.provenance as unknown as Record<string, unknown> | undefined;
+      const src: unknown = provenance?.['source'];
+      if (src === undefined) continue; // absence is META/DQ territory
+      // Any present value outside the grammar is SRC-01, including a non-string,
+      // the empty string and null (RFC 0101); null also keeps its existing
+      // META_FIELD_MISSING_SOURCE warning.
+      if (typeof src !== 'string' || src.length === 0) {
+        issues.push({
+          code: 'SRC-01',
+          severity,
+          section: sectionId,
+          field: '_meta.provenance.source',
+          message: `Section ${sectionId} _meta.provenance.source must be 'manual' or '<namespace>/<id>'; got ${JSON.stringify(src)}.`,
+        });
+        continue;
+      }
 
       if (RESOLUTION_TAG_SET.has(src)) {
         issues.push({
           code: 'SRC-02',
           severity,
           section: sectionId,
+          field: '_meta.provenance.source',
           message: `Section ${sectionId} _meta.provenance.source is '${src}', a resolution tag in the actor field. Move it to _meta.provenance.resolution and state the actor.`,
         });
         continue;
@@ -3135,10 +3259,43 @@ function checkSourceVocabulary(parsed: ParsedUWFile, issues: ValidationMessage[]
           code: 'SRC-01',
           severity,
           section: sectionId,
+          field: '_meta.provenance.source',
           message: `Section ${sectionId} _meta.provenance.source '${src}' is not 'manual' or '<namespace>/<id>' with a registered actor namespace (${['agent', 'document', 'system', 'institution'].join(', ')}).`,
         });
       }
     }
+  }
+  // Accepted leaf counterparts (Format2.5g/RFC0031): assess own annotation
+  // assertions in the existing sections/current-variant population. Canonical SRC
+  // admission/population above stays unchanged; these findings name the leaf.
+  for (const [section, entry] of Object.entries(parsed.sections)) {
+    const blocks = isVariantMap(entry) ? Object.values(entry as Record<string, UWBlock>) : [entry as UWBlock];
+    for (const block of blocks) {
+    if (!Object.hasOwn(block.content, '_overrides') || !Array.isArray(block.content['_overrides'])) continue;
+    const overrides = block.content['_overrides'];
+    for (let index = 0; index < overrides.length; index++) {
+      const override = Object.hasOwn(overrides, index) ? overrides[index] : undefined;
+      if (!metaObject(override)) continue; // META-05 owns the entry shape.
+      const path = `_overrides[${index}]`;
+      if (Object.hasOwn(override, 'source')) {
+        const value = override.source;
+        if (typeof value === 'string' && RESOLUTION_TAG_SET.has(value)) {
+          issues.push({ code: 'SRC-02', severity, section, field: `${path}.source`,
+            message: `Block ${path}.source is a resolution tag in the actor field.` });
+        } else {
+          const actor = typeof value === 'string' ? parseActorSource(value) : { kind: 'invalid' as const };
+          const valid = actor.kind === 'manual' || (actor.kind === 'namespaced' && value === `${actor.namespace}/${actor.id}`);
+          if (!valid) issues.push({ code: 'SRC-01', severity, section, field: `${path}.source`,
+            message: `Block ${path}.source must be manual or an exact registered <namespace>/<id> actor.` });
+        }
+      }
+      if (Object.hasOwn(override, 'resolution') && !(typeof override.resolution === 'string' && RESOLUTION_TAG_SET.has(override.resolution))) {
+        issues.push({ code: 'SRC-03', severity, section, field: `${path}.resolution`,
+          message: `Block ${path}.resolution is outside the closed resolution vocabulary.` });
+      }
+    }
+  }
+
   }
 }
 
@@ -3276,6 +3433,178 @@ function checkMetadataBooleans(parsed: ParsedUWFile, issues: ValidationMessage[]
   for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
 }
 
+// RFC0094: only present-invalid canonical confidence, revision and timestamp.
+// Keep all absence/completeness predicates and earlier parent gates unchanged.
+function checkMetadataLeaves(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  const visited = new Set<UWBlock>();
+  const walk = (sectionId: string, block: UWBlock): void => {
+    if (visited.has(block)) return;
+    visited.add(block);
+    const meta = block.content['_meta'];
+    if (!Object.hasOwn(block.content, '_meta') || meta === undefined || malformedMetaShape(block)) return;
+    const admitted = meta as Record<string, unknown>;
+    for (const [group, leaf, valid, requirement] of [
+      ['quality', 'confidence', (value: unknown) => typeof value === 'string'
+        && ['high', 'medium', 'low'].includes(value), 'one of the exact strings high, medium or low'],
+      ['lifecycle', 'revision', (value: unknown) => typeof value === 'number'
+        && Number.isFinite(value) && Number.isInteger(value) && value >= 1, 'an integer greater than or equal to 1'],
+      ['provenance', 'timestamp', isMetadataTimestamp, 'an exact Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z timestamp'],
+    ] as const) {
+      const parent = admitted[group];
+      if (!Object.hasOwn(admitted, group) || !metaObject(parent) || !Object.hasOwn(parent, leaf) || valid(parent[leaf])) continue;
+      const field = `_meta.${group}.${leaf}`;
+      issues.push({
+        code: 'META-04', severity: 'error', section: sectionId, field,
+        message: `Block ${field} must be ${requirement}.`,
+      });
+    }
+  };
+  for (const block of parsedPhysicalBlocks(parsed)) walk(block.annotation.section, block);
+  for (const [id, block] of metaModelBlocks(parsed)) walk(id, block);
+}
+
+function isMetadataTimestamp(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const match = /^([0-9]{4}-[0-9]{2}-[0-9]{2})T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]+)?Z$/.exec(value);
+  // Preserve the accepted T1B whole-value equality guard; unflagged $ is exact in ECMAScript.
+  return match !== null && match[0] === value && parseISODate(match[1]!) !== null;
+}
+
+// RFC0095: exact-identity union shared by the two new complete passes.
+// Keep earlier passes/order intact and never reparse stale raw model evidence.
+function metadataReferences(parsed: ParsedUWFile): [string, UWBlock][] {
+  const seen = new Set<UWBlock>();
+  const entries: [string, UWBlock][] = [];
+  for (const [id, block] of [
+    ...parsedPhysicalBlocks(parsed).map(block => [block.annotation.section, block] as [string, UWBlock]),
+    ...metaModelBlocks(parsed),
+  ]) {
+    if (seen.has(block)) continue;
+    seen.add(block);
+    entries.push([id, block]);
+  }
+  return entries;
+}
+
+function admittedOwnMetadata(block: UWBlock): Record<string, unknown> | undefined {
+  if (!Object.hasOwn(block.content, '_meta') || malformedMetaShape(block)) return undefined;
+  const meta = block.content['_meta'];
+  if (!metaObject(meta) || !Object.hasOwn(meta, 'provenance') || !metaObject(meta.provenance)
+    || !Object.hasOwn(meta, 'lifecycle') || !metaObject(meta.lifecycle)) return undefined;
+  return meta;
+}
+
+function checkOptionalMetadata(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  for (const [section, block] of metadataReferences(parsed)) {
+    const fail = (field: string, requirement: string): void => {
+      issues.push({ code: 'META-05', severity: 'error', section, field,
+        message: `Block ${field} must ${requirement}.` });
+    };
+    const meta = admittedOwnMetadata(block);
+    if (meta !== undefined) {
+      const provenance = meta.provenance as Record<string, unknown>;
+      for (const key of ['agent_id', 'agent_version', 'notes']) {
+        if (Object.hasOwn(provenance, key) && provenance[key] !== null && typeof provenance[key] !== 'string') {
+          fail(`_meta.provenance.${key}`, 'be a string or null when present');
+        }
+      }
+      const quality = Object.hasOwn(meta, 'quality') ? meta.quality : undefined;
+      if (metaObject(quality)) {
+        if (Object.hasOwn(quality, 'flags')) {
+          if (!Array.isArray(quality.flags)) fail('_meta.quality.flags', 'be an array of strings');
+          else for (let index = 0; index < quality.flags.length; index++) {
+            if (!Object.hasOwn(quality.flags, index) || typeof quality.flags[index] !== 'string') fail(`_meta.quality.flags[${index}]`, 'be a string');
+          }
+        }
+        for (const key of ['partial', 'provisional']) {
+          if (Object.hasOwn(quality, key) && typeof quality[key] !== 'boolean') fail(`_meta.quality.${key}`, 'be a boolean');
+        }
+        if (Object.hasOwn(quality, 'field_overrides')) fail('_meta.quality.field_overrides', 'be absent; state leaf annotations in block-level _overrides');
+      }
+    }
+    // Sibling annotations remain independently assessed under a rejected _meta.
+    if (!Object.hasOwn(block.content, '_overrides')) continue;
+    const overrides = block.content['_overrides'];
+    if (!Array.isArray(overrides)) { fail('_overrides', 'be an array'); continue; }
+    for (let index = 0; index < overrides.length; index++) {
+      const override = Object.hasOwn(overrides, index) ? overrides[index] : undefined;
+      const path = `_overrides[${index}]`;
+      if (!metaObject(override)) { fail(path, 'be an object'); continue; }
+      if (!Object.hasOwn(override, 'path') || typeof override.path !== 'string') fail(`${path}.path`, 'be a required string');
+      if (Object.hasOwn(override, 'confidence') && !(typeof override.confidence === 'string'
+        && ['high', 'medium', 'low'].includes(override.confidence))) fail(`${path}.confidence`, 'be exactly high, medium or low');
+      if (Object.hasOwn(override, 'reason') && !(typeof override.reason === 'string'
+        && ['illegible', 'missing', 'overridden', 'estimated', 'computed'].includes(override.reason))) fail(`${path}.reason`, 'be exactly illegible, missing, overridden, estimated or computed');
+      if (Object.hasOwn(override, 'note') && typeof override.note !== 'string') fail(`${path}.note`, 'be a string');
+    }
+  }
+}
+
+function isReferenceDigest(value: unknown): boolean {
+  return typeof value === 'string' && value.length === 71 && /^sha256:[0-9a-f]{64}$/.test(value);
+}
+
+// RFC0095 U3 is date-only, years 0001–9999; do not reuse T1B or a host parser.
+function isMarketReferenceDate(value: unknown): boolean {
+  if (typeof value !== 'string' || value.length !== 10 || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)) return false;
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(5, 7));
+  const day = Number(value.slice(8, 10));
+  if (year === 0 || month < 1 || month > 12 || day < 1) return false;
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const days = month === 2 ? (leap ? 29 : 28) : ([4, 6, 9, 11].includes(month) ? 30 : 31);
+  return day <= days;
+}
+
+function checkMetadataReferences(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  for (const [section, block] of metadataReferences(parsed)) {
+    const meta = admittedOwnMetadata(block);
+    if (meta === undefined) continue;
+    const provenance = meta.provenance as Record<string, unknown>;
+    const fail = (field: string, requirement: string): void => {
+      issues.push({ code: 'META-06', severity: 'error', section, field,
+        message: `Block ${field} must ${requirement}.` });
+    };
+    if (Object.hasOwn(provenance, 'source') && typeof provenance.source === 'string') {
+      const source = parseActorSource(provenance.source);
+      // Keep the explicit exact agent-identity comparison; the parser's unflagged $ is already whole-input.
+      if (source.kind === 'namespaced' && source.namespace === 'agent'
+        && provenance.source === `agent/${source.id}` && !Object.hasOwn(provenance, 'agent_id')) {
+        fail('_meta.provenance.agent_id', 'be present for a canonical agent source (string or null)');
+      }
+    }
+    const overrides = Object.hasOwn(block.content, '_overrides') && Array.isArray(block.content['_overrides'])
+      ? block.content['_overrides'] as unknown[] : [];
+    for (const [carrier, tag] of [
+      ['inherited_from', 'inherited_assumption'], ['market_data_ref', 'market_data_accepted'],
+    ] as const) {
+      // Assertions are not effective leaf selection: path validity, duplicates,
+      // shadows and later tags cannot retract any own literal tag assertion.
+      const required = (Object.hasOwn(provenance, 'resolution') && provenance.resolution === tag)
+        || overrides.some((value, index) => Object.hasOwn(overrides, index) && metaObject(value) && Object.hasOwn(value, 'resolution') && value.resolution === tag);
+      const field = `_meta.provenance.${carrier}`;
+      if (!Object.hasOwn(provenance, carrier)) {
+        if (required) fail(field, `be present for a stated ${tag} assertion`);
+        continue;
+      }
+      const value = provenance[carrier];
+      if (!metaObject(value)) { fail(field, 'be an object'); continue; }
+      const requiredString = (key: string): void => {
+        if (!Object.hasOwn(value, key) || typeof value[key] !== 'string') fail(`${field}.${key}`, 'be a required string');
+      };
+      requiredString('document_id');
+      if (carrier === 'market_data_ref' && (!Object.hasOwn(value, 'as_of') || !isMarketReferenceDate(value.as_of))) {
+        fail(`${field}.as_of`, 'be a whole ASCII YYYY-MM-DD Gregorian date in years 0001–9999');
+      }
+      if (!Object.hasOwn(value, 'digest') || !isReferenceDigest(value.digest)) fail(`${field}.digest`, 'be exactly sha256: followed by 64 lowercase ASCII hexadecimal digits');
+      if (carrier === 'inherited_from') {
+        if (!Object.hasOwn(value, 'distance') || typeof value.distance !== 'number' || !Number.isFinite(value.distance)
+          || !Number.isInteger(value.distance) || value.distance < 1) fail(`${field}.distance`, 'be a finite integer greater than or equal to 1');
+      } else if (Object.hasOwn(value, 'rationale') && typeof value.rationale !== 'string') fail(`${field}.rationale`, 'be a string when present');
+    }
+  }
+}
+
 // ─── Stage readiness ──────────────────────────────────────────────────────────
 
 /**
@@ -3360,7 +3689,7 @@ function checkScopeReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]):
 
 function isVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
-  return !('annotation' in (val as object));
+  return !hasBlockShape(val);
 }
 
 // ─── DQ-01..03 / DQ-05: data quality checks ──────────────────────────────────
@@ -3405,11 +3734,10 @@ export function checkDataQuality(
 
     for (const block of blocks) {
       const quality = block.meta?.quality;
-      const provenance = block.meta?.provenance;
       const overrides = blockOverrides(block);
 
       // DQ-01: provisional block not in gaps
-      if (quality?.provisional) {
+      if (quality?.provisional === true) {
         const referenced = gapKeys.has(`${sectionId}::`) ||
           // Any field-level gap counts as referencing the section
           [...gapKeys].some((k) => k.startsWith(`${sectionId}::`) && k !== `${sectionId}::`);
@@ -3418,6 +3746,7 @@ export function checkDataQuality(
             code: 'DQ-01',
             severity: 'warning',
             section: sectionId,
+            field: '_meta.quality.provisional',
             message: `Block ${sectionId} is provisional but no gaps entry references it.`,
           });
         }
@@ -3429,38 +3758,24 @@ export function checkDataQuality(
             code: 'DQ-02',
             severity: 'error',
             section: sectionId,
+            field: '_meta.quality.provisional',
             message: `Provisional ${sectionId} cannot be consumed at stage '${stage}' (policy: halt).`,
           });
         }
       }
 
       // DQ-03: partial without enumeration
-      if (quality?.partial && overrides.length === 0) {
+      if (quality?.partial === true && overrides.length === 0) {
         issues.push({
           code: 'DQ-03',
           severity: 'warning',
           section: sectionId,
+          field: '_overrides',
           message: `Block ${sectionId} is marked partial but has no _overrides[] enumeration.`,
         });
       }
 
-      // DQ-06: a promoted market observation that cannot be traced back to the
-      // observation set it came from (RFC 0022 §4). An error, not a warning:
-      // without the reference the `market_data_accepted` tag is an
-      // unfalsifiable claim, and a reviewer can see that *something* was
-      // accepted but never recover which observations, of which vintage. That
-      // is precisely the gap the profile exists to close, so a block asserting
-      // the tag without the reference is worse than one tagged plainly.
-      const promoted = provenance?.resolution === 'market_data_accepted'
-        || overrides.some(o => o.resolution === 'market_data_accepted');
-      if (promoted && !provenance?.market_data_ref) {
-        issues.push({
-          code: 'DQ-06',
-          severity: 'error',
-          section: sectionId,
-          message: `Block ${sectionId} carries a market_data_accepted value but no _meta.provenance.market_data_ref naming the observation set, vintage, and digest it was promoted from.`,
-        });
-      }
+
     }
   }
 
@@ -3468,7 +3783,7 @@ export function checkDataQuality(
   if (gaps) {
     const now = opts.now ? Date.parse(opts.now) : Date.now();
     const thresholdMs = (opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS) * 86_400_000;
-    for (const item of gaps.items) {
+    for (const [index, item] of gaps.items.entries()) {
       if (!item.last_checked) continue;
       const last = Date.parse(item.last_checked);
       if (Number.isNaN(last)) continue;
@@ -3476,9 +3791,9 @@ export function checkDataQuality(
         issues.push({
           code: 'DQ-05',
           severity: 'info',
-          section: item.section,
-          field: item.field_path,
-          message: `Gap last checked ${item.last_checked}; exceeds staleness threshold (${opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS}d).`,
+          section: 'gaps',
+          field: `items[${index}].last_checked`,
+          message: `Gap for ${item.section}${item.field_path ? `.${item.field_path}` : ''} last checked ${item.last_checked}; exceeds staleness threshold (${opts.gap_staleness_days ?? DEFAULT_GAP_STALENESS_DAYS}d).`,
         });
       }
     }

@@ -1,3 +1,4 @@
+import { hasBlockShape } from '../block-kind.js';
 // Bancroft agent runner — asks a model for structured section output and writes
 // it back to the deal file.
 //
@@ -422,7 +423,7 @@ function writeSectionOutputs(
     const currentParsed = parseUWFile(currentContent);
 
     const existingBlock = currentParsed.sections[toolOut.section_id];
-    const existingVersion = existingBlock && 'meta' in existingBlock
+    const existingVersion = existingBlock && hasBlockShape(existingBlock)
       ? ((existingBlock as UWBlock).meta?.lifecycle?.revision ?? 0)
       : 0;
     const newVersion = existingVersion + 1;

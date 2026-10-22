@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // .uw.md parser — extracts frontmatter, section blocks, prose, and pipeline log
 // Spec: UW_FORMAT_SPEC.md §2.4 (annotation syntax), §2.7 (update semantics), §2.8 (multi-variant)
 
@@ -40,6 +41,59 @@ function firstJSONMember(json: string): string | undefined {
     if (json[i++] === '"') return JSON.parse(json.slice(start, i)) as string;
   }
   return undefined;
+}
+
+/**
+ * Admit one structured block body (Format §2.4, RFC 0106): exactly one JSON
+ * object that is I-JSON. `JSON.parse` proves the syntax; the lexical walk then
+ * finds what it hides: a duplicate member name after escape decoding (it keeps
+ * the last), an unpaired surrogate, and a number that overflows binary64 (it
+ * reads `Infinity`). Any defect refuses the whole document.
+ */
+function admitBlockJson(rawJson: string, sectionId: string, line: number): Record<string, unknown> {
+  const refuse = (defect: string): never => {
+    throw new UWMDParseError('SOURCE_BLOCK_MALFORMED',
+      `Section '${sectionId}' block at line ${line} ${defect}.`, { line });
+  };
+  let value: unknown;
+  try {
+    value = JSON.parse(rawJson);
+  } catch (err) {
+    if (!(err instanceof SyntaxError)) throw err;
+    return refuse(`is not valid JSON (${err.message})`);
+  }
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return refuse('is not a JSON object');
+  }
+  const stack: (Set<string> | null)[] = [];
+  const tokens = /"(?:\\.|[^"\\])*"|[{}[\]]|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
+  for (const match of rawJson.matchAll(tokens)) {
+    const token = match[0];
+    if (token === '{') stack.push(new Set());
+    else if (token === '[') stack.push(null);
+    else if (token === '}' || token === ']') stack.pop();
+    else if (token[0] !== '"') {
+      if (!Number.isFinite(Number(token))) refuse(`has a number outside finite binary64 (${token})`);
+    } else {
+      const decoded = JSON.parse(token) as string;
+      for (let k = 0; k < decoded.length; k++) {
+        const code = decoded.charCodeAt(k);
+        if (code >= 0xd800 && code <= 0xdbff) {
+          const next = decoded.charCodeAt(k + 1);
+          if (next >= 0xdc00 && next <= 0xdfff) { k++; continue; }
+          refuse('has an unpaired surrogate');
+        } else if (code >= 0xdc00 && code <= 0xdfff) refuse('has an unpaired surrogate');
+      }
+      let after = match.index + token.length;
+      while (after < rawJson.length && ' \t\r\n'.includes(rawJson[after]!)) after++;
+      if (rawJson[after] === ':') {
+        const names = stack.at(-1);
+        if (names?.has(decoded)) refuse(`has a duplicate member name ${JSON.stringify(decoded)}`);
+        names?.add(decoded);
+      }
+    }
+  }
+  return value as Record<string, unknown>;
 }
 
 /** Internal only: deliberately absent from the package's public barrels. */
@@ -245,6 +299,17 @@ function parseYamlFrontmatter(text: string, onMember?: ParseOptions['onFrontmatt
       }
       if (keep) result[key] = nested;
     } else {
+      // Appendix D nests only under a `key:` line with no inline value. An
+      // indented line under a scalar or `[]` would otherwise be dropped (or read
+      // as a top-level key), so it is refused rather than lost (#426).
+      let next = i + 1;
+      while (next < lines.length && (lines[next].trim() === '' || lines[next].trim().startsWith('#'))) next++;
+      if (next < lines.length && /^[ \t]/.test(lines[next])) {
+        const feature = 'a scalar entry that also contains nested entries';
+        throw new UWMDParseError('UNSUPPORTED_YAML_FEATURE',
+          `Frontmatter line ${next + 1} uses ${feature}, which is not part of the .uw.md YAML subset (see UW_FORMAT_SPEC.md Appendix D).`,
+          { line: next + 1, feature });
+      }
       if (keep) result[key] = scalar.value;
       i++;
     }
@@ -438,18 +503,9 @@ export function parseUWFile(content: string, options: ParseOptions = {}): Parsed
     i++; // move past closing ```
 
     const rawJson = jsonLines.join('\n');
-    let parsed: Record<string, unknown>;
-    let firstMember: string | undefined;
-
-    try {
-      parsed = JSON.parse(rawJson) as Record<string, unknown>;
-      firstMember = firstJSONMember(rawJson);
-    } catch (err) {
-      if (strict) {
-        throw new Error(`JSON parse error in section ${sectionId} at line ${lineStart}: ${err}`);
-      }
-      parsed = { _parse_error: String(err), _raw: rawJson };
-    }
+    // Every block, current or superseded, in strict mode or not (RFC 0106).
+    const parsed = admitBlockJson(rawJson, sectionId, lineStart);
+    const firstMember = firstJSONMember(rawJson);
 
     const meta = (parsed['_meta'] ?? {}) as UWMeta;
 
@@ -527,23 +583,14 @@ function routeBlock(
       result.sections[sectionId] = { [variant]: block };
     } else {
       const variantMap = existing as { [v: string]: UWBlock };
-      const current = variantMap[variant];
-
-      if (!current) {
-        variantMap[variant] = block;
-      } else {
-        // Replace if newer version
-        const currentV = current.annotation.v ?? current.meta?.lifecycle?.revision ?? 1;
-        const newV = annotation.v ?? block.meta?.lifecycle?.revision ?? 1;
-        if (newV > currentV) {
-          if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-          result.superseded[sectionId].push(current);
-          variantMap[variant] = block;
-        } else {
-          if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-          result.superseded[sectionId].push(block);
-        }
+      // Format §2.7: the last non-superseded block is canonical, whatever its
+      // revision. The block it overwrites stays retained in `superseded`, so
+      // integrity and subject accounting still see every physical block.
+      if (Object.hasOwn(variantMap, variant)) {
+        if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
+        result.superseded[sectionId].push(variantMap[variant]!);
       }
+      defineVariant(variantMap, variant, block);
     }
     if (!result.prose[sectionId]) result.prose[sectionId] = prose;
     return;
@@ -558,26 +605,27 @@ function routeBlock(
     return;
   }
 
-  // Resolve version conflict: keep higher version as current
-  const existingBlock = existing as UWBlock;
-  const existingV = existingBlock.annotation.v ?? existingBlock.meta?.lifecycle?.revision ?? 1;
-  const newV = annotation.v ?? block.meta?.lifecycle?.revision ?? 1;
+  // Format §2.7: the last non-superseded block is canonical, whatever its
+  // revision; the block it overwrites stays retained (see above).
+  if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
+  result.superseded[sectionId].push(existing);
+  result.sections[sectionId] = block;
+  result.prose[sectionId] = prose;
+}
 
-  if (newV > existingV) {
-    if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-    result.superseded[sectionId].push(existingBlock);
-    result.sections[sectionId] = block;
-    result.prose[sectionId] = prose;
-  } else {
-    if (!result.superseded[sectionId]) result.superseded[sectionId] = [];
-    result.superseded[sectionId].push(block);
-  }
+/**
+ * Add or replace a variant peer as an own member. Plain assignment of a variant
+ * named `__proto__` would replace the map's prototype and lose the peer; the
+ * `{ [variant]: block }` literal that starts a map already defines it.
+ */
+function defineVariant(map: { [v: string]: UWBlock }, variant: string, block: UWBlock): void {
+  Object.defineProperty(map, variant, { value: block, writable: true, enumerable: true, configurable: true });
 }
 
 function isMultiVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
   // A UWBlock has annotation, meta, content — a variant map has string keys pointing to blocks
-  return !('annotation' in (val as object));
+  return !hasBlockShape(val);
 }
 
 // ─── Convenience: get current block for a section ─────────────────────────────
@@ -612,7 +660,7 @@ export function getSectionVariant(
 ): UWBlock | null {
   const entry = parsed.sections[sectionId];
   if (!entry || !isMultiVariantMap(entry)) return null;
-  return (entry as { [v: string]: UWBlock })[variant] ?? null;
+  return Object.hasOwn(entry, variant) ? (entry as { [v: string]: UWBlock })[variant] ?? null : null;
 }
 
 // ─── Path segment safety ─────────────────────────────────────────────────────

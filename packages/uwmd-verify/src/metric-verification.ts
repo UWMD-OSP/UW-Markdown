@@ -12,11 +12,11 @@
 // semantics are that fixture's, unchanged. Browser-safe; performs no I/O.
 
 import { evaluateDeclared } from './calc/evaluator.js';
-import { parseExpression } from './calc/parser.js';
+import { parseExpression, type Expr } from './calc/parser.js';
 import { compareStatedMetric, getStatedDecimals } from './calc/stated-precision.js';
 import { BUILTIN_METRIC_DICTIONARY } from './metric-dictionary.js';
 import { blockPayload } from './parser.js';
-import type { MetricDictionary, MetricDictionaryCalculation, MetricDictionarySize } from './protocol.js';
+import { SIZE_INTENSIVES, type MetricDictionary, type MetricDictionaryCalculation, type MetricDictionarySize } from './protocol.js';
 import { resolveSectionBlock } from './section-resolution.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 import { readYamlScalar } from './yaml-scalar.js';
@@ -82,7 +82,10 @@ export interface StatedMetricBindings {
 export interface VerifyStatedMetricsOptions {
   /** The dictionary to verify against. Defaults to the builtin dictionary. */
   dictionary?: MetricDictionary;
-  /** Where statements live. Defaults to the canonical id at the builtin output section roots. */
+  /**
+   * Where statements live. Defaults to the dictionary's `statement_bindings`
+   * (RFC 0099), so every bound home of a metric is checked.
+   */
   bindings?: StatedMetricBindings;
   /**
    * Source decimals by unvaried address (`section.path`, or
@@ -97,18 +100,12 @@ export interface VerifyStatedMetricsOptions {
 }
 
 /**
- * The output section roots searched by default: the sections where the
- * builtin examples state dictionary metrics under their canonical ids
- * (`conformance/metrics/statement-bindings.json`; a test pins the two equal).
- * No aliases by default; the conformance aliases bind existing example fields
- * only. Module-level, not part of the public surface.
+ * The builtin dictionary's normative statement-binding registry (RFC 0099):
+ * each metric's own id at the output section roots, plus its aliases. It is
+ * closed; no binding is inferred from a field name. Module-level, not part of
+ * the public surface.
  */
-export const DEFAULT_STATED_METRIC_BINDINGS: StatedMetricBindings = Object.freeze({
-  output_sections: Object.freeze([
-    'valuation', 'debt_structure', 'noi_model', 'rent_roll', 'property', 'components',
-    'dc_capacity', 'dc_power', 'dc_revenue', 'mhc_sites', 'hotel_metrics', 'hotel_food_beverage',
-  ]),
-});
+export const DEFAULT_STATED_METRIC_BINDINGS: StatedMetricBindings = BUILTIN_METRIC_DICTIONARY.statement_bindings;
 
 // ─── Verification ────────────────────────────────────────────────────────────
 
@@ -130,6 +127,35 @@ export function verifyStatedMetric(
 }
 
 /**
+ * RFC 0100: the registered `property` sizes (Protocol §XIII, primary and
+ * secondary) a formula divides by directly, for the given classes. A metric with
+ * one is `positive_size_denominator`. Module-level, not part of the public surface.
+ */
+export function sizeDenominators(formula: string, assetClasses: readonly string[]): string[] {
+  const sizes = new Set(assetClasses.flatMap((cls) => {
+    const size = SIZE_INTENSIVES[cls];
+    return size ? [size.path, ...size.secondary] : [];
+  }));
+  const found = new Set<string>();
+  const walk = (expr: Expr): void => {
+    switch (expr.kind) {
+      case 'binary':
+        if (expr.op === '/' && expr.right.kind === 'path' && expr.right.head === 'property'
+          && expr.right.segments.length === 1 && sizes.has(expr.right.segments[0]!)) {
+          found.add(`property.${expr.right.segments[0]}`);
+        }
+        walk(expr.left); walk(expr.right); return;
+      case 'unary': walk(expr.operand); return;
+      case 'cond': walk(expr.test); walk(expr.consequent); walk(expr.else); return;
+      case 'call': for (const arg of expr.args) walk(arg); return;
+      default: return;
+    }
+  };
+  walk(parseExpression(formula));
+  return [...found];
+}
+
+/**
  * `missingPrecision` says what an absent `statedDecimals` means for a rounded
  * metric: a caller error at the comparison API (RFC 0079, `CALC-TYPE-001`), or
  * a document whose source tokens are unavailable (`missing_stated_precision`).
@@ -148,6 +174,17 @@ function checkStatement(
       const raw = block ? get(blockPayload(block), metric.path) : undefined;
       if (typeof raw !== 'number' || !Number.isFinite(raw)) {
         return { state: 'unverifiable', reason: 'missing_or_invalid_size', computed: null };
+      }
+    }
+    if (metric.null_semantics === 'positive_size_denominator') {
+      // RFC 0100: no Verifier confirms a figure against an impossible size.
+      const block = resolveSectionBlock(parsed, 'property', { sectionVariants });
+      const payload = block ? blockPayload(block) : undefined;
+      for (const path of sizeDenominators(metric.formula, metric.asset_classes)) {
+        const size = get(payload, path.slice('property.'.length));
+        if (typeof size === 'number' && size < 0) {
+          return { state: 'unverifiable', reason: 'negative_size_denominator', computed: null };
+        }
       }
     }
     const value = evaluateDeclared(parseExpression(metric.formula), {
@@ -189,7 +226,9 @@ export function verifyStatedMetrics(
   options: VerifyStatedMetricsOptions = {},
 ): StatedMetricsReport {
   const dictionary = options.dictionary ?? BUILTIN_METRIC_DICTIONARY;
-  const bindings = options.bindings ?? DEFAULT_STATED_METRIC_BINDINGS;
+  // A dictionary carries its own registry (RFC 0099); a module dictionary without one
+  // is checked at the builtin homes.
+  const bindings = options.bindings ?? dictionary.statement_bindings ?? DEFAULT_STATED_METRIC_BINDINGS;
   const precision = options.statedDecimals;
   const source = parsed.raw;
   // Each block's source JSON is tokenized once, however many statements it holds.

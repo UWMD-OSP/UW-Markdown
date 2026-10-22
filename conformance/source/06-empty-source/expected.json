@@ -1,0 +1,6 @@
+{
+  "why": "an empty `_meta.provenance.source` is present and outside the \u00a72.6 grammar: SRC-01 (RFC 0101, #413).",
+  "src_codes": [
+    "SRC-01"
+  ]
+}

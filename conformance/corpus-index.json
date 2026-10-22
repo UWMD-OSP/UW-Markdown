@@ -478,6 +478,36 @@
     },
     {
       "suite": "documents",
+      "scenario": "malformed/60-block-json-syntax-error",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/61-block-json-duplicate-member",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/62-block-json-number-overflow",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/63-block-json-lone-surrogate",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/64-block-json-null-root",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/65-block-json-superseded-duplicate",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
       "scenario": "malformed/20-flat-meta",
       "target": "verifier"
     },
@@ -2563,6 +2593,46 @@
     },
     {
       "suite": "capital-stack",
+      "scenario": "point-in-time-closing-leg",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-construction-takeout",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-debt-unknown",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-no-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-same-point-collision",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-single-loan",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-stack-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "point-in-time-stack-unknown",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
       "scenario": "pref-cash-vs-accrued",
       "target": "verifier"
     },
@@ -2579,6 +2649,16 @@
     {
       "suite": "capital-stack",
       "scenario": "senior-reconciles-debt-structure",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "senior-rate-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "capital-stack",
+      "scenario": "position-below-one",
       "target": "verifier"
     },
     {
@@ -4667,6 +4747,21 @@
       "target": "starter-products"
     },
     {
+      "suite": "source",
+      "scenario": "06-empty-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "source",
+      "scenario": "07-null-source",
+      "target": "verifier"
+    },
+    {
+      "suite": "source",
+      "scenario": "08-nonstring-source",
+      "target": "verifier"
+    },
+    {
       "suite": "scenario",
       "scenario": "01-stabilized_acquisition",
       "target": "verifier"
@@ -5357,6 +5452,116 @@
       "target": "verifier"
     },
     {
+      "suite": "metrics",
+      "scenario": "negative-size-denominator-is-unverifiable",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-cap_rate-going-in-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-cap_rate-going-in-disagrees-quick-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-cap_rate-unbound-look-alike-is-not-a-statement",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_unit-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_unit-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_sqft-price-per-sf-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_sqft-price-per-sf-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_sqft-purchase-price-per-sqft-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_sqft-purchase-price-per-sqft-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-noi_per_sqft-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-noi_per_sqft-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-occupancy-property-disagrees-rent-roll-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-occupancy-rent-roll-disagrees-property-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-revpor-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-revpor-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-sizing-metrics-agree",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-dscr-sizing-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-ltv-sizing-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-debt_yield-sizing-disagrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-hospitality-gop-component-identity-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-senior-housing-labor-component-identity-agrees",
+      "target": "verifier"
+    },
+    {
       "suite": "starter-agent",
       "scenario": "l0a-scope-deterministic",
       "target": "starter-products"
@@ -5619,6 +5824,331 @@
     {
       "suite": "documents",
       "scenario": "malformed/33-meta-pass-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/34-meta-t1b",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/35-meta-leaf-values",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/36-meta-leaf-parents-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/37-meta-leaf-retained",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/38-meta-optional-values",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/39-meta-reference-values",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/40-meta-optional-parents-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/41-meta-optional-retained",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/42-meta-optional-lawful",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/43-meta-reference-calendar",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/44-payload-lease-up",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/45-payload-recovery",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/46-payload-sizing",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/47-payload-waterfall",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/48-payload-lawful",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/49-payload-current-peers",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/50-tilde-fenced-block",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/51-size-negative-count",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/52-size-negative-area",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/53-size-negative-capacity",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/54-size-negative-rent",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/55-size-fractional-count",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/56-size-negative-twin",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/57-yaml-nested-under-scalar",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/58-asset-class-boolean",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/59-asset-class-empty",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/66-issue-field-paths",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/67-financial-validity-homes",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/68-ltc-homes",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/69-ltc-boundaries",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "reject-inherited-cash-flow-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "recoveries",
+      "scenario": "accept-own-prototype-named-variant",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "01-automatic-absence",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "02-explicit-missing",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "03-selected-directory",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "04-invalid-utf8",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "05-leading-bom",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "06-trailing-json",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "07-decoded-duplicate-root",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "08-decoded-duplicate-opaque",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "09-lone-surrogate-value",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "10-lone-surrogate-key",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "11-nonobject-root",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "12-forbidden-root-priority",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "13-invalid-carrier",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "14-null-dscr",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "15-boolean-ltv",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "16-string-debt-yield",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "17-recognized-overflow",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "18-fixed-leaf-order",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "19-atomic-sibling-refusal",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "20-empty-carrier",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "21-opaque-overflow-paired-scalar",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "22-three-flat-overrides",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "23-explicit-spaced-path",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "24-automatic-adjacent",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "25-automatic-malformed",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "26-explicit-suppresses-adjacent",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "27-explicit-failure-no-fallback",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "28-nested-lookalike-opaque",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "29-json-whitespace",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "30-deal-flags-not-errors",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "31-escalate-listed-error-band",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "32-escalate-warning-band-stays-flag",
+      "target": "verifier"
+    },
+    {
+      "suite": "institution-config",
+      "scenario": "33-escalation-unregistered-code",
       "target": "verifier"
     }
   ]

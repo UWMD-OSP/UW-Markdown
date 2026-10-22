@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // .uw.md context builder — curates what each Bancroft agent layer receives
 //
 // Each Bancroft layer has a defined set of sections it reads and writes.
@@ -173,7 +174,7 @@ export function buildAgentContext(
     } else {
       // Check multi-variant
       const variantEntry = parsed.sections[sectionId];
-      if (variantEntry && !('annotation' in variantEntry)) {
+      if (variantEntry && !hasBlockShape(variantEntry)) {
         sections[sectionId] = Object.fromEntries(
           Object.entries(variantEntry as Record<string, UWBlock>).map(([v, b]) => [v, b.content])
         );

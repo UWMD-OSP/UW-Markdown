@@ -1,0 +1,20 @@
+{
+  "id": "verifier__institution-config__10-lone-surrogate-key__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "policy.input",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/10-lone-surrogate-key",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/10-lone-surrogate-key/expected.json",
+    "exit_code": 1
+  }
+}

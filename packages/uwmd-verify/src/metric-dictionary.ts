@@ -112,7 +112,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -132,7 +132,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -152,7 +152,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -289,7 +289,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -309,7 +309,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -327,7 +327,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -500,7 +500,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -520,7 +520,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -538,7 +538,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -729,7 +729,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -749,7 +749,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -767,7 +767,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -958,7 +958,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -978,7 +978,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -996,7 +996,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1052,7 +1052,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1187,7 +1187,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1207,7 +1207,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1225,7 +1225,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1344,11 +1344,9 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "hospitality"
       ],
-      "formula": "rent_roll.adr == null || rent_roll.occupancy == null || rent_roll.available_room_nights == null ? null : (rent_roll.adr * rent_roll.occupancy * rent_roll.available_room_nights)",
+      "formula": "noi_model.income.rooms_revenue",
       "input_paths": [
-        "rent_roll.adr",
-        "rent_roll.occupancy",
-        "rent_roll.available_room_nights"
+        "noi_model.income.rooms_revenue"
       ],
       "unit": "$",
       "round_to": 2,
@@ -1363,18 +1361,16 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "hospitality"
       ],
-      "formula": "rent_roll.adr == null || rent_roll.occupancy == null || rent_roll.available_room_nights == null || property.keys == null ? null : (round((rent_roll.adr * rent_roll.occupancy * rent_roll.available_room_nights), 2) / property.keys)",
+      "formula": "noi_model.income.rooms_revenue / property.keys",
       "input_paths": [
-        "rent_roll.adr",
-        "rent_roll.occupancy",
-        "rent_roll.available_room_nights",
+        "noi_model.income.rooms_revenue",
         "property.keys"
       ],
       "unit": "$",
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -1402,11 +1398,10 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "asset_classes": [
         "hospitality"
       ],
-      "formula": "hotel_food_beverage.fb_revenue == null || hotel_food_beverage.fb_cogs == null || hotel_food_beverage.fb_labor == null ? null : ((hotel_food_beverage.fb_revenue - hotel_food_beverage.fb_cogs - hotel_food_beverage.fb_labor) / hotel_food_beverage.fb_revenue)",
+      "formula": "hotel_food_beverage.fb_revenue == null || hotel_food_beverage.fb_cogs == null ? null : ((hotel_food_beverage.fb_revenue - hotel_food_beverage.fb_cogs) / hotel_food_beverage.fb_revenue)",
       "input_paths": [
         "hotel_food_beverage.fb_revenue",
-        "hotel_food_beverage.fb_cogs",
-        "hotel_food_beverage.fb_labor"
+        "hotel_food_beverage.fb_cogs"
       ],
       "unit": "%",
       "round_to": 4,
@@ -1994,7 +1989,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2014,7 +2009,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2032,7 +2027,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2088,7 +2083,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2259,7 +2254,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2279,7 +2274,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2297,7 +2292,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2353,7 +2348,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2371,7 +2366,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2389,7 +2384,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2425,7 +2420,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2443,7 +2438,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2461,7 +2456,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2479,7 +2474,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 6,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2497,7 +2492,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 4,
       "minimum_stated_decimals": 2,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2558,7 +2553,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2576,7 +2571,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2612,7 +2607,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2807,14 +2802,17 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "deterministic": true
     },
     {
-      "id": "annual_facility_kwh_at_contract",
-      "label": "Annual Facility kWh at Contracted Load",
+      "id": "annual_facility_kwh",
+      "label": "Annual Facility kWh (Metered or Drawn)",
       "asset_classes": [
         "data_center"
       ],
-      "formula": "dc_capacity.contracted_it_load_kw * dc_capacity.design_pue * 8760",
+      "formula": "dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)",
       "input_paths": [
+        "dc_power.metered_annual_kwh",
+        "dc_power.draw_factor",
         "dc_capacity.contracted_it_load_kw",
+        "dc_capacity.measured_pue",
         "dc_capacity.design_pue"
       ],
       "unit": "kWh",
@@ -2826,14 +2824,18 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
     },
     {
       "id": "annual_power_cost",
-      "label": "Annual Power Cost",
+      "label": "Annual Power Cost (Landlord)",
       "asset_classes": [
         "data_center"
       ],
-      "formula": "dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : round((dc_capacity.contracted_it_load_kw * dc_capacity.design_pue * 8760), 0) * dc_power.utility_rate_per_kwh",
+      "formula": "dc_power.billing == 'metered_pass_through' ? 0 : (dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : ((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)) == null ? null : round((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)), 0) * dc_power.utility_rate_per_kwh))",
       "input_paths": [
+        "dc_power.billing",
         "dc_power.stated_annual_power_cost",
+        "dc_power.metered_annual_kwh",
+        "dc_power.draw_factor",
         "dc_capacity.contracted_it_load_kw",
+        "dc_capacity.measured_pue",
         "dc_capacity.design_pue",
         "dc_power.utility_rate_per_kwh"
       ],
@@ -2846,14 +2848,18 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
     },
     {
       "id": "power_cost_per_kw_month",
-      "label": "Power Cost per kW-Month",
+      "label": "Power Cost per kW-Month (Landlord)",
       "asset_classes": [
         "data_center"
       ],
-      "formula": "round((dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : round((dc_capacity.contracted_it_load_kw * dc_capacity.design_pue * 8760), 0) * dc_power.utility_rate_per_kwh), 2) / (dc_capacity.contracted_it_load_kw * 12)",
+      "formula": "(dc_power.billing == 'metered_pass_through' ? 0 : (dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : ((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)) == null ? null : round((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)), 0) * dc_power.utility_rate_per_kwh))) == null ? null : round((dc_power.billing == 'metered_pass_through' ? 0 : (dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : ((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)) == null ? null : round((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)), 0) * dc_power.utility_rate_per_kwh))), 2) / (dc_capacity.contracted_it_load_kw * 12)",
       "input_paths": [
+        "dc_power.billing",
         "dc_power.stated_annual_power_cost",
+        "dc_power.metered_annual_kwh",
+        "dc_power.draw_factor",
         "dc_capacity.contracted_it_load_kw",
+        "dc_capacity.measured_pue",
         "dc_capacity.design_pue",
         "dc_power.utility_rate_per_kwh"
       ],
@@ -2903,17 +2909,17 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "deterministic": true
     },
     {
-      "id": "rent_index",
-      "label": "Rent Index vs Market",
+      "id": "mark_to_market",
+      "label": "Mark-to-Market (Market vs In-Place Rent)",
       "asset_classes": [
         "data_center"
       ],
-      "formula": "dc_revenue.rent_per_kw_month / dc_revenue.market_rent_per_kw_month",
+      "formula": "(dc_revenue.market_rent_per_kw_month - dc_revenue.rent_per_kw_month) / dc_revenue.rent_per_kw_month",
       "input_paths": [
-        "dc_revenue.rent_per_kw_month",
-        "dc_revenue.market_rent_per_kw_month"
+        "dc_revenue.market_rent_per_kw_month",
+        "dc_revenue.rent_per_kw_month"
       ],
-      "unit": "x",
+      "unit": "%",
       "round_to": 4,
       "minimum_stated_decimals": 2,
       "section_roles": {},
@@ -2971,7 +2977,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -2989,7 +2995,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -3009,7 +3015,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -3218,7 +3224,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -3236,7 +3242,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "round_to": 2,
       "minimum_stated_decimals": 0,
       "section_roles": {},
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     },
     {
@@ -3256,7 +3262,7 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
       "section_roles": {
         "debt_structure": "senior"
       },
-      "null_semantics": "expression",
+      "null_semantics": "positive_size_denominator",
       "deterministic": true
     }
   ],
@@ -3470,5 +3476,58 @@ export const BUILTIN_METRIC_DICTIONARY: MetricDictionary = deepFreeze<MetricDict
         "entitled_units"
       ]
     }
-  ]
+  ],
+  "statement_bindings": {
+    "output_sections": [
+      "valuation",
+      "debt_structure",
+      "noi_model",
+      "rent_roll",
+      "property",
+      "components",
+      "dc_capacity",
+      "dc_power",
+      "dc_revenue",
+      "mhc_sites",
+      "hotel_metrics",
+      "hotel_food_beverage"
+    ],
+    "aliases": {
+      "cap_rate": [
+        "valuation.going_in_cap_rate"
+      ],
+      "price_per_unit": [
+        "valuation.purchase_price_per_unit"
+      ],
+      "price_per_sqft": [
+        "valuation.price_per_sf",
+        "valuation.purchase_price_per_sqft"
+      ],
+      "noi_per_sqft": [
+        "noi_model.noi_per_sf"
+      ],
+      "occupancy": [
+        "property.occupancy_pct",
+        "rent_roll.occupancy_pct"
+      ],
+      "revpor": [
+        "noi_model.revpor_monthly"
+      ],
+      "dscr": [
+        "debt_structure.sizing_metrics.dscr_underwritten"
+      ],
+      "ltv": [
+        "debt_structure.sizing_metrics.ltv"
+      ],
+      "debt_yield": [
+        "debt_structure.sizing_metrics.debt_yield"
+      ],
+      "hospitality_gross_operating_profit": [
+        "components.hospitality.gross_operating_profit"
+      ],
+      "senior_housing_total_labor_expense": [
+        "components.senior_housing.total_labor_expense"
+      ]
+    }
+  }
 });

@@ -1,0 +1,7 @@
+{
+  "why": "RFC 0098: absence of point_in_time means both points; today's single-loan result is unchanged.",
+  "agree_codes": [],
+  "mismatch_codes": [
+    "CC-03"
+  ]
+}

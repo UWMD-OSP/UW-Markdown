@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // RFC 0084 / Protocol §V.13: crypto-free authentication of a document snapshot.
 import { canonicalize, InvalidUnicodeError } from './integrity-canonical.js';
 import { computeEnvelopeDigest, toUWEnvelope, type UWDocumentEnvelope } from './envelope.js';
@@ -138,7 +139,7 @@ export async function resolveDocumentSigningSubject(source: string): Promise<Doc
       // Sections represented as maps have an explicit variant/default key;
       // singleton sections have only their section id, regardless of annotation.
       const entry = parsed.sections[section];
-      const variantMap = entry && !Object.hasOwn(entry, 'annotation');
+      const variantMap = entry && !hasBlockShape(entry);
       const key = JSON.stringify([section, variantMap ? block.annotation.variant ?? 'default' : null]);
       if (seen.has(key)) throw new DocumentSigningError(`Duplicate active selection key ${key}.`);
       seen.add(key);
@@ -164,7 +165,7 @@ export async function resolveDocumentSigningSubject(source: string): Promise<Doc
 
 function envelopeBlocks(envelope: UWDocumentEnvelope): Record<string, unknown>[] {
   const blocks = Object.values(envelope.sections).flatMap(entry =>
-    Object.hasOwn(entry, 'annotation') ? [entry as import('./envelope.js').UWEnvelopeBlock] : Object.values(entry));
+    hasBlockShape(entry) ? [entry as import('./envelope.js').UWEnvelopeBlock] : Object.values(entry));
   return [...blocks, ...envelope.pipeline_log, ...envelope.custom_calculations, ...envelope.custom_scenarios,
     ...Object.values(envelope.extensions), ...Object.values(envelope.superseded).flat()].map(block => block.content);
 }

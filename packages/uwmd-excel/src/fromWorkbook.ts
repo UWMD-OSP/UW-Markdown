@@ -8,6 +8,7 @@ import { PERIOD_EXPORT_MARKER } from './custom-calculations.js';
 import type { WorkbookLayout } from './layout.js';
 import { SUBTOTAL_RANGES } from './layout.js';
 import { getLayoutForAssetClass } from './layouts.js';
+import { MIXED_USE_PROPERTY_PATHS, mixedUseName } from './mixed-use.js';
 import { readWorkbookContract } from './mcpSheet.js';
 import type { WorkbookContract } from './mcpSheet.js';
 
@@ -55,6 +56,16 @@ function scalarNumberOrNull(cell: ExcelJS.Cell, description: string): number | n
   throw new WorkbookImportError(
     'WORKBOOK-IMPORT-NAMED-RANGE',
     `${description} must resolve to a finite number or blank cell.`,
+  );
+}
+
+function scalarTextOrNull(cell: ExcelJS.Cell, description: string): string | null {
+  const value = cell.value;
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'string') return value;
+  throw new WorkbookImportError(
+    'WORKBOOK-IMPORT-NAMED-RANGE',
+    `${description} must resolve to text or a blank cell.`,
   );
 }
 
@@ -163,6 +174,69 @@ function assertSubtotalRows(wb: ExcelJS.Workbook, layout: WorkbookLayout): void 
   }
 }
 
+function hasName(wb: ExcelJS.Workbook, name: string): boolean {
+  return wb.definedNames.getRanges(name).ranges.length > 0;
+}
+
+function negatedOrNull(value: number | null): number | null {
+  if (value === null) return null;
+  return Object.is(-value, -0) ? 0 : -value;
+}
+
+/**
+ * Mixed-use (RFC 0019, §4.23): the property inputs on the Underwriting sheet and,
+ * for each component the workbook carries, its stated EGI and operating expenses
+ * plus any intermediate, allocation and intensive denominator. NOIs are
+ * formula-derived and never imported; the footing formulas must be unaltered.
+ */
+function fromMixedUseWorkbook(wb: ExcelJS.Workbook, layout: WorkbookLayout): Record<string, Record<string, unknown>> {
+  const sections: Record<string, Record<string, unknown>> = {};
+  for (const path of MIXED_USE_PROPERTY_PATHS) {
+    if (path === 'noi_model.net_operating_income') continue; // the consolidation SUM
+    const dot = path.indexOf('.');
+    const name = mixedUseName(path);
+    setPath(sectionFor(sections, path.slice(0, dot)), path.slice(dot + 1), scalarNumberOrNull(namedCell(wb, name), name));
+  }
+
+  const sheet = wb.getWorksheet('Operating Statement');
+  const noiNames: string[] = [];
+  for (const spec of layout.mixedUse?.components ?? []) {
+    const cls = spec.componentClass;
+    const noiName = mixedUseName(`components.${cls}.net_operating_income`);
+    if (!hasName(wb, noiName)) continue; // an absent use has no block
+    const egi = namedCell(wb, mixedUseName(`components.${cls}.effective_gross_income`));
+    const opex = namedCell(wb, mixedUseName(`components.${cls}.operating_expenses`));
+    const noi = namedCell(wb, noiName);
+    if (formulaAt(noi) !== `SUM(${egi.address}:${opex.address})` || (sheet && noi.worksheet !== sheet)) {
+      throw new WorkbookImportError('WORKBOOK-IMPORT-SUBTOTAL',
+        `Workbook subtotal "${spec.label} Net Operating Income" has been altered.`);
+    }
+    noiNames.push(noiName);
+
+    const component: Record<string, unknown> = {
+      effective_gross_income: scalarNumberOrNull(egi, `${spec.label} Effective Gross Income`),
+      operating_expenses: negatedOrNull(scalarNumberOrNull(opex, `${spec.label} Operating Expenses`)),
+    };
+    const optional = [
+      ...(spec.intermediate ? [spec.intermediate.field] : []),
+      'allocation_pct',
+      ...(spec.denom ? [spec.denom.field] : []),
+    ];
+    for (const field of optional) {
+      const name = mixedUseName(`components.${cls}.${field}`);
+      if (hasName(wb, name)) component[field] = scalarNumberOrNull(namedCell(wb, name), name);
+    }
+    sectionFor(sections, 'components')[cls] = component;
+  }
+
+  const consolidated = namedCell(wb, mixedUseName('noi_model.net_operating_income'));
+  if (formulaAt(consolidated) !== noiNames.join('+')) {
+    throw new WorkbookImportError('WORKBOOK-IMPORT-SUBTOTAL',
+      'Workbook subtotal "Property Net Operating Income" has been altered.');
+  }
+  return sections;
+}
+
 /**
  * Recover editable field fragments from a workbook produced by toWorkbook().
  * Formula-derived values are never imported, so a cached workbook calculation
@@ -199,17 +273,6 @@ export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
   }
   const layout = getLayoutForAssetClass(assetClass)!;
 
-  // The reader reconstructs a single operating statement from `layout.incomeLines`
-  // / `expenseLines`. Mixed-use has neither — it emits per-component statements
-  // (RFC 0019) — so reverse import of a mixed-use workbook is refused rather than
-  // silently reconstructing an empty noi_model. (Export is fully supported.)
-  if (layout.mixedUse) {
-    throw new WorkbookImportError(
-      'WORKBOOK-IMPORT-UNSUPPORTED-SHAPE',
-      `Reverse import of a "${assetClass}" workbook is not supported: mixed-use uses per-component statements, not a single operating statement. Export (.uw.md → .xlsx) is supported.`,
-    );
-  }
-
   // Row geometry below is derived from the CURRENT layout, and a different pack
   // may declare a different metric set. Reading an old workbook at new offsets
   // would silently import the wrong cells, so refuse rather than guess.
@@ -220,12 +283,18 @@ export function fromWorkbook(wb: ExcelJS.Workbook): WorkbookImport {
     );
   }
 
+  // Mixed-use emits per-component statements (RFC 0019), not one operating
+  // statement, so it reads its own named inputs (#411).
+  if (layout.mixedUse) return { asset_class: assetClass, contract: contract ?? null, sections: fromMixedUseWorkbook(wb, layout) };
+
   assertSubtotalRows(wb, layout);
 
   const sections: Record<string, Record<string, unknown>> = {};
   for (const input of layout.namedInputs) {
     const section = sectionFor(sections, input.source.section);
-    setPath(section, input.source.path, scalarNumberOrNull(namedCell(wb, input.name), input.name));
+    const cell = namedCell(wb, input.name);
+    setPath(section, input.source.path,
+      input.format === 'text' ? scalarTextOrNull(cell, input.name) : scalarNumberOrNull(cell, input.name));
   }
 
   const operatingStatement = wb.getWorksheet('Operating Statement')!;

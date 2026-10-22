@@ -1,4 +1,7 @@
-// RFC 0080: class metrics and RFC 0079 standard income metrics.
+// RFC 0080: class metrics and RFC 0079 standard income metrics. RFC 0103:
+// power never assumes full draw (metered kWh, else an explicit draw factor,
+// measured PUE before design; zero landlord cost under metered pass-through),
+// and mark_to_market replaces rent_index.
 import type { ModuleManifest } from '../protocol.js';
 
 export const DATA_CENTER_PACK: ModuleManifest = {
@@ -97,25 +100,25 @@ export const DATA_CENTER_PACK: ModuleManifest = {
       "deterministic": true
     },
     {
-      "id": "annual_facility_kwh_at_contract",
-      "label": "Annual Facility kWh at Contracted Load",
-      "formula": "dc_capacity.contracted_it_load_kw * dc_capacity.design_pue * 8760",
+      "id": "annual_facility_kwh",
+      "label": "Annual Facility kWh (Metered or Drawn)",
+      "formula": "dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)",
       "unit": "kWh",
       "round_to": 0,
       "deterministic": true
     },
     {
       "id": "annual_power_cost",
-      "label": "Annual Power Cost",
-      "formula": "dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : round((dc_capacity.contracted_it_load_kw * dc_capacity.design_pue * 8760), 0) * dc_power.utility_rate_per_kwh",
+      "label": "Annual Power Cost (Landlord)",
+      "formula": "dc_power.billing == 'metered_pass_through' ? 0 : (dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : ((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)) == null ? null : round((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)), 0) * dc_power.utility_rate_per_kwh))",
       "unit": "$",
       "round_to": 2,
       "deterministic": true
     },
     {
       "id": "power_cost_per_kw_month",
-      "label": "Power Cost per kW-Month",
-      "formula": "round((dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : round((dc_capacity.contracted_it_load_kw * dc_capacity.design_pue * 8760), 0) * dc_power.utility_rate_per_kwh), 2) / (dc_capacity.contracted_it_load_kw * 12)",
+      "label": "Power Cost per kW-Month (Landlord)",
+      "formula": "(dc_power.billing == 'metered_pass_through' ? 0 : (dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : ((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)) == null ? null : round((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)), 0) * dc_power.utility_rate_per_kwh))) == null ? null : round((dc_power.billing == 'metered_pass_through' ? 0 : (dc_power.stated_annual_power_cost != null ? dc_power.stated_annual_power_cost : ((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)) == null ? null : round((dc_power.metered_annual_kwh != null ? dc_power.metered_annual_kwh : (dc_power.draw_factor == null ? null : dc_capacity.contracted_it_load_kw * dc_power.draw_factor * (dc_capacity.measured_pue != null ? dc_capacity.measured_pue : dc_capacity.design_pue) * 8760)), 0) * dc_power.utility_rate_per_kwh))), 2) / (dc_capacity.contracted_it_load_kw * 12)",
       "unit": "$",
       "round_to": 2,
       "deterministic": true
@@ -137,10 +140,10 @@ export const DATA_CENTER_PACK: ModuleManifest = {
       "deterministic": true
     },
     {
-      "id": "rent_index",
-      "label": "Rent Index vs Market",
-      "formula": "dc_revenue.rent_per_kw_month / dc_revenue.market_rent_per_kw_month",
-      "unit": "x",
+      "id": "mark_to_market",
+      "label": "Mark-to-Market (Market vs In-Place Rent)",
+      "formula": "(dc_revenue.market_rent_per_kw_month - dc_revenue.rent_per_kw_month) / dc_revenue.rent_per_kw_month",
+      "unit": "%",
       "round_to": 4,
       "deterministic": true
     },

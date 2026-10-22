@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import { getStatedDecimals, parseUWFile } from '../../packages/uwmd-verify/dist/index.js';
-import { verifyExample, verifyStatedMetric as verifyWithPrecision } from './verifier.mjs';
+import { readLiteSections, verifyExample, verifyStatedMetric as verifyWithPrecision, verifyStatementHome } from './verifier.mjs';
 import { jsonNumericTokens, jsonStatedDecimals, quickMetricDecimals } from './numeric-tokens.mjs';
 
 // Synthetic controls explicitly declare the full dictionary output precision.
@@ -159,6 +159,19 @@ export function controls(root) {
       p.sections.sources_uses = block('sources_uses', { uses: { total: 124615.3846153846 } });
       assert.equal(verifyWithPrecision(metric('ltc', 'office'), p, 0.6, undefined, 1).state, 'verified');
     }],
+    ['negative-size-denominator-is-unverifiable', () => {
+      // RFC 0100 D5: price per unit over total_units -1 is not confirmed; zero
+      // already refuses as a division; a positive size verifies as before.
+      const m = metric('price_per_unit');
+      assert.equal(m.null_semantics, 'positive_size_denominator');
+      const p = simple();
+      assert.equal(verifyStatedMetric(m, p, 100000.21).state, 'verified');
+      p.sections.property.content.total_units = -1;
+      assert.deepEqual(verifyStatedMetric(m, p, -100000.21), { state: 'unverifiable', reason: 'negative_size_denominator', computed: null });
+      p.sections.property.content.total_units = 0;
+      assert.equal(verifyStatedMetric(m, p, 0).reason, 'CALC-DIV-ZERO');
+      assert.equal(metric('dscr').null_semantics, 'expression');
+    }],
     ['all-class-LTV-uses-underwritten-value-with-lazy-price-fallback', () => {
       for (const cls of d.calculations.filter(m => m.id === 'ltv').flatMap(m => m.asset_classes)) {
         const p = simple(); p.sections.valuation.content.underwritten_value = 120000;
@@ -174,9 +187,9 @@ export function controls(root) {
       }
     }],
     ['Lite-ratio-token-retains-stated-precision', () => {
-      const bindings = JSON.parse(readFileSync(join(root, 'conformance/metrics/statement-bindings.json'), 'utf8'));
+      const liteSections = readLiteSections(root);
       const source = '---\nuw_lite_version: 1.0\nasset_class: multifamily\n---\n- NOI: $120 <!-- uw:noi.net_operating_income -->\n- Debt service: $100 <!-- uw:debt.annual_debt_service -->\n- DSCR: 1.20x <!-- uw:debt.dscr -->\n';
-      const result = verifyExample(source, d, bindings);
+      const result = verifyExample(source, d, liteSections);
       assert.deepEqual(result.counts, { verified: 1, failed: 0, unverifiable: 0 });
       assert.equal(result.evidence[0].stated_decimals, 2);
     }],
@@ -187,5 +200,23 @@ export function controls(root) {
       verifyStatedMetric(m, p, 2);
       assert.equal(JSON.stringify({ m, p }), before);
     }],
+    ...statementHomes(root),
   ];
+}
+
+// RFC 0099: every bound home of a metric is checked, each address on its own.
+function statementHomes(root) {
+  const { cases } = JSON.parse(readFileSync(join(root, 'conformance/metrics/statement-homes/cases.json'), 'utf8'));
+  return cases.map(testCase => [`statement-home-${testCase.name}`, () => {
+    const report = verifyStatementHome(root, testCase);
+    for (const { path, state } of testCase.expect) {
+      const found = report.evidence.filter(e => e.path === path);
+      assert.equal(found.length, 1, `${path} is stated once`);
+      assert.equal(found[0].state, state, `${path}: ${JSON.stringify(found[0])}`);
+    }
+    for (const path of testCase.absent ?? []) {
+      assert.ok(!report.evidence.some(e => e.path === path), `${path} is not a statement`);
+    }
+    if (testCase.failed !== undefined) assert.equal(report.counts.failed, testCase.failed);
+  }]);
 }

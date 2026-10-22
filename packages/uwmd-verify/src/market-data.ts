@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // `market-data-v1` document profile (RFC 0022).
 //
 // A market-data document carries dated, attributable *observations* — not
@@ -258,7 +259,7 @@ export function parseMarketDataDocument(parsed: ParsedUWFile): MarketDataDocumen
       `A market-data document must carry a '${MARKET_OBSERVATIONS_SECTION}' section.`,
     );
   }
-  const block = 'annotation' in (entry as object)
+  const block = hasBlockShape(entry)
     ? (entry as { content: unknown })
     : Object.values(entry as Record<string, { content: unknown }>)[0]!;
   const content = block.content as Record<string, unknown> | undefined;

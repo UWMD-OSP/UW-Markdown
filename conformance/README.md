@@ -15,7 +15,7 @@ describe content; they do not confer a tier claim.
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
 | Reader | 26 | 17 |
-| Verifier | 716 | 295 |
+| Verifier | 726 | 295 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 142 | 0 |
@@ -23,7 +23,7 @@ describe content; they do not confer a tier claim.
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
 | Starter products | 106 | 37 |
-| **Total** | **1,124** | **364** |
+| **Total** | **1,134** | **364** |
 
 ## How to self-certify
 
@@ -73,6 +73,14 @@ public versus internal exceptional values and retained IRR behavior. All 14 also
 run through actual CLI subprocesses. Portable cases project a subset of the same
 checks, so 364 is not an additional corpus. The index and generated cases are
 checked for exact ownership, missing/duplicate results and generation drift.
+
+Accepted RFC 0093 and RFC 0094 each add four authored native Verifier cases.
+RFC 0094 pins all 60 accepted T1B vectors, present leaf types versus absence,
+parent suppression, complete pass ordering and retained physical peers. Exact
+metadata assertions include META-01 through META-06. RFC 0095 adds six authored
+native controls for optional values, symmetric references, parent/pass ordering,
+retained peers, lawful unknown data and strict date-only calendars. The portable case count
+is unchanged; existing source and expectation assertions are not rebaselined.
 
 Starter-product checks belong to the [starter guide](../docs/starter/README.md)
 and remain blocking CI checks. A mixed check with product assertions stays a

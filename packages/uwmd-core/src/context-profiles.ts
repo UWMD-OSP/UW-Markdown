@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // Context Profiles — non-normative starter views of a .uw.md for AI consumption
 // Guide: docs/starter/ai-host.md §IX.7 (RFC 0078 D3; RFC 0083)
 //
@@ -225,7 +226,7 @@ function finalize(
 function headBlock(parsed: ParsedUWFile, sectionId: string): UWBlock | null {
   const entry = parsed.sections[sectionId];
   if (!entry) return null;
-  if ('annotation' in (entry as object)) return entry as UWBlock;
+  if (hasBlockShape(entry)) return entry as UWBlock;
   // Multi-variant: pick the first variant.
   const variants = Object.values(entry as Record<string, UWBlock>);
   return variants[0] ?? null;

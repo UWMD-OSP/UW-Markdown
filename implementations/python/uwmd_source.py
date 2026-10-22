@@ -4,7 +4,8 @@ Format 2.1/2.4 describes the structured Markdown carrier; Protocol VIII.5.1
 requires retaining authored numeric precision. This module preserves the UTF-8
 source and JSON number lexemes before float conversion. It does not parse YAML,
 route variants, validate records, compute hashes, or claim ``parse`` conformance.
-Errors here are implementation-local exceptions, not new Protocol error codes.
+Errors here are implementation-local exceptions, except one: a block body that
+is not an I-JSON object is the registered ``SOURCE_BLOCK_MALFORMED`` (RFC 0106).
 """
 from dataclasses import dataclass
 import json
@@ -15,6 +16,27 @@ from typing import Any
 
 class SourceError(ValueError):
     """Source cannot be scanned without guessing or losing distinctions."""
+
+
+class BlockMalformedError(SourceError):
+    """A structured block body is not an I-JSON object (Format 2.4, RFC 0106)."""
+
+    code = "SOURCE_BLOCK_MALFORMED"
+
+
+def _lone_surrogate(value: Any) -> bool:
+    """True if any decoded string or member name holds an unpaired surrogate.
+
+    Python's JSON decoder joins an escaped surrogate pair into one code point,
+    so any surviving code point in U+D800..U+DFFF is unpaired.
+    """
+    if isinstance(value, str):
+        return any(0xD800 <= ord(character) <= 0xDFFF for character in value)
+    if isinstance(value, dict):
+        return any(_lone_surrogate(key) or _lone_surrogate(item) for key, item in value.items())
+    if isinstance(value, list):
+        return any(_lone_surrogate(item) for item in value)
+    return False
 
 
 @dataclass(frozen=True)
@@ -61,7 +83,12 @@ class ScannedSource:
 
 _NUMBER = re.compile(r"-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?")
 _SPACE = re.compile(r"[ \t\r\n]*")
-_FENCE = re.compile(rb" {0,3}(`{3,}|~{3,})([^\r\n]*)")
+# Format §2.4 (RFC 0102): a structured block opens on a line that begins with
+# exactly three backticks, `json`, whitespace and the `uw:` annotation, and
+# closes on the next line of exactly three backticks. Tilde, indented or longer
+# fences are ordinary Markdown, as in the reference.
+_UW_OPEN = re.compile(rb"```json[ \t]+(uw:section=[^\r\n]*)")
+_UW_CLOSE = re.compile(rb"```[ \t]*")
 _ATTRIBUTE = re.compile(r"([^\s=]+)=([^\s=]+)")
 
 
@@ -186,8 +213,8 @@ def scan_source(raw: bytes) -> ScannedSource:
     Frontmatter is retained, not interpreted. No format/version/extension or
     required-field check is claimed here. Unknown sections and all historical
     blocks are retained in physical order; section routing is a later layer.
-    Generic fenced examples are opaque so nested apparent UW fences inside
-    them cannot become actual data blocks.
+    Only the Format §2.4 line rule opens a block (RFC 0102); other Markdown,
+    including tilde or generic code fences, is not interpreted.
     """
     if not isinstance(raw, bytes):
         raise TypeError("scan_source requires original bytes")
@@ -214,37 +241,39 @@ def scan_source(raw: bytes) -> ScannedSource:
     index = closing + 1
     while index < len(lines):
         line = lines[index].rstrip(b"\r\n")
-        opening = _FENCE.fullmatch(line)
+        opening = _UW_OPEN.fullmatch(line)
         if opening is None:
             index += 1
             continue
-        marker, info = opening.groups()
-        # Backticks in the info string cannot open a backtick fence.
-        if marker.startswith(b"`") and b"`" in info:
-            index += 1
-            continue
-        ending = re.compile(rb" {0,3}" + re.escape(marker[:1])
-                            + rb"{" + str(len(marker)).encode("ascii") + rb",}[ \t]*")
         end = next((i for i in range(index + 1, len(lines))
-                    if ending.fullmatch(lines[i].rstrip(b"\r\n"))), None)
+                    if _UW_CLOSE.fullmatch(lines[i].rstrip(b"\r\n"))), None)
         if end is None:
             raise SourceError("unclosed Markdown fence")
-        words = info.decode("utf-8").strip().split()
-        if words and words[0] == "json" and any(word.startswith("uw:section=") for word in words[1:]):
-            attributes = {}
-            for word in words[1:]:
-                attribute = _ATTRIBUTE.fullmatch(word)
-                if attribute is None:
-                    raise SourceError("unsupported fence annotation")
-                key, item = attribute.groups()
-                if key in attributes:
-                    raise SourceError("repeated fence annotation key")
-                attributes[key] = item
-            body = Span(offsets[index + 1], offsets[end])
+        words = opening.group(1).decode("utf-8").split()
+        attributes = {}
+        for word in words:
+            attribute = _ATTRIBUTE.fullmatch(word)
+            if attribute is None:
+                raise SourceError("unsupported fence annotation")
+            key, item = attribute.groups()
+            if key in attributes:
+                raise SourceError("repeated fence annotation key")
+            attributes[key] = item
+        body = Span(offsets[index + 1], offsets[end])
+        where = "block at line " + str(index + 1)
+        try:
             parsed = parse_json_source(body.extract(raw), byte_offset=body.start)
-            if not isinstance(parsed.value, dict):
-                raise SourceError("UW structured block body is not an object")
-            blocks.append(StructuredBlock(attributes["uw:section"], tuple(attributes.items()),
-                                          Span(offsets[index], offsets[end + 1]), body, parsed))
+        except SourceError as error:
+            # A local resource limit is this seed's refusal, not a defect of
+            # the source, so it keeps its own uncoded diagnostic.
+            if "resource" in str(error):
+                raise
+            raise BlockMalformedError(where + ": " + str(error)) from error
+        if not isinstance(parsed.value, dict):
+            raise BlockMalformedError(where + ": UW structured block body is not an object")
+        if _lone_surrogate(parsed.value):
+            raise BlockMalformedError(where + ": unpaired surrogate")
+        blocks.append(StructuredBlock(attributes["uw:section"], tuple(attributes.items()),
+                                      Span(offsets[index], offsets[end + 1]), body, parsed))
         index = end + 1
     return ScannedSource(raw, frontmatter, tuple(blocks))

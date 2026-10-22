@@ -112,6 +112,7 @@ Module | Package | Responsibility | Key exports
 `defaults.ts` | core | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
 `gaps.ts` | core | Gap detection | `inferGaps`, `summarizeGaps`
 `gaps-content.ts` | verify | The `gaps` section's types and reader | `readGapsContent`, `GapsContent`
+`size-contract.ts` | verify | RFC 0100 size contract: `SIZE-01` for a negative or fractional size, count, area or rent | module-level `checkSizeContract`, `SIZE_CONTRACT`
 `refinement.ts` | core | Value-of-information gap ranking | `rankGaps`
 `asset-class.ts` | verify | Identifier grammar + resolution for module-declared classes (RFC 0003) | `parseAssetClass`, `resolveAssetClass`, `declaredAssetClasses`
 `module-runtime.ts` | verify | Running what a module declares (RFC 0006) | `evaluateModuleCalculations`, `validateAgainstModules`, `checkModuleSections`
@@ -156,22 +157,38 @@ walks a dot-path into a content object.
 
 ## validator.ts
 
-`validateUWFile(parsed, thresholds?) → ValidationResult`. Returns
+`validateUWFile(parsed, thresholds?, sourceOptions?, policy?) → ValidationResult`. Returns
 `overall_status` (`clean`|`warnings`|`errors`|`blocking`), `stage_readiness`
-(per `DealStage`), and `issues` split into `errors`/`warnings`/`info`. Each
+(per `DealStage`), `issues` split into `errors`/`warnings`/`info`, and
+`deal_flags`: the Format §5.2 bands the deal crosses, which never count toward
+the status (RFC 0109). `policy.financial_validity_errors` (from an institution
+config) raises a listed code's error band to an `error` issue. Each
 `ValidationMessage` carries a `code` and (when a registry entry exists) a `title`,
 `remediation`, and `spec_ref` pulled from `BUILTIN_REMEDIATIONS` via
 `lookupRemediation`.
+Its `field` is the dotted path from the block payload root (or the frontmatter
+root), with array elements by index: `_meta.provenance.source`,
+`tranches[1].position` (Protocol §III.6a, RFC 0104). A frontmatter-scoped issue
+has `section: "frontmatter"`. Issue order is not part of the contract, with
+one exception: the RFC 0093–0096 metadata and payload passes keep their fixed
+order.
 
 **Validation code families** (all defined with copy in `BUILTIN_REMEDIATIONS`):
 - `CC-01..CC-10` — cross-section consistency (NOI/DSCR/LTV/cap/sources-uses/…).
 - `DQ-01..DQ-05` — data quality (provisional/partial blocks, scope readiness, stale gaps).
 - `INT-01..INT-04` — integrity (parent/content hash chain), `INT-05..INT-08` — block signatures (RFC 0010) — surfaced by `integrity.ts`.
 - `POL-01..POL-02` — provenance/policy (unauthorized actor, replace-where-supersede).
-- `FV-01..FV-14` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex…).
+- `FV-01..FV-15` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex, LTC…),
+  read at every Format §5.2 home (`quick_metrics` and the section field), one
+  finding per home at the worst band crossed (RFC 0105). Reported as
+  `deal_flags` with a `band`, not as issues, unless an institution escalates
+  the code (RFC 0109).
 - `DQ-07..DQ-09` — scenario vocabulary, BTR subtype agreement and class scope
   (RFC 0072); warnings in both format generations, no stage or math changes.
 - `UNSUPPORTED_YAML_FEATURE` — frontmatter outside the YAML subset.
+- `SOURCE_BLOCK_MALFORMED` — a structured block body that is not one I-JSON
+  object (RFC 0106); `parseUWFile` throws it as a `UWMDParseError` with the
+  block's line, so a non-strict parse no longer keeps a `_parse_error` block.
 
 ## editor.ts (starter editor)
 
@@ -614,7 +631,11 @@ reaches no core module.
 
 `verifyStatedMetrics(parsed, options?)` (`metric-verification.ts`) checks every
 numeric statement of the document's dictionary metrics and returns one
-`verified`, `failed` or `unverifiable` result per statement. Stated precision
+`verified`, `failed` or `unverifiable` result per statement. Where a document
+states a metric is the dictionary's closed `statement_bindings` registry
+(RFC 0099): `quick_metrics.<id>`, `<id>` at each output section root, and each
+alias path (`valuation.going_in_cap_rate`, `debt_structure.sizing_metrics.dscr_underwritten`,
+…). Every bound address is checked and counted separately. Stated precision
 (RFC 0079) comes from the source: each block's `rawJson` and the frontmatter
 text. A document decoded from an envelope or another representation
 (`fromUWEnvelope`) has neither, so pass `options.statedDecimals` (keyed by

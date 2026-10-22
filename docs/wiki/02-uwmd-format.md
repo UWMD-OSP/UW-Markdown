@@ -64,6 +64,12 @@ no calculations or defaults depend on them.
 > indicators inside quotes are content, and ` #` outside quotes starts a
 > comment. Both readers share this in `yaml-scalar.ts`.
 
+> **Block JSON is I-JSON (RFC 0106).** Each `uw:section` body must be one JSON
+> object with unique member names (after escape decoding), finite binary64
+> numbers and no unpaired surrogates. Anything else, in a current or a
+> superseded block, refuses the whole document with `SOURCE_BLOCK_MALFORMED`
+> (category `parse`), in strict and non-strict mode alike.
+
 ## The fence annotation
 
 The opening fence carries inline key=value metadata, parsed into
@@ -167,7 +173,7 @@ by dropping superseded blocks; `diff()` compares two files section-by-section.
 their remediation copy lives in `BUILTIN_REMEDIATIONS` (`protocol.ts`). Examples:
 CC-01 rent-roll GPR vs operating-statement GPR (3%), CC-02 stated LTV vs
 `loan_amount / underwritten_value`, CC-03 senior loan across `sources_uses`,
-`debt_structure` and `capital_stack`, CC-04 sources/uses imbalance, CC-05 the
+`debt_structure` and `capital_stack` at each point in time (closing/stabilization, RFC 0098), CC-04 sources/uses imbalance, CC-05 the
 NOI used for DSCR vs `noi_model.net_operating_income` (1%). See [07 — Data model reference](07-data-model-reference.md)
 and [03 — Core library › validator](03-core-library.md) for the full code families
 (CC / DQ / INT / POL / FV).

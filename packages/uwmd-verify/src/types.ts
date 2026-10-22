@@ -250,7 +250,7 @@ export interface UWProvenance {
   /** REQUIRED when `source` matches `agent/*`. */
   agent_id?: string | null;
   agent_version?: string | null;
-  /** ISO 8601 UTC write time. */
+  /** Exact T1B UTC-Z write time: Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z (RFC0094). */
   timestamp: string;
   notes?: string | null;
   /**
@@ -384,7 +384,7 @@ export interface InheritedFrom {
  */
 export interface MarketDataRef {
   document_id: string;
-  /** ISO `YYYY-MM-DD`, copied from the observation set. */
+  /** Whole ASCII Gregorian YYYY-MM-DD, years0001–9999, no normalization (RFC0095). */
   as_of: string;
   /** `sha256:<64 lowercase hex>` over the observation set's canonical form. */
   digest: string;
@@ -435,6 +435,8 @@ export interface UWQuickMetrics {
   noi_underwritten?: number | null;
   dscr?: number | null;
   ltv?: number | null;
+  /** Loan-to-cost, a fraction (RFC 0107); a Format §5.2 `FV-15` home. */
+  ltc?: number | null;
   debt_yield?: number | null;
   cap_rate?: number | null;
   irr_projected?: number | null;
@@ -540,8 +542,45 @@ export interface ValidationResult {
   errors: ValidationMessage[];
   warnings: ValidationMessage[];
   info: ValidationMessage[];
+  /**
+   * Format §5.2 financial-validity findings (RFC 0109). They describe the deal,
+   * not the record: never in `issues`, never counted in `overall_status`.
+   * Always present, possibly empty.
+   */
+  deal_flags: DealFlag[];
   /** One entry per registered `CC-NN` rule (`CROSS_CHECK_RULE_IDS`), RFC 0037. */
   coverage: Record<string, CrossCheckCoverage>;
+}
+
+/**
+ * One Format §5.2 band crossed at one home (RFC 0109). `band` names the column
+ * crossed; there is deliberately no `severity`, so no reader counts a weak deal
+ * as a defective record.
+ */
+export interface DealFlag {
+  code: string;
+  section: string;
+  field: string;
+  message: string;
+  value: number;
+  threshold: { min?: number; max?: number };
+  band: 'error' | 'warning';
+}
+
+/** The registered Format §5.2 financial-validity codes (RFC 0105, RFC 0107, RFC 0109). */
+export const FINANCIAL_VALIDITY_CODES = [
+  'FV-01', 'FV-02', 'FV-03', 'FV-04', 'FV-05', 'FV-06', 'FV-07',
+  'FV-08', 'FV-09', 'FV-10', 'FV-11', 'FV-12', 'FV-13', 'FV-14', 'FV-15',
+] as const;
+
+/** Validation policy an institution configuration supplies beyond thresholds. */
+export interface ValidationPolicy {
+  /**
+   * `validation_overrides.financial_validity_errors` (RFC 0109 D3): for each
+   * listed code an error-band finding is reported as an `error` issue instead
+   * of a deal flag. A warning-band finding stays a flag (D4).
+   */
+  financial_validity_errors?: readonly string[];
 }
 
 // Default financial validity thresholds (spec §5.2)
@@ -584,11 +623,20 @@ export interface ParseOptions {
 
 // ─── Institution sidecar (.uw.institution.json) ───────────────────────────────
 
+/** Canonical sidecar wire object (Format C.6, RFC0097); not a pure API map. */
 export interface InstitutionConfig {
-  institution_name: string;
-  thresholds?: Partial<FinancialThresholds>;
-  required_fields?: string[];       // dot-path fields that must be non-null
-  render_template?: string;
+  validation_overrides?: {
+    dscr_warning_below?: number;
+    ltv_warning_above?: number;
+    debt_yield_warning_below?: number;
+    /** `FV-NN` codes whose error band fails validation (RFC 0109 D3). */
+    financial_validity_errors?: string[];
+    /** Other data is opaque and is never claimed applied. */
+    [member: string]: unknown;
+  };
+  /** Forbidden wire member; pure APIs separately accept FinancialThresholds. */
+  thresholds?: never;
+  [member: string]: unknown;
 }
 
 /** Resolve only published builtin identities; never suffix-match custom ids. */

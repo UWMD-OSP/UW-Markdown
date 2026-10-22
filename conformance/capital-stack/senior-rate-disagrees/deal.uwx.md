@@ -1,0 +1,140 @@
+---
+uw_version: "3.0"
+deal_id: TEST-CS-CC03-AGREE
+deal_name: "Senior Reconciles With Debt Structure"
+created: "2026-08-22T10:00:00Z"
+last_modified: "2026-08-22T10:00:00Z"
+property_address: "100 Stack Way"
+city: "Phoenix"
+state: "AZ"
+zip: "85001"
+asset_class: multifamily
+status: under_review
+recommendation: pending
+quick_metrics:
+  purchase_price: 40000000
+  loan_amount: 26000000
+flags: []
+blocking_flags: []
+tier: analyst
+created_by: "test-fixture"
+---
+
+# Senior Reconciles With Debt Structure
+
+The `capital_stack` senior_debt tranche states the same amount as
+`debt_structure.loan_amount`, so the generalized CC-03 (RFC 0026 §4.24) must
+NOT fire: one senior view, stated once, agreeing everywhere.
+
+```json uw:section=property source=manual ts=2026-08-22T10:00:00Z v=1
+{
+  "_meta": {
+    "section": "property",
+    "provenance": {
+      "source": "manual",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-22T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1
+    }
+  },
+  "address": "100 Stack Way",
+  "total_units": 180
+}
+```
+
+```json uw:section=debt_structure source=manual ts=2026-08-22T10:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "debt_structure",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-22T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "_notes": null,
+  "loan_amount": 26000000,
+  "interest_rate": 0.0625,
+  "amortization_months": 360,
+  "annual_debt_service": 1920950
+}
+```
+
+```json uw:section=capital_stack source=manual ts=2026-08-22T10:00:00Z v=1 confidence=high
+{
+  "_meta": {
+    "section": "capital_stack",
+    "provenance": {
+      "source": "manual",
+      "actor": "test-fixture",
+      "agent_id": null,
+      "agent_version": null,
+      "timestamp": "2026-08-22T10:00:00Z",
+      "notes": null
+    },
+    "quality": {
+      "confidence": "high",
+      "human_review_required": false,
+      "flags": [],
+      "partial": false,
+      "provisional": false
+    },
+    "lifecycle": {
+      "revision": 1,
+      "superseded": false
+    }
+  },
+  "_notes": null,
+  "point_in_time": "stabilization",
+  "tranches": [
+    {
+      "id": "senior",
+      "class": "senior_debt",
+      "position": 1,
+      "amount": 26000000,
+      "rate": 0.0999,
+      "amortization_months": 360,
+      "accrual": "cash"
+    },
+    {
+      "id": "mezz",
+      "class": "mezzanine_debt",
+      "position": 2,
+      "amount": 6000000,
+      "rate": 0.11,
+      "amortization_months": 0,
+      "accrual": "cash"
+    },
+    {
+      "id": "common",
+      "class": "common_equity",
+      "position": 3,
+      "amount": 8000000
+    }
+  ]
+}
+```

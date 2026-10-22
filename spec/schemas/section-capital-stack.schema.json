@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uwmd.org/schemas/section-capital-stack.schema.json",
   "title": "UW Markdown Capital Stack Section",
-  "description": "Content payload for the `capital_stack` section (UW_FORMAT_SPEC.md §4.24, RFC 0026, RFC 0050). An ordered array of typed capital `tranches` plus a `sizing` array of stated figures a verifier recomputes. This is a state-and-verify structure (RFC 0021 §6): the Tier-3 calc engine never reads it, so a variable-length array is safe — two mezzanine notes are just two tranches. This schema enforces structure only. The cross-field rules a validator/verifier adds are: the senior tranche reconciles with `debt_structure` and the `sources_uses` senior bucket (generalized CC-03); a debt or preferred tranche states a `rate` and common equity does not (CS-02); a split preferred-equity coupon carries component rates whose sum equals `rate` (CS-02b); each stated `sizing` value recomputes equal or the result is `failed` (CS-SIZING-DISAGREES); and a stack encoding a distribution waterfall (promote, hurdles, tiers, catch-up) is refused (CS-WATERFALL-UNSUPPORTED), which is deferred to a later phase.",
+  "description": "Content payload for the `capital_stack` section (UW_FORMAT_SPEC.md §4.24, RFC 0026, RFC 0050). An ordered array of typed capital `tranches` plus a `sizing` array of stated figures a verifier recomputes. This is a state-and-verify structure (RFC 0021 §6): the Tier-3 calc engine never reads it, so a variable-length array is safe — two mezzanine notes are just two tranches. This schema enforces structure only. The cross-field rules a validator/verifier adds are: the senior tranche reconciles with `debt_structure` and the `sources_uses` senior bucket (generalized CC-03); a debt or preferred tranche states a `rate` and common equity does not (CS-02); a split preferred-equity coupon carries component rates whose sum equals `rate` (CS-02b); each stated `sizing` value recomputes equal or the result is `failed` (CS-SIZING-DISAGREES); and a stack encoding a distribution waterfall (promote, hurdles, tiers, catch-up) is refused (CS-WATERFALL-UNSUPPORTED), which is deferred to a later phase. RFC0096 CS-03 validates only sizing declaration carrier, fields and selector union; no financial recomputation.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["tranches"],
+  "required": ["point_in_time", "tranches"],
   "properties": {
     "_role": {
       "enum": ["primary", "senior", "junior", "summary", "detail", "component"],
@@ -18,6 +18,10 @@
     "_notes": {
       "type": ["string", "null"],
       "description": "Optional free-text annotation (§4 universal field)."
+    },
+    "point_in_time": {
+      "enum": ["closing", "stabilization"],
+      "description": "REQUIRED (RFC 0098). The one point in time the stack describes (RFC 0033): `closing` for the capitalization funded at closing, `stabilization` for the stabilized (permanent) stack. Absent or any other value is CS-04."
     },
     "tranches": {
       "type": "array",
@@ -120,7 +124,7 @@
     },
     "sizingFigure": {
       "type": "object",
-      "description": "One stated sizing figure. Mirrors uw-rollup.schema.json's aggregate: an id, a closed fn, a selector, and a stated value the verifier recomputes.",
+      "description": "One stated sizing figure. Mirrors uw-rollup.schema.json's aggregate: an id, a closed fn, a selector, and a stated value the verifier recomputes. CS-03: required own id/fn/value and exactly one over/through, no safe-integer ceiling or tranche-resolution requirement.",
       "required": ["id", "fn", "value"],
       "additionalProperties": false,
       "properties": {

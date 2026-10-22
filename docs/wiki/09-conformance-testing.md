@@ -196,7 +196,8 @@ counts. Only content names are accepted as fixture-family addresses.
   flip on an existing one are both visible diffs now.
 - `malformed/<id>.uw.md` + `<id>.expected.json` — negative tests. `expected.json`
   declares `expected_codes[]` the validator MUST surface (extra codes allowed) and
-  optional `must_parse`. INT-/POL- expectations also exercise
+  optional `must_parse`. An optional `field_issues[]` pins `{code, section, field}`
+  rows that MUST appear, compared as a multiset (RFC 0104). INT-/POL- expectations also exercise
   `verifyChain`/`verifyProvenance`; an optional `<id>.policies.json` supplies
   custom policies.
 - `malformed/<id>.validation.json` (06 and 07 only) freezes the Verifier
@@ -516,6 +517,12 @@ codes, the LU-04 warning, the tolerance-checked `CC-15` seam to `noi_model`
   fixed slots could not.
 - `senior-reconciles-debt-structure/` — the generalized `CC-03` in both
   directions: equal senior amounts are clean, mismatched fires.
+- `point-in-time-*` (RFC 0098) — `CC-03` per point: a construction-to-permanent
+  record (closing construction senior, stabilization takeout, closing statement
+  at 0) reconciles; a loan with no `point_in_time` counts at both points; a
+  same-point role collision still owes `CC-16`; a stabilization stack never
+  falls back to `sources_uses`; `CS-04` (stack point absent/unknown) and
+  `DS-01` (unknown debt point).
 - `no-stack-single-loan/` — **the additivity pin.** A document with only
   `debt_structure` computes every multifamily pack metric exactly as before
   the RFC and trips no `CS-*` rule. The pinned values are hand-verified in the

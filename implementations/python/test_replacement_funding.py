@@ -80,7 +80,7 @@ class ReplacementFundingTests(unittest.TestCase):
                 expected = json.loads((fixture.parent / frozen["expect"]["file"]).read_text())
                 self.assertEqual(driver.json_subset(expected, driver.project(adapted, "replacement-funding")), [])
                 self.assertEqual((path.read_bytes(), fixture.read_bytes()), (before, source))
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate"])
         for command in ("validate", "calc"):
             self.assertNotEqual(main([command, "unused"])[1], 0)
 
@@ -191,12 +191,16 @@ class ReplacementFundingTests(unittest.TestCase):
         self.assertEqual(verify(document)["reason"],"not_applicable")
         for mutate,code in ((lambda p:p["uses"].update(escrows=[]),"ESC-01"),
                 (lambda p:p["uses"]["escrows"][0].update(upfront=True),"ESC-01"),
-                (lambda p:p["uses"]["escrows"][0].update(unknown=1),"ESC-01"),
+                (lambda p:p["uses"]["escrows"][0].update(monthly=-1),"ESC-01"),
                 (lambda p:p["uses"]["escrows"][0].update(label="not-other"),"ESC-02"),
                 (lambda p:p["uses"]["escrows"].append(dict(p["uses"]["escrows"][0])),"ESC-02")):
             result=report(alter(document,1,mutate))
             self.assertIn(code,codes(result))
             self.assertEqual(result["replacement_funding_verification"]["reason"],"invalid_structure")
+        # Format 4.8's ESC-01 judges the name and funding amounts only; other
+        # escrow members are inert, as the reference reads them.
+        inert=report(alter(document,1,lambda p:p["uses"]["escrows"][0].update(unknown=1,lender_required="yes")))
+        self.assertFalse({"ESC-01","ESC-02"}&set(codes(inert)))
 
     def test_0081_strike_only_terms_null_and_refused_selection_boundary(self):
         strike=case("0076-two-seniors-no-hedge-escrow")

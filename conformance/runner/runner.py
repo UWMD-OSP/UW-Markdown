@@ -198,9 +198,18 @@ def project(actual, name: str | None):
                 (issue.get("code"), issue.get("severity")),
                 {"code": issue.get("code"), "severity": issue.get("severity")},
             )
+        # RFC 0109: Format 5.2 findings are deal flags, projected apart from
+        # issues as (code, band) pairs; an expectation omitting them still holds.
+        flags = {}
+        for flag in actual.get("deal_flags", []):
+            flags.setdefault(
+                (flag.get("code"), flag.get("band")),
+                {"code": flag.get("code"), "band": flag.get("band")},
+            )
         return {
             "overall_status": actual.get("overall_status"),
             "issues": sorted(seen.values(), key=lambda i: (i["code"] or "", i["severity"] or "")),
+            "deal_flags": sorted(flags.values(), key=lambda f: (f["code"] or "", f["band"] or "")),
         }
     if name == "replacement-funding":
         verification = actual.get("replacement_funding_verification", {})

@@ -10,6 +10,7 @@ import {
   jsonNumericTokens,
   jsonStatedDecimals,
   quickMetricDecimals,
+  sizeDenominators,
   verifyStatedMetric,
   verifyStatedMetrics,
   type StatedMetricBindings,
@@ -19,7 +20,7 @@ import { parseUWFile } from './parser.js';
 import type { ParsedUWFile, UWBlock } from './types.js';
 
 const repo = (path: string): string => readFileSync(fileURLToPath(new URL(`../../../${path}`, import.meta.url)), 'utf8');
-const CONFORMANCE_BINDINGS = JSON.parse(repo('conformance/metrics/statement-bindings.json')) as StatedMetricBindings;
+const SPEC_DICTIONARY = JSON.parse(repo('spec/metrics/builtin.json')) as { statement_bindings: StatedMetricBindings };
 const EXPECTED = JSON.parse(repo('conformance/metrics/expected.json')) as Array<{
   example: string; asset_class: string; counts: Record<string, number>; evidence: StatedMetricEvidence[];
 }>;
@@ -47,22 +48,38 @@ describe('verifyStatedMetrics — the builtin examples', () => {
   it('reproduces the conformance evidence for an example, address for address', () => {
     const recorded = EXPECTED.find((e) => e.example === 'Parkview-Apts-Glendale-AZ.uwx.md')!;
     const { example: _example, ...expected } = recorded;
-    expect(verifyStatedMetrics(parkview, { dictionary: D, bindings: CONFORMANCE_BINDINGS })).toEqual(expected);
+    expect(verifyStatedMetrics(parkview, { dictionary: D })).toEqual(expected);
   });
 
-  it('defaults to the builtin dictionary and canonical ids at the output sections, without aliases', () => {
+  it('defaults to the builtin dictionary and checks every bound home, aliases included (RFC 0099)', () => {
+    const recorded = EXPECTED.find((e) => e.example === 'Parkview-Apts-Glendale-AZ.uwx.md')!;
     const report = verifyStatedMetrics(parkview);
-    const recorded = EXPECTED.find((e) => e.example === 'Parkview-Apts-Glendale-AZ.uwx.md')!.evidence;
-    expect(report.asset_class).toBe('multifamily');
-    expect(report.counts.failed).toBe(0);
-    expect(report.evidence.length).toBeGreaterThan(0);
-    expect(report.evidence.length).toBeLessThan(recorded.length); // aliases are opt-in
-    for (const item of report.evidence) expect(recorded).toContainEqual(item);
+    expect(report.counts).toEqual(recorded.counts);
+    expect(report.evidence).toEqual(recorded.evidence);
+    expect(report.evidence.map((e) => e.path)).toContain('debt_structure.sizing_metrics.dscr_underwritten');
   });
 
-  it('pins the default output sections to the conformance statement bindings', () => {
-    expect([...DEFAULT_STATED_METRIC_BINDINGS.output_sections]).toEqual(CONFORMANCE_BINDINGS.output_sections);
-    expect(DEFAULT_STATED_METRIC_BINDINGS.aliases).toBeUndefined();
+  it('defaults to the dictionary registry, which is the spec file member (one source)', () => {
+    expect(DEFAULT_STATED_METRIC_BINDINGS).toBe(D.statement_bindings);
+    expect(D.statement_bindings).toEqual(SPEC_DICTIONARY.statement_bindings);
+  });
+
+  it('fails a section-home statement that disagrees while quick_metrics agrees, reporting both', () => {
+    const source = repo('examples/Parkview-Apts-Glendale-AZ.uwx.md');
+    const at = source.indexOf('"dscr_underwritten": 1.109');
+    expect(at).toBeGreaterThan(0);
+    const tampered = parseUWFile(source.replace('"dscr_underwritten": 1.109', '"dscr_underwritten": 1.220'));
+    const report = verifyStatedMetrics(tampered);
+    const dscr = report.evidence.filter((e) => e.id === 'dscr');
+    expect(dscr.find((e) => e.path === 'debt_structure.sizing_metrics.dscr_underwritten')?.state).toBe('failed');
+    expect(dscr.find((e) => e.path === 'quick_metrics.dscr')?.state).toBe('verified');
+    expect(report.counts.failed).toBe(1);
+  });
+
+  it('does not read a field the registry does not bind, whatever its name', () => {
+    const p = simple();
+    p.sections.valuation = block('valuation', { purchase_price: 100000.21, cap_rate_trailing: 0.9 });
+    expect(verifyStatedMetrics(p).evidence.map((e) => e.path)).not.toContain('valuation.cap_rate_trailing');
   });
 
   it('counts every state', () => {
@@ -118,17 +135,32 @@ describe('verifyStatedMetric — one statement', () => {
   });
 });
 
+describe('sizeDenominators — RFC 0100', () => {
+  it('finds a registered size the formula divides by directly, for the class', () => {
+    expect(sizeDenominators('valuation.purchase_price / property.total_units', ['multifamily'])).toEqual(['property.total_units']);
+    expect(sizeDenominators('valuation.purchase_price / property.total_nra_sqft', ['multifamily'])).toEqual(['property.total_nra_sqft']);
+    expect(sizeDenominators('round(noi_model.income.rooms_revenue, 2) / property.keys', ['hospitality'])).toEqual(['property.keys']);
+  });
+
+  it('ignores sizes another class registers, numerators and non-size divisors', () => {
+    expect(sizeDenominators('valuation.purchase_price / property.keys', ['multifamily'])).toEqual([]);
+    expect(sizeDenominators('property.total_units * 12', ['multifamily'])).toEqual([]);
+    expect(sizeDenominators('noi_model.net_operating_income / debt_structure.annual_debt_service', ['multifamily'])).toEqual([]);
+  });
+});
+
 describe('verifyStatedMetrics — stated precision', () => {
   it('needs caller-supplied precision for an envelope-decoded document', () => {
     const source = parseUWFile(repo('examples/Parkview-Apts-Glendale-AZ.uwx.md'));
     const fromSource = verifyStatedMetrics(source);
-    expect(fromSource.counts).toEqual({ verified: 5, failed: 0, unverifiable: 0 });
+    // Five quick_metrics/primary-size statements plus four section homes (RFC 0099).
+    expect(fromSource.counts).toEqual({ verified: 9, failed: 0, unverifiable: 0 });
 
     // A decoded document has no rawJson or frontmatter source text, so the
     // rounded statements cannot be compared at their stated precision.
     const decoded = fromUWEnvelope(toUWEnvelope(source));
     const bare = verifyStatedMetrics(decoded);
-    expect(bare.counts).toEqual({ verified: 1, failed: 0, unverifiable: 4 });
+    expect(bare.counts).toEqual({ verified: 5, failed: 0, unverifiable: 4 });
     for (const item of bare.evidence.filter((e) => e.state === 'unverifiable')) {
       expect(item).toEqual({ id: item.id, path: item.path, stated: item.stated, state: 'unverifiable', reason: 'missing_stated_precision', computed: null });
     }

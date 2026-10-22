@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { hasBlockShape } from './block-kind.js';
 import {
   verifyReserveDrawBindings,
   verifyReserveAccounts,
@@ -38,8 +39,8 @@ import {
   PropertyCashFlowAssemblyError,
   inspectPropertyCashFlowInputs,
   type AssetClass,
+  type DealFlag,
   type DealStage,
-  type InstitutionConfig,
   parseUWPart,
   resolveComposition,
   externalizeSection,
@@ -77,6 +78,7 @@ import { issueReceipt } from './receipt-engine.js';
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
+import { InstitutionConfigError, loadInstitutionPolicy } from './institution-config.js';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
 import { render } from './renderer.js';
@@ -114,9 +116,7 @@ import {
   parseFlags,
   extractPositionals,
   composeOutDir,
-  deprecatedFlagWarnings,
   flagVocabulary,
-  requestedStage,
   unknownFlagMessage,
   signingLoadFailureMessage,
   replaceUWExtension,
@@ -136,14 +136,17 @@ function readFile(path: string): string {
   return readFileSync(resolved, 'utf-8');
 }
 
-function loadInstitutionConfig(path: string | undefined): InstitutionConfig | undefined {
-  if (!path) return undefined;
-  try {
-    return JSON.parse(readFileSync(resolve(path), 'utf-8')) as InstitutionConfig;
-  } catch {
-    console.error(`Warning: could not load institution config: ${path}`);
-    return undefined;
+function institutionFailure(error: unknown, json: boolean): void {
+  // Only failures in the new config preflight get this internal-error boundary.
+  // Other CLI commands retain their existing refusal transport unchanged.
+  if (!(error instanceof InstitutionConfigError)) {
+    console.error(error);
+    process.exitCode = 2;
+    return;
   }
+  if (json) console.log(JSON.stringify({ error: error.proto }, null, 2));
+  else console.error(`uwmd: ${error.code}: ${error.message}${error.proto.pointer ? ` [${error.proto.pointer}]` : ''}`);
+  process.exitCode = 1;
 }
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
@@ -186,7 +189,7 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
     return { meta: (_meta as Record<string, unknown> | undefined) ?? {}, content: rest };
   };
   const isBlock = (v: unknown): v is UWBlock =>
-    typeof v === 'object' && v !== null && 'rawJson' in v && 'meta' in v;
+    hasBlockShape(v);
   const projectEntry = (entry: UWBlock | { [variant: string]: UWBlock }) =>
     isBlock(entry)
       ? projectBlock(entry)
@@ -211,19 +214,17 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
 }
 
 async function cmdValidate(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  // Deprecated `--stage` (see DEPRECATED_FLAGS): report one stage's readiness.
-  // Readiness is workflow completeness, never a validation failure (Format
-  // §5.1), so it changes neither the result nor the exit status.
-  const stageRequest = flags['stage'] === undefined ? undefined : requestedStage(flags['stage']);
-  if (stageRequest !== undefined && !stageRequest.ok) {
-    console.error(stageRequest.message);
-    process.exit(1);
+  if (flags['institution'] !== undefined && typeof flags['institution'] !== 'string') {
+    console.error('--institution requires a path.'); process.exit(1);
   }
   const content = readFile(file);
   const detection = detectUWSourceRepresentation(content, file);
   if (detection.representation !== UWX_REPRESENTATION_ID) {
-    if (stageRequest?.ok) console.error(`uwmd validate: --stage ${stageRequest.stage}: readiness is not checked for UW Lite.`);
     const lite = parseUWLite(content);
+    try { loadInstitutionPolicy(file, flags['institution'] as string | undefined); }
+    catch (error) {
+      institutionFailure(error, flags['json'] === true); return;
+    }
     const errors = lite.issues.filter((issue) => issue.severity === 'error');
     const warnings = lite.issues.filter((issue) => issue.severity === 'warning');
     const result = {
@@ -258,18 +259,18 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
   const parsed = parseUWFile(content);
-  const instCfg = loadInstitutionConfig(flags['institution'] as string | undefined);
-  const structural = validateUWFile(content, instCfg?.thresholds);
+  let institution: ReturnType<typeof loadInstitutionPolicy>;
+  try { institution = loadInstitutionPolicy(file, flags['institution'] as string | undefined); }
+  catch (error) {
+    institutionFailure(error, flags['json'] === true); return;
+  }
+  const structural = validateUWFile(content, institution?.thresholds, undefined, institution);
   const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
   const result = { ...structural, replacement_funding_verification };
   const fundingRefuses = replacement_funding_verification.state !== 'verified'
     && !(replacement_funding_verification.state === 'not_checked' && replacement_funding_verification.reason === 'not_applicable');
 
-  const stageLine = stageRequest?.ok
-    ? `--stage ${stageRequest.stage}: ${result.stage_readiness[stageRequest.stage] ? 'complete' : 'incomplete'} (reported only; it does not change the result or exit status)`
-    : undefined;
   if (flags['json']) {
-    if (stageLine !== undefined) console.error(`uwmd validate: ${stageLine}`);
     console.log(JSON.stringify(result, null, 2));
     // §II.6a.2: exit 1 on a validation error, in every output mode. This
     // branch returned before the exit line below, so `--json` exited 0 on a
@@ -296,7 +297,6 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   for (const [stage, ready] of Object.entries(result.stage_readiness)) {
     console.log(`  ${stage}: ${ready ? 'complete' : 'incomplete'}`);
   }
-  if (stageLine !== undefined) console.log(`  Requested with ${stageLine}`);
 
   // §5.3 coverage (RFC 0037): "checked and clean" is not "never looked".
   const coverage = Object.values(result.coverage);
@@ -321,9 +321,22 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   } else {
     console.log('\nNo issues found.');
   }
+  printDealFlags(result.deal_flags);
   console.log('');
 
   process.exit(result.errors.length > 0 || fundingRefuses ? 1 : 0);
+}
+
+/**
+ * Format §5.2 deal flags (RFC 0109), under their own heading after the issues:
+ * they describe the deal, not the record, and never change the exit status.
+ */
+function printDealFlags(flags: readonly DealFlag[]): void {
+  if (flags.length === 0) return;
+  console.log(`\nDeal flags (${flags.length}; Format §5.2 bands, not validation errors):`);
+  for (const flag of flags) {
+    console.log(`  [${flag.band === 'error' ? 'ERROR BAND' : 'WARN BAND'}] [${flag.section}.${flag.field}] ${flag.code}: ${flag.message}`);
+  }
 }
 
 /**
@@ -411,21 +424,35 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     replacement_funding_verification: { state: 'not_checked', reason: 'not_invoked', issues: [] },
   };
   let hadError = false;
+  let configError: InstitutionConfigError | undefined;
 
   if (runAll || onlyValidate) {
-    const v = validateUWFile(content, undefined, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) });
-    sections['validation'] = v;
-    const funding = await verifyReplacementFundingBindings(parsed);
-    sections['replacement_funding_verification'] = funding;
-    if (v.errors.length > 0 || (funding.state !== 'verified'
-      && !(funding.state === 'not_checked' && funding.reason === 'not_applicable'))) hadError = true;
-    // Protocol §II.2 item 2: a stated metric that disagrees with its
-    // recomputation is a verification failure. One whose inputs are absent is
-    // `unverifiable`, which is reported but is not a failure. Through 4.2.0 this
-    // check never ran here, so a wrong stated cap rate printed `OK`.
-    const metrics = verifyStatedMetrics(parsed);
-    sections['stated_metrics'] = metrics;
-    if (metrics.counts.failed > 0) hadError = true;
+    let institution: ReturnType<typeof loadInstitutionPolicy>;
+    try { institution = loadInstitutionPolicy(file); }
+    catch (error) {
+      if (!(error instanceof InstitutionConfigError)) {
+        institutionFailure(error, flags['json'] === true); return;
+      }
+      configError = error;
+      hadError = true;
+      sections['validation'] = { error: error.proto };
+      delete sections['replacement_funding_verification'];
+    }
+    if (configError === undefined) {
+      const v = validateUWFile(content, institution?.thresholds, partSources === undefined ? undefined : { parts: partSources.map(part => part.source) }, institution);
+      sections['validation'] = v;
+      const funding = await verifyReplacementFundingBindings(parsed);
+      sections['replacement_funding_verification'] = funding;
+      if (v.errors.length > 0 || (funding.state !== 'verified'
+        && !(funding.state === 'not_checked' && funding.reason === 'not_applicable'))) hadError = true;
+      // Protocol §II.2 item 2: a stated metric that disagrees with its
+      // recomputation is a verification failure. One whose inputs are absent is
+      // `unverifiable`, which is reported but is not a failure. Through 4.2.0 this
+      // check never ran here, so a wrong stated cap rate printed `OK`.
+      const metrics = verifyStatedMetrics(parsed);
+      sections['stated_metrics'] = metrics;
+      if (metrics.counts.failed > 0) hadError = true;
+    }
   }
   let chain: IntegrityResult | undefined;
   let prov: IntegrityResult | undefined;
@@ -444,7 +471,8 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     console.log(JSON.stringify({ ok: !hadError, ...sections }, null, 2));
   } else {
     console.log(`\n${hadError ? '✗' : '✓'}  ${hadError ? 'FAIL' : 'OK'} — ${basename(file)}\n`);
-    if ('validation' in sections) {
+    if (configError) institutionFailure(configError, false);
+    if ('validation' in sections && configError === undefined) {
       const v = sections['validation'] as ReturnType<typeof validateUWFile>;
       console.log(`Structural validation: ${v.overall_status} (${v.issues.length} issue${v.issues.length === 1 ? '' : 's'})`);
       for (const issue of v.issues) {
@@ -452,10 +480,11 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
         const loc = issue.section ? ` [${issue.section}${issue.field ? `.${issue.field}` : ''}]` : '';
         console.log(`  ${tag}${loc} ${issue.code ? `${issue.code}: ` : ''}${issue.message}`);
       }
+      printDealFlags(v.deal_flags);
     }
     const metrics = sections['stated_metrics'] as ReturnType<typeof verifyStatedMetrics> | undefined;
     if (!metrics) {
-      console.log('Stated metrics: not checked (validation not requested)');
+      if (!configError) console.log('Stated metrics: not checked (validation not requested)');
     } else if (metrics.evidence.length === 0) {
       console.log(`Stated metrics: none stated for asset class '${metrics.asset_class}'`);
     } else {
@@ -466,10 +495,12 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
         else if (item.state === 'unverifiable') console.log(`  [UNVERIFIABLE] ${item.path}: ${item.reason ?? 'not checkable'}`);
       }
     }
-    const funding = sections['replacement_funding_verification'] as Awaited<ReturnType<typeof verifyReplacementFundingBindings>>;
-    console.log(`Replacement funding verification: ${funding.state}${'reason' in funding ? ` / ${funding.reason}` : ''}`);
-    for (const issue of funding.issues) console.log(issue.message);
-    if (funding.state === 'not_checked' && funding.reason === 'not_invoked') console.log('Validation not requested; no complete binding verification claim.');
+    const funding = sections['replacement_funding_verification'] as Awaited<ReturnType<typeof verifyReplacementFundingBindings>> | undefined;
+    if (funding) {
+      console.log(`Replacement funding verification: ${funding.state}${'reason' in funding ? ` / ${funding.reason}` : ''}`);
+      for (const issue of funding.issues) console.log(issue.message);
+      if (funding.state === 'not_checked' && funding.reason === 'not_invoked') console.log('Validation not requested; no complete binding verification claim.');
+    }
     if (chain) {
       const document = chain.document_signature;
       console.log(`Document snapshot authentication: ${document ? document.state : 'not checked'}`);
@@ -645,8 +676,7 @@ function cmdSummary(file: string): void {
 }
 
 async function cmdExport(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  // `--compact` is 4.2.0's deprecated alias (DEPRECATED_FLAGS).
-  const includeSuperseded = flags['no-superseded'] !== true && flags['compact'] !== true;
+  const includeSuperseded = flags['no-superseded'] !== true;
   // --resolved exports the assembled record. Exporting the directive instead
   // would ship a document whose rent roll is a list of filenames.
   const loaded = flags['resolved']
@@ -1260,9 +1290,6 @@ const positional = extractPositionals(args);
     console.error(refusal);
     process.exit(1);
   }
-  // Flags kept only because 4.2.0 offered them (`DEPRECATED_FLAGS`) still
-  // work, with a warning on stderr so `--json` output stays clean.
-  if (vocabulary !== undefined) for (const warning of deprecatedFlagWarnings(vocabulary.command, flags)) console.error(warning);
 }
 
 
@@ -1296,7 +1323,6 @@ function cmdCompose(file: string, flags: Record<string, string | boolean>): void
   }
   const collectionKey = (flags['collection-key'] as string) ?? 'unit_id';
   const collectionPath = (flags['collection-path'] as string) ?? 'units';
-  // `--parts` is the deprecated alias of `--out-dir` (DEPRECATED_FLAGS).
   const out = composeOutDir(file, flags);
   if (!out.ok) {
     console.error(out.message);
@@ -2107,7 +2133,7 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   --calc-context <f> JSON sectionVariants/overrides (calc, refine; refine: period overrides only)
   --strict           Throw on parse errors instead of collecting
   --format <f>       Render format: json|csv|chat|summary (render, default: summary)
-  --no-superseded    Drop append-only history from the .uw.json export (export; --compact is a deprecated alias)
+  --no-superseded    Drop append-only history from the .uw.json export (export)
   --resolved         Resolve externalized sections first (verify, export)
   --signing          Check _meta.integrity.signature on every block (verify; requires --keystore)
   --keystore <path>  JSON key store mapping kid to public key (verify --signing, --document-signature)
@@ -2126,7 +2152,7 @@ Options (each command accepts only the flags listed for it; an unknown flag exit
   --issued-at <iso>  Fix the receipt issuance timestamp (receipt issue)
   --tier <tier>      Module host conformance tier: reader | verifier (modules; default verifier)
   --max-tokens <n>   Max tokens for chat render (default: 12000)
-  --institution <f>  Path to .uw.institution.json config (validate)
+  --institution <f>  Path to .uw.institution.json config (validate; otherwise adjacent sidecar)
   --name <n>         Deal name (init)
   --address <a>      Property address (init)
   --city <c>         City (init)

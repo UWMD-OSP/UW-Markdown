@@ -1,0 +1,6 @@
+{
+  "why": "RFC 0098: the closing leg compares sources_uses with the closing senior only.",
+  "expected_codes": [
+    "CC-03"
+  ]
+}

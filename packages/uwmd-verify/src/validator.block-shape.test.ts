@@ -62,6 +62,14 @@ describe('META-01', () => {
     expect(result.issues.filter((i) => i.code === 'META-01')).toEqual([]);
     expect(result.issues.some((i) => i.code === 'META_MISSING')).toBe(true);
   });
+
+  it('reads a non-object _meta as no _meta object, never as five missing fields (#429)', () => {
+    for (const value of ['present but a string', ['a'], 0, true]) {
+      const codes = validateUWFile(doc({ _meta: value, total_units: 10 })).issues.map((i) => i.code);
+      expect(codes, JSON.stringify(value)).toContain('META_MISSING');
+      expect(codes.filter((c) => c.startsWith('META_FIELD_MISSING_')), JSON.stringify(value)).toEqual([]);
+    }
+  });
 });
 
 

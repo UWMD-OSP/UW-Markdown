@@ -78,7 +78,7 @@ class SourceValidationTests(unittest.TestCase):
                 self.assertEqual(path.read_bytes(),raw)
                 self.assertNotIn("overall_status",actual)
         manifest=main(["manifest"])[0]
-        self.assertEqual((manifest["capabilities"],manifest["profiles"]),(["parse"],[]))
+        self.assertEqual((manifest["capabilities"],manifest["profiles"]),(["parse", "calc-evaluate"],[]))
         for command in ("validate","calc","verify"):
             self.assertNotEqual(main([command,"unused"])[1],0)
 
@@ -159,17 +159,18 @@ class SourceValidationTests(unittest.TestCase):
         self.assertEqual(result["shape_findings"],[])
         self.assertEqual(value["_overrides"],overrides)
 
-    def test_leaf_schema_shape_diagnostics_never_invent_codes_or_path_lookup(self):
+    def test_closed_override_diagnostics_keep_local_evidence_without_path_lookup(self):
         for value in (None,{},"wrong",1):
             result=inspect(payload(_overrides=value))
-            self.assertEqual(result["issues"],[])
+            self.assertEqual([(i["code"], i["field"]) for i in result["issues"]], [("META-05", "_overrides")])
             self.assertFalse(result["ok"])
             self.assertTrue(result["shape_findings"])
             self.assertTrue(all("code" not in f and "severity" not in f for f in result["shape_findings"]))
         overrides=[None,{}, {"path":5,"confidence":"uncertain","reason":"new_reason","note":None},
                    {"path":"not_a_real_target[999]","unknown_member":{"retained":True}}]
         result=inspect(payload(_overrides=overrides))
-        self.assertEqual(result["issues"],[])
+        self.assertEqual([(i["code"], i["field"]) for i in result["issues"]], [("META-05", field) for field in
+            ("_overrides[0]", "_overrides[1].path", "_overrides[2].path", "_overrides[2].confidence", "_overrides[2].reason", "_overrides[2].note")])
         self.assertEqual(result["blocks"][0]["overrides_checked"],4)
         self.assertFalse(any(f["field"].startswith("_overrides[3]") for f in result["shape_findings"]))
         # No new minimum length/path grammar is invented beyond the schema's string.
@@ -196,13 +197,18 @@ class SourceValidationTests(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertEqual([f["field"] for f in result["shape_findings"]], ["_meta"])
 
-    def test_selected_provenance_shape_stays_local_and_has_no_legacy_fallback(self):
+    def test_exact_registered_leaves_keep_unrelated_local_provenance_shapes(self):
         value=payload();value["_meta"]["provenance"]={"source":"agent/A","actor":0,"timestamp":False}
         value["_meta"]["quality"].update(field_overrides=[{"source":"market_data"}],confidence="unknown")
         value["_meta"]["lifecycle"].update(revision=True)
         result=inspect(value)
         self.assertEqual([(i["code"],i["field"]) for i in result["issues"]],
-                         [("META-01","_meta.provenance.actor")])
+                         [("META-01","_meta.provenance.actor"),
+                          ("META-04","_meta.quality.confidence"),
+                          ("META-04","_meta.lifecycle.revision"),
+                          ("META-04","_meta.provenance.timestamp"),
+                          ("META-05","_meta.quality.field_overrides"),
+                          ("META-06","_meta.provenance.agent_id")])
         paths={f["field"] for f in result["shape_findings"]}
         self.assertTrue({"_meta.provenance.agent_id","_meta.provenance.timestamp",
                          "_meta.quality.field_overrides","_meta.quality.confidence","_meta.lifecycle.revision"}<=paths)

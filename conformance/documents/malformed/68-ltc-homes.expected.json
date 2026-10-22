@@ -1,0 +1,20 @@
+{
+  "description": "RFC 0107: the Format \u00a75.2 LTC band (FV-15) is read at quick_metrics.ltc and sources_uses.equity_metrics.loan_to_cost, for every stated value whatever the loan purpose. Each home draws one deal flag (RFC 0109) at the most severe band: 0.95 is the error band, 0.85 the warning band.",
+  "must_parse": true,
+  "expected_codes": [],
+  "deal_flags": [
+    {
+      "code": "FV-15",
+      "band": "error",
+      "section": "frontmatter",
+      "field": "quick_metrics.ltc"
+    },
+    {
+      "code": "FV-15",
+      "band": "warning",
+      "section": "sources_uses",
+      "field": "equity_metrics.loan_to_cost"
+    }
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md \u00a75.2"
+}

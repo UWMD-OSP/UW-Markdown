@@ -21,7 +21,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 const SRC = dirname(fileURLToPath(import.meta.url));
 
@@ -29,11 +29,11 @@ const SRC = dirname(fileURLToPath(import.meta.url));
 const STANDARD_MODULES: readonly string[] = Object.freeze([
   // Reader
   'parser.ts', 'yaml-scalar.ts', 'types.ts', 'scenario.ts', 'metadata.ts', 'version.ts',
-  'block-roles.ts', 'section-resolution.ts',
+  'block-roles.ts', 'block-kind.ts', 'section-resolution.ts',
   // Validation
-  'validator.ts', 'builtin-class-content.ts', 'builtin-class-validation.ts', 'asset-class.ts',
+  'validator.ts', 'payload-admission.ts', 'builtin-class-content.ts', 'builtin-class-validation.ts', 'asset-class.ts',
   'period-path.ts', 'periods.ts', 'period-validation.ts', 'lease-up-structure.ts',
-  'replacement-funding-structure.ts', 'reserve-accounts-structure.ts', 'gaps-content.ts',
+  'replacement-funding-structure.ts', 'reserve-accounts-structure.ts', 'gaps-content.ts', 'size-contract.ts',
   // Stated-figure verifiers
   'cash-flow-series.ts', 'lease-up.ts', 'lease-up-cash-flows.ts', 'property-cash-flows.ts',
   'waterfall.ts', 'reserve-accounts.ts', 'reserve-draw-bindings.ts', 'replacement-funding.ts',
@@ -115,9 +115,21 @@ function sourceFiles(dir = SRC): string[] {
   });
 }
 
-/** Every module specifier a source file names, static, dynamic or in a type position. */
-function moduleSpecifiers(file: string): string[] {
-  return specifiersIn(file, readFileSync(file, 'utf8'));
+/**
+ * Every module specifier a source file names, static, dynamic or in a type
+ * position. Each file is parsed once per run (see the `beforeAll` below) and the
+ * result shared by every test: the sources do not change mid-run, and parsing
+ * the whole package once per test pushed these tests past the default timeout
+ * on a loaded machine.
+ */
+const parsed = new Map<string, readonly string[]>();
+function moduleSpecifiers(file: string): readonly string[] {
+  let specifiers = parsed.get(file);
+  if (specifiers === undefined) {
+    specifiers = Object.freeze(specifiersIn(file, readFileSync(file, 'utf8')));
+    parsed.set(file, specifiers);
+  }
+  return specifiers;
 }
 
 function specifiersIn(file: string, text: string): string[] {
@@ -184,6 +196,12 @@ const PACKAGE_JSON = JSON.parse(readFileSync(resolve(SRC, '../package.json'), 'u
 const DEPENDENCY_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'] as const;
 
 describe('standard module closure (RFC 0083)', () => {
+  // One TypeScript parse of every source file (~2 MB), timed on its own rather
+  // than charged to whichever test happens to run first.
+  beforeAll(() => {
+    for (const path of sourceFiles()) moduleSpecifiers(resolve(SRC, path));
+  }, 60_000);
+
   it('lists only modules that exist, once each', () => {
     expect(new Set(STANDARD_MODULES).size).toBe(STANDARD_MODULES.length);
     for (const path of [...STANDARD_MODULES, ...ENTRIES]) expect(existsSync(resolve(SRC, path)), path).toBe(true);

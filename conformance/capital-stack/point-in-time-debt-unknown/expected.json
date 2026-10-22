@@ -1,0 +1,6 @@
+{
+  "why": "RFC 0098: a stated debt_structure point_in_time must be closing or stabilization.",
+  "expected_codes": [
+    "DS-01"
+  ]
+}

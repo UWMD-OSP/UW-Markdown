@@ -1263,7 +1263,12 @@ export interface MetricDictionaryCalculation {
   /** RFC 0079 comparison floor in stored units; coarse statements are checked at this precision. */
   readonly minimum_stated_decimals: number;
   readonly section_roles: Readonly<Record<string, Exclude<BlockRole, 'component'>>>;
-  readonly null_semantics: 'expression';
+  /**
+   * `expression`: Protocol §VIII.2 semantics. `positive_size_denominator`
+   * (RFC 0100): the same, and the metric is unverifiable when a registered size
+   * it divides by is stated below zero (zero already refuses as a division).
+   */
+  readonly null_semantics: 'expression' | 'positive_size_denominator';
   readonly deterministic: true;
 }
 
@@ -1283,6 +1288,17 @@ export interface MetricDictionary {
   readonly $schema: 'https://uwmd.org/schemas/metric-dictionary.schema.json';
   readonly calculations: readonly MetricDictionaryCalculation[];
   readonly size_intensives: readonly MetricDictionarySize[];
+  /**
+   * RFC 0099: the closed registry of where a document states each metric,
+   * beyond frontmatter `quick_metrics.<id>`. A Verifier checks every bound
+   * statement; a field the registry does not bind is not a statement.
+   */
+  readonly statement_bindings: {
+    /** Section roots at which a metric's own id is a statement of it. */
+    readonly output_sections: readonly string[];
+    /** Further addresses (`section.path`) that state a metric, by metric id. */
+    readonly aliases: Readonly<Record<string, readonly string[]>>;
+  };
 }
 
 // ─── Size-intensive registry (PROTOCOL §XIII, RFC 0027) ──────────────────────
@@ -1561,7 +1577,10 @@ export interface ProtocolError {
   category: ProtocolErrorCategory;
   code: string;                     // e.g. "PROTO-EDIT-001"
   message: string;
-  /** Path into the file (section.field or frontmatter.path). */
+  /** Path into the owning input. For VAL-INSTITUTION-CONFIG-UNREADABLE and
+   * VAL-INSTITUTION-CONFIG-MALFORMED this is the selected configuration,
+   * not the underwriting document (RFC0097, Protocol VI.3). Other codes retain
+   * their own section.field or frontmatter.path authority. */
   pointer?: string;
   /** Suggested remediation text. */
   remediation?: string;
@@ -1634,6 +1653,9 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'DQ', description: 'Data quality / incomplete data', capabilities: ['validate'] },
   { prefix: 'MU', description: 'Mixed-use composition', capabilities: ['validate'] },
   { prefix: 'CS', description: 'Capital stack', capabilities: ['validate'] },
+  { prefix: 'DS', description: 'Debt structure field admission (RFC 0098)', capabilities: ['validate'] },
+  { prefix: 'SIZE', description: 'Generic size, count, area and rent contract (RFC 0100)', capabilities: ['validate'] },
+  { prefix: 'REC', description: 'Lease recovery admission and reconciliation (RFC 0058, RFC0096)', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
   { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['calc-evaluate'] },
   { prefix: 'RSV', description: 'Property custody structure and separate balance identity verification (RFC 0064)', capabilities: ['validate'] },
@@ -1669,6 +1691,7 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
     description: 'Frontmatter YAML subset violation',
     capabilities: ['parse'],
   },
+  { prefix: 'SOURCE_BLOCK_MALFORMED', description: 'Structured block body is not an I-JSON object (RFC 0106)', capabilities: ['parse'] },
   // Protocol-level refusals are owed by every implementation: they report that a
   // request was malformed, which is not a capability one can decline to have.
   { prefix: 'UNSUPPORTED_FORMAT_VERSION', description: 'Unsupported or absent document version (RFC 0081)', capabilities: ['parse'] },
@@ -1743,10 +1766,61 @@ export const DEFAULT_RETURN_TAX_BASIS = 'pre_tax' as const;
  * every conforming implementation.
  */
 export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
+  // RFC0096: closed stated-payload admission; financial result rules are separate.
+  {
+    code: 'LU-05', severity: 'error',
+    title: 'Malformed lease-up payload',
+    description: 'A current lease-up payload violates its closed model, target, carrier or numeric declaration contract.',
+    remediation: 'State only the declared model, cadence-qualified target and admitted typed lease-up fields; do not infer missing figures.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.25 LU-05',
+  },
+  {
+    code: 'REC-11', severity: 'error',
+    title: 'Malformed recovery declaration',
+    description: 'A current recovery terms, cap or true-up row violates its remaining typed-leaf or closed-member contract.',
+    remediation: 'State admitted recovery leaves and closed members; retain the existing conditional method and accumulation requirements without defaults.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.3 REC-11',
+  },
+  {
+    code: 'CS-03', severity: 'error',
+    title: 'Malformed capital-stack sizing claim',
+    description: 'A sizing claim has an invalid carrier, identity, function, selector union, value or extra member.',
+    remediation: 'State each sizing identity, registered function, exactly one valid over/through selector and finite value without inventing a result.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.24 CS-03',
+  },
+  {
+    code: 'CS-04', severity: 'error',
+    title: 'Capital stack states no point in time',
+    description: 'capital_stack (or a component stack) omits point_in_time, or states a value other than "closing" or "stabilization" (RFC 0098).',
+    remediation: 'State point_in_time: "stabilization" for the stabilized (permanent) stack, or "closing" for the capitalization funded at closing. The stack describes exactly one point (RFC 0033).',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.24 CS-04',
+  },
+  {
+    code: 'DS-01', severity: 'error',
+    title: 'Invalid debt_structure point in time',
+    description: 'A debt_structure block states point_in_time with a value other than "closing" or "stabilization" (RFC 0098).',
+    remediation: 'State "closing" for a facility retired before stabilization, "stabilization" for one first funded after closing, or omit point_in_time for a loan outstanding at both points.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.7 DS-01',
+  },
+  {
+    code: 'SIZE-01', severity: 'error',
+    title: 'Size, count, area or rent breaks its contract',
+    description: 'A stated field in the Format §5.5 size contract table is negative or non-finite, or, for a count, not an integer (RFC 0100).',
+    remediation: 'State the size as a finite number of zero or more, and a count as a whole number. Signed amounts such as concessions and credits belong in their own fields.',
+    spec_ref: 'UW_FORMAT_SPEC.md §5.5 SIZE-01',
+  },
+  {
+    code: 'WF-16', severity: 'error',
+    title: 'Malformed waterfall claim',
+    description: 'Stated outcomes, schedule or unselected clawback leaves violate their closed structural contract.',
+    remediation: 'State only admitted finite claims, lexical schedule dates and typed tier rows; preserve the selected-floor requirements and do not infer distributions.',
+    spec_ref: 'UW_FORMAT_SPEC.md §4.27 WF-16',
+  },
   { code: 'UNSUPPORTED_FORMAT_VERSION', severity: 'error', title: 'Unsupported format version', description: 'uw_version is absent or differs from 3.0.', remediation: 'State a Format 3.0 document; no other format version is admitted.', spec_ref: 'UW_FORMAT_SPEC.md §2.2 / UW_PROTOCOL.md §XII.3' },
   { code: 'META-01', severity: 'error', title: 'Block is not in the Format 3.0 shape', description: 'A block uses a section_id wrapper member, lacks nested provenance and lifecycle, its canonical provenance.actor is absent, null, empty, or non-string; or admitted canonical _meta is misplaced, its present section is invalid/mismatched, or its required quality is absent/nonobject (RFC0093).', remediation: 'State the bare payload with inline nested _meta and _meta.section matching the fence, state canonical _meta first, provide its required quality object with explicit members, and state the actual author in _meta.provenance.actor as a nonempty string; do not infer an actor or other metadata.', spec_ref: 'UW_FORMAT_SPEC.md §2.4–§2.5' },
   { code: 'META-02', severity: 'error', title: 'Required review flag is not boolean', description: 'An admitted canonical quality object lacks a boolean human_review_required.', remediation: 'State _meta.quality.human_review_required explicitly as true or false; do not infer a flag.', spec_ref: 'UW_FORMAT_SPEC.md §2.5c' },
   { code: 'META-03', severity: 'error', title: 'Required superseded flag is not boolean', description: 'An admitted canonical lifecycle object lacks a boolean superseded.', remediation: 'State _meta.lifecycle.superseded explicitly as true or false; do not infer a flag.', spec_ref: 'UW_FORMAT_SPEC.md §2.5d' },
+  { code: 'META-04', severity: 'error', title: 'Present metadata leaf is invalid', description: 'A present canonical confidence is outside high/medium/low, revision is not a finite integral number at least1, or provenance timestamp is outside exact T1B UTC-Z (RFC0094).', remediation: 'State the actual confidence as high, medium or low; the actual positive integer revision; and the actual write timestamp as Gregorian YYYY-MM-DDTHH:mm:ss[.digits]Z with uppercase T/Z and seconds00–59. Do not infer, coerce, normalize or repair metadata.', spec_ref: 'UW_FORMAT_SPEC.md §2.5 / UW_PROTOCOL.md §III.6a' },
   { code: 'RDB-01', severity: 'error', title: 'Invalid reserve draw binding plan shape or declaration', description: 'Invalid reserve draw binding plan shape or declaration.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
   { code: 'RDB-02', severity: 'error', title: 'Reserve draw binding source digest is stale', description: 'Reserve draw binding source digest is stale.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
   { code: 'RDB-03', severity: 'error', title: 'Exact reserve draw or gross expenditure reference is unresolved', description: 'Exact reserve draw or gross expenditure reference is unresolved.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
@@ -1756,6 +1830,8 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   { code: 'RDB-07', severity: 'error', title: 'Selected reserve draw is not fully allocated', description: 'Selected reserve draw is not fully allocated.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
   { code: 'RDB-08', severity: 'error', title: 'Stated expenditure funding disagrees or exceeds gross expenditure', description: 'Stated expenditure funding disagrees or exceeds gross expenditure.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
   { code: 'RDB-09', severity: 'error', title: 'Reserve draw allocation arithmetic is nonfinite', description: 'Reserve draw allocation arithmetic is nonfinite.', remediation: 'Check exact source references and explicitly stated allocations; preserve gross expenditure and the RFC 0045 reserve refusal.', spec_ref: 'UW_PROTOCOL.md §VIII.12 / RFC 0065' },
+  { code: 'META-05', severity: 'error', title: 'Optional metadata or override annotation is invalid', description: 'A present optional provenance or quality member, forbidden quality.field_overrides, or block-level _overrides container/entry/member violates the closed RFC0095 predicates. Source/resolution vocabulary remains SRC-owned.', remediation: 'State only the actual string-or-null provenance annotations, boolean partial/provisional, string-array flags and typed _overrides entries. Use block-level _overrides for leaf exceptions; do not infer, coerce or repair metadata.', spec_ref: 'UW_FORMAT_SPEC.md §2.5 / UW_PROTOCOL.md §III.6a' },
+  { code: 'META-06', severity: 'error', title: 'Conditional identity or provenance reference is missing or invalid', description: 'A valid canonical agent source lacks agent_id, a stated reference carrier or child is invalid, or a canonical/any stated override assertion requires a missing inherited_from or market_data_ref. RFC0095 uses symmetric triggers and exact Gregorian date-only as_of.', remediation: 'State the actual required agent_id member and reference objects with document_id, exact sha256 digest, positive integral inherited distance or whole Gregorian YYYY-MM-DD as_of (years0001–9999). Optional rationale is a string. Do not infer identities, fetch references, normalize dates or invent missing values.', spec_ref: 'UW_FORMAT_SPEC.md §2.5 / UW_PROTOCOL.md §III.6a' },
   { code: 'RSV-01', severity: 'error', title: 'Invalid reserve-account shape, amount, currency or source provenance', description: 'Invalid reserve-account shape, amount, currency or source provenance.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
   { code: 'RSV-02', severity: 'error', title: 'Duplicate reserve account, period or movement identity', description: 'Duplicate reserve account, period or movement identity.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
   { code: 'RSV-03', severity: 'error', title: 'Invalid reserve statement or movement calendar dates', description: 'Invalid reserve statement or movement calendar dates.', remediation: 'Check the explicitly stated account facts and source pointers; do not infer missing movements or net gross expenditure.', spec_ref: 'UW_FORMAT_SPEC.md §4.28 / UW_PROTOCOL.md §VIII.11' },
@@ -1825,8 +1901,8 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'CC-03', severity: 'error',
     title: 'Senior loan does not reconcile',
-    description: 'sources_uses.sources.loan_amount, debt_structure.loan_amount and (when present) the capital_stack senior_debt tranche do not agree within $100.',
-    remediation: 'State the senior loan once and make every surface agree — sources_uses, debt_structure and the capital_stack senior_debt tranche MUST carry the same amount (RFC 0026 §4.24).',
+    description: 'At one point in time, the senior loan does not agree within $100: sources_uses (the closing statement) against the senior debt_structure outstanding at closing, or the capital_stack senior_debt tranche against the senior outstanding at the stack’s point_in_time (RFC 0098); the tranche rate must also equal that senior’s interest_rate exactly.',
+    remediation: 'State each senior loan once per point and make like-dated figures agree. A debt_structure block states point_in_time when it exists at only one point (a construction facility at closing, a takeout at stabilization); the stack states its own point (RFC 0026 §4.24, RFC 0098).',
     spec_ref: '§5.3 CC-03',
   },
   {
@@ -2404,8 +2480,10 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   },
 
   // ─── Financial validity (FV-NN) — renamed from FV_* in v1.1 ────────────────
-  // Severity is the *highest* severity any emission of this code can carry
-  // (e.g. FV-04 may be warning OR error depending on threshold).
+  // Reported as deal flags (ValidationResult.deal_flags, RFC 0109), not issues.
+  // Severity is the *highest* band the code can cross (e.g. FV-04 has a warning
+  // and an error band); it is an issue severity only when an institution
+  // configuration escalates the code (validation_overrides.financial_validity_errors).
   {
     code: 'FV-01', severity: 'warning',
     title: 'Cap rate below threshold',
@@ -2505,11 +2583,25 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: '§5.2',
   },
   {
+    code: 'FV-15', severity: 'error',
+    title: 'Loan-to-cost above threshold',
+    description: 'Loan-to-cost is above the configured warning or error threshold (RFC 0107).',
+    remediation: 'Confirm the loan amount and total project cost in sources and uses; a high LTC leaves little sponsor equity at risk.',
+    spec_ref: '§5.2',
+  },
+  {
     code: 'UNSUPPORTED_YAML_FEATURE', severity: 'error',
     title: 'Unsupported YAML feature in frontmatter',
     description: 'Frontmatter uses a YAML feature outside the .uw.md subset (anchors, tags, block scalars, complex keys, or directives).',
     remediation: 'Rewrite the frontmatter using only the YAML subset documented in UW_FORMAT_SPEC.md Appendix D — scalars, simple mappings, and dash-prefixed sequences.',
     spec_ref: 'UW_FORMAT_SPEC.md Appendix D',
+  },
+  {
+    code: 'SOURCE_BLOCK_MALFORMED', severity: 'error',
+    title: 'Structured block is not an I-JSON object',
+    description: 'A uw:section block body is not one JSON object, or is JSON a reader cannot read faithfully: a syntax error or empty body, a duplicate member name, a number outside finite binary64, or an unpaired surrogate. The document is refused, including when the block is superseded.',
+    remediation: 'Fix the block at the reported line so its body is a single JSON object with unique member names, finite numbers and well-formed strings. Do not drop the block: a superseded block is still part of the record.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.4',
   },
 ]);
 

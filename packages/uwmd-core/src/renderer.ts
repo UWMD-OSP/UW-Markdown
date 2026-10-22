@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // .uw.md renderer — converts a ParsedUWFile to output formats
 // Formats: json | csv | chat | summary
 // PDF and DOCX require dedicated external rendering pipelines.
@@ -314,6 +315,10 @@ ${tableRows}
   const issueLines = validation.issues.length > 0
     ? validation.issues.map(i => `- **[${i.severity.toUpperCase()}]** ${i.message}`).join('\n')
     : '- No issues found';
+  // Format §5.2 deal flags (RFC 0109) describe the deal, not the record.
+  const dealFlagBlock = validation.deal_flags.length > 0
+    ? `\n### Deal Flags (Format §5.2)\n${validation.deal_flags.map(f => `- **[${f.band.toUpperCase()} BAND]** ${f.message}`).join('\n')}\n`
+    : '';
 
   const flagLines = (fm.flags ?? []).length > 0
     ? (fm.flags as string[]).map(f => `- \`${f}\``).join('\n')
@@ -364,7 +369,7 @@ ${valueCreation ? `\n## Value Creation Strategy\n\n${valueCreation}\n` : ''}
 **Overall:** ${validation.overall_status.toUpperCase()}
 
 ${issueLines}
-
+${dealFlagBlock}
 ### Flags
 ${flagLines}
 
@@ -610,6 +615,13 @@ Credit Score: ${val(deepGet(c, 'fico_score') ?? deepGet(c, 'credit_score'))}`);
     );
     sections.push(`## VALIDATION ISSUES\n${issueLines.join('\n')}`);
   }
+  // Format §5.2 deal flags (RFC 0109): the deal's bands, not record defects.
+  if (validation.deal_flags.length > 0) {
+    const flagLines = validation.deal_flags.map(f =>
+      `[${f.band.toUpperCase()} BAND] ${f.code} (${f.section}): ${f.message}`
+    );
+    sections.push(`## DEAL FLAGS\n${flagLines.join('\n')}`);
+  }
 
   // ── Custom calculations ───────────────────────────────────────────────────
   if (parsed.custom_calculations.length > 0) {
@@ -743,5 +755,5 @@ Key Risks: ${((deepGet(c, 'key_risks') as string[] | undefined) ?? []).slice(0, 
 
 function isVariantMap(val: unknown): boolean {
   if (typeof val !== 'object' || val === null) return false;
-  return !('annotation' in (val as object));
+  return !hasBlockShape(val);
 }

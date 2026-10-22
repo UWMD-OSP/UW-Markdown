@@ -1,0 +1,484 @@
+{
+  "kind": "Independent research observation, not production or conformance activation",
+  "base_head": "54a44a3bde8bdca75e946b2f1801db672a18e095",
+  "reference_sha256": "528d35ee9fac7b03480436f0641e864056b682d866c17bb6b6c1bed0c60fc133",
+  "vectors_sha256": "f8d3ebc4aef8b0992edf2a333cc53fa2325b869c680ba990158225f18c6e7400",
+  "summary": {
+    "date_cases": 106,
+    "admitted": 25,
+    "refused": 81,
+    "carrier_cases": 6,
+    "passed": 112,
+    "failed": 0
+  },
+  "date_observations": [
+    {
+      "id": "minimum",
+      "admitted": true
+    },
+    {
+      "id": "maximum",
+      "admitted": true
+    },
+    {
+      "id": "ordinary",
+      "admitted": true
+    },
+    {
+      "id": "leap-4",
+      "admitted": true
+    },
+    {
+      "id": "leap-400",
+      "admitted": true
+    },
+    {
+      "id": "leap-1600",
+      "admitted": true
+    },
+    {
+      "id": "leap-2000",
+      "admitted": true
+    },
+    {
+      "id": "leap-2400",
+      "admitted": true
+    },
+    {
+      "id": "common-century-end",
+      "admitted": true
+    },
+    {
+      "id": "january-31",
+      "admitted": true
+    },
+    {
+      "id": "april-30",
+      "admitted": true
+    },
+    {
+      "id": "november-30",
+      "admitted": true
+    },
+    {
+      "id": "december-31",
+      "admitted": true
+    },
+    {
+      "id": "year-zero",
+      "admitted": false
+    },
+    {
+      "id": "year-zero-leap",
+      "admitted": false
+    },
+    {
+      "id": "year-10000",
+      "admitted": false
+    },
+    {
+      "id": "year-99999",
+      "admitted": false
+    },
+    {
+      "id": "negative-year",
+      "admitted": false
+    },
+    {
+      "id": "year-short",
+      "admitted": false
+    },
+    {
+      "id": "year-shorter",
+      "admitted": false
+    },
+    {
+      "id": "month-zero",
+      "admitted": false
+    },
+    {
+      "id": "month-13",
+      "admitted": false
+    },
+    {
+      "id": "month-short",
+      "admitted": false
+    },
+    {
+      "id": "month-wide",
+      "admitted": false
+    },
+    {
+      "id": "day-zero",
+      "admitted": false
+    },
+    {
+      "id": "day-32",
+      "admitted": false
+    },
+    {
+      "id": "day-short",
+      "admitted": false
+    },
+    {
+      "id": "day-wide",
+      "admitted": false
+    },
+    {
+      "id": "april-31",
+      "admitted": false
+    },
+    {
+      "id": "june-31",
+      "admitted": false
+    },
+    {
+      "id": "september-31",
+      "admitted": false
+    },
+    {
+      "id": "november-31",
+      "admitted": false
+    },
+    {
+      "id": "common-feb-29",
+      "admitted": false
+    },
+    {
+      "id": "leap-feb-30",
+      "admitted": false
+    },
+    {
+      "id": "century-0100",
+      "admitted": false
+    },
+    {
+      "id": "century-1700",
+      "admitted": false
+    },
+    {
+      "id": "century-1800",
+      "admitted": false
+    },
+    {
+      "id": "century-1900",
+      "admitted": false
+    },
+    {
+      "id": "century-2100",
+      "admitted": false
+    },
+    {
+      "id": "all-zero",
+      "admitted": false
+    },
+    {
+      "id": "empty",
+      "admitted": false
+    },
+    {
+      "id": "leading-space",
+      "admitted": false
+    },
+    {
+      "id": "trailing-space",
+      "admitted": false
+    },
+    {
+      "id": "leading-tab",
+      "admitted": false
+    },
+    {
+      "id": "trailing-tab",
+      "admitted": false
+    },
+    {
+      "id": "leading-lf",
+      "admitted": false
+    },
+    {
+      "id": "trailing-lf",
+      "admitted": false
+    },
+    {
+      "id": "trailing-cr",
+      "admitted": false
+    },
+    {
+      "id": "trailing-crlf",
+      "admitted": false
+    },
+    {
+      "id": "embedded-newline",
+      "admitted": false
+    },
+    {
+      "id": "trailing-nbsp",
+      "admitted": false
+    },
+    {
+      "id": "leading-bom",
+      "admitted": false
+    },
+    {
+      "id": "zero-width",
+      "admitted": false
+    },
+    {
+      "id": "nul-suffix",
+      "admitted": false
+    },
+    {
+      "id": "fullwidth-digits",
+      "admitted": false
+    },
+    {
+      "id": "arabic-indic-digits",
+      "admitted": false
+    },
+    {
+      "id": "mixed-unicode-digit",
+      "admitted": false
+    },
+    {
+      "id": "unicode-hyphens",
+      "admitted": false
+    },
+    {
+      "id": "unicode-minus",
+      "admitted": false
+    },
+    {
+      "id": "slash",
+      "admitted": false
+    },
+    {
+      "id": "dot",
+      "admitted": false
+    },
+    {
+      "id": "no-separators",
+      "admitted": false
+    },
+    {
+      "id": "signed-year",
+      "admitted": false
+    },
+    {
+      "id": "suffix",
+      "admitted": false
+    },
+    {
+      "id": "date-range",
+      "admitted": false
+    },
+    {
+      "id": "timestamp-z",
+      "admitted": false
+    },
+    {
+      "id": "timestamp-offset",
+      "admitted": false
+    },
+    {
+      "id": "timestamp-space",
+      "admitted": false
+    },
+    {
+      "id": "timestamp-year-zero",
+      "admitted": false
+    },
+    {
+      "id": "ordinal-date",
+      "admitted": false
+    },
+    {
+      "id": "week-date",
+      "admitted": false
+    },
+    {
+      "id": "null",
+      "admitted": false
+    },
+    {
+      "id": "false",
+      "admitted": false
+    },
+    {
+      "id": "true",
+      "admitted": false
+    },
+    {
+      "id": "integer-zero",
+      "admitted": false
+    },
+    {
+      "id": "integer-date",
+      "admitted": false
+    },
+    {
+      "id": "fraction",
+      "admitted": false
+    },
+    {
+      "id": "integral-number",
+      "admitted": false
+    },
+    {
+      "id": "array-empty",
+      "admitted": false
+    },
+    {
+      "id": "array-date",
+      "admitted": false
+    },
+    {
+      "id": "object-empty",
+      "admitted": false
+    },
+    {
+      "id": "object-date",
+      "admitted": false
+    },
+    {
+      "id": "common-month-01-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-01-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-02-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-02-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-03-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-03-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-04-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-04-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-05-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-05-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-06-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-06-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-07-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-07-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-08-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-08-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-09-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-09-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-10-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-10-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-11-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-11-over",
+      "admitted": false
+    },
+    {
+      "id": "common-month-12-last",
+      "admitted": true
+    },
+    {
+      "id": "common-month-12-over",
+      "admitted": false
+    }
+  ],
+  "carrier_observations": [
+    {
+      "id": "absent",
+      "field_present": false,
+      "date_evaluated": false,
+      "required_missing": true,
+      "admitted": false
+    },
+    {
+      "id": "other-member-only",
+      "field_present": false,
+      "date_evaluated": false,
+      "required_missing": true,
+      "admitted": false
+    },
+    {
+      "id": "present-null",
+      "field_present": true,
+      "date_evaluated": true,
+      "required_missing": false,
+      "admitted": false
+    },
+    {
+      "id": "present-false",
+      "field_present": true,
+      "date_evaluated": true,
+      "required_missing": false,
+      "admitted": false
+    },
+    {
+      "id": "present-invalid-calendar",
+      "field_present": true,
+      "date_evaluated": true,
+      "required_missing": false,
+      "admitted": false
+    },
+    {
+      "id": "present-valid-with-unknown",
+      "field_present": true,
+      "date_evaluated": true,
+      "required_missing": false,
+      "admitted": true
+    }
+  ]
+}

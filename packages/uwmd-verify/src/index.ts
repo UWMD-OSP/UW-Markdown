@@ -659,6 +659,8 @@ export type {
   // Validation
   ValidationMessage,
   ValidationResult,
+  DealFlag,
+  ValidationPolicy,
   CrossCheckCoverage,
   CrossCheckSkipReason,
   ReturnTaxBasis,
@@ -673,7 +675,7 @@ export type {
   UWAssetClassId,
 } from './types.js';
 
-export { DEFAULT_THRESHOLDS, ASSET_CLASSES, UW_SIGNATURE_ALGORITHMS } from './types.js';
+export { DEFAULT_THRESHOLDS, ASSET_CLASSES, UW_SIGNATURE_ALGORITHMS, FINANCIAL_VALIDITY_CODES } from './types.js';
 
 // ─── Protocol surface ─────────────────────────────────────────────────────────
 export {

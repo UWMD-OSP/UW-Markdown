@@ -1,0 +1,304 @@
+{
+  "description": "Authored accepted RFC0094 controls; exact closed metadata findings/order on unchanged stated values.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-04"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_nonleap_1900",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_nonleap_2100",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_nonleap_2026",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_feb30",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_april31",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_month00",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_month13",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_day00",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_day32",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_hour24",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_minute60",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_second60",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_announced_leap_second_still_forbidden",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_lower_t",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_lower_z",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_space_separator",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_plus_zero_offset",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_minus_zero_offset",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_nonzero_offset",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_missing_zone",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_missing_time",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_empty_fraction",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_comma_fraction",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_fullwidth_fraction",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_arabic_year",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_fullwidth_year",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_unicode_minus",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_leading_space",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_trailing_space",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_trailing_newline",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_trailing_crlf",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_trailing_line_separator",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_embedded_newline",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_embedded_nul",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_empty",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_volatile",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_signed_year",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_five_digit_year",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_three_digit_year",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_one_digit_month",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_one_digit_second",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_null",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_bool_true",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_bool_false",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_integer",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_decimal",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_array",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_object",
+      "field": "_meta.provenance.timestamp"
+    },
+    {
+      "code": "META-04",
+      "severity": "error",
+      "section": "x_t1b_boxed",
+      "field": "_meta.provenance.timestamp"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md \u00a7III.6a; RFC0094"
+}

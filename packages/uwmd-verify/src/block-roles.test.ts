@@ -101,8 +101,16 @@ describe('RFC 0040 role selection', () => {
     }));
     for (const code of ['CC-02', 'CC-03', 'CC-05', 'CC-09']) {
       expect(result.coverage[code]?.status, code).toBe('evaluated');
+    }
+    for (const code of ['CC-02', 'CC-05', 'CC-09']) {
       expect(result.coverage[code]?.resolutions?.['debt_structure']).toEqual({ variant: 'senior', via: 'role' });
     }
+    // CC-03 selects one senior per point (RFC 0098 D7); a block stating no point
+    // is outstanding at both.
+    expect(result.coverage['CC-03']?.resolutions).toMatchObject({
+      'debt_structure@closing': { variant: 'senior', via: 'role' },
+      'debt_structure@stabilization': { variant: 'senior', via: 'role' },
+    });
   });
   it('uses the declared property NOI in CC-12', () => {
     const parsed = file({ components: block({ retail: { component_class: 'retail', net_operating_income: 40 }, office: { component_class: 'office', net_operating_income: 60 } }, 'components'),

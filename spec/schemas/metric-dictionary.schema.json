@@ -8,7 +8,8 @@
   "required": [
     "$schema",
     "calculations",
-    "size_intensives"
+    "size_intensives",
+    "statement_bindings"
   ],
   "properties": {
     "$schema": {
@@ -26,6 +27,43 @@
       "minItems": 1,
       "items": {
         "$ref": "#/$defs/size"
+      }
+    },
+    "statement_bindings": {
+      "description": "RFC 0099: the closed registry of where a document states each dictionary metric, beyond frontmatter `quick_metrics.<id>`. A statement is a finite number at `S.<id>` for each output section S, or at an alias path. No binding is inferred from a field name.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "output_sections",
+        "aliases"
+      ],
+      "properties": {
+        "output_sections": {
+          "description": "Section roots at which a metric's own id is a statement of it.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          }
+        },
+        "aliases": {
+          "description": "Further `section.path` addresses that state a metric, by metric id.",
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+            }
+          }
+        }
       }
     }
   },
@@ -114,7 +152,11 @@
           "maximum": 12
         },
         "null_semantics": {
-          "const": "expression"
+          "description": "expression: Protocol VIII.2 semantics. positive_size_denominator (RFC 0100): the same, and unverifiable when a registered size the formula divides by is stated below zero.",
+          "enum": [
+            "expression",
+            "positive_size_denominator"
+          ]
         },
         "deterministic": {
           "const": true

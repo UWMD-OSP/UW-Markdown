@@ -1,0 +1,8 @@
+{
+  "description": "A number outside finite binary64 is not I-JSON; JSON.parse would read Infinity.",
+  "must_parse": false,
+  "expected_codes": [
+    "SOURCE_BLOCK_MALFORMED"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §2.4"
+}

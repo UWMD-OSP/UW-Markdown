@@ -122,6 +122,12 @@ with expected outputs in the matching `expected/` directory. To add a fixture:
    `expected-after-shape.json` lists fields that MUST be present, with allowed
    value types but not specific values.
 
+## Playbooks
+
+Larger changes follow a playbook in [`docs/playbooks/`](docs/playbooks/README.md):
+adding an official asset class, adding or changing a metric, third-party modules,
+and the release rules after launch.
+
 ## Code style
 
 - TypeScript strict mode; no `any` without comment justifying.

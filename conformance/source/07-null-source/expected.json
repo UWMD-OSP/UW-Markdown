@@ -1,0 +1,9 @@
+{
+  "why": "a null `_meta.provenance.source` is SRC-01 and keeps its existing META_FIELD_MISSING_SOURCE warning (RFC 0101, #413).",
+  "src_codes": [
+    "SRC-01"
+  ],
+  "also_codes": [
+    "META_FIELD_MISSING_SOURCE"
+  ]
+}

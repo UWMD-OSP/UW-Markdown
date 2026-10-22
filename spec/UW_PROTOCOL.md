@@ -256,6 +256,19 @@ A Verifier MUST satisfy all Reader requirements, and additionally:
    A metric whose inputs are absent is `unverifiable`, not failed. The
    definitions are written in the expression notation of
    §VIII.1–VIII.3 and published in the normative [metric dictionary](metrics/README.md), including class-scoped formulas, input paths, minimum stated precision, round_to and null semantics.
+   **Where a document states a metric (RFC 0099).** A statement of metric
+   *m* is a finite JSON number at frontmatter `quick_metrics.m`, at `S.m`
+   for each section `S` in the dictionary's
+   `statement_bindings.output_sections`, or at each path in
+   `statement_bindings.aliases[m]`, in every current block variant. It
+   applies to every class whose dictionary has an entry with id *m*. The
+   registry is closed: a field it does not bind is not a statement, and no
+   binding is inferred from a field name. A Verifier MUST check every
+   statement it finds, each address separately, with the entry's formula,
+   `round_to` and comparison precision; a `failed` statement at any address
+   fails verification. A non-numeric value at a bound address is not a
+   statement. A metric marked `positive_size_denominator` is unverifiable
+   when a registered size it divides by is stated below zero (RFC 0100).
 3. Implement the stated-figure verifiers and apply them to the figures
    a document states: calendar-anchored cash flows, including the IRR
    procedure (§VIII.9); property cash-flow assembly (§VIII.9.6);
@@ -407,9 +420,16 @@ or `edit-*` capabilities they need has those cases skipped (§II.6a.5).
 - **Exit `0`** — the operation succeeded.
 - **Exit `1`** — the operation failed in a way the protocol describes: a
   validation error, a refused edit, a calc that could not evaluate.
-  stdout is still a parseable response.
+  stdout is still a parseable response. A Format §5.2 deal flag is not a
+  validation error and never sets exit `1` (RFC 0109).
 - **Exit `2`** — unrecoverable internal error. stdout is not required to
   be anything.
+
+Selected institution-config failures are operation errors, not ValidationResult
+findings: `validate --json` emits only `{ "error": ProtocolError }` and exits1.
+The exact codes, message/pointer precedence and source-admission ordering are
+normative in §VI.3. No partial result or replacement-funding result accompanies
+that refusal. Pure SOURCE/MODEL calls and receipts do not discover configs.
 
 Implementations SHOULD emit UTF-8 regardless of platform locale.
 
@@ -594,11 +614,13 @@ capability is unconditional: every implementation owes it.
 | Prefix | Family | Owning capability | Default severity |
 |---|---|---|---|
 | `CC-NN` | Cross-section consistency — two or more sections disagree about the same fact. NN is a two-digit integer registered in this spec. | `validate` | `warning` or `error` per check |
-| `FV-NN` | Single-section financial validity — a value falls outside a registered plausibility threshold. | `validate` | typically `warning` |
+| `FV-NN` | Single-section financial validity — a value falls outside a registered plausibility threshold. Reported in `ValidationResult.deal_flags` with a `band`, never in `issues`, unless the selected institution configuration escalates the code (Format §5.2, RFC 0109). | `validate` | none (a deal flag); `error` when escalated |
 | `DQ-NN` | Data quality — a required value is missing, provisional, or below a stage threshold. | `validate` | `warning` or `error` |
 | `MU-NN` | Mixed-use composition (§XII). | `validate` | `warning` or `error` |
-| `CS-*` | Capital stack (§XIII); RFC 0050 registers `CS-02b` for malformed split preferred-equity coupons. | `validate` | `warning` or `error` |
-| `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence (format spec §4.25, RFC 0008). | `validate` | `warning` or `error` |
+| `CS-*` | Capital stack (§XIII); RFC0096 adds CS-03 sizing-declaration admission; RFC 0050 registers `CS-02b` for malformed split preferred-equity coupons; RFC 0098 adds CS-04 for an absent or invalid `point_in_time`. | `validate` | `warning` or `error` |
+| `DS-NN` | Debt structure field admission (format §4.7, RFC 0098): `DS-01` refuses a stated `point_in_time` outside `closing`/`stabilization`. | `validate` | `error` |
+| `SIZE-NN` | Generic size contract (format §5.5, RFC 0100): `SIZE-01` refuses a stated size, count, area or rent in the closed table that is negative or non-finite or, for a count, not an integer. `CLS-04` stays the class contracts' code. | `validate` | `error` |
+| `LU-NN` | Lease-up schedule structure — period grammar, contiguity, presence and closed LU-05 payload admission (format spec §4.25, RFCs0008/0096). | `validate` | `warning` or `error` |
 | `RT-NN` | Return-metric declarations — the `dcf.returns` basis fields (format §4.9, RFC 0038). | `validate` | `error` |
 | `PS-NN` | Period-series shape and identity (RFC 0041). | `validate` | PS-01/03 warning; PS-02 error |
 | `ROLE-NN` | Signed block role vocabulary (RFC 0040). | `validate` | `error` |
@@ -608,13 +630,13 @@ capability is unconditional: every implementation owes it.
 | `LSE-NN` | Commercial lease clauses — escalation steps, break options, co-tenancy, TI/LC balances (format §4.3, RFC 0055). | `validate` | `error` |
 | `HDG-NN` | RFC 0070 adds HDG-07/08/10 structural funding rules and HDG-09 solely for async digest mismatch. Interest-rate hedges — cap strike, notional, term and post-expiration assumption (format §4.7, RFC 0056). `rate_swap` and `rate_collar` are reserved and refused by `HDG-02`. | `validate` | `error` |
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
-| `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
-| `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC 0058). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `error` |
+| `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). RFC0096 adds WF-16 stated-claim admission. Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
+| `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC0058), with closed REC-11 admission (RFC0096). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `error` |
 | `RDB-NN` | Optional reserve draw binding plan/source/allocation verification (§VIII.12, RFC 0065); ordinary document validation and assembly unchanged. | `calc-evaluate` | `error` |
 | `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
-| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), and required canonical boolean members (`META-02`/`META-03`, RFC0091). | `validate` | `error` |
+| `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), required canonical boolean members (`META-02`/`META-03`, RFC0091), exactly three present-invalid canonical leaves (`META-04`, RFC0094), and closed optional/conditional metadata (`META-05`/`META-06`, RFC0095). | `validate` | `error` |
 | `MOD-CALC-*` | Official class or module calculation errors. | `validate`, `module-load` | `error` |
 | `MOD-RULE-*` | Safe-expression rule errors from builtin or module validation. | `validate`, `module-load` | `error` |
 | `CLS-NN` | Official builtin field contracts (RFC 0080, RFC 0081). | `validate` | error |
@@ -628,9 +650,28 @@ capability is unconditional: every implementation owes it.
 | `MOD-*` | Module runtime (§X). | `module-load` | `info` to `error` |
 | `CALC-*` | Calc engine (§VIII). | `calc-evaluate` | `error` |
 | `UNSUPPORTED_YAML_FEATURE` | Frontmatter YAML subset violation (format Appendix D). | `parse` | `error` |
+| `SOURCE_BLOCK_MALFORMED` | A structured block body is not one I-JSON object (format §2.4, RFC 0106). | `parse` | `error` |
 | `UNSUPPORTED_FORMAT_VERSION` | Absent or non-3.0 document version (RFC 0081). | `parse` | `error` |
 | `PROTO-*` | Protocol-level refusal — a malformed request. | *(none)* | `error` |
 | `RCP-*` | Verification receipt (§XI). | *(none)* | `error` |
+
+**Issue `field` and order (RFC 0104).**
+
+1. **`field`** is the dotted path to the offending member. For an issue with a
+   `section` it starts at the block payload root, the whole fenced object
+   (`_meta.provenance.source`, `units[3].sqft`). A frontmatter issue has
+   `section` `"frontmatter"`, and its `field` starts at the frontmatter root
+   (`asset_class`, `quick_metrics.dscr`). Each
+   step is a member name, and an array element is its index in brackets
+   (`tranches[2].position`), never an element's `id`. An issue about a missing
+   object names that object (`META_MISSING` → `_meta`). An issue about a whole
+   block or section, or about a relation among several members, has no `field`.
+2. **Order.** The order of `issues` carries no meaning, with one normative
+   exception: the `META-01`…`META-06` metadata passes (RFCs 0093–0095) and the
+   RFC 0096 payload pass keep the order this section fixes for them, and
+   conformance pins that order. Every other issue may appear in any order. A
+   consumer that needs a stable order sorts by `(section, field, code)`, and
+   conformance compares those issues as multisets.
 
 **Coverage (RFC 0037).** Beside its issues, a conforming validator reports
 a per-check coverage record for the `CC-NN` family — `evaluated`, or
@@ -756,6 +797,202 @@ blocks first, then model-only collections in the stated order; within each
 block emit META-02 before META-03. This pass precedes role, period-series and
 source-vocabulary checks and preserves unrelated findings' relative order.
 No other required metadata field or malformed parent gains an allocation.
+
+**Present-invalid metadata leaves (RFC0094).** Complete the entire required
+boolean pass first; then, before role/period/source checks, traverse the same
+retained-physical plus current model-only exact-reference union above. For each
+block emit `META-04`/error for each present invalid canonical leaf, in this order:
+
+| Field | Admitted present domain |
+|---|---|
+| `_meta.quality.confidence` | Exactly the strings `high`, `medium`, `low`. |
+| `_meta.lifecycle.revision` | Finite integral number at least1; JSON1.0/1e0 are integer1, booleans are not numbers for this predicate; no new maximum. |
+| `_meta.provenance.timestamp` | Exact T1B UTC-Z domain in Format §2.5 and below. |
+
+T1B consumes the entire string `YYYY-MM-DDTHH:mm:ss[.digits]Z`, using only ASCII
+digits, year0000–9999 and valid proleptic Gregorian month/day (leap if divisible
+by400 or divisible by4 but not100), hour00–23, minute/second00–59, uppercase T/Z
+and an optional nonempty fraction without a new length cap. Reject every numeric
+offset, lowercase separator, whitespace, second60 and invalid date without
+normalization, time-zone conversion, host-parser authority, clock or calendar
+lookup. The allocation imposes no age, temporal ordering or revision-chain test.
+
+Presence means an own member of the admitted canonical parent. An absent leaf
+never gains META-04. Keep every existing completeness warning predicate,
+applicability and relative order, including null warnings alongside new errors.
+Old rejected metadata/provenance/lifecycle shapes suppress descendants; missing
+or nonobject quality suppresses only confidence. Other shape/actor/boolean
+errors do not suppress these leaves. Use current canonical values, never cached
+metadata aliases or stale raw text; resolved source composition accounts for
+original root, actual consumed parts and derived model references as above.
+
+Each finding identifies its exact canonical field and section. Ordinary issues
+gain no category; ProtocolError transport uses `validate`. Findings enter normal
+issues/error partitions, status and CLI exits. Newly issued receipt policy counts
+follow actual validation findings; source digests, authenticated subjects,
+issuance rules and authenticate-first receipt verdict precedence are unchanged.
+Validation stays read-only. Optional/conditional metadata and all other shapes
+remain outside this closed list; no generic fallback is allocated.
+
+**Closed optional metadata and reference admission (RFC0095).** Complete all
+META-04 findings before the entire META-05 pass; complete META-05 across the
+physical/current MODEL identity union before the entire META-06 pass. Only then
+run existing role/period/source checkpoints and remaining checks in their
+existing relative order. Do not globally sort or interleave old per-block
+findings. Exact reference deduplication, current canonical own-member authority,
+SOURCE versus MODEL and resolved root/consumed-part accounting above apply.
+
+META-05/error has exactly these predicates, in this per-block order:
+
+| Field | Invalid present domain |
+|---|---|
+| `_meta.provenance.agent_id`, then `.agent_version`, then `.notes` | Neither string nor null. |
+| `_meta.quality.flags` | Not an array; otherwise each non-string item at its indexed field, in array order. |
+| `_meta.quality.partial`, then `.provisional` | Not a literal boolean. |
+| `_meta.quality.field_overrides` | Any present value; use block-level annotations. |
+| `_overrides` | Not an array; otherwise each entry in array order. |
+
+For each override entry: a nonobject/null/array receives one parent META-05 and
+no children. An object receives independent findings in path/confidence/reason/
+note order: path absent or non-string; present confidence outside high/medium/low;
+present reason outside illegible/missing/overridden/estimated/computed; present
+note non-string. Unknown members, empty strings, duplicate/unmatched paths gain
+no extra rejection. Source/resolution remain SRC-owned; no generic fallback.
+
+META-06/error uses agent_id, inherited_from, market_data_ref order per block:
+
+- A valid canonical `agent/<id>` source requires an own agent_id member. Absence
+  yields META-06; null/empty string satisfy presence. Wrong present types yield
+  META-05 only. An invalid source/override source creates no agent-id trigger.
+- An optional absent carrier passes. A required absent or any present invalid
+  carrier yields one parent finding; only non-null non-array objects are
+  admitted, with no duplicate absence or child findings beneath invalid parents.
+- inherited_from children are checked once in document_id/digest/distance order:
+  required string, exact sha256: plus64 lowercase ASCII hexadecimal digits,
+  finite JSON integral number at least1. No nonempty document id or safe-integer
+  ceiling is added; booleans are not numbers.
+- market_data_ref children are checked once in document_id/as_of/digest/rationale
+  order: required string, required exact Gregorian date-only below, required
+  exact digest above, then optional string rationale. Unknown children pass.
+
+The two carrier absence triggers are symmetric: own canonical resolution OR
+any own resolution of any stated object override entry equals the corresponding
+inherited_assumption or market_data_accepted tag. Missing, invalid, duplicate,
+unmatched and shadowed paths never remove an assertion; a later tag does not
+retract earlier tags. Collapse all assertions to one obligation per block/carrier,
+not per path. Inherited prototypes/nonobject entries do not trigger. Canonical
+inheritance plus an override market assertion requires both carriers. Fetching,
+hop inference and arbitrary peer/effective-leaf selection are forbidden here.
+
+market_data_ref.as_of is the entire ASCII string YYYY-MM-DD, years0001–9999,
+with valid proleptic Gregorian month/day and the400/4/100 leap rule. No whitespace,
+Unicode digits, year zero, reduced widths, timestamps, offsets, trimming or
+normalization. This is not T1B. Missing as_of in an admitted carrier produces
+one child finding; a missing required carrier produces only its parent finding.
+Reference digests require an absolute end, including rejection of line endings.
+
+Whole-missing/rejected canonical metadata/provenance/lifecycle suppresses these
+canonical descendants. Missing/nonobject quality suppresses only its own new
+quality predicates. Sibling _overrides remains independent even with rejected
+metadata. Actor or META-02/03/04 errors do not suppress otherwise admitted new
+predicates; invalid agent_id does not suppress references. Later DQ checks must
+tolerate invalid optional shapes and apply their accepted literal boolean
+predicates. Existing completeness warnings and META-01–04 remain unchanged.
+
+DQ-06/info means declared-stage readiness only. Remove promoted-reference
+DQ-06/error and duplicate emission; META-06 owns attribution under the rule
+above. Preserve readiness placement, CC-14 suppression and unrelated order.
+Issues keep exact field/section/severity and ordinary result partitions, status
+and CLI exits. ProtocolError category is validate; ordinary issues gain no
+category. Newly issued receipt policy counts reflect actual findings; subject,
+digest, issuance and authenticate-first verdict rules remain unchanged.
+Validation is read-only; no new result state, inferred value or source repair.
+
+#### Closed current-payload admission (RFC0096)
+
+The validation-only error allocations are LU-05 (Format §4.25 model/payload
+admission), REC-11 (Format §4.3 remaining recovery leaves/closed objects),
+CS-03 (Format §4.24 stated sizing declarations, including admitted components),
+and WF-16 (Format §4.27 stated claims and remaining clawback leaves).
+The corresponding Format tables define every closed predicate; no schema
+fallback or financial-result interpretation is allocated. Ordinary findings
+carry no category; ProtocolError transport uses category validate.
+
+A number means a finite binary64 numeric value; booleans are not numbers.
+An integer is a finite number with no fractional component; this RFC adds no
+safe-integer ceiling. A nullable optional field may be absent or exactly null.
+An own, present non-null value MUST satisfy its named predicate. Required
+members in the four Format allocations are required own members, without trimming, coercion, inferred
+defaults or filling absent values. String length means the actual nonempty
+string, so whitespace is not silently trimmed. Unknown members are rejected
+only in the exact closed objects enumerated here. `_notes` is never validated;
+`_meta`, `_role` and `_overrides` retain their existing universal owners.
+
+These payload allocations MUST visit the current canonical block or every
+current variant of each named standard section, independently of a financial
+role-selection fallback. A role collision or missing financial primary does
+not exempt other current peers from admission. This is the existing payload
+population of Format4 and the original formal audit, not metadata's
+all-retained-physical population. History, superseded/overwritten physical
+blocks and physical append inputs which no longer constitute a current payload
+MUST NOT independently gain these errors. Unknown/extension sections and
+nested opaque lookalikes are not these named payloads.
+
+SOURCE MUST freshly parse the actual source, perform accepted selection and
+composition, and assess the assembled current payload. A consumed part's
+payload is assessed where it becomes current assembled content, not again as
+an independent physical block. Unused loaded parts are not assessed. MODEL
+MUST assess current own model members, without stale raw/convenience metadata
+or reparsing away mutations. Existing unresolved, unavailable and unsupported
+composition refusals remain typed operation outcomes; this RFC neither invents
+missing payloads nor turns source availability into a structural error.
+Metadata's separate root/consumed-part/derived-model physical union remains
+unchanged under RFCs0090/0091/0093/0094/0095.
+
+Container precedence is local: emit one parent-carrier finding and stop that
+subtree when its listed container type fails; continue independent siblings.
+A required own member's absence and a present invalid value produce one finding
+at that exact member, not simultaneous missing/type findings. A leaf failing
+several predicates produces one finding. A condition already owned by an
+existing registered error in the four allocations MUST NOT be emitted again under a new code.
+Deduplication requires the same selected block, row, field and predicate; an
+unrelated REC/LU/WF finding never suppresses an unowned sibling.
+
+Run one complete payload-admission pass after existing data-quality checks,
+before CC-16 coverage-summary output, remediation enrichment and result
+partitioning. It MUST preserve all existing checks' relative order. Within
+this pass use LU-05, REC-11, CS-03, WF-16 family order. Visit an unlabelled entry
+as one current block; for maps visit every current variant in Unicode code-point
+key order. Admitted component-class keys use the same ordering, only under the existing
+mixed_use and declared component-class eligibility of Format4.23; an unknown
+component key or opaque nested object does not create a new traversal scope. Do not select only base or
+primary. This pass does not resort the preexisting issue array.
+
+Within LU use model_type, stabilization_target, assumptions, schedule,
+stabilized_summary; within REC visit tenant array order, terms before true-up,
+with terms field order as its closed list above, cap fields pct/over/accumulation,
+and true-up row fields as its closed list above. Within CS visit array order,
+then id, fn, selector union, value. Within WF visit clawback, stated_outcomes,
+stated_schedule; clawback floor_rate then floor_multiple; outcomes lp then gp
+(contributions, distributions, moic, xirr), then promote_total, profit_total,
+clawback_amount; schedule row date then by_tier; tier rows tier, lp, gp.
+In each object assess its listed fields first, then unknown own members in
+Unicode code-point order. Parent failure stops only its subtree.
+
+Existing code ownership is predicate-based, not an instruction to concatenate
+duplicate full validation arrays. Implementations may share admission helpers
+with existing validators, but MUST preserve the registered findings, exact
+fields, independent siblings and order. No schema-library error order defines
+the result. Errors enter ordinary errors/issues partitions and existing overall
+status and CLI exit semantics. Stage readiness remains independently derived;
+no profile or complete-Verifier claim follows from this allocation.
+
+Existing per-lease structural REC-01–04 and REC-09 admission applies to current
+rent_roll peers independently of property-level cross-check resolution. Keep
+existing selected-check order, assess remaining peers once without duplicate
+selected findings, and do not expand REC-05–08 arithmetic or unrelated LSE checks.
+Newly issued receipt policy counts use actual findings under existing issuance
+rules; no subject, digest, signature, result-state or verdict-precedence change.
 
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
@@ -912,7 +1149,7 @@ On every write, the host MUST set:
   resolution vocabulary (format §2.6) naming how the value was resolved (e.g. a step of the starter fallback
   cascade, [§V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)), when the
   host knows it.
-- `_meta.provenance.timestamp` — current ISO-8601 UTC timestamp.
+- `_meta.provenance.timestamp` — current write time in the exact T1B UTC-Z domain (Format §2.5, RFC0094); never normalize existing timestamps while validating.
 - `_meta.provenance.actor` — REQUIRED nonempty string naming the initiating
   human or system principal. RFC 0090 actor admission performs no
   trimming, source-namespace grammar or principal inference.
@@ -1584,10 +1821,210 @@ Module profile reports them `unverifiable`, never wrong.
 
 ### VI.3 InstitutionConfig layering
 
-A `.uw.institution.json` sidecar (format spec Appendix C.6) overrides
-threshold defaults. Implementations MUST apply the institution config
-to validation but MUST NOT apply it to display formatting (display is a
-starter product; locale is frozen).
+A `.uw.institution.json` sidecar (Format Appendix C.6) configures the three
+validation overrides below. Implementations MUST apply admitted settings to
+validation, and MUST NOT apply them to display formatting. The selected-config
+operation contract is normative under RFC0097. The minimum wire schema is
+[`institution-config.schema.json`](schemas/institution-config.schema.json);
+byte/profile admission, binary64 finiteness and filesystem outcomes also require
+the following runtime rules. No new financial threshold or comparison is added.
+
+#### VI.3.1 Selection and operation boundary
+
+A filesystem validation adapter selects exactly one file:
+
+1. If the caller explicitly supplies an institution-config path, use that path.
+   The reference CLI's existing `--institution` option selects it. Resolve a
+   relative explicit path from the invocation's working directory.
+2. Otherwise select `.uw.institution.json` in the directory of the absolute,
+   lexically resolved document path. Do not search the working directory,
+   parents, frontmatter ids or another document's directory. Do not realpath
+   the document through symlinks merely to choose a different sidecar directory.
+3. An explicit path suppresses automatic discovery entirely. Do not merge two
+   files or fall back to the adjacent file if the explicit one fails.
+
+For example, from `/work`, `records/link.uwx.md` selects
+`/work/records/.uw.institution.json` even if the document link targets
+`/archive/deal.uwx.md`. `records/../deal.uwx.md` selects
+`/work/.uw.institution.json`. This accepted directory rule is independent of
+existing document-read semantics; it does not change whether/how the OS follows
+a document link. Tests must distinguish invocation-path and physical-target
+sidecars.
+A missing automatically selected path is the sole absence/default branch.
+Attempt the read; a genuine not-found outcome for that automatic path means no
+configuration. Access denial, a directory in place of the file, a broken
+symlink at the sidecar path, or any other read failure is not absence. An
+explicit missing path is unreadable. If a path disappears after selection or
+inspection, classify the actual read outcome; do not rely on a racy exists-only
+check. Distinguishing a dangling link from no directory entry is an adapter
+responsibility and is tested without prescribing an OS-specific API.
+
+CLI argument and fatal input-source/representation/parse admission retain their
+existing precedence. After those prerequisites and before document validation
+predicates or financial funding checks, finish config preflight. Do not add new
+document parse rules through this RFC. Once config preflight fails, no ordinary
+ValidationResult, overall status, partitions, stage-readiness, coverage or
+replacement-funding result is computed or presented for that operation.
+
+Pure SOURCE/MODEL validation APIs remain I/O-free with respect to institution
+files. `validateUWFile(input, thresholdOverrides?)` and Python's equivalent take
+the caller's supplied nested threshold map; that parameter is not the sidecar
+wire object. They do not discover files or acquire hidden sidecar authority.
+A file adapter parses the selected wire object into that existing parameter.
+
+#### VI.3.2 Bounded malformed domain and atomic application
+
+The selected file MUST decode as strict UTF-8 and exactly one JSON value with
+only JSON whitespace around it. A leading BOM, trailing non-whitespace, invalid
+UTF-8, invalid JSON or duplicate object member names is malformed. Names are
+compared after JSON escape decoding, without trimming or Unicode normalization.
+Every decoded member name and string value, including opaque data, MUST have
+well-formed Unicode scalar content: reject an escaped lone high/low surrogate;
+a correctly paired escaped surrogate sequence is admitted. Do not normalize
+strings or replace invalid code units. A Unicode-profile failure is malformed
+without a pointer, at the same pre-shape stage as whole JSON admission.
+The BOM, duplicate-name and decoded-Unicode rules are explicit accepted
+profile choices, not inherited JSON MUSTs or reuse of document JCS admission.
+[RFC8259 section4](https://www.rfc-editor.org/rfc/rfc8259.html#section-4)
+recommends unique names; [section8.1](https://www.rfc-editor.org/rfc/rfc8259.html#section-8.1)
+permits parsers to ignore a BOM. They do not themselves select this stricter
+configuration profile. The owner accepted these stated choices at4a31eb3c.
+The root MUST be an object, not null or an array.
+
+The recognized carrier is an own `validation_overrides` member. Absence means
+no override. If present it MUST be an object, not null or an array. Empty is
+valid. Its three recognized optional own members MUST be finite binary64
+numbers when present; null, booleans and strings are invalid, with no coercion:
+
+| Wire member | Existing explicit API member |
+|---|---|
+| dscr_warning_below | dscr.warning_below |
+| ltv_warning_above | ltv.warning_above |
+| debt_yield_warning_below | debt_yield.warning_below |
+
+A fourth recognized optional own member, `financial_validity_errors` (RFC 0109),
+MUST be an array whose every element is a string equal to a registered `FV-NN`
+code (Format §5.2); empty and repeated entries are admitted. It maps to the
+validation policy's `financial_validity_errors`: for a listed code an error-band
+finding is an `error` issue rather than a deal flag. A warning-band finding of a
+listed code stays a deal flag.
+
+This adds no numeric bounds, threshold defaults, rounding or comparisons.
+Negative values, zero and finite fractional values are admitted as configuration
+numbers; the existing validation comparison procedures remain unchanged.
+A JSON number spelling which overflows binary64 is not an admitted recognized
+threshold. No new safe-integer restriction is imposed.
+
+A root own `thresholds` member is explicitly noncanonical and malformed,
+including when a canonical carrier is also present. Do not choose between two
+carriers or treat it as a nested wire alias. This does not change the existing
+nested threshold-map parameter of pure APIs.
+
+Other top-level data and other members of `validation_overrides` remain opaque:
+this RFC does not allocate new validation for `institution_id`, workflow/render
+preferences or an exhaustive vocabulary for every Format5.2 threshold. Do not
+report an opaque member as applied. A similarly named nested lookalike is not
+the root canonical carrier. The duplicate-name JSON rule still applies to every
+object in the selected file. This scope is deliberately explicit; unknown-data
+handling is not a claim of complete institution-policy support. In particular,
+a lexically valid overflow number in opaque data (for example an unknown
+`note_number:1e309`) does not trigger the recognized-leaf finite check and is
+never applied or reported as a threshold. An adapter need not coerce that opaque
+number into binary64 or reserialize the config. Original bytes stay unchanged.
+An escaped lone surrogate remains malformed even in opaque data under the whole
+Unicode rule above; paired scalars are valid. Neither rule authenticates a config
+or makes it an Envelope, signature or receipt subject.
+
+The adapter MUST admit the complete selected config before applying any
+recognized override. One invalid recognized member refuses the whole operation;
+no partial map is passed to validation. On success build fresh affected bands
+from existing defaults, then replace only the named member. Existing DSCR/LTV
+error limits and unrelated bands remain present. Do not mutate process-wide
+defaults, the caller's model/map, the document or the selected config bytes.
+
+#### VI.3.3 Exact refusal, precedence and field attribution
+
+Allocate exactly these operation errors, both category `validate`:
+
+| Code | Condition | Required message |
+|---|---|---|
+| VAL-INSTITUTION-CONFIG-UNREADABLE | Selected read fails, except genuine automatic absence | Selected institution config could not be read. |
+| VAL-INSTITUTION-CONFIG-MALFORMED | Decoding/JSON/profile or recognized admission fails | Selected institution config is malformed. |
+
+These codes do not enter ordinary errors/warnings/issues arrays, change their
+registered severity system or allocate a META/FV fallback. Add operation-error
+documentation/remediation without pretending they are document issue families.
+`ProtocolError`'s existing category/shape remains unchanged. Its pointer comment
+and the protocol-error schema describe these two codes relative to the selected
+configuration input, not the underwriting document. Existing other codes retain their own pointer authority.
+No new pointer syntax or outer filename field is allocated.
+
+Return exactly one primary config error:
+
+1. Read failure wins before decode/profile checks.
+2. Decode, whole JSON syntax, duplicate-name or Unicode-profile failure: malformed; omit pointer.
+3. Nonobject root: malformed; omit pointer.
+4. Own root `thresholds`: malformed; pointer `thresholds`.
+5. Invalid canonical carrier: malformed; pointer `validation_overrides`.
+6. Invalid recognized leaves: first in the fixed order dscr_warning_below,
+   ltv_warning_above, debt_yield_warning_below, financial_validity_errors;
+   pointer is the exact `validation_overrides.<member>` path.
+
+No document-field issue or lower-priority config error cascades. Opaque members
+have no admission pass beyond the whole-JSON rules. A caller MAY receive optional
+`cause`/`remediation` strings permitted by ProtocolError; do not add schema-forbidden
+inner members, reinterpret pointer as a document field or expose config bytes
+as part of the error. Optional diagnostic detail does not change the primary
+code/message/pointer above.
+
+#### VI.3.4 CLI transport
+
+`validate <file> --json`, with an optional explicit config selector, MUST exit1
+and write exactly one JSON object to stdout:
+
+```json
+{
+  "error": {
+    "category": "validate",
+    "code": "VAL-INSTITUTION-CONFIG-MALFORMED",
+    "message": "Selected institution config is malformed.",
+    "pointer": "validation_overrides.ltv_warning_above"
+  }
+}
+```
+
+The outer object has only `error`; its value conforms to the existing
+`protocol-error.schema.json`. Omit pointer for cases which have none. A trailing
+newline is allowed. No `partial_validation_result`, structural result, clean
+verdict or partial override output accompanies this refusal. Stderr may carry
+diagnostics but cannot substitute for the structured stdout error. A described
+selected-config failure is exit1, never internal-error exit2 or success exit0.
+An actual unrelated implementation defect retains the existing exit2 boundary.
+
+Without `--json`, the same refusal/code exits1; human diagnostics go to stderr
+and stdout contains no validation-result claim. No new normative CLI selector
+syntax is required beyond the existing optional reference-CLI flag.
+
+Any existing aggregate adapter which invokes validation, including the
+reference `verify` command's validation branch, must propagate this same typed
+validation-operation failure and cannot report that branch as passed. Its
+existing aggregate wrapper/other independent operations are not redesigned by
+this RFC, and no new `verify --institution` flag is allocated.
+
+#### VI.3.5 Receipt and authentication boundary
+
+Receipt issuance presently validates with builtin defaults and records those
+counts (`receipts.ts` validate/counts calls). Issuance/verification options have
+no config parameter, and receipt CLI commands load no sidecar. Verification
+checks count shape rather than recomputing the policy counts. Configured CLI
+validation findings can therefore differ from builtin receipt counts.
+
+This RFC MUST NOT silently make receipt issue/verify discover or refuse on an
+adjacent config. It changes no receipt subject, policy identity/count binding,
+signature requirement, recomputation, result-digest or verdict precedence. Any
+extension of receipts to configured policy requires its own explicit governed
+scope. Config errors are not additional document findings or receipt error counts.
+The accepted authenticate-first receipt contract remains authority.
 
 ---
 
@@ -3674,7 +4111,7 @@ All protocol-level errors MUST be expressible as a `ProtocolError`:
           | 'package' | 'portfolio',
   code: string,           // e.g. "PROTO-EDIT-001"
   message: string,
-  pointer?: string,       // dot-path into the file
+  pointer?: string,       // dot-path into the owning input; selected config for §VI.3 errors
   remediation?: string,
   cause?: string,
 }
@@ -3690,7 +4127,40 @@ families, owning capabilities and remediation-entry schema are
 normative in §III.6a, which keeps its section number so existing
 references resolve (RFC 0078). RFC0093 adds only P1/P2/P3 to META-01;
 its fields, error severity, ordering and admitted-parent suppression are normative
-there. META-02/03 and ordinary issue/ProtocolError transport remain unchanged.
+there. RFC0094 adds the closed META-04 present-leaf allocation; RFC0095 adds
+closed META-05 optional/override and META-06 conditional/reference allocations,
+with readiness-only DQ-06/info. Their exact fields, complete-pass ordering and
+admitted-parent suppression are normative in §III.6a. META-01/02/03 and ordinary
+issue/ProtocolError transport remain unchanged.
+
+### XI.1 Selected institution-configuration operation errors (RFC0097)
+
+`VAL-INSTITUTION-CONFIG-UNREADABLE` and
+`VAL-INSTITUTION-CONFIG-MALFORMED` are category `validate` operation errors.
+Their exact conditions/messages, fixed primary precedence, optional config-relative
+pointer and error-only JSON/exit1 are defined in §VI.3. They MUST NOT be emitted
+as document errors/warnings/issues or change ordinary issue severities/counts.
+For unreadable input, obtain a readable selected config; for malformed input,
+correct that config's strict profile or indicated canonical carrier/finite leaf.
+Do not repair the underwriting document or fall back to another policy.
+
+The `ProtocolError.pointer` authority for these two codes is the selected config,
+not a document field. This does not change other codes' pointer authority or the
+ProtocolError DTO. Optional cause/remediation may not expose config bytes. Receipts
+retain their own input/policy/authentication rules; §VI.3 adds no config dependency.
+
+### XI.2 Malformed structured block (RFC 0106)
+
+A Reader MUST refuse, at parse stage, a document containing a structured block
+whose body is not one I-JSON object (Format §2.4): a syntax error or empty body,
+trailing content, a `null`, scalar or array root, a member name repeated after
+escape decoding, a number outside finite binary64, or an unpaired surrogate. The
+refusal is a `ProtocolError` with category `parse` and code
+`SOURCE_BLOCK_MALFORMED`. Its message names the block's opening line and the
+defect. It applies to superseded blocks as to current ones, because a superseded
+block is still part of the record a signature covers. No partial parse result is
+returned, so no validation, verification or receipt operation runs over the
+document: `validate` reports the refusal instead of findings.
 
 ---
 

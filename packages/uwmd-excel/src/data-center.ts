@@ -30,6 +30,10 @@ const namedInputs: readonly NamedInput[] = [
   {"name": "dc_power_utility_rate_per_kwh", "label": "Utility Rate Per Kwh", "source": {"section": "dc_power", "path": "utility_rate_per_kwh"}, "format": "decimal"},
   {"name": "dc_power_power_margin", "label": "Power Margin", "source": {"section": "dc_power", "path": "power_margin"}, "format": "decimal"},
   {"name": "dc_power_stated_annual_power_cost", "label": "Stated Annual Power Cost", "source": {"section": "dc_power", "path": "stated_annual_power_cost"}, "format": "currency"},
+  // RFC 0103: drawn power (metered kWh or an explicit draw factor) and the billing basis.
+  {"name": "dc_power_billing", "label": "Power Billing", "source": {"section": "dc_power", "path": "billing"}, "format": "text"},
+  {"name": "dc_power_metered_annual_kwh", "label": "Metered Annual kWh", "source": {"section": "dc_power", "path": "metered_annual_kwh"}, "format": "count"},
+  {"name": "dc_power_draw_factor", "label": "Draw Factor", "source": {"section": "dc_power", "path": "draw_factor"}, "format": "decimal"},
   {"name": "dc_revenue_rent_per_kw_month", "label": "Rent Per Kw Month", "source": {"section": "dc_revenue", "path": "rent_per_kw_month"}, "format": "currency"},
   {"name": "dc_revenue_interconnection_revenue_annual", "label": "Interconnection Revenue Annual", "source": {"section": "dc_revenue", "path": "interconnection_revenue_annual"}, "format": "currency"},
   {"name": "dc_revenue_services_revenue_annual", "label": "Services Revenue Annual", "source": {"section": "dc_revenue", "path": "services_revenue_annual"}, "format": "currency"},

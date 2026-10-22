@@ -1,0 +1,9 @@
+{
+  "why": "RFC 0098: per-point CC-03 on #403's construction-to-permanent record. CC-16 is the other senior-preferring checks (CC-02/05/09, HDG), which keep their single selection; it does not name CC-03.",
+  "agree_codes": [
+    "CC-16"
+  ],
+  "mismatch_codes": [
+    "CC-03"
+  ]
+}

@@ -189,6 +189,7 @@ quick_metrics:
   noi_underwritten: null
   dscr: null
   ltv: null
+  ltc: null                         # loan-to-cost, a fraction (RFC 0107)
   debt_yield: null
   cap_rate: null
   irr_projected: null
@@ -360,7 +361,7 @@ The anchor (e.g., `{#property}`) is the section ID used for internal linking and
 
 ### 2.4 Data Block Annotation Syntax
 
-Every data block is a fenced JSON code block. The opening fence carries a structured annotation:
+Every data block is a fenced JSON code block. The opening fence carries a structured annotation. A structured block opens on a line that begins, at the first column, with exactly three backticks immediately followed by `json`, whitespace and the `uw:section=` annotation; it closes on the next line that is exactly three backticks, optionally followed by spaces or tabs (RFC 0102). Nothing else opens a block: a tilde fence (`~~~json`), an indented fence or a longer backtick run is ordinary Markdown, as is any other code fence. The rule is line-based, so such a line opens a block even inside another Markdown code fence:
 
 ```
 ```json uw:section=<section_id> [key=value ...]
@@ -390,6 +391,21 @@ Every data block is a fenced JSON code block. The opening fence carries a struct
 ```
 
 A Format 3.0 block body is an object containing section payload fields and reserved members. `_meta` is REQUIRED and MUST be the first key; `_role`, `_overrides` and `_notes` are OPTIONAL. Every other member is payload, including a member named `content`. The section id is stated in the fence annotation and `_meta.section`, never as a block member. A top-level `section_id` is refused with `META-01`.
+
+**Block JSON (RFC 0106).** The text between a structured block's fences MUST be
+exactly one JSON value (RFC 8259) that is an object and is I-JSON (RFC 7493 §2):
+
+- member names are unique within each object, compared after escape decoding
+  (`"a"` and `"\u0061"` are the same name), at every depth;
+- no string and no member name contains an unpaired surrogate, escaped or not;
+- every number, read as an IEEE 754 binary64 value, is finite. A number that
+  rounds to a finite value (a long integer, for example) is admitted; its
+  authored lexeme is what §VIII.5.1 precision reads.
+
+An empty body, a syntax error, trailing content, or a `null`, scalar or array
+root is malformed. A Reader MUST refuse a document that contains such a block,
+current or superseded, with `SOURCE_BLOCK_MALFORMED` (Protocol §XI.2). It returns
+no partial result and never repairs, drops or re-reads the block.
 
 The Document Envelope has a separate block structure: `{ annotation, content, prose? }`, where `content` is the complete fenced object. Conversion is mechanical because the annotation carries the section id.
 
@@ -444,14 +460,38 @@ organized into four named sub-objects by concern:
 | `actor` | nonempty string | yes | The principal that initiated the write. Distinct from `source`: `source` is the policy-vocabulary identity of the writer, `actor` is who asked for the write. No trimming, source grammar or attribution inference applies (RFC 0090). |
 | `agent_id` | string\|null | no | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"`. REQUIRED when `source` matches `agent/*`. |
 | `agent_version` | string\|null | no | Version (semver) of the agent or tool that produced this block. |
-| `timestamp` | ISO 8601 | yes | When this block was written. |
+| `timestamp` | T1B UTC-Z string | yes | When this block was written; exact reader domain below (RFC0094). |
 | `notes` | string\|null | no | Free-text notes from the agent or user. |
-| `market_data_ref` | object | cond. | RFC 0022 §4 — REQUIRED when `resolution` is `market_data_accepted`. |
-| `inherited_from` | object | cond. | RFC 0021 §5 — REQUIRED when `resolution` is `inherited_assumption`. |
+| `market_data_ref` | object | cond. | REQUIRED under the canonical or any stated override `market_data_accepted` assertion (RFC0095). |
+| `inherited_from` | object | cond. | REQUIRED under the canonical or any stated override `inherited_assumption` assertion (RFC0095). |
 
 `market_data_ref` and `inherited_from` sit in `provenance`, not `integrity`:
-each names *where a value came from*, and each is coupled to a `resolution`
-value. The conditional-requirement rules are defined against `provenance.resolution`.
+each names *where a value came from*. For each distinct admitted block, the
+corresponding carrier is REQUIRED when its tag occurs in own canonical
+`provenance.resolution` **or any own resolution of an object entry in the stated
+block-level `_overrides` array**, identically for both references. Invalid,
+missing, unmatched, duplicate or shadowed paths do not erase an assertion.
+A later assertion cannot retract an earlier one. Collapse matching assertions to
+one obligation per block/carrier; do not select an effective leaf winner, fetch
+references or infer asymmetry. Rejected canonical metadata/provenance/lifecycle
+parents suppress descendants; independent sibling annotations are still assessed.
+
+A stated carrier is a non-null non-array object even without a matching tag.
+For `inherited_from`, require `document_id:string`, `digest` exactly `sha256:`
+plus64 lowercase ASCII hexadecimal digits, and `distance` a finite integral JSON
+number at least1 (no new maximum; booleans are not numbers). For `market_data_ref`,
+require `document_id:string`, `as_of` in the domain below and the same exact
+digest; optional `rationale` is a string. Unknown children remain admitted;
+`document_id` and `rationale` have no nonempty constraint. Present null is invalid.
+
+`market_data_ref.as_of` consumes the whole string: exactly ASCII `YYYY-MM-DD`,
+four year digits, two month digits, two day digits and literal hyphens. Years
+are0001–9999; month/day follow the proleptic Gregorian calendar (leap if divisible
+by400 or divisible by4 but not100). No trimming, normalization, offsets, time
+components, Unicode digits or year zero. This date-only domain is distinct from
+RFC0094 T1B. A missing required carrier produces one parent META-06; an admitted
+carrier missing as_of produces one child META-06. Carrier shape errors suppress
+its children. Lexical reference validation does not authenticate external data.
 
 #### 2.5c `quality` — how trustworthy or complete the data is
 
@@ -464,6 +504,9 @@ value. The conditional-requirement rules are defined against `provenance.resolut
 | `provisional` | boolean | no | See §3.4. |
 
 Per-field exceptions are stated only in block-level `_overrides` (§2.5f).
+Present `flags` MUST be an array with string elements; present `partial` and
+`provisional` MUST be booleans. A present `quality.field_overrides`, regardless
+of value, is forbidden. These are closed META-05/error predicates (RFC0095).
 
 #### 2.5d `lifecycle` — where this block sits in the supersede chain
 
@@ -517,6 +560,22 @@ alike — `_meta.quality` / `_meta.provenance` apply elsewhere.
 
 `_overrides` is **block content for integrity purposes**: it is inside the
 digest, including every stated override.
+
+**Closed optional admission (RFC0095).** A present `_overrides` MUST be an array;
+each entry MUST be a non-null non-array object with an own string `path`.
+Present confidence is high/medium/low, reason is one of the five values above,
+and note is a string. No path parser, target-existence, nonempty or uniqueness
+constraint is added; unknown members remain admitted. META-05/error applies in
+container/entry/path/confidence/reason/note order. Source/resolution keep their
+SRC-01/02/03 ownership. Sibling `_overrides` is assessed even when `_meta` is
+missing or rejected; invalid containers/entries must not crash later validators.
+Optional provenance agent_id/agent_version/notes are string-or-null. A valid
+canonical agent source requires an own agent_id member (META-06 if absent);
+null/empty strings satisfy presence, wrong types receive META-05 only. No actor
+inference, source-suffix comparison or new identity/version grammar is imposed.
+Complete metadata ordering, parent precedence and physical/current MODEL
+accounting are defined in Protocol §III.6a; META-01–04 and absence warnings remain
+unchanged. DQ-06/info is stage readiness only; it emits no attribution duplicate.
 
 ---
 
@@ -586,9 +645,39 @@ Existing completeness rules and META-01 retain their scope. Protocol §III.6a
 defines exact attribution and ordering; these allocations do not extend to
 other missing or malformed metadata members.
 
+**Present-invalid metadata leaves (RFC0094).** After the complete META-02/03
+pass, emit one `META-04`/error for each present invalid canonical leaf, per block
+in this order: `_meta.quality.confidence` must be exactly `high`, `medium` or
+`low`; `_meta.lifecycle.revision` must be a finite integral number at least1;
+`_meta.provenance.timestamp` must satisfy T1B below. Numeric1.0 and1e0 are
+integer1; booleans are not integers. No new safe-integer maximum, chain rule or
+fraction-length limit is imposed.
+
+T1B is exactly `YYYY-MM-DDTHH:mm:ss[.digits]Z`: ASCII digits, four-digit year0000
+through9999 and a valid proleptic Gregorian date, hour00–23, minute/second00–59,
+uppercase T/Z and optional nonempty ASCII fraction. Gregorian leap years are
+divisible by400 or divisible by4 but not100, including year0000. Consume the
+entire string. Offsets (including zero), lowercase, whitespace, second60 and
+normalization are refused; no clock or leap-second lookup supplies admission.
+This profile applies to the canonical provenance timestamp only.
+
+Use the same all-retained-physical plus current model-reference identity union
+and SOURCE/MODEL/composition authority as above. Complete every shape, actor and
+boolean pass before this complete leaf pass, and keep role/period/source checks
+later. Within each block confidence precedes revision, then timestamp. Attribute
+each finding to its exact canonical field and block section. Rejected old whole
+metadata/provenance/lifecycle shape suppresses descendants; absent/nonobject
+quality suppresses only confidence. Placement/section, actor and boolean errors
+do not suppress independent leaves. An absent leaf gains no META-04; existing
+completeness warning predicates, populations and order remain, including any
+warning that also applies to present null. No default, coercion, repair or
+generic schema fallback is permitted. Optional metadata and conditional
+references remain outside this closed allocation. Protocol §III.6a defines
+transport and resulting validation/receipt-policy accounting.
+
 ### 2.6 Source Identifiers
 
-`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); a resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
+`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); any present value outside this grammar is out of grammar, including a non-string, the empty string and `null` (RFC 0101). A `null` source also keeps its existing `META_FIELD_MISSING_SOURCE` warning; an absent source is not `SRC-01`. A resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
 
 `_meta.provenance.resolution` is OPTIONAL and describes how values were resolved. It MUST be one member of this closed vocabulary; any other value is `SRC-03` (error). `manual` is actor-only; human-typed values use `user_input`.
 
@@ -866,6 +955,8 @@ frontmatter fallback. Other free values are unchanged.
 **Required for pipeline stage:** All stages  
 **Dependencies:** None
 
+**Size contract (RFC 0100).** A stated size, count or area in this section is in the §5.5 size contract table: it MUST be a finite number ≥ 0, and a count MUST also be an integer. A stated value that breaks this is `SIZE-01` (error) at that field.
+
 ```json
 {
   "_meta": {
@@ -960,6 +1051,8 @@ Field notes:
   per bed and also states units. Both figures are legitimate; Protocol §XIII.1
   says which one is the denominator.
 
+**Verified statements (RFC 0099).** `property.occupancy_pct`, when stated, is a statement of the dictionary metric `occupancy`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
+
 ---
 
 ### § 4.2 — Ownership & Acquisition
@@ -1026,6 +1119,10 @@ Field notes:
 **Variants:** `multifamily` (default), `commercial`  
 **Required for pipeline stage:** Screening and beyond  
 **Dependencies:** `property`
+
+**Size contract (RFC 0100).** The roll's counts, areas and rents listed in the §5.5 size contract table MUST be finite numbers ≥ 0 when stated, and counts MUST also be integers (`SIZE-01`, error). Concessions, credits, loss-to-lease and cash-flow lines are signed and outside the table.
+
+**Verified statements (RFC 0099).** `rent_roll.occupancy_pct`, when stated, is a statement of the dictionary metric `occupancy`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
 #### Multifamily Variant
 
@@ -1325,7 +1422,7 @@ stated values with each other, never with the current date or file metadata.
 ```
 
 **Expense recoveries and the CAM true-up (RFC 0058).** `recovery_terms` and
-`recovery_true_up` are OPTIONAL. A tenant stating neither adds no requirement. A cap may be stated alone; method is required as soon as any other member of recovery_terms is stated non-null. A lone `cap` needs neither `over` nor `accumulation`. Rules reading method evaluate only when it is stated. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). Like the RFC 0055 clauses these are
+`recovery_true_up` are OPTIONAL. A tenant stating neither adds no requirement. A cap may be stated alone; method is required as soon as any other member of recovery_terms is stated non-null. A lone `cap` needs neither `over` nor `accumulation`. Rules reading method evaluate only when it is stated. A nullable optional member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). Like the RFC 0055 clauses these are
 **attributes of a lease** plus a reconciliation of a **closed** period — not a
 periodic ledger, which RFC 0054 placed behind a named consumer.
 
@@ -1371,6 +1468,81 @@ and is a modeling decision, not a recorded fact; each tenant states its own shar
   success: the row claims the settled amount reached the cash flows, and nothing
   else checks that it did.
 
+
+**Closed recovery payload admission (`REC-11`, RFC0096).**
+
+On every object tenant in a current
+rent_roll, optional nullable recovery_terms/recovery_true_up retain their
+existing parent admission owners. Allocate only these additional predicates:
+
+| Field | Predicate when present and non-null |
+|---|---|
+| recovery_terms.share_basis | exactly nra, gla or stated |
+| recovery_terms.base_year | integer |
+| recovery_terms.expense_stop_per_sqft | finite >=0 |
+| recovery_terms.fixed_recovery_annual | finite >=0 |
+| recovery_terms.admin_fee_pct | finite [0,1) |
+| recovery_terms.gross_up_pct | finite (0,1] |
+| recovery_terms.cap.over | exactly base_year or prior_year |
+| recovery_terms.cap.accumulation | exactly cumulative, non_cumulative or compounding; REC-02 owns the conditional case M and P defined below, otherwise invalid present non-null values receive REC-11 |
+| recovery_true_up[i].pool_actual | finite >=0 |
+| recovery_true_up[i].tenant_share_uncapped | finite >=0 |
+| recovery_true_up[i].tenant_share_capped | finite >=0 |
+| recovery_true_up[i].estimated_billed | finite >=0 |
+| recovery_true_up[i].true_up_amount | finite, signed |
+
+The three closed objects are recovery_terms (method, pro_rata_share,
+share_basis, base_year, expense_stop_per_sqft, fixed_recovery_annual,
+admin_fee_pct, gross_up_pct, recoverable_pool, cap), cap (pct, over,
+accumulation), and each true-up row (period_start, period_end, pool_actual,
+tenant_share_uncapped, tenant_share_capped, estimated_billed, true_up_amount,
+settlement, cash_flow_ref). Extra own members receive REC-11 at the exact child.
+No new inner closed structure is imposed on cash_flow_ref.
+
+Already owned and excluded: REC-01 share/cap fractions; REC-02 terms/cap
+carrier, closed method, required selected-method companion and applicable
+accumulation; REC-03 pool container/nonempty/member vocabulary; REC-04 true-up
+carrier/row/date/settlement; REC-05 closed-period admission; REC-06/07/08
+financial ties/direction; REC-09 cash-reference carrier/selection. A present
+wrong companion type/bound (for example base_year=bad with base_year_stop) is
+REC-11; absence/null of the required companion remains REC-02. A coarse WIP
+REC-02 parent finding does not establish ownership of an unrelated child.
+REC-11 does not reallocate or tighten REC-04's accepted calendar contract.
+
+#### Exact cap accumulation ownership and null precedence
+
+For an admitted recovery_terms and cap object, let M mean an own method member
+whose value is not null, and P mean an own cap.pct whose value is not null.
+These are presence predicates, not inferred values or successful enum/number
+admission. Validate method and pct independently under their existing owners.
+
+- If M and P, REC-02 owns accumulation: absent, null or outside the three-string
+  vocabulary gives exactly one REC-02 at cap.accumulation. REC-11 MUST NOT
+  duplicate that same condition. An invalid pct also keeps its independent REC-01.
+- Otherwise accumulation is optional/nullable. Absent/null gives no accumulation
+  finding; a present non-null value outside the vocabulary gives REC-11 once.
+- A present method:null remains its own REC-02 type error under the non-nullable
+  enum/S6 qualification. It does not make M true. Nullable companion nulls neither
+  require a method nor satisfy an actually required companion.
+
+| method | cap | Findings at the named method/pct/accumulation fields |
+|---|---|---|
+| absent | {pct:0.05} | none |
+| absent | {pct:0.05,accumulation:null} | none |
+| absent | {pct:0.05,accumulation:bad} | REC-11 accumulation |
+| absent | {pct:null,accumulation:bad} | REC-11 accumulation |
+| net | {pct:0.05} | REC-02 accumulation |
+| net | {pct:0.05,accumulation:null} | REC-02 accumulation |
+| null | {pct:0.05,accumulation:null} | REC-02 method only |
+| net | {pct:null,accumulation:bad} | REC-11 accumulation |
+| net | {pct:false,accumulation:null} | REC-01 pct; REC-02 accumulation |
+
+This explicitly corrects the current implementation's own-null accumulation
+trigger on a method-absent cap; it does not silently preserve that coarse
+predicate as authority. Synchronized Format/Protocol/schema conditions MUST pin
+M/P and the same null/required boundaries. Neither method nor accumulation is
+invented or defaulted. These diagnostic dispositions are accepted; they add no financial treatment.
+These are validation admissions, not financial recomputation.
 
 Nothing here is projected: no future recovery is forecast, no pool is grossed up
 from occupancy, and `gross_up_pct` records the occupancy a pool was grossed up
@@ -1418,7 +1590,7 @@ escalated, no break is taken, no remedy is applied and no balance is amortized.
 
 **Normative schema:** [rent-roll-hospitality.schema.json](schemas/rent-roll-hospitality.schema.json) (the class contract for a hospitality `rent_roll`; other members of the section are unconstrained by it).
 
-Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `rent_roll` is stage-required (§5.1); when stated it MUST contain `available_room_nights` (integer ≥ 0), otherwise `CLS-04`. Optional fields: `occupied_room_nights` (integer ≥ 0), `adr` (number ≥ 0), and `occupancy` (fraction in [0,1]). `rent_roll.keys` is not admitted. `hotel_metrics` (§4.32) is optional and holds only market_revpar. No hotel class-required section is added. RevPAR stays rooms_revenue / available_room_nights. ADR, occupancy and available room nights also feed total_room_revenue; room_revenue_per_key divides its 2dp rounded total by property.keys. The dictionary supplies the unchanged null guards, units and round_to.
+Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `rent_roll` is stage-required (§5.1); when stated it MUST contain `available_room_nights` (integer ≥ 0), otherwise `CLS-04`. Optional fields: `occupied_room_nights` (integer ≥ 0), `adr` (number ≥ 0), and `occupancy` (fraction in [0,1]). `rent_roll.keys` is not admitted. `hotel_metrics` (§4.32) is optional and holds only market_revpar. No hotel class-required section is added. RevPAR stays rooms_revenue / available_room_nights. Total room revenue is the stated booked rooms revenue, `noi_model.income.rooms_revenue`, and room_revenue_per_key divides it by property.keys (RFC 0103). ADR × occupancy × available room nights is never their value; it is the `CC-HOSP-05` cross-check. The dictionary supplies the unchanged null guards, units and round_to.
 
 ### § 4.4 — Operating Statement
 
@@ -1713,6 +1885,8 @@ The schedule documents and verifies the stated tax line; it does not project it.
 No per-period expense rows are generated, and no jurisdiction rules are inferred
 from `jurisdiction`, which is a label.
 
+**Verified statements (RFC 0099).** `noi_model.noi_per_sf` states the dictionary metric `noi_per_sqft`, and `noi_model.revpor_monthly` states `revpor`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
+
 ---
 
 ### § 4.6 — Valuation
@@ -1775,6 +1949,8 @@ from `jurisdiction`, which is a label.
   "value_used_for_ltv_basis": "appraised | underwritten | lesser_of | purchase_price"
 }
 ```
+
+**Verified statements (RFC 0099).** `valuation.going_in_cap_rate` states the dictionary metric `cap_rate`; `valuation.purchase_price_per_unit` states `price_per_unit`; `valuation.price_per_sf` and `valuation.purchase_price_per_sqft` state `price_per_sqft`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
 ---
 
@@ -1860,6 +2036,8 @@ from `jurisdiction`, which is a label.
 }
 ```
 
+**Point in time (RFC 0098).** `point_in_time` is OPTIONAL: `closing` or `stabilization`, non-extensible. It names the only point at which this loan is outstanding: `closing` for a facility retired before stabilization (a construction loan, typically), `stabilization` for a facility first funded after closing (a permanent takeout). A block that omits it states a loan outstanding at **both** points, one loan for the hold, and this covers every single-loan record. A stated value outside the vocabulary MUST be rejected (`DS-01`). The field changes no figure, and `loan_purpose`/`loan_type` keep their meaning. A producer MUST NOT infer it from `loan_purpose: construction`: a construction loan that converts to permanent is one loan at both points and states no `point_in_time`.
+
 **Rate hedges (RFC 0056, RFC 0081 G1).** `rate_hedge` is OPTIONAL. Only `instrument` and `strike_rate` are required. `notional`, `index`, `effective_date`, `expiration_date` and `post_expiration_assumption` form an all-or-none terms group (`HDG-01`). A strike-only hedge may also state premium; no other fact is inferred. `HDG-01` validates stated members; `HDG-02`/`HDG-03` apply to every hedge. `HDG-06`–`HDG-10`, replacement_funding and the hedge clauses of `ESC-04` evaluate only when the terms group is stated. The premium is the single home of the cap cost. A member stated as `null` is not stated: it neither satisfies nor triggers a group requirement (the `ESC-04` absent/null equivalence). `replacement_funding: null` therefore requires no terms group.
 When `debt_structure` is a variant map, the hedge rules read the one block
 §5.3 selects for them, preferring `senior` (RFC 0075). A hedge on any other
@@ -1940,6 +2118,8 @@ See Protocol §V.12 for exact commitment bytes and separate verification states.
 $30M notional is 75% hedged; without it, that deal and a fully hedged one read
 identically.
 
+**Verified statements (RFC 0099).** `debt_structure.sizing_metrics.dscr_underwritten`, `.ltv` and `.debt_yield` state the dictionary metrics `dscr`, `ltv` and `debt_yield`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
+
 ---
 
 ### § 4.8 — Sources & Uses
@@ -1950,6 +2130,8 @@ identically.
 **Written by:** `wizard:step_4`, `agent/L4-05`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `debt_structure`, `valuation`
+
+**The closing statement (RFC 0098).** `sources_uses` states the closing: the sources that fund the deal and the uses they pay for, at closing. Its senior bucket (`sources.loan_amount`, or `sources.debt_proceeds` when that is absent) is a **closing** figure. A facility funded at closing appears in sources however it is retired later.
 
 ```json
 {
@@ -2958,7 +3140,7 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 
 **ID:** `validation`  
 **Header:** `## Flags & Validation {#validation}`  
-**Purpose:** All warnings, errors, policy flags, and cross-section consistency checks. This section is the machine-readable deal health signal.  
+**Purpose:** All warnings, errors, policy flags, and cross-section consistency checks. This section is the machine-readable deal health signal. Its `financial_validity[]` array records the §5.2 deal flags (RFC 0109); `overall_status` means what the validation result's status means, so it excludes them.  
 **Written by:** `system/financialValidityChecker`  
 **Required for pipeline stage:** All stages  
 **Dependencies:** All sections (reads everything)
@@ -2981,7 +3163,7 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
       "superseded": false
     }
   },
-  "overall_status": "clean | warnings_only | errors_present | blocking",
+  "overall_status": "clean | warnings | errors | blocking",
   "financial_validity": [
     {
       "flag_id": "string",
@@ -3002,8 +3184,8 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
     {
       "section": "string",
       "field": "string",
-      "required_for_stage": "screening | underwriting | credit_approval | closing",
-      "severity": "blocking | warning | info",
+      "required_for_stage": "scope | screening | term_sheet | full_underwrite | credit_approval | closing | monitoring",
+      "severity": "error | warning | info",
       "message": "string"
     }
   ],
@@ -3048,6 +3230,18 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
   }
 }
 ```
+
+**Vocabulary (RFC 0108).** The section uses the validation result's words.
+`overall_status` takes the values of §6.2 with the meaning §6.2 gives each, and
+a producer that writes the section SHOULD copy the status of the validation run
+it records; like the result's, it excludes the §5.2 deal flags recorded in
+`financial_validity[]` (RFC 0109). `completeness[].severity` is
+`error | warning | info`: a completeness item that halts the pipeline is
+recorded as a `blocking_flags` entry (§3.3), not as a severity.
+`completeness[].required_for_stage` takes the seven `deal_stage` values of §2.2;
+the retired `underwriting` corresponds to `full_underwrite`. The retired
+spellings `warnings_only`, `errors_present` and the `blocking` severity are not
+refused (no implementation reads the section's contents).
 
 ---
 
@@ -3506,6 +3700,8 @@ The section is a **bounded map keyed by the component's own asset class**, not a
 
 In this example property NOI is `1300000 + 372000 = 1672000`, which `noi_model.net_operating_income` MUST equal, and the allocations sum to `1.0`.
 
+**Verified statements (RFC 0099).** `components.hospitality.gross_operating_profit` and `components.senior_housing.total_labor_expense` state the mixed-use dictionary metrics `hospitality_gross_operating_profit` and `senior_housing_total_labor_expense`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
+
 ---
 
 ### § 4.24 — Capital Stack
@@ -3520,6 +3716,8 @@ In this example property NOI is `1300000 + 372000 = 1672000`, which `noi_model.n
 **Introduced by:** RFC 0026 (capital stack).
 
 The section has two parts: an ordered **`tranches`** array and a **`sizing`** array of stated figures a verifier recomputes. Unlike `components` (§ 4.23), which must be a bounded map because a calc pack reads its fields by static path, `capital_stack` is a **state-and-verify** structure (RFC 0021 § 6): the Tier‑3 calc engine never reads it, so a variable-length array is safe. Stated sizing figures are recomputed by a deterministic verifier (`verifyCapitalStack`, a sibling of `verifyRollup`) over a **fixed, closed function vocabulary** — not by a pack formula and not by any calc-engine primitive. This is what lets the stack carry an arbitrary number of tranches (including two mezzanine notes) without the sandbox iterating.
+
+**Point in time (RFC 0098).** `point_in_time` is REQUIRED: `closing` or `stabilization`, non-extensible. It names the one point in time the stack describes: `closing` for the capitalization funded at closing (including a deal underwritten during its bridge period), `stabilization` for the stabilized (permanent) capitalization. A mixed-use component stack (§ 4.23) carries the same field.
 
 **Tranches.** Each entry is a typed object:
 
@@ -3538,11 +3736,38 @@ The section has two parts: an ordered **`tranches`** array and a **`sizing`** ar
 
 - The `capital_stack` section is OPTIONAL and asset-class independent. A document with no `capital_stack` behaves exactly as before this RFC; every single-loan metric is unchanged.
 - **The stack is one point in time** (*stated by [RFC 0033](../docs/rfcs/0033-capital-stack-point-in-time.md)*). The section states the capitalization contemporaneous with the operating year the sizing verbs read (`noi_model.net_operating_income`) — for a deal underwritten to stabilization, the stabilized (permanent) stack. Facilities that do not coexist at that point MUST NOT be stated as concurrent tranches: a construction loan and the permanent takeout that retires it are one senior position in time sequence, and stating both double-counts the senior capital and misstates every attachment point above it. A producer underwriting a ground-up development SHOULD emit the stabilized stack — the takeout senior plus the layers that survive into stabilization — and MUST NOT add the retired construction facility to it. A `bridge` tranche is unaffected: a deal underwritten *during* its bridge period states the bridge-period capitalization, which is the point in time its NOI describes. Phased stacks (construction → takeout, draw schedules, as-is/as-stabilized dual sizing) are deferred with the multi-period spine (RFC 0026 § D; RFC 0033).
+- A stack MUST state `point_in_time` as `closing` or `stabilization`; a stack that omits it or states any other value MUST be rejected (`CS-04`, RFC 0098). This is the point RFC 0033's one-point rule names, and the point `CC-03` reads its senior at.
 - Each tranche MUST state `id`, `class`, `position`, and `amount`; `id` and `position` MUST be unique within the section. A malformed or duplicate-keyed tranche MUST be rejected (`CS-01`).
 - Every debt tranche and every `preferred_equity` tranche MUST state a `rate`; a `common_equity` tranche MUST NOT (`CS-02`).
-- When a `capital_stack` is present, its `senior_debt` tranche MUST reconcile with `debt_structure` and the `sources_uses` senior bucket — same amount, same rate. This is the generalized `CC-03`: the senior view is stated once and agrees everywhere.
+- When a `capital_stack` is present, its `senior_debt` tranche MUST reconcile with the senior `debt_structure` outstanding at the stack's `point_in_time` — same amount, same rate — and a `closing` stack also with the `sources_uses` senior bucket. This is the generalized `CC-03` (RFC 0098): each senior is stated once per point, and like-dated figures agree.
 - **Sizing is stated and verified, never trusted.** Each `sizing` entry names a closed `fn`, a selector, and a stated `value`; a verifier recomputes `fn` and compares. Disagreement is `CS-SIZING-DISAGREES` and the result is `failed`, never a silent pass. A figure that reads a tranche field the document does not supply is `unverifiable`, never `0`.
 - **The distribution waterfall is out of scope for this version.** A `capital_stack` that attempts to encode distribution tiers, promote, IRR hurdles, or catch-up MUST be refused (`CS-WATERFALL-UNSUPPORTED`) with guidance to `x_partnership_structure`; the multi-period distribution waterfall is deferred (RFC 0026 § E) pending a hold-period cash-flow primitive.
+
+**Sizing declaration admission (`CS-03`, RFC0096).**
+
+Absent sizing is valid. Present sizing MUST be an array (null is invalid);
+empty is valid. Each item MUST be an object closed to id, fn, over, through,
+value, with required own id, fn and value:
+
+- id: nonempty string.
+- fn: exactly coverage, blended_coverage, debt_yield_through, ltc_through,
+  ltv_through or weighted_cost.
+- value: finite number, including signed values and zero.
+- Exactly one own over/through member; over is a nonempty string; through is
+  an integer >=1. For neither/both selectors emit one CS-03 at sizing[i];
+  do not cascade selector-leaf findings. Otherwise report a wrong selected
+  carrier at sizing[i].over or sizing[i].through.
+
+Apply the same declaration check to each admitted builtin component's own
+capital_stack.sizing, under Format4.23's existing component eligibility;
+qualify fields as `<component>.capital_stack.sizing[i]` and `section=components`.
+Do not invent a new component kind or validate a component-like extension.
+CS-01 tranches/identities, CS-02 coupon/class, CS-02b split coupon and
+CS-WATERFALL-UNSUPPORTED retain their owners. This RFC does not resolve a
+selector to a tranche, require a missing financial input, calculate sizing or
+interpret unknown selectors as zero. Format4.24's fn/selector association table
+and its financial unverifiable/refusal rules remain authority; the new code
+covers the structural union above, without adding a new calculation rule.
 
 **Sizing vocabulary (closed, non-extensible).** Each figure selects tranches with `over` (a single tranche `id`), `through` (a `position`, cumulative through that layer), or `*` (the whole stack):
 
@@ -3622,6 +3847,46 @@ Like `capital_stack` (§ 4.24), this is a **state-and-verify** structure (RFC 00
 - **Turnover needs a starting point (`LU-04`, warning).** `model_type: natural_turnover` with no `rent_roll` present in the document is a warning, not a refusal — a compose-time fragment may carry the schedule without the roll.
 - **Stated figures are verified, never trusted.** A verifier MUST recompute, three-state (`verified` / `failed` / `unverifiable`), quantizing both sides at the same quantum (Protocol § VIII.5 posture): each period's `net_cash_flow` = `rent_revenue + concessions + ti_lc_capex` (a period omitting a stated component is `unverifiable` for that row, never `failed`); `stabilized_summary.occupied_sf` against the final period; and `stabilized_summary.occupancy_rate` = final occupied SF ÷ the § XIII size denominator (no resolvable square-foot denominator → `unverifiable`, never a guess).
 - **Endpoint agreement (`CC-15`, warning, § 5.3).** The **base** variant's `stabilized_summary.annualized_noi` MUST agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%, a named exported constant). The tolerance is deliberate, not softness: unlike `CC-01` (one number restated in two places, exact), the trajectory endpoint and the stabilized-year projection are two different models of stabilization, and demanding exact agreement would force producers to hand-tune one to echo the other — destroying the independent-model signal the check exists to read. Non-base variants are exempt: a downside scenario is *supposed* to disagree with stabilized NOI.
+
+**Closed lease-up payload admission (`LU-05`, RFC0096).**
+
+The closed LU-05/error admission predicates are:
+
+| Field/object | Predicate |
+|---|---|
+| model_type | Required; exactly natural_turnover or absorption_curve |
+| stabilization_target | Optional nullable; when non-null, a string in the declared monthly YYYY-MM or quarterly YYYY-Q1…Q4 grammar |
+| assumptions | Optional nullable object, closed to the six members below |
+| stabilized_summary | Optional nullable object, closed to the four members below |
+| schedule row object | Closed to period plus the nine numeric members below; nonobject rows remain the existing LU-01 missing/invalid period boundary |
+| section payload | Closed to model_type, period_granularity, stabilization_target, assumptions, schedule, stabilized_summary and the universal members above |
+
+Optional nullable numeric fields, in fixed order:
+
+| Container | Order and predicate |
+|---|---|
+| schedule[i] | occupied_sf, leased_sf, in_place_rent_psf, market_rent_psf: >=0; vacancy_rate:[0,1]; rent_revenue, concessions, ti_lc_capex, net_cash_flow: finite, signed |
+| assumptions | monthly_turnover_rate:[0,1]; market_rent_psf_at_stabilization:>=0; vacancy_during_lease_up:[0,1]; concession_months_per_lease:>=0; tenant_improvement_psf:>=0; leasing_commission_rate:[0,1] |
+| stabilized_summary | occupied_sf:>=0; occupancy_rate:[0,1]; annualized_egi, annualized_noi: finite, signed |
+
+The description of concessions/capex as negative does not create a new sign
+restriction beyond the admitted numeric schema domain. Model type gates no
+other shape check. No rent roll, trajectory, occupancy denominator or endpoint
+recomputation is required for LU-05. LU-01 keeps cadence and row-period grammar;
+LU-02 contiguity; LU-03 schedule presence/type/nonempty and target inversion;
+LU-04 remains a missing-rent-roll warning; CC-15 remains endpoint tolerance.
+For a present non-null stabilization_target, assess string type independently
+of cadence. Assess its monthly/quarterly grammar only when current own
+period_granularity is exactly monthly/quarterly. An absent or invalid cadence
+keeps its existing LU-01; do not infer a quarterly default or add a target-grammar
+finding without an admitted declared grammar. A non-string target still receives
+LU-05 independently. Synchronized schema assertions MUST use the same cadence
+eligibility and whole-input ASCII grammar, not an unconditional fallback pattern.
+
+The target grammar allocation above is explicit: WIP Python's LU-01 target
+handling and TS's silently ignored invalid target are implementation evidence,
+not authority to broaden LU-01 implicitly. No calendar/date-time profile is
+added to these monthly/quarterly identities.
 
 ```json uw:section=lease_up_schedule variant=base source=manual ts=2026-10-11T00:00:00Z v=1 confidence=high
 {
@@ -3779,6 +4044,47 @@ Like § 4.24 – § 4.26 this is a **state-and-verify** structure (RFC 0021 § 6
 - **A waterfall needs capital (`WF-03`, error).** The referenced series MUST contain at least one negative amount; over pure inflows every tier is vacuous.
 - **Stated figures are verified, never trusted.** `verifyWaterfall` recomputes by Protocol § VIII.10, three-state, both sides quantized at the § VIII.9.4 quanta (`$` → 2, `x` → 4, `%` → 6): outcomes and schedule cells against the recomputed allocation; a stated `xirr` whose recomputation raises (§ VIII.9.3 refusal — e.g. a zero-contribution party) is `failed`; a `moic` over zero contributions is `unverifiable`; an unresolvable or structurally invalid referenced series makes every stated figure `unverifiable`, never a guess.
 
+**Stated-claim admission (`WF-16`, RFC0096).**
+
+Allocate exactly the following:
+
+| Field/object | Predicate |
+|---|---|
+| stated_outcomes | Optional nullable object, closed to lp, gp, promote_total, profit_total, clawback_amount |
+| stated_outcomes.lp / gp | Optional nullable objects, closed to contributions, distributions, moic, xirr |
+| each party's contributions, distributions, xirr | Optional nullable finite signed number |
+| each party's moic | Optional nullable finite number >=0 |
+| promote_total, profit_total, clawback_amount | Optional nullable finite signed number |
+| stated_schedule | Optional nullable array; empty valid |
+| stated_schedule[i] | Object closed to required date and by_tier |
+| stated_schedule[i].date | Required string matching exactly four ASCII digits, hyphen, two ASCII digits, hyphen, two ASCII digits |
+| stated_schedule[i].by_tier | Required array; empty valid |
+| by_tier[j] | Object closed to required tier plus optional nullable lp and gp |
+| by_tier[j].tier | Integer >=0 |
+| by_tier[j].lp / gp | Optional nullable finite signed number |
+| clawback.floor_rate | Optional nullable finite (0,1), when not already owned by selected-basis WF-10 |
+| clawback.floor_multiple | Optional nullable finite >1, when not already owned by selected-basis WF-10 |
+| clawback object | Closed to basis, floor_rate, floor_multiple, net_of_tax_rate, cap |
+
+WF-10 retains clawback carrier/basis and selected-floor presence/domain;
+WF-11 preferred-tier precondition; WF-12 cap; WF-13 tax fraction; WF-15 warning.
+Malformed clawback parents stop WF-16 descendants. WF-01 ladder/equity split,
+WF-02 source reference and WF-03 contribution keep their existing owners.
+No claim is generated from an absent leaf, no distribution date/tier is inferred,
+and no balance is recomputed. The structural tier integer predicate does not
+add a new index-range or duplicate-cell financial interpretation.
+
+The stated_schedule date predicate is lexical admission only. Its synchronized
+schema assertion MUST consume the entire ASCII digit/hyphen string, including
+rejection of trailing line endings. Explicit absolute-end guards preserve this
+contract across validator regex engines; no optional format plugin defines it. Its existing
+schema has a digit pattern, no format:date assertion. This RFC does NOT
+transplant RFC0095's as_of Gregorian/year profile, RFC0094's T1B timestamp or
+REC-04's separate date owner. A date-shaped impossible calendar value's
+financial comparison/refusal remains the existing verifier's responsibility.
+Any broader calendar requirement needs an explicit governed decision and
+cross-runtime vectors; the WIP's stronger local date check cannot supply it.
+
 **Deliberately deferred (RFC 0035, RFC 0036, RFC 0051, RFC 0059).** N-party splits, Excel emit (the § 4.26 literals posture), a `capital_stack` cross-check (waterfall contributions vs. the common-equity tranche), and GP-side hurdles (RFC 0051 lifted `hurdle_mode: "any"` into the normative contract; RFC 0059 took clawback as a terminal true-up, leaving per-period crystallization and interim promote escrows deferred).
 
 ---
@@ -3906,6 +4212,20 @@ These additive sections use the same bare block body and role/variant resolution
 | `billing` | string; {'enum': ['metered_pass_through', 'all_in', 'breakered']} |
 | `power_margin` | ['number', 'null']; {'minimum': 0} |
 | `stated_annual_power_cost` | ['number', 'null']; {'minimum': 0} |
+| `metered_annual_kwh` | ['number', 'null']; {'minimum': 0} |
+| `draw_factor` | ['number', 'null']; {'minimum': 0, 'maximum': 1} |
+
+**Power cost never assumes full draw (RFC 0103).** `annual_facility_kwh` is
+`metered_annual_kwh` when stated. Otherwise it is
+`contracted_it_load_kw × draw_factor × PUE × 8,760`, where PUE is
+`dc_capacity.measured_pue` when stated and `design_pue` otherwise (The Green Grid
+WP #49 reports PUE over a year of measured energy). With neither metered kWh nor
+a draw factor, the energy and the power-cost metrics are `null`; no draw is
+inferred. Under `billing: metered_pass_through`, tenants pay their metered power
+at cost, so the landlord's `annual_power_cost` and `power_cost_per_kw_month` are
+`0`. Otherwise a stated `stated_annual_power_cost` takes precedence over
+energy × `utility_rate_per_kwh`.
+
 ### 4.31 Revenue
 
 **ID:** `dc_revenue`
@@ -3961,6 +4281,13 @@ These additive sections use the same bare block body and role/variant resolution
 | `fb_cogs` | number; {'minimum': 0} |
 | `fb_labor` | number; {'minimum': 0} |
 | `complimentary_breakfast_cost_per_occupied_room` | number; {'minimum': 0} |
+
+**F&B gross margin is USALI gross profit (RFC 0103).** `fb_gross_margin` is
+`(fb_revenue − fb_cogs) ÷ fb_revenue`: revenue less cost of sales, the Gross
+Profit line of the USALI Food and Beverage Department schedule. `fb_labor` is a
+stated fact and is not part of it. Departmental profit, which also deducts
+labor and other departmental expenses, is a different metric.
+
 ### 4.35 Manufactured Housing Sites
 
 **ID:** `mhc_sites`
@@ -3992,11 +4319,12 @@ Rules use Protocol §VIII.1 safe expressions. A false result emits the listed fi
 | `CC-DC-04` | warning | `dc_capacity.contracted_it_load_kw <= dc_capacity.critical_it_load_kw` |
 | `CC-DC-05` | warning | `facility_load_kw <= dc_capacity.utility_feed_kw` |
 | `CC-DC-06` | warning | `dc_capacity.measured_pue == null &#124;&#124; dc_capacity.measured_pue <= dc_capacity.design_pue * 1.15` |
-| `CC-DC-07` | warning | `dc_revenue.market_rent_per_kw_month == null &#124;&#124; rent_index >= 0.85` |
+| `CC-DC-07` | warning | `dc_revenue.market_rent_per_kw_month == null &#124;&#124; mark_to_market <= round(1 / 0.85 - 1, 4)`: in-place rent more than 15% below market. `mark_to_market` is `(market − in-place) ÷ in-place`, positive meaning upside (RFC 0103). |
 | `CC-HOSP-01` | warning | `hotel_metrics.market_revpar == null &#124;&#124; revpar >= hotel_metrics.market_revpar * 0.85` |
 | `CC-HOSP-02` | error | `rent_roll.occupancy == null &#124;&#124; (rent_roll.occupancy >= 0 && rent_roll.occupancy <= 1)` |
 | `CC-HOSP-03` | warning | `hotel_brand.franchise_fee_pct_of_rooms + hotel_brand.marketing_fund_pct + hotel_brand.loyalty_program_pct <= 0.13` |
 | `CC-HOSP-04` | warning | `hotel_metrics.market_revpar` is stated but RevPAR (`noi_model.income.rooms_revenue / rent_roll.available_room_nights`) is uncomputable, so `CC-HOSP-01` is not evaluated. The finding names the missing canonical inputs; RevPAR is never inferred from ADR × occupancy. |
+| `CC-HOSP-05` | warning | `rent_roll.adr`, `rent_roll.occupancy`, `rent_roll.available_room_nights` and `noi_model.income.rooms_revenue` are all stated, rooms revenue is nonzero, and `abs(adr × occupancy × available_room_nights − rooms_revenue) > 0.01 × abs(rooms_revenue)`. The stated revenue stays the value; the identity is only a cross-check, and it holds only on one paid-rooms basis and period (RFC 0103). |
 | `CC-MH-01` | error | `mhc_sites == null &#124;&#124; (mhc_sites.total_sites != null && mhc_sites.total_sites >= 1 && round(mhc_sites.total_sites, 0) == mhc_sites.total_sites)` |
 | `CC-MH-02` | error | `mhc_sites == null &#124;&#124; (mhc_sites.occupied_sites != null && mhc_sites.occupied_sites >= 0 && round(mhc_sites.occupied_sites, 0) == mhc_sites.occupied_sites && mhc_sites.occupied_sites <= mhc_sites.total_sites)` |
 | `CC-MH-03` | error | `mhc_sites == null &#124;&#124; (mhc_sites.park_owned_homes != null && mhc_sites.park_owned_homes >= 0 && round(mhc_sites.park_owned_homes, 0) == mhc_sites.park_owned_homes && mhc_sites.park_owned_homes <= mhc_sites.total_sites)` |
@@ -4066,18 +4394,42 @@ class (`CLS-03`), never substituted for `rent_roll`.
 
 These are the default thresholds. Institution configs may override.
 
-| Metric | Error Below | Warning Below | Warning Above | Error Above |
-|---|---|---|---|---|
-| DSCR | 1.00x | 1.20x | — | — |
-| LTV | — | — | 75% | 85% |
-| Debt Yield | — | 7% | — | — |
-| Going-in Cap Rate | — | 3% | 15% | — |
-| Vacancy Rate | — | 2% | 40% | — |
-| OpEx Ratio | — | 20% | 70% | — |
-| Levered IRR | — | 5% | 40% | — |
-| Equity Multiple | — | 1.0x | 5.0x | — |
-| Annual Rent Growth | — | — | 8% | — |
-| LTC (construction) | — | — | 80% | 90% |
+**Findings are deal flags (RFC 0109).** A band crossed here describes the deal,
+not the record: an honest underwriting of a weak deal is still a valid record.
+A validator MUST report each `FV-NN` finding in the result's `deal_flags` list
+(§6.2) and MUST NOT place it in `issues`, `errors`, `warnings` or `info`. A deal
+flag MUST NOT affect `overall_status`, the exit status, `stage_readiness` or a
+receipt's `validation` counts. A flag carries `code`, `section`, `field`,
+`message`, `value`, `threshold` and `band`, where `band` is `"error"` or
+`"warning"` and names the column crossed; it has no `severity`. The one
+exception is institution escalation (Appendix C.6): for a code the selected
+configuration lists in `validation_overrides.financial_validity_errors`, an
+error-band finding is reported as an ordinary `error` issue instead, and counts
+as one. A warning-band finding of a listed code stays a deal flag.
+
+| Metric | Code (below / above) | Read from | Error Below | Warning Below | Warning Above | Error Above |
+|---|---|---|---|---|---|---|
+| DSCR | `FV-04` | `quick_metrics.dscr`; `debt_structure.sizing_metrics.dscr_underwritten` | 1.00x | 1.20x | — | — |
+| LTV | `FV-09` | `quick_metrics.ltv`; `debt_structure.sizing_metrics.ltv` | — | — | 75% | 85% |
+| Debt Yield | `FV-03` | `quick_metrics.debt_yield`; `debt_structure.sizing_metrics.debt_yield` | — | 7% | — | — |
+| Going-in Cap Rate | `FV-01` / `FV-02` | `quick_metrics.cap_rate`; `valuation.going_in_cap_rate` | — | 3% | 15% | — |
+| Vacancy Rate | `FV-13` / `FV-14` | `noi_model.income.vacancy_credit_loss.rate_applied` | — | 2% | 40% | — |
+| OpEx Ratio | `FV-10` / `FV-11` | `noi_model.expenses.expense_ratio` | — | 20% | 70% | — |
+| Levered IRR | `FV-07` / `FV-08` | `quick_metrics.irr_projected`; `dcf.returns.levered_irr` | — | 5% | 40% | — |
+| Equity Multiple | `FV-05` / `FV-06` | `dcf.returns.equity_multiple` | — | 1.0x | 5.0x | — |
+| Annual Rent Growth | `FV-12` | `dcf.assumptions.revenue_growth_rate` | — | — | 8% | — |
+| LTC | `FV-15` | `quick_metrics.ltc`; `sources_uses.equity_metrics.loan_to_cost` | — | — | 80% | 90% |
+
+**Reading the bands (RFC 0105).** Each finite number stated at a listed home is
+compared with its band. A home that is absent, `null` or not a number draws
+nothing, and no field outside the table is read. A section home is read from the
+one block the §5.3 selection order picks, preferring the `senior` role for
+`debt_structure`. Each home draws at most one finding per side, at the most severe
+band it crosses: a DSCR of 0.95 is `FV-04` in the error band, not also in the
+warning band. The finding's `field` is the home (Protocol §III.6a), and a frontmatter home's
+`section` is `"frontmatter"`: `quick_metrics.dscr` in section `frontmatter`, or
+`sizing_metrics.dscr_underwritten` in section `debt_structure`. A value stated at both homes is checked at both. The
+LTC band is checked for every stated value, whatever the loan purpose (RFC 0107).
 
 ### 5.3 Cross-Section Consistency Checks
 
@@ -4087,7 +4439,7 @@ Tools MUST run these after each section write:
 |---|---|---|
 | `CC-01` | Rent roll GPR must match OS GPR within 3% | `rent_roll`, `operating_statement` |
 | `CC-02` | UW value in `valuation` must match value used for LTV in `debt_structure` | `valuation`, `debt_structure` |
-| `CC-03` | Senior loan reconciles: `sources_uses` senior loan, `debt_structure.loan_amount`, and (when present) the `capital_stack` `senior_debt` tranche must all match | `sources_uses`, `debt_structure`, `capital_stack` |
+| `CC-03` | Senior loan reconciles at each point in time (RFC 0098): the `sources_uses` senior bucket (a closing figure) matches the `loan_amount` of the senior `debt_structure` outstanding at `closing`; when present, the `capital_stack` `senior_debt` tranche matches the senior outstanding at the stack's `point_in_time` in amount (falling back to `sources_uses` only for a `closing` stack) and in rate (the tranche `rate` equals that senior's `interest_rate` exactly, with no tolerance). One senior is selected per point by the §5.3 order applied to the blocks whose `point_in_time` is that point or absent. A leg with no senior or no figure at its point does not apply | `sources_uses`, `debt_structure`, `capital_stack` |
 | `CC-04` | Sources must equal uses in `sources_uses` | `sources_uses` |
 | `CC-05` | NOI used for DSCR must match `noi_model.net_operating_income` within 1% | `noi_model`, `debt_structure` |
 | `CC-06` | DCF Year 1 NOI must be consistent with `noi_model` projections | `noi_model`, `dcf` |
@@ -4109,7 +4461,8 @@ For eligible variants, try (1) explicit check preference (`t12` on CC-01's
 operating statement, `appraisal` on CC-08's due diligence); (2) unique check
 role; (3) unique `primary`; (4) `default`; (5) `base`; (6) sole eligible
 variant. CC-01 prefers `detail` on rent_roll; CC-02/03/05/09 prefer `senior`
-on debt_structure. The rate-hedge and escrow rules `HDG-01`–`HDG-10` and
+on debt_structure; `CC-03` applies that preference to each point's candidates
+separately (RFC 0098). The rate-hedge and escrow rules `HDG-01`–`HDG-10` and
 `ESC-04` (§4.7/§4.8) also prefer `senior` on debt_structure, as one shared
 selection, so a hedge is read from the senior loan (RFC 0075). All of these
 are registered in `CROSS_CHECK_ROLE_PREFERENCE`. A consulted role collision
@@ -4132,7 +4485,10 @@ does not imply that every affected check was wholly skipped.
 section ids to `{ variant?, via }`, where `via` is `preference`, `role`,
 `primary`, `default`, `base`, `sole`, or `single`. Emit it only for selections
 from sections bearing roles, even when a later field check skips comparison.
-Multi-section checks record selections separately. Role-free coverage has no
+Multi-section checks record selections separately. `CC-03` selects one
+`debt_structure` per point (RFC 0098) and records each under
+`debt_structure@closing` / `debt_structure@stabilization`; no other check's keys
+change. Role-free coverage has no
 new fields. Constants, reporting and diagnostics do not alter financial math.
 
 **Coverage (RFC 0037).** A conforming validator MUST report, alongside its
@@ -4232,6 +4588,35 @@ These diagnostics MUST be warnings, never errors.
 Other free subtype values add no diagnostics. These checks do not alter
 calculations, default resolution, packs, financial validation or stage readiness.
 
+### 5.5 Size Contract (RFC 0100)
+
+A stated value of a field in the **size contract table** MUST be a finite JSON
+number ≥ 0; a field marked *count* MUST also be an integer (a JSON number with no
+fractional part; `1.0` and `1e0` are integer 1, as RFC 0094 reads revisions). A
+stated value that breaks this is `SIZE-01` (error) at that field, in every current
+block. `null` and absence keep their existing meaning: absence is not a finding,
+and stage readiness owns missing facts (§5.1). Zero is admissible: a land or
+pre-development deal can state zero units. A path segment `[]` applies to every
+element of that array.
+
+| Field | Kind |
+|---|---|
+| `property.total_units`, `property.keys`, `property.total_beds`, `property.total_sites`, `property.rentable_units`, `property.entitled_units`, `property.parking_spaces` | count |
+| `property.total_nra_sqft`, `property.rentable_square_feet`, `property.gross_leasable_area`, `property.net_rentable_square_feet`, `property.critical_it_load_kw`, `property.gross_acres`, `property.usable_acres`, `property.land_area_sqft`, `property.land_area_acres`, `property.site_acres` | area / capacity |
+| `rent_roll.total_units`, `occupied_units`, `vacant_units`, `notice_units`, `model_units`, `down_units`, `month_to_month_units` | count |
+| `rent_roll.total_sites`, `occupied_sites`, `vacant_sites`, `park_owned_homes` | count |
+| `rent_roll.total_beds`, `unit_mix[].units`, `unit_mix[].beds`, `unit_mix[].occupied_beds` | count |
+| `rent_roll.unit_mix_summary[].count`, `lease_expiration_schedule[].expiring_count` | count |
+| `rent_roll.total_rentable_sf`, `occupied_sf`, `vacant_sf`, `tenants[].leased_sf`, `units[].sqft`, `unit_mix_summary[].avg_sqft` | area |
+| `rent_roll.weighted_avg_rent_psf`, `tenants[].rent_psf`, `units[].monthly_rent`, `units[].market_rent` | rent |
+
+The table is **closed**; each field keeps its existing path and meaning. A
+class's own contract (`mhc_sites`, `dc_capacity`, `BED-*`, `keys`) is unchanged and
+keeps its own code. Where a class rule also reports the same field, both findings
+stand. A dictionary metric that divides by a registered size is `unverifiable`
+when that size is ≤ 0 (`null_semantics: positive_size_denominator`, Protocol
+§II.2), so no Verifier confirms a figure against an impossible size.
+
 ## Part VI — Toolchain Interface
 
 The `uwmd` command-line tool is the reference implementation. Other tools (AI agents, API consumers, rendering pipelines) implement a subset of this interface.
@@ -4278,13 +4663,17 @@ Runs all validation rules (Part V) and returns, with `--json`:
     "monitoring": false
   },
   "issues": [ "...ValidationIssue objects..." ],
+  "deal_flags": [ "...DealFlag objects (§5.2), possibly empty..." ],
   "...": "plus errors, warnings, info, coverage and replacement_funding_verification"
 }
 ```
 
-Readiness is reported for every `deal_stage` (§2.2). The reference CLI
-still accepts a deprecated `--stage <stage>` that repeats one stage's
-readiness; it changes neither the result nor the exit status.
+`deal_flags` is always present. Deal flags are not issues: `overall_status`, the
+partitions and the exit status ignore them (§5.2, RFC 0109). Human-readable output
+lists them under their own heading after the validation issues.
+
+Readiness is reported for every `deal_stage` (§2.2). The CLI takes no
+`--stage` flag; read one stage's readiness from `stage_readiness`.
 
 ### 6.3 `uwmd run <file> --agent <agent_id>`
 
@@ -4485,14 +4874,48 @@ The `.uw.institution.json` sidecar file (same directory as the `.uwx.md` file) c
   "validation_overrides": {
     "dscr_warning_below": 1.25,
     "ltv_warning_above": 0.70,
-    "debt_yield_warning_below": 0.09
+    "debt_yield_warning_below": 0.09,
+    "financial_validity_errors": ["FV-04", "FV-09"]
   },
   "required_sections_overrides": {},
   "render_template_overrides": {}
 }
 ```
 
-When a `.uw.institution.json` is present, its thresholds take precedence over the spec defaults. This allows institutional deployments to enforce their own credit policy without modifying the spec.
+**Selected configuration admission (normative, RFC0097).** Filesystem validation
+selects one explicit path or the lexical document-adjacent `.uw.institution.json`,
+without merging, fallback or relocating discovery through the document's realpath.
+Only genuine automatic absence keeps defaults. A selected unreadable/malformed
+config refuses the validation operation; it is not a document finding. Protocol
+§VI.3 defines source/preflight order, strict UTF-8/JSON/decoded-name/Unicode
+admission, atomic application, fixed typed error/pointer precedence and transport.
+The minimum wire schema is
+[`institution-config.schema.json`](schemas/institution-config.schema.json).
+
+The own optional `validation_overrides` carrier must be an object. Its three
+optional own leaves above must be finite binary64 numbers, with no coercion,
+null/default inference or additional financial range. Admit the entire selected
+config before applying any leaf. The root member `thresholds` is forbidden;
+the pure API's nested threshold map is a separate input. Other members remain
+opaque and are not claimed applied. Unknown overflow number spellings remain
+opaque; malformed Unicode or duplicate decoded names anywhere are refused.
+
+**Escalating deal flags (RFC 0109).** The optional own leaf
+`financial_validity_errors` is an array of registered `FV-NN` codes (§5.2). It
+is admitted after the three numeric leaves; a present value that is not an array
+whose every element is a registered code string is malformed, with pointer
+`validation_overrides.financial_validity_errors`. Empty and repeated entries are
+admitted. For each listed code an error-band finding is reported as an `error`
+issue instead of a deal flag; its warning band, and every unlisted code, stay
+deal flags. Codes are listed one by one: an institution that hard-stops on DSCR
+need not hard-stop on cap rate.
+
+Admitted overrides replace only their named warning limits in fresh affected
+default bands. Existing error limits, unrelated bands and financial comparisons
+remain unchanged. No source/config bytes or caller/process defaults are mutated.
+Pure SOURCE/MODEL validation does no hidden config I/O, and receipt issue/verify
+adds no config loading or subject/count/verdict change. Full rules are in
+Protocol §VI.3 and its operation-error taxonomy (§XI).
 
 ### C.7 — Spec Evolution Protocol
 

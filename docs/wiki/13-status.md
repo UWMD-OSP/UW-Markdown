@@ -8,6 +8,187 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Python certified — Issue #354 (2026-10-20).** The independent Python
+implementation's manifest claims the Reader tier plus `calc-evaluate`; CI runs the
+portable Verifier-tier corpus on three OSes and allows only the unclaimed
+`validate` cases to skip. `validate` passes the corpus but waits on its
+differences from the reference outside it (#425 review). Not the Verifier tier:
+dictionary reproduction, stated-figure verifiers and receipts are not implemented
+in Python (Protocol §II.2/§II.5). Divergences found
+while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
+(spec-ambiguity, non-portable).
+
+**Implemented RFC0108 — the §4.17 validation section's vocabulary (owner acceptance 2026-10-21, D2 and D3).**
+[RFC0108](../rfcs/0108-validation-section-vocabulary.md): a stored `validation`
+section now speaks the validation result's words: `overall_status`
+`clean | warnings | errors | blocking`, `completeness[].severity`
+`error | warning | info` (a halting item goes to `blocking_flags`), and
+`required_for_stage` the seven `deal_stage` values (`underwriting` →
+`full_underwrite`). Spec and corpus only; nothing reads the section. Six corpus
+files rewritten (`warnings_only` → `warnings`, completeness `blocking` →
+`error`) and the `02-full-multifamily` parse baseline follows.
+
+**Implemented RFC0107 — the LTC band's homes and code (owner acceptance 2026-10-21, D2 adds `quick_metrics.ltc`, D3 every stated value).**
+[RFC0107](../rfcs/0107-ltc-financial-validity-home.md): Format §5.2's LTC row
+reads `quick_metrics.ltc` (new, beside `ltv`) and
+`sources_uses.equity_metrics.loan_to_cost`, as `FV-15` (warning above 0.80, error
+above 0.90), for every stated value whatever the loan purpose. It is a deal flag
+like every FV code (RFC 0109) and can be escalated by institutions. Both
+implementations; portable cases `documents/malformed/68`–`69`.
+
+**Implemented RFC0109 — financial-validity findings are deal flags (owner acceptance 2026-10-21, D1 separate list, D3 per-code).**
+[RFC0109](../rfcs/0109-financial-validity-deal-flags.md): `FV-NN` findings leave
+`issues` for a new, always-present `ValidationResult.deal_flags` (`band`, no
+`severity`). They never set `overall_status`, the exit status, stage readiness or
+receipt counts, so a weak deal reads as a valid record. An institution config's
+`validation_overrides.financial_validity_errors` (strictly admitted) raises a
+listed code's error band to an `error` issue; its warning band stays a flag.
+CLI, renders, MCP, web editor and VS Code show flags apart from issues. Python
+matches. New portable cases `institution-config/30`–`33`; case 67 and the FV
+baselines re-derived. Parkview (`02-full-multifamily`) now reads `clean`.
+
+**Owner rulings 2026-10-21 on RFC0104 implemented.** Protocol §III.6a names the
+RFC 0093–0096 pass order as the one normative exception to non-normative issue
+order. Frontmatter-scoped issues carry `section: "frontmatter"` in both
+implementations: the reference adds it to `LOC-01`, `CUR-01`,
+`INVALID-ASSET-CLASS-*`, `MOD-DEPENDENCY-UNDECLARED` and the `quick_metrics` FV
+homes (Python already did).
+
+**Implemented RFC0105 — financial-validity homes (owner acceptance 2026-10-20, as drafted).**
+[RFC0105](../rfcs/0105-financial-validity-homes.md): Format §5.2 now names the
+code and the homes of each band. Both implementations read every
+Format-defined home: `quick_metrics` and the section field for DSCR, LTV, debt
+yield, cap rate and IRR; `noi_model` rate_applied and expense_ratio; `dcf`
+revenue_growth_rate and equity_multiple. Each home draws one issue at its worst
+band. The reference no longer reads `noi_model.vacancy_rate`,
+`dcf.levered_equity_multiple` or `dcf.assumptions.annual_rent_growth`, and no
+longer computes the OpEx ratio from totals. Python adds the frontmatter homes.
+The LTC band still has no home or code. Portable case `documents/malformed/67`
+(#428).
+
+**Implemented RFC0104 — issue field paths (owner acceptance 2026-10-20, as drafted).**
+[RFC0104](../rfcs/0104-issue-field-paths-and-order.md): Protocol §III.6a defines
+`field` as the dotted path from the payload (or frontmatter) root, with array
+elements by index, and makes issue order non-normative outside the metadata
+and payload passes whose order it already fixes. The reference now names
+`_meta` paths for `META_MISSING`, `META_FIELD_MISSING_*`,
+`META_LOW_CONFIDENCE_NO_REVIEW_FLAG`, `SRC-01`–`03` and `DQ-01`–`03`; reports
+`DQ-05` on the gaps item (`gaps`, `items[i].last_checked`); and addresses
+capital-stack tranches by index in `CS-*` and `CC-03`, as Python now does too.
+Portable case `documents/malformed/66` pins the spellings (#424).
+
+**Implemented RFC0106 — refuse malformed block JSON (owner acceptance 2026-10-20, as drafted).**
+[RFC0106](../rfcs/0106-malformed-block-json.md): Format §2.4 requires each
+structured block body to be one I-JSON object, and Protocol §XI.2 registers
+`SOURCE_BLOCK_MALFORMED` (`parse`). The reference no longer drops a block with
+a syntax error, keeps the last of duplicate names, reads `1e999` as `Infinity`,
+admits a lone surrogate, or crashes on a `null` root; Python now codes the
+refusals it already made and adds the surrogate check. Superseded blocks are
+refused too. Portable reader cases `documents/malformed/60`–`65` (#432).
+
+**Implemented RFC0100 — refuse negative sizes (owner acceptance 2026-10-20, D2 = SIZE-01).**
+[RFC0100](../rfcs/0100-nonnegative-sizes.md): Format §5.5's closed size contract
+(`SIZE-01`, error) in TS and Python; per-size dictionary metrics are
+`positive_size_denominator` (a negative size is unverifiable). The corpus measured
+two existing documents that now also draw `SIZE-01` (MHC class fixtures 28/29,
+negative and fractional `total_sites`); both keep their class findings.
+
+**Implemented RFC0103 — four metric dictionary corrections (owner decisions 2026-10-20).**
+[RFC0103](../rfcs/0103-metric-dictionary-corrections.md): USALI F&B gross margin
+(no labor); data-center `mark_to_market` replaces `rent_index`; drawn power
+(metered kWh, else an explicit `draw_factor`, measured PUE before design; zero
+landlord cost under metered pass-through; null with no draw); stated booked
+rooms revenue with the `CC-HOSP-05` 1% cross-check. Authorities are cited in the
+metric dictionary README.
+
+**Implemented RFC0099 — verify every stated home (owner acceptance 2026-10-20).**
+[RFC0099](../rfcs/0099-verify-every-stated-home.md): the metric dictionary carries
+a closed `statement_bindings` registry (output sections plus eleven aliases, the
+former `conformance/metrics/statement-bindings.json`, now deleted). `uwmd verify`
+and `verifyStatedMetrics` check every bound home, so a wrong
+`valuation.going_in_cap_rate`, `price_per_sf` or sizing DSCR fails even when
+`quick_metrics` is right (#416). `conformance/metrics/statement-homes/` proves
+each alias. The Python implementation has no metric verifier yet, so it has
+nothing to adopt.
+
+**Implemented RFC0098 — capital point in time (owner acceptance 2026-10-19).**
+[RFC0098](../rfcs/0098-capital-point-in-time.md): `capital_stack.point_in_time`
+is required (`closing`|`stabilization`, `CS-04`); `debt_structure.point_in_time`
+is optional, absent meaning outstanding at both points (`DS-01` for an unknown
+value); `sources_uses` is the closing statement; `CC-03` selects one senior per
+point and compares like-dated figures (coverage evidence keys
+`debt_structure@<point>`). Corpus and example stacks state `stabilization`.
+The TypeScript reference is complete; the Python validator update rides the
+Issue354 WIP, which is not on main. Other senior-preferring checks keep their
+single selection (RFC0098 Unresolved questions).
+
+**Reader canonical block — Issue #404.** The last non-superseded block of a
+section (or variant key) is canonical, per Format §2.7; the overwritten block
+stays retained under `superseded`.
+
+**Reader variant routing — Issue #395.** Actual block shape distinguishes a
+single block from a map of lawful variant labels. Current peers named
+`annotation`, `content` or a prototype member retain exact selection and history;
+parser routing consults own keys only. Envelope, receipt/document-signature
+subject construction and existing consumers use the same shape distinction.
+Synthetic controls cover both source orders, current/history accounting, parts,
+role-opted sections, malformed blocks, source bytes and real signature tampering.
+This corrects existing Format2.8/RFC0040/0066 behavior; it changes no schema,
+Envelope representation, financial procedure, receipt rule or capability claim.
+Issue365/RFC0089's extension representation remains separate.
+
+**Accepted RFC0097 — owner decision2026-10-19 at4a31eb3c.**
+[RFC0097](../rfcs/0097-institution-config-refusal.md) allocates two typed
+validate-operation errors for unreadable/malformed selected configuration,
+error-only JSON/exit1, atomic admission of the three documented overrides and
+automatic-absence defaults. Exact lexical selection, strict JSON/Unicode profile,
+opaque data and config-relative pointer authority are accepted. The synchronized implementation provides the strict file adapter and CLI
+transport, public canonical wire type, minimum schema and Format/Protocol/pointer
+rules. The independent private Python helper is main-safe; full validation CLI
+wiring remains in Issue354's unadvertised WIP. Twenty-nine paired source/config
+controls supplement the unchanged111 original portable validation cases. Pure API
+threshold maps and receipt identity/count/authentication rules remain separate;
+no new financial threshold/comparison is introduced. Discovery stays parse-only
+until complete validation and applicable native/platform requirements certify.
+
+**Accepted RFC0096 — owner decision2026-10-19 at1926efe4.**
+[RFC0096](../rfcs/0096-bounded-stated-payload-admission.md) allocates closed
+LU-05/REC-11/CS-03/WF-16 validation-only errors. The owner accepted all six
+reviewed dispositions: current canonical/all current variants under assembled
+model authority, no physical-history expansion, LU-05 target grammar only,
+unchanged recovery null qualification, existing lexical-only waterfall dates,
+and untouched financial selector/result rules. Thirty bounded observations
+and four actual CLI partial refusals remain evidence with their stated limits.
+The synchronized implementation adds the four closed TypeScript predicates,
+independent private Python admission helper, Format/Protocol/schema/remediation
+and eight authored native conformance controls. The six document controls pin37
+ordered new-code findings, including lawful and current-peer cases; two recovery
+controls distinguish missing prototype-named references from actual own variants.
+The only prior expectation change is two REC-02 findings becoming one for a
+member without a method, as the accepted presence table requires; its source is
+unchanged. Structural recovery own-member corrections preserve financial
+expressions, selectors and result rules. Python's complete-validation integration
+remains on Issue354; the main helper adds no command, and discovery remains
+parse-only until complete capability certification. Dictionary/financial/receipt
+obligations remain separate.
+
+**Accepted RFC0095 — owner decision2026-10-18 atc551e956.**
+[RFC0095](../rfcs/0095-optional-metadata-and-provenance-references.md) accepts
+META-05/06/error with META-01–04 and absence warnings unchanged. DQ-06/info
+remains stage readiness only; symmetric canonical/any-stated-override reference
+assertions belong to META-06 with exact identity/carrier dedup. The as_of domain
+is whole ASCII Gregorian YYYY-MM-DD, years0001–9999, without normalization.
+The reviewed89-reference inventory is frozen as the activation baseline, with
+its population limits preserved. Synchronized TS/Python source predicates,
+Format/Protocol/registry/schema and six authored native controls implement the
+accepted allocation. Complete META-05 and META-06 passes follow META-04;
+malformed-parent/sibling boundaries and current physical/model authority remain
+explicit. Independent frozen calendar vectors exercise both runtimes. A bounded
+SRC override correction uses only the existing sections/current-variant population.
+The separate complete-validation WIP still requires composition, full admission,
+applicable native/platform evidence and actual certification. Discovery remains
+parse-only; receipt subject/authentication rules and release state are unchanged.
+
 **uwmd.org refresh — owner direction C,2026-10-18.** The approved refresh
 leads with document versions, identifies normative versus guide/starter/project
 pages, keeps the current starter host described accurately and applies the
@@ -37,8 +218,10 @@ The independently verified main0450 inventory has174 candidate leaves in78 files
 in normalized editor AFTER templates. Those are not174 demonstrated live validation
 failures or automatic expectation edits. The owner selected T1B, exact uppercase UTC-Z
 with Gregorian validity and second00–59. Schema-library permissiveness does not define this contract.
-This is docs-only acceptance; synchronized TS/Python implementation and contracts
-follow on Issue354. No runtime activation or capability promotion in this PR. Python discovery stays parse-only while complete-validation gates close.
+Synchronized TS/Python implementation applies the exact accepted closed predicates
+and ordered physical/model pass, with Format/Protocol/registry/schema and authored
+conformance controls. Existing absence warnings and subject/receipt precedence stay
+unchanged. Python discovery stays parse-only while complete-validation gates close.
 
 **Accepted RFC0093 — owner decision2026-10-18 at0306d126.**
 [RFC0093](../rfcs/0093-metadata-shape-diagnostics.md) accepts exactly the three

@@ -256,6 +256,21 @@ ${makeBlock(2, false)}
     expect(parsed.superseded['property']?.[0]?.meta.lifecycle?.revision).toBe(1);
   });
 
+  // Format §2.7: the canonical block is the last non-superseded one, not the
+  // highest revision (#404). The block it overwrites stays retained.
+  it.each([
+    ['a revision tie', 1, 1],
+    ['a later lower revision', 2, 1],
+  ])('makes the last non-superseded block canonical on %s', (_label, first, second) => {
+    const block = (revision: number, units: number) => `
+\`\`\`json uw:section=property
+{ "_meta": { "section": "property", "provenance": { "source": "manual", "actor": "user", "timestamp": "2026-01-01T00:00:00Z" }, "quality": { "confidence": "high", "human_review_required": false }, "lifecycle": { "revision": ${revision}, "superseded": false } }, "total_units": ${units} }
+\`\`\``;
+    const parsed = parseUWFile(`---\nuw_version: "3.0"\ndeal_id: "x"\nasset_class: multifamily\n---\n${block(first, 10)}\n${block(second, 20)}\n`);
+    expect(getSection(parsed, 'property')?.content.total_units).toBe(20);
+    expect(parsed.superseded['property']?.map(b => b.content.total_units)).toEqual([10]);
+  });
+
   it('parses fence annotation key-value pairs', () => {
     const content = `---
 uw_version: "3.0"
@@ -489,12 +504,15 @@ describe('Parkview example file', () => {
     expect(parsed.extensions['x_lender_matrix']).toBeDefined();
   });
 
-  it.skipIf(!exampleContent)('validation produces issues (DSCR warning expected)', () => {
+  it.skipIf(!exampleContent)('validation flags the deal (DSCR warning band expected)', () => {
     const parsed = parseUWFile(exampleContent);
     const result = validateUWFile(parsed);
-    // The Parkview example has a known DSCR warning (1.109x < 1.20x warning threshold).
-    const dscrIssues = result.issues.filter(i => i.code === 'FV-04');
-    expect(dscrIssues.length).toBeGreaterThan(0);
+    // The Parkview example has a known DSCR in the warning band (1.109x < 1.20x),
+    // reported as a deal flag, not an issue (RFC 0109).
+    const dscrFlags = result.deal_flags.filter(f => f.code === 'FV-04');
+    expect(dscrFlags.length).toBeGreaterThan(0);
+    expect(dscrFlags.every(f => f.band === 'warning')).toBe(true);
+    expect(result.issues.filter(i => i.code === 'FV-04')).toEqual([]);
   });
 });
 
@@ -526,6 +544,24 @@ asset_class: multifamily`;
       expect((e as UWMDParseError).code).toBe('UNSUPPORTED_YAML_FEATURE');
       expect((e as UWMDParseError).feature).toMatch(/anchor/i);
     }
+  });
+
+  // #426: an indented line under a scalar or `[]` was dropped, or read as a
+  // top-level key. Appendix D nests only under a `key:` line with no value.
+  it.each([
+    ['an empty flow sequence with list lines', 'flags: []\n  - "dscr_warning_amortizing"'],
+    ['a number with list lines', 'source_documents: 0\n  - "om.pdf"'],
+    ['null with a nested mapping', 'pipeline_state: null\n  stage: screening'],
+    ['a string with nested lines after a blank line and a comment', 'quick_metrics: "x"\n\n  # note\n  dscr: 1.2'],
+  ])('rejects %s with UNSUPPORTED_YAML_FEATURE (#426)', (_label, extra) => {
+    expect(() => parseUWFile(withFrontmatterLine(extra))).toThrow(/UNSUPPORTED_YAML_FEATURE[\s\S]*nested entries/);
+  });
+
+  it('still reads a sequence and a nested mapping under a key with no inline value', () => {
+    const parsed = parseUWFile(withFrontmatterLine('flags:\n  - "a"\nquick_metrics:\n  dscr: 1.25\nblocking_flags: []'));
+    expect(parsed.frontmatter.flags).toEqual(['a']);
+    expect(parsed.frontmatter.quick_metrics).toEqual({ dscr: 1.25 });
+    expect(parsed.frontmatter.blocking_flags).toEqual([]);
   });
 
   it('rejects YAML aliases with UNSUPPORTED_YAML_FEATURE', () => {
@@ -745,5 +781,57 @@ describe('quoted frontmatter mapping keys', () => {
     try { parseUWFile(doc(rows)); } catch (error) {
       expect((error as UWMDParseError).code).toBe('UNSUPPORTED_YAML_FEATURE');
     }
+  });
+});
+
+// ─── Structured block JSON admission (RFC 0106) ──────────────────────────────
+
+describe('structured block JSON admission (RFC 0106)', () => {
+  const META = '"_meta":{"section":"x_probe","provenance":{"source":"manual","actor":"test","timestamp":"2026-10-20T00:00:00Z"},"quality":{"confidence":"high","human_review_required":false},"lifecycle":{"revision":1,"superseded":false}}';
+  const doc = (body: string, fence = '```json uw:section=x_probe') =>
+    `---\nuw_version: "3.0"\ndeal_id: "rfc0106"\n---\n\n${fence}\n${body}\n\`\`\`\n`;
+  const refusal = (content: string, defect: RegExp, strict = false) => {
+    let caught: unknown;
+    try { parseUWFile(content, { strict }); } catch (error) { caught = error; }
+    expect(caught).toBeInstanceOf(UWMDParseError);
+    expect((caught as UWMDParseError).code).toBe('SOURCE_BLOCK_MALFORMED');
+    expect((caught as UWMDParseError).line).toBe(6);
+    expect((caught as Error).message).toMatch(defect);
+  };
+
+  it.each([
+    ['a syntax error', `{${META},"value":}`, /not valid JSON/],
+    ['an empty body', '', /not valid JSON/],
+    ['a trailing value', `{${META}} {}`, /not valid JSON/],
+    ['a null root', 'null', /not a JSON object/],
+    ['a scalar root', '42', /not a JSON object/],
+    ['an array root', `[{${META}}]`, /not a JSON object/],
+    ['a duplicate member', `{${META},"value":1,"value":2}`, /duplicate member name "value"/],
+    ['a duplicate after escape decoding', String.raw`{${META},"value":1,"value":2}`, /duplicate member name "value"/],
+    ['a nested duplicate', `{${META},"inner":{"a":1,"a":2}}`, /duplicate member name "a"/],
+    ['an overflowing number', `{${META},"value":1e999}`, /outside finite binary64 \(1e999\)/],
+    ['an overflowing negative number', `{${META},"value":-1e400}`, /outside finite binary64/],
+    ['an escaped lone high surrogate', String.raw`{${META},"value":"\ud800"}`, /unpaired surrogate/],
+    ['an escaped lone low surrogate', String.raw`{${META},"value":"\udc00"}`, /unpaired surrogate/],
+    ['a lone surrogate in a member name', String.raw`{${META},"\ud801":"kept"}`, /unpaired surrogate/],
+  ])('refuses %s, in non-strict and strict mode', (_label, body, defect) => {
+    refusal(doc(body), defect);
+    refusal(doc(body), defect, true);
+  });
+
+  it('refuses a malformed superseded block too (D4)', () => {
+    refusal(doc(`{${META},"value":1,"value":2}`, '```json uw:section=x_probe superseded=true'), /duplicate member name/);
+  });
+
+  it('admits the same names in sibling objects, paired surrogates and large finite numbers', () => {
+    const body = String.raw`{${META},"a":{"id":1},"b":{"id":2},"rows":[{"id":1},{"id":2}],"emoji":"😀","raw":"😀","big":1.7976931348623157e308,"long":12345678901234567890,"text":"a \"quoted\" : name"}`;
+    const parsed = parseUWFile(doc(body));
+    const block = parsed.extensions['x_probe'] as { content: Record<string, unknown> };
+    expect(block.content['emoji']).toBe('😀');
+    expect(block.content['big']).toBe(1.7976931348623157e308);
+  });
+
+  it('does not read a member-like string value as a member name', () => {
+    expect(() => parseUWFile(doc(`{${META},"note":"value","value":1}`))).not.toThrow();
   });
 });

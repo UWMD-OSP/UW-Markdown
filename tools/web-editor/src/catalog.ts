@@ -183,6 +183,8 @@ export const NUMERIC_SECTION_FIELDS: readonly NumericSectionField[] = [
   { section_id: 'dc_power', path: 'utility_rate_per_kwh', label: 'Utility Rate Per Kwh', kind: 'number', asset_classes: ['data_center'] },
   { section_id: 'dc_power', path: 'power_margin', label: 'Power Margin', kind: 'rate', asset_classes: ['data_center'] },
   { section_id: 'dc_power', path: 'stated_annual_power_cost', label: 'Stated Annual Power Cost', kind: 'currency', asset_classes: ['data_center'] },
+  { section_id: 'dc_power', path: 'metered_annual_kwh', label: 'Metered Annual Kwh', kind: 'number', asset_classes: ['data_center'] },
+  { section_id: 'dc_power', path: 'draw_factor', label: 'Draw Factor', kind: 'rate', asset_classes: ['data_center'] },
   { section_id: 'dc_revenue', path: 'rent_per_kw_month', label: 'Rent Per Kw Month', kind: 'number', asset_classes: ['data_center'] },
   { section_id: 'dc_revenue', path: 'interconnection_revenue_annual', label: 'Interconnection Revenue Annual', kind: 'currency', asset_classes: ['data_center'] },
   { section_id: 'dc_revenue', path: 'services_revenue_annual', label: 'Services Revenue Annual', kind: 'currency', asset_classes: ['data_center'] },

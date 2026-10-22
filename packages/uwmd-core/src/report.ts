@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // HTML report renderer — the "lender-ready package" rendering target.
 // Implements UW_FORMAT_SPEC.md §7.1 (Tier 1 Lender Package) and §7.2
 // (Tier 2 Analyst Credit Memo) as a single self-contained HTML document with
@@ -633,7 +634,7 @@ function sourcesUses(ctx: Ctx): string | null {
     }
   }
   const debt = ctx.parsed.sections.debt_structure;
-  const debts = !debt ? [] : 'annotation' in debt ? [debt as UWBlock] : Object.values(debt as Record<string, UWBlock>);
+  const debts = !debt ? [] : hasBlockShape(debt) ? [debt as UWBlock] : Object.values(debt as Record<string, UWBlock>);
   for (const loan of debts) {
     const premium = deepGet(loan.content, 'rate_hedge.premium');
     if (has(premium)) useRows.push(['Rate Cap Cost', money(premium)]);

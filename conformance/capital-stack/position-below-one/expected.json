@@ -1,0 +1,6 @@
+{
+  "why": "#430: the common tranche states position 0. Format §4.24 makes position an integer with 1 the most senior, and the section schema's minimum is 1, so CS-01 refuses it. The base document (fixture 17, common at position 4) draws no CS code.",
+  "expected_codes": [
+    "CS-01"
+  ]
+}

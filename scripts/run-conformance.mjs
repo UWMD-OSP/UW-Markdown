@@ -29,6 +29,7 @@ import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSy
 import { resolve, join, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 
 import {
   parseUWFile,
@@ -240,6 +241,17 @@ function hasValidateCase(suite, scenario) {
   return index.has(key(suite, `${scenario} [validate]`));
 }
 
+// RFC 0109: Format §5.2 findings are deal flags, beside the issues and never in
+// them. A baseline names their (code, band) pairs only when there are any, so a
+// record without flags keeps its baseline unchanged.
+function dealFlagPairs(validation) {
+  const flags = validation.deal_flags ?? [];
+  if (flags.length === 0) return {};
+  const pairs = [...new Map(flags.map((f) => [`${f.code} ${f.band}`, { code: f.code, band: f.band }])).values()]
+    .sort((a, b) => a.code.localeCompare(b.code) || a.band.localeCompare(b.band));
+  return { deal_flags: pairs };
+}
+
 function recordValidationOnly(suite, scenario, baselinePath, parsed, requiredCodes, provenanceIssues, source) {
   const id = `${scenario} [validate]`;
   let validation;
@@ -262,7 +274,7 @@ function recordValidationOnly(suite, scenario, baselinePath, parsed, requiredCod
   }
   // `overall_status` stays the validator's own verdict; provenance findings
   // (§V.3) are reported beside it rather than folded into it.
-  const actual = `${JSON.stringify({ overall_status: validation.overall_status, issues, ...(provenance ? { provenance } : {}) }, null, 2)}\n`;
+  const actual = `${JSON.stringify({ overall_status: validation.overall_status, issues, ...dealFlagPairs(validation), ...(provenance ? { provenance } : {}) }, null, 2)}\n`;
   if (UPDATE) {
     writeFileSync(baselinePath, actual);
     record(suite, id, 'updated');
@@ -372,7 +384,7 @@ function runDocuments() {
     const issuePairs = [...new Map(
       (validation.issues ?? []).map((i) => [`${i.code} ${i.severity}`, { code: i.code, severity: i.severity }])
     ).values()].sort((a, b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity));
-    const actualValidationStr = `${JSON.stringify({ overall_status: validation.overall_status, issues: issuePairs }, null, 2)}\n`;
+    const actualValidationStr = `${JSON.stringify({ overall_status: validation.overall_status, issues: issuePairs, ...dealFlagPairs(validation) }, null, 2)}\n`;
     const expectedValidationPath = join(expectedDir, `${id}.validation.json`);
 
     if (UPDATE) {
@@ -455,7 +467,7 @@ async function runMalformedDocuments() {
 
     const mustParse = expected.must_parse !== false;
     const expectedCodes = Array.isArray(expected.expected_codes) ? expected.expected_codes : [];
-    if (expectedCodes.length === 0) {
+    if (expectedCodes.length === 0 && !(expected.must_parse === true && (Array.isArray(expected.metadata_issues) || Array.isArray(expected.payload_issues) || Array.isArray(expected.deal_flags)))) {
       record('documents', `malformed/${id}`, 'fail', 'expected.json has no expected_codes');
       continue;
     }
@@ -508,13 +520,58 @@ async function runMalformedDocuments() {
       continue;
     }
 
-    // RFC0093 controls pin exact closed predicates and cross-block pass order.
+    // RFC0093/0094 controls pin exact closed predicates and cross-block pass order.
     // Authored expected rows are reviewed independently, never generated here.
     if (Array.isArray(expected.metadata_issues)) {
-      const actual = validation.issues.filter(i => ['META-01', 'META-02', 'META-03'].includes(i.code))
+      const actual = validation.issues.filter(i => ['META-01', 'META-02', 'META-03', 'META-04', 'META-05', 'META-06'].includes(i.code))
         .map(({ code, severity, section, field }) => ({ code, severity, section, ...(field === undefined ? {} : { field }) }));
       if (!isDeepStrictEqual(actual, expected.metadata_issues)) {
         record('documents', `malformed/${id}`, 'fail', `metadata findings/order differ: ${JSON.stringify(actual)}`);
+        continue;
+      }
+    }
+
+    // RFC0096 authored controls pin only the closed new payload pass.
+    if (Array.isArray(expected.payload_issues)) {
+      const actual = validation.issues.filter(i => ['LU-05', 'REC-11', 'CS-03', 'WF-16'].includes(i.code))
+        .map(({ code, severity, section, field }) => ({ code, severity, section, field }));
+      if (!isDeepStrictEqual(actual, expected.payload_issues)) {
+        record('documents', `malformed/${id}`, 'fail', `payload findings/order differ: ${JSON.stringify(actual)}`);
+        continue;
+      }
+    }
+
+    // RFC 0104: authored rows pin `field` spellings. Each row must appear among
+    // the issues, compared as a multiset; order and extra issues are free.
+    if (Array.isArray(expected.field_issues)) {
+      const remaining = validation.issues.map(({ code, section, field }) => ({ code, section, field }));
+      const missing = expected.field_issues.filter((row) => {
+        const at = remaining.findIndex((i) => isDeepStrictEqual(i, { code: row.code, section: row.section, field: row.field }));
+        if (at < 0) return true;
+        remaining.splice(at, 1);
+        return false;
+      });
+      if (missing.length > 0) {
+        const seen = validation.issues.map(({ code, section, field }) => `${code}@${section}:${field}`).join(', ');
+        record('documents', `malformed/${id}`, 'fail', `field rows not found: ${JSON.stringify(missing)}; saw ${seen}`);
+        continue;
+      }
+    }
+
+    // RFC 0109: authored deal-flag rows, compared as a multiset; no FV code may
+    // remain among the issues.
+    if (Array.isArray(expected.deal_flags)) {
+      const remaining = validation.deal_flags.map(({ code, band, section, field }) => ({ code, band, section, field }));
+      const missing = expected.deal_flags.filter((row) => {
+        const at = remaining.findIndex((f) => isDeepStrictEqual(f, { code: row.code, band: row.band, section: row.section, field: row.field }));
+        if (at < 0) return true;
+        remaining.splice(at, 1);
+        return false;
+      });
+      const leaked = validation.issues.filter((i) => i.code.startsWith('FV-')).map((i) => i.code);
+      if (missing.length > 0 || remaining.length > 0 || leaked.length > 0) {
+        const seen = validation.deal_flags.map(({ code, band, section, field }) => `${code}/${band}@${section}:${field}`).join(', ');
+        record('documents', `malformed/${id}`, 'fail', `deal flags differ: missing ${JSON.stringify(missing)}, extra ${JSON.stringify(remaining)}, FV issues ${leaked.join(', ') || 'none'}; saw ${seen}`);
         continue;
       }
     }
@@ -2549,6 +2606,47 @@ const RECOVERIES_DIR = join(CONFORMANCE_DIR, 'recoveries');
 // RFC 0058 expense recoveries and the CAM true-up. Its own tier rather than a
 // guest in `lease`: that suite pins LSE-* exactly, so a REC-* code emitted
 // there would be filtered out and a broken fixture would read as passing.
+// RFC0097 tests the actual filesystem CLI adapter, not a second validator.
+async function runInstitutionConfig() {
+  const base = join(CONFORMANCE_DIR, 'institution-config');
+  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
+  const admitError = new Ajv2020({ strict: true, validateFormats: false }).compile(
+    JSON.parse(readFileSync(join(ROOT, 'spec/schemas/protocol-error.schema.json'), 'utf8')));
+  for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a,b) => a.name.localeCompare(b.name))) {
+    const dir = join(base, entry.name);
+    try {
+      const descriptor = readCase(dir, 'case.json');
+      const expected = readCase(dir, descriptor.expect.file);
+      const args = descriptor.args.map(arg => {
+        const candidate = resolve(dir, arg);
+        return existsSync(candidate) && statSync(candidate).isFile() ? candidate : arg;
+      });
+      const inputs = [join(dir, 'case.json'), join(dir, descriptor.expect.file),
+        ...args.filter(arg => existsSync(arg) && statSync(arg).isFile()),
+        ...(existsSync(join(dir, '.uw.institution.json')) ? [join(dir, '.uw.institution.json')] : [])];
+      const hashes = inputs.map(path => createHash('sha256').update(readFileSync(path)).digest('hex'));
+      const actualProcess = spawnSync(process.execPath, [join(ROOT, 'packages/uwmd-cli/bin/uwmd.mjs'), 'validate', ...args],
+        { cwd: ROOT, encoding: 'utf8', timeout: 60_000, maxBuffer: 4 * 1024 * 1024 });
+      if (actualProcess.error) throw actualProcess.error;
+      if (actualProcess.status !== descriptor.expect.exit_code) throw new Error(`exit ${actualProcess.status}, expected ${descriptor.expect.exit_code}: ${actualProcess.stderr}`);
+      const actual = JSON.parse(actualProcess.stdout);
+      if (expected.error) {
+        if (!deepEqual(Object.keys(actual), ['error']) || !admitError(actual.error)) throw new Error('Not an error-only ProtocolError response');
+        for (const member of ['category', 'code', 'message', 'pointer']) {
+          if (actual.error[member] !== expected.error[member]) throw new Error(`Error ${member} differs from the accepted contract`);
+        }
+      } else {
+        if (actual.error || !Array.isArray(actual.issues) || !Array.isArray(actual.errors) || !Array.isArray(actual.warnings)) throw new Error('Expected an ordinary validation result');
+        const seen = new Map(actual.issues.map(issue => [JSON.stringify([issue.code, issue.severity]), { code: issue.code, severity: issue.severity }]));
+        const projected = { overall_status: actual.overall_status, issues: [...seen.values()].sort((a,b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity)), ...dealFlagPairs(actual) };
+        if (!deepEqual(projected, expected)) throw new Error(`Validation projection differs: ${JSON.stringify(projected)}`);
+      }
+      if (!hashes.every((hash, i) => hash === createHash('sha256').update(readFileSync(inputs[i])).digest('hex'))) throw new Error('Source/config/case/expectation bytes changed');
+      record('institution-config', entry.name, 'pass', actual.error?.code ?? actual.overall_status);
+    } catch (error) { record('institution-config', entry.name, 'fail', error.message); }
+  }
+}
+
 async function runRecoveries() {
   if (!existsSync(RECOVERIES_DIR)) {
     record('recoveries', '(none)', 'pass', 'no recovery fixtures');
@@ -4258,6 +4356,20 @@ async function runSource() {
     record('source', id, ok ? 'pass' : 'fail',
       ok ? undefined : `edit ${edit.ok ? 'succeeded' : edit.error?.code} != refused ${expected.edit_refused}`);
   }
+  // 06+ — present values outside the §2.6 grammar (RFC 0101): the SRC codes are
+  // exact, and any `also_codes` (a retained completeness warning) must appear.
+  for (const id of readdirSync(SOURCE_DIR).filter((name) => /^(0[6-9]|[1-9]\d)-/.test(name)).sort()) {
+    const expected = expectedOf(id);
+    const { parsed } = load(id);
+    const problems = [];
+    const codes = srcCodes(parsed);
+    if (codes.join(',') !== [...expected.src_codes].sort().join(',')) {
+      problems.push(`SRC codes [${codes.join(', ')}] != [${expected.src_codes.join(', ')}]`);
+    }
+    const emitted = validateUWFile(parsed).issues.map((i) => i.code);
+    for (const code of expected.also_codes ?? []) if (!emitted.includes(code)) problems.push(`missing ${code}`);
+    record('source', id, problems.length ? 'fail' : 'pass', problems.join('; ') || undefined);
+  }
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
@@ -4279,6 +4391,7 @@ const dispatch = {
   'tax': async () => { await runTax(); },
   'lease': async () => { await runLease(); },
   'recoveries': async () => { await runRecoveries(); },
+  'institution-config': async () => { await runInstitutionConfig(); },
   'reserve-draw-bindings': async () => {
     const base = join(CONFORMANCE_DIR, 'reserve-draw-bindings');
     for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a,b) => a.name.localeCompare(b.name))) {

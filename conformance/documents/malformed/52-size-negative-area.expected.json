@@ -1,0 +1,8 @@
+{
+  "description": "A negative area (`property.total_nra_sqft: -45000`) is SIZE-01 (Format §5.5, RFC 0100).",
+  "must_parse": true,
+  "expected_codes": [
+    "SIZE-01"
+  ],
+  "spec_ref": "spec/UW_FORMAT_SPEC.md §5.5 (RFC 0100)"
+}

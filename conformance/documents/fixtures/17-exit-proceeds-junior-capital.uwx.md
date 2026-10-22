@@ -76,6 +76,7 @@ equity's residual is 2,300,000.
       "superseded": false
     }
   },
+  "point_in_time": "stabilization",
   "tranches": [
     {
       "id": "senior",

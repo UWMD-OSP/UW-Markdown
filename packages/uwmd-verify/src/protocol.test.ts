@@ -26,6 +26,7 @@ import {
 import { validateUWDealPackageManifest } from './deal-package.js';
 import { validatePortfolioProfile } from './portfolio.js';
 import { VERIFY_VERSION } from './version.js';
+import { ACTOR_SOURCE_RE as publicActorSourceRE, parseActorSource as publicParseActorSource } from './index.js';
 
 describe('protocol — lookupIncompleteDataPolicy', () => {
   it('returns null when no policy matches', () => {
@@ -264,6 +265,33 @@ describe('parseActorSource (RFC 0031)', () => {
     for (const p of probes) {
       expect(ACTOR_SOURCE_RE.test(p), p).toBe(parseActorSource(p).kind !== 'invalid');
     }
+  });
+
+  it('rejects35 trailing-suffix probes through the unchanged public API and both source schemas', () => {
+    const schema = JSON.parse(readFileSync(new URL('../../../spec/schemas/uwmd-block.schema.json', import.meta.url), 'utf8'));
+    const ajv = new Ajv2020({ strict: false, validateFormats: false });
+    const canonicalSource = ajv.compile(schema.$defs.UWMeta.properties.provenance.properties.source);
+    const overrideSource = ajv.compile(schema.properties._overrides.items.properties.source);
+    const valid = ['manual', 'agent/x', 'document/OM.pdf', 'system/calc_1', 'institution/X-2'];
+    const suffixes = ['\n', '\r', '\r\n', '\u2028', '\u2029', ' ', '\t'];
+    expect(publicActorSourceRE).toBe(ACTOR_SOURCE_RE);
+    expect(publicParseActorSource).toBe(parseActorSource);
+    let rejected = 0;
+    for (const source of valid) {
+      expect(publicParseActorSource(source).kind, source).not.toBe('invalid');
+      expect(publicActorSourceRE.test(source), source).toBe(true);
+      expect(canonicalSource(source), source).toBe(true);
+      expect(overrideSource(source), source).toBe(true);
+      for (const suffix of suffixes) {
+        const malformed = source + suffix;
+        expect(publicParseActorSource(malformed), JSON.stringify(malformed)).toEqual({ kind: 'invalid' });
+        expect(publicActorSourceRE.test(malformed), JSON.stringify(malformed)).toBe(false);
+        expect(canonicalSource(malformed), JSON.stringify(malformed)).toBe(false);
+        expect(overrideSource(malformed), JSON.stringify(malformed)).toBe(false);
+        rejected++;
+      }
+    }
+    expect(rejected).toBe(35);
   });
 
   it('registers every namespace exactly once', () => {

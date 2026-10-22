@@ -1,0 +1,20 @@
+{
+  "id": "verifier__institution-config__12-forbidden-root-priority__validate",
+  "target": "verifier",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "../../documents/fixtures/02-full-multifamily.uwx.md",
+    "--institution",
+    "policy.input",
+    "--json"
+  ],
+  "fixture_dir": "conformance/institution-config/12-forbidden-root-priority",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/institution-config/12-forbidden-root-priority/expected.json",
+    "exit_code": 1
+  }
+}

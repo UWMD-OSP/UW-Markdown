@@ -1,0 +1,83 @@
+{
+  "description": "Authored accepted RFC0095 controls; exact manually derived closed metadata findings/order.",
+  "must_parse": true,
+  "expected_codes": [
+    "META-05",
+    "META-06"
+  ],
+  "metadata_issues": [
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.notes"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.notes"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.notes"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.notes"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.notes"
+    },
+    {
+      "code": "META-05",
+      "severity": "error",
+      "section": "pipeline_log",
+      "field": "_meta.provenance.notes"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.inherited_from"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.inherited_from"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.inherited_from"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.inherited_from"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "x_retained",
+      "field": "_meta.provenance.inherited_from"
+    },
+    {
+      "code": "META-06",
+      "severity": "error",
+      "section": "pipeline_log",
+      "field": "_meta.provenance.inherited_from"
+    }
+  ],
+  "spec_ref": "spec/UW_PROTOCOL.md §III.6a; RFC0095"
+}

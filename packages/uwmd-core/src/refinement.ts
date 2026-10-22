@@ -1,3 +1,4 @@
+import { hasBlockShape } from './block-kind.js';
 // Refinement engine — Protocol §X.4
 //
 // Ranks gaps by value-of-information (VOI). The intuition:
@@ -327,7 +328,7 @@ export function rankGaps(parsed: ParsedUWFile, opts: RankGapsOptions = {}): Rank
   };
   for (const [section, ids] of readers) {
     const explicit = sectionVariants !== undefined && Object.hasOwn(sectionVariants, section);
-    if ('annotation' in parsed.sections[section]! && !explicit) continue; // nothing to choose
+    if (hasBlockShape(parsed.sections[section]) && !explicit) continue; // nothing to choose
     selectionNeeded = true;
     const declared = [...new Set(ids.map((id) => declRoles.get(id)?.[section]).filter((r) => r !== undefined))].sort();
     if (declared.length > 1) {

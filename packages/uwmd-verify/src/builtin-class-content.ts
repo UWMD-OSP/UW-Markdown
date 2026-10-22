@@ -120,7 +120,24 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
                 "null"
               ],
               "minimum": 0,
-              "description": "The operator's stated annual utility bill, when known. Takes precedence over the computed figure."
+              "description": "The operator's stated annual utility bill, when known. Takes precedence over the computed figure, except under metered_pass_through, where the landlord's power cost is zero."
+            },
+            "metered_annual_kwh": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Metered or measured annual facility consumption, in kWh. When stated it is the energy the power-cost metrics use; never inferred."
+            },
+            "draw_factor": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Average share of contracted IT load the tenants draw, a FRACTION. Required to compute power cost without metered kWh; the metrics never assume full draw."
             }
           }
         }
@@ -213,7 +230,7 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
         "code": "CC-DC-07",
         "severity": "warning",
         "message": "Contracted rent more than 15% below market — verify the comp set or the lease vintage.",
-        "rule": "dc_revenue.market_rent_per_kw_month == null || rent_index >= 0.85"
+        "rule": "dc_revenue.market_rent_per_kw_month == null || mark_to_market <= round(1 / 0.85 - 1, 4)"
       }
     ],
     "view_models": [
@@ -311,6 +328,18 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
             "label": "Stated Annual Power Cost",
             "kind": "currency",
             "decimals": 0
+          },
+          {
+            "path": "metered_annual_kwh",
+            "label": "Metered Annual kWh",
+            "kind": "count",
+            "decimals": 0
+          },
+          {
+            "path": "draw_factor",
+            "label": "Draw Factor",
+            "kind": "percent",
+            "decimals": 2
           }
         ]
       },
@@ -360,12 +389,12 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
       "utilization",
       "commissioned_share",
       "facility_load_kw",
-      "annual_facility_kwh_at_contract",
+      "annual_facility_kwh",
       "annual_power_cost",
       "power_cost_per_kw_month",
       "annual_rent_revenue",
       "blended_revenue_per_kw_month",
-      "rent_index",
+      "mark_to_market",
       "price_per_commissioned_kw",
       "noi_per_commissioned_kw"
     ]
@@ -472,6 +501,12 @@ export const BUILTIN_CLASS_CONTENT: Readonly<Record<string, { calculation_ids: s
         "severity": "warning",
         "message": "Total franchise fee burden exceeds 13% of room revenue — confirm flag economics.",
         "rule": "hotel_brand.franchise_fee_pct_of_rooms + hotel_brand.marketing_fund_pct + hotel_brand.loyalty_program_pct <= 0.13"
+      },
+      {
+        "code": "CC-HOSP-05",
+        "severity": "warning",
+        "message": "Stated rooms revenue differs from ADR × occupancy × available room nights by more than 1% — check the period and the paid-rooms basis.",
+        "rule": "rent_roll.adr == null || rent_roll.occupancy == null || rent_roll.available_room_nights == null || noi_model.income.rooms_revenue == null || noi_model.income.rooms_revenue == 0 || abs(rent_roll.adr * rent_roll.occupancy * rent_roll.available_room_nights - noi_model.income.rooms_revenue) <= 0.01 * abs(noi_model.income.rooms_revenue)"
       }
     ],
     "view_models": [

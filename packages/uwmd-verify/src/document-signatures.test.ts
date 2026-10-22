@@ -40,6 +40,8 @@ describe('document source accounting', () => {
   });
   it('allows explicit statement variants while refusing duplicate active keys', async () => {
     await expect(resolveDocumentSigningSubject(FRONT + section('operating_statement', ' variant=t12') + section('operating_statement', ' variant=budget'))).resolves.toBeDefined();
+    // `annotation` is a lawful variant key, not the single-block discriminator.
+    await expect(resolveDocumentSigningSubject(FRONT + section('operating_statement', ' variant=annotation') + section('operating_statement', ' variant=t12'))).resolves.toBeDefined();
     await expect(resolveDocumentSigningSubject(FRONT + section('operating_statement', ' variant=t12') + section('operating_statement', ' variant=t12 v=9'))).rejects.toThrow(/Duplicate active/);
     await expect(resolveDocumentSigningSubject(SOURCE + section('property', ' variant=other'))).rejects.toThrow(/Duplicate active/);
   });
@@ -56,7 +58,6 @@ describe('document source accounting', () => {
     SOURCE.replace('section=property', 'section=property constructor=x'),
     SOURCE.replace('section=property', 'section=__proto__').replace('"section":"property"', '"section":"__proto__"'),
     FRONT + section('operating_statement', ' variant=constructor'),
-    FRONT + section('operating_statement', ' variant=annotation') + section('operating_statement', ' variant=t12'),
     SOURCE.replace('"value":100', '"value":100,"value":200'),
     SOURCE.replace('"value":100', '"nested":{"a":1,"\\u0061":2}'),
     SOURCE.replace('"value":100', '"nested":[{"a":1,"a":2}]'),

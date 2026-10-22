@@ -109,26 +109,38 @@ and how it gets accepted.
 | [0079](./0079-metric-precision.md) | Verify stated metrics at their stated precision; one cash-on-cash definition | implemented | protocol, core, conformance, tooling |
 | [0080](./0080-official-classes-are-builtins.md) | Every official asset class is a builtin | implemented | format, protocol, core, conformance, tooling |
 | [0081](./0081-one-format-one-protocol.md) | One format, one protocol: remove backward compatibility (pre-release cleanup) | accepted | format, protocol, core, conformance, tooling |
-| [0082](./0082-borrower-underwriting-profile.md) | A borrower-underwriting document profile for a loan to an operating company | draft | format, protocol, core, conformance, tooling |
 | [0081](./0081-one-format-one-protocol.md) | One format, one protocol: remove backward compatibility (pre-release cleanup) | implemented | format, protocol, core, conformance, tooling |
+| [0082](./0082-borrower-underwriting-profile.md) | A borrower-underwriting document profile for a loan to an operating company | draft | format, protocol, core, conformance, tooling |
 | [0083](./0083-verify-package-split.md) | Split `@uwmd/verify`, the reference implementation of the standard, out of `@uwmd/core` | implemented | core, conformance, tooling |
 | [0084](./0084-document-signature-binding.md) | Bind a document snapshot without discarding signed block attribution | implemented | protocol, core, conformance, tooling |
 | [0086](./0086-data-center-purchase-price-authority.md) | Resolve data-center purchase-price authority and summary binding | draft | format, protocol, core, conformance, tooling |
 | [0087](./0087-hospitality-revenue-reconciliation.md) | Define the basis for hospitality revenue reconciliation | draft | format, protocol, core, conformance, tooling |
 | [0088](./0088-pin-financial-numerical-procedures.md) | Resolve financial power and transcendental reproducibility | accepted | protocol, core, conformance |
-
 | [0090](./0090-provenance-actor-admission.md) | Admit required provenance actors with an explicit diagnostic | accepted | format, protocol, core, conformance, tooling |
+| [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
+| [0093](./0093-metadata-shape-diagnostics.md) | Close three metadata-shape diagnostic gaps | accepted | format, protocol, core, conformance, tooling |
+| [0094](./0094-present-invalid-metadata-leaves.md) | Allocate three present-invalid metadata leaf diagnostics | accepted | format, protocol, core, conformance, tooling |
+| [0095](./0095-optional-metadata-and-provenance-references.md) | Allocate bounded optional metadata and provenance-reference diagnostics | accepted | format, protocol, core, conformance, tooling |
+| [0096](./0096-bounded-stated-payload-admission.md) | Allocate bounded stated-payload admission diagnostics | accepted | format, protocol, core, conformance, tooling |
+| [0097](./0097-institution-config-refusal.md) | Refuse invalid selected institution configuration before validation | accepted | format, protocol, core, conformance, tooling |
+| [0098](./0098-capital-point-in-time.md) | Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point | accepted | format, protocol, core, conformance, tooling |
+| [0099](./0099-verify-every-stated-home.md) | Verify each dictionary metric wherever the document states it | accepted | format, protocol, core, conformance, tooling |
+| [0100](./0100-nonnegative-sizes.md) | Refuse negative sizes, counts, areas and rents | accepted | format, protocol, core, conformance, tooling |
+| [0101](./0101-present-invalid-source.md) | Refuse every present source value outside the actor grammar | accepted | format, core, conformance |
+| [0102](./0102-backtick-fences-only.md) | A structured block opens only on a three-backtick json line | accepted | format, conformance, tooling |
+| [0103](./0103-metric-dictionary-corrections.md) | Four metric dictionary corrections — USALI F&B gross margin, data-center mark-to-market and drawn power, booked rooms revenue | accepted | format, core, conformance, tooling |
+| [0104](./0104-issue-field-paths-and-order.md) | Validation issue field paths are dotted paths from the payload root; issue order is not normative | accepted | protocol, core, conformance |
+| [0105](./0105-financial-validity-homes.md) | Name the field each financial-validity threshold reads, and check each stated home | accepted | format, core, conformance |
+| [0106](./0106-malformed-block-json.md) | Refuse a structured block whose JSON is not an I-JSON object | accepted | format, protocol, core, conformance |
+| [0107](./0107-ltc-financial-validity-home.md) | Give the LTC band a Format-defined home and an FV code | accepted | format, protocol, core, conformance |
+| [0108](./0108-validation-section-vocabulary.md) | Align the §4.17 validation section's vocabulary with the validation result | accepted | format, conformance |
+| [0109](./0109-financial-validity-deal-flags.md) | Report financial-validity findings as deal flags, not record errors | accepted | format, protocol, core, conformance, tooling |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
 its RFC was written, and records that process failure rather than hiding it. See
 its [Process failure](./0017-uw-lite-source-representation.md#process-failure)
 section.
-
-| [0091](./0091-required-metadata-booleans.md) | Allocate the two required metadata boolean diagnostics | accepted | format, protocol, core, conformance, tooling |
-
-| [0093](./0093-metadata-shape-diagnostics.md) | Close three metadata-shape diagnostic gaps | accepted | format, protocol, core, conformance, tooling |
-| [0094](./0094-present-invalid-metadata-leaves.md) | Allocate three present-invalid metadata leaf diagnostics | accepted | format, protocol, core, conformance, tooling |
 
 ## Status values
 

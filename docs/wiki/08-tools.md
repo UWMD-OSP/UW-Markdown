@@ -60,19 +60,10 @@ refuses under its typed JSON contract instead. A flag a usage string promises
 must be in the table (`cli-args.test.ts` holds the two together), so add a new
 flag to both.
 
-Three flags 4.2.0 offered are in the table only as deprecated spellings
-(`DEPRECATED_FLAGS`). Each prints a stderr warning, and none appears in a
-usage string:
-
-- **`validate --stage <deal_stage>`** reports that one stage's readiness. It
-  never changes the result or exit status. A value outside the seven stages
-  exits 1.
-- **`export --compact`** means `--no-superseded`.
-- **`compose --parts <dir>`** means `--out-dir <dir>`. Contradictory values
-  exit 1.
-
-The list is pinned by `cli-args.test.ts`, so it cannot grow into a way
-around the refusal.
+The three 4.2.0 aliases (`validate --stage`, `export --compact`,
+`compose --parts`) were removed under the prelaunch no-compatibility rule
+(#412). They are unknown flags now and exit 1 like any other: use
+`stage_readiness` in the report, `--no-superseded` and `--out-dir`.
 
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
 CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
@@ -268,8 +259,10 @@ block** whose SUM of the component NOI named ranges is the property NOI (the §3
 foot, live in the sheet). Metrics are emitted **per deal** — a metric is written
 only when it evaluates non-null for that document, so a component absent from the
 file, or an intensive lacking its user-supplied `allocation_pct`, simply
-contributes no row (RFC 0019 §4). Reverse import (`fromWorkbook`) refuses
-`mixed_use` with `WORKBOOK-IMPORT-UNSUPPORTED-SHAPE`; export is fully supported.
+contributes no row (RFC 0019 §4). Reverse import (`fromWorkbook`) reads the
+property inputs and each component's named inputs (EGI, operating expenses,
+intermediate, allocation, denominator) back; NOIs are formula-derived and never
+imported, and an altered footing is `WORKBOOK-IMPORT-SUBTOTAL` (#411).
 
 Layout:
 - **Underwriting** sheet — header (deal name/address) + an inputs block (each
