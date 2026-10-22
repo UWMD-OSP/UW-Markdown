@@ -39,7 +39,7 @@ This RFC handles the class sections through the stage overlay, defines the
 scope minimum in Format fields, makes "present" mean "states something", and
 makes readiness cumulative.
 
-## Proposed change
+## Change
 
 1. **Class sections are stage requirements (#485).** The §5.1 class overlay
    (RFC 0029) gains two rows: `data_center` requires `dc_capacity`, and
@@ -63,8 +63,9 @@ makes readiness cumulative.
    ready, so the scope field rules hold at every later stage. `stage_readiness`
    is therefore monotonic: once one stage is false, every later stage is false.
 5. **`uwmd init` (starter product).** Init copies `--address` and the asset
-   class into `property`, so a record it writes meets the scope minimum when
-   given those flags. It writes no other value. (Init never fabricates figures.)
+   class into `property`, satisfying those portions of scope readiness when
+   given those flags. Size or price must still be supplied by the author.
+   It writes no other value. (Init never fabricates figures.)
 
 ## Validation impact
 

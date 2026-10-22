@@ -622,7 +622,7 @@ export function lookupIncompleteDataPolicy(
  * must resolve" (also `scope`-only today).
  *
  * Paths are dot-notated relative to a section's content root, prefixed with
- * the section ID (e.g. `property.asking_price`, `property.units`).
+ * the section ID (e.g. `property.total_units`, `valuation.purchase_price`).
  */
 export interface StageRequirement {
   required_sections: string[];
@@ -737,7 +737,7 @@ function buildStageContract(): readonly StageContractEntry[] {
     for (const group of req.required_one_of ?? []) {
       const first = group[0] ?? '';
       const dot = first.indexOf('.');
-      const section = dot === -1 ? first : first.slice(0, dot);
+      const section = stage === 'scope' ? 'property' : dot === -1 ? first : first.slice(0, dot);
       rows.push({ stage, section, one_of: [...group], required: true });
     }
 

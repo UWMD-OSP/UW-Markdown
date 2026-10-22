@@ -1074,6 +1074,13 @@ rules; no subject, digest, signature, result-state or verdict-precedence change.
 
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/03/05, PROTO-MOD-055/056/057/058/059/060, META-V2-IN-V1 and META-V1-IN-V2. A retired code stays reserved and is never reused; PROTO-MOD-055 to PROTO-MOD-060 validated the module `agent_layers` declarations that RFC 0112 removed. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
+RFC 0116 defines readiness by Format §5.1: a current block must state a non-null
+leaf outside `_meta`, `_notes` and `_role`. Readiness is cumulative across stages.
+Scope requires `property.address`, `property.asset_class`, and the class's primary
+size or `valuation.purchase_price`; mixed-use accepts a slot-specific component
+size. Missing `dc_capacity` or `mhc_sites` is a `DQ-06` info gap from screening,
+with `CLS-03` retired. This is document readiness, not an underwriting verdict.
+
 RFC 0072 extends the existing data-quality sequence with `DQ-07`
 (scenario structure/vocabulary), `DQ-08` (BTR subtype carrier disagreement)
 and `DQ-09` (BTR class scope), all **warning**.

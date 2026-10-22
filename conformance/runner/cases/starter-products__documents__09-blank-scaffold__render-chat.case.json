@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__09-blank-scaffold__render-chat",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "09-blank-scaffold.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/09-blank-scaffold.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

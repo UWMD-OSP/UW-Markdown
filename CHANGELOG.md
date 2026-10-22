@@ -29,6 +29,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0116: stage readiness requires stated non-null content
+  and is cumulative; scope uses the class primary size or valuation price.
+  Missing data-center capacity and manufactured-housing sites are screening
+  readiness gaps (`DQ-06`), with `CLS-03` retired. Init copies the supplied
+  address and class into property. TypeScript and Python share the contract;
+  portable document cases now pin all seven readiness values.
+
 - Implement accepted RFC 0114: an optional `property.area_measurement` records
   the standard behind a record's areas (`standard`: `boma`, `ipms`, `rebny`,
   `rics` or `other`; free-text `edition`; optional `note`; no other member). A

@@ -1,5 +1,14 @@
 {
   "overall_status": "clean",
+  "stage_readiness": {
+    "scope": false,
+    "screening": false,
+    "term_sheet": false,
+    "full_underwrite": false,
+    "credit_approval": false,
+    "closing": false,
+    "monitoring": false
+  },
   "issues": [
     {
       "code": "DQ-06",

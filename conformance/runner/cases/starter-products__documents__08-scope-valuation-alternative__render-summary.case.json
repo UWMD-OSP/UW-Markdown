@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__08-scope-valuation-alternative__render-summary",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "08-scope-valuation-alternative.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/08-scope-valuation-alternative.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

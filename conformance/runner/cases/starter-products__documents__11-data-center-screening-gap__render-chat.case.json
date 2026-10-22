@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__11-data-center-screening-gap__render-chat",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-chat"
+  ],
+  "command": "render",
+  "args": [
+    "11-data-center-screening-gap.uwx.md",
+    "--format",
+    "chat"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/11-data-center-screening-gap.rendered-chat.txt",
+    "baseline_field": "content"
+  }
+}

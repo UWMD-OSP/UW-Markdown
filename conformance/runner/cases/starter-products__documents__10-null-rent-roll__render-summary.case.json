@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__10-null-rent-roll__render-summary",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "10-null-rent-roll.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/10-null-rent-roll.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}
