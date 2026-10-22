@@ -1,7 +1,7 @@
 ---
 rfc: 0113
 title: Define hospitality occupied room nights as paid room nights sold
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-21
 affects:
@@ -11,7 +11,8 @@ affects:
 
 # RFC 0113: Define hospitality occupied room nights as paid room nights sold
 
-> **Draft for owner acceptance.** Origin: issue #343 finding M07, left open by the
+> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0113 (#476) and RFC 0114 (#477) accepted as drafted.").
+> Origin: issue #343 finding M07, left open by the
 > metric variants table in `spec/metrics/README.md` ("whether to define
 > `occupied_room_nights` as paid rooms sold"). It fixes the meaning of a stated
 > field that `adr` and `occupancy` read, so it is normative. No formula changes.
@@ -82,7 +83,7 @@ reader's schema copy if it has one, and the fixture.
   `adr` is compared against in the variants table. A separate STR-basis field is
   not proposed.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-21)
 
 | # | Question | Proposal | Why / alternative |
 |---|---|---|---|
