@@ -1,0 +1,7 @@
+{
+  "description": "CC-17 skipped as section_absent (CC-10's coverage). No fallback (RFC 0086 D5): price_per_kw and price_per_commissioned_kw are null, never the frontmatter copy.",
+  "expected_calcs": {
+    "price_per_kw": null,
+    "price_per_commissioned_kw": null
+  }
+}

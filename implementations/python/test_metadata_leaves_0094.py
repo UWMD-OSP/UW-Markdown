@@ -49,7 +49,7 @@ class MetadataLeaf0094Tests(unittest.TestCase):
                          [FIELDS[2], FIELDS[0], FIELDS[1]])
         self.assertEqual(response["errors"], [i for i in response["issues"] if i["severity"] == "error"])
         self.assertEqual(len(response["stage_readiness"]), 7)
-        self.assertEqual(len(response["coverage"]), 15)
+        self.assertEqual(len(response["coverage"]), 16)
         self.assertTrue(all("category" not in issue for issue in response["issues"]))
 
     def test_absent_members_keep_three_warnings_and_whole_missing_meta_is_unchanged(self):

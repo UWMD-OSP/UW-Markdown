@@ -1233,17 +1233,24 @@ async function runReceiptIssue() {
   }
 }
 
-async function runReceiptVerify() {
+// RFC 0115 D4: each verify scenario runs twice. With the builtin packs it is a
+// starter check (packs are starter products, RFC 0078). Without a pack it is
+// the Verifier check, `verify/<id> [pack-less]`: a pack-named result is RCP-05
+// unverifiable. Its expectation is expected-verdict-pack-less.json where the
+// pack changes the outcome, otherwise the scenario's expected-verdict.json.
+async function runReceiptVerify(packLess = false) {
   for (const { id, dir } of receiptScenarios('verify')) {
+    const scenario = packLess ? `verify/${id} [pack-less]` : `verify/${id}`;
     const deal = receiptDeal(dir);
     const receiptPath = join(dir, 'receipt.json');
-    const expectedPath = join(dir, 'expected-verdict.json');
+    const packLessPath = join(dir, 'expected-verdict-pack-less.json');
+    const expectedPath = packLess && existsSync(packLessPath) ? packLessPath : join(dir, 'expected-verdict.json');
     if (!deal) {
-      record('receipts', `verify/${id}`, 'fail', 'no deal document in scenario');
+      record('receipts', scenario, 'fail', 'no deal document in scenario');
       continue;
     }
     if (!existsSync(receiptPath) || !existsSync(expectedPath)) {
-      record('receipts', `verify/${id}`, 'fail', 'missing receipt.json or expected-verdict.json');
+      record('receipts', scenario, 'fail', 'missing receipt.json or expected-verdict.json');
       continue;
     }
 
@@ -1264,9 +1271,9 @@ async function runReceiptVerify() {
     if (expected.refused_code) {
       try {
         assertUWReceipt(receipt);
-        record('receipts', `verify/${id}`, 'fail', `expected ${expected.refused_code}, but the receipt was read`);
+        record('receipts', scenario, 'fail', `expected ${expected.refused_code}, but the receipt was read`);
       } catch (e) {
-        record('receipts', `verify/${id}`, e.code === expected.refused_code ? 'pass' : 'fail',
+        record('receipts', scenario, e.code === expected.refused_code ? 'pass' : 'fail',
           e.code === expected.refused_code ? `refused with ${e.code}` : `threw ${e.code ?? '(no code)'}, expected ${expected.refused_code}`);
       }
       continue;
@@ -1277,19 +1284,20 @@ async function runReceiptVerify() {
       assertUWReceipt(receipt);
       result = await verifyReceipt(receipt, deal.source, {
         filename: deal.path,
+        ...(packLess ? { packs: [] } : {}),
         ...(inputs ? { inputs } : {}),
       });
     } catch (e) {
-      record('receipts', `verify/${id}`, 'fail', `verification threw: ${e.message}`);
+      record('receipts', scenario, 'fail', `verification threw: ${e.message}`);
       continue;
     }
 
     if (!['verified', 'failed', 'unverifiable'].includes(result.verdict)) {
-      record('receipts', `verify/${id}`, 'fail', `verdict outside the three-state set: ${result.verdict}`);
+      record('receipts', scenario, 'fail', `verdict outside the three-state set: ${result.verdict}`);
       continue;
     }
     if (result.verdict !== expected.verdict) {
-      record('receipts', `verify/${id}`, 'fail', `expected ${expected.verdict}, got ${result.verdict}`);
+      record('receipts', scenario, 'fail', `expected ${expected.verdict}, got ${result.verdict}`);
       continue;
     }
 
@@ -1297,9 +1305,9 @@ async function runReceiptVerify() {
     const missing = (expected.expected_codes ?? []).filter((c) => !seen.has(c));
     if (missing.length > 0) {
       const list = [...seen].sort().join(', ') || '(none)';
-      record('receipts', `verify/${id}`, 'fail', `did not surface ${missing.join(', ')} — saw: [${list}]`);
+      record('receipts', scenario, 'fail', `did not surface ${missing.join(', ')} — saw: [${list}]`);
     } else {
-      record('receipts', `verify/${id}`, 'pass');
+      record('receipts', scenario, 'pass');
     }
   }
 }
@@ -4213,6 +4221,45 @@ async function runSource() {
   }
 }
 
+// ─── §5.3 cross-checks (RFC 0086 CC-17) ──────────────────────────────────────
+//
+// Each case pins three things about one record: its validation projection (the
+// (code, severity) set, `expected.json`, also the portable `validate` case),
+// the coverage of the checks it names (`expected-coverage.json`, a subset, also
+// the portable `coverage` case), and the dictionary metrics it computes or
+// leaves null (`case.json`, reference only). Coverage is what tells a clean
+// evaluated check from one that silently skipped.
+function runCrossChecks() {
+  const base = join(CONFORMANCE_DIR, 'cross-checks');
+  for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = join(base, entry.name);
+    try {
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const result = validateUWFile(parsed);
+      const seen = new Map(result.issues.map(i => [`${i.code} ${i.severity}`, { code: i.code, severity: i.severity }]));
+      const projected = { overall_status: result.overall_status, issues: [...seen.values()].sort((a, b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity)), ...dealFlagPairs(result) };
+      const baselinePath = join(dir, 'expected.json');
+      if (UPDATE) writeFileSync(baselinePath, `${JSON.stringify(projected, null, 2)}\n`);
+      else if (!deepEqual(projected, readCase(dir, 'expected.json'))) throw new Error(`Validation projection differs: ${JSON.stringify(projected)}`);
+      const problems = [];
+      for (const [code, want] of Object.entries(readCase(dir, 'expected-coverage.json').coverage)) {
+        const got = result.coverage[code];
+        for (const [member, value] of Object.entries(want)) if (got?.[member] !== value) problems.push(`coverage ${code}.${member}: ${got?.[member]} != ${value}`);
+      }
+      const testCase = readCase(dir, 'case.json');
+      const pack = getPackForAssetClass(parsed.frontmatter.asset_class);
+      const evaluate = id => evaluateCalc(pack.calculations.find(c => c.id === id), { parsed, prior_results: {}, locale: 'en-US' });
+      for (const [id, want] of Object.entries(testCase.expected_calcs ?? {})) {
+        const r = evaluate(id);
+        if (!r.ok || r.value !== want) problems.push(`${id}: ${r.ok ? r.value : r.error?.code} != ${want}`);
+      }
+      for (const id of testCase.refused_calcs ?? []) if (evaluate(id).ok) problems.push(`${id} evaluated; expected a refusal`);
+      if (problems.length) throw new Error(problems.join('; '));
+      record('cross-checks', entry.name, UPDATE ? 'updated' : 'pass', `${result.overall_status}; CC-17 ${result.coverage['CC-17']?.status}`);
+    } catch (error) { record('cross-checks', entry.name, 'fail', error.message); }
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -4220,7 +4267,7 @@ const dispatch = {
   'starter-editor': async () => { await runEditor(); },
   'calc': async () => { runCalculations(); await runRefinement(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
-  'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
+  'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptVerify(true); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },
   'modules': async () => { await runModules(); await runBuiltinClassControls(); await runModuleRegistry(); await runAssetClasses(); },
   'packages': async () => { await runPackages(); },
@@ -4296,6 +4343,7 @@ const dispatch = {
   'stochastic': async () => { await runStochastic(); },
   'source': async () => { await runSource(); },
   'scenario': async () => { runScenario(); },
+  'cross-checks': async () => { runCrossChecks(); },
 };
 const dispatchKey = suiteFamily;
 const dispatched = new Set(selected.map(c => dispatchKey(c.suite)));

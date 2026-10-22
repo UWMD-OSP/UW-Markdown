@@ -123,7 +123,7 @@ class HospitalityHomeValidationTests(unittest.TestCase):
                 self.assertEqual(source.read_bytes(), raw)
             run = subprocess.run([sys.executable, "-B", str(ROOT/"implementations/python/uwmd.py"),
                                   "manifest"], capture_output=True, encoding="utf8", timeout=30)
-            self.assertEqual(json.loads(run.stdout)["capabilities"], ["parse", "calc-evaluate", "validate"])
+            self.assertEqual(json.loads(run.stdout)["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
 
 
 if __name__ == "__main__":

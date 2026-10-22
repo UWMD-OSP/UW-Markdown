@@ -149,6 +149,13 @@ Reporting it as success would be straightforwardly dangerous.
 If you are scripting a gate, treat exit 1 as a stop and exit 3 as "get a verifier
 that has the pack" — not as a pass and not as a rejection.
 
+`uwmd verify-receipt <receipt.json> <file> --json` is the conformance protocol's
+receipt subcommand (RFC 0115, Protocol §II.6a.1). It verifies as a Verifier
+without a calculation pack does, so a receipt whose record is unchanged reports
+`unverifiable` with RCP-05 rather than `verified`; digest, referenced-input,
+rule-set and signature checks still decide first. It exits 1 only on `failed`
+or an unreadable receipt. `uwmd receipt verify` is the pack-based check above.
+
 ## Receipts go stale, and that is normal
 
 A receipt describes one exact version of a deal. Edit the deal and the receipt no

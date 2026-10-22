@@ -1,0 +1,25 @@
+{
+  "id": "verifier__lease-up__verify-stated-sum-disagrees__verify-lease-up",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-lease-up"
+  ],
+  "command": "verify-lease-up",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/runner/derived/lease-up/verify-stated-sum-disagrees",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/lease-up/verify-stated-sum-disagrees/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict",
+      "expected_code"
+    ],
+    "exit_code": 1
+  }
+}

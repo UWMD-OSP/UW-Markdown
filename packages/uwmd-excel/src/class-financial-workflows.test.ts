@@ -15,8 +15,8 @@ function runFormula(formula: string, values: Record<string, number | string | nu
   return result as number | string | null;
 }
 
-async function parity(asset: string, sections: Record<string, unknown>, expected: Record<string, number | null>) {
-  const parsed = parseUWFile(`---\nuw_version: "3.0"\nasset_class: ${asset}\nquick_metrics:\n  purchase_price: 10000000\n---\n${Object.entries(sections).map(([section, value]) => `\n\`\`\`json uw:section=${section} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`).join('')}`);
+async function parity(asset: string, sections: Record<string, unknown>, expected: Record<string, number | null>, quickPrice = 10000000) {
+  const parsed = parseUWFile(`---\nuw_version: "3.0"\nasset_class: ${asset}\nquick_metrics:\n  purchase_price: ${quickPrice}\n---\n${Object.entries(sections).map(([section, value]) => `\n\`\`\`json uw:section=${section} source=manual\n${JSON.stringify(value)}\n\`\`\`\n`).join('')}`);
   const layout = getLayoutForAssetClass(asset)!;
   const emitted = await toWorkbook(parsed);
   const workbook = new ExcelJS.Workbook();
@@ -93,6 +93,19 @@ describe('connected hospitality workbook controls', () => {
 });
 
 describe('connected data-center workbook controls', () => {
+  // RFC 0086: both price-per-kW metrics read valuation.purchase_price. A drifted
+  // frontmatter copy (12m against a 10m valuation) moves neither the pack nor
+  // the workbook formula.
+  it('prices per commissioned kW from the valuation, not the frontmatter copy', async () => {
+    const noi = 1800000 + 120000 - 300000;
+    await parity('data_center', {
+      ...common(noi), property: { critical_it_load_kw: 2000 },
+      dc_capacity: { critical_it_load_kw: 2000, planned_it_load_kw: 2500, contracted_it_load_kw: 1000, design_pue: 1.25 },
+      dc_power: { utility_rate_per_kwh: 0.08, billing: 'metered_pass_through' },
+      dc_revenue: { rent_per_kw_month: 150, interconnection_revenue_annual: 100000, services_revenue_annual: 20000, market_rent_per_kw_month: 200 },
+      noi_model: { income: { base_rent: 1800000, other_income: 120000, effective_gross_income: 1920000 }, expenses: { cam: 300000, total_operating_expenses: 300000 }, net_operating_income: noi },
+    }, { price_per_kw: 5000, price_per_commissioned_kw: 5000 }, 12000000);
+  });
   it('no draw factor and no meter is null, never full draw', () => {
     const parsed = parseUWFile(`---\nuw_version: "3.0"\nasset_class: data_center\n---\n\n\`\`\`json uw:section=dc_capacity source=manual\n${JSON.stringify({ critical_it_load_kw: 2000, planned_it_load_kw: 2500, contracted_it_load_kw: 1000, design_pue: 1.25 })}\n\`\`\`\n\n\`\`\`json uw:section=dc_power source=manual\n${JSON.stringify({ utility_rate_per_kwh: 0.08, billing: 'all_in' })}\n\`\`\`\n`);
     const pack = getLayoutForAssetClass('data_center')!.pack;

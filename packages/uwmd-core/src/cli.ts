@@ -3,6 +3,10 @@ import { hasBlockShape } from './block-kind.js';
 import {
   verifyReserveDrawBindings,
   verifyReserveAccounts,
+  verifyCapitalStackDocument,
+  verifyLeaseUpDocument,
+  verifyWaterfallDocument,
+  type SectionVerificationOptions,
   verifyReplacementFundingBindings,
   verifyStatedMetrics,
   parseUWFile,
@@ -1713,9 +1717,11 @@ switch (command) {
     break;
   }
 
-  case 'assemble-property': {
+  // RFC 0115 D1: the portable Verifier subcommand for §VIII.9.6 (formerly
+  // `assemble-property`; prelaunch, no alias).
+  case 'verify-property-cash-flows': {
     if (positional.length !== 2) {
-      console.error('Usage: uwmd assemble-property <file> <plan.json> [--json]');
+      console.error('Usage: uwmd verify-property-cash-flows <file> <plan.json> [--json]');
       process.exit(1);
     }
     const parsed = parseUWFile(readFile(positional[0]!));
@@ -1732,6 +1738,86 @@ switch (command) {
       else console.error(`${error.message} (${error.proto.pointer})`);
       process.exitCode = 1;
     }
+    break;
+  }
+
+  // RFC 0115: the document-level section verifiers (§II.6a.1). Each prints
+  // a section report; only a failed verification exits 1 (§II.6a.2).
+  case 'verify-waterfall':
+  case 'verify-capital-stack':
+  case 'verify-lease-up': {
+    const [verifier, usage] = command === 'verify-waterfall'
+      ? [verifyWaterfallDocument, 'Usage: uwmd verify-waterfall <file> [--variant <name>] [--json]'] as const
+      : command === 'verify-capital-stack'
+        ? [verifyCapitalStackDocument, 'Usage: uwmd verify-capital-stack <file> [--variant <name>] [--json]'] as const
+        : [verifyLeaseUpDocument, 'Usage: uwmd verify-lease-up <file> [--variant <name>] [--json]'] as const;
+    if (positional.length !== 1 || flags['variant'] === true || flags['variant'] === '') {
+      console.error(usage); process.exit(1);
+    }
+    const options: SectionVerificationOptions = typeof flags['variant'] === 'string' ? { variant: flags['variant'] } : {};
+    try {
+      const report = verifier(parseUWFile(readFile(positional[0]!)), options);
+      if (flags['json']) console.log(JSON.stringify(report, null, 2));
+      else {
+        console.log(`${report.section} (variant: ${report.variant ?? '(unlabelled)'}): ${report.status}`);
+        for (const issue of report.verification?.issues ?? []) console.log(`  [${issue.code}] ${issue.message}`);
+      }
+      process.exitCode = report.status === 'failed' ? 1 : 0;
+    } catch (error) {
+      if (!(error instanceof CalcError)) throw error;
+      if (flags['json']) console.log(JSON.stringify({ error: error.proto }, null, 2));
+      else console.error(`${error.message} (${error.proto.pointer ?? command})`);
+      process.exitCode = 1;
+    }
+    break;
+  }
+
+  // RFC 0115: stated dictionary metrics alone (§II.2.2, RFC 0099). `verify`
+  // stays the combined validation/metrics/integrity/provenance command.
+  case 'verify-metrics': {
+    if (positional.length !== 1) { console.error('Usage: uwmd verify-metrics <file> [--json]'); process.exit(1); }
+    const report = verifyStatedMetrics(parseUWFile(readFile(positional[0]!)));
+    if (flags['json']) console.log(JSON.stringify(report, null, 2));
+    else {
+      console.log(`Stated metrics (rule set ${report.rule_set}): ${report.counts.verified} verified, ${report.counts.failed} failed, ${report.counts.unverifiable} unverifiable`);
+      for (const e of report.evidence.filter((item) => item.state !== 'verified'))
+        console.log(`  ${e.state.toUpperCase()} ${e.path} = ${e.stated}${e.computed === null ? '' : ` (computed ${e.computed})`}${e.reason ? ` [${e.reason}]` : ''}`);
+    }
+    process.exitCode = report.counts.failed > 0 ? 1 : 0;
+    break;
+  }
+
+  // RFC 0115 D4: receipt verification as a Verifier holds it, without a
+  // calculation pack (packs are starter products, RFC 0078), so a pack-named
+  // result is RCP-05 unverifiable. `receipt verify` keeps the pack-based check.
+  case 'verify-receipt': {
+    if (positional.length !== 2 || flags['inputs'] === true) {
+      console.error('Usage: uwmd verify-receipt <receipt.json> <file> [--inputs <inputs.json>] [--json]'); process.exit(1);
+    }
+    let receipt: unknown;
+    try { receipt = JSON.parse(readFile(positional[0]!)); } catch { receipt = undefined; }
+    try {
+      assertUWReceipt(receipt);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const typed = (error as { code?: unknown } | null)?.code;
+      const code = typeof typed === 'string' ? typed : 'RCP_MALFORMED';
+      if (flags['json']) console.log(JSON.stringify({ error: { category: 'parse', code, message, pointer: 'receipt' } }, null, 2));
+      else console.error(`Not a readable receipt: ${message}`);
+      process.exitCode = 1;
+      break;
+    }
+    const inputs = typeof flags['inputs'] === 'string'
+      ? JSON.parse(readFile(flags['inputs'])) as Record<string, string> : undefined;
+    const result = await verifyReceipt(receipt, readFile(positional[1]!), {
+      filename: positional[1]!, packs: [], ...(inputs ? { inputs } : {}),
+    });
+    if (flags['json']) console.log(JSON.stringify(result, null, 2));
+    else {
+      console.log(`Receipt verification verdict (no calculation pack): ${result.verdict.toUpperCase()}`);
+      for (const issue of result.issues) console.log(`  [${issue.code}] ${issue.message}`);
+    }
+    process.exitCode = result.verdict === 'failed' ? 1 : 0;
     break;
   }
 
@@ -2007,8 +2093,13 @@ Commands:
   diff     <file-a> <file-b>  Compare two files section by section
   verify-reserve-draws <file> [plan.json] [--json]  Verify stated gross-expenditure draw bindings (read-only)
   verify-reserve-accounts <file> [--json]  Verify stated property reserve balances (read-only)
+  verify-metrics <file> [--json]  Verify stated dictionary metrics only (read-only; a failed statement exits 1)
   verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
-  assemble-property <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
+  verify-property-cash-flows <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
+  verify-waterfall <file> [--variant <name>] [--json]  Verify stated distribution waterfall outcomes (read-only)
+  verify-capital-stack <file> [--variant <name>] [--json]  Verify stated capital-stack sizing (read-only)
+  verify-lease-up <file> [--variant <name>] [--json]  Verify stated lease-up figures (read-only)
+  verify-receipt <receipt.json> <file> [--inputs <inputs.json>] [--json]  Verify a receipt without a calculation pack (read-only)
   inspect-property-cash-flows <file> [--json]  Inventory source inputs needed for an assembly plan (read-only)
   project-lease-up <file> <plan.json>  Project verified lease-up amounts onto explicit cash dates (JSON candidate only)
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)

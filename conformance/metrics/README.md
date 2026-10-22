@@ -30,7 +30,10 @@ aliases such as `valuation.going_in_cap_rate`, `valuation.price_per_sf` and
 it from the dictionary, so the fixture holds no copy. `statement-homes/cases.json`
 proves each alias: a +10% tamper at a section home fails at that address while
 its `quick_metrics` copy keeps its own outcome, and an unbound look-alike field
-is no statement. Lite anchors map only their explicitly stated input sections
+is no statement. Two data-center cases edit the frontmatter (RFC 0086): a
+drifted `quick_metrics.purchase_price` alone leaves `price_per_commissioned_kw`
+verified, because the metric reads `valuation.purchase_price`, and a statement
+computed from the drifted price fails. Lite anchors map only their explicitly stated input sections
 (`lite-input-sections.json`), using the published bridge's section mapping
 without any bridge defaults. Primary-size statements
 are also checked as unrounded raw finite selectors. The two new builtin examples state cash-on-cash outputs; controls exercise the
