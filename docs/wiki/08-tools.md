@@ -267,7 +267,10 @@ file, or an intensive lacking its user-supplied `allocation_pct`, simply
 contributes no row (RFC 0019 §4). Reverse import (`fromWorkbook`) reads the
 property inputs and each component's named inputs (EGI, operating expenses,
 intermediate, allocation, denominator) back; NOIs are formula-derived and never
-imported, and an altered footing is `WORKBOOK-IMPORT-SUBTOTAL` (#411).
+imported, and an altered footing is `WORKBOOK-IMPORT-SUBTOTAL` (#411). With no
+component block there is nothing to consolidate, so the property NOI is the
+stated source NOI as an editable input, or `#N/A` when it is absent, written and
+imported like a single-statement subtotal (#484).
 
 Layout:
 - **Underwriting** sheet — header (deal name/address) + an inputs block (each
@@ -291,6 +294,15 @@ Layout:
   source aggregate with a note instead of a live subtotal formula. This is a
   source-preserving fallback, with no financial tolerance or input rounding;
   subsequent detail edits do not update that aggregate.
+  Each non-formula subtotal carries column-C status text. Reverse import
+  (`fromWorkbook`) accepts exactly these three forms: the live formula with no
+  status (not imported), `#N/A` beside the missing status (nothing imported),
+  or a finite number beside the retained status (imported as
+  `noi_model.income.effective_gross_income`,
+  `noi_model.expenses.total_operating_expenses` or
+  `noi_model.net_operating_income`). A different formula, a value typed over a
+  formula or over `#N/A`, a formula typed over a retained value, or a deleted
+  status refuses with `WORKBOOK-IMPORT-SUBTOTAL` (#484).
 - **Capital Stack** sheet (`src/capital-stack.ts`, RFC 0026) — present **only
   when the document carries a `capital_stack` section**, for any asset class; a
   single-loan document produces exactly the workbook it produced before. One row
