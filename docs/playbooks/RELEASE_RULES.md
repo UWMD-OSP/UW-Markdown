@@ -3,9 +3,8 @@
 These rules take effect when the public launch (5.0.0) ships. Until then the
 prelaunch rule in [VERSIONS.md](../../VERSIONS.md) applies: 4.x releases, with no
 backward compatibility. The owner ratified them on 2026-10-21. The one rule that
-binds verifiers, how a record's rule set is chosen, is proposed in draft RFC 0111
-([below](#verification-rule-sets)) and takes effect only when that RFC is
-accepted.
+binds verifiers, how a record's rule set is chosen, is normative and lives in
+accepted RFC 0111 ([below](#verification-rule-sets)).
 
 ## One public number
 
@@ -44,10 +43,12 @@ accepted.
 
 ## Verification rule sets
 
-**Proposed in draft RFC 0111; not in force until accepted.** A record is always
-verified under the rule set of the version it declares. Every 5.x verifier
-keeps every earlier 5.x rule set. A fix applies to new records only: a record
-that declared an earlier version is verified under that version's rules.
+**RFC 0111, accepted 2026-10-21; in force from 5.0.0.** A record is verified
+under the rule set its declared Format version (`uw_version`) names. Every 5.x
+verifier keeps every earlier 5.x rule set. A fix that changes an outcome issues
+a new Format minor, so it applies to new records only. The one exception: a
+security or soundness fix that makes verification stricter applies to every
+kept rule set.
 
 ## Breaking changes and deprecation
 
