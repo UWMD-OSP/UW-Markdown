@@ -2,7 +2,7 @@
 rfc: 0011
 title: Capability tokens for write authorization
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-04-27
 revised: 2026-09-01
 affects:

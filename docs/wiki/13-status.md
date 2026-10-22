@@ -18,6 +18,22 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**uwmd.org is hosted on Cloudflare Workers (2026-10-21).** The owner moved the
+site to the Worker `uwmd-org` after #391 merged and disconnected Vercel. The
+repository's Vercel configuration (`vercel.json`, `scripts/vercel-ignore-build.sh`)
+is removed; `tools/docs-site/README.md` describes the Cloudflare host and its
+project settings.
+
+**Stored validation sections regenerated (owner ruling 2026-10-21 evening).**
+The six examples and fixtures that state a §4.17 `validation` section now store
+what a fresh `uwmd validate` reports, not the renamed old run: `clean`, the deal
+flags in `financial_validity[]` (`flag_id` the FV code, the band in `severity`
+until draft RFC 0110), completeness from `DQ-04`/`DQ-06`, cross-section entries
+from `CC-*` issues, and the thresholds used. `policy_flags` and
+`human_review_items` are kept: validation does not produce them. Record 24 is
+regenerated with its adjacent institution config; fixture 57, which the reader
+refuses on purpose, takes fixture 02's section.
+
 **Implemented RFC0108 — the §4.17 validation section's vocabulary (owner acceptance 2026-10-21, D2 and D3).**
 [RFC0108](../rfcs/0108-validation-section-vocabulary.md): a stored `validation`
 section now speaks the validation result's words: `overall_status`
@@ -188,6 +204,15 @@ SRC override correction uses only the existing sections/current-variant populati
 The separate complete-validation WIP still requires composition, full admission,
 applicable native/platform evidence and actual certification. Discovery remains
 parse-only; receipt subject/authentication rules and release state are unchanged.
+
+**uwmd.org refresh — owner direction C,2026-10-18.** The approved refresh
+leads with document versions, identifies normative versus guide/starter/project
+pages, keeps the current starter host described accurately and applies the
+approved public-identity/copy sweep. The contrast prerequisite merged as
+`fa9a9ea37d31b918f5993eae4276b159f31719f3`; its main CI is recorded separately.
+The remaining refresh belongs with the Cloudflare migration, not an independent
+site cutover. No normative text removal, accepted RFC change, package version,
+release, tag or publication is authorized by this presentation work.
 
 **Python expression execution — Issue354.** A coherent read-only `calc` CLI
 implements the accepted expression grammar, all21 builtins, exact source/variant/
@@ -2027,3 +2052,11 @@ invariants move to Representations, and five new validate-only Verifier checks
 (`CUR-01`, `LOC-01`, `SRC-01`, `POL-01`, `POL-02`) bring the reference total to
 1,061 (Verifier 679 / 280 portable, Module 68 / 1). Release: published in
 core/CLI 3.0.0 with Stable Protocol 3.0.0.
+
+### Cloudflare static-host preparation
+
+The owner-directed `codex/site-cloudflare-migration` branch contains direction C
+first, then Workers static-asset configuration. `tools/docs-site/README.md` gives
+the exact build, watch-path and project settings. Merged in #391; the owner
+then moved uwmd.org to the Cloudflare Worker `uwmd-org` and disconnected Vercel,
+and the Vercel configuration was removed from the repository.

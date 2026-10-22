@@ -8,7 +8,29 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Prepare Cloudflare Workers static hosting for the refreshed docs site, with a
+  pinned Node runtime, asset headers, real 404 responses and owner-configured
+  docs-only build watch paths. Vercel remains unchanged pending owner cutover.
+- uwmd.org is now served by the Cloudflare Worker `uwmd-org`; Vercel is
+  disconnected. Remove `vercel.json`, `scripts/vercel-ignore-build.sh` and the
+  `.vercel` ignore entry; `tools/docs-site/README.md` describes Cloudflare as the
+  host.
+
 ### Changed
+
+- Refresh uwmd.org with the owner-approved direction C: document-version card,
+  page classification and normative navigation markers, compact mobile landing,
+  complete guide sidebars, favicon and the approved public-copy sweep. Keep
+  the standard and current starter tools distinct. Coordinate go-live with the
+  Cloudflare hosting branch after the independent contrast fix lands on main.
+  No normative contract, package version or release change.
+
+- Regenerate the stored §4.17 `validation` sections of the six examples and
+  fixtures from a fresh `uwmd validate` (owner ruling, 2026-10-21): they now show
+  `clean` with the Format §5.2 deal flags in `financial_validity[]`, completeness
+  and cross-section entries from the current findings, and the thresholds used.
+  Hand-written `policy_flags` and `human_review_items` are kept. The
+  `02-full-multifamily` parse baseline follows.
 
 - Implement accepted RFC 0108: Format §4.17's stored `validation` section uses
   the validation result's vocabulary. `overall_status` is

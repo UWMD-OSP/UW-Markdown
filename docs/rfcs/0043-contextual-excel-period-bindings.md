@@ -2,7 +2,7 @@
 rfc: 0043
 title: Contextual Excel period bindings
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-12
 affects:
   - protocol-spec

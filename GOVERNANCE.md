@@ -6,8 +6,9 @@ begin contributing.
 
 ## Current mode: owner-led development
 
-The project owner is [jaredmaxey](https://github.com/jaredmaxey). While the owner
-is the only contributor actively maintaining the project, the owner may:
+The project is maintained by the UWMD maintainers in the
+[UWMD-OSP](https://github.com/UWMD-OSP) organization. While the owner is the only
+contributor actively maintaining the project, the owner may:
 
 - change code, specifications, schemas, tests, documentation, and release plans
   directly;

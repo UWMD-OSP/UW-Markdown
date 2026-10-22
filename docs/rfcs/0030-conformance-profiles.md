@@ -2,7 +2,7 @@
 rfc: 0030
 title: Make partial conformance mechanically checkable
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-30
 accepted: 2026-08-30
 implemented: 2026-08-30

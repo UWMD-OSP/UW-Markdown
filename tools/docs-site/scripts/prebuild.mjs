@@ -165,6 +165,10 @@ const NORMALIZED_LINK_MAP = new Map([
   ['reviews/2026-10-04-renamed-identifiers.md', '/about/reviews/renamed-identifiers'],
   // The review links its sibling reproduction script, which is code, not a page.
   ['2026-10-04-renamed-identifiers.repro.mjs', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-04-renamed-identifiers.repro.mjs'],
+  // Repository documents the site does not render link their GitHub source.
+  ['reviews/2026-10-15-financial-audit-343.md', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-audit-343.md'],
+  ['docs/reviews/2026-10-15-financial-audit-343.md', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/reviews/2026-10-15-financial-audit-343.md'],
+  ['docs/playbooks/README.md', 'https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/playbooks/README.md'],
   ['docs/reviews/2026-09-12-release-2.8.0.md', '/about/reviews/release-2.8.0'],
   ['docs/reviews/2026-09-12-release-2.9.0.md', '/about/reviews/release-2.9.0'],
   ['reviews/2026-09-12-release-2.8.0.md', '/about/reviews/release-2.8.0'],

@@ -1,0 +1,20 @@
+# Cloudflare Workers static-asset response headers.
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=0, s-maxage=3600
+
+/llms-full.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=0, s-maxage=3600
+
+/downloads/templates/blank-screener.uw.md
+  Content-Disposition: attachment; filename="blank-screener.uw.md"
+
+/downloads/templates/blank-analyst.uw.md
+  Content-Disposition: attachment; filename="blank-analyst.uw.md"
+
+/downloads/templates/blank-screener.uwx.md
+  Content-Disposition: attachment; filename="blank-screener.uwx.md"
+
+/downloads/templates/blank-analyst.uwx.md
+  Content-Disposition: attachment; filename="blank-analyst.uwx.md"

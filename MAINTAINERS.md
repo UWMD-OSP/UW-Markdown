@@ -6,9 +6,11 @@ are added and how decisions get made.
 
 ## Current maintainers
 
-| Handle | Role | Areas of ownership |
+| Role | Organization | Areas of ownership |
 |---|---|---|
-| [@jaredmaxey](https://github.com/jaredmaxey) | BDFL | Everything (spec, `@uwmd/core`, conformance corpus, tools, governance) |
+| Project owner | [UWMD-OSP](https://github.com/UWMD-OSP) | Everything (spec, `@uwmd/core`, conformance corpus, tools, governance) |
+
+Contact the maintainers through [GitHub issues](https://github.com/UWMD-OSP/UW-Markdown/issues).
 
 UW Markdown is currently a solo project. Maintainer additions follow
 the promotion path documented in [`GOVERNANCE.md`](./GOVERNANCE.md#promotion-path).

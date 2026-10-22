@@ -3,65 +3,54 @@
 Reconciled **2026-10-16** (America/Phoenix) for published and independently
 verified **4.3.0**, pairing core/CLI 4.3.0 and verifier 0.2.1 with Protocol 4.1.0
 and Format 3.0. The forward priorities are complete independent verification,
-deterministic procedures and lossless exchange. StackUW owns model generation,
-agents and workflows. This roadmap is directional, not release approval.
+deterministic procedures and lossless exchange. Model generation, agents and
+workflows belong to producing products, not the standard. This roadmap is
+directional, not release approval.
 Reference coverage alone does not establish independent interoperability or
 complete financial reproducibility. Draft RFCs are not accepted contracts.
 
 ## Reserved milestone: 5.0, the coordinated public launch
 
-The [explicit owner decision, 2026-10-16](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
-makes UWMD 5.0 the first official public compatibility baseline. All earlier
-versions, including published 4.x, are prelaunch history. The launch need not
-carry their readers, numerical procedures, Envelope/receipt regimes or obsolete
-APIs solely for compatibility. Major 5 preserves the existing npm naming and
-publication continuity, not a legacy-support promise. No automatic migration,
-erasure of published npm artifacts or new-semantic authentication of historical
-artifacts is implied.
+The [owner launch rule, 2026-10-17](VERSIONS.md#public-launch-compatibility-policy-owner-decision-2026-10-16)
+reserves 5.0.0 for the official public launch. Every `@uwmd` npm package moves
+to 5.0.0 together then. Before launch, releases use 4.x.x from main as needed.
+Format, Protocol and other documents remain independently versioned surfaces.
 
-Independent versions remain the policy for Format, Protocol, packages, modules
-and other surfaces; aligning every component to 5.0.0 is not required. Exact
-launch numbers and post-launch release/support details remain review work.
-Prelaunch breaks still require applicable RFC decisions, synchronized normative
-contracts/conformance and independent verification. There is no mandatory 4.x
-maintenance line, migration shim or deprecation window imposed by this policy.
-Historical commits/tags/source/signatures/release evidence stay accurate.
+The launch still requires separate explicit owner approval. This roadmap
+allocates no version, release, tag or publication. Normative changes continue
+through their applicable RFC, synchronized contract/conformance and independent
+verification gates; the public refresh does not accept any draft RFC.
 
-Development may continue; no routine release consumes the reserved launch
-milestone. **A 5.0 tag or publication requires separate explicit owner launch
-approval.** Recording this policy accepts no draft RFC, exact retirement set,
-release candidate or publication action.
-
-**Interim4.3.0 published and independently checked (2026-10-15):** #351
+**Interim 4.3.0 published and independently checked (2026-10-15):** #351
 merged preparation as `80c68c3d`; annotated `v4.3.0` targets that exact commit.
-The established Release38821844153 published all8 independent versions with
-provenance. Verification38822782450 checks registry identities, tarball hashes,
-signatures/provenance, fresh consumers and the published CLI350/350. See the
+The established Release 38821844153 published all 8 independent versions with
+provenance. Verification 38822782450 checks registry identities, tarball hashes,
+signatures/provenance, fresh consumers and the published CLI 350/350. See the
 [publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/4.3.0-publication.md).
-The #346 compatibility behavior and #347/#348 financial correctness repairs ship;
+The #346 documented CLI behavior and #347/#348 financial correctness repairs ship;
 #350's audit/regressions remain the basis for further work. Format 3.0 and
-Protocol 4.1.0 are unchanged. No5.0 action or production deployment is included.
+Protocol 4.1.0 are unchanged. No 5.0 action or production deployment is included.
 
 The [post-publication decision packet](https://github.com/UWMD-OSP/UW-Markdown/pull/353)
-records RFC0085–0087 alternatives. They remain drafts. #349's exact paired renderer
+records RFC 0085–0087 alternatives. They remain drafts. #349's exact paired renderer
 and starter-golden correction is now owner-approved and merged at `a18ed8ee`;
 source order/years, amounts, CC-06, validation and financial calculations remain
 unchanged. Its prior baseline-review hold is resolved.
 
 ### Foundational verification sequence — proposed launch criteria
 
-Owner direction preserves RFC0078 and RFC0083: UWMD defines financial meanings
+Owner direction preserves RFC 0078 and RFC 0083: UWMD defines financial meanings
 and verifies declared assertions; StackUW and other adopters construct models.
 A comprehensive generation engine is **not** a 5.0 prerequisite. No launch date or
 release preparation is authorized by this plan.
 
 | Order / workstream | Deliverable / decision | Actual dependency and evidence |
 |---|---|---|
-| High priority: [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356), [draft0088](docs/rfcs/0088-pin-financial-numerical-procedures.md) | Resolve demonstrated power/IRR/quantized-digest disagreement; pin domains/order/range and fractional/log behavior | Independent TS/Python vectors, runtime/platform evidence, precision and historical receipt-identity consequences. Current formulas/expectations remain unchanged pending acceptance |
-| Parallel: [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354) | Independent Python Reader/Verifier from the specification; initial numeric kernel is incomplete | Reader, source tokens, validation/resolution, ordinary arithmetic, dictionary and exact ledger checks can progress now; affected powers/returns/annuities need #356. Full base inventory, portable cases and independent manifests; Node wrappers are not a second implementation |
+| Accepted: [#356](https://github.com/UWMD-OSP/UW-Markdown/issues/356), [RFC 0088](docs/rfcs/0088-pin-financial-numerical-procedures.md) | One pinned pow/exp/log procedure and authenticate-first receipt precedence are accepted and implemented on main | Independent numerical and spreadsheet evidence is recorded in the accepted RFC; spreadsheet recalculation findings are export-contract limits. This row proposes no new numerical convention |
+| Active: [#354](https://github.com/UWMD-OSP/UW-Markdown/issues/354) | Independent Python Reader/Verifier: parse/calc foundation is on main; complete validation and remaining verification obligations continue | Accepted RFC 0088 is available. Discovery remains parse-only until complete capability requirements and independent conformance certification pass; dictionary, stated results and receipts remain separate obligations |
 | Bounded optional assurance: [#355](https://github.com/UWMD-OSP/UW-Markdown/issues/355) | First bind headline returns to exact streams/methods/periods/variants/source identities; optional declared acquisition-ledger coverage; additional named identities require their own justified contracts | Define applicability and assertion-counting before coverage reports. Verify scoped claims, not the entire producer model. Financially verified/stated-only/failed/unverifiable remain distinct. Numerical methods depend on #356; profile-specific evidence follows acceptance |
-| Provenance: [draft0085](https://github.com/UWMD-OSP/UW-Markdown/pull/335) | Complete retained source as authority; distinct history projections; scoped authentication/continuity evidence | Owner architectural preference is design direction, not RFC acceptance. Resolve launch-Reader projection safety, missing predecessors and archive/authentication contracts before implementation; prelaunch support is not required |
-| Financial reconciliation: draft0086 / draft0087 | Data-center purchase-price authority and hospitality comparable revenue bases | Separate owner decisions on source/variant/scenario/period/scope/precision; no universal equality or revised metric formulas inferred |
+| Provenance: [draft 0085](https://github.com/UWMD-OSP/UW-Markdown/pull/335) | Complete retained source as authority; distinct history projections; scoped authentication/continuity evidence | Owner architectural preference is design direction, not RFC acceptance. Resolve launch-Reader projection safety, missing predecessors and archive/authentication contracts before implementation; prelaunch support is not required |
+| Financial reconciliation: draft 0086 / draft 0087 | Data-center purchase-price authority and hospitality comparable revenue bases | Separate owner decisions on source/variant/scenario/period/scope/precision; no universal equality or revised metric formulas inferred |
 | Cross-implementation / spreadsheet assurance | Independently verified scoped results and actual recalculation for supported spreadsheet claims | Accepted contracts and explicit source/method scope. Emitted literals/caches and the Node-backed portable driver are not independent recalculation/implementation evidence |
 
 A full pro forma row-checking expansion, revenue/expense forecasting, debt-model
@@ -69,7 +58,7 @@ construction, scenarios, arbitrary custom-model mechanics, L2/L3, every lender
 program or every optional Python profile is not automatically required for launch.
 Each extra relationship needs a concrete assurance claim and normative justification.
 The earlier engine-first planning proposal is superseded as the working scope.
-Issue343 stays open with its remaining durable dispositions. RFC0085–0087 remain
+Issue 343 stays open with its remaining durable dispositions. RFC 0085–0087 remain
 separate proposed foundational launch components, not automatically deferred.
 
 ## Historical publication: 4.2.0
@@ -453,11 +442,11 @@ status claim.
 
 Nothing here adds a protocol capability, and no forward candidate below moved.
 
-## StackUW protocol alignment queue
+## Adopter alignment queue
 
 **Source:** owner-supplied *StackUW protocol brief* from the engine team,
-2026-09-13. StackUW (formerly underwriter.cc) is the current vendor building
-on UW Markdown and produces `.uwx.md` records through `export_uwmd`.
+2026-09-13. StackUW, built by the UWMD maintainers, produces `.uwx.md` records
+through `export_uwmd`.
 
 This is adopter input, not an accepted contract or an instruction to change the
 spec immediately. Each normative item below still needs its own accepted RFC,
@@ -529,7 +518,7 @@ no additional financial assumptions are supplied by the released adapter.
 
 | Priority | Work | State | Definition of done / prerequisite |
 |---|---|---|---|
-| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 released in 2.14.0 | The [completed-corpus review](docs/reviews/2026-09-24-completed-golden-corpus-validation.md) records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/reviews/2026-09-24-terminal-boundary-design.md) places final monthly cash on disposition at the final period's exclusive boundary. Jared accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs shipped in 2.14.0 and are **implemented**. The [verification record](docs/reviews/2026-09-24-rfc-0063-implementation.md) covers conformance and Golden Deal probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. Reserve-account and financing assembly remain separate. |
+| 1 | Real-deal DCF validation and extensions | RFCs 0062 and 0063 released in 2.14.0 | The [completed-corpus review](docs/reviews/2026-09-24-completed-golden-corpus-validation.md) records 640/640 registered comparisons, 20/20 existing refusals and a separate stale-workbook integrity refusal; stated-source checks do not establish complete assembly parity. RFC 0062's same-day errata is integrated at `e49eb43`. The [terminal-boundary owner brief](docs/reviews/2026-09-24-terminal-boundary-design.md) places final monthly cash on disposition at the final period's exclusive boundary. The owner accepted [RFC 0063](docs/rfcs/0063-final-period-exclusive-boundary.md) at `f04b34a`; its implementation is on `main` at `413a645`, preparing Protocol **2.18.0** for explicit monthly/quarterly boundary admission. Both RFCs shipped in 2.14.0 and are **implemented**. The [verification record](docs/reviews/2026-09-24-rfc-0063-implementation.md) covers conformance and Golden Deal probes: the timing-only case assembles with opt-in, while reserve-dependent spending still refuses. Reserve-account and financing assembly remain separate. |
 | 2 | Speculative leasing module | Proposal | Pin renewal probability, vacancy, market-rent resets, TI/LC cash timing and amortization against a concrete adopter example. Add deterministic fixtures before implementing rollover math. |
 | 3 | Additional period consumers | Deferred extensions | Reverse import, structural workbook edits, period defaults and custom function/cash-flow metric export need separate contracts and parity evidence. |
 | 4 | Waterfall extensions | RFC 0051 implemented; **RFC 0059 released in 2.12.0** | Combined-hurdle "any" mode implemented under RFC 0051. RFC 0059 takes up clawback as the terminal true-up protocol §XVI predicted, closed-form via the RFC 0036 hurdle balance so no iteration is introduced. GP-side hurdles (`until_gp_irr`) remain deliberately out. |

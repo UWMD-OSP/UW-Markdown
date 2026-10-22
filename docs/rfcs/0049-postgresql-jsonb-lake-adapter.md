@@ -2,7 +2,7 @@
 rfc: 0049
 title: PostgreSQL JSONB lake adapter boundary
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-09-13
 accepted: 2026-09-15
 implemented: 2026-09-15

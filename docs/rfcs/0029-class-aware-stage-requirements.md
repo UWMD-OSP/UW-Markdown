@@ -2,7 +2,7 @@
 rfc: 0029
 title: Make stage requirements class-aware
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-26
 accepted: 2026-08-26
 implemented: 2026-08-26

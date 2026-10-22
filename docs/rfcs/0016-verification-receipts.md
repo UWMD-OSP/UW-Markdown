@@ -2,7 +2,7 @@
 rfc: 0016
 title: Define signed deterministic verification receipts
 status: implemented
-author: jaredmaxey
+author: UWMD maintainers
 created: 2026-08-08
 accepted: 2026-08-09
 implemented: 2026-08-27
