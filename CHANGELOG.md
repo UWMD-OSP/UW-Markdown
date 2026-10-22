@@ -25,6 +25,10 @@ protocol, and each package each carry an independent semver).
   `complimentary_room_nights` (integer ≥ 0, CLS-04 contract) records the excluded
   nights; no metric reads it. Builtin-class controls 62 and 63.
 
+- Fix #497 (erratum): the Format §4.1 `property.asset_class` example lists all
+  twelve builtin classes, adding `data_center` and `manufactured_housing` as the
+  frontmatter list (§2.2) and RFC 0080 already do.
+
 - Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
   for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
   `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.

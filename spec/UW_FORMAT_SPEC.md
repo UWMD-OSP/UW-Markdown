@@ -985,7 +985,7 @@ frontmatter fallback. Other free values are unchanged.
     "legal_description": "string | null",
     "coordinates": { "lat": 0.0, "lng": 0.0 }
   },
-  "asset_class": "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land",
+  "asset_class": "multifamily | office | retail | industrial | self_storage | hospitality | mixed_use | senior_housing | student_housing | land | data_center | manufactured_housing",
   "asset_subtype": "string | null",
   "year_built": 0,
   "year_renovated": null,
