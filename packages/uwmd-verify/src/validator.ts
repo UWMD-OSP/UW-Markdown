@@ -607,10 +607,10 @@ function checkCrossSectionConsistency(
             issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by $${difference.toLocaleString()} (threshold: $500; RFC 0119)`, value: difference });
           }
         } else {
-        const pctDiff = Math.abs(modelNOI - debtNOI) / modelNOI;
-        if (pctDiff > 0.01) {
-          issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}% (threshold: 1%)`, value: pctDiff });
-        }
+          const pctDiff = Math.abs(modelNOI - debtNOI) / modelNOI;
+          if (pctDiff > 0.01) {
+            issues.push({ code: 'CC-05', severity: 'warning', section: 'debt_structure', field: 'underwritten_noi', message: `CC-05: NOI used for DSCR ($${debtNOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}% (threshold: 1%)`, value: pctDiff });
+          }
         }
       }
     }
@@ -634,10 +634,10 @@ function checkCrossSectionConsistency(
             issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) differs from noi_model NOI ($${modelNOI.toLocaleString()}) by $${difference.toLocaleString()} (threshold: $500; RFC 0119)`, value: difference });
           }
         } else {
-        const pctDiff = Math.abs(modelNOI - dcfY1NOI) / modelNOI;
-        if (pctDiff > 0.02) {
-          issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) deviates from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}%`, value: pctDiff });
-        }
+          const pctDiff = Math.abs(modelNOI - dcfY1NOI) / modelNOI;
+          if (pctDiff > 0.02) {
+            issues.push({ code: 'CC-06', severity: 'warning', section: 'dcf', field: 'annual_cash_flows[0].noi', message: `CC-06: DCF Year 1 NOI ($${dcfY1NOI.toLocaleString()}) deviates from noi_model NOI ($${modelNOI.toLocaleString()}) by ${(pctDiff * 100).toFixed(2)}%`, value: pctDiff });
+          }
         }
       }
     }

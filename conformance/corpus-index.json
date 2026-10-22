@@ -6395,6 +6395,86 @@
       "suite": "documents",
       "scenario": "12-mhc-screening-gap [render-summary]",
       "target": "starter-products"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-01-negative-equal",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-02-negative-within",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-03-negative-at-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-04-negative-outside",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-05-negative-other-side-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-06-negative-other-side-outside",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-07-zero-equal",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-08-zero-at-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-09-zero-outside",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-10-zero-negative-boundary",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-11-zero-negative-outside",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-12-model-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-13-restatement-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-14-aliases",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-15-positive-agrees",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc-noi-16-positive-disagrees",
+      "target": "verifier"
     }
   ]
 }

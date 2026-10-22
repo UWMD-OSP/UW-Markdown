@@ -16,6 +16,12 @@ seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
 An unknown command exits 1 before any I/O. The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
+**RFC 0119 implemented (owner acceptance, 2026-10-22 second set).** CC-05/06
+evaluate stated NOI <= 0 using the accepted $500 absolute tolerance, zero
+included. Greater differences remain warnings; positive-NOI percentages are
+unchanged. Sixteen new records pin validation and evaluated/skipped coverage
+in both the reference runner and portable CLI cases.
+
 **RFC 0116 implemented (owner acceptance, 2026-10-22 second set).** Stage
 readiness now requires a stated non-null leaf and is cumulative. Scope reads the
 class primary size or valuation price; mixed-use uses a component size. Missing
