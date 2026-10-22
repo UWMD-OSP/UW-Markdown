@@ -1,0 +1,26 @@
+{
+  "id": "verifier__lease-up__valid-ground-up-absorption__verify-lease-up",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-lease-up"
+  ],
+  "command": "verify-lease-up",
+  "args": [
+    "deal.uwx.md",
+    "--variant",
+    "base",
+    "--json"
+  ],
+  "fixture_dir": "conformance/lease-up/valid-ground-up-absorption",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/lease-up/valid-ground-up-absorption/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict"
+    ],
+    "exit_code": 0
+  }
+}

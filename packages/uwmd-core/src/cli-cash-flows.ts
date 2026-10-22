@@ -8,6 +8,7 @@ import {
   datedFlowsOf,
   verifyCashFlowSeries,
   type CashFlowSeries,
+  type CashFlowVerificationReport,
 } from '@uwmd/verify';
 
 const section = 'cash_flow_series';
@@ -44,13 +45,15 @@ export function parseCashFlowVerificationArgs(args: string[]) {
   return { file, variant, json };
 }
 
-export function verifyCashFlowDocument(source: string, variant?: string) {
+export function verifyCashFlowDocument(source: string, variant?: string): { exitCode: 0 | 1; report: CashFlowVerificationReport } {
   let parsed: ReturnType<typeof parseUWFile>;
   try { parsed = parseUWFile(source, { strict: true }); }
   catch (error) { refuse(`Cannot parse source: ${error instanceof Error ? error.message : String(error)}`, 'source'); }
   const block = periodSection(parsed, section,
     variant === undefined ? {} : { sectionVariants: { [section]: variant } });
-  if (!block) refuse('No active cash_flow_series block was found.');
+  // RFC 0115 (§II.6a.2): an absent subject is not a refusal. Nothing is
+  // checked, the report says so, and the exit code is 0.
+  if (!block) return absent(null);
   const content = periodPayload(block);
   if (!obj(content)) refuse('Expected an object payload.');
   const series = content as unknown as CashFlowSeries;
@@ -78,11 +81,19 @@ export function verifyCashFlowDocument(source: string, variant?: string) {
       }
     } else if (!finite(value)) refuse('Claim must be a finite number.', p);
   }
-  const verification = checked.length ? verifyCashFlowSeries(series) : null;
-  const status = verification?.verdict ?? 'no_stated_metrics';
+  // A block that states no metric has no claim to check: not_applicable, the
+  // same answer as an absent section, kept apart from a verified comparison.
+  if (!checked.length) return absent(block.annotation.variant ?? null);
+  const verification = verifyCashFlowSeries(series);
   return {
-    exitCode: status === 'verified' ? 0 : status === 'failed' ? 1 : 3,
-    report: { section, variant: block.annotation.variant ?? null, status,
-      checked_metrics: checked, verification },
+    // RFC 0115 (§II.6a.2): only a failed verification exits 1; unverifiable is
+    // a reported outcome, not an operation failure.
+    exitCode: verification.verdict === 'failed' ? 1 : 0,
+    report: { section, variant: block.annotation.variant ?? null, status: verification.verdict,
+      checked_metrics: [...checked], verification },
   };
+}
+
+function absent(variant: string | null): { exitCode: 0; report: CashFlowVerificationReport } {
+  return { exitCode: 0, report: { section, variant, status: 'not_applicable', checked_metrics: [], verification: null } };
 }

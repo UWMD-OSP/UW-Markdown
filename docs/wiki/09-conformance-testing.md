@@ -127,24 +127,26 @@ model provider (`starter-agent/l0a-scope-deterministic`,
 `starter-agent-replay/l6-risk-rating/{sections,document}`). RFC 0112 retired
 the layer-profile contract check (`starter-agent-profile/consumer-profile-contract`)
 and module fixture `reject/02-agent-layer-malformed` with its schema-parity
-twin, and added `reject/20-agent-layers-unknown-member` with its twin. RFC 0086
-added the `cross-checks` suite (six `CC-17` records, each a reference check and
-two portable cases: the issue projection and the coverage subset) and two
-`price_per_commissioned_kw` statement-home cases. The index now holds **1,244** reference checks and **409**
+twin, and added `reject/20-agent-layers-unknown-member` with its twin. RFC 0111
+added `receipts/verify/13-rule-set-mismatch`. RFC 0115 re-owned the 13
+pack-based receipt verifications as starter checks, added their 13 pack-less
+Verifier twins (`verify/<id> [pack-less]`) and generated 160 portable Verifier
+cases from existing fixtures. RFC 0086 added the `cross-checks` suite (six
+`CC-17` records) and two `price_per_commissioned_kw` statement-home cases. The index now holds **1,249** reference checks and **557**
 portable CLI projections:
 
 | Owner | Reference | Portable |
 |---|---:|---:|
 | reader | 32 | 17 |
-| verifier | 827 | 340 |
+| verifier | 819 | 488 |
 | module | 76 | 1 |
 | integrity | 32 | 14 |
 | representations | 150 | 0 |
 | portfolio | 14 | 0 |
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
-| starter-products | 101 | 37 |
-| **Total** | **1,244** | **409** |
+| starter-products | 114 | 37 |
+| **Total** | **1,249** | **557** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -301,11 +303,11 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,244 indexed checks across its suites, and most of what has been added
+runs all 1,249 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable
-driver checks its 409-case subset using shared comparison logic, while the
+driver checks its 557-case subset using shared comparison logic, while the
 reference runner checks the full indexed corpus. A result claims only the
 checks actually run. Replacing one with the other would
 trade breadth for portability.
@@ -324,6 +326,18 @@ hand-maintaining fifty invites one to go stale silently. The known gaps are
 listed in the runner README rather than hidden: two editor starter fixtures need
 `applyEditAsync` and a volatile hash the synchronous CLI cannot express, the layer-profile
 check has no CLI surface, and the named suites are TypeScript-only.
+
+Since RFC 0115 every Verifier obligation has a portable subcommand and
+capability flag (`verify-metrics`, `verify-cash-flows`,
+`verify-property-cash-flows`, `verify-waterfall`, `verify-capital-stack`,
+`verify-lease-up`, `verify-receipt`, `verify-reserve-accounts`,
+`verify-reserve-draws`), so "passes the Verifier tier" means the same thing for
+every implementation. Bare-payload fixtures and statement-home edits are
+restated as generated documents under `conformance/runner/derived/`. A partial
+implementation claims the flags it has built; the other cases are skipped, not
+failed. Portable receipt cases verify without a calculation pack (D4); the
+reference runner records them as `verify/<id> [pack-less]` and keeps the
+pack-based run as a starter check.
 
 Comparison is **subset-by-default**: the baselines are projections, so an
 implementation reporting `round_to` and `display` alongside the four fields a

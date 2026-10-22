@@ -162,7 +162,46 @@ export type ViewerCapability =
    * behavior (RFC 0078; starter guide §VIII.2b). It is a capability so its fixtures can be tagged rather
    * than inferred from a directory name.
    */
-  | 'refinement';
+  | 'refinement'
+  // RFC 0115: one flag per Verifier obligation, each driven by its portable
+  // subcommand (§II.6a.1). A Verifier tier claim requires every one (§II.5);
+  // a manifest that omits one is a partial claim.
+  /** Reproduces stated dictionary metrics: `verify-metrics` (§II.2.2, RFC 0099). */
+  | 'verify-metrics'
+  /** Verifies stated calendar cash-flow metrics: `verify-cash-flows` (§VIII.9). */
+  | 'verify-cash-flows'
+  /** Assembles declared property cash flows: `verify-property-cash-flows` (§VIII.9.6). */
+  | 'verify-property-cash-flows'
+  /** Verifies stated waterfall outcomes: `verify-waterfall` (§VIII.10). */
+  | 'verify-waterfall'
+  /** Verifies stated capital-stack sizing: `verify-capital-stack` (Format §4.24). */
+  | 'verify-capital-stack'
+  /** Verifies stated lease-up figures: `verify-lease-up` (Format §4.25). */
+  | 'verify-lease-up'
+  /** Verifies receipts without a calculation pack: `verify-receipt` (Receipt §5, RFC 0115 D4). */
+  | 'verify-receipts'
+  /** Verifies stated reserve balances: `verify-reserve-accounts` (§VIII.11). */
+  | 'verify-reserve-accounts'
+  /** Verifies reserve draw bindings: `verify-reserve-draws` (§VIII.12). */
+  | 'verify-reserve-draws';
+
+/**
+ * The capability flags a Verifier tier claim requires, one per Verifier
+ * obligation, each driven by its §II.6a.1 subcommand (RFC 0115 D2, Protocol
+ * §II.5). Replacement-funding verification (§V.12) is reported by `validate`,
+ * which a Verifier also claims, so it has no flag of its own.
+ */
+export const VERIFIER_OBLIGATION_CAPABILITIES = Object.freeze([
+  'verify-metrics',
+  'verify-cash-flows',
+  'verify-property-cash-flows',
+  'verify-waterfall',
+  'verify-capital-stack',
+  'verify-lease-up',
+  'verify-receipts',
+  'verify-reserve-accounts',
+  'verify-reserve-draws',
+] as const satisfies readonly ViewerCapability[]);
 
 export type RepresentationFidelity = 'source' | 'model' | 'view';
 export type RepresentationDirection = 'read' | 'write';
@@ -1653,8 +1692,8 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'SIZE', description: 'Generic size, count, area and rent contract (RFC 0100)', capabilities: ['validate'] },
   { prefix: 'REC', description: 'Lease recovery admission and reconciliation (RFC 0058, RFC0096)', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
-  { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['calc-evaluate'] },
-  { prefix: 'RSV', description: 'Property custody structure and separate balance identity verification (RFC 0064)', capabilities: ['validate'] },
+  { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['verify-reserve-draws'] },
+  { prefix: 'RSV', description: 'Property custody structure and separate balance identity verification (RFC 0064)', capabilities: ['validate', 'verify-reserve-accounts'] },
   { prefix: 'HDG', description: 'Hedge structure and separate replacement binding verification (RFC 0070)', capabilities: ['validate'] },
   { prefix: 'ESC', description: 'Escrow funding', capabilities: ['validate'] },
   { prefix: 'CF', description: 'Cash-flow series (RFC 0034)', capabilities: ['validate'] },
@@ -2958,4 +2997,56 @@ export interface ReserveDrawBindingVerification {
   stated_digest?: string;
   evidence: ReserveDrawBindingEvidence[];
   issues: ValidationMessage[];
+}
+
+// ─── RFC 0115 — portable Verifier subcommand results (§II.6a.1) ──────────────
+//
+// Each Verifier obligation has one subcommand, and each subcommand prints one
+// of these results (invariant 7: protocol.ts, spec/schemas/ and the Protocol
+// change together). The verifier result types live with their verifiers and
+// are re-exported here unchanged; the section report is the document-level
+// envelope the `verify-cash-flows` CLI already printed, generalized.
+
+export type { StatedMetricsReport, StatedMetricEvidence, StatedMetricOutcome } from './metric-verification.js';
+export type { CashFlowVerification, CashFlowIssue } from './cash-flow-series.js';
+export type { WaterfallVerification, WaterfallIssue } from './waterfall.js';
+export type { CapitalStackVerification, CapitalStackIssue, SizingResult } from './capital-stack.js';
+export type { LeaseUpVerification, LeaseUpIssue } from './lease-up.js';
+export type { UWReceiptVerification, UWReceiptIssue } from './receipts.js';
+
+/**
+ * A section verifier's verdict on one document (RFC 0115): the selected
+ * block's variant and the section verifier's result, unchanged. `status` is
+ * that result's verdict, or `not_applicable` when the document has no current
+ * block of the section, in which case `verification` is null and nothing was
+ * checked (§II.6a.2: exit 0).
+ */
+export interface SectionVerificationReport<V> {
+  section: string;
+  /** The selected block's variant; null for an unlabelled block or an absent section. */
+  variant: string | null;
+  status: 'verified' | 'failed' | 'unverifiable' | 'not_applicable';
+  verification: V | null;
+}
+
+/** `verify-cash-flows` (§VIII.9): also names the stated metrics it checked. */
+export interface CashFlowVerificationReport
+  extends SectionVerificationReport<import('./cash-flow-series.js').CashFlowVerification> {
+  section: 'cash_flow_series';
+  checked_metrics: Array<'total_net' | 'moic' | 'xnpv' | 'xirr'>;
+}
+/** `verify-waterfall` (§VIII.10). */
+export interface WaterfallVerificationReport
+  extends SectionVerificationReport<import('./waterfall.js').WaterfallVerification> {
+  section: 'distribution_waterfall';
+}
+/** `verify-capital-stack` (Format §4.24). */
+export interface CapitalStackVerificationReport
+  extends SectionVerificationReport<import('./capital-stack.js').CapitalStackVerification> {
+  section: 'capital_stack';
+}
+/** `verify-lease-up` (Format §4.25). */
+export interface LeaseUpVerificationReport
+  extends SectionVerificationReport<import('./lease-up.js').LeaseUpVerification> {
+  section: 'lease_up_schedule';
 }

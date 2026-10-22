@@ -30,6 +30,22 @@ twelve portable cases) and two statement-home cases pin the metric against a
 drifted frontmatter (1,244 indexed checks, 409 portable). Every repository
 data-center record states equal prices, so no expected value moved.
 
+**Implemented RFC 0115 — portable cases for every Verifier obligation (owner acceptance 2026-10-22, including D2 and D4).**
+[RFC 0115](../rfcs/0115-portable-verifier-cases.md) gives each Verifier
+obligation one §II.6a.1 subcommand and one capability flag: `verify-metrics`,
+`verify-cash-flows`, `verify-property-cash-flows` (was `assemble-property`),
+`verify-waterfall`, `verify-capital-stack`, `verify-lease-up`, `verify-receipt`
+and the two reserve verifiers. A Verifier tier claim requires all nine flags
+(§II.5). The portable corpus grows from 397 to 557 cases; every new case is
+Verifier-owned and generated from an existing fixture, with bare payloads and
+statement-home edits restated as documents under `conformance/runner/derived/`.
+Portable receipt cases are pack-less (D4): a pack-named result is RCP-05
+`unverifiable`, and the pack-based receipt checks are starter checks. The
+Python implementation passes 345 of 345 cases it claims and skips the 160 that
+need its seven unclaimed flags. Open: Receipt §5 has no step that recomputes
+dictionary-defined receipt results without the pack, so a pack-less verifier
+reports every pack-named receipt `unverifiable`.
+
 **Implemented RFC 0111 — verify under the declared rule set (owner acceptance 2026-10-21, including D4).**
 [RFC 0111](../rfcs/0111-verify-under-declared-rule-set.md) is now Protocol
 [§XII.5](../../spec/UW_PROTOCOL.md): a record's declared `uw_version` names the

@@ -1,0 +1,8 @@
+{
+  "description": "RFC 0115 D4: what a Verifier without a calculation pack determines for this receipt, derived by running the reference verifyReceipt with packs: []. The subject digest agrees; the verifier holds neither the referenced market-data input (RCP-11) nor the named pack (RCP-05, Receipt §5.1 step 3). expected-verdict.json keeps the pack-based starter expectation.",
+  "verdict": "unverifiable",
+  "expected_codes": [
+    "RCP-11",
+    "RCP-05"
+  ]
+}

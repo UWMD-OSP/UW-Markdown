@@ -7,11 +7,17 @@ external packages, hosted services, production fixture lookup, or TypeScript
 translation. No PyPI name, supported Python floor or publication is decided.
 
 **Certified 2026-10-21 (Issue #354):** the discovery manifest claims the
-**Reader tier** and the capabilities `parse`, `calc-evaluate` and `validate`.
+**Reader tier** and the capabilities `parse`, `calc-evaluate` and `validate`,
+plus (since RFC 0115) the Verifier-obligation flags `verify-reserve-accounts`
+and `verify-reserve-draws` for the two reserve verifiers it implements.
 CI proves the claim with the RFC 0004 runner on Windows, Linux and macOS:
-`--tier verifier --no-skip` selects every Reader and Verifier portable case
-(17 parse, 110 calc, 144 validate, 28 reserve-account and 46 reserve-draw), and
-every one must pass with no skip. It does **not** claim the Verifier tier, and
+`--tier verifier` selects every Reader and Verifier portable case, and the 345
+it claims (17 parse, 110 calc, 144 validate, 28 reserve-account and
+46 reserve-draw) must all pass. The only skips allowed are the 160 cases that
+need one of the seven RFC 0115 flags it does not claim (`verify-metrics`,
+`verify-cash-flows`, `verify-property-cash-flows`, `verify-waterfall`,
+`verify-capital-stack`, `verify-lease-up`, `verify-receipts`); a skip for any
+other capability fails the job. It does **not** claim the Verifier tier, and
 the manifest keeps `tier: reader`. Protocol §II.2 also requires, and this
 implementation does not provide (§II.5: publish capabilities rather than round
 up):
