@@ -93,7 +93,7 @@ The section the custom class requires and no builtin has.
   "_notes": null,
   "critical_load_mw": 12.5,
   "pue": 1.28,
-  "utility_provider": "SRP",
+  "utility_provider": "Arroyo Power",
   "redundancy": "N+1"
 }
 ```

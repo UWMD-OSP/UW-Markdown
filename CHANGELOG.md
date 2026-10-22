@@ -104,6 +104,18 @@ protocol, and each package each carry an independent semver).
   source files. The two standalone package manifests and ZIPs and the
   `02-full-multifamily` reader and render-chat baselines are regenerated. No
   figure, metric or normative rule changes.
+- Replace real places and brands in example and fixture records with fictional
+  ones: the utility, university, stadium, hospital systems, employers, an
+  entertainment district, a named technology corridor, a hotel brand and its
+  flags, and a tenant that carried a real brand name. Every full street address
+  on a real road (the Parkview subject and its five comps, the subject address
+  of ten other asset-class examples and the verification pair, their
+  conformance copies, the hospitality fixtures and the self-storage calc
+  fixture) now uses a
+  fictional street with the same house number, city, state and ZIP. City and
+  state names stay. The `02-full-multifamily` render-chat and render-summary
+  baselines are regenerated (address text and the token-count estimate only).
+  No figure, metric or normative rule changes.
 
 - Ratify the release rules after launch (owner, 2026-10-21,
   `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the

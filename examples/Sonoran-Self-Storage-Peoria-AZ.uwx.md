@@ -5,7 +5,7 @@ deal_name: "Sonoran Self Storage - Peoria, AZ"
 created: "2026-06-05T09:00:00Z"
 last_modified: "2026-06-05T09:00:00Z"
 
-property_address: "8720 W Peoria Ave"
+property_address: "8720 W Cholla Crest Ave"
 city: "Peoria"
 state: "AZ"
 zip: "85345"
