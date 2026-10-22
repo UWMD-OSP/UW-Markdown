@@ -18,6 +18,16 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #484: `uwmd-excel --import` (`fromWorkbook`) accepts every subtotal form
+  the exporter writes: the live formula, a retained stated subtotal beside its
+  status text (now imported as the editable input it is), and the documented
+  `#N/A` for a missing subtotal. Workbooks exported from `uwmd init` records and
+  totals-only `noi_model` records import again; a different formula, a value
+  typed over a formula or over `#N/A`, or a formula typed over a retained value
+  still refuses with `WORKBOOK-IMPORT-SUBTOTAL`. A mixed-use record with no
+  component block now states its property NOI (or `#N/A`) instead of writing an
+  empty consolidation formula.
+
 - Fix #497 (erratum): the Format §4.1 `property.asset_class` example lists all
   twelve builtin classes, adding `data_center` and `manufactured_housing` as the
   frontmatter list (§2.2) and RFC 0080 already do.

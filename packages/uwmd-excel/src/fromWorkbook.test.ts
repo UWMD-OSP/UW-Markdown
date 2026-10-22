@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import ExcelJS from 'exceljs';
-import { parseUWFile } from '@uwmd/core';
+import { evaluate, generateBlankUWFile, parseExpression, parseUWFile } from '@uwmd/core';
+import type { AssetClass, DealStage } from '@uwmd/core';
 import type { WorkbookLayout } from './layout.js';
+import { SUBTOTAL_STATUS } from './layout.js';
 import { fromWorkbook, WorkbookImportError } from './fromWorkbook.js';
 import { toWorkbook } from './toWorkbook.js';
-import { getLayoutForAssetClass } from './layouts.js';
+import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
 
 const EXAMPLES = resolve(__dirname, '../../../examples');
 
@@ -203,5 +205,151 @@ describe('fromWorkbook — mixed_use per-component statements (#411)', () => {
     const [, ref] = range.split('!');
     wb.getWorksheet('Operating Statement')!.getCell(ref!.replace(/\$/g, '')).value = { formula: 'components_retail_net_operating_income', result: undefined };
     expect(() => fromWorkbook(wb)).toThrow(WorkbookImportError);
+  });
+});
+
+// ─── #484: import accepts every subtotal form the exporter writes ────────────
+//
+// toWorkbook() writes a statement subtotal as a live formula, as the stated
+// source subtotal retained as an editable input (a totals-only record), or as
+// #N/A when the source subtotal is absent. An unedited workbook in any of those
+// forms imports; a subtotal changed to anything the exporter does not write
+// refuses.
+
+const STAGES: readonly DealStage[] = [
+  'scope', 'screening', 'term_sheet', 'full_underwrite', 'credit_approval', 'closing', 'monitoring',
+];
+
+/** Replace the payload of a record's single noi_model block, keeping its _meta. */
+function withNoiModel(text: string, payload: Record<string, unknown>): string {
+  const match = /(```json uw:section=noi_model[^\n]*\n)([\s\S]*?)(\n```)/.exec(text);
+  if (!match) throw new Error('no noi_model block');
+  const meta = (JSON.parse(match[2]!) as Record<string, unknown>)._meta;
+  return text.replace(match[0], `${match[1]}${JSON.stringify({ _meta: meta, ...payload }, null, 2)}${match[3]}`);
+}
+
+const TOTALS_ONLY = {
+  income: { effective_gross_income: 100000 },
+  expenses: { total_operating_expenses: 40000 },
+  net_operating_income: 60000,
+};
+
+async function exportedFrom(text: string): Promise<{ wb: ExcelJS.Workbook; parsed: ReturnType<typeof parseUWFile> }> {
+  const parsed = parseUWFile(text);
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(await (await toWorkbook(parsed)).xlsx.writeBuffer() as ArrayBuffer);
+  return { wb, parsed };
+}
+
+function leaves(value: unknown, prefix: string, out: Array<[string, unknown]>): Array<[string, unknown]> {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    for (const [key, child] of Object.entries(value)) leaves(child, prefix ? `${prefix}.${key}` : key, out);
+  } else out.push([prefix, value]);
+  return out;
+}
+
+/**
+ * Every imported leaf equals the source record's value at that path, read the
+ * way the calc engine reads it (absent is null). Returns the compared paths.
+ */
+function expectImportMatchesSource(
+  imported: Record<string, Record<string, unknown>>,
+  parsed: ReturnType<typeof parseUWFile>,
+): string[] {
+  const paths: string[] = [];
+  for (const [section, fragment] of Object.entries(imported)) {
+    for (const [path, value] of leaves(fragment, '', [])) {
+      const source = evaluate(parseExpression(`${section}.${path}`), { parsed, prior_results: {}, locale: 'en-US' });
+      expect(value, `${section}.${path}`).toEqual(source ?? null);
+      paths.push(`${section}.${path}`);
+    }
+  }
+  return paths;
+}
+
+function subtotalCell(wb: ExcelJS.Workbook, name: string): ExcelJS.Cell {
+  const [, ref] = wb.definedNames.getRanges(name).ranges[0]!.split('!');
+  return wb.getWorksheet('Operating Statement')!.getCell(ref!.replace(/\$/g, ''));
+}
+
+describe('fromWorkbook — exporter subtotal forms (#484)', () => {
+  for (const assetClass of SUPPORTED_ASSET_CLASSES) {
+    it(`imports every unedited ${assetClass} init workbook, at every deal stage`, async () => {
+      for (const dealStage of STAGES) {
+        const text = generateBlankUWFile({ assetClass: assetClass as AssetClass, dealStage });
+        const { wb, parsed } = await exportedFrom(text);
+        const imported = fromWorkbook(wb);
+        expect(imported.asset_class, dealStage).toBe(assetClass);
+        expect(expectImportMatchesSource(imported.sections, parsed).length, dealStage).toBeGreaterThan(0);
+      }
+    });
+  }
+
+  it('imports a totals-only record and carries its retained subtotals back', async () => {
+    const text = withNoiModel(generateBlankUWFile({ assetClass: 'office' }), TOTALS_ONLY);
+    const { wb, parsed } = await exportedFrom(text);
+    expect(subtotalCell(wb, 'effective_gross_income').value).toBe(100000);
+    expect(subtotalCell(wb, 'noi').value).toMatchObject({ formula: expect.any(String) });
+    const imported = fromWorkbook(wb);
+    const paths = expectImportMatchesSource(imported.sections, parsed);
+    expect(paths).toEqual(expect.arrayContaining([
+      'noi_model.income.effective_gross_income',
+      'noi_model.expenses.total_operating_expenses',
+    ]));
+    // NOI is the live EGI - OpEx formula over the retained inputs: formula-derived, never imported.
+    expect(imported.sections.noi_model).not.toHaveProperty('net_operating_income');
+  });
+
+  it('imports an edited retained subtotal, which the workbook documents as editable', async () => {
+    const { wb } = await exportedFrom(withNoiModel(generateBlankUWFile({ assetClass: 'office' }), TOTALS_ONLY));
+    subtotalCell(wb, 'effective_gross_income').value = 125000;
+    const income = fromWorkbook(wb).sections.noi_model!.income as Record<string, unknown>;
+    expect(income.effective_gross_income).toBe(125000);
+  });
+
+  const refuses = (wb: ExcelJS.Workbook) =>
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({ code: 'WORKBOOK-IMPORT-SUBTOTAL' }));
+
+  it('refuses a value typed over a live subtotal formula', async () => {
+    const { wb } = await workbookFor(CASES[0]);
+    subtotalCell(wb, 'effective_gross_income').value = 1_000_000;
+    refuses(wb);
+  });
+
+  it('refuses a value typed over a missing-subtotal #N/A', async () => {
+    const { wb } = await exportedFrom(generateBlankUWFile({ assetClass: 'office' }));
+    expect(subtotalCell(wb, 'noi').value).toEqual({ error: '#N/A' });
+    subtotalCell(wb, 'noi').value = 60000;
+    refuses(wb);
+  });
+
+  it('refuses a formula written over a retained subtotal', async () => {
+    const { wb } = await exportedFrom(withNoiModel(generateBlankUWFile({ assetClass: 'office' }), TOTALS_ONLY));
+    // Even the exact live SUM the exporter writes for a record with detail: this
+    // record's form for the row is the retained input, marked in column C.
+    subtotalCell(wb, 'total_operating_expenses').value = { formula: 'SUM(B7:B12)', result: undefined } as ExcelJS.CellFormulaValue;
+    refuses(wb);
+  });
+
+  it('refuses a non-formula subtotal without the status text the exporter writes beside it', async () => {
+    const { wb } = await exportedFrom(withNoiModel(generateBlankUWFile({ assetClass: 'office' }), TOTALS_ONLY));
+    const cell = subtotalCell(wb, 'effective_gross_income');
+    expect(cell.worksheet.getCell(cell.row, 3).value).toBe(SUBTOTAL_STATUS.retained);
+    cell.worksheet.getCell(cell.row, 3).value = null;
+    refuses(wb);
+
+    const missing = await exportedFrom(generateBlankUWFile({ assetClass: 'office' }));
+    const na = subtotalCell(missing.wb, 'effective_gross_income');
+    expect(na.worksheet.getCell(na.row, 3).value).toBe(SUBTOTAL_STATUS.missing);
+    na.worksheet.getCell(na.row, 3).value = SUBTOTAL_STATUS.retained;
+    refuses(missing.wb);
+  });
+
+  it('refuses a formula over a mixed-use consolidated NOI that has no component to consolidate', async () => {
+    const { wb } = await exportedFrom(generateBlankUWFile({ assetClass: 'mixed_use' }));
+    const cell = subtotalCell(wb, 'noi_model_net_operating_income');
+    expect(cell.value).toEqual({ error: '#N/A' });
+    cell.value = { formula: '0', result: undefined } as ExcelJS.CellFormulaValue;
+    expect(() => fromWorkbook(wb)).toThrow(expect.objectContaining({ code: 'WORKBOOK-IMPORT-SUBTOTAL' }));
   });
 });
