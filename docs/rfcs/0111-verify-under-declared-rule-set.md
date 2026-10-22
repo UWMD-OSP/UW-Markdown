@@ -1,7 +1,7 @@
 ---
 rfc: 0111
 title: Verify each record under the rule set of the version it declares
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-21
 affects:
@@ -13,7 +13,8 @@ affects:
 
 # RFC 0111: Verify each record under the rule set of the version it declares
 
-> **Draft for owner acceptance.** Origin: owner ruling of 2026-10-21 on the
+> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0111 (#473) accepted as drafted, including D4: stricter security and soundness fixes apply to every kept rule set.").
+> Origin: owner ruling of 2026-10-21 on the
 > release rules after launch, rule (1): "a record is always verified under the
 > rule set of the version it declares, and every 5.x verifier keeps every
 > earlier 5.x rule set; a fix applies to new records only." It binds every
@@ -113,14 +114,14 @@ runner keys cases by Format version.
   minor, so a monthly minor train may move the Format monthly. Readers already
   key on `uw_version`; the cost is the version count, not new parsing.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-21)
 
 | # | Question | Proposal | Why / alternative |
 |---|---|---|---|
 | D1 | What selects a record's rule set | The declared Format version; a rule-set change issues a Format minor | Release rule (5): a record declares its Format version. Alternative: a separate `uwmd_rules` field |
 | D2 | What a rule set contains | Format rules, §5.2 bands and codes, Protocol verification procedures, receipt rules, the metric dictionary | Everything normative that decides an outcome; starter products excluded (RFC 0078) |
 | D3 | Which rule sets a Verifier keeps | Every Format version issued in 5.x up to its claimed release; none prelaunch | The ruling ("every earlier 5.x rule set"); the owner rule's zero prelaunch retention |
-| D4 | Security and soundness fixes | Apply to every kept rule set when they make verification stricter | Otherwise an old declaration reaches a known flaw. Alternative: no exception |
+| D4 | Security and soundness fixes | **Ruled:** Apply to every kept rule set when they make verification stricter | Otherwise an old declaration reaches a known flaw. Alternative: no exception |
 | D5 | Reporting | Verification results and receipts name the applied rule set | A verdict is only reproducible if its rule set is known |
 | D6 | Conformance | Cases keyed by Format version; a Verifier passes every kept rule set's cases | Proves retention rather than claiming it |
 | D7 | Versions | None allocated; effective at 5.0.0 | Owner rule: 5.0.0 needs separate approval |
