@@ -382,36 +382,7 @@ Financial-validity engine run over the consolidated property figures; per-compon
     }
   },
   "overall_status": "clean",
-  "financial_validity": [
-    {
-      "flag_id": "FV-001",
-      "metric": "dscr",
-      "value": 1.3537,
-      "threshold": {
-        "type": "min",
-        "min": 1.2,
-        "max": null
-      },
-      "severity": "pass",
-      "message": "DSCR (1.3537x) clears the 1.20x warning threshold.",
-      "suppressed": false,
-      "suppress_reason": null
-    },
-    {
-      "flag_id": "FV-002",
-      "metric": "ltv",
-      "value": 0.65,
-      "threshold": {
-        "type": "max",
-        "min": null,
-        "max": 0.75
-      },
-      "severity": "pass",
-      "message": "LTV at 65.0% is within the 75% policy maximum.",
-      "suppressed": false,
-      "suppress_reason": null
-    }
-  ],
+  "financial_validity": [],
   "completeness": []
 }
 ```
