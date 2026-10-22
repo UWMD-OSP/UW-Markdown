@@ -31,6 +31,15 @@ protocol, and each package each carry an independent semver).
   The verifier rule-set rule is proposed separately in draft RFC 0111. The lender
   acceptance kit is a post-launch 5.x milestone.
 
+- Implement accepted RFC 0110: a stored §4.17 `financial_validity[]` entry names
+  its band `band` (`error | warning`), as the validation result's deal flags do,
+  in place of `severity`; the entry's `metric` list gains `ltc`; and an entry that
+  crosses no band is not recorded. The corpus follows: the six regenerated
+  sections rename the member, and the sixteen hand-written sections whose entries
+  said `pass` (no band crossed) now store an empty list. Every changed record's
+  stored flags equal a fresh `uwmd validate`'s `deal_flags`. The
+  `02-full-multifamily` parse baseline follows.
+
 - Refresh uwmd.org with the owner-approved direction C: document-version card,
   page classification and normative navigation markers, compact mobile landing,
   complete guide sidebars, favicon and the approved public-copy sweep. Keep

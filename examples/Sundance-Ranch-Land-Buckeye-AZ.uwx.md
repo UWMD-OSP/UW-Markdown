@@ -408,22 +408,7 @@ Financial-validity engine run. Income-property thresholds do not apply to a land
     }
   },
   "overall_status": "clean",
-  "financial_validity": [
-    {
-      "flag_id": "FV-001",
-      "metric": "ltc",
-      "value": 0.5,
-      "threshold": {
-        "type": "max",
-        "min": null,
-        "max": 0.8
-      },
-      "severity": "pass",
-      "message": "LTC at 50.0% is well inside the 80% warning threshold for land.",
-      "suppressed": false,
-      "suppress_reason": null
-    }
-  ],
+  "financial_validity": [],
   "completeness": []
 }
 ```

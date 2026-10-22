@@ -135,6 +135,7 @@ and how it gets accepted.
 | [0107](./0107-ltc-financial-validity-home.md) | Give the LTC band a Format-defined home and an FV code | accepted | format, protocol, core, conformance |
 | [0108](./0108-validation-section-vocabulary.md) | Align the §4.17 validation section's vocabulary with the validation result | accepted | format, conformance |
 | [0109](./0109-financial-validity-deal-flags.md) | Report financial-validity findings as deal flags, not record errors | accepted | format, protocol, core, conformance, tooling |
+| [0110](./0110-financial-validity-entry-band.md) | Name the §4.17 financial_validity entry's band "band", as RFC 0109 does | accepted | format, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

@@ -2181,7 +2181,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
         "min": 1.2,
         "max": null
       },
-      "severity": "warning",
+      "band": "warning",
       "message": "DSCR 1.109 at quick_metrics.dscr is below the warning threshold of 1.2",
       "suppressed": false,
       "suppress_reason": null
@@ -2195,7 +2195,7 @@ The deal presents a moderate risk profile. The asset is stabilized with no signi
         "min": 1.2,
         "max": null
       },
-      "severity": "warning",
+      "band": "warning",
       "message": "DSCR 1.109 at debt_structure.sizing_metrics.dscr_underwritten is below the warning threshold of 1.2",
       "suppressed": false,
       "suppress_reason": null
