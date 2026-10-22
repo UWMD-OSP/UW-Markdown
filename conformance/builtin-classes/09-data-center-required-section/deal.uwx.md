@@ -5,7 +5,7 @@ deal_name: "Mesa Gateway Data Center — Mesa, AZ"
 created: "2026-09-09T08:00:00Z"
 last_modified: "2026-09-09T11:00:00Z"
 
-property_address: "6200 S Sossaman Rd"
+property_address: "6200 S Basalt Ridge Rd"
 city: "Mesa"
 state: "AZ"
 zip: "85212"
@@ -38,7 +38,7 @@ created_by: "wizard"
 source_documents:
   - "mesa_gateway_rent_roll_aug2026.xlsx"
   - "mesa_gateway_t12_2025.pdf"
-  - "mesa_gateway_srp_capacity_letter_2026.pdf"
+  - "mesa_gateway_arroyo_power_capacity_letter_2026.pdf"
   - "mesa_gateway_appraisal_2026.pdf"
 ---
 
@@ -63,7 +63,7 @@ on one file; nothing else does.
 
 ## Deal Context {#deal_context}
 
-Mesa Gateway is a 10 MW (critical IT) wholesale data center in the Elliot Road Technology Corridor, 100% contracted to two tenants on power-metered leases, with a permitted 2.5 MW phase 2 already pre-leased to the anchor. Thesis: acquire a modern N+1 facility with a secured 15 MW utility feed at $16,000/kW — well below the cost of new powered capacity in a market where the utility queue, not land, is the constraint.
+Mesa Gateway is a 10 MW (critical IT) wholesale data center in the Elliot Road corridor, 100% contracted to two tenants on power-metered leases, with a permitted 2.5 MW phase 2 already pre-leased to the anchor. Thesis: acquire a modern N+1 facility with a secured 15 MW utility feed at $16,000/kW — well below the cost of new powered capacity in a market where the utility queue, not land, is the constraint.
 
 ```json uw:section=deal_context source=manual ts=2026-09-09T08:20:00Z v=1 confidence=high
 {
@@ -89,7 +89,7 @@ Mesa Gateway is a 10 MW (critical IT) wholesale data center in the Elliot Road T
       "superseded": false
     }
   },
-  "_notes": "Utility feed is 15 MW under an executed SRP capacity agreement, which covers the 12.5 MW build-out at design PUE. Phase 2 (2.5 MW) is permitted; 1 MW of it is pre-leased to the anchor with rent commencing on delivery.",
+  "_notes": "Utility feed is 15 MW under an executed Arroyo Power capacity agreement, which covers the 12.5 MW build-out at design PUE. Phase 2 (2.5 MW) is permitted; 1 MW of it is pre-leased to the anchor with rent commencing on delivery.",
   "deal_summary": "10 MW commissioned wholesale data center in Mesa, 100% contracted to two tenants under metered pass-through power, with a permitted 2.5 MW phase 2 of which 1 MW is pre-leased.",
   "investment_thesis": "Secured utility capacity is the scarce asset in the East Valley. Buying commissioned, contracted megawatts at $16,000/kW, with an expansion phase already permitted and partly pre-leased, captures the utility-queue premium without development risk.",
   "value_creation_strategy": "Deliver phase 2 into the pre-lease, mark the anchor's 2029 renewal to a market that is 25% above the in-place rate, and hold the interconnection and services lines as they scale with density.",
@@ -138,7 +138,7 @@ Square footage is the **building** footprint, carried so that a fallback reader 
   "parking_type": "surface",
   "condition": "excellent",
   "occupancy_pct": 1,
-  "submarket": "Elliot Road Technology Corridor / East Valley"
+  "submarket": "Elliot Road corridor / East Valley"
 }
 ```
 

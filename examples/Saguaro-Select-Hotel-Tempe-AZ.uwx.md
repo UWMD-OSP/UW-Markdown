@@ -5,7 +5,7 @@ deal_name: "Saguaro Select Hotel - Tempe, AZ"
 created: "2026-08-11T09:00:00Z"
 last_modified: "2026-08-11T09:00:00Z"
 
-property_address: "1450 E Apache Blvd"
+property_address: "1450 E Ironleaf Blvd"
 city: "Tempe"
 state: "AZ"
 zip: "85281"
@@ -45,8 +45,8 @@ source_documents:
 
 # Saguaro Select Hotel - Tempe, AZ
 
-Stabilized select-service acquisition adjacent to the ASU campus and the Loop 202
-corridor. The underwriting case holds ADR flat in year one and assumes occupancy
+Stabilized select-service acquisition adjacent to the Desert Valley University campus and the
+Loop 202 corridor. The underwriting case holds ADR flat in year one and assumes occupancy
 stays in the low-to-mid 70s, with a franchise-mandated PIP funded at close out of
 the sources & uses rather than out of operations.
 
@@ -82,7 +82,7 @@ the sources & uses rather than out of operations.
   "year_renovated": 2019,
   "building_class": "B",
   "asset_subtype": "select_service",
-  "brand": "Marriott Courtyard",
+  "brand": "Lanternbrook Select",
   "franchise_expiration": "2034-06-30",
   "stories": 5,
   "meeting_space_sqft": 2400,

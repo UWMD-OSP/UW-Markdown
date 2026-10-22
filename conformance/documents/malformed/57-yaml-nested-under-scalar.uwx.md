@@ -5,7 +5,7 @@ deal_name: "Parkview Apartments — Glendale, AZ"
 created: "2026-04-24T09:00:00Z"
 last_modified: "2026-04-24T15:42:00Z"
 
-property_address: "1234 W Camelback Rd"
+property_address: "1234 W Palisade Wash Rd"
 city: "Glendale"
 state: "AZ"
 zip: "85301"
@@ -51,7 +51,7 @@ source_documents:
 
 ## Deal Context {#deal_context}
 
-Parkview is a 48-unit garden-style multifamily in the Camelback corridor of Glendale, AZ — a stable, infill westside Phoenix submarket with consistent renter demand driven by proximity to State Farm Stadium, Banner Health campuses, and the Westgate entertainment district. The property has been owner-operated for 14 years with below-market rents and deferred professional management, which is exactly the inefficiency that creates the buy opportunity here.
+Parkview is a 48-unit garden-style multifamily in the Camelback corridor of Glendale, AZ — a stable, infill westside Phoenix submarket with consistent renter demand driven by proximity to Sidewinder Stadium, Ridgeline Health campuses, and the Lariat Commons entertainment district. The property has been owner-operated for 14 years with below-market rents and deferred professional management, which is exactly the inefficiency that creates the buy opportunity here.
 
 The thesis is straightforward: acquire at a realistic in-place yield, replace management, push rents toward market over the first 18 months through natural turnover, and hold for 5 years as the submarket continues to absorb population growth from Phoenix metro expansion. No heavy value-add capital required — this is an income play with a moderate rent-growth kicker, not a repositioning.
 
@@ -152,7 +152,7 @@ The owner is motivated — estate sale situation, wants a clean close. LOI accep
 
 Parkview Apartments is a two-story, wood-frame garden-style apartment complex comprising 48 units across four buildings on a 1.8-acre parcel. Built in 1987, the property received a common area renovation in 2023 (new leasing office, resurfaced parking, landscaping refresh). Unit interiors are original but functional — no deferred maintenance flagged in the walk-through; appliances aging but operational.
 
-The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, with strong renter demand from healthcare workers (Banner Thunderbird Medical Center 1.2 miles), sports/entertainment employees (State Farm Stadium 3 miles), and workforce renters priced out of Scottsdale and Tempe.
+The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, with strong renter demand from healthcare workers (Ridgeline Westside Medical Center 1.2 miles), sports/entertainment employees (Sidewinder Stadium 3 miles), and workforce renters priced out of Scottsdale and Tempe.
 
 ```json uw:section=property source=manual ts=2026-04-24T09:05:00Z v=1 confidence=high
 {
@@ -181,7 +181,7 @@ The Camelback/Glendale submarket sits between Loop 101 and the I-17 corridor, wi
   },
   "_notes": null,
   "address": {
-    "street": "1234 W Camelback Rd",
+    "street": "1234 W Palisade Wash Rd",
     "city": "Glendale",
     "state": "AZ",
     "zip": "85301",
@@ -1373,10 +1373,10 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
     "employment_growth_pct": 0.024,
     "population_growth_pct": 0.019,
     "major_employers": [
-      "Banner Thunderbird Medical Center",
-      "State Farm",
-      "USAA",
-      "Abrazo Health"
+      "Ridgeline Westside Medical Center",
+      "Copperleaf Mutual Insurance",
+      "Lodestar Financial Services",
+      "Bluesage Health"
     ],
     "demand_drivers": [
       "healthcare employment growth",
@@ -1394,7 +1394,7 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
   },
   "comparable_sales": [
     {
-      "address": "4820 N 67th Ave, Glendale AZ",
+      "address": "4820 N Brittlebush Mesa Ave, Glendale AZ",
       "property_name": "Desert View Apts",
       "sale_date": "2026-01",
       "units_or_sqft": 52,
@@ -1407,7 +1407,7 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
       "notes": "B-class garden, similar vintage, 94% occupancy at sale"
     },
     {
-      "address": "2250 W Bethany Home Rd, Phoenix AZ",
+      "address": "2250 W Coyote Bend Rd, Phoenix AZ",
       "property_name": "Bethany Gardens",
       "sale_date": "2025-11",
       "units_or_sqft": 64,
@@ -1420,7 +1420,7 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
       "notes": "Larger but similar quality and vintage"
     },
     {
-      "address": "5540 N 51st Ave, Glendale AZ",
+      "address": "5540 N Tumbleweed Flats Ave, Glendale AZ",
       "property_name": "Westwood Place",
       "sale_date": "2025-08",
       "units_or_sqft": 36,
@@ -1436,7 +1436,7 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
   "comparable_rentals": [
     {
       "property_name": "Camelback Village Apts",
-      "address": "4200 W Camelback Rd",
+      "address": "4200 W Palisade Wash Rd",
       "units": 60,
       "unit_type": "1BR/1BA",
       "asking_rent_per_unit": 1095,
@@ -1448,7 +1448,7 @@ The Glendale/West Phoenix submarket is a supply-constrained, workforce-renter ma
     },
     {
       "property_name": "Glendale Palms",
-      "address": "6700 N 43rd Ave",
+      "address": "6700 N Desert Lark Ave",
       "units": 80,
       "unit_type": "2BR/2BA",
       "asking_rent_per_unit": 1310,
@@ -2606,7 +2606,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
       "output_hash": null,
       "error_code": null,
       "error_message": null,
-      "notes": "File initialized via uwmd init --scenario stabilized_acquisition --address '1234 W Camelback Rd, Glendale AZ 85301'"
+      "notes": "File initialized via uwmd init --scenario stabilized_acquisition --address '1234 W Palisade Wash Rd, Glendale AZ 85301'"
     },
     {
       "entry_id": "e002",

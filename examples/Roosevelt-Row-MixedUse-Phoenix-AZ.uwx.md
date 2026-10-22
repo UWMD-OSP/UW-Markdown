@@ -5,7 +5,7 @@ deal_name: "Roosevelt Row Commons — Mixed-Use, Phoenix, AZ"
 created: "2026-08-10T09:00:00Z"
 last_modified: "2026-08-14T16:00:00Z"
 
-property_address: "801 N 2nd St"
+property_address: "801 N Kiln Works St"
 city: "Phoenix"
 state: "AZ"
 zip: "85004"
