@@ -177,7 +177,7 @@ class SourceMetadataLeafTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), original)
         from uwmd import main
         manifest, status = main(["manifest"])
-        self.assertEqual((status, manifest["capabilities"]), (0, ["parse", "calc-evaluate", "validate"]))
+        self.assertEqual((status, manifest["capabilities"]), (0, ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"]))
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ import {
   FORMAT_VERSION,
   PROTOCOL_VERSION,
   VALIDATOR_CODE_FAMILIES,
+  VERIFIER_OBLIGATION_CAPABILITIES,
 } from '@uwmd/verify';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
 import { CORE_VERSION } from './version.js';
@@ -49,6 +50,12 @@ describe('REFERENCE_IMPLEMENTATION_MANIFEST', () => {
     );
   });
 
+  it('claims every Verifier obligation flag its tier requires (RFC 0115, §II.5)', () => {
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).toEqual(
+      expect.arrayContaining([...VERIFIER_OBLIGATION_CAPABILITIES]),
+    );
+  });
+
   it('does not claim agent hosting, which the toolkit no longer performs', () => {
     // RFC 0112 removed the `agent-host` capability from the vocabulary; this
     // implementation runs no agent, so it cannot claim it either.
@@ -65,6 +72,23 @@ describe('the reference manifest and the normative schema', () => {
     // portfolio-relationships, which the schema's capability enum lacked, so
     // the reference implementation's own `uwmd manifest` output was invalid.
     expect(validate(REFERENCE_IMPLEMENTATION_MANIFEST), JSON.stringify(validate.errors)).toBe(true);
+  });
+
+  it('refuses a Verifier tier claim that omits an obligation flag (RFC 0115 D2)', () => {
+    for (const omitted of VERIFIER_OBLIGATION_CAPABILITIES) {
+      const partial = {
+        ...REFERENCE_IMPLEMENTATION_MANIFEST,
+        capabilities: REFERENCE_IMPLEMENTATION_MANIFEST.capabilities!.filter((c) => c !== omitted),
+      };
+      expect(validate(partial), omitted).toBe(false);
+      // The same capabilities without a tier are an honest partial claim.
+      const { tier: _tier, ...untiered } = partial;
+      expect(validate(untiered), omitted).toBe(true);
+    }
+    // An absent or empty list claims every capability (§II.6a.5).
+    const { capabilities: _capabilities, ...claimsAll } = REFERENCE_IMPLEMENTATION_MANIFEST;
+    expect(validate(claimsAll)).toBe(true);
+    expect(validate({ ...REFERENCE_IMPLEMENTATION_MANIFEST, capabilities: [] })).toBe(true);
   });
 });
 

@@ -165,7 +165,7 @@ class CompletenessOwnershipTests(unittest.TestCase):
                             self.assertNotIn("error", result)
                             self.assertEqual(result["overall_status"], "warnings")
                             self.assertEqual([i["code"] for i in result["issues"]], ["META_FIELD_MISSING_" + suffix])
-                            self.assertEqual((len(result["stage_readiness"]), len(result["coverage"])), (7, 15))
+                            self.assertEqual((len(result["stage_readiness"]), len(result["coverage"])), (7, 16))
 
 
 if __name__ == "__main__":

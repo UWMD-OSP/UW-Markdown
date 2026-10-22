@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/receipt-verification.schema.json",
+  "title": "Receipt verification (Receipt §5, RFC 0115)",
+  "description": "What `verify-receipt <receipt.json> <file> --json` prints (Protocol §II.6a.1): one of three verdicts and its issues (UW_RECEIPT §5). A Verifier holds no calculation pack (RFC 0115 D4), so a pack-named result is RCP-05 unverifiable. Mirrors UWReceiptVerification in @uwmd/verify's protocol.ts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["verdict", "issues"],
+  "properties": {
+    "verdict": { "enum": ["verified", "failed", "unverifiable"] },
+    "rule_set": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "The record's declared Format version (RFC 0111 D5). Absent only when the record could not be canonicalized (RCP-09)."
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "severity", "message"],
+        "properties": {
+          "code": {
+            "enum": ["RCP-01", "RCP-02", "RCP-03", "RCP-04", "RCP-05", "RCP-06", "RCP-07", "RCP-08", "RCP-09", "RCP-10", "RCP-11", "RCP-12", "RCP-13", "COMP-ROLLUP-DISAGREES"]
+          },
+          "severity": { "enum": ["failure", "indeterminate"] },
+          "message": { "type": "string" },
+          "calc_id": { "type": "string" },
+          "expected": { "type": "string" },
+          "actual": { "type": "string" }
+        }
+      }
+    },
+    "recomputed": {
+      "type": "array",
+      "description": "What the verifier computed, when it got far enough to compute.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["calc_id", "value", "computed"],
+        "properties": {
+          "calc_id": { "type": "string" },
+          "value": { "type": ["number", "string", "boolean", "null"] },
+          "unit": { "type": "string" },
+          "computed": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

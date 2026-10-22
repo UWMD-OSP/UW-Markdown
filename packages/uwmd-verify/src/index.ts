@@ -678,6 +678,7 @@ export { DEFAULT_THRESHOLDS, ASSET_CLASSES, UW_SIGNATURE_ALGORITHMS, FINANCIAL_V
 // ─── Protocol surface ─────────────────────────────────────────────────────────
 export {
   CONFORMANCE_TARGETS,
+  VERIFIER_OBLIGATION_CAPABILITIES,
   BLOCK_ROLES,
   CROSS_CHECK_ROLE_PREFERENCE,
   PERIOD_SERIES,
@@ -786,6 +787,13 @@ export { verifyReserveAccounts } from './reserve-accounts.js';
 export type { ReserveSource, ReserveMovementKind, ReserveMovement, ReservePeriod, PropertyReserveAccount, ReserveAccounts, ReservePeriodEvidence, ReserveAccountsVerificationIssue, ReserveAccountsVerification } from './protocol.js';
 
 export { verifyReserveDrawBindings } from './reserve-draw-bindings.js';
+
+// RFC 0115 — document-level section verifiers behind the portable Verifier
+// subcommands (§II.6a.1), and the section report each prints.
+export { verifyCapitalStackDocument, verifyLeaseUpDocument, verifyWaterfallDocument } from './section-verification.js';
+export type { SectionVerificationOptions } from './section-verification.js';
+export type { SectionVerificationReport, CashFlowVerificationReport, WaterfallVerificationReport,
+  CapitalStackVerificationReport, LeaseUpVerificationReport } from './protocol.js';
 export type { ReserveDrawReference, ReserveGrossExpenditureReference, ReserveGrossExpenditure, ReserveDrawBinding, ReserveDrawBindingPlan, ReserveDrawBindingEvidence, ReserveDrawBindingVerification } from './protocol.js';
 
 // RFC 0079 stated-metric comparison, independent of packs and defaults.

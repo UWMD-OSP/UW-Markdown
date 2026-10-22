@@ -7,11 +7,17 @@ external packages, hosted services, production fixture lookup, or TypeScript
 translation. No PyPI name, supported Python floor or publication is decided.
 
 **Certified 2026-10-21 (Issue #354):** the discovery manifest claims the
-**Reader tier** and the capabilities `parse`, `calc-evaluate` and `validate`.
+**Reader tier** and the capabilities `parse`, `calc-evaluate` and `validate`,
+plus (since RFC 0115) the Verifier-obligation flags `verify-reserve-accounts`
+and `verify-reserve-draws` for the two reserve verifiers it implements.
 CI proves the claim with the RFC 0004 runner on Windows, Linux and macOS:
-`--tier verifier --no-skip` selects every Reader and Verifier portable case
-(17 parse, 110 calc, 144 validate, 28 reserve-account and 46 reserve-draw), and
-every one must pass with no skip. It does **not** claim the Verifier tier, and
+`--tier verifier` selects every Reader and Verifier portable case, and the 345
+it claims (17 parse, 110 calc, 144 validate, 28 reserve-account and
+46 reserve-draw) must all pass. The only skips allowed are the 160 cases that
+need one of the seven RFC 0115 flags it does not claim (`verify-metrics`,
+`verify-cash-flows`, `verify-property-cash-flows`, `verify-waterfall`,
+`verify-capital-stack`, `verify-lease-up`, `verify-receipts`); a skip for any
+other capability fails the job. It does **not** claim the Verifier tier, and
 the manifest keeps `tier: reader`. Protocol §II.2 also requires, and this
 implementation does not provide (§II.5: publish capabilities rather than round
 up):
@@ -126,7 +132,7 @@ No capability promotion or release is implied.
 ### Current command and evidence
 
 `validate <file> --json` freshly parses the actual input and produces one
-ValidationResult, all seven stage-readiness booleans, all fifteen CC coverage
+ValidationResult, all seven stage-readiness booleans, all sixteen CC coverage
 entries and separate Protocol V.12 replacement-funding verification. Structural
 errors or failed/unverifiable V.12 return exit1; warning-only results return0.
 Workflow blocking flags retain overall_status:blocking but do not alone fail the
@@ -405,7 +411,7 @@ capability, schema activation or general validator is introduced by this audit.
 This audit covers the developing API, not a complete validation claim. Accepted
 authorities are [Format 2–5](../../spec/UW_FORMAT_SPEC.md),
 [Protocol III.6a / VIII](../../spec/UW_PROTOCOL.md) and the referenced schemas/
-RFCs. All fifteen registered CC entries are produced, including skips; all
+RFCs. All sixteen registered CC entries are produced, including skips; all
 fourteen FV codes have focused threshold/severity/type/override controls.
 Reachable codes and passing projections do not establish every field condition.
 
@@ -461,7 +467,8 @@ implemented ledger, with remaining proof limits named explicitly.
 | CC-13 | Registered class primary-size presence, deal profile only; missing/externalized property exempt | Full per-class field shape and zero/null/role evidence; existing raw-size registry stays authoritative. |
 | CC-14 | Unconditional deal-record property presence, including unresolved external reference | Non-deal profile and Lite/source discrimination must remain exact. |
 | CC-15 | Eligible base/default/sole lease-up scenario versus NOI, 2% | Complete variant/canonical field controls; role cannot select another scenario. |
-| CC-16 | One info finding per unresolvable section, affected checks sorted | Reporting only; not one of the fifteen coverage entries and not a financial failure. |
+| CC-17 | Frontmatter `quick_metrics.purchase_price` versus valuation, tolerance 100 (RFC 0086) | Every class; canonical frontmatter carrier and unavailable inputs. |
+| CC-16 | One info finding per unresolvable section, affected checks sorted | Reporting only; not one of the sixteen coverage entries and not a financial failure. |
 
 The CC-02 operand proof follows accepted RFC 0079 D2 and its Decisions table,
 plus Protocol XIII.2: stated underwritten value is the denominator; purchase
@@ -639,7 +646,7 @@ fill defaults, host agents, or require starter rendering/editing workflows.
 |---|---|---|
 | Reader parsing: Format II, Appendix D; Protocol II.1, XII.1–2 | `uwmd_source`, `uwmd_frontmatter`, `uwmd_reader` retain bytes, number tokens, unknown data, physical blocks and the portable projection. Existing evidence: 17 portable parse cases and nine additional frozen Reader refusals. Legal one-layer sequence-object source support now also admits all 61 builtin-class documents unchanged. | Settle the bare scalar-key question below; audit source admission, all current registered/unknown sections and canonical lifecycle routing. Do not impose validation on otherwise parseable incomplete records. |
 | Reader current/history identity: Format 2.4, 2.7–2.8; Protocol II.6a.6 | Registered parallel sections, role opt-in and append collections are implemented. Reader projection and verification share `source_superseded`, which recognizes the exact fence flag or JSON lifecycle true without altering authored metadata. | The documented fence-only history-routing defect is corrected under the accepted Format 2.4/2.7 contract. Exact nullable versus named variant identities and the remaining Reader gates still require independent evidence before certification. |
-| Full `validate`: Format II–V and 6.2; Protocol III.6a, V.12 | The real unadvertised command integrates structural result partitions, all fifteen CC coverage entries, seven readiness values and separate V.12. All111 unchanged actual portable subprocess cases now pass; local/composition refusals remain explicit. No complete capability is claimed. | Finish the named field/domain, applicable ordering and nonportable obligations above before promotion. Preserve published metadata warning/info/error distinctions; a portable pass does not establish complete admission or a Verifier tier. |
+| Full `validate`: Format II–V and 6.2; Protocol III.6a, V.12 | The real unadvertised command integrates structural result partitions, all sixteen CC coverage entries, seven readiness values and separate V.12. All111 unchanged actual portable subprocess cases now pass; local/composition refusals remain explicit. No complete capability is claimed. | Finish the named field/domain, applicable ordering and nonportable obligations above before promotion. Preserve published metadata warning/info/error distinctions; a portable pass does not establish complete admission or a Verifier tier. |
 | Standard metrics: Protocol II.2.2, VIII.2, VIII.5.1, XIII; [dictionary](../../spec/metrics/README.md) | Source numeric precision, AST parsing, calendar and quantization foundations exist. A private allowlisted executor supplies accepted class-validation prerequisites only. No complete statement discovery, comparison API or document metric report. | Reproduce all 171 class-scoped definitions and eleven raw primary-size selectors, with exact class/id lookup, lazy null branches, role/variant selection and retained source precision. Verified/failed/unverifiable remain distinct; absent inputs are never filled. |
 | General calculation method: Protocol II.2.6, VIII.1–6 | `uwmd_calc` now executes the accepted grammar, source selection, overrides, prior-result API, all 21 builtins and quantized `CalcResult` values through the actual `calc` CLI. The current base portable subset has110 cases; the new scoped evidence is described above. | Complete all applicable nonportable execution and transport controls and independent platform evidence before any capability claim. Passing this subset does not close validation, dictionary reproduction, other financial verifiers or receipts; discovery remains parse-only. |
 | Calendar cash flows: Protocol VIII.9; Format 4.26 | Integer Gregorian dates, three day counts, ordered totals/MOIC and selected-source structural prerequisites only. | Complete declared/stated metric verification, source/variant/override refusal, quantized results and xnpv/xirr procedure. `calc-cash-flow` has a separate declaration/refusal contract; these functions are not expression-callable. |

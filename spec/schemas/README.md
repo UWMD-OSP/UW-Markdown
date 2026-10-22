@@ -34,6 +34,9 @@ files live in this directory pending publication on `uwmd.org`.
 | [`section-cash-flow-series.schema.json`](section-cash-flow-series.schema.json) | `cash_flow_series` section (dated flows + stated metrics) | Format §4.26 / RFC 0034 |
 | [`section-reserve-accounts.schema.json`](section-reserve-accounts.schema.json) | ReserveAccounts | Format §4.28 / RFC 0064 |
 | [reserve-accounts-verification.schema.json](reserve-accounts-verification.schema.json) | ReserveAccountsVerification | Protocol §VIII.11 / RFC 0064 |
+| [`stated-metrics-report.schema.json`](stated-metrics-report.schema.json) | `StatedMetricsReport` (`verify-metrics`) | Protocol §II.2 item 2, §II.6a.1 / RFC 0115 |
+| [`section-verification-report.schema.json`](section-verification-report.schema.json) | `SectionVerificationReport` with `CashFlowVerification`, `WaterfallVerification`, `CapitalStackVerification`, `LeaseUpVerification` | Protocol §II.6a.1 / RFC 0115 |
+| [`receipt-verification.schema.json`](receipt-verification.schema.json) | `UWReceiptVerification` (`verify-receipt`) | [UW Receipt](../UW_RECEIPT.md) §5, Protocol §II.6a.1 / RFC 0115 |
 | [`section-distribution-waterfall.schema.json`](section-distribution-waterfall.schema.json) | `distribution_waterfall` section (tier ladder + stated outcomes) | Format §4.27 / RFC 0035 |
 | [`rent-roll-hospitality.schema.json`](rent-roll-hospitality.schema.json) | hospitality `rent_roll` class contract (room nights, ADR, occupancy; no `keys`) | Format §4.3 / RFC 0081 G3 |
 | [`lease-escalation-schedule.schema.json`](lease-escalation-schedule.schema.json) | commercial tenant rent-step schedule | Format §4.3 / RFC 0055 |

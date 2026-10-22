@@ -74,6 +74,22 @@ def _gaps(*stamps):
 
 
 # name -> (source bytes, code prefixes compared, expected reference rows)
+def _priced(price, *blocks, asset="office"):
+    """RFC 0086: a record whose frontmatter states quick_metrics.purchase_price."""
+    raw = _doc(asset=asset)
+    if price is not None:
+        raw = raw.replace(b"unknown_key: retained\n",
+                          b"unknown_key: retained\nquick_metrics:\n  purchase_price: " + str(price).encode() + b"\n")
+    return raw + b"".join(blocks)
+
+
+def _valuation_variant(variant, price):
+    """Two such blocks collide on `primary`, so the valuation does not resolve (§5.3)."""
+    meta = dict(section="valuation", provenance=dict(source="manual", actor="tester", timestamp="2026-01-01T00:00:00Z"),
+                quality=dict(confidence="high", human_review_required=False), lifecycle=dict(revision=1, superseded=False))
+    return block("valuation", {"_meta": meta, "purchase_price": price}, variant=variant, role="primary")
+
+
 CASES = {
     # CF-01 is the §4.26 row grammar only: schema shape beyond it is not CF-01.
     "cf-schema-shape-is-not-cf01": (
@@ -190,6 +206,22 @@ CASES = {
                    schedule=[dict(period="2026-01")], stabilized_summary=dict(annualized_noi=500.0)),
                    variant="downside")),
         ("CC-15",), []),
+    # CC-17 (RFC 0086): the frontmatter price against valuation, CC-10's $100 / error rule, every class.
+    "cc17-agrees": (
+        _priced(10000000, well_formed("valuation", purchase_price=10000000.0)),
+        ("CC-17",), []),
+    "cc17-101-off": (
+        _priced(10000101, well_formed("valuation", purchase_price=10000000.0)),
+        ("CC-17",), [("CC-17", "error", "frontmatter", "quick_metrics.purchase_price")]),
+    "cc17-100-off-boundary": (
+        _priced(10000100, well_formed("valuation", purchase_price=10000000.0)),
+        ("CC-17",), []),
+    "cc17-multifamily": (
+        _priced(12000000, well_formed("valuation", purchase_price=10000000.0), asset="multifamily"),
+        ("CC-17",), [("CC-17", "error", "frontmatter", "quick_metrics.purchase_price")]),
+    "cc17-unresolved-valuation": (
+        _priced(12000000, _valuation_variant("bank", 10000000.0), _valuation_variant("sponsor", 12000000.0)),
+        ("CC-17",), []),
     # Waterfall reference (Format §4.27).
     "wf-non-array-series": (
         _doc(_cash(variant="lp", series="none"),
@@ -262,6 +294,22 @@ class ReferenceAlignmentTests(unittest.TestCase):
         result = validate(CASES["cc15-ineligible-base"][0])
         self.assertEqual(result["coverage"]["CC-15"]["status"], "skipped")
         self.assertEqual(result["coverage"]["CC-15"]["reason"], "variant_unresolvable")
+
+    def test_cc17_coverage_follows_cc10(self):
+        def coverage(raw):
+            result = validate(raw)
+            entry = result["coverage"]["CC-17"]
+            return entry["status"], entry.get("reason"), result
+        self.assertEqual(coverage(CASES["cc17-agrees"][0])[:2], ("evaluated", None))
+        self.assertEqual(coverage(CASES["cc17-100-off-boundary"][0])[:2], ("evaluated", None))
+        self.assertEqual(coverage(_priced(None, well_formed("valuation", purchase_price=1.0)))[:2], ("skipped", "field_absent"))
+        self.assertEqual(coverage(_priced(1, well_formed("valuation", underwritten_value=1.0)))[:2], ("skipped", "field_absent"))
+        self.assertEqual(coverage(_priced(1))[:2], ("skipped", "section_absent"))
+        status, reason, result = coverage(CASES["cc17-unresolved-valuation"][0])
+        self.assertEqual((status, reason), ("skipped", "variant_unresolvable"))
+        notes = [i for i in result["issues"] if i["code"] == "CC-16"]
+        self.assertEqual(len(notes), 1)
+        self.assertIn("CC-17", notes[0]["message"])
 
     def test_cc05_cc06_nonpositive_noi_is_field_absent(self):
         coverage = validate(CASES["cc05-cc06-nonpositive-noi"][0])["coverage"]

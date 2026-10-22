@@ -54,14 +54,17 @@ jobs:
           name: isolated-python-fdlibm-${{ matrix.os }}
           path: ${{ runner.temp }}/python-fdlibm-observations.json
           if-no-files-found: error
-      # Certification (Issue #354): the claimed Reader tier plus calc-evaluate
-      # and validate. --tier verifier selects Reader and Verifier cases; with
-      # --no-skip any skipped case fails, and so does a failure, an unverifiable
-      # profile or an empty selection. The manifest keeps tier "reader".
-      - name: Portable Reader + calc-evaluate + validate (no skips)
+      # Certification (Issue #354): the claimed Reader tier plus calc-evaluate,
+      # validate and the two reserve verifiers. --tier verifier selects Reader
+      # and Verifier cases. Zero failures, zero unverifiable profiles and a
+      # nonempty pass are required. The only skips allowed are cases needing an
+      # RFC 0115 Verifier-obligation flag the Python manifest does not claim
+      # yet, listed here by name; a skip for any other capability fails the job.
+      # The manifest keeps tier "reader".
+      - name: Portable Reader + calc-evaluate + validate + reserve verifiers (only unclaimed RFC 0115 flags may skip)
         run: |
-          python conformance/runner/runner.py --impl "python implementations/python/uwmd.py" --tier verifier --no-skip --manifest-out python-reader-conformance.json
-          python -c "import json,sys; s=json.load(open('python-reader-conformance.json'))['summary']; ok=s['failed']==0 and s['unverifiable']==0 and s['skipped']==0 and not s['skipped_by_capability'] and s['passed']>0; print(s); sys.exit(0 if ok else 1)"
+          python conformance/runner/runner.py --impl "python implementations/python/uwmd.py" --tier verifier --manifest-out python-reader-conformance.json
+          python -c "import json,sys; s=json.load(open('python-reader-conformance.json'))['summary']; allowed={'verify-metrics','verify-cash-flows','verify-property-cash-flows','verify-waterfall','verify-capital-stack','verify-lease-up','verify-receipts'}; ok=s['failed']==0 and s['unverifiable']==0 and set(s['skipped_by_capability'])<=allowed and s['passed']>0; print(s); sys.exit(0 if ok else 1)"
       - uses: actions/upload-artifact@v6
         if: always()
         with:

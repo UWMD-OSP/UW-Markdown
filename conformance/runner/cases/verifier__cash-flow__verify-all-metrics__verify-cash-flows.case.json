@@ -1,0 +1,25 @@
+{
+  "id": "verifier__cash-flow__verify-all-metrics__verify-cash-flows",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-cash-flows"
+  ],
+  "command": "verify-cash-flows",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/runner/derived/cash-flow/verify-all-metrics",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/cash-flow/verify-all-metrics/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict",
+      "expected_code"
+    ],
+    "exit_code": 0
+  }
+}

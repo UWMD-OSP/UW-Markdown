@@ -1,0 +1,7 @@
+{
+  "description": "Clean at exactly $100: CC-17 is an error only over $100.",
+  "expected_calcs": {
+    "price_per_kw": 10000,
+    "price_per_commissioned_kw": 10000
+  }
+}

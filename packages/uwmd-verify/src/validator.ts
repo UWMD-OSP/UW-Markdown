@@ -708,6 +708,26 @@ function checkCrossSectionConsistency(
       }
     }
   }
+
+  // CC-17 (RFC 0086): the frontmatter summary's purchase price must match
+  // valuation.purchase_price, the one authority. CC-10's tolerance, severity
+  // and coverage; every asset class. The valuation block is the §5.3 selection.
+  {
+    const got = requireSections(ledger, parsed, 'CC-17', [['valuation']]);
+    if (got) {
+      const valuation = got['valuation']!.block;
+      const fmPP = num(deepGet(parsed.frontmatter as Record<string, unknown>, 'quick_metrics.purchase_price'));
+      const valPP = num(deepGet(valuation.content, 'purchase_price'));
+      if (fmPP == null) markSkipped(ledger, 'CC-17', 'field_absent', 'quick_metrics.purchase_price');
+      else if (valPP == null) markSkipped(ledger, 'CC-17', 'field_absent', 'valuation.purchase_price');
+      else {
+        markEvaluated(ledger, 'CC-17');
+        if (Math.abs(fmPP - valPP) > 100) {
+          issues.push({ code: 'CC-17', severity: 'error', section: 'frontmatter', field: 'quick_metrics.purchase_price', message: `CC-17: Purchase price in frontmatter quick_metrics ($${fmPP.toLocaleString()}) does not match valuation.purchase_price ($${valPP.toLocaleString()})`, value: Math.abs(fmPP - valPP) });
+        }
+      }
+    }
+  }
 }
 
 // ─── §4.9 dcf.returns.tax_basis (RFC 0038) ───────────────────────────────────

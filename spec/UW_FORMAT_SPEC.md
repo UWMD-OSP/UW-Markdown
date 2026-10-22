@@ -147,7 +147,7 @@ recommendation: "pending | approve | approve_with_conditions | decline | null"
 # These mirror the financial_model section; kept here for fast lookup
 # without parsing the full document. Updated by the engine after each run.
 quick_metrics:
-  purchase_price: null
+  purchase_price: null              # must match valuation.purchase_price (CC-17, RFC 0086)
   loan_amount: null
   noi_underwritten: null
   dscr: null
@@ -4430,6 +4430,7 @@ Tools MUST run these after each section write:
 | `CC-14` | A deal-record document must have a `property` section (§4.1) (RFC 0028) | `property` |
 | `CC-15` | The lease-up base variant's `stabilized_summary.annualized_noi` must agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%) (RFC 0008) | `lease_up_schedule`, `noi_model` |
 | `CC-16` | A section a cross-check reads is present as multiple variants and none resolves under the §5.3 preference order; the checks reading it were skipped (`info`) (RFC 0037) | any |
+| `CC-17` | Purchase price in frontmatter `quick_metrics` must match `valuation.purchase_price` (RFC 0086) | frontmatter, `valuation` |
 
 **Resolution over variant maps (RFC 0037 / RFC 0040).** A cross-check
 reads one block per section. Exclude component-role blocks and invalid roles
@@ -4542,11 +4543,27 @@ band is deliberate. It reads only the **base** variant of
 and `noi_model.net_operating_income` are stated. Non-base variants are
 exempt by design: a downside scenario is supposed to disagree with
 stabilized NOI. `stabilized_summary.annualized_noi` deliberately does **not**
-also cross-check `quick_metrics.noi_underwritten` — `quick_metrics` is a
-frontmatter restatement with no cross-check of its own (`CC-01` compares the
-rent roll to the operating statement, not NOI to the frontmatter), and RFC
-0008 adds one seam, the trajectory endpoint against the stabilized-year
-model, not a second.
+also cross-check `quick_metrics.noi_underwritten` — the frontmatter NOI
+restatement has no cross-check of its own (`CC-01` compares the rent roll to
+the operating statement, not NOI to the frontmatter; `CC-17` checks only the
+purchase price), and RFC 0008 adds one seam, the trajectory endpoint against
+the stabilized-year model, not a second.
+
+**`CC-17` severity and applicability (RFC 0086).** `valuation.purchase_price`
+is the one purchase-price authority; the frontmatter copy is a summary that is
+checked, not trusted. `CC-17` is an **error** when `quick_metrics.purchase_price`
+and `valuation.purchase_price` differ by more than $100 — `CC-10`'s tolerance
+and severity, since both compare a restated purchase price with the same
+authority. It applies to every asset class. The `valuation` block is the one
+the §5.3 preference order selects (there is no binding field, and descriptive
+`scenario` never selects it, §2.2b); when its variants do not resolve the
+check is skipped as `variant_unresolvable` and `CC-16` names it. Coverage
+follows `CC-10`: `skipped` / `section_absent` without a `valuation` section,
+and `skipped` / `field_absent` when either price is not stated as a finite
+number. No price is ever substituted for an absent one: a metric whose
+formula reads `valuation.purchase_price` (`price_per_kw`,
+`price_per_commissioned_kw`) is null when it is absent and never falls back
+to the frontmatter copy.
 
 ---
 
