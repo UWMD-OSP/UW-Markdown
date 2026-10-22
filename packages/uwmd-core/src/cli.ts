@@ -8,6 +8,9 @@ import {
   parseUWFile,
   validateUWFile,
   isScenarioId,
+  ASSET_CLASSES,
+  isCustomAssetClass,
+  STAGE_REQUIREMENTS,
   stringifyUWEnvelope,
   stampEnvelopeDigest,
   toUWEnvelope,
@@ -585,6 +588,22 @@ function cmdInit(flags: Record<string, string | boolean>): void {
       `--scenario must be one of the standard plans (${INIT_SCENARIOS.join(', ')}) or a reverse-DNS identifier (e.g. com.example.repositioning); got ${scenario === true ? 'no value' : `'${scenario}'`}.`,
     );
     process.exit(1);
+  }
+  // The closed vocabularies init writes into frontmatter (#492): a value
+  // outside them would produce a record that fails or misleads its readers.
+  const closed: [flag: string, allowed: readonly string[]][] = [
+    ['asset-class', ASSET_CLASSES],
+    ['stage', Object.keys(STAGE_REQUIREMENTS)],
+    ['tier', ['screener', 'analyst']],
+  ];
+  for (const [flag, allowed] of closed) {
+    const value = flags[flag];
+    // A namespaced custom class (Format §2.2a) is also a lawful asset_class.
+    if (flag === 'asset-class' && typeof value === 'string' && isCustomAssetClass(value)) continue;
+    if (value !== undefined && (typeof value !== 'string' || !allowed.includes(value))) {
+      console.error(`--${flag} must be one of ${allowed.join(', ')}; got ${value === true ? 'no value' : `'${value}'`}.`);
+      process.exit(1);
+    }
   }
   let content: string;
   try {
