@@ -48,12 +48,37 @@ describe('registered source files', () => {
       await expect(loadEditableUWXFile(files[id]!)).rejects.toMatchObject({ code: 'SOURCE_EDIT_UNSUPPORTED' });
   });
   it.each(['uwx', 'lite', 'uw-json', 'uw-xml', 'uw-csv-bundle'])('CLI commands read %s through the shared loader', (id) => {
-    for (const args of [['summary'], ['render', '--format=json'], ['scope', '--json'], ['verify', '--integrity', '--json']]) {
+    for (const args of [['parse'], ['validate', '--json'], ['summary'], ['render', '--format=json'],
+      ['scope', '--json'], ['refine', '--json'], ['report', '--stdout'], ['calc', '1'], ['verify-cash-flows', '--json'],
+      ['verify', '--integrity', '--json']]) {
       const child = spawnSync(process.execPath, [join(root, 'packages/uwmd-cli/bin/uwmd.mjs'), args[0]!, files[id]!, ...args.slice(1)],
         { encoding: 'utf8', timeout: 30_000, maxBuffer: 2_000_000 });
       expect(child.error, `${id} ${args[0]}`).toBeUndefined();
       expect(child.status, `${id} ${args[0]}: ${child.stderr}`).toBe(0);
       expect(child.stdout).not.toBe('');
     }
+  }, 60_000);
+  it.each(['lite', 'uw-json', 'uw-xml', 'uw-csv-bundle'])('refuses source writes and snapshot authentication for %s without changing bytes', async (id) => {
+    const file = files[id]!;
+    const before = await readFile(file);
+    const cli = (...args: string[]) => spawnSync(process.execPath, [join(root, 'packages/uwmd-cli/bin/uwmd.mjs'), ...args],
+      { encoding: 'utf8', timeout: 30_000, maxBuffer: 2_000_000 });
+    const compact = cli('compact', file);
+    expect(compact.status).toBe(1);
+    expect(compact.stderr).toContain('SOURCE_EDIT_UNSUPPORTED');
+    const signature = join(root, 'conformance/document-signatures/01-valid/signature.json');
+    const keys = join(root, 'conformance/document-signatures/keys');
+    const verified = cli('verify', file, '--integrity', `--document-signature=${signature}`, `--keystore=${join(keys, 'keystore.json')}`, '--json');
+    expect(verified.status).toBe(1);
+    expect(JSON.parse(verified.stdout).integrity.document_signature).toMatchObject({
+      state: 'unverifiable', reason: 'unsupported_version', issues: [{ code: 'INT-14' }],
+    });
+    const output = join(temp, `${id}.signature.json`);
+    const signed = cli('sign-document', file, `--key=${join(keys, 'signer.json')}`, `--out=${output}`);
+    expect(signed.status).toBe(1);
+    expect(signed.stderr).toContain('supplied');
+    expect(signed.stderr).toContain('require uwx-markdown');
+    await expect(readFile(output)).rejects.toMatchObject({ code: 'ENOENT' });
+    expect(await readFile(file)).toEqual(before);
   }, 60_000);
 });

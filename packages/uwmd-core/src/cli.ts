@@ -1673,11 +1673,11 @@ switch (command) {
   case 'verify-cash-flows': {
     try {
       const options = parseCashFlowVerificationArgs(args);
-      let source: string;
-      try { source = readFileSync(resolve(options.file), 'utf8'); }
+      let loaded: Awaited<ReturnType<typeof loadUWSourceFile>>;
+      try { loaded = await loadUWSourceFile(options.file); }
       catch (error) { throw new CalcError('CALC-CF-SERIES',
         `Cannot read source: ${error instanceof Error ? error.message : String(error)}`, 'source'); }
-      const result = verifyCashFlowDocument((await loadUWSourceFile(options.file)).parsed, options.variant);
+      const result = verifyCashFlowDocument(loaded.parsed, options.variant);
       if (options.json) console.log(JSON.stringify(result.report, null, 2));
       else {
         const r = result.report;
