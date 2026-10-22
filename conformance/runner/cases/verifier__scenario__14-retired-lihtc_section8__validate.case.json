@@ -1,6 +1,7 @@
 {
   "id": "verifier__scenario__14-retired-lihtc_section8__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],

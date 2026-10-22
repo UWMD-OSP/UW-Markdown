@@ -63,6 +63,7 @@ conventional sidecar spelling is `<record>.receipt.json`.
     "engine": "@uwmd/core",
     "engine_version": "1.2.0",
     "protocol_version": "1.3.0",
+    "rule_set": "3.0",
     "results": [
       { "calc_id": "dscr", "value": 1.2824864235841738, "unit": "x", "computed": true },
       { "calc_id": "ltv", "value": 0.6, "unit": "%", "computed": true },
@@ -145,6 +146,10 @@ a typed error. It **MUST NOT** emit a partial, caveated, or provisional receipt.
 An issuer **MUST NOT** name a pack that declares no version, and **MUST NOT**
 name a pack that declares no calculations.
 
+An issuer **MUST** compute and validate under the rule set the record's
+declared Format version names (Protocol §XII.5) and state it at
+`computation.rule_set` (§5.2.2).
+
 Validation `errors` and `warnings` are counted and recorded, but do **not**
 block issuance — a receipt describes what the policy set found, and a record
 that trips a threshold is still a record whose arithmetic can be attested.
@@ -182,6 +187,10 @@ Verifiers **MUST** apply these in order:
    (`RCP-12`); see §10. Checked here, above the indeterminate group, because a
    reference the verifier holds and can compare is real evidence, and ordering
    it later would let an unknown pack mask a mutated observation set.
+2b. **The receipt names a rule set other than the one its record declares** →
+   `failed` (`RCP-13`); see §5.2.2. Like the digest, this compares the receipt
+   with its own subject, so it is decided before the indeterminate group and
+   before any signature check or recomputation.
 3. **Verifier cannot decide** → `unverifiable`: unknown pack (`RCP-05`), a
    different version of the named pack (`RCP-06`), a signature with no
    available backend (`RCP-08`), or a referenced input the verifier does not
@@ -241,6 +250,23 @@ Absence means **unstated**, not non-conforming: a receipt issued before the
 field existed cannot retroactively claim a version. A verifier **MUST NOT**
 treat absence as a failure.
 
+### 5.2.2 Rule set
+
+*Added by [RFC 0111](../docs/rfcs/0111-verify-under-declared-rule-set.md) D5.*
+`computation.rule_set` is REQUIRED and names, by Format version, the rule set
+the issuer computed and validated under (Protocol §XII.5). It is always the
+subject record's declared `uw_version`; for a UW Lite record that declares
+none, it is the Format version the Lite bridge compiles to (`3.0`).
+
+A verifier selects the rule set from the record, never from the receipt, and
+reports the one it applied (`rule_set` in its verification result). If the
+receipt names a different rule set, the verdict is `failed` with `RCP-13`: the
+receipt misstates its own subject, and its results do not attest a computation
+under the rules that record is verified by. Unlike §5.3 and §5.5 there is no
+`unverifiable` carve-out: the rule set is fixed by the record, not by either
+side's implementation. A record whose declared version names no rule set the
+verifier keeps does not canonicalize (`RCP-09`, §5.1 step 1).
+
 ### 5.3 Engine-identity mismatch
 
 *Resolves the open question in RFC 0016.* If recomputation disagrees and the
@@ -277,6 +303,7 @@ would train users to ignore the state.
 | `RCP-10` | unverifiable | Digests disagree and the canonicalization version also differs |
 | `RCP-11` | unverifiable | A referenced input is not available to this verifier |
 | `RCP-12` | failed | A referenced input resolved, but its digest disagrees |
+| `RCP-13` | failed | The receipt names a rule set other than the one its record declares (§5.2.2) |
 | `COMP-ROLLUP-DISAGREES` | failed | A stated composite aggregate disagrees with recomputation (§11) |
 
 ### 5.5 Canonicalization-version mismatch

@@ -1,6 +1,7 @@
 {
   "id": "verifier__scenario__09-absent__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],

@@ -1,6 +1,7 @@
 {
   "id": "starter-products__documents__14-student-bed-counts__render-chat",
   "target": "starter-products",
+  "format_version": "3.0",
   "requires_capabilities": [
     "render-chat"
   ],

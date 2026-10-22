@@ -60,10 +60,11 @@ Know which side a change is on before you start.
 
 UWMD stays vendor-neutral and verifier-focused. StackUW owns modeling, AI
 agents and workflow products; it is an adopter, not the required producer or
-runtime for this standard. The reference toolkit no longer hosts agents (the
-Bancroft runner, provider adapters and `uwmd run` were removed); the layer
-vocabulary that remains awaits draft RFC 0112. None of it is a direction to
-expand UWMD's product scope. UWMD 5.0 is the first official public
+runtime for this standard. The reference toolkit no longer hosts agents, and
+RFC 0112 removed the Bancroft layer vocabulary from the standard (layer
+registry, `pipeline_state`, module `agent_layers`, `agent-host`, `uwmd layers`).
+Generic agent provenance (`agent/<id>` with `agent_id`/`agent_version`) stays.
+None of this is a direction to expand UWMD's product scope. UWMD 5.0 is the first official public
 compatibility baseline. Apply the owner rule above: all @uwmd npm packages
 launch together at 5.0.0, prelaunch releases use4.x.x, and no prelaunch
 compatibility or artifact-retention work is required. Specific normative

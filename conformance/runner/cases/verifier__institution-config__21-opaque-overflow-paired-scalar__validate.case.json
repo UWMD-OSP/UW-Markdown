@@ -1,6 +1,7 @@
 {
   "id": "verifier__institution-config__21-opaque-overflow-paired-scalar__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],

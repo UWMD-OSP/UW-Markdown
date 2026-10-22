@@ -12,7 +12,7 @@ This file also records the versions actually released.
 
 | Surface | Version | Pairs with |
 |---|---|---|
-| `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
+| `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3); 3.0 names the one verification rule set (Protocol §XII.5, RFC 0111) |
 | UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.3.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
 | `@uwmd/verify` | **0.2.1** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.3.0 depends on it exactly and re-exports it |
 | `@uwmd/core` | **4.3.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.1 |
