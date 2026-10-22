@@ -99,14 +99,14 @@ RFC 0078 Phase 3 uses case-level ownership in
 Every check belongs exactly once to Reader, Verifier, one optional profile
 (Module, Integrity, Representations, Portfolio, Sensitivity or Stochastic),
 or starter products. Directories describe content; owners come from the index.
-Editor/agent, rendering, defaults/cascade, projections and refinement checks
+Editor, layer-profile, rendering, defaults/cascade, projections and refinement checks
 belong to [docs/starter](../starter/README.md), remain in CI and have separate
 report counts. Mixed cases keep all their assertions and are product checks.
 
 RFC 0081 Phase 5 renames the corpus to `documents/`, `calc/` and
 `starter/{editor,refinement,agent}/`. Suites use the same content names
-(`starter-editor`, `starter-refinement`, `starter-agent`,
-`starter-agent-profile`, `starter-agent-replay` for starter checks).
+(`starter-editor`, `starter-refinement` and `starter-agent-profile` for
+starter checks).
 Portable ids and filenames use `<owner>__<suite>__<scenario>__<operation>`;
 malformed document scenarios start with `malformed-`. The reserve
 `bare-block` cases keep their existing checks. No old path or id is accepted.
@@ -119,20 +119,26 @@ Phase 4 deletes the checks that exercised only a backward-compatibility path
 (the `meta-v2` and `migrate` suites, the retired-format projections and the
 module compatibility shells) and adds refusal cases for what those paths used
 to admit, leaving **1,069** and **336 portable CLI projections**. The lender
-fixture stays **187/0/0**.
+fixture stays **187/0/0**. Later RFCs added cases. Removing agent execution
+from the toolkit retired the four starter checks that needed an agent run or a
+model provider (`starter-agent/l0a-scope-deterministic`,
+`starter-agent/l6-risk-rating` and
+`starter-agent-replay/l6-risk-rating/{sections,document}`); the layer-profile
+contract stays. The index now holds **1,226** reference checks and **397**
+portable CLI projections:
 
 | Owner | Reference | Portable |
 |---|---:|---:|
-| reader | 26 | 17 |
-| verifier | 686 | 281 |
+| reader | 32 | 17 |
+| verifier | 816 | 328 |
 | module | 76 | 1 |
-| integrity | 14 | 0 |
-| representations | 135 | 0 |
+| integrity | 32 | 14 |
+| representations | 142 | 0 |
 | portfolio | 14 | 0 |
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
-| starter-products | 106 | 37 |
-| **Total** | **1,069** | **336** |
+| starter-products | 102 | 37 |
+| **Total** | **1,226** | **397** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -150,8 +156,8 @@ Unknown owners, duplicate/missing results and unindexed portable identities
 fail the gate, as does a runner suite with no index rows or an indexed suite
 with no runner. Baseline updates require full runs or `--suite`; a target
 filter is refused because mixed-suite updates could alter unselected baselines.
-A family includes its child suites (`starter-refinement` under `calc`, `starter-agent-profile`
-under `starter-agent`); baseline updates selecting only a child suite are refused.
+A family includes its child suites (`starter-refinement` under `calc`);
+baseline updates selecting only a child suite are refused.
 The descriptions below use the content paths introduced by RFC 0081 Phase 5.
 
 
@@ -176,8 +182,8 @@ npm run conformance -- --json              # machine-readable summary
 ```
 
 Exit code 0 = all pass, 1 = a failed assertion, 2 = an invalid selector or
-coverage error. Shape, layer-profile and deterministic replay checks all run
-by default as starter products; no live model is called. JSON reports contain
+coverage error. The layer-profile check runs by default as a starter product;
+no model is called. JSON reports contain
 canonical `target` plus `tier`, `profile` or `starter_product`, and `by_target`
 counts. Only content names are accepted as fixture-family addresses.
 
@@ -229,33 +235,13 @@ unit?, error?}` against `expected-result.json`. Plus a **refinement** mode
 (`conformance/starter/refinement/<scenario>/`): `deal.uw.md` → `extractDependencyGraph` → compare the
 projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 
-### Agent starter checks
+### Layer-profile starter check
 
-`conformance/starter/agent/`:
-- `replay/<scenario>/` — **the real gate, and it runs by default.**
-  `before.uwx.md` + `cassette.json` + a frozen `after.uwx.md`. The cassette
-  supplies the model's side of the conversation, so the run needs no network and
-  no key, and the resulting document is compared **byte for byte**. That single
-  comparison pins context assembly, tool-call extraction, supersede semantics,
-  `_meta` ownership, the pipeline-log append, and the frontmatter update at once.
-
-  Determinism comes from `BancroftRunOptions.now`: a constant clock freezes
-  `_meta.provenance.timestamp`, collapses `duration_ms`, and makes the log-entry id
-  derivable instead of random.
-
-  Replay is **strict** — each exchange records the request it answered, and a
-  mismatch is a typed error naming the changed field, so a cassette doubles as a
-  prompt-drift detector. Matching is sequential rather than keyed, because a
-  keyed cassette would happily serve a reordered run and hide a change in call
-  order. See `conformance/starter/agent/replay/README.md`, including its
-  note on what recorded replay does *not* prove.
-- `fixtures/<scenario>/`: `before.uw.md` + `expected-after-shape.json` —
-  **shape checks** (parse + JSON-validate), run by default without a live model.
-  Note the `l6-risk-rating` fixture is not runnable as written: it carries only
-  a `property` section while L6 requires `noi_model`, `valuation`, and
-  `debt_structure`. The replay scenario uses its own input for that reason.
-- `profile/<scenario>/expected-layer-profiles.json` — asserts the `layer →
-  consumed_profile` map from `BANCROFT_LAYERS` matches the baseline.
+`conformance/starter/agent/profile/<scenario>/expected-layer-profiles.json`
+asserts the `layer → consumed_profile` map from `BANCROFT_LAYERS` matches the
+baseline. It needs no model and no agent run. The toolkit hosts no agents, so
+there are no shape or replay checks of agent output; a host that runs its own
+agents tests its own writes.
 
 ### UW Lite — representation + bridge
 
@@ -311,11 +297,11 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,069 indexed checks across its suites, and most of what has been added
+runs all 1,226 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable
-driver checks its 336-case subset using shared comparison logic, while the
+driver checks its 397-case subset using shared comparison logic, while the
 reference runner checks the full indexed corpus. A result claims only the
 checks actually run. Replacing one with the other would
 trade breadth for portability.
@@ -332,8 +318,8 @@ The `cases/*.case.json` files are **generated** —
 already on disk (which fixture, which command, which baseline), and
 hand-maintaining fifty invites one to go stale silently. The known gaps are
 listed in the runner README rather than hidden: two editor starter fixtures need
-`applyEditAsync` and a volatile hash the synchronous CLI cannot express, agent starter checks
-have no CLI surface, and the named suites are TypeScript-only.
+`applyEditAsync` and a volatile hash the synchronous CLI cannot express, the layer-profile
+check has no CLI surface, and the named suites are TypeScript-only.
 
 Comparison is **subset-by-default**: the baselines are projections, so an
 implementation reporting `round_to` and `display` alongside the four fields a

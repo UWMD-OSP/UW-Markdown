@@ -1,4 +1,5 @@
-// .uw.md runner — the write path for agent and engine outputs
+// .uw.md runner — the generic write path for agent and engine outputs. The
+// toolkit runs no agent itself; any host writes its records through here.
 //
 // Responsibilities:
 //   1. Mark an existing section block as superseded (fence annotation + _meta)
@@ -10,7 +11,7 @@
 // The runner uses exact line numbers from the parser to do targeted surgery.
 // Output is always a valid .uw.md string that parseUWFile can round-trip.
 //
-// Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §6.3 (uwmd run)
+// Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §6.8 (agent contract)
 
 import {
   stampMetaIntoBlockContent,
@@ -56,7 +57,7 @@ export interface RunOptions {
   updateQuickMetrics?: Partial<Record<string, number | null>>;
   /**
    * Freeze the wall-clock stamp on the block and its log entry. Defaults to
-   * now. Supplying it is what lets a recorded-replay run reproduce a document
+   * now. Supplying it is what lets a caller reproduce a document
    * byte-for-byte — without it every run differs in `_meta.provenance.timestamp`.
    */
   timestamp?: string;

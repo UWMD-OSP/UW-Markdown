@@ -117,10 +117,9 @@ with expected outputs in the matching `expected/` directory. To add a fixture:
 3. Add its owner row (Reader, Verifier, a profile, or starter products) to
    `conformance/corpus-index.json`, and an entry to the suite README explaining
    what the fixture exercises.
-4. For agent-host starter fixtures (`starter/agent/`), expected outputs are *shape assertions*,
-   not byte equality — LLMs are nondeterministic, so the fixture's
-   `expected-after-shape.json` lists fields that MUST be present, with allowed
-   value types but not specific values.
+4. The `starter/agent/` directory holds only the layer-profile check, which
+   reads `BANCROFT_LAYERS` directly. The toolkit runs no agent, so there are no
+   agent-output fixtures.
 
 ## Playbooks
 

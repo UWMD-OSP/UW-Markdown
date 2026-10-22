@@ -41,13 +41,18 @@ describe('REFERENCE_IMPLEMENTATION_MANIFEST', () => {
 
   it('claims the Protocol 3.0 Verifier tier with every profile (RFC 0078)', () => {
     // The reference implements every stated-figure verifier and every optional
-    // profile. Editing and agent hosting are starter-product capabilities now,
-    // not tiers, so the old 'tier-4-agent-host' claim has no 3.0 equivalent.
+    // profile. Editing is a starter-product capability now, not a tier.
     expect(REFERENCE_IMPLEMENTATION_MANIFEST.tier).toBe('verifier');
     expect(REFERENCE_IMPLEMENTATION_MANIFEST.profiles).toEqual([...CONFORMANCE_PROFILES]);
     expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).toEqual(
-      expect.arrayContaining(['edit-supersede', 'agent-host', 'render-chat']),
+      expect.arrayContaining(['edit-supersede', 'render-chat']),
     );
+  });
+
+  it('does not claim agent hosting, which the toolkit no longer performs', () => {
+    // The `agent-host` capability stays in the Protocol vocabulary for other
+    // hosts to declare; this implementation runs no agent, so it must not.
+    expect(REFERENCE_IMPLEMENTATION_MANIFEST.capabilities).not.toContain('agent-host');
   });
 });
 

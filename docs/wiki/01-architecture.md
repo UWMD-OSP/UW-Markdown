@@ -19,7 +19,7 @@ the single most important diagram in the repo (also in [`ARCHITECTURE.md`](../..
 ├──────────────────────────────────────────────────────────────┤
 │  Starter toolkit        packages/uwmd-core  (@uwmd/core)       │  the heart
 │   editor · renderer · runner · compactor · cascade · defaults  │
-│   packs/ (Excel emit) · agents/ · context · CLI …              │
+│   packs/ (Excel emit) · layer context · CLI …                  │
 │   depends on @uwmd/verify exactly and re-exports all of it     │
 └──────────────────────────────────────────────────────────────┘
                          ▲ used by
@@ -49,7 +49,7 @@ the Protocol 3.0 contract) splits the repo into two layers:
   document: well formed, internally consistent, reproducible.
 - **The starter products** — the tools given away on top of it: calc engine and
   packs, editor, viewer and report renderer, Excel exporter, defaults and the
-  cascade, refinement, Bancroft agents. Their behavior is described
+  cascade, refinement, the Bancroft layer registry. Their behavior is described
   non-normatively in [`docs/starter/`](../starter/README.md) and versions with
   the packages only.
 
@@ -68,8 +68,8 @@ Profiles: `module`, `integrity`, `representations`, `portfolio`, `sensitivity`,
 all six.
 
 `reader` and `verifier` are the only tier values (`isConformanceTier` in
-`protocol.ts`); the Protocol 2.x tier names are not read. Editor and agent-host
-behavior is a non-normative starter-product claim. Module manifests declare
+`protocol.ts`); the Protocol 2.x tier names are not read. Editor behavior is a
+non-normative starter-product claim; the reference toolkit hosts no agents. Module manifests declare
 `requires_conformance` and optional `requires_profiles` in the same
 vocabulary. The re-tiered corpus retains its historical
 directory names until RFC 0081 Phase 5 renames them.
@@ -115,10 +115,8 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
 2. **The library keeps transport logic dependency-light.** `@uwmd/verify`'s
    runtime dependencies are `fast-xml-parser` and `fflate`, and it depends on no
    `@uwmd/*` package. `@uwmd/core` depends on `@uwmd/verify` exactly and imports
-   it only through its public entry. `@anthropic-ai/sdk` is an **optional peer
-   dependency** of core — needed only by the reference Anthropic provider,
-   loaded dynamically on the first request, and excluded from
-   `@uwmd/core/browser`. HTTP/MCP adapters add no server SDK.
+   it only through its public entry. Neither package takes a vendor SDK, and
+   HTTP/MCP adapters add no server SDK.
 3. **Tools depend on the library** — `@uwmd/core`, or `@uwmd/verify` alone
    when they only read and verify (browser entry where applicable) — plus their
    own UI/runtime stack. **Tools MUST NOT reach into other tools' code.**
@@ -132,8 +130,10 @@ From `ARCHITECTURE.md`, restated because agents break these most often:
    pipeline log + superseded history.
 2. It is **validated** (`validateUWFile`) against cross-section consistency
    (CC-NN), financial thresholds (FV-NN), and data-quality rules (DQ-NN).
-3. **Optional Bancroft reference agents** (a starter product) read curated context, call Claude, and write
-   structured section blocks back — *extracting data, never computing financials*.
+3. **Agents run by a host** (outside this toolkit, which runs none) read
+   curated context and write structured section blocks back through the
+   generic writers or the edit API — *extracting data, never computing
+   financials*.
 4. **Derived metrics** (cap rate, DSCR, LTV, …) are computed **deterministically**
    by the calc engine from the asset class's pack — same formulas, every tool.
    The packs mirror the normative [metric dictionary](../../spec/metrics/README.md),

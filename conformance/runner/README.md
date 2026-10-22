@@ -44,7 +44,7 @@ Known gaps inside the tiers it does cover, listed rather than hidden:
 - **`starter/editor/parent-hash-stamp` and `stale-parent-rejected`** need
   `applyEditAsync` and a volatile content hash, which the CLI's synchronous
   `edit` cannot express. Covered by the TypeScript runner only.
-- **Agent starter checks** are shape-only and replay-driven; they have no CLI surface.
+- **The layer-profile starter check** reads the layer registry directly; it has no CLI surface.
 - **The named suites** (`lite`, `receipts`, `market-data`, `modules`,
   `packages`, `composition`, `capital-stack`, `size-intensive`, `signing`) are
   TypeScript-only today.

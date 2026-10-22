@@ -32,14 +32,13 @@ uwmd <command> [args]
 | `uwmd render <file>` | Render to `chat`, `summary`, or full markdown |
 | `uwmd edit <file> <op.json>` | Apply an `EditOperation` (starter editor) and write back |
 | `uwmd calc <file> <calc.json>` | Evaluate a calc declaration (§VIII expression notation) |
-| `uwmd run <file>` | Invoke UWMD optional Claude-backed Bancroft reference agent suite |
 | `uwmd compact <file>` | Strip superseded blocks (`--dry-run`, `--output`) |
 | `uwmd diff <a> <b>` | Diff two `.uwx.md` files at the section level |
 | `uwmd summary <file>` | One-screen deal summary |
 | `uwmd export <file.uw.md>` | Write a digested, model-lossless `.uw.json` sibling |
 | `uwmd formats` | List registered machine representations |
 | `uwmd convert <file> --to uw-json\|uw-xml\|uw-csv-bundle` | Convert Markdown, verified JSON/XML, or normalized CSV ZIP bundles |
-| `uwmd layers` | List the Bancroft agent layers (takes no file) |
+| `uwmd layers` | List the Bancroft layer registry (takes no file; the CLI runs no agent) |
 | `uwmd manifest` | Print the implementation manifest JSON: core, Protocol and Format versions, and capabilities (the `@uwmd/verify` version goes to stderr) |
 
 `uwmd --version` (or `-V`) prints the @uwmd/core, @uwmd/verify, Protocol and
@@ -96,7 +95,7 @@ import { parseUWFile, validateUWFile, evaluateCalc } from '@uwmd/core';
 
 ## Conformance
 
-This CLI is the reference implementation of the UW Markdown protocol's Reader and Verifier tiers and its six optional verification profiles, and it ships the starter-product editor and agent host. See the [protocol spec](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_PROTOCOL.md) for what each tier and profile guarantees.
+This CLI is the reference implementation of the UW Markdown protocol's Reader and Verifier tiers and its six optional verification profiles, and it ships the starter-product editor. It hosts no agents; an unknown command exits 1 before it reads any file. See the [protocol spec](https://github.com/UWMD-OSP/UW-Markdown/blob/main/spec/UW_PROTOCOL.md) for what each tier and profile guarantees.
 
 ## License
 

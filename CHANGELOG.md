@@ -451,6 +451,32 @@ protocol, and each package each carry an independent semver).
   verification gates remain, with no numerical/design acceptance or publication.
   Reconcile live contributor/version/roadmap and agent-retirement guidance.
 
+### Removed
+
+- Remove Bancroft agent execution from `@uwmd/core` and the `uwmd` CLI (owner
+  decision; RFC 0078 classes the agents as a starter product). Removed: the
+  runner (`runBancroftAgent`, `runBancroftAgentStreaming`, `BancroftRunOptions`,
+  `BancroftRunResult`, `ProgressEvent`), the tool schemas
+  (`WRITE_UW_SECTION_TOOL`, `WRITE_MULTIPLE_SECTIONS_TOOL`,
+  `MULTI_SECTION_LAYERS`, `ToolOutput`), the provider seam (`AgentProviderError`,
+  `AgentProvider`, `AgentRequest`, `AgentCompletion`, `AgentToolCall`,
+  `AgentToolSchema`, `AgentMessage`), the Anthropic adapter
+  (`createAnthropicProvider`, `AnthropicProviderOptions`), record and replay
+  (`createReplayProvider`, `createRecordingProvider`, `RecordingProvider`,
+  `parseAgentCassette`, `agentRequestFingerprint`, `CASSETTE_VERSION`,
+  `AgentCassette`, `RecordedExchange`) and `AgentHostCapability`; the
+  `uwmd run` command and its flags; core's `agent-host` manifest claim; the
+  `@anthropic-ai/sdk` optional peer and dev dependency;
+  `scripts/rerecord-cassettes.mjs`; and the four starter checks that needed an
+  agent run or a provider (`starter-agent/l0a-scope-deterministic`,
+  `starter-agent/l6-risk-rating`,
+  `starter-agent-replay/l6-risk-rating/{sections,document}`). Kept until RFC
+  0112: `BANCROFT_LAYERS`, the context and prompt builders, `uwmd layers` and
+  the layer-profile check. Kept: the generic writers (`writeAgentBlock`,
+  `writeErrorEntry`, `buildMeta`), `buildContext` and `uwmd edit
+  --agent-id/--agent-version`. An unknown command, `uwmd run` included, now
+  exits 1 before any file I/O instead of printing the help text with exit 0.
+
 ### Fixed
 
 - Enforce accepted RFC0081's single hospitality field homes with CLS-04:
