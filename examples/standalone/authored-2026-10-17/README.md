@@ -1,10 +1,7 @@
 # Authored standalone positive kit — 2026-10-17
 
-These are newly authored fictional examples under the owner's RFC0048 disposition.
-They demonstrate accepted profiles, fragments, composition and packaging. They do
-not repair or reauthenticate the original kit. The owner accepted RFC0091 and
-these six declarations on2026-10-17. Final integration remains gated by review
-and exact-head CI; no version, release or publication is authorized.
+Synthetic examples: every name, party and figure is fictional. They demonstrate
+the accepted profiles, fragments, composition and packaging (RFC 0048, RFC 0091).
 
 ## Identities and provenance
 
@@ -20,11 +17,11 @@ are not a source for these decisions. All blocks are new revision-1 heads.
 | [inline-deal.uwx.md](inline-deal.uwx.md) | `uw_standalone_authored_2026_10_17` | `example:standalone:2026-10-17:inline-deal` |
 | [externalized-deal.uwx.md](externalized-deal.uwx.md) | `uw_standalone_authored_2026_10_17` | `example:standalone:2026-10-17:externalized-deal` |
 
-The two deal carriers share one NEW logical record identity and canonical metadata:
+The two deal carriers share one logical record identity and canonical metadata:
 RFC0048 requires the full resolved externalized model and digest to equal the
 inline model. Their physical identities are distinct member IDs and byte hashes,
 not distinct financial records. No frontmatter or metadata is excluded to make
-the comparison pass. The API abstract and source handle are new identities too.
+the comparison pass.
 
 ## Six authored top-level block declarations
 
@@ -46,36 +43,31 @@ verified. Review-required true remains a valid positive validation example.
 The five [parts](parts/) have new part IDs and complete authored metadata with
 review required true and superseded false; their one-line reason is in
 [declarations.json](declarations.json). Numeric amounts and dates remain stated
-illustrative data, with no new calculation. The newly authored dated fragment
-uses accepted Format §4.26 `series` rather than the historical fixture's `flows`
-member, preserving the two original rows unchanged. The original remains intact.
+illustrative data, with no new calculation. The dated fragment uses Format
+§4.26 `series`.
 
-The source-evidence text is newly authored illustrative material, not an executed
-lease or evidence that an original was reviewed. The package context omits its
-bytes and reports `not_transferred`.
+The source-evidence text is illustrative material, not an executed lease. The
+package context omits its bytes and reports `not_transferred`.
 
-## New package
+## Package
 
 [manifest.json](package/manifest.json) declares `pkg:standalone:authored:2026-10-17`.
 [standalone-authored.uwpkg.zip](package/standalone-authored.uwpkg.zip) contains all
-four new records, five new fragments and the new source-evidence stand-in. All
-record copies, raw hashes and four semantic digests are checked. Example/member
-IDs and the package are new; no public version was allocated.
+four records, five fragments and the source-evidence stand-in. All record
+copies, raw hashes and four semantic digests are checked.
 
 ```text
 npm run build
 node packages/uwmd-cli/bin/uwmd.mjs package verify examples/standalone/authored-2026-10-17/package/standalone-authored.uwpkg.zip
 ```
 
-The new package can be regenerated only from its NEW manifest and members. Do
-not regenerate or overwrite the original historical ZIP. Package VERIFIED means
-member byte/semantic identity, not truth or complete financial verification.
+The package is regenerated from its manifest and members (`uwmd package
+create`). Package VERIFIED means member byte/semantic identity, not truth or
+complete financial verification.
 
 ## Current verification scope
 
 Tests cover the six authored declarations, strict absent-flag findings, actual
 CLI exits/partitions and read-only behavior, complete composition equality,
 member/raw/semantic digest checks, native-host repeat encoding and package
-source-context separation. The owner's2026-10-17 rule retires prelaunch
-artifact freezes and archive-reproduction obligations. No legacy documents or
-issued subjects need preservation or repair for this kit.
+source-context separation.

@@ -2,7 +2,7 @@
   "format": "rfc0088-frozen-trajectory-integration-v1",
   "accepted_main_commit": "afcc615897aca301c7b5ec070bba7c0bd253e4ef",
   "historical_manifest_path": "experiments/numerical-0088/financial-trajectories/evidence/manifest.json",
-  "historical_manifest_sha256": "53a79745035278e22f01322d7f851293762a41f1e1e7dad1cb1a9efd11d22c08",
+  "historical_manifest_sha256": "ceeba51bd8dcab6384ec47d8bf35e1cf7ceaa3d582ca5b4f27ac173accbdd883",
   "historical_checkout_commit": "5c034dd063aa3e57a6d42d0384a768a700cb1c14",
   "historical_checkout_tree": "80d24a81ce7dfc2f578e51832945eb65df3ad6e6",
   "reason": "Accepted RFC 0090 / #376 changes Protocol actor text only within this historical source closure. Historical raw trajectories retain original execution provenance; every other current numerical/helper/input/evidence identity must match exactly. New composed-receipts evidence independently records actual afcc API execution; no 4730-row rerun or new universal coverage is implied.",

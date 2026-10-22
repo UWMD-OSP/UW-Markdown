@@ -36,6 +36,14 @@ protocol, and each package each carry an independent semver).
   address and class into property. TypeScript and Python share the contract;
   portable document cases now pin all seven readiness values.
 
+- Scrub leftovers for public launch (cleanup phase D, owner ruling 2026-10-22):
+  the `experiments/numerical-0088` evidence manifests record `<repo>` and
+  `<python>` instead of machine-local absolute paths, with every pinned digest of
+  a changed file repinned; the authored standalone kit's README describes the kit
+  without owner process narrative.
+- Fix #489: `render --format csv` quotes and escapes fields per RFC 4180, so a
+  comma or quote in a value no longer shifts the columns. The text columns that
+  were always quoted stay quoted, with embedded quotes doubled.
 - Implement accepted RFC 0114: an optional `property.area_measurement` records
   the standard behind a record's areas (`standard`: `boma`, `ipms`, `rebny`,
   `rics` or `other`; free-text `edition`; optional `note`; no other member). A
