@@ -10,6 +10,7 @@ import { hasBlockShape } from './block-kind.js';
 
 import {
   STAGE_REQUIREMENTS,
+  stageOneOfFor,
   deepGet,
   type DealStage,
   type ParsedUWFile,
@@ -170,8 +171,8 @@ export function inferGaps(parsed: ParsedUWFile, opts: InferGapsOptions = {}): Ga
   }
 
   // 3) required_one_of: at least one path of each group must exist
-  if (req.required_one_of) {
-    for (const group of req.required_one_of) {
+  if (stageOneOfFor(stage, parsed.frontmatter.asset_class).length) {
+    for (const group of stageOneOfFor(stage, parsed.frontmatter.asset_class)) {
       const anyPresent = group.some((fp) => {
         const split = splitFieldPath(fp);
         if (!split) return false;

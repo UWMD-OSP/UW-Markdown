@@ -32,6 +32,7 @@ function legacyRequiredSections(stage: DealStage, assetClass?: string): string[]
     const replacement = overlay.substitute?.[section] ?? section;
     if (!out.includes(replacement)) out.push(replacement);
   }
+  if (stage !== 'scope') out.push(...overlay.add_from_screening ?? []);
   return out;
 }
 
@@ -51,7 +52,7 @@ describe('STAGE_CONTRACT — presence equivalence', () => {
   it('carries the RFC 0029 overlays as asset_class-qualified rows, not a side table', () => {
     const landRows = STAGE_CONTRACT.filter((r) => r.asset_class === 'land');
     expect(landRows.length).toBeGreaterThan(0);
-    expect(landRows.every((r) => r.required === false)).toBe(true);
+    expect(landRows.filter(r => !r.one_of).every((r) => r.required === false)).toBe(true);
 
     const mixedRows = STAGE_CONTRACT.filter((r) => r.asset_class === 'mixed_use');
     expect(mixedRows.some((r) => r.section === 'components' && r.required === true)).toBe(true);
@@ -64,7 +65,7 @@ describe('STAGE_CONTRACT — presence equivalence', () => {
       expect.arrayContaining(['property.address', 'property.asset_class']),
     );
     const oneOf = STAGE_CONTRACT.find((r) => r.stage === 'scope' && r.one_of !== undefined);
-    expect(oneOf?.one_of).toEqual(['property.asking_price', 'property.units']);
+    expect(oneOf?.one_of).toEqual(['valuation.purchase_price']);
   });
 });
 

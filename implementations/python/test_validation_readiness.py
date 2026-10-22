@@ -30,6 +30,8 @@ def requirements(stage, asset):
         sections = [s for s in sections if s not in ("rent_roll", "operating_statement")]
     elif asset == "mixed_use":
         sections = ["components" if s in ("rent_roll", "operating_statement") else s for s in sections]
+    if stage != "scope" and asset in ("data_center", "manufactured_housing"):
+        sections.append("dc_capacity" if asset == "data_center" else "mhc_sites")
     return tuple(dict.fromkeys(sections))
 
 
@@ -39,14 +41,16 @@ def header(stage="scope", asset="multifamily"):
 
 
 def property_block(**values):
-    return well_formed("property", **{"address": "A", "asset_class": "multifamily", "units": 0, **values})
+    return well_formed("property", **{"address": "A", "asset_class": "multifamily", "total_units": 0, "rentable_square_feet": 1, "gross_leasable_area": 1, "net_rentable_square_feet": 1, "keys": 1, "total_beds": 1, "gross_acres": 1, "critical_it_load_kw": 1, "total_sites": 1, **values})
 
 
 def declared_document(stage, asset, omitted=None):
     raw = header(stage, asset)
     for section in requirements(stage, asset):
         if section != omitted:
-            raw += property_block(asset_class=asset) if section == "property" else well_formed(section)
+            raw += property_block(asset_class=asset) if section == "property" else well_formed(section, stated=True)
+    if omitted != "valuation":
+        raw += well_formed("valuation", purchase_price=1)
     return parse(raw)
 
 
@@ -102,17 +106,14 @@ class ValidationReadinessTests(unittest.TestCase):
 
     def test_scope_field_presence_distinguishes_null_zero_without_type_coercion(self):
         for values, ready, missing in (
-            ({}, True, []), ({"units": None}, False, ["units|asking_price"]),
-            ({"units": None, "asking_price": 0}, True, []),
+            ({}, True, []), ({"total_units": None}, False, ["property.total_units|valuation.purchase_price"]),
             ({"address": None}, False, ["address"]),
             ({"asset_class": None}, False, ["asset_class"]),
             ({"address": ""}, False, ["address"]),
             ({"asset_class": ""}, False, ["asset_class"]),
-            ({"units": ""}, False, ["units|asking_price"]),
-            ({"units": None, "asking_price": ""}, False, ["units|asking_price"]),
-            ({"units": "", "asking_price": 0}, True, []),
-            ({"units": False, "address": " ", "asset_class": " "}, True, []),
-            ({"units": " "}, True, [])):
+            ({"total_units": ""}, False, ["property.total_units|valuation.purchase_price"]),
+            ({"total_units": False, "address": " ", "asset_class": " "}, True, []),
+            ({"total_units": " "}, True, [])):
             with self.subTest(values=values):
                 parsed = parse(header() + property_block(**values)); before = copy.deepcopy(parsed)
                 result = validate(parsed)
@@ -126,9 +127,10 @@ class ValidationReadinessTests(unittest.TestCase):
         raw = header("screening") + well_formed("property") + well_formed("debt_structure") + well_formed("validation")
         result = validate(parse(raw))
         self.assertFalse(result["stage_readiness"]["scope"])
-        self.assertTrue(result["stage_readiness"]["screening"])
+        self.assertFalse(result["stage_readiness"]["screening"])
         self.assertFalse(result["stage_readiness"]["term_sheet"])
-        self.assertFalse(any(i["code"] in ("DQ-04", "DQ-06") for i in result["issues"]))
+        self.assertFalse(any(i["code"] == "DQ-04" for i in result["issues"]))
+        self.assertEqual({i["section"] for i in result["issues"] if i["code"] == "DQ-06"}, {"property", "debt_structure", "validation"})
         # The table reports section presence, not cleared diligence/final loan
         # terms or a guarantee that every previous stage's fields are complete.
 
@@ -148,11 +150,11 @@ class ValidationReadinessTests(unittest.TestCase):
             raw += external(section)
         result = validate(parse(raw))
         self.assertFalse(result["stage_readiness"]["scope"])
-        self.assertTrue(all(result["stage_readiness"][s] for s in STAGES if s != "scope"))
+        self.assertFalse(any(result["stage_readiness"].values()))
         self.assertFalse(any(i["code"] == "DQ-06" for i in result["issues"]))
-        raw = header() + block("property", {"address": "A", "asset_class": "multifamily", "units": 1}, superseded=True)
+        raw = header() + block("property", {"address": "A", "asset_class": "multifamily", "total_units": 1}, superseded=True)
         self.assertFalse(stage_readiness(parse(raw))["scope"])
-        raw += property_block(units=None)
+        raw += property_block(total_units=None)
         self.assertFalse(stage_readiness(parse(raw))["scope"])
         raw += property_block()
         self.assertTrue(stage_readiness(parse(raw))["scope"])

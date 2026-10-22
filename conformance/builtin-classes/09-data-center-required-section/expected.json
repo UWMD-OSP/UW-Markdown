@@ -8,8 +8,7 @@
     "mark_to_market": 0.25
   },
   "expected_codes": [
-    "CC-DC-07",
-    "CLS-03"
+    "CC-DC-07"
   ],
   "builtin_class": "data_center"
 }

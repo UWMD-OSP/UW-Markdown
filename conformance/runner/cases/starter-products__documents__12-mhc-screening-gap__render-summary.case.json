@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__12-mhc-screening-gap__render-summary",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "12-mhc-screening-gap.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/12-mhc-screening-gap.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

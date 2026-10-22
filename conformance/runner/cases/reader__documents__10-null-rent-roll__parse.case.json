@@ -1,0 +1,17 @@
+{
+  "id": "reader__documents__10-null-rent-roll__parse",
+  "target": "reader",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "10-null-rent-roll.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/10-null-rent-roll.parsed.json"
+  }
+}
