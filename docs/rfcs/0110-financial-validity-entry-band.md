@@ -1,7 +1,7 @@
 ---
 rfc: 0110
 title: Name the §4.17 financial_validity entry's band "band", as RFC 0109 does
-status: draft
+status: accepted
 author: claude-code
 created: 2026-10-21
 affects:
@@ -11,9 +11,11 @@ affects:
 
 # RFC 0110: Name the §4.17 financial_validity entry's band "band"
 
-> **Draft for owner acceptance.** Origin: owner ruling of 2026-10-21 evening (1):
-> rename §4.17 `financial_validity[].severity` to `band`, matching RFC 0109. It
-> changes a section's member name, so it is normative.
+> **Accepted by the owner, 2026-10-21, as drafted** (Jared: "RFC 0110 (#466)
+> accepted, including both proposals: add ltc to the metric list, and drop stored
+> entries marked info."). Origin: owner ruling of 2026-10-21 evening (1): rename
+> §4.17 `financial_validity[].severity` to `band`, matching RFC 0109. It changes a
+> section's member name, so it is normative.
 
 ## Summary
 
@@ -84,13 +86,13 @@ other expected output changes.
   `ltc_warning_above`, `ltc_error_above`). Adding them is a natural follow-up, but
   it is not part of the ruling.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-21)
 
 | # | Question | Proposal | Why |
 |---|---|---|---|
 | D1 | Member name and values | `band: "error" \| "warning"`, replacing `severity` | The ruling; matches `DealFlag.band` (RFC 0109 D2) |
-| D2 | `metric` vocabulary | Add `ltc` | RFC 0107 gave LTC a band; alternative: leave the list |
-| D3 | Corpus entries with `info` | Removed: they cross no band | Not deal flags; alternative: keep them with no `band` |
+| D2 | `metric` vocabulary | **Ruled: add `ltc`** | RFC 0107 gave LTC a band |
+| D3 | Corpus entries with `info` | **Ruled: removed**; they cross no band | Not deal flags |
 | D4 | Retired `severity` | Not refused | As RFC 0108 D5 |
 | D5 | Versions | None allocated; prelaunch 4.x | RFC 0091 D6 |
 
