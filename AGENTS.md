@@ -60,9 +60,10 @@ Know which side a change is on before you start.
 
 UWMD stays vendor-neutral and verifier-focused. StackUW owns modeling, AI
 agents and workflow products; it is an adopter, not the required producer or
-runtime for this standard. The existing Bancroft suite, provider adapters,
-prompts and workflow skills are prelaunch starter-product history, not a
-direction to expand UWMD's product scope. UWMD 5.0 is the first official public
+runtime for this standard. The reference toolkit no longer hosts agents (the
+Bancroft runner, provider adapters and `uwmd run` were removed); the layer
+vocabulary that remains awaits draft RFC 0112. None of it is a direction to
+expand UWMD's product scope. UWMD 5.0 is the first official public
 compatibility baseline. Apply the owner rule above: all @uwmd npm packages
 launch together at 5.0.0, prelaunch releases use4.x.x, and no prelaunch
 compatibility or artifact-retention work is required. Specific normative
@@ -88,9 +89,8 @@ RFC before editing contracts. Do not build a complete projection engine here.
   package; runtime dependencies are `fast-xml-parser` and `fflate`.
 - `packages/uwmd-core` — `@uwmd/core`, the library and the heart of the repo.
   Everything depends on it or on `@uwmd/verify`. It depends on `@uwmd/verify`
-  at an exact version and re-exports its whole surface; `@anthropic-ai/sdk`
-  is an **optional peer**, loaded by dynamic import and excluded from the
-  `@uwmd/core/browser` entry.
+  at an exact version and re-exports its whole surface. It has no vendor SDK
+  dependency, optional or otherwise.
 - `packages/uwmd-cli` — the `uwmd` CLI (thin wrapper over core's `cli.ts`).
 - `packages/uwmd-excel` — `.uw.md → .xlsx` converter.
 - `packages/uwmd-lake` — `@uwmd/lake`, the RFC 0049 PostgreSQL/JSONB adapter.
