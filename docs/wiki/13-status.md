@@ -18,6 +18,15 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Release rules after launch ratified (owner, 2026-10-21).**
+[RELEASE_RULES](../playbooks/RELEASE_RULES.md) now records the owner's rulings:
+one public number ("UWMD 5.x") while records keep their Format version,
+result-changing fixes as minor releases, a monthly minor train, standing approval
+for green patch releases, the deprecation window, code reservation and key
+rotation. GOVERNANCE.md starts owner-led and switches to collaborative mode when
+the first outside RFC or PR arrives. The verifier rule-set rule waits on draft
+RFC 0111. The lender acceptance kit moves to a post-launch 5.x milestone.
+
 **uwmd.org is hosted on Cloudflare Workers (2026-10-21).** The owner moved the
 site to the Worker `uwmd-org` after #391 merged and disconnected Vercel. The
 repository's Vercel configuration (`vercel.json`, `scripts/vercel-ignore-build.sh`)
