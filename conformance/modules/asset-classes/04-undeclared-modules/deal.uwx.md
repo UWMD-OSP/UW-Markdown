@@ -10,7 +10,7 @@ state: "AZ"
 zip: "85201"
 asset_class: com.example.specialty_facility
 deal_stage: screening
-status: under_review
+status: in_progress
 recommendation: pending
 flags: []
 blocking_flags: []

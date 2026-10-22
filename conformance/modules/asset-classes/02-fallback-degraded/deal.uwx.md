@@ -13,7 +13,7 @@ modules:
   - id: com.example.datacenters
     version: ">=0.1.0 <1.0.0"
 deal_stage: screening
-status: under_review
+status: in_progress
 recommendation: pending
 flags: []
 blocking_flags: []

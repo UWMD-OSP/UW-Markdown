@@ -147,7 +147,7 @@ describe('the async gate', () => {
   it('names _frontmatter for frontmatter ops', async () => {
     const seen: CapabilityVerifyContext[] = [];
     const parsed = parseUWFile(FILE);
-    const op: EditOperation = { kind: 'frontmatter_set', path: 'status', value: 'under_review' };
+    const op: EditOperation = { kind: 'frontmatter_set', path: 'status', value: 'in_progress' };
     await applyEditAsync(FILE, parsed, op, CTX, undefined, { capabilityVerifier: accepting(seen) });
     expect(seen[0]!.section).toBe('_frontmatter');
     expect(seen[0]!.op).toBe('frontmatter_set');

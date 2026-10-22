@@ -10,7 +10,7 @@ state: "AZ"
 zip: "85001"
 asset_class: multifamily
 deal_stage: screening
-status: under_review
+status: in_progress
 recommendation: "approve"
 quick_metrics:
   purchase_price: 10000000

@@ -4495,6 +4495,10 @@ consistency checks would misfile them for anyone filtering by prefix.
 
 | Code | Severity | Rule |
 |---|---|---|
+| `INVALID-DEAL-STAGE-001` | error | A stated non-null `deal_stage` is outside its closed vocabulary (§2.2, RFC 0118). |
+| `INVALID-TIER-001` | error | A stated non-null `tier` is outside its closed vocabulary (§2.2, RFC 0118). |
+| `INVALID-STATUS-001` | error | A stated non-null `status` is outside its closed vocabulary (§2.2, RFC 0118). |
+| `INVALID-RECOMMENDATION-001` | error | A stated non-null `recommendation` is outside its closed vocabulary (§2.2, RFC 0118). |
 | `INVALID-ASSET-CLASS-001` | error | `asset_class` is neither a builtin nor a well-formed namespaced identifier (§2.2a). |
 | `INVALID-ASSET-CLASS-002` | error | A namespaced identifier whose final segment shadows a builtin name (§2.2a). |
 | `MOD-DEPENDENCY-UNDECLARED` | warning | A namespaced `asset_class` with no frontmatter `modules` list naming what declares it, or a `modules` entry that is not an object with an `id` (§2.2a). |

@@ -6295,6 +6295,106 @@
       "suite": "cross-checks",
       "scenario": "cc17-06-valuation-unresolved",
       "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "19-invalid-declared-stage [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "19-invalid-declared-stage [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "19-invalid-declared-stage [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "19-invalid-declared-stage [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "20-invalid-declared-tier [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "20-invalid-declared-tier [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "20-invalid-declared-tier [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "20-invalid-declared-tier [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "21-invalid-declared-status [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "21-invalid-declared-status [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "21-invalid-declared-status [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "21-invalid-declared-status [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "22-invalid-declared-recommendation [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "22-invalid-declared-recommendation [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "22-invalid-declared-recommendation [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "22-invalid-declared-recommendation [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "23-non-string-declared-stage [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "23-non-string-declared-stage [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "23-non-string-declared-stage [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "23-non-string-declared-stage [render-summary]",
+      "target": "starter-products"
     }
   ]
 }
