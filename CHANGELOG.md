@@ -18,6 +18,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0113: hospitality `rent_roll.occupied_room_nights` is
+  paid room nights sold in the period `rooms_revenue` covers (complimentary and
+  house-use nights excluded; package nights that include the room count as
+  sold), the basis `adr` and `occupancy` read. An optional
+  `complimentary_room_nights` (integer ≥ 0, CLS-04 contract) records the excluded
+  nights; no metric reads it. Builtin-class controls 62 and 63.
+
 - Fix #497 (erratum): the Format §4.1 `property.asset_class` example lists all
   twelve builtin classes, adding `data_center` and `manufactured_housing` as the
   frontmatter list (§2.2) and RFC 0080 already do.
@@ -49,6 +56,18 @@ protocol, and each package each carry an independent semver).
   in Format §2.5 and the `uwmd-block` and `edit-operation` schemas use
   `analyst@example.com`, and spec and schema references cite an RFC rather than
   an internal phase of it. No normative change.
+
+- Scrub example and fixture records for public launch (cleanup brief phase D):
+  provenance actors that named a maintainer or an agent product now read
+  `analyst` (`user:analyst` where the field uses that shape; the editor's
+  supersede fixture uses `risk-rating-agent`); every example record under
+  `examples/` opens with a one-line synthetic-example banner; real brokers,
+  lenders, a title company, a credit union and data vendors in record text are
+  replaced with fictional names; and the Parkview pipeline log names its engine
+  steps (`engine:calculations`, `engine:dcf`, `engine:validation`) instead of
+  source files. The two standalone package manifests and ZIPs and the
+  `02-full-multifamily` reader and render-chat baselines are regenerated. No
+  figure, metric or normative rule changes.
 
 - Ratify the release rules after launch (owner, 2026-10-21,
   `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the

@@ -50,6 +50,8 @@ source_documents:
   - "saguaro_select_franchise_agreement.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Saguaro Select Hotel - Tempe, AZ
 
 Stabilized select-service acquisition adjacent to the ASU campus and the Loop 202
@@ -125,7 +127,7 @@ the sources & uses rather than out of operations.
       "superseded": false
     }
   },
-  "_notes": "Hospitality has no lease-based rent roll. This section carries the trailing-twelve room-night statistics that stand in for one: available room nights are keys x 365, and occupied room nights come from the STR report.",
+  "_notes": "Hospitality has no lease-based rent roll. This section carries the trailing-twelve room-night statistics that stand in for one: available room nights are keys x 365, and occupied room nights come from the comp-set benchmark report.",
   "available_room_nights": 51830,
   "occupied_room_nights": 38000,
   "occupancy": 0.73316612,
@@ -430,7 +432,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
     "provenance": {
       "source": "system/extractor",
       "resolution": "ai_extracted",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -472,7 +474,7 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -530,7 +532,7 @@ Saguaro Hospitality Ventures LLC — single-principal sponsorship; figures PFS-s
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -593,7 +595,7 @@ Tempe / Airport select-service hotel fundamentals as of 2026-08.
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",

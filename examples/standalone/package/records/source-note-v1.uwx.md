@@ -4,6 +4,8 @@ document_profile: source-note-v1
 document_id: note:parkview:rent-roll-review
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Parkview — Rent Roll Review Note
 
 This evidence note records a transcription observation from the example lease

@@ -49,6 +49,8 @@ source_documents:
   - "sonoran_self_storage_rent_roll_may2026.xlsx"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Sonoran Self Storage - Peoria, AZ
 
 Stabilized self-storage acquisition in the northwest Phoenix metro with a mix of
@@ -425,7 +427,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
     "provenance": {
       "source": "system/extractor",
       "resolution": "ai_extracted",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -467,7 +469,7 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -525,7 +527,7 @@ Sonoran Storage Partners LLC — single-principal sponsorship; figures PFS-state
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -588,7 +590,7 @@ Peoria / Northwest Valley self-storage fundamentals as of 2026-08.
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",

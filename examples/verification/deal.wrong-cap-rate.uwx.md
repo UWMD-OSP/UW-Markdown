@@ -49,6 +49,8 @@ source_documents:
   - "agave_court_term_sheets_2026.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Agave Court Apartments — Scottsdale, AZ
 
 > **Deal ID:** uw_2026_cs7r4t | **Scenario:** Stabilized Acquisition | **Status:** In Progress  
@@ -77,7 +79,7 @@ same senior loan for single-loan consumers.
     "section": "deal_context",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-21T09:15:00Z",
@@ -115,7 +117,7 @@ same senior loan for single-loan consumers.
     "section": "property",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-21T09:30:00Z",
@@ -242,7 +244,7 @@ same senior loan for single-loan consumers.
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-21T14:00:00Z",
@@ -279,7 +281,7 @@ same senior loan for single-loan consumers.
     "section": "debt_structure",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-21T15:00:00Z",
@@ -325,7 +327,7 @@ same senior loan for single-loan consumers.
     "section": "capital_stack",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-21T16:00:00Z",
@@ -520,7 +522,7 @@ same senior loan for single-loan consumers.
       "entry_id": "log_002",
       "timestamp": "2026-08-21T16:00:00Z",
       "event_type": "section_written",
-      "agent_or_actor": "jared",
+      "agent_or_actor": "analyst",
       "section_affected": "capital_stack",
       "status": "success",
       "input_sections": [

@@ -167,7 +167,7 @@ source_documents: []
 \`\`\`
 `;
 
-const MANUAL_CTX: EditContext = { actor: 'jared', source: 'manual' };
+const MANUAL_CTX: EditContext = { actor: 'analyst', source: 'manual' };
 const AGENT_CTX: EditContext = {
   actor: 'system',
   source: 'agent/risk-rater',
@@ -330,7 +330,7 @@ describe('applyEdit — section_replace', () => {
     expect(block?.content['total_units']).toBe(30);
     expect(block?.meta.lifecycle?.revision).toBe(2);
     expect(block?.meta.provenance?.source).toBe('manual');
-    expect(block?.meta.provenance?.actor).toBe('jared');
+    expect(block?.meta.provenance?.actor).toBe('analyst');
     expect(reparsed.superseded['property']).toBeUndefined();
   });
 
@@ -555,7 +555,7 @@ describe('applyEdit — pipeline_log_append', () => {
       entry_id: 'log_test_1',
       timestamp: '2026-01-05T00:00:00Z',
       event_type: 'manual_edit',
-      agent_or_actor: 'jared',
+      agent_or_actor: 'analyst',
       section_affected: 'property',
       status: 'success',
     };

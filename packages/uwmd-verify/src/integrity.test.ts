@@ -31,7 +31,7 @@ function makeBlock(
     content,
     meta: {
       section: sectionId,
-      provenance: { source: 'manual', actor: 'human/jared', agent_id: null, agent_version: null, timestamp: '2026-04-27T00:00:00Z', notes: null, ...meta.provenance },
+      provenance: { source: 'manual', actor: 'human/analyst', agent_id: null, agent_version: null, timestamp: '2026-04-27T00:00:00Z', notes: null, ...meta.provenance },
       quality: { confidence: 'medium', human_review_required: false, flags: [], ...meta.quality },
       lifecycle: { revision: 1, superseded: false, ...meta.lifecycle },
       ...(meta.integrity ? { integrity: meta.integrity } : {}),
