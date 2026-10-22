@@ -7,6 +7,8 @@ created_by: uwmd-examples
 asset_class: multifamily
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Parkview Apartments — Glendale, AZ
 
 A 48-unit garden-style multifamily property in Glendale, Arizona, offered at a

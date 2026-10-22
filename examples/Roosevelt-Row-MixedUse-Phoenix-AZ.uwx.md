@@ -39,6 +39,8 @@ source_documents:
   - "roosevelt_row_appraisal_2026.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Roosevelt Row Commons — Mixed-Use, Phoenix, AZ
 
 > **Deal ID:** uw_2026_mx8k2p | **Scenario:** Stabilized Acquisition | **Status:** In Progress  
@@ -68,7 +70,7 @@ intensive metric divides its own allocated share instead.
     "section": "deal_context",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-10T09:15:00Z",
@@ -106,7 +108,7 @@ intensive metric divides its own allocated share instead.
     "section": "property",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-10T09:30:00Z",
@@ -142,7 +144,7 @@ intensive metric divides its own allocated share instead.
     "section": "components",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-10T11:00:00Z",
@@ -232,7 +234,7 @@ intensive metric divides its own allocated share instead.
     "section": "debt_structure",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-10T13:30:00Z",
@@ -325,7 +327,7 @@ intensive metric divides its own allocated share instead.
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-10T14:30:00Z",
@@ -397,7 +399,7 @@ Consolidated-property sizing against the three standard constraints; the governi
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T15:00:00Z",
@@ -455,7 +457,7 @@ Roosevelt Row Mixed-Use Ventures LLC — single-principal sponsorship; figures P
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T15:00:00Z",
@@ -518,7 +520,7 @@ Roosevelt Row / Downtown Phoenix mixed-use fundamentals as of 2026-08.
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T15:00:00Z",
