@@ -106,7 +106,9 @@ def lease_rules(ledger):
                         valid = calendar_date(date) and _nonnegative(step.get("base_rent_annual"))
                         valid = valid and set(step) <= {"effective_date", "base_rent_annual"}
                         if not valid or previous is not None and calendar_date(date) and date <= previous:
-                            issue("LSE-01", path, "Steps require real increasing dates and finite nonnegative resulting rent")
+                            member = ("effective_date" if not calendar_date(date) or previous is not None and calendar_date(date) and date <= previous
+                                      else "base_rent_annual" if not _nonnegative(step.get("base_rent_annual")) else "")
+                            issue("LSE-01", path + ("." + member if member else ""), "Steps require real increasing dates and finite nonnegative resulting rent")
                         if calendar_date(date):
                             if term and not start <= date <= end:
                                 issue("LSE-02", path + ".effective_date", "Step lies outside the stated lease term")
@@ -194,7 +196,8 @@ def lease_rules(ledger):
                     represented_shape("recovery_terms.cap.accumulation", ("required", None), "REC-02")
             pool = terms.get("recoverable_pool")
             if pool is not None and (not isinstance(pool, list) or not pool or any(k not in _POOL for k in pool)):
-                issue("REC-03", "recovery_terms.recoverable_pool", "Pool must name registered operating-expense keys, never totals/ratios/capital")
+                suffix = "[" + str(next(i for i,k in enumerate(pool) if k not in _POOL)) + "]" if isinstance(pool,list) and pool else ""
+                issue("REC-03", "recovery_terms.recoverable_pool" + suffix, "Pool must name registered operating-expense keys, never totals/ratios/capital")
             # Accepted RFC0058 / Format4.3 / REC-02 admits only an object
             # when cap is non-null; this is independent of its method.
             if invalid_cap:
@@ -217,7 +220,8 @@ def lease_rules(ledger):
                 valid = calendar_date(beginning) and calendar_date(finish) and beginning <= finish
                 valid = valid and row.get("settlement") in (None, "billed", "credited", "disputed", "unsettled")
                 if not valid:
-                    issue("REC-04", path, "True-up period dates or settlement are invalid")
+                    member = "period_start" if not calendar_date(beginning) else "period_end" if not calendar_date(finish) or finish < beginning else "settlement"
+                    issue("REC-04", path + "." + member, "True-up period dates or settlement are invalid")
                 if calendar_date(finish) and calendar_date(roll.get("as_of_date")) and finish >= roll["as_of_date"]:
                     issue("REC-05", path + ".period_end", "True-up period must have closed before the stated roll date")
                 pool_actual, uncapped = row.get("pool_actual"), row.get("tenant_share_uncapped")
@@ -234,5 +238,5 @@ def lease_rules(ledger):
                         issue("REC-08", path + ".true_up_amount", "True-up does not equal capped share less billed estimate")
                 reference = row.get("cash_flow_ref")
                 if reference is not None and (not isinstance(reference, dict) or not isinstance(reference.get("variant"), str) or reference["variant"] not in current_cash):
-                    issue("REC-09", path + ".cash_flow_ref", "Cash-flow reference must name a current exact variant")
+                    issue("REC-09", path + ".cash_flow_ref" + (".variant" if isinstance(reference,dict) else ""), "Cash-flow reference must name a current exact variant")
     return represented

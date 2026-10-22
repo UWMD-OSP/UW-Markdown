@@ -79,7 +79,10 @@ def tax_rules(ledger):
                     for key in missing:
                         issue("TAX-01", rpath(key), "Every stated assessment group requires this member")
                 elif not valid:
-                    issue("TAX-01", rpath(), "Reassessment vocabulary, assessment group or product is invalid")
+                    member = ("trigger" if r.get("trigger") not in ("sale", "construction_completion", "statutory_cycle", "none")
+                              else "assessment_ratio" if r.get("assessment_ratio") is not None and (not finite(r["assessment_ratio"]) or not 0 < r["assessment_ratio"] <= 1)
+                              else next((k for k in group if not finite(r.get(k))), "assessed_value"))
+                    issue("TAX-01", rpath(member), "Reassessment vocabulary, assessment group or product is invalid")
                 if group_stated and all(finite(r.get(k)) for k in group):
                     product = r["assessed_value"] * r["millage_rate"]
                     if not _money_equal(product, r["indicated_tax"]):
@@ -117,7 +120,7 @@ def tax_rules(ledger):
                             continue
                         identity = _period(row.get("period"))
                         if identity is None or previous is not None and (identity[0] != previous[0] or identity <= previous):
-                            issue("TAX-05", path + ".period", "Periods must be one kind, increasing and unique")
+                            issue("TAX-05", path + ".period" if identity is None else "abatement.schedule", "Periods must be one kind, increasing and unique")
                             admitted = False
                         if identity is not None:
                             previous = identity
@@ -173,7 +176,9 @@ def capex_rules(ledger):
         if draw_stated:
             valid = valid and all(finite(r.get(k)) and r[k] >= 0 for k in amounts) and calendar_date(r.get("as_of_date"))
         if not valid:
-            issue("CAPX-01", "", "Renovation amounts and all-or-none draw group must be valid stated facts")
+            member = next((k for k in amounts if r.get(k) is not None and (not finite(r[k]) or r[k] < 0)),
+                          "as_of_date" if r.get("as_of_date") is not None and not calendar_date(r["as_of_date"]) else "")
+            issue("CAPX-01", member, "Renovation amounts and all-or-none draw group must be valid stated facts")
         if any(r.get(k) is not None for k in group):
             for key in group:
                 if r.get(key) is None:
@@ -203,7 +208,10 @@ def capex_rules(ledger):
             if noi.block is not None:
                 valid = valid and isinstance(expenses, dict) and project.get("targets") in expenses
             if not valid:
-                issue("CAPX-06", path, "Project identity, period, amounts or stated expense target is invalid")
+                member = ("label" if not nonblank(project.get("label")) else "amount" if not finite(project.get("amount")) or project["amount"] < 0
+                          else "annual_savings" if not finite(project.get("annual_savings")) or project["annual_savings"] < 0
+                          else "savings_begin" if _period(project.get("savings_begin")) is None else "targets")
+                issue("CAPX-06", path + "." + member, "Project identity, period, amounts or stated expense target is invalid")
             if not isinstance(project.get("in_noi_model"), bool):
                 issue("CAPX-07", path + ".in_noi_model", "Project must disclose whether the saving is already in NOI")
             payback = project.get("simple_payback_years")

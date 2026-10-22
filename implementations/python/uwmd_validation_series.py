@@ -1,4 +1,6 @@
 """Independent accepted period-series, lease-up, cash-flow and bed checks."""
+import re
+
 from uwmd_binding_sources import finite, cash_flow_findings
 from uwmd_expressions import ExpressionError, parse_expression, expression_references
 from uwmd_numeric import calendar_date
@@ -62,8 +64,17 @@ def series_rules(ledger):
                          value={"variant": dict(block.attributes).get("variant")})
     lease_up = lease_up_rules(ledger)
     for block in current_blocks(document, "reserve_accounts"):
-        ledger.issues.extend(reserve_structure(block.parsed.value, document.frontmatter.value.get("currency_code"),
-                                              dict(block.attributes).get("variant")))
+        for finding in reserve_structure(block.parsed.value, document.frontmatter.value.get("currency_code"),
+                                         dict(block.attributes).get("variant")):
+            path = finding["field"]
+            if finding["code"] == "RSV-01":
+                movement = re.match(r"(accounts\[\d+\]\.periods\[\d+\]\.movements\[\d+\])", path)
+                if movement: finding["field"] = movement[1]
+                elif finding["message"] == "unknown member" or path.endswith(".movements"):
+                    finding["field"] = path.rsplit(".",1)[0]
+            elif finding["code"] == "RSV-05" and finding["message"] == "periods must be ordered without overlap":
+                finding["field"] = path + ".start_date"
+            ledger.issues.append(finding)
     return lease_up
 
 

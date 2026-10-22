@@ -113,7 +113,7 @@ def composition_rules(ledger):
             if isinstance(value.get("capital_stack"), dict):
                 _stack(ledger, value["capital_stack"], "components", key + ".capital_stack")
         if document.frontmatter.value.get("asset_class") == "mixed_use" and any(isinstance(v, dict) and v.get("allocation_pct") is not None for v in admitted.values()):
-            allocations = [v.get("allocation_pct") if isinstance(v, dict) else None for v in admitted.values()]
+            allocations = [v["allocation_pct"] for v in admitted.values() if isinstance(v, dict) and finite(v.get("allocation_pct"))]
             total = 0.0
             valid = all(_unit(v) for v in allocations)
             if valid:
@@ -143,58 +143,72 @@ def waterfall_rules(ledger):
                         if code in ("WF-10", "WF-12", "WF-13") else {})
             ledger.issue(code, severity, "distribution_waterfall", path, message, **evidence)
         equity, tiers = payload.get("equity_split"), payload.get("tiers")
-        grammar = (isinstance(equity, dict) and set(equity) == {"lp", "gp"}
-                   and _unit(equity["lp"]) and _unit(equity["gp"])
-                   and quantize(equity["lp"] + equity["gp"], 4) == 1)
+        if (not isinstance(equity, dict) or set(equity) != {"lp", "gp"}
+                or not _unit(equity.get("lp")) or not _unit(equity.get("gp"))
+                or abs(equity["lp"] + equity["gp"] - 1) >= .0001):
+            issue("WF-01", "equity_split", "Contribution shares must be closed fractions summing to one")
         previous, seen, previous_em, previous_irr = -1, set(), None, None
         order = ("return_of_capital", "preferred_return", "catch_up", "split")
         if not isinstance(tiers, list) or not tiers:
-            grammar = False
+            issue("WF-01", "tiers", "A nonempty ordered tier ladder is required")
             tiers = []
-        for tier in tiers:
+        for ti, tier in enumerate(tiers):
+            path = "tiers[" + str(ti) + "]"
+            def malformed(member, message):
+                issue("WF-01", path + ("." + member if member else ""), message)
             if not isinstance(tier, dict) or tier.get("type") not in order:
-                grammar = False
+                malformed("", "Tier must have one admitted type")
                 continue
             kind = tier["type"]; index = order.index(kind)
-            if index < previous or (kind != "split" and kind in seen):
-                grammar = False
-            previous = index;seen.add(kind)
+            if index < previous or kind != "split" and kind in seen:
+                malformed("", "Tier types must follow the admitted order without repeats")
+            previous = index; seen.add(kind)
             allowed = {"type"}
             if kind == "preferred_return":
                 allowed |= {"rate", "accrual"}
                 rate = tier.get("rate")
-                grammar = grammar and finite(rate) and 0 < rate < 1 and tier.get("accrual") in ("simple", "compound_annual")
+                if not finite(rate) or not 0 < rate < 1:
+                    malformed("rate", "Preferred rate must be a fraction in (0,1)")
+                if tier.get("accrual") not in ("simple", "compound_annual"):
+                    malformed("accrual", "Preferred accrual must name an admitted convention")
             elif kind == "catch_up":
                 allowed |= {"gp_share", "target_promote"}
                 share, promote = tier.get("gp_share"), tier.get("target_promote")
-                grammar = grammar and _unit(share) and finite(promote) and 0 < promote < 1 and share > promote
+                if not _unit(share): malformed("gp_share", "Catch-up share must be a fraction")
+                if not finite(promote) or not 0 < promote < 1:
+                    malformed("target_promote", "Target promote must be a fraction in (0,1)")
+                elif finite(share) and share <= promote:
+                    malformed("gp_share", "Catch-up share must exceed target promote")
             elif kind == "split":
                 allowed |= {"lp_share", "gp_share", "until_lp_em", "until_lp_irr", "hurdle_mode"}
                 lp, gp = tier.get("lp_share"), tier.get("gp_share")
-                grammar = grammar and _unit(lp) and _unit(gp)
-                if _unit(lp) and _unit(gp):grammar = grammar and quantize(lp + gp, 4) == 1
+                if not _unit(lp): malformed("lp_share", "LP share must be a fraction")
+                if not _unit(gp): malformed("gp_share", "GP share must be a fraction")
+                if _unit(lp) and _unit(gp) and abs(lp + gp - 1) >= .0001:
+                    malformed("", "Residual shares must sum to one")
                 em, irr, mode = tier.get("until_lp_em"), tier.get("until_lp_irr"), tier.get("hurdle_mode")
                 if em is not None:
-                    grammar = grammar and finite(em) and em > 0 and finite(lp) and lp > 0
-                    if finite(em):
-                        rounded = quantize(em, 4)
-                        grammar = grammar and (previous_em is None or rounded > previous_em)
-                        previous_em = rounded
+                    if not finite(em) or em <= 0:
+                        malformed("until_lp_em", "Multiple hurdle must be positive")
+                    elif previous_em is not None and quantize(em,4) <= previous_em:
+                        malformed("until_lp_em", "Multiple hurdles must strictly increase at ratio quantum")
+                    if finite(em): previous_em = quantize(em,4)
                 if irr is not None:
-                    grammar = grammar and finite(irr) and 0 < irr < 1 and finite(lp) and lp > 0
-                    if finite(irr):
-                        rounded = quantize(irr, 6)
-                        grammar = grammar and (previous_irr is None or rounded > previous_irr)
-                        previous_irr = rounded
-                if mode is not None:
-                    grammar = grammar and em is not None and irr is not None and mode in ("both", "any")
-            grammar = grammar and set(tier) <= allowed
+                    if not finite(irr) or not 0 < irr < 1:
+                        malformed("until_lp_irr", "IRR hurdle must be a fraction in (0,1)")
+                    elif previous_irr is not None and quantize(irr,6) <= previous_irr:
+                        malformed("until_lp_irr", "IRR hurdles must strictly increase at rate quantum")
+                    if finite(irr): previous_irr = quantize(irr,6)
+                if (em is not None or irr is not None) and finite(lp) and lp <= 0:
+                    malformed("lp_share", "A hurdle requires a positive LP share")
+                if mode is not None and (em is None or irr is None or mode not in ("both", "any")):
+                    malformed("hurdle_mode", "Hurdle mode requires both stated hurdles and an admitted value")
+            if set(tier) - allowed: malformed("", "Tier has a member outside its closed grammar")
         if tiers:
             final = tiers[-1]
-            grammar = grammar and isinstance(final, dict) and final.get("type") == "split"
-            grammar = grammar and isinstance(final, dict) and final.get("until_lp_em") is None and final.get("until_lp_irr") is None
-        if not grammar:
-            issue("WF-01", "tiers", "Waterfall equity split or ordered tier ladder is outside the admitted grammar")
+            if (not isinstance(final,dict) or final.get("type") != "split"
+                    or final.get("until_lp_em") is not None or final.get("until_lp_irr") is not None):
+                issue("WF-01", "tiers", "The final tier must be an unbounded split")
         reference = payload.get("cash_flow_ref")
         variant = reference.get("variant") if isinstance(reference, dict) else None
         series = cash.get(variant) if isinstance(variant, str) else None
@@ -224,7 +238,7 @@ def waterfall_rules(ledger):
             if (basis not in ("lp_preferred_shortfall", "lp_irr_floor", "lp_em_floor")
                     or basis == "lp_irr_floor" and (not finite(rate) or not 0 < rate < 1)
                     or basis == "lp_em_floor" and (not finite(multiple) or multiple <= 1)):
-                issue("WF-10", "clawback", "Clawback basis requires its stated floor input")
+                issue("WF-10", "clawback." + ("floor_rate" if basis == "lp_irr_floor" else "floor_multiple" if basis == "lp_em_floor" else "basis"), "Clawback basis requires its stated floor input")
             if basis == "lp_preferred_shortfall" and not any(isinstance(t, dict) and t.get("type") == "preferred_return" for t in tiers):
                 issue("WF-11", "clawback.basis", "Preferred shortfall requires a preferred-return tier")
             if clawback.get("cap") != "promote_received":
