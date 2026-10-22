@@ -1,5 +1,10 @@
 # 03 — Core library (`@uwmd/verify` and `@uwmd/core`)
 
+The validator follows the Format's null-is-unstated rule for tax stabilization
+and optional hedge terms. CC-15 selects base, default, then a sole lease-up
+variant. Replacement funding verification reports unresolvable_source before
+invalid_structure when a named source cannot resolve (Protocol §V.12.3).
+
 Format 3.0 is the only format the reference library reads ([RFC
 0081](../rfcs/0081-one-format-one-protocol.md)): bare section payloads with an
 inline nested `_meta`, a block digest over the block minus `_meta`, and one
