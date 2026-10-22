@@ -80,7 +80,8 @@ def tax_rules(ledger):
                         issue("TAX-01", rpath(key), "Every stated assessment group requires this member")
                 elif not valid:
                     member = ("trigger" if r.get("trigger") not in ("sale", "construction_completion", "statutory_cycle", "none")
-                              else "assessment_ratio" if r.get("assessment_ratio") is not None and (not finite(r["assessment_ratio"]) or not 0 < r["assessment_ratio"] <= 1)
+                              else "" if all(r.get(k) is None for k in group)
+                              else "assessment_ratio" if r.get("assessment_ratio") is not None and (not finite(r.get("value_basis")) or not finite(r["assessment_ratio"]) or not 0 < r["assessment_ratio"] <= 1)
                               else next((k for k in group if not finite(r.get(k))), "assessed_value"))
                     issue("TAX-01", rpath(member), "Reassessment vocabulary, assessment group or product is invalid")
                 if group_stated and all(finite(r.get(k)) for k in group):
@@ -120,7 +121,7 @@ def tax_rules(ledger):
                             continue
                         identity = _period(row.get("period"))
                         if identity is None or previous is not None and (identity[0] != previous[0] or identity <= previous):
-                            issue("TAX-05", path + ".period" if identity is None else "abatement.schedule", "Periods must be one kind, increasing and unique")
+                            issue("TAX-05", path + ".period" if identity is None or identity == previous else "abatement.schedule", "Periods must be one kind, increasing and unique")
                             admitted = False
                         if identity is not None:
                             previous = identity

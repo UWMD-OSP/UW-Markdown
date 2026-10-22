@@ -208,7 +208,8 @@ def waterfall_rules(ledger):
             final = tiers[-1]
             if (not isinstance(final,dict) or final.get("type") != "split"
                     or final.get("until_lp_em") is not None or final.get("until_lp_irr") is not None):
-                issue("WF-01", "tiers", "The final tier must be an unbounded split")
+                member = "until_lp_em" if isinstance(final,dict) and final.get("until_lp_em") is not None else "until_lp_irr" if isinstance(final,dict) and final.get("until_lp_irr") is not None else None
+                issue("WF-01", "tiers[" + str(len(tiers)-1) + "]." + member if member else "tiers", "The final tier must be an unbounded split")
         reference = payload.get("cash_flow_ref")
         variant = reference.get("variant") if isinstance(reference, dict) else None
         series = cash.get(variant) if isinstance(variant, str) else None
