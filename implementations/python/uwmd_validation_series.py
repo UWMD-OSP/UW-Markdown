@@ -1,5 +1,5 @@
 """Independent accepted period-series, lease-up, cash-flow and bed checks."""
-from uwmd_binding_sources import finite, cash_source_issues
+from uwmd_binding_sources import finite, cash_flow_findings
 from uwmd_expressions import ExpressionError, parse_expression, expression_references
 from uwmd_numeric import calendar_date
 from uwmd_periods import PERIOD_SERIES, inspect_period_series, parse_period_selector, PeriodError
@@ -57,14 +57,8 @@ def series_rules(ledger):
         if isinstance(returns, dict) and "tax_basis" in returns and returns["tax_basis"] not in ("pre_tax", "after_tax"):
             ledger.issue("RT-01", "error", "dcf", "returns.tax_basis", "Return tax basis is outside the admitted vocabulary")
     for block in current_blocks(document, "cash_flow_series"):
-        for message in cash_source_issues(block.parsed.value):
-            if "source must contain both signs" in message:
-                code = "CF-03"
-            elif "nonempty array required" in message or "source dates must be nondecreasing" in message:
-                code = "CF-02"
-            else:
-                code = "CF-01"
-            ledger.issue(code, "error", "cash_flow_series", message.split(":", 1)[0], message,
+        for code, path, message in cash_flow_findings(block.parsed.value):
+            ledger.issue(code, "error", "cash_flow_series", path, message,
                          value={"variant": dict(block.attributes).get("variant")})
     lease_up = lease_up_rules(ledger)
     for block in current_blocks(document, "reserve_accounts"):

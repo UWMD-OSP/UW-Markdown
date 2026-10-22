@@ -114,7 +114,13 @@ Layouts cover all twelve builtin classes: multifamily, office, retail,
 industrial, self-storage, hospitality, senior housing, student housing, land,
 data center, manufactured housing and mixed-use. `fromWorkbook` and
 `--import` recover editable section fragments from supported converter workbooks;
-apply those through the starter editor (`applyEdit`) to preserve provenance. Extended custom
+apply those through the starter editor (`applyEdit`) to preserve provenance.
+Import accepts each statement subtotal in the form the exporter wrote it: the
+live formula (never imported), a retained stated subtotal beside its status text
+(imported as the editable input it is), or `#N/A` beside its status text (nothing
+imported). Any other subtotal, such as a value typed over a formula, refuses with
+`WORKBOOK-IMPORT-SUBTOTAL`. A mixed-use record with no component block states its
+property NOI the same way instead of an empty consolidation formula. Extended custom
 calculation workbooks explicitly refuse reverse import. `@uwmd/excel` is in
 the release workflow from 0.9.14, which pairs with `@uwmd/core` 3.0.0. The
 deprecated `0.3.0` on the registry is a stray 2026-08-16 hand publish pinned

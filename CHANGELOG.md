@@ -8,6 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Python (#354): the independent implementation now claims `validate` beside
+  `parse` and `calc-evaluate`, still at the Reader tier. CI runs the portable
+  Verifier-tier corpus with `--no-skip` on three OSes, so all 144 validate cases
+  must pass. `validate` reads spec data through one resolver, with
+  `UWMD_SPEC_DIR` to run outside a checkout. The #425 differences are closed:
+  CF-01 is the §4.26 row grammar only, HDG-08 reports the failing reference
+  member, HDG-01 reports each stated member, CS-01/CS-02/CS-WATERFALL-UNSUPPORTED
+  follow §4.24 and the reference, CC-01/05/06/07/15, WF-02/03, TAX-07 and DQ-05
+  read the reference's carriers and skips. A `null` `stabilized_period` stays
+  unstated (Format §4.5). No TypeScript, spec, schema or conformance change.
+
 - Prepare Cloudflare Workers static hosting for the refreshed docs site, with a
   pinned Node runtime, asset headers, real 404 responses and owner-configured
   docs-only build watch paths. Vercel remains unchanged pending owner cutover.
@@ -28,6 +39,16 @@ protocol, and each package each carry an independent semver).
   where the engine gives null, and populated examples show `#N/A` instead of
   `#VALUE!` for their three null metrics; every metric with a value is
   unchanged. Pack formulas are unchanged.
+
+- Fix #484: `uwmd-excel --import` (`fromWorkbook`) accepts every subtotal form
+  the exporter writes: the live formula, a retained stated subtotal beside its
+  status text (now imported as the editable input it is), and the documented
+  `#N/A` for a missing subtotal. Workbooks exported from `uwmd init` records and
+  totals-only `noi_model` records import again; a different formula, a value
+  typed over a formula or over `#N/A`, or a formula typed over a retained value
+  still refuses with `WORKBOOK-IMPORT-SUBTOTAL`. A mixed-use record with no
+  component block now states its property NOI (or `#N/A`) instead of writing an
+  empty consolidation formula.
 
 - Fix #492 (init part): `uwmd init` refuses an `--asset-class`, `--stage` or
   `--tier` outside its vocabulary and writes nothing; a namespaced custom asset
