@@ -29,6 +29,9 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #494: an unknown `render --format` is a typed refusal
+  (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
+  longer advertises flags removed by #412 and lists `init --zip`.
 - Scrub leftovers for public launch (cleanup phase D, owner ruling 2026-10-22):
   the `experiments/numerical-0088` evidence manifests record `<repo>` and
   `<python>` instead of machine-local absolute paths, with every pinned digest of
