@@ -288,6 +288,7 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   console.log(`\n${fundingRefuses ? '✗' : statusEmoji}  Validation result: ${fundingRefuses ? 'REFUSED' : result.overall_status.toUpperCase()} — ${basename(file)}\n`);
 
   console.log(`Complete validation: ${result.errors.length > 0 || fundingRefuses ? 'refused' : 'passed'}`);
+  console.log(`Rule set: Format ${result.rule_set} (the record's declared uw_version, Protocol §XII.5)`);
   console.log(`Structural validation: ${result.overall_status}`);
   console.log(`Replacement funding verification: ${replacement_funding_verification.state}${'reason' in replacement_funding_verification ? ` / ${replacement_funding_verification.reason}` : ''}`);
   for (const issue of replacement_funding_verification.issues) console.log(issue.message);
@@ -472,6 +473,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     if (configError) institutionFailure(configError, false);
     if ('validation' in sections && configError === undefined) {
       const v = sections['validation'] as ReturnType<typeof validateUWFile>;
+      console.log(`Rule set: Format ${v.rule_set} (the record's declared uw_version, Protocol §XII.5)`);
       console.log(`Structural validation: ${v.overall_status} (${v.issues.length} issue${v.issues.length === 1 ? '' : 's'})`);
       for (const issue of v.issues) {
         const tag = issue.severity === 'error' ? '[ERROR]' : issue.severity === 'warning' ? '[WARN] ' : '[INFO] ';

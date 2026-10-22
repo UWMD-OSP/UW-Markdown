@@ -1,6 +1,7 @@
 {
   "id": "module__calc__revpar-basic__calc",
   "target": "module",
+  "format_version": "3.0",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -20,6 +20,23 @@ layer-profile check (Format §2.2 `pipeline_state` names its keys after the
 layers, and §6.3 still describes `uwmd run`). The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
+**Implemented RFC 0111 — verify under the declared rule set (owner acceptance 2026-10-21, including D4).**
+[RFC 0111](../rfcs/0111-verify-under-declared-rule-set.md) is now Protocol
+[§XII.5](../../spec/UW_PROTOCOL.md): a record's declared `uw_version` names the
+rule set it is verified under (Format rules and §5.2 bands, verification
+procedures, receipt rules, metric dictionary); retention and forward-only fixes
+bind from 5.0.0, with stricter security and soundness fixes applying to every
+kept rule set. `@uwmd/verify`'s `RULE_SETS` registry holds the one entry,
+`"3.0"`, pointing at the existing bands, dictionary and builtin packs.
+Validation, stated-metric verification and receipts select from it and refuse
+an unkept declaration, also on a document model (`UNSUPPORTED_FORMAT_VERSION`).
+`ValidationResult`, `StatedMetricsReport`, receipt verification and receipts
+(`computation.rule_set`, required) name the rule set; a receipt naming another
+fails with `RCP-13`. Each portable conformance case names its `format_version`
+and `runner.py --format-version` selects by it. The Python validator reports
+`rule_set` too. Open before a second rule set exists: a UW Lite record may omit
+`uw_version` and is compiled as 3.0 (RFC 0081 D12).
+
 **Python certified — Issue #354 (2026-10-20).** The independent Python
 implementation's manifest claims the Reader tier plus `calc-evaluate`; CI runs the
 portable Verifier-tier corpus on three OSes and allows only the unclaimed
@@ -36,8 +53,7 @@ one public number ("UWMD 5.x") while records keep their Format version,
 result-changing fixes as minor releases, a monthly minor train, standing approval
 for green patch releases, the deprecation window, code reservation and key
 rotation. GOVERNANCE.md starts owner-led and switches to collaborative mode when
-the first outside RFC or PR arrives. The verifier rule-set rule waits on draft
-RFC 0111. The lender acceptance kit moves to a post-launch 5.x milestone.
+the first outside RFC or PR arrives. The verifier rule-set rule is accepted RFC 0111 (Protocol §XII.5). The lender acceptance kit moves to a post-launch 5.x milestone.
 
 **uwmd.org is hosted on Cloudflare Workers (2026-10-21).** The owner moved the
 site to the Worker `uwmd-org` after #391 merged and disconnected Vercel. The

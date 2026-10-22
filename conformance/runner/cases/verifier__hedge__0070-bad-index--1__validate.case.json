@@ -1,6 +1,7 @@
 {
   "id": "verifier__hedge__0070-bad-index--1__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],

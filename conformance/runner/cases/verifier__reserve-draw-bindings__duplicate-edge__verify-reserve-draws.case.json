@@ -1,6 +1,7 @@
 {
   "id": "verifier__reserve-draw-bindings__duplicate-edge__verify-reserve-draws",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "parse",
     "calc-evaluate"

@@ -210,6 +210,13 @@ source_documents: []                 # list of filenames ingested via L0
 ---
 ```
 
+**Format version.** `uw_version` names the Format version the record is
+written to, and so the rule set it is verified under: its validation rules and
+§5.2 bands, the Protocol's verification procedures, the receipt rules and the
+metric dictionary ([Protocol §XII.5](UW_PROTOCOL.md),
+RFC 0111). A record is always verified under the rule set its declared version
+names; an absent or unkept value is refused (Protocol §XII.3).
+
 **Pipeline stages.** The `deal_stage` enum advances monotonically as
 the deal progresses. The `scope` stage indicates a back-of-napkin
 readiness level: a `scope`-stage file MAY consist almost entirely of
