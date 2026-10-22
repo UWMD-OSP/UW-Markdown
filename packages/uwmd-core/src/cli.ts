@@ -10,6 +10,7 @@ import {
   verifyReplacementFundingBindings,
   verifyStatedMetrics,
   parseUWFile,
+  isSupportedLocale,
   validateUWFile,
   isScenarioId,
   ASSET_CLASSES,
@@ -90,7 +91,9 @@ import { resolve, basename, dirname } from 'node:path';
 import { InstitutionConfigError, loadInstitutionPolicy } from './institution-config.js';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
-import { render } from './renderer.js';
+import { render, UnsupportedLocaleError } from './renderer.js';
+import { resolveRenderMetrics } from './render-metrics.js';
+import { formatCurrency, formatPercent, formatRatio } from './format.js';
 import { renderReportHtml } from './report.js';
 import { applyEdit, applyEditAsync } from './editor.js';
 import type { EditContext, EditResult } from './editor.js';
@@ -680,13 +683,13 @@ function cmdInit(flags: Record<string, string | boolean>): void {
 async function cmdSummary(file: string): Promise<void> {
   const parsed = (await loadSource(file)).parsed;
   const fm = parsed.frontmatter;
-  const qm = fm.quick_metrics ?? {};
+  const qm = resolveRenderMetrics(parsed);
 
-  const fmt = (v: unknown, unit = ''): string =>
-    v == null ? 'n/a' : `${typeof v === 'number' ? v.toLocaleString() : v}${unit}`;
-
-  const pctFmt = (v: unknown): string =>
-    v == null ? 'n/a' : `${((v as number) * 100).toFixed(2)}%`;
+  if (fm.locale != null && !isSupportedLocale(fm.locale)) throw new UnsupportedLocaleError(fm.locale);
+  const locale = fm.locale ?? 'en-US';
+  const money = (value: unknown) => formatCurrency(value, { locale, currencyCode: fm.currency_code });
+  const pctFmt = (value: unknown) => formatPercent(value, { locale });
+  const ratio = (value: unknown) => formatRatio(value, { locale });
 
   console.log(`
 ─────────────────────────────────────────────────
@@ -694,11 +697,11 @@ async function cmdSummary(file: string): Promise<void> {
   ${fm.property_address ?? ''}, ${fm.city ?? ''} ${fm.state ?? ''}
   ${fm.asset_class ?? ''} · ${fm.deal_stage ?? 'draft'}
 ─────────────────────────────────────────────────
-  Purchase Price:   $${fmt(qm.purchase_price)}
-  Loan Amount:      $${fmt(qm.loan_amount)}
-  Equity Required:  $${fmt(qm.equity_required)}
-  UW NOI:           $${fmt(qm.noi_underwritten)}
-  DSCR:             ${fmt(qm.dscr)}x
+  Purchase Price:   ${money(qm.purchase_price)}
+  Loan Amount:      ${money(qm.loan_amount)}
+  Equity Required:  ${money(qm.equity_required)}
+  UW NOI:           ${money(qm.noi_underwritten)}
+  DSCR:             ${ratio(qm.dscr)}
   LTV:              ${pctFmt(qm.ltv)}
   Cap Rate:         ${pctFmt(qm.cap_rate)}
   Debt Yield:       ${pctFmt(qm.debt_yield)}

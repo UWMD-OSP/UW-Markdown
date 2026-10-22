@@ -29,6 +29,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #496: omit units on missing summary/chat values, format CSV percentages
+  and DSCR at display precision, and fill absent summaries through existing
+  deterministic class packs without changing authored values or source bytes.
+
 - Fix #517: Python validation diagnostics agree with the reference across the
   tracked structured corpus, including finding counts and precise field paths.
   Add a read-only cross-implementation CI check; advertised capabilities stay
