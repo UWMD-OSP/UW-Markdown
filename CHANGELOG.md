@@ -32,6 +32,9 @@ protocol, and each package each carry an independent semver).
 - Reconcile the Mesa and Sundance examples with runtime validation: retain
   Mesa's documented review conditions and store its warnings, and describe
   Sundance's horizontal development under the standard development scenario.
+- Fix #516's four reference departures: null tax/hedge terms are unstated,
+  CC-15 uses the documented sole-variant fallback, and unresolved replacement
+  sources take precedence over malformed reference values.
 
 - Fix #494: an unknown `render --format` is a typed refusal
   (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
