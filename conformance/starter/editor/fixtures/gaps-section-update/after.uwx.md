@@ -47,7 +47,7 @@ created_by: "test-fixture"
   },
   "address": "600 Gaps Way",
   "asset_class": "multifamily",
-  "units": 18
+  "total_units": 18
 }
 ```
 

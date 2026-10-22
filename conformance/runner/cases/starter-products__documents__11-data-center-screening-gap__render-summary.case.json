@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__11-data-center-screening-gap__render-summary",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "11-data-center-screening-gap.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/11-data-center-screening-gap.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}

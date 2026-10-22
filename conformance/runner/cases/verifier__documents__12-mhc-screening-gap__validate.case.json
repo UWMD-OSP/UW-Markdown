@@ -1,0 +1,20 @@
+{
+  "id": "verifier__documents__12-mhc-screening-gap__validate",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "12-mhc-screening-gap.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/12-mhc-screening-gap.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

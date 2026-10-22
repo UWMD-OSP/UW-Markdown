@@ -6298,6 +6298,106 @@
     },
     {
       "suite": "documents",
+      "scenario": "08-scope-valuation-alternative [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "08-scope-valuation-alternative [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "08-scope-valuation-alternative [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "08-scope-valuation-alternative [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "09-blank-scaffold [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "09-blank-scaffold [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "09-blank-scaffold [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "09-blank-scaffold [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "10-null-rent-roll [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "10-null-rent-roll [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "10-null-rent-roll [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "10-null-rent-roll [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "11-data-center-screening-gap [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "11-data-center-screening-gap [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "11-data-center-screening-gap [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "11-data-center-screening-gap [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "12-mhc-screening-gap [parse]",
+      "target": "reader"
+    },
+    {
+      "suite": "documents",
+      "scenario": "12-mhc-screening-gap [validate]",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "12-mhc-screening-gap [render-chat]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
+      "scenario": "12-mhc-screening-gap [render-summary]",
+      "target": "starter-products"
+    },
+    {
+      "suite": "documents",
       "scenario": "malformed/72-component-negative-area",
       "target": "verifier"
     },

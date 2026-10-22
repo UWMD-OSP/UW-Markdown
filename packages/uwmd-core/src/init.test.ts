@@ -324,7 +324,10 @@ describe('generateBlankUWFile — class scaffolds satisfy their contracts', () =
 
   it.each([['data_center', 'dc_capacity'], ['manufactured_housing', 'mhc_sites']] as const)(
     '%s reports only that its required %s is missing, never an empty stub', (assetClass, section) => {
-      expect(errors(assetClass)).toEqual(['CLS-03']);
+      expect(errors(assetClass)).toEqual([]);
+      const report = validateUWFile(parseUWFile(generateBlankUWFile({ assetClass })));
+      expect(report.issues.some(i => i.code === 'DQ-06' && i.section === section)).toBe(true);
+      expect(Object.values(report.stage_readiness).every(ready => !ready)).toBe(true);
       expect(parseUWFile(generateBlankUWFile({ assetClass })).sections[section]).toBeUndefined();
     });
 

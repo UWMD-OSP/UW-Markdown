@@ -25,7 +25,7 @@ import { ASSET_CLASSES, SOURCE_TAGS } from './types.js';
 import { ruleSetFor } from './rule-sets.js';
 import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks, parseUWFile, parsedFirstSourceMember } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
-  CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
+  CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS, stageOneOfFor,
 } from './protocol.js';
 import { EXTERNAL_ANNOTATION_KEY, CompositionError, parseUWPart, resolveComposition } from './composition.js';
 import { UW_LITE_SOURCE_EXTENSION } from './lite-bridge.js';
@@ -2518,7 +2518,7 @@ function checkSectionReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]
   const profile = (parsed.frontmatter as Record<string, unknown>)['document_profile'];
   const isDealRecord = profile == null || profile === DEAL_UNDERWRITING_PROFILE;
 
-  const hasProperty = hasStageSection(parsed, 'property');
+  const hasProperty = !!parsed.sections.property;
   if (isCompiledLite) markSkipped(ledger, 'CC-14', 'not_applicable', 'compiled UW Lite summary');
   else if (!isDealRecord) markSkipped(ledger, 'CC-14', 'not_applicable', 'not a deal record');
   else markEvaluated(ledger, 'CC-14');
@@ -3633,16 +3633,22 @@ function checkMetadataReferences(parsed: ParsedUWFile, issues: ValidationMessage
 // ─── Stage readiness ──────────────────────────────────────────────────────────
 
 /**
- * Variant-aware section presence, as stage readiness defines it: a
- * multi-variant `operating_statement` counts through its `t12` or `default`
- * variant. Shared by `computeStageReadiness` and the RFC 0028 checks
- * (`CC-14`, `DQ-06`) so "present" means one thing.
+ * RFC 0116 stated-content presence across current section variants.
+ * Readiness and DQ-06 share this definition; CC-14 checks block absence.
  */
 function hasStageSection(parsed: ParsedUWFile, id: string): boolean {
-  if (id === 'operating_statement') {
-    return !!(parsed.sections[id] || getSectionVariant(parsed, id, 't12') || getSectionVariant(parsed, id, 'default'));
-  }
-  return !!parsed.sections[id];
+  const entry = parsed.sections[id];
+  if (!entry) return false;
+  const blocks = hasBlockShape(entry) ? [entry] : Object.values(entry);
+  return blocks.some(block => hasStatedLeaf(blockPayload(block)));
+}
+
+function hasStatedLeaf(value: unknown): boolean {
+  if (value == null) return false;
+  if (Array.isArray(value)) return value.some(hasStatedLeaf);
+  if (typeof value === 'object') return Object.entries(value).some(([key, child]) =>
+    !['_meta', '_notes', '_role'].includes(key) && hasStatedLeaf(child));
+  return true;
 }
 
 function computeStageReadiness(parsed: ParsedUWFile): StageReadiness {
@@ -3660,19 +3666,16 @@ function computeStageReadiness(parsed: ParsedUWFile): StageReadiness {
     const requiredSections = requiredSectionsFor(stage, parsed.frontmatter.asset_class);
     if (!requiredSections.every(s => hasSection(s))) return false;
     if (req.required_field_paths && !req.required_field_paths.every(hasFieldPath)) return false;
-    if (req.required_one_of && !req.required_one_of.every(group => group.some(hasFieldPath))) return false;
+    if (!stageOneOfFor(stage, parsed.frontmatter.asset_class).every(group => group.some(hasFieldPath))) return false;
     return true;
   };
 
-  return {
-    scope:           stageReady('scope'),
-    screening:       stageReady('screening'),
-    term_sheet:      stageReady('term_sheet'),
-    full_underwrite: stageReady('full_underwrite'),
-    credit_approval: stageReady('credit_approval'),
-    closing:         stageReady('closing'),
-    monitoring:      stageReady('monitoring'),
-  };
+  let ready = true;
+  return Object.fromEntries((Object.keys(STAGE_REQUIREMENTS) as DealStage[])
+    .map(stage => {
+      ready = ready && stageReady(stage);
+      return [stage, ready];
+    })) as unknown as StageReadiness;
 }
 
 // ─── DQ-04: scope-stage readiness ────────────────────────────────────────────
@@ -3700,7 +3703,7 @@ function checkScopeReadiness(parsed: ParsedUWFile, issues: ValidationMessage[]):
       });
     }
   }
-  for (const group of req.required_one_of ?? []) {
+  for (const group of stageOneOfFor('scope', parsed.frontmatter.asset_class)) {
     if (group.every(missing)) {
       issues.push({
         code: 'DQ-04',

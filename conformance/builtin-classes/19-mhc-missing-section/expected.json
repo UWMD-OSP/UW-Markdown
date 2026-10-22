@@ -8,8 +8,6 @@
     "price_per_site": null,
     "noi_per_site": null
   },
-  "expected_codes": [
-    "CLS-03"
-  ],
+  "expected_codes": [],
   "builtin_class": "manufactured_housing"
 }

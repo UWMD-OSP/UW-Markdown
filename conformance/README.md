@@ -14,16 +14,16 @@ describe content; they do not confer a tier claim.
 
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
-| Reader | 32 | 17 |
-| Verifier | 834 | 505 |
+| Reader | 37 | 22 |
+| Verifier | 839 | 510 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 150 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
-| Starter products | 114 | 37 |
-| **Total** | **1,264** | **574** |
+| Starter products | 124 | 47 |
+| **Total** | **1,284** | **594** |
 
 ## How to self-certify
 

@@ -23,6 +23,14 @@ per-size dictionary metrics reject a negative denominator as unverifiable.
 Negative, zero, positive and fractional controls cover the boundary; formulas
 and rounding are unchanged.
 
+**RFC 0116 implemented (owner acceptance, 2026-10-22 second set).** Stage
+readiness now requires a stated non-null leaf and is cumulative. Scope reads the
+class primary size or valuation price; mixed-use uses a component size. Missing
+`dc_capacity`/`mhc_sites` are screening gaps, and `CLS-03` is retired. Init writes
+the supplied address and class into property without inventing size or price.
+Five new document fixtures cover the alternatives and blank/missing sections;
+portable document validation now pins all seven readiness values.
+
 **Implemented RFC 0086 — one purchase-price authority (owner acceptance 2026-10-22).**
 [RFC 0086](../rfcs/0086-data-center-purchase-price-authority.md) closes #343
 M04 and #493: `price_per_commissioned_kw` now reads `valuation.purchase_price`

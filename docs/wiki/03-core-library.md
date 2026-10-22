@@ -172,7 +172,7 @@ order.
 
 **Validation code families** (all defined with copy in `BUILTIN_REMEDIATIONS`):
 - `CC-01..CC-10` — cross-section consistency (NOI/DSCR/LTV/cap/sources-uses/…).
-- `DQ-01..DQ-05` — data quality (provisional/partial blocks, scope readiness, stale gaps).
+- `DQ-01..DQ-06` — data quality (provisional/partial blocks, scope readiness, stale gaps and missing stated sections). RFC 0116 makes readiness cumulative; empty/all-null scaffolds do not count, scope uses the class primary size or valuation price, and class sections enter at screening.
 - `INT-01..INT-04` — integrity (parent/content hash chain), `INT-05..INT-08` — block signatures (RFC 0010) — surfaced by `integrity.ts`.
 - `POL-01..POL-02` — provenance/policy (unauthorized actor, replace-where-supersede).
 - `FV-01..FV-15` — financial validity vs. thresholds (cap, DSCR, LTV, debt yield, IRR, vacancy, opex, LTC…),

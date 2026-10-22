@@ -186,7 +186,9 @@ readiness level: a `scope`-stage file MAY consist almost entirely of
 provisional blocks (see Part III §3.4 `_meta.quality.provisional`) and
 represents triage rather than commitment. The minimum content for
 `scope` is a `property` section with at least an address, an asset
-class, and one of `units` or `asking_price`; everything else MAY be
+class, and either the class's primary size (Protocol §XIII.1) or
+`valuation.purchase_price`; a mixed-use record may state any component's
+slot-specific size instead. Everything else MAY be
 filled in from the fallback cascade (see the
 [starter guide](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade)). Advancing
 past `scope` requires real documents, not better assumptions —
@@ -4154,7 +4156,7 @@ gross amount or RFC 0045 reserve refusal. See the
 
 ### Official class sections (RFC 0080, RFC 0081)
 
-These additive sections use the same bare block body and role/variant resolution as existing standard sections. Fixed field contracts are enforced by core (CLS-03 missing required section, CLS-04 invalid stated field). The normative schemas below govern their payloads; additional annotations do not change the calculations. Primary size is always stated on property, never synthesized: `critical_it_load_kw` for data centers and `total_sites` for manufactured housing. The matching detailed-section quantity must agree exactly when both are stated.
+These additive sections use the same bare block body and role/variant resolution as existing standard sections. Fixed field contracts are enforced by core (CLS-04 invalid stated field; missing sections are stage gaps under §5.1). The normative schemas below govern their payloads; additional annotations do not change the calculations. Primary size is always stated on property, never synthesized: `critical_it_load_kw` for data centers and `total_sites` for manufactured housing. The matching detailed-section quantity must agree exactly when both are stated.
 
 ### 4.29 Capacity & Topology
 
@@ -4311,7 +4313,7 @@ Rules use Protocol §VIII.1 safe expressions. A false result emits the listed fi
 | `CC-MH-07` | error | `mhc_sites == null &#124;&#124; mhc_sites.park_owned_homes == null &#124;&#124; mhc_sites.park_owned_homes <= 0 &#124;&#124; (mhc_sites.poh_home_rent_monthly != null && mhc_sites.poh_home_rent_monthly >= 0)` |
 | `CC-DC-08` | error | Stated property critical IT kW equals stated dc_capacity critical IT kW. |
 | `CC-MH-08` | error | Stated property sites equal stated mhc_sites total_sites. |
-| `CLS-03` | error | A required official class section is absent. |
+| `CLS-03` | retired, reserved | Section absence is a §5.1 readiness gap (RFC 0116). |
 | `CLS-04` | error | A stated official field violates its fixed field contract; hospitality rent_roll requires available_room_nights when stated. |
 
 ---
@@ -4320,7 +4322,11 @@ Rules use Protocol §VIII.1 safe expressions. A false result emits the listed fi
 
 ### 5.1 Pipeline Stage Completeness Requirements
 
-The following sections must be present (non-null) before advancing to each stage:
+The following sections must be stated before advancing to each stage. A current
+block states a section when it contains at least one non-null leaf outside
+`_meta`, `_notes` and `_role`, recursively through objects and arrays. Empty
+containers and all-null scaffolds do not count (RFC 0116). Readiness is cumulative:
+every earlier stage, including scope's field requirements, must also be ready.
 
 | Stage | Required Sections |
 |---|---|
@@ -4343,7 +4349,7 @@ expressible as section presence; staleness belongs to the `DQ-05` machinery
 (§4.22) and institution policy.
 
 **Class overlays (RFC 0029).** The base lists assume an income property with
-direct tenancy. Two asset classes diverge structurally, and for them a
+direct tenancy. The listed asset classes diverge structurally, and for them a
 validator MUST adjust the requirements as follows — exhaustively; an asset
 class not listed here (including an unrecognized one) takes the base lists
 verbatim:
@@ -4352,6 +4358,8 @@ verbatim:
 |---|---|
 | `land` | `rent_roll` and `operating_statement` are **exempt** at every stage: raw land has no tenancy and no operating statement — its carry lives in `noi_model` and `dcf`, and nothing stands in for the exempted sections. |
 | `mixed_use` | `components` **substitutes** for `rent_roll` and `operating_statement`: wherever a stage's base list requires either, the requirement is satisfied by (and only by) a `components` section, which §4.23 already makes the home of per-component income and operating detail. |
+| `data_center` | `dc_capacity` is additionally required from Screening onward. |
+| `manufactured_housing` | `mhc_sites` is additionally required from Screening onward. |
 
 A substitution is checkable — the substitute section is *required* at the
 stage where the replaced section would have been (a substitute replacing two
@@ -4362,10 +4370,10 @@ class. Section ids remain class-neutral containers otherwise: hospitality's
 `rent_roll` carries keys/ADR/segmentation, senior housing's carries
 unit/acuity mix, a data center's carries its kW leases and a manufactured-housing
 community's its site/pad mix, and no overlay entry exists for them because
-reuse is the design, not a gap. The RFC 0080 builtins (`data_center`,
-`manufactured_housing`) take the base lists verbatim, exactly as multifamily
-does: their class sections (`dc_capacity`, `mhc_sites`) are required by the
-class (`CLS-03`), never substituted for `rent_roll`.
+reuse is the design, not a gap. `dc_capacity` and `mhc_sites` supplement the
+base lists from screening; they never substitute for `rent_roll`. Their absence
+is a `DQ-06` info readiness gap, not a class-field error. `CLS-03` is retired
+and reserved (RFC 0116). A stated class section still satisfies `CLS-04`.
 
 ### 5.2 Financial Validity Thresholds
 

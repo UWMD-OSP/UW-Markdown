@@ -140,6 +140,8 @@ and how it gets accepted.
 | [0113](./0113-paid-room-nights.md) | Define hospitality occupied room nights as paid room nights sold | accepted | format, conformance |
 | [0114](./0114-area-measurement-standard.md) | Record the area measurement standard behind per-area metrics | accepted | format, protocol, core, conformance |
 | [0115](./0115-portable-verifier-cases.md) | Portable conformance subcommands for every Verifier obligation | accepted | protocol, conformance, core |
+| [0116](./0116-stage-readiness.md) | Stage readiness by class section, a scope minimum in Format fields, and present meaning stated | accepted | format, protocol, core, conformance, tooling |
+
 | [0117](./0117-size-contract-components.md) | Extend the size contract to mixed-use component sizes and guard the per-size component metrics | accepted | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
