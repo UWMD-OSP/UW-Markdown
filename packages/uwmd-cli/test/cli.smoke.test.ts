@@ -167,6 +167,29 @@ describe('uwmd CLI', () => {
     });
   });
 
+  // Issue #409: land's null cap rate made the Lite writer emit a line its own
+  // compiler refused, and the refusal surfaced as a stack trace.
+  it('round-trips a land record through Lite and refuses a bad Lite unit without a stack', async () => {
+    const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-lite-land-'));
+    try {
+      const land = resolve(__dirname, '..', '..', '..', 'examples', 'Sundance-Ranch-Land-Buckeye-AZ.uwx.md');
+      const lite = resolve(temp, 'land.uw.md');
+      expect((await runCli(['convert', land, '--to', 'lite', '--output', lite])).status).toBe(0);
+      expect(readFileSync(lite, 'utf8')).not.toContain('uw:valuation.going_in_cap_rate');
+      const back = await runCli(['convert', lite, '--to', 'uwx', '--output', resolve(temp, 'land2.uwx.md')]);
+      expect(back.status).toBe(0);
+
+      const bad = resolve(temp, 'bad.uw.md');
+      writeFileSync(bad, readFileSync(lite, 'utf8').replace(/^(# [^\n]*\n\n)/m, '$1- Going-in cap rate: null <!-- uw:valuation.going_in_cap_rate -->\n'));
+      const refused = await runCli(['convert', bad, '--to', 'uwx', '--stdout']);
+      expect(refused.status).toBe(1);
+      expect(refused.stderr).toContain('uwmd: [LITE_COMPILE_UNIT_MISMATCH]');
+      expect(refused.stderr).not.toMatch(/^\s+at /m);
+    } finally {
+      rmSync(temp, { recursive: true, force: true });
+    }
+  });
+
   it('writes an explicit omission report for lossy UWX-to-Lite projection', async () => {
     const temp = mkdtempSync(resolve(tmpdir(), 'uwmd-cli-lite-'));
     try {

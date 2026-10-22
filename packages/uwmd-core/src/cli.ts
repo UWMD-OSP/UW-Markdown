@@ -62,6 +62,7 @@ import {
   UWX_EXTENSION,
   parseUWLite,
   compileUWLite,
+  UWLiteBridgeError,
   projectUWEnvelopeToLite,
   stringifyUWX,
   UW_LITE_REPRESENTATION_ID,
@@ -723,10 +724,13 @@ async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
     if (detection.representation !== UWX_REPRESENTATION_ID) {
       const compilation = compileUWLite(parseUWLite(content));
       if (!compilation.ok) {
-        const issues = compilation.report.issues
-          .map((issue) => `${issue.code}: ${issue.message}`)
-          .join('; ');
-        throw new Error(`UW Lite compilation failed: ${issues}`);
+        // A refusal, not a crash: the typed error prints without a stack (#409).
+        const errors = compilation.report.issues.filter((issue) => issue.severity === 'error');
+        const issues = errors.map((issue) => `${issue.code}: ${issue.message}`).join('; ');
+        throw new UWLiteBridgeError(
+          errors[0]?.code ?? 'LITE_COMPILE_FAILED',
+          `UW Lite compilation failed: ${issues}`,
+        );
       }
       return compilation.envelope;
     }
