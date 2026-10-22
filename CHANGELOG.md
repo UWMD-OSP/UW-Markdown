@@ -18,6 +18,17 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #487: an exported workbook gives the calc engine's outcome when an input
+  is missing. `emitCalcExcelFormula` renders null as `#N/A`: a blank named input
+  reads as `NA()`, a null branch is `NA()` instead of `""` (which made
+  `ROUND("")` `#VALUE!`), null tests are `ISNA`-based, and the inputs whose
+  absence nulls a metric are tested once outside `ROUND`. Init records no longer
+  show a fabricated 0 (hospitality total room revenue, data-center facility load
+  and rent revenue, manufactured-housing rent potentials) or `#DIV/0!`/`#VALUE!`
+  where the engine gives null, and populated examples show `#N/A` instead of
+  `#VALUE!` for their three null metrics; every metric with a value is
+  unchanged. Pack formulas are unchanged.
+
 - Fix #497 (erratum): the Format §4.1 `property.asset_class` example lists all
   twelve builtin classes, adding `data_center` and `manufactured_housing` as the
   frontmatter list (§2.2) and RFC 0080 already do.
