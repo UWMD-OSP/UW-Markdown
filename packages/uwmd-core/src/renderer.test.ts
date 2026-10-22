@@ -252,6 +252,22 @@ asset_class: multifamily
     expect(result.estimatedTokens).toBeGreaterThan(0);
   });
 
+  // Issue #410: structured key risks rendered as "[object Object]".
+  it('renders structured and plain key risks readably in chat output', () => {
+    const path = resolve(__dirname, '../../../examples/parkview-after-L6.uwx.md');
+    const parsed = parseUWFile(readFileSync(path, 'utf-8'));
+    const line = render(parsed, { format: 'chat' }).content
+      .split('\n')
+      .find((l) => l.startsWith('Key Risks:'));
+    expect(line).toBeDefined();
+    expect(line).not.toContain('[object Object]');
+    expect(line).toMatch(/^Key Risks: high: DSCR \(amortizing\) of 1\.109x/);
+
+    const risk = parsed.sections['risk_assessment'] as UWBlock;
+    risk.content = { key_risks: ['Plain text risk', { id: 'KR-09' }, { severity: 'low' }, 42] };
+    expect(render(parsed, { format: 'chat' }).content).toContain('Key Risks: Plain text risk; KR-09\n');
+  });
+
   it('renders chat output and truncates when the token budget is exceeded', () => {
     const parsed = loadFixture();
     const result = render(parsed, { format: 'chat', maxTokens: 40 });
