@@ -161,6 +161,17 @@ function renderJson(parsed: ParsedUWFile, opts: RenderOptions): RenderResult {
 
 // ─── CSV — flat key=value metrics row ────────────────────────────────────────
 
+/**
+ * One RFC 4180 field. The text columns that were always quoted stay quoted, with
+ * embedded quotes doubled; any other field is quoted only when it holds a comma,
+ * a quote or a line break, so a value can never shift the columns (#489).
+ */
+function csvField(value: unknown, alwaysQuote = false): string {
+  const text = value === undefined || value === null ? '' : String(value);
+  if (!alwaysQuote && !/[",\r\n]/.test(text)) return text;
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
 function renderCsv(parsed: ParsedUWFile): RenderResult {
   const fm = parsed.frontmatter;
   const qm = fm.quick_metrics ?? {};
@@ -188,13 +199,13 @@ function renderCsv(parsed: ParsedUWFile): RenderResult {
   const size = resolveDealSize(parsed);
 
   const row = [
-    fm.deal_id ?? '',
-    `"${fm.deal_name ?? ''}"`,
-    `"${fm.property_address ?? ''}"`,
-    fm.city ?? '',
-    fm.state ?? '',
-    fm.asset_class ?? '',
-    fm.deal_stage ?? '',
+    csvField(fm.deal_id),
+    csvField(fm.deal_name, true),
+    csvField(fm.property_address, true),
+    csvField(fm.city),
+    csvField(fm.state),
+    csvField(fm.asset_class),
+    csvField(fm.deal_stage),
     num(deepGet(property?.content, 'total_units')),
     num(deepGet(property?.content, 'year_built')),
     num(qm.purchase_price),
@@ -213,10 +224,10 @@ function renderCsv(parsed: ParsedUWFile): RenderResult {
     pct(deepGet(getSection(parsed, 'dcf')?.content, 'assumptions.exit_cap_rate') ?? deepGet(getSection(parsed, 'dcf')?.content, 'exit_cap_rate')),
     num(deepGet(getSection(parsed, 'dcf')?.content, 'assumptions.hold_period_years') ?? deepGet(getSection(parsed, 'dcf')?.content, 'hold_period_years')),
     num(deepGet(getSection(parsed, 'dcf')?.content, 'levered_equity_multiple') ?? deepGet(getSection(parsed, 'dcf')?.content, 'summary.equity_multiple')),
-    `"${(fm.flags ?? []).join('; ')}"`,
-    `"${(fm.blocking_flags ?? []).join('; ')}"`,
-    fm.recommendation ?? '',
-    size?.basis ?? '',
+    csvField((fm.flags ?? []).join('; '), true),
+    csvField((fm.blocking_flags ?? []).join('; '), true),
+    csvField(fm.recommendation),
+    csvField(size?.basis),
     size ? num(size.quantity) : '',
   ];
 
