@@ -420,7 +420,7 @@ organized into four named sub-objects by concern:
   "provenance": {
     "source": "agent/L2-01",
     "resolution": "ai_extracted",
-    "actor": "jared@example.com",
+    "actor": "analyst@example.com",
     "agent_id": "L2-01",
     "agent_version": "1.0.0",
     "timestamp": "2026-09-01T10:12:00Z",
@@ -4011,7 +4011,7 @@ Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **st
 asserted — `moic` at the 4-decimal ratio quantum, `xnpv` at the currency
 quantum, `xirr` at the 6-decimal rate quantum.)*
 
-**Deliberately deferred (RFC 0034).** Excel emit — Excel's `XIRR` is Newton-seeded, so a live `=XIRR(...)` formula cannot hold the bit-exact parity boundary the ROUND-wrapped closed-form formulas do; if a Cash Flow sheet is ever emitted, stated/computed metrics land as literals, by an RFC that takes that exception knowingly. Also deferred: a `dcf` cross-check and defaults-table entries. The RFC 0026 Phase 2 distribution waterfall — whose stated precondition this section removed — was taken up as RFC 0035 (§ 4.27).
+**Deliberately deferred (RFC 0034).** Excel emit — Excel's `XIRR` is Newton-seeded, so a live `=XIRR(...)` formula cannot hold the bit-exact parity boundary the ROUND-wrapped closed-form formulas do; if a Cash Flow sheet is ever emitted, stated/computed metrics land as literals, by an RFC that takes that exception knowingly. Also deferred: a `dcf` cross-check and defaults-table entries. The distribution waterfall that RFC 0026 deferred — whose stated precondition this section removed — was taken up as RFC 0035 (§ 4.27).
 
 ---
 

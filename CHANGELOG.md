@@ -18,6 +18,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Scrub spec wording for public launch (cleanup brief phase D): example actors
+  in Format §2.5 and the `uwmd-block` and `edit-operation` schemas use
+  `analyst@example.com`, and spec and schema references cite an RFC rather than
+  an internal phase of it. No normative change.
+
 - Ratify the release rules after launch (owner, 2026-10-21,
   `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the
   packages and the standard while each record keeps declaring its Format
