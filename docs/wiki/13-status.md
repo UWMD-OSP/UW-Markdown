@@ -43,6 +43,7 @@ RFC 0111. The lender acceptance kit moves to a post-launch 5.x milestone.
 [RFC0114](../rfcs/0114-area-measurement-standard.md): optional
 `property.area_measurement`; a malformed value is `SIZE-02` in TS and Python.
 Informational only: no metric or conversion depends on it.
+
 **Implemented RFC0113 — paid room nights (owner acceptance 2026-10-21).**
 [RFC0113](../rfcs/0113-paid-room-nights.md): `occupied_room_nights` is paid room
 nights sold (USALI basis); optional `complimentary_room_nights` records the
