@@ -25,8 +25,8 @@ User-facing tools built on `@uwmd/core` and `@uwmd/verify` (RFC 0083). Deep refe
 - **Tools depend on the library only** — `@uwmd/core`, or `@uwmd/verify` when
   a tool needs only to read and verify (the VS Code extension) — never on
   another tool's code.
-- **Browser tools import from `@uwmd/core/browser`** (not `@uwmd/core`) so the
-  Anthropic SDK stays out of the bundle (or from `@uwmd/verify/browser`).
+- **Browser tools import from `@uwmd/core/browser`** (not `@uwmd/core`), or from
+  `@uwmd/verify/browser`, so Node-only code stays out of the bundle.
 - TypeScript, ESM, `Bundler` resolution for web tools (`vscode`/`web-editor`).
 - `docs/wiki/` is internal dev docs — **do not** add it to the docs-site nav.
 
