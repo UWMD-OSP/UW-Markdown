@@ -721,6 +721,10 @@ capability is unconditional: every implementation owes it.
 | `CC-DC-NN` | Data-center class rules (Format §4.29–§4.31). | `validate` | warning / error |
 | `CC-MH-NN` | Manufactured-housing class rules. | `validate` | error |
 | `CC-HOSP-NN` | Hospitality class rules. | `validate` | warning / error |
+| `INVALID-DEAL-STAGE-NNN` | Closed declared-stage vocabulary (RFC 0118, Format §2.2). | `validate` | `error` |
+| `INVALID-TIER-NNN` | Closed declared-tier vocabulary (RFC 0118, Format §2.2). | `validate` | `error` |
+| `INVALID-STATUS-NNN` | Closed declared-status vocabulary (RFC 0118, Format §2.2). | `validate` | `error` |
+| `INVALID-RECOMMENDATION-NNN` | Closed recommendation vocabulary (RFC 0118, Format §2.2). | `validate` | `error` |
 | `INVALID-ASSET-CLASS-NNN` | Asset-class identifier syntax (§X.2). | `validate` | `error` |
 | `SRC-NN` | Actor grammar and closed resolution vocabulary (Format §2.6). | `validate` | `error` |
 | `INT-NN` | Integrity — `content_hash` / `parent_hash` chain (§V.10). | `integrity` | `warning` or `error` |

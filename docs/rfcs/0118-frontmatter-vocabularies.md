@@ -1,7 +1,7 @@
 ---
 rfc: 0118
-title: Refuse a deal_stage or tier outside its vocabulary
-status: draft
+title: Refuse closed frontmatter values outside their vocabularies
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -11,9 +11,10 @@ affects:
   - conformance-corpus
 ---
 
-# RFC 0118: Refuse a deal_stage or tier outside its vocabulary
+# RFC 0118: Refuse closed frontmatter values outside their vocabularies
 
-> **Draft for owner acceptance.** Origin: owner ruling of 2026-10-22 (5), taking
+> **Accepted by the owner, 2026-10-22 (second set).** Extend the same checks to
+> `status` and `recommendation`, as expressly ruled. Origin: owner ruling of 2026-10-22 (5), taking
 > option 1 on bug bash finding #492: an out-of-vocabulary value is an error, as
 > other closed vocabularies are. `uwmd init` already refuses such values (#503).
 > This RFC adds the validation rule, which changes what validation reports, so
@@ -28,7 +29,7 @@ Format §2.2 gives frontmatter `deal_stage` seven values and `tier` two
 outside its vocabulary is `INVALID-ASSET-CLASS-001`, an error. This RFC treats
 `deal_stage` and `tier` the same way.
 
-## Proposed change
+## Change
 
 1. **`INVALID-DEAL-STAGE-001` (error).** A stated `deal_stage` that is not one of
    the seven §2.2 values: `scope`, `screening`, `term_sheet`,
@@ -43,9 +44,9 @@ outside its vocabulary is `INVALID-ASSET-CLASS-001`, an error. This RFC treats
 3. **Format §2.2** says both fields are closed vocabularies and names the codes.
    The code taxonomy (Protocol §III.6a) registers them.
 
-## Compatibility analysis
+## Validation impact
 
-No compatibility path (prelaunch; the owner rule). A record with an
+A record with an
 out-of-vocabulary stage or tier now fails validation. The shipped examples and
 fixtures use valid values; the implementation PR checks them all.
 
@@ -70,13 +71,18 @@ Python validator; the cases. `uwmd init` already refuses both (#503).
 - **One frontmatter-vocabulary code for both fields.** This is fewer codes, but
   `asset_class` set the per-field pattern. Not proposed; see D1.
 
-## Unresolved questions
+## Owner extension, 2026-10-22
 
-- `status` (`draft | in_progress | complete | flagged | archived`) and
-  `recommendation` are also enumerated in §2.2 and also unchecked. They were not
-  part of the ruling. A follow-up could close them the same way.
+The owner accepted the RFC and directed the same vocabulary checks for
+`status` and `recommendation`. `INVALID-STATUS-001` and
+`INVALID-RECOMMENDATION-001` are errors at their frontmatter fields. Status
+admits `draft`, `in_progress`, `complete`, `flagged`, `archived`; recommendation
+admits `pending`, `approve`, `approve_with_conditions`, `decline` and null.
+Absent/null values remain unstated; values are never coerced or trimmed.
+Current positive fixtures using undocumented `under_review` are authored with
+`in_progress`; explicit invalid-value controls remain invalid.
 
-## Decisions proposed for owner review
+## Decisions
 
 | # | Question | Proposal | Why / alternative |
 |---|---|---|---|

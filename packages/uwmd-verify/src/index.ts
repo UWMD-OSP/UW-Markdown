@@ -706,6 +706,7 @@ export {
   lookupIncompleteDataPolicy,
   STAGE_CONTRACT,
   STAGE_REQUIREMENTS,
+  FRONTMATTER_VOCABULARIES,
   STAGE_SECTION_OVERLAYS,
   requiredSectionsFor,
   lookupStageContract,

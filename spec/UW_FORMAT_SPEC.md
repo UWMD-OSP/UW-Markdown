@@ -193,6 +193,14 @@ past `scope` requires real documents, not better assumptions —
 producers MUST re-stamp defaulted blocks with observed data before
 setting `deal_stage: screening` or later.
 
+The non-null `deal_stage`, `tier`, `status` and `recommendation` values are
+closed vocabularies (RFC 0118). A value outside the enumerated strings,
+including a non-string, is respectively `INVALID-DEAL-STAGE-001`,
+`INVALID-TIER-001`, `INVALID-STATUS-001` or `INVALID-RECOMMENDATION-001` (**error**)
+at that frontmatter field. Absence and null are unstated, not findings. Do not
+trim, coerce or infer values. Readiness still computes independently; an invalid
+declared stage produces no `DQ-06` gap list.
+
 ### 2.2a Asset-class identifiers (RFC 0003)
 
 `asset_class` is one of the twelve official builtin values **or** a

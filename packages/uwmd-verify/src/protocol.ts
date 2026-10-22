@@ -648,6 +648,14 @@ export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
   monitoring:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing', 'operating_statement', 'noi_model', 'valuation', 'sources_uses', 'market_analysis', 'dcf', 'stress_tests', 'risk_assessment', 'compliance', 'assumptions', 'due_diligence'] },
 };
 
+/** RFC 0118: stated non-null frontmatter values use these closed vocabularies. */
+export const FRONTMATTER_VOCABULARIES: Readonly<Record<'deal_stage' | 'tier' | 'status' | 'recommendation', readonly string[]>> = Object.freeze({
+  deal_stage: Object.freeze(Object.keys(STAGE_REQUIREMENTS)),
+  tier: Object.freeze(['screener', 'analyst']),
+  status: Object.freeze(['draft', 'in_progress', 'complete', 'flagged', 'archived']),
+  recommendation: Object.freeze(['pending', 'approve', 'approve_with_conditions', 'decline']),
+});
+
 /**
  * Per-class adjustments to the base stage lists (format spec §5.1 class
  * overlays, RFC 0029). Exhaustive by design: only `land` and `mixed_use`
@@ -1710,6 +1718,10 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
     capabilities: ['validate'],
   },
   { prefix: 'INT', description: 'Integrity / hash chain', capabilities: ['integrity'] },
+  { prefix: 'INVALID-DEAL-STAGE', description: 'Declared stage vocabulary (RFC 0118)', capabilities: ['validate'] },
+  { prefix: 'INVALID-TIER', description: 'Declared tier vocabulary (RFC 0118)', capabilities: ['validate'] },
+  { prefix: 'INVALID-STATUS', description: 'Declared status vocabulary (RFC 0118)', capabilities: ['validate'] },
+  { prefix: 'INVALID-RECOMMENDATION', description: 'Declared recommendation vocabulary (RFC 0118)', capabilities: ['validate'] },
   {
     prefix: 'POL',
     description: 'Edit policy',
@@ -2392,6 +2404,27 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   },
 
   // ─── Asset-class identifiers (RFC 0003) ────────────────────────────────────
+  {
+    code: 'INVALID-DEAL-STAGE-001', severity: 'error', title: 'Invalid declared stage',
+    description: 'frontmatter.deal_stage is outside the closed Format vocabulary.',
+    remediation: 'Use scope, screening, term_sheet, full_underwrite, credit_approval, closing or monitoring.',
+    spec_ref: 'UW_FORMAT_SPEC.md §2.2',
+  },
+  {
+    code: 'INVALID-TIER-001', severity: 'error', title: 'Invalid declared tier',
+    description: 'frontmatter.tier is outside the closed Format vocabulary.',
+    remediation: 'Use screener or analyst.', spec_ref: 'UW_FORMAT_SPEC.md §2.2',
+  },
+  {
+    code: 'INVALID-STATUS-001', severity: 'error', title: 'Invalid declared status',
+    description: 'frontmatter.status is outside the closed Format vocabulary.',
+    remediation: 'Use draft, in_progress, complete, flagged or archived.', spec_ref: 'UW_FORMAT_SPEC.md §2.2',
+  },
+  {
+    code: 'INVALID-RECOMMENDATION-001', severity: 'error', title: 'Invalid declared recommendation',
+    description: 'frontmatter.recommendation is outside the closed Format vocabulary.',
+    remediation: 'Use pending, approve, approve_with_conditions, decline, or null.', spec_ref: 'UW_FORMAT_SPEC.md §2.2',
+  },
   {
     code: 'INVALID-ASSET-CLASS-001', severity: 'error',
     title: 'Malformed asset-class identifier',
