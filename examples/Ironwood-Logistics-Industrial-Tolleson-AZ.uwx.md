@@ -51,6 +51,8 @@ source_documents:
   - "ironwood_appraisal_2026.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Ironwood Logistics Center — Tolleson, AZ
 
 > **Deal ID:** uw_2026_i3k9m2 | **Scenario:** Stabilized Acquisition | **Status:** In Progress  
@@ -74,7 +76,7 @@ Ironwood Logistics Center is a 220,000 SF Class A bulk-distribution warehouse in
     "section": "deal_context",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-19T08:20:00Z",
@@ -112,7 +114,7 @@ Ironwood Logistics Center is a 220,000 SF Class A bulk-distribution warehouse in
     "section": "property",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-19T08:40:00Z",
@@ -157,7 +159,7 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-19T09:10:00Z",
@@ -299,7 +301,7 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
     "section": "debt_structure",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-19T13:00:00Z",
@@ -397,7 +399,7 @@ Industrial tenant variant — the spec's `rent_roll` section accepts a `tenants`
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-19T14:30:00Z",
@@ -437,7 +439,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
     "provenance": {
       "source": "system/extractor",
       "resolution": "ai_extracted",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -479,7 +481,7 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -537,7 +539,7 @@ Ironwood Logistics Holdings LLC — single-principal sponsorship; figures PFS-st
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -600,7 +602,7 @@ Tolleson / Southwest Valley infill logistics fundamentals as of 2026-08.
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",

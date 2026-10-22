@@ -1,0 +1,13 @@
+{
+  "description": "RFC 0113: occupied_room_nights is paid room nights sold. ADR and occupancy read the paid count (3,784,320 / 21,024 = 180; 21,024 / 29,200 = 0.72); the 1,100 complimentary nights stated apart change neither.",
+  "expected_calcs": {
+    "adr": 180,
+    "occupancy": 0.72,
+    "revpar": 129.6
+  },
+  "expected_codes": [
+    "CC-HOSP-01",
+    "CC-HOSP-03"
+  ],
+  "builtin_class": "hospitality"
+}

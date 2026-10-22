@@ -10,6 +10,8 @@ governing_documents:
   - source:standalone:2026-10-17:anchor-lease
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Anchor Tenant — Lease Abstract
 
 This newly authored fictional example illustrates the abstract shape of an executed lease. It preserves the source
@@ -25,7 +27,7 @@ the reviewed materials. No rent or cash-flow figure is calculated here.
     "section": "deal_context",
     "provenance": {
       "source": "system/standalone-kit",
-      "actor": "codex/standalone-kit-2026-10-17",
+      "actor": "analyst",
       "timestamp": "2026-10-17T21:34:15Z",
       "notes": "Human review is required before using this illustrative abstract with unresolved legal terms; revision 1 is the current block of a new document."
     },
