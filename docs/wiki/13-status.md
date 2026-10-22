@@ -18,6 +18,16 @@ in Python (Protocol §II.2/§II.5). Divergences found
 while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
 (spec-ambiguity, non-portable).
 
+**Stored validation sections regenerated (owner ruling 2026-10-21 evening).**
+The six examples and fixtures that state a §4.17 `validation` section now store
+what a fresh `uwmd validate` reports, not the renamed old run: `clean`, the deal
+flags in `financial_validity[]` (`flag_id` the FV code, the band in `severity`
+until draft RFC 0110), completeness from `DQ-04`/`DQ-06`, cross-section entries
+from `CC-*` issues, and the thresholds used. `policy_flags` and
+`human_review_items` are kept: validation does not produce them. Record 24 is
+regenerated with its adjacent institution config; fixture 57, which the reader
+refuses on purpose, takes fixture 02's section.
+
 **Implemented RFC0108 — the §4.17 validation section's vocabulary (owner acceptance 2026-10-21, D2 and D3).**
 [RFC0108](../rfcs/0108-validation-section-vocabulary.md): a stored `validation`
 section now speaks the validation result's words: `overall_status`
