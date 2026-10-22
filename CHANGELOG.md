@@ -18,6 +18,13 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
+  for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
+  `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.
+  Lite markers are now sought only outside UWX structured fences. The Lite
+  conformance suite reads each compiled UWX back (eight new `[uwx-read]` checks;
+  1,238 checks in all).
+
 - Ratify the release rules after launch (owner, 2026-10-21,
   `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the
   packages and the standard while each record keeps declaring its Format
