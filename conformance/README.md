@@ -14,16 +14,16 @@ describe content; they do not confer a tier claim.
 
 | Target | Reference checks | Portable CLI cases |
 |---|---:|---:|
-| Reader | 26 | 17 |
-| Verifier | 726 | 295 |
+| Reader | 32 | 17 |
+| Verifier | 816 | 328 |
 | Module | 76 | 1 |
 | Integrity | 32 | 14 |
 | Representations | 142 | 0 |
 | Portfolio | 14 | 0 |
 | Sensitivity | 5 | 0 |
 | Stochastic | 7 | 0 |
-| Starter products | 106 | 37 |
-| **Total** | **1,134** | **364** |
+| Starter products | 102 | 37 |
+| **Total** | **1,226** | **397** |
 
 ## How to self-certify
 
@@ -50,8 +50,8 @@ node scripts/run-conformance.mjs
 # Reader + Verifier, plus the Module profile
 node scripts/run-conformance.mjs --tier=verifier --profile=module
 
-# Agent starter checks (lint-only — does not invoke an LLM)
-node scripts/run-conformance.mjs --starter-products --suite=starter-agent
+# The layer-profile starter check (no model, no agent run)
+node scripts/run-conformance.mjs --starter-products --suite=starter-agent-profile
 
 # Bootstrap / refresh expected outputs from the current library
 node scripts/run-conformance.mjs --update
@@ -130,8 +130,7 @@ conformance/
 │   ├── fixtures/       <scenario>/{deal.uwx.md, calc.json, expected-result.json}
 ├── starter/refinement/  <scenario>/{deal.uwx.md, expected-graph.json}
 │                         Starter dependency-graph checks
-├── starter/agent/  Starter products: AI agent layers (shape, profile, replay)
-│   ├── fixtures/       <scenario>/{before.uwx.md, expected-after-shape.json}
+├── starter/agent/  Starter products: the Bancroft layer registry
 │   └── profile/        <scenario>/{expected-layer-profiles.json}
 │                         Asserts BANCROFT_LAYERS layer→consumed_profile contract
 ├── lite/               UW Lite representation + deal-summary-v1 bridge

@@ -31,7 +31,7 @@ The project has five layers, each consuming the one above it:
 │                   ├── editor (starter edit dispatcher)       │  verify
 │                   ├── renderer / report / cascade / defaults │
 │                   ├── packs/ (excel-emit)                    │
-│                   └── agents/ (starter agent host)           │
+│                   └── context (layer registry; no agents)    │
 └─────────────────────────────────────────────────────────────┘
                           ▲
                           │ used by
@@ -101,17 +101,16 @@ module.
 | `bindings.ts` (verify) + `bindings-edit.ts` (core) | HTTP negotiation/ETags and MCP resource/tool-result adapters over the shared codecs; core injects its editor for source edits. |
 | `renderer.ts` (core) | HTML / Markdown rendering paths. PDF/DOCX are stubs deferred to a third-party pipeline. |
 | `runner.ts` (core) | Writer API; generic metadata is supplied by verify's `buildMeta`. Generic editing and initialization import metadata directly from verify. |
-| `agents/` + `context.ts` (core) | Optional starter agent host: layer prompts, provider execution and replay. The [starter guide](docs/starter/ai-host.md) describes this non-normative product surface. |
 | `calc/` (verify) | `parser.ts` (recursive-descent), `evaluator.ts` (AST walker), `builtins.ts` (financial + math primitives). The evaluator is sandboxed: capped input, no globals, no I/O. |
 | `builtin-packs/` (verify) + `packs/` (core) | One pack manifest per builtin asset class in `builtin-packs/` (standard data), each equal to its normative `spec/metrics/` entries (`metric-dictionary.test.ts`); `packs/` re-exports them. `packs/excel-emit.ts` translates the same AST to Excel formulas, and the pack tests assert the two paths agree exactly after §VIII.5 quantization (a starter-product quality bar). |
 | `protocol.ts` (verify) | The normative contract types, `BUILTIN_EDIT_POLICIES`, `BUILTIN_REMEDIATIONS`, version constants. |
-| `starter-protocol.ts` (core) | Starter tables: `BUILTIN_VIEW_MODELS`, number formats, `CASCADE_ORDER`, the AI-host and capability-token types (RFC 0083). |
+| `starter-protocol.ts` (core) | Starter tables: `BUILTIN_VIEW_MODELS`, number formats, `CASCADE_ORDER` and the capability-token types (RFC 0083). |
 | `format.ts` (core) | Field-level formatters (currency, percent, multiple, etc.) used by view models. |
-| `context.ts` (core) | `BANCROFT_LAYERS` definitions and `buildAgentContext`. |
+| `context.ts` (core) | `BANCROFT_LAYERS` definitions and the agent context and prompt builders. The toolkit hosts no agents: a host runs its own and writes through `runner.ts` or the editor. The [starter guide](docs/starter/ai-host.md) describes this non-normative surface. |
 | `compactor.ts` (core) | Materializes "live view" by collapsing superseded blocks. |
 | `init.ts` (core) | Scaffold a new `.uw.md` from defaults. |
 | `cli.ts` (core) | Programmatic CLI entry; surfaced via `uwmd-cli`. |
-| `browser.ts` (both) | Subpath export excluding `@anthropic-ai/sdk` so the parser/validator/calc engine can be bundled into a web app. Verify's equals its main entry; core's adds the browser-safe starter products. |
+| `browser.ts` (both) | Subpath export excluding Node-only starter code so the parser/validator/calc engine can be bundled into a web app. Verify's equals its main entry; core's adds the browser-safe starter products. |
 
 ## Tools layer
 
@@ -146,7 +145,7 @@ case exactly one owner (Protocol §II.6, RFC 0078):
   receipts and the §VIII.1–VIII.3 expression notation.
 - **Profiles** — Module, Integrity, Representations, Portfolio,
   Sensitivity and Stochastic, each claimed explicitly.
-- **Starter products** — editor, agent, rendering, defaults and refinement
+- **Starter products** — editor, layer-profile, rendering, defaults and refinement
   checks. Not conformance; still blocking in CI and reported separately.
 
 Fixture directories are named by content (`documents/`, `calc/`,
@@ -182,9 +181,8 @@ These constraints exist to keep the boundaries clean:
    regardless of whether implementations follow.
 2. **The library keeps transport logic dependency-light.** `@uwmd/verify`'s
    runtime dependencies are `fast-xml-parser` and `fflate`, and it depends on
-   no `@uwmd/*` package. `@uwmd/core` adds `@uwmd/verify` (exact) and the
-   optional peer `@anthropic-ai/sdk` (excluded from `browser`); HTTP/MCP
-   adapters introduce no server-SDK dependency.
+   no `@uwmd/*` package. `@uwmd/core` adds `@uwmd/verify` (exact) and no
+   vendor SDK; HTTP/MCP adapters introduce no server-SDK dependency.
 3. **Tools depend on `@uwmd/core` or `@uwmd/verify`** plus their own UI/runtime stack.
    Tools MUST NOT reach into other tools' code.
 4. **Conformance fixtures depend on nothing.** They are pure data and

@@ -25,7 +25,6 @@ Command | Purpose
 `verify <file>` | Validate + recompute stated metrics + integrity (hashes) + provenance (`--validate`/`--integrity`/`--policy`/`--json`). The validate phase applies Protocol §II.2 item 2: a stated metric that disagrees with its recomputation fails the command (exit 1), while one whose inputs are absent is reported `unverifiable` and does not; `--json` carries the report as `stated_metrics`; `--signing --keystore=<store>` checks block signatures, and `--document-signature=<artifact> --keystore=<store>` requires an authenticated document snapshot (RFC 0084; both via the optional `@uwmd/signing`)
 `sign-document <file> --key=<signer.json> --out=<signature.json>` | Write a detached document snapshot signature (RFC 0084; `--signed-at=<iso>`). The output must be a new file distinct from the source and key
 `render <file>` | Render (`--format json\|csv\|chat\|summary`, or `--profile`, `--max-tokens`, `--output`)
-`run <file> --agent <id>` | Bancroft agent, a starter product (`--context-only`, `--prompt`, `--live`, `--model`, `--api-key`, `--instructions`)
 `edit <file> <op.json>` | Apply an `EditOperation` with the starter editor (`--actor`, `--source`, `--confidence`, …)
 `calc <file> <calc.json\|formula>` | Evaluate a calc decl or inline formula
 `compact <file>` | Strip superseded blocks (`--dry-run`, `--output`)
@@ -42,7 +41,7 @@ Command | Purpose
 `receipt verify <file> <receipt.json>` | Verify a receipt (`--json`; exits 0 verified, 1 failed, 3 unverifiable)
 `compose <file> --externalize <s>` | Split a collection section into `.uwpart.md` fragments (`--collection-key`, `--collection-path`, `--out-dir`, `--in-place`, `--dry-run`)
 `resolve <file>` | Reassemble externalized sections from a parts directory (`--parts`, `--output`, `--json`; exits 1 unresolved)
-`layers` | List Bancroft agent layers
+`layers` | List the Bancroft layer registry (the CLI runs no agent)
 
 Chat rendering labels each annual DCF row with its stated `year`, preserving
 source order, duplicate years and sparse years. An absent year displays `n/a`;
@@ -66,7 +65,13 @@ The three 4.2.0 aliases (`validate --stage`, `export --compact`,
 `stage_readiness` in the report, `--no-superseded` and `--out-dir`.
 
 From a source checkout: `npm run cli -- <command> ...` (root script proxies to the
-CLI bin). `run --live` needs `ANTHROPIC_API_KEY` (or `--api-key`).
+CLI bin).
+
+An unknown command exits 1 with `uwmd: unknown command '<name>'` on stderr
+before it reads or writes any file; only no command, `--help`, `-h` or `help`
+prints the command list (exit 0). That covers the removed `uwmd run`: the
+toolkit hosts no agents, and a host that runs its own writes through
+`uwmd edit --agent-id/--agent-version` or the writer API.
 
 ### Validation, completeness and receipt reporting
 
@@ -482,7 +487,7 @@ NoiLineItems, AssumptionsEditor, GenericFieldEditor, HistoryView, Intelligence,
 DiffView, SourceView, NewDealDialog, PipelineLog, ValidationPanel, ReportPreview).
 Build: `tsc --noEmit && vite build`. TS uses `Bundler` resolution + DOM libs +
 `react-jsx`; **must import from `@uwmd/core/browser`** (not `@uwmd/core`) to
-keep the Anthropic SDK out of the bundle. The intelligence + introspection
+keep Node-only starter code out of the bundle. The intelligence + introspection
 functions (`resolveValue`, `rankGaps`, `inferGaps`, `getAssetClassDefaults`,
 `getExprDependencies`, `extractDependencyGraph`, …) are browser-safe and are
 now exported from `@uwmd/core/browser`.

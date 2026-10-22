@@ -1057,16 +1057,6 @@
       "target": "starter-products"
     },
     {
-      "suite": "starter-agent-replay",
-      "scenario": "l6-risk-rating/sections",
-      "target": "starter-products"
-    },
-    {
-      "suite": "starter-agent-replay",
-      "scenario": "l6-risk-rating/document",
-      "target": "starter-products"
-    },
-    {
       "suite": "lite",
       "scenario": "01-minimal [parse]",
       "target": "representations"
@@ -5600,16 +5590,6 @@
       "suite": "metrics",
       "scenario": "statement-home-senior-housing-labor-component-identity-agrees",
       "target": "verifier"
-    },
-    {
-      "suite": "starter-agent",
-      "scenario": "l0a-scope-deterministic",
-      "target": "starter-products"
-    },
-    {
-      "suite": "starter-agent",
-      "scenario": "l6-risk-rating",
-      "target": "starter-products"
     },
     {
       "suite": "starter-agent-profile",

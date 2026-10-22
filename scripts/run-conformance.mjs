@@ -59,9 +59,6 @@ import {
   issueReceipt,
   verifyReceipt,
   assertUWReceipt,
-  runBancroftAgent,
-  createReplayProvider,
-  parseAgentCassette,
   loadModuleManifest,
   loadModuleManifestAsync,
   createModuleRegistry,
@@ -871,146 +868,6 @@ function deepEqual(a, b) {
   const bk = Object.keys(b).sort();
   if (ak.length !== bk.length || !ak.every((k, i) => k === bk[i])) return false;
   return ak.every((k) => deepEqual(a[k], b[k]));
-}
-
-// ─── Starter agent shape checks (shape-only) ─────────────────────────────────────────
-// Agent shape checks run by default without a live model; recorded replays
-// exercise the write path separately.
-
-async function runAgent() {
-  const baseDir = join(CONFORMANCE_DIR, 'starter/agent', 'fixtures');
-  if (!existsSync(baseDir)) {
-    record('starter-agent', '(none)', 'pass', 'no fixtures');
-    return;
-  }
-  const { default: Ajv2020 } = await import('ajv/dist/2020.js');
-  const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
-  for (const scenario of scenarios) {
-    const dir = join(baseDir, scenario);
-    const beforePath = join(dir, 'before.uwx.md');
-    const shapePath = join(dir, 'expected-after-shape.json');
-    if (!existsSync(beforePath) || !existsSync(shapePath)) {
-      record('starter-agent', scenario, 'fail', 'missing before.uwx.md or expected-after-shape.json');
-      continue;
-    }
-    // A live run is operator-driven, so the post-run shape cannot be applied
-    // to an after-document here. What CI can prove: the shape is a strict
-    // JSON Schema (no stray keywords), the before file already satisfies the
-    // frontmatter contract L6 must preserve, and the shape refuses a block in
-    // the retired {section_id, _meta, content} wrapper (RFC 0081 §3).
-    try {
-      const shape = JSON.parse(readFileSync(shapePath, 'utf8'));
-      if (!shape.$schema) {
-        // A declarative contract, not a JSON Schema: lint only.
-        parseUWFile(readFileSync(beforePath, 'utf8'));
-        record('starter-agent', scenario, 'pass', 'shape file lint only — live run not exercised');
-        continue;
-      }
-      const ajv = new Ajv2020({ strict: true, strictRequired: false, validateFormats: false });
-      ajv.compile(shape);
-      const problems = [];
-      const frontmatter = ajv.compile(shape.properties.frontmatter);
-      const before = parseUWFile(readFileSync(beforePath, 'utf8'));
-      if (!frontmatter(before.frontmatter)) problems.push(`before frontmatter: ${ajv.errorsText(frontmatter.errors)}`);
-      for (const [id, sectionShape] of Object.entries(shape.properties.sections.properties)) {
-        if (!sectionShape.required?.includes('_meta')) continue;
-        const block = ajv.compile(sectionShape);
-        if (block({ section_id: id, _meta: {}, content: {} })) problems.push(`${id} shape admits the retired section_id wrapper`);
-      }
-      record('starter-agent', scenario, problems.length ? 'fail' : 'pass', problems.join('; ') || 'shape compiled; before frontmatter and wrapper refusal checked — live run not exercised');
-    } catch (e) {
-      record('starter-agent', scenario, 'fail', `shape check failed: ${e.message}`);
-    }
-  }
-}
-
-// ─── Starter agent replay: deterministic agent runs from a recorded cassette ────────
-// Unlike the shape-only fixtures above, these actually run the agent write
-// path. A cassette supplies the model's side of the conversation, so the run
-// needs no network and no API key and can gate CI.
-//
-// Each scenario freezes an expected output document and is compared BYTE FOR
-// BYTE — not by shape. That is what makes it a real conformance assertion: it
-// pins supersede semantics, `_meta` ownership, pipeline-log append, and
-// frontmatter updates all at once. Determinism comes from injecting a constant
-// clock, which freezes `_meta.timestamp`, collapses `duration_ms` to 0, and
-// makes the log entry id derivable instead of random.
-
-const REPLAY_CLOCK = Date.parse('2026-08-13T00:00:00.000Z');
-
-async function runAgentReplay() {
-  const baseDir = join(CONFORMANCE_DIR, 'starter/agent', 'replay');
-  if (!existsSync(baseDir)) {
-    record('starter-agent-replay', '(none)', 'pass', 'no replay scenarios');
-    return;
-  }
-  const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
-
-  for (const scenario of scenarios) {
-    const dir = join(baseDir, scenario);
-    const meta = JSON.parse(readFileSync(join(dir, 'scenario.json'), 'utf8'));
-    const before = readFileSync(join(dir, 'before.uwx.md'), 'utf8');
-    const expectedPath = join(dir, 'after.uwx.md');
-
-    let result;
-    try {
-      const cassette = parseAgentCassette(readFileSync(join(dir, 'cassette.json'), 'utf8'));
-      result = await runBancroftAgent(before, meta.agent_id, {
-        provider: createReplayProvider(cassette),
-        now: () => REPLAY_CLOCK,
-      });
-    } catch (e) {
-      record('starter-agent-replay', `${scenario}/sections`, 'fail', e.message);
-      record('starter-agent-replay', `${scenario}/document`, 'fail', e.message);
-      continue;
-    }
-
-    if (!result.success) {
-      record('starter-agent-replay', `${scenario}/sections`, 'fail', `run failed: ${result.error}`);
-      record('starter-agent-replay', `${scenario}/document`, 'fail', `run failed: ${result.error}`);
-      continue;
-    }
-
-    // The sections the layer claims to have written.
-    const expectedSections = meta.sections_written ?? [];
-    if (JSON.stringify(result.sectionsWritten) !== JSON.stringify(expectedSections)) {
-      record(
-        'starter-agent-replay',
-        `${scenario}/sections`,
-        'fail',
-        `wrote [${result.sectionsWritten}] expected [${expectedSections}]`,
-      );
-    } else {
-      record('starter-agent-replay', `${scenario}/sections`, 'pass', `wrote ${expectedSections.join(', ')}`);
-    }
-
-    baselineCompare('starter-agent-replay', `${scenario}/document`, expectedPath, result.updatedContent);
-  }
-}
-
-// A replayed run must reproduce the frozen document exactly. `--update`
-// refreshes the baseline the same way every other suite does.
-function baselineCompare(tier, name, expectedPath, actual) {
-  if (!existsSync(expectedPath)) {
-    if (UPDATE) {
-      writeFileSync(expectedPath, actual, 'utf8');
-      record(tier, name, 'updated', 'baseline created');
-    } else {
-      record(tier, name, 'fail', `missing baseline: ${basename(expectedPath)}`);
-    }
-    return;
-  }
-  const expected = readFileSync(expectedPath, 'utf8');
-  if (expected === actual) {
-    record(tier, name, 'pass', 'byte-identical to baseline');
-    return;
-  }
-  if (UPDATE) {
-    writeFileSync(expectedPath, actual, 'utf8');
-    record(tier, name, 'updated', 'baseline refreshed');
-    return;
-  }
-  record(tier, name, 'fail', firstDifference(expected, actual));
 }
 
 function firstDifference(expected, actual) {
@@ -4396,9 +4253,7 @@ const dispatch = {
   'documents': async () => { runDocuments(); await runMalformedDocuments(); },
   'starter-editor': async () => { await runEditor(); },
   'calc': async () => { runCalculations(); await runRefinement(); },
-  'starter-agent': async () => { await runAgent(); await runAgentProfile(); },
-  // Runs by default: deterministic, no network, no API key.
-  'starter-agent-replay': async () => { await runAgentReplay(); },
+  'starter-agent-profile': async () => { await runAgentProfile(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },

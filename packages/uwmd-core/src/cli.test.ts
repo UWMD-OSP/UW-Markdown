@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, rmdirSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync, unlinkSync, rmdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import { resolve } from 'node:path';
@@ -96,6 +96,47 @@ describe('uwmd --version', () => {
     // §II.6a.2: stdout is one JSON document, and the schema admits no extra field.
     expect(JSON.parse(result.stdout)).toEqual(JSON.parse(JSON.stringify(manifest)));
     expect(result.stderr.trim()).toBe(`@uwmd/verify ${VERIFY_VERSION}`);
+  });
+});
+
+describe('commands the CLI does not have', () => {
+  const run = (cwd: string, ...args: string[]) =>
+    spawnCli(process.execPath, [cli, ...args], { encoding: 'utf8', cwd });
+
+  it('refuses the removed `run` command with a non-zero exit and no side effects', async () => {
+    // The toolkit no longer hosts agents. `uwmd run` must fail before it reads
+    // or writes anything, not fall through to the help text with exit 0.
+    const dir = mkdtempSync(resolve(tmpdir(), 'uwmd-run-removed-'));
+    try {
+      const input = resolve(dir, 'x.uw.md');
+      const bytes = readFileSync(resolve(process.cwd(), '../../examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
+      writeFileSync(input, bytes);
+      const result = await run(dir, 'run', 'x.uw.md', '--agent', 'L6', '--live', '--output', 'out.uw.md');
+      expect(result.status).toBe(1);
+      expect(result.stdout).toBe('');
+      expect(result.stderr.trim()).toBe("uwmd: unknown command 'run'. Run 'uwmd --help' for the command list.");
+      expect(readdirSync(dir)).toEqual(['x.uw.md']);
+      expect(readFileSync(input, 'utf8')).toBe(bytes);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('refuses any unknown command the same way', async () => {
+    const result = await run(process.cwd(), 'nonsense');
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain("uwmd: unknown command 'nonsense'.");
+  });
+
+  it.each([{ args: [] }, { args: ['--help'] }, { args: ['-h'] }, { args: ['help'] }])('prints the command list for $args, without `run`', async ({ args }: { args: string[] }) => {
+    const result = await run(process.cwd(), ...args);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('Commands:');
+    expect(result.stdout).toContain('layers');
+    expect(result.stdout).not.toMatch(/^\s+run\s/m);
+    expect(result.stdout).not.toContain('--live');
+    expect(result.stdout).not.toContain('ANTHROPIC_API_KEY');
   });
 });
 
