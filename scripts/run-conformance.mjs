@@ -1124,7 +1124,25 @@ function runLiteFixtures() {
       record('lite', `${id} [compile]`, 'fail', `fixtures/ documents must compile; saw: ${errorCodes(compiled.report.issues).join(', ')}`);
       continue;
     }
-    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, `${stringifyUWX(compiled.envelope).trimEnd()}\n`);
+    const uwxText = `${stringifyUWX(compiled.envelope).trimEnd()}\n`;
+    liteBaseline(`${id} [uwx]`, `${id}.uwx.md`, uwxText);
+
+    // The compiled UWX keeps the Lite source in x_uw_lite_source; a UWX reader
+    // must still read it as UWX and recover the same envelope (issue #408).
+    try {
+      const detected = detectUWSourceRepresentation(uwxText, `${id}.uwx.md`).representation;
+      if (detected !== 'uwx-markdown') {
+        record('lite', `${id} [uwx-read]`, 'fail', `compiled UWX detected as ${detected}`);
+      } else if (
+        canonicalizeUWEnvelope(toUWEnvelope(parseUWFile(uwxText))) !== canonicalizeUWEnvelope(compiled.envelope)
+      ) {
+        record('lite', `${id} [uwx-read]`, 'fail', 'reading the compiled UWX yields a different envelope');
+      } else {
+        record('lite', `${id} [uwx-read]`, 'pass');
+      }
+    } catch (e) {
+      record('lite', `${id} [uwx-read]`, 'fail', `reading the compiled UWX threw: ${e.message}`);
+    }
 
     const projection = projectUWEnvelopeToLite(compiled.envelope);
     liteBaseline(

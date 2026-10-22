@@ -1103,6 +1103,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "01-minimal [uwx-read]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "01-minimal [projection-report]",
       "target": "representations"
     },
@@ -1144,6 +1149,11 @@
     {
       "suite": "lite",
       "scenario": "02-full-deal-summary [uwx]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "02-full-deal-summary [uwx-read]",
       "target": "representations"
     },
     {
@@ -1193,6 +1203,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "03-display-variants [uwx-read]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "03-display-variants [projection-report]",
       "target": "representations"
     },
@@ -1234,6 +1249,11 @@
     {
       "suite": "lite",
       "scenario": "04-typed-values [uwx]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "04-typed-values [uwx-read]",
       "target": "representations"
     },
     {
@@ -1283,6 +1303,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "05-prose-and-normalization [uwx-read]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "05-prose-and-normalization [projection-report]",
       "target": "representations"
     },
@@ -1324,6 +1349,11 @@
     {
       "suite": "lite",
       "scenario": "06-decimal-exact-percents [uwx]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "06-decimal-exact-percents [uwx-read]",
       "target": "representations"
     },
     {
@@ -1373,6 +1403,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [uwx-read]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "07-decimal-exact-fractions [projection-report]",
       "target": "representations"
     },
@@ -1414,6 +1449,11 @@
     {
       "suite": "lite",
       "scenario": "08-frontmatter-yaml-scalars [uwx]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [uwx-read]",
       "target": "representations"
     },
     {
