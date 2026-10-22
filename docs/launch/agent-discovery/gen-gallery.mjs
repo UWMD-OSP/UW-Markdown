@@ -21,8 +21,8 @@ function frontmatter(source) {
 }
 
 const rows = readdirSync(join(root, 'examples'))
-  // parkview-after-L6 is the Parkview record after a later pipeline stage, not another class.
-  .filter((f) => f.endsWith('.uwx.md') && f !== 'parkview-after-L6.uwx.md')
+  // parkview-reviewed is the reviewed Parkview record, not another class.
+  .filter((f) => f.endsWith('.uwx.md') && f !== 'parkview-reviewed.uwx.md')
   .map((file) => ({ file, ...frontmatter(readFileSync(join(root, 'examples', file), 'utf8')) }))
   .filter((r) => r.asset_class)
   .sort((a, b) => a.asset_class.localeCompare(b.asset_class) || a.file.localeCompare(b.file));

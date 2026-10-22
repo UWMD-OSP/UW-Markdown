@@ -254,7 +254,7 @@ asset_class: multifamily
 
   // Issue #410: structured key risks rendered as "[object Object]".
   it('renders structured and plain key risks readably in chat output', () => {
-    const path = resolve(__dirname, '../../../examples/parkview-after-L6.uwx.md');
+    const path = resolve(__dirname, '../../../examples/parkview-reviewed.uwx.md');
     const parsed = parseUWFile(readFileSync(path, 'utf-8'));
     const line = render(parsed, { format: 'chat' }).content
       .split('\n')

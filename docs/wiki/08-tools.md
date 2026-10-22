@@ -11,6 +11,10 @@ capability-token types; the CLI, Excel, report and the web editor build on
 "which tool should I use" guide is [`docs/TOOLS.md`](../TOOLS.md); this page is the
 developer view (where the code is, how it's built, what to know when changing it).
 
+The editor's new-deal address placeholder is explicitly fictional. The reviewed
+Parkview example is `parkview-reviewed.uwx.md` and its narrative key is
+`review_gate_note`; neither name implies a hosted agent pipeline.
+
 ## `uwmd` CLI — `packages/uwmd-cli`
 
 Summary, chat and CSV fill absent quick-metric summaries through the existing

@@ -45,7 +45,7 @@ align the two smaller mismatches in the same section: completeness severities
 - Every example and fixture that states the section writes `warnings_only`:
   `examples/Parkview-Apts-Glendale-AZ.uwx.md`,
   `examples/Riverside-Office-Phoenix-AZ.uwx.md`,
-  `examples/parkview-after-L6.uwx.md`,
+  `examples/parkview-reviewed.uwx.md`,
   `conformance/documents/fixtures/02-full-multifamily.uwx.md`,
   `conformance/institution-config/24-automatic-adjacent/record.uwx.md` and
   `conformance/documents/malformed/57-yaml-nested-under-scalar.uwx.md`.

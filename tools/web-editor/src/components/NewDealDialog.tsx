@@ -82,7 +82,7 @@ export function NewDealDialog(props: {
               id="nd-address"
               className="input"
               value={address}
-              placeholder="1234 W Camelback Rd"
+              placeholder="1234 Fictional Example Lane"
               onChange={(e) => setAddress(e.target.value)}
             />
           </Field>

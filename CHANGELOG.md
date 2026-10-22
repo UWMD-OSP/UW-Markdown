@@ -32,6 +32,8 @@ protocol, and each package each carry an independent semver).
 - Fix #496: omit units on missing summary/chat values, format CSV percentages
   and DSCR at display precision, and fill absent summaries through existing
   deterministic class packs without changing authored values or source bytes.
+- Use an obviously fictional editor address and neutral reviewed-example naming;
+  retain neighborhood/area names and the RFC 0006 Marriott reference.
 - Fix #516's four reference departures: null tax/hedge terms are unstated,
   CC-15 uses the documented sole-variant fallback, and unresolved replacement
   sources take precedence over malformed reference values.

@@ -2767,7 +2767,7 @@ Tracking lenders contacted, terms quoted, and next steps. Three lenders in conve
     "blocking_flags": [],
     "conditions_outstanding": 7,
     "ready_for_l7_assembly": false,
-    "l7_gate_note": "Assembly should not proceed until COND-01 through COND-07 are resolved, stress test section is populated, and sponsor data is on file. Deal is conditionally approvable — not unconditionally approvable at this stage."
+    "review_gate_note": "Assembly should not proceed until COND-01 through COND-07 are resolved, stress test section is populated, and sponsor data is on file. Deal is conditionally approvable — not unconditionally approvable at this stage."
   }
 }
 ```

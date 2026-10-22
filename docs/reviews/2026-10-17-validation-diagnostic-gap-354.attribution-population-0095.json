@@ -2228,9 +2228,9 @@
       }
     },
     {
-      "operation": "examples/parkview-after-L6.uwx.md",
+      "operation": "examples/parkview-reviewed.uwx.md",
       "ref": 14,
-      "path": "examples/parkview-after-L6.uwx.md",
+      "path": "examples/parkview-reviewed.uwx.md",
       "line": 1744,
       "source_model_paths": [
         "superseded.risk_assessment[0]"
@@ -2253,9 +2253,9 @@
       }
     },
     {
-      "operation": "examples/parkview-after-L6.uwx.md",
+      "operation": "examples/parkview-reviewed.uwx.md",
       "ref": 18,
-      "path": "examples/parkview-after-L6.uwx.md",
+      "path": "examples/parkview-reviewed.uwx.md",
       "line": 2288,
       "source_model_paths": [
         "custom_calculations[0]"
@@ -2278,9 +2278,9 @@
       }
     },
     {
-      "operation": "examples/parkview-after-L6.uwx.md",
+      "operation": "examples/parkview-reviewed.uwx.md",
       "ref": 19,
-      "path": "examples/parkview-after-L6.uwx.md",
+      "path": "examples/parkview-reviewed.uwx.md",
       "line": 2416,
       "source_model_paths": [
         "custom_scenarios[0]"
@@ -2303,9 +2303,9 @@
       }
     },
     {
-      "operation": "examples/parkview-after-L6.uwx.md",
+      "operation": "examples/parkview-reviewed.uwx.md",
       "ref": 20,
-      "path": "examples/parkview-after-L6.uwx.md",
+      "path": "examples/parkview-reviewed.uwx.md",
       "line": 2523,
       "source_model_paths": [
         "extensions.x_lender_matrix"
@@ -2328,9 +2328,9 @@
       }
     },
     {
-      "operation": "examples/parkview-after-L6.uwx.md",
+      "operation": "examples/parkview-reviewed.uwx.md",
       "ref": 22,
-      "path": "examples/parkview-after-L6.uwx.md",
+      "path": "examples/parkview-reviewed.uwx.md",
       "line": 2834,
       "source_model_paths": [
         "pipeline_log[0]"

@@ -59,7 +59,7 @@ for (const [name, rows] of cases) {
   yearLabels.push({ name, input_rows: rows, actual_rows: actualRows, proposed_rows: proposedRows, actual_tokens: actual.estimatedTokens, proposed_tokens: proposed.estimatedTokens, source_sha256: hash(source), source_and_diagnostics_unchanged: true });
 }
 const compaction = [];
-for (const path of ['conformance/documents/malformed/04-broken-chain.uwx.md', 'examples/parkview-after-L6.uwx.md']) {
+for (const path of ['conformance/documents/malformed/04-broken-chain.uwx.md', 'examples/parkview-reviewed.uwx.md']) {
   const source = readFileSync(join(repo, path), 'utf8');
   const parsed = core.parseUWFile(source);
   const beforeHash = hash(parsed.raw);
