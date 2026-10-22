@@ -101,7 +101,6 @@ import { cmdPortfolioValidate, cmdPortfolioEdges } from './cli-portfolio.js';
 import { evaluateCalc } from './calc-display.js';
 import { parseCalculationContext } from './calculation-context.js';
 import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cash-flows.js';
-import { BANCROFT_LAYERS } from './context.js';
 import type { RenderFormat, RenderTier } from './renderer.js';
 import { buildContext } from './context-profiles.js';
 import type { ContextProfile } from './context-profiles.js';
@@ -953,7 +952,6 @@ function cmdModulesList(files: string[], flags: Record<string, string | boolean>
     calculations: (m.calculations ?? []).length,
     validations: (m.validations ?? []).length,
     sections: (m.sections ?? []).length,
-    agent_layers: (m.agent_layers ?? []).length,
   }));
 
   if (flags['json']) {
@@ -968,7 +966,7 @@ function cmdModulesList(files: string[], flags: Record<string, string | boolean>
     console.log(`    asset classes: ${row.asset_classes.length ? row.asset_classes.join(', ') : 'class-agnostic'}`);
     console.log(
       `    contributes: ${row.calculations} calc, ${row.validations} validation, ` +
-        `${row.sections} section, ${row.agent_layers} agent layer`,
+        `${row.sections} section`,
     );
   }
   console.log('');
@@ -1543,14 +1541,6 @@ switch (command) {
     break;
   }
 
-  case 'layers':
-    console.log('\nBancroft agent layers:\n');
-    for (const layer of BANCROFT_LAYERS) {
-      console.log(`  ${layer.id.padEnd(4)} ${layer.name.padEnd(22)} reads: ${(layer.reads[0] === '*' ? ['all'] : layer.reads).slice(0, 3).join(', ')}${layer.reads.length > 3 ? '…' : ''}`);
-    }
-    console.log('');
-    break;
-
   case 'edit': {
     if (!positional[0] || !positional[1]) {
       console.error('Usage: uwmd edit <file> <operation.json> [--actor <name>] [--source <pattern>] [--agent-id <id>] [--agent-version <v>] [--confidence high|medium|low] [--output <file>] [--capability-token <jwt> --coord-key <keystore.json>]');
@@ -2018,7 +2008,6 @@ Commands:
   portfolio validate|edges      Validate a .uwportfolio.json sidecar, or list its entity edges (RFC 0015)
   manifest                     Print this implementation's ImplementationManifest (conformance protocol; @uwmd/verify version on stderr)
   --version, -V                Print the @uwmd/core, @uwmd/verify, Protocol and Format versions
-  layers                       List the Bancroft layer registry (runs no agent)
 
 Options (each command accepts only the flags listed for it; an unknown flag exits 1 before any work runs):
   --output <path>    Output file path (compact, init; init refuses an existing file)

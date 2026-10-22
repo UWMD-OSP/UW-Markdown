@@ -36,8 +36,8 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
   format_version: FORMAT_VERSION,
   // RFC 0078: a Verifier with every optional profile. Editing and rendering
   // stay claimed as capabilities: they are starter-product claims now (§II.4),
-  // still exercised by their fixtures. The toolkit hosts no agents, so it does
-  // not claim the `agent-host` capability the vocabulary still defines.
+  // still exercised by their fixtures. The toolkit hosts no agents, and RFC
+  // 0112 removed the `agent-host` capability from the vocabulary.
   tier: 'verifier',
   profiles: Object.freeze([...CONFORMANCE_PROFILES]) as ConformanceProfile[],
   capabilities: Object.freeze([

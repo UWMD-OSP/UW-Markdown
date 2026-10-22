@@ -135,8 +135,8 @@ them.
   computes or projects a document is not part of the standard: display
   conventions and locales, view models, byte-preserving round trips,
   multi-variant edits, frontmatter update rules, the fallback cascade
-  and default tables, refinement, workbook bindings, the AI agent host
-  and capability tokens. The non-normative
+  and default tables, refinement, workbook bindings, the agent writers
+  and context profiles, and capability tokens. The non-normative
   [starter products guide](../docs/starter/README.md) describes how the
   reference tools behave. Those tools keep their test suites and can
   change without a Protocol version (RFC 0078). A rule that protects
@@ -316,12 +316,12 @@ document-declared calculations `unverifiable`, never wrong.
 
 ### II.4 Starter-product claims
 
-Editing, display and AI-agent hosting are not conformance tiers. A tool
-that edits documents or hosts agents compatibly with the reference
-starter products says so as a product claim, against the
+Editing and display are not conformance tiers. A tool that edits
+documents compatibly with the reference starter products says so as a
+product claim, against the
 [starter products guide](../docs/starter/README.md) and its test
 suites, not as Protocol conformance. The capability flags for that work
-(`edit-replace`, `edit-supersede`, `edit-frontmatter`, `agent-host`,
+(`edit-replace`, `edit-supersede`, `edit-frontmatter`,
 `refinement`, `capability-verify` and the `render-*` family) stay in
 `ImplementationManifest.capabilities`, so those claims remain checkable
 against their fixtures (§II.6a.5).
@@ -994,7 +994,7 @@ selected findings, and do not expand REC-05–08 arithmetic or unrelated LSE che
 Newly issued receipt policy counts use actual findings under existing issuance
 rules; no subject, digest, signature, result-state or verdict-precedence change.
 
-Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
+Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, PROTO-MOD-055/056/057/058/059/060, META-V2-IN-V1 and META-V1-IN-V2. A retired code stays reserved and is never reused; PROTO-MOD-055 to PROTO-MOD-060 validated the module `agent_layers` declarations that RFC 0112 removed. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
 RFC 0072 extends the existing data-quality sequence with `DQ-07`
 (scenario structure/vocabulary), `DQ-08` (BTR subtype carrier disagreement)
@@ -1124,12 +1124,12 @@ grammar — a retired colon form, a bare word, a resolution tag —
 belongs to **no** authority class: it can write where authority is
 `either` and can never satisfy `human_only`, `agent_only`, or
 `system_only`. (The prefix test's negative space used to classify
-`agent:L0-01` as a *human* write.) `document/*` likewise satisfies
+`agent:rent-roll-extractor` as a *human* write.) `document/*` likewise satisfies
 none of the three restricted classes — a document is evidence, not an
 authority class.
 
 A module MAY contribute additional patterns; conflicts resolve in
-favor of the more-specific glob (e.g. `agent/L6` beats `agent/*`), and
+favor of the more-specific glob (e.g. `agent/risk-rater` beats `agent/*`), and
 any module pattern is more specific than the catch-all.
 
 ### V.4 _meta authorship
@@ -2045,7 +2045,7 @@ is expressed via the safe-expression language (§VIII).
    single Format 3.0 and Protocol 4.1.0 values. If incompatible, refuse with `ProtocolError`
    category `module`.
 4. Host registers the module's sections, calculations, validations,
-   thresholds, view models, and agent layers.
+   thresholds and view models.
 5. Host runs subsequent operations with the module's contributions
    merged into its registries.
 
@@ -4312,9 +4312,6 @@ maintainable copy of the forward plan is [`ROADMAP.md`](../ROADMAP.md).
   carry another currency's amounts.
 - **Lease-up follow-ons** — RFC 0008 deferred the Excel emit of
   `lease_up_schedule`, its coupling to `dcf`, and defaults-table entries.
-- **Portfolio and relationship agent layers (L9 / L10)** — RFC 0015
-  shipped the data surface (§XV); reference layers that consume it are
-  follow-up work the interchange format did not gate on.
 - **Embedding-based corpus retrieval** — RFC 0013 stays a draft by
   decision until an adopter needs semantic (find-similar, risk-pattern)
   retrieval; analytical retrieval is served by the corpus fact table.
@@ -4405,10 +4402,8 @@ validations:
   with `uw:section=…`.
 - **Canonical block**: the most recent, non-superseded block for a
   given section ID (and variant, if applicable).
-- **Layer**: a Bancroft AI agent stage with declared `reads` and
-  `writes`. A starter-product term (starter guide §IX).
 - **Module**: a declarative manifest extending the standard sections,
-  calculations, validations, view models, and/or agent layers.
+  calculations, validations and/or view models.
 - **Provenance**: the `_meta` block carried inside every fenced
   section, recording authorship, timestamp, version, and confidence.
 - **Profile**: an optional, named verification capability added to a

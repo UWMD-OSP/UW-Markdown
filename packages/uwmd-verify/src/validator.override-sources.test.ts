@@ -13,7 +13,7 @@ const vocabulary = (input: Parameters<typeof validateUWFile>[0]) => validateUWFi
 
 describe('accepted override vocabulary ownership independent of META05/06', () => {
   it('admits exactly registered actors and resolutions without path lookup', () => {
-    const _overrides = ['manual', 'agent/L0-01', 'document/om.pdf', 'system/calc.ts', 'institution/policy'].flatMap(actor => SOURCE_TAGS.map(resolution => ({ path: 'unmatched', source: actor, resolution })));
+    const _overrides = ['manual', 'agent/rent-roll-extractor', 'document/om.pdf', 'system/calc.ts', 'institution/policy'].flatMap(actor => SOURCE_TAGS.map(resolution => ({ path: 'unmatched', source: actor, resolution })));
     expect(vocabulary(source(_overrides))).toEqual([]);
   });
   it.each(['unknown', '', 'agent:', 'agent/', 'agent/X/Y', 'agent/X\n', 'manual ', null, false, 1, [], {}])('refuses own invalid override source %j under SRC01 only', value => {

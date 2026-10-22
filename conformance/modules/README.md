@@ -28,7 +28,8 @@ validator — the layering invariant admits only the Anthropic SDK as a runtime
 dependency — so the loader is hand-written and can drift from the normative
 document with nothing to notice. It had. When this suite was written the loader
 and the schema disagreed on **seven of eight** probes: `sections`, `view_models`,
-and `agent_layers` had no runtime validation at all, unknown keys were accepted
+and agent layer declarations (since removed by RFC 0112) had no runtime
+validation at all, unknown keys were accepted
 everywhere, and `id` ignored the schema's minimum length. The `deal_stages` enum
 had also gone stale in the other direction, omitting the `scope` stage that
 shipped in the v1.1 train.

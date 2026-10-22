@@ -144,15 +144,6 @@ asset_subtype: ${fm.asset_subtype}
 loan_type: null
 scenario: ${fm.scenario}
 
-pipeline_state:
-  L0_ingestion: pending
-  L1_screening: pending
-  L2_underwriting: pending
-  L4_structuring: pending
-  L5_compliance: pending
-  L6_risk: pending
-  L7_assembly: pending
-
 status: draft
 deal_stage: ${fm.deal_stage}
 recommendation: null
@@ -214,12 +205,12 @@ source_documents: []
     { id: 'stress_tests', header: 'Stress Tests', label: '§4.10' },
     { id: 'market_analysis', header: 'Market Analysis', label: '§4.11' },
     { id: 'borrower_sponsor', header: 'Borrower / Sponsor', label: '§4.12' },
-    { id: 'lease_schedule', header: 'Lease Schedule', label: 'L0 agent section' },
+    { id: 'lease_schedule', header: 'Lease Schedule', label: 'Unnumbered section' },
     { id: 'due_diligence', header: 'Due Diligence', label: '§4.13' },
     { id: 'risk_assessment', header: 'Risk Assessment', label: '§4.14' },
     { id: 'compliance', header: 'Compliance', label: '§4.15' },
     { id: 'assumptions', header: 'Assumptions', label: '§4.16' },
-    { id: 'preliminary_sizing', header: 'Preliminary Sizing', label: 'L1 agent section' },
+    { id: 'preliminary_sizing', header: 'Preliminary Sizing', label: 'Unnumbered section' },
     { id: 'validation', header: 'Flags & Validation', label: '§4.17' },
     { id: 'custom_calculations', header: 'Custom Calculations', label: '§4.19' },
     { id: 'custom_scenarios', header: 'Custom Scenarios', label: '§4.20' },

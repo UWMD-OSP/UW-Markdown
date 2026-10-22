@@ -83,9 +83,10 @@ describe.each(ENTRIES)('@uwmd/core $name entry', ({ name, core, verify, file }) 
   });
 });
 
-// The toolkit hosts no agents (the execution half of the Bancroft removal).
-// These names left both entries on purpose; the layer registry, its context and
-// prompt builders, and the generic writers stay until RFC 0112 decides them.
+// The toolkit hosts no agents (the execution half of the Bancroft removal), and
+// RFC 0112 removed the layer registry with its context, prompt and readiness
+// builders and the layer, pipeline-state and module agent-layer types. These
+// names left both entries on purpose; the generic writers and buildContext stay.
 const REMOVED_RUNTIME = [
   'runBancroftAgent',
   'runBancroftAgentStreaming',
@@ -99,6 +100,11 @@ const REMOVED_RUNTIME = [
   'parseAgentCassette',
   'agentRequestFingerprint',
   'CASSETTE_VERSION',
+  'BANCROFT_LAYERS',
+  'buildAgentContext',
+  'buildAgentPrompt',
+  'isContextReady',
+  'getLayerDependencies',
 ];
 const REMOVED_TYPES = [
   'BancroftRunOptions',
@@ -116,14 +122,20 @@ const REMOVED_TYPES = [
   'RecordedExchange',
   'RecordingProvider',
   'AgentHostCapability',
+  'AgentContext',
+  'BancroftPrompt',
+  'LayerDefinition',
+  'ModuleAgentLayerDecl',
+  'UWPipelineState',
+  'PipelineStatus',
 ];
 const RETAINED_RUNTIME = {
-  index: ['writeAgentBlock', 'writeErrorEntry', 'buildMeta', 'buildContext', 'buildAgentContext', 'buildAgentPrompt', 'isContextReady', 'getLayerDependencies', 'BANCROFT_LAYERS'],
-  browser: ['writeAgentBlock', 'writeErrorEntry', 'buildMeta', 'buildAgentContext', 'buildAgentPrompt', 'isContextReady', 'getLayerDependencies', 'BANCROFT_LAYERS'],
+  index: ['writeAgentBlock', 'writeErrorEntry', 'buildMeta', 'buildContext'],
+  browser: ['writeAgentBlock', 'writeErrorEntry', 'buildMeta'],
 } as const;
 const RETAINED_TYPES = {
-  index: ['AgentOutput', 'RunOptions', 'RunResult', 'ContextProfile', 'BuildContextOptions', 'ContextResult', 'AgentContext', 'BancroftPrompt', 'LayerDefinition'],
-  browser: ['AgentOutput', 'RunOptions', 'RunResult', 'AgentContext', 'BancroftPrompt', 'LayerDefinition'],
+  index: ['AgentOutput', 'RunOptions', 'RunResult', 'ContextProfile', 'BuildContextOptions', 'ContextResult'],
+  browser: ['AgentOutput', 'RunOptions', 'RunResult'],
 } as const;
 
 describe.each(ENTRIES)('@uwmd/core $name entry without agent execution', ({ name, core, file }) => {
@@ -138,7 +150,7 @@ describe.each(ENTRIES)('@uwmd/core $name entry without agent execution', ({ name
     expect([...REMOVED_RUNTIME, ...REMOVED_TYPES].filter((n) => declared.has(n))).toEqual([]);
   }, 60_000);
 
-  it('keeps the generic writers, the context builders and the layer registry', () => {
+  it('keeps the generic writers and buildContext', () => {
     expect(missing(RETAINED_RUNTIME[name], Object.keys(core))).toEqual([]);
     const declared = names(declarations(file));
     expect(missing(RETAINED_TYPES[name], declared)).toEqual([]);

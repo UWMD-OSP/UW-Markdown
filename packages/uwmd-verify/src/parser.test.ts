@@ -551,7 +551,7 @@ asset_class: multifamily`;
   it.each([
     ['an empty flow sequence with list lines', 'flags: []\n  - "dscr_warning_amortizing"'],
     ['a number with list lines', 'source_documents: 0\n  - "om.pdf"'],
-    ['null with a nested mapping', 'pipeline_state: null\n  stage: screening'],
+    ['null with a nested mapping', 'review_state: null\n  stage: screening'],
     ['a string with nested lines after a blank line and a comment', 'quick_metrics: "x"\n\n  # note\n  dscr: 1.2'],
   ])('rejects %s with UNSUPPORTED_YAML_FEATURE (#426)', (_label, extra) => {
     expect(() => parseUWFile(withFrontmatterLine(extra))).toThrow(/UNSUPPORTED_YAML_FEATURE[\s\S]*nested entries/);
@@ -666,7 +666,7 @@ asset_class: multifamily
   });
 
   it('reads _meta as stated: block.meta is the document object itself', () => {
-    for (const source of ['manual', 'agent/L6-01', 'system/init', 'asset_class_default']) {
+    for (const source of ['manual', 'agent/risk-rater', 'system/init', 'asset_class_default']) {
       const parsed = parseUWFile(fileWithSource(source));
       const block = parsed.sections['property'] as import('./types.js').UWBlock;
       expect(block.meta, source).toBe(block.content['_meta']);
@@ -755,11 +755,11 @@ describe('quoted frontmatter mapping keys', () => {
   });
 
   it('decodes nested keys and reports decoded member paths without changing source', () => {
-    const source = doc('"pipeline_state":\n  "L0": complete\n  \'x:y\': pending').replaceAll('\n', '\r\n');
+    const source = doc('"review_state":\n  "step_a": complete\n  \'x:y\': pending').replaceAll('\n', '\r\n');
     const paths: string[][] = [];
     const parsed = parseUWFile(source, { onFrontmatterMember: path => paths.push([...path]) });
-    expect(parsed.frontmatter.pipeline_state).toEqual({ L0: 'complete', 'x:y': 'pending' });
-    expect(paths).toEqual([['uw_version'], ['pipeline_state'], ['pipeline_state', 'L0'], ['pipeline_state', 'x:y']]);
+    expect(parsed.frontmatter.review_state).toEqual({ step_a: 'complete', 'x:y': 'pending' });
+    expect(paths).toEqual([['uw_version'], ['review_state'], ['review_state', 'step_a'], ['review_state', 'x:y']]);
     expect(parsed.raw).toBe(source);
   });
 

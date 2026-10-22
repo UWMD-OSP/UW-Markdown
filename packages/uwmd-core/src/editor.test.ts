@@ -25,14 +25,6 @@ city: "Phoenix"
 state: "AZ"
 zip: "85001"
 asset_class: multifamily
-pipeline_state:
-  L0_ingestion: complete
-  L1_screening: pending
-  L2_underwriting: pending
-  L4_structuring: pending
-  L5_compliance: pending
-  L6_risk: pending
-  L7_assembly: pending
 status: draft
 deal_stage: screening
 recommendation: null
@@ -90,14 +82,14 @@ source_documents: []
 
 ## Risk Assessment {#risk_assessment}
 
-\`\`\`json uw:section=risk_assessment source=agent/L6 ts=2026-01-02T00:00:00Z v=2 confidence=medium
+\`\`\`json uw:section=risk_assessment source=agent/risk-rater ts=2026-01-02T00:00:00Z v=2 confidence=medium
 {
   "_meta": {
     "section": "risk_assessment",
     "provenance": {
-      "source": "agent/L6",
+      "source": "agent/risk-rater",
       "actor": "system",
-      "agent_id": "L6",
+      "agent_id": "risk-rater",
       "agent_version": "1.0.0",
       "timestamp": "2026-01-02T00:00:00Z",
       "notes": null
@@ -178,8 +170,8 @@ source_documents: []
 const MANUAL_CTX: EditContext = { actor: 'jared', source: 'manual' };
 const AGENT_CTX: EditContext = {
   actor: 'system',
-  source: 'agent/L6',
-  agentId: 'L6',
+  source: 'agent/risk-rater',
+  agentId: 'risk-rater',
   agentVersion: '1.0.0',
 };
 const SYSTEM_CTX: EditContext = { actor: 'system', source: 'system/init' };
@@ -194,7 +186,7 @@ function expectOk(result: EditResult): asserts result is EditResult & { ok: true
 
 describe('resolvePolicy', () => {
   it('returns the most-specific match', () => {
-    const policy = resolvePolicy('agent/L6');
+    const policy = resolvePolicy('agent/risk-rater');
     expect(policy?.source_pattern).toBe('agent/*');
     expect(policy?.authority).toBe('either');
     expect(policy?.supersede_on_edit).toBe(true);
@@ -203,10 +195,10 @@ describe('resolvePolicy', () => {
   it('matches an exact pattern over a glob', () => {
     const custom = [
       { source_pattern: 'agent/*', authority: 'either' as const, supersede_on_edit: true },
-      { source_pattern: 'agent/L6', authority: 'system_only' as const, supersede_on_edit: false },
+      { source_pattern: 'agent/risk-rater', authority: 'system_only' as const, supersede_on_edit: false },
     ];
-    const policy = resolvePolicy('agent/L6', custom);
-    expect(policy?.source_pattern).toBe('agent/L6');
+    const policy = resolvePolicy('agent/risk-rater', custom);
+    expect(policy?.source_pattern).toBe('agent/risk-rater');
   });
 
   it('is total under BUILTIN_EDIT_POLICIES — no source resolves to null', () => {
@@ -221,7 +213,7 @@ describe('resolvePolicy', () => {
     // and the `agent:` colon form from format spec 2.6.
     const sources = [
       'alien/xyz',
-      'agent:L0-01', // the format spec 2.6 colon form
+      'agent:rent-roll-extractor', // the format spec 2.6 colon form
       'engine:calculations.ts',
       'market_data', // a canonical SOURCE_TAG
       'user_input',
@@ -249,7 +241,7 @@ describe('resolvePolicy', () => {
     // The catch-all is one character long and matchSource scores by length, so
     // it can only apply where nothing else did.
     expect(resolvePolicy('manual')?.source_pattern).toBe('manual');
-    expect(resolvePolicy('agent/L6-01')?.source_pattern).toBe('agent/*');
+    expect(resolvePolicy('agent/risk-rater')?.source_pattern).toBe('agent/*');
     expect(resolvePolicy('system/init')?.source_pattern).toBe('system/*');
     expect(resolvePolicy('institution/x')?.source_pattern).toBe('institution/*');
     expect(resolvePolicy('document/rent_roll')?.source_pattern).toBe('document/*');
@@ -346,7 +338,7 @@ describe('applyEdit — section_replace', () => {
     [{ confidence: 'high' }, 'meta.confidence'],
     [{ lifecycle: { revision: 9 } }, 'meta.lifecycle'],
     [{ provenance: 'manual' }, 'meta.provenance'],
-    [{ provenance: { source: 'agent/L6' } }, 'meta.provenance.source'],
+    [{ provenance: { source: 'agent/risk-rater' } }, 'meta.provenance.source'],
   ])('refuses a meta patch member outside provenance/quality (%j) as PROTO-EDIT-002', (meta, named) => {
     const parsed = parseUWFile(FILE);
     for (const kind of ['section_replace', 'section_supersede'] as const) {
@@ -364,7 +356,7 @@ describe('applyEdit — section_replace', () => {
   });
 
   it('rejects replace when target source requires supersede_on_edit', () => {
-    // risk_assessment has source=agent/L6 which has supersede_on_edit: true
+    // risk_assessment has source=agent/risk-rater which has supersede_on_edit: true
     const parsed = parseUWFile(FILE);
     const op: EditOperation = {
       kind: 'section_replace',
@@ -474,7 +466,7 @@ describe('applyEdit — section_supersede', () => {
     expect(result.ok).toBe(false);
     expect(result.error?.code).toBe('PROTO-EDIT-002');
     // Restating the writer's own source is harmless and allowed.
-    const same = applyEdit(FILE, parsed, { ...op, meta: { provenance: { source: 'agent/L6' } } }, AGENT_CTX);
+    const same = applyEdit(FILE, parsed, { ...op, meta: { provenance: { source: 'agent/risk-rater' } } }, AGENT_CTX);
     expect(same.ok).toBe(true);
   });
 
@@ -510,7 +502,7 @@ describe('applyEdit — section_supersede', () => {
     const block = getSection(reparsed, 'risk_assessment');
     expect(block?.content['risk_score']).toBe(3);
     expect(block?.meta.lifecycle?.revision).toBe(3);
-    expect(block?.meta.provenance?.source).toBe('agent/L6');
+    expect(block?.meta.provenance?.source).toBe('agent/risk-rater');
     expect(reparsed.superseded['risk_assessment']?.length).toBe(1);
     expect(reparsed.superseded['risk_assessment']?.[0].meta.lifecycle?.revision).toBe(2);
   });
@@ -621,11 +613,11 @@ describe('applyEdit — round-trip preservation', () => {
 // ─── The unpoliced-write regression ───────────────────────────────────────────
 
 describe('an unrecognized _meta.provenance.source no longer permits a destructive replace', () => {
-  // Format spec 2.6 tells producers to write `agent:L0-01`. BUILTIN_EDIT_POLICIES
+  // Format spec 2.6 tells producers to write `agent:rent-roll-extractor`. BUILTIN_EDIT_POLICIES
   // matches `agent/*`. The delimiter differs, so the source matched nothing, and
   // an unmatched source used to mean "authorized, and exempt from supersede" —
   // the prior block was overwritten and neither POL-01 nor POL-02 could fire.
-  const COLON_SOURCED = FILE.replace('"source": "manual"', '"source": "agent:L0-01"');
+  const COLON_SOURCED = FILE.replace('"source": "manual"', '"source": "agent:rent-roll-extractor"');
 
   it('refuses section_replace against a block whose source matches only the catch-all', () => {
     expect(COLON_SOURCED).not.toBe(FILE); // the substitution actually happened
@@ -687,11 +679,11 @@ describe('authority classification reads the parsed actor namespace', () => {
     expect(editAs('manual').ok).toBe(true);
   });
 
-  it('no longer classifies the colon form agent:L0-01 as a human write', () => {
+  it('no longer classifies the colon form agent:rent-roll-extractor as a human write', () => {
     // The prefix test's negative space — anything not system/ or agent/ counted
     // as human — is the bug RFC 0031 closes. The colon form is an agent id in a
     // retired spelling; it must never pass human_only.
-    const result = editAs('agent:L0-01');
+    const result = editAs('agent:rent-roll-extractor');
     expect(result.ok).toBe(false);
     expect(result.error?.code).toBe('PROTO-EDIT-001');
   });
@@ -707,7 +699,7 @@ describe('authority classification reads the parsed actor namespace', () => {
   });
 
   it('still refuses agents and systems under human_only', () => {
-    expect(editAs('agent/L6-01').ok).toBe(false);
+    expect(editAs('agent/risk-rater').ok).toBe(false);
     expect(editAs('system/init').ok).toBe(false);
   });
 });

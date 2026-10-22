@@ -134,7 +134,7 @@
       "kind": "section_supersede",
       "section_id": "risk_assessment",
       "content": { "overall_rating": "elevated", "risk_score": 7, "key_risks": [] },
-      "meta": { "provenance": { "source": "agent/L6-01", "agent_id": "L6-01", "agent_version": "1.2.0", "actor": "system" } }
+      "meta": { "provenance": { "source": "agent/risk-rater", "agent_id": "risk-rater", "agent_version": "1.2.0", "actor": "system" } }
     },
     {
       "kind": "pipeline_log_append",
@@ -142,7 +142,7 @@
         "entry_id": "evt_001",
         "timestamp": "2026-04-25T10:00:00Z",
         "event_type": "agent_run",
-        "agent_or_actor": "L6-01",
+        "agent_or_actor": "risk-rater",
         "section_affected": "risk_assessment",
         "status": "success"
       }

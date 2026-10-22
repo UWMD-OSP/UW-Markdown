@@ -83,7 +83,6 @@
           "calc-sensitivity",
           "calc-cash-flow",
           "portfolio-relationships",
-          "agent-host",
           "module-load",
           "signing",
           "document-signature-verification",
@@ -94,7 +93,7 @@
         ]
       },
       "uniqueItems": true,
-      "description": "Finer-grained capability flags. Tier and profiles carry the conformance claim; capabilities advertise partial conformance, and the starter-product claims (edit-*, render-*, agent-host, refinement, capability-verify) that are outside the Protocol's tiers (UW_PROTOCOL §II.4)."
+      "description": "Finer-grained capability flags. Tier and profiles carry the conformance claim; capabilities advertise partial conformance, and the starter-product claims (edit-*, render-*, refinement, capability-verify) that are outside the Protocol's tiers (UW_PROTOCOL §II.4)."
     },
     "representations": {
       "type": "array",
@@ -268,8 +267,7 @@
         "calc-evaluate",
         "calc-deterministic",
         "module-load",
-        "integrity",
-        "agent-host"
+        "integrity"
       ],
       "role": "library",
       "homepage": "https://uwmd.org"

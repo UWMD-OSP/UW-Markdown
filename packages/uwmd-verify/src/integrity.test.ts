@@ -191,7 +191,7 @@ deal_id: X
       risk_assessment: makeBlock(
         'risk_assessment',
         { score: 'low' },
-        { provenance: { source: 'agent/L6', actor: 'agent/L6' } },
+        { provenance: { source: 'agent/risk-rater', actor: 'agent/risk-rater' } },
       ),
     });
     const customPolicies = [
@@ -205,7 +205,7 @@ deal_id: X
     // rent_roll has supersede_on_edit=true in BUILTIN_EDIT_POLICIES
     const head = makeBlock('rent_roll', { units: [] }, {
       lifecycle: { revision: 3 },
-      provenance: { source: 'document/rent_roll', actor: 'agent/L1' },
+      provenance: { source: 'document/rent_roll', actor: 'agent/screener' },
     });
     const file = makeFile({ rent_roll: head }, {});
     const r = verifyProvenance(file);
@@ -216,7 +216,7 @@ deal_id: X
     const prior = makeBlock('rent_roll', { units: [] }, { lifecycle: { revision: 1, superseded: true } });
     const head = makeBlock('rent_roll', { units: [] }, {
       lifecycle: { revision: 2 },
-      provenance: { source: 'document/rent_roll', actor: 'agent/L1' },
+      provenance: { source: 'document/rent_roll', actor: 'agent/screener' },
     });
     const file = makeFile({ rent_roll: head }, { rent_roll: [prior] });
     const r = verifyProvenance(file);

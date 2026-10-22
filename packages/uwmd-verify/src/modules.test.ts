@@ -138,42 +138,19 @@ describe('loadModuleManifest', () => {
     ).toBe(true);
   });
 
-  it('validates agent layer declarations', () => {
-    const result = loadModuleManifest({
+  it('refuses agent_layers as an unknown member (RFC 0112)', () => {
+    // RFC 0112 removed agent layer declarations; PROTO-MOD-055 to -060 are
+    // retired and reserved, so the member falls to the unknown-key refusal.
+    const manifest = {
       ...BASE,
-      requires_conformance: 'verifier',
-      agent_layers: [{ id: 'NOT_A_LAYER', reads: 'noi_model', writes: [''], prompt_template: 42 }],
-    }, { hostConformance: 'verifier' });
-
-    expect(result.ok).toBe(false);
-    expect(result.errors.map((e) => e.code)).toEqual(
-      expect.arrayContaining(['PROTO-MOD-057', 'PROTO-MOD-059', 'PROTO-MOD-060']),
-    );
-  });
-
-  it('accepts a well-formed agent layer', () => {
-    const result = loadModuleManifest({
-      ...BASE,
-      requires_conformance: 'verifier',
       agent_layers: [
         { id: 'L7_storage', reads: ['property'], writes: ['risk_assessment'], prompt_template: 'x' },
       ],
-    }, { hostConformance: 'verifier' });
-
-    expect(result.errors).toHaveLength(0);
-    expect(result.ok).toBe(true);
-  });
-
-  it('rejects duplicate agent layer ids', () => {
-    const layer = { id: 'L7_storage', reads: ['property'], writes: ['risk_assessment'], prompt_template: 'x' };
-    const result = loadModuleManifest({
-      ...BASE,
-      requires_conformance: 'verifier',
-      agent_layers: [layer, { ...layer }],
-    }, { hostConformance: 'verifier' });
+    };
+    const result = loadModuleManifest(manifest);
 
     expect(result.ok).toBe(false);
-    expect(result.errors.some((e) => e.code === 'PROTO-MOD-058')).toBe(true);
+    expect(result.errors.map((e) => [e.code, e.pointer])).toEqual([['PROTO-MOD-064', 'agent_layers']]);
   });
 
   it('validates section declarations', () => {

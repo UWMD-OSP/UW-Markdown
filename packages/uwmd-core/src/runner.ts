@@ -5,13 +5,13 @@
 //   1. Mark an existing section block as superseded (fence annotation + _meta)
 //   2. Append a new versioned block with correct annotation
 //   3. Append a pipeline_log entry
-//   4. Update frontmatter quick_metrics and pipeline_state
+//   4. Update frontmatter last_modified and quick_metrics
 //
 // All operations are string-based (no re-serialization of the whole file).
 // The runner uses exact line numbers from the parser to do targeted surgery.
 // Output is always a valid .uw.md string that parseUWFile can round-trip.
 //
-// Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §6.8 (agent contract)
+// Spec: UW_FORMAT_SPEC.md §2.7 (update semantics), §3.6 (producer obligations)
 
 import {
   stampMetaIntoBlockContent,
@@ -20,7 +20,6 @@ import {
   type ParsedUWFile,
   type UWBlock,
   type UWMeta,
-  type PipelineStatus,
   type UWFrontmatter,
   getSection,
   getSectionVariant,
@@ -53,7 +52,6 @@ export interface RunOptions {
   flagsRaised?: string[];
   flagsCleared?: string[];
   notes?: string;
-  updatePipelineState?: Partial<Record<string, PipelineStatus>>;
   updateQuickMetrics?: Partial<Record<string, number | null>>;
   /**
    * Freeze the wall-clock stamp on the block and its log entry. Defaults to
@@ -169,12 +167,6 @@ export function writeAgentBlock(
   // ── Step 5: Update frontmatter fields ─────────────────────────────────────
   let result = lines.join('\n');
   result = updateFrontmatterField(result, 'last_modified', `"${now}"`);
-
-  if (opts.updatePipelineState) {
-    for (const [stage, status] of Object.entries(opts.updatePipelineState)) {
-      result = updateNestedFrontmatterField(result, 'pipeline_state', stage, `"${status}"`);
-    }
-  }
 
   if (opts.updateQuickMetrics) {
     for (const [metric, value] of Object.entries(opts.updateQuickMetrics)) {
@@ -387,7 +379,7 @@ export function writeErrorEntry(
   sectionId: string,
   errorCode: string,
   errorMessage: string,
-  opts: Omit<RunOptions, 'updatePipelineState' | 'updateQuickMetrics'> = {},
+  opts: Omit<RunOptions, 'updateQuickMetrics'> = {},
 ): string {
   const now = opts.timestamp ?? new Date().toISOString();
   const logEntryId = opts.logEntryId ?? `log_${Date.now()}_err`;
