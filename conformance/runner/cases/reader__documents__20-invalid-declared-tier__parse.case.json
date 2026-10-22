@@ -1,0 +1,17 @@
+{
+  "id": "reader__documents__20-invalid-declared-tier__parse",
+  "target": "reader",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse"
+  ],
+  "command": "parse",
+  "args": [
+    "20-invalid-declared-tier.uwx.md"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/20-invalid-declared-tier.parsed.json"
+  }
+}

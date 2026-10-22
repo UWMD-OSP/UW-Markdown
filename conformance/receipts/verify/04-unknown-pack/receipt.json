@@ -5,7 +5,7 @@
     "representation_version": "1.0",
     "canonicalization": "uw-envelope-semantic",
     "canonicalization_version": "1.0",
-    "digest": "sha256:9026f5d2e216260587b9d939fb563da90e1e0feca6bfe0b254f29ed68f3a5980"
+    "digest": "sha256:0a6b152188c98c69cecb14ce90d77d45ca7cb5c431786b21903ef23f1ee9bfa4"
   },
   "computation": {
     "pack": "com.example.pack.bespoke",

@@ -1,0 +1,9 @@
+{
+  "overall_status": "errors",
+  "issues": [
+    {
+      "code": "INVALID-DEAL-STAGE-001",
+      "severity": "error"
+    }
+  ]
+}
