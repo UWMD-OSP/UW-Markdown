@@ -35,6 +35,31 @@ protocol, and each package each carry an independent semver).
   malformed value is the new `SIZE-02` (error) in the §5.5 size contract. No
   metric reads it and no area is converted. Malformed documents 70 and 71.
 
+- Implement accepted RFC 0111 (owner, 2026-10-21, including D4): a record is
+  verified under the rule set its declared Format version names. New Protocol
+  §XII.5 defines a rule set (Format validation rules and §5.2 bands, the
+  verification procedures, the receipt rules, the metric dictionary), selection
+  by `uw_version` with no fallback, retention of every 5.x rule set and
+  forward-only fixes from 5.0.0, and the exception that a stricter security or
+  soundness fix applies to every kept rule set; §II.2 gains Verifier item 7,
+  and Format §2.2, §XII.3 and the Receipt spec cross-reference it.
+  `@uwmd/verify` adds the `RULE_SETS` registry (`getRuleSet`, `ruleSetFor`,
+  `UWRuleSet`), whose one entry `"3.0"` points at the existing bands,
+  dictionary and builtin packs; validation, stated-metric verification,
+  builtin-class checks and receipts obtain them from it. A document model whose
+  `uw_version` names no kept rule set is now refused with
+  `UNSUPPORTED_FORMAT_VERSION`, as source already was. `ValidationResult`,
+  `StatedMetricsReport` and receipt verification results carry `rule_set`;
+  receipts carry a required `computation.rule_set`, and a receipt naming a rule
+  set other than its record's fails with the new `RCP-13` (fixture
+  `verify/13-rule-set-mismatch`). The receipt fixtures gain the member (verify
+  inputs edited, issue baselines regenerated with `--update`); the metric
+  evidence baseline gains `rule_set` per example. No financial value changes.
+  Every portable conformance case names its `format_version` (`"3.0"`), the
+  case schema requires it, and `runner.py --format-version` selects by it. The
+  CLI prints the rule set; `@uwmd/mcp` results and the Python validator report
+  it.
+
 - Fix #487: an exported workbook gives the calc engine's outcome when an input
   is missing. `emitCalcExcelFormula` renders null as `#N/A`: a blank named input
   reads as `NA()`, a null branch is `NA()` instead of `""` (which made
@@ -110,6 +135,18 @@ protocol, and each package each carry an independent semver).
   source files. The two standalone package manifests and ZIPs and the
   `02-full-multifamily` reader and render-chat baselines are regenerated. No
   figure, metric or normative rule changes.
+- Replace real places and brands in example and fixture records with fictional
+  ones: the utility, university, stadium, hospital systems, employers, an
+  entertainment district, a named technology corridor, a hotel brand and its
+  flags, and a tenant that carried a real brand name. Every full street address
+  on a real road (the Parkview subject and its five comps, the subject address
+  of ten other asset-class examples and the verification pair, their
+  conformance copies, the hospitality fixtures and the self-storage calc
+  fixture) now uses a
+  fictional street with the same house number, city, state and ZIP. City and
+  state names stay. The `02-full-multifamily` render-chat and render-summary
+  baselines are regenerated (address text and the token-count estimate only).
+  No figure, metric or normative rule changes.
 
 - Ratify the release rules after launch (owner, 2026-10-21,
   `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the

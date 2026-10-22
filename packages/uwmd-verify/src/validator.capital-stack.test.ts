@@ -18,7 +18,7 @@ function block(section: string, content: Record<string, unknown>): UWBlock {
 
 function file(sections: Record<string, UWBlock>): ParsedUWFile {
   return {
-    frontmatter: { asset_class: 'multifamily' } as ParsedUWFile['frontmatter'],
+    frontmatter: { uw_version: '3.0', asset_class: 'multifamily' } as ParsedUWFile['frontmatter'],
     sections, prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
     extensions: {}, superseded: {}, raw: '',
   };
@@ -223,7 +223,7 @@ describe('validateUWFile — capital stack (RFC 0026)', () => {
 
 function mixedUseFile(components: Record<string, unknown>, propertyNoi: number): ParsedUWFile {
   return {
-    frontmatter: { asset_class: 'mixed_use' } as ParsedUWFile['frontmatter'],
+    frontmatter: { uw_version: '3.0', asset_class: 'mixed_use' } as ParsedUWFile['frontmatter'],
     sections: {
       components: block('components', components),
       noi_model: block('noi_model', { net_operating_income: propertyNoi }),
@@ -299,7 +299,7 @@ describe('validateUWFile — component-level capital stacks (§4.23)', () => {
     // The component senior (8M) deliberately disagrees with the property loan
     // (20M): CC-03 must not compare across that boundary.
     const parsed: ParsedUWFile = {
-      frontmatter: { asset_class: 'mixed_use' } as ParsedUWFile['frontmatter'],
+      frontmatter: { uw_version: '3.0', asset_class: 'mixed_use' } as ParsedUWFile['frontmatter'],
       sections: {
         components: block('components', {
           multifamily: { component_class: 'multifamily', net_operating_income: 1_300_000 },

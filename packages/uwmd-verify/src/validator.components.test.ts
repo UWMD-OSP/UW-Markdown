@@ -17,7 +17,7 @@ function block(section: string, content: Record<string, unknown>): UWBlock {
 
 function file(sections: Record<string, UWBlock>, assetClass = 'mixed_use'): ParsedUWFile {
   return {
-    frontmatter: { asset_class: assetClass } as ParsedUWFile['frontmatter'],
+    frontmatter: { uw_version: '3.0', asset_class: assetClass } as ParsedUWFile['frontmatter'],
     sections, prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
     extensions: {}, superseded: {}, raw: '',
   };

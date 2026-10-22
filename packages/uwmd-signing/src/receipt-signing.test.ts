@@ -19,6 +19,7 @@ const RECEIPT: UWReceipt = {
     pack_version: '1.0.0',
     engine: '@uwmd/core',
     engine_version: '1.7.0',
+    rule_set: '3.0',
     results: [],
     results_digest: `sha256:${'b'.repeat(64)}`,
   },

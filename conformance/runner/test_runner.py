@@ -12,7 +12,7 @@ import runner
 
 class SelectionTests(unittest.TestCase):
     def setUp(self):
-        self.cases = [{"id": target, "target": target} for target in runner.VOCABULARY["targets"]]
+        self.cases = [{"id": target, "target": target, "format_version": "3.0"} for target in runner.VOCABULARY["targets"]]
 
     def test_cumulative_tiers_and_explicit_profiles(self):
         self.assertEqual([c["target"] for c in runner.select_cases(deepcopy(self.cases), "verifier")], ["reader", "verifier"])
@@ -26,9 +26,26 @@ class SelectionTests(unittest.TestCase):
                 runner.select_cases(deepcopy(self.cases), value)
 
     def test_unknown_cases_duplicates_and_selectors_refused(self):
-        for cases, kwargs in [([{"id": "x", "target": "unknown"}], {}), ([self.cases[0]] * 2, {}), (self.cases, {"tiers": "unknown"}), (self.cases, {"profiles": "unknown"})]:
+        for cases, kwargs in [([{"id": "x", "target": "unknown", "format_version": "3.0"}], {}), ([self.cases[0]] * 2, {}), (self.cases, {"tiers": "unknown"}), (self.cases, {"profiles": "unknown"})]:
             with self.assertRaises(ValueError):
                 runner.select_cases(deepcopy(cases), **kwargs)
+
+    def test_cases_select_by_the_format_version_they_were_written_for(self):
+        # RFC 0111 D6: a Verifier runs the cases of every rule set it keeps.
+        cases = [{"id": "a", "target": "verifier", "format_version": "3.0"},
+                 {"id": "b", "target": "verifier", "format_version": "3.1"}]
+        self.assertEqual([c["id"] for c in runner.select_cases(deepcopy(cases))], ["a", "b"])
+        self.assertEqual([c["id"] for c in runner.select_cases(deepcopy(cases), format_versions="3.0")], ["a"])
+        self.assertEqual([c["id"] for c in runner.select_cases(deepcopy(cases), format_versions="3.0, 3.1")], ["a", "b"])
+        self.assertEqual(runner.select_cases(deepcopy(cases), format_versions="3.2"), [])
+
+    def test_a_case_without_a_format_version_or_a_bad_selector_is_refused(self):
+        for version in [None, "", "3", 3.0, "v3.0"]:
+            case = {"id": "x", "target": "verifier"} | ({} if version is None else {"format_version": version})
+            with self.assertRaises(ValueError):
+                runner.select_cases([case])
+        with self.assertRaises(ValueError):
+            runner.select_cases(deepcopy(self.cases), format_versions="latest")
 
     def test_profile_requires_explicit_claim(self):
         case = {"target": "module"}
@@ -44,16 +61,17 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(runner.missing_capabilities({"requires_capabilities": ["parse", "validate"]}, {"parse"}), ["validate"])
 
     def test_result_ownership_does_not_claim_a_tier_for_products(self):
-        self.assertNotIn("tier", runner.result_owner({"target": "starter-products"}))
-        self.assertNotIn("tier", runner.result_owner({"target": "module"}))
-        self.assertEqual(runner.result_owner({"target": "reader"}), {"target": "reader", "tier": "reader"})
+        self.assertNotIn("tier", runner.result_owner({"target": "starter-products", "format_version": "3.0"}))
+        self.assertNotIn("tier", runner.result_owner({"target": "module", "format_version": "3.0"}))
+        self.assertEqual(runner.result_owner({"target": "reader", "format_version": "3.0"}),
+                         {"target": "reader", "tier": "reader", "format_version": "3.0"})
 
 
 class ReportingTests(unittest.TestCase):
     def test_unclaimed_profile_is_neither_passed_nor_failed_and_no_skip_refuses(self):
         with tempfile.TemporaryDirectory() as directory:
             case_dir = Path(directory)
-            (case_dir / "module.case.json").write_text(json.dumps({"id": "custom", "target": "module"}), encoding="utf-8")
+            (case_dir / "module.case.json").write_text(json.dumps({"id": "custom", "target": "module", "format_version": "3.0"}), encoding="utf-8")
             output = case_dir / "report.json"
             for no_skip, expected_exit in [(False, 0), (True, 1)]:
                 args = ["runner.py", "--cases", directory, "--manifest-out", str(output)] + (["--no-skip"] if no_skip else [])
@@ -69,7 +87,7 @@ class ReportingTests(unittest.TestCase):
 
     def test_a_retired_manifest_tier_is_refused(self):
         with tempfile.TemporaryDirectory() as directory:
-            (Path(directory) / "verifier.case.json").write_text(json.dumps({"id": "v", "target": "verifier"}), encoding="utf-8")
+            (Path(directory) / "verifier.case.json").write_text(json.dumps({"id": "v", "target": "verifier", "format_version": "3.0"}), encoding="utf-8")
             for manifest_tier in ["tier-3-calc-host", "tier-4-agent-host"]:
                 stderr = io.StringIO()
                 args = ["runner.py", "--cases", directory]

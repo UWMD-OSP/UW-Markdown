@@ -1,6 +1,7 @@
 {
   "id": "verifier__calc__period-10-same-day-repeated__calc",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "calc-evaluate"
   ],

@@ -1,6 +1,7 @@
 {
   "id": "starter-products__documents__16-frontmatter-yaml-scalars__render-summary",
   "target": "starter-products",
+  "format_version": "3.0",
   "requires_capabilities": [
     "render-summary"
   ],

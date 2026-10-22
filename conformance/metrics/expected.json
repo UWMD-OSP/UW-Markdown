@@ -1,6 +1,7 @@
 [
   {
     "example": "Agave-Court-Apts-Scottsdale-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 9,
@@ -101,6 +102,7 @@
   },
   {
     "example": "Cactus-Crossing-Retail-Mesa-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "retail",
     "counts": {
       "verified": 14,
@@ -251,6 +253,7 @@
   },
   {
     "example": "Desert-Palms-MHC-Apache-Junction-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "manufactured_housing",
     "counts": {
       "verified": 14,
@@ -401,6 +404,7 @@
   },
   {
     "example": "Ironwood-Logistics-Industrial-Tolleson-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "industrial",
     "counts": {
       "verified": 14,
@@ -551,6 +555,7 @@
   },
   {
     "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "data_center",
     "counts": {
       "verified": 30,
@@ -861,6 +866,7 @@
   },
   {
     "example": "Mill-Ave-Commons-Student-Tempe-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "student_housing",
     "counts": {
       "verified": 14,
@@ -1011,6 +1017,7 @@
   },
   {
     "example": "Ocotillo-Senior-Living-Chandler-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "senior_housing",
     "counts": {
       "verified": 15,
@@ -1171,6 +1178,7 @@
   },
   {
     "example": "Parkview-Apts-Glendale-AZ.uw.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 2,
@@ -1201,6 +1209,7 @@
   },
   {
     "example": "Parkview-Apts-Glendale-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 9,
@@ -1301,6 +1310,7 @@
   },
   {
     "example": "Riverside-Office-Phoenix-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "office",
     "counts": {
       "verified": 14,
@@ -1451,6 +1461,7 @@
   },
   {
     "example": "Roosevelt-Row-MixedUse-Phoenix-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "mixed_use",
     "counts": {
       "verified": 5,
@@ -1512,6 +1523,7 @@
   },
   {
     "example": "Saguaro-Select-Hotel-Tempe-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "hospitality",
     "counts": {
       "verified": 15,
@@ -1672,6 +1684,7 @@
   },
   {
     "example": "Sonoran-Self-Storage-Peoria-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "self_storage",
     "counts": {
       "verified": 13,
@@ -1812,6 +1825,7 @@
   },
   {
     "example": "Sundance-Ranch-Land-Buckeye-AZ.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "land",
     "counts": {
       "verified": 7,
@@ -1892,6 +1906,7 @@
   },
   {
     "example": "market-data/Phoenix-Multifamily-2026-Q2.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 0,
@@ -1902,6 +1917,7 @@
   },
   {
     "example": "parkview-after-L6.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 9,
@@ -2002,6 +2018,7 @@
   },
   {
     "example": "standalone/authored-2026-10-17/externalized-deal.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 1,
@@ -2022,6 +2039,7 @@
   },
   {
     "example": "standalone/authored-2026-10-17/inline-deal.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 1,
@@ -2042,6 +2060,7 @@
   },
   {
     "example": "standalone/authored-2026-10-17/package/records/externalized-deal.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 1,
@@ -2062,6 +2081,7 @@
   },
   {
     "example": "standalone/authored-2026-10-17/package/records/inline-deal.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 1,
@@ -2082,6 +2102,7 @@
   },
   {
     "example": "standalone/externalized-deal.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 1,
@@ -2102,6 +2123,7 @@
   },
   {
     "example": "standalone/inline-deal.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 1,
@@ -2122,6 +2144,7 @@
   },
   {
     "example": "standalone/package/records/externalized-deal.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 1,
@@ -2142,6 +2165,7 @@
   },
   {
     "example": "verification/deal.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 9,
@@ -2242,6 +2266,7 @@
   },
   {
     "example": "verification/deal.wrong-cap-rate.uwx.md",
+    "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
       "verified": 8,

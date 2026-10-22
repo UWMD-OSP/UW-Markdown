@@ -379,7 +379,9 @@ detached artifact, not a protocol tier. It runs by default.
   mutated after issuance, a stated result that disagrees with recomputation, a
   receipt naming an unknown pack, and a signed receipt with no backend. The last
   two must be `unverifiable`, **not** `failed` — that is the case
-  implementations are most likely to get wrong.
+  implementations are most likely to get wrong. Every receipt names its rule
+  set (`computation.rule_set`, RFC 0111); `13-rule-set-mismatch` names one its
+  record does not declare and must be `failed` with `RCP-13`.
 - `refuse/<scenario>/` — `deal.*` + `expected.json` naming the `ReceiptError`
   code. Issuance must throw, never emit a caveated receipt.
 

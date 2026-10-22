@@ -5,7 +5,7 @@ deal_name: "Mill Ave Commons - Tempe, AZ"
 created: "2026-08-12T09:00:00Z"
 last_modified: "2026-08-12T09:00:00Z"
 
-property_address: "920 S Mill Ave"
+property_address: "920 S Scholar Commons Ave"
 city: "Tempe"
 state: "AZ"
 zip: "85281"
@@ -45,8 +45,8 @@ source_documents:
 
 # Mill Ave Commons - Tempe, AZ
 
-Purpose-built off-campus student housing two blocks from the ASU Tempe campus,
-leased by the bed on academic-year terms. The underwriting case assumes the
+Purpose-built off-campus student housing two blocks from the Desert Valley
+University (DVU) Tempe campus, leased by the bed on academic-year terms. The underwriting case assumes the
 property re-leases at the pre-lease pace shown in the August report and holds
 rate flat, since the submarket has absorbed two new deliveries in the last
 eighteen months.
@@ -89,7 +89,7 @@ pre-lease premium, not on current coupon.
   "year_renovated": null,
   "building_class": "A",
   "asset_subtype": "purpose_built_off_campus",
-  "university_served": "Arizona State University - Tempe",
+  "university_served": "Desert Valley University - Tempe",
   "university_enrollment": 65000,
   "distance_to_campus_miles": 0.3,
   "shuttle_provided": false,
@@ -599,7 +599,7 @@ Mill Avenue Student Housing LP — single-principal sponsorship; figures PFS-sta
 
 ## Market Analysis
 
-Tempe / ASU purpose-built student housing fundamentals as of 2026-08.
+Tempe / DVU purpose-built student housing fundamentals as of 2026-08.
 
 ```json uw:section=market_analysis source=manual ts=2026-08-26T09:00:00Z v=1 confidence=medium
 {
@@ -626,7 +626,7 @@ Tempe / ASU purpose-built student housing fundamentals as of 2026-08.
     }
   },
   "market": "Phoenix Metro",
-  "submarket": "Tempe / ASU",
+  "submarket": "Tempe / DVU",
   "data_as_of": "2026-08-01",
   "vacancy": {
     "current_rate": 0.035,
@@ -642,7 +642,7 @@ Tempe / ASU purpose-built student housing fundamentals as of 2026-08.
     "subject_going_in": 0.0575291624
   },
   "supply": {
-    "note": "Two towers (1,150 beds) delivering pre-2027 within one mile of campus; ASU enrollment growth continues to absorb."
+    "note": "Two towers (1,150 beds) delivering pre-2027 within one mile of campus; DVU enrollment growth continues to absorb."
   }
 }
 ```

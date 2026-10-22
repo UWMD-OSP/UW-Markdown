@@ -16,7 +16,7 @@ function file(
   sections: Record<string, UWBlock> = {},
 ): ParsedUWFile {
   return {
-    frontmatter: { asset_class: 'multifamily', quick_metrics: quickMetrics } as ParsedUWFile['frontmatter'],
+    frontmatter: { uw_version: '3.0', asset_class: 'multifamily', quick_metrics: quickMetrics } as ParsedUWFile['frontmatter'],
     sections, prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
     extensions: {}, superseded: {}, raw: '',
   };

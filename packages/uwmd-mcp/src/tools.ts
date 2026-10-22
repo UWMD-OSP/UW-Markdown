@@ -49,6 +49,8 @@ export interface CompactDealFlag {
 }
 
 export interface ValidateResult {
+  /** The rule set applied: the record's declared Format version (RFC 0111 D5). */
+  rule_set: string;
   overall_status: string;
   error_count: number;
   warning_count: number;
@@ -63,6 +65,8 @@ export interface VerifyResult {
   ok: boolean;
   validation: Omit<ValidateResult, 'stage_readiness'>;
   stated_metrics: {
+    /** The rule set the statements were checked under (RFC 0111 D5). */
+    rule_set: string;
     counts: { verified: number; failed: number; unverifiable: number };
     /** Every failed statement, with what was stated and what the standard recomputes. */
     failed: Array<{ id: string; path: string; stated: number; computed: number | null }>;
@@ -113,6 +117,7 @@ export function validateSource(source: unknown): ValidateResult {
   parse(text); // a parse refusal is a tool error, not a validation result
   const result = validateUWFile(text);
   return {
+    rule_set: result.rule_set,
     overall_status: result.overall_status,
     error_count: result.errors.length,
     warning_count: result.warnings.length,
@@ -141,6 +146,7 @@ export async function verifySource(source: unknown): Promise<VerifyResult> {
   return {
     ok: validation.errors.length === 0 && fundingOk && metrics.counts.failed === 0 && chain.ok && provenance.ok,
     validation: {
+      rule_set: validation.rule_set,
       overall_status: validation.overall_status,
       error_count: validation.errors.length,
       warning_count: validation.warnings.length,
@@ -148,6 +154,7 @@ export async function verifySource(source: unknown): Promise<VerifyResult> {
       deal_flags: validation.deal_flags.map(compactFlag),
     },
     stated_metrics: {
+      rule_set: metrics.rule_set,
       counts: metrics.counts,
       failed: metrics.evidence.filter((e) => e.state === 'failed')
         .map(({ id, path, stated, computed }) => ({ id, path, stated, computed })),
