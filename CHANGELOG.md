@@ -18,6 +18,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #492 (init part): `uwmd init` refuses an `--asset-class`, `--stage` or
+  `--tier` outside its vocabulary and writes nothing; a namespaced custom asset
+  class (Format §2.2a) is still admitted.
+
 - Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
   for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
   `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.
