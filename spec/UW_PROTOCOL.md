@@ -1076,6 +1076,11 @@ selected findings, and do not expand REC-05–08 arithmetic or unrelated LSE che
 Newly issued receipt policy counts use actual findings under existing issuance
 rules; no subject, digest, signature, result-state or verdict-precedence change.
 
+RFC 0119: Format §5.3 CC-05 and CC-06 evaluate stated model NOI <= 0 using
+an absolute $500 tolerance (zero included); a larger difference is a warning.
+Positive model NOI retains the 1%/2% rules. Coverage is evaluated for both
+stated amounts, and field_absent is reserved for absent comparison facts.
+
 Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/03/05, PROTO-MOD-055/056/057/058/059/060, META-V2-IN-V1 and META-V1-IN-V2. A retired code stays reserved and is never reused; PROTO-MOD-055 to PROTO-MOD-060 validated the module `agent_layers` declarations that RFC 0112 removed. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
 RFC 0116 defines readiness by Format §5.1: a current block must state a non-null

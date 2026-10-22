@@ -4221,7 +4221,7 @@ async function runSource() {
   }
 }
 
-// ─── §5.3 cross-checks (RFC 0086 CC-17) ──────────────────────────────────────
+// ─── §5.3 cross-checks (RFC 0086 CC-17, RFC 0119 NOI) ──────────────────────────────────────
 //
 // Each case pins three things about one record: its validation projection (the
 // (code, severity) set, `expected.json`, also the portable `validate` case),
@@ -4255,7 +4255,7 @@ function runCrossChecks() {
       }
       for (const id of testCase.refused_calcs ?? []) if (evaluate(id).ok) problems.push(`${id} evaluated; expected a refusal`);
       if (problems.length) throw new Error(problems.join('; '));
-      record('cross-checks', entry.name, UPDATE ? 'updated' : 'pass', `${result.overall_status}; CC-17 ${result.coverage['CC-17']?.status}`);
+      record('cross-checks', entry.name, UPDATE ? 'updated' : 'pass', `${result.overall_status}; ${Object.keys(readCase(dir, 'expected-coverage.json').coverage).map(code => `${code} ${result.coverage[code]?.status}`).join('; ')}`);
     } catch (error) { record('cross-checks', entry.name, 'fail', error.message); }
   }
 }

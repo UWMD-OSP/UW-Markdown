@@ -4434,8 +4434,8 @@ Tools MUST run these after each section write:
 | `CC-02` | UW value in `valuation` must match value used for LTV in `debt_structure` | `valuation`, `debt_structure` |
 | `CC-03` | Senior loan reconciles at each point in time (RFC 0098): the `sources_uses` senior bucket (a closing figure) matches the `loan_amount` of the senior `debt_structure` outstanding at `closing`; when present, the `capital_stack` `senior_debt` tranche matches the senior outstanding at the stack's `point_in_time` in amount (falling back to `sources_uses` only for a `closing` stack) and in rate (the tranche `rate` equals that senior's `interest_rate` exactly, with no tolerance). One senior is selected per point by the §5.3 order applied to the blocks whose `point_in_time` is that point or absent. A leg with no senior or no figure at its point does not apply | `sources_uses`, `debt_structure`, `capital_stack` |
 | `CC-04` | Sources must equal uses in `sources_uses` | `sources_uses` |
-| `CC-05` | NOI used for DSCR must match `noi_model.net_operating_income` within 1% | `noi_model`, `debt_structure` |
-| `CC-06` | DCF Year 1 NOI must be consistent with `noi_model` projections | `noi_model`, `dcf` |
+| `CC-05` | NOI used for DSCR must match `noi_model.net_operating_income` within 1% when model NOI > 0, or within $500 absolute when model NOI <= 0 (RFC 0119) | `noi_model`, `debt_structure` |
+| `CC-06` | DCF Year 1 NOI must match `noi_model.net_operating_income` within 2% when model NOI > 0, or within $500 absolute when model NOI <= 0 (RFC 0119) | `noi_model`, `dcf` |
 | `CC-07` | Exit cap rate in `dcf` must match stress test cap rate expansion scenarios | `dcf`, `stress_tests` |
 | `CC-08` | Appraised value in `due_diligence.appraisal` must match `valuation.appraised_value` | `due_diligence`, `valuation` |
 | `CC-09` | Annual debt service in `stress_tests` base case must match `debt_structure.annual_debt_service` | `stress_tests`, `debt_structure` |

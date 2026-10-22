@@ -26,6 +26,39 @@ def report(raw):
 
 
 class ValidationCrossTests(unittest.TestCase):
+    def test_nonpositive_noi_absolute_boundary_and_coverage(self):
+        for model, stated, warning in ((-272000, -272000, False), (-272000, -272400, False),
+                (-272000, -272500, False), (-272000, -272501, True),
+                (-272000, -271500, False), (-272000, -271499, True),
+                (0, 0, False), (0, 500, False), (0, 501, True), (0, -500, False), (0, -501, True)):
+            with self.subTest(model=model, stated=stated):
+                raw = HEADER + block("noi_model", {"net_operating_income": model})
+                raw += block("debt_structure", {"underwritten_noi": stated})
+                raw += block("dcf", {"annual_cash_flows": [{"noi": stated}]})
+                document = parse(raw); before = copy.deepcopy(document); result = validate(document)
+                for code in ("CC-05", "CC-06"):
+                    self.assertEqual(result["coverage"][code]["status"], "evaluated")
+                    found = [i for i in result["issues"] if i["code"] == code]
+                    self.assertEqual(len(found), int(warning))
+                    if warning:
+                        self.assertEqual((found[0]["severity"], found[0]["threshold"]), ("warning", {"max": 500}))
+                self.assertEqual(document, before)
+
+    def test_missing_noi_is_skipped_and_aliases_keep_the_absolute_rule(self):
+        for model, stated in ((None, 0), (0, None)):
+            raw = HEADER + block("noi_model", {"net_operating_income": model})
+            raw += block("debt_structure", {"underwritten_noi": stated})
+            raw += block("dcf", {"annual_cash_flows": [{"noi": stated}]})
+            result = validate(parse(raw))
+            for code in ("CC-05", "CC-06"):
+                self.assertEqual((result["coverage"][code]["status"], result["coverage"][code]["reason"]),
+                                 ("skipped", "field_absent"))
+        raw = HEADER + block("noi_model", {"net_operating_income": 0})
+        raw += block("debt_structure", {"noi_used_for_dscr": 501})
+        raw += block("dcf", {"annual_cash_flows": [{"net_operating_income": 501}]})
+        self.assertEqual([i["code"] for i in validate(parse(raw))["issues"] if i["code"] in ("CC-05", "CC-06")],
+                         ["CC-05", "CC-06"])
+
     def test_canonical_interest_rate_wins_and_unknown_rate_pct_is_not_alias(self):
         for canonical, shortcut, mismatch in ((.0625, .9, False), (.07, .0625, True)):
             with self.subTest(canonical=canonical):
