@@ -69,3 +69,29 @@ describe('RFC 0100 size contract', () => {
     expect(Object.isFrozen(SIZE_CONTRACT.property)).toBe(true);
   });
 });
+
+describe('RFC 0114 area measurement (SIZE-02)', () => {
+  const area = (value: unknown) => sizeIssues(doc('office', { property: { rentable_square_feet: 42500, area_measurement: value } }))
+    .filter(i => i.code === 'SIZE-02').map(i => i.field);
+
+  it('admits a lawful basis, null and absence', () => {
+    expect(area({ standard: 'boma', edition: 'ANSI/BOMA Z65.1-2017', note: 'Office method A' })).toEqual([]);
+    for (const standard of ['boma', 'ipms', 'rebny', 'rics', 'other']) expect(area({ standard })).toEqual([]);
+    expect(area(null)).toEqual([]);
+    expect(sizeIssues(doc('office', { property: { rentable_square_feet: 42500 } }))).toEqual([]);
+  });
+
+  it('refuses an unknown standard, a non-object, non-string members and unknown members', () => {
+    expect(area({ standard: 'estimated' })).toEqual(['area_measurement.standard']);
+    expect(area({ edition: 'x' })).toEqual(['area_measurement.standard']);
+    expect(area('boma')).toEqual(['area_measurement']);
+    expect(area(['boma'])).toEqual(['area_measurement']);
+    expect(area({ standard: 'boma', edition: 2017, note: false })).toEqual(['area_measurement.edition', 'area_measurement.note']);
+    expect(area({ standard: 'boma', basis: 'rentable' })).toEqual(['area_measurement.basis']);
+  });
+
+  it('is an error that validation reports', () => {
+    const codes = validateUWFile(parseUWFile(doc('office', { property: { area_measurement: { standard: 'x' } } }))).errors.map(e => e.code);
+    expect(codes).toContain('SIZE-02');
+  });
+});

@@ -49,3 +49,26 @@ class SizeContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AreaMeasurementTests(unittest.TestCase):
+    """RFC 0114: SIZE-02 for a malformed property.area_measurement."""
+
+    def area(self, value):
+        doc = document("office", property={"rentable_square_feet": 42500, "area_measurement": value})
+        result = asyncio.run(validate_document(doc, now="2026-10-20T00:00:00Z"))
+        return [i["field"] for i in result["issues"] if i["code"] == "SIZE-02"]
+
+    def test_lawful(self):
+        self.assertEqual(self.area({"standard": "boma", "edition": "ANSI/BOMA Z65.1-2017", "note": "Office method A"}), [])
+        for standard in ("boma", "ipms", "rebny", "rics", "other"):
+            self.assertEqual(self.area({"standard": standard}), [])
+        self.assertEqual(self.area(None), [])
+
+    def test_malformed(self):
+        self.assertEqual(self.area({"standard": "estimated"}), ["area_measurement.standard"])
+        self.assertEqual(self.area({"edition": "x"}), ["area_measurement.standard"])
+        self.assertEqual(self.area("boma"), ["area_measurement"])
+        self.assertEqual(self.area({"standard": "boma", "edition": 2017, "note": False}),
+                         ["area_measurement.edition", "area_measurement.note"])
+        self.assertEqual(self.area({"standard": "boma", "basis": "rentable"}), ["area_measurement.basis"])
