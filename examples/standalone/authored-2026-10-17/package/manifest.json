@@ -7,71 +7,71 @@
       "path": "records/lease-abstract-v1.uwx.md",
       "role": "lease_abstract",
       "media_type": "text/vnd.uwmd.extended+markdown",
-      "sha256": "sha256:3caa385d98d20b0b0976cf78c53342b26d391cf88994328314b69b1b9bf7a55e",
+      "sha256": "sha256:05aaac457992b5b53a1cbbff195041d3889303b6b2b9263a5a1902b0a4796525",
       "document_profile": "lease-abstract-v1",
-      "semantic_digest": "sha256:34dea7fa90e16a6b1bb7556f32e5f343ab047d137e4bee2e7ce40fe660bc6183"
+      "semantic_digest": "sha256:f6daafcef2d6d81f6a02bf75b1863696b6e79ccdba6ffb61d60bffb336c44e0c"
     },
     {
       "id": "example:standalone:2026-10-17:source-note-v1",
       "path": "records/source-note-v1.uwx.md",
       "role": "source_note",
       "media_type": "text/vnd.uwmd.extended+markdown",
-      "sha256": "sha256:32dc4d2fc11ab579cce33cd1622bb7acf79fe5d6a106267ccb49526a9d6e3884",
+      "sha256": "sha256:3e42f31ee2ea1dc0a5fd1d2b83728780faadbcf8e3ba0f91c836181bf0992e5f",
       "document_profile": "source-note-v1",
-      "semantic_digest": "sha256:2e1836881b4b6b8bc254e886755ce04491f859ec7babec729f0b19a7eaf60bc2"
+      "semantic_digest": "sha256:f8cec28809dfeceda26f172f1093d79d7dd271f12f1a44838625c8b8a06dc29a"
     },
     {
       "id": "example:standalone:2026-10-17:inline-deal",
       "path": "records/inline-deal.uwx.md",
       "role": "underwriting",
       "media_type": "text/vnd.uwmd.extended+markdown",
-      "sha256": "sha256:1040625ee351ab98f6f30388c9429707c9767d634464db56a2c71b5a7ab1e430",
+      "sha256": "sha256:d6195eed6715fd8bbd2ca455cdb71ab7125fd51a373f2a13d27f995ba15eaa7f",
       "document_profile": "deal-underwriting-v1",
-      "semantic_digest": "sha256:3abd753b1414328323509b3090fcbef664fc1b56fa520a94bf727969d13233b3"
+      "semantic_digest": "sha256:1f53d0114a16f1e855f2bf0c0ce6e7e50f22d4eccc334afc1c222304a1fb8c6d"
     },
     {
       "id": "example:standalone:2026-10-17:externalized-deal",
       "path": "records/externalized-deal.uwx.md",
       "role": "underwriting",
       "media_type": "text/vnd.uwmd.extended+markdown",
-      "sha256": "sha256:b02358ac3b6c033b297ffbfffd827d976dfb01616f6bd3c10caec39e63b7a0e3",
+      "sha256": "sha256:53f7ddc68a8ec93d83e4408b26c24b78af7d98e8ea2ba2f371ad68acc6b8292b",
       "document_profile": "deal-underwriting-v1",
-      "semantic_digest": "sha256:69f12072baf63edac0e2c7c33aa0653a231bdb6906c743fe6639963e52901ca7"
+      "semantic_digest": "sha256:40276c30408b62dfa595515312c03c6088bda6aab07d1e671345825da7d645c4"
     },
     {
       "id": "part:authored-2026-10-17-cash-flow-series-dated",
       "path": "parts/cash-flow-series-dated.uwpart.md",
       "role": "model_encoding",
       "media_type": "text/vnd.uwmd.part+markdown",
-      "sha256": "sha256:6d52ce7dfcef9bf91f3577d6c91457169879b73433f9dcf7c23e74d5ed0770cf"
+      "sha256": "sha256:eca8d7ce5ee2fb45d9771b6ac8cc6f11448e5567564116409f6057129b3084f4"
     },
     {
       "id": "part:authored-2026-10-17-operating-statement-t12",
       "path": "parts/operating-statement-t12.uwpart.md",
       "role": "model_encoding",
       "media_type": "text/vnd.uwmd.part+markdown",
-      "sha256": "sha256:026e3668703cefe922eac091747dd9db9957831ba47f816e91b739c2538ff86b"
+      "sha256": "sha256:4b50882808500bc6fbf640b57e5a2bc5205899b48d738d36ca8d28479069f53f"
     },
     {
       "id": "part:authored-2026-10-17-rent-roll-210",
       "path": "parts/rent-roll-210.uwpart.md",
       "role": "model_encoding",
       "media_type": "text/vnd.uwmd.part+markdown",
-      "sha256": "sha256:903e8cba082a870197fb2bfdfa7a1e589a579dc02a868ce4e4fbe733bbb1543c"
+      "sha256": "sha256:bd280f61e4ab958be6e425c0e84404e1b8132dcdc858b694c723bba193766592"
     },
     {
       "id": "part:authored-2026-10-17-rent-roll-215",
       "path": "parts/rent-roll-215.uwpart.md",
       "role": "model_encoding",
       "media_type": "text/vnd.uwmd.part+markdown",
-      "sha256": "sha256:3aa5d47e654dadf70eb35cfbb50c52a1dea1224d7a552045a2bc512ae3dcca19"
+      "sha256": "sha256:c6238a959766502c0575d05ee400f996ee70d6ae358774587f162734986cc662"
     },
     {
       "id": "part:authored-2026-10-17-rent-roll-220",
       "path": "parts/rent-roll-220.uwpart.md",
       "role": "model_encoding",
       "media_type": "text/vnd.uwmd.part+markdown",
-      "sha256": "sha256:6666e65c6b00bf4de5bc4b624b24270787f057d97a9b48a16f69e07339509691"
+      "sha256": "sha256:c317b7cb85f0cc1e15029dc1bf690930d166da1973835010674624294b99489d"
     },
     {
       "id": "source:standalone:2026-10-17:anchor-lease",

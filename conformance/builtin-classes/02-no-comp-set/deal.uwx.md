@@ -71,7 +71,7 @@ the thing hotel operators most often get wrong.
 ## Hotel Operating Metrics
 
 Trailing twelve months. 80 keys x 365 nights = 29,200 available room nights.
-Comp-set RevPAR of $160 comes from the STR report dated 2026-07-31.
+Comp-set RevPAR of $160 comes from the comp-set benchmark report dated 2026-07-31.
 ```json uw:section=hotel_metrics source=manual ts=2026-08-27T00:00:00Z v=1 confidence=high
 {
   "_meta": {

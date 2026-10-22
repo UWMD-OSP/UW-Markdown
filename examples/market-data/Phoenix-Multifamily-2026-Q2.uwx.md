@@ -8,6 +8,8 @@ geo: Phoenix-Mesa-Chandler, AZ
 asset_class: multifamily
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Phoenix Multifamily — Q2 2026
 
 An observation set, not an underwriting record. It carries no `deal_id`, no
