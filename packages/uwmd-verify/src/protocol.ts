@@ -1982,14 +1982,14 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
   {
     code: 'CC-05', severity: 'warning',
     title: 'DSCR NOI does not match the NOI model',
-    description: 'debt_structure.underwritten_noi (the NOI used for DSCR) differs from noi_model.net_operating_income by more than 1%.',
+    description: 'debt_structure.underwritten_noi (the NOI used for DSCR) differs from noi_model.net_operating_income by more than 1% for positive model NOI, or $500 absolute for model NOI <= 0 (RFC 0119).',
     remediation: 'Recompute DSCR from noi_model.net_operating_income and restate debt_structure.underwritten_noi, or correct the NOI model.',
     spec_ref: '§5.3 CC-05',
   },
   {
     code: 'CC-06', severity: 'warning',
     title: 'DCF Year 1 NOI does not match the NOI model',
-    description: 'dcf.annual_cash_flows[0].noi differs from noi_model.net_operating_income by more than 2%.',
+    description: 'dcf.annual_cash_flows[0].noi differs from noi_model.net_operating_income by more than 2% for positive model NOI, or $500 absolute for model NOI <= 0 (RFC 0119).',
     remediation: 'Re-run the DCF from the current noi_model projection so Year 1 NOI agrees, or correct the NOI model.',
     spec_ref: '§5.3 CC-06',
   },

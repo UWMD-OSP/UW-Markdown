@@ -4569,3 +4569,8 @@ validations:
 - **View model**: a per-section layout description used to render the
   section uniformly across implementations. A starter-product term
   (starter guide §IV).
+
+RFC 0119: Format §5.3 CC-05 and CC-06 evaluate stated model NOI <= 0 using
+an absolute $500 tolerance (zero included); a larger difference is a warning.
+Positive model NOI retains the 1%/2% rules. Coverage is evaluated for both
+stated amounts, and field_absent is reserved for absent comparison facts.

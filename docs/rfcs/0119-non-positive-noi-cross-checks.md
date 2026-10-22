@@ -1,7 +1,7 @@
 ---
 rfc: 0119
 title: Compare NOI by absolute difference when it is zero or negative (CC-05, CC-06)
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -13,11 +13,9 @@ affects:
 
 # RFC 0119: Compare NOI by absolute difference when it is zero or negative (CC-05, CC-06)
 
-> **Draft for owner acceptance.** Origin: owner ruling of 2026-10-22 (6) on bug
-> bash finding #491: "an absolute-difference rule when NOI is zero or negative,
-> and propose the dollar tolerance in it for my OK". It adds a comparison
-> tolerance, a numeric convention that only the owner sets (AGENTS.md "Never
-> guess at numerics"), so **D1 is the owner's call**.
+> **Accepted by the owner, 2026-10-22 (second set), as drafted.** The owner
+> expressly accepted D1: **$500 absolute**, and D2: **model NOI <= 0, zero
+> included**. Origin: owner ruling of 2026-10-22 (6) on #491.
 
 ## Summary
 
@@ -37,12 +35,12 @@ record's NOI tampered from −272,000 to −299,200 passed both validate and
 verify. This RFC compares by absolute difference whenever the model NOI is
 zero or negative.
 
-## Proposed change
+## Change
 
 1. **CC-05 and CC-06, model NOI ≤ 0.** When `noi_model.net_operating_income` is
    stated and ≤ 0, the check is evaluated, not skipped. It compares the absolute
    difference between the two stated NOI figures with a fixed tolerance:
-   **$500 (proposed, D1)**. A larger difference is the check's existing
+   **$500 (accepted, D1)**. A larger difference is the check's existing
    `warning`. The message states both figures and the dollar difference instead
    of a percentage.
 2. **Model NOI > 0.** No change: the 1% (CC-05) and 2% (CC-06) percentage rules
@@ -52,9 +50,9 @@ zero or negative.
 4. **Format §5.3** CC-05 and CC-06 rows state both branches and the tolerance.
    The Python validator matches.
 
-## The tolerance (D1, for the owner)
+## The accepted tolerance (D1)
 
-**Proposed: $500, in the record's currency units, absolute.** The precedents:
+**Accepted: $500, in the record's currency units, absolute.** The precedents:
 
 | Check | Compares | Tolerance |
 |---|---|---|
@@ -64,7 +62,7 @@ zero or negative.
 
 NOI, like annual debt service, is an annual operating amount that producers
 round to whole dollars or hundreds. CC-09's $500 is the existing tolerance for
-an annual operating figure restated in another section, so this draft reuses
+an annual operating figure restated in another section, so this RFC reuses
 it. The other options:
 
 - **$1 (CC-12)**, if restatements are expected to be exact copies.
@@ -72,9 +70,9 @@ it. The other options:
 
 A loss of $272,000 restated as $299,200 is caught under any of the three.
 
-## Compatibility analysis
+## Validation impact
 
-No compatibility path (prelaunch; the owner rule). Records with NOI ≤ 0 whose
+Records with NOI ≤ 0 whose
 restatements differ by more than the tolerance gain a CC-05 or CC-06 warning.
 Warnings do not change a verdict or exit code. No record with positive NOI
 changes outcome.
@@ -104,7 +102,7 @@ validator; the cases.
 - **An absolute rule at every NOI.** This changes the established
   positive-NOI percentage rules. Not proposed.
 
-## Decisions proposed for owner review
+## Decisions
 
 | # | Question | Proposal | Alternative |
 |---|---|---|---|
