@@ -29,6 +29,31 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0086 (owner, 2026-10-22): `valuation.purchase_price`
+  is the one purchase-price authority. **Affected metric:
+  `price_per_commissioned_kw`** (data center) is now
+  `valuation.purchase_price / dc_capacity.critical_it_load_kw` (it read
+  `quick_metrics.purchase_price`); `round_to`, unit and null semantics are
+  unchanged, and it is null when the valuation states no price, with no
+  fallback to the frontmatter copy. `price_per_kw` is unchanged. The dictionary,
+  its generated mirror and the data-center pack change together; the Excel
+  data-center layout drops the `quick_purchase_price` input no formula reads,
+  so the workbook divides the `purchase_price` named range. New cross-check
+  `CC-17` (Format §5.3, error, every asset class): frontmatter
+  `quick_metrics.purchase_price` must match `valuation.purchase_price` within
+  $100, with CC-10's tolerance, severity and coverage, and CC-16 when the
+  valuation does not resolve. It joins `CROSS_CHECK_RULE_IDS` and
+  `BUILTIN_REMEDIATIONS`, so coverage reports sixteen checks; Python adds it
+  too. When two valuation blocks both claim `primary`, the builtin-class check
+  now reports `MOD-CALC-ERROR` for `price_per_commissioned_kw`, as the
+  evaluator refuses `price_per_kw` there. Conformance: a new `cross-checks`
+  suite (six records: prices agree, $101 over, $100 boundary, frontmatter price
+  null, no valuation, unresolved valuation), each pinning its issues and its
+  CC-17 coverage in twelve portable cases, and two `price_per_commissioned_kw`
+  statement-home cases (statement-home edits may now target the frontmatter).
+  The variants table in `spec/metrics/README.md` records the check. No example
+  or fixture changes value: every data-center record states equal prices.
+
 - Implement accepted RFC 0111 (owner, 2026-10-21, including D4): a record is
   verified under the rule set its declared Format version names. New Protocol
   §XII.5 defines a rule set (Format validation rules and §5.2 bands, the

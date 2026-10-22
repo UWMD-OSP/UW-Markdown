@@ -252,6 +252,19 @@ for (const scenario of dirs(join(CONFORMANCE, 'scenario'))) {
     kind: 'json-subset', file: 'expected.json', project: 'issue-code-severity-set', exit_code: 0,
   });
 }
+// Format §5.3 cross-checks (RFC 0086 CC-17): the (code, severity) projection,
+// and, unprojected, the coverage subset that tells evaluated from skipped.
+for (const scenario of dirs(join(CONFORMANCE, 'cross-checks'))) {
+  const dir = join(CONFORMANCE, 'cross-checks', scenario);
+  const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+  const exit_code = expected.overall_status === 'errors' ? 1 : 0;
+  add(`cross-checks/${scenario}/validate`, 'validate', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected.json', project: 'issue-code-severity-set', exit_code,
+  });
+  add(`cross-checks/${scenario}/coverage`, 'validate', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected-coverage.json', exit_code,
+  });
+}
 // RFC 0064 separately invoked, read-only custody verification.
 for (const scenario of dirs(join(CONFORMANCE, 'reserve-accounts'))) {
   const dir = join(CONFORMANCE, 'reserve-accounts', scenario);

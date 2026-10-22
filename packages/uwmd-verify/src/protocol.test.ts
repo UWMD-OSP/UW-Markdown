@@ -321,7 +321,7 @@ describe('SRC code family (RFC 0031)', () => {
   });
 });
 
-describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
+describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10, CC-17)', () => {
   // Read the spec table rather than restating it. Until 2.6.2 the ten
   // cross-section entries described a quick_metrics-reconciliation draft that
   // never shipped (CC-01 "NOI mismatch" for a rule that compares rent-roll GPR
@@ -335,12 +335,12 @@ describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
 
   it('finds the table', () => {
     expect(rows.map((r) => r.code)).toEqual(
-      Array.from({ length: 16 }, (_, i) => `CC-${String(i + 1).padStart(2, '0')}`),
+      Array.from({ length: 17 }, (_, i) => `CC-${String(i + 1).padStart(2, '0')}`),
     );
   });
 
   it('every entry names the sections its §5.3 row reads', () => {
-    for (const row of rows.filter((r) => Number(r.code.slice(3)) <= 10)) {
+    for (const row of rows.filter((r) => Number(r.code.slice(3)) <= 10 || r.code === 'CC-17')) {
       const entry = BUILTIN_REMEDIATIONS.find((r) => r.code === row.code);
       expect(entry, row.code).toBeDefined();
       for (const section of row.sections) {
@@ -357,6 +357,7 @@ describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
     const emitted: Record<string, string> = {
       'CC-01': 'warning', 'CC-02': 'warning', 'CC-03': 'error', 'CC-04': 'error', 'CC-05': 'warning',
       'CC-06': 'warning', 'CC-07': 'warning', 'CC-08': 'warning', 'CC-09': 'warning', 'CC-10': 'error',
+      'CC-17': 'error',
     };
     for (const [code, severity] of Object.entries(emitted)) {
       expect(BUILTIN_REMEDIATIONS.find((r) => r.code === code)?.severity, code).toBe(severity);

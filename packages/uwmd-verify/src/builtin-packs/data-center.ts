@@ -150,7 +150,7 @@ export const DATA_CENTER_PACK: ModuleManifest = {
     {
       "id": "price_per_commissioned_kw",
       "label": "Price per Commissioned kW",
-      "formula": "quick_metrics.purchase_price / dc_capacity.critical_it_load_kw",
+      "formula": "valuation.purchase_price / dc_capacity.critical_it_load_kw",
       "unit": "$",
       "round_to": 2,
       "deterministic": true

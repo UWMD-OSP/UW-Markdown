@@ -118,7 +118,7 @@ def cross_checks(ledger, *, defer_summaries=False):
         if usable:
             limit = tolerance * abs(right) if relative else tolerance
             if abs(left - right) > limit:
-                severity = "error" if rule in ("CC-03", "CC-04", "CC-10", "CC-12") else "warning"
+                severity = "error" if rule in ("CC-03", "CC-04", "CC-10", "CC-12", "CC-17") else "warning"
                 ledger.issue(rule, severity, section, path, "Stated figures exceed the registered reconciliation tolerance",
                              value=dict(stated=left, comparison=right), threshold={"max": limit})
         return usable
@@ -168,6 +168,10 @@ def cross_checks(ledger, *, defer_summaries=False):
     s, v = read("CC-10", "sources_uses"), read("CC-10", "valuation")
     compare("CC-10", number(s, "uses.purchase_price"), number(v, "purchase_price"), 100,
             section="sources_uses", path="uses.purchase_price")
+    # CC-17 (RFC 0086): the frontmatter summary price against the valuation, CC-10's rule.
+    v = read("CC-17", "valuation")
+    compare("CC-17", number(fm, "quick_metrics.purchase_price"), number(v, "purchase_price"), 100,
+            section="frontmatter", path="quick_metrics.purchase_price")
     component_presence = bool(active_blocks(document, "components"))
     ledger.cover("CC-11", component_presence, reason="section_absent" if not component_presence else None,
                  detail="Components section is absent")

@@ -16,6 +16,20 @@ seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
 An unknown command exits 1 before any I/O. The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
+**Implemented RFC 0086 — one purchase-price authority (owner acceptance 2026-10-22).**
+[RFC 0086](../rfcs/0086-data-center-purchase-price-authority.md) closes #343
+M04 and #493: `price_per_commissioned_kw` now reads `valuation.purchase_price`
+like `price_per_kw` (dictionary, generated mirror, data-center pack and Excel
+layout together), and new `CC-17` (Format §5.3, error, every class) checks
+frontmatter `quick_metrics.purchase_price` against the valuation with CC-10's
+$100 rule, coverage and CC-16 handling. A drifted summary is now a CC-17 error
+instead of a second verified price per kW; with no valuation price both
+metrics are null, never the frontmatter copy. Python implements CC-17. The new
+`cross-checks` conformance suite pins six CC-17 records (issues and coverage,
+twelve portable cases) and two statement-home cases pin the metric against a
+drifted frontmatter (1,244 indexed checks, 409 portable). Every repository
+data-center record states equal prices, so no expected value moved.
+
 **Implemented RFC 0111 — verify under the declared rule set (owner acceptance 2026-10-21, including D4).**
 [RFC 0111](../rfcs/0111-verify-under-declared-rule-set.md) is now Protocol
 [§XII.5](../../spec/UW_PROTOCOL.md): a record's declared `uw_version` names the
