@@ -139,7 +139,7 @@ and how it gets accepted.
 | [0112](./0112-remove-bancroft-vocabulary.md) | Remove the Bancroft layer vocabulary from the standard | accepted | format, protocol, core, conformance, tooling |
 | [0113](./0113-paid-room-nights.md) | Define hospitality occupied room nights as paid room nights sold | accepted | format, conformance |
 | [0114](./0114-area-measurement-standard.md) | Record the area measurement standard behind per-area metrics | accepted | format, protocol, core, conformance |
-| [0115](./0115-portable-verifier-cases.md) | Portable conformance subcommands for every Verifier obligation | draft | protocol, conformance, core |
+| [0115](./0115-portable-verifier-cases.md) | Portable conformance subcommands for every Verifier obligation | accepted | protocol, conformance, core |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

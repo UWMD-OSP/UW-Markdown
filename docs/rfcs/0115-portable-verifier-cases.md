@@ -1,7 +1,7 @@
 ---
 rfc: 0115
 title: Portable conformance subcommands for every Verifier obligation
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-21
 affects:
@@ -12,7 +12,8 @@ affects:
 
 # RFC 0115: Portable conformance subcommands for every Verifier obligation
 
-> **Draft for owner acceptance.** Origin: the issue #354 inventory of what an
+> **Accepted by the owner, 2026-10-22, as drafted** (owner: "RFC 0115 (#483) accepted as drafted, including D2 and D4.").
+> Origin: the issue #354 inventory of what an
 > independent implementation needs for the Verifier tier. It adds subcommands
 > and capability flags to the conformance CLI protocol (Protocol §II.6a), so it
 > is normative.
@@ -132,14 +133,14 @@ Python implementation's manifest (which claims none of the new flags yet).
 - **Leave these obligations to the reference runner only.** That is the status
   quo, and it is the problem. Rejected.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-22)
 
 | # | Question | Proposal | Why / alternative |
 |---|---|---|---|
 | D1 | Subcommand names | `verify-<obligation>` as tabled; the reference CLI renames `verify` and `assemble-property` to match | One naming pattern, as the reserve verifiers already use. Alternative: protocol names alias the reference CLI's existing names |
-| D2 | Required capabilities | A flag per verifier, reserve cases included | Honest partial claims (§II.5). Alternative: `parse` + `calc-evaluate`, as the reserve cases use today |
+| D2 | Required capabilities | **Ruled:** A flag per verifier, reserve cases included | Honest partial claims (§II.5). Alternative: `parse` + `calc-evaluate`, as the reserve cases use today |
 | D3 | Capital-stack and lease-up verifiers | Named in §II.2 item 3 | The corpus already assigns them to the Verifier |
-| D4 | Pack-dependent receipt values | Portable cases expect what the dictionary defines; pack-only values are RCP-05 `unverifiable`; pack-based expectations stay starter checks | RFC 0078: packs are starter products. Alternative: Verifiers must carry the multifamily pack |
+| D4 | Pack-dependent receipt values | **Ruled:** Portable cases expect what the dictionary defines; pack-only values are RCP-05 `unverifiable`; pack-based expectations stay starter checks | RFC 0078: packs are starter products. Alternative: Verifiers must carry the multifamily pack |
 | D5 | Versions | None allocated; prelaunch 4.x | RFC 0091 D6 |
 
 ## Prior art
