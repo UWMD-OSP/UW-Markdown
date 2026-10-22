@@ -29,7 +29,7 @@ function file(
   frontmatterExtra: Record<string, unknown> = {},
 ): ParsedUWFile {
   return {
-    frontmatter: { asset_class: 'office', ...frontmatterExtra } as ParsedUWFile['frontmatter'],
+    frontmatter: { uw_version: '3.0', asset_class: 'office', ...frontmatterExtra } as ParsedUWFile['frontmatter'],
     sections, prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
     extensions: {}, superseded: {}, raw: '',
   };

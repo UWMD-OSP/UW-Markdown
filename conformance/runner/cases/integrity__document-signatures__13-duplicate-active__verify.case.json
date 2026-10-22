@@ -1,6 +1,7 @@
 {
   "id": "integrity__document-signatures__13-duplicate-active__verify",
   "target": "integrity",
+  "format_version": "3.0",
   "requires_capabilities": [
     "integrity",
     "document-signature-verification"

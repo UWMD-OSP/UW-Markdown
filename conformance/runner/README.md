@@ -34,6 +34,13 @@ run and `by_target` separates standard and product outcomes. Any other
 vocabulary is read from `vocabulary.json`, which `gen-conformance-cases`
 generates from `scripts/conformance-targets.mjs`.
 
+Every case names the Format version it was written for (`format_version`,
+RFC 0111 D6): the rule set it exercises (Protocol §XII.5). `--format-version
+3.0[,...]` runs only the cases of those rule sets; with no selector every rule
+set runs. A Verifier claiming a release passes the cases of every rule set it
+keeps. All cases are `3.0` today, the one rule set. A case with no
+`format_version` is refused (exit `2`), and each result row carries it.
+
 A profile must be explicitly claimed in the implementation manifest. An
 unclaimed profile yields `unverifiable`, never pass/fail. Capability skips
 remain separate. `--no-skip` rejects a run containing either outcome;
@@ -95,6 +102,7 @@ Ids and filenames use `<owner>__<suite>__<scenario>__<operation>`. The `target` 
 {
   "id": "module__calc__revpar-basic__calc",
   "target": "module",
+  "format_version": "3.0",
   "command": "calc",
   "args": ["deal.uwx.md", "calc.json", "--json"],
   "fixture_dir": "conformance/calc/fixtures/revpar-basic",

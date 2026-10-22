@@ -1,6 +1,7 @@
 {
   "id": "verifier__scenario__13-retired-nnn_single_tenant__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],

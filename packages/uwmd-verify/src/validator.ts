@@ -21,7 +21,8 @@ import type {
   DealStage,
   CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
-import { ASSET_CLASSES, DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
+import { ASSET_CLASSES, SOURCE_TAGS } from './types.js';
+import { ruleSetFor } from './rule-sets.js';
 import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks, parseUWFile, parsedFirstSourceMember } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
@@ -113,7 +114,10 @@ export function validateUWFile(
     }
     parsed = resolved.document;
   }
-  const thresholds: FinancialThresholds = { ...DEFAULT_THRESHOLDS, ...thresholdOverrides };
+  // RFC 0111: the record's declared Format version selects its rule set; an
+  // unkept version is refused, never validated under another one.
+  const ruleSet = ruleSetFor(parsed);
+  const thresholds: FinancialThresholds = { ...ruleSet.thresholds, ...thresholdOverrides };
   const issues: ValidationMessage[] = [];
 
   const ledger = newCoverageLedger();
@@ -139,7 +143,7 @@ export function validateUWFile(
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
-  issues.push(...checkBuiltinClassContent(parsed));
+  issues.push(...checkBuiltinClassContent(parsed, ruleSet));
   checkScenarioIdentity(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
@@ -190,6 +194,7 @@ export function validateUWFile(
     : 'clean';
 
   return {
+    rule_set: ruleSet.format_version,
     overall_status,
     stage_readiness: computeStageReadiness(parsed),
     issues,

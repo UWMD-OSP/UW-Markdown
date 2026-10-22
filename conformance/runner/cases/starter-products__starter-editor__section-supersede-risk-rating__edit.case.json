@@ -1,6 +1,7 @@
 {
   "id": "starter-products__starter-editor__section-supersede-risk-rating__edit",
   "target": "starter-products",
+  "format_version": "3.0",
   "requires_capabilities": [
     "edit-supersede"
   ],

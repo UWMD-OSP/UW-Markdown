@@ -1,6 +1,7 @@
 {
   "id": "verifier__scenario__12-retired-build_to_rent__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],

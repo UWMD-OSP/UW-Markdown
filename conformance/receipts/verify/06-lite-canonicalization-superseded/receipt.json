@@ -13,6 +13,7 @@
     "engine": "@uwmd/core",
     "engine_version": "1.2.0",
     "protocol_version": "1.4.0",
+    "rule_set": "3.0",
     "results": [
       {
         "calc_id": "cap_rate",
