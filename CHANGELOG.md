@@ -18,6 +18,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Scrub spec wording for public launch (cleanup brief phase D): example actors
+  in Format §2.5 and the `uwmd-block` and `edit-operation` schemas use
+  `analyst@example.com`, and spec and schema references cite an RFC rather than
+  an internal phase of it. No normative change.
+
 - Implement accepted RFC 0110: a stored §4.17 `financial_validity[]` entry names
   its band `band` (`error | warning`), as the validation result's deal flags do,
   in place of `severity`; the entry's `metric` list gains `ltc`; and an entry that
