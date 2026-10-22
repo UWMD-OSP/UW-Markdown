@@ -18,6 +18,24 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Scrub spec wording for public launch (cleanup brief phase D): example actors
+  in Format §2.5 and the `uwmd-block` and `edit-operation` schemas use
+  `analyst@example.com`, and spec and schema references cite an RFC rather than
+  an internal phase of it. No normative change.
+
+- Ratify the release rules after launch (owner, 2026-10-21,
+  `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the
+  packages and the standard while each record keeps declaring its Format
+  version; any fix that changes a computed result is a minor release whose
+  CHANGELOG entry names the affected metrics; monthly minor trains, patches as
+  needed; standing approval for green patch releases; a deprecation window of one
+  minor release and 90 days, whichever is longer; validation codes never
+  renumbered or reused; project keys rotated at once on suspected compromise and
+  otherwise yearly. `GOVERNANCE.md`: the project launches owner-led, and
+  collaborative mode begins when the first outside RFC or pull request arrives.
+  The verifier rule-set rule is proposed separately in draft RFC 0111. The lender
+  acceptance kit is a post-launch 5.x milestone.
+
 - Implement accepted RFC 0110: a stored §4.17 `financial_validity[]` entry names
   its band `band` (`error | warning`), as the validation result's deal flags do,
   in place of `severity`; the entry's `metric` list gains `ltc`; and an entry that
