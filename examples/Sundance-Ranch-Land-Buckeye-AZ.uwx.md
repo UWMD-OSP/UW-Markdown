@@ -12,7 +12,7 @@ zip: "85326"
 asset_class: "land"
 asset_subtype: "entitled_residential"
 loan_type: "land_acquisition"
-scenario: "entitled_land_acquisition"
+scenario: "ground_up_development"
 
 status: "in_progress"
 deal_stage: "full_underwrite"

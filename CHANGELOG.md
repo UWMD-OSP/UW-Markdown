@@ -32,6 +32,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Reconcile the Mesa and Sundance examples with runtime validation: retain
+  Mesa's documented review conditions and store its warnings, and describe
+  Sundance's horizontal development under the standard development scenario.
+
 - Fix #496: omit units on missing summary/chat values, format CSV percentages
   and DSCR at display precision, and fill absent summaries through existing
   deterministic class packs without changing authored values or source bytes.
