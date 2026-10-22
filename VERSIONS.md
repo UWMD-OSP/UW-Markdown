@@ -18,7 +18,7 @@ This file also records the versions actually released.
 | `@uwmd/core` | **4.3.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.1 |
 | `@uwmd/cli` (CLI) | **4.3.0** | `@uwmd/core` 4.3.0 |
 | `@uwmd/excel` | **0.9.19** | `@uwmd/core` 4.3.0, format 3.0, explicit contextual calculations |
-| `@uwmd/report` | **0.9.0** | `@uwmd/core` 4.3.0, format spec §7.1/§7.2 |
+| `@uwmd/report` | **0.9.0** | `@uwmd/core` 4.3.0, starter renderer reference §7.1/§7.2 |
 | `@uwmd/batch` | **0.9.2** | `@uwmd/verify` 0.2.1, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
 | `@uwmd/lake` | **0.3.2** | `@uwmd/verify` 0.2.1, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
 | `@uwmd/signing` | **0.6.0** | `@uwmd/verify` 0.2.1 and `@uwmd/core` 4.3.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |

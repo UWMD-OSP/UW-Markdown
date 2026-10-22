@@ -10,7 +10,7 @@ hold the system together. Breaking them is grounds for blocking a PR.
 the representation specs and the normative metric dictionary in
 [`spec/metrics/`](../../spec/metrics/README.md)) from **the starter products**
 (the calc engine code and packs, defaults and the cascade, refinement, the
-editor, viewer and report, the Excel exporter, the agent layer registry, capability tokens
+editor, viewer and report, the Excel exporter, the agent writers and context profiles, capability tokens
 and display conventions, described in [`docs/starter/`](../starter/README.md)).
 
 The invariants below mix both layers, and each says which it belongs to. A
@@ -31,8 +31,7 @@ Module-declared classes are for third parties only.
 All NOI / DSCR / LTV / cap rate / IRR / DCF / amortization math is computed by the
 deterministic calc engine (`calc/` + `packs/`). AI agents (run by a host; the
 reference toolkit runs none) only **extract data** (from documents, market
-knowledge) and **write narrative**. The prompt `buildAgentPrompt` builds
-literally instructs the model: *"Never calculate financial figures."* Agents may write an *input* a formula reads (e.g.
+knowledge) and **write narrative**. Agents may write an *input* a formula reads (e.g.
 `debt_structure.annual_debt_service`, itself computed deterministically via the
 `pmt` builtin), but the derived metric is always a calc, never an LLM guess.
 - **Why:** auditability and reproducibility. A deal must be re-derivable from its

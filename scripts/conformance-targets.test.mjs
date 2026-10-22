@@ -99,7 +99,7 @@ test('standard reproduction, custom formula checks and starter behavior stay dis
   for (const id of ['context-valid', 'context-omits-source-bytes', 'deterministic-encoding']) assert.equal(index.get(key('packages', `invariant/${id}`)).target, 'representations');
   assert.equal(corpus.cases.find(c => c.suite === 'starter-refinement').target, 'starter-products');
   assert.ok(corpus.cases.filter(c => c.suite === 'metrics').every(c => c.target === 'verifier'));
-  for (const c of corpus.cases.filter(c => ['starter-editor', 'starter-agent-profile', 'capability'].includes(c.suite))) assert.equal(c.target, 'starter-products');
+  for (const c of corpus.cases.filter(c => ['starter-editor', 'capability'].includes(c.suite))) assert.equal(c.target, 'starter-products');
 });
 
 
@@ -118,9 +118,11 @@ test('the actual CLI selects Reader-only JSON for --tier=reader and refuses a re
 
 // Suite names changed once; old numeric selectors are never aliases.
 test('content suite names select existing checks and numeric suite names are refused', () => {
-  for (const suite of ['documents', 'starter-editor', 'calc', 'starter-refinement', 'starter-agent-profile']) {
+  for (const suite of ['documents', 'starter-editor', 'calc', 'starter-refinement']) {
     assert.ok(selection([`--suite=${suite}`]).some(c => c.suite === suite), suite);
   }
+  // RFC 0112 retired the layer-profile check with the layer registry.
+  assert.throws(() => selection(['--suite=starter-agent-profile']), /Unknown suite/);
   for (const suite of ['1', '2', '3', '4']) assert.throws(() => selection([`--suite=${suite}`]), /Unknown suite/);
   for (const c of cases) {
     assert.equal(c.id.split('__').length, 4, c.id);

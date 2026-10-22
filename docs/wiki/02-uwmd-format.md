@@ -21,11 +21,11 @@ A `.uw.md` file is three things stacked in one Markdown document:
 ```
 ┌─ YAML frontmatter ────────────────────────────────┐
 │ uw_version, deal_id, deal_name, asset_class,       │  deal-level metadata
-│ pipeline_state, quick_metrics, flags, …            │  (UWFrontmatter)
+│ status, deal_stage, quick_metrics, flags, …        │  (UWFrontmatter)
 └────────────────────────────────────────────────────┘
 # Prose heading + narrative (human-readable)
 
-```json uw:section=noi_model source=agent/L2 ts=… v=2 confidence=high
+```json uw:section=noi_model source=agent/underwriter ts=… v=2 confidence=high
 { "_meta": { … }, "_notes": "…", …section fields… }     ← a data block
 ```
 
@@ -44,8 +44,8 @@ Three coordinated representations:
 ## Frontmatter
 
 Parsed into `UWFrontmatter`. Key fields: `uw_version` ("3.0"), `deal_id`,
-`deal_name`, address fields, `asset_class` (`AssetClass` union), `pipeline_state`
-(per-layer `PipelineStatus`), `deal_stage` (`DealStage`), `quick_metrics`
+`deal_name`, address fields, `asset_class` (`AssetClass` union), `status`,
+`deal_stage` (`DealStage`), `quick_metrics`
 (`UWQuickMetrics` snapshot), `flags[]`, `blocking_flags[]`.
 
 `scenario` is an optional single business plan: eight standard plans or a
@@ -76,7 +76,7 @@ The opening fence carries inline key=value metadata, parsed into
 `UWFenceAnnotation`:
 
 ```
-```json uw:section=debt_structure source=agent/L4 ts=2026-04-24T15:42:00Z v=2 superseded=false confidence=high variant=…
+```json uw:section=debt_structure source=agent/debt-structurer ts=2026-04-24T15:42:00Z v=2 superseded=false confidence=high variant=…
 ```
 
 `section` is required; `source`, `ts`, `v`, `superseded`, `variant`, `confidence`
@@ -92,7 +92,7 @@ Field | Meaning
 `section` | Section ID this block belongs to
 `version` | Monotonic integer; bumped on each supersede
 `superseded` | True once a newer version replaces it
-`source` | Where the value came from (`SourceTag`; e.g. `agent/L6-01`, `manual`, `document/rent_roll`, or a canonical short tag)
+`source` | Where the value came from (`SourceTag`; e.g. `agent/risk-rater`, `manual`, `document/rent_roll`, or a canonical short tag)
 `agent_id` / `agent_version` | Producing agent identity (null for manual)
 `actor` | Who performed the write (`"jared"`, `"system"`, …)
 `timestamp` | ISO-8601

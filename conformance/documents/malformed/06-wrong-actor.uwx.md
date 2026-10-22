@@ -20,8 +20,8 @@ created_by: "test-fixture"
 
 # Malformed — POL-01
 
-`risk_assessment` was written by `agent/L1`. The (custom, fixture-bound)
-policy at `06-wrong-actor.policies.json` declares that `agent/L1` is
+`risk_assessment` was written by `agent/screener`. The (custom, fixture-bound)
+policy at `06-wrong-actor.policies.json` declares that `agent/screener` is
 restricted to `human_only` authority. `verifyProvenance` MUST emit
 `POL-01`.
 
@@ -59,17 +59,17 @@ restricted to `human_only` authority. `verifyProvenance` MUST emit
 
 ## Risk Assessment {#risk_assessment}
 
-```json uw:section=risk_assessment source=agent/L1 ts=2026-01-15T10:30:00Z v=1 confidence=medium
+```json uw:section=risk_assessment source=agent/screener ts=2026-01-15T10:30:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "risk_assessment",
     "provenance": {
-      "source": "agent/L1",
-      "actor": "agent/L1",
-      "agent_id": "agent/L1",
+      "source": "agent/screener",
+      "actor": "agent/screener",
+      "agent_id": "agent/screener",
       "agent_version": "1.0.0",
       "timestamp": "2026-01-15T10:30:00Z",
-      "notes": "Risk write by L1 — under fixture policy this section requires human authority."
+      "notes": "Risk write by agent/screener — under fixture policy this section requires human authority."
     },
     "quality": {
       "confidence": "medium",

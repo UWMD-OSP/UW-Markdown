@@ -61,12 +61,6 @@
   .issue.warning  { border-color: var(--warn); }
   .issue.info     { border-color: var(--accent); }
   .issue .code    { color: var(--muted); font-size: 11px; margin-right: 6px; }
-  .pipeline { display: flex; flex-wrap: wrap; gap: 12px; }
-  .pipeline .step { padding: 6px 10px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--border);
-                    font-size: 12px; color: var(--muted); }
-  .pipeline .step.complete { color: var(--good); border-color: rgba(90, 209, 122, .3); }
-  .pipeline .step.in_progress { color: var(--accent); border-color: rgba(78, 161, 255, .3); }
-  .pipeline .step.failed { color: var(--bad); border-color: rgba(239, 111, 108, .3); }
   .footer { color: var(--muted); font-size: 11px; margin-top: 24px; text-align: center; }
   .err { color: var(--bad); padding: 16px; background: rgba(239, 111, 108, .08); border-radius: 8px; border: 1px solid rgba(239, 111, 108, .3); }
 </style>
@@ -346,17 +340,6 @@ function renderDeal(parsed) {
     grid.appendChild(card);
   }
   root.appendChild(grid);
-
-  // Pipeline
-  if (fm.pipeline_state) {
-    const panel = el('div', { class: 'panel' }, [
-      el('h3', {}, 'Pipeline'),
-      el('div', { class: 'pipeline' }, Object.entries(fm.pipeline_state).map(([k, v]) =>
-        el('span', { class: `step ${v}` }, `${k} · ${v}`)
-      )),
-    ]);
-    root.appendChild(panel);
-  }
 
   // Flags
   if ((fm.flags || []).length || (fm.blocking_flags || []).length) {

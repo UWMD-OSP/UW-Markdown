@@ -59,15 +59,15 @@ MUST emit `DQ-03` (warning).
 
 ## NOI Model {#noi_model}
 
-```json uw:section=noi_model source=agent/agent-L2 ts=2026-01-15T10:00:00Z v=1 confidence=medium
+```json uw:section=noi_model source=agent/agent-underwriter ts=2026-01-15T10:00:00Z v=1 confidence=medium
 {
   "_meta": {
     "section": "noi_model",
     "provenance": {
-      "source": "agent/agent-L2",
+      "source": "agent/agent-underwriter",
       "resolution": "ai_extracted",
-      "actor": "agent/L2",
-      "agent_id": "agent/L2",
+      "actor": "agent/underwriter",
+      "agent_id": "agent/underwriter",
       "agent_version": "1.0.0",
       "timestamp": "2026-01-15T10:00:00Z",
       "notes": "T-12 was partially illegible; some lines could not be extracted."

@@ -26,8 +26,8 @@ receipts, the module system, the representation specs and the metric
 dictionary in [`spec/metrics/`](../../spec/metrics/README.md); conformance is
 two tiers, Reader and Verifier, plus optional profiles. **The starter
 products** (non-normative) are the calc engine code and packs, defaults,
-refinement, the editor, viewer and report, the Excel exporter and the agent
-layer registry (the toolkit hosts no agents), described in the [starter products guide](../starter/README.md). Every
+refinement, the editor, viewer and report, the Excel exporter, the CLI and the
+agent writers (the toolkit hosts no agents), described in the [starter products guide](../starter/README.md). Every
 official asset class is a full builtin on both layers
 ([RFC 0080](../rfcs/0080-official-classes-are-builtins.md)); modules are for
 third parties.
@@ -41,7 +41,7 @@ Understand the `.uw.md` file itself | [02 — The `.uw.md` format](02-uwmd-forma
 Touch `@uwmd/core` (parser/validator/editor/…) | [03 — Core library](03-core-library.md)
 Work on calc evaluation (starter engine; normative notation) | [04 — Calc engine](04-calc-engine.md)
 Add/change a metric definition or asset pack | [05 — Calc packs](05-calc-packs.md)
-Work on the Bancroft layer registry and agent context (starter product) | [06 — Bancroft layers](06-bancroft-agents.md)
+Work on the agent writers and context profiles (starter product) | [06 — Agent writers](06-agent-writers.md)
 Look up a deal's data shapes / types | [07 — Data model reference](07-data-model-reference.md)
 Work on a tool (CLI, Excel, web, VS Code) | [08 — Tools](08-tools.md)
 Add/run tests or conformance fixtures | [09 — Conformance & testing](09-conformance-testing.md)

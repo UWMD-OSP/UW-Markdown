@@ -34,7 +34,7 @@ const key = { kid: KID, alg: 'ed25519', privateKey: await importPrivateKey('ed25
 
 const BASE = {
   iss: 'https://coordinator.conformance.uwmd.org',
-  sub: 'agent/L2.inst-A',
+  sub: 'agent/underwriter.inst-A',
   aud: CAPABILITY_AUDIENCE,
   deal: 'DEAL-CAP-01',
   sections: ['noi_model'],

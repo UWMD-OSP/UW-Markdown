@@ -108,7 +108,7 @@ SHOULD display a compact badge per block:
 
 | `_meta.provenance.source` pattern | Suggested label | Color hint |
 |---|---|---|
-| `agent/*` | "AI" or layer ID | accent |
+| `agent/*` | "AI" or agent id | accent |
 | `manual` | "Manual" | neutral |
 | `document/*` | "Document" | neutral |
 | `system/*` | "System" | muted |

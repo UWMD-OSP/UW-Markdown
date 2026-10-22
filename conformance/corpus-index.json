@@ -1793,16 +1793,6 @@
     },
     {
       "suite": "modules",
-      "scenario": "reject/02-agent-layer-malformed",
-      "target": "module"
-    },
-    {
-      "suite": "modules",
-      "scenario": "reject/02-agent-layer-malformed [schema-parity]",
-      "target": "module"
-    },
-    {
-      "suite": "modules",
       "scenario": "reject/03-view-model-malformed",
       "target": "module"
     },
@@ -1969,6 +1959,16 @@
     {
       "suite": "modules",
       "scenario": "reject/19-host-below-requirements [schema-parity]",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/20-agent-layers-unknown-member",
+      "target": "module"
+    },
+    {
+      "suite": "modules",
+      "scenario": "reject/20-agent-layers-unknown-member [schema-parity]",
       "target": "module"
     },
     {
@@ -5605,11 +5605,6 @@
       "suite": "metrics",
       "scenario": "statement-home-senior-housing-labor-component-identity-agrees",
       "target": "verifier"
-    },
-    {
-      "suite": "starter-agent-profile",
-      "scenario": "consumer-profile-contract",
-      "target": "starter-products"
     },
     {
       "suite": "document-signatures",

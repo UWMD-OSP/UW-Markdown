@@ -45,7 +45,7 @@ import { inferGaps, summarizeGaps } from './gaps.js';
 export interface EditContext {
   /** Human name, system identifier, or agent ID. Stamped on `_meta.provenance.actor`. */
   actor: string;
-  /** Provenance pattern. Examples: "manual", "agent/L6", "document/rent_roll", "system/init", "institution/abc-bank". */
+  /** Provenance pattern. Examples: "manual", "agent/risk-rater", "document/rent_roll", "system/init", "institution/abc-bank". */
   source: string;
   /** Agent identifier when source begins with "agent/". */
   agentId?: string | null;
@@ -694,7 +694,7 @@ function checkAuthority(
   // Classify from the parsed actor namespace, never from string prefixes
   // (RFC 0031). The prefix test's negative space was the bug: anything that
   // wasn't `system/`/`agent/` counted as human, so the malformed colon form
-  // `agent:L0-01` — and every bare resolution tag — was classified as a human
+  // `agent:rent-roll-extractor` — and every bare resolution tag — was classified as a human
   // write. A source outside the grammar now classifies as *nothing*: it can
   // still write wherever authority is 'either', but it can never satisfy
   // human_only, agent_only, or system_only. `document/*` is likewise none of

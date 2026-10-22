@@ -564,7 +564,7 @@ product specification; lease economics and cash timing are.
   to declare each retired class id. RFC 0073 would declare the old and new ids
   one class. It waits on StackUW's answers in the
   [review](docs/reviews/2026-10-04-renamed-identifiers.md) and owner acceptance.
-- **Investor profiles and portfolio/relationship agent layers:** the data
+- **Investor profiles and portfolio/relationship consumers:** the data
   surfaces exist, but reference consumers need concrete adoption requirements.
 - **Official module publication:** hospitality and data-center are approved together
   as public npm packages. Both first published at 0.1.10 with core 2.18.0, through

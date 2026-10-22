@@ -36,14 +36,6 @@ city: "Phoenix"
 state: "AZ"
 zip: "85001"
 asset_class: multifamily
-pipeline_state:
-  L0_ingestion: complete
-  L1_screening: pending
-  L2_underwriting: pending
-  L4_structuring: pending
-  L5_compliance: pending
-  L6_risk: pending
-  L7_assembly: pending
 status: draft
 deal_stage: screening
 recommendation: null

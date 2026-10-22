@@ -57,11 +57,6 @@ The `uw:section=<id>` marker on a fenced JSON block that ties the
 block to a registered section. Without it the parser treats the
 fence as opaque markdown.
 
-### Pipeline state
-The frontmatter object recording each layer's status (`complete`,
-`in_progress`, `pending`, `skipped`, `failed`). Drives routing in
-multi-stage agent workflows. See format spec §III.
-
 ### Quick metrics
 Denormalized financial summaries (purchase_price, dscr, ltv, etc.)
 in frontmatter, mirrored from the canonical sections. Exists for

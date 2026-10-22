@@ -83,7 +83,7 @@
           "blocks_stage": "screening",
           "first_seen": "2026-04-25T10:00:00Z",
           "last_checked": "2026-04-27T09:00:00Z",
-          "owner": "agent/L0a",
+          "owner": "agent/scope-reviewer",
           "note": "Awaiting unit-level rent roll from broker."
         },
         {

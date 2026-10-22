@@ -649,7 +649,6 @@ export type {
   UWSignatureAlgorithm,
   MarketDataRef,
   UWFrontmatter,
-  UWPipelineState,
   UWQuickMetrics,
   ParsedUWFile,
   ParsedSections,
@@ -668,7 +667,6 @@ export type {
   FinancialThresholds,
   // Enums
   ConfidenceLevel,
-  PipelineStatus,
   ValidationSeverity,
   DealStage,
   AssetClass,
@@ -737,7 +735,6 @@ export type {
   ModuleSectionDecl,
   ModuleCalcDecl,
   ModuleValidationDecl,
-  ModuleAgentLayerDecl,
   ModuleLoadResult,
   ProtocolError,
   ProtocolErrorCategory,

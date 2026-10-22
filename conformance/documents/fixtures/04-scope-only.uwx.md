@@ -68,8 +68,8 @@ unknowns. Validates clean at `deal_stage: scope`.
     "provenance": {
       "source": "system/uwmd",
       "resolution": "asset_class_default",
-      "actor": "agent/L0a",
-      "agent_id": "agent/L0a",
+      "actor": "agent/scope-reviewer",
+      "agent_id": "agent/scope-reviewer",
       "agent_version": "1.0.0",
       "timestamp": "2026-01-15T10:00:00Z",
       "notes": "Filled from asset-class defaults; replace with real T-12 to advance past scope."
@@ -102,8 +102,8 @@ unknowns. Validates clean at `deal_stage: scope`.
     "provenance": {
       "source": "system/uwmd",
       "resolution": "asset_class_default",
-      "actor": "agent/L0a",
-      "agent_id": "agent/L0a",
+      "actor": "agent/scope-reviewer",
+      "agent_id": "agent/scope-reviewer",
       "agent_version": "1.0.0",
       "timestamp": "2026-01-15T10:00:00Z",
       "notes": "Indicative terms from asset-class defaults."

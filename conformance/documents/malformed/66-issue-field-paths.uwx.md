@@ -105,7 +105,7 @@ property and quick_metrics only.
   "_meta": {
     "section": "valuation",
     "provenance": {
-      "source": "agent:L1-01",
+      "source": "agent:screener",
       "actor": "test-fixture",
       "timestamp": "2026-01-15T10:00:00Z"
     },

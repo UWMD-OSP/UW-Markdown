@@ -13,11 +13,7 @@ remain. No package numbers or release publication are changed here.
 seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
 `uwmd run` and core's `agent-host` manifest claim are gone, with the
 `@anthropic-ai/sdk` peer and the four starter checks that needed an agent run
-(1,226 indexed checks now, starter products 102). An unknown command exits 1
-before any I/O. Kept until draft RFC 0112 removes the layer vocabulary:
-`BANCROFT_LAYERS`, the context/prompt builders, `uwmd layers` and the
-layer-profile check (Format §2.2 `pipeline_state` names its keys after the
-layers, and §6.3 still describes `uwmd run`). The generic writers,
+An unknown command exits 1 before any I/O. The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
 **Implemented RFC 0111 — verify under the declared rule set (owner acceptance 2026-10-21, including D4).**
@@ -36,6 +32,21 @@ fails with `RCP-13`. Each portable conformance case names its `format_version`
 and `runner.py --format-version` selects by it. The Python validator reports
 `rule_set` too. Open before a second rule set exists: a UW Lite record may omit
 `uw_version` and is compiled as 3.0 (RFC 0081 D12).
+
+**RFC 0112 implemented: the Bancroft layer vocabulary is gone (2026-10-22).**
+The Format no longer names a producer tool (§1.2), maps layers to sections
+(§1.3 deleted), carries frontmatter `pipeline_state` (a record that still has it
+reads it as an unknown key) or "Written by" lines; eight prohibitions became
+**Source rules** for any non-user source. Spec examples use neutral agent ids
+under the unchanged `agent/<id>` source. §6.8's producer rules are §3.6, the
+validation result is §5.6, and Parts VI and VII are the starter
+[CLI](../starter/cli.md) and [renderer](../starter/rendering.md) references.
+Module manifests refuse `agent_layers` as an unknown member (`PROTO-MOD-055`
+to `-060` retired and reserved), and `agent-host` left the capability
+vocabulary. Core drops the layer registry and its builders, `uwmd layers`,
+`agents/L0b-prompt.md` and the layer-profile check (1,235 indexed checks,
+starter products 101, 397 portable). Examples and fixtures drop
+`pipeline_state` and take neutral agent ids.
 
 **Python certified — Issue #354 (2026-10-21).** The independent Python
 implementation's manifest claims the Reader tier plus `parse`, `calc-evaluate`
