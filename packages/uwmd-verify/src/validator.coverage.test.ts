@@ -26,6 +26,46 @@ function file(sections: Record<string, UWBlock | Record<string, UWBlock>>): Pars
 }
 
 describe('validateUWFile — cross-check coverage (RFC 0037)', () => {
+  it('evaluates non-positive NOI at the accepted absolute boundary (RFC 0119)', () => {
+    for (const [model, stated, warning] of [
+      [-272000, -272000, false], [-272000, -272400, false],
+      [-272000, -272500, false], [-272000, -272501, true],
+      [-272000, -271500, false], [-272000, -271499, true],
+      [0, 0, false], [0, 500, false], [0, 501, true], [0, -500, false], [0, -501, true],
+    ] as const) {
+      const parsed = file({ noi_model: block('noi_model', { net_operating_income: model }),
+        debt_structure: block('debt_structure', { underwritten_noi: stated }),
+        dcf: block('dcf', { annual_cash_flows: [{ noi: stated }] }) });
+      const before = JSON.stringify(parsed);
+      const result = validateUWFile(parsed);
+      for (const code of ['CC-05', 'CC-06']) {
+        expect(result.coverage[code]).toMatchObject({ status: 'evaluated' });
+        const findings = result.issues.filter(issue => issue.code === code);
+        expect(findings).toHaveLength(warning ? 1 : 0);
+        if (warning) {
+          expect(findings[0]!.severity).toBe('warning');
+          expect(findings[0]!.message).toContain('threshold: $500');
+        }
+      }
+      expect(JSON.stringify(parsed)).toBe(before);
+    }
+  });
+
+  it('keeps actual missing NOI comparisons skipped and retains the accepted aliases', () => {
+    for (const [model, stated] of [[null, 0], [0, null]]) {
+      const result = validateUWFile(file({ noi_model: block('noi_model', { net_operating_income: model }),
+        debt_structure: block('debt_structure', { underwritten_noi: stated }),
+        dcf: block('dcf', { annual_cash_flows: [{ noi: stated }] }) }));
+      for (const code of ['CC-05', 'CC-06']) expect(result.coverage[code])
+        .toMatchObject({ status: 'skipped', reason: 'field_absent' });
+    }
+    const result = validateUWFile(file({ noi_model: block('noi_model', { net_operating_income: 0 }),
+      debt_structure: block('debt_structure', { noi_used_for_dscr: 501 }),
+      dcf: block('dcf', { annual_cash_flows: [{ net_operating_income: 501 }] }) }));
+    expect(result.issues.filter(issue => ['CC-05', 'CC-06'].includes(issue.code)).map(issue => issue.code))
+      .toEqual(['CC-05', 'CC-06']);
+  });
+
   it('reports every registered CC rule and nothing else', () => {
     const result = validateUWFile(file({}));
     expect(Object.keys(result.coverage)).toEqual([...CROSS_CHECK_RULE_IDS]);

@@ -1,0 +1,19 @@
+{
+  "id": "verifier__cross-checks__cc-noi-10-zero-negative-boundary__coverage",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/cross-checks/cc-noi-10-zero-negative-boundary",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected-coverage.json",
+    "exit_code": 0
+  }
+}

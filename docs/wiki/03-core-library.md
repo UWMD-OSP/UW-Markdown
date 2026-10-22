@@ -177,7 +177,7 @@ order.
 
 **Validation code families** (all defined with copy in `BUILTIN_REMEDIATIONS`):
 - `INVALID-DEAL-STAGE-001`, `INVALID-TIER-001`, `INVALID-STATUS-001`, `INVALID-RECOMMENDATION-001` — closed non-null frontmatter values (RFC 0118); absent/null are unstated, and invalid stages do not run DQ-06.
-- `CC-01..CC-10` — cross-section consistency (NOI/DSCR/LTV/cap/sources-uses/…).
+- `CC-01..CC-10` — cross-section consistency (NOI/DSCR/LTV/cap/sources-uses/…). RFC 0119 evaluates non-positive model NOI in CC-05/06 against $500 absolute, while positive NOI retains its existing percentages.
 - `DQ-01..DQ-06` — data quality (provisional/partial blocks, scope readiness, stale gaps and missing stated sections). RFC 0116 makes readiness cumulative; empty/all-null scaffolds do not count, scope uses the class primary size or valuation price, and class sections enter at screening.
 - `INT-01..INT-04` — integrity (parent/content hash chain), `INT-05..INT-08` — block signatures (RFC 0010) — surfaced by `integrity.ts`.
 - `POL-01..POL-02` — provenance/policy (unauthorized actor, replace-where-supersede).

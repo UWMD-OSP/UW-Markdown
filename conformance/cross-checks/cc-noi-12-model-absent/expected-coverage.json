@@ -1,0 +1,12 @@
+{
+  "coverage": {
+    "CC-05": {
+      "status": "skipped",
+      "reason": "field_absent"
+    },
+    "CC-06": {
+      "status": "skipped",
+      "reason": "field_absent"
+    }
+  }
+}
