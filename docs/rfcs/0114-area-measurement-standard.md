@@ -1,7 +1,7 @@
 ---
 rfc: 0114
 title: Record the area measurement standard behind per-area metrics
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-21
 affects:
@@ -13,7 +13,8 @@ affects:
 
 # RFC 0114: Record the area measurement standard behind per-area metrics
 
-> **Draft for owner acceptance.** Origin: issue #343 finding M10, left open by the
+> **Accepted by the owner, 2026-10-21, as drafted** (owner: "RFC 0113 (#476) and RFC 0114 (#477) accepted as drafted.").
+> Origin: issue #343 finding M10, left open by the
 > metric variants table in `spec/metrics/README.md` ("whether to record the area
 > measurement standard"). It adds an optional, validated member, so it is
 > normative. No formula changes.
@@ -87,7 +88,7 @@ table row.
 - **Convert to a common basis.** No conversion between standards is exact.
   Rejected.
 
-## Decisions proposed for owner review
+## Decisions (accepted 2026-10-21)
 
 | # | Question | Proposal | Why / alternative |
 |---|---|---|---|
