@@ -10,6 +10,7 @@ import {
   verifyReplacementFundingBindings,
   verifyStatedMetrics,
   parseUWFile,
+  isSupportedLocale,
   validateUWFile,
   isScenarioId,
   ASSET_CLASSES,
@@ -89,7 +90,7 @@ import { resolve, basename, dirname } from 'node:path';
 import { InstitutionConfigError, loadInstitutionPolicy } from './institution-config.js';
 import { compact, diff } from './compactor.js';
 import { generateBlankUWFile, INIT_SCENARIOS, UWInitError } from './init.js';
-import { render } from './renderer.js';
+import { render, UnsupportedLocaleError } from './renderer.js';
 import { resolveRenderMetrics } from './render-metrics.js';
 import { formatCurrency, formatPercent, formatRatio } from './format.js';
 import { renderReportHtml } from './report.js';
@@ -666,9 +667,11 @@ function cmdSummary(file: string): void {
   const fm = parsed.frontmatter;
   const qm = resolveRenderMetrics(parsed);
 
-  const money = (value: unknown) => formatCurrency(value, { locale: fm.locale, currencyCode: fm.currency_code });
-  const pctFmt = (value: unknown) => formatPercent(value, { locale: fm.locale });
-  const ratio = (value: unknown) => formatRatio(value, { locale: fm.locale });
+  if (fm.locale != null && !isSupportedLocale(fm.locale)) throw new UnsupportedLocaleError(fm.locale);
+  const locale = fm.locale ?? 'en-US';
+  const money = (value: unknown) => formatCurrency(value, { locale, currencyCode: fm.currency_code });
+  const pctFmt = (value: unknown) => formatPercent(value, { locale });
+  const ratio = (value: unknown) => formatRatio(value, { locale });
 
   console.log(`
 ─────────────────────────────────────────────────
