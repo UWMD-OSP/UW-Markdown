@@ -2,7 +2,7 @@
 rfc: 0101
 title: Refuse every present source value outside the actor grammar
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-20
 affects:
   - format-spec

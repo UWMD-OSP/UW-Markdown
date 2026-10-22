@@ -3,7 +3,7 @@ rfc: 0075
 title: Read a rate hedge from the senior loan when debt_structure is a role map
 status: implemented
 implemented: 2026-10-09
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-06
 depends_on:
   - 0040

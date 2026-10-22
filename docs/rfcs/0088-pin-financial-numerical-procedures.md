@@ -2,7 +2,7 @@
 rfc: 0088
 title: Resolve financial power and transcendental reproducibility
 status: accepted
-author: UW Markdown Working Group
+author: UWMD maintainers
 created: 2026-10-15
 accepted: 2026-10-18
 affects:

@@ -4,7 +4,7 @@ title: 'One format, one protocol: remove backward compatibility (pre-release cle
 status: implemented
 accepted: 2026-10-11
 implemented: 2026-10-12
-author: claude-code (agent proposal, from owner direction 2026-10-11)
+author: UWMD maintainers
 created: 2026-10-11
 depends_on:
   - 0009

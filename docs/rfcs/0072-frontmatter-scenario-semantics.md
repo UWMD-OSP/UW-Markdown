@@ -3,7 +3,7 @@ rfc: 0072
 title: Give frontmatter `scenario` a defined meaning
 status: implemented
 implemented: 2026-10-10
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-04
 affects:
   - format-spec

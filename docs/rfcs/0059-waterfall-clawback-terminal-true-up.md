@@ -4,7 +4,7 @@ title: 'Waterfall clawback as a terminal true-up'
 status: implemented
 accepted: 2026-09-16
 implemented: 2026-09-16
-author: claude
+author: UWMD maintainers
 created: 2026-09-16
 depends_on:
   - 0035

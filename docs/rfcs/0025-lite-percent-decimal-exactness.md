@@ -2,7 +2,7 @@
 rfc: 0025
 title: Scale percent displays by moving the point, not by dividing
 status: implemented
-author: uwmd-core
+author: UWMD maintainers
 created: 2026-08-16
 accepted: 2026-08-16
 affects:

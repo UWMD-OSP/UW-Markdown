@@ -2,7 +2,7 @@
 rfc: 0104
 title: Validation issue field paths are dotted paths from the payload root; issue order is not normative
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-20
 affects:
   - protocol-spec

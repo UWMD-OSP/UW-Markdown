@@ -4,7 +4,7 @@ title: Define exit proceeds to equity when the capital stack carries junior capi
 status: implemented
 accepted: 2026-10-07
 implemented: 2026-10-09
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-07
 depends_on:
   - 0026

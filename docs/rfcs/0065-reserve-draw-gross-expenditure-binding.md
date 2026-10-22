@@ -4,7 +4,7 @@ title: Bind a stated reserve draw to an already-stated gross expenditure
 status: implemented
 accepted: 2026-10-10
 implemented: 2026-10-10
-author: codex
+author: UWMD maintainers
 created: 2026-09-29
 depends_on:
   - 0045

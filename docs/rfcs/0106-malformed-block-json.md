@@ -2,7 +2,7 @@
 rfc: 0106
 title: Refuse a structured block whose JSON is not an I-JSON object
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-20
 affects:
   - format-spec

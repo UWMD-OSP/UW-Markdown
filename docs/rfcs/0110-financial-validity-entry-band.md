@@ -2,7 +2,7 @@
 rfc: 0110
 title: Name the §4.17 financial_validity entry's band "band", as RFC 0109 does
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-21
 affects:
   - format-spec

@@ -2,7 +2,7 @@
 rfc: 0109
 title: Report financial-validity findings as deal flags, not record errors
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-21
 affects:
   - format-spec

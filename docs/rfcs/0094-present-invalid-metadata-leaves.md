@@ -2,7 +2,7 @@
 rfc: 0094
 title: Allocate three present-invalid metadata leaf diagnostics
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-18
 affects:
   - format-spec

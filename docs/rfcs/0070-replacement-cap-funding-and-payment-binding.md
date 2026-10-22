@@ -4,7 +4,7 @@ title: Bind outright replacement-cap funding to an exact modeled cash payment
 status: implemented
 accepted: 2026-10-02
 implemented: 2026-10-03
-author: codex
+author: UWMD maintainers
 created: 2026-10-02
 depends_on:
   - 0045

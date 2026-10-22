@@ -2,7 +2,7 @@
 rfc: 0073
 title: Previous identifiers for module-declared asset classes
 status: draft
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-04
 affects:
   - protocol-spec

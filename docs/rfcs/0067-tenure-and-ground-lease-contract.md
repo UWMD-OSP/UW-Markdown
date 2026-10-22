@@ -2,7 +2,7 @@
 rfc: 0067
 title: Tenure and ground-lease contract
 status: draft
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-09-29
 depends_on:
   - 0053

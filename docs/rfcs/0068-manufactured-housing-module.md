@@ -2,7 +2,7 @@
 rfc: 0068
 title: Manufactured-housing module — a community leased by the site, with park-owned homes as a second income line
 status: draft
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-09-29
 depends_on:
   - 0003

@@ -4,7 +4,7 @@ title: Refuse a stated rate hedge whose loan or cash lines cannot be selected
 status: implemented
 accepted: 2026-10-06
 implemented: 2026-10-09
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-06
 depends_on:
   - 0040

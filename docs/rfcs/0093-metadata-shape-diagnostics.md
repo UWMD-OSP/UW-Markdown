@@ -2,7 +2,7 @@
 rfc: 0093
 title: Close three metadata-shape diagnostic gaps
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-18
 affects:
   - format-spec

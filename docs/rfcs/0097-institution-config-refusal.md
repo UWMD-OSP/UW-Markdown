@@ -2,7 +2,7 @@
 rfc: 0097
 title: Refuse invalid selected institution configuration before validation
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-19
 affects:
   - format-spec

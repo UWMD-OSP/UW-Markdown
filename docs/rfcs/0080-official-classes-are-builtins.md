@@ -3,7 +3,7 @@ rfc: 0080
 title: Every official asset class is a builtin; data center and manufactured housing join the builtin set
 status: implemented
 implemented: 2026-10-11
-author: claude-code (agent proposal, from owner direction 2026-10-10)
+author: UWMD maintainers
 created: 2026-10-10
 depends_on:
   - 0003

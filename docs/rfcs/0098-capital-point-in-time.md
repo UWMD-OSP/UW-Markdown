@@ -2,7 +2,7 @@
 rfc: 0098
 title: Declare the point in time of the capital stack and senior loans, and reconcile CC-03 per point
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-19
 affects:
   - format-spec

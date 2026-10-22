@@ -2,7 +2,7 @@
 rfc: 0107
 title: Give the LTC band a Format-defined home and an FV code
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-21
 affects:
   - format-spec

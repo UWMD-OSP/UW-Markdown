@@ -2,7 +2,7 @@
 rfc: 0099
 title: Verify each dictionary metric wherever the document states it
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-20
 affects:
   - format-spec

@@ -4,7 +4,7 @@ title: 'Split @uwmd/verify, the reference implementation of the standard, out of
 status: implemented
 accepted: 2026-10-13
 implemented: 2026-10-13
-author: claude-code (agent proposal, from owner decision RFC 0078 D8)
+author: UWMD maintainers
 created: 2026-10-13
 depends_on:
   - 0016

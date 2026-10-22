@@ -3,7 +3,7 @@ rfc: 0045
 title: Assemble explicitly covered property cash flows
 status: implemented
 accepted: 2026-09-12
-author: codex
+author: UWMD maintainers
 created: 2026-09-12
 affects:
   - protocol-spec

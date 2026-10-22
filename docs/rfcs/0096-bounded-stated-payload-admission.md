@@ -2,7 +2,7 @@
 rfc: 0096
 title: Allocate bounded stated-payload admission diagnostics
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-18
 affects:
   - format-spec

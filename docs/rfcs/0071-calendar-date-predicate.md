@@ -4,7 +4,7 @@ title: A calendar-date validity predicate for safe expressions
 status: implemented
 accepted: 2026-10-04
 implemented: 2026-10-08
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-03
 depends_on:
   - 0006

@@ -2,7 +2,7 @@
 rfc: 0103
 title: Four metric dictionary corrections — USALI F&B gross margin, data-center mark-to-market and drawn power, booked rooms revenue
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-20
 affects:
   - format-spec

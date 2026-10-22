@@ -2,7 +2,7 @@
 rfc: 0090
 title: Admit required provenance actors with an explicit diagnostic
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-17
 affects:
   - format-spec

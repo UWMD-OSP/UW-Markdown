@@ -4,7 +4,7 @@ title: Declare the student rent-roll bed counts and pre-leasing dates the studen
 status: implemented
 accepted: 2026-10-02
 implemented: 2026-10-02
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-09-28
 affects:
   - format-spec

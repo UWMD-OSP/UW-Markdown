@@ -2,7 +2,7 @@
 rfc: 0079
 title: 'Verify stated metrics at their stated precision; one cash-on-cash definition'
 status: implemented
-author: codex (owner direction, Jared 2026-10-10)
+author: UWMD maintainers
 created: 2026-10-10
 accepted: 2026-10-10
 affects:

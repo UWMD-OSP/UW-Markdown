@@ -2,7 +2,7 @@
 rfc: 0087
 title: Define the basis for hospitality revenue reconciliation
 status: draft
-author: codex (Phase 2 financial verification proposal)
+author: UWMD maintainers
 created: 2026-10-15
 affects:
   - format-spec

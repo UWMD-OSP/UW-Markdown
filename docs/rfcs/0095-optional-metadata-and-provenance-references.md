@@ -2,7 +2,7 @@
 rfc: 0095
 title: Allocate bounded optional metadata and provenance-reference diagnostics
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-18
 affects:
   - format-spec

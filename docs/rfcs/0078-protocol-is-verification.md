@@ -4,7 +4,7 @@ title: 'The protocol is verification: separate the standard from the starter pro
 status: implemented
 accepted: 2026-10-10
 implemented: 2026-10-11
-author: claude-code (agent proposal, from owner direction 2026-10-10)
+author: UWMD maintainers
 created: 2026-10-10
 affects:
   - protocol-spec

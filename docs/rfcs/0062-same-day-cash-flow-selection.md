@@ -4,7 +4,7 @@ title: Permit same-day cash-flow rows while refusing ambiguous selectors
 status: implemented
 accepted: 2026-09-24
 implemented: 2026-10-02
-author: codex
+author: UWMD maintainers
 created: 2026-09-24
 affects:
   - format-spec

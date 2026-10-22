@@ -2,7 +2,7 @@
 rfc: 0102
 title: A structured block opens only on a three-backtick json line
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-20
 affects:
   - format-spec

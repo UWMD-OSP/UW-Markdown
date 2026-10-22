@@ -2,7 +2,7 @@
 rfc: 0066
 title: Resolve calc identifiers over variant-map sections the way cross-checks do
 status: implemented
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-09-28
 accepted: 2026-10-02
 implemented: 2026-10-02

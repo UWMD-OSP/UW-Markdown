@@ -2,7 +2,7 @@
 rfc: 0091
 title: Allocate the two required metadata boolean diagnostics
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-17
 affects:
   - format-spec

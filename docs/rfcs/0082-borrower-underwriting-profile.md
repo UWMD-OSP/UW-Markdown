@@ -2,7 +2,7 @@
 rfc: 0082
 title: A borrower-underwriting document profile for a loan to an operating company
 status: draft
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-12
 depends_on:
   - 0018

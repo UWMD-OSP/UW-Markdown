@@ -4,7 +4,7 @@ title: Verify property reserve-account roll-forwards without netting expenditure
 status: implemented
 accepted: 2026-10-09
 implemented: 2026-10-10
-author: codex
+author: UWMD maintainers
 created: 2026-09-27
 affects:
   - format-spec

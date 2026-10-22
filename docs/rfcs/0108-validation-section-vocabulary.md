@@ -2,7 +2,7 @@
 rfc: 0108
 title: Align the §4.17 validation section's vocabulary with the validation result
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-21
 affects:
   - format-spec

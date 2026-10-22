@@ -2,7 +2,7 @@
 rfc: 0105
 title: Name the field each financial-validity threshold reads, and check each stated home
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-20
 affects:
   - format-spec

@@ -4,7 +4,7 @@ title: What a dependent module's declaration override means
 status: implemented
 accepted: 2026-10-06
 implemented: 2026-10-08
-author: claude-code (agent proposal)
+author: UWMD maintainers
 created: 2026-10-05
 depends_on:
   - 0006
