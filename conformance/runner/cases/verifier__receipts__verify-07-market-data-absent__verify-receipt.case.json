@@ -1,0 +1,27 @@
+{
+  "id": "verifier__receipts__verify-07-market-data-absent__verify-receipt",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-receipts"
+  ],
+  "command": "verify-receipt",
+  "args": [
+    "receipt.json",
+    "deal.uw.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/receipts/verify/07-market-data-absent",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "expected-verdict-pack-less.json",
+    "project": "receipt-verification",
+    "fields": [
+      "verdict",
+      "expected_codes",
+      "refused_code"
+    ],
+    "exit_code": 0
+  }
+}

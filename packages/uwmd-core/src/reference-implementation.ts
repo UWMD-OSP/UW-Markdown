@@ -69,6 +69,17 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     'capability-verify',
     'integrity',
     'refinement',
+    // RFC 0115: one flag per Verifier obligation; the Verifier tier claim
+    // requires every one (§II.5). `uwmd verify-*` drives each (§II.6a.1).
+    'verify-metrics',
+    'verify-cash-flows',
+    'verify-property-cash-flows',
+    'verify-waterfall',
+    'verify-capital-stack',
+    'verify-lease-up',
+    'verify-receipts',
+    'verify-reserve-accounts',
+    'verify-reserve-draws',
   ]) as ViewerCapability[],
   // RFC 0001: the reference implementation supports the full first wave, so
   // its own LOC-01 fires only on unregistered tags.

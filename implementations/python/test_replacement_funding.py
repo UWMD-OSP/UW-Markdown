@@ -81,7 +81,7 @@ class ReplacementFundingTests(unittest.TestCase):
                 expected = json.loads((fixture.parent / frozen["expect"]["file"]).read_text())
                 self.assertEqual(driver.json_subset(expected, driver.project(adapted, "replacement-funding")), [])
                 self.assertEqual((path.read_bytes(), fixture.read_bytes()), (before, source))
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
         for command in ("validate", "calc"):
             self.assertNotEqual(main([command, "unused"])[1], 0)
 

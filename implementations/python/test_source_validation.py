@@ -78,7 +78,7 @@ class SourceValidationTests(unittest.TestCase):
                 self.assertEqual(path.read_bytes(),raw)
                 self.assertNotIn("overall_status",actual)
         manifest=main(["manifest"])[0]
-        self.assertEqual((manifest["capabilities"],manifest["profiles"]),(["parse", "calc-evaluate", "validate"],[]))
+        self.assertEqual((manifest["capabilities"],manifest["profiles"]),(["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"],[]))
         for command in ("validate","calc","verify"):
             self.assertNotEqual(main([command,"unused"])[1],0)
 

@@ -1,0 +1,26 @@
+{
+  "id": "verifier__cash-flow__valid-same-day-selection__verify-cash-flows",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-cash-flows"
+  ],
+  "command": "verify-cash-flows",
+  "args": [
+    "deal.uwx.md",
+    "--variant",
+    "base",
+    "--json"
+  ],
+  "fixture_dir": "conformance/cash-flow/valid-same-day-selection",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/cash-flow/valid-same-day-selection/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict"
+    ],
+    "exit_code": 0
+  }
+}

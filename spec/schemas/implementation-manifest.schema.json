@@ -89,11 +89,20 @@
           "capability-verify",
           "module-signature-verification",
           "integrity",
-          "refinement"
+          "refinement",
+          "verify-metrics",
+          "verify-cash-flows",
+          "verify-property-cash-flows",
+          "verify-waterfall",
+          "verify-capital-stack",
+          "verify-lease-up",
+          "verify-receipts",
+          "verify-reserve-accounts",
+          "verify-reserve-draws"
         ]
       },
       "uniqueItems": true,
-      "description": "Finer-grained capability flags. Tier and profiles carry the conformance claim; capabilities advertise partial conformance, and the starter-product claims (edit-*, render-*, refinement, capability-verify) that are outside the Protocol's tiers (UW_PROTOCOL §II.4)."
+      "description": "Finer-grained capability flags. Tier and profiles carry the conformance claim; capabilities advertise partial conformance, and the starter-product claims (edit-*, render-*, refinement, capability-verify) that are outside the Protocol's tiers (UW_PROTOCOL §II.4). The verify-* flags name one Verifier obligation each and its §II.6a.1 subcommand (RFC 0115); a Verifier tier claim with a nonempty capability list must list every one of them (§II.5)."
     },
     "representations": {
       "type": "array",
@@ -244,6 +253,35 @@
       ]
     }
   },
+  "allOf": [
+    {
+      "$comment": "RFC 0115 D2, Protocol §II.5: a Verifier tier claim requires every Verifier obligation flag. An absent or empty capability list claims every capability (§II.6a.5), so the rule applies only to a nonempty list.",
+      "if": {
+        "required": ["tier", "capabilities"],
+        "properties": {
+          "tier": { "const": "verifier" },
+          "capabilities": { "minItems": 1 }
+        }
+      },
+      "then": {
+        "properties": {
+          "capabilities": {
+            "allOf": [
+              { "contains": { "const": "verify-metrics" } },
+              { "contains": { "const": "verify-cash-flows" } },
+              { "contains": { "const": "verify-property-cash-flows" } },
+              { "contains": { "const": "verify-waterfall" } },
+              { "contains": { "const": "verify-capital-stack" } },
+              { "contains": { "const": "verify-lease-up" } },
+              { "contains": { "const": "verify-receipts" } },
+              { "contains": { "const": "verify-reserve-accounts" } },
+              { "contains": { "const": "verify-reserve-draws" } }
+            ]
+          }
+        }
+      }
+    }
+  ],
   "examples": [
     {
       "id": "io.uwmd.core",
@@ -267,7 +305,16 @@
         "calc-evaluate",
         "calc-deterministic",
         "module-load",
-        "integrity"
+        "integrity",
+        "verify-metrics",
+        "verify-cash-flows",
+        "verify-property-cash-flows",
+        "verify-waterfall",
+        "verify-capital-stack",
+        "verify-lease-up",
+        "verify-receipts",
+        "verify-reserve-accounts",
+        "verify-reserve-draws"
       ],
       "role": "library",
       "homepage": "https://uwmd.org"

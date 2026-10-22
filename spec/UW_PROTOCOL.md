@@ -274,7 +274,8 @@ A Verifier MUST satisfy all Reader requirements, and additionally:
 3. Implement the stated-figure verifiers and apply them to the figures
    a document states: calendar-anchored cash flows, including the IRR
    procedure (§VIII.9); property cash-flow assembly (§VIII.9.6);
-   distribution waterfalls (§VIII.10); property reserve accounts
+   distribution waterfalls (§VIII.10); capital-stack sizing (format
+   §4.24); lease-up schedules (format §4.25); property reserve accounts
    (§VIII.11); reserve draw bindings (§VIII.12); and
    replacement-funding bindings (§V.12).
 4. Verify receipts as [`UW_RECEIPT`](UW_RECEIPT.md)
@@ -350,6 +351,18 @@ A partial claim is **checkable**, not merely declarative: conformance
 cases carry the capabilities they require (§II.6a.5), so a claim can be
 run rather than believed.
 
+**A Verifier tier claim requires every Verifier obligation flag (RFC 0115).**
+Each obligation in §II.2 that a document states figures for has one
+capability flag and one §II.6a.1 subcommand: `verify-metrics` (item 2),
+`verify-cash-flows`, `verify-property-cash-flows`, `verify-waterfall`,
+`verify-capital-stack`, `verify-lease-up`, `verify-reserve-accounts` and
+`verify-reserve-draws` (item 3), and `verify-receipts` (item 4). Item 1
+is `validate`, which also reports replacement-funding bindings (§V.12).
+A manifest that claims `tier: "verifier"` with a nonempty capability list
+MUST list `validate` and every one of these flags. A manifest that omits
+one is a partial claim: it publishes its capabilities and omits the tier,
+and the cases needing the omitted flag are skipped, not failed.
+
 Conformance tier values are only reader and verifier. No legacy value or numeric alias is admitted; modules declare requires_conformance and optional requires_profiles (§VII.4).
 
 ### II.6 Self-certification
@@ -400,6 +413,15 @@ language, runtime, or packaging is observable across that boundary.
 | `<bin> render <file> --format <chat\|summary\|json\|csv>` | The rendered body, as text. |
 | `<bin> edit <file> <operation.json> --json` | `{ ok, content?, error? }`. |
 | `<bin> calc <file> <calc.json> --json` | A `CalcResult`, or an array of them for an array input. |
+| `<bin> verify-metrics <file> --json` | A `StatedMetricsReport` (§II.2 item 2, RFC 0099). |
+| `<bin> verify-cash-flows <file> [--variant <name>] --json` | A section report whose `verification` is a `CashFlowVerification` (§VIII.9). |
+| `<bin> verify-property-cash-flows <file> <plan.json> --json` | A `PropertyCashFlowAssembly`, or `{ error }` with its `CALC-CF-ASSEMBLY` refusal (§VIII.9.6). |
+| `<bin> verify-waterfall <file> [--variant <name>] --json` | A section report whose `verification` is a `WaterfallVerification` (§VIII.10). |
+| `<bin> verify-capital-stack <file> [--variant <name>] --json` | A section report whose `verification` is a `CapitalStackVerification` (format §4.24). |
+| `<bin> verify-lease-up <file> [--variant <name>] --json` | A section report whose `verification` is a `LeaseUpVerification` (format §4.25). |
+| `<bin> verify-receipt <receipt.json> <file> [--inputs <inputs.json>] --json` | A `UWReceiptVerification` (§II.2 item 4, UW_RECEIPT §5), or `{ error }` for a receipt that cannot be read. |
+| `<bin> verify-reserve-accounts <file> --json` | A `ReserveAccountsVerification` (§VIII.11). |
+| `<bin> verify-reserve-draws <file> [plan.json] --json` | A `ReserveDrawBindingVerification` (§VIII.12). |
 
 `edit --json` **MUST NOT** write the edited file. A driver that rewrote
 fixtures as a side effect of reading them would corrupt the corpus it is
@@ -412,6 +434,38 @@ nothing a driver can use.
 `render` and `edit` drive starter-product fixtures (§II.4). Neither
 tier requires them: an implementation that does not claim the `render-*`
 or `edit-*` capabilities they need has those cases skipped (§II.6a.5).
+
+**Verifier subcommands (RFC 0115).** Each `verify-*` subcommand drives one
+Verifier obligation and is read-only. Its result types are defined in
+`protocol.ts` and `spec/schemas/` ([`stated-metrics-report`](schemas/stated-metrics-report.schema.json),
+[`section-verification-report`](schemas/section-verification-report.schema.json),
+[`property-cash-flow-assembly`](schemas/property-cash-flow-assembly.schema.json),
+[`receipt-verification`](schemas/receipt-verification.schema.json) and the two
+reserve schemas).
+
+- **Section reports.** `verify-cash-flows`, `verify-waterfall`,
+  `verify-capital-stack` and `verify-lease-up` print
+  `{ section, variant, status, verification }` (`verify-cash-flows` adds
+  `checked_metrics`). They check one current block of the section, selected
+  as §VIII.2 selects: the `--variant` named exactly, otherwise the
+  RFC 0040 primary/default/base/sole order. An ambiguous section or an
+  absent named variant is refused with `{ error }` (`CALC-RESOLVE-002`, or
+  `CALC-PERIOD-003` for cash flows). `verification` is the section verifier's
+  result, unchanged, and `status` is its verdict. With no current block of the
+  section, `status` is `not_applicable` and `verification` is null; a cash-flow
+  block that states no metric is also `not_applicable`. A waterfall's series is
+  the `cash_flow_series` variant its `cash_flow_ref` names, resolved as the
+  WF-02 rule resolves it; an unresolved reference is the verifier's
+  `unverifiable` (§VIII.10 step 6). To check every variant a document states,
+  run the subcommand once per variant.
+- **Receipts.** `verify-receipt` verifies as a Verifier holds the standard:
+  without a calculation pack (packs are starter products, RFC 0078). A
+  receipt's results are its pack's outputs, so after the subject, rule-set and
+  referenced-input checks a pack-named receipt is `unverifiable` with
+  `RCP-05` (UW_RECEIPT §5.1 step 3). `--inputs` supplies the referenced-input
+  digests the verifier holds (UW_RECEIPT §10); without it the verifier holds none.
+  A receipt that cannot be read is refused with `{ error }`, code
+  `RCP_MALFORMED`.
 
 #### II.6a.2 Stream and exit-code contract
 
@@ -429,6 +483,14 @@ or `edit-*` capabilities they need has those cases skipped (§II.6a.5).
   validation error and never sets exit `1` (RFC 0109).
 - **Exit `2`** — unrecoverable internal error. stdout is not required to
   be anything.
+
+For the `verify-*` subcommands (RFC 0115), a **failed** verification exits
+`1`. A verified result, an `unverifiable` result and an absent subject
+(`not_applicable`) exit `0`: they are reported outcomes, not operation
+failures, and `status` or `verdict` says which. A refusal (`{ error }`)
+also exits `1`. `verify-metrics` exits `1` when any statement is `failed`.
+The two reserve subcommands keep their §VIII.11 and §VIII.12 contract, which
+also exits `1` on `unverifiable`.
 
 Selected institution-config failures are operation errors, not ValidationResult
 findings: `validate --json` emits only `{ "error": ProtocolError }` and exits1.
@@ -481,10 +543,14 @@ remain a distinct outcome. Both appear in the report; `--no-skip` makes
 an incomplete claim fail the certification run without treating an
 unsupported profile as a wrong numerical answer.
 
-The portable cases cover checks expressible as one CLI operation. The
-reference runner also checks multi-step contracts, receipt verification,
-integrity, representations and other cross-fixture invariants. Passing
-only the portable subset is not a claim about omitted checks. Existing
+The portable cases cover checks expressible as one CLI operation. Since
+RFC 0115 every Verifier obligation has portable cases: generated from the
+reference suites, with bare-payload fixtures and statement-home edits
+restated as documents under `conformance/runner/derived/`. The reference
+runner also checks multi-step contracts, pack-based receipt verification
+(a starter check, RFC 0115 D4), integrity, representations and other
+cross-fixture invariants. Passing only the portable subset is not a claim
+about omitted checks. Existing
 fixture-family selections remain available in the reference runner via
 `--suite=<family>`. Baseline updates require a full run or `--suite`, because
 target filtering inside a mixed suite must not overwrite unselected
@@ -514,6 +580,13 @@ A driver **SHOULD** offer a mode that treats any skip as a failure. The
 reference implementation claims every capability, so it runs that way
 in CI — otherwise a case tagged with a capability nothing claims stops
 being executed and nothing says so.
+
+Each Verifier obligation case requires `parse` and its own flag
+(RFC 0115 D2): `verify-metrics`, `verify-cash-flows`,
+`verify-property-cash-flows`, `verify-waterfall`, `verify-capital-stack`,
+`verify-lease-up`, `verify-receipts`, `verify-reserve-accounts` or
+`verify-reserve-draws`. An implementation that has built some verifiers
+claims those flags; the cases for the others are skipped, not failed.
 
 Example:
 
@@ -637,8 +710,8 @@ capability is unconditional: every implementation owes it.
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
 | `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). RFC0096 adds WF-16 stated-claim admission. Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
 | `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC0058), with closed REC-11 admission (RFC0096). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `error` |
-| `RDB-NN` | Optional reserve draw binding plan/source/allocation verification (§VIII.12, RFC 0065); ordinary document validation and assembly unchanged. | `calc-evaluate` | `error` |
-| `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
+| `RDB-NN` | Optional reserve draw binding plan/source/allocation verification (§VIII.12, RFC 0065); ordinary document validation and assembly unchanged. | `verify-reserve-draws` (RFC 0115) | `error` |
+| `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate`; RSV-06–08 also `verify-reserve-accounts` (RFC 0115) | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
 | `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), required canonical boolean members (`META-02`/`META-03`, RFC0091), exactly three present-invalid canonical leaves (`META-04`, RFC0094), and closed optional/conditional metadata (`META-05`/`META-06`, RFC0095). | `validate` | `error` |
@@ -3681,7 +3754,8 @@ precedes continuity mismatch within a period.
 
 The reference CLI `uwmd verify-reserve-accounts <file> [--json]` returns this
 result, exits 1 on `failed` or `unverifiable`, and exits 0 on `verified`
-or absent/not-applicable. Ordinary `validate` checks structure and does not
+or absent/not-applicable. It is the §II.6a.1 subcommand for this obligation;
+its cases require the `verify-reserve-accounts` capability (RFC 0115). Ordinary `validate` checks structure and does not
 claim arithmetic verification. A custody verifier neither writes the file
 nor alters gross expenditure or relaxes §VIII.9.6's
 `reserve_spending_excluded` refusal. Digest consistency and matching balances
@@ -3782,7 +3856,8 @@ and expenditure totals in their authored order.
 
 The reference CLI `uwmd verify-reserve-draws <file> [plan.json] [--json]`
 returns this result, exits 1 on failed/unverifiable, and 0 on verified or omitted
-plan. Ordinary document validation remains unchanged, with no automatic binding
+plan. It is the §II.6a.1 subcommand for this obligation; its cases require the
+`verify-reserve-draws` capability (RFC 0115). Ordinary document validation remains unchanged, with no automatic binding
 verification. A verifying plan asserts only consistency of declared funding
 identity: it does not authenticate gross classification or evidence, admit
 reserve-dependent RFC 0045 assembly, bind external transfers, create owner cash,

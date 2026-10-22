@@ -1,0 +1,25 @@
+{
+  "id": "verifier__cash-flow__verify-moic-no-outflows__verify-cash-flows",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-cash-flows"
+  ],
+  "command": "verify-cash-flows",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/runner/derived/cash-flow/verify-moic-no-outflows",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/cash-flow/verify-moic-no-outflows/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict",
+      "expected_code"
+    ],
+    "exit_code": 0
+  }
+}

@@ -1599,66 +1599,131 @@
     {
       "suite": "receipts",
       "scenario": "verify/01-clean",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/02-record-mutated",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/03-result-disagrees",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/04-unknown-pack",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/05-signed-no-backend",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/06-lite-canonicalization-superseded",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/07-market-data-absent",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/08-market-data-mutated",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/09-multifamily-old-pack-version",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/10-rehashed-one-cent",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/11-rehashed-subquantum-ratio",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/12-receipt-version-1-0",
-      "target": "verifier"
+      "target": "starter-products"
     },
     {
       "suite": "receipts",
       "scenario": "verify/13-rule-set-mismatch",
+      "target": "starter-products"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/01-clean [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/02-record-mutated [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/03-result-disagrees [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/04-unknown-pack [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/05-signed-no-backend [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/06-lite-canonicalization-superseded [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/07-market-data-absent [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/08-market-data-mutated [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/09-multifamily-old-pack-version [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/10-rehashed-one-cent [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/11-rehashed-subquantum-ratio [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/12-receipt-version-1-0 [pack-less]",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
+      "scenario": "verify/13-rule-set-mismatch [pack-less]",
       "target": "verifier"
     },
     {

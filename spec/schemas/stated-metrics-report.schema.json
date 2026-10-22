@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/stated-metrics-report.schema.json",
+  "title": "Stated metrics report (RFC 0083, RFC 0099, RFC 0115)",
+  "description": "What `verify-metrics <file> --json` prints (Protocol §II.6a.1): every numeric statement of the document's dictionary metrics, checked against the metric dictionary (§II.2 item 2). Mirrors StatedMetricsReport in @uwmd/verify's protocol.ts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rule_set", "asset_class", "counts", "evidence"],
+  "properties": {
+    "rule_set": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "The record's declared Format version the statements were checked under (Protocol §XII.5, RFC 0111 D5)."
+    },
+    "asset_class": { "type": "string" },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verified", "failed", "unverifiable"],
+      "properties": {
+        "verified": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "unverifiable": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "stated", "state", "computed"],
+      "properties": {
+        "id": { "type": "string", "description": "The dictionary metric id." },
+        "path": { "type": "string", "description": "Where the document states it, e.g. quick_metrics.dscr or valuation[base].cap_rate." },
+        "stated": { "type": "number" },
+        "stated_decimals": { "type": "integer", "minimum": 0 },
+        "state": { "enum": ["verified", "failed", "unverifiable"] },
+        "computed": { "type": ["number", "null"], "description": "The recomputed value at the comparison precision; null when unverifiable." },
+        "comparison": { "type": "number" },
+        "comparison_decimals": { "type": "integer", "minimum": 0 },
+        "reason": { "type": "string", "description": "Why the statement could not be checked; calc refusals carry their CALC-* code." }
+      }
+    }
+  }
+}
