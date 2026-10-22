@@ -194,7 +194,8 @@ class OptionalShapeAdmissionTests(unittest.TestCase):
             # A test-only future schema change; normative source files are untouched.
             schema={"type":"object","properties":{"cap":{"type":"object","properties":{"pct":{"type":"number","multipleOf":2}}}}}
             (provider/"lease-recovery-terms.schema.json").write_text(json.dumps(schema),encoding="utf8")
-            with patch("uwmd_validation_optional_shapes._SCHEMAS",provider):
+            with patch("uwmd_validation_optional_shapes.spec_schema",
+                       lambda name: json.loads((provider/name).read_text(encoding="utf-8"))):
                 _,findings,_,_=self.report(self.recoveries(recovery_terms={"method":"net","cap":{}}),
                                           "lease_recoveries")
             self.assertTrue(any("Unsupported fixed-schema keyword: multipleOf"==f["message"] for f in findings))

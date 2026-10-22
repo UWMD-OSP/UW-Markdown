@@ -3,10 +3,8 @@
 Numeric comparisons use the published check-specific thresholds/tolerances,
 not dictionary recomputation or inferred underwriting figures.
 """
-import json
-from pathlib import Path
-
 from uwmd_binding_sources import finite
+from uwmd_spec_data import metric_dictionary
 from uwmd_validation_core import BUILTINS
 from uwmd_validation_selection import active_blocks, current_blocks, field
 
@@ -16,6 +14,15 @@ def number(payload, *paths):
         value = field(payload, path)
         if value is not None:
             return value if finite(value) else None
+    return None
+
+
+def first_finite(payload, *paths):
+    """The first carrier stating a finite number; a malformed one falls through."""
+    for path in paths:
+        value = field(payload, path)
+        if finite(value):
+            return value
     return None
 
 
@@ -115,10 +122,25 @@ def cross_checks(ledger, *, defer_summaries=False):
                 ledger.issue(rule, severity, section, path, "Stated figures exceed the registered reconciliation tolerance",
                              value=dict(stated=left, comparison=right), threshold={"max": limit})
         return usable
+    def ratio(rule, stated, base, tolerance, section, path, *, positive=False, nonzero=False):
+        """|stated - base| / base against a published relative tolerance.
+
+        Format §5.3 fixes the percentage, not the operand carriers, the skip
+        conditions or the arithmetic; these follow the reference (positive:
+        base <= 0 is skipped; nonzero: |base| is the denominator).
+        """
+        usable = (stated is not None and base is not None
+                  and (base > 0 if positive else base != 0))
+        ledger.cover(rule, usable)
+        if usable:
+            drift = abs(stated - base) / (abs(base) if nonzero else base)
+            if drift > tolerance:
+                ledger.issue(rule, "warning", section, path, "Stated figures exceed the registered reconciliation tolerance",
+                             value=drift, threshold={"max": tolerance})
     r, o = read("CC-01", "rent_roll", preferred_role="detail"), read("CC-01", "operating_statement", preferred_key="t12")
-    compare("CC-01", number(r, "gross_potential_rent", "gross_potential_rent_annual"),
-            number(o, "gross_potential_rent", "income.gross_potential_rent"), .03,
-            relative=True, section="rent_roll", path="gross_potential_rent")
+    ratio("CC-01", first_finite(r, "gross_potential_rent", "totals.gross_potential_rent"),
+          first_finite(o, "gross_potential_rent", "income.gross_potential_rent"), .03,
+          "rent_roll", "gross_potential_rent")
     debt, valuation = read("CC-02", "debt_structure", preferred_role="senior"), read("CC-02", "valuation")
     loan, value = number(debt, "loan_amount"), number(valuation, "underwritten_value", "purchase_price")
     expected = loan / value if finite(loan) and finite(value) and value != 0 else None
@@ -127,15 +149,15 @@ def cross_checks(ledger, *, defer_summaries=False):
     s = read("CC-04", "sources_uses")
     compare("CC-04", number(s, "total_sources"), number(s, "total_uses"), 1, section="sources_uses", path="total_sources")
     n, d = read("CC-05", "noi_model"), read("CC-05", "debt_structure", preferred_role="senior")
-    compare("CC-05", number(d, "underwritten_noi"), number(n, "net_operating_income"), .01,
-            relative=True, section="debt_structure", path="underwritten_noi")
+    ratio("CC-05", first_finite(d, "underwritten_noi", "noi_used_for_dscr"), first_finite(n, "net_operating_income"),
+          .01, "debt_structure", "underwritten_noi", positive=True)
     n, d = read("CC-06", "noi_model"), read("CC-06", "dcf")
     rows = field(d, "annual_cash_flows")
     first = rows[0] if isinstance(rows, list) and rows else None
-    compare("CC-06", number(first, "noi", "net_operating_income"), number(n, "net_operating_income"), .02,
-            relative=True, section="dcf", path="annual_cash_flows[0].net_operating_income")
+    ratio("CC-06", first_finite(first, "noi", "net_operating_income"), first_finite(n, "net_operating_income"),
+          .02, "dcf", "annual_cash_flows[0].noi", positive=True)
     d, stress = read("CC-07", "dcf"), read("CC-07", "stress_tests")
-    compare("CC-07", number(d, "assumptions.exit_cap_rate"), number(stress, "base_case.exit_cap_rate"),
+    compare("CC-07", first_finite(d, "assumptions.exit_cap_rate", "exit_cap_rate"), first_finite(stress, "base_case.exit_cap_rate"),
             .005, section="stress_tests", path="base_case.exit_cap_rate")
     due, valuation = read("CC-08", "due_diligence", preferred_key="appraisal"), read("CC-08", "valuation")
     compare("CC-08", number(due, "appraisal.appraised_value", "appraised_value"),
@@ -199,7 +221,7 @@ def cross_checks(ledger, *, defer_summaries=False):
             elif prop is None:
                 ledger.cover("CC-13")
             else:
-                registry = json.loads((Path(__file__).resolve().parents[2] / "spec/metrics/builtin.json").read_text(encoding="utf-8"))
+                registry = metric_dictionary()
                 definition = next((r for r in registry["size_intensives"] if fm["asset_class"] in r["asset_classes"]), None)
                 if definition is None:
                     ledger.cover("CC-13", reason="not_applicable", detail="Class has no primary size entry")
@@ -209,8 +231,8 @@ def cross_checks(ledger, *, defer_summaries=False):
                     if not finite(field(prop, path)):
                         ledger.issue("CC-13", "warning", "property", path, "Primary class size is not stated as a finite number")
     lease, noi = read("CC-15", "lease_up_schedule", lease_up_base=True), read("CC-15", "noi_model")
-    compare("CC-15", number(lease, "stabilized_summary.annualized_noi"), number(noi, "net_operating_income"),
-            .02, relative=True, section="lease_up_schedule", path="stabilized_summary.annualized_noi")
+    ratio("CC-15", first_finite(lease, "stabilized_summary.annualized_noi"), first_finite(noi, "net_operating_income"),
+          .02, "lease_up_schedule", "stabilized_summary.annualized_noi", nonzero=True)
     ledger.finish_coverage(summaries=not defer_summaries)
 
 

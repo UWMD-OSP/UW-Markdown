@@ -54,14 +54,14 @@ jobs:
           name: isolated-python-fdlibm-${{ matrix.os }}
           path: ${{ runner.temp }}/python-fdlibm-observations.json
           if-no-files-found: error
-      # Certification (Issue #354): the claimed Reader tier plus calc-evaluate.
-      # --tier verifier selects Reader and Verifier cases. The only skips allowed
-      # are the cases needing the unclaimed `validate`; anything else (a failure,
-      # an unverifiable profile, any other skipped capability) fails the job.
-      - name: Portable Reader + calc-evaluate (only validate may skip)
+      # Certification (Issue #354): the claimed Reader tier plus calc-evaluate
+      # and validate. --tier verifier selects Reader and Verifier cases; with
+      # --no-skip any skipped case fails, and so does a failure, an unverifiable
+      # profile or an empty selection. The manifest keeps tier "reader".
+      - name: Portable Reader + calc-evaluate + validate (no skips)
         run: |
-          python conformance/runner/runner.py --impl "python implementations/python/uwmd.py" --tier verifier --manifest-out python-reader-conformance.json
-          python -c "import json,sys; s=json.load(open('python-reader-conformance.json'))['summary']; ok=s['failed']==0 and s['unverifiable']==0 and set(s['skipped_by_capability'])<={'validate'} and s['passed']>0; print(s); sys.exit(0 if ok else 1)"
+          python conformance/runner/runner.py --impl "python implementations/python/uwmd.py" --tier verifier --no-skip --manifest-out python-reader-conformance.json
+          python -c "import json,sys; s=json.load(open('python-reader-conformance.json'))['summary']; ok=s['failed']==0 and s['unverifiable']==0 and s['skipped']==0 and not s['skipped_by_capability'] and s['passed']>0; print(s); sys.exit(0 if ok else 1)"
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -69,8 +69,8 @@ jobs:
           path: python-reader-conformance.json
           if-no-files-found: error
 
-      # Scoped actual CLI evidence, not a capability or Verifier-tier claim.
-      # Reuse these existing runtimes; discovery intentionally remains parse-only.
+      # Scoped actual CLI evidence, not a Verifier-tier claim.
+      # Reuse these existing runtimes.
       - name: Actual portable Python calculation cases (development evidence)
         run: python -B implementations/python/run_calc_cases.py --output-dir "${{ runner.temp }}/python-calc-cases"
       - uses: actions/upload-artifact@v6

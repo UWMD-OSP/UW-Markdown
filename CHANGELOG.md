@@ -8,6 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Python (#354): the independent implementation now claims `validate` beside
+  `parse` and `calc-evaluate`, still at the Reader tier. CI runs the portable
+  Verifier-tier corpus with `--no-skip` on three OSes, so all 144 validate cases
+  must pass. `validate` reads spec data through one resolver, with
+  `UWMD_SPEC_DIR` to run outside a checkout. The #425 differences are closed:
+  CF-01 is the §4.26 row grammar only, HDG-08 reports the failing reference
+  member, HDG-01 reports each stated member, CS-01/CS-02/CS-WATERFALL-UNSUPPORTED
+  follow §4.24 and the reference, CC-01/05/06/07/15, WF-02/03, TAX-07 and DQ-05
+  read the reference's carriers and skips. A `null` `stabilized_period` stays
+  unstated (Format §4.5). No TypeScript, spec, schema or conformance change.
+
 - Prepare Cloudflare Workers static hosting for the refreshed docs site, with a
   pinned Node runtime, asset headers, real 404 responses and owner-configured
   docs-only build watch paths. Vercel remains unchanged pending owner cutover.

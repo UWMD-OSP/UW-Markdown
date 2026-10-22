@@ -4,17 +4,15 @@ Only the repository's normative builtin dictionary and the fixed Format 4.29-35
 assertions below can reach this executor. Document/custom/module formulas are
 never executed. This implements no calc command/capability, defaults or models.
 """
-import json
-from pathlib import Path
 
 from uwmd_binding_sources import finite
 from uwmd_builtin_field_homes import removed_hospitality_fields
 from uwmd_expressions import parse_expression
 from uwmd_numeric import quantize
+from uwmd_spec_data import metric_dictionary, schema as spec_schema
 from uwmd_periods import select_period_row, PeriodError
 from uwmd_validation_selection import current_blocks, select_section, field
 
-_ROOT = Path(__file__).resolve().parents[2]
 _SCHEMAS = {
     "data_center": {"dc_capacity":"section-dc-capacity.schema.json", "dc_power":"section-dc-power.schema.json",
                     "dc_revenue":"section-dc-revenue.schema.json"},
@@ -203,7 +201,7 @@ def builtin_rules(ledger):
         blocks = current_blocks(document, section)
         if not current_blocks(document, section, include_external=True) and section in ("dc_capacity", "mhc_sites"):
             ledger.issue("CLS-03", "error", section, "", "Required official class section is absent")
-        schema = json.loads((_ROOT/"spec/schemas"/filename).read_text(encoding="utf-8"))
+        schema = spec_schema(filename)
         for block in blocks:
             body = block.parsed.value
             for key, definition in schema.get("properties",{}).items():
@@ -221,7 +219,7 @@ def builtin_rules(ledger):
                 for key in removed_hospitality_fields(section, selected.block.parsed.value):
                     ledger.issue("CLS-04", "error", section, key,
                                  "Hospitality field is stated outside its canonical home")
-    dictionary = json.loads((_ROOT/"spec/metrics/builtin.json").read_text(encoding="utf-8"))
+    dictionary = metric_dictionary()
     prior = {}
     for definition in dictionary["calculations"]:
         if asset not in definition["asset_classes"] or definition["id"] not in _CALCULATIONS[asset]:continue
