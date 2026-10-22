@@ -278,7 +278,7 @@ describe('RFC 0070 canonical snapshot controls', () => {
   it.each(['row_index', 'binding_digest'])('gives unresolved source precedence over malformed %s', async (field) => {
     for (const name of ['missing-source', 'outright-payment']) {
       const parsed = parseUWFile(source(name));
-      const debt = blockPayload(sectionBlocks(parsed.sections.debt_structure)[0]!);
+      const debt = blockPayload(sectionBlocks(parsed.sections.debt_structure)[0]!) as Record<string, unknown>;
       const hedge = debt.rate_hedge as Record<string, unknown>;
       const funding = hedge.replacement_funding as Record<string, unknown>;
       const ref = funding.cash_flow_ref as Record<string, unknown>;
