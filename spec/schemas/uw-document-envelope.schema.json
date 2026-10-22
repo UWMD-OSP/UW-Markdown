@@ -58,7 +58,8 @@
           "type": "string"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "description": "Carries declared frontmatter, including well-formed source values that validation may reject. Format §2.2 closed vocabularies (RFC 0118) are Verifier checks, not additional Reader transport-admission requirements."
     },
     "sections": {
       "type": "object",

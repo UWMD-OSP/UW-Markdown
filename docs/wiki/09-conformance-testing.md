@@ -135,22 +135,38 @@ cases from existing fixtures. RFC 0086 added the `cross-checks` suite (six
 `CC-17` records) and two `price_per_commissioned_kw` statement-home cases. RFC 0114 added two malformed-area cases. RFC 0116 added five document fixtures
 (20 reference checks and 20 portable cases), and document validation pins all
 seven readiness values. RFC 0117 adds two component-size cases and three portable
+<<<<<<< HEAD
 metric-boundary cases. RFC 0119 adds sixteen paired NOI boundary/coverage
 records and 32 portable validate/coverage cases. The index now holds **1,300** reference checks and **626**
+=======
+metric-boundary cases. RFC 0118 adds five invalid frontmatter documents
+(20 reference and portable cases), keeping Reader admission separate from
+Verifier vocabulary refusal. The index now holds **1,304** reference checks and **614**
+>>>>>>> origin/main
 portable CLI projections:
 
 | Owner | Reference | Portable |
 |---|---:|---:|
+<<<<<<< HEAD
 | reader | 37 | 22 |
 | verifier | 855 | 542 |
+=======
+| reader | 42 | 27 |
+| verifier | 844 | 515 |
+>>>>>>> origin/main
 | module | 76 | 1 |
 | integrity | 32 | 14 |
 | representations | 150 | 0 |
 | portfolio | 14 | 0 |
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
+<<<<<<< HEAD
 | starter-products | 124 | 47 |
 | **Total** | **1,300** | **626** |
+=======
+| starter-products | 134 | 57 |
+| **Total** | **1,304** | **614** |
+>>>>>>> origin/main
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -307,11 +323,19 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
+<<<<<<< HEAD
 runs all 1,300 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable
 driver checks its 626-case subset using shared comparison logic, while the
+=======
+runs all 1,304 indexed checks across its suites, and most of what has been added
+since the corpus was four tiers is not "run a command, compare the output":
+receipt re-issuance stability, composition DAG resolution, ZIP packaging,
+signature key stores, invariants asserted with no baseline at all. The portable
+driver checks its 614-case subset using shared comparison logic, while the
+>>>>>>> origin/main
 reference runner checks the full indexed corpus. A result claims only the
 checks actually run. Replacing one with the other would
 trade breadth for portability.
