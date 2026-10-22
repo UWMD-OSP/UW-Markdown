@@ -1,9 +1,9 @@
 import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { CORE_CODEC_REGISTRY, parseUWFile, toUWEnvelope } from '@uwmd/verify';
+import { computeEnvelopeDigest, CORE_CODEC_REGISTRY, parseUWFile, toUWEnvelope } from '@uwmd/verify';
 import { loadEditableUWXFile, loadUWSourceFile } from './source-file.js';
 
 const root = resolve('../..');
@@ -37,7 +37,7 @@ describe('registered source files', () => {
     const file = files[id]!;
     const before = await readFile(file);
     const result = await loadUWSourceFile(file);
-    expect(result.envelope).toEqual(toUWEnvelope(parseUWFile(original)));
+    expect(await computeEnvelopeDigest(result.envelope)).toBe(await computeEnvelopeDigest(toUWEnvelope(parseUWFile(original))));
     expect(result.parsed.frontmatter.deal_id).toBe(parseUWFile(original).frontmatter.deal_id);
     expect(await readFile(file)).toEqual(before);
   });

@@ -418,7 +418,6 @@ async function signingOptions(
 }
 
 async function cmdVerify(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const content = readFile(file);
   // --resolved verifies the assembled record. Without it an externalized
   // section verifies as a directive, which is not the document anyone means.
   const partSources = flags['resolved']
@@ -575,8 +574,6 @@ async function cmdCompact(file: string, flags: Record<string, string | boolean>)
 }
 
 async function cmdDiff(fileA: string, fileB: string): Promise<void> {
-  const contentA = readFile(fileA);
-  const contentB = readFile(fileB);
   const parsedA = (await loadUWSourceFile(fileA)).parsed;
   const parsedB = (await loadUWSourceFile(fileB)).parsed;
   const diffs = diff(parsedA, parsedB);
@@ -674,7 +671,6 @@ function cmdInit(flags: Record<string, string | boolean>): void {
 }
 
 async function cmdSummary(file: string): Promise<void> {
-  const content = readFile(file);
   const parsed = (await loadUWSourceFile(file)).parsed;
   const fm = parsed.frontmatter;
   const qm = fm.quick_metrics ?? {};
@@ -1048,7 +1044,6 @@ function cmdFormats(flags: Record<string, string | boolean>): void {
   }
 }
 async function cmdReport(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const content = readFile(file);
   const parsed = (await loadUWSourceFile(file)).parsed;
   const result = renderReportHtml(parsed, {
     tier: flags['tier'] as RenderTier | undefined,
@@ -1133,7 +1128,6 @@ async function cmdMarketDataValidate(file: string, flags: Record<string, string 
 }
 
 async function cmdScope(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const content = readFile(file);
   const parsed = (await loadUWSourceFile(file)).parsed;
   const assetClass =
     (flags['asset-class'] as string | undefined) ??
@@ -1222,7 +1216,6 @@ function loadCalculationContext(flags: Record<string, string | boolean>, periodO
 }
 
 async function cmdRefine(file: string, flags: Record<string, string | boolean>): Promise<void> {
-  const content = readFile(file);
   const parsed = (await loadUWSourceFile(file)).parsed;
   const targets = flags['targets']
     ? (flags['targets'] as string).split(',').map(s => s.trim()).filter(Boolean)
@@ -1512,7 +1505,6 @@ switch (command) {
 
   case 'render': {
     if (!positional[0]) { console.error('Usage: uwmd render <file> [--format <json|csv|chat|summary>] [--profile <summary|live|compact|full|relevant>] [--sections a,b,c] [--max-tokens 12000] [--no-meta] [--output <file>] [--tier screener|analyst]'); process.exit(1); }
-    const content = readFile(positional[0]);
     const parsedFile = (await loadUWSourceFile(positional[0]!)).parsed;
 
     if (flags['profile']) {
@@ -1685,7 +1677,7 @@ switch (command) {
       try { source = readFileSync(resolve(options.file), 'utf8'); }
       catch (error) { throw new CalcError('CALC-CF-SERIES',
         `Cannot read source: ${error instanceof Error ? error.message : String(error)}`, 'source'); }
-      const result = verifyCashFlowDocument(source, options.variant);
+      const result = verifyCashFlowDocument((await loadUWSourceFile(options.file)).parsed, options.variant);
       if (options.json) console.log(JSON.stringify(result.report, null, 2));
       else {
         const r = result.report;
@@ -1836,7 +1828,6 @@ switch (command) {
       console.error('Usage: uwmd calc <file> <calc.json|formula> [--calc-context <file>]');
       process.exit(1);
     }
-    const fileContent = readFile(positional[0]!);
     const parsed = (await loadUWSourceFile(positional[0]!)).parsed;
 
     // Second arg is either a JSON file path or a raw formula string.
