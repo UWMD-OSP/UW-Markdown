@@ -144,6 +144,7 @@ and how it gets accepted.
 | [0117](./0117-size-contract-components.md) | Extend the size contract to mixed-use component sizes and guard the per-size component metrics | accepted | format, protocol, core, conformance |
 | [0118](./0118-frontmatter-vocabularies.md) | Refuse closed frontmatter values outside their vocabularies | accepted | format, protocol, core, conformance |
 | [0119](./0119-non-positive-noi-cross-checks.md) | Compare NOI by absolute difference when it is zero or negative (CC-05, CC-06) | accepted | format, protocol, core, conformance |
+| [0120](./0120-selected-source-structural-findings.md) | Preserve selected-source cash-flow structural findings | draft | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before

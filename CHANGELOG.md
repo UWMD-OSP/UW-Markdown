@@ -8,6 +8,8 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Draft RFC 0120: preserve selected-source cash-flow structural findings; pending owner review, with no implementation.
+
 - CSV decoding preserves own prototype-named content members while reconstructing
   metadata first, so valid envelopes retain their semantic digest.
 
