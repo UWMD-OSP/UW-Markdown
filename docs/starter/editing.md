@@ -47,4 +47,3 @@ replace/supersede policy as single-variant sections.
 
 `uw_version`, `deal_id`, and `created` MUST NOT be modified by
 post-init edits. `last_modified` MUST be updated on every write.
-`pipeline_state` MUST be updated by Tier-4 hosts as layers complete.

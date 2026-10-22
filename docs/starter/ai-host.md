@@ -1,4 +1,4 @@
-# Starter products: AI agent host
+# Starter products: agent writers and context profiles
 
 > **Non-normative starter-product guidance (RFC 0078). Not part of the standard.**
 >
@@ -11,37 +11,21 @@
 > Verifier owes none of them.
 
 **The reference toolkit hosts no agents.** `@uwmd/core` and the `uwmd` CLI run
-no model, ship no provider adapter or tool schema, and have no `uwmd run`
-command. What remains is the Bancroft layer registry (`BANCROFT_LAYERS`), its
-context and prompt builders (`buildAgentContext`, `buildAgentPrompt`,
-`isContextReady`, `getLayerDependencies`), the context profiles
-(`buildContext`), and the generic writers (`writeAgentBlock`,
-`writeErrorEntry`). Any host that runs its own agents writes their records
-through those writers or through the edit API (`applyEdit`, `uwmd edit
+no model, ship no provider adapter, tool schema or layer registry, and have no
+`uwmd run` or `uwmd layers` command ([RFC 0112](../rfcs/0112-remove-bancroft-vocabulary.md)
+removed the layer vocabulary). What remains is the context profiles
+(`buildContext`) and the generic writers (`writeAgentBlock`,
+`writeErrorEntry`, `buildMeta`). Any host that runs its own agents writes their
+records through those writers or through the edit API (`applyEdit`, `uwmd edit
 --agent-id/--agent-version`); the format's provenance, supersede and
-pipeline-log rules apply to it exactly as to any other producer.
+pipeline-log rules, and its producer obligations (Format §3.6), apply to it
+exactly as to any other producer.
 
 ## IX. AI Host Contract
 
-### IX.1 Layer DAG
-
-`BANCROFT_LAYERS` (`context.ts`) is the reference layer dependency
-graph for v1. Each layer declares its `reads` (sections it needs as
-input) and `writes` (sections it produces). A host MUST satisfy all
-`reads` before invoking a layer; `isContextReady()` and
-`getLayerDependencies()` answer that from a parsed file.
-
-The seven canonical layers are L0 (ingestion), L1 (screening), L2
-(underwriting), L4 (structuring), L5 (compliance), L6 (risk), L7
-(assembly). Modules MAY contribute additional layers; module layers
-MUST NOT use IDs that shadow canonical IDs.
-
-### IX.2 Context bundling
-
-`buildAgentPrompt()` defines the canonical context bundle shape: the
-deal frontmatter, the relevant `reads` sections (canonical blocks
-only — superseded blocks excluded), validation issues affecting those
-sections, and the layer's prompt template.
+§IX.1 (layer DAG), §IX.2 (context bundling) and §IX.8 (layer-declared profile
+consumption) described the removed layer registry and are retired with it
+(RFC 0112).
 
 ### IX.4 _meta substitution
 
@@ -54,7 +38,7 @@ carries.
 
 ### IX.5 Pipeline log
 
-Every successful layer invocation MUST append a `pipeline_log` entry
+Every successful agent write MUST append a `pipeline_log` entry
 with `timestamp`, `agent_or_actor`, `event_type`, and `status`.
 Failures MUST also be logged, with `status: "failed"` and an error
 string. `writeAgentBlock()` appends the success entry and
@@ -68,15 +52,15 @@ whether superseded blocks appear, whether prose is included, and the
 approximate token budget the producer targets when constructing the
 context payload.
 
-The five normative profiles are:
+The five profiles are:
 
 | Profile | Audience | Includes | Notes |
 |---|---|---|---|
-| `summary` | Chat agents, orchestration heuristics | Frontmatter slim subset, `pipeline_state`, `quick_metrics`, `gaps` head | Soft target ≤ 600 tokens (chars/4 estimate). |
+| `summary` | Chat agents, orchestration heuristics | Frontmatter slim subset (including `status` and `deal_stage`), `quick_metrics`, `gaps` head | Soft target ≤ 600 tokens (chars/4 estimate). |
 | `live` | Calc-aware editors | All non-superseded sections, full prose | Default for human-facing tools. |
 | `compact` | LLMs at scale | All non-superseded sections, JSON only, minified, ordered stable→volatile | Targets ≤ 55% of `live` token count on the canonical Parkview fixture. `_meta` stripped by default. |
 | `full` | Archival / forensic | Every byte, prose included, no compaction | Round-trips the input file byte-for-byte when no truncation. |
-| `relevant` | Custom Bancroft layers | Caller-supplied section list, `live`-style payload | Used by `consumed_profile: 'relevant'` layers; the host passes the layer's `reads` as the section filter. |
+| `relevant` | Callers that need a subset | Caller-supplied section list, `live`-style payload | The caller passes the sections to include. |
 
 A producer that satisfies a request for profile `X` MUST NOT return
 a context strictly larger than `X` allows; it MAY return a smaller
@@ -112,26 +96,3 @@ Sections not on this list trail the canonical prefix in
 Token estimates use the `chars/4` approximation; producers MUST
 document the approximation and SHOULD validate periodically against
 the true tokenizer cost (typical drift ±5% on `.uwx.md` content).
-
-### IX.8 Layer-declared profile consumption
-
-Each Bancroft layer declares a `consumed_profile` field in
-`BANCROFT_LAYERS`. A host MUST request that profile (and only that
-profile) when preparing the layer's input context. The starter
-`consumer-profile-contract` check verifies the declaration.
-
-For canonical v1 layers the declared profiles are:
-
-| Layer | `consumed_profile` |
-|---|---|
-| L0 — Document Ingestion | `summary` |
-| L1 — Screening | `summary` |
-| L2 — Underwriting | `relevant` |
-| L4 — Structuring | `relevant` |
-| L5 — Compliance | `relevant` |
-| L6 — Risk Rating | `relevant` |
-| L7 — Assembly | `live` |
-
-Module-contributed layers MUST declare `consumed_profile`. A module
-layer that consumes `full` or that declines to declare a profile is
-non-conformant.

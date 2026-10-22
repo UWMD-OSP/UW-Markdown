@@ -27,7 +27,10 @@ here.
   under RFC 0078, with its section numbers and headings kept. The Protocol
   keeps a stub at each old heading that links here, so existing references
   still resolve. The only edits are relative links re-based to this
-  directory.
+  directory. The CLI and renderer references hold Format Parts VI and VII,
+  moved the same way under RFC 0112, which removed the layer vocabulary
+  they and the AI host page carried; the Format keeps a pointer at each
+  old Part.
 - **Versioned with the packages.** Starter products change with their
   package versions only. There is no starter-guide version, and a change
   here does not move the Protocol version (RFC 0078 D13).
@@ -38,8 +41,7 @@ here.
   tool needs only `@uwmd/core`, and a verifier needs only `@uwmd/verify`.
 - **Still tested.** Starter checks remain blocking CI checks, owned by this
   guide and tagged `starter-products` in the [runtime corpus index](../../conformance/corpus-index.json).
-  `starter/editor/`, the `starter/agent/` layer-profile check,
-  refinement, rendering, defaults/cascade and other product assertions carry
+  `starter/editor/`, refinement, rendering, defaults/cascade and other product assertions carry
   no Protocol conformance claim. Run `npm run conformance -- --starter-products`
   after building. Reports keep these outcomes separate from Reader, Verifier
   and profile claims.
@@ -53,8 +55,10 @@ here.
 | Former §II.2 Tier 2 — Editor, §V.1 Round-trip preservation, §V.5 Multi-variant edits, §V.6 Frontmatter update rules | [Editing](editing.md) | D3 |
 | §V.7 Fallback cascade (with §V.7.1), §V.8 Asset-class default tables | [Defaults and the fallback cascade](defaults-and-cascade.md) | D4 |
 | §VIII.2b Stated period inputs in refinement, §VIII.2c Contextual workbook bindings | [Refinement and workbook bindings](refinement-and-workbooks.md) | D4, D6 |
-| §IX AI Host Contract (layer registry, context, writers; the toolkit hosts no agents) | [AI agent host](ai-host.md) | D3 |
+| §IX AI Host Contract (context profiles and writers; the toolkit hosts no agents, and RFC 0112 removed the layer registry) | [Agent writers and context profiles](ai-host.md) | D3 |
 | §XIV Capability tokens | [Capability tokens](capability-tokens.md) | D10 |
+| Format Part VI Toolchain Interface (without `uwmd run`) | [CLI reference](cli.md) | RFC 0112 D6 |
+| Format Part VII Rendering Targets | [Renderer reference](rendering.md) | RFC 0112 D6 |
 
 ## What stayed in the Protocol
 

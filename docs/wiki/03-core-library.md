@@ -28,8 +28,8 @@ else in the repo depends on one or both:
   has no peers. Versions independently from 0.1.0.
 - **`packages/uwmd-core` — `@uwmd/core`**, the starter toolkit on top: editor,
   runner, renderer, report, defaults and cascade, refinement, display
-  formatting, the Excel emitter, the Bancroft layer registry with its context
-  builders, and the CLI. It depends on `@uwmd/verify` at an exact version and
+  formatting, the Excel emitter, the context profiles and generic writers,
+  and the CLI. It depends on `@uwmd/verify` at an exact version and
   **re-exports its whole surface**, so consumers use the current standard
   surface through either package. Core hosts no agents and takes no vendor
   SDK: a host that runs its own agents writes their records through
@@ -104,8 +104,7 @@ Module | Package | Responsibility | Key exports
 `starter-protocol.ts` | core | Starter-product protocol tables (RFC 0083) | `DEFAULT_NUMBER_FORMAT`, `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`, `CapabilityVerifier`, …
 `types.ts` | verify | Format type definitions | `UWBlock`, `UWMeta`, `UWFrontmatter`, `ParsedUWFile`, `DEFAULT_THRESHOLDS`, …
 `format.ts` | core | Field-level display formatters | `formatCurrency`, `formatPercent`, `formatRatio`, `formatCount`, `formatDate`, `formatValue`, …
-`context.ts` | core | Bancroft layer registry + agent context and prompt builders (no execution) | `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`, `getLayerDependencies`, `isContextReady`
-`context-profiles.ts` | core | Normative context payloads (Protocol §XI) | `buildContext` (+ `ContextProfile`)
+`context-profiles.ts` | core | Starter context payloads (starter guide §IX.7) | `buildContext` (+ `ContextProfile`)
 `cascade.ts` | core | Fallback-cascade value resolver | `resolveValue`, `readInFile` (browser-exported)
 `section-resolution.ts` | verify | One block per section-rooted read (§VIII.2, RFC 0066) | `resolveSectionBlock` (browser-exported)
 `defaults.ts` | core | Asset-class default tables | `MULTIFAMILY_DEFAULTS`, `SELF_STORAGE_DEFAULTS`, `getAssetClassDefaults`, `getDefaultRange`, `listDefaultedFields`
@@ -129,7 +128,6 @@ Module | Package | Responsibility | Key exports
 `metric-dictionary.ts` | verify | `spec/metrics/builtin.json` as package data (generated) | `BUILTIN_METRIC_DICTIONARY` (internal)
 `builtin-packs/` | verify | The twelve builtin pack manifests and their registry | see [05 — Calc packs](05-calc-packs.md)
 `packs/` | core | Re-exports the builtin packs + Excel emit | see [05 — Calc packs](05-calc-packs.md)
-`agents/L0b-prompt.md` | core | The L0b layer's prompt text (no code; the toolkit hosts no agents) | see [06 — Bancroft layers](06-bancroft-agents.md)
 
 ## parser.ts
 
@@ -220,8 +218,8 @@ returning empty content. Use `report.ts` (HTML) plus `@uwmd/report` for PDF.
 
 ## report.ts (starter report renderer)
 
-`renderReportHtml(parsed, opts?) → ReportResult` implements the spec's rendering
-targets **§7.1 Lender Package** (tier `screener`, 10 sections from cover page to
+`renderReportHtml(parsed, opts?) → ReportResult` implements the starter
+[renderer reference](../starter/rendering.md) **§7.1 Lender Package** (tier `screener`, 10 sections from cover page to
 assumptions/disclosures) and **§7.2 Credit Memo** (tier `analyst`, adds market
 analysis, financial analysis with stress matrix, due diligence, risk, compliance,
 covenants, appendix). Output is a single self-contained HTML document with
@@ -565,7 +563,7 @@ tables every conforming tool references:
   `validator.ts` and the registry is derived from them at module init, so
   the two views cannot disagree.
 - Calc contract: `CalcEvaluationContext`, `CalcResult`, `ModuleCalcDecl`.
-- Modules: `ModuleManifest` mirrors `module-manifest.schema.json`: `ModuleConformanceRequirements` (`requires_conformance` plus optional `requires_profiles`) and the section/calc/validation/agent-layer declarations;
+- Modules: `ModuleManifest` mirrors `module-manifest.schema.json`: `ModuleConformanceRequirements` (`requires_conformance` plus optional `requires_profiles`) and the section/calc/validation/view-model declarations;
   `modules.ts` validates and registers declarative v1 manifests.
 - Errors: `ProtocolError`, `ProtocolErrorCategory`.
 - Remediations: `IssueRemediation`, `BUILTIN_REMEDIATIONS` (CC/DQ/INT/POL/FV copy).
@@ -587,8 +585,9 @@ and profile vocabularies stay in `protocol.ts`.
 > For modules that lockstep is now **checked**, not merely requested. Core
 > cannot carry a JSON Schema validator — the layering invariant admits no
 > such dependency — so `modules.ts` re-implements the schema by hand, and a
-> hand-written mirror drifts. It had: `sections`, `view_models`, and
-> `agent_layers` were declared in the schema and validated nowhere, unknown keys
+> hand-written mirror drifts. It had: `sections`, `view_models`, and agent
+> layer declarations (removed by RFC 0112) were declared in the schema and
+> validated nowhere, unknown keys
 > were accepted at every level, and the schema's `deal_stages` enum had gone
 > stale in the other direction by omitting `scope`. The `modules` conformance
 > suite now runs every fixture through both ajv and the loader and fails if the
@@ -654,7 +653,6 @@ Parser bug | `parser.ts` + `parser.test.ts`
 New validator check | `validator.ts` (register copy in `BUILTIN_REMEDIATIONS`)
 New calc builtin | `calc/builtins.ts` + `calc.test.ts`, then `packs/excel-emit.ts`
 New derived metric | the relevant file in `builtin-packs/` (one place, all tools pick it up), after its `spec/metrics/` entry
-New agent layer | `context.ts` (`BANCROFT_LAYERS`)
 New edit semantics | `editor.ts` + `protocol.ts` (`EditOperation`/policy)
 New display formatter | `format.ts` + the relevant `BUILTIN_VIEW_MODELS` entry
 

@@ -34,14 +34,13 @@ Command | Purpose
 `export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
 `formats` | List Lite, UWX, and registered model representations/media types (`--json`)
 `convert <file> --to <format>` | Convert `.uw.md`, `.uwx.md`, verified model formats, or CSV bundles to `lite`, `uwx`, `uw-json`, `uw-xml`, or `uw-csv-bundle`
-`report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML (`--tier`, `--prepared-by`, `--output`, `--stdout`)
+`report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML ([renderer reference](../starter/rendering.md); `--tier`, `--prepared-by`, `--output`, `--stdout`)
 `scope <file>` | Resolve every required input via the fallback cascade (triage view)
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
 `receipt issue <file>` | Issue a detached verification receipt (`--output`, `--issued-at`, `--stdout`)
 `receipt verify <file> <receipt.json>` | Verify a receipt (`--json`; exits 0 verified, 1 failed, 3 unverifiable)
 `compose <file> --externalize <s>` | Split a collection section into `.uwpart.md` fragments (`--collection-key`, `--collection-path`, `--out-dir`, `--in-place`, `--dry-run`)
 `resolve <file>` | Reassemble externalized sections from a parts directory (`--parts`, `--output`, `--json`; exits 1 unresolved)
-`layers` | List the Bancroft layer registry (the CLI runs no agent)
 
 Chat rendering labels each annual DCF row with its stated `year`, preserving
 source order, duplicate years and sparse years. An absent year displays `n/a`;

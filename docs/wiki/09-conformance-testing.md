@@ -104,9 +104,10 @@ belong to [docs/starter](../starter/README.md), remain in CI and have separate
 report counts. Mixed cases keep all their assertions and are product checks.
 
 RFC 0081 Phase 5 renames the corpus to `documents/`, `calc/` and
-`starter/{editor,refinement,agent}/`. Suites use the same content names
-(`starter-editor`, `starter-refinement` and `starter-agent-profile` for
-starter checks).
+`starter/{editor,refinement}/`. Suites use the same content names
+(`starter-editor` and `starter-refinement` for starter checks); RFC 0112
+removed `starter/agent/` and its `starter-agent-profile` check with the layer
+registry.
 Portable ids and filenames use `<owner>__<suite>__<scenario>__<operation>`;
 malformed document scenarios start with `malformed-`. The reserve
 `bare-block` cases keep their existing checks. No old path or id is accepted.
@@ -123,8 +124,10 @@ fixture stays **187/0/0**. Later RFCs added cases. Removing agent execution
 from the toolkit retired the four starter checks that needed an agent run or a
 model provider (`starter-agent/l0a-scope-deterministic`,
 `starter-agent/l6-risk-rating` and
-`starter-agent-replay/l6-risk-rating/{sections,document}`); the layer-profile
-contract stays. The index now holds **1,226** reference checks and **397**
+`starter-agent-replay/l6-risk-rating/{sections,document}`). RFC 0112 retired
+the layer-profile contract check (`starter-agent-profile/consumer-profile-contract`)
+and module fixture `reject/02-agent-layer-malformed` with its schema-parity
+twin, and added `reject/20-agent-layers-unknown-member` with its twin. The index now holds **1,226** reference checks and **397**
 portable CLI projections:
 
 | Owner | Reference | Portable |
@@ -235,13 +238,11 @@ unit?, error?}` against `expected-result.json`. Plus a **refinement** mode
 (`conformance/starter/refinement/<scenario>/`): `deal.uw.md` → `extractDependencyGraph` → compare the
 projected `{outputs, inputs, formulas}` graph against `expected-graph.json`.
 
-### Layer-profile starter check
+### Agent output
 
-`conformance/starter/agent/profile/<scenario>/expected-layer-profiles.json`
-asserts the `layer → consumed_profile` map from `BANCROFT_LAYERS` matches the
-baseline. It needs no model and no agent run. The toolkit hosts no agents, so
-there are no shape or replay checks of agent output; a host that runs its own
-agents tests its own writes.
+The toolkit hosts no agents, so there are no shape or replay checks of agent
+output; a host that runs its own agents tests its own writes. RFC 0112 retired
+the layer-profile check with the layer registry it read.
 
 ### UW Lite — representation + bridge
 

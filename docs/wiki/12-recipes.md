@@ -62,14 +62,6 @@ scaffold is in [05 — Calc packs › new asset-class pack](05-calc-packs.md). A
 third-party class is a module ([playbook](../playbooks/THIRD_PARTY_MODULE.md)).
 RFC: **yes**.
 
-## Add a Bancroft agent layer
-
-See [06 — Bancroft layers › add a new agent layer](06-bancroft-agents.md).
-Touches `context.ts` (`BANCROFT_LAYERS`, `REQUIRED_BY_LAYER`,
-`getLayerDependencies`, `getLayerDescription`, `getOutputSchemaDescription`),
-`types.ts` (`UWPipelineState`) and the layer-profile starter check. RFC: yes if
-it changes the §IX agent-host contract.
-
 A new case needs an owner row in
 [`conformance/corpus-index.json`](../../conformance/corpus-index.json)
 (Reader, Verifier, one profile, or starter products; see
@@ -122,17 +114,16 @@ attributed edit or through the generic writer:
 
 ```bash
 npm run build
-npm run cli -- layers    # the layer registry: reads and writes per layer
-npm run cli -- edit deal.uwx.md op.json --source agent/L6 --agent-id L6 --agent-version 1.0.0
+npm run cli -- edit deal.uwx.md op.json --source agent/risk-rater --agent-id risk-rater --agent-version 1.0.0
 ```
 
 ```ts
-import { parseUWFile, buildAgentContext, buildMeta, writeAgentBlock } from '@uwmd/core';
+import { parseUWFile, buildContext, buildMeta, writeAgentBlock } from '@uwmd/core';
 const parsed = parseUWFile(source);
-const ctx = buildAgentContext(parsed, 'L6'); // what the layer reads, and whether it is ready
-// ... the host calls its own model with ctx.chatContext ...
-const _meta = buildMeta('risk_assessment', 1, { source: 'agent/L6', agentId: 'L6', confidence: 'medium' });
-const { content } = writeAgentBlock(source, parsed, { sectionId: 'risk_assessment', content: { _meta, ...sectionData } }, { agentId: 'L6' });
+const ctx = buildContext(parsed, 'relevant', { sections: ['noi_model', 'debt_structure', 'valuation'] });
+// ... the host calls its own model with ctx.content ...
+const _meta = buildMeta('risk_assessment', 1, { source: 'agent/risk-rater', agentId: 'risk-rater', confidence: 'medium' });
+const { content } = writeAgentBlock(source, parsed, { sectionId: 'risk_assessment', content: { _meta, ...sectionData } }, { agentId: 'risk-rater' });
 ```
 
 ## Scaffold, validate, and inspect a deal
