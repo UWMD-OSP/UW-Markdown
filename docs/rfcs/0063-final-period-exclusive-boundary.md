@@ -4,7 +4,7 @@ title: Admit disposition at the final calendar period's exclusive boundary
 status: implemented
 accepted: 2026-09-24
 implemented: 2026-10-02
-author: codex
+author: UWMD maintainers
 created: 2026-09-24
 affects:
   - protocol-spec
@@ -25,14 +25,8 @@ quarterly cadences. The absent/default rule remains `within_final_period`.
 Every cash date still lies inside the closed acquisition/disposition interval;
 there is no post-sale settlement horizon, new operating period or proration.
 
-**Implemented; released in 2.14.0.** Jared accepted this RFC's final text at
-`f04b34ab5606264424bddc02b09ced256a09bbcc` on 2026-09-24 and authorized
-implementation. The capability shipped in core/CLI **2.14.0**, published from
-the `v2.14.0` tag on 2026-10-02. The preceding [design review](../reviews/2026-09-24-terminal-boundary-design.md)
-was integrated in canonical `main` at `22d993b5c5d6d3710a60af1ab9e5e0cf987cdda4`.
-The implementation integrated on canonical `main` at `413a645` is Protocol
-**2.18.0**, including the RFC 0062 errata selected as 2.17.1. Format is
-unchanged; the 2.14.0 package generation was merged to `main` by PR #218.
+**Implemented; released in 2.14.0** with Protocol **2.18.0**. See
+[Resolution](#resolution).
 
 ## Motivation
 
@@ -41,8 +35,9 @@ the last source period. That intentional rule rejects a sale on the first day
 following a complete final calendar period, even when every selected cash item
 settles on or before the economic sale date.
 
-The [completed-corpus review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
-and subsequent design review document multiple private monthly workflows with
+A private validation corpus and the subsequent
+[design review](../reviews/2026-09-24-terminal-boundary-design.md) document
+multiple private monthly workflows with
 this boundary convention. No reviewed investment stream demonstrates cash after
 economic disposition. Their successful stated-series metrics and projections
 do not establish complete model or assembly parity. One workflow also fails an
@@ -125,13 +120,13 @@ and code organization are implementation details:
    and two-digit month/day padding. Use calendar integers, with no local time,
    timezone, elapsed-day approximation or financial day-count calculation.
 
-The public Golden Deal review directly demonstrates the monthly boundary
+The validation evidence directly demonstrates the monthly boundary
 case only. RFC 0045 already accepts monthly and quarterly source schedules;
 both use canonical calendar-period identities and have a deterministically
 derivable exclusive upper boundary. The same period-start-plus-cadence rule
 therefore covers both, with no different financial arithmetic or economic
 assumption. Quarterly inclusion is an architectural generalization to an
-already-supported cadence, not a claim that a Golden Deal demonstrated a
+already-supported cadence, not a claim that the validation evidence demonstrated a
 quarterly boundary case. Inspection found no semantic difference relevant to
 this admission rule beyond calendar arithmetic.
 
@@ -244,7 +239,7 @@ and unchanged; no new economic verification claim is made.
 ### 6. Reserve, financing, arithmetic and row identity
 
 Every existing reserve assertion remains required and literal `true`. Timing
-admission MUST NOT cure any reserve refusal: a Golden Deal that fails
+admission MUST NOT cure any reserve refusal: a workflow that fails
 `reserve_spending_excluded` or another existing reserve assertion still fails.
 This RFC adds no reserve roll-forward model for opening balance, contributions,
 funded draws, internal reserve spending, reconciliation or ending balance, and
@@ -326,9 +321,7 @@ No numeric-index expression syntax or other calc-grammar change is authorized.
   expands what an explicit opt-in assembly plan may legally request. With no
   intervening protocol change, the implementation prepares **2.18.0** after
   the unreleased **2.17.1** RFC 0062 normative errata. That errata decision and
-  RFC 0062's accepted status are unchanged. Format remains **2.0**, package
-  versions remain unchanged, and RFC 0063 remains accepted until shipped.
-  Package release versions and scheduling require later release planning.
+  RFC 0062's accepted status are unchanged. Format remains **2.0**.
 - **Excel:** This adds no workbook shape, live dated-metric formula or new
   emitter capability. Existing same-day whole-column safeguards and RFC 0034's
   deferred cash-flow metric export remain. No new engine/Excel parity claim.
@@ -374,13 +367,13 @@ acceptance matrix rather than inventing separate semantics.
 | Same-day / evidence | Preserve boundary-day row count, source tie ordering, source bindings/digest, deep-copy snapshots and `declared_complete`. Cash rows produce no PS-02 for equal dates; ambiguous requested date refuses CALC-PERIOD-002; unique date selects; other-series duplicate protections and Excel guard remain. |
 
 There is deliberately no positive post-disposition settlement fixture: such cash
-is still forbidden. Do not reuse proprietary Golden Deal rows as engineering
+is still forbidden. Do not reuse proprietary validation-corpus rows as engineering
 fixtures or claim a reserve-dependent source qualifies merely from timing.
 
 ## Reference implementation
 
-The implementation is integrated on canonical `main` at `413a645` in the
-required spec/schema/type lockstep. It has not shipped. Changed surfaces:
+The implementation landed in the required spec/schema/type lockstep. Changed
+surfaces:
 
 - `spec/UW_PROTOCOL_v1.md`, VIII.9.6 plan shape and date-admission language;
   `packages/uwmd-core/src/protocol.ts`, additive plan member; and
@@ -425,19 +418,32 @@ series containing the same rows.
 
 ## Unresolved questions
 
-No unresolved semantic decision remains for this scope. Jared accepted the
+No unresolved semantic decision remains for this scope. The owner accepted the
 public enum, both cadences, exact boundary, representability limit, unchanged
-cash horizon and compatibility rules at `f04b34a` on 2026-09-24.
+cash horizon and compatibility rules on 2026-09-24.
 
-The implementation shipped in core/CLI 2.14.0, published from the `v2.14.0`
-tag on 2026-10-02; RFC status is `implemented`. Reserve roll-forward, financing, investor tax, speculative
-leasing and actual post-sale settlement remain separate future contracts.
+Reserve roll-forward, financing, investor tax, speculative leasing and actual
+post-sale settlement remain separate future contracts.
+
+## Resolution
+
+- **Status.** Accepted 2026-09-24; implemented and released 2026-10-02 in
+  core/CLI 2.14.0 with Protocol 2.18.0, which also carries the RFC 0062
+  errata selected as 2.17.1. Format is unchanged at 2.0.
+- **Decided.** The contract under [Proposed change](#proposed-change)
+  (§§1–6), with the version treatment in
+  [Compatibility analysis](#compatibility-analysis).
+- **Implementing PRs.** The 2.14.0 package generation merged in
+  [#218](https://github.com/UWMD-OSP/UW-Markdown/pull/218).
+- **Scope boundary.** Reserve roll-forward, financing, investor tax,
+  speculative leasing and actual post-sale settlement remain separate
+  contracts; timing admission does not cure a reserve refusal.
 
 ## Prior art
 
 RFC 0041 supplies absolute period identity; RFC 0044 distinguishes accrual
 periods from explicit cash dates; RFC 0045 supplies the closed hold and evidence
 wrapper. RFC 0052 provides the repository precedent for optional plan members
-whose absence preserves prior behavior. Those existing contracts and the
-public corpus/design reviews are the basis for this proposal; no external
+whose absence preserves prior behavior. Those existing contracts, the private
+validation evidence and the design review are the basis for this proposal; no external
 financial convention or assumption is imported.

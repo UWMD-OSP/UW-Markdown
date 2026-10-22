@@ -2,7 +2,7 @@
 rfc: 0023
 title: Fix a numeric model and a single quantization boundary
 status: implemented
-author: UW Markdown Working Group
+author: UWMD maintainers
 created: 2026-08-14
 affects:
   - protocol-spec

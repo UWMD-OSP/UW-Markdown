@@ -2,7 +2,7 @@
 rfc: 0091
 title: Allocate the two required metadata boolean diagnostics
 status: accepted
-author: codex
+author: UWMD maintainers
 created: 2026-10-17
 affects:
   - format-spec
@@ -14,23 +14,9 @@ affects:
 
 # RFC 0091: Allocate the two required metadata boolean diagnostics
 
-## Acceptance and scope
+## Scope
 
-**Accepted by the owner, 2026-10-17; implementation unreleased.** The owner
-supplied this decision after reviewing the bounded implementation and six
-new-kit declarations:
-
-> Owner decision (2026-10-17): RFC 0091 goes to acceptance. I've reviewed the six review declarations in the authored-2026-10-17 kit and accept them as written.
-
-The owner also required:
-
-The initial integration required exact-head CI and an artifact freeze. The later
-owner rule below retires that prelaunch retention requirement; normal CI remains.
-
-The synchronized implementation is integrated on main; normal
-integration review, exact-final-head CI and subsequent exact-main verification
-remain required. Acceptance allocates no release version and authorizes no tag,
-npm publication or public launch.
+**Accepted by the owner, 2026-10-17.** See [Resolution](#resolution).
 
 Issue #354's nine native partial refusals do not establish nine missing
 allocations. Six cases have accepted owning errors or fail an existing
@@ -204,17 +190,10 @@ or receipt subject is rewritten. The historical research hook used placeholder
 messages and no new registry copy; its frozen observations remain evidence,
 not a regenerated render baseline.
 
-## Activation gates and historical consequences
+## Activation consequences
 
-Final integration requires independent verification of the two predicates,
-full physical/model populations and ordering; run absent/null/every-type and
-container/actor/override/source-boundary controls in both implementations;
-measure the complete applicable native/portable/producer/receipt consumers;
-prepare explicit governed expectations on original sources; synchronize
-Format/Protocol/registry/validators/conformance/documentation; and obtain green
-exact-final-head CI. After merge, verify exact-main CI before treating integration
-as complete. The current schema already requires both
-booleans and must be verified unchanged, not altered for cosmetic lockstep.
+The current schema already requires both booleans and is unchanged, not
+altered for cosmetic lockstep.
 
 Diagnostic-only assessment of the same bytes does not itself change payload,
 Envelope or receipt subject digests. Newly issued receipts may have different
@@ -227,20 +206,10 @@ verification shim is required by the owner's first-public-baseline policy.
 Python discovery stays `capabilities: ["parse"]` until its whole validation gate
 and applicable nonportable obligations are proven. Dictionary/calculation,
 stated-result and receipt capabilities remain separate. This narrow allocation
-does not solve every remaining typed admission obligation. RFC0085/0088/0089
-remain separate drafts. No Format/Protocol/package version is allocated, and no
-UWMD5.0 tag, release preparation or publication is authorized.
+does not solve every remaining typed admission obligation. No
+Format/Protocol/package version is allocated.
 
-## Independently reviewed implementation and owner acceptance
-
-The bounded implementation applies exactly these predicates in TypeScript and
-Python. [The existing review](https://github.com/UWMD-OSP/UW-Markdown/blob/c558a55656562f619154aa21e26ebd383173da13/docs/reviews/2026-10-15-python-reader-354.md#rfc0091-implementation-acceptance-packet)
-records independent review, exhaustive original-source/consumer dispositions,
-actual CLI and receipt boundaries, focused negative controls and exact CI.
-The archive retains before/after observations and original expectation evidence.
-The owner accepted this contract and the authored-kit declarations on2026-10-17.
-The final integration gate applies to the exact final commit, not an earlier
-green checkpoint. No other RFC or release state changes.
+## Diagnostic section attribution
 
 A model-only diagnostic's section follows the existing actor traversal context
 (collection key for keyed collections, block annotation for append entries).
@@ -251,10 +220,10 @@ remain canonical in both operations.
 ## Owner RFC0048 disposition — 2026-10-17
 
 The owner selected option (a): genuinely author new positive examples and retain
-the originals as metadata-incomplete history. The subsequent2026-10-17 decision
-quoted above accepts RFC0091 and the six authored declarations, with final review
-and CI required before merge. It authorizes no release. RFC0048's promise and
-all zero-error positive-validation assertions remain unchanged.
+the originals as metadata-incomplete history. The acceptance quoted in
+[Resolution](#resolution) accepts RFC0091 and the six authored declarations.
+RFC0048's promise and all zero-error positive-validation assertions remain
+unchanged.
 
 The four new records are under `examples/standalone/authored-2026-10-17/` with
 new document/member/package identities, canonical provenance and six explicit
@@ -282,22 +251,31 @@ also exercise the new kit. Separate controls require the old six META-02 errors
 and preserve the complete history inventory. This is not a legacy admission shim.
 
 A bounded downstream-writer inventory distinguishes current public Format3
-serialization from old internal adapters and passthrough. StackUW at audited
-commit fea704ee6a2b4d01057f216880678445347c76fe has an omission-preserving
-reshapeMetaV1toV2 helper in packages/underwriting-engine/src/export/meta-v2.ts,
-but its current default Format3 writer calls toFormat3Meta, which emits both
-required booleans. The blanket current-writer omission claim is therefore not
-verified at that head. Typed fresh outputs avoid META02/03; untyped malformed
+serialization from old internal adapters and passthrough. One audited adopter
+writer has an omission-preserving helper that reshapes earlier metadata, but
+its current default Format3 writer emits both required booleans. The blanket
+current-writer omission claim is therefore not verified for that writer. Typed fresh outputs avoid META02/03; untyped malformed
 values or bypassed/externally supplied admitted metadata remain exposed.
 Defaulted booleans do not prove underlying facts or authorization to repair an
 old source. Genuine Format2 refusals and wrapper precedence remain distinct.
 The writer inventory is source/synthetic-probe evidence, not deployed-service
-certification; no StackUW code is modified by this RFC.
+certification; no adopter code is modified by this RFC.
 
-## Subsequent owner release rule — 2026-10-17
+## Resolution
 
-The owner's later rule supersedes this RFC's prelaunch compatibility,
-artifact-retention, migration-note and version-recommendation obligations.
+Accepted by the owner, 2026-10-17, after review of the bounded implementation
+and the six new-kit declarations:
+
+> Owner decision (2026-10-17): RFC 0091 goes to acceptance. I've reviewed the six review declarations in the authored-2026-10-17 kit and accept them as written.
+
+The decisions are D1–D6 above. The implementation applies exactly these
+predicates in TypeScript and Python
+([#378](https://github.com/UWMD-OSP/UW-Markdown/pull/378)); no release version
+is allocated by this RFC.
+
+**Subsequent owner release rule, 2026-10-17.** The owner's later rule
+supersedes this RFC's prelaunch compatibility, artifact-retention,
+migration-note and version-recommendation obligations.
 Every @uwmd npm package launches together at5.0.0; prelaunch releases use4.x.x
 from main as needed. There is no prelaunch backward compatibility or document,
 signature, receipt or historical-artifact preservation/repair work. The former

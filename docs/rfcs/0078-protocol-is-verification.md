@@ -4,7 +4,7 @@ title: 'The protocol is verification: separate the standard from the starter pro
 status: implemented
 accepted: 2026-10-10
 implemented: 2026-10-11
-author: claude-code (agent proposal, from owner direction 2026-10-10)
+author: UWMD maintainers
 created: 2026-10-10
 affects:
   - protocol-spec
@@ -18,14 +18,9 @@ affects:
 
 **Legacy tier readings superseded by [RFC 0081](0081-one-format-one-protocol.md).** The "during 3.x" readability of the Protocol 2.x tier names, D12's file-name deferral and the Phase 3 legacy-id bookkeeping are removed in Protocol 4.0.0. The two-layer design stands.
 
-**Accepted 2026-10-10.** A coding agent wrote this RFC from the owner's
-direction of 2026-10-10 (D1–D13). It is a breaking change to the Protocol's
-conformance model (Protocol 3.0.0), so it landed as a draft first; the owner
-accepted it in session the same day ("accept"), and merging PR #298 records
-that. Implementation follows in the phases under Reference implementation,
-each its own PR. **Implemented; released and independently verified.** The
-`v3.0.0` release published Protocol 3.0.0 as Stable with core/CLI 3.0.0 (see
-[Publication and verification](#publication-and-verification-2026-10-11)).
+**Implemented; released in 3.0.0** (Protocol 3.0.0). Written from the
+owner's direction of 2026-10-10 (D1–D13). Drafted with AI assistance;
+reviewed by maintainers. See [Resolution](#resolution).
 
 ## Summary
 
@@ -49,8 +44,9 @@ This RFC inverts that. The **standard** is the format, the verification
 protocol, receipts, the module system, and a new normative, machine-readable
 **metric dictionary** that defines every metric. The starter products become
 non-normative reference tools built on the standard. The test for the
-boundary: *if Argus, an Excel model or StackUW exported a `.uw.md`, a lender
-could verify it using only the standard, with none of our tools.*
+boundary: *if Argus, an Excel model or another vendor's tool exported a
+`.uw.md`, a lender could verify it using only the standard, with none of our
+tools.*
 
 ## Motivation
 
@@ -201,7 +197,7 @@ reopened backlog items from the audit.
     profile.
   - *Tier-2 Editor* and *Tier-4 Agent Host* claims become starter-product
     compatibility claims, outside the Protocol.
-  - StackUW is the only known external claimant.
+  - One adopter is the only known external claimant.
 - **`ImplementationManifest`.** The `tier` enum changes to `reader` /
   `verifier` with a `profiles` list. During 3.x the four old values stay
   readable and are mapped with a deprecation warning: tier-1 → reader,
@@ -256,91 +252,10 @@ In phases, each its own PR once this RFC is accepted:
    - Wiki 04/05/10/11 and docs site (Standard vs Tools navigation).
 5. **Release.** Protocol 3.0.0 with the next core release. Release
    preparation pairs Protocol 3.0.0 with core/CLI 3.0.0 and Format 2.1
-   (RFC 0080). Released in 3.0.0; publication was independently verified
-   before this RFC moved to `implemented`.
+   (RFC 0080). Released in 3.0.0.
 6. **Follow-up RFCs:** `@uwmd/verify` package split (D8); asset classes as
    full builtins (principle 1, including data center and manufactured
    housing); levered and after-tax definitions (D7).
-
-### Phase 2 implementation decisions
-
-The [metric dictionary](../../spec/metrics/README.md) extracts the existing
-builtin calculations and primary-size selectors. The [lender fixture](../../conformance/metrics/README.md)
-records current example findings independently of the starter packs.
-
-| Question | Decision | Why (precedent) |
-|---|---|---|
-| Shared metric ids | Preserve one class-scoped entry per existing pack declaration; do not reconcile formulas, paths or labels. | RFC 0078 D1–D3; extraction of all ten builtin packs, including mixed-use components. |
-| Pack drift | Keep existing TypeScript declarations and Excel bindings; require exact bidirectional parity with the normative dictionary. | Existing pack/Excel parity and the approved Phase 2 test alternative; preserves runtime behavior. |
-| Effective precision and nulls | State current unit-derived `round_to` explicitly; use existing expression null/refusal semantics, including lazy cash-on-cash selection. | Protocol §VIII.1, §VIII.2, §VIII.5 and RFC 0066; no new tolerance or fallback. |
-| Size quantities | Use selector entries with `round_to: null`, raw finite-number semantics and existing secondary-path metadata. | RFC 0027 and `resolveDealSize()` select raw stated quantities without quantizing or inferring a denominator. |
-| Example statement addresses | Keep canonical current output fields and explicit existing field aliases in a fixture-only binding map; include Lite anchors and size selectors. | Existing example representations and the Lite bridge's stated-input section mapping; no new normative alias contract or financial defaults. |
-| Example disagreements | Freeze per-statement evidence and per-example counts as findings; preserve the examples and metric definitions. | RFC 0078 D1–D3; the approved lender-with-only-the-standard fixture reports failures rather than silently correcting them. |
-| Versioning | Add the dictionary contract without changing Format or `PROTOCOL_VERSION`; release preparation remains separate. | RFC 0078 Phase 2 scope and semver per surface. |
-
-### Phase 3 implementation decisions
-
-The [runtime corpus index](../../conformance/corpus-index.json) tags every
-reference case. The portable cases retain `legacy_id` for exact migration
-reconciliation. The baseline is 1,053 default plus three opt-in reference
-checks, and 332 portable projections; after tagging there are 1,056 and
-332 respectively, with no changed fixture, assertion or expected output.
-Review added five validate-only Verifier checks (marked `added` in the index),
-so the reference total is 1,056 existing + 5 new = 1,061. Owners after review:
-
-| Owner | Reference | Portable |
-|---|---:|---:|
-| reader | 23 | 16 |
-| verifier | 679 | 280 |
-| module | 68 | 1 |
-| integrity | 15 | 0 |
-| representations | 134 | 0 |
-| portfolio | 14 | 0 |
-| sensitivity | 5 | 0 |
-| stochastic | 7 | 0 |
-| starter-products | 116 | 35 |
-| **Total** | **1,061** | **332** |
-
-The lender-only fixture remains **187 verified / 0 failed / 0 unverifiable**.
-
-| Question | Decision | Why (precedent) |
-|---|---|---|
-| Move or tag existing cases? | Tag each reference case exactly once in the runtime corpus index; retain fixture paths and baselines. Generated portable cases carry the same single owner and their legacy id. | §II.6 already makes directory membership non-normative; preserves existing fixture consumers and the approved tagging alternative. |
-| Mixed standard/product assertions? | Keep the entire check as a starter-product check when it also asserts editing, rendering, defaults/cascade, authoring, projection or refinement. Do not remove assertions to claim standard coverage. | D3–D6 and D10–D11; product quality bars stay in CI, separately reported. |
-| Legacy calculation cases? | Exact dictionary reproductions belong to Verifier; custom declarations belong to Module. Existing custom ADR × occupancy (`revpar-basic`) is not a second standard RevPAR definition and stays Module. Superseded in part by the review rows below. | D1–D3, §II.3 Module and Phase 2 extraction/parity; no formula or baseline redesign. |
-| Spec text or reviewer intuition when they differ? (owner, 2026-10-11) | **Spec text wins.** A case testing something §II.2 lists as a Verifier requirement is Verifier-owned. Cases that need expression evaluation keep `requires_capabilities: ["calc-evaluate"]`, so a Verifier that does not claim it skips them rather than failing. | Owner decision on review; §II.2 items 2, 3 and 6 and §II.6a.5 capability skips. |
-| IRR cases (`irr-01`…`05`)? | Verifier. | §II.2 item 3 names the IRR procedure among the stated-figure verifiers. |
-| Dictionary reproductions in suite 3? | Verifier when id, formula and unit equal a `spec/metrics/builtin.json` entry: the nine former Module cases (land usable-land ratio, self-storage economic occupancy, senior-housing care-revenue ratio, student-housing pre-lease rate, and five mixed-use cases). An independent re-scan of all 97 suite-3 calcs found no other exact match. `dscr-from-section` (the dictionary `dscr` formula and unit under the id `implied_dscr`) is Verifier because the formula is what is verified. | §II.2 item 2 and §3: a Verifier reproduces each dictionary definition by any method. |
-| Expression notation (`date-*`, `period-*`, `variant-*`)? | Verifier, `calc-evaluate` required. `date-01`…`48` pin the §VIII.3 `is_calendar_date` built-in; `period-01`…`12` the §VIII.1/§VIII.2a period grammar, including the same-day selection the cash-flow verifier mirrors; `variant-01`…`11` the §VIII.2 resolution of the role-bearing `debt_structure` map that every dictionary `ltv`/`dscr` entry reads through its `section_roles`. Each was checked: none depends on a module manifest or a custom-only construct, so none stays Module. Module keeps manifests, the registry, runtime and custom declarations. | §II.2 item 6 ("wherever it evaluates an expression … the built-in function set") and §2's disposition of §VIII.1–VIII.3 as the dictionary's notation. |
-| No-stack capital-stack pins (`no-stack-single-loan`, `gd05-total-equity`)? | Verifier. They assert the absence of `CS-*` validator codes and dictionary multifamily metrics; no starter behavior. | §II.2 items 1 and 2. |
-| Registered codes inside mixed starter checks? | Keep the mixed checks starter in full and add five new `<scenario> [validate]` Verifier cases for `CUR-01` (`currency/malformed`), `LOC-01` (`locale/unsupported-locale-refuses`), `SRC-01` (`source/04-colon-form-rejected`), `POL-01` and `POL-02` (`tier-1-reader/malformed/06`, `07`). Each reuses its fixture; its baseline is the validator's `overall_status` and `(code, severity)` pairs (plus `provenance` pairs for the POL cases) from unchanged validator output, and the source case's required code must also appear. They are reference-only: §II.6a.1 `validate` takes no policy input and the locale case derives its document, and `portable_legacy_ids` is the frozen migration set. | §III.6a code taxonomy and §V.3 source authority stay normative (§2 disposition); the "mixed checks stay starter" row above. |
-| Lite compilation (`lite [compile-report]`, `lite [uwx]`, `lite/compile/01`…`06`)? | Representations. Lite spec §8 states the conforming compiler's obligations, so the profile exercises both directions (compile and projection). | §II.3 Representations ("read and write the registered representations"); UW_LITE_SPEC_v1 §8. |
-| Package context invariants (`packages/invariant/context-valid`, `context-omits-source-bytes`, `deterministic-encoding`)? | Representations, consistent with their `standalone/package/*` siblings; none asserts starter behavior. `no-member-only-projection` (an RFC 0015 entity-edge projection) stays a starter check. | RFC 0018 §3–§5 package encodings and context boundary; consistency with existing Representations owners. |
-| Fail-closed dispatch and strict aliases? | A runner suite with no index rows, or an indexed suite with no runner, is a coverage error. A numeric legacy short is exactly `/^[1-4]$/`, as in the generated Python readings. The unused `readConformanceTarget` export (unreleased) is removed. | The "Baseline updates and coverage" row; one alias table for both drivers. |
-| Selection and legacy tier aliases? | Verifier includes Reader; profiles and starter products are explicit selectors. Old long names and numeric shorts resolve through readConformanceTier, warn on stderr and infer no profiles. Named fixture families use --suite; old named --tier selectors warn. | §II.2, §II.5 and §II.6a.2; the portable driver consumes the generated helper readings instead of maintaining another mapping. |
-| Default run and old opt-in agent shapes? | Run all 1,056 existing reference checks by default, including the three formerly opt-in shapes, and separate counts by owner. Retain all 332 portable cases with unchanged commands, arguments and expectations. | RFC Conformance impact: starter checks remain in CI; promotion adds coverage to the default without adding or dropping a case. |
-| Unclaimed profiles? | Report their cases unverifiable; retain distinct capability skips. --no-skip rejects an incomplete certification run without calling an unsupported profile a wrong result. | §II.3 requires explicit profile claims and forbids passed/failed numerical judgments for unsupported profiles; RFC 0030 capability skips remain unchanged. |
-| Baseline updates and coverage? | Permit updates only for full runs or complete fixture families (including their child suites); reject target-filtered and partial-family updates. Refuse unknown owners, duplicate results, missing results and portable identities without an indexed owner. | Frozen-baseline precedent (§II.6a.3); filtering a mixed suite must not overwrite an unselected baseline or hide a case. |
-| Versions and product ownership? | Change no version label; starter checks belong to docs/starter and remain blocking CI checks. | D13, Phase 3 scope and the separate release phase. |
-
-### Phase 4 implementation decisions
-
-Project docs only: `AGENTS.md`, the wiki, the docs site and the root
-orientation pages. No spec, schema, `protocol.ts`, conformance or version
-change.
-
-| Question | Decision | Why (precedent) |
-|---|---|---|
-| Renumber the invariants once some become starter-product rules? | No. Keep 1–8 in place and label each rule's layer. | Source comments cite invariants by number (`invariant #4` in `dcf.ts`, `debt.ts`, `rentroll.ts`, `sourcesuses.ts`, `valuation.ts`; RFCs 0024, 0060, 0071). Renumbering would silently repoint them. |
-| Does a starter-product invariant still block a PR? | Yes. Excel parity (4) and byte preservation (3) stay blocking quality bars for the reference tools; another implementation of the standard owes them nothing. | D6 ("a quality bar for the Excel starter product") keeps the bar and only moves its layer; the parity tests stay in CI (Conformance impact: starter suites "still run in CI"). |
-| Invariant 3 (byte preservation) was not named in item 4. Reframe it too? | Yes: "Tier-2" no longer exists, and §V.1 moved to the starter guide. | D3 and the §V disposition row: "byte preservation is an editor guarantee, not a verification requirement". |
-| Do starter-product changes need an RFC? | No RFC and no Protocol version, but tests, a CHANGELOG entry, package semver, and maintainer sign-off on any number (defaults, formulas, rounding). | D4, D13 and §4 Versioning; AGENTS "Never guess at numerics", which applies to every tool. |
-| Is adding a metric to a pack still "usually no RFC"? | No. A new or changed metric definition is a dictionary change and needs an RFC; the wiki 11 table is corrected. | §3: "Adding or changing a definition after that is an RFC, as any normative change is." |
-| Where does the docs site put receipts, which are both a spec and a CLI feature? | The Receipt spec goes under **Standard**; the receipts guide (issuing with the CLI) goes under **Starter products** as "Issuing receipts". | §1 lists `UW_RECEIPT_v1` in the standard; issuing is tool work. |
-| Where do HTTP/MCP bindings and the representation specs go? | **Standard**, in a "Representations and bindings" group. | §1: the representation specs and the optional HTTP/MCP bindings are in the standard, "unchanged in status". |
-| The module system has no page of its own. | Link the Protocol's §VII anchor from the Standard menu rather than adding a new copy target. | §2: §VI, §VII and §X stay normative in the Protocol; no new source page is needed. |
-| Touch conformance tier names, pages or the corpus directory references? | No. Leave the `/conformance/tier-*` sidebar, the prebuild conformance copies, the `--tier` gate text and the corpus paths in `ARCHITECTURE.md` and wiki 09/11 to Phase 3. Drop the one hand-written link into a Tier 4 page so a rename cannot break the site build. | Phase 3 owns corpus re-tiering and the CLI's tier names; separate PRs, one topic each. |
-| AGENTS.md lists invariant 8 as workspace isolation; wiki 10's #8 is descriptive identity. | Left as is and reported. The mismatch predates RFC 0078. | One PR, one topic. |
 
 ## Alternatives considered
 
@@ -366,6 +281,123 @@ stochastic results, capability tokens, display conventions, spec file naming,
 starter-product versioning) were resolved by the owner on 2026-10-10 as
 recommended; see D9–D13.
 
+## Resolution
+
+**Accepted 2026-10-10 (PR #298); implemented 2026-10-11; released in 3.0.0**
+with Protocol 3.0.0 (Stable), Format 2.1 and core/CLI 3.0.0. The decisions
+are D1–D13 under [Owner direction](#owner-direction-2026-10-10). Implementing
+PRs: #300 (spec restructure), #299 (metric dictionary), #304 (corpus
+re-tiering), #303 (project docs) and #305 (release preparation). The
+follow-up RFCs in item 6 were left to their own RFCs. RFC 0081 later removed
+the legacy tier readings and legacy-id bookkeeping noted below.
+
+**Metric dictionary.** The [metric dictionary](../../spec/metrics/README.md)
+is an extraction of the builtin calculations and primary-size selectors with
+no change of meaning (D1–D3):
+
+- one class-scoped entry per existing pack declaration, including mixed-use
+  components; formulas, paths and labels are not reconciled across classes;
+- packs and their Excel bindings stay TypeScript declarations and must equal
+  the dictionary exactly, in both directions;
+- each entry states its current unit-derived `round_to` explicitly and uses
+  the existing expression null/refusal semantics, including lazy cash-on-cash
+  selection, with no new tolerance or fallback (Protocol §VIII.1, §VIII.2,
+  §VIII.5; RFC 0066);
+- size quantities are selector entries with `round_to: null`, raw
+  finite-number semantics and the existing secondary-path metadata (RFC 0027
+  selects raw stated quantities without quantizing or inferring a
+  denominator);
+- the [lender fixture](../../conformance/metrics/README.md) binds example
+  statements through a fixture-only map (canonical output fields, explicit
+  existing field aliases, Lite anchors and size selectors), which creates no
+  normative alias contract; it freezes per-statement disagreements as
+  findings rather than correcting the examples or the definitions;
+- adding the dictionary changed neither Format nor `PROTOCOL_VERSION`.
+
+**Corpus ownership.** The [runtime corpus index](../../conformance/corpus-index.json)
+tags each reference case with exactly one owner; fixture paths, assertions
+and expected outputs were unchanged. Review added five validate-only Verifier
+checks, for 1,061 reference checks and 332 portable cases:
+
+| Owner | Reference | Portable |
+|---|---:|---:|
+| reader | 23 | 16 |
+| verifier | 679 | 280 |
+| module | 68 | 1 |
+| integrity | 15 | 0 |
+| representations | 134 | 0 |
+| portfolio | 14 | 0 |
+| sensitivity | 5 | 0 |
+| stochastic | 7 | 0 |
+| starter-products | 116 | 35 |
+| **Total** | **1,061** | **332** |
+
+The lender-only fixture reported 187 verified / 0 failed / 0 unverifiable.
+The ownership rules:
+
+- **Spec text wins** over reviewer intuition (owner ruling, 2026-10-11): a
+  case testing something §II.2 lists as a Verifier requirement is
+  Verifier-owned. Cases that need expression evaluation keep
+  `requires_capabilities: ["calc-evaluate"]`, so a Verifier that does not
+  claim it skips them rather than failing (§II.6a.5).
+- A check that also asserts editing, rendering, defaults/cascade, authoring,
+  projection or refinement stays a starter-product check in full; assertions
+  are not removed to claim standard coverage (D3–D6, D10–D11).
+- Exact dictionary reproductions (id, formula and unit equal a
+  `spec/metrics/builtin.json` entry) are Verifier. That includes nine former
+  Module cases (land usable-land ratio, self-storage economic occupancy,
+  senior-housing care-revenue ratio, student-housing pre-lease rate and five
+  mixed-use cases) and `dscr-from-section` (the dictionary `dscr` formula and
+  unit under the id `implied_dscr`); an independent re-scan of all 97 suite-3
+  calcs found no other exact match. Custom declarations, manifests, the
+  registry and the runtime are Module; the custom ADR × occupancy
+  `revpar-basic` is not a second standard RevPAR definition and stays Module.
+- IRR cases `irr-01`…`05` are Verifier (§II.2 item 3).
+- Expression-notation cases are Verifier with `calc-evaluate` required:
+  `date-01`…`48` pin the §VIII.3 `is_calendar_date` built-in, `period-01`…`12`
+  the §VIII.1/§VIII.2a period grammar (including the same-day selection the
+  cash-flow verifier mirrors), and `variant-01`…`11` the §VIII.2 resolution of
+  the role-bearing `debt_structure` map that every dictionary `ltv`/`dscr`
+  entry reads through its `section_roles` (§II.2 item 6).
+- The no-stack capital-stack pins (`no-stack-single-loan`,
+  `gd05-total-equity`) are Verifier: they assert the absence of `CS-*` codes
+  and dictionary multifamily metrics.
+- Registered codes inside mixed starter checks are covered by five added
+  `<scenario> [validate]` Verifier cases for `CUR-01`, `LOC-01`, `SRC-01`,
+  `POL-01` and `POL-02`. Each reuses its fixture; its baseline is the
+  validator's `overall_status` and `(code, severity)` pairs (plus
+  `provenance` pairs for the POL cases), and the source case's required code
+  must also appear. They are reference-only (§II.6a.1 `validate` takes no
+  policy input).
+- Lite compilation cases (`lite [compile-report]`, `lite [uwx]`,
+  `lite/compile/01`…`06`) and the package context invariants are
+  Representations (UW_LITE_SPEC_v1 §8; RFC 0018 §3–§5);
+  `no-member-only-projection` stays a starter check.
+- Dispatch fails closed: a runner suite with no index rows, or an indexed
+  suite with no runner, is a coverage error.
+- Verifier selection includes Reader; profiles and starter products are
+  explicit selectors, and named fixture families use `--suite`.
+- The default run executes every reference check, including the three
+  formerly opt-in shapes, and reports counts by owner.
+- Cases of unclaimed profiles report `unverifiable`, distinct from capability
+  skips; `--no-skip` rejects an incomplete certification run without calling
+  an unsupported profile a wrong result (§II.3; RFC 0030).
+- Baseline updates are permitted only for full runs or complete fixture
+  families (including child suites). Unknown owners, duplicate results,
+  missing results and portable identities without an indexed owner are
+  refused (§II.6a.3).
+- Starter checks belong to `docs/starter` and remain blocking CI checks.
+
+**Project docs.** The invariants keep their numbers (source comments and RFCs
+cite them) and each is labelled with its layer. Starter-product invariants
+(3, byte preservation; 4, Excel parity) still block a PR. A starter-product
+change needs no RFC and no Protocol version, but needs tests, a CHANGELOG
+entry, package semver and maintainer sign-off on any number; a new or changed
+metric definition is a dictionary change and needs an RFC (§3). On the docs
+site the Receipt spec, the representation specs and the HTTP/MCP bindings sit
+under **Standard**, issuing receipts with the CLI sits under **Starter
+products**, and the module system links to Protocol §VII.
+
 ## Prior art
 
 - **XBRL.** The specification defines the document format and validation.
@@ -376,19 +408,3 @@ recommended; see D9–D13.
 - **HTML and browsers, JSON Schema and validators.** In both, the spec defines
   what documents mean and how to check them, and any number of independent
   tools implement it.
-
-## Publication and verification (2026-10-11)
-
-Annotated `v3.0.0` targets the release-prepared merge
-`44ab7347a8a3054fc377e19e85f89ad6f1539dea` (PR #305).
-[Release run 38163964522](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38163964522)
-succeeded and published core/CLI 3.0.0, signing 0.2.26, batch 0.8.21, Excel
-0.9.14, report 0.8.26, lake 0.2.10 and both module packages 0.2.0, pairing
-Stable Protocol 3.0.0 with Format 2.1. Independent registry, provenance,
-published-file, delivered-CLI (332/332 portable cases, no skips) and consumer
-checks passed, including the published core's `verifier` tier claim and its
-Reader/Verifier portable split (16/280); see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/3.0.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section above
-remain unchanged. The follow-up RFCs in item 6 remain open.
