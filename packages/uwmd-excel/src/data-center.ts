@@ -38,7 +38,6 @@ const namedInputs: readonly NamedInput[] = [
   {"name": "dc_revenue_interconnection_revenue_annual", "label": "Interconnection Revenue Annual", "source": {"section": "dc_revenue", "path": "interconnection_revenue_annual"}, "format": "currency"},
   {"name": "dc_revenue_services_revenue_annual", "label": "Services Revenue Annual", "source": {"section": "dc_revenue", "path": "services_revenue_annual"}, "format": "currency"},
   {"name": "dc_revenue_market_rent_per_kw_month", "label": "Market Rent Per Kw Month", "source": {"section": "dc_revenue", "path": "market_rent_per_kw_month"}, "format": "currency"},
-  {"name": "quick_purchase_price", "label": "Stated Purchase Price", "source": {"section": "quick_metrics", "path": "purchase_price"}, "format": "currency"},
 
   { name: 'purchase_price',              label: 'Purchase Price',       source: { section: 'valuation',      path: 'purchase_price' },              format: 'currency' },
   { name: 'underwritten_value', label: 'Underwritten Value', source: { section: 'valuation', path: 'underwritten_value' }, format: 'currency' },

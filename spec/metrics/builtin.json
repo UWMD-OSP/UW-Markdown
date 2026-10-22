@@ -2915,9 +2915,9 @@
       "asset_classes": [
         "data_center"
       ],
-      "formula": "quick_metrics.purchase_price / dc_capacity.critical_it_load_kw",
+      "formula": "valuation.purchase_price / dc_capacity.critical_it_load_kw",
       "input_paths": [
-        "quick_metrics.purchase_price",
+        "valuation.purchase_price",
         "dc_capacity.critical_it_load_kw"
       ],
       "unit": "$",

@@ -1,0 +1,8 @@
+{
+  "description": "CC-17 skipped as variant_unresolvable and named by CC-16; no variant is picked (D4). The builtin data_center calculation price_per_commissioned_kw now reads the valuation, so it is refused (MOD-CALC-ERROR), as price_per_kw is.",
+  "expected_calcs": {},
+  "refused_calcs": [
+    "price_per_kw",
+    "price_per_commissioned_kw"
+  ]
+}

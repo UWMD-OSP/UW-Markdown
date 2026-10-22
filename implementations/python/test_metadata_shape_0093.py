@@ -158,7 +158,7 @@ class MetadataShape0093Tests(unittest.TestCase):
                     self.assertEqual(path.read_bytes(), raw)
                     if command == "validate":
                         self.assertEqual(len(report["stage_readiness"]), 7)
-                        self.assertEqual(len(report["coverage"]), 15)
+                        self.assertEqual(len(report["coverage"]), 16)
                         for member, severity in (("errors", "error"), ("warnings", "warning"), ("info", "info")):
                             self.assertEqual(report[member], [i for i in report["issues"] if i["severity"] == severity])
         self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])

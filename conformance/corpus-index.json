@@ -5672,6 +5672,16 @@
       "target": "verifier"
     },
     {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_commissioned_kw-frontmatter-drift-alone-verifies",
+      "target": "verifier"
+    },
+    {
+      "suite": "metrics",
+      "scenario": "statement-home-price_per_commissioned_kw-from-drifted-frontmatter-fails",
+      "target": "verifier"
+    },
+    {
       "suite": "document-signatures",
       "scenario": "01-valid",
       "target": "integrity"
@@ -6244,6 +6254,36 @@
     {
       "suite": "institution-config",
       "scenario": "33-escalation-unregistered-code",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc17-01-prices-agree",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc17-02-frontmatter-101-over",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc17-03-frontmatter-100-over",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc17-04-frontmatter-price-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc17-05-valuation-absent",
+      "target": "verifier"
+    },
+    {
+      "suite": "cross-checks",
+      "scenario": "cc17-06-valuation-unresolved",
       "target": "verifier"
     }
   ]

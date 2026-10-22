@@ -4221,6 +4221,45 @@ async function runSource() {
   }
 }
 
+// ─── §5.3 cross-checks (RFC 0086 CC-17) ──────────────────────────────────────
+//
+// Each case pins three things about one record: its validation projection (the
+// (code, severity) set, `expected.json`, also the portable `validate` case),
+// the coverage of the checks it names (`expected-coverage.json`, a subset, also
+// the portable `coverage` case), and the dictionary metrics it computes or
+// leaves null (`case.json`, reference only). Coverage is what tells a clean
+// evaluated check from one that silently skipped.
+function runCrossChecks() {
+  const base = join(CONFORMANCE_DIR, 'cross-checks');
+  for (const entry of readdirSync(base, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = join(base, entry.name);
+    try {
+      const parsed = parseUWFile(readFileSync(join(dir, 'deal.uwx.md'), 'utf8'));
+      const result = validateUWFile(parsed);
+      const seen = new Map(result.issues.map(i => [`${i.code} ${i.severity}`, { code: i.code, severity: i.severity }]));
+      const projected = { overall_status: result.overall_status, issues: [...seen.values()].sort((a, b) => a.code.localeCompare(b.code) || a.severity.localeCompare(b.severity)), ...dealFlagPairs(result) };
+      const baselinePath = join(dir, 'expected.json');
+      if (UPDATE) writeFileSync(baselinePath, `${JSON.stringify(projected, null, 2)}\n`);
+      else if (!deepEqual(projected, readCase(dir, 'expected.json'))) throw new Error(`Validation projection differs: ${JSON.stringify(projected)}`);
+      const problems = [];
+      for (const [code, want] of Object.entries(readCase(dir, 'expected-coverage.json').coverage)) {
+        const got = result.coverage[code];
+        for (const [member, value] of Object.entries(want)) if (got?.[member] !== value) problems.push(`coverage ${code}.${member}: ${got?.[member]} != ${value}`);
+      }
+      const testCase = readCase(dir, 'case.json');
+      const pack = getPackForAssetClass(parsed.frontmatter.asset_class);
+      const evaluate = id => evaluateCalc(pack.calculations.find(c => c.id === id), { parsed, prior_results: {}, locale: 'en-US' });
+      for (const [id, want] of Object.entries(testCase.expected_calcs ?? {})) {
+        const r = evaluate(id);
+        if (!r.ok || r.value !== want) problems.push(`${id}: ${r.ok ? r.value : r.error?.code} != ${want}`);
+      }
+      for (const id of testCase.refused_calcs ?? []) if (evaluate(id).ok) problems.push(`${id} evaluated; expected a refusal`);
+      if (problems.length) throw new Error(problems.join('; '));
+      record('cross-checks', entry.name, UPDATE ? 'updated' : 'pass', `${result.overall_status}; CC-17 ${result.coverage['CC-17']?.status}`);
+    } catch (error) { record('cross-checks', entry.name, 'fail', error.message); }
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 const dispatch = {
@@ -4304,6 +4343,7 @@ const dispatch = {
   'stochastic': async () => { await runStochastic(); },
   'source': async () => { await runSource(); },
   'scenario': async () => { runScenario(); },
+  'cross-checks': async () => { runCrossChecks(); },
 };
 const dispatchKey = suiteFamily;
 const dispatched = new Set(selected.map(c => dispatchKey(c.suite)));

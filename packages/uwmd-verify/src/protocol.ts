@@ -1751,7 +1751,7 @@ export function validatorCodeFamily(code: string): ValidatorCodeFamily | null {
  */
 export const CROSS_CHECK_RULE_IDS: readonly string[] = Object.freeze([
   'CC-01', 'CC-02', 'CC-03', 'CC-04', 'CC-05', 'CC-06', 'CC-07', 'CC-08',
-  'CC-09', 'CC-10', 'CC-11', 'CC-12', 'CC-13', 'CC-14', 'CC-15',
+  'CC-09', 'CC-10', 'CC-11', 'CC-12', 'CC-13', 'CC-14', 'CC-15', 'CC-17',
 ]);
 
 /**
@@ -2054,6 +2054,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A section a cross-check reads is present as multiple variants and none is named default or base (or the check\'s own preferred variant), so every check that reads it was skipped.',
     remediation: 'Name one variant default (or base) so cross-checks know which block reconciles, or state the section once. The skipped checks are listed in the message and in the validation result\'s coverage record (RFC 0037).',
     spec_ref: '§5.3 CC-16',
+  },
+  {
+    code: 'CC-17', severity: 'error',
+    title: 'Frontmatter purchase price differs from valuation',
+    description: 'frontmatter quick_metrics.purchase_price does not match valuation.purchase_price (within $100). The valuation is the one purchase-price authority; the frontmatter copy is a summary (RFC 0086).',
+    remediation: 'Restate quick_metrics.purchase_price from valuation.purchase_price — the frontmatter summary MUST agree with the valuation it mirrors.',
+    spec_ref: '§5.3 CC-17',
   },
   {
     code: 'RT-01', severity: 'error',

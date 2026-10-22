@@ -49,7 +49,7 @@ class ValidationCLITests(unittest.TestCase):
         self.assertEqual(status,0)
         self.assertEqual(result["overall_status"],"clean")
         self.assertEqual(len(result["stage_readiness"]),7)
-        self.assertEqual(len(result["coverage"]),15)
+        self.assertEqual(len(result["coverage"]),16)
         for name,severity in (("errors","error"),("warnings","warning"),("info","info")):
             self.assertEqual(result[name],[i for i in result["issues"] if i["severity"]==severity])
         self.assertEqual(result["replacement_funding_verification"]["state"],"not_checked")

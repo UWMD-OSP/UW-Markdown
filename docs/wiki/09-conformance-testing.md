@@ -131,13 +131,14 @@ twin, and added `reject/20-agent-layers-unknown-member` with its twin. RFC 0111
 added `receipts/verify/13-rule-set-mismatch`. RFC 0115 re-owned the 13
 pack-based receipt verifications as starter checks, added their 13 pack-less
 Verifier twins (`verify/<id> [pack-less]`) and generated 160 portable Verifier
-cases from existing fixtures. The index now holds **1,249** reference checks and **557**
+cases from existing fixtures. RFC 0086 added the `cross-checks` suite (six
+`CC-17` records) and two `price_per_commissioned_kw` statement-home cases. The index now holds **1,257** reference checks and **571**
 portable CLI projections:
 
 | Owner | Reference | Portable |
 |---|---:|---:|
 | reader | 32 | 17 |
-| verifier | 819 | 488 |
+| verifier | 827 | 502 |
 | module | 76 | 1 |
 | integrity | 32 | 14 |
 | representations | 150 | 0 |
@@ -145,7 +146,7 @@ portable CLI projections:
 | sensitivity | 5 | 0 |
 | stochastic | 7 | 0 |
 | starter-products | 114 | 37 |
-| **Total** | **1,249** | **557** |
+| **Total** | **1,257** | **571** |
 
 A case testing something §II.2 lists as a Verifier requirement is a Verifier
 case, even when it needs an expression evaluator: those keep
@@ -302,11 +303,11 @@ Python, Go, or Rust one would be. Python 3.10+, standard library only — a
 driver that needs a package index is one an air-gapped implementer cannot run.
 
 **It is not the gate, and is not meant to be.** `npm run conformance` still
-runs all 1,249 indexed checks across its suites, and most of what has been added
+runs all 1,257 indexed checks across its suites, and most of what has been added
 since the corpus was four tiers is not "run a command, compare the output":
 receipt re-issuance stability, composition DAG resolution, ZIP packaging,
 signature key stores, invariants asserted with no baseline at all. The portable
-driver checks its 557-case subset using shared comparison logic, while the
+driver checks its 571-case subset using shared comparison logic, while the
 reference runner checks the full indexed corpus. A result claims only the
 checks actually run. Replacing one with the other would
 trade breadth for portability.
@@ -577,6 +578,16 @@ unlisted/retired/malformed values and narrow BTR subtype rules. It runs in the
 default suite and the v2 CLI driver. Code/severity and overall-status expectations
 require zero errors; read-only, stage, coverage and unrelated-finding comparisons
 ensure identity remains descriptive. See its README for the case list.
+
+## Cross-check suite (RFC 0086)
+
+`conformance/cross-checks/` holds one minimal record per case for a Format §5.3
+cross-check, starting with `CC-17` (the frontmatter purchase price against
+`valuation.purchase_price`). Each case pins the `(code, severity)` projection
+(`expected.json`), the coverage of the check it names (`expected-coverage.json`,
+a subset, so an evaluated-and-clean check is told apart from a skipped one) and,
+in the reference runner only, the dictionary metrics it computes, leaves null
+or refuses (`case.json`). The portable driver runs both baselines as two cases.
 
 ## Adding fixtures (quick reference)
 
