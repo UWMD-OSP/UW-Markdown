@@ -10,7 +10,7 @@ hold the system together. Breaking them is grounds for blocking a PR.
 the representation specs and the normative metric dictionary in
 [`spec/metrics/`](../../spec/metrics/README.md)) from **the starter products**
 (the calc engine code and packs, defaults and the cascade, refinement, the
-editor, viewer and report, the Excel exporter, the AI agents, capability tokens
+editor, viewer and report, the Excel exporter, the agent layer registry, capability tokens
 and display conventions, described in [`docs/starter/`](../starter/README.md)).
 
 The invariants below mix both layers, and each says which it belongs to. A
@@ -29,10 +29,10 @@ Module-declared classes are for third parties only.
 ### 1. The deterministic calc boundary — AI never does financial math
 *Project rule for every tool, standard and starter alike.*
 All NOI / DSCR / LTV / cap rate / IRR / DCF / amortization math is computed by the
-deterministic calc engine (`calc/` + `packs/`). AI agents (including the optional Bancroft reference suite) only
-**extract data** (from documents, market knowledge) and **write narrative**. The
-agent system prompt literally instructs Claude: *"Never calculate financial
-figures."* Agents may write an *input* a formula reads (e.g.
+deterministic calc engine (`calc/` + `packs/`). AI agents (run by a host; the
+reference toolkit runs none) only **extract data** (from documents, market
+knowledge) and **write narrative**. The prompt `buildAgentPrompt` builds
+literally instructs the model: *"Never calculate financial figures."* Agents may write an *input* a formula reads (e.g.
 `debt_structure.annual_debt_service`, itself computed deterministically via the
 `pmt` builtin), but the derived metric is always a calc, never an LLM guess.
 - **Why:** auditability and reproducibility. A deal must be re-derivable from its
@@ -48,15 +48,10 @@ figures."* Agents may write an *input* a formula reads (e.g.
   `standard-closure.test.ts` refuses any other import. `@uwmd/core` depends on
   it at an exact version and imports it only through its public entry, never a
   deep path into the package.
-- `@uwmd/core` takes no vendor SDK as a hard dependency. `@anthropic-ai/sdk` is an
-  **optional peer dependency**, reached only through a dynamic import in
-  `agents/providers/anthropic.ts` — so importing `@uwmd/core` never loads it, and
-  a consumer who does not install it gets a typed `AGENT_PROVIDER_SDK_MISSING`
-  on the first provider request rather than a resolution failure at import.
-  **The SDK is also excluded from the `@uwmd/core/browser` entry.** Anything
-  imported by code that must run in a browser (parser, validator, calc, packs)
-  must not transitively pull in the SDK. Web tools import from
-  `@uwmd/core/browser`.
+- `@uwmd/core` takes no vendor SDK as a hard dependency. It hosts no agents
+  and declares no model SDK at all, even as an optional peer. Anything imported
+  by code that must run in a browser (parser, validator, calc, packs) must stay
+  free of Node-only modules. Web tools import from `@uwmd/core/browser`.
 - Tools depend on `@uwmd/core` (or only `@uwmd/verify`, when they only read
   and verify) + their own stack. **Tools never import other tools.**
 - Conformance fixtures depend on nothing (pure data).
@@ -165,7 +160,7 @@ either number; both lists now agree, keeping the older 8.
 ## Common gotchas
 
 - **Browser import boundary:** importing from `@uwmd/core` (not `/browser`) in a
-  web tool drags in the Anthropic SDK and breaks/bloats the bundle.
+  web tool drags in Node-only starter code and breaks/bloats the bundle.
 - **Calc identifier resolution:** a bare section name resolves to the block's
   *inner* user data (`block.content.content`), not the raw envelope. Path segments
   drill from there. (See [04 — Calc engine](04-calc-engine.md).)
@@ -176,5 +171,5 @@ either number; both lists now agree, keeping the older 8.
 - **`--update` rewrites baselines** — only with intent, and review the diff.
 - **`pipeline_log` is always the last section** (§4.18). Don't insert sections
   after it.
-- **Agent `_meta` ownership:** never trust `_meta` returned inside Claude's
-  `section_data`; the runner builds it.
+- **Agent `_meta` ownership:** never trust `_meta` returned inside a model's
+  `section_data`; the host builds it with `buildMeta`.

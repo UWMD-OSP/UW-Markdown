@@ -64,11 +64,11 @@ RFC: **yes**.
 
 ## Add a Bancroft agent layer
 
-See [06 — Bancroft agents › add a new agent layer](06-bancroft-agents.md).
+See [06 — Bancroft layers › add a new agent layer](06-bancroft-agents.md).
 Touches `context.ts` (`BANCROFT_LAYERS`, `REQUIRED_BY_LAYER`,
 `getLayerDependencies`, `getLayerDescription`, `getOutputSchemaDescription`),
-`agents/schemas.ts` (if multi-section), `types.ts` (`UWPipelineState`), the agent
-starter checks. RFC: yes if it changes the §IX agent-host contract.
+`types.ts` (`UWPipelineState`) and the layer-profile starter check. RFC: yes if
+it changes the §IX agent-host contract.
 
 A new case needs an owner row in
 [`conformance/corpus-index.json`](../../conformance/corpus-index.json)
@@ -115,14 +115,24 @@ baselines from current output.
 `InstitutionConfig.thresholds` (`.uw.institution.json`), not code. Bump nothing
 else unless the change is normative.
 
-## Run an agent against a deal (manual / debugging)
+## Write an agent's output into a deal
+
+The toolkit runs no agent. A host runs its own, then writes the result as an
+attributed edit or through the generic writer:
 
 ```bash
 npm run build
-npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uwx.md --agent L6 --context-only
-npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uwx.md --agent L6 --prompt
-# live (needs ANTHROPIC_API_KEY):
-npm run cli -- run examples/Parkview-Apts-Glendale-AZ.uwx.md --agent L6 --live
+npm run cli -- layers    # the layer registry: reads and writes per layer
+npm run cli -- edit deal.uwx.md op.json --source agent/L6 --agent-id L6 --agent-version 1.0.0
+```
+
+```ts
+import { parseUWFile, buildAgentContext, buildMeta, writeAgentBlock } from '@uwmd/core';
+const parsed = parseUWFile(source);
+const ctx = buildAgentContext(parsed, 'L6'); // what the layer reads, and whether it is ready
+// ... the host calls its own model with ctx.chatContext ...
+const _meta = buildMeta('risk_assessment', 1, { source: 'agent/L6', agentId: 'L6', confidence: 'medium' });
+const { content } = writeAgentBlock(source, parsed, { sectionId: 'risk_assessment', content: { _meta, ...sectionData } }, { agentId: 'L6' });
 ```
 
 ## Scaffold, validate, and inspect a deal

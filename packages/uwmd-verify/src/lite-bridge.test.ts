@@ -228,6 +228,23 @@ describe('UWX bridge rendering and Lite projection', () => {
     expect(projection.report.externalized_sections).toEqual([]);
   });
 
+  // Issue #409: land states `going_in_cap_rate: null`. A `null` Lite line has no
+  // unit, so it would not compile under the fraction field; it is omitted and
+  // reported, and the projection compiles back.
+  it('omits a stated null under a unit-bearing field and still compiles back', () => {
+    const result = compileUWLite(parseUWLite(LITE));
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    singleBlock(result.envelope.sections['valuation']).content['going_in_cap_rate'] = null;
+    const projection = projectUWEnvelopeToLite(result.envelope);
+    expect(projection.content).not.toContain('uw:valuation.going_in_cap_rate');
+    expect(projection.report.projected_paths).not.toContain('valuation.going_in_cap_rate');
+    expect(projection.report.omitted_paths).toContain('valuation.going_in_cap_rate');
+    expect(projection.report.lossy).toBe(true);
+    const back = compileUWLite(parseUWLite(projection.content));
+    expect(back.ok).toBe(true);
+  });
+
   // RFC 0021 §3: projection is UWX→Lite only and never resolves fragments, so a
   // section whose rows live in `.uwpart.md` files is invisible to the envelope.
   // Naming it is the only complete account of the loss available.

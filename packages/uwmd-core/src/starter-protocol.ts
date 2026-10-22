@@ -1,8 +1,8 @@
 // Starter-product protocol tables (RFC 0078 D10, D11; RFC 0083).
 //
 // Display conventions, source badges, the builtin view models, the fallback
-// cascade order, the agent host and capability tokens serve the non-normative
-// starter products in docs/starter/, not verification. They were part of
+// cascade order and capability tokens serve the non-normative starter
+// products in docs/starter/, not verification. They were part of
 // `protocol.ts`; they live here so the standard side of the library
 // (`@uwmd/verify`: `protocol.ts` and everything it reaches) never depends on them.
 // `@uwmd/core` exports every name below unchanged from `index.ts` and
@@ -78,17 +78,6 @@ export const CASCADE_ORDER: readonly CascadeStep[] = Object.freeze([
   'global_default',
   'system_default',
 ]);
-
-// ─── Agent host (starter guide §IX; non-normative since RFC 0078) ─────────────
-
-export interface AgentHostCapability {
-  /** Layer ID this host can run (e.g. "L6"). Maps to BANCROFT_LAYERS. */
-  layer_id: string;
-  /** Whether the host runs the layer with a real LLM (vs. dry-run replay). */
-  live: boolean;
-  /** Tool schemas the agent is allowed to call. */
-  tools: ('write_uw_section' | 'write_multiple_sections')[];
-}
 
 // ─── Built-in tables ──────────────────────────────────────────────────────────
 

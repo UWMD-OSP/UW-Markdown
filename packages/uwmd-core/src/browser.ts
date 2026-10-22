@@ -1,15 +1,12 @@
 // uwmd — browser-safe subset of the public API.
 //
-// This entry point excludes everything that pulls in node-only modules or the
-// @anthropic-ai/sdk so it can be bundled directly into a web app (Tier-2 web
-// editor, calc-aware editor, etc.) without polyfills or build-time exclusion
-// rules.
+// This entry point excludes everything that pulls in node-only modules so it
+// can be bundled directly into a web app (Tier-2 web editor, calc-aware editor,
+// etc.) without polyfills or build-time exclusion rules.
 //
 // It re-exports the whole of `@uwmd/verify/browser` (RFC 0083), which has no
 // Node-only export, and adds the browser-safe starter products below. Excluded
-// vs. the main entry: the agents (`runBancroftAgent`, `runBancroftAgentStreaming`,
-// `WRITE_UW_SECTION_TOOL`, `WRITE_MULTIPLE_SECTIONS_TOOL`, `MULTI_SECTION_LAYERS`,
-// the provider seam), `applyEditAsync`, `buildContext`, `CASCADE_ORDER` and
+// vs. the main entry: `applyEditAsync`, `buildContext`, `CASCADE_ORDER` and
 // `REFERENCE_IMPLEMENTATION_MANIFEST`.
 //
 // As in the main entry, `evaluateCalc`, `evaluateModuleCalculations` and
@@ -147,7 +144,6 @@ export type {
   SourceBadge,
   FlagSeverity,
   ViewModelRegistry,
-  AgentHostCapability,
 } from './starter-protocol.js';
 
 export type { SectionDiff } from './compactor.js';
