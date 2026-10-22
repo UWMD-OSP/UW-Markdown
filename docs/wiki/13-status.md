@@ -53,7 +53,9 @@ one public number ("UWMD 5.x") while records keep their Format version,
 result-changing fixes as minor releases, a monthly minor train, standing approval
 for green patch releases, the deprecation window, code reservation and key
 rotation. GOVERNANCE.md starts owner-led and switches to collaborative mode when
-the first outside RFC or PR arrives. The verifier rule-set rule is accepted RFC 0111 (Protocol §XII.5). The lender acceptance kit moves to a post-launch 5.x milestone.
+the first outside RFC or PR arrives. The verifier rule-set rule is accepted
+RFC 0111 (Protocol §XII.5). The lender acceptance kit moves to a post-launch
+5.x milestone.
 
 **Implemented RFC0113 — paid room nights (owner acceptance 2026-10-21).**
 [RFC0113](../rfcs/0113-paid-room-nights.md): `occupied_room_nights` is paid room
