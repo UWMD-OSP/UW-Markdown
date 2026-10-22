@@ -123,7 +123,7 @@ class Metadata0095ValidationTests(unittest.TestCase):
                 self.assertEqual(path.read_bytes(), raw)
             manifest = subprocess.run([sys.executable, "-B", str(ROOT / "implementations/python/uwmd.py"), "manifest"],
                 capture_output=True, encoding="utf8", timeout=30)
-            self.assertEqual(json.loads(manifest.stdout)["capabilities"], ["parse", "calc-evaluate"])
+            self.assertEqual(json.loads(manifest.stdout)["capabilities"], ["parse", "calc-evaluate", "validate"])
 
 
 if __name__ == "__main__":

@@ -3,18 +3,16 @@
 Only the named normative schema fragments are inspected. This is not a general
 JSON Schema library, financial verifier or new registered diagnostic family.
 """
-import json
-from pathlib import Path
 import re
 
 from uwmd_binding_sources import finite
 from uwmd_numeric import calendar_date
+from uwmd_spec_data import schema as spec_schema
 from uwmd_validation_selection import current_blocks
 from uwmd_validation_core import BUILTINS
 from uwmd_validation_lease import _POOL
 from uwmd_validation_payload_admission import payload_findings,same_payload_owner
 
-_SCHEMAS=Path(__file__).resolve().parents[2]/"spec/schemas"
 
 
 _KEYWORDS=frozenset(("$schema","$id","$comment","title","description","examples","default","$defs",
@@ -282,7 +280,7 @@ def optional_shape_assessments(document, *, registered_recovery_shapes=None,
         else:result[family]["shape_findings"].append(evidence)
     def check(block,family,value,filename,pointer="",field=""):
         if filename not in schemas:
-            schemas[filename]=json.loads((_SCHEMAS/filename).read_text(encoding="utf8"))
+            schemas[filename]=spec_schema(filename)
         root=schemas[filename];schema=root
         for member in pointer.split("/") if pointer else ():
             schema=schema[member]
