@@ -702,7 +702,7 @@ not core gaps.
   > verify-packages now covers excel and report too.
   > This cost real time during T16 before it was noticed.
 - **Examples = 9 deals** (multifamily, office, retail, industrial, self-storage,
-  hospitality, senior housing, student housing, land) plus `parkview-after-L6`;
+  hospitality, senior housing, student housing, land) plus `parkview-reviewed`;
   other loan types undemonstrated. All are `.uwx.md` as of RFC 0020 — they were
   structured records on the legacy `.uw.md` extension, which the project's own
   detector flagged on every load. One UW Lite `.uw.md` example now ships
