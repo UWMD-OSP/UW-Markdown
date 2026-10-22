@@ -52,6 +52,8 @@ source_documents:
   - "riverside_appraisal_2026.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Riverside Office Center — Phoenix, AZ
 
 > **Deal ID:** uw_2026_b8c2d4 | **Scenario:** Value-Add Bridge | **Status:** In Progress  
@@ -71,7 +73,7 @@ Riverside is a 42,500 SF Class B suburban office property in north Phoenix at 73
     "section": "deal_context",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-04-25T08:45:00Z",
@@ -109,7 +111,7 @@ Riverside is a 42,500 SF Class B suburban office property in north Phoenix at 73
     "section": "property",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-04-25T08:50:00Z",
@@ -152,7 +154,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-04-25T09:00:00Z",
@@ -312,7 +314,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
     "section": "debt_structure",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-04-25T13:00:00Z",
@@ -418,7 +420,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-04-25T14:00:00Z",
@@ -458,7 +460,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
     "provenance": {
       "source": "system/extractor",
       "resolution": "ai_extracted",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -500,7 +502,7 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -558,7 +560,7 @@ Riverside Office Investors LLC — single-principal sponsorship; figures PFS-sta
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -621,7 +623,7 @@ Midtown Phoenix suburban office fundamentals as of 2026-08.
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
