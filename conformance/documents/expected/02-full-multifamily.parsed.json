@@ -5,7 +5,7 @@
     "deal_name": "Parkview Apartments — Glendale, AZ",
     "created": "2026-04-24T09:00:00Z",
     "last_modified": "2026-04-24T15:42:00Z",
-    "property_address": "1234 W Camelback Rd",
+    "property_address": "1234 W Palisade Wash Rd",
     "city": "Glendale",
     "state": "AZ",
     "zip": "85301",
@@ -154,7 +154,7 @@
       },
       "content": {
         "address": {
-          "street": "1234 W Camelback Rd",
+          "street": "1234 W Palisade Wash Rd",
           "city": "Glendale",
           "state": "AZ",
           "zip": "85301",
@@ -1238,10 +1238,10 @@
           "employment_growth_pct": 0.024,
           "population_growth_pct": 0.019,
           "major_employers": [
-            "Banner Thunderbird Medical Center",
-            "State Farm",
-            "USAA",
-            "Abrazo Health"
+            "Ridgeline Westside Medical Center",
+            "Copperleaf Mutual Insurance",
+            "Lodestar Financial Services",
+            "Bluesage Health"
           ],
           "demand_drivers": [
             "healthcare employment growth",
@@ -1259,7 +1259,7 @@
         },
         "comparable_sales": [
           {
-            "address": "4820 N 67th Ave, Glendale AZ",
+            "address": "4820 N Brittlebush Mesa Ave, Glendale AZ",
             "property_name": "Desert View Apts",
             "sale_date": "2026-01",
             "units_or_sqft": 52,
@@ -1272,7 +1272,7 @@
             "notes": "B-class garden, similar vintage, 94% occupancy at sale"
           },
           {
-            "address": "2250 W Bethany Home Rd, Phoenix AZ",
+            "address": "2250 W Coyote Bend Rd, Phoenix AZ",
             "property_name": "Bethany Gardens",
             "sale_date": "2025-11",
             "units_or_sqft": 64,
@@ -1285,7 +1285,7 @@
             "notes": "Larger but similar quality and vintage"
           },
           {
-            "address": "5540 N 51st Ave, Glendale AZ",
+            "address": "5540 N Tumbleweed Flats Ave, Glendale AZ",
             "property_name": "Westwood Place",
             "sale_date": "2025-08",
             "units_or_sqft": 36,
@@ -1301,7 +1301,7 @@
         "comparable_rentals": [
           {
             "property_name": "Camelback Village Apts",
-            "address": "4200 W Camelback Rd",
+            "address": "4200 W Palisade Wash Rd",
             "units": 60,
             "unit_type": "1BR/1BA",
             "asking_rent_per_unit": 1095,
@@ -1313,7 +1313,7 @@
           },
           {
             "property_name": "Glendale Palms",
-            "address": "6700 N 43rd Ave",
+            "address": "6700 N Desert Lark Ave",
             "units": 80,
             "unit_type": "2BR/2BA",
             "asking_rent_per_unit": 1310,
@@ -2095,7 +2095,7 @@
           "output_hash": null,
           "error_code": null,
           "error_message": null,
-          "notes": "File initialized via uwmd init --scenario stabilized_acquisition --address '1234 W Camelback Rd, Glendale AZ 85301'"
+          "notes": "File initialized via uwmd init --scenario stabilized_acquisition --address '1234 W Palisade Wash Rd, Glendale AZ 85301'"
         },
         {
           "entry_id": "e002",

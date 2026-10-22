@@ -4,7 +4,7 @@ deal_id: TEST-MOD-HOSP-001
 deal_name: "Boutique Hotel Austin"
 created: "2026-08-27T00:00:00Z"
 last_modified: "2026-08-27T00:00:00Z"
-property_address: "1200 South Congress Ave"
+property_address: "1200 South Pecan Hollow Ave"
 city: "Austin"
 state: "TX"
 zip: "78704"
@@ -23,7 +23,7 @@ created_by: "test-fixture"
 
 # Boutique Hotel Austin
 
-An 80-key independent-turned-Autograph property on South Congress. It exists to
+An 80-key independent-turned-Signature property on South Pecan Hollow. It exists to
 exercise the hospitality module end to end, and it is deliberately **not** a
 clean deal: RevPAR runs below the comp set and the flag's total fee burden is
 over 13%, so both warning rules fire and both branches are covered by one file.
@@ -134,7 +134,7 @@ the 13% the module warns at. That is the point of the fixture, not an error in i
     }
   },
   "_notes": null,
-  "flag": "Marriott Autograph Collection",
+  "flag": "Lanternbrook Signature Collection",
   "franchise_fee_pct_of_rooms": 0.06,
   "marketing_fund_pct": 0.03,
   "loyalty_program_pct": 0.05,
