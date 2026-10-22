@@ -12,6 +12,7 @@ from test_reserve_draws import alter
 from uwmd import main
 from uwmd_envelope import EnvelopeError, source_digest
 from uwmd_reader import parse
+from uwmd_validation import validate_document
 from uwmd_replacement_funding import (
     ReplacementFundingError, check_replacement_funding_structure,
     compute_replacement_cash_flow_binding_digest, replacement_funding_report,
@@ -80,7 +81,7 @@ class ReplacementFundingTests(unittest.TestCase):
                 expected = json.loads((fixture.parent / frozen["expect"]["file"]).read_text())
                 self.assertEqual(driver.json_subset(expected, driver.project(adapted, "replacement-funding")), [])
                 self.assertEqual((path.read_bytes(), fixture.read_bytes()), (before, source))
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate"])
         for command in ("validate", "calc"):
             self.assertNotEqual(main([command, "unused"])[1], 0)
 
@@ -251,16 +252,23 @@ class ReplacementFundingTests(unittest.TestCase):
 
     def test_full_selected_cf_source_shape_and_independent_metric_scope(self):
         document=case()
-        for mutate in (lambda p:p["series"][0].update(date="2026-02-30"),
-                lambda p:p["series"][0].update(date="2029-01-01"),
-                lambda p:p["series"][0].update(unknown=1),lambda p:p.update(day_count="invented"),
-                lambda p:p.update(stated_metrics={"xirr":0.1})):
+        # Format §4.26 owns CF findings; HDG-08 owns the binding's own row
+        # contract (closed rows), and metrics are outside it (V.12 step 3).
+        for mutate,cf in ((lambda p:p["series"][0].update(date="2026-02-30"),True),
+                (lambda p:p["series"][0].update(date="2029-01-01"),True),
+                (lambda p:p["series"][0].update(unknown=1),False),
+                (lambda p:p.update(day_count="invented"),True)):
             result=report(alter(document,2,mutate))
             self.assertIn("HDG-08",codes(result))
-            self.assertTrue(any(c.startswith("CF-") for c in codes(result)))
+            self.assertEqual(any(c.startswith("CF-") for c in codes(result)),cf)
             self.assertEqual(result["replacement_funding_verification"]["reason"],"invalid_structure")
-        signs=report(alter(document,2,lambda p:p.update(stated_metrics={"xirr":0.1})))
-        self.assertIn("CF-03",codes(signs))
+        # A stated xirr without a sign change is CF-03 in validation, but a
+        # metric is outside the binding (V.12 step 3), as in the reference.
+        signs=alter(document,2,lambda p:p.update(stated_metrics={"xirr":0.1}))
+        self.assertEqual(codes(report(signs)),[])
+        self.assertEqual(verify(signs)["state"],"verified")
+        validation=asyncio.run(validate_document(signs,now="2026-10-16T00:00:00Z"))
+        self.assertEqual([i["code"] for i in validation["errors"]],["CF-03"])
         good=alter(document,2,lambda p:p.update(stated_metrics={"xnpv":{"rate":0.1,"value":123}}))
         self.assertEqual(verify(good)["state"],"verified")
 

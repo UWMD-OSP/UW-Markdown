@@ -20,15 +20,15 @@ layer-profile check (Format §2.2 `pipeline_state` names its keys after the
 layers, and §6.3 still describes `uwmd run`). The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
-**Python certified — Issue #354 (2026-10-20).** The independent Python
-implementation's manifest claims the Reader tier plus `calc-evaluate`; CI runs the
-portable Verifier-tier corpus on three OSes and allows only the unclaimed
-`validate` cases to skip. `validate` passes the corpus but waits on its
-differences from the reference outside it (#425 review). Not the Verifier tier:
-dictionary reproduction, stated-figure verifiers and receipts are not implemented
-in Python (Protocol §II.2/§II.5). Divergences found
-while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
-(spec-ambiguity, non-portable).
+**Python certified — Issue #354 (2026-10-21).** The independent Python
+implementation's manifest claims the Reader tier plus `parse`, `calc-evaluate`
+and `validate`; CI runs the portable Verifier-tier corpus on three OSes with
+`--no-skip`, so every case, including all 144 validate cases, must pass. The #425
+validate differences are closed, and `UWMD_SPEC_DIR` lets `validate` run outside
+a checkout. Not the Verifier tier: POL-01/02, dictionary reproduction, the
+stated-figure verifiers and receipts are not implemented in Python (Protocol
+§II.2/§II.5). Divergences found while certifying were fixed or filed: #404, #405,
+#406, #413 (fixed), #424 (spec-ambiguity, non-portable).
 
 **Release rules after launch ratified (owner, 2026-10-21).**
 [RELEASE_RULES](../playbooks/RELEASE_RULES.md) now records the owner's rulings:

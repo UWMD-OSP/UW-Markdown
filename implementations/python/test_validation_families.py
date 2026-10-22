@@ -151,11 +151,15 @@ class ValidationFamilyTests(unittest.TestCase):
         tranche=dict(id="pref",position=1,**{"class":"preferred_equity"},amount=1,rate=0,
                      accrual="split",cash_rate=-.01,accrued_rate=.01)
         self.assertEqual(selected_codes(validate(document(capital_stack={"point_in_time":"stabilization","tranches":[tranche]})),("CS-",)),[])
-        for alteration,code in (({"cash_rate":None},"CS-02b"),({"term_months":True},"CS-01"),
-                                 ({"rate":.001},"CS-02b"),({"accrual":"unknown"},"CS-01")):
+        for alteration,code in (({"cash_rate":None},"CS-02b"),({"rate":.001},"CS-02b")):
             with self.subTest(alteration=alteration):
                 body=tranche|alteration
                 self.assertIn(code,selected_codes(validate(document(capital_stack={"point_in_time":"stabilization","tranches":[body]})),("CS-",)))
+        # Format §4.24 allocates no CS-01 to month terms or the accrual vocabulary (#425).
+        for alteration in ({"term_months":True},{"accrual":"unknown"}):
+            with self.subTest(alteration=alteration):
+                body=tranche|alteration
+                self.assertNotIn("CS-01",selected_codes(validate(document(capital_stack={"point_in_time":"stabilization","tranches":[body]})),("CS-",)))
 
     def test_terminal_tax_requires_assessment_but_normal_g1_trigger_remains_valid(self):
         normal=document(noi_model={"expenses":{"real_estate_taxes":{"value":1,"reassessment":{"trigger":"sale"}}}})
@@ -217,16 +221,14 @@ class CapitalStackAdmissionTests(unittest.TestCase):
         self.assertEqual(parsed.source.raw,raw)
         return result,[i for i in result["issues"] if i["code"].startswith("CS-")]
 
-    def test_authored_accrual_is_closed_but_omission_remains_optional_in_both_locations(self):
+    def test_accrual_vocabulary_has_no_registered_cs01_in_either_location(self):
+        # Format §4.24 CS-01 names the four required members and uniqueness
+        # only; an accrual outside the vocabulary is not CS-01 (#425, reference).
         for scope in ("top_level","component"):
             for mode in (None,"unknown","cash ",False,0,[],{}):
                 with self.subTest(scope=scope,mode=mode):
                     result,issues=self.report(self.source(scope,dict(tranches=[self.tranche(accrual=mode)])))
-                    path="" if scope=="top_level" else "retail.capital_stack."
-                    self.assertEqual([(i["code"],i["severity"],i["field"]) for i in issues],
-                                     [("CS-01","error",path+"tranches[0]")])
-                    self.assertEqual(result["overall_status"],"errors")
-                    self.assertIn(issues[0],result["errors"])
+                    self.assertEqual(issues,[])
             for extra in ({},{"accrual":"cash"},{"accrual":"accrued"}):
                 with self.subTest(scope=scope,extra=extra):
                     _,issues=self.report(self.source(scope,dict(tranches=[self.tranche(**extra)])))
@@ -248,7 +250,7 @@ class CapitalStackAdmissionTests(unittest.TestCase):
             self.assertEqual([i["code"] for i in issues],["CS-02b"])
 
     def test_current_selection_history_and_external_payload_remain_separate_from_admission(self):
-        bad=dict(tranches=[self.tranche(accrual=None)])
+        bad=dict(tranches=[{**self.tranche(),"position":"1"}])
         good=dict(tranches=[self.tranche(accrual="cash")])
         for scope in ("top_level","component"):
             section="capital_stack" if scope=="top_level" else "components"
@@ -273,13 +275,21 @@ class CapitalStackAdmissionTests(unittest.TestCase):
                 _,issues=self.report(raw)
                 self.assertEqual([i["code"] for i in issues],["CS-01"])
 
-    def test_malformed_stack_and_tranche_containers_preserve_existing_structural_refusal(self):
+    def test_malformed_stack_and_tranche_containers_follow_the_required_members(self):
+        # A non-object tranche states none of the four required members, one
+        # CS-01 each; an absent or non-array tranches carrier is not CS-01
+        # (Format §4.24 is silent; the reference reports nothing, #425).
         for scope in ("top_level","component"):
-            for stack in ({},{"tranches":None},{"tranches":{}},{"tranches":[]},
-                          {"tranches":[None]},{"tranches":[False]},{"tranches":[[]]}):
+            path="" if scope=="top_level" else "retail.capital_stack."
+            for stack in ({},{"tranches":None},{"tranches":{}},{"tranches":[]}):
                 with self.subTest(scope=scope,stack=stack):
                     _,issues=self.report(self.source(scope,stack))
-                    self.assertEqual([i["code"] for i in issues],["CS-01"])
+                    self.assertEqual(issues,[])
+            for stack in ({"tranches":[None]},{"tranches":[False]},{"tranches":[[]]}):
+                with self.subTest(scope=scope,stack=stack):
+                    _,issues=self.report(self.source(scope,stack))
+                    self.assertEqual([(i["code"],i["field"]) for i in issues],
+                                     [("CS-01",path+"tranches[0]."+m) for m in ("id","class","position","amount")])
 
 
 if __name__=="__main__":
