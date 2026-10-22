@@ -68,8 +68,47 @@ function* statedAt(payload: unknown, path: string): Generator<[string, unknown]>
   for (const [tail, value] of statedAt(record[head!], rest.join('.'))) yield [`${head}.${tail}`, value];
 }
 
-/** SIZE-01 for every current `property` / `rent_roll` block that breaks the size contract. */
+/** The area measurement standards `property.area_measurement.standard` admits (RFC 0114). */
+export const AREA_MEASUREMENT_STANDARDS: readonly string[] = Object.freeze(['boma', 'ipms', 'rebny', 'rics', 'other']);
+const AREA_MEASUREMENT_MEMBERS = new Set(['standard', 'edition', 'note']);
+
+/**
+ * SIZE-02 (RFC 0114): a stated `property.area_measurement` is an object with a
+ * `standard` from the closed list and optional string `edition` and `note`, and
+ * nothing else. `null` and absence are not stated.
+ */
+function areaMeasurementProblems(value: unknown): [field: string, message: string][] {
+  if (value === null || value === undefined) return [];
+  if (typeof value !== 'object' || Array.isArray(value)) return [['area_measurement', 'must be an object']];
+  const record = value as Record<string, unknown>;
+  const problems: [string, string][] = [];
+  const standard = record['standard'];
+  if (typeof standard !== 'string' || !AREA_MEASUREMENT_STANDARDS.includes(standard)) {
+    problems.push(['area_measurement.standard', `must be one of ${AREA_MEASUREMENT_STANDARDS.join(', ')}`]);
+  }
+  for (const member of ['edition', 'note']) {
+    if (Object.hasOwn(record, member) && typeof record[member] !== 'string') {
+      problems.push([`area_measurement.${member}`, 'must be a string']);
+    }
+  }
+  for (const member of Object.keys(record)) {
+    if (!AREA_MEASUREMENT_MEMBERS.has(member)) problems.push([`area_measurement.${member}`, 'is not a member of area_measurement']);
+  }
+  return problems;
+}
+
+/** SIZE-01 for every current `property` / `rent_roll` block that breaks the size contract; SIZE-02 for a malformed area measurement. */
 export function checkSizeContract(parsed: ParsedUWFile, issues: ValidationMessage[]): void {
+  for (const [variant, block] of currentPayloadBlocks(parsed, 'property')) {
+    const payload = blockPayload(block);
+    if (payload === null || typeof payload !== 'object' || !Object.hasOwn(payload, 'area_measurement')) continue;
+    for (const [field, problem] of areaMeasurementProblems((payload as Record<string, unknown>)['area_measurement'])) {
+      issues.push({
+        code: 'SIZE-02', severity: 'error', section: 'property', field,
+        message: `SIZE-02: property${variant ? ` (variant "${variant}")` : ''}.${field} ${problem} (RFC 0114)`,
+      });
+    }
+  }
   for (const [section, table] of Object.entries(SIZE_CONTRACT)) {
     for (const [variant, block] of currentPayloadBlocks(parsed, section)) {
       const payload = blockPayload(block);

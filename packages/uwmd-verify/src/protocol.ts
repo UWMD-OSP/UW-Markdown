@@ -1845,6 +1845,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     spec_ref: 'UW_FORMAT_SPEC.md §5.5 SIZE-01',
   },
   {
+    code: 'SIZE-02', severity: 'error',
+    title: 'Malformed area measurement',
+    description: 'A stated property.area_measurement is not an object with a standard from the closed list (boma, ipms, rebny, rics, other) and optional string edition and note (RFC 0114).',
+    remediation: 'State area_measurement as { "standard": "boma", "edition": "ANSI/BOMA Z65.1-2017" }, or omit it.',
+    spec_ref: 'UW_FORMAT_SPEC.md §5.5 SIZE-02',
+  },
+  {
     code: 'WF-16', severity: 'error',
     title: 'Malformed waterfall claim',
     description: 'Stated outcomes, schedule or unselected clawback leaves violate their closed structural contract.',

@@ -6028,6 +6028,16 @@
     },
     {
       "suite": "documents",
+      "scenario": "malformed/70-area-measurement-unknown-standard",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
+      "scenario": "malformed/71-area-measurement-malformed-members",
+      "target": "verifier"
+    },
+    {
+      "suite": "documents",
       "scenario": "malformed/53-size-negative-capacity",
       "target": "verifier"
     },
