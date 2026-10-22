@@ -18,7 +18,7 @@ import type { ParsedUWFile, UWBlock, ValidationMessage } from './types.js';
 function block(section: string, content: Record<string, unknown>, annotation: Record<string, unknown> = {}): UWBlock {
   return {
     annotation: { section, ...annotation },
-    content,
+    content: { address: 'A', asset_class: 'office', rentable_square_feet: 1, total_units: 1, critical_it_load_kw: 1, total_sites: 1, gross_acres: 1, stated: true, ...content },
     meta: { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor: 'test', timestamp: '2026-08-26T00:00:00Z', notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } },
     prose: '', rawJson: JSON.stringify(content), lineStart: 1, lineEnd: 1,
   };
@@ -185,8 +185,8 @@ describe('requiredSectionsFor — class overlays (RFC 0029)', () => {
       expect(requiredSectionsFor(stage, 'specialty_facility')).toEqual(base);
       // RFC 0080: the new builtins take the base lists verbatim, like
       // multifamily — §5.1's overlay set stays exactly land and mixed_use.
-      expect(requiredSectionsFor(stage, 'data_center')).toEqual(base);
-      expect(requiredSectionsFor(stage, 'manufactured_housing')).toEqual(base);
+      expect(requiredSectionsFor(stage, 'data_center')).toEqual(stage === 'scope' ? base : [...base, 'dc_capacity']);
+      expect(requiredSectionsFor(stage, 'manufactured_housing')).toEqual(stage === 'scope' ? base : [...base, 'mhc_sites']);
       expect(requiredSectionsFor(stage)).toEqual(base);
     }
   });
@@ -277,7 +277,7 @@ describe('DQ-06 treats the RFC 0080 builtins exactly like multifamily', () => {
   };
 
   it('has no overlay entry for either new class', () => {
-    expect(Object.keys(STAGE_SECTION_OVERLAYS).sort()).toEqual(['land', 'mixed_use']);
+    expect(Object.keys(STAGE_SECTION_OVERLAYS).sort()).toEqual(['data_center', 'land', 'manufactured_housing', 'mixed_use']);
   });
 
   for (const [assetClass, classSection] of [

@@ -15,6 +15,7 @@ from uwmd_reader import APPEND
 from uwmd_source_validation import _inspect_source_roles, _metadata_routing
 from uwmd_validation_provenance import metadata_assessment, incomplete_policy
 from uwmd_validation_selection import active_blocks, current_blocks, select_section, field
+from uwmd_spec_data import metric_dictionary
 
 STAGES = ("scope", "screening", "term_sheet", "full_underwrite",
           "credit_approval", "closing", "monitoring")
@@ -85,6 +86,8 @@ class Ledger:
 
 def sections_required(stage, asset_class):
     source = REQUIRED[stage]
+    if stage != "scope" and asset_class in ("data_center", "manufactured_housing"):
+        source = (*source, "dc_capacity" if asset_class == "data_center" else "mhc_sites")
     if asset_class == "land":
         return tuple(s for s in source if s not in ("rent_roll", "operating_statement"))
     if asset_class == "mixed_use":
@@ -93,18 +96,39 @@ def sections_required(stage, asset_class):
 
 
 def _section_presence(document):
-    """Format 5.1 counts active presence, including unresolved external refs."""
-    return {block.section for block in active_blocks(document)}
+    """RFC 0116: a current section must state a non-null leaf."""
+    def stated(value):
+        if isinstance(value, dict):
+            return any(stated(v) for k, v in value.items() if k not in ("_meta", "_notes", "_role"))
+        if isinstance(value, list):
+            return any(stated(v) for v in value)
+        return value is not None
+    return {section for section in REQUIRED["monitoring"] + ("components", "dc_capacity", "mhc_sites")
+            if any(stated(b.parsed.value) for b in current_blocks(document, section, include_external=True))}
 
 
-def _scope_missing_fields(prop):
+def _scope_missing_fields(prop, document):
     """Published scope presence: absent/null/exact empty string, no trimming."""
     def missing(path):
         value = field(prop, path)
         return value is None or value == ""
     paths = [path for path in ("address", "asset_class") if missing(path)]
-    if all(missing(path) for path in ("units", "asking_price")):
-        paths.append("units|asking_price")
+    asset = document.frontmatter.value.get("asset_class")
+    size = next((r["path"] for r in metric_dictionary()["size_intensives"]
+                 if asset in r["asset_classes"]), None)
+    valuation = select_section(document, "valuation")
+    price = field(valuation.block.parsed.value, "purchase_price") if valuation.block else None
+    alternatives = [("property." + size, field(prop, size))] if size else []
+    if asset == "mixed_use":
+        components = select_section(document, "components")
+        body = components.block.parsed.value if components.block else {}
+        slots = ("multifamily.total_units", "retail.nra_sqft", "office.nra_sqft", "industrial.nra_sqft",
+                 "self_storage.nra_sqft", "student_housing.total_beds", "senior_housing.total_units",
+                 "data_center.critical_it_load_kw", "manufactured_housing.total_sites")
+        alternatives = [("components." + p, field(body, p)) for p in slots]
+    alternatives.append(("valuation.purchase_price", price))
+    if all(v is None or v == "" for _, v in alternatives):
+        paths.append("|".join(p for p, _ in alternatives))
     return paths
 
 
@@ -114,7 +138,11 @@ def stage_readiness(document):
     selected = select_section(document, "property")
     prop = selected.block.parsed.value if selected.block is not None else {}
     result["scope"] = (result["scope"] and selected.block is not None
-                       and not _scope_missing_fields(prop))
+                       and not _scope_missing_fields(prop, document))
+    ready = True
+    for stage in STAGES:
+        ready = ready and result[stage]
+        result[stage] = ready
     return result
 
 
@@ -268,13 +296,11 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
     present = _section_presence(document)
     if stage in STAGES:
         for section in sections_required(stage, asset):
-            if section != "property" and section not in present:
+            if section not in present and (section != "property" or current_blocks(document, "property", include_external=True)):
                 ledger.issue("DQ-06", "info", section, "", "Declared stage requires this section")
         if stage == "scope" and not selected.externalized:
-            for path in _scope_missing_fields(prop):
-                message = ("Scope requires stated units or asking price" if path == "units|asking_price"
-                           else "Scope-stage property field is absent")
-                ledger.issue("DQ-04", "error", "property", path, message)
+            for path in _scope_missing_fields(prop, document):
+                ledger.issue("DQ-04", "error", "property", path, "Scope-stage required field is absent")
     if now is None:
         instant = datetime.now(timezone.utc)
     elif isinstance(now, datetime):

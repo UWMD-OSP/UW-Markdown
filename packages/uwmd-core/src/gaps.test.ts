@@ -82,7 +82,7 @@ describe('inferGaps — stage-required sections', () => {
       },
     });
     const items = inferGaps(file, { now: NOW });
-    const oneOf = items.filter((i) => i.field_path === 'asking_price' || i.field_path === 'units');
+    const oneOf = items.filter((i) => i.field_path === 'total_units' || i.field_path === 'purchase_price');
     expect(oneOf.length).toBe(1);
   });
 
@@ -90,7 +90,7 @@ describe('inferGaps — stage-required sections', () => {
     const file = makeFile({
       deal_stage: 'scope',
       sections: {
-        property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', units: 100 }),
+        property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', total_units: 100 }),
       },
     });
     const items = inferGaps(file, { now: NOW });
@@ -104,7 +104,7 @@ describe('inferGaps — provisional and partial flags', () => {
     const file = makeFile({
       deal_stage: 'scope',
       sections: {
-        property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', units: 100 }),
+        property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', total_units: 100 }),
         noi_model: makeBlock('noi_model', { expense_ratio: 0.4 }, { provisional: true }),
       },
     });
@@ -117,7 +117,7 @@ describe('inferGaps — provisional and partial flags', () => {
     const file = makeFile({
       deal_stage: 'scope',
       sections: {
-        property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', units: 100 }),
+        property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', total_units: 100 }),
         rent_roll: makeBlock('rent_roll', { units: [] }, { partial: true }),
       },
     });
@@ -133,7 +133,7 @@ describe('inferGaps — provisional and partial flags', () => {
     const file = makeFile({
       deal_stage: 'scope',
       sections: {
-        property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', units: 100 }),
+        property: makeBlock('property', { address: '1 Main', asset_class: 'multifamily', total_units: 100 }),
         rent_roll: makeBlock('rent_roll', { units: [] }, { partial: true }, overrides),
       },
     });

@@ -634,7 +634,7 @@ export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
   scope: {
     required_sections: ['property'],
     required_field_paths: ['property.address', 'property.asset_class'],
-    required_one_of: [['property.asking_price', 'property.units']],
+    required_one_of: [['valuation.purchase_price']],
   },
   screening:        { required_sections: ['property', 'debt_structure', 'validation'] },
   term_sheet:       { required_sections: ['property', 'debt_structure', 'validation', 'rent_roll', 'borrower_sponsor', 'preliminary_sizing'] },
@@ -661,9 +661,12 @@ export const STAGE_REQUIREMENTS: Record<DealStage, StageRequirement> = {
 export const STAGE_SECTION_OVERLAYS: Partial<Record<AssetClass, {
   exempt?: readonly string[];
   substitute?: Readonly<Record<string, string>>;
+  add_from_screening?: readonly string[];
 }>> = {
   land:      { exempt: ['rent_roll', 'operating_statement'] },
   mixed_use: { substitute: { rent_roll: 'components', operating_statement: 'components' } },
+  data_center: { add_from_screening: ['dc_capacity'] },
+  manufactured_housing: { add_from_screening: ['mhc_sites'] },
 };
 
 // ─── STAGE_CONTRACT — the merged stage registry (RFC 0009) ────────────────────
@@ -739,8 +742,19 @@ function buildStageContract(): readonly StageContractEntry[] {
     }
 
     // Class-qualified rows (the absorbed RFC 0029 overlays).
+    if (stage === 'scope') {
+      for (const assetClass of [...Object.keys(SIZE_INTENSIVES), 'mixed_use']) {
+        rows.push({ stage, section: 'property', asset_class: assetClass as AssetClass,
+          one_of: stageOneOfFor(stage, assetClass)[0], required: true });
+      }
+    }
     for (const [assetClass, overlay] of Object.entries(STAGE_SECTION_OVERLAYS)) {
       if (!overlay) continue;
+      if (stage !== 'scope') {
+        for (const section of overlay.add_from_screening ?? []) {
+          rows.push({ stage, section, asset_class: assetClass as AssetClass, required: true });
+        }
+      }
       const substituted = new Set<string>();
       for (const section of req.required_sections) {
         if (overlay.exempt?.includes(section)) {
@@ -788,7 +802,6 @@ function buildStageContract(): readonly StageContractEntry[] {
 
 /** The merged stage registry. Derived once at module init — see
  *  {@link StageContractEntry}. */
-export const STAGE_CONTRACT: readonly StageContractEntry[] = buildStageContract();
 
 /**
  * The sections a declared stage requires of a document of the given asset
@@ -1383,6 +1396,23 @@ export const SIZE_INTENSIVES: Readonly<Record<string, SizeIntensive>> = Object.f
 export function getSizeIntensive(assetClass: string): SizeIntensive | null {
   return SIZE_INTENSIVES[toBuiltinAssetClass(assetClass) ?? assetClass] ?? null;
 }
+
+/** RFC 0116: class-specific scope size alternatives, without aggregating uses. */
+export function stageOneOfFor(stage: DealStage, assetClass?: string): string[][] {
+  if (stage !== 'scope') return STAGE_REQUIREMENTS[stage].required_one_of ?? [];
+  const builtin = assetClass && toBuiltinAssetClass(assetClass);
+  const size = assetClass ? getSizeIntensive(assetClass) : null;
+  const paths = size ? [`property.${size.path}`] : builtin === 'mixed_use'
+    ? ['multifamily.total_units', 'retail.nra_sqft', 'office.nra_sqft',
+       'industrial.nra_sqft', 'self_storage.nra_sqft', 'student_housing.total_beds',
+       'senior_housing.total_units', 'data_center.critical_it_load_kw',
+       'manufactured_housing.total_sites'].map(path => `components.${path}`)
+    : [];
+  return [[...paths, 'valuation.purchase_price']];
+}
+
+/** Initialize after the size registry used by class-qualified scope rows. */
+export const STAGE_CONTRACT: readonly StageContractEntry[] = buildStageContract();
 
 /**
  * The deal's size as `{basis, label, unit, quantity}`, selected through the
@@ -2241,7 +2271,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'DQ-04', severity: 'error',
     title: 'Scope-stage readiness gap',
     description: 'A field required for scope-stage readiness is missing.',
-    remediation: 'Provide the missing scope-stage field (property.address, property.asset_class, and at least one of property.units or property.asking_price) or downgrade deal_stage.',
+    remediation: 'State property.address, property.asset_class, and either the class primary size or valuation.purchase_price.',
     spec_ref: 'UW_FORMAT_SPEC.md §2.2',
   },
   {

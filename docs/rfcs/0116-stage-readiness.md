@@ -1,7 +1,7 @@
 ---
 rfc: 0116
 title: Stage readiness by class section, a scope minimum in Format fields, and present meaning stated
-status: draft
+status: accepted
 author: UWMD maintainers
 created: 2026-10-22
 affects:
@@ -14,7 +14,7 @@ affects:
 
 # RFC 0116: Stage readiness by class section, a scope minimum in Format fields, and present meaning stated
 
-> **Draft for owner acceptance.** Origin: owner ruling of 2026-10-22 (5), taking
+> **Accepted by the owner, 2026-10-22 (second set), as drafted.** Origin: owner ruling of 2026-10-22 (5), taking
 > option 1 on bug bash findings #485, #486 and #495. All three change how Format
 > §5.1 and Protocol `STAGE_REQUIREMENTS` decide readiness, so they are batched
 > here. It changes what validation reports, so it is normative.
@@ -66,9 +66,9 @@ makes readiness cumulative.
    class into `property`, so a record it writes meets the scope minimum when
    given those flags. It writes no other value. (Init never fabricates figures.)
 
-## Compatibility analysis
+## Validation impact
 
-No compatibility path (prelaunch; the owner rule). Records that were "ready"
+Records that were "ready"
 only through scaffold sections become not ready. Their `DQ-06` info lists
 grow, but no verdict on a stated figure changes. A data-center or
 manufactured-housing record without its class section no longer fails
@@ -103,7 +103,7 @@ the Python validator; `init.ts`; the cases.
 - **#495: present means the block exists.** This is today's rule, and it is the
   defect. Rejected.
 
-## Decisions proposed for owner review
+## Decisions
 
 | # | Question | Proposal | Why / alternative |
 |---|---|---|---|

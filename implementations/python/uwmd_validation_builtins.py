@@ -199,8 +199,6 @@ def builtin_rules(ledger):
     if not isinstance(asset, str) or asset not in _SCHEMAS:return
     for section, filename in _SCHEMAS[asset].items():
         blocks = current_blocks(document, section)
-        if not current_blocks(document, section, include_external=True) and section in ("dc_capacity", "mhc_sites"):
-            ledger.issue("CLS-03", "error", section, "", "Required official class section is absent")
         schema = spec_schema(filename)
         for block in blocks:
             body = block.parsed.value

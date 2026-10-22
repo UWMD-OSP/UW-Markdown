@@ -1072,7 +1072,7 @@ selected findings, and do not expand REC-05–08 arithmetic or unrelated LSE che
 Newly issued receipt policy counts use actual findings under existing issuance
 rules; no subject, digest, signature, result-state or verdict-precedence change.
 
-Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, PROTO-MOD-055/056/057/058/059/060, META-V2-IN-V1 and META-V1-IN-V2. A retired code stays reserved and is never reused; PROTO-MOD-055 to PROTO-MOD-060 validated the module `agent_layers` declarations that RFC 0112 removed. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
+Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/03/05, PROTO-MOD-055/056/057/058/059/060, META-V2-IN-V1 and META-V1-IN-V2. A retired code stays reserved and is never reused; PROTO-MOD-055 to PROTO-MOD-060 validated the module `agent_layers` declarations that RFC 0112 removed. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
 RFC 0072 extends the existing data-quality sequence with `DQ-07`
 (scenario structure/vocabulary), `DQ-08` (BTR subtype carrier disagreement)
@@ -4174,7 +4174,7 @@ a silent denominator change does the most damage.
 
 ### Official builtin contracts (RFC 0080, RFC 0081)
 
-Only the twelve builtin ids resolve as builtins. Namespaced suffix shadows, including org.uwmd.data_center, are INVALID-ASSET-CLASS-002. Module lists use object entries; official module ids are ordinary unsatisfied dependencies. No class behavior varies by version or prior packaging. CLS-03/04 and MOD-CALC-ERROR are errors; rules retain declared severities. Hospitality rent_roll requires available_room_nights when stated; optional hotel_metrics holds only market_revpar. CC-HOSP-02 reads `rent_roll.occupancy == null || (rent_roll.occupancy >= 0 && rent_roll.occupancy <= 1)`. Standard class formulas and paths live in spec/metrics/; eleven classes have property-level primary sizes and mixed-use uses component slots. Envelope content is the bare fenced object with nested metadata.
+Only the twelve builtin ids resolve as builtins. Namespaced suffix shadows, including org.uwmd.data_center, are INVALID-ASSET-CLASS-002. Module lists use object entries; official module ids are ordinary unsatisfied dependencies. No class behavior varies by version or prior packaging. CLS-04 and MOD-CALC-ERROR are errors; CLS-03 is retired and reserved (RFC 0116), and missing class sections are Format §5.1 stage-readiness gaps; rules retain declared severities. Hospitality rent_roll requires available_room_nights when stated; optional hotel_metrics holds only market_revpar. CC-HOSP-02 reads `rent_roll.occupancy == null || (rent_roll.occupancy >= 0 && rent_roll.occupancy <= 1)`. Standard class formulas and paths live in spec/metrics/; eleven classes have property-level primary sizes and mixed-use uses component slots. Envelope content is the bare fenced object with nested metadata.
 
 ## XI. Error Taxonomy
 
