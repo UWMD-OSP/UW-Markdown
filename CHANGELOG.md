@@ -18,6 +18,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #494: an unknown `render --format` is a typed refusal
+  (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
+  longer advertises flags removed by #412 and lists `init --zip`.
+
 - Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
   for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
   `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.
