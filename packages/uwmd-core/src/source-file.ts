@@ -22,7 +22,18 @@ export async function loadUWSourceFile(file: string): Promise<LoadedUWSource> {
     return { representation: codec.descriptor.id, envelope, parsed: fromUWEnvelope(envelope) };
   }
   const content = await readFile(file, 'utf8');
-  const detection = detectUWSourceRepresentation(content, file);
+  let detection;
+  try { detection = detectUWSourceRepresentation(content, file); }
+  catch (error) {
+    // Read-only verifier subjects may lawfully have no section at all. The
+    // parse/validate CLI commands separately retain their structured-source gate.
+    if (file.toLowerCase().endsWith('.uwx.md') && error instanceof UWSourceRepresentationError
+      && error.message.includes('must contain UWX structured section fences')) {
+      const parsed = parseUWFile(content);
+      return { representation: UWX_REPRESENTATION_ID, parsed, envelope: toUWEnvelope(parsed) };
+    }
+    throw error;
+  }
   if (detection.representation === UWX_REPRESENTATION_ID) {
     const parsed = parseUWFile(content);
     return { representation: detection.representation, parsed, envelope: toUWEnvelope(parsed) };
