@@ -39,6 +39,11 @@ rotation. GOVERNANCE.md starts owner-led and switches to collaborative mode when
 the first outside RFC or PR arrives. The verifier rule-set rule waits on draft
 RFC 0111. The lender acceptance kit moves to a post-launch 5.x milestone.
 
+**Implemented RFC0113 — paid room nights (owner acceptance 2026-10-21).**
+[RFC0113](../rfcs/0113-paid-room-nights.md): `occupied_room_nights` is paid room
+nights sold (USALI basis); optional `complimentary_room_nights` records the
+excluded nights. No formula changes. Builtin controls 62/63; Python counts 63.
+
 **uwmd.org is hosted on Cloudflare Workers (2026-10-21).** The owner moved the
 site to the Worker `uwmd-org` after #391 merged and disconnected Vercel. The
 repository's Vercel configuration (`vercel.json`, `scripts/vercel-ignore-build.sh`)

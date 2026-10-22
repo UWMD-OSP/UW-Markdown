@@ -6,6 +6,8 @@ deal_name: Standalone Authored Kit — 2026-10-17
 asset_class: multifamily
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Standalone Authored Kit — 2026-10-17 Record
 
 Newly authored fictional fixture; these figures illustrate stated data, not a verified real property. The inline and externalized carriers represent the same new logical record.
@@ -18,7 +20,7 @@ Newly authored fictional fixture; these figures illustrate stated data, not a ve
     "section": "property",
     "provenance": {
       "source": "system/standalone-kit",
-      "actor": "codex/standalone-kit-2026-10-17",
+      "actor": "analyst",
       "timestamp": "2026-10-17T21:34:15Z",
       "notes": "This deliberately authored fictional property only demonstrates structure and requires no human fact-review for that purpose; revision 1 is the new record head."
     },
@@ -50,7 +52,7 @@ Newly authored fictional fixture; these figures illustrate stated data, not a ve
     "section": "rent_roll",
     "provenance": {
       "source": "system/standalone-kit",
-      "actor": "codex/standalone-kit-2026-10-17",
+      "actor": "analyst",
       "timestamp": "2026-10-17T21:34:15Z",
       "notes": "Human review is required before relying on these illustrative tenant rows as underwriting inputs; revision 1 is the new record head."
     },

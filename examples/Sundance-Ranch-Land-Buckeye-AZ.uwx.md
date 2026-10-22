@@ -51,6 +51,8 @@ source_documents:
   - "buckeye_cfd_assessment_schedule_2026.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Sundance Ranch - Buckeye, AZ
 
 160 gross acres of entitled residential land in the far west Phoenix valley,
@@ -423,7 +425,7 @@ Sizing for a land carry: LTC at 50% against an 80% limit is the only applicable 
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T15:00:00Z",
@@ -470,7 +472,7 @@ Sundance Ranch Land Partners LLC — single-principal sponsorship; figures PFS-s
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T15:00:00Z",
@@ -533,7 +535,7 @@ Buckeye / Far West Valley land fundamentals as of 2026-08.
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T15:00:00Z",

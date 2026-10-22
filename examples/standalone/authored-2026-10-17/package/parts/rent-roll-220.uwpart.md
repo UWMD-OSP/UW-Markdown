@@ -14,7 +14,7 @@ collection_member: true
     "section": "rent_roll",
     "provenance": {
       "source": "system/standalone-kit",
-      "actor": "codex/standalone-kit-2026-10-17",
+      "actor": "analyst",
       "timestamp": "2026-10-17T21:34:15Z",
       "notes": "Human review is required before reusing this illustrative stated-data fragment; revision 1 is the current block of its new part identity."
     },

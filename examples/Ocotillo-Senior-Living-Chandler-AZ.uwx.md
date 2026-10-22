@@ -50,6 +50,8 @@ source_documents:
   - "ocotillo_senior_living_operator_agreement.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Ocotillo Senior Living - Chandler, AZ
 
 Stabilized assisted-living and memory-care community in the southeast Phoenix
@@ -448,7 +450,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
     "provenance": {
       "source": "system/extractor",
       "resolution": "ai_extracted",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -490,7 +492,7 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -548,7 +550,7 @@ Ocotillo Senior Care Group LLC — single-principal sponsorship; figures PFS-sta
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -611,7 +613,7 @@ Chandler / Southeast Valley assisted living fundamentals as of 2026-08.
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
