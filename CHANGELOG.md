@@ -18,6 +18,11 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #409: the UWX -> Lite projection omits a stated `null` under a
+  unit-bearing field (land's `valuation.going_in_cap_rate`) and reports it in
+  `omitted_paths`, so the projection compiles back; a failed Lite compile in the
+  CLI is a typed refusal (`UWLiteBridgeError`, exit 1, no stack trace).
+
 - Scrub spec wording for public launch (cleanup brief phase D): example actors
   in Format §2.5 and the `uwmd-block` and `edit-operation` schemas use
   `analyst@example.com`, and spec and schema references cite an RFC rather than
