@@ -5,7 +5,7 @@ owner release rule below: prelaunch 4.x.x, then a coordinated 5.0.0 public launc
 From launch, people see one public number, **UWMD 5.x**, for the packages and the
 standard; each record keeps declaring its Format version, and this file maps
 every UWMD release to the Format and Protocol versions it carries
-([release rules](docs/playbooks/RELEASE_RULES.md#one-public-number)).
+([release rules](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/playbooks/RELEASE_RULES.md#one-public-number)).
 This file also records the versions actually released.
 
 ## Current matrix
