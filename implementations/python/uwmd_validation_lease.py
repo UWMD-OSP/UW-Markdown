@@ -195,9 +195,13 @@ def lease_rules(ledger):
                 if "accumulation" not in cap:
                     represented_shape("recovery_terms.cap.accumulation", ("required", None), "REC-02")
             pool = terms.get("recoverable_pool")
-            if pool is not None and (not isinstance(pool, list) or not pool or any(k not in _POOL for k in pool)):
-                suffix = "[" + str(next(i for i,k in enumerate(pool) if k not in _POOL)) + "]" if isinstance(pool,list) and pool else ""
-                issue("REC-03", "recovery_terms.recoverable_pool" + suffix, "Pool must name registered operating-expense keys, never totals/ratios/capital")
+            if pool is not None:
+                if not isinstance(pool,list) or not pool:
+                    issue("REC-03", "recovery_terms.recoverable_pool", "Pool must be a nonempty array of registered expense keys")
+                else:
+                    for pi, member in enumerate(pool):
+                        if member not in _POOL:
+                            issue("REC-03", "recovery_terms.recoverable_pool[" + str(pi) + "]", "Pool member must name a registered expense key")
             # Accepted RFC0058 / Format4.3 / REC-02 admits only an object
             # when cap is non-null; this is independent of its method.
             if invalid_cap:
@@ -217,11 +221,12 @@ def lease_rules(ledger):
                     issue("REC-04", path, "True-up must state its closed period")
                     continue
                 beginning, finish = row.get("period_start"), row.get("period_end")
-                valid = calendar_date(beginning) and calendar_date(finish) and beginning <= finish
-                valid = valid and row.get("settlement") in (None, "billed", "credited", "disputed", "unsettled")
-                if not valid:
-                    member = "period_start" if not calendar_date(beginning) else "period_end" if not calendar_date(finish) or finish < beginning else "settlement"
-                    issue("REC-04", path + "." + member, "True-up period dates or settlement are invalid")
+                if not calendar_date(beginning) or not calendar_date(finish):
+                    issue("REC-04", path + ".period_start", "True-up requires real start and end dates")
+                elif finish < beginning:
+                    issue("REC-04", path + ".period_end", "True-up end precedes start")
+                if row.get("settlement") not in (None, "billed", "credited", "disputed", "unsettled"):
+                    issue("REC-04", path + ".settlement", "True-up settlement is outside the admitted vocabulary")
                 if calendar_date(finish) and calendar_date(roll.get("as_of_date")) and finish >= roll["as_of_date"]:
                     issue("REC-05", path + ".period_end", "True-up period must have closed before the stated roll date")
                 pool_actual, uncapped = row.get("pool_actual"), row.get("tenant_share_uncapped")
