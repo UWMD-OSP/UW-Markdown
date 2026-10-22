@@ -45,10 +45,22 @@ Format versions (`@uwmd/verify` from 4.1.0). Through 2.17.0, `--version` printed
 versions, use `uwmd manifest`.
 
 The read-only command `uwmd verify-cash-flows <file> [--variant <name>] [--json]`
-checks stated dated-cash-flow metrics with the existing verifier. Exit 0 means
-nonempty verified claims, 1 means failure/input refusal, and 3 means
-unverifiable or no stated metrics. It is available from CLI 2.10.0. See the
+checks stated dated-cash-flow metrics with the existing verifier. Exit 1 means
+a failed metric or an input refusal; verified, unverifiable and not-applicable
+results exit 0 and say which in `status`. It is available from CLI 2.10.0. See the
 [workflow and limitations](../../docs/PROPERTY_CASH_FLOW_WORKFLOW.md#check-stated-cash-flow-metrics-from-the-cli).
+
+Every Verifier obligation has one read-only subcommand, which the shared
+conformance driver runs (RFC 0115, Protocol §II.6a.1): `verify-metrics`,
+`verify-cash-flows`, `verify-property-cash-flows`, `verify-waterfall`,
+`verify-capital-stack`, `verify-lease-up`, `verify-receipt <receipt.json> <file>`,
+`verify-reserve-accounts` and `verify-reserve-draws`. Each prints one JSON result
+with `--json`. A failed verification exits 1; an absent or unverifiable subject
+exits 0, except that the two reserve verifiers keep their §VIII.11/§VIII.12
+contract (unverifiable exits 1). `verify-receipt` holds no calculation pack, so a
+pack-named result is `unverifiable` (RCP-05); `uwmd receipt verify` keeps the
+pack-based check. `uwmd verify` remains the combined validation, metrics,
+integrity and provenance command.
 
 The read-only command `uwmd inspect-property-cash-flows <file> [--json]`,
 available from CLI 2.10.0, inventories exact
@@ -114,7 +126,8 @@ rent receipts, concessions and TI/LC only; it is not a complete DCF.
 
 ### Property cash-flow assembly (2.9.0)
 
-`uwmd assemble-property <file> <plan.json> [--json]` emits a read-only candidate
+`uwmd verify-property-cash-flows <file> <plan.json> [--json]` (RFC 0115; `assemble-property`
+before 4.x prelaunch, no alias) emits a read-only candidate
 for explicitly covered unlevered, pre-tax cash flows in one declared currency.
 It preserves source evidence and refuses missing or overlapping coverage. The
 plan and source are not edited; no financial inputs are inferred. Available

@@ -1,0 +1,26 @@
+{
+  "id": "verifier__property-cash-flow-assembly__boundary-quarterly-boundary__verify-property-cash-flows",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-property-cash-flows"
+  ],
+  "command": "verify-property-cash-flows",
+  "args": [
+    "deal.uwx.md",
+    "plan.json",
+    "--json"
+  ],
+  "fixture_dir": "conformance/property-cash-flow-assembly/boundary-quarterly-boundary",
+  "expect": {
+    "kind": "json-subset",
+    "file": "expected.json",
+    "project": "property-cash-flow-assembly",
+    "ignore": [
+      "metrics",
+      "absent_validation_codes"
+    ],
+    "exit_code": 0
+  }
+}

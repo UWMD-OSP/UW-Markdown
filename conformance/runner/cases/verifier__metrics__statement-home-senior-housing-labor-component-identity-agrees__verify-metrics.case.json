@@ -1,0 +1,21 @@
+{
+  "id": "verifier__metrics__statement-home-senior-housing-labor-component-identity-agrees__verify-metrics",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-metrics"
+  ],
+  "command": "verify-metrics",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/runner/derived/metrics/statement-home-senior-housing-labor-component-identity-agrees",
+  "expect": {
+    "kind": "statement-states",
+    "file": "conformance/metrics/statement-homes/cases.json",
+    "baseline_pointer": "/cases/20",
+    "exit_code": 0
+  }
+}

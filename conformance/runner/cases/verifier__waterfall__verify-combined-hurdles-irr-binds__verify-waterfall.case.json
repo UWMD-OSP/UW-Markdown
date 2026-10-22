@@ -1,0 +1,25 @@
+{
+  "id": "verifier__waterfall__verify-combined-hurdles-irr-binds__verify-waterfall",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-waterfall"
+  ],
+  "command": "verify-waterfall",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/runner/derived/waterfall/verify-combined-hurdles-irr-binds",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/waterfall/verify-combined-hurdles-irr-binds/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict",
+      "expected_code"
+    ],
+    "exit_code": 0
+  }
+}

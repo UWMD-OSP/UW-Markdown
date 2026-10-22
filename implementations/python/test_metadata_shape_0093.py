@@ -161,7 +161,7 @@ class MetadataShape0093Tests(unittest.TestCase):
                         self.assertEqual(len(report["coverage"]), 15)
                         for member, severity in (("errors", "error"), ("warnings", "warning"), ("info", "info")):
                             self.assertEqual(report[member], [i for i in report["issues"] if i["severity"] == severity])
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
 
 
 if __name__ == "__main__":
