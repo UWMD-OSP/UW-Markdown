@@ -16,7 +16,7 @@ export function makeBlock(
     content,
     meta: {
       section: sectionId,
-      provenance: { source: 'manual', actor: 'human/jared', agent_id: null, agent_version: null, timestamp: '2026-08-27T00:00:00Z', notes: null },
+      provenance: { source: 'manual', actor: 'human/analyst', agent_id: null, agent_version: null, timestamp: '2026-08-27T00:00:00Z', notes: null },
       quality: { confidence: 'medium', human_review_required: false, flags: [] },
       lifecycle: { revision: 1, superseded: false },
       ...(integrity ? { integrity } : {}),

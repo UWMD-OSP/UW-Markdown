@@ -51,6 +51,8 @@ source_documents:
   - "cactus_crossing_appraisal_2026.pdf"
 ---
 
+> Synthetic example: every name, party and figure in this record is fictional.
+
 # Cactus Crossing — Grocery-Anchored Retail, Mesa, AZ
 
 > **Deal ID:** uw_2026_r5e7f1 | **Scenario:** Stabilized Acquisition | **Status:** In Progress  
@@ -74,7 +76,7 @@ Cactus Crossing is a 95,000 SF grocery-anchored neighborhood center in southeast
     "section": "deal_context",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-18T09:15:00Z",
@@ -112,7 +114,7 @@ Cactus Crossing is a 95,000 SF grocery-anchored neighborhood center in southeast
     "section": "property",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-18T09:30:00Z",
@@ -156,7 +158,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-18T10:00:00Z",
@@ -263,7 +265,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
     },
     {
       "tenant_id": "T-006",
-      "tenant_name": "Valley First Credit Union",
+      "tenant_name": "Sunburst Valley Credit Union",
       "suite": "C-1",
       "leased_sf": 3000,
       "annual_base_rent": 105000,
@@ -365,7 +367,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
     "section": "debt_structure",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-18T13:30:00Z",
@@ -463,7 +465,7 @@ Retail tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
     "provenance": {
       "source": "manual",
       "resolution": "user_input",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-05-18T14:30:00Z",
@@ -503,7 +505,7 @@ Trailing-twelve summary reconciled to the NOI model — same revenue, expense, a
     "provenance": {
       "source": "system/extractor",
       "resolution": "ai_extracted",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -545,7 +547,7 @@ Loan sizing against the three standard constraints. The governing test is dscr; 
     "section": "preliminary_sizing",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -603,7 +605,7 @@ Cactus Crossing Retail Partners LLC — single-principal sponsorship; figures PF
     "section": "borrower_sponsor",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",
@@ -666,7 +668,7 @@ Mesa / East Valley neighborhood retail fundamentals as of 2026-08.
     "section": "market_analysis",
     "provenance": {
       "source": "manual",
-      "actor": "jared",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-08-26T09:00:00Z",

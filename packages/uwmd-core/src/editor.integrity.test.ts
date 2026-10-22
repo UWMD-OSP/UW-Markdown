@@ -76,7 +76,7 @@ source_documents: []
 \`\`\`
 `;
 
-const CTX: EditContext = { actor: 'jared', source: 'manual' };
+const CTX: EditContext = { actor: 'analyst', source: 'manual' };
 
 function makeReplaceOp(content: Record<string, unknown>): EditOperation {
   return {

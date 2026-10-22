@@ -7,27 +7,27 @@
       "path": "records/externalized-deal.uwx.md",
       "role": "underwriting",
       "media_type": "text/vnd.uwmd.extended+markdown",
-      "sha256": "sha256:1c42e1658a7f2fa4cf7a4cf160684bf52c4d4080c6856815ccfaea7fadfbfbe2",
+      "sha256": "sha256:08cfb69e127d524b0750f95c238f315a309003015e55bc2794a22654536eada2",
       "document_profile": "deal-underwriting-v1",
-      "semantic_digest": "sha256:cda0b77ad63a1b129eb2c4cdc787a4b5cfa387b41c868443fb2bde842f4bf9fc"
+      "semantic_digest": "sha256:f6c8b19c618935b93a4aadf26690c3a16320e31f0edb9b667417c4aa4d6494bd"
     },
     {
       "id": "lease:anchor-tenant",
       "path": "records/lease-abstract-v1.uwx.md",
       "role": "lease_abstract",
       "media_type": "text/vnd.uwmd.extended+markdown",
-      "sha256": "sha256:e5066a4edb8f9fd6637ee1d0d5ab3afad58ab396fa527afe2ae38dd7c58749a7",
+      "sha256": "sha256:86a01d843f443b35a4de1553d1b77211d29ec51596ce4df01d48c1610ae780b9",
       "document_profile": "lease-abstract-v1",
-      "semantic_digest": "sha256:afbd57b2f4c42cf0c5942d73d192c2aa8b47f3ff6ad60a78805137e8c16c4bf0"
+      "semantic_digest": "sha256:2d6a8ddedcf353c07af6789a971a38d6647912c2aacf53619ace724f1b2501f8"
     },
     {
       "id": "note:rent-roll-review",
       "path": "records/source-note-v1.uwx.md",
       "role": "source_note",
       "media_type": "text/vnd.uwmd.extended+markdown",
-      "sha256": "sha256:874c7d0a7ad9db5eeac8d3b4d4941d37b58f85e84511ed23742f736c463660e4",
+      "sha256": "sha256:4039d4639a210f6ac5203db8804aaa2e26a6f44a9bf7adc216d2feb1428794d5",
       "document_profile": "source-note-v1",
-      "semantic_digest": "sha256:ce2f4c2d9aad45eb0f0107979642994f1b4d4955413425e7c9e1e744c1014ff5"
+      "semantic_digest": "sha256:6557588ede85bf4739b88bb10d83b250701683009e73d48f74c2b92499913550"
     },
     {
       "id": "part:rent-roll-210",

@@ -10,7 +10,7 @@
     "operation.json",
     "--json",
     "--actor",
-    "bancroft-l6",
+    "risk-rating-agent",
     "--source",
     "agent/L6",
     "--confidence",

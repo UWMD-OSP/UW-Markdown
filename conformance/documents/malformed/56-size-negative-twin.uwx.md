@@ -27,7 +27,7 @@ with NOI. The standard sections carry the common income and financing metrics, w
   "_meta": {
     "section": "property",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -73,7 +73,7 @@ records would live in the source file.
   "_meta": {
     "section": "rent_roll",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -124,7 +124,7 @@ records would live in the source file.
   "_meta": {
     "section": "valuation",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -168,7 +168,7 @@ records would live in the source file.
   "_meta": {
     "section": "noi_model",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -216,7 +216,7 @@ records would live in the source file.
   "_meta": {
     "section": "debt_structure",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -247,7 +247,7 @@ records would live in the source file.
   "_meta": {
     "section": "mhc_sites",
     "provenance": {
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T12:00:00Z",
@@ -284,7 +284,7 @@ records would live in the source file.
     "section": "sources_uses",
     "provenance": {
       "source": "manual",
-      "actor": "codex",
+      "actor": "analyst",
       "agent_id": null,
       "agent_version": null,
       "timestamp": "2026-10-10T00:00:00Z",

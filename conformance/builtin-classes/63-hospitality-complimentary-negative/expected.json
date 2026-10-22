@@ -1,0 +1,13 @@
+{
+  "description": "RFC 0113: complimentary_room_nights is an integer >= 0; a negative count violates the standard field contract (CLS-04). ADR and occupancy still read the paid count.",
+  "expected_calcs": {
+    "adr": 180,
+    "occupancy": 0.72
+  },
+  "expected_codes": [
+    "CC-HOSP-01",
+    "CC-HOSP-03",
+    "CLS-04"
+  ],
+  "builtin_class": "hospitality"
+}
