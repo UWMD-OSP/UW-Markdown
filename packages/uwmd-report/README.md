@@ -1,7 +1,7 @@
 # @uwmd/report
 
-PDF pipeline for the `.uw.md` **lender package** (spec §7.1) and **credit memo**
-(spec §7.2). The HTML itself is rendered deterministically by `@uwmd/core`'s
+PDF pipeline for the `.uw.md` **lender package** (starter renderer reference §7.1) and **credit memo**
+(§7.2). The HTML itself is rendered deterministically by `@uwmd/core`'s
 `renderReportHtml` — this package only adds the headless-Chromium print step.
 
 ```bash

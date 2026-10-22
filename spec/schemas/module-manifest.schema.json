@@ -289,42 +289,6 @@
       "description": "Free-form host-specific UI hints. Hosts MAY ignore unrecognized keys.",
       "additionalProperties": true
     },
-    "agent_layers": {
-      "type": "array",
-      "description": "Bancroft-style agent layer declarations contributed by this module.",
-      "items": {
-        "type": "object",
-        "required": [
-          "id",
-          "reads",
-          "writes",
-          "prompt_template"
-        ],
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^L\\d+(?:_[a-z_]+)?$"
-          },
-          "reads": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "writes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "prompt_template": {
-            "type": "string",
-            "description": "Template body for the layer's system prompt. Placeholders use {{ section.field }} syntax resolved by the agent host."
-          }
-        }
-      }
-    },
     "depends_on": {
       "type": "array",
       "description": "Other modules this one requires. The host MUST refuse to load if a dependency is missing or version-incompatible.",

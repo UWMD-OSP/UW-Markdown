@@ -8,6 +8,9 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runProcess as spawnCli } from '../../../test/cli.mjs';
 import ExcelJS from 'exceljs';
+import { evaluate, generateBlankUWFile, parseExpression, parseUWFile } from '@uwmd/core';
+import type { AssetClass } from '@uwmd/core';
+import { SUPPORTED_ASSET_CLASSES } from './layouts.js';
 const bin = fileURLToPath(new URL('../bin/uwmd-excel.mjs', import.meta.url));
 const source = readFileSync(
   new URL(
@@ -100,5 +103,68 @@ describe('calculation context CLI export', () => {
     const noPath = await run(['deal.uwx.md', '--calc-context']);
     expect(noPath.status).toBe(2);
     expect(noPath.stderr).toContain('requires a JSON file path');
+  });
+});
+
+// #484: the converter imports every workbook it exports from an init record
+// (all twelve classes) and from a totals-only noi_model record.
+describe('export then --import round trip (#484)', () => {
+  function leaves(value: unknown, prefix: string, out: Array<[string, unknown]> = []): Array<[string, unknown]> {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      for (const [key, child] of Object.entries(value)) leaves(child, prefix ? `${prefix}.${key}` : key, out);
+    } else out.push([prefix, value]);
+    return out;
+  }
+  async function roundTrip(text: string): Promise<string[]> {
+    const dir = mkdtempSync(join(tmpdir(), 'uwmd-excel-roundtrip-'));
+    try {
+      const input = join(dir, 'deal.uwx.md');
+      const output = join(dir, 'deal.xlsx');
+      writeFileSync(input, text);
+      const exported = await run([input, '-o', output]);
+      expect(exported.status, exported.stderr).toBe(0);
+      const imported = await run(['--import', output]);
+      expect(imported.status, imported.stderr).toBe(0);
+      const sections = (JSON.parse(imported.stdout) as { sections: Record<string, Record<string, unknown>> }).sections;
+      const parsed = parseUWFile(text);
+      const paths: string[] = [];
+      // The imported fragment equals the source record on every path the
+      // workbook carries, read the way the calc engine reads it (absent is null).
+      for (const [section, fragment] of Object.entries(sections)) {
+        for (const [path, value] of leaves(fragment, '')) {
+          const source = evaluate(parseExpression(`${section}.${path}`), { parsed, prior_results: {}, locale: 'en-US' });
+          expect(value, `${section}.${path}`).toEqual(source ?? null);
+          paths.push(`${section}.${path}`);
+        }
+      }
+      return paths;
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
+  for (const assetClass of SUPPORTED_ASSET_CLASSES) {
+    it(`imports the workbook exported from a ${assetClass} init record`, async () => {
+      const paths = await roundTrip(generateBlankUWFile({ assetClass: assetClass as AssetClass }));
+      expect(paths.length).toBeGreaterThan(0);
+    });
+  }
+
+  it('imports the workbook exported from a totals-only noi_model record', async () => {
+    const text = generateBlankUWFile({ assetClass: 'office' }).replace(
+      /(```json uw:section=noi_model[^\n]*\n)([\s\S]*?)(\n```)/,
+      (_, open: string, body: string, close: string) => `${open}${JSON.stringify({
+        _meta: (JSON.parse(body) as Record<string, unknown>)._meta,
+        income: { effective_gross_income: 100000 },
+        expenses: { total_operating_expenses: 40000 },
+        net_operating_income: 60000,
+      }, null, 2)}${close}`,
+    );
+    expect(text).toContain('"effective_gross_income": 100000');
+    const paths = await roundTrip(text);
+    expect(paths).toEqual(expect.arrayContaining([
+      'noi_model.income.effective_gross_income',
+      'noi_model.expenses.total_operating_expenses',
+    ]));
   });
 });

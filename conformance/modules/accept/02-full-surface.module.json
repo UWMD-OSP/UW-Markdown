@@ -92,19 +92,6 @@
       "collapsed_by_default": true
     }
   },
-  "agent_layers": [
-    {
-      "id": "L7_concessions",
-      "reads": [
-        "rent_roll",
-        "market_analysis"
-      ],
-      "writes": [
-        "x_mod_concession_analysis"
-      ],
-      "prompt_template": "Extract concession terms from the offering memorandum. Report months free and concession type. Do not compute effective rent."
-    }
-  ],
   "depends_on": [],
   "requires_conformance": "verifier",
   "requires_profiles": [

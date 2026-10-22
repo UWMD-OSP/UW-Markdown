@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 import hashlib
 import re
 
-from uwmd_binding_sources import cash_source_issues, finite
+from uwmd_binding_sources import binding_series_valid, cash_flow_findings, cash_source_issues, finite
 from uwmd_jcs import CanonicalizationError, canonicalize
 from uwmd_numeric import calendar_date
 from uwmd_source_lifecycle import source_superseded
@@ -17,7 +17,6 @@ from uwmd_text import nonblank, trim
 
 _ROLES = ("primary", "senior", "junior", "summary", "detail", "component")
 _TERMS = ("notional", "index", "effective_date", "expiration_date", "post_expiration_assumption")
-_HEDGE = ("instrument", "strike_rate", *_TERMS, "premium", "counterparty", "replacement_funding")
 _ESCROWS = ("tax", "insurance", "replacement_reserve", "ti_lc", "interest", "operating", "rate_cap_replacement", "other")
 _DIGEST = re.compile(r"sha256:[0-9a-f]{64}\Z")
 
@@ -83,6 +82,7 @@ def _cash(document, variant):
     for block in _current(document, "cash_flow_series"):
         current[dict(block.attributes).get("variant")] = block
     block = current.get(variant)
+    # Format 2.7: the last active revision of one declared identity is current.
     # Projection's unlabelled 'default' is never an explicit authored identity.
     return block if block is not None and dict(block.attributes).get("variant") == variant else None
 
@@ -164,7 +164,7 @@ def _check(document):
         for b in _current(document, "debt_structure"))
     if stated and (debt_refused or sources_refused):
         check.unresolved = True
-        issues.append(_issue("HDG-08", "debt_structure", "rate_hedge" if debt_refused else "sources_uses", "Required property-level source selection refuses."))
+        issues.append(_issue("HDG-08", "debt_structure", "rate_hedge", "Required property-level source selection refuses."))
     # Debt-only findings remain assessable when just sources_uses refuses.
     if debt_refused and stated:
         return check
@@ -182,32 +182,40 @@ def _check(document):
         return check
     def add(code, field, message):
         issues.append(_issue(code, "debt_structure", "rate_hedge" + ("." + field if field else ""), message))
+    # Format §4.7 HDG-01..03/06, one finding per stated defect at its member
+    # (RFC 0081 G1: null is not stated). The terms-group members are judged
+    # only when the group is stated; instrument, strike and premium always.
+    stated_terms = [k for k in _TERMS if hedge.get(k) is not None]
+    terms = bool(stated_terms)
+    funding, assumption = hedge.get("replacement_funding"), hedge.get("post_expiration_assumption")
+    if terms and len(stated_terms) < len(_TERMS):
+        add("HDG-01", "", "The non-null terms group is all-or-none.")
     instrument, strike = hedge.get("instrument"), hedge.get("strike_rate")
-    if instrument not in ("rate_cap", "rate_swap", "rate_collar") or not finite(strike) or not 0 < strike < 1 or any(k not in _HEDGE for k in hedge):
-        add("HDG-01", "", "Invalid closed hedge instrument, strike or member.")
     if instrument in ("rate_swap", "rate_collar"):
         add("HDG-02", "instrument", "This instrument has no accepted verification procedure.")
-    if debt.parsed.value.get("rate_type") not in ("floating", "hybrid"):
-        add("HDG-03", "", "A stated hedge requires floating or hybrid debt.")
+    elif instrument != "rate_cap":
+        add("HDG-01", "instrument", "Hedge instrument is outside the closed set.")
+    notional = hedge.get("notional")
+    if terms and (not finite(notional) or notional < 0):
+        add("HDG-01", "notional", "Notional must be finite and nonnegative.")
+    if not finite(strike) or not 0 < strike < 1:
+        add("HDG-01", "strike_rate", "Strike must be a fraction strictly between zero and one.")
+    if terms and hedge.get("index") not in ("sofr", "prime", "treasury_5yr", "treasury_10yr"):
+        add("HDG-01", "index", "Unsupported hedge index.")
+    effective, expiration = hedge.get("effective_date"), hedge.get("expiration_date")
+    if terms and not calendar_date(effective):
+        add("HDG-01", "effective_date", "Effective date must be a real calendar date.")
+    if terms and not calendar_date(expiration):
+        add("HDG-01", "expiration_date", "Expiration date must be a real calendar date.")
+    elif calendar_date(effective) and calendar_date(expiration) and expiration <= effective:
+        add("HDG-01", "expiration_date", "Expiration must be strictly after the effective date.")
     if hedge.get("premium") is not None and (not finite(hedge["premium"]) or hedge["premium"] < 0):
         add("HDG-01", "premium", "Premium must be finite and nonnegative.")
-    if hedge.get("counterparty") is not None and not isinstance(hedge["counterparty"], str):
-        add("HDG-01", "counterparty", "Counterparty must be string or null.")
-    terms = any(hedge.get(k) is not None for k in _TERMS)
-    funding, assumption = hedge.get("replacement_funding"), hedge.get("post_expiration_assumption")
-    if terms:
-        if any(hedge.get(k) is None for k in _TERMS):
-            add("HDG-01", "", "The non-null terms group is all-or-none.")
-        if not finite(hedge.get("notional")) or hedge["notional"] < 0:
-            add("HDG-01", "notional", "Notional must be finite and nonnegative.")
-        if hedge.get("index") not in ("sofr", "prime", "treasury_5yr", "treasury_10yr"):
-            add("HDG-01", "index", "Unsupported hedge index.")
-        effective, expiration = hedge.get("effective_date"), hedge.get("expiration_date")
-        if not calendar_date(effective) or not calendar_date(expiration) or expiration <= effective:
-            add("HDG-01", "effective_date", "Real ordered initial hedge dates are required.")
-        if assumption not in ("replace", "unhedged", "loan_matures_first"):
-            add("HDG-06", "post_expiration_assumption", "A registered post-expiration assumption is required.")
-    elif funding is not None:
+    if debt.parsed.value.get("rate_type") not in ("floating", "hybrid"):
+        issues.append(_issue("HDG-03", "debt_structure", "rate_type", "A stated hedge requires floating or hybrid debt."))
+    if terms and assumption not in ("replace", "unhedged", "loan_matures_first"):
+        add("HDG-06", "post_expiration_assumption", "A registered post-expiration assumption is required.")
+    if not terms and funding is not None:
         add("HDG-01", "", "Funding requires the complete terms group.")
     mode = funding.get("mode") if isinstance(funding, dict) else None
     shape = True
@@ -232,32 +240,37 @@ def _check(document):
     currency = document.frontmatter.value.get("currency_code")
     if not _currency(currency):
         issues.append(_issue("CUR-01", "frontmatter", "currency_code", "Currency must be an exact three-letter uppercase code or null."))
-    reference_valid = isinstance(variant, str) and bool(variant) and _safe_index(index) and isinstance(digest, str) and _DIGEST.fullmatch(digest)
+    # V.12.2 / Format HDG-08, one finding at the failing reference member:
+    # invalid values, then the exact current variant, then the selected
+    # series and row. A named
+    # variant that does not resolve is unresolvable_source even beside other
+    # invalid values (V.12.3: selection precedence).
     cash = _cash(document, variant) if isinstance(variant, str) and variant else None
     if cash is not None:
         check.consulted.append(cash)
-    if cash is None and isinstance(variant, str) and variant:
+    elif isinstance(variant, str) and variant:
         check.unresolved = True
-    if not reference_valid or cash is None:
-        add("HDG-08", "replacement_funding.cash_flow_ref", "Invalid reference values or unavailable exact current cash variant.")
+    if not (isinstance(variant, str) and variant and _safe_index(index)
+            and isinstance(digest, str) and _DIGEST.fullmatch(digest)):
+        add("HDG-08", "replacement_funding.cash_flow_ref", "Invalid reference values.")
+        return check
+    if cash is None:
+        add("HDG-08", "replacement_funding.cash_flow_ref.variant", "No exact current cash_flow_series variant; no fallback.")
         return check
     payload = cash.parsed.value
-    diagnostics = cash_source_issues(payload)
-    if diagnostics:
-        add("HDG-08", "replacement_funding.cash_flow_ref", "Selected cash series is structurally invalid.")
-        for diagnostic in diagnostics:
-            code = "CF-02" if "nonempty" in diagnostic or "nondecreasing" in diagnostic else "CF-03" if "both signs" in diagnostic else "CF-01"
-            issues.append(_issue(code, "cash_flow_series", "series", diagnostic))
+    if not binding_series_valid(payload) or index >= len(payload["series"]):
+        add("HDG-08", "replacement_funding.cash_flow_ref.row_index",
+            "Selected ordered series/row must have legal shape and an in-range index.")
+        # V.12.2: applicable existing CF findings stay exposed with the V.12
+        # result. validate takes only HDG/ESC from here; CF is its own rule.
+        issues.extend(_issue(code, "cash_flow_series", path, message)
+                      for code, path, message in cash_flow_findings(payload))
         return check
     rows = payload["series"]
-    if index >= len(rows):
-        add("HDG-08", "replacement_funding.cash_flow_ref.row_index", "Row ordinal is outside the selected series.")
-        return check
     row = rows[int(index)]
-    if row["amount"] > 0:
-        add("HDG-10", "replacement_funding.cash_flow_ref", "The bound payment must be nonpositive.")
-    if calendar_date(hedge.get("effective_date")) and row["date"] <= hedge["effective_date"]:
-        add("HDG-10", "replacement_funding.cash_flow_ref", "The bound payment must follow the initial effective date.")
+    if row["amount"] > 0 or calendar_date(hedge.get("effective_date")) and row["date"] <= hedge["effective_date"]:
+        add("HDG-10", "replacement_funding.cash_flow_ref",
+            "The bound payment must be nonpositive and strictly after the initial effective date.")
     if not _currency(currency):
         return check
     check.context = dict(debt_variant=dict(debt.attributes).get("variant"), cash_flow_variant=variant,

@@ -1,6 +1,7 @@
 import { hasBlockShape } from './block-kind.js';
 // HTML report renderer — the "lender-ready package" rendering target.
-// Implements UW_FORMAT_SPEC.md §7.1 (Tier 1 Lender Package) and §7.2
+// Implements the starter renderer reference (docs/starter/rendering.md)
+// §7.1 (Tier 1 Lender Package) and §7.2
 // (Tier 2 Analyst Credit Memo) as a single self-contained HTML document with
 // embedded print CSS, so one template serves web preview, browser print, and
 // the @uwmd/report PDF pipeline.

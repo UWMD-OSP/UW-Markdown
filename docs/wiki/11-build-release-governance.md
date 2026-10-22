@@ -517,8 +517,8 @@ refuse them. Preserve the existing synchronous/async verification boundary.
 - **Conformance claims under Protocol 3.0** are a tier (`reader` or
   `verifier`) plus `profiles` (`module`, `integrity`, `representations`,
   `portfolio`, `sensitivity`, `stochastic`). An RFC states which tier or
-  profile its change affects, under "Conformance impact". Editor and agent-host
-  claims are starter-product compatibility claims, outside the Protocol.
+  profile its change affects, under "Conformance impact". Editor and agent
+  hosting claims are starter-product compatibility claims, outside the Protocol.
 - RFCs live in [`docs/rfcs/`](../rfcs/), numbered from `0000-template.md`.
   Read the index and each RFC's status before treating it as future work:
   signing (0002/0010), capability tokens (0011), iterative determinism (0024),

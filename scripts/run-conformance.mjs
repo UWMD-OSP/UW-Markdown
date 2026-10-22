@@ -48,7 +48,6 @@ import {
   extractDependencyGraph,
   rankGaps,
   buildContext,
-  BANCROFT_LAYERS,
   parseUWLite,
   detectUWSourceRepresentation,
   canonicalizeUWLiteFinancial,
@@ -825,39 +824,6 @@ function projectGraph(graph) {
   ));
   const formulas = sortKeys(Object.fromEntries(graph.formulas.entries()));
   return { outputs, inputs, formulas };
-}
-
-// ─── Starter agent profiles: consumer-profile contract ────────────────────────
-// Each Bancroft layer must declare a `consumed_profile`. The fixture's
-// `expected-layer-profiles.json` is a {layerId: profile} map; mismatch fails.
-
-async function runAgentProfile() {
-  const baseDir = join(CONFORMANCE_DIR, 'starter/agent', 'profile');
-  if (!existsSync(baseDir)) return;
-  const scenarios = readdirSync(baseDir).filter((d) => statSync(join(baseDir, d)).isDirectory());
-  for (const scenario of scenarios) {
-    const dir = join(baseDir, scenario);
-    const expectedPath = join(dir, 'expected-layer-profiles.json');
-    const actual = Object.fromEntries(
-      [...BANCROFT_LAYERS]
-        .sort((a, b) => a.id.localeCompare(b.id))
-        .map((l) => [l.id, l.consumed_profile]),
-    );
-    const actualStr = `${JSON.stringify(actual, null, 2)}\n`;
-    if (UPDATE) {
-      writeFileSync(expectedPath, actualStr);
-      record('starter-agent-profile', scenario, 'updated');
-    } else if (!existsSync(expectedPath)) {
-      record('starter-agent-profile', scenario, 'fail', 'missing expected-layer-profiles.json');
-    } else {
-      const expected = readFileSync(expectedPath, 'utf8');
-      if (normalize(expected) === normalize(actualStr)) {
-        record('starter-agent-profile', scenario, 'pass');
-      } else {
-        record('starter-agent-profile', scenario, 'fail', 'layer→profile mapping differs from baseline');
-      }
-    }
-  }
 }
 
 function deepEqual(a, b) {
@@ -3409,7 +3375,7 @@ async function runCurrency() {
 //
 //   <scenario>/expected.json:
 //     op                default: section_supersede noi_model
-//     source            default: agent/L2.inst-A (the tokens' sub)
+//     source            default: agent/underwriter.inst-A (the tokens' sub)
 //     no_token          true → the edit presents no token (08)
 //     ok                whether the edit must apply
 //     error_code        pinned refusal code when !ok
@@ -3450,7 +3416,7 @@ async function runCapability() {
     };
     const ctx = {
       actor: 'conformance',
-      source: expected.source ?? 'agent/L2.inst-A',
+      source: expected.source ?? 'agent/underwriter.inst-A',
     };
     if (!expected.no_token) {
       ctx.capability_token = readFileSync(join(dir, 'token.jwt'), 'utf8').trim();
@@ -4200,7 +4166,7 @@ async function runSource() {
       problems.push(`SRC codes [${codes.join(', ')}] != [${expected.src_codes.join(', ')}]`);
     }
     // A human_only policy over the manual-sourced property block: an actor
-    // writing as `agent:L0-01` must be refused, not classified as human.
+    // writing as `agent:rent-roll-extractor` must be refused, not classified as human.
     const humanOnly = [
       { source_pattern: 'manual', authority: 'human_only', supersede_on_edit: true },
       { source_pattern: '*', authority: 'human_only', supersede_on_edit: true },
@@ -4208,7 +4174,7 @@ async function runSource() {
     const edit = applyEdit(content, parsed, {
       kind: 'section_supersede', section_id: 'property',
       content: { total_units: 999 }, meta: {},
-    }, { actor: 'system', source: 'agent:L0-01' }, humanOnly);
+    }, { actor: 'system', source: 'agent:rent-roll-extractor' }, humanOnly);
     if (edit.ok || edit.error?.code !== expected.human_only_edit_refused) {
       problems.push(`colon-form edit ${edit.ok ? 'succeeded' : edit.error?.code} != refused ${expected.human_only_edit_refused}`);
     }
@@ -4253,7 +4219,6 @@ const dispatch = {
   'documents': async () => { runDocuments(); await runMalformedDocuments(); },
   'starter-editor': async () => { await runEditor(); },
   'calc': async () => { runCalculations(); await runRefinement(); },
-  'starter-agent-profile': async () => { await runAgentProfile(); },
   'lite': async () => { runLiteFixtures(); runLiteMalformed(); runLiteCompile(); runLiteEquivalence(); },
   'receipts': async () => { await runReceiptIssue(); await runReceiptVerify(); await runReceiptRefuse(); },
   'market-data': async () => { await runMarketData(); },

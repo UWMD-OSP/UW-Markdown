@@ -29,6 +29,7 @@ import {
   buildDerivedMetrics,
   excelFormatFor,
   SUBTOTAL_RANGES,
+  SUBTOTAL_STATUS,
   type WorkbookLayout,
   type NamedInput,
   type DerivedMetric,
@@ -357,6 +358,35 @@ function decimalSumMatches(values: readonly number[], stated: number): boolean {
   return terms.reduce((sum, term) => sum + term.coefficient * 10n ** BigInt(scale - term.scale), 0n) === 0n;
 }
 
+/**
+ * Write one statement subtotal in one of its three exporter forms: a live
+ * formula, the stated source subtotal retained as an editable input, or `#N/A`
+ * when the source subtotal is absent. The two non-formula forms carry a note and
+ * the column-C status text that reverse import checks (#484).
+ */
+function writeSubtotalCell(
+  ws: ExcelJS.Worksheet,
+  cell: ExcelJS.Cell,
+  value: number | null | Refusal,
+  formula?: string,
+  note?: string,
+): void {
+  if (value === null) {
+    cell.value = { error: '#N/A' };
+    cell.note = 'Source subtotal is absent; this workbook does not calculate a replacement for the missing pack input.';
+  } else if (formula) cell.value = { formula, result: undefined };
+  else writeInputValue(cell, value);
+  if (!formula && typeof value === 'number') {
+    cell.note = note ?? 'The original source subtotal is retained as an editable input. Detail edits do not update this aggregate; edit the subtotal explicitly.';
+  }
+  if (value === null || (!formula && typeof value === 'number')) {
+    ws.getColumn(3).width = 64;
+    const status = ws.getCell(cell.row, 3);
+    status.value = value === null ? SUBTOTAL_STATUS.missing : SUBTOTAL_STATUS.retained;
+    status.alignment = { wrapText: true };
+  }
+}
+
 function writeOperatingStatementSheet(
   wb: ExcelJS.Workbook,
   reader: SectionReader,
@@ -405,24 +435,8 @@ function writeOperatingStatementSheet(
         'The workbook cannot reconstruct noi_model.net_operating_income from the selected source subtotals without changing its stated value.');
     }
   }
-  const writeSubtotal = (cell: ExcelJS.Cell, value: number | null | Refusal, formula?: string, note?: string) => {
-    if (value === null) {
-      cell.value = { error: '#N/A' };
-      cell.note = 'Source subtotal is absent; this workbook does not calculate a replacement for the missing pack input.';
-    } else if (formula) cell.value = { formula, result: undefined };
-    else writeInputValue(cell, value);
-    if (!formula && typeof value === 'number') {
-      cell.note = note ?? 'The original source subtotal is retained as an editable input. Detail edits do not update this aggregate; edit the subtotal explicitly.';
-    }
-    if (value === null || (!formula && typeof value === 'number')) {
-      ws.getColumn(3).width = 64;
-      const status = ws.getCell(cell.row, 3);
-      status.value = value === null
-        ? 'Unavailable: source subtotal is missing.'
-        : 'Source input: detail edits do not recalculate this subtotal.';
-      status.alignment = { wrapText: true };
-    }
-  };
+  const writeSubtotal = (cell: ExcelJS.Cell, value: number | null | Refusal, formula?: string, note?: string) =>
+    writeSubtotalCell(ws, cell, value, formula, note);
 
   // Income block — deduction lines carry sign:-1 so the cell shows a negative
   // magnitude and the EGI SUM nets correctly.
@@ -721,8 +735,11 @@ function writeMixedUseOperatingStatement(
   ws.getCell(`A${row}`).value = 'Property Net Operating Income';
   ws.getCell(`A${row}`).font = { bold: true, size: 12 };
   const propNoi = ws.getCell(`B${row}`);
-  writeInputValue(propNoi, 'refused' in read ? read : null);
-  if (!('refused' in read)) propNoi.value = { formula: noiNames.join('+'), result: undefined };
+  if ('refused' in read) writeInputValue(propNoi, read);
+  else if (noiNames.length > 0) propNoi.value = { formula: noiNames.join('+'), result: undefined };
+  // No component block to consolidate: an empty formula is not a workbook
+  // formula, so state the source NOI the single-statement way (#484).
+  else writeSubtotalCell(ws, propNoi, reader.number('noi_model', 'net_operating_income'));
   propNoi.numFmt = fmtFor('currency');
   propNoi.font = { bold: true, size: 12 };
   wb.definedNames.add(abs(ws.name, row, 2), mixedUseName('noi_model.net_operating_income'));

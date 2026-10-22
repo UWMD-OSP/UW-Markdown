@@ -56,15 +56,6 @@ export { evaluateModuleCalculations } from './calc-display.js';
 export { AmbiguousInheritanceError, selectInheritedAssumption } from './cascade.js';
 export type { InheritedAssumptions } from './cascade.js';
 
-export {
-  buildAgentContext,
-  buildAgentPrompt,
-  isContextReady,
-  getLayerDependencies,
-  BANCROFT_LAYERS,
-} from './context.js';
-export type { AgentContext, BancroftPrompt, LayerDefinition } from './context.js';
-
 export { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
 
 // ─── Intelligence surfaces (browser-safe: no node, no SDK) ───────────────────

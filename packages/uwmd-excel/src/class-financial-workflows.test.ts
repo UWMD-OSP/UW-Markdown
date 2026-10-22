@@ -1,26 +1,18 @@
 import ExcelJS from 'exceljs';
 import { evaluateCalc, parseUWFile, quantizeDecimal } from '@uwmd/core';
 import { describe, expect, it } from 'vitest';
+import { evaluateExcelFormula, isXlError } from '../../../test/excel-formula.mjs';
 import { getLayoutForAssetClass } from './layouts.js';
 import { toWorkbook } from './toWorkbook.js';
 
 // Synthetic connected statements, not independent industry metric definitions.
-// The small evaluator executes persisted workbook formulas; it is not Excel.
-function runFormula(formula: string, values: Record<string, number | string | null>): number | null {
-  let expression = formula.replaceAll('<>""', '!==null').replaceAll('=""', '===null').replaceAll('""', 'null')
-    .replaceAll('<>', '!==').replace(/(?<![<>!=])=(?!=)/g, '===');
-  for (const name of Object.keys(values).sort((a, b) => b.length - a.length)) {
-    const value = values[name];
-    expression = expression.replace(new RegExp(`\\b${name}\\b`, 'g'), typeof value === 'string' ? JSON.stringify(value) : String(value));
-  }
-  // Text cells (an enum such as dc_power.billing) compare as quoted strings.
-  expect(/^[0-9.eE +*/(),!<>=\-nullIFROUNDORA]+$/.test(expression.replace(/"[a-z_]*"/g, '')), expression).toBe(true);
-  return new Function('IF', 'ROUND', 'OR', 'AND', `return (${expression});`)(
-    (test: boolean, yes: unknown, no: unknown) => test ? yes : no,
-    quantizeDecimal,
-    (...tests: boolean[]) => tests.some(Boolean),
-    (...tests: boolean[]) => tests.every(Boolean),
-  ) as number | null;
+// The test-only evaluator executes persisted workbook formulas with Excel's
+// semantics for the emitted subset; it is not Excel. #N/A is the engine's null;
+// any other error never equals an expected value.
+function runFormula(formula: string, values: Record<string, number | string | null>): number | string | null {
+  const result = evaluateExcelFormula(formula, values);
+  if (isXlError(result)) return result.error === '#N/A' ? null : result.error;
+  return result as number | string | null;
 }
 
 async function parity(asset: string, sections: Record<string, unknown>, expected: Record<string, number | null>) {

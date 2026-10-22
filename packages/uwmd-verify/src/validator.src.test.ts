@@ -52,7 +52,7 @@ function srcIssues(file: ParsedUWFile) {
 
 describe('SRC-01 — unrecognized actor source', () => {
   it('refuses the retired colon form and bare words as errors', () => {
-    for (const source of ['agent:L0-01', 'engine:calculations.ts', 'user', 'wizard', 'alien/xyz']) {
+    for (const source of ['agent:rent-roll-extractor', 'engine:calculations.ts', 'user', 'wizard', 'alien/xyz']) {
       const file = makeFile({ property: makeBlock('property', { total_units: 10 }, { source }) });
       const issues = srcIssues(file);
       expect(issues, source).toHaveLength(1);
@@ -63,7 +63,7 @@ describe('SRC-01 — unrecognized actor source', () => {
 
   it('stays silent for manual and every registered namespace', () => {
     for (const source of [
-      'manual', 'agent/L6-01', 'document/rent_roll', 'system/init',
+      'manual', 'agent/risk-rater', 'document/rent_roll', 'system/init',
       'institution/threshold-override', 'system/calculations.ts',
     ]) {
       const file = makeFile({ property: makeBlock('property', { total_units: 10 }, { source }) });
@@ -100,7 +100,7 @@ describe('SRC-02 — resolution tag in the actor field', () => {
   it('stays silent when the split is done properly — actor in source, tag in resolution', () => {
     const file = makeFile({
       property: makeBlock('property', { total_units: 10 }, {
-        source: 'agent/L6-01',
+        source: 'agent/risk-rater',
         resolution: 'asset_class_default',
       }),
     });
@@ -109,7 +109,7 @@ describe('SRC-02 — resolution tag in the actor field', () => {
 });
 
 describe('SRC-03 — resolution outside the closed vocabulary', () => {
-  it.each(['manual', 'wizard', 'agent/L6-01', 'User_Input'])('refuses resolution %s as an error', (resolution) => {
+  it.each(['manual', 'wizard', 'agent/risk-rater', 'User_Input'])('refuses resolution %s as an error', (resolution) => {
     const file = makeFile({ property: makeBlock('property', { total_units: 10 }, { resolution }) });
     const issues = srcIssues(file);
     expect(issues.map((i) => i.code)).toEqual(['SRC-03']);

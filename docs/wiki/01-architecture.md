@@ -49,7 +49,8 @@ the Protocol 3.0 contract) splits the repo into two layers:
   document: well formed, internally consistent, reproducible.
 - **The starter products** — the tools given away on top of it: calc engine and
   packs, editor, viewer and report renderer, Excel exporter, defaults and the
-  cascade, refinement, the Bancroft layer registry. Their behavior is described
+  cascade, refinement, the context profiles and generic writers, the CLI. Their
+  behavior is described
   non-normatively in [`docs/starter/`](../starter/README.md) and versions with
   the packages only.
 

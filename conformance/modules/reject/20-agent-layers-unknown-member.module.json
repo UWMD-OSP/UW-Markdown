@@ -12,12 +12,14 @@
   "requires_format": "^3.0",
   "agent_layers": [
     {
-      "id": "NOT_A_LAYER",
-      "reads": "noi_model",
-      "writes": [
-        ""
+      "id": "L7_concessions",
+      "reads": [
+        "rent_roll"
       ],
-      "prompt_template": 42
+      "writes": [
+        "x_mod_concession_analysis"
+      ],
+      "prompt_template": "Extract concession terms from the offering memorandum."
     }
   ],
   "requires_conformance": "verifier"
