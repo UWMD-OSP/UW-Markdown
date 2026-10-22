@@ -414,6 +414,28 @@ function noiSpecValue(content: unknown, path: string): unknown {
 // Includes everything needed for instant deal literacy. Sections are compressed
 // from full JSON to labeled bullet points to maximize information density.
 
+/**
+ * One readable line per key risk. A risk is plain text or a structured entry
+ * (`id`, `category`, `severity`, `description`, `mitigant`); a structured entry
+ * reads as `<severity>: <description>`, falling back to its `id` (issue #410).
+ */
+function keyRisks(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((risk): string[] => {
+    if (typeof risk === 'string') return risk.length > 0 ? [risk] : [];
+    if (risk === null || typeof risk !== 'object') return [];
+    const entry = risk as Record<string, unknown>;
+    const text = typeof entry['description'] === 'string' && entry['description'].length > 0
+      ? entry['description']
+      : typeof entry['id'] === 'string' && entry['id'].length > 0 ? entry['id'] : undefined;
+    if (text === undefined) return [];
+    const severity = typeof entry['severity'] === 'string' && entry['severity'].length > 0
+      ? `${entry['severity']}: `
+      : '';
+    return [`${severity}${text}`];
+  });
+}
+
 function renderChat(parsed: ParsedUWFile, opts: RenderOptions): RenderResult {
   const maxTokens = opts.maxTokens ?? 12000;
   const fm = parsed.frontmatter;
@@ -712,7 +734,7 @@ LP: ${pct(deepGet(c, 'stated_outcomes.lp.xirr'))} XIRR, ${val(deepGet(c, 'stated
     sections.push(`## RISK ASSESSMENT
 Overall Rating: ${val(deepGet(c, 'overall_rating') ?? deepGet(c, 'risk_rating'))}
 Risk Score: ${val(deepGet(c, 'risk_score'))}
-Key Risks: ${((deepGet(c, 'key_risks') as string[] | undefined) ?? []).slice(0, 3).join('; ')}`);
+Key Risks: ${keyRisks(deepGet(c, 'key_risks')).slice(0, 3).join('; ')}`);
   }
 
   // ── Pipeline log (last 5 entries) ────────────────────────────────────────
