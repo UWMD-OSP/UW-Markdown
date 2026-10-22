@@ -845,3 +845,7 @@ optional locations agree), plus typed parser-refusal codes. Both sides share a
 fixed test clock. CI runs it on Node 20 with the existing Python runtime. This
 is development evidence alongside the portable CLI driver; messages, evidence
 payloads, issue order, institution configuration and tier claims are outside it.
+
+## Draft RFC 0122
+
+[Make DQ-05 date parsing deterministic](../rfcs/0122-strict-gap-instants.md) is pending owner review. Its proposed controls are not current conformance requirements.
