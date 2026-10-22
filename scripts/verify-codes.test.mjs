@@ -22,7 +22,7 @@ test('a compound INVALID family must be registered before the contract guard pas
     assert.equal(missing.status, 1);
     assert.match(missing.stderr, /unregistered|appear in no protocol/);
     assert.match(missing.stderr, /INVALID-DECISION/);
-    writeFileSync(join(root, 'spec/UW_PROTOCOL.md'), protocol + '| `INVALID-DECISION-NNN` | Closed decision vocabulary. |\n');
+    writeFileSync(join(root, 'spec/UW_PROTOCOL.md'), `${protocol}| \`INVALID-DECISION-NNN\` | Closed decision vocabulary. |\n`);
     const registered = run();
     assert.equal(registered.status, 0, registered.stderr);
     assert.match(registered.stdout, /2 emitted codes/);
