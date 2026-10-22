@@ -10,7 +10,7 @@ from main as needed; breaking changes within 4.x are allowed.
 Before 5.0 there is zero backward compatibility. Do not write migration notes,
 deprecation paths, "breaking for consumers" analyses or version-bump
 recommendations. Do not preserve or repair pre-5.0 documents, signatures,
-receipts or historical artifacts. Jared is the only prelaunch consumer; no
+receipts or historical artifacts. The owner is the only prelaunch consumer; no
 prelaunch document is intended for anyone else. Drop work whose only purpose
 is prelaunch compatibility or artifact preservation. This restates PROCESS
 principle 5 and supersedes earlier compatibility/preservation instructions.

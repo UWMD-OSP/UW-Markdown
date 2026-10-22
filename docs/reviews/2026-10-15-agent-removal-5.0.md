@@ -32,8 +32,8 @@ architecture to create records that UWMD can verify.
 
 | Current public surface | Published prelaunch inventory | Proposed launch disposition |
 |---|---|---|
-| Root `runBancroftAgent`, `runBancroftAgentStreaming`, run/result/progress types | Historical behavior | Remove from UWMD; product host owns execution, retries and streaming. No replacement package name or StackUW API is promised by this plan. |
-| Root and browser `BANCROFT_LAYERS`, context/prompt/readiness/dependency builders and `AgentContext`, `BancroftPrompt`, `LayerDefinition` | Historical behavior | Remove product layer registry and prompt builders; callers own prompts, readiness and workflow structure. |
+| Root `runretired agent hostAgent`, `runretired agent hostAgentStreaming`, run/result/progress types | Historical behavior | Remove from UWMD; product host owns execution, retries and streaming. No replacement package name or StackUW API is promised by this plan. |
+| Root and browser `BANCROFT_LAYERS`, context/prompt/readiness/dependency builders and `AgentContext`, `retired agent hostPrompt`, `LayerDefinition` | Historical behavior | Remove product layer registry and prompt builders; callers own prompts, readiness and workflow structure. |
 | Root tool constants, `MULTI_SECTION_LAYERS`, `ToolOutput` | Historical behavior | Retire host tool definitions after approval; adopters may define their own. No automatic transfer or replacement package is authorized. |
 | Root `AgentProviderError`, provider/request/completion/message/tool types; `createAnthropicProvider`, options | Historical behavior | Remove execution/provider integration from core. Product installs its own vendor SDK or uses its own provider interface. |
 | Root replay/recording factories, cassette parser/fingerprint/version and related types | Historical behavior | Retire with approved host execution removal; any adopter migration is a separate decision. Model cassettes are not financial conformance evidence. |
@@ -42,7 +42,7 @@ architecture to create records that UWMD can verify.
 | Root/browser `AgentHostCapability`; core manifest `agent-host` claim | Historical behavior | Remove core's execution type/claim after removal; preserve accepted manifest vocabulary and external module declarations unless separately governed. |
 | `uwmd run`, `uwmd layers` and their command-specific flags/help/tests | Historical modes include JSON-input/dry context/prompt | After approval, refuse retired commands explicitly before I/O; do not fall through to successful help. Preserve generic `uwmd edit`, its attribution flags and shared options for other commands. |
 | Anthropic optional peer/dev dependency and root lockfile entries | Historical behavior | Remove core SDK declarations/imports after no remaining product user; regenerate lockfile and verify peer-free consumers and browser closure. Never delete another package's transitive dependency by name alone. |
-| Five `.codex/skills/uwmd-*` workflow directories and companion `agents/openai.yaml` | Historical behavior | Retire UWMD workflow assets only after owner approval of asset/URL support policy. No automatic copying, required StackUW destination or replacement package is authorized. Any adopter migration is a separate decision, not a retirement prerequisite. Generic format-use/download instructions remain. |
+| Five `local workflow skills: uwmd-*` workflow directories and companion `agents/openai.yaml` | Historical behavior | Retire UWMD workflow assets only after owner approval of asset/URL support policy. No automatic copying, required StackUW destination or replacement package is authorized. Any adopter migration is a separate decision, not a retirement prerequisite. Generic format-use/download instructions remain. |
 
 The actual release must enumerate all value **and type** removals from the then
 current barrels and declarations. The matrix is a family-level inventory, not
@@ -79,7 +79,7 @@ permission to drop unrelated exports from mixed modules.
 6. Remove the SDK peer/dev declarations, regenerate the workspace lockfile,
    update package descriptions and all affected docs/site/download discovery.
    Keep historical RFCs and publication records as evidence. Replace live
-   Bancroft recipes with the approved launch documentation; keep contributor instructions.
+   retired agent host recipes with the approved launch documentation; keep contributor instructions.
 7. Prepare a bounded implementation proposal with launch-surface evidence for owner
    approval. Release preparation, package-version selection and publication
    require their own authorization. This 4.x PR removes no public contracts.
@@ -94,7 +94,7 @@ math, dictionary and builtin data required by the accepted launch contracts;
 old receipt success is not a backward-compatibility requirement.
 
 Current Format §6.3 still describes `uwmd run`; §6.8 imposes MUST requirements
-on Bancroft writers. RFC 0078's retired Agent Host tier does not erase these
+on retired agent host writers. RFC 0078's retired Agent Host tier does not erase these
 Format provisions. Before final command/API retirement, obtain a governed
 clarification distinguishing reference-product behavior from retained
 independent-producer obligations. Preserve source authority, metadata,
@@ -130,22 +130,22 @@ removal plan neither changes those contracts nor creates a projection engine.
 This snapshot names the proposed host-specific removals, not approved deletions.
 Reconcile it against the reviewed implementation base before any removal.
 
-Runtime values (17): `runBancroftAgent`, `runBancroftAgentStreaming`,
+Runtime values (17): `runretired agent hostAgent`, `runretired agent hostAgentStreaming`,
 `WRITE_UW_SECTION_TOOL`, `WRITE_MULTIPLE_SECTIONS_TOOL`, `MULTI_SECTION_LAYERS`,
 `AgentProviderError`, `createAnthropicProvider`, `createReplayProvider`,
 `createRecordingProvider`, `parseAgentCassette`, `agentRequestFingerprint`,
 `CASSETTE_VERSION`, `buildAgentContext`, `buildAgentPrompt`, `isContextReady`,
 `getLayerDependencies`, `BANCROFT_LAYERS`.
 
-Additional type-only names (18): `BancroftRunOptions`, `BancroftRunResult`,
+Additional type-only names (18): `retired agent hostRunOptions`, `retired agent hostRunResult`,
 `ProgressEvent`, `ToolOutput`, `AgentProvider`, `AgentRequest`, `AgentCompletion`,
 `AgentToolCall`, `AgentToolSchema`, `AgentMessage`, `AnthropicProviderOptions`,
 `AgentCassette`, `RecordedExchange`, `RecordingProvider`, `AgentContext`,
-`BancroftPrompt`, `LayerDefinition`, `AgentHostCapability`.
+`retired agent hostPrompt`, `LayerDefinition`, `AgentHostCapability`.
 
 Browser subset: `buildAgentContext`, `buildAgentPrompt`, `isContextReady`,
 `getLayerDependencies`, `BANCROFT_LAYERS` and `AgentContext`,
-`BancroftPrompt`, `LayerDefinition`, `AgentHostCapability`.
+`retired agent hostPrompt`, `LayerDefinition`, `AgentHostCapability`.
 `AgentProviderError` also has its class type facet. Generic writers/context APIs,
 verify exports and normative module declarations are excluded.
 
@@ -170,11 +170,11 @@ The proposed governed text treatment must cover more than the CLI subsection:
 
 | Existing normative reference | Candidate treatment requiring review | Protected meaning |
 |---|---|---|
-| Format §1.2, “Toolchain-agnostic,” says proprietary Bancroft/CLI tooling is required to generate sections correctly | Propose removing the exclusive-producer assertion and describing any producer that satisfies the record/writer contracts. Do not silently declare this sentence already repealed | Open production and independent verification; no required StackUW runtime |
-| Format §1.3 maps Bancroft layers, wizard and deterministic engine to sections | Propose identifying this as a historical/reference workflow mapping, rather than a mandatory producer architecture. Check every dependent “Written by” reference before moving wording | Section meanings, source authority and prohibited invented inputs remain enforceable |
+| Format §1.2, “Toolchain-agnostic,” says proprietary retired agent host/CLI tooling is required to generate sections correctly | Propose removing the exclusive-producer assertion and describing any producer that satisfies the record/writer contracts. Do not silently declare this sentence already repealed | Open production and independent verification; no required StackUW runtime |
+| Format §1.3 maps retired agent host layers, wizard and deterministic engine to sections | Propose identifying this as a historical/reference workflow mapping, rather than a mandatory producer architecture. Check every dependent “Written by” reference before moving wording | Section meanings, source authority and prohibited invented inputs remain enforceable |
 | Format §2.2 pipeline-state comment ties keys to `BANCROFT_LAYERS`; §2.2 frontmatter retains institutional identity | Keep represented keys, default state, reserved-L3 rule and identity fields. Propose decoupling their descriptions from a shipped runtime only through governed clarification | Existing records and validation stay interpretable; descriptive identity never routes underwriting behavior |
 | Format §2.5/§2.6 provenance/source identifiers, §3.1 source hierarchy and Part IV “Written by”/MUST NOT rules | Preserve `agent/*`, required agent identity/version when applicable, producer attribution and source prohibitions. Audit wording for historical product names individually | No namespace deletion or loss of writer accountability merely because the host is retired |
-| Format §6.3 `uwmd run`, §6.4 Bancroft/tier display description | Propose separating historical/reference CLI behavior from interoperable document requirements; update only after explicit approval | Generic rendering and source records remain supported; CLI retirement is not a format refusal |
+| Format §6.3 `uwmd run`, §6.4 retired agent host/tier display description | Propose separating historical/reference CLI behavior from interoperable document requirements; update only after explicit approval | Generic rendering and source records remain supported; CLI retirement is not a format refusal |
 | Format §6.8 numbered Agent Contract | Classify each of its eight obligations before editing: read state; schema; host metadata; revision; current/superseded state; scope; review flag; missing-input response. Product request/response mechanics and independent-producer invariants must not be removed together | No implied repeal of MUST language or new obligation for every unrelated producer |
 | Protocol §II.4 and Appendix F; module schema/types including `agent_layers`/`prompt_template` | Preserve retired-tier separation and external capability/declaration vocabulary. Remove only core's obsolete implementation claim after its runtime is actually removed | Third-party hosts may continue advertising their own product capabilities and producing verifiable records |
 | Protocol §V.2–§V.4 and §V.9–§V.11, receipts and bindings | No proposed change in this workstream | Replace/supersede, authority, metadata, canonical digests, integrity/signatures, receipt subjects and transports retain their established semantics |
@@ -190,7 +190,7 @@ no accepted replacement text, changed severity or new conformance obligation.
 
 | Current consumer or distribution path | Smallest future change after approval |
 |---|---|
-| `core/cli.ts` invokes layer/prompt helpers and dynamically loads `runBancroftAgent`; `cli-args.ts` accepts host flags | Remove approved host dispatch and fail unsupported commands before side effects; no dedicated legacy parser is required. Retain `edit --agent-id/--agent-version`; do not map removed host writes to `edit` silently |
+| `core/cli.ts` invokes layer/prompt helpers and dynamically loads `runretired agent hostAgent`; `cli-args.ts` accepts host flags | Remove approved host dispatch and fail unsupported commands before side effects; no dedicated legacy parser is required. Retain `edit --agent-id/--agent-version`; do not map removed host writes to `edit` silently |
 | `core/agents/bancroft.ts` consumes context, tool schemas, provider interface and optional Anthropic factory | Retire the execution closure together; no orphan provider or retry layer in verify |
 | `scripts/rerecord-cassettes.mjs` and agent dispatch in `scripts/run-conformance.mjs` | Retire only the removed host's recording/dispatch branches, with explicit corpus ownership/count review; preserve runner infrastructure for standard cases |
 | `core/runner.test.ts` mixes layer-context and generic writer cases | Separate/remove host-specific context tests while keeping writer metadata, byte/supersede, error-log and frontmatter cases; do not delete the whole file |
@@ -235,7 +235,7 @@ independent versioning when separately authorized.
 
 The five workflow directories are `uwmd-intake-scope`,
 `uwmd-document-extraction`, `uwmd-validation-triage`, `uwmd-batch-exceptions` and
-`uwmd-portfolio-rollup`, under `.codex/skills/`, including their
+`uwmd-portfolio-rollup`, under `local workflow skills: `, including their
 `agents/openai.yaml` descriptors. A directory being hidden or named “agents”
 does not make it a contributor instruction. Conversely, root/package coding
 `AGENTS.md`/`CLAUDE.md` must remain. `agents/L0b-prompt.md` is a repository asset;

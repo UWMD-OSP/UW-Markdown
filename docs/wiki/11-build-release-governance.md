@@ -156,8 +156,10 @@ missing publisher fails the job after every gate has already passed.
 
 Changelog: [`CHANGELOG.md`](../../CHANGELOG.md), Keep-a-Changelog format,
 per-surface sections. A prepared candidate belongs in the current matrix and
-an explicitly unpublished changelog section, alongside its release plan (for
-example, the [2.14.0 record](../releases/2.14.0-candidate.md)). A merged
+an explicitly unpublished changelog section. Preparation plans, publication
+evidence and reconciliation working notes belong in the private maintainer
+workspace. Public proof is CHANGELOG, VERSIONS, GitHub Releases and npm provenance;
+no public release-record file is required. A merged
 candidate is not a tagged or npm-published release.
 
 ### The three release states
@@ -215,7 +217,7 @@ when the release workflow runs.
 
 At `v2.14.0` and `v2.15.0`, the release commit only dated the heading, so
 their tagged trees still call their own packages candidates and their
-protocol unreleased. StackUW's re-vendor found it (its UPSTREAM-020). The
+protocol unreleased. StackUW's re-vendor found it (its adopter report 020). The
 owner decided on 2026-10-02 to fix future tags and not to cut a `v2.15.1` for
 that metadata, so both historical tags stay as they are.
 
@@ -580,3 +582,8 @@ Add a new official asset class | Yes (full builtin, RFC 0080); third-party class
 Change provenance rules (§V.2–§V.4), integrity, calc notation or numeric model | Yes (protocol)
 Change starter behavior: cascade order, defaults, editor mechanics, view models, display, agents | No (starter guide + package semver); numerics still go to maintainers
 Anything touching `spec/` or `spec/schemas/` | Yes
+
+The required index gate also enforces tracked-content identity policy. Its exact
+public-handle exceptions are the maintainer and code-owner files; other matches
+fail regardless of directory. Retained historical evidence with redactions is
+not public release proof. Launch-day file moves and slimming are separate work.

@@ -17,6 +17,7 @@
 //
 // Run: npm run verify-indexes
 
+import { trackedPublicIdentityFindings } from './public-identity.mjs';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -195,6 +196,11 @@ if (!existsSync(resolve(root, 'AGENTS.md'))) {
 if (!failures.some(f => f.startsWith('CLAUDE.md') || f.startsWith('AGENTS.md'))) {
   checks.push('Agent entry points repeat the same owner rule and otherwise share AGENTS.md');
 }
+
+// Public content policy is part of this already-required Main CI gate.
+const identities = trackedPublicIdentityFindings(root);
+failures.push(...identities.map(({ path, line, rule }) => `${path}:${line}: public identity policy (${rule})`));
+checks.push('Tracked file contents checked against the public identity policy');
 
 // ── Report ───────────────────────────────────────────────────────────────────
 

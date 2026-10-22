@@ -1,4 +1,5 @@
 {
+  "_public_redaction_note": "Identity-bearing observations were redacted; this retained historical file is not release proof.",
   "status": "recovery disposition, not normative authority or conformance certification",
   "archive_source_files": 54,
   "excluded_routine_logs": 392,
@@ -35,7 +36,7 @@
       "original_relative_path": "uwmd-lane-354/docs/reviews/2026-10-15-python-reader-354.md",
       "sha256": "30f86f8e2af4b5b16abfbda1d23ec22cb20d570f6cb22d662321cde17025c50a",
       "disposition": "superseded-source-foundation-review-represented-in-PR358",
-      "remote_branch": "codex/python-source-354",
+      "remote_branch": "work/python-source-354",
       "remote_path": "docs/reviews/2026-10-15-python-reader-354.md"
     },
     {
@@ -280,7 +281,7 @@
       "original_relative_path": "uwmd-lane-354/implementations/python/test_source.py",
       "sha256": "b4b56778a6820de02a1b0265f15a6f68248724ce25ef85d5869536003a893513",
       "disposition": "exact-content-already-in-reviewed-PR358",
-      "remote_branch": "codex/python-source-354",
+      "remote_branch": "work/python-source-354",
       "remote_path": "implementations/python/test_source.py"
     },
     {
@@ -322,7 +323,7 @@
       "original_relative_path": "uwmd-lane-354/implementations/python/uwmd_source.py",
       "sha256": "be2f52fe9e754b4ddb827448e82f905bd0074becdf2197a01cc09ebf45402ac1",
       "disposition": "exact-content-already-in-reviewed-PR358",
-      "remote_branch": "codex/python-source-354",
+      "remote_branch": "work/python-source-354",
       "remote_path": "implementations/python/uwmd_source.py"
     },
     {

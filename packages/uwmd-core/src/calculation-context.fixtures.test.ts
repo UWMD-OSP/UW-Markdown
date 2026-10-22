@@ -20,7 +20,7 @@ import { parseCalculationContext } from './calculation-context.js';
 // variant-05 and variant-11 once put the block their caller context names in
 // the last fence. A reader that checked the name and then kept the last fence
 // passed both, in both runners, because both read these same files (StackUW's
-// UPSTREAM-021). Swapping the fences would only move the blind spot: every
+// adopter report 021). Swapping the fences would only move the blind spot: every
 // generic-order fixture also resolved to its first fence. Both context and
 // successful no-context fixtures now put the selected block between two others;
 // this suite preserves their distinct selection reasons and rejects both orders.

@@ -72,7 +72,7 @@ const RECONCILED = {
   protocolDoc: PREPARED.protocolDoc.replace('Accepted release contract (RFC 0066)', 'Stable'),
 };
 
-// ── The v2.15.0 tag's tree, verbatim excerpts: the shape UPSTREAM-020 found ──
+// ── The v2.15.0 tag's tree, verbatim excerpts: the shape adopter report 020 found ──
 const TAGGED_2_15_0 = {
   changelog: `## [Unreleased]
 
@@ -488,4 +488,14 @@ test('dependencyDrift flags a changed dependency set under an unchanged version 
   ]), []);
   // An absent field equals an empty one.
   assert.deepEqual(dependencyDrift([{ current: { name: 'x', version: '1.0.0', dependencies: {} }, previous: { name: 'x', version: '1.0.0' } }]), []);
+});
+
+test('release-state checks depend on public contracts, not preparation/evidence file paths', () => {
+  const inputs = new Proxy(PREPARED, {
+    get(target, name) {
+      assert.ok(Object.hasOwn(target, name) || ['tag', 'specProtocolVersion'].includes(name), `unexpected release input ${String(name)}`);
+      return target[name];
+    },
+  });
+  assert.deepEqual(checkReleaseState(inputs).failures, []);
 });

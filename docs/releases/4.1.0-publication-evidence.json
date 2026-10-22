@@ -1,4 +1,5 @@
 {
+  "_public_redaction_note": "Identity-bearing observations were redacted; this retained historical file is not release proof.",
   "verified_at": "2026-10-14T04:16:51.029Z",
   "verification_date_local": "2026-10-13",
   "timezone": "America/Phoenix",
@@ -182,7 +183,7 @@
       "version": "0.0.0-bootstrap.0",
       "published_at": "2026-10-14T04:11:57.566Z",
       "dist_tag": "bootstrap",
-      "published_by": "jaredmaxey",
+      "published_by": "[redacted public handle]",
       "files": [
         "package/README.md",
         "package/package.json"
@@ -198,7 +199,7 @@
       "version": "0.0.0-stage",
       "published_at": "2026-10-14T04:06:45.736Z",
       "description": "Temporary package placeholder for staged publishing",
-      "published_by": "jaredmaxey",
+      "published_by": "[redacted public handle]",
       "files": 2,
       "dist_tag": null,
       "deprecated": null,
