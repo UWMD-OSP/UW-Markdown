@@ -69,7 +69,7 @@ import {
   UWX_EXTENSION,
   parseUWLite,
   compileUWLite,
-  UWLiteBridgeError,
+  UWSourceRepresentationError,
   projectUWEnvelopeToLite,
   stringifyUWX,
   UW_LITE_REPRESENTATION_ID,
@@ -77,6 +77,7 @@ import {
   VERIFY_PACKAGE_NAME,
   VERIFY_VERSION,
 } from '@uwmd/verify';
+import { loadUWSourceFile, loadEditableUWXFile } from './source-file.js';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
 // Receipts the CLI issues name `@uwmd/core` as their issuer (RFC 0083).
 import { issueReceipt } from './receipt-engine.js';
@@ -156,10 +157,12 @@ function institutionFailure(error: unknown, json: boolean): void {
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
 
-function cmdParse(file: string, flags: Record<string, string | boolean>): void {
+async function cmdParse(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
-  const detection = detectUWSourceRepresentation(content, file);
-  if (detection.representation !== UWX_REPRESENTATION_ID) {
+  const detection = CORE_CODEC_REGISTRY.findByFileName(file)
+    ? { representation: 'codec', warnings: [] }
+    : detectUWSourceRepresentation(content, file);
+  if (detection.representation === UW_LITE_REPRESENTATION_ID) {
     const lite = parseUWLite(content);
     console.log(
       JSON.stringify(
@@ -177,7 +180,9 @@ function cmdParse(file: string, flags: Record<string, string | boolean>): void {
     return;
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
-  const parsed = parseUWFile(content, { strict: flags['strict'] === true });
+  const loaded = await loadUWSourceFile(file);
+  const parsed = flags['strict'] && loaded.representation === UWX_REPRESENTATION_ID
+    ? parseUWFile(content, { strict: true }) : loaded.parsed;
   // `sections` and `superseded` are emitted in the §II.6a.6 conformance
   // projection — `{ meta, content }` per block, one such object per variant
   // for a multi-variant section — NOT as in-memory UWBlocks:
@@ -223,8 +228,10 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
     console.error('--institution requires a path.'); process.exit(1);
   }
   const content = readFile(file);
-  const detection = detectUWSourceRepresentation(content, file);
-  if (detection.representation !== UWX_REPRESENTATION_ID) {
+  const detection = CORE_CODEC_REGISTRY.findByFileName(file)
+    ? { representation: 'codec', warnings: [] }
+    : detectUWSourceRepresentation(content, file);
+  if (detection.representation === UW_LITE_REPRESENTATION_ID) {
     const lite = parseUWLite(content);
     try { loadInstitutionPolicy(file, flags['institution'] as string | undefined); }
     catch (error) {
@@ -263,13 +270,13 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
     process.exit(errors.length > 0 ? 1 : 0);
   }
   for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
-  const parsed = parseUWFile(content);
+  const parsed = (await loadUWSourceFile(file)).parsed;
   let institution: ReturnType<typeof loadInstitutionPolicy>;
   try { institution = loadInstitutionPolicy(file, flags['institution'] as string | undefined); }
   catch (error) {
     institutionFailure(error, flags['json'] === true); return;
   }
-  const structural = validateUWFile(content, institution?.thresholds, undefined, institution);
+  const structural = validateUWFile(parsed, institution?.thresholds, undefined, institution);
   const replacement_funding_verification = await verifyReplacementFundingBindings(parsed);
   const result = { ...structural, replacement_funding_verification };
   const fundingRefuses = replacement_funding_verification.state !== 'verified'
@@ -417,7 +424,8 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   const partSources = flags['resolved']
     ? loadPartSourcesDir(flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file))
     : undefined;
-  const parsed = withResolved(parseUWFile(content), file, flags, partSources);
+  const loaded = await loadUWSourceFile(file);
+  const parsed = withResolved(loaded.parsed, file, flags, partSources);
 
   // No flag set → run all three.
   const onlyValidate = flags['validate'] === true;
@@ -462,7 +470,14 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   let chain: IntegrityResult | undefined;
   let prov: IntegrityResult | undefined;
   if (runAll || onlyIntegrity || flags['signing'] || flags['document-signature']) {
-    chain = await verifyChain(parsed, await signingOptions(flags));
+    const options = await signingOptions(flags);
+    if (flags['document-signature'] && loaded.representation !== UWX_REPRESENTATION_ID) {
+      const { documentSignature: _signature, documentSignatureVerifier: _verifier,
+        requireDocumentSignature: _required, ...blockOptions } = options;
+      chain = { ...await verifyChain(parsed, blockOptions), ok: false,
+        document_signature: { state: 'unverifiable', reason: 'unsupported_version',
+          issues: [{ code: 'INT-14', message: `Document signatures require uwx-markdown; supplied ${loaded.representation}.` }] } };
+    } else chain = await verifyChain(parsed, options);
     sections['integrity'] = chain;
     if (!chain.ok) hadError = true;
   }
@@ -533,9 +548,9 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
   process.exit(hadError ? 1 : 0);
 }
 
-function cmdCompact(file: string, flags: Record<string, string | boolean>): void {
+async function cmdCompact(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
-  const parsed = parseUWFile(content);
+  const parsed = await loadEditableUWXFile(file);
   const totalSuperseded = Object.values(parsed.superseded).reduce((n, arr) => n + arr.length, 0);
 
   if (totalSuperseded === 0) {
@@ -559,11 +574,11 @@ function cmdCompact(file: string, flags: Record<string, string | boolean>): void
   console.log(`Compacted ${totalSuperseded} superseded block(s). Wrote to: ${outPath}`);
 }
 
-function cmdDiff(fileA: string, fileB: string): void {
+async function cmdDiff(fileA: string, fileB: string): Promise<void> {
   const contentA = readFile(fileA);
   const contentB = readFile(fileB);
-  const parsedA = parseUWFile(contentA);
-  const parsedB = parseUWFile(contentB);
+  const parsedA = (await loadUWSourceFile(fileA)).parsed;
+  const parsedB = (await loadUWSourceFile(fileB)).parsed;
   const diffs = diff(parsedA, parsedB);
 
   const changed = diffs.filter(d => d.status !== 'unchanged');
@@ -658,9 +673,9 @@ function cmdInit(flags: Record<string, string | boolean>): void {
   console.log(`Created: ${outPath}`);
 }
 
-function cmdSummary(file: string): void {
+async function cmdSummary(file: string): Promise<void> {
   const content = readFile(file);
-  const parsed = parseUWFile(content);
+  const parsed = (await loadUWSourceFile(file)).parsed;
   const fm = parsed.frontmatter;
   const qm = fm.quick_metrics ?? {};
 
@@ -702,7 +717,7 @@ async function cmdExport(file: string, flags: Record<string, string | boolean>):
   // --resolved exports the assembled record. Exporting the directive instead
   // would ship a document whose rent roll is a list of filenames.
   const loaded = flags['resolved']
-    ? toUWEnvelope(withResolved(parseUWFile(readFile(file)), file, flags))
+    ? toUWEnvelope(withResolved((await loadUWSourceFile(file)).parsed, file, flags))
     : await loadEnvelope(file);
   const envelope = includeSuperseded ? loaded : { ...loaded, superseded: {} };
   const text = stringifyUWEnvelope(await stampEnvelopeDigest(envelope));
@@ -738,35 +753,7 @@ const FORMAT_ALIASES: Record<string, string> = {
 };
 
 async function loadEnvelope(file: string): Promise<UWDocumentEnvelope> {
-  const lower = file.toLowerCase();
-  if (lower.endsWith('.uw.md') || lower.endsWith(UWX_EXTENSION)) {
-    const content = readFile(file);
-    const detection = detectUWSourceRepresentation(content, file);
-    if (detection.representation !== UWX_REPRESENTATION_ID) {
-      const compilation = compileUWLite(parseUWLite(content));
-      if (!compilation.ok) {
-        // A refusal, not a crash: the typed error prints without a stack (#409).
-        const errors = compilation.report.issues.filter((issue) => issue.severity === 'error');
-        const issues = errors.map((issue) => `${issue.code}: ${issue.message}`).join('; ');
-        throw new UWLiteBridgeError(
-          errors[0]?.code ?? 'LITE_COMPILE_FAILED',
-          `UW Lite compilation failed: ${issues}`,
-        );
-      }
-      return compilation.envelope;
-    }
-    for (const warning of detection.warnings) console.warn(`Warning: ${warning}`);
-    return toUWEnvelope(parseUWFile(content));
-
-  }
-  const sourceCodec = CORE_CODEC_REGISTRY.findByFileName(file);
-  if (!sourceCodec || !sourceCodec.descriptor.directions.includes('read')) {
-    throw new Error(`Cannot detect a readable UW representation for ${file}.`);
-  }
-  const input = sourceCodec.descriptor.id === 'uw-csv-bundle'
-    ? new Uint8Array(readFileSync(resolve(file)))
-    : readFile(file);
-  return sourceCodec.decode(input);
+  return (await loadUWSourceFile(file)).envelope;
 }
 
 /**
@@ -1060,9 +1047,9 @@ function cmdFormats(flags: Record<string, string | boolean>): void {
     );
   }
 }
-function cmdReport(file: string, flags: Record<string, string | boolean>): void {
+async function cmdReport(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
-  const parsed = parseUWFile(content);
+  const parsed = (await loadUWSourceFile(file)).parsed;
   const result = renderReportHtml(parsed, {
     tier: flags['tier'] as RenderTier | undefined,
     preparedBy: flags['prepared-by'] as string | undefined,
@@ -1091,14 +1078,14 @@ function cmdReport(file: string, flags: Record<string, string | boolean>): void 
  * the flag is absent. Exits with a message rather than throwing, so a bad
  * observation set is a usage error rather than a stack trace.
  */
-function loadMarketData(flags: Record<string, string | boolean>): {
+async function loadMarketData(flags: Record<string, string | boolean>): Promise<{
   lookup: ReturnType<typeof createDocumentMarketData>;
   identity: { document_id: string; as_of: string; provider: string; geo: string };
-} | null {
+} | null> {
   const path = flags['market-data'] as string | undefined;
   if (!path) return null;
   try {
-    const doc = parseMarketDataDocument(parseUWFile(readFile(path)));
+    const doc = parseMarketDataDocument((await loadUWSourceFile(path)).parsed);
     return {
       lookup: createDocumentMarketData(doc),
       identity: {
@@ -1114,8 +1101,8 @@ function loadMarketData(flags: Record<string, string | boolean>): {
   }
 }
 
-function cmdMarketDataValidate(file: string, flags: Record<string, string | boolean>): void {
-  const parsed = parseUWFile(readFile(file));
+async function cmdMarketDataValidate(file: string, flags: Record<string, string | boolean>): Promise<void> {
+  const parsed = (await loadUWSourceFile(file)).parsed;
   try {
     const doc = parseMarketDataDocument(parsed);
     if (flags['json']) {
@@ -1145,9 +1132,9 @@ function cmdMarketDataValidate(file: string, flags: Record<string, string | bool
   }
 }
 
-function cmdScope(file: string, flags: Record<string, string | boolean>): void {
+async function cmdScope(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
-  const parsed = parseUWFile(content);
+  const parsed = (await loadUWSourceFile(file)).parsed;
   const assetClass =
     (flags['asset-class'] as string | undefined) ??
     (parsed.frontmatter.asset_class as string | undefined) ??
@@ -1159,7 +1146,7 @@ function cmdScope(file: string, flags: Record<string, string | boolean>): void {
     process.exit(1);
   }
 
-  const market = loadMarketData(flags);
+  const market = await loadMarketData(flags);
 
   const out: Record<string, {
     value: unknown;
@@ -1234,9 +1221,9 @@ function loadCalculationContext(flags: Record<string, string | boolean>, periodO
   return context;
 }
 
-function cmdRefine(file: string, flags: Record<string, string | boolean>): void {
+async function cmdRefine(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const content = readFile(file);
-  const parsed = parseUWFile(content);
+  const parsed = (await loadUWSourceFile(file)).parsed;
   const targets = flags['targets']
     ? (flags['targets'] as string).split(',').map(s => s.trim()).filter(Boolean)
     : undefined;
@@ -1251,7 +1238,7 @@ function cmdRefine(file: string, flags: Record<string, string | boolean>): void 
   // With `--market-data`, a field the observation set covers is no longer a
   // gap the cascade cannot fill, so it drops out of the VOI ranking. That is
   // the point: the ranking should tell you what is still worth diligencing.
-  const market = loadMarketData(flags);
+  const market = await loadMarketData(flags);
   const periodContext = loadCalculationContext(flags, true);
   const result = rankGaps(parsed, {
     periodContext,
@@ -1339,7 +1326,7 @@ function loadPartsDir(dir: string, sources = loadPartSourcesDir(dir)): Map<strin
   return parts;
 }
 
-function cmdCompose(file: string, flags: Record<string, string | boolean>): void {
+async function cmdCompose(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const section = flags['externalize'];
   if (typeof section !== 'string') {
     console.error('Usage: uwmd compose <file> --externalize <section> [--collection-key <k>] [--collection-path <p>]');
@@ -1353,7 +1340,7 @@ function cmdCompose(file: string, flags: Record<string, string | boolean>): void
     process.exit(1);
   }
 
-  const parsed = parseUWFile(readFile(file));
+  const parsed = await loadEditableUWXFile(file);
   let result: ExternalizationResult;
   try {
     result = externalizeSection(parsed, {
@@ -1396,9 +1383,9 @@ function cmdCompose(file: string, flags: Record<string, string | boolean>): void
   console.log('The resolved record has the same semantic digest as the original.');
 }
 
-function cmdResolve(file: string, flags: Record<string, string | boolean>): void {
+async function cmdResolve(file: string, flags: Record<string, string | boolean>): Promise<void> {
   const partsDir = flags['parts'] ? resolve(flags['parts'] as string) : defaultPartsDir(file);
-  const parsed = parseUWFile(readFile(file));
+  const parsed = await loadEditableUWXFile(file);
   let parts: Map<string, UWPart>;
   try {
     parts = loadPartsDir(partsDir);
@@ -1474,7 +1461,7 @@ function withResolved(
 switch (command) {
   case 'parse':
     if (!positional[0]) { console.error('Usage: uwmd parse <file> [--compact] [--strict]'); process.exit(1); }
-    cmdParse(positional[0], flags);
+    await cmdParse(positional[0], flags);
     break;
 
   case 'validate':
@@ -1500,7 +1487,10 @@ switch (command) {
     const signing = await loadOptionalSigning<DocumentSigningModule>('uwmd sign-document');
     try {
       const key = await signing.loadDocumentSigningKey(JSON.parse(readFile(flags['key'])));
-      const signature = await signing.signDocument(readFile(positional[0]), key as never,
+      const source = await loadUWSourceFile(positional[0]);
+      if (source.representation !== UWX_REPRESENTATION_ID) throw new UWSourceRepresentationError(
+        'INT-14', `Document signatures require uwx-markdown; supplied ${source.representation}.`);
+      const signature = await signing.signDocument(source.parsed.raw, key as never,
         typeof flags['signed-at'] === 'string' ? { signedAt: flags['signed-at'] } : {});
       writeFileSync(resolve(flags['out']), `${JSON.stringify(signature, null, 2)}\n`, { encoding: 'utf8', flag: 'wx' });
       console.log(`Document snapshot signature written to ${flags['out']}.`);
@@ -1512,18 +1502,18 @@ switch (command) {
 
   case 'compact':
     if (!positional[0]) { console.error('Usage: uwmd compact <file> [--output <file>] [--dry-run]'); process.exit(1); }
-    cmdCompact(positional[0], flags);
+    await cmdCompact(positional[0], flags);
     break;
 
   case 'diff':
     if (!positional[0] || !positional[1]) { console.error('Usage: uwmd diff <file-a> <file-b>'); process.exit(1); }
-    cmdDiff(positional[0], positional[1]);
+    await cmdDiff(positional[0], positional[1]);
     break;
 
   case 'render': {
     if (!positional[0]) { console.error('Usage: uwmd render <file> [--format <json|csv|chat|summary>] [--profile <summary|live|compact|full|relevant>] [--sections a,b,c] [--max-tokens 12000] [--no-meta] [--output <file>] [--tier screener|analyst]'); process.exit(1); }
     const content = readFile(positional[0]);
-    const parsedFile = parseUWFile(content);
+    const parsedFile = (await loadUWSourceFile(positional[0]!)).parsed;
 
     if (flags['profile']) {
       const profile = flags['profile'] as ContextProfile;
@@ -1580,7 +1570,7 @@ switch (command) {
       console.error(`Could not parse operation JSON: ${err}`);
       process.exit(1);
     }
-    const parsedFile = parseUWFile(fileContent);
+    const parsedFile = await loadEditableUWXFile(positional[0]!);
     const ctx: EditContext = {
       actor: (flags['actor'] as string | undefined) ?? 'system',
       source: (flags['source'] as string | undefined) ?? 'manual',
@@ -1646,7 +1636,7 @@ switch (command) {
       console.error('Usage: uwmd project-lease-up <file> <plan.json> [--json]');
       process.exit(1);
     }
-    const parsed = parseUWFile(readFile(positional[0]!));
+    const parsed = (await loadUWSourceFile(positional[0]!)).parsed;
     const planText = readFile(positional[1]!);
     try {
       let plan: LeaseUpCashFlowPlan;
@@ -1667,7 +1657,7 @@ switch (command) {
     if (positional.length < 1 || positional.length > 2 || Object.keys(flags).some(k => k !== 'json')) {
       console.error('Usage: uwmd verify-reserve-draws <file> [plan.json] [--json]'); process.exit(1);
     }
-    const parsed = parseUWFile(readFile(positional[0]!));
+    const parsed = (await loadUWSourceFile(positional[0]!)).parsed;
     let plan: unknown;
     if (positional[1]) {
       const text = readFile(positional[1]);
@@ -1682,7 +1672,7 @@ switch (command) {
   }
   case 'verify-reserve-accounts': {
     if (!positional[0]) { console.error('Usage: uwmd verify-reserve-accounts <file> [--json]'); process.exit(1); }
-    const result = await verifyReserveAccounts(parseUWFile(readFile(positional[0])));
+    const result = await verifyReserveAccounts((await loadUWSourceFile(positional[0])).parsed);
     if (flags['json']) console.log(JSON.stringify(result, null, 2));
     else { console.log(`Reserve account verification: ${result.state}`); for (const issue of result.issues) console.log(issue.message); }
     process.exit(result.state === 'failed' || result.state === 'unverifiable' ? 1 : 0);
@@ -1724,7 +1714,7 @@ switch (command) {
       console.error('Usage: uwmd verify-property-cash-flows <file> <plan.json> [--json]');
       process.exit(1);
     }
-    const parsed = parseUWFile(readFile(positional[0]!));
+    const parsed = (await loadUWSourceFile(positional[0]!)).parsed;
     const planText = readFile(positional[1]!);
     try {
       let plan: PropertyCashFlowPlan;
@@ -1756,7 +1746,7 @@ switch (command) {
     }
     const options: SectionVerificationOptions = typeof flags['variant'] === 'string' ? { variant: flags['variant'] } : {};
     try {
-      const report = verifier(parseUWFile(readFile(positional[0]!)), options);
+      const report = verifier((await loadUWSourceFile(positional[0]!)).parsed, options);
       if (flags['json']) console.log(JSON.stringify(report, null, 2));
       else {
         console.log(`${report.section} (variant: ${report.variant ?? '(unlabelled)'}): ${report.status}`);
@@ -1776,7 +1766,7 @@ switch (command) {
   // stays the combined validation/metrics/integrity/provenance command.
   case 'verify-metrics': {
     if (positional.length !== 1) { console.error('Usage: uwmd verify-metrics <file> [--json]'); process.exit(1); }
-    const report = verifyStatedMetrics(parseUWFile(readFile(positional[0]!)));
+    const report = verifyStatedMetrics((await loadUWSourceFile(positional[0]!)).parsed);
     if (flags['json']) console.log(JSON.stringify(report, null, 2));
     else {
       console.log(`Stated metrics (rule set ${report.rule_set}): ${report.counts.verified} verified, ${report.counts.failed} failed, ${report.counts.unverifiable} unverifiable`);
@@ -1826,7 +1816,7 @@ switch (command) {
       console.error('Usage: uwmd inspect-property-cash-flows <file> [--json]');
       process.exit(1);
     }
-    const inventory = inspectPropertyCashFlowInputs(parseUWFile(readFile(positional[0]!)));
+    const inventory = inspectPropertyCashFlowInputs((await loadUWSourceFile(positional[0]!)).parsed);
     if (flags['json']) {
       console.log(JSON.stringify(inventory, null, 2));
     } else {
@@ -1847,7 +1837,7 @@ switch (command) {
       process.exit(1);
     }
     const fileContent = readFile(positional[0]!);
-    const parsed = parseUWFile(fileContent);
+    const parsed = (await loadUWSourceFile(positional[0]!)).parsed;
 
     // Second arg is either a JSON file path or a raw formula string.
     let decls: ModuleCalcDecl[];
@@ -1898,7 +1888,7 @@ switch (command) {
 
   case 'summary':
     if (!positional[0]) { console.error('Usage: uwmd summary <file>'); process.exit(1); }
-    cmdSummary(positional[0]);
+    await cmdSummary(positional[0]);
     break;
 
   case 'export':
@@ -1916,34 +1906,34 @@ switch (command) {
     break;
   case 'report':
     if (!positional[0]) { console.error('Usage: uwmd report <file.uw.md> [--tier screener|analyst] [--prepared-by <name>] [--output <file.html>] [--stdout]'); process.exit(1); }
-    cmdReport(positional[0], flags);
+    await cmdReport(positional[0], flags);
     break;
 
   case 'scope':
     if (!positional[0]) { console.error('Usage: uwmd scope <file> [--asset-class multifamily] [--market-data <file>] [--output <file>] [--json]'); process.exit(1); }
-    cmdScope(positional[0], flags);
+    await cmdScope(positional[0], flags);
     break;
 
   case 'refine':
     if (!positional[0]) { console.error('Usage: uwmd refine <file> [--targets dscr,debt_yield] [--top 5] [--asset-class multifamily] [--market-data <file>] [--calc-context <file>] [--json]'); process.exit(1); }
-    cmdRefine(positional[0], flags);
+    await cmdRefine(positional[0], flags);
     break;
 
   case 'compose':
     if (!positional[0]) { console.error('Usage: uwmd compose <file> --externalize <section> [--collection-key <k>] [--collection-path <p>] [--part-prefix <p>] [--out-dir <dir>] [--in-place] [--output <file>] [--dry-run]'); process.exit(1); }
-    cmdCompose(positional[0], flags);
+    await cmdCompose(positional[0], flags);
     break;
 
   case 'resolve':
     if (!positional[0]) { console.error('Usage: uwmd resolve <file> [--parts <dir>] [--output <file>] [--json]'); process.exit(1); }
-    cmdResolve(positional[0], flags);
+    await cmdResolve(positional[0], flags);
     break;
 
   case 'market-data': {
     const sub = positional[0];
     if (sub === 'validate') {
       if (!positional[1]) { console.error('Usage: uwmd market-data validate <file> [--json]'); process.exit(1); }
-      cmdMarketDataValidate(positional[1], flags);
+      await cmdMarketDataValidate(positional[1], flags);
     } else {
       console.error('Usage: uwmd market-data validate <file> [--json]');
       process.exit(1);

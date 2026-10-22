@@ -29,6 +29,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #488: reading CLI commands and Excel load registered UWX, Lite, JSON,
+  XML and CSV bundle sources through one decoder. Source writers refuse
+  unsupported representations explicitly; document signatures remain UWX-only.
+
 - Fix #494: an unknown `render --format` is a typed refusal
   (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
   longer advertises flags removed by #412 and lists `init --zip`.

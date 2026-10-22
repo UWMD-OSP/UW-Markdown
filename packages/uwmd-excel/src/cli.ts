@@ -11,7 +11,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve, dirname, basename, extname, join } from 'node:path';
 import ExcelJS from 'exceljs';
-import { parseUWFile, parseCalculationContext } from '@uwmd/core';
+import { loadUWSourceFile, parseCalculationContext } from '@uwmd/core';
 import { toWorkbook } from './toWorkbook.js';
 import { fromWorkbook } from './fromWorkbook.js';
 import { getLayoutForAssetClass, SUPPORTED_ASSET_CLASSES } from './layouts.js';
@@ -120,8 +120,7 @@ export async function main(argv: readonly string[]): Promise<number> {
     return 0;
   }
 
-  const raw = await readFile(args.input, 'utf8');
-  const parsed = parseUWFile(raw);
+  const parsed = (await loadUWSourceFile(args.input)).parsed;
 
   const assetClass = String(parsed.frontmatter.asset_class ?? '');
   if (!getLayoutForAssetClass(assetClass)) {
