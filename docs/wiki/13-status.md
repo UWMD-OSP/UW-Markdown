@@ -27,7 +27,7 @@ instead of a second verified price per kW; with no valuation price both
 metrics are null, never the frontmatter copy. Python implements CC-17. The new
 `cross-checks` conformance suite pins six CC-17 records (issues and coverage,
 twelve portable cases) and two statement-home cases pin the metric against a
-drifted frontmatter (1,244 indexed checks, 409 portable). Every repository
+drifted frontmatter (1,257 indexed checks, 571 portable, with RFC 0115). Every repository
 data-center record states equal prices, so no expected value moved.
 
 **Implemented RFC 0115 — portable cases for every Verifier obligation (owner acceptance 2026-10-22, including D2 and D4).**
