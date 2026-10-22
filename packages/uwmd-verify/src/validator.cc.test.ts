@@ -96,3 +96,90 @@ describe('validateUWFile — CC cross-section consistency', () => {
     });
   }
 });
+
+// RFC 0086: the frontmatter summary's purchase price is checked against
+// valuation.purchase_price with CC-10's $100 / error rule, in every class.
+describe('validateUWFile — CC-17 frontmatter purchase price (RFC 0086)', () => {
+  function withFrontmatter(
+    quickPrice: number | undefined,
+    sections: Record<string, UWBlock | Record<string, UWBlock>>,
+    assetClass = 'data_center',
+  ): ParsedUWFile {
+    return {
+      frontmatter: {
+        uw_version: '3.0', asset_class: assetClass,
+        ...(quickPrice === undefined ? {} : { quick_metrics: { purchase_price: quickPrice } }),
+      } as ParsedUWFile['frontmatter'],
+      sections: sections as ParsedUWFile['sections'], prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
+      extensions: {}, superseded: {}, raw: '',
+    };
+  }
+  const valuation = (price?: number): UWBlock => block('valuation', price === undefined ? { underwritten_value: 1 } : { purchase_price: price });
+  const cc17 = (parsed: ParsedUWFile) => {
+    const result = validateUWFile(parsed);
+    return { coverage: result.coverage['CC-17'], issues: result.issues.filter((i) => i.code === 'CC-17'), all: result.issues };
+  };
+
+  it('is evaluated and clean when the prices agree', () => {
+    const r = cc17(withFrontmatter(10_000_000, { valuation: valuation(10_000_000) }));
+    expect(r.coverage).toEqual({ status: 'evaluated' });
+    expect(r.issues).toEqual([]);
+  });
+
+  it('is an error when the frontmatter is $101 off, with its field and canonical remediation', () => {
+    const r = cc17(withFrontmatter(10_000_101, { valuation: valuation(10_000_000) }));
+    expect(r.coverage).toEqual({ status: 'evaluated' });
+    expect(r.issues).toHaveLength(1);
+    expectRegistered(r.issues[0]!, 'CC-17', 'error', 'quick_metrics.purchase_price');
+    expect(r.issues[0]).toMatchObject({ section: 'frontmatter', value: 101 });
+  });
+
+  it('is clean at exactly $100 (the boundary is CC-10\'s: over $100 is an error)', () => {
+    for (const price of [10_000_100, 9_999_900]) {
+      const r = cc17(withFrontmatter(price, { valuation: valuation(10_000_000) }));
+      expect(r.coverage, String(price)).toEqual({ status: 'evaluated' });
+      expect(r.issues, String(price)).toEqual([]);
+    }
+  });
+
+  it('applies to every asset class', () => {
+    for (const assetClass of ['multifamily', 'office', 'hospitality']) {
+      const r = cc17(withFrontmatter(12_000_000, { valuation: valuation(10_000_000) }, assetClass));
+      expect(r.issues, assetClass).toHaveLength(1);
+    }
+  });
+
+  it('is skipped field_absent when either price is absent, section_absent without a valuation', () => {
+    expect(cc17(withFrontmatter(undefined, { valuation: valuation(10_000_000) })).coverage)
+      .toEqual({ status: 'skipped', reason: 'field_absent', detail: 'quick_metrics.purchase_price' });
+    expect(cc17(withFrontmatter(10_000_000, { valuation: valuation() })).coverage)
+      .toEqual({ status: 'skipped', reason: 'field_absent', detail: 'valuation.purchase_price' });
+    expect(cc17(withFrontmatter(10_000_000, {})).coverage)
+      .toEqual({ status: 'skipped', reason: 'section_absent', detail: 'valuation' });
+  });
+
+  it('is skipped variant_unresolvable, named by CC-16, when two valuation variants do not resolve', () => {
+    const r = cc17(withFrontmatter(12_000_000, {
+      valuation: {
+        bank: { ...valuation(10_000_000), annotation: { section: 'valuation', variant: 'bank' } },
+        sponsor: { ...valuation(12_000_000), annotation: { section: 'valuation', variant: 'sponsor' } },
+      },
+    }));
+    expect(r.coverage).toEqual({ status: 'skipped', reason: 'variant_unresolvable', detail: 'valuation' });
+    expect(r.issues).toEqual([]);
+    const cc16 = r.all.filter((i) => i.code === 'CC-16');
+    expect(cc16).toHaveLength(1);
+    expect(cc16[0]!.message).toContain('CC-17');
+  });
+
+  it('reads the default variant when one is named', () => {
+    const r = cc17(withFrontmatter(12_000_000, {
+      valuation: {
+        default: { ...valuation(10_000_000), annotation: { section: 'valuation', variant: 'default' } },
+        sponsor: { ...valuation(12_000_000), annotation: { section: 'valuation', variant: 'sponsor' } },
+      },
+    }));
+    expect(r.coverage).toEqual({ status: 'evaluated' });
+    expect(r.issues).toHaveLength(1);
+  });
+});

@@ -1,5 +1,5 @@
 {
-  "description": "RFC 0099 statement homes. Each case applies section-scoped text edits to a builtin example and states the outcome owed at bound addresses. A +10% tamper of a section-home figure is failed at that address, while its quick_metrics copy keeps its own outcome. An unbound look-alike field yields no statement. The two identity aliases (the metric is the field itself) can only agree, so they pin verified.",
+  "description": "RFC 0099 statement homes. Each case applies section-scoped (or frontmatter-scoped) text edits to a builtin example and states the outcome owed at bound addresses. A +10% tamper of a section-home figure is failed at that address, while its quick_metrics copy keeps its own outcome. An unbound look-alike field yields no statement. The two identity aliases (the metric is the field itself) can only agree, so they pin verified.",
   "cases": [
     {
       "name": "cap_rate-going-in-agrees",
@@ -166,6 +166,29 @@
       "edits": [{ "section": "components", "find": "{\n", "replace": "{\n  \"senior_housing\": { \"total_labor_expense\": 1850000 },\n" }],
       "expect": [{ "path": "components.senior_housing.total_labor_expense", "state": "verified" }],
       "failed": 0
+    },
+    {
+      "name": "price_per_commissioned_kw-frontmatter-drift-alone-verifies",
+      "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "edits": [{ "section": "frontmatter", "find": "purchase_price:    160000000", "replace": "purchase_price:    192000000" }],
+      "expect": [
+        { "path": "valuation.price_per_commissioned_kw", "state": "verified" },
+        { "path": "valuation.price_per_kw", "state": "verified" }
+      ],
+      "failed": 0
+    },
+    {
+      "name": "price_per_commissioned_kw-from-drifted-frontmatter-fails",
+      "example": "Mesa-Gateway-Data-Center-Mesa-AZ.uwx.md",
+      "edits": [
+        { "section": "frontmatter", "find": "purchase_price:    160000000", "replace": "purchase_price:    192000000" },
+        { "section": "valuation", "find": "\"price_per_commissioned_kw\": 16000", "replace": "\"price_per_commissioned_kw\": 19200" }
+      ],
+      "expect": [
+        { "path": "valuation.price_per_commissioned_kw", "state": "failed" },
+        { "path": "valuation.price_per_kw", "state": "verified" }
+      ],
+      "failed": 1
     }
   ]
 }

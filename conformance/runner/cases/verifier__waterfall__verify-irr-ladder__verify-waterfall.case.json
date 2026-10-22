@@ -1,0 +1,25 @@
+{
+  "id": "verifier__waterfall__verify-irr-ladder__verify-waterfall",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-waterfall"
+  ],
+  "command": "verify-waterfall",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/runner/derived/waterfall/verify-irr-ladder",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/waterfall/verify-irr-ladder/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict",
+      "expected_code"
+    ],
+    "exit_code": 0
+  }
+}

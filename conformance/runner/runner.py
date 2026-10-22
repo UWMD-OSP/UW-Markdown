@@ -249,7 +249,111 @@ def project(actual, name: str | None):
         return {"codes": sorted(i["code"] for i in actual.get("issues", [])
                                  if i["code"].startswith(("HDG-", "ESC-"))),
                 "verification": result}
+    if name == "section-verification":
+        # RFC 0115: a section report reduced to its verdict and the set of
+        # verifier issue codes. A not_applicable report has no verification.
+        if not isinstance(actual, dict):
+            return actual
+        verification = actual.get("verification") or {}
+        return {"verdict": verification.get("verdict", actual.get("status")),
+                "codes": sorted({i.get("code") for i in verification.get("issues", [])})}
+    if name == "receipt-verification":
+        # RFC 0115 D4: a receipt verdict and its issue codes, or the typed
+        # refusal of a receipt the verifier cannot read.
+        if not isinstance(actual, dict):
+            return actual
+        if isinstance(actual.get("error"), dict):
+            return {"refused_code": actual["error"].get("code")}
+        return {"verdict": actual.get("verdict"),
+                "codes": sorted({i.get("code") for i in actual.get("issues", [])})}
+    if name == "property-cash-flow-assembly":
+        # RFC 0115: a PropertyCashFlowAssembly, or its CALC-CF-ASSEMBLY refusal,
+        # reduced to the fields the assembly baselines name.
+        if not isinstance(actual, dict):
+            return actual
+        error = actual.get("error")
+        if isinstance(error, dict):
+            result = {"error_code": error.get("code"), "reason": error.get("reason"), "pointer": error.get("pointer")}
+            lease_up = ((error.get("evidence") or {}).get("lease_up") or {})
+            verdict = ((lease_up.get("evidence") or {}).get("verification") or {}).get("verdict")
+            if verdict is not None:
+                result["lease_up_verdict"] = verdict
+            return result
+        rows = (actual.get("series") or {}).get("series", [])
+        cells = actual.get("cells", [])
+        slots = list(dict.fromkeys(c.get("slot") for c in cells))
+        periods = slots[1:-1] if slots[:1] == ["acquisition"] and slots[-1:] == ["disposition"] else slots
+        return {
+            "amounts": [r.get("amount") for r in rows],
+            "dates": [r.get("date") for r in rows],
+            "cell_count": len(cells),
+            "source_periods": periods,
+            "source_paths": [b.get("source_path") for b in actual.get("bindings", [])],
+            "sale_deductions": actual.get("sale_deductions"),
+            "net_sale_proceeds": actual.get("net_sale_proceeds"),
+        }
     raise Failure(f"unknown projection '{name}'")
+
+
+# ── RFC 0115 comparators ─────────────────────────────────────────────────────
+#
+# The verifier fixtures pin a verdict and require named codes to appear; they
+# do not list every issue. These comparators restate those reference checks
+# exactly. The case names the baseline fields read, from a closed set, because
+# a document fixture's `expected_codes` are validator codes, not verifier codes.
+
+VERDICT_FIELDS = ("verdict", "expected_code", "expected_codes", "refused_code")
+
+
+def verdict_codes(expected: dict, actual, fields: list[str]) -> list[str]:
+    if not isinstance(actual, dict):
+        return ["<root>: expected an object"]
+    problems = []
+    codes = set(actual.get("codes", []))
+    for field in fields:
+        if field not in VERDICT_FIELDS:
+            raise Failure(f"unknown verdict-codes field '{field}'")
+        if field not in expected:
+            continue
+        want = expected[field]
+        if field in ("verdict", "refused_code"):
+            if actual.get(field) != want:
+                problems.append(f"{field}: {want!r} != {actual.get(field)!r}")
+        else:
+            for code in [want] if field == "expected_code" else want:
+                if code not in codes:
+                    problems.append(f"{field}: {code} not reported (saw {sorted(codes)})")
+    return problems
+
+
+def statement_states(expected: dict, actual) -> list[str]:
+    """RFC 0099 statement homes against a StatedMetricsReport."""
+    if not isinstance(actual, dict):
+        return ["<root>: expected an object"]
+    evidence = actual.get("evidence", [])
+    problems = []
+    for item in expected.get("expect", []):
+        found = [e for e in evidence if e.get("path") == item["path"]]
+        if len(found) != 1:
+            problems.append(f"{item['path']}: stated {len(found)} times, expected once")
+        elif found[0].get("state") != item["state"]:
+            problems.append(f"{item['path']}: {item['state']!r} != {found[0].get('state')!r}")
+    for path in expected.get("absent", []):
+        if any(e.get("path") == path for e in evidence):
+            problems.append(f"{path}: is not a statement, but was reported")
+    if "failed" in expected and (actual.get("counts") or {}).get("failed") != expected["failed"]:
+        problems.append(f"counts.failed: {expected['failed']!r} != {(actual.get('counts') or {}).get('failed')!r}")
+    return problems
+
+
+def json_pointer(document, pointer: str):
+    """RFC 6901, for `expect.baseline_pointer` into a shared baseline file."""
+    if pointer == "":
+        return document
+    for token in pointer.lstrip("/").split("/"):
+        token = token.replace("~1", "/").replace("~0", "~")
+        document = document[int(token)] if isinstance(document, list) else document[token]
+    return document
 
 
 # ── Execution ────────────────────────────────────────────────────────────────
@@ -327,7 +431,17 @@ def run_case(impl: list[str], case: dict, timeout: float) -> tuple[float, list[s
         return elapsed, [] if want == got else [_text_diff(want, got)]
 
     expected = json.loads(baseline_path.read_text(encoding="utf-8"))
+    if "baseline_pointer" in expect:
+        expected = json_pointer(expected, expect["baseline_pointer"])
+    if expect.get("ignore"):
+        # Baseline members a reference-runner check owns (e.g. a validator
+        # code list beside an assembly result), named in the case, never guessed.
+        expected = {k: v for k, v in expected.items() if k not in expect["ignore"]}
     actual = project(actual, expect.get("project"))
+    if kind == "verdict-codes":
+        return elapsed, verdict_codes(expected, actual, expect.get("fields", []))
+    if kind == "statement-states":
+        return elapsed, statement_states(expected, actual)
     if kind == "json-exact":
         return elapsed, [] if canonical(expected) == canonical(actual) else json_subset(expected, actual) or [
             "canonical forms differ"

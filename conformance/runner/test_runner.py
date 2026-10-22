@@ -95,3 +95,51 @@ class ReportingTests(unittest.TestCase):
                     self.assertEqual(runner.main(), 2)
                 self.assertIn(f"unknown tier: {manifest_tier}", stderr.getvalue())
 
+
+
+class VerifierComparatorTests(unittest.TestCase):
+    """RFC 0115: the verdict, statement and assembly comparisons."""
+
+    def test_verdict_codes_reads_only_the_named_fields(self):
+        report = {"section": "capital_stack", "variant": None, "status": "failed",
+                  "verification": {"verdict": "failed", "issues": [{"code": "CS-SIZING-DISAGREES"}]}}
+        projected = runner.project(report, "section-verification")
+        self.assertEqual(projected, {"verdict": "failed", "codes": ["CS-SIZING-DISAGREES"]})
+        self.assertEqual(runner.verdict_codes({"verdict": "failed", "expected_code": "CS-SIZING-DISAGREES"}, projected, ["verdict", "expected_code"]), [])
+        self.assertTrue(runner.verdict_codes({"verdict": "verified"}, projected, ["verdict"]))
+        self.assertTrue(runner.verdict_codes({"expected_code": "CS-OTHER"}, projected, ["expected_code"]))
+        # A document fixture's validator codes are not verifier codes: unnamed fields are not read.
+        self.assertEqual(runner.verdict_codes({"verdict": "failed", "expected_codes": ["CS-04"]}, projected, ["verdict"]), [])
+        with self.assertRaises(runner.Failure):
+            runner.verdict_codes({}, projected, ["state"])
+
+    def test_not_applicable_is_never_a_verdict(self):
+        projected = runner.project({"status": "not_applicable", "verification": None}, "section-verification")
+        self.assertTrue(runner.verdict_codes({"verdict": "verified"}, projected, ["verdict"]))
+
+    def test_receipt_refusal_and_verdict(self):
+        self.assertEqual(runner.project({"error": {"code": "RCP_MALFORMED"}}, "receipt-verification"), {"refused_code": "RCP_MALFORMED"})
+        projected = runner.project({"verdict": "unverifiable", "issues": [{"code": "RCP-05"}, {"code": "RCP-08"}]}, "receipt-verification")
+        self.assertEqual(runner.verdict_codes({"verdict": "unverifiable", "expected_codes": ["RCP-08"]}, projected, ["verdict", "expected_codes"]), [])
+
+    def test_statement_states_checks_each_address_absence_and_count(self):
+        report = {"counts": {"failed": 1}, "evidence": [
+            {"path": "valuation.going_in_cap_rate", "state": "failed"},
+            {"path": "quick_metrics.cap_rate", "state": "verified"}]}
+        want = {"expect": [{"path": "valuation.going_in_cap_rate", "state": "failed"}], "absent": ["valuation.x"], "failed": 1}
+        self.assertEqual(runner.statement_states(want, report), [])
+        self.assertTrue(runner.statement_states({**want, "absent": ["quick_metrics.cap_rate"]}, report))
+        self.assertTrue(runner.statement_states({**want, "failed": 0}, report))
+        self.assertTrue(runner.statement_states({"expect": [{"path": "valuation.y", "state": "verified"}]}, report))
+
+    def test_assembly_projection_and_pointer(self):
+        result = {"series": {"series": [{"date": "2026-01-01", "amount": -1}, {"date": "2027-01-01", "amount": 2}]},
+                  "cells": [{"slot": "acquisition"}, {"slot": "2026-Q1"}, {"slot": "2026-Q1"}, {"slot": "disposition"}],
+                  "bindings": [{"source_path": "a"}, {"source_path": "b"}]}
+        projected = runner.project(result, "property-cash-flow-assembly")
+        self.assertEqual((projected["amounts"], projected["dates"], projected["cell_count"], projected["source_periods"], projected["source_paths"]),
+                         ([-1, 2], ["2026-01-01", "2027-01-01"], 4, ["2026-Q1"], ["a", "b"]))
+        refusal = runner.project({"error": {"code": "CALC-CF-ASSEMBLY", "reason": "verification", "pointer": "p",
+                                            "evidence": {"lease_up": {"evidence": {"verification": {"verdict": "failed"}}}}}}, "property-cash-flow-assembly")
+        self.assertEqual(refusal, {"error_code": "CALC-CF-ASSEMBLY", "reason": "verification", "pointer": "p", "lease_up_verdict": "failed"})
+        self.assertEqual(runner.json_pointer({"cases": [{"a": 1}, {"a/b": 2}]}, "/cases/1/a~1b"), 2)

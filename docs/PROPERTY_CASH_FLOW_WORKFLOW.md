@@ -18,18 +18,18 @@ Install the CLI for your own explicitly covered source and plan:
 
 ```sh
 npm install --global @uwmd/cli@2.9.0
-uwmd assemble-property deal.uwx.md plan.json --json
+uwmd verify-property-cash-flows deal.uwx.md plan.json --json
 ```
 
 To run the included synthetic fixtures from a repository checkout:
 
 ```sh
 npm run build
-npm run cli -- assemble-property docs/examples/property-cash-flow-synthetic.uwx.md docs/examples/property-cash-flow-plan.json --json
+npm run cli -- verify-property-cash-flows docs/examples/property-cash-flow-synthetic.uwx.md docs/examples/property-cash-flow-plan.json --json
 node scripts/verify-property-cash-flow-workflow.mjs
 ```
 
-The `assemble-property` command emits a candidate JSON payload and does not edit either input.
+The `verify-property-cash-flows` command (named `assemble-property` before RFC 0115) emits a candidate JSON payload and does not edit either input.
 The workflow script additionally invokes the existing dated metric engine at an
 explicit discount-rate input of `0.08`. Neither operation writes to the deal.
 The `.uwx.md` example uses Format 2.0 nested metadata; its provenance labels the
@@ -49,7 +49,7 @@ row indexes/dates/amounts, stated metric names and the coverage cells that a
 selected schedule requires. It does not choose a variant, assign an expense or
 reserve category, infer a payment date, create zero declarations, or attest an
 economic assertion. The output is an intake aid; the owner still supplies
-explicit expense, reserve and payment-timing inputs before `assemble-property`
+explicit expense, reserve and payment-timing inputs before `verify-property-cash-flows`
 can establish a complete declared candidate.
 
 The complete candidate contains 12 copied cash rows and 20 coverage cells.
@@ -87,11 +87,13 @@ passed to the verifier; the verdict/issues determine whether they were verifiabl
 
 | Exit | Meaning |
 |---|---|
-| 0 | At least one stated metric was checked and all checked claims verified. |
+| 0 | The checked claims verified, the verifier returned unverifiable, or nothing was checked. |
 | 1 | A metric failed, or arguments, file reading, parsing, selection or input shape refused. |
-| 3 | The verifier returned unverifiable, or no supported non-null metric was stated. |
 
-No claims yields `status: "no_stated_metrics"` and `verification: null`.
+This is the RFC 0115 exit contract (Protocol §II.6a.2): only a failed verification
+exits 1; `status` says which of the other outcomes it was. A document with no
+`cash_flow_series` block, or a block that states no metric, yields
+`status: "not_applicable"` and `verification: null`.
 Null is not zero; a stated numeric zero is checked normally. The CLI refuses
 nonnumeric claims and malformed cash rows even when no metrics are stated.
 Partial XNPV claims retain the existing verifier's unverifiable result.

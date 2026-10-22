@@ -10,7 +10,7 @@ const path = (p: string) => fileURLToPath(new URL(`../../../${p}`, import.meta.u
 const cli = path('packages/uwmd-cli/bin/uwmd.mjs');
 const source = path('docs/examples/property-cash-flow-synthetic.uwx.md');
 const plan = path('docs/examples/property-cash-flow-plan.json');
-const run = (args: string[]) => spawnCli(process.execPath, [cli, 'assemble-property', ...args], { encoding: 'utf8' });
+const run = (args: string[]) => spawnCli(process.execPath, [cli, 'verify-property-cash-flows', ...args], { encoding: 'utf8' });
 const inspect = (args: string[]) => spawnCli(process.execPath, [cli, 'inspect-property-cash-flows', ...args], { encoding: 'utf8' });
 describe('property cash-flow assembly CLI', () => {
   it('inventories source inputs without producing a plan or editing the deal', async () => {

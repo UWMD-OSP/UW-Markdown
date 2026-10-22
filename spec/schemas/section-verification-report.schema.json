@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uwmd.org/schemas/section-verification-report.schema.json",
+  "title": "Section verification report (RFC 0115)",
+  "description": "What `verify-cash-flows`, `verify-waterfall`, `verify-capital-stack` and `verify-lease-up` print with --json (Protocol §II.6a.1): the selected block's variant and the section verifier's own result, unchanged. `status` is that result's verdict, or `not_applicable` when nothing was checked (verification null). Mirrors SectionVerificationReport and its four section types in @uwmd/verify's protocol.ts.",
+  "oneOf": [
+    { "$ref": "#/$defs/cashFlowReport" },
+    { "$ref": "#/$defs/waterfallReport" },
+    { "$ref": "#/$defs/capitalStackReport" },
+    { "$ref": "#/$defs/leaseUpReport" }
+  ],
+  "$defs": {
+    "variant": { "type": ["string", "null"], "minLength": 1 },
+    "status": { "enum": ["verified", "failed", "unverifiable", "not_applicable"] },
+    "severity": { "enum": ["failure", "indeterminate"] },
+    "cashFlowReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["section", "variant", "status", "checked_metrics", "verification"],
+      "properties": {
+        "section": { "const": "cash_flow_series" },
+        "variant": { "$ref": "#/$defs/variant" },
+        "status": { "$ref": "#/$defs/status" },
+        "checked_metrics": { "type": "array", "items": { "$ref": "#/$defs/cashFlowMetric" }, "uniqueItems": true },
+        "verification": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/cashFlowVerification" }] }
+      }
+    },
+    "cashFlowMetric": { "enum": ["total_net", "moic", "xnpv", "xirr"] },
+    "cashFlowVerification": {
+      "description": "CashFlowVerification (Protocol §VIII.9.4).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "issues"],
+      "properties": {
+        "verdict": { "enum": ["verified", "failed", "unverifiable"] },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "severity", "message"],
+            "properties": {
+              "code": { "enum": ["CF-METRIC-DISAGREES", "CF-PROCEDURE-REFUSES", "CF-UNEVALUABLE"] },
+              "severity": { "$ref": "#/$defs/severity" },
+              "message": { "type": "string" },
+              "metric": { "$ref": "#/$defs/cashFlowMetric" },
+              "expected": { "type": "string" },
+              "actual": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "waterfallReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["section", "variant", "status", "verification"],
+      "properties": {
+        "section": { "const": "distribution_waterfall" },
+        "variant": { "$ref": "#/$defs/variant" },
+        "status": { "$ref": "#/$defs/status" },
+        "verification": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/waterfallVerification" }] }
+      }
+    },
+    "waterfallVerification": {
+      "description": "WaterfallVerification (Protocol §VIII.10 step 6).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "issues"],
+      "properties": {
+        "verdict": { "enum": ["verified", "failed", "unverifiable"] },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "severity", "message"],
+            "properties": {
+              "code": { "enum": ["WF-OUTCOME-DISAGREES", "WF-SCHEDULE-DISAGREES", "WF-PROCEDURE-REFUSES", "WF-UNEVALUABLE"] },
+              "severity": { "$ref": "#/$defs/severity" },
+              "message": { "type": "string" },
+              "field": { "type": "string" },
+              "expected": { "type": "string" },
+              "actual": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "capitalStackReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["section", "variant", "status", "verification"],
+      "properties": {
+        "section": { "const": "capital_stack" },
+        "variant": { "$ref": "#/$defs/variant" },
+        "status": { "$ref": "#/$defs/status" },
+        "verification": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/capitalStackVerification" }] }
+      }
+    },
+    "capitalStackVerification": {
+      "description": "CapitalStackVerification (Format §4.24).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "issues", "sizing"],
+      "properties": {
+        "verdict": { "enum": ["verified", "failed", "unverifiable"] },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "severity", "message"],
+            "properties": {
+              "code": { "enum": ["CS-SIZING-DISAGREES", "CS-SIZING-UNEVALUABLE"] },
+              "severity": { "$ref": "#/$defs/severity" },
+              "message": { "type": "string" },
+              "expected": { "type": "string" },
+              "actual": { "type": "string" }
+            }
+          }
+        },
+        "sizing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "fn", "stated", "recomputed", "agrees"],
+            "properties": {
+              "id": { "type": "string" },
+              "fn": { "enum": ["coverage", "blended_coverage", "debt_yield_through", "ltc_through", "ltv_through", "weighted_cost"] },
+              "stated": { "type": "number" },
+              "recomputed": { "type": ["number", "null"] },
+              "agrees": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "leaseUpReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["section", "variant", "status", "verification"],
+      "properties": {
+        "section": { "const": "lease_up_schedule" },
+        "variant": { "$ref": "#/$defs/variant" },
+        "status": { "$ref": "#/$defs/status" },
+        "verification": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/leaseUpVerification" }] }
+      }
+    },
+    "leaseUpVerification": {
+      "description": "LeaseUpVerification (Format §4.25).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "issues"],
+      "properties": {
+        "verdict": { "enum": ["verified", "failed", "unverifiable"] },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "severity", "message"],
+            "properties": {
+              "code": { "enum": ["LU-NCF-DISAGREES", "LU-SUMMARY-DISAGREES", "LU-UNEVALUABLE"] },
+              "severity": { "$ref": "#/$defs/severity" },
+              "message": { "type": "string" },
+              "period": { "type": "string" },
+              "expected": { "type": "string" },
+              "actual": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

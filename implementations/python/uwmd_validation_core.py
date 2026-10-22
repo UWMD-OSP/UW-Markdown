@@ -31,7 +31,8 @@ BUILTINS = ("multifamily", "office", "retail", "industrial", "self_storage", "ho
 SCENARIOS = ("stabilized_acquisition", "ground_up_development", "value_add", "lease_up",
              "house_flip", "commercial_flip", "property_conversion", "land_banking")
 NAMESPACE = re.compile(r"[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*){2,}\Z")
-CC_IDS = tuple("CC-" + str(i).zfill(2) for i in range(1, 16))
+# CC-16 is the unresolvable-section diagnostic, not a check; CC-17 is RFC 0086.
+CC_IDS = tuple("CC-" + str(i).zfill(2) for i in range(1, 16)) + ("CC-17",)
 
 
 class Ledger:

@@ -1,0 +1,7 @@
+{
+  "description": "CC-17 skipped as field_absent: a null frontmatter price is not stated. The metrics are unaffected.",
+  "expected_calcs": {
+    "price_per_kw": 10000,
+    "price_per_commissioned_kw": 10000
+  }
+}
