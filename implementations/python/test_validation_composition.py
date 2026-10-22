@@ -44,7 +44,7 @@ class ValidationCompositionTests(unittest.TestCase):
 
     def test_whole_current_financial_view_and_caller_sources_are_unchanged(self):
         root = parse(external(["whole"], collection=False).source.raw.replace(b"rent_roll", b"property"))
-        supplied = part("whole", typed("property", address="123 Main", asset_class="multifamily", units=4), section="property", collection=False)
+        supplied = part("whole", typed("property", address="123 Main", asset_class="multifamily", total_units=4), section="property", collection=False)
         before = copy.deepcopy((root, supplied)); result = assess(root, supplied)
         response, exit_code = _validation_response(result)
         self.assertEqual(exit_code, 0); self.assertNotIn("error", response)

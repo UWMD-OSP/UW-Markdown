@@ -1,0 +1,189 @@
+{
+  "frontmatter": {
+    "uw_version": "3.0",
+    "asset_class": "office",
+    "deal_stage": "term_sheet"
+  },
+  "sections": {
+    "property": {
+      "meta": {
+        "section": "property",
+        "provenance": {
+          "source": "manual",
+          "resolution": "user_input",
+          "actor": "user",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-01-15T10:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "address": "1 Fictional Lane",
+        "asset_class": "office",
+        "rentable_square_feet": 1
+      }
+    },
+    "debt_structure": {
+      "meta": {
+        "section": "debt_structure",
+        "provenance": {
+          "source": "manual",
+          "resolution": "user_input",
+          "actor": "user",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-01-15T10:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "loan_amount": null
+      }
+    },
+    "validation": {
+      "meta": {
+        "section": "validation",
+        "provenance": {
+          "source": "manual",
+          "resolution": "user_input",
+          "actor": "user",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-01-15T10:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "checked": false
+      }
+    },
+    "rent_roll": {
+      "meta": {
+        "section": "rent_roll",
+        "provenance": {
+          "source": "manual",
+          "resolution": "user_input",
+          "actor": "user",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-01-15T10:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "tenants": [
+          {
+            "leased_sf": null
+          }
+        ]
+      }
+    },
+    "borrower_sponsor": {
+      "meta": {
+        "section": "borrower_sponsor",
+        "provenance": {
+          "source": "manual",
+          "resolution": "user_input",
+          "actor": "user",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-01-15T10:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "name": "Fictional Sponsor"
+      }
+    },
+    "preliminary_sizing": {
+      "meta": {
+        "section": "preliminary_sizing",
+        "provenance": {
+          "source": "manual",
+          "resolution": "user_input",
+          "actor": "user",
+          "agent_id": null,
+          "agent_version": null,
+          "timestamp": "2026-01-15T10:00:00Z",
+          "notes": null
+        },
+        "quality": {
+          "confidence": "high",
+          "human_review_required": false,
+          "flags": [],
+          "partial": false,
+          "provisional": false
+        },
+        "lifecycle": {
+          "revision": 1,
+          "superseded": false
+        }
+      },
+      "content": {
+        "loan_amount": null
+      }
+    }
+  },
+  "prose": {},
+  "pipeline_log": [],
+  "custom_calculations": [],
+  "custom_scenarios": [],
+  "extensions": {},
+  "superseded": {}
+}

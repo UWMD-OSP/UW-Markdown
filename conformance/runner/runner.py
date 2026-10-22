@@ -237,6 +237,7 @@ def project(actual, name: str | None):
             )
         return {
             "overall_status": actual.get("overall_status"),
+            "stage_readiness": actual.get("stage_readiness"),
             "issues": sorted(seen.values(), key=lambda i: (i["code"] or "", i["severity"] or "")),
             "deal_flags": sorted(flags.values(), key=lambda f: (f["code"] or "", f["band"] or "")),
         }

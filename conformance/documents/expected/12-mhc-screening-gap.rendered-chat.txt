@@ -1,0 +1,6 @@
+{
+  "format": "chat",
+  "content": "# CRE DEAL CONTEXT — Untitled\nFILE FORMAT: .uw.md v3.0 | DEAL ID: n/a\nADDRESS: ,   \nASSET CLASS: manufactured_housing | STAGE: screening | STATUS: n/a\nRECOMMENDATION: pending\nLAST MODIFIED: n/a\n\n## KEY METRICS\nPurchase Price: n/a | Loan: n/a | Equity: n/a\nNOI (UW): n/a | DSCR: n/ax | LTV: n/a\nCap Rate: n/a | Debt Yield: n/a | IRR (levered): n/a\n\n## PROPERTY\nSize: 1 Sites (total_sites)\nUnits: n/a | Built: n/a | Renovated: n/a\nClass: n/a | Condition: n/a | Subtype: n/a\nNRA: n/a sqft | Land: n/a acres | Stories: n/a\nParking: n/a spaces (n/a) | Zoning: n/a\nDeferred Maintenance Est: n/a\nAmenities: n/a\n\n## DEBT STRUCTURE\nLoan: $0 | Type: n/a\nRate: n/a | Term: n/ayr | Am: n/ayr\nIO Period: n/a months | Recourse: n/a\nDSCR (IO): n/a | DSCR (amortizing): n/a\nLTV: n/a | Debt Yield: n/a\nAnnual DS: n/a | Monthly DS: n/a\n\n## VALIDATION ISSUES\n[INFO] DQ-06 (mhc_sites): DQ-06: screening requires mhc_sites; section is missing.\n\n---\nDeal ID: n/a | .uw.md format v3.0 | This file is the canonical underwriting record for this deal.",
+  "estimatedTokens": 257,
+  "truncated": false
+}

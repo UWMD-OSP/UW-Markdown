@@ -1,0 +1,5 @@
+{
+  "format": "summary",
+  "content": "# Deal Summary\n>  · ,  · manufactured_housing · 1 Sites\n\n**Status:** screening · **Recommendation:** pending · **Class:** n/a\n\n---\n\n## Key Metrics\n\n| Metric | Value | | Metric | Value |\n|---|---|---|---|---|\n| Purchase Price | n/a | | NOI (UW) | n/a |\n| Loan Amount | n/a | | DSCR | n/ax |\n| Equity Required | n/a | | LTV | n/a |\n| Going-in Cap Rate | n/a | | Debt Yield | n/a |\n| Levered IRR | n/a | | Equity Multiple | n/ax |\n| Exit Cap Rate | n/a | | Hold Period | n/a yrs |\n\n---\n\n## Debt Structure\n\n| | |\n|---|---|\n| Loan Amount | n/a |\n| Rate | n/a (n/a) |\n| Term / Amortization | n/a yr term / n/a yr am |\n| IO Period | none |\n| LTV | n/a |\n| Debt Yield | n/a |\n\n\n\n---\n\n\n## Validation\n\n**Overall:** CLEAN\n\n- **[INFO]** DQ-06: screening requires mhc_sites; section is missing.\n\n### Flags\n- None\n\n### Blocking Flags\n- None\n\n---\n\n## Stage Readiness\n\n- ✓ scope\n- ✗ screening\n- ✗ term_sheet\n- ✗ full_underwrite\n- ✗ credit_approval\n- ✗ closing\n- ✗ monitoring\n\n---\n\n*Deal ID: n/a · Last modified: n/a · Format: .uw.md v3.0*\n",
+  "estimatedTokens": 256
+}

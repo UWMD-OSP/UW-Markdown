@@ -50,10 +50,6 @@ export function checkBuiltinClassContent(parsed: ParsedUWFile, ruleSet?: UWRuleS
     const resolved = resolveRoleBlock(parsed.sections[section.id], section.id, ['default', 'base']);
     if (!resolved.block) {
       if (resolved.state === 'unresolvable') issues.push({ code: 'CC-16', severity: 'info', section: section.id, message: `Class field/rule checks could not resolve ${section.id}; choose an eligible primary/default/base block.` });
-      if (section.required && !parsed.sections[section.id]) {
-        issues.push({ code: 'CLS-03', severity: 'error', section: section.id,
-          message: `${assetClass} requires ${section.id}.` });
-      }
       continue;
     }
     const payload = blockPayload(resolved.block) as Record<string, unknown>;

@@ -705,6 +705,7 @@ export {
   parseActorSource,
   lookupIncompleteDataPolicy,
   STAGE_CONTRACT,
+  stageOneOfFor,
   STAGE_REQUIREMENTS,
   STAGE_SECTION_OVERLAYS,
   requiredSectionsFor,

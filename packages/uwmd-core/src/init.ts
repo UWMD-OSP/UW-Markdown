@@ -181,6 +181,10 @@ source_documents: []
   // by a person.
   const metaStub = (section: string): string => {
     const content: Record<string, unknown> = { _notes: null };
+    if (section === 'property') {
+      if (opts.address !== undefined) content.address = opts.address;
+      content.asset_class = assetClass;
+    }
     stampMetaIntoBlockContent(content, buildMeta(section, 1, {
       source: 'manual',
       actor: 'user',
@@ -223,7 +227,7 @@ source_documents: []
   // contract. One that requires stated facts (dc_capacity, dc_power,
   // dc_revenue, mhc_sites) is left out rather than written empty: an empty
   // stub would fail CLS-04 on every required field, and filling it would
-  // invent facts. A class-required one then reports CLS-03 once.
+  // invent facts. Its absence is a stage-readiness gap (RFC 0116).
   const officialSections = (BUILTIN_CLASS_CONTENT[assetClass]?.sections ?? [])
     .filter((section) => !((section.schema as { required?: string[] }).required?.length))
     .map((section) => section.id);

@@ -1,0 +1,20 @@
+{
+  "id": "verifier__documents__10-null-rent-roll__validate",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "validate"
+  ],
+  "command": "validate",
+  "args": [
+    "10-null-rent-roll.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "json-subset",
+    "file": "conformance/documents/expected/10-null-rent-roll.validation.json",
+    "project": "issue-code-severity-set",
+    "exit_code": 0
+  }
+}

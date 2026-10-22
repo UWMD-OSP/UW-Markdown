@@ -50,7 +50,7 @@ class ValidationTests(unittest.TestCase):
         paths = [p for p in every if p not in config]
         # 111 plus RFC 0086's six cross-check projections (their coverage twins
         # are `__coverage` cases, compared below only through the CLI runner).
-        self.assertEqual((len(paths), len(config)), (117, 33))
+        self.assertEqual((len(paths), len(config)), (122, 33))
         for path in paths:
             case = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(case["requires_capabilities"], ["validate"])
@@ -115,7 +115,7 @@ class ValidationTests(unittest.TestCase):
             raw = raw.replace(b"unknown_key: retained",b"deal_stage: full_underwrite")
             needed = sections_required("full_underwrite",asset)
             for section in needed:
-                raw += well_formed(section, **({"address":"A","asset_class":asset,"units":0} if section=="property" else {}))
+                raw += well_formed(section, **({"address":"A","asset_class":asset,"total_units":0,"gross_acres":0,"critical_it_load_kw":0} if section=="property" else {"purchase_price":0} if section=="valuation" else {"stated":True}))
             document=parse(raw);readiness=stage_readiness(document)
             self.assertTrue(readiness["full_underwrite"],asset)
             self.assertTrue(readiness["scope"],asset)  # Explicit zero remains present.

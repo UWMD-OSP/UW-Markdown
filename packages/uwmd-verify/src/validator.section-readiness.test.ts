@@ -18,7 +18,7 @@ import type { ParsedUWFile, UWBlock, ValidationMessage } from './types.js';
 function block(section: string, content: Record<string, unknown>, annotation: Record<string, unknown> = {}): UWBlock {
   return {
     annotation: { section, ...annotation },
-    content,
+    content: { address: 'A', asset_class: 'office', rentable_square_feet: 1, total_units: 1, critical_it_load_kw: 1, total_sites: 1, gross_acres: 1, stated: true, ...content },
     meta: { section, lifecycle: { revision: 1, superseded: false }, provenance: { source: 'manual', agent_id: null, agent_version: null, actor: 'test', timestamp: '2026-08-26T00:00:00Z', notes: null }, quality: { confidence: 'high', human_review_required: false, flags: [] }, integrity: { input_hash: null } },
     prose: '', rawJson: JSON.stringify(content), lineStart: 1, lineEnd: 1,
   };
@@ -37,6 +37,41 @@ function file(
 
 const codes = (parsed: ParsedUWFile, code: string): ValidationMessage[] =>
   validateUWFile(parsed).issues.filter((i) => i.code === code);
+
+describe('RFC 0116 stated sections and cumulative readiness', () => {
+  it('does not count reserved values, empty containers, or all-null nested leaves', () => {
+    const validation = block('validation', {});
+    validation.content = { _notes: 'narrative', _role: 'primary', nested: [{ value: null }, {}] };
+    const parsed = file({ property: block('property', {}), debt_structure: block('debt_structure', {}), validation }, { deal_stage: 'screening' });
+    expect(codes(parsed, 'DQ-06').map(i => i.section)).toEqual(['validation']);
+    expect(validateUWFile(parsed).stage_readiness.screening).toBe(false);
+    validation.content.nested = [{ value: false }];
+    expect(validateUWFile(parsed).stage_readiness.screening).toBe(true);
+  });
+
+  it('inherits a missing scope field through every later stage', () => {
+    const sections = Object.fromEntries(STAGE_REQUIREMENTS.monitoring.required_sections.map(id => [id, block(id, {})]));
+    sections.property!.content.address = null;
+    expect(Object.values(validateUWFile(file(sections)).stage_readiness)).toEqual(Array(7).fill(false));
+  });
+
+  it('uses the class primary size or valuation, never an undefined property alias', () => {
+    const property = block('property', {});
+    property.content = { address: 'A', asset_class: 'office', units: 10, asking_price: 100 };
+    const parsed = file({ property }, { deal_stage: 'scope' });
+    expect(validateUWFile(parsed).stage_readiness.scope).toBe(false);
+    parsed.sections.valuation = block('valuation', { purchase_price: 0 });
+    expect(validateUWFile(parsed).stage_readiness.scope).toBe(true);
+  });
+
+  it.each([['data_center', 'dc_capacity'], ['manufactured_housing', 'mhc_sites']])(
+    '%s needs %s from screening, without CLS-03', (asset_class, section) => {
+      const parsed = file({ property: block('property', {}), debt_structure: block('debt_structure', {}), validation: block('validation', {}) }, { asset_class, deal_stage: 'screening' });
+      expect(validateUWFile(parsed).stage_readiness.scope).toBe(true);
+      expect(codes(parsed, 'DQ-06').map(i => i.section)).toEqual([section]);
+      expect(codes(parsed, 'CLS-03')).toEqual([]);
+    });
+});
 
 describe('validateUWFile — CC-14 property section missing (RFC 0028)', () => {
   it('warns when a deal record has no property section, and never blocks', () => {
@@ -185,8 +220,8 @@ describe('requiredSectionsFor — class overlays (RFC 0029)', () => {
       expect(requiredSectionsFor(stage, 'specialty_facility')).toEqual(base);
       // RFC 0080: the new builtins take the base lists verbatim, like
       // multifamily — §5.1's overlay set stays exactly land and mixed_use.
-      expect(requiredSectionsFor(stage, 'data_center')).toEqual(base);
-      expect(requiredSectionsFor(stage, 'manufactured_housing')).toEqual(base);
+      expect(requiredSectionsFor(stage, 'data_center')).toEqual(stage === 'scope' ? base : [...base, 'dc_capacity']);
+      expect(requiredSectionsFor(stage, 'manufactured_housing')).toEqual(stage === 'scope' ? base : [...base, 'mhc_sites']);
       expect(requiredSectionsFor(stage)).toEqual(base);
     }
   });
@@ -277,7 +312,7 @@ describe('DQ-06 treats the RFC 0080 builtins exactly like multifamily', () => {
   };
 
   it('has no overlay entry for either new class', () => {
-    expect(Object.keys(STAGE_SECTION_OVERLAYS).sort()).toEqual(['land', 'mixed_use']);
+    expect(Object.keys(STAGE_SECTION_OVERLAYS).sort()).toEqual(['data_center', 'land', 'manufactured_housing', 'mixed_use']);
   });
 
   for (const [assetClass, classSection] of [

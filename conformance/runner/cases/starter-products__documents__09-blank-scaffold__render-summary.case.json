@@ -1,0 +1,20 @@
+{
+  "id": "starter-products__documents__09-blank-scaffold__render-summary",
+  "target": "starter-products",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "render-summary"
+  ],
+  "command": "render",
+  "args": [
+    "09-blank-scaffold.uwx.md",
+    "--format",
+    "summary"
+  ],
+  "fixture_dir": "conformance/documents/fixtures",
+  "expect": {
+    "kind": "text",
+    "file": "conformance/documents/expected/09-blank-scaffold.rendered-summary.md",
+    "baseline_field": "content"
+  }
+}
