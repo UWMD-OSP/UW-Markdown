@@ -61,9 +61,7 @@ test('unknown selectors and unsafe filtered updates are refused', () => {
   for (const args of [['--tier=unknown'], ['--profile=unknown'], ['--suite=unknown'], ['--tier=reader', '--update'], ['--profile=module', '--update']]) assert.throws(() => selection(args));
   assert.ok(selection(['--suite=metrics', '--update']).length);
   assert.ok(selection(['--suite=calc', '--update']).some(c => c.suite === 'starter-refinement'));
-  assert.ok(selection(['--suite=starter-agent']).some(c => c.suite === 'starter-agent-profile'));
   assert.throws(() => selection(['--suite=starter-refinement', '--update']), /entire suite family/);
-  assert.throws(() => selection(['--suite=starter-agent-profile', '--update']), /entire suite family/);
 });
 test('validate-only Verifier projections of mixed starter checks keep both owners', () => {
   const projections = [
@@ -101,7 +99,7 @@ test('standard reproduction, custom formula checks and starter behavior stay dis
   for (const id of ['context-valid', 'context-omits-source-bytes', 'deterministic-encoding']) assert.equal(index.get(key('packages', `invariant/${id}`)).target, 'representations');
   assert.equal(corpus.cases.find(c => c.suite === 'starter-refinement').target, 'starter-products');
   assert.ok(corpus.cases.filter(c => c.suite === 'metrics').every(c => c.target === 'verifier'));
-  for (const c of corpus.cases.filter(c => ['starter-editor', 'starter-agent', 'starter-agent-profile', 'starter-agent-replay', 'capability'].includes(c.suite))) assert.equal(c.target, 'starter-products');
+  for (const c of corpus.cases.filter(c => ['starter-editor', 'starter-agent-profile', 'capability'].includes(c.suite))) assert.equal(c.target, 'starter-products');
 });
 
 
@@ -120,7 +118,7 @@ test('the actual CLI selects Reader-only JSON for --tier=reader and refuses a re
 
 // Suite names changed once; old numeric selectors are never aliases.
 test('content suite names select existing checks and numeric suite names are refused', () => {
-  for (const suite of ['documents', 'starter-editor', 'calc', 'starter-refinement', 'starter-agent', 'starter-agent-profile', 'starter-agent-replay']) {
+  for (const suite of ['documents', 'starter-editor', 'calc', 'starter-refinement', 'starter-agent-profile']) {
     assert.ok(selection([`--suite=${suite}`]).some(c => c.suite === suite), suite);
   }
   for (const suite of ['1', '2', '3', '4']) assert.throws(() => selection([`--suite=${suite}`]), /Unknown suite/);

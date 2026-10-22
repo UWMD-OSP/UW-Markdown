@@ -3,7 +3,7 @@ rfc: 0055
 title: Type the commercial lease clauses that already have stubs
 status: implemented
 accepted: 2026-09-15
-author: claude
+author: UWMD maintainers
 created: 2026-09-15
 depends_on:
   - 0053

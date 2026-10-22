@@ -700,7 +700,7 @@ Financial-validity engine run over the sections above.
         "min": 1.2,
         "max": null
       },
-      "severity": "warning",
+      "band": "warning",
       "message": "DSCR 1.026 at quick_metrics.dscr is below the warning threshold of 1.2",
       "suppressed": false,
       "suppress_reason": null

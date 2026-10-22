@@ -3,7 +3,7 @@ rfc: 0053
 title: Type the tax abatement schedule and the reassessment basis
 status: implemented
 accepted: 2026-09-15
-author: claude
+author: UWMD maintainers
 created: 2026-09-15
 depends_on:
   - 0041

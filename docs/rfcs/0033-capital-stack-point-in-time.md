@@ -29,8 +29,7 @@ already parked there.
 
 ## Motivation
 
-Raised by the underwriter.cc app team (their tracking id UPSTREAM-003, raised
-2026-09-01 while implementing § 4.24): their engine currently **suppresses
+Raised by an adopter (2026-09-01, while implementing § 4.24): their engine currently **suppresses
 the entire `capital_stack` section** for any deal whose sources carry
 construction debt, because the spec gave them no honest way to state it. On
 their canonical ground-up deal, stating the construction loan (~$17.5M) and

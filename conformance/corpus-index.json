@@ -1057,16 +1057,6 @@
       "target": "starter-products"
     },
     {
-      "suite": "starter-agent-replay",
-      "scenario": "l6-risk-rating/sections",
-      "target": "starter-products"
-    },
-    {
-      "suite": "starter-agent-replay",
-      "scenario": "l6-risk-rating/document",
-      "target": "starter-products"
-    },
-    {
       "suite": "lite",
       "scenario": "01-minimal [parse]",
       "target": "representations"
@@ -1099,6 +1089,11 @@
     {
       "suite": "lite",
       "scenario": "01-minimal [uwx]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "01-minimal [uwx-read]",
       "target": "representations"
     },
     {
@@ -1148,6 +1143,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "02-full-deal-summary [uwx-read]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "02-full-deal-summary [projection-report]",
       "target": "representations"
     },
@@ -1189,6 +1189,11 @@
     {
       "suite": "lite",
       "scenario": "03-display-variants [uwx]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "03-display-variants [uwx-read]",
       "target": "representations"
     },
     {
@@ -1238,6 +1243,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "04-typed-values [uwx-read]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "04-typed-values [projection-report]",
       "target": "representations"
     },
@@ -1279,6 +1289,11 @@
     {
       "suite": "lite",
       "scenario": "05-prose-and-normalization [uwx]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "05-prose-and-normalization [uwx-read]",
       "target": "representations"
     },
     {
@@ -1328,6 +1343,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "06-decimal-exact-percents [uwx-read]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "06-decimal-exact-percents [projection-report]",
       "target": "representations"
     },
@@ -1373,6 +1393,11 @@
     },
     {
       "suite": "lite",
+      "scenario": "07-decimal-exact-fractions [uwx-read]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
       "scenario": "07-decimal-exact-fractions [projection-report]",
       "target": "representations"
     },
@@ -1414,6 +1439,11 @@
     {
       "suite": "lite",
       "scenario": "08-frontmatter-yaml-scalars [uwx]",
+      "target": "representations"
+    },
+    {
+      "suite": "lite",
+      "scenario": "08-frontmatter-yaml-scalars [uwx-read]",
       "target": "representations"
     },
     {
@@ -5560,16 +5590,6 @@
       "suite": "metrics",
       "scenario": "statement-home-senior-housing-labor-component-identity-agrees",
       "target": "verifier"
-    },
-    {
-      "suite": "starter-agent",
-      "scenario": "l0a-scope-deterministic",
-      "target": "starter-products"
-    },
-    {
-      "suite": "starter-agent",
-      "scenario": "l6-risk-rating",
-      "target": "starter-products"
     },
     {
       "suite": "starter-agent-profile",

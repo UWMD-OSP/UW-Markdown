@@ -3,7 +3,7 @@ rfc: 0060
 title: The four tranche-class candidates — a decision, not an enum opening
 status: decided
 accepted: 2026-09-19
-author: claude
+author: UWMD maintainers
 created: 2026-09-19
 depends_on:
   - 0026

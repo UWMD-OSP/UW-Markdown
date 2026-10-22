@@ -88,8 +88,8 @@ To open the reference web viewer, point any browser at
 ## What ships in v1
 
 - The format spec (`UW_FORMAT_SPEC.md`) — 21 standard sections, validation rules, supersede semantics.
-- The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 4.1.0; RFCs 0078, 0081 and 0084). Display, editing, defaults and the AI agent host are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
-- `@uwmd/core` - parser, validator, renderer, runner, and an optional Claude-backed Bancroft reference agent suite.
+- The protocol spec (`UW_PROTOCOL.md`) - how any party verifies a document: two conformance tiers (Reader, Verifier) plus optional verification profiles, the provenance rules, and the module manifest (Protocol 4.1.0; RFCs 0078, 0081 and 0084). Display, editing, defaults and the agent layer conventions are non-normative starter-product guidance in [`docs/starter/`](docs/starter/README.md).
+- `@uwmd/core` - parser, validator, renderer, the generic block writers, and the Bancroft layer registry with its context builders. It runs no agent; a host runs its own and writes through the writers or the edit API.
 - A conformance corpus per tier so third parties can self-certify.
 - A single-file web viewer demonstrating a Reader in <500 LOC.
 

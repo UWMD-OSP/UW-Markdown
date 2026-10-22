@@ -43,6 +43,9 @@ Owner direction preserves RFC 0078 and RFC 0083: UWMD defines financial meanings
 and verifies declared assertions; StackUW and other adopters construct models.
 A comprehensive generation engine is **not** a 5.0 prerequisite. No launch date or
 release preparation is authorized by this plan.
+A lender acceptance kit (a lender requirements crosswalk, lender-side worked
+deals, mappings to the formats lenders ingest and a credit-memo view) is a
+post-launch 5.x milestone, not a launch criterion (owner, 2026-10-21).
 
 | Order / workstream | Deliverable / decision | Actual dependency and evidence |
 |---|---|---|

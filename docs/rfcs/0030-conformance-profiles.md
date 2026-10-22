@@ -34,8 +34,8 @@ eighteen.
 
 ## Motivation
 
-The first external adopter to run the corpus end-to-end (underwriter.cc,
-vendored at `32a0df8`, protocol 1.2.0) reported four divergences. Every one of
+The first external adopter to run the corpus end-to-end (at protocol 1.2.0)
+reported four divergences. Every one of
 them is a defect on our side, and all four have the same root cause: the corpus
 encodes requirements the spec does not state, and the spec offers no mechanism
 to opt out of the parts that do not apply.
@@ -273,7 +273,7 @@ retires, and §II.6a exists precisely so nobody has to write that driver.
 - `conformance/profiles/01-reader-only/` — a manifest claiming `parse` alone.
   Asserts the driver skips every `validate`, `edit-*`, `calc-*`, and `integrity`
   case, and that the skip count is reported rather than folded into passes.
-- `conformance/profiles/02-calc-no-edit/` — the underwriter.cc shape: `parse`,
+- `conformance/profiles/02-calc-no-edit/` — the first adopter's shape: `parse`,
   `validate`, `calc-evaluate`, no `edit-*`. Asserts tier-2 cases skip while
   tier-3 cases run, which is the combination cumulative tiers cannot express.
 - `conformance/profiles/03-absent-capabilities/` — a manifest with no

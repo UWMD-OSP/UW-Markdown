@@ -4,7 +4,7 @@ title: Bind outright replacement-cap funding to an exact modeled cash payment
 status: implemented
 accepted: 2026-10-02
 implemented: 2026-10-03
-author: codex
+author: UWMD maintainers
 created: 2026-10-02
 depends_on:
   - 0045
@@ -33,106 +33,29 @@ separately verified binding digest. Date and amount remain in that cash row. Exi
 valid RFC 0056 documents remain valid without edits. This is a modeled future
 purchase, never evidence of an executed successor trade.
 
-**Status: implemented; released and independently verified.** Jared accepted this
-RFC on 2026-10-02 with semantics frozen at
-`29c42c79e855fca4f97d82ec71596857370ca4b6` and separately authorized
-implementation on 2026-10-03. PR #245 merged on canonical
-`UWMD-OSP/UW-Markdown` main at `d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`.
-The owner-authorized `v2.17.0` release on `98dc5e4a040cf04f7b907a76e3d83825868d1d9f`
-published core/CLI 2.17.0 with Stable Protocol 2.21.0 and Format 2.0,
-including the later multifamily deal-level cash-on-cash correction. Independent
-registry, provenance, published-file and delivered-CLI verification passed;
-see [the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md). The RFC remained `accepted` in the
-immutable tagged preparation tree. This lifecycle record changes no frozen
-semantics or StackUW admission.
-
-## Historical owner acceptance record (2026-10-02)
-
-- **Decision:** Jared, the project owner, explicitly accepted RFC 0070 as a whole
-  on 2026-10-02 (America/Phoenix), under the owner-led process in
-  [GOVERNANCE.md](../../GOVERNANCE.md). No public-comment waiting period or
-  waiver is required in that mode.
-- **Frozen contract:** [draft commit
-  `29c42c79e855fca4f97d82ec71596857370ca4b6`](https://github.com/UWMD-OSP/UW-Markdown/commit/29c42c79e855fca4f97d82ec71596857370ca4b6).
-  The accepted wire shape, binding scope, validation/verification contract,
-  economic semantics and fixture matrix are unchanged by this status record.
-- **Disposition:** `accepted`; intent to implement is recorded, but the owner
-  expressly withheld implementation authorization. This is not `implemented`
-  and adds no released outright-funding capability.
-- **Authorization boundary:** record acceptance and required documentation only.
-  No normative spec/schema/protocol edits, validators, conformance changes,
-  version bumps or release preparation are authorized. No active implementation
-  spec/task matrix is started by this record.
-- **Version direction:** retain Format 2.0; likely Protocol 2.21.0 and core/CLI
-  2.17.0, subject to sequence reconciliation when separately authorized.
-  Published Format 2.0 / Protocol 2.20.0 / core/CLI 2.16.0 remain unchanged.
-- **Next decision:** separately authorize implementation using the sequence below.
-  Release preparation and StackUW adoption remain later decisions and gates.
-
-## Owner implementation authorization (2026-10-03)
-
-Jared explicitly authorized implementation of the frozen contract from canonical
-main `48fa1086671c0c229562457b98efd0a378969f78`. The authorization covers the synchronized
-normative/core/consumer/conformance/documentation changes and their full gates.
-The implementation specification and completed task matrix are archived at
-`specs/archive/rfc-0070-replacement-funding.md` in the repository.
-The historical acceptance boundary above records the earlier decision.
-
-The implementation is merged via PR #245 at
-`d83837d2dc3049ffeadb5f27a42e3f0deb2b83af`; implementation review is complete.
-
-## Owner release-preparation direction (2026-10-03)
-
-The owner selected core/CLI **2.17.0**, Protocol **2.21.0**, Format **2.0**
-for the complete current main generation, including the subsequently merged
-multifamily deal-level cash-on-cash correction. Release preparation follows
-[wiki 11](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/wiki/11-build-release-governance.md) and is recorded in
-[the preparation record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-preparation.md).
-RFC 0070 remains `accepted` throughout preparation; it becomes `implemented`
-only after shipment and independent publication verification. Tagging,
-publication and StackUW adoption require separate owner action. The frozen
-wire shape, binding scope, structural/async boundary and economics are unchanged.
-
-## Owner-authorized publication and verification (2026-10-03 America/Phoenix)
-
-The owner authorized annotated `v2.17.0` exactly on canonical main
-`98dc5e4a040cf04f7b907a76e3d83825868d1d9f` after exact-main push CI run 37169227124
-succeeded. Tag object `d9b52227ed6df8dbcb97d6c9d5cb0b1c04559c44` is unchanged.
-[Release run 37172975077](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/37172975077)
-succeeded and published only core 2.17.0, CLI 2.17.0, signing 0.2.21 and
-batch 0.8.16. Independent versions/`latest`/`gitHead`, integrity, registry
-signatures, SLSA/npm attestations, authenticated Fulcio/TUF/Rekor evidence,
-462 published file contents and all 158 delivered-CLI portable cases passed.
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section below
-remain unchanged. [Durable evidence](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.17.0-publication.md) records the checks.
+**Status: implemented; released in 2.17.0.** See [Resolution](#resolution).
 
 ## Motivation
 
-Canonical baseline is `UWMD-OSP/UW-Markdown` main
-`2fbf9250b200f6d4f455165bee35bbbc9cfe8dee`: Format 2.0, stable Protocol
-2.20.0, released core/CLI 2.16.0. RFC 0056 is implemented. The immutable
-`v2.16.0` tag remains on `a1ca815e2aee5da374caf7627ba3702849ecd257`.
+The baseline at drafting was Format 2.0, stable Protocol 2.20.0 and released
+core/CLI 2.16.0. RFC 0056 is implemented.
 
 ### Demonstrated adopter requirement
 
-StackUW `TASK-3294` and `Q-1297`, recorded at source commit
-`9a6dfb9fad0f307df10031fef8ca49ced111afd8`,
-identify a bridge with an initial rate cap expiring before the modeled loan/hold
-ends. The replacement is purchased outright in a specified future loan month,
+An adopter reported a bridge loan with an initial rate cap expiring before the
+modeled loan/hold ends. The replacement is purchased outright in a specified future loan month,
 with a modeled premium paid from deal cash. There is no close-date replacement
 reserve and no periodic escrow accumulation. The document must preserve the
 model's amount and timing rather than manufacture escrow or reallocate cash.
 
-At canonical adopter master `9a6dfb9fad0f307df10031fef8ca49ced111afd8`,
-the existing export fixture states a $400,000 initial premium and a $360,000
-outright replacement in loan month 25. Bridge `compute.ts` puts the latter
-cost in `rateCapCostByMonth[24]`. The current exporter already emits a dedicated
-§4.26 signed replacement-payment row. Its draft `rate_cap` projection is
-producer-side convention, not the released UWMD `rate_hedge` contract.
+The adopter's export fixture states a $400,000 initial premium and a $360,000
+outright replacement in loan month 25; its model books the replacement cost in
+that month. The adopter's exporter already emits a dedicated §4.26 signed
+replacement-payment row. Its draft `rate_cap` projection is producer-side
+convention, not the released UWMD `rate_hedge` contract.
 
 The export fixture's `2002-01-01` comes from a default forecast anchor, not a
-real closing date. TASK-3294 still needs its explicitly stated calendar anchor.
+real closing date; the adopter still needs an explicitly stated calendar anchor.
 All 2026/2028 dates below are **synthetic public examples**. UWMD must not infer a
 purchase date from that anchor, the export clock, or loan years.
 
@@ -143,9 +66,7 @@ purchase date from that anchor, the export clock, or loan years.
 whenever the typed assumption is `replace`. `upfront` means funded at close;
 `monthly` means ongoing deposit. Neither means a single future payment.
 
-The research brief at `docs/reviews/2026-10-02-outright-cap-replacement.md`
-and its sibling `.evidence.json` output, committed at
-`0b0c031a0f3bd45dffa8a06bce74c48637ce1e08`, show that a truthful §4.26
+A reproduction against the released validator shows that a truthful §4.26
 replacement row does not discharge ESC-04. A
 zero-funded dummy escrow can pass selected checks, but asserts an account that
 does not exist and fails to identify the future premium or its timing.
@@ -641,8 +562,8 @@ The owner-selected direction permits an old tool to refuse new-feature files;
 it does not promise that every new file validates under every prior protocol.
 The missing-section coverage correction enforces existing normative behavior.
 
-No version is selected or bumped by this acceptance record. The owner accepted
-this versioning direction; later preparation must reconcile actual versions anew.
+The owner accepted this versioning direction. The release used Format 2.0,
+Protocol 2.21.0 and core/CLI 2.17.0 (see [Resolution](#resolution)).
 
 ### Static/Excel and representation fidelity
 
@@ -725,10 +646,9 @@ authenticity and prevents a claim that hashing proves purpose.
 
 ## Reference implementation
 
-Implementation remains a follow-up **only after separate explicit owner
-authorization**. Acceptance is recorded above; no source change is authorized.
+Implemented in PR #245 (see [Resolution](#resolution)).
 
-Planned files/surfaces:
+Files/surfaces:
 
 - Format §4.7/§4.8 prose in `spec/UW_FORMAT_SPEC_v1.md`, incorporated by v2.
 - `spec/schemas/debt-rate-hedge.schema.json`: optional closed union and binding
@@ -753,56 +673,6 @@ Planned files/surfaces:
 - `scripts/run-conformance.mjs`, portable cases/driver, new hedge scenarios,
   wiki data model/testing/status and user-facing adoption documentation.
   Ordinary financial packs and Excel formulas are untouched.
-
-### Acceptance and implementation sequence
-
-1. **Owner acceptance — complete:** Jared accepted the frozen `29c42c7` contract
-   on 2026-10-02. The acceptance record above pins the full source commit.
-   This completed decision does not authorize the remaining implementation steps.
-2. **Explicit implementation authorization:** after acceptance, reconcile main
-   and create `specs/active/SPEC.md` and its ordered `TASKS.md` only if this
-   feature is the selected active work. Do not displace another active spec.
-   Exactly one task is in flight; check it off only after applicable gates
-   and its commit.
-3. **Atomic normative implementation:** land synchronized format/schema/protocol,
-   executable declarations, structural validator, separate verifier and conformance.
-   Include the shared known-answer digest and immutable-snapshot tests.
-   No temporary release may accept outright funding while skipping its digest.
-4. **Consumer integration:** prove core async, browser crypto, CLI text/JSON
-   exit status, MCP result and built-in claimed consumers agree. Sync-only callers
-   retain clean structural results when appropriate and
-   expose `not_checked`; they cannot claim complete verification. Legacy
-   controls preserve byte-validity except for documents exploiting the disclosed
-   RFC 0056 implementation defect.
-5. **Deterministic gates:** build; full tests; all default conformance suites;
-   schema validation; lint; verify-lockfile; verify-packages; verify-versions;
-   verify-indexes; verify-codes; docs build, plus release-readiness checks when
-   a generation is later prepared. Run `npm ci` only if dependencies/lockfile
-   or workspace linking actually change. None is required by this design.
-6. **Separate owner release decision:** re-check actual semver sequence, prepare
-   the selected package generation and exact dependency pins, then use existing
-   release-prepared/tag/publication verification. Do not alter v2.16.0.
-   RFC becomes `implemented` only after the accepted implementation ships.
-7. **Stack adoption:** satisfy the released condition below, resolve Q-1297,
-   refresh TASK-3294 admission/scope and complete its downstream proofs.
-   TASK-3295 waits for TASK-3294's durable DONE state.
-
-### Exact StackUW unblock condition
-
-TASK-3294 remains **SCOPED**, and TASK-3295 remains downstream, until a released,
-declared Protocol/core/CLI pairing includes this accepted funding union,
-separate async digest verification and conformance for both funding paths
-and their refusals. Stack must vendor that release and invoke both structural
-validation and the separate async verifier for the new binding. An unaccepted draft, accepted-but-unreleased implementation or
-absence of ESC-04 alone does not unblock export.
-
-Stack's own task then needs an actual stated calendar anchor, exact copying of
-the engine's future purchase amount/date into the existing §4.26 row, the
-matching binding commitment, no invented escrow, unchanged financial results,
-no-cap byte/digest controls, and its required deliberate capped-document
-digest/provenance event. A zero modeled premium needs an explicit zero row if
-exported under this branch; its current omission policy cannot create a binding.
-This RFC authorizes neither named export refusal nor silent purchase omission.
 
 ## Alternatives considered
 
@@ -829,15 +699,38 @@ released ESC-04 coverage defect, byte-valid legacy escrow funding and optional
 authored currency with canonical null.
 
 The owner accepted the final wire shape, canonical scope, exact API/result
-contract, matrices and versioning analysis at frozen commit `29c42c7`.
-Implementation authorization and merge are recorded above. No semantic owner
-questions remain; shipment and independently verified publication gate the
-`implemented` lifecycle transition.
+contract, matrices and versioning analysis (see [Resolution](#resolution)).
 
 Mixed funding, multiple replacements, successor coverage, post-sale financing
 assembly and executed-trade records remain deferred to separate adopter-backed
 contracts. No pricing formula, tolerance or numerical convergence choice is
 introduced.
+
+## Resolution
+
+**Accepted 2026-10-02; implemented 2026-10-03; released in core/CLI 2.17.0
+with Protocol 2.21.0 and Format 2.0.** The owner accepted the RFC as a whole
+under the owner-led process in [GOVERNANCE.md](../../GOVERNANCE.md), with the
+wire shape, binding scope, validation/verification contract, economic semantics
+and fixture matrix in sections 1-7 and [Conformance impact](#conformance-impact)
+frozen at acceptance. Implementation authorization followed on 2026-10-03, and
+PR #245 implemented the frozen contract unchanged: synchronized format, schema,
+protocol, executable declarations, structural validator, the separate async
+verifier, consumers and conformance.
+
+Facts for readers of the standard:
+
+- Adoption by the reporting adopter depended on a released implementation of
+  both funding paths and their refusals, invoked through both structural
+  validation and the separate async verifier. Its export also needs an actual
+  stated calendar anchor, exact copying of the modeled purchase amount and date
+  into the existing §4.26 row, the matching binding commitment and no invented
+  escrow. A zero modeled premium needs an explicit zero row if exported under
+  this branch; omitting the row cannot create a binding. This RFC authorizes
+  neither a named export refusal nor silent omission of the purchase.
+- Mixed funding, multiple replacements, successor coverage, post-sale financing
+  assembly and executed-trade records remain deferred (see
+  [Unresolved questions](#unresolved-questions)).
 
 ## Prior art
 
@@ -851,11 +744,3 @@ introduced.
 - Protocol §V.9 and the existing `canonicalizeExact` / SHA-256 seam provide
   deterministic canonical bytes. This draft adds the fixed binding preimage;
   it does not change existing block/document digest semantics.
-
-## Draft verification record
-
-This documentation-only draft revision modifies no normative file, implementation,
-conformance fixture, version or release record. The original research
-reproduced ESC-04 from current released code; those results remain historical
-evidence, not tests of an unimplemented proposal. Draft verification results
-are recorded in the commit's accompanying response.

@@ -2,7 +2,7 @@
 rfc: 0109
 title: Report financial-validity findings as deal flags, not record errors
 status: accepted
-author: claude-code
+author: UWMD maintainers
 created: 2026-10-21
 affects:
   - format-spec
@@ -14,7 +14,7 @@ affects:
 
 # RFC 0109: Report financial-validity findings as deal flags, not record errors
 
-> **Accepted by the owner, 2026-10-21, as drafted** (Jared: "Owner rulings, 2026-10-21. RFC 0107 (#460) accepted with D2 = yes, add quick_metrics.ltc as a second home; D3 = check every stated LTC, not construction only. RFC 0108 (#461) accepted with D2 = yes, align completeness.severity; D3 = yes, replace the four stage names with the seven deal_stage values. RFC 0109 (#462) accepted with D1 = a separate deal_flags list; D3 = institutions list codes one by one in validation_overrides.financial_validity_errors. All other decisions as drafted.").
+> **Accepted by the owner, 2026-10-21, as drafted** (owner: "Owner rulings, 2026-10-21. RFC 0107 (#460) accepted with D2 = yes, add quick_metrics.ltc as a second home; D3 = check every stated LTC, not construction only. RFC 0108 (#461) accepted with D2 = yes, align completeness.severity; D3 = yes, replace the four stage names with the seven deal_stage values. RFC 0109 (#462) accepted with D1 = a separate deal_flags list; D3 = institutions list codes one by one in validation_overrides.financial_validity_errors. All other decisions as drafted.").
 > Origin: owner ruling of 2026-10-21 (5). The
 > owner's reason: an honest underwriting of a weak deal must not read as a broken
 > record to the party receiving it. It changes what fails validation, so it is

@@ -420,7 +420,7 @@ organized into four named sub-objects by concern:
   "provenance": {
     "source": "agent/L2-01",
     "resolution": "ai_extracted",
-    "actor": "jared@example.com",
+    "actor": "analyst@example.com",
     "agent_id": "L2-01",
     "agent_version": "1.0.0",
     "timestamp": "2026-09-01T10:12:00Z",
@@ -3167,14 +3167,14 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
   "financial_validity": [
     {
       "flag_id": "string",
-      "metric": "dscr | ltv | cap_rate | vacancy_rate | opex_ratio | irr | rent_growth | equity_multiple | debt_yield | noi | other",
+      "metric": "dscr | ltv | ltc | cap_rate | vacancy_rate | opex_ratio | irr | rent_growth | equity_multiple | debt_yield | noi | other",
       "value": null,
       "threshold": {
         "type": "min | max | range",
         "min": null,
         "max": null
       },
-      "severity": "error | warning | info",
+      "band": "error | warning",
       "message": "string",
       "suppressed": false,
       "suppress_reason": null
@@ -3235,13 +3235,18 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 `overall_status` takes the values of §6.2 with the meaning §6.2 gives each, and
 a producer that writes the section SHOULD copy the status of the validation run
 it records; like the result's, it excludes the §5.2 deal flags recorded in
-`financial_validity[]` (RFC 0109). `completeness[].severity` is
+`financial_validity[]` (RFC 0109). A `financial_validity[]` entry is a deal
+flag: its `band` is the §5.2 column crossed, `error` or `warning`, with the
+meaning of the validation result's deal-flag `band` (RFC 0110). An entry that
+crosses no band is not recorded; `metric` includes `ltc` for the RFC 0107
+band. `completeness[].severity` is
 `error | warning | info`: a completeness item that halts the pipeline is
 recorded as a `blocking_flags` entry (§3.3), not as a severity.
 `completeness[].required_for_stage` takes the seven `deal_stage` values of §2.2;
 the retired `underwriting` corresponds to `full_underwrite`. The retired
-spellings `warnings_only`, `errors_present` and the `blocking` severity are not
-refused (no implementation reads the section's contents).
+spellings `warnings_only`, `errors_present`, the `blocking` severity and a
+`financial_validity[]` entry's `severity` member are not refused (no
+implementation reads the section's contents).
 
 ---
 
@@ -4006,7 +4011,7 @@ Like `capital_stack` (§ 4.24) and `lease_up_schedule` (§ 4.25), this is a **st
 asserted — `moic` at the 4-decimal ratio quantum, `xnpv` at the currency
 quantum, `xirr` at the 6-decimal rate quantum.)*
 
-**Deliberately deferred (RFC 0034).** Excel emit — Excel's `XIRR` is Newton-seeded, so a live `=XIRR(...)` formula cannot hold the bit-exact parity boundary the ROUND-wrapped closed-form formulas do; if a Cash Flow sheet is ever emitted, stated/computed metrics land as literals, by an RFC that takes that exception knowingly. Also deferred: a `dcf` cross-check and defaults-table entries. The RFC 0026 Phase 2 distribution waterfall — whose stated precondition this section removed — was taken up as RFC 0035 (§ 4.27).
+**Deliberately deferred (RFC 0034).** Excel emit — Excel's `XIRR` is Newton-seeded, so a live `=XIRR(...)` formula cannot hold the bit-exact parity boundary the ROUND-wrapped closed-form formulas do; if a Cash Flow sheet is ever emitted, stated/computed metrics land as literals, by an RFC that takes that exception knowingly. Also deferred: a `dcf` cross-check and defaults-table entries. The distribution waterfall that RFC 0026 deferred — whose stated precondition this section removed — was taken up as RFC 0035 (§ 4.27).
 
 ---
 

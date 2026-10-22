@@ -42,7 +42,7 @@ the full section model, `_meta` provenance, and calc inputs — that is, UWX —
 while `UW_LITE_SPEC_v1.md` and RFC 0017 define `.uw.md` as a constrained,
 explicitly lossy summary. A reader holding only the format spec would conclude
 that a structured record is a `.uw.md` file, which the implementation has
-already stopped believing. `CLAUDE.md` invariant 7 requires spec, schema, and
+already stopped believing. `AGENTS.md` invariant 7 requires spec, schema, and
 protocol to stay in lockstep; they were not.
 
 **2. The published site inherits the error.** `tools/docs-site` renders the

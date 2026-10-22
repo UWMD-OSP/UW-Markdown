@@ -18,6 +18,56 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
+  for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
+  `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.
+  Lite markers are now sought only outside UWX structured fences. The Lite
+  conformance suite reads each compiled UWX back (eight new `[uwx-read]`
+  checks).
+
+- Fix #409: the UWX -> Lite projection omits a stated `null` under a
+  unit-bearing field (land's `valuation.going_in_cap_rate`) and reports it in
+  `omitted_paths`, so the projection compiles back; a failed Lite compile in the
+  CLI is a typed refusal (`UWLiteBridgeError`, exit 1, no stack trace).
+
+- Scrub RFC records for public launch: every RFC's `author` is now `UWMD maintainers`;
+  the owner's personal name, private adopter identifiers, branch names and
+  private-repository references leave RFC prose; owner and phase logs collapse
+  into one `## Resolution` section; Golden Deal citations are restated
+  generically; RFC 0068 is marked superseded by RFC 0080. No decision,
+  normative text, code or version changes.
+
+- Fix #410: `render --format chat` shows structured key risks as
+  `<severity>: <description>` (falling back to the risk's `id`) instead of
+  `[object Object]`; plain-text risks are unchanged.
+
+- Scrub spec wording for public launch (cleanup brief phase D): example actors
+  in Format §2.5 and the `uwmd-block` and `edit-operation` schemas use
+  `analyst@example.com`, and spec and schema references cite an RFC rather than
+  an internal phase of it. No normative change.
+
+- Ratify the release rules after launch (owner, 2026-10-21,
+  `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the
+  packages and the standard while each record keeps declaring its Format
+  version; any fix that changes a computed result is a minor release whose
+  CHANGELOG entry names the affected metrics; monthly minor trains, patches as
+  needed; standing approval for green patch releases; a deprecation window of one
+  minor release and 90 days, whichever is longer; validation codes never
+  renumbered or reused; project keys rotated at once on suspected compromise and
+  otherwise yearly. `GOVERNANCE.md`: the project launches owner-led, and
+  collaborative mode begins when the first outside RFC or pull request arrives.
+  The verifier rule-set rule is proposed separately in draft RFC 0111. The lender
+  acceptance kit is a post-launch 5.x milestone.
+
+- Implement accepted RFC 0110: a stored §4.17 `financial_validity[]` entry names
+  its band `band` (`error | warning`), as the validation result's deal flags do,
+  in place of `severity`; the entry's `metric` list gains `ltc`; and an entry that
+  crosses no band is not recorded. The corpus follows: the six regenerated
+  sections rename the member, and the sixteen hand-written sections whose entries
+  said `pass` (no band crossed) now store an empty list. Every changed record's
+  stored flags equal a fresh `uwmd validate`'s `deal_flags`. The
+  `02-full-multifamily` parse baseline follows.
+
 - Refresh uwmd.org with the owner-approved direction C: document-version card,
   page classification and normative navigation markers, compact mobile landing,
   complete guide sidebars, favicon and the approved public-copy sweep. Keep
@@ -412,6 +462,32 @@ protocol, and each package each carry an independent semver).
   packages and retires prelaunch artifact-retention/compatibility work; RFC and
   verification gates remain, with no numerical/design acceptance or publication.
   Reconcile live contributor/version/roadmap and agent-retirement guidance.
+
+### Removed
+
+- Remove Bancroft agent execution from `@uwmd/core` and the `uwmd` CLI (owner
+  decision; RFC 0078 classes the agents as a starter product). Removed: the
+  runner (`runBancroftAgent`, `runBancroftAgentStreaming`, `BancroftRunOptions`,
+  `BancroftRunResult`, `ProgressEvent`), the tool schemas
+  (`WRITE_UW_SECTION_TOOL`, `WRITE_MULTIPLE_SECTIONS_TOOL`,
+  `MULTI_SECTION_LAYERS`, `ToolOutput`), the provider seam (`AgentProviderError`,
+  `AgentProvider`, `AgentRequest`, `AgentCompletion`, `AgentToolCall`,
+  `AgentToolSchema`, `AgentMessage`), the Anthropic adapter
+  (`createAnthropicProvider`, `AnthropicProviderOptions`), record and replay
+  (`createReplayProvider`, `createRecordingProvider`, `RecordingProvider`,
+  `parseAgentCassette`, `agentRequestFingerprint`, `CASSETTE_VERSION`,
+  `AgentCassette`, `RecordedExchange`) and `AgentHostCapability`; the
+  `uwmd run` command and its flags; core's `agent-host` manifest claim; the
+  `@anthropic-ai/sdk` optional peer and dev dependency;
+  `scripts/rerecord-cassettes.mjs`; and the four starter checks that needed an
+  agent run or a provider (`starter-agent/l0a-scope-deterministic`,
+  `starter-agent/l6-risk-rating`,
+  `starter-agent-replay/l6-risk-rating/{sections,document}`). Kept until RFC
+  0112: `BANCROFT_LAYERS`, the context and prompt builders, `uwmd layers` and
+  the layer-profile check. Kept: the generic writers (`writeAgentBlock`,
+  `writeErrorEntry`, `buildMeta`), `buildContext` and `uwmd edit
+  --agent-id/--agent-version`. An unknown command, `uwmd run` included, now
+  exits 1 before any file I/O instead of printing the help text with exit 0.
 
 ### Fixed
 
