@@ -106,7 +106,7 @@ module.
 | `protocol.ts` (verify) | The normative contract types, `BUILTIN_EDIT_POLICIES`, `BUILTIN_REMEDIATIONS`, version constants. |
 | `starter-protocol.ts` (core) | Starter tables: `BUILTIN_VIEW_MODELS`, number formats, `CASCADE_ORDER` and the capability-token types (RFC 0083). |
 | `format.ts` (core) | Field-level formatters (currency, percent, multiple, etc.) used by view models. |
-| `context.ts` (core) | `BANCROFT_LAYERS` definitions and the agent context and prompt builders. The toolkit hosts no agents: a host runs its own and writes through `runner.ts` or the editor. The [starter guide](docs/starter/ai-host.md) describes this non-normative surface. |
+| `context-profiles.ts` (core) | `buildContext`, the starter context profiles. The toolkit hosts no agents: a host runs its own and writes through `runner.ts` or the editor. The [starter guide](docs/starter/ai-host.md) describes this non-normative surface. |
 | `compactor.ts` (core) | Materializes "live view" by collapsing superseded blocks. |
 | `init.ts` (core) | Scaffold a new `.uw.md` from defaults. |
 | `cli.ts` (core) | Programmatic CLI entry; surfaced via `uwmd-cli`. |
@@ -145,11 +145,11 @@ case exactly one owner (Protocol §II.6, RFC 0078):
   receipts and the §VIII.1–VIII.3 expression notation.
 - **Profiles** — Module, Integrity, Representations, Portfolio,
   Sensitivity and Stochastic, each claimed explicitly.
-- **Starter products** — editor, layer-profile, rendering, defaults and refinement
+- **Starter products** — editor, rendering, defaults and refinement
   checks. Not conformance; still blocking in CI and reported separately.
 
 Fixture directories are named by content (`documents/`, `calc/`,
-`starter/editor/`, `starter/agent/`); ownership comes from the
+`starter/editor/`, `starter/refinement/`); ownership comes from the
 corpus index, not the directory name. A `malformed/`
 subdirectory (where applicable) holds deliberately-invalid fixtures whose
 `expected.json` declares which validator codes the parser must surface.

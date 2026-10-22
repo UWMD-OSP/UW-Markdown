@@ -9,7 +9,7 @@ import { hasBlockShape } from './block-kind.js';
 //   - `live`      — calc-aware editors. All non-superseded sections, full prose.
 //   - `compact`   — LLMs at scale. Stable-first ordering for prompt-cache hits.
 //   - `full`      — archival / forensic. Whole file, untouched.
-//   - `relevant`  — Bancroft-style filter to a caller-named subset of sections.
+//   - `relevant`  — filter to a caller-named subset of sections.
 //
 // Token estimates use the chars/4 approximation. See FEEDING-UWMD-TO-AN-LLM
 // docs page for cache-strategy guidance.
@@ -101,7 +101,6 @@ function buildSummary(parsed: ParsedUWFile, opts: BuildContextOptions): ContextR
   const minify = opts.minify ?? true;
   const payload: Record<string, unknown> = {
     frontmatter: pickFrontmatter(parsed),
-    pipeline_state: parsed.frontmatter.pipeline_state ?? null,
     quick_metrics: parsed.frontmatter.quick_metrics ?? null,
   };
   const sectionsIncluded: string[] = [];

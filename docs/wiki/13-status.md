@@ -13,22 +13,33 @@ remain. No package numbers or release publication are changed here.
 seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
 `uwmd run` and core's `agent-host` manifest claim are gone, with the
 `@anthropic-ai/sdk` peer and the four starter checks that needed an agent run
-(1,226 indexed checks now, starter products 102). An unknown command exits 1
-before any I/O. Kept until draft RFC 0112 removes the layer vocabulary:
-`BANCROFT_LAYERS`, the context/prompt builders, `uwmd layers` and the
-layer-profile check (Format §2.2 `pipeline_state` names its keys after the
-layers, and §6.3 still describes `uwmd run`). The generic writers,
+An unknown command exits 1 before any I/O. The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
-**Python certified — Issue #354 (2026-10-20).** The independent Python
-implementation's manifest claims the Reader tier plus `calc-evaluate`; CI runs the
-portable Verifier-tier corpus on three OSes and allows only the unclaimed
-`validate` cases to skip. `validate` passes the corpus but waits on its
-differences from the reference outside it (#425 review). Not the Verifier tier:
-dictionary reproduction, stated-figure verifiers and receipts are not implemented
-in Python (Protocol §II.2/§II.5). Divergences found
-while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
-(spec-ambiguity, non-portable).
+**RFC 0112 implemented: the Bancroft layer vocabulary is gone (2026-10-22).**
+The Format no longer names a producer tool (§1.2), maps layers to sections
+(§1.3 deleted), carries frontmatter `pipeline_state` (a record that still has it
+reads it as an unknown key) or "Written by" lines; eight prohibitions became
+**Source rules** for any non-user source. Spec examples use neutral agent ids
+under the unchanged `agent/<id>` source. §6.8's producer rules are §3.6, the
+validation result is §5.6, and Parts VI and VII are the starter
+[CLI](../starter/cli.md) and [renderer](../starter/rendering.md) references.
+Module manifests refuse `agent_layers` as an unknown member (`PROTO-MOD-055`
+to `-060` retired and reserved), and `agent-host` left the capability
+vocabulary. Core drops the layer registry and its builders, `uwmd layers`,
+`agents/L0b-prompt.md` and the layer-profile check (1,235 indexed checks,
+starter products 101, 397 portable). Examples and fixtures drop
+`pipeline_state` and take neutral agent ids.
+
+**Python certified — Issue #354 (2026-10-21).** The independent Python
+implementation's manifest claims the Reader tier plus `parse`, `calc-evaluate`
+and `validate`; CI runs the portable Verifier-tier corpus on three OSes with
+`--no-skip`, so every case, including all 144 validate cases, must pass. The #425
+validate differences are closed, and `UWMD_SPEC_DIR` lets `validate` run outside
+a checkout. Not the Verifier tier: POL-01/02, dictionary reproduction, the
+stated-figure verifiers and receipts are not implemented in Python (Protocol
+§II.2/§II.5). Divergences found while certifying were fixed or filed: #404, #405,
+#406, #413 (fixed), #424 (spec-ambiguity, non-portable).
 
 **Release rules after launch ratified (owner, 2026-10-21).**
 [RELEASE_RULES](../playbooks/RELEASE_RULES.md) now records the owner's rulings:

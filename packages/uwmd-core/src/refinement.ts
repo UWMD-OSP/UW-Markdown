@@ -90,7 +90,7 @@ export interface NonMonotonicWarning {
 export interface RankGapsResult {
   by_voi: RankedGap[];
   /** Non-numeric / completeness gaps that don't move output ranges but
-   *  may still block a stage. (Empty in v1; placeholder for the L0b loop.) */
+   *  may still block a stage. (Empty in v1; placeholder.) */
   by_stage_blocking: { field_path: string; reason: string }[];
   diagnostics: {
     graph_size: number;

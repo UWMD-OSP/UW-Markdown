@@ -60,7 +60,7 @@ const MANIFEST_KEYS: readonly string[] = [
   'manifest_version', 'id', 'name', 'version', 'description', 'authors', 'license',
   'requires_protocol', 'requires_format', 'requires_conformance', 'requires_profiles', 'asset_classes',
   'deal_stages', 'sections', 'calculations', 'validations', 'thresholds',
-  'view_models', 'ui', 'agent_layers', 'depends_on', 'signature',
+  'view_models', 'ui', 'depends_on', 'signature',
   'declares_asset_classes',
 ];
 const SECTION_KEYS: readonly string[] = ['id', 'display_name', 'schema', 'required'];
@@ -75,7 +75,6 @@ const VIEW_MODEL_KEYS: readonly string[] = [
 const FIELD_HINT_KEYS: readonly string[] = [
   'path', 'label', 'kind', 'primary', 'unit', 'decimals', 'enum',
 ];
-const AGENT_LAYER_KEYS: readonly string[] = ['id', 'reads', 'writes', 'prompt_template'];
 const DEPENDS_ON_KEYS: readonly string[] = ['id', 'version'];
 
 // Length caps mirror the schema's minLength/maxLength constraints.
@@ -83,7 +82,6 @@ const ID_MIN_LENGTH = 3;
 const ID_MAX_LENGTH = 128;
 const NAME_MAX_LENGTH = 200;
 const DESCRIPTION_MAX_LENGTH = 2000;
-const AGENT_LAYER_ID_PATTERN = /^L\d+(?:_[a-z_]+)?$/;
 
 /**
  * Internal (§VII.3), not exported from the package entry points: for each
@@ -659,7 +657,6 @@ function validateModuleManifest(
   validateValidations(errors, manifest);
   validateThresholds(errors, manifest);
   validateViewModels(errors, manifest);
-  validateAgentLayers(errors, manifest);
   validateDependsOnShape(errors, manifest);
   validateDependencies(errors, manifest, opts.alreadyLoaded ?? []);
   validateCompatibility(errors, manifest, opts);
@@ -800,54 +797,6 @@ function validateFieldHints(
     }
     if (hint.enum !== undefined && (!Array.isArray(hint.enum) || !hint.enum.every((v) => typeof v === 'string'))) {
       errors.push(moduleError('PROTO-MOD-054', 'Field view hint enum must be a string array.', `${hintPointer}.enum`));
-    }
-  }
-}
-
-// Agent layers carry `prompt_template`, so a malformed one is a Tier-4 prompt
-// surface defect, not just a shape error. This is the construct with the widest
-// blast radius and it previously had no validation at all.
-function validateAgentLayers(errors: ProtocolError[], manifest: ModuleManifest): void {
-  if (manifest.agent_layers === undefined) return;
-  if (!Array.isArray(manifest.agent_layers)) {
-    errors.push(moduleError('PROTO-MOD-055', 'agent_layers must be an array.', 'agent_layers'));
-    return;
-  }
-  const ids = new Set<string>();
-  for (const [idx, layer] of manifest.agent_layers.entries()) {
-    const pointer = `agent_layers[${idx}]`;
-    if (!isRecord(layer)) {
-      errors.push(moduleError('PROTO-MOD-056', 'Agent layer declaration must be an object.', pointer));
-      continue;
-    }
-    rejectUnknownKeys(errors, layer, AGENT_LAYER_KEYS, pointer);
-    if (typeof layer.id !== 'string' || !AGENT_LAYER_ID_PATTERN.test(layer.id)) {
-      errors.push(moduleError(
-        'PROTO-MOD-057',
-        'Agent layer id must match ^L\\d+(?:_[a-z_]+)?$.',
-        `${pointer}.id`,
-      ));
-    } else if (ids.has(layer.id)) {
-      errors.push(moduleError('PROTO-MOD-058', `Duplicate agent layer id: ${layer.id}`, `${pointer}.id`));
-    } else {
-      ids.add(layer.id);
-    }
-    for (const key of ['reads', 'writes'] as const) {
-      const value = layer[key];
-      if (!Array.isArray(value) || !value.every((v) => typeof v === 'string' && v.length > 0)) {
-        errors.push(moduleError(
-          'PROTO-MOD-059',
-          `Agent layer ${key} must be an array of non-empty strings.`,
-          `${pointer}.${key}`,
-        ));
-      }
-    }
-    if (typeof layer.prompt_template !== 'string' || layer.prompt_template.length === 0) {
-      errors.push(moduleError(
-        'PROTO-MOD-060',
-        'Agent layer prompt_template must be a non-empty string.',
-        `${pointer}.prompt_template`,
-      ));
     }
   }
 }
@@ -1239,7 +1188,6 @@ function freezeManifest(manifest: ModuleManifest): ModuleManifest {
     calculations: manifest.calculations ? Object.freeze([...manifest.calculations]) : undefined,
     validations: manifest.validations ? Object.freeze([...manifest.validations]) : undefined,
     view_models: manifest.view_models ? Object.freeze([...manifest.view_models]) : undefined,
-    agent_layers: manifest.agent_layers ? Object.freeze([...manifest.agent_layers]) : undefined,
     depends_on: manifest.depends_on ? Object.freeze([...manifest.depends_on]) : undefined,
     declares_asset_classes: manifest.declares_asset_classes
       ? Object.freeze([...manifest.declares_asset_classes])

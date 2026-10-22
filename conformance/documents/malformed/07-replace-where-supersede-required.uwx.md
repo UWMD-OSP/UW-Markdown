@@ -21,7 +21,7 @@ created_by: "test-fixture"
 # Malformed — POL-02
 
 The `noi_model` block is at `_meta.lifecycle.revision: 2` and was written by an
-agent (source `agent/L2`). The `agent/*` policy mandates
+agent (source `agent/underwriter`). The `agent/*` policy mandates
 `supersede_on_edit: true`, but no superseded prior version exists in
 this file — the v1 block was overwritten via `section_replace` instead
 of `section_supersede`. `verifyProvenance` MUST emit `POL-02`.
@@ -60,14 +60,14 @@ of `section_supersede`. `verifyProvenance` MUST emit `POL-02`.
 
 ## NOI Model {#noi_model}
 
-```json uw:section=noi_model source=agent/L2 ts=2026-01-15T10:30:00Z v=2 confidence=medium
+```json uw:section=noi_model source=agent/underwriter ts=2026-01-15T10:30:00Z v=2 confidence=medium
 {
   "_meta": {
     "section": "noi_model",
     "provenance": {
-      "source": "agent/L2",
-      "actor": "agent/L2",
-      "agent_id": "agent/L2",
+      "source": "agent/underwriter",
+      "actor": "agent/underwriter",
+      "agent_id": "agent/underwriter",
       "agent_version": "1.0.0",
       "timestamp": "2026-01-15T10:30:00Z",
       "notes": "v2 written via section_replace; v1 was discarded — should have been section_supersede."

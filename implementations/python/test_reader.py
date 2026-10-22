@@ -250,7 +250,7 @@ class ReaderTests(unittest.TestCase):
     def test_manifest_claims_reader_tier_not_verifier_and_missing_commands_do_not_pass(self):
         manifest, status = main(["manifest"])
         self.assertEqual(status, 0)
-        self.assertEqual(manifest["capabilities"], ["parse", "calc-evaluate"])
+        self.assertEqual(manifest["capabilities"], ["parse", "calc-evaluate", "validate"])
         self.assertEqual(manifest["profiles"], [])
         # Certified Reader tier (#354); never the Verifier tier (Protocol II.2/II.5).
         self.assertEqual(manifest["tier"], "reader")

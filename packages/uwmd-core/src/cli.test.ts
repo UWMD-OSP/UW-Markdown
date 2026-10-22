@@ -111,7 +111,7 @@ describe('commands the CLI does not have', () => {
       const input = resolve(dir, 'x.uw.md');
       const bytes = readFileSync(resolve(process.cwd(), '../../examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
       writeFileSync(input, bytes);
-      const result = await run(dir, 'run', 'x.uw.md', '--agent', 'L6', '--live', '--output', 'out.uw.md');
+      const result = await run(dir, 'run', 'x.uw.md', '--agent', 'risk-rater', '--live', '--output', 'out.uw.md');
       expect(result.status).toBe(1);
       expect(result.stdout).toBe('');
       expect(result.stderr.trim()).toBe("uwmd: unknown command 'run'. Run 'uwmd --help' for the command list.");
@@ -120,6 +120,13 @@ describe('commands the CLI does not have', () => {
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  it('refuses the removed `layers` command (RFC 0112)', async () => {
+    const result = await run(process.cwd(), 'layers');
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain("uwmd: unknown command 'layers'.");
   });
 
   it('refuses any unknown command the same way', async () => {
@@ -133,7 +140,7 @@ describe('commands the CLI does not have', () => {
     const result = await run(process.cwd(), ...args);
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('Commands:');
-    expect(result.stdout).toContain('layers');
+    expect(result.stdout).not.toMatch(/^\s+layers\s/m);
     expect(result.stdout).not.toMatch(/^\s+run\s/m);
     expect(result.stdout).not.toContain('--live');
     expect(result.stdout).not.toContain('ANTHROPIC_API_KEY');

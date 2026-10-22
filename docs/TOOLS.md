@@ -167,8 +167,8 @@ npx @uwmd/cli receipt verify my-deal.uwx.md my-deal.receipt.json
 
 Run `npx @uwmd/cli` with no arguments for the complete command list,
 including `diff`, `edit`, `calc`, `scope`, `refine`, `verify-cash-flows`,
-`package`, `portfolio`, and `layers` (the Bancroft layer registry). An
-unknown command exits 1 before it reads any file.
+`package` and `portfolio`. An unknown command exits 1 before it reads any
+file. The [CLI reference](starter/cli.md) describes the core commands.
 
 `receipt verify` exits 0 for `verified`, 1 for `failed`, and **3 for
 `unverifiable`** — "cannot decide" is a distinct outcome, not a pass
@@ -255,14 +255,13 @@ agent to create, read, validate, edit, calculate, convert, or exchange a deal
 file.
 
 A host that runs its own agents (StackUW, or any other producer) uses what
-`@uwmd/core` keeps: the Bancroft layer registry (`BANCROFT_LAYERS`) and its
-context and prompt builders (`buildAgentContext`, `buildAgentPrompt`,
-`isContextReady`) to decide what a layer reads, and the generic writers
-(`writeAgentBlock`, `writeErrorEntry`) or the edit API (`applyEdit`,
-`uwmd edit --agent-id/--agent-version`) to write the result with its
-provenance. Agents write extracted data and narrative only; they never supply
-financial math. The starter [agent host guide](starter/ai-host.md) describes
-the layer, context and writer conventions.
+`@uwmd/core` keeps: the context profiles (`buildContext`) to prepare what an
+agent reads, and the generic writers (`writeAgentBlock`, `writeErrorEntry`)
+or the edit API (`applyEdit`, `uwmd edit --agent-id/--agent-version`) to write
+the result with its provenance. Agents write extracted data and narrative only;
+they never supply financial math. The starter
+[agent writers guide](starter/ai-host.md) describes the context and writer
+conventions.
 
 ---
 
@@ -276,4 +275,4 @@ the layer, context and writer conventions.
 | `uwmd` CLI | `packages/uwmd-cli/` | Verifier (all six profiles, `uwmd manifest`), plus starter editing |
 | Excel converter | `packages/uwmd-excel/` | Starter export |
 | Batch indexer | `packages/uwmd-batch/` | Reader (read-only index) |
-| Bancroft layer registry | `packages/uwmd-core/src/context.ts` | Starter layer registry and context builders (no agent execution) |
+| Context profiles and writers | `packages/uwmd-core/src/context-profiles.ts`, `runner.ts` | Starter context builder and generic writers (no agent execution) |

@@ -17,10 +17,11 @@ describe('buildContext — summary profile', () => {
     expect(r.tokenEstimate).toBeLessThanOrEqual(600);
   });
 
-  it('emits parseable JSON with frontmatter + pipeline_state', () => {
+  it('emits parseable JSON with the slim frontmatter and no pipeline_state (RFC 0112)', () => {
     const r = buildContext(PARSED, 'summary');
     const obj = JSON.parse(r.content) as Record<string, unknown>;
     expect(obj.frontmatter).toBeDefined();
+    expect(Object.hasOwn(obj, 'pipeline_state')).toBe(false);
     expect((obj.frontmatter as Record<string, unknown>).deal_id).toBe(PARSED.frontmatter.deal_id);
   });
 });
