@@ -10,7 +10,7 @@
   "references": {
     "financial-trajectories/inputs.json": "1e78c5ad9e26ac4ee7ece9f7153931db9828155773b7c08c77cb0b15c9f93145",
     "financial-trajectories/evidence/python.json.gz": "8d474b780b8cf23ee8e7f4f67fff20ba17049b151f69c4e270f48a50143abfd7",
-    "financial-trajectories/evidence/manifest.json": "53a79745035278e22f01322d7f851293762a41f1e1e7dad1cb1a9efd11d22c08",
+    "financial-trajectories/evidence/manifest.json": "ceeba51bd8dcab6384ec47d8bf35e1cf7ceaa3d582ca5b4f27ac173accbdd883",
     "impact/financial-evidence/baseline.financial.json": "7be6073869deb69b8b8836266934e53bd9f1d7b4df21f8c022ddaca308c32999",
     "impact/financial-evidence/manifest.json": "5d5aa3493c2f9cc1c86229eaeefdfac2aefae9a5e9c3902be1637bd2319e0749"
   }

@@ -50,7 +50,7 @@ solver, receipt, corpus, schema, version or RFC acceptance change.
 Capture `7747e60d614e064b2f7ae38df60077c5d57744c5` / tree
 `7bcfa00185f4fe7e6419209db217dc65dd6bf260` records CPython3.12.3,
 WindowsAMD64 and Node24.14.1/V8 13.6.233.17-node.44. Manifest SHA-256:
-`d9582a6764e4b7c403f87860ee33e64417769843eaeb591a386e7341da1a2141`.
+`af8a2dc12fa94be7c73b1404b5dc8be930499b5e9f6aa92c79cbd062d5246244`.
 Sixteen compressed artifacts retain314642 raw bytes: exact real/rational log
 certificates, ideal-log traces,141 complete ordered rows per JS/Python candidate,
 actual builtin/evaluator/reporting outputs, original NaN/zero bits, primitive

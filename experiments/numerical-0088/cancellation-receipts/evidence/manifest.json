@@ -15,7 +15,7 @@
   "sources": {
     "conformance/receipts/issue/01-uwx-multifamily/deal.uwx.md": "7988e4679a0a21e156ce5ae88eb0cb05abbcd9427a6adf449df1b754598d573e",
     "experiments/numerical-0088/cancellation-accuracy/evidence/candidate.json.gz": "1f65827dc1afa9cdea0de2f65710da0a2eb9e3b0e67e0311d74b473501403f60",
-    "experiments/numerical-0088/cancellation-accuracy/evidence/manifest.json": "e09b52ac510542ad77830bc36e33d9cabbfd99e595660f4cb02bbb02c0b54352",
+    "experiments/numerical-0088/cancellation-accuracy/evidence/manifest.json": "c51f42016d76fea22c2de86767c72979daaf1135aed5dc418a0b670685d4d24c",
     "experiments/numerical-0088/cancellation-accuracy/evidence/python.json.gz": "71cab2a06cb78d8b06a3d18068f663866b1725f4be77d8566381e8217e2f8a47",
     "experiments/numerical-0088/cancellation-accuracy/evidence/unmodified.json.gz": "dd0a9057d05d3811d4fcb0b60fc3d4ac89491ea26fbb6a13dbbeb54cebcb6f99",
     "experiments/numerical-0088/cancellation-accuracy/inputs.json": "f471e657670450d4c2d27e736120c56a55eacd7d11b88db7f21d62815d48a122",
@@ -23,7 +23,7 @@
     "experiments/numerical-0088/cancellation-receipts/check.mjs": "633576987ef2fa42caa9b480e84e53e3cbb2fd0379d26d89e333377a51d6312b",
     "experiments/numerical-0088/cancellation-receipts/inputs.json": "f3e02c1a31546d5c33556f6f4a195d6e0d7a2ad0ce4aa1939cee170fd98d1e62",
     "experiments/numerical-0088/cancellation-receipts/probe.mjs": "d14db60215069393426aa887911017c8efcbc1123696c83da732fa74c05c7fc3",
-    "experiments/numerical-0088/composed-receipts/inputs.json": "71278e3f32c791193ecd6b53c03be972db9edf9c99aa6fc3ea078b5a5ed8f3b9",
+    "experiments/numerical-0088/composed-receipts/inputs.json": "ed6c6284ca72c7f39c75fb1c6ef5300d063ea2a6d03415770d9e2f4e7026786d",
     "experiments/numerical-0088/impact/hook.mjs": "dfce317208322858842951fbf3a1b52f8650f7c8060c9e2203290eb65fca6682",
     "experiments/numerical-0088/impact/runtime.mjs": "d3e91c127dd27380603d225dde16b5b83069bdc0cb4ec430b71adf83475dfe5e",
     "experiments/numerical-0088/pinned-fdlibm/constants.json": "e9793112e7a5d0e2c1ccb2f8d8dd9bbc35608598cf725cb8e5ee44117dad59d9",
@@ -225,7 +225,7 @@
       "argv": [
         "node",
         "--experimental-loader",
-        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "file:///<repo>/experiments/numerical-0088/impact/hook.mjs",
         "<repo>\\experiments\\numerical-0088\\cancellation-receipts\\probe.mjs",
         "host",
         "-",
@@ -238,7 +238,7 @@
       "argv": [
         "node",
         "--experimental-loader",
-        "file:///C:/Users/jared/.codex/worktrees/numeric-0088-lane/UW%20Markdown/experiments/numerical-0088/impact/hook.mjs",
+        "file:///<repo>/experiments/numerical-0088/impact/hook.mjs",
         "<repo>\\experiments\\numerical-0088\\cancellation-receipts\\probe.mjs",
         "candidate",
         "<scratch>\\host.json",
