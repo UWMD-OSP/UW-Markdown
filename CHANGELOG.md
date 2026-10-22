@@ -11,6 +11,10 @@ protocol, and each package each carry an independent semver).
 - Prepare Cloudflare Workers static hosting for the refreshed docs site, with a
   pinned Node runtime, asset headers, real 404 responses and owner-configured
   docs-only build watch paths. Vercel remains unchanged pending owner cutover.
+- uwmd.org is now served by the Cloudflare Worker `uwmd-org`; Vercel is
+  disconnected. Remove `vercel.json`, `scripts/vercel-ignore-build.sh` and the
+  `.vercel` ignore entry; `tools/docs-site/README.md` describes Cloudflare as the
+  host.
 
 ### Changed
 
