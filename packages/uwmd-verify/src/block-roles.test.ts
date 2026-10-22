@@ -182,7 +182,10 @@ describe('RFC 0040 conformance fixture coverage', () => {
 
 it('preserves CC-15 scenario exemption even if the property NOI has a role collision', () => {
   const result = validateUWFile(file({
-    lease_up_schedule: { downside: block({ stabilized_summary: { annualized_noi: 100 } }, 'lease_up_schedule', 'downside') },
+    lease_up_schedule: {
+      downside: block({ stabilized_summary: { annualized_noi: 100 } }, 'lease_up_schedule', 'downside'),
+      upside: block({ stabilized_summary: { annualized_noi: 200 } }, 'lease_up_schedule', 'upside'),
+    },
     noi_model: { a: block({ _role: 'primary' }, 'noi_model'), b: block({ _role: 'primary' }, 'noi_model') },
   }));
   expect(result.coverage['CC-15']).toEqual({ status: 'skipped', reason: 'not_applicable', detail: 'no base variant' });
