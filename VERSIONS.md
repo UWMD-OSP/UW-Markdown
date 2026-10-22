@@ -2,6 +2,10 @@
 
 Format and Protocol are separate normative surfaces. npm packages follow the
 owner release rule below: prelaunch 4.x.x, then a coordinated 5.0.0 public launch.
+From launch, people see one public number, **UWMD 5.x**, for the packages and the
+standard; each record keeps declaring its Format version, and this file maps
+every UWMD release to the Format and Protocol versions it carries
+([release rules](docs/playbooks/RELEASE_RULES.md#one-public-number)).
 This file also records the versions actually released.
 
 ## Current matrix
@@ -71,7 +75,9 @@ verification, read-only source-integrity and conformance requirements remain;
 those are current contracts, not legacy support obligations.
 
 Format and Protocol remain distinct normative surfaces; the coordinated 5.0.0
-rule applies to npm package releases. Earlier release entries below report what
+rule applies to npm package releases, and "UWMD 5.x" names those releases and
+the standard they carry. A record declares its Format version, not the UWMD
+number. Earlier release entries below report what
 was released, not versions to repeat or compatibility commitments. No package
 number, release, tag or publication is changed by recording this rule. The
 public launch still requires separate explicit owner approval, and normative

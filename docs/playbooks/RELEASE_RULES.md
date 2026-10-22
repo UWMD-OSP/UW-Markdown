@@ -2,38 +2,62 @@
 
 These rules take effect when the public launch (5.0.0) ships. Until then the
 prelaunch rule in [VERSIONS.md](../../VERSIONS.md) applies: 4.x releases, with no
-backward compatibility. Items marked **proposed** await the owner's
-ratification; the rest are recorded decisions.
+backward compatibility. The owner ratified them on 2026-10-21. The one rule that
+binds verifiers, how a record's rule set is chosen, is proposed in draft RFC 0111
+([below](#verification-rule-sets)) and takes effect only when that RFC is
+accepted.
 
-Every release and every publication needs the owner's explicit approval.
+## One public number
+
+- **People see "UWMD 5.x".** The packages and the standard are released and
+  announced under one number: UWMD 5.0 is the launch, UWMD 5.1 the next minor
+  release, and so on.
+- **Each record keeps declaring its Format version.** A `.uw.md` states
+  `uw_version` (Format §2.2), and the Format and Protocol keep their own version
+  streams inside the standard (VERSIONS.md "Why three streams?"). Adopters who
+  write their own readers pin those. VERSIONS.md maps every UWMD release to the
+  Format and Protocol versions it carries.
 
 ## Versions
 
 - **Packages move in lockstep.** Every `@uwmd/*` npm package launches at 5.0.0
-  and shares one version number from then on (owner decision, VERSIONS.md).
-  A release bumps them all, even a package with no change.
+  and shares the UWMD number from then on (owner decision, VERSIONS.md). A
+  release bumps them all, even a package with no change.
 - **Semver applies to that shared number.**
   - *Major*: a breaking change to a public API, a CLI contract, or a normative
     requirement a conforming document or implementation relied on.
-  - *Minor*: additive changes: a new metric id, section, optional field,
-    validation code or API.
-  - *Patch*: fixes that change no contract.
-- **Format and Protocol keep their own version streams** (VERSIONS.md "Why three
-  streams?"). Adopters who write their own readers pin those, not the packages.
+  - *Minor*: additive changes (a new metric id, section, optional field,
+    validation code or API) and **any fix that changes a computed result**. The
+    CHANGELOG entry for such a fix names every affected metric.
+  - *Patch*: fixes that change no contract and no computed result.
 - A version number is never reused, and npm publication is permanent in
   practice. Releases follow the three release states (candidate,
   release-prepared, published) in wiki
   [11](../wiki/11-build-release-governance.md#the-three-release-states).
 
+## Cadence and approval
+
+- **Minors ship on a monthly train.** Patches ship as needed. Majors are rare.
+- **Patch releases have standing owner approval** once every release gate is
+  green. The owner approves each minor and major release.
+- The 5.0.0 launch itself needs the owner's separate, explicit approval.
+
+## Verification rule sets
+
+**Proposed in draft RFC 0111; not in force until accepted.** A record is always
+verified under the rule set of the version it declares. Every 5.x verifier
+keeps every earlier 5.x rule set. A fix applies to new records only: a record
+that declared an earlier version is verified under that version's rules.
+
 ## Breaking changes and deprecation
 
-- **Proposed:** before a breaking change, the affected surface is deprecated for
-  at least **one minor release and 90 days**, whichever is longer. The
-  deprecation is stated in the CHANGELOG and, for APIs, in the code.
+- Before a breaking change, the affected surface is deprecated for at least
+  **one minor release and 90 days**, whichever is longer. The deprecation is
+  stated in the CHANGELOG and, for APIs, in the code.
 - A metric id keeps its meaning forever. A new meaning gets a new id, and the old
   id is deprecated, never redefined ([Adding a metric](ADD_METRIC.md)).
-- **Proposed:** validation codes are never renumbered or reused; a retired code
-  stays reserved.
+- Validation codes are never renumbered or reused. A retired code stays
+  reserved.
 - Emergency security fixes may be merged immediately and documented afterward
   (GOVERNANCE.md), even when the earlier behavior was the vulnerability.
 
@@ -41,10 +65,12 @@ Every release and every publication needs the owner's explicit approval.
 
 - An RFC in `docs/rfcs/` for anything that changes what a conforming
   implementation must do (wiki 11, "When does my change need an RFC?").
-- In collaborative mode, a **public comment period of at least 14 days**,
-  owner approval, and a reference implementation in the same PR or a linked
-  follow-up ([GOVERNANCE.md](../../GOVERNANCE.md)). In owner-led mode the owner
-  may accept immediately.
+- **The project launches in owner-led mode**: the owner may accept an RFC
+  immediately. **Collaborative mode begins when the first RFC or pull request
+  from an outside contributor arrives**, and the owner announces it in
+  [GOVERNANCE.md](../../GOVERNANCE.md). From then on a normative change needs a
+  public comment period of at least 14 days, owner approval, and a reference
+  implementation in the same PR or a linked follow-up.
 - Spec, schemas, protocol and conformance change together (invariant 7).
 
 ## Signing keys
@@ -53,11 +79,10 @@ Every release and every publication needs the owner's explicit approval.
   `kid` and keeping the old key loaded. A `kid` is never reused for a different
   key, and blocks signed under a retired `kid` stay verifiable while a key store
   holds it.
-- **Proposed** project policy for keys the project holds (release provenance and
-  any project-signed modules):
+- Keys the project holds (release provenance and any project-signed modules):
   - rotate at once on suspected compromise, and say so in the release notes;
-  - otherwise rotate on a fixed schedule, publishing the retired `kid` alongside
-    the new one.
+  - otherwise rotate every year;
+  - publish the retired `kid` alongside the new one.
 
 ## Security disclosure
 
