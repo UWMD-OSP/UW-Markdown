@@ -29,6 +29,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #496: omit units on missing summary/chat values, format CSV percentages
+  and DSCR at display precision, and fill absent summaries through existing
+  deterministic class packs without changing authored values or source bytes.
+
 - Fix #494: an unknown `render --format` is a typed refusal
   (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
   longer advertises flags removed by #412 and lists `init --zip`.

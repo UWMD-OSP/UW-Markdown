@@ -13,6 +13,11 @@ developer view (where the code is, how it's built, what to know when changing it
 
 ## `uwmd` CLI — `packages/uwmd-cli`
 
+Summary, chat and CSV fill absent quick-metric summaries through the existing
+class pack and canonical statement homes. Authored values (including explicit
+nulls) win, and rendering never writes the record. Missing values carry no
+currency/unit suffix; CSV uses two decimal percent and three decimal DSCR display.
+
 A thin npm package whose `bin/uwmd.mjs` is one line: `import '@uwmd/core/cli'`.
 All logic is in `@uwmd/core`'s [`src/cli.ts`](../../packages/uwmd-core/src/cli.ts).
 

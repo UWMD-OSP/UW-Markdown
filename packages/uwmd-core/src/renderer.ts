@@ -18,6 +18,7 @@ import {
   type SupportedLocale,
 } from '@uwmd/verify';
 import { REFERENCE_IMPLEMENTATION_MANIFEST } from './reference-implementation.js';
+import { resolveRenderMetrics } from './render-metrics.js';
 import { BUILTIN_FORMAT_RULES, formatNumberWithRules } from './format-rules.js';
 import {
   formatCurrency,
@@ -174,7 +175,7 @@ function csvField(value: unknown, alwaysQuote = false): string {
 
 function renderCsv(parsed: ParsedUWFile): RenderResult {
   const fm = parsed.frontmatter;
-  const qm = fm.quick_metrics ?? {};
+  const qm = resolveRenderMetrics(parsed);
   const property = getSection(parsed, 'property');
   const debt = getSection(parsed, 'debt_structure');
   const _noi = getSection(parsed, 'noi_model');
@@ -212,7 +213,7 @@ function renderCsv(parsed: ParsedUWFile): RenderResult {
     num(qm.loan_amount),
     num(qm.equity_required),
     num(qm.noi_underwritten),
-    num(qm.dscr),
+    formatRatio(qm.dscr, { suffix: '', nullDisplay: '' }),
     pct(qm.ltv),
     pct(qm.cap_rate),
     pct(qm.debt_yield),
@@ -241,7 +242,7 @@ function renderCsv(parsed: ParsedUWFile): RenderResult {
 
 function renderSummary(parsed: ParsedUWFile): RenderResult {
   const fm = parsed.frontmatter;
-  const qm = fm.quick_metrics ?? {};
+  const qm = resolveRenderMetrics(parsed);
   const property = getSection(parsed, 'property');
   const debt = getSection(parsed, 'debt_structure');
   const _noi = getSection(parsed, 'noi_model');
@@ -253,8 +254,9 @@ function renderSummary(parsed: ParsedUWFile): RenderResult {
   const currencyCode = resolveRenderCurrencyCode(fm);
   const pct = (v: unknown): string => formatPercent(v, { locale });
   const money = (v: unknown): string => formatCurrency(v, { locale, currencyCode });
-  const num = (v: unknown, dec = 3): string => formatRatio(v, { decimals: dec, suffix: '', locale });
   const val = (v: unknown): string => formatValue(v);
+  const ratio = (v: unknown, decimals = 3): string => formatRatio(v, { locale, decimals });
+  const unit = (v: unknown, suffix: string): string => v == null ? 'n/a' : `${val(v)}${suffix}`;
 
   const units = deepGet(property?.content, 'total_units');
   const yearBuilt = deepGet(property?.content, 'year_built');
@@ -354,11 +356,11 @@ ${tableRows}
 | Metric | Value | | Metric | Value |
 |---|---|---|---|---|
 | Purchase Price | ${money(qm.purchase_price)} | | NOI (UW) | ${money(qm.noi_underwritten)} |
-| Loan Amount | ${money(qm.loan_amount)} | | DSCR | ${num(qm.dscr, 3)}x |
+| Loan Amount | ${money(qm.loan_amount)} | | DSCR | ${ratio(qm.dscr)} |
 | Equity Required | ${money(qm.equity_required)} | | LTV | ${pct(qm.ltv)} |
 | Going-in Cap Rate | ${pct(qm.cap_rate)} | | Debt Yield | ${pct(qm.debt_yield)} |
-| Levered IRR | ${pct(qm.irr_projected)} | | Equity Multiple | ${num(equityMult, 2)}x |
-| Exit Cap Rate | ${pct(exitCap)} | | Hold Period | ${val(holdPeriod)} yrs |
+| Levered IRR | ${pct(qm.irr_projected)} | | Equity Multiple | ${ratio(equityMult, 2)} |
+| Exit Cap Rate | ${pct(exitCap)} | | Hold Period | ${unit(holdPeriod, ' yrs')} |
 
 ---
 
@@ -453,13 +455,15 @@ function keyRisks(value: unknown): string[] {
 function renderChat(parsed: ParsedUWFile, opts: RenderOptions): RenderResult {
   const maxTokens = opts.maxTokens ?? 12000;
   const fm = parsed.frontmatter;
-  const qm = fm.quick_metrics ?? {};
+  const qm = resolveRenderMetrics(parsed);
 
   const locale = resolveRenderLocale(fm);
   const currencyCode = resolveRenderCurrencyCode(fm);
   const pct = (v: unknown): string => formatPercent(v, { locale });
   const money = (v: unknown): string => formatCurrency(v, { locale, currencyCode });
   const val = (v: unknown): string => formatValue(v);
+  const ratio = (v: unknown, decimals = 3): string => formatRatio(v, { locale, decimals });
+  const unit = (v: unknown, suffix: string): string => v == null ? 'n/a' : `${val(v)}${suffix}`;
 
   const sections: string[] = [];
 
@@ -474,7 +478,7 @@ LAST MODIFIED: ${fm.last_modified ?? 'n/a'}`);
   // ── Quick metrics ──────────────────────────────────────────────────────────
   sections.push(`## KEY METRICS
 Purchase Price: ${money(qm.purchase_price)} | Loan: ${money(qm.loan_amount)} | Equity: ${money(qm.equity_required)}
-NOI (UW): ${money(qm.noi_underwritten)} | DSCR: ${val(qm.dscr)}x | LTV: ${pct(qm.ltv)}
+NOI (UW): ${money(qm.noi_underwritten)} | DSCR: ${ratio(qm.dscr)} | LTV: ${pct(qm.ltv)}
 Cap Rate: ${pct(qm.cap_rate)} | Debt Yield: ${pct(qm.debt_yield)} | IRR (levered): ${pct(qm.irr_projected)}`);
 
   // ── Flags ──────────────────────────────────────────────────────────────────
@@ -554,7 +558,7 @@ OpEx Ratio: ${val(noiSpecValue(c, 'expenses.expense_ratio'))}`);
     sections.push(`## DEBT STRUCTURE
 Loan: ${money(deepGet(c, 'loan_amount'))} | Type: ${val(deepGet(c, 'loan_type') ?? deepGet(c, 'rate_type'))}
 Rate: ${pct(deepGet(c, 'interest_rate') ?? deepGet(c, 'rate'))} | Term: ${val(deepGet(c, 'loan_term_years') ?? deepGet(c, 'term_years'))}yr | Am: ${val(deepGet(c, 'amortization_years'))}yr
-IO Period: ${val(deepGet(c, 'io_period_months'))} months | Recourse: ${val(deepGet(c, 'recourse'))}
+IO Period: ${unit(deepGet(c, 'io_period_months'), ' months')} | Recourse: ${val(deepGet(c, 'recourse'))}
 DSCR (IO): ${val(deepGet(c, 'dscr_io'))} | DSCR (amortizing): ${val(deepGet(c, 'dscr_amortizing') ?? deepGet(c, 'dscr'))}
 LTV: ${pct(deepGet(c, 'ltv'))} | Debt Yield: ${pct(deepGet(c, 'debt_yield'))}
 Annual DS: ${money(deepGet(c, 'annual_debt_service'))} | Monthly DS: ${money(deepGet(c, 'monthly_debt_service'))}`);
@@ -582,7 +586,7 @@ Hold: ${val(deepGet(c, 'hold_period_years') ?? assumptions?.hold_period_years)} 
 Exit Cap: ${pct(deepGet(c, 'exit_cap_rate') ?? assumptions?.exit_cap_rate)}
 Rent Growth: ${pct(deepGet(c, 'rent_growth_assumption') ?? assumptions?.annual_rent_growth)}/yr
 Levered IRR: ${pct(deepGet(c, 'levered_irr'))} | Unlevered IRR: ${pct(deepGet(c, 'unlevered_irr'))}
-Equity Multiple: ${val(deepGet(c, 'levered_equity_multiple') ?? deepGet(c, 'summary.equity_multiple'))}x
+Equity Multiple: ${ratio(deepGet(c, 'levered_equity_multiple') ?? deepGet(c, 'summary.equity_multiple'), 2)}
 Exit Value: ${money(deepGet(c, 'exit_value') ?? deepGet(c, 'terminal_value'))}`);
 
     // Year-by-year cash flows if present
@@ -632,7 +636,7 @@ Purchase: ${money(deepGet(c, 'uses.purchase_price'))} | Closing Costs: ${money(d
     sections.push(`## BORROWER / SPONSOR
 Name: ${val(deepGet(c, 'name') ?? deepGet(c, 'principal_name') ?? deepGet(c, 'borrower_name'))}
 Net Worth: ${money(deepGet(c, 'net_worth'))} | Liquidity: ${money(deepGet(c, 'liquidity'))}
-Experience: ${val(deepGet(c, 'years_experience'))} yrs | Prior Deals: ${val(deepGet(c, 'similar_deals_count'))}
+Experience: ${unit(deepGet(c, 'years_experience'), ' yrs')} | Prior Deals: ${val(deepGet(c, 'similar_deals_count'))}
 Credit Score: ${val(deepGet(c, 'fico_score') ?? deepGet(c, 'credit_score'))}`);
   }
 
@@ -669,7 +673,7 @@ Credit Score: ${val(deepGet(c, 'fico_score') ?? deepGet(c, 'credit_score'))}`);
       const scens = (deepGet(block.content, 'scenarios') as unknown[] | undefined) ?? [block.content];
       return (scens as Record<string, unknown>[]).map(s => {
         const res = s['results'] as Record<string, unknown> | undefined;
-        return `${val(s['scenario_id'])} (${val(s['type'])}): IRR=${pct(res?.['irr'])} EM=${val(res?.['equity_multiple'])}x DSCR=${val(res?.['dscr'])}`;
+        return `${val(s['scenario_id'])} (${val(s['type'])}): IRR=${pct(res?.['irr'])} EM=${ratio(res?.['equity_multiple'], 2)} DSCR=${val(res?.['dscr'])}`;
       });
     });
     sections.push(`## CUSTOM SCENARIOS\n${scenLines.join('\n')}`);
@@ -731,7 +735,7 @@ ${rowLines.join('\n')}`);
     const tierLine = tiers.map((t) => String(t['type'])).join(' → ');
     sections.push(`## DISTRIBUTION WATERFALL (LP ${pct(deepGet(c, 'equity_split.lp'))} / GP ${pct(deepGet(c, 'equity_split.gp'))})
 Ladder: ${tierLine || '(none)'}
-LP: ${pct(deepGet(c, 'stated_outcomes.lp.xirr'))} XIRR, ${val(deepGet(c, 'stated_outcomes.lp.moic'))}x | GP: ${pct(deepGet(c, 'stated_outcomes.gp.xirr'))} XIRR | Promote: ${money(deepGet(c, 'stated_outcomes.promote_total'))}`);
+LP: ${pct(deepGet(c, 'stated_outcomes.lp.xirr'))} XIRR, ${ratio(deepGet(c, 'stated_outcomes.lp.moic'), 2)} | GP: ${pct(deepGet(c, 'stated_outcomes.gp.xirr'))} XIRR | Promote: ${money(deepGet(c, 'stated_outcomes.promote_total'))}`);
   }
 
   // ── Risk assessment (abbreviated) ────────────────────────────────────────

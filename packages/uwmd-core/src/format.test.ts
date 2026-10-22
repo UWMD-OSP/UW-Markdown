@@ -45,7 +45,7 @@ describe('display formatters', () => {
   });
 
   it('uses raw numeric cells for CSV and coerces generic display values', () => {
-    expect(formatPercentCsv(0.0551)).toBe('5.5100');
+    expect(formatPercentCsv(0.0551)).toBe('5.51');
     expect(formatPercentCsv(null)).toBe('');
     expect(formatNumberCsv('1200.5')).toBe('1200.5');
     expect(formatNumberCsv(Number.NaN)).toBe('');
