@@ -994,6 +994,7 @@ frontmatter fallback. Other free values are unchanged.
   "rentable_square_feet": null,
   "gross_leasable_area": null,
   "net_rentable_square_feet": null,
+  "area_measurement": { "standard": "boma | ipms | rebny | rics | other", "edition": "string", "note": "string" },
   "rentable_units": null,
   "keys": null,
   "total_beds": null,
@@ -1050,6 +1051,12 @@ Field notes:
   Senior housing sizes per unit and also states beds; student housing sizes
   per bed and also states units. Both figures are legitimate; Protocol §XIII.1
   says which one is the denominator.
+- `area_measurement` — optional: the standard behind every area this record
+  states (RFC 0114). `standard` is `boma`, `ipms`, `rebny`, `rics` or `other`;
+  `edition` names the publication as free text (for example
+  `"ANSI/BOMA Z65.1-2017"`); `note` is optional. No other member is admitted. It
+  changes no metric, and a Verifier neither compares nor converts areas across
+  standards. Absence is not a finding; a malformed value is `SIZE-02` (§5.5).
 
 **Verified statements (RFC 0099).** `property.occupancy_pct`, when stated, is a statement of the dictionary metric `occupancy`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
@@ -4618,7 +4625,13 @@ element of that array.
 The table is **closed**; each field keeps its existing path and meaning. A
 class's own contract (`mhc_sites`, `dc_capacity`, `BED-*`, `keys`) is unchanged and
 keeps its own code. Where a class rule also reports the same field, both findings
-stand. A dictionary metric that divides by a registered size is `unverifiable`
+stand.
+
+**Area measurement (RFC 0114).** A stated `property.area_measurement` (§4.1)
+MUST be an object whose `standard` is one of `boma`, `ipms`, `rebny`, `rics` or
+`other`, whose `edition` and `note`, when present, are strings, and which has no
+other member. Otherwise it is `SIZE-02` (error) at the offending member, in every
+current `property` block. `null` and absence are not stated. A dictionary metric that divides by a registered size is `unverifiable`
 when that size is ≤ 0 (`null_semantics: positive_size_denominator`, Protocol
 §II.2), so no Verifier confirms a figure against an impossible size.
 
