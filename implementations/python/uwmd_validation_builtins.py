@@ -121,12 +121,6 @@ def _evaluate(node, resolve):
     right = _evaluate(node[3], resolve)
     if operator in ("==", "!="):
         return _calc_binary(operator, left, right)
-    if left is None or right is None:equal = left is None and right is None
-        elif finite(left) and finite(right):equal = left == right
-        elif isinstance(left, bool) and isinstance(right, bool) or isinstance(left, str) and isinstance(right, str):equal = left == right
-        elif isinstance(left, dict) and isinstance(right, dict) or isinstance(left, list) and isinstance(right, list):equal = left is right
-        else:raise _OperationError("CALC-TYPE-001", "Equality operands have incompatible types")
-        return equal if operator == "==" else not equal
     if left is None or right is None:return None
     left, right = _number(left), _number(right)
     if operator == "+":return _number(left + right)
