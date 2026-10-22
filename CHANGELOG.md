@@ -29,6 +29,9 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Use an obviously fictional editor address and neutral reviewed-example naming;
+  retain neighborhood/area names and the RFC 0006 Marriott reference.
+
 - Fix #494: an unknown `render --format` is a typed refusal
   (`UNSUPPORTED_RENDER_FORMAT`, exit 1, no stack trace), and `uwmd --help` no
   longer advertises flags removed by #412 and lists `init --zip`.

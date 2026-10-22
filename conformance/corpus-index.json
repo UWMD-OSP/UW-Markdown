@@ -5433,7 +5433,7 @@
     },
     {
       "suite": "metrics",
-      "scenario": "parkview-after-L6.uwx.md",
+      "scenario": "parkview-reviewed.uwx.md",
       "target": "verifier"
     },
     {

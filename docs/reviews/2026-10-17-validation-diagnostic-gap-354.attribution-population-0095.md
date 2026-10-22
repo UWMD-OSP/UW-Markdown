@@ -136,7 +136,7 @@ Opening-fence line numbers identify every physical reference; section, variant, 
 | `examples/Saguaro-Select-Hotel-Tempe-AZ.uwx.md` | 1 | 375 |
 | `examples/Sonoran-Self-Storage-Peoria-AZ.uwx.md` | 1 | 370 |
 | `examples/Sundance-Ranch-Land-Buckeye-AZ.uwx.md` | 1 | 335 |
-| `examples/parkview-after-L6.uwx.md` | 5 | 1744, 2288, 2416, 2523, 2834 |
+| `examples/parkview-reviewed.uwx.md` | 5 | 1744, 2288, 2416, 2523, 2834 |
 | `examples/verification/deal.uwx.md` | 1 | 475 |
 | `examples/verification/deal.wrong-cap-rate.uwx.md` | 1 | 475 |
 

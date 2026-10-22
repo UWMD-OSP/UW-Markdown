@@ -1916,7 +1916,7 @@
     "evidence": []
   },
   {
-    "example": "parkview-after-L6.uwx.md",
+    "example": "parkview-reviewed.uwx.md",
     "rule_set": "3.0",
     "asset_class": "multifamily",
     "counts": {
