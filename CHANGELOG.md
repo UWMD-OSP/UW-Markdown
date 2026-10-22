@@ -18,6 +18,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #410: `render --format chat` shows structured key risks as
+  `<severity>: <description>` (falling back to the risk's `id`) instead of
+  `[object Object]`; plain-text risks are unchanged.
+
 - Ratify the release rules after launch (owner, 2026-10-21,
   `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the
   packages and the standard while each record keeps declaring its Format
