@@ -5,7 +5,7 @@ deal_name: "Ironwood Logistics Center — Tolleson, AZ"
 created: "2026-05-19T08:00:00Z"
 last_modified: "2026-05-21T11:00:00Z"
 
-property_address: "8400 W Buckeye Rd"
+property_address: "8400 W Freightline Rd"
 city: "Tolleson"
 state: "AZ"
 zip: "85353"

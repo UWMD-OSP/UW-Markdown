@@ -1,6 +1,7 @@
 {
   "id": "starter-products__documents__08-variant-cross-checks__render-summary",
   "target": "starter-products",
+  "format_version": "3.0",
   "requires_capabilities": [
     "render-summary"
   ],

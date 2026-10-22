@@ -1,6 +1,7 @@
 {
   "id": "starter-products__documents__11-role-collision__render-summary",
   "target": "starter-products",
+  "format_version": "3.0",
   "requires_capabilities": [
     "render-summary"
   ],

@@ -60,7 +60,34 @@ def case_target(case: dict) -> str:
     return target
 
 
-def select_cases(cases: list[dict], tiers: str = "", profiles: str = "", starter: bool = False) -> list[dict]:
+FORMAT_VERSION = re.compile(r"^[0-9]+[.][0-9]+$")
+
+
+def case_format_version(case: dict) -> str:
+    """The Format version a case was written for: the rule set it exercises.
+
+    RFC 0111 D6 (Protocol XII.5). Every case names one; a case without one, or
+    with a malformed one, is refused rather than assumed to be any version.
+    """
+    version = case.get("format_version")
+    if not isinstance(version, str) or not FORMAT_VERSION.match(version):
+        raise ValueError(f"case {case.get('id')} names no Format version: {version!r}")
+    return version
+
+
+def select_cases(cases: list[dict], tiers: str = "", profiles: str = "", starter: bool = False,
+                 format_versions: str = "") -> list[dict]:
+    """Cases owned by the selected targets, and written for the selected rule sets.
+
+    `format_versions` is a comma-separated list of Format versions (RFC 0111):
+    a Verifier claiming a release runs the cases of every rule set it keeps.
+    Empty means every rule set in the corpus.
+    """
+    versions: set[str] = set()
+    for version in filter(None, (s.strip() for s in format_versions.split(","))):
+        if not FORMAT_VERSION.match(version):
+            raise ValueError(f"unknown format version: {version}")
+        versions.add(version)
     wanted: set[str] = set()
     for tier in filter(None, (s.strip() for s in tiers.split(","))):
         current = read_tier(tier)
@@ -81,18 +108,20 @@ def select_cases(cases: list[dict], tiers: str = "", profiles: str = "", starter
         seen.add(case["id"])
         target = case_target(case)
         case["target"] = target
-        if not wanted or target in wanted:
+        version = case_format_version(case)
+        if (not wanted or target in wanted) and (not versions or version in versions):
             selected.append(case)
     return selected
 
 
 def result_owner(case: dict) -> dict:
     target = case["target"]
+    version = {"format_version": case["format_version"]}
     if target in ("reader", "verifier"):
-        return {"target": target, "tier": target}
+        return {"target": target, "tier": target, **version}
     if target == "starter-products":
-        return {"target": target, "starter_product": True}
-    return {"target": target, "profile": target}
+        return {"target": target, "starter_product": True, **version}
+    return {"target": target, "profile": target, **version}
 
 
 # ── Comparison ───────────────────────────────────────────────────────────────
@@ -397,6 +426,11 @@ def main() -> int:
     parser.add_argument("--tier", default="", help="reader, or verifier (includes Reader).")
     parser.add_argument("--profile", default="", help="Comma-separated optional verification profiles.")
     parser.add_argument("--starter-products", action="store_true", help="Select non-normative product checks.")
+    parser.add_argument(
+        "--format-version",
+        default="",
+        help="Comma-separated Format versions (rule sets, RFC 0111) whose cases to run; default all.",
+    )
     parser.add_argument("--manifest-out", default="", help="Write the JSON manifest here.")
     parser.add_argument("--timeout", type=float, default=60.0, help="Per-case timeout in seconds.")
     parser.add_argument(
@@ -412,7 +446,7 @@ def main() -> int:
     case_files = sorted(Path(args.cases).glob("*.case.json"))
     cases = [json.loads(p.read_text(encoding="utf-8")) for p in case_files]
     try:
-        cases = select_cases(cases, args.tier, args.profile, args.starter_products)
+        cases = select_cases(cases, args.tier, args.profile, args.starter_products, args.format_version)
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -513,6 +547,7 @@ def main() -> int:
         "manifest_tier": manifest_tier,
         "tiers": sorted({c["target"] for c in cases if c["target"] in ("reader", "verifier")}),
         "profiles": sorted({c["target"] for c in cases if c["target"] in VOCABULARY["profiles"]}),
+        "format_versions": sorted({c["format_version"] for c in cases}),
         "by_target": {target: {
             "passed": sum(r["target"] == target and r["ok"] is True and not r["skipped"] for r in results),
             "failed": sum(r["target"] == target and r["ok"] is False for r in results),

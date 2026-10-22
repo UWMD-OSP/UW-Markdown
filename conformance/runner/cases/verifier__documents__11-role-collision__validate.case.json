@@ -1,6 +1,7 @@
 {
   "id": "verifier__documents__11-role-collision__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],

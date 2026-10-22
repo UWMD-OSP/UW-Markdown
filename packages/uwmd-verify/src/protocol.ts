@@ -66,6 +66,12 @@ export interface ModuleConformanceRequirements {
 export { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 
+// The rule set each admitted Format version names (§XII.5, RFC 0111): the §5.2
+// bands, metric dictionary and builtin packs verification obtains. The registry
+// lives beside the tables it points at; the protocol surface re-exports it.
+export { RULE_SETS, getRuleSet, ruleSetFor } from './rule-sets.js';
+export type { UWRuleSet } from './rule-sets.js';
+
 /** The one protocol contract (RFC 0081 D1). Module ranges are checked against it. */
 export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.1.0'] as const);
 

@@ -11,6 +11,7 @@ const WRONG_CAP_RATE = repo('examples/verification/deal.wrong-cap-rate.uwx.md');
 describe('validateSource', () => {
   it('validates a clean record', () => {
     const result = validateSource(VALID);
+    expect(result.rule_set).toBe('3.0');
     expect(result.error_count).toBe(0);
     expect(typeof result.stage_readiness.screening).toBe('boolean');
     for (const issue of result.issues) expect(Object.keys(issue).sort()).toEqual(expect.arrayContaining(['code', 'message', 'severity']));
@@ -31,6 +32,7 @@ describe('verifySource', () => {
   it('verifies a record whose stated metrics all recompute', async () => {
     const result = await verifySource(VALID);
     expect(result.ok).toBe(true);
+    expect([result.validation.rule_set, result.stated_metrics.rule_set]).toEqual(['3.0', '3.0']);
     expect(result.stated_metrics.counts.failed).toBe(0);
     expect(result.stated_metrics.counts.verified).toBeGreaterThan(0);
   });

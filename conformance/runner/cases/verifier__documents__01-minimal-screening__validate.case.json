@@ -1,6 +1,7 @@
 {
   "id": "verifier__documents__01-minimal-screening__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],
