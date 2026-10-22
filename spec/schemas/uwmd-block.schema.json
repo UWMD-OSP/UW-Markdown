@@ -348,7 +348,7 @@
         "section": "property",
         "provenance": {
           "source": "manual",
-          "actor": "jared@example.com",
+          "actor": "analyst@example.com",
           "agent_id": null,
           "agent_version": null,
           "timestamp": "2026-09-01T10:00:00Z",
