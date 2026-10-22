@@ -1658,6 +1658,11 @@
     },
     {
       "suite": "receipts",
+      "scenario": "verify/13-rule-set-mismatch",
+      "target": "verifier"
+    },
+    {
+      "suite": "receipts",
       "scenario": "refuse/01-lite-parse-errors",
       "target": "starter-products"
     },

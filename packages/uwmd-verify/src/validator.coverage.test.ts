@@ -18,7 +18,7 @@ function variants(section: string, map: Record<string, Record<string, unknown>>)
 
 function file(sections: Record<string, UWBlock | Record<string, UWBlock>>): ParsedUWFile {
   return {
-    frontmatter: { asset_class: 'multifamily' } as ParsedUWFile['frontmatter'],
+    frontmatter: { uw_version: '3.0', asset_class: 'multifamily' } as ParsedUWFile['frontmatter'],
     sections: sections as ParsedUWFile['sections'],
     prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [],
     extensions: {}, superseded: {}, raw: '',

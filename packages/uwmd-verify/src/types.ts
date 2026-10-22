@@ -523,6 +523,11 @@ export interface StageReadiness {
 }
 
 export interface ValidationResult {
+  /**
+   * The rule set the record was validated under: its declared Format version
+   * (`uw_version`), Protocol §XII.5 (RFC 0111 D5).
+   */
+  rule_set: string;
   overall_status: 'clean' | 'warnings' | 'errors' | 'blocking';
   stage_readiness: StageReadiness;
   issues: ValidationMessage[];

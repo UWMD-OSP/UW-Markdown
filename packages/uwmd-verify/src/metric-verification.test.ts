@@ -59,6 +59,12 @@ describe('verifyStatedMetrics — the builtin examples', () => {
     expect(report.evidence.map((e) => e.path)).toContain('debt_structure.sizing_metrics.dscr_underwritten');
   });
 
+  it('names the rule set the record declares and refuses one it does not keep (RFC 0111)', () => {
+    expect(verifyStatedMetrics(parkview).rule_set).toBe('3.0');
+    const model = { ...parkview, frontmatter: { ...parkview.frontmatter, uw_version: '3.1' } } as unknown as ParsedUWFile;
+    expect(() => verifyStatedMetrics(model)).toThrow(/UNSUPPORTED_FORMAT_VERSION/);
+  });
+
   it('defaults to the dictionary registry, which is the spec file member (one source)', () => {
     expect(DEFAULT_STATED_METRIC_BINDINGS).toBe(D.statement_bindings);
     expect(D.statement_bindings).toEqual(SPEC_DICTIONARY.statement_bindings);

@@ -1,6 +1,7 @@
 {
   "id": "verifier__calc__land-usable-land-ratio__calc",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "calc-evaluate"
   ],

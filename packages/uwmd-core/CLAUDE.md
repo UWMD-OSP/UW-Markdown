@@ -32,9 +32,9 @@ the root [`CLAUDE.md`](../../CLAUDE.md).
 - `packs/` — re-exports verify's builtin pack manifests beside the Excel
   emitter (`excel-emit.ts`); the per-class Excel parity tests live here
   (`docs/wiki/05`).
-- `context.ts` — `buildContext` and the Bancroft layer registry (`BANCROFT_LAYERS`,
-  context and prompt builders, `uwmd layers`). Nothing executes an agent; the
-  registry awaits draft RFC 0112.
+- `context-profiles.ts` — generic `buildContext` (root entry only); the generic
+  writers (`writeAgentBlock`, `writeErrorEntry`, `buildMeta`) are in `runner.ts`.
+  There is no layer registry (RFC 0112).
 - `cascade.ts` / `defaults.ts` / `gaps.ts` / `refinement.ts` — data resolution +
   VOI gap ranking. `bindings-edit.ts` wires the editor into verify's bindings.
 - `cli.ts` — the `uwmd` CLI (wrapped by `@uwmd/cli`).

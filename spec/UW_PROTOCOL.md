@@ -65,7 +65,9 @@ Editing and AI-agent hosting are starter products, outside the Protocol. Conform
 Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `3.0`, the only admitted version)
-  — the bytes-on-disk schema. Bumped on any breaking format change.
+  — the bytes-on-disk schema, and the name of the rule set a record is
+  verified under (§XII.5). Bumped on any breaking format change; from the
+  5.0.0 launch its minor also moves on any change to a rule set's outcome.
 - **Protocol version** (this document, currently `4.1.0`) — the
   verification contract. Bumped on any normative change to required
   behavior. From 3.0.0 it moves only when what a document *means* or
@@ -288,6 +290,9 @@ A Verifier MUST satisfy all Reader requirements, and additionally:
    (function definitions, assignments, lambdas, control flow keywords,
    property access on disallowed targets) with a `ProtocolError` of
    category `calc`.
+7. Verify every record under the rule set its declared Format version
+   names (§XII.5), never another, and name that rule set in each
+   validation result, stated-metric report and receipt it produces.
 
 A Verifier checks numbers. It never produces, defaults or projects one:
 a value a document does not state is never filled in to make a check
@@ -4178,11 +4183,68 @@ MUST be parsed and surfaced. Validators MAY warn but MUST NOT error.
 
 ### XII.3 Format version skew
 
-A Reader MUST refuse absent or non-`"3.0"` uw_version at parse stage with `UNSUPPORTED_FORMAT_VERSION`, naming the declared value and supported value. No partial read, display-only mode or newer-minor tolerance is admitted.
+A Reader MUST refuse absent or non-`"3.0"` uw_version at parse stage with `UNSUPPORTED_FORMAT_VERSION`, naming the declared value and supported value. No partial read, display-only mode or newer-minor tolerance is admitted. The admitted versions are exactly the rule sets an implementation keeps (§XII.5); Format 3.0 is the only one.
 
 ### XII.4 Protocol version skew
 
 A module MUST NOT load unless its requires_protocol range is satisfied by 4.1.0 and its requires_format range by 3.0. No earlier contract satisfies either range.
+
+### XII.5 Rule sets (RFC 0111)
+
+*Accepted in [RFC 0111](../docs/rfcs/0111-verify-under-declared-rule-set.md).
+The retention and forward-fix obligations take effect at the 5.0.0 launch;
+before it there is one rule set, Format 3.0.*
+
+A **rule set** is everything normative that decides a verification outcome for
+a record:
+
+1. the Format's parse and validation rules, including the
+   [Format](UW_FORMAT_SPEC.md) §5.2 financial-validity
+   bands and the registered validation codes (§III.6a);
+2. the Protocol's verification procedures, including §VIII.5 quantization and
+   the pinned numerical procedures (§VIII.5.2);
+3. the receipt rules ([`UW_RECEIPT`](UW_RECEIPT.md)); and
+4. the [metric dictionary](metrics/README.md) (`spec/metrics/`).
+
+Starter-product code (packs, defaults, the editor, the Excel exporter) is not
+part of a rule set (RFC 0078).
+
+**Selection.** A record's declared Format version (`uw_version`, Format §2.2)
+names its rule set. An implementation MUST verify a record under the rule set
+its declared version names and MUST NOT fall back to another, including its
+newest. A declared version naming no rule set the implementation keeps,
+including one newer than it knows, is refused with `UNSUPPORTED_FORMAT_VERSION`
+(§XII.3). The refusal applies to a record supplied as a document model as well
+as to source: a model is never verified under a rule set its declaration does
+not name.
+
+**New rule sets.** Any change to a rule set's outcome for some record (a
+result-changing fix, a new refusal, a moved band) issues a new Format minor
+version, whose rule set carries the change. [`VERSIONS.md`](../VERSIONS.md)
+maps every Format version to the UWMD release that issued it and the Protocol
+version it pairs with.
+
+**Retention.** A Verifier that claims a UWMD 5.x release MUST keep the rule set
+of every Format version issued in 5.x up to that release, and verify a record
+declaring any of them under that version's rule set. Prelaunch (4.x) Format
+versions are not 5.x rule sets and need not be kept.
+
+**Fixes apply forward.** A fix lands in a new rule set; an earlier rule set is
+never edited, with one exception. A fix that makes verification stricter to
+close a security or soundness flaw applies to every kept rule set, because
+otherwise a record could declare an old version to reach a known flaw. The
+fix's CHANGELOG entry and security advisory say that it does.
+
+**Reporting.** A validation result, a stated-metric verification report and a
+receipt name the rule set applied, by its Format version, as `rule_set`. A
+receipt states it at `computation.rule_set`; a receipt verifier fails a receipt
+that names a rule set other than the one its record declares (`RCP-13`,
+[`UW_RECEIPT`](UW_RECEIPT.md) §5.2.2).
+
+**Conformance.** Each conformance case names the Format version it was written
+for (`format_version`,
+[`conformance-case.schema.json`](schemas/conformance-case.schema.json)). A
+Verifier claiming a 5.x release passes the cases of every rule set it keeps.
 
 ---
 

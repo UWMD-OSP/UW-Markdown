@@ -20,6 +20,7 @@ from uwmd_validation_selection import is_externalized
 from uwmd_validation_optional_shapes import optional_shape_assessments
 from uwmd_validation_payload_admission import payload_rules
 from uwmd_validation_lease_up import _lease_up_assessment
+from uwmd_rule_sets import rule_set_for
 
 
 async def validate_document(document, *, now=None, gap_staleness_days=14,
@@ -56,6 +57,9 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
     codes, and never merges async HDG-09 into synchronous errors.
     """
     snapshot = copy.deepcopy(document)
+    # RFC 0111: the declared Format version selects the rule set; an unkept
+    # version is refused before any rule runs, never validated under another.
+    rule_set = rule_set_for(snapshot.frontmatter.value)
     ledger = Ledger(snapshot)
     metadata = basic_rules(ledger, now=now, gap_staleness_days=gap_staleness_days,
                 incomplete_policies=incomplete_policies, _source_order=_source_order)
@@ -93,7 +97,7 @@ async def _validate_document(document, *, now=None, gap_staleness_days=14,
     # non-empty list or string); a number or mapping is not a flag list.
     if isinstance(flags, (list, str)) and len(flags) > 0:
         status = "blocking"
-    return dict(overall_status=status, stage_readiness=stage_readiness(snapshot),
+    return dict(rule_set=rule_set, overall_status=status, stage_readiness=stage_readiness(snapshot),
                 issues=issues, errors=partitions["error"], warnings=partitions["warning"],
                 info=partitions["info"], deal_flags=copy.deepcopy(deal_flags),
                 coverage=copy.deepcopy(ledger.coverage),
