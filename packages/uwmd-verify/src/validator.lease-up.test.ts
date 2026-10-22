@@ -121,9 +121,9 @@ describe('CC-15 — the tolerance-checked endpoint seam', () => {
     expect(issues[0]!.severity).toBe('warning');
   });
 
-  it('exempts non-base variants — a downside is supposed to disagree', () => {
+  it('checks the sole variant when base and default are absent', () => {
     const issues = luIssues(CLEAN.replace('478000', '300000'), { variant: 'downside' });
-    expect(issues).toEqual([]);
+    expect(issues.map(i => i.code)).toEqual(['CC-15']);
   });
 
   it('stays silent when noi_model is absent — no seam to check', () => {
