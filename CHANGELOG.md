@@ -8,6 +8,9 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- CSV decoding preserves own prototype-named content members while reconstructing
+  metadata first, so valid envelopes retain their semantic digest.
+
 - Python (#354): the independent implementation now claims `validate` beside
   `parse` and `calc-evaluate`, still at the Reader tier. CI runs the portable
   Verifier-tier corpus with `--no-skip` on three OSes, so all 144 validate cases
