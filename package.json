@@ -27,7 +27,7 @@
     "verify-lockfile": "node scripts/verify-lockfile.mjs",
     "verify-versions": "node scripts/verify-versions.mjs",
     "verify-indexes": "node --test scripts/docs-site-sources.test.mjs scripts/spec-refs.test.mjs scripts/agent-guidance.test.mjs && node scripts/verify-indexes.mjs",
-    "verify-codes": "node scripts/verify-codes.mjs",
+    "verify-codes": "node --test scripts/verify-codes.test.mjs && node scripts/verify-codes.mjs",
     "verify-issue-forms": "node --test scripts/issue-forms.test.mjs && node scripts/verify-issue-forms.mjs",
     "verify-release": "node --test scripts/release-state.test.mjs && node scripts/verify-release.mjs",
     "release:check": "node --test scripts/registry-version-state.test.mjs && node scripts/check-release-readiness.mjs",

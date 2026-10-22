@@ -1,0 +1,18 @@
+{
+  "overall_status": "errors",
+  "stage_readiness": {
+    "scope": false,
+    "screening": false,
+    "term_sheet": false,
+    "full_underwrite": false,
+    "credit_approval": false,
+    "closing": false,
+    "monitoring": false
+  },
+  "issues": [
+    {
+      "code": "INVALID-DEAL-STAGE-001",
+      "severity": "error"
+    }
+  ]
+}

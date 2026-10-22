@@ -10,7 +10,7 @@ state: "AZ"
 zip: "85326"
 asset_class: land
 deal_stage: full_underwrite
-status: under_review
+status: in_progress
 recommendation: pending
 flags: []
 blocking_flags: []

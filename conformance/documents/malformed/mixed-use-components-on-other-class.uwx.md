@@ -10,7 +10,7 @@ state: "AZ"
 zip: "85004"
 asset_class: office
 deal_stage: full_underwrite
-status: under_review
+status: in_progress
 recommendation: pending
 flags: []
 blocking_flags: []
