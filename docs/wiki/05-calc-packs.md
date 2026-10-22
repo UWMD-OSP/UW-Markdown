@@ -419,6 +419,20 @@ identical; `%` → `MOD`; comparisons/ternary → `IF`/`AND`/`OR`/`NOT`; builtin
 to Excel equivalents (`sum→SUM`, `pmt→PMT`, `npv→NPV`, `irr→IRR`, `round→ROUND`,
 `pow→POWER`, `log→LN`, `ceil→CEILING`, `fv→FV`, `pv→PV`, `nper→NPER`, …).
 
+`emitCalcExcelFormula(decl, opts)` is what converters call. Beyond the
+§VIII.5 `ROUND`, it renders the evaluator's null (§VIII.2) as `#N/A` (#487):
+a blank named input reads as `NA()` where it is used, the null literal is
+`NA()`, `x == null` is `ISNA`-based, `&&`/`||` short-circuit through `IF`,
+`sum` counts null as 0 and `min`/`max` skip it, and the inputs whose absence
+nulls the whole result are tested once outside `ROUND`:
+`IF(OR(ISBLANK(a),ISBLANK(b)),NA(),ROUND(expr,n))`. A mapped value that is not
+a plain workbook name (a caller-guarded expression) is used as given. The bare
+`emitFromAst`/`emitExcelFormula` keep Excel's reading of a blank cell and are
+not the parity path. `excel-emit.null-parity.test.ts` blanks every combination
+of every builtin calculation's inputs and checks the emitted formula, evaluated
+with Excel's semantics by the test-only `test/excel-formula.mts`, against
+`evaluateCalc`.
+
 `ExcelEmitError` codes:
 - `EXCEL-EMIT-PATH` — a path/identifier has no named range in the map.
 - `EXCEL-EMIT-FN` — a builtin has no clean Excel equivalent (e.g. `coalesce`,
