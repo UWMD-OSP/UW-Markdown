@@ -39,6 +39,11 @@ rotation. GOVERNANCE.md starts owner-led and switches to collaborative mode when
 the first outside RFC or PR arrives. The verifier rule-set rule waits on draft
 RFC 0111. The lender acceptance kit moves to a post-launch 5.x milestone.
 
+**Implemented RFC0114 — area measurement standard (owner acceptance 2026-10-21).**
+[RFC0114](../rfcs/0114-area-measurement-standard.md): optional
+`property.area_measurement`; a malformed value is `SIZE-02` in TS and Python.
+Informational only: no metric or conversion depends on it.
+
 **uwmd.org is hosted on Cloudflare Workers (2026-10-21).** The owner moved the
 site to the Worker `uwmd-org` after #391 merged and disconnected Vercel. The
 repository's Vercel configuration (`vercel.json`, `scripts/vercel-ignore-build.sh`)

@@ -18,6 +18,12 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Implement accepted RFC 0114: an optional `property.area_measurement` records
+  the standard behind a record's areas (`standard`: `boma`, `ipms`, `rebny`,
+  `rics` or `other`; free-text `edition`; optional `note`; no other member). A
+  malformed value is the new `SIZE-02` (error) in the §5.5 size contract. No
+  metric reads it and no area is converted. Malformed documents 70 and 71.
+
 - Fix #408: a Lite -> UWX conversion now reads back. Source detection looked
   for Lite anchors anywhere in the text, so the Lite source a conversion keeps in
   `x_uw_lite_source` made every converted file `SOURCE_REPRESENTATION_AMBIGUOUS`.
