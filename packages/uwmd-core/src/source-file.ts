@@ -22,7 +22,7 @@ export async function loadUWSourceFile(file: string): Promise<LoadedUWSource> {
     return { representation: codec.descriptor.id, envelope, parsed: fromUWEnvelope(envelope) };
   }
   const content = await readFile(file, 'utf8');
-  let detection;
+  let detection: ReturnType<typeof detectUWSourceRepresentation>;
   try { detection = detectUWSourceRepresentation(content, file); }
   catch (error) {
     // Read-only verifier subjects may lawfully have no section at all. The
