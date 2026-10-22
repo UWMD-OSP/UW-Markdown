@@ -367,7 +367,9 @@ export async function decodeUWCSVBundle(
     }
     const block: UWEnvelopeBlock = {
       annotation: annotation as unknown as UWEnvelopeBlock['annotation'],
-      content: { ...content, _meta: meta },
+      // CSV scopes have no authored JSON member order. Reconstruct Format's
+      // canonical metadata first, keeping the meta scope authoritative.
+      content: Object.assign({ _meta: meta }, content, { _meta: meta }),
       ...(proseByBlock.has(blockRef) ? { prose: proseByBlock.get(blockRef) } : {}),
     };
     assignBlock(envelope, row, block);
