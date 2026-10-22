@@ -108,7 +108,6 @@ and how it gets accepted.
 | [0078](./0078-protocol-is-verification.md) | The protocol is verification: separate the standard from the starter products | implemented | protocol, format, conformance, core, tooling |
 | [0079](./0079-metric-precision.md) | Verify stated metrics at their stated precision; one cash-on-cash definition | implemented | protocol, core, conformance, tooling |
 | [0080](./0080-official-classes-are-builtins.md) | Every official asset class is a builtin | implemented | format, protocol, core, conformance, tooling |
-| [0081](./0081-one-format-one-protocol.md) | One format, one protocol: remove backward compatibility (pre-release cleanup) | accepted | format, protocol, core, conformance, tooling |
 | [0081](./0081-one-format-one-protocol.md) | One format, one protocol: remove backward compatibility (pre-release cleanup) | implemented | format, protocol, core, conformance, tooling |
 | [0082](./0082-borrower-underwriting-profile.md) | A borrower-underwriting document profile for a loan to an operating company | draft | format, protocol, core, conformance, tooling |
 | [0083](./0083-verify-package-split.md) | Split `@uwmd/verify`, the reference implementation of the standard, out of `@uwmd/core` | implemented | core, conformance, tooling |
@@ -136,6 +135,10 @@ and how it gets accepted.
 | [0108](./0108-validation-section-vocabulary.md) | Align the §4.17 validation section's vocabulary with the validation result | accepted | format, conformance |
 | [0109](./0109-financial-validity-deal-flags.md) | Report financial-validity findings as deal flags, not record errors | accepted | format, protocol, core, conformance, tooling |
 | [0110](./0110-financial-validity-entry-band.md) | Name the §4.17 financial_validity entry's band "band", as RFC 0109 does | accepted | format, conformance |
+| [0111](./0111-verify-under-declared-rule-set.md) | Verify each record under the rule set of the version it declares | accepted | format, protocol, conformance, core |
+| [0112](./0112-remove-bancroft-vocabulary.md) | Remove the Bancroft layer vocabulary from the standard | accepted | format, protocol, core, conformance, tooling |
+| [0113](./0113-paid-room-nights.md) | Define hospitality occupied room nights as paid room nights sold | accepted | format, conformance |
+| [0114](./0114-area-measurement-standard.md) | Record the area measurement standard behind per-area metrics | accepted | format, protocol, core, conformance |
 
 `0012` is an unused number, left as a gap so existing references keep their
 meaning. RFC 0017 is **retroactive**: it documents a change that shipped before
