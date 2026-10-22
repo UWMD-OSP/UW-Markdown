@@ -364,6 +364,9 @@ export function projectUWEnvelopeToLite(
   for (const mapping of UW_LITE_FIELD_MAPPINGS) {
     const value = getEnvelopePath(envelope, mapping.target_path);
     if (value === undefined) continue;
+    // A stated null has no unit, so its Lite line would not compile under a
+    // unit-bearing field (land's cap rate, #409). It is omitted and reported.
+    if (value === null && mapping.expected_unit !== undefined) continue;
     const section = mapping.target_path.split('.')[0] ?? 'deal';
     const group = groups.get(section) ?? [];
     group.push(

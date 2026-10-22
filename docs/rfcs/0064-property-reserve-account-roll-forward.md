@@ -4,7 +4,7 @@ title: Verify property reserve-account roll-forwards without netting expenditure
 status: implemented
 accepted: 2026-10-09
 implemented: 2026-10-10
-author: codex
+author: UWMD maintainers
 created: 2026-09-27
 affects:
   - format-spec
@@ -25,19 +25,12 @@ balance verifier. It checks only `ending = opening + contributions - internal
 It does not create economic cash flows or net draws against gross expenditure.
 RFC 0045's `reserve_spending_excluded` refusal remains exactly as released.
 
-**Implemented; released and independently verified.** The owner authorized
-acceptance and implementation together on 2026-10-09. PR #290 carries the
-implementation and recorded that acceptance when it merged. Format stays 2.0.
-Release preparation paired it with Protocol 2.24.0 and core/CLI 2.20.0. The
-`v2.20.0` release published it in core/CLI 2.20.0 with Stable Protocol 2.24.0,
-and independent publication verification passed (see
-[Publication and verification](#publication-and-verification-2026-10-10)).
-PR #219 is abandoned, closed unmerged, and is not revived by this implementation.
-The carrier and exclusion of lender reserves were settled on 2026-09-29.
+**Implemented; released in core/CLI 2.20.0 with Protocol 2.24.0.** See
+[Resolution](#resolution).
 
 ## Motivation and scope
 
-The [completed Golden Deal review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
+A private validation corpus
 identified property custody opening balances, contributions, draws, releases
 and ending balances. Public examples here are independently authored synthetic
 facts. The verifier makes no claim of full assembly parity for those private deals.
@@ -148,15 +141,15 @@ contract. Netting against TI/LC or capex hides gross economics and remains refus
 RFC 0065 must separately specify exact draw-to-gross-expenditure identity and
 owner-cash mapping before any later RFC could relax RFC 0045. This RFC does neither.
 
-## Publication and verification (2026-10-10)
+## Resolution
 
-Annotated `v2.20.0` targets the release-prepared merge
-`020e8b088307ac53a0023bfc0b881c31fb40db91` (PR #292).
-[Release run 38064763014](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38064763014)
-succeeded and published core/CLI 2.20.0, signing 0.2.24, batch 0.8.19 and
-both modules 0.1.12. Independent registry, provenance, published-file,
-delivered-CLI (279/279) and module-consumer checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.20.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section above
-remain unchanged.
+- **Status.** Accepted 2026-10-09 (acceptance and implementation authorized
+  together); implemented and released 2026-10-10 in core/CLI 2.20.0 with
+  Protocol 2.24.0. Format stays 2.0.
+- **Decided.** The [Decisions](#decisions) table. The carrier and the exclusion
+  of lender reserves were settled on 2026-09-29.
+- **Implementing PRs.** [#290](https://github.com/UWMD-OSP/UW-Markdown/pull/290)
+  carries the implementation and recorded acceptance when it merged;
+  [#292](https://github.com/UWMD-OSP/UW-Markdown/pull/292) prepared the release.
+  The earlier draft PR [#219](https://github.com/UWMD-OSP/UW-Markdown/pull/219)
+  was abandoned, closed unmerged, and is not revived by this implementation.

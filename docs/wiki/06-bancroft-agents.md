@@ -1,40 +1,43 @@
-# 06 — Bancroft agents (starter product)
+# 06 — Bancroft layers (starter product)
 
-> RFC 0078 retired Tier 4 (Agent Host) as a Protocol tier. The agent host is a
-> non-normative starter product; its former Protocol text is in
-> [`docs/starter/ai-host.md`](../starter/ai-host.md), and its fixtures still run
-> from `conformance/starter/agent/` until the corpus is re-tiered.
+> RFC 0078 retired Tier 4 (Agent Host) as a Protocol tier. The layer registry
+> and its builders are non-normative starter products; their former Protocol
+> text is in [`docs/starter/ai-host.md`](../starter/ai-host.md), and the
+> layer-profile check runs from `conformance/starter/agent/`.
 
-Bancroft is UWMD optional **reference suite** of AI agents. It is not part of the file format and no user or implementer must run it to create, read, validate, edit, calculate, or exchange UWMD files. Each agent is a **layer** in an underwriting
-pipeline (L0…L7). A layer reads a curated subset of the deal, calls Claude with a
-structured-output tool, and writes section blocks back via the supersede-aware
-writer. **Agents extract and narrate; they never compute financial metrics.**
+**The reference toolkit hosts no agents.** `@uwmd/core` runs no model, ships no
+provider adapter, tool schema or replay cassette, and the CLI has no `uwmd run`
+command. A host that runs its own agents (StackUW, or any other producer) does
+the execution itself and writes each record through the generic writers
+(`writeAgentBlock`, `writeErrorEntry`) or the edit API (`applyEdit`,
+`uwmd edit --agent-id/--agent-version`). The format's provenance, supersede and
+pipeline-log rules apply to those writes as to any producer's. **Agents extract
+and narrate; they never compute financial metrics** (invariant 1).
 
-- **Location:** [`packages/uwmd-core/src/agents/`](../../packages/uwmd-core/src/agents/)
-  + [`src/context.ts`](../../packages/uwmd-core/src/context.ts)
+What core keeps, until RFC 0112 decides the layer vocabulary (Format §2.2
+`pipeline_state` names its keys after `BANCROFT_LAYERS`):
+
+- **Location:** [`src/context.ts`](../../packages/uwmd-core/src/context.ts)
   + [`src/context-profiles.ts`](../../packages/uwmd-core/src/context-profiles.ts)
+  + the generic writers in [`src/runner.ts`](../../packages/uwmd-core/src/runner.ts).
+  `src/agents/L0b-prompt.md` is the L0b layer's prompt text, which its layer
+  description refers to.
 - **Starter contract:** [AI host guide](../starter/ai-host.md) §IX,
-  non-normative since RFC 0078. `bancroft.ts` runs the optional reference suite;
-  its provider interface is neutral and its default adapter is Anthropic.
-- **Ownership:** these are retained 4.x compatibility surfaces. StackUW owns
-  modeling, agents and workflows. See the [inventory](../reviews/2026-10-15-architecture-boundary.md)
-  and [5.0 removal plan](../reviews/2026-10-15-agent-removal-5.0.md).
-- **Public API (via `index.ts`):** `runBancroftAgent`, `runBancroftAgentStreaming`,
-  `buildAgentContext`, `buildAgentPrompt`, `isContextReady`, `getLayerDependencies`,
-  `BANCROFT_LAYERS`, `WRITE_UW_SECTION_TOOL`, `WRITE_MULTIPLE_SECTIONS_TOOL`,
-  `MULTI_SECTION_LAYERS`.
-
-The Anthropic provider loads its optional SDK only when sending a request.
-Its injected client option uses structural types for the methods the adapter
-calls, so strict TypeScript consumers can import core without installing that
-peer. Package verification compiles root and browser imports with
-skipLibCheck disabled and optional peers absent.
+  non-normative since RFC 0078.
+- **Ownership:** StackUW owns modeling, agents and workflows. See the
+  [inventory](../reviews/2026-10-15-architecture-boundary.md) and
+  [removal plan](../reviews/2026-10-15-agent-removal-5.0.md).
+- **Public API (via `index.ts` and `browser.ts`):** `buildAgentContext`,
+  `buildAgentPrompt`, `isContextReady`, `getLayerDependencies`,
+  `BANCROFT_LAYERS` and the types `AgentContext`, `BancroftPrompt`,
+  `LayerDefinition`; `buildContext` (root entry only); `writeAgentBlock`,
+  `writeErrorEntry`, `buildMeta`.
 
 ## The layer registry (`BANCROFT_LAYERS` in `context.ts`)
 
 Each `LayerDefinition` declares `id`, `layer` (number), `name`, `reads[]`,
 `writes[]`, `pipelineStateKey`, and `consumed_profile` (the starter context
-profile, verified by the agent starter-product checks).
+profile, verified by the layer-profile starter check).
 
 Layer | Name | Reads | Writes | Profile
 ---|---|---|---|---
@@ -52,9 +55,8 @@ Notes:
 - **L3 is intentionally absent** (reserved). L9/L10 (portfolio/relationship)
   appear in product strategy but are **not implemented here**.
 - `reads: ['*']` means "all sections" (L0b, L7).
-- `L0` and `L4` write multiple sections → they use the multi-section tool
-  (`MULTI_SECTION_LAYERS = {'L0','L4'}`).
-- All layers default to **`claude-sonnet-4-6`**, temperature **0.1**.
+- `L0` and `L4` write multiple sections. How a host collects a multi-section
+  answer from its model is the host's business.
 
 ## Pipeline dependencies & readiness
 
@@ -64,7 +66,8 @@ Notes:
   layer to produce meaningful output (e.g. L2 needs `property`+`rent_roll`; L6
   needs `noi_model`+`debt_structure`+`valuation`).
 - `isContextReady(ctx)` halts on (a) any `blocking_flags`, or (b) any missing
-  required section. The agent runner refuses to call Claude if not ready.
+  required section. A host should not invoke a layer whose context is not
+  ready.
 
 ## Context building (`buildAgentContext`)
 
@@ -93,66 +96,26 @@ includes the explicit instruction: *"Never calculate financial figures — repor
 what the data shows; the deterministic engine owns the math."* The user message is
 the chat context + the section list to write.
 
-## Structured output tools (`agents/schemas.ts`)
+## Writing a layer's output
 
-Claude is forced to return JSON via `tool_choice: { type: 'any' }` over one of two
-tools:
-- `WRITE_UW_SECTION_TOOL` (`write_uw_section`) — single section. Required fields:
-  `section_id`, `confidence` (`high|medium|low`), `human_review_required`,
-  `flags[]`, `section_data`; optional `notes`.
-- `WRITE_MULTIPLE_SECTIONS_TOOL` (`write_multiple_uw_sections`) — an array of the
-  same shape; used only by L0 and L4.
-
-The runner ignores any `_meta`/`_notes` Claude tries to put inside `section_data`
-— **the host owns `_meta`**, built fresh via `buildMeta`.
-
-## The runner (`agents/bancroft.ts`)
-
-```ts
-runBancroftAgent(fileContent, agentId, opts) → Promise<BancroftRunResult>
-runBancroftAgentStreaming(fileContent, agentId, opts) → Promise<BancroftRunResult>
-```
-
-`BancroftRunOptions`: either `provider` or `apiKey` is required;
-an injected provider avoids loading the SDK. Other options: `model?` (default `claude-sonnet-4-6`),
-`maxRetries?` (default 2), `maxTokens?` (default 4096), `temperature?` (default
-0.1), `userInstructions?`, `onProgress?`.
-
-Flow:
-1. Parse file, `buildAgentContext`, check `isContextReady` (else return a
-   not-ready failure without calling Claude).
-2. `buildAgentPrompt`, then call `client.messages.create` (or `.stream`) with the
-   system prompt, user message, the layer's tool, and `tool_choice: 'any'`.
-3. `extractToolOutputs` pulls the `tool_use` block(s). If Claude didn't call the
-   tool, retry with `sleep(1000 * retries)` backoff up to `maxRetries`.
-4. On exhausted retries, write a `writeErrorEntry` (`AGENT_NO_TOOL_CALL`) to the
-   pipeline log and return failure.
-5. On success, `writeSectionOutputs` re-parses before each write, bumps the
-   block version, builds `_meta` (`source: agentId`, `actor: 'system'`,
-   `agent_version: '1.0.0'`, plus confidence/flags/notes from the tool output),
-   calls `writeAgentBlock`, and updates `pipeline_state[layer.pipelineStateKey] =
-   'complete'`.
-
-Result includes `success`, `updatedContent`, `sectionsWritten`, `tokensUsed`,
-`durationMs`, `logEntryIds`, `retries`, optional `error`. `ProgressEvent.stage`
-goes `context_built → calling_claude → parsing_output → writing_block → complete`
-(or `error`).
-
-> **Rate limiting / caching:** there is only simple linear backoff on retry. No
-> token-rate awareness, no prompt caching, no response caching today.
+The host owns `_meta`: it builds it with `buildMeta()` and passes it with the
+section payload to `writeAgentBlock(fileContent, parsed, { sectionId, content },
+opts)`, which supersedes the prior block, appends the new versioned block and a
+`pipeline_log` entry, and applies any requested `pipeline_state` and
+`quick_metrics` updates. It drops any `_role` or `_overrides` the payload
+carries. A failed run records a `writeErrorEntry`. Neither function calls a
+model.
 
 ## Context profiles (`context-profiles.ts`)
 
 `buildContext(parsed, profile, opts) → ContextResult`. Profiles: `summary`,
 `compact`, `relevant`, `full`, `live`. Each layer declares which it `consumes`;
-The agent profile starter check asserts the `layer → profile` map matches the baseline.
+the layer-profile starter check asserts the `layer → profile` map matches the
+baseline.
 
-## Running a layer from the CLI
+## From the CLI
 
 ```bash
-uwmd run deal.uw.md --agent L2 --context-only   # inspect curated context
-uwmd run deal.uw.md --agent L2 --prompt         # print system+user prompts
-uwmd run deal.uw.md --agent L2 --live           # call Claude (needs ANTHROPIC_API_KEY)
 uwmd layers                                      # list all layers
 ```
 
@@ -165,9 +128,7 @@ uwmd layers                                      # list all layers
    to `getLayerDependencies`.
 3. Add a role string in `getLayerDescription` and an output-schema hint in
    `getOutputSchemaDescription`.
-4. If it writes multiple sections, add its id to `MULTI_SECTION_LAYERS` in
-   `agents/schemas.ts`.
-5. If it consumes a new pipeline-state key, extend `UWPipelineState` in `types.ts`.
-6. Add an agent profile expectation and (optionally) a shape fixture under
-   `conformance/starter/agent/` (starter-product checks). Run
-   `npm run conformance -- --suite=starter-agent`.
+4. If it consumes a new pipeline-state key, extend `UWPipelineState` in `types.ts`.
+5. Update the layer-profile expectation under
+   `conformance/starter/agent/profile/` (a starter-product check). Run
+   `npm run conformance -- --suite=starter-agent-profile`.

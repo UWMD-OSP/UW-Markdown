@@ -2,7 +2,7 @@
 rfc: 0008
 title: Lease-up modeling section for value-add and ground-up deals
 status: implemented
-author: jared
+author: UWMD maintainers
 created: 2026-04-27
 revised: 2026-09-01
 affects:

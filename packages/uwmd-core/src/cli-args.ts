@@ -128,7 +128,6 @@ export const COMMAND_FLAGS: Readonly<Record<string, readonly string[]>> = {
   compact: ['output', 'dry-run'],
   diff: [],
   render: ['format', 'profile', 'sections', 'max-tokens', 'no-meta', 'output', 'tier'],
-  run: ['agent', 'section', 'context-only', 'prompt', 'live', 'api-key', 'model', 'instructions', 'json-input', 'output'],
   layers: [],
   edit: ['actor', 'source', 'agent-id', 'agent-version', 'confidence', 'output', 'capability-token', 'coord-key', 'json'],
   'project-lease-up': ['json'],

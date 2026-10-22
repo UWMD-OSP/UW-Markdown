@@ -28,8 +28,8 @@ level of computed values (§ VIII, RFCs 0023/0024) and verification receipts
 
 ## Motivation
 
-Raised by the underwriter.cc app team (their tracking id UPSTREAM-002, first
-raised 2026-08-30 and re-verified at protocol 1.9.0): § V.7's provisional
+Raised by an adopter (first raised 2026-08-30 and re-verified at protocol
+1.9.0): § V.7's provisional
 obligation is a SHOULD, `_meta.provisional` is inside the signed bytes, so two
 producers that both conform — one stamping `provisional`, one not — produce
 different signatures over the same underwriting. Their ask, verbatim in shape:

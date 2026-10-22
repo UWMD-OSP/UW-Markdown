@@ -4,7 +4,7 @@ title: Bind a stated reserve draw to an already-stated gross expenditure
 status: implemented
 accepted: 2026-10-10
 implemented: 2026-10-10
-author: codex
+author: UWMD maintainers
 created: 2026-09-29
 depends_on:
   - 0045
@@ -29,8 +29,7 @@ Many-to-many allocations and explicit partial expenditure funding are admitted;
 every selected draw must be fully allocated. The verifier preserves both gross
 expenditure and the draw, their identities and attributable source evidence.
 
-The [completed Golden Deal review](../reviews/2026-09-24-completed-golden-corpus-validation.md)
-identified reserve-dependent spending that correctly refuses RFC 0045. RFC 0064
+A private validation corpus identified reserve-dependent spending that correctly refuses RFC 0045. RFC 0064
 is implemented and was released in core/CLI 2.20.0 with Protocol 2.24.0. Its custody identity does not establish which
 internal draw funded which expenditure. Date, equal amount, label or shared
 provenance cannot supply that relationship. All public examples here are synthetic.
@@ -116,13 +115,9 @@ The source block `_meta` remains host-owned and append-only.
 
 No optional plan means exactly the current document validation and assembly
 behavior, including reserve refusals. Existing files require no edits. Both
-format generations can be supplied to the companion verifier. PR #293 carries
-the implementation and recorded acceptance when it merged on 2026-10-10.
-Format stays 2.0. Release preparation paired it with Protocol 2.25.0 and
-core/CLI 2.21.0. **Implemented; released and independently verified.** The
-`v2.21.0` release published it in core/CLI 2.21.0 with Stable Protocol 2.25.0,
-and independent publication verification passed (see
-[Publication and verification](#publication-and-verification-2026-10-10)).
+format generations can be supplied to the companion verifier. Format stays
+2.0. **Implemented; released in core/CLI 2.21.0 with Protocol 2.25.0.** See
+[Resolution](#resolution).
 
 `conformance/reserve-draw-bindings/` carries independently authored synthetic
 source/plan/expected triples. Cases cover one-to-one, one-to-many, many-to-many,
@@ -144,19 +139,13 @@ Netting a draw against expenditure erases gross economics; treating the draw as
 a second expenditure duplicates it. A `reserve_net` row names external owner
 transfers, not an internal draw. A source category or timestamp does not choose a
 variant. Inferring missing accounts, movements, expenses, dates or shares cannot
-establish an attributable binding. Release preparation and Claude Code's merge
-remain separate steps after this RFC and its implementation are reviewed.
+establish an attributable binding.
 
-## Publication and verification (2026-10-10)
+## Resolution
 
-Annotated `v2.21.0` targets the release-prepared merge
-`6e5ffaf75425d35554c57d72bea28c59c6047839` (PR #295).
-[Release run 38088657045](https://github.com/UWMD-OSP/UW-Markdown/actions/runs/38088657045)
-succeeded and published core/CLI 2.21.0, signing 0.2.25, batch 0.8.20 and
-both modules 0.1.13. Independent registry, provenance, published-file,
-delivered-CLI (325/325, including all 46 `reserve-draw-bindings/*` cases),
-published `verify-reserve-draws` and module-consumer checks passed; see
-[the publication record](https://github.com/UWMD-OSP/UW-Markdown/blob/main/docs/releases/2.21.0-publication.md).
-Publication verification precedes this separate `accepted` → `implemented`
-reconciliation. The immutable release tag and every normative section above
-remain unchanged.
+- **Status.** Accepted and implemented 2026-10-10; released in core/CLI 2.21.0
+  with Protocol 2.25.0. Format stays 2.0.
+- **Decided.** The [Decisions](#decisions) table.
+- **Implementing PRs.** [#293](https://github.com/UWMD-OSP/UW-Markdown/pull/293)
+  carries the implementation and recorded acceptance when it merged;
+  [#295](https://github.com/UWMD-OSP/UW-Markdown/pull/295) prepared the release.

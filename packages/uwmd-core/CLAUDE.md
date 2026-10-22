@@ -24,7 +24,7 @@ the root [`CLAUDE.md`](../../CLAUDE.md).
 - `runner.ts` — supersede-aware block writer (`writeAgentBlock`; re-exports
   `buildMeta`, which is verify's).
 - `starter-protocol.ts` — the starter protocol tables (number formats, badges,
-  `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`, agent host, capability tokens); the
+  `BUILTIN_VIEW_MODELS`, `CASCADE_ORDER`, capability tokens); the
   barrels export them under the same names as before.
 - `reference-implementation.ts` — `REFERENCE_IMPLEMENTATION_MANIFEST`, what
   `uwmd manifest` prints. `version.ts` — `CORE_VERSION`, in lockstep with
@@ -32,8 +32,9 @@ the root [`CLAUDE.md`](../../CLAUDE.md).
 - `packs/` — re-exports verify's builtin pack manifests beside the Excel
   emitter (`excel-emit.ts`); the per-class Excel parity tests live here
   (`docs/wiki/05`).
-- `agents/` + `context.ts` — Bancroft agent host (`docs/wiki/06`). Layers default
-  to `claude-sonnet-4-6`, temp 0.1.
+- `context.ts` — `buildContext` and the Bancroft layer registry (`BANCROFT_LAYERS`,
+  context and prompt builders, `uwmd layers`). Nothing executes an agent; the
+  registry awaits draft RFC 0112.
 - `cascade.ts` / `defaults.ts` / `gaps.ts` / `refinement.ts` — data resolution +
   VOI gap ranking. `bindings-edit.ts` wires the editor into verify's bindings.
 - `cli.ts` — the `uwmd` CLI (wrapped by `@uwmd/cli`).
@@ -50,11 +51,9 @@ here, named for the starter module (`editor.block-roles.test.ts`,
 ## Local invariants
 
 - **AI never computes financials** — that's verify's `calc/` + `builtin-packs/`, deterministically.
-- **Browser boundary:** `@anthropic-ai/sdk` may be reached only by code reachable
-  from `index.ts`, never from anything `browser.ts` re-exports. It is an optional
-  peer dependency: `agents/providers/anthropic.ts` must load it by *dynamic*
-  import only — a static import there would make `import '@uwmd/core'` pull the
-  vendor SDK in for every consumer, since `index.ts` re-exports the factory.
+- **No vendor SDK.** Core takes no vendor SDK dependency, optional or otherwise
+  (invariant 2); `@uwmd/signing` is the one optional peer, loaded by dynamic
+  import.
 - **Editor byte preservation**, **append-only supersede**, **the host owns
   `_meta`** (strip any `_meta`/`_notes` from agent `section_data`).
 - Relative imports carry the `.js` extension (NodeNext).

@@ -2,7 +2,7 @@
 rfc: 0044
 title: Project verified lease-up amounts onto explicitly stated cash dates
 status: implemented
-author: codex
+author: UWMD maintainers
 created: 2026-09-12
 affects:
   - protocol-spec

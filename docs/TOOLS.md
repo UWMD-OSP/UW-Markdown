@@ -66,7 +66,7 @@ It checks mathematical consistency, not economic completeness.
 | Script validation, scaffolding, or rendering | [`uwmd` CLI](#uwmd-cli) | 1 + 2 |
 | Hand the deal to a banker who lives in Excel | [Excel converter](#excel-converter) | 3 (export) |
 | Index a folder of deals, or feed a data lake | [`@uwmd/batch`](#batch-indexer) | 1 + 3 (read-only) |
-| Run an LLM agent over the deal | `runBancroftAgent` from `@uwmd/core` | 4 |
+| Write an agent's output into the deal | [`uwmd edit`](#uwmd-cli) or `writeAgentBlock` from `@uwmd/core` (your host runs the agent) | 2 |
 | Prove a deal's metrics follow from its inputs | [`uwmd receipt`](#uwmd-cli) or the [web editor](#web-editor) | 3 |
 | Check a receipt a counterparty sent you | any of the [CLI](#uwmd-cli), [web editor](#web-editor), or [VS Code extension](#vs-code-extension) | 3 |
 
@@ -167,7 +167,8 @@ npx @uwmd/cli receipt verify my-deal.uwx.md my-deal.receipt.json
 
 Run `npx @uwmd/cli` with no arguments for the complete command list,
 including `diff`, `edit`, `calc`, `scope`, `refine`, `verify-cash-flows`,
-`package`, `portfolio`, and `run` (a Bancroft agent layer).
+`package`, `portfolio`, and `layers` (the Bancroft layer registry). An
+unknown command exits 1 before it reads any file.
 
 `receipt verify` exits 0 for `verified`, 1 for `failed`, and **3 for
 `unverifiable`** — "cannot decide" is a distinct outcome, not a pass
@@ -248,31 +249,20 @@ Read-only by construction. Published on npm as `@uwmd/batch`.
 
 ## Programmatic agent host
 
-Bancroft is UW Markdown's optional reference suite of staged underwriting agents. It is not required to create, read, validate, edit, calculate, convert, or exchange a deal file; other providers and application-specific agents can use the same format and the starter [agent host guide](starter/ai-host.md).
+The reference toolkit hosts no agents: it runs no model, ships no provider
+adapter or tool schema, and the CLI has no `uwmd run`. UW Markdown needs no
+agent to create, read, validate, edit, calculate, convert, or exchange a deal
+file.
 
-**[`packages/uwmd-core/src/agents/bancroft.ts`](../packages/uwmd-core/src/agents/bancroft.ts)
-— the reference agent host (a starter product).**
-
-`runBancroftAgent(file, layerId, opts)` runs a single Bancroft layer
-(`L1`–`L7`) over the deal. Edits are dispatched through the same
-`applyEdit` gate that the web editor uses, so an agent can never violate
-an edit policy, and agents write extracted data and narrative only; they
-never supply financial math.
-
-The model is pluggable through the `provider` option. With no provider,
-the built-in Anthropic adapter loads the optional `@anthropic-ai/sdk` peer
-and needs an `ANTHROPIC_API_KEY`. `createRecordingProvider` and
-`createReplayProvider` record real exchanges once and replay them with no
-network and no key, which makes an agent run deterministic and testable.
-The agent host contract (former Protocol §IX, now the
-[starter guide](starter/ai-host.md)) is provider-neutral; any `AgentProvider`
-implementation can stand in.
-
-Best for: building a custom underwriting pipeline. Researching what
-LLM-driven underwriting looks like end-to-end.
-
-Skip it for: anything that needs no extraction or narrative. Validation,
-calculation, and receipts never involve an agent.
+A host that runs its own agents (StackUW, or any other producer) uses what
+`@uwmd/core` keeps: the Bancroft layer registry (`BANCROFT_LAYERS`) and its
+context and prompt builders (`buildAgentContext`, `buildAgentPrompt`,
+`isContextReady`) to decide what a layer reads, and the generic writers
+(`writeAgentBlock`, `writeErrorEntry`) or the edit API (`applyEdit`,
+`uwmd edit --agent-id/--agent-version`) to write the result with its
+provenance. Agents write extracted data and narrative only; they never supply
+financial math. The starter [agent host guide](starter/ai-host.md) describes
+the layer, context and writer conventions.
 
 ---
 
@@ -286,4 +276,4 @@ calculation, and receipts never involve an agent.
 | `uwmd` CLI | `packages/uwmd-cli/` | Verifier (all six profiles, `uwmd manifest`), plus starter editing |
 | Excel converter | `packages/uwmd-excel/` | Starter export |
 | Batch indexer | `packages/uwmd-batch/` | Reader (read-only index) |
-| Bancroft agent host | `packages/uwmd-core/src/agents/` | Starter agent host |
+| Bancroft layer registry | `packages/uwmd-core/src/context.ts` | Starter layer registry and context builders (no agent execution) |

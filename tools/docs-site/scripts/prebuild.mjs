@@ -70,7 +70,7 @@ const COPIES = [
   { from: 'conformance/documents/README.md',    to: 'conformance/documents.md', title: 'Reader and validation fixtures' },
   { from: 'conformance/starter/editor/README.md',    to: 'conformance/starter-editor.md', title: 'Editor starter checks' },
   { from: 'conformance/calc/README.md', to: 'conformance/calc.md', title: 'Calculation fixtures' },
-  { from: 'conformance/starter/agent/README.md', to: 'conformance/starter-agent.md', title: 'Agent starter checks' },
+  { from: 'conformance/starter/agent/README.md', to: 'conformance/starter-agent.md', title: 'Layer-profile starter check' },
   { from: 'conformance/starter/refinement/README.md', to: 'conformance/starter-refinement.md', title: 'Refinement starter checks' },
   { from: 'conformance/runner/README.md',           to: 'conformance/runner.md', title: 'Language-agnostic runner' },
 
