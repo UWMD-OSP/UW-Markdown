@@ -8,6 +8,11 @@ or prelaunch artifact preservation/repair. Earlier contrary work is retired.
 Current RFC/conformance/read-only verification and source-integrity requirements
 remain. No package numbers or release publication are changed here.
 
+**Example validation reconciled (2026-10-22).** Mesa's stored validation now
+records its two documented cross-check warnings. Sundance's horizontal lot
+development uses ground_up_development, matching its stated construction plan.
+Financial facts and calculation definitions are unchanged.
+
 **Agent execution removed from the toolkit (owner decision, 2026-10-21).**
 `@uwmd/core` and the CLI host no agents: the runner, tool schemas, provider
 seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
