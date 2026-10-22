@@ -5,7 +5,7 @@ deal_name: "Riverside Office Center — Phoenix, AZ"
 created: "2026-04-25T08:30:00Z"
 last_modified: "2026-04-25T16:00:00Z"
 
-property_address: "5500 N Riverside Dr"
+property_address: "5500 N Riverside Commons Dr"
 city: "Phoenix"
 state: "AZ"
 zip: "85021"
@@ -13,15 +13,6 @@ asset_class: "office"
 asset_subtype: "suburban"
 loan_type: "bridge"
 scenario: "value_add"
-
-pipeline_state:
-  L0_ingestion:    "complete"
-  L1_screening:    "complete"
-  L2_underwriting: "complete"
-  L4_structuring:  "in_progress"
-  L5_compliance:   "pending"
-  L6_risk:         "pending"
-  L7_assembly:     "pending"
 
 status: "in_progress"
 deal_stage: "full_underwrite"
@@ -221,7 +212,7 @@ Office tenant variant — the spec's `rent_roll` section accepts a `tenants` arr
     },
     {
       "tenant_id": "T-004",
-      "tenant_name": "Bridgestone Architects",
+      "tenant_name": "Flagstone Architects",
       "suite": "Suite 202",
       "leased_sf": 4500,
       "annual_base_rent": 96750,

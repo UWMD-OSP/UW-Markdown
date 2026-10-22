@@ -8,6 +8,17 @@ protocol, and each package each carry an independent semver).
 
 ## [Unreleased]
 
+- Python (#354): the independent implementation now claims `validate` beside
+  `parse` and `calc-evaluate`, still at the Reader tier. CI runs the portable
+  Verifier-tier corpus with `--no-skip` on three OSes, so all 144 validate cases
+  must pass. `validate` reads spec data through one resolver, with
+  `UWMD_SPEC_DIR` to run outside a checkout. The #425 differences are closed:
+  CF-01 is the §4.26 row grammar only, HDG-08 reports the failing reference
+  member, HDG-01 reports each stated member, CS-01/CS-02/CS-WATERFALL-UNSUPPORTED
+  follow §4.24 and the reference, CC-01/05/06/07/15, WF-02/03, TAX-07 and DQ-05
+  read the reference's carriers and skips. A `null` `stabilized_period` stays
+  unstated (Format §4.5). No TypeScript, spec, schema or conformance change.
+
 - Prepare Cloudflare Workers static hosting for the refreshed docs site, with a
   pinned Node runtime, asset headers, real 404 responses and owner-configured
   docs-only build watch paths. Vercel remains unchanged pending owner cutover.
@@ -17,6 +28,120 @@ protocol, and each package each carry an independent semver).
   host.
 
 ### Changed
+
+- Implement accepted RFC 0114: an optional `property.area_measurement` records
+  the standard behind a record's areas (`standard`: `boma`, `ipms`, `rebny`,
+  `rics` or `other`; free-text `edition`; optional `note`; no other member). A
+  malformed value is the new `SIZE-02` (error) in the §5.5 size contract. No
+  metric reads it and no area is converted. Malformed documents 70 and 71.
+
+- Implement accepted RFC 0086 (owner, 2026-10-22): `valuation.purchase_price`
+  is the one purchase-price authority. **Affected metric:
+  `price_per_commissioned_kw`** (data center) is now
+  `valuation.purchase_price / dc_capacity.critical_it_load_kw` (it read
+  `quick_metrics.purchase_price`); `round_to`, unit and null semantics are
+  unchanged, and it is null when the valuation states no price, with no
+  fallback to the frontmatter copy. `price_per_kw` is unchanged. The dictionary,
+  its generated mirror and the data-center pack change together; the Excel
+  data-center layout drops the `quick_purchase_price` input no formula reads,
+  so the workbook divides the `purchase_price` named range. New cross-check
+  `CC-17` (Format §5.3, error, every asset class): frontmatter
+  `quick_metrics.purchase_price` must match `valuation.purchase_price` within
+  $100, with CC-10's tolerance, severity and coverage, and CC-16 when the
+  valuation does not resolve. It joins `CROSS_CHECK_RULE_IDS` and
+  `BUILTIN_REMEDIATIONS`, so coverage reports sixteen checks; Python adds it
+  too. When two valuation blocks both claim `primary`, the builtin-class check
+  now reports `MOD-CALC-ERROR` for `price_per_commissioned_kw`, as the
+  evaluator refuses `price_per_kw` there. Conformance: a new `cross-checks`
+  suite (six records: prices agree, $101 over, $100 boundary, frontmatter price
+  null, no valuation, unresolved valuation), each pinning its issues and its
+  CC-17 coverage in twelve portable cases, and two `price_per_commissioned_kw`
+  statement-home cases (statement-home edits may now target the frontmatter).
+  The variants table in `spec/metrics/README.md` records the check. No example
+  or fixture changes value: every data-center record states equal prices.
+
+- Implement accepted RFC 0115 (owner, 2026-10-22, as drafted, including D2
+  and D4): every Verifier obligation has one portable conformance subcommand,
+  one capability flag and generated cases. Protocol §II.6a.1 adds
+  `verify-metrics`, `verify-cash-flows`, `verify-property-cash-flows`,
+  `verify-waterfall`, `verify-capital-stack`, `verify-lease-up` and
+  `verify-receipt <receipt.json> <file>` beside the two reserve verifiers;
+  §II.6a.2 fixes their exit contract (a failed verification exits 1, an
+  unverifiable or absent subject exits 0; the reserve verifiers keep theirs).
+  §II.2 item 3 names the capital-stack and lease-up verifiers. New
+  `ViewerCapability` flags `verify-metrics`, `verify-cash-flows`,
+  `verify-property-cash-flows`, `verify-waterfall`, `verify-capital-stack`,
+  `verify-lease-up`, `verify-receipts`, `verify-reserve-accounts` and
+  `verify-reserve-draws` (`VERIFIER_OBLIGATION_CAPABILITIES`); a Verifier tier
+  claim requires all of them (§II.5, enforced by the manifest schema) and the
+  reference manifest claims them. Reserve cases now require their own flag,
+  not `calc-evaluate`, and the `RDB` family is owned by `verify-reserve-draws`.
+  `@uwmd/verify` adds `verifyWaterfallDocument`, `verifyCapitalStackDocument`
+  and `verifyLeaseUpDocument` and the `SectionVerificationReport` types;
+  `protocol.ts` re-exports each verifier's result type, and new schemas
+  `stated-metrics-report`, `section-verification-report` and
+  `receipt-verification` mirror them. The reference CLI renames
+  `assemble-property` to `verify-property-cash-flows` (no alias), keeps `verify`
+  as the combined command, and `verify-cash-flows` reports an absent section or
+  no stated metric as `not_applicable` and exits 0 for unverifiable (was 3).
+  The generator emits 160 new portable Verifier cases (557 in all); bare-payload
+  fixtures and statement-home edits are restated as documents under
+  `conformance/runner/derived/`. Receipts (D4): the portable case is the
+  pack-less check, `verify/<id> [pack-less]` in the corpus index, with
+  `expected-verdict-pack-less.json` where the pack changes the outcome; the
+  pack-based checks are re-owned as starter checks. `runner.py` adds the
+  `verdict-codes` and `statement-states` comparisons and three projections.
+  The Python implementation claims the two reserve flags it implements; CI
+  allows skips only for the seven unclaimed RFC 0115 flags.
+- Implement accepted RFC 0111 (owner, 2026-10-21, including D4): a record is
+  verified under the rule set its declared Format version names. New Protocol
+  §XII.5 defines a rule set (Format validation rules and §5.2 bands, the
+  verification procedures, the receipt rules, the metric dictionary), selection
+  by `uw_version` with no fallback, retention of every 5.x rule set and
+  forward-only fixes from 5.0.0, and the exception that a stricter security or
+  soundness fix applies to every kept rule set; §II.2 gains Verifier item 7,
+  and Format §2.2, §XII.3 and the Receipt spec cross-reference it.
+  `@uwmd/verify` adds the `RULE_SETS` registry (`getRuleSet`, `ruleSetFor`,
+  `UWRuleSet`), whose one entry `"3.0"` points at the existing bands,
+  dictionary and builtin packs; validation, stated-metric verification,
+  builtin-class checks and receipts obtain them from it. A document model whose
+  `uw_version` names no kept rule set is now refused with
+  `UNSUPPORTED_FORMAT_VERSION`, as source already was. `ValidationResult`,
+  `StatedMetricsReport` and receipt verification results carry `rule_set`;
+  receipts carry a required `computation.rule_set`, and a receipt naming a rule
+  set other than its record's fails with the new `RCP-13` (fixture
+  `verify/13-rule-set-mismatch`). The receipt fixtures gain the member (verify
+  inputs edited, issue baselines regenerated with `--update`); the metric
+  evidence baseline gains `rule_set` per example. No financial value changes.
+  Every portable conformance case names its `format_version` (`"3.0"`), the
+  case schema requires it, and `runner.py --format-version` selects by it. The
+  CLI prints the rule set; `@uwmd/mcp` results and the Python validator report
+  it.
+
+- Fix #487: an exported workbook gives the calc engine's outcome when an input
+  is missing. `emitCalcExcelFormula` renders null as `#N/A`: a blank named input
+  reads as `NA()`, a null branch is `NA()` instead of `""` (which made
+  `ROUND("")` `#VALUE!`), null tests are `ISNA`-based, and the inputs whose
+  absence nulls a metric are tested once outside `ROUND`. Init records no longer
+  show a fabricated 0 (hospitality total room revenue, data-center facility load
+  and rent revenue, manufactured-housing rent potentials) or `#DIV/0!`/`#VALUE!`
+  where the engine gives null, and populated examples show `#N/A` instead of
+  `#VALUE!` for their three null metrics; every metric with a value is
+  unchanged. Pack formulas are unchanged.
+
+- Fix #484: `uwmd-excel --import` (`fromWorkbook`) accepts every subtotal form
+  the exporter writes: the live formula, a retained stated subtotal beside its
+  status text (now imported as the editable input it is), and the documented
+  `#N/A` for a missing subtotal. Workbooks exported from `uwmd init` records and
+  totals-only `noi_model` records import again; a different formula, a value
+  typed over a formula or over `#N/A`, or a formula typed over a retained value
+  still refuses with `WORKBOOK-IMPORT-SUBTOTAL`. A mixed-use record with no
+  component block now states its property NOI (or `#N/A`) instead of writing an
+  empty consolidation formula.
+
+- Fix #492 (init part): `uwmd init` refuses an `--asset-class`, `--stage` or
+  `--tier` outside its vocabulary and writes nothing; a namespaced custom asset
+  class (Format §2.2a) is still admitted.
 
 - Implement accepted RFC 0113: hospitality `rent_roll.occupied_room_nights` is
   paid room nights sold in the period `rooms_revenue` covers (complimentary and
@@ -68,6 +193,18 @@ protocol, and each package each carry an independent semver).
   source files. The two standalone package manifests and ZIPs and the
   `02-full-multifamily` reader and render-chat baselines are regenerated. No
   figure, metric or normative rule changes.
+- Replace real places and brands in example and fixture records with fictional
+  ones: the utility, university, stadium, hospital systems, employers, an
+  entertainment district, a named technology corridor, a hotel brand and its
+  flags, and a tenant that carried a real brand name. Every full street address
+  on a real road (the Parkview subject and its five comps, the subject address
+  of ten other asset-class examples and the verification pair, their
+  conformance copies, the hospitality fixtures and the self-storage calc
+  fixture) now uses a
+  fictional street with the same house number, city, state and ZIP. City and
+  state names stay. The `02-full-multifamily` render-chat and render-summary
+  baselines are regenerated (address text and the token-count estimate only).
+  No figure, metric or normative rule changes.
 
 - Ratify the release rules after launch (owner, 2026-10-21,
   `docs/playbooks/RELEASE_RULES.md`): one public number, "UWMD 5.x", for the
@@ -511,6 +648,44 @@ protocol, and each package each carry an independent semver).
   `writeErrorEntry`, `buildMeta`), `buildContext` and `uwmd edit
   --agent-id/--agent-version`. An unknown command, `uwmd run` included, now
   exits 1 before any file I/O instead of printing the help text with exit 0.
+
+- Implement RFC 0112: remove the Bancroft layer vocabulary from the standard.
+  **Format:** §1.2 no longer names a required producer tool; §1.3 is deleted;
+  frontmatter `pipeline_state` and its L3 rule are removed (workflow position
+  stays in `status` and `deal_stage`; a record that still carries the member
+  reads it as an ordinary unknown key, D4); the 29 Part IV "Written by" lines
+  are removed, and the eight that carried a source rule become **Source rules**
+  lines that bind any non-user source (D3); spec examples use neutral agent ids
+  (`agent/risk-rater`) under the unchanged `agent/<id>` source with `agent_id`
+  and `agent_version` (D2); §6.8's producer rules move into new §3.6 (items
+  2-5 as MUST, item 7 as SHOULD; items 1, 6 and 8 dropped, D5); Part VI's
+  validation result moves to new §5.6, and Parts VI and VII move to the
+  non-normative starter [CLI reference](docs/starter/cli.md) (without
+  `uwmd run`) and [renderer reference](docs/starter/rendering.md) (D6).
+  **Protocol and schemas (lockstep):** module manifests drop `agent_layers`,
+  `ModuleAgentLayerDecl` and `prompt_template`, so a manifest that declares
+  `agent_layers` is refused as an unknown member (`PROTO-MOD-064`);
+  `PROTO-MOD-055` to `PROTO-MOD-060` are retired and reserved (D7); §II.4,
+  `ViewerCapability` and `ImplementationManifest.capabilities` drop
+  `agent-host`; the glossary drops "Layer". **Libraries:** `@uwmd/core`
+  removes `BANCROFT_LAYERS`, `buildAgentContext`, `buildAgentPrompt`,
+  `isContextReady`, `getLayerDependencies`, the `AgentContext`,
+  `BancroftPrompt` and `LayerDefinition` types, `uwmd layers` (now an unknown
+  command), `agents/L0b-prompt.md`, `RunOptions.updatePipelineState`, the
+  chat render's pipeline-state block, the `summary` context profile's
+  `pipeline_state` member and `init`'s `pipeline_state` scaffold;
+  `@uwmd/verify` removes `UWPipelineState`, `PipelineStatus` and
+  `ModuleAgentLayerDecl`. The generic writers and `buildContext` stay.
+  **Conformance:** the `starter-agent-profile/consumer-profile-contract` check
+  and module fixture `reject/02-agent-layer-malformed` are retired; new
+  `reject/20-agent-layers-unknown-member` shows the refusal; capability tokens
+  are re-signed for the neutral subject `agent/underwriter.inst-A`; examples,
+  fixtures and the download templates drop `pipeline_state`, layer agent ids
+  become neutral ids (`agent/rent-roll-extractor`, `agent/market-analyst`,
+  `agent/risk-rater`, ...) with `agent_id` following, and layer prose in the
+  Parkview records is restated. The documents baselines for
+  `02-full-multifamily` and `04-scope-only` were regenerated with
+  `scripts/regen-conformance.mjs --suite=documents`; no financial value moved.
 
 ### Fixed
 

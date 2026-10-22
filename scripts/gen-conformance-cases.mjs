@@ -10,6 +10,8 @@
 // Run: node scripts/gen-conformance-cases.mjs  (or `npm run gen-conformance-cases`)
 
 import { portableOwner, portableVocabulary } from './conformance-targets.mjs';
+import { statementHomeSource } from '../conformance/metrics/verifier.mjs';
+import { parseUWFile } from '../packages/uwmd-verify/dist/index.js';
 import { readdirSync, statSync, existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { resolve, dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,8 +19,20 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CASES = join(ROOT, 'conformance', 'runner', 'cases');
 const CONFORMANCE = join(ROOT, 'conformance');
+// RFC 0115: documents restated from bare-payload fixtures and statement-home
+// edits, so a document-level Verifier subcommand can read them. Generated and
+// checked like the case files; never edited by hand.
+const DERIVED = join(ROOT, 'conformance', 'runner', 'derived');
 
 const cases = [];
+
+/**
+ * The Format version each case was written for (RFC 0111 D6, Protocol §XII.5):
+ * the rule set a Verifier must keep to owe the case. Every case today was
+ * written for Format 3.0, the one rule set. A case written for a later rule set
+ * will name that version; existing cases keep the one they were written for.
+ */
+const WRITTEN_FOR_FORMAT_VERSION = '3.0';
 
 const readFileText = (path) => readFileSync(path, 'utf8');
 
@@ -44,6 +58,18 @@ function capabilitiesFor(command, args) {
       const view = args[args.indexOf('--format') + 1];
       return [`render-${view}`];
     }
+    // RFC 0115 D2: one capability flag per Verifier obligation, plus `parse`.
+    case 'verify-metrics':
+    case 'verify-cash-flows':
+    case 'verify-property-cash-flows':
+    case 'verify-waterfall':
+    case 'verify-capital-stack':
+    case 'verify-lease-up':
+    case 'verify-reserve-accounts':
+    case 'verify-reserve-draws':
+      return ['parse', command];
+    case 'verify-receipt':
+      return ['parse', 'verify-receipts'];
     default:
       throw new Error(`capabilitiesFor: no mapping for command '${command}'`);
   }
@@ -58,6 +84,7 @@ function add(caseKey, command, args, fixtureDir, expect, capabilities) {
   cases.push({
     id: `${target}__${suite}__${scenario}__${operation}`,
     target,
+    format_version: WRITTEN_FOR_FORMAT_VERSION,
     requires_capabilities: capabilities ?? capabilitiesFor(command, args),
     command,
     args,
@@ -243,6 +270,19 @@ for (const scenario of dirs(join(CONFORMANCE, 'scenario'))) {
     kind: 'json-subset', file: 'expected.json', project: 'issue-code-severity-set', exit_code: 0,
   });
 }
+// Format §5.3 cross-checks (RFC 0086 CC-17): the (code, severity) projection,
+// and, unprojected, the coverage subset that tells evaluated from skipped.
+for (const scenario of dirs(join(CONFORMANCE, 'cross-checks'))) {
+  const dir = join(CONFORMANCE, 'cross-checks', scenario);
+  const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+  const exit_code = expected.overall_status === 'errors' ? 1 : 0;
+  add(`cross-checks/${scenario}/validate`, 'validate', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected.json', project: 'issue-code-severity-set', exit_code,
+  });
+  add(`cross-checks/${scenario}/coverage`, 'validate', ['deal.uwx.md', '--json'], dir, {
+    kind: 'json-subset', file: 'expected-coverage.json', exit_code,
+  });
+}
 // RFC 0064 separately invoked, read-only custody verification.
 for (const scenario of dirs(join(CONFORMANCE, 'reserve-accounts'))) {
   const dir = join(CONFORMANCE, 'reserve-accounts', scenario);
@@ -250,7 +290,7 @@ for (const scenario of dirs(join(CONFORMANCE, 'reserve-accounts'))) {
   add(`reserve-accounts/${scenario}`, 'verify-reserve-accounts', ['deal.uwx.md', '--json'], dir, {
     kind: 'json-subset', file: 'expected.json',
     exit_code: ['failed', 'unverifiable'].includes(expected.state) ? 1 : 0,
-  }, ['parse', 'calc-evaluate']);
+  });
 }
 // RFC 0065 optional draw-to-gross-expenditure binding plans.
 for (const scenario of dirs(join(CONFORMANCE, 'reserve-draw-bindings'))) {
@@ -260,8 +300,132 @@ for (const scenario of dirs(join(CONFORMANCE, 'reserve-draw-bindings'))) {
   add(`reserve-draw-bindings/${scenario}`, 'verify-reserve-draws', args, dir, {
     kind: 'json-subset', file: 'expected.json',
     exit_code: ['failed', 'unverifiable'].includes(expected.state) ? 1 : 0,
-  }, ['parse', 'calc-evaluate']);
+  });
 }
+
+// ── RFC 0115: the remaining Verifier obligations ─────────────────────────────
+//
+// Each case restates a reference check through its portable subcommand. A
+// fixture that is already a document is used as it is. A bare-payload fixture
+// (`case.json`) and a statement-home edit are restated as a document under
+// conformance/runner/derived/, holding exactly the payload the reference
+// runner passes to the verifier. Expected files are the fixtures' own; the
+// case names the baseline fields it compares, because a document fixture's
+// `expected_codes` are validator codes, not verifier codes.
+
+const derived = new Map();
+const derive = (suite, scenario, body) => {
+  const dir = join(DERIVED, suite, scenario);
+  derived.set(join(dir, 'deal.uwx.md'), body);
+  return dir;
+};
+const FENCE = '```';
+const fence = (section, payload, variant) =>
+  `\n${FENCE}json uw:section=${section}${variant ? ` variant=${variant}` : ''}\n${JSON.stringify(payload, null, 2)}\n${FENCE}\n`;
+const restated = (origin, blocks) =>
+  `---\nuw_version: "${WRITTEN_FOR_FORMAT_VERSION}"\n---\n\n# Restated from ${origin}\n\nGenerated by scripts/gen-conformance-cases.mjs (RFC 0115). Do not edit.\n${blocks.join('')}`;
+const verdictExit = (verdict) => (verdict === 'failed' ? 1 : 0);
+
+/** The `--variant` the reference runner selects for a document fixture: base, else default. */
+function referenceVariant(path, section) {
+  const entry = parseUWFile(readFileText(path)).sections[section];
+  if (!entry) throw new Error(`${rel(path)} has no ${section}`);
+  if ('annotation' in entry) return [];
+  const variant = ['base', 'default'].find((name) => Object.hasOwn(entry, name));
+  if (!variant) throw new Error(`${rel(path)}: no base/default ${section} variant`);
+  return ['--variant', variant];
+}
+
+const SECTION_VERIFIERS = [
+  { suite: 'cash-flow', command: 'verify-cash-flows', section: 'cash_flow_series',
+    blocks: (c) => [fence('cash_flow_series', c.series, 'base')] },
+  { suite: 'lease-up', command: 'verify-lease-up', section: 'lease_up_schedule',
+    // leaseUpContext reads a sqft denominator from property.total_nra_sqft.
+    blocks: (c) => [fence('lease_up_schedule', c.schedule),
+      ...(c.context?.total_sf != null ? [fence('property', { total_nra_sqft: c.context.total_sf })] : [])] },
+  { suite: 'capital-stack', command: 'verify-capital-stack', section: 'capital_stack',
+    // capitalStackContext reads NOI, total uses and underwritten value.
+    blocks: (c) => [fence('capital_stack', c.stack),
+      ...(c.context?.noi != null ? [fence('noi_model', { net_operating_income: c.context.noi })] : []),
+      ...(c.context?.total_cost != null ? [fence('sources_uses', { uses: { total: c.context.total_cost } })] : []),
+      ...(c.context?.total_value != null ? [fence('valuation', { underwritten_value: c.context.total_value })] : [])] },
+  { suite: 'waterfall', command: 'verify-waterfall', section: 'distribution_waterfall',
+    // The series sits at the variant the waterfall's cash_flow_ref names; a
+    // null series is the unresolved reference (WF-02) reaching the verifier.
+    blocks: (c) => {
+      const ref = c.waterfall?.cash_flow_ref?.variant;
+      if (c.series != null && typeof ref !== 'string') throw new Error('waterfall series without a named cash_flow_ref');
+      return [fence('distribution_waterfall', c.waterfall), ...(c.series != null ? [fence('cash_flow_series', c.series, ref)] : [])];
+    } },
+];
+
+for (const { suite, command, section, blocks } of SECTION_VERIFIERS) {
+  for (const scenario of dirs(join(CONFORMANCE, suite))) {
+    const dir = join(CONFORMANCE, suite, scenario);
+    if (!existsSync(join(dir, 'expected.json'))) continue;
+    const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+    if (typeof expected.verdict !== 'string') continue; // validator-code, calc and contrast fixtures
+    const expect = (fields) => ({ kind: 'verdict-codes', file: rel(join(dir, 'expected.json')),
+      project: 'section-verification', fields, exit_code: verdictExit(expected.verdict) });
+    if (existsSync(join(dir, 'case.json'))) {
+      const payload = JSON.parse(readFileText(join(dir, 'case.json')));
+      const docDir = derive(suite, scenario, restated(rel(join(dir, 'case.json')), blocks(payload)));
+      add(`${suite}/${scenario}/${command}`, command, ['deal.uwx.md', '--json'], docDir,
+        expect(['verdict', 'expected_code']));
+    } else if (existsSync(join(dir, 'deal.uwx.md'))) {
+      add(`${suite}/${scenario}/${command}`, command,
+        ['deal.uwx.md', ...referenceVariant(join(dir, 'deal.uwx.md'), section), '--json'], dir,
+        expect(['verdict']));
+    }
+  }
+}
+
+// §VIII.9.6: the property cash-flow assembly, with its plan. The projection
+// reduces a PropertyCashFlowAssembly (or its refusal) to the baseline's fields;
+// `metrics` (dated metrics over the candidate, a calc declaration) and
+// `absent_validation_codes` (a validator check) stay reference-runner checks.
+for (const scenario of dirs(join(CONFORMANCE, 'property-cash-flow-assembly'))) {
+  const dir = join(CONFORMANCE, 'property-cash-flow-assembly', scenario);
+  const expected = JSON.parse(readFileText(join(dir, 'expected.json')));
+  const ignore = ['metrics', 'absent_validation_codes'].filter((k) => k in expected);
+  add(`property-cash-flow-assembly/${scenario}/verify-property-cash-flows`, 'verify-property-cash-flows',
+    ['deal.uwx.md', 'plan.json', '--json'], dir, {
+      kind: 'json-subset', file: 'expected.json', project: 'property-cash-flow-assembly',
+      ...(ignore.length ? { ignore } : {}),
+      exit_code: expected.error_code ? 1 : 0,
+    });
+}
+
+// RFC 0099 statement homes: the edited example, verified with the dictionary.
+const STATEMENT_HOMES = join(CONFORMANCE, 'metrics', 'statement-homes', 'cases.json');
+const METRIC_EXAMPLES = JSON.parse(readFileText(join(CONFORMANCE, 'metrics', 'expected.json')));
+JSON.parse(readFileText(STATEMENT_HOMES)).cases.forEach((testCase, i) => {
+  const scenario = `statement-home-${testCase.name}`;
+  // The exit code follows from the counts: a failed statement exits 1. A case
+  // that pins neither leaves the example's own recorded findings unedited.
+  const failed = testCase.failed ?? (testCase.expect.some((e) => e.state === 'failed') ? 1
+    : testCase.edits.length === 0 ? METRIC_EXAMPLES.find((e) => e.example === testCase.example)?.counts.failed : undefined);
+  if (failed === undefined) throw new Error(`${scenario}: cannot restate its exit code`);
+  const docDir = derive('metrics', scenario, statementHomeSource(ROOT, testCase));
+  add(`metrics/${scenario}/verify-metrics`, 'verify-metrics', ['deal.uwx.md', '--json'], docDir, {
+    kind: 'statement-states', file: rel(STATEMENT_HOMES), baseline_pointer: `/cases/${i}`,
+    exit_code: failed > 0 ? 1 : 0,
+  });
+});
+
+// RFC 0115 D4: receipts, as a Verifier without a calculation pack determines them.
+for (const id of dirs(join(CONFORMANCE, 'receipts', 'verify'))) {
+  const dir = join(CONFORMANCE, 'receipts', 'verify', id);
+  const deal = readdirSync(dir).find((f) => /\.uwx?\.md$/.test(f));
+  const file = existsSync(join(dir, 'expected-verdict-pack-less.json')) ? 'expected-verdict-pack-less.json' : 'expected-verdict.json';
+  const expected = JSON.parse(readFileText(join(dir, file)));
+  const inputs = existsSync(join(dir, 'inputs.json')) ? ['--inputs', 'inputs.json'] : [];
+  add(`receipts/verify-${id}/verify-receipt`, 'verify-receipt', ['receipt.json', deal, ...inputs, '--json'], dir, {
+    kind: 'verdict-codes', file, project: 'receipt-verification', fields: ['verdict', 'expected_codes', 'refused_code'],
+    exit_code: expected.refused_code || expected.verdict === 'failed' ? 1 : 0,
+  });
+}
+
 // ── Emit (or, under --check, compare) ───────────────────────────────────────
 //
 // `--check` exists because these files are generated but committed. A fixture
@@ -302,12 +466,20 @@ if (process.argv.includes('--check')) {
   for (const name of onDisk) {
     if (!wanted.has(name)) problems.push(`orphaned: ${name}`);
   }
+  for (const [path, body] of derived) {
+    if (!existsSync(path)) problems.push(`missing: ${rel(path)}`);
+    else if (readFileText(path) !== body) problems.push(`stale: ${rel(path)}`);
+  }
+  const derivedOnDisk = existsSync(DERIVED) ? readdirSync(DERIVED, { recursive: true }).map(String).filter((f) => f.endsWith('.md')) : [];
+  for (const name of derivedOnDisk) {
+    if (!derived.has(join(DERIVED, name))) problems.push(`orphaned: ${rel(join(DERIVED, name))}`);
+  }
   if (problems.length > 0) {
-    console.error('conformance/runner/cases is out of date. Run: npm run gen-conformance-cases');
+    console.error('conformance/runner/cases or derived/ is out of date. Run: npm run gen-conformance-cases');
     for (const problem of problems) console.error(`  ${problem}`);
     process.exit(1);
   }
-  console.log(`[PASS] conformance/runner/cases: ${wanted.size} case files are current.`);
+  console.log(`[PASS] conformance/runner/cases: ${wanted.size} case files and ${derived.size} derived documents are current.`);
   process.exit(0);
 }
 
@@ -317,6 +489,12 @@ rmSync(CASES, { recursive: true, force: true });
 mkdirSync(CASES, { recursive: true });
 for (const [name, body] of wanted) {
   writeFileSync(join(CASES, name), body, 'utf8');
+}
+if (resolve(DERIVED) !== join(ROOT, 'conformance', 'runner', 'derived')) throw new Error('Derived directory escaped workspace');
+rmSync(DERIVED, { recursive: true, force: true });
+for (const [path, body] of derived) {
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, body, 'utf8');
 }
 
 const byTier = {};

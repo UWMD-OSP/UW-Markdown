@@ -6,6 +6,7 @@
   "required": [
     "id",
     "target",
+    "format_version",
     "command",
     "args",
     "fixture_dir",
@@ -28,6 +29,11 @@
         "stochastic",
         "starter-products"
       ]
+    },
+    "format_version": {
+      "type": "string",
+      "pattern": "^[0-9]+[.][0-9]+$",
+      "description": "The Format version the case was written for, which names the rule set it exercises (UW_PROTOCOL §XII.5, RFC 0111 D6). A Verifier passes the cases of every rule set it keeps."
     },
     "requires_capabilities": {
       "type": "array",

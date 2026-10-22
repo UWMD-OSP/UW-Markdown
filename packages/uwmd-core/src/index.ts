@@ -5,9 +5,9 @@
 // implementation of the standard (RFC 0083). It re-exports verify's whole
 // surface, so every 4.0.x name stays importable from here, and adds the starter
 // products below: editor, runner, renderer, report, defaults and cascade,
-// refinement, display formatting, the Excel emitter, and the Bancroft layer
-// registry with its context and prompt builders. It hosts no agent execution:
-// any host writes its records through the generic writers and edit API.
+// refinement, display formatting, the Excel emitter, the context profiles and
+// the generic writers. It hosts no agent execution: any host writes its
+// records through the generic writers and edit API.
 //
 // Three names override verify's under the same name: `evaluateCalc` and
 // `evaluateModuleCalculations` add the starter `display` string, and
@@ -42,15 +42,6 @@ export type { ExcelEmitOptions } from './packs/index.js';
 export { evaluateModuleCalculations } from './calc-display.js';
 export { AmbiguousInheritanceError, selectInheritedAssumption } from './cascade.js';
 export type { InheritedAssumptions } from './cascade.js';
-
-export {
-  buildAgentContext,
-  buildAgentPrompt,
-  isContextReady,
-  getLayerDependencies,
-  BANCROFT_LAYERS,
-} from './context.js';
-export type { AgentContext, BancroftPrompt, LayerDefinition } from './context.js';
 
 export { generateBlankUWFile, INIT_SCENARIOS } from './init.js';
 

@@ -1,6 +1,7 @@
 {
   "id": "starter-products__documents__07-stage-overlay-control__render-chat",
   "target": "starter-products",
+  "format_version": "3.0",
   "requires_capabilities": [
     "render-chat"
   ],

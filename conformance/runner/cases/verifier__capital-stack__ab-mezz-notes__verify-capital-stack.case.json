@@ -1,0 +1,25 @@
+{
+  "id": "verifier__capital-stack__ab-mezz-notes__verify-capital-stack",
+  "target": "verifier",
+  "format_version": "3.0",
+  "requires_capabilities": [
+    "parse",
+    "verify-capital-stack"
+  ],
+  "command": "verify-capital-stack",
+  "args": [
+    "deal.uwx.md",
+    "--json"
+  ],
+  "fixture_dir": "conformance/runner/derived/capital-stack/ab-mezz-notes",
+  "expect": {
+    "kind": "verdict-codes",
+    "file": "conformance/capital-stack/ab-mezz-notes/expected.json",
+    "project": "section-verification",
+    "fields": [
+      "verdict",
+      "expected_code"
+    ],
+    "exit_code": 0
+  }
+}

@@ -204,6 +204,11 @@ describe('validator code families (§III.6a, RFC 0030)', () => {
     }
   });
 
+  it('has no agent-host capability (RFC 0112)', () => {
+    const schema = JSON.parse(readFileSync(fileURLToPath(new URL('../../../spec/schemas/implementation-manifest.schema.json', import.meta.url)), 'utf8'));
+    expect(schema.properties.capabilities.items.enum).not.toContain('agent-host');
+  });
+
   it('owns INT and POL away from a read-only reader', () => {
     // The two families the first external adopter could not implement. If these
     // ever become unconditional, a reader-only host stops being conformant.
@@ -217,8 +222,9 @@ describe('validator code families (§III.6a, RFC 0030)', () => {
 describe('parseActorSource (RFC 0031)', () => {
   it('accepts manual and every registered namespace', () => {
     expect(parseActorSource('manual')).toEqual({ kind: 'manual' });
-    expect(parseActorSource('agent/L6-01')).toEqual({
-      kind: 'namespaced', namespace: 'agent', id: 'L6-01',
+    // Upper-case id characters are legal (the RFC 0031 erratum).
+    expect(parseActorSource('agent/RiskRater-01')).toEqual({
+      kind: 'namespaced', namespace: 'agent', id: 'RiskRater-01',
     });
     expect(parseActorSource('document/rent_roll')).toEqual({
       kind: 'namespaced', namespace: 'document', id: 'rent_roll',
@@ -238,7 +244,7 @@ describe('parseActorSource (RFC 0031)', () => {
 
   it('rejects everything outside the grammar as invalid, never as an actor', () => {
     for (const source of [
-      'agent:L0-01',            // the retired format-§2.6 colon form
+      'agent:rent-roll-extractor',            // the retired format-§2.6 colon form
       'engine:calculations.ts', // ditto
       'user',                   // bare word
       'wizard',
@@ -247,7 +253,7 @@ describe('parseActorSource (RFC 0031)', () => {
       'alien/xyz',              // unregistered namespace
       'agent/',                 // empty id
       'agent/-leading-dash',    // id must start alphanumeric
-      'Agent/L6',               // namespace is case-sensitive
+      'Agent/risk-rater',       // namespace is case-sensitive
       '',
     ]) {
       expect(parseActorSource(source).kind, source).toBe('invalid');
@@ -258,9 +264,9 @@ describe('parseActorSource (RFC 0031)', () => {
     // Two spellings of one grammar (the regex is what the JSON Schema
     // mirrors); they must never diverge.
     const probes = [
-      'manual', 'agent/L6-01', 'document/rent_roll', 'system/uwmd',
-      'institution/x', 'agent:L0-01', 'market_data', 'user', 'alien/xyz',
-      'agent/', 'Agent/L6', '', 'system/calculations.ts',
+      'manual', 'agent/risk-rater', 'document/rent_roll', 'system/uwmd',
+      'institution/x', 'agent:rent-roll-extractor', 'market_data', 'user', 'alien/xyz',
+      'agent/', 'Agent/risk-rater', '', 'system/calculations.ts',
     ];
     for (const p of probes) {
       expect(ACTOR_SOURCE_RE.test(p), p).toBe(parseActorSource(p).kind !== 'invalid');
@@ -315,7 +321,7 @@ describe('SRC code family (RFC 0031)', () => {
   });
 });
 
-describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
+describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10, CC-17)', () => {
   // Read the spec table rather than restating it. Until 2.6.2 the ten
   // cross-section entries described a quick_metrics-reconciliation draft that
   // never shipped (CC-01 "NOI mismatch" for a rule that compares rent-roll GPR
@@ -329,12 +335,12 @@ describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
 
   it('finds the table', () => {
     expect(rows.map((r) => r.code)).toEqual(
-      Array.from({ length: 16 }, (_, i) => `CC-${String(i + 1).padStart(2, '0')}`),
+      Array.from({ length: 17 }, (_, i) => `CC-${String(i + 1).padStart(2, '0')}`),
     );
   });
 
   it('every entry names the sections its §5.3 row reads', () => {
-    for (const row of rows.filter((r) => Number(r.code.slice(3)) <= 10)) {
+    for (const row of rows.filter((r) => Number(r.code.slice(3)) <= 10 || r.code === 'CC-17')) {
       const entry = BUILTIN_REMEDIATIONS.find((r) => r.code === row.code);
       expect(entry, row.code).toBeDefined();
       for (const section of row.sections) {
@@ -351,6 +357,7 @@ describe('BUILTIN_REMEDIATIONS mirrors §5.3 (CC-01..CC-10)', () => {
     const emitted: Record<string, string> = {
       'CC-01': 'warning', 'CC-02': 'warning', 'CC-03': 'error', 'CC-04': 'error', 'CC-05': 'warning',
       'CC-06': 'warning', 'CC-07': 'warning', 'CC-08': 'warning', 'CC-09': 'warning', 'CC-10': 'error',
+      'CC-17': 'error',
     };
     for (const [code, severity] of Object.entries(emitted)) {
       expect(BUILTIN_REMEDIATIONS.find((r) => r.code === code)?.severity, code).toBe(severity);

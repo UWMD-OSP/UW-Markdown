@@ -21,7 +21,8 @@ import type {
   DealStage,
   CrossCheckCoverage, CrossCheckResolutionEvidence, CrossCheckSkipReason, ReturnTaxBasis,
 } from './types.js';
-import { ASSET_CLASSES, DEFAULT_THRESHOLDS, SOURCE_TAGS } from './types.js';
+import { ASSET_CLASSES, SOURCE_TAGS } from './types.js';
+import { ruleSetFor } from './rule-sets.js';
 import { blockPayload, getSection, getSectionVariant, deepGet, parsedPhysicalBlocks, parseUWFile, parsedFirstSourceMember } from './parser.js';
 import { BUILTIN_REMEDIATIONS, BUILTIN_INCOMPLETE_DATA_POLICIES, lookupIncompleteDataPolicy, getSizeIntensive, DEAL_UNDERWRITING_PROFILE, parseActorSource, isSupportedLocale, isCurrencyCode, STAGE_REQUIREMENTS, requiredSectionsFor,
   CROSS_CHECK_RULE_IDS, RETURN_TAX_BASES, DEFAULT_RETURN_TAX_BASIS,
@@ -113,7 +114,10 @@ export function validateUWFile(
     }
     parsed = resolved.document;
   }
-  const thresholds: FinancialThresholds = { ...DEFAULT_THRESHOLDS, ...thresholdOverrides };
+  // RFC 0111: the record's declared Format version selects its rule set; an
+  // unkept version is refused, never validated under another one.
+  const ruleSet = ruleSetFor(parsed);
+  const thresholds: FinancialThresholds = { ...ruleSet.thresholds, ...thresholdOverrides };
   const issues: ValidationMessage[] = [];
 
   const ledger = newCoverageLedger();
@@ -139,7 +143,7 @@ export function validateUWFile(
   checkLocale(parsed, issues);
   checkCurrencyIdentity(parsed, issues);
   checkAssetClassIdentifier(parsed, issues);
-  issues.push(...checkBuiltinClassContent(parsed));
+  issues.push(...checkBuiltinClassContent(parsed, ruleSet));
   checkScenarioIdentity(parsed, issues);
   checkMetaIntegrity(parsed, issues);
   checkMetaShape(parsed, issues);
@@ -190,6 +194,7 @@ export function validateUWFile(
     : 'clean';
 
   return {
+    rule_set: ruleSet.format_version,
     overall_status,
     stage_readiness: computeStageReadiness(parsed),
     issues,
@@ -699,6 +704,26 @@ function checkCrossSectionConsistency(
         markEvaluated(ledger, 'CC-10');
         if (Math.abs(suPP - valPP) > 100) {
           issues.push({ code: 'CC-10', severity: 'error', section: 'sources_uses', field: 'uses.purchase_price', message: `CC-10: Purchase price in Sources & Uses ($${suPP.toLocaleString()}) does not match valuation.purchase_price ($${valPP.toLocaleString()})`, value: Math.abs(suPP - valPP) });
+        }
+      }
+    }
+  }
+
+  // CC-17 (RFC 0086): the frontmatter summary's purchase price must match
+  // valuation.purchase_price, the one authority. CC-10's tolerance, severity
+  // and coverage; every asset class. The valuation block is the §5.3 selection.
+  {
+    const got = requireSections(ledger, parsed, 'CC-17', [['valuation']]);
+    if (got) {
+      const valuation = got['valuation']!.block;
+      const fmPP = num(deepGet(parsed.frontmatter as Record<string, unknown>, 'quick_metrics.purchase_price'));
+      const valPP = num(deepGet(valuation.content, 'purchase_price'));
+      if (fmPP == null) markSkipped(ledger, 'CC-17', 'field_absent', 'quick_metrics.purchase_price');
+      else if (valPP == null) markSkipped(ledger, 'CC-17', 'field_absent', 'valuation.purchase_price');
+      else {
+        markEvaluated(ledger, 'CC-17');
+        if (Math.abs(fmPP - valPP) > 100) {
+          issues.push({ code: 'CC-17', severity: 'error', section: 'frontmatter', field: 'quick_metrics.purchase_price', message: `CC-17: Purchase price in frontmatter quick_metrics ($${fmPP.toLocaleString()}) does not match valuation.purchase_price ($${valPP.toLocaleString()})`, value: Math.abs(fmPP - valPP) });
         }
       }
     }

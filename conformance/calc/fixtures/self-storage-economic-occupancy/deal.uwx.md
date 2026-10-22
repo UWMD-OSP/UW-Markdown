@@ -4,7 +4,7 @@ deal_id: TEST-T3-STORAGE-001
 deal_name: "Self-Storage Economic Occupancy"
 created: "2026-09-28T00:00:00Z"
 last_modified: "2026-09-28T00:00:00Z"
-property_address: "9100 W Bell Rd"
+property_address: "9100 W Granite Wash Rd"
 city: "Peoria"
 state: "AZ"
 zip: "85382"

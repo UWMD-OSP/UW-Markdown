@@ -34,14 +34,13 @@ Command | Purpose
 `export <file>` | Export a lossless `.uw.json` sibling — provenance + history preserved (`--no-superseded`, `--stdout`, `--output`)
 `formats` | List Lite, UWX, and registered model representations/media types (`--json`)
 `convert <file> --to <format>` | Convert `.uw.md`, `.uwx.md`, verified model formats, or CSV bundles to `lite`, `uwx`, `uw-json`, `uw-xml`, or `uw-csv-bundle`
-`report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML (`--tier`, `--prepared-by`, `--output`, `--stdout`)
+`report <file>` | Render the §7.1 Lender Package / §7.2 Credit Memo HTML ([renderer reference](../starter/rendering.md); `--tier`, `--prepared-by`, `--output`, `--stdout`)
 `scope <file>` | Resolve every required input via the fallback cascade (triage view)
 `refine <file>` | Rank gaps by value-of-information (`--targets`, `--top`, `--json`)
 `receipt issue <file>` | Issue a detached verification receipt (`--output`, `--issued-at`, `--stdout`)
 `receipt verify <file> <receipt.json>` | Verify a receipt (`--json`; exits 0 verified, 1 failed, 3 unverifiable)
 `compose <file> --externalize <s>` | Split a collection section into `.uwpart.md` fragments (`--collection-key`, `--collection-path`, `--out-dir`, `--in-place`, `--dry-run`)
 `resolve <file>` | Reassemble externalized sections from a parts directory (`--parts`, `--output`, `--json`; exits 1 unresolved)
-`layers` | List the Bancroft layer registry (the CLI runs no agent)
 
 Chat rendering labels each annual DCF row with its stated `year`, preserving
 source order, duplicate years and sparse years. An absent year displays `n/a`;
@@ -267,7 +266,10 @@ file, or an intensive lacking its user-supplied `allocation_pct`, simply
 contributes no row (RFC 0019 §4). Reverse import (`fromWorkbook`) reads the
 property inputs and each component's named inputs (EGI, operating expenses,
 intermediate, allocation, denominator) back; NOIs are formula-derived and never
-imported, and an altered footing is `WORKBOOK-IMPORT-SUBTOTAL` (#411).
+imported, and an altered footing is `WORKBOOK-IMPORT-SUBTOTAL` (#411). With no
+component block there is nothing to consolidate, so the property NOI is the
+stated source NOI as an editable input, or `#N/A` when it is absent, written and
+imported like a single-statement subtotal (#484).
 
 Layout:
 - **Underwriting** sheet — header (deal name/address) + an inputs block (each
@@ -291,6 +293,15 @@ Layout:
   source aggregate with a note instead of a live subtotal formula. This is a
   source-preserving fallback, with no financial tolerance or input rounding;
   subsequent detail edits do not update that aggregate.
+  Each non-formula subtotal carries column-C status text. Reverse import
+  (`fromWorkbook`) accepts exactly these three forms: the live formula with no
+  status (not imported), `#N/A` beside the missing status (nothing imported),
+  or a finite number beside the retained status (imported as
+  `noi_model.income.effective_gross_income`,
+  `noi_model.expenses.total_operating_expenses` or
+  `noi_model.net_operating_income`). A different formula, a value typed over a
+  formula or over `#N/A`, a formula typed over a retained value, or a deleted
+  status refuses with `WORKBOOK-IMPORT-SUBTOTAL` (#484).
 - **Capital Stack** sheet (`src/capital-stack.ts`, RFC 0026) — present **only
   when the document carries a `capital_stack` section**, for any asset class; a
   single-loan document produces exactly the workbook it produced before. One row
@@ -616,6 +627,6 @@ Optional, asset-class-independent `reserve_accounts` (Format §4.28) carries clo
 
 ## Official builtin starters (RFC 0080)
 
-All twelve classes have packs and Excel layouts. Data center uses critical IT kW; manufactured housing uses sites. Their layouts bind every class calculation and the six standard income metrics to stated inputs. Hospitality also binds the former module's hotel and F&B fields; missing optional hotel inputs produce blank metrics. The web editor includes both new class names, primary-size fields and standard class sections. The official module packages were retired after 3.0.0 and deleted by RFC 0081.
+All twelve classes have packs and Excel layouts. Data center uses critical IT kW; manufactured housing uses sites. Their layouts bind every class calculation and the six standard income metrics to stated inputs. Hospitality also binds the former module's hotel and F&B fields; a metric whose optional hotel inputs are missing is `#N/A`, as the calc engine's null (#487). The web editor includes both new class names, primary-size fields and standard class sections. The official module packages were retired after 3.0.0 and deleted by RFC 0081.
 
 The Lite bridge emits bare Format 3.0 for all twelve classes (RFC 0081 D12) and recognizes the two new classes' standard section/size anchors; a Lite source stating any other `uw_version` is refused.

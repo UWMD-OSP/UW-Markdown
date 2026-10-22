@@ -1,7 +1,7 @@
 {
   "name": "@uwmd/core",
   "version": "4.3.0",
-  "description": "The UW Markdown starter toolkit — editor, renderer, report, defaults and cascade, refinement, Excel emission, the Bancroft layer registry and the CLI for .uw.md underwriting files, on top of @uwmd/verify (the reference implementation of the standard), whose whole API it re-exports.",
+  "description": "The UW Markdown starter toolkit — editor, renderer, report, defaults and cascade, refinement, Excel emission, context profiles, the generic writers and the CLI for .uw.md underwriting files, on top of @uwmd/verify (the reference implementation of the standard), whose whole API it re-exports.",
   "repository": {
     "type": "git",
     "url": "https://github.com/UWMD-OSP/UW-Markdown.git",

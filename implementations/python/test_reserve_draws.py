@@ -50,13 +50,13 @@ class ReserveDrawTests(unittest.TestCase):
         self.assertEqual(len(paths), 46)
         for path in paths:
             frozen = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(frozen["requires_capabilities"], ["parse", "calc-evaluate"])
+            self.assertEqual(frozen["requires_capabilities"], ["parse", "verify-reserve-draws"])
             with self.subTest(case=frozen["id"]):
                 _, problems = driver.run_case([sys.executable, "-B", str(ROOT / "implementations/python/uwmd.py")], frozen, 60)
                 self.assertEqual(problems, [])
         # Direct case execution deliberately does not alter catalogue selection,
         # generated cases, expectations or manifest flags to fake certification.
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
         for command in ("validate", "calc"):
             self.assertNotEqual(main([command, "unused"])[1], 0)
 

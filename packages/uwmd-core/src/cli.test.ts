@@ -111,7 +111,7 @@ describe('commands the CLI does not have', () => {
       const input = resolve(dir, 'x.uw.md');
       const bytes = readFileSync(resolve(process.cwd(), '../../examples/Parkview-Apts-Glendale-AZ.uwx.md'), 'utf8');
       writeFileSync(input, bytes);
-      const result = await run(dir, 'run', 'x.uw.md', '--agent', 'L6', '--live', '--output', 'out.uw.md');
+      const result = await run(dir, 'run', 'x.uw.md', '--agent', 'risk-rater', '--live', '--output', 'out.uw.md');
       expect(result.status).toBe(1);
       expect(result.stdout).toBe('');
       expect(result.stderr.trim()).toBe("uwmd: unknown command 'run'. Run 'uwmd --help' for the command list.");
@@ -120,6 +120,13 @@ describe('commands the CLI does not have', () => {
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  it('refuses the removed `layers` command (RFC 0112)', async () => {
+    const result = await run(process.cwd(), 'layers');
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe('');
+    expect(result.stderr).toContain("uwmd: unknown command 'layers'.");
   });
 
   it('refuses any unknown command the same way', async () => {
@@ -133,7 +140,7 @@ describe('commands the CLI does not have', () => {
     const result = await run(process.cwd(), ...args);
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('Commands:');
-    expect(result.stdout).toContain('layers');
+    expect(result.stdout).not.toMatch(/^\s+layers\s/m);
     expect(result.stdout).not.toMatch(/^\s+run\s/m);
     expect(result.stdout).not.toContain('--live');
     expect(result.stdout).not.toContain('ANTHROPIC_API_KEY');
@@ -234,5 +241,52 @@ describe('RFC0093 composed-source CLI transport', () => {
       expect(readFileSync(file, 'utf8')).toBe(root);
       expect(readFileSync(partFile, 'utf8')).toBe(part);
     } finally { unlinkSync(partFile); rmdirSync(partsDir); unlinkSync(file); rmdirSync(dir); }
+  });
+});
+
+describe('RFC 0115 portable Verifier subcommands', () => {
+  const root = (p: string) => resolve(process.cwd(), `../../${p}`);
+  const run = (...args: string[]) => spawnCli(process.execPath, [cli, ...args], { encoding: 'utf8' });
+
+  it.each([
+    ['verify-waterfall', 'conformance/runner/derived/waterfall/verify-classic-outcomes/deal.uwx.md', 0, 'verified'],
+    ['verify-waterfall', 'conformance/runner/derived/waterfall/verify-promote-overstated/deal.uwx.md', 1, 'failed'],
+    ['verify-capital-stack', 'conformance/runner/derived/capital-stack/sizing-disagrees/deal.uwx.md', 1, 'failed'],
+    ['verify-lease-up', 'conformance/runner/derived/lease-up/verify-missing-denominator/deal.uwx.md', 0, 'unverifiable'],
+    ['verify-cash-flows', 'conformance/runner/derived/cash-flow/verify-moic-no-outflows/deal.uwx.md', 0, 'unverifiable'],
+    ['verify-lease-up', 'conformance/reserve-accounts/absent/deal.uwx.md', 0, 'not_applicable'],
+  ] as const)('%s %s exits %i with status %s', async (command, file, status, state) => {
+    const result = await run(command, root(file), '--json');
+    expect(result.status, result.stderr).toBe(status);
+    expect(JSON.parse(result.stdout).status).toBe(state);
+  });
+
+  it('verify-metrics prints the StatedMetricsReport and exits 1 only on a failed statement', async () => {
+    const clean = await run('verify-metrics', root('examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md'), '--json');
+    expect(clean.status, clean.stderr).toBe(0);
+    expect(JSON.parse(clean.stdout)).toMatchObject({ rule_set: '3.0', counts: { failed: 0 } });
+    const wrong = await run('verify-metrics', root('conformance/runner/derived/metrics/statement-home-cap_rate-going-in-disagrees-quick-agrees/deal.uwx.md'), '--json');
+    expect(wrong.status).toBe(1);
+    expect(JSON.parse(wrong.stdout).counts.failed).toBe(1);
+  });
+
+  it('verify-receipt holds no pack, refuses an unreadable receipt, and exits 1 only on failed', async () => {
+    const dir = (id: string) => root(`conformance/receipts/verify/${id}`);
+    const clean = await run('verify-receipt', `${dir('01-clean')}/receipt.json`, `${dir('01-clean')}/deal.uwx.md`, '--json');
+    expect(clean.status).toBe(0);
+    expect(JSON.parse(clean.stdout)).toMatchObject({ verdict: 'unverifiable', issues: [{ code: 'RCP-05' }] });
+    const mutated = await run('verify-receipt', `${dir('08-market-data-mutated')}/receipt.json`, `${dir('08-market-data-mutated')}/deal.uw.md`,
+      '--inputs', `${dir('08-market-data-mutated')}/inputs.json`, '--json');
+    expect(mutated.status).toBe(1);
+    expect(JSON.parse(mutated.stdout).verdict).toBe('failed');
+    const refused = await run('verify-receipt', `${dir('12-receipt-version-1-0')}/receipt.json`, `${dir('12-receipt-version-1-0')}/deal.uwx.md`, '--json');
+    expect(refused.status).toBe(1);
+    expect(JSON.parse(refused.stdout).error).toMatchObject({ code: 'RCP_MALFORMED' });
+  });
+
+  it.each(['assemble-property', 'verify-stated-metrics'])('%s is not a command (prelaunch, no alias)', async (command) => {
+    const result = await run(command, root('examples/Agave-Court-Apts-Scottsdale-AZ.uwx.md'));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(`unknown command '${command}'`);
   });
 });

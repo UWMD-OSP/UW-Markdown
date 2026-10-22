@@ -496,7 +496,7 @@ checks full coverage and copies signed rows with stable same-date ordering.
 It adds no financial math. Existing dated metric APIs consume its generic series;
 retain the wrapper for currency, basis and declared completeness.
 
-The core/browser API and `assemble-property` CLI use typed `CALC-CF-ASSEMBLY`
+The core/browser API and `verify-property-cash-flows` CLI use typed `CALC-CF-ASSEMBLY`
 errors with original nested verifier evidence. Missing/overlapping coverage,
 unknown amounts, unsupported economic assertions and out-of-hold cash refuse.
 Three new schemas and the normative VIII.9.6 text mirror the public types.

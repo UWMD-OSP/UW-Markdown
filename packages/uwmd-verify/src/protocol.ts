@@ -23,7 +23,6 @@ import type {
   DealStage,
   FinancialThresholds,
   ParsedUWFile,
-  PipelineStatus,
   UWBlock,
   UWMeta,
   UWMetaPatch,
@@ -66,6 +65,12 @@ export interface ModuleConformanceRequirements {
 // beside the parser that enforces it; the protocol surface re-exports it.
 export { SUPPORTED_FORMAT_VERSIONS } from './types.js';
 import { SUPPORTED_FORMAT_VERSIONS } from './types.js';
+
+// The rule set each admitted Format version names (§XII.5, RFC 0111): the §5.2
+// bands, metric dictionary and builtin packs verification obtains. The registry
+// lives beside the tables it points at; the protocol surface re-exports it.
+export { RULE_SETS, getRuleSet, ruleSetFor } from './rule-sets.js';
+export type { UWRuleSet } from './rule-sets.js';
 
 /** The one protocol contract (RFC 0081 D1). Module ranges are checked against it. */
 export const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze(['4.1.0'] as const);
@@ -136,7 +141,6 @@ export type ViewerCapability =
   | 'calc-cash-flow'
   /** Reads and validates `.uwportfolio.json` sidecars (§XV, RFC 0015). */
   | 'portfolio-relationships'
-  | 'agent-host'
   | 'module-load'
   /** Verifies `_meta.integrity.signature` on blocks (§V.11.5, RFC 0010). */
   | 'signing'
@@ -158,7 +162,46 @@ export type ViewerCapability =
    * behavior (RFC 0078; starter guide §VIII.2b). It is a capability so its fixtures can be tagged rather
    * than inferred from a directory name.
    */
-  | 'refinement';
+  | 'refinement'
+  // RFC 0115: one flag per Verifier obligation, each driven by its portable
+  // subcommand (§II.6a.1). A Verifier tier claim requires every one (§II.5);
+  // a manifest that omits one is a partial claim.
+  /** Reproduces stated dictionary metrics: `verify-metrics` (§II.2.2, RFC 0099). */
+  | 'verify-metrics'
+  /** Verifies stated calendar cash-flow metrics: `verify-cash-flows` (§VIII.9). */
+  | 'verify-cash-flows'
+  /** Assembles declared property cash flows: `verify-property-cash-flows` (§VIII.9.6). */
+  | 'verify-property-cash-flows'
+  /** Verifies stated waterfall outcomes: `verify-waterfall` (§VIII.10). */
+  | 'verify-waterfall'
+  /** Verifies stated capital-stack sizing: `verify-capital-stack` (Format §4.24). */
+  | 'verify-capital-stack'
+  /** Verifies stated lease-up figures: `verify-lease-up` (Format §4.25). */
+  | 'verify-lease-up'
+  /** Verifies receipts without a calculation pack: `verify-receipt` (Receipt §5, RFC 0115 D4). */
+  | 'verify-receipts'
+  /** Verifies stated reserve balances: `verify-reserve-accounts` (§VIII.11). */
+  | 'verify-reserve-accounts'
+  /** Verifies reserve draw bindings: `verify-reserve-draws` (§VIII.12). */
+  | 'verify-reserve-draws';
+
+/**
+ * The capability flags a Verifier tier claim requires, one per Verifier
+ * obligation, each driven by its §II.6a.1 subcommand (RFC 0115 D2, Protocol
+ * §II.5). Replacement-funding verification (§V.12) is reported by `validate`,
+ * which a Verifier also claims, so it has no flag of its own.
+ */
+export const VERIFIER_OBLIGATION_CAPABILITIES = Object.freeze([
+  'verify-metrics',
+  'verify-cash-flows',
+  'verify-property-cash-flows',
+  'verify-waterfall',
+  'verify-capital-stack',
+  'verify-lease-up',
+  'verify-receipts',
+  'verify-reserve-accounts',
+  'verify-reserve-draws',
+] as const satisfies readonly ViewerCapability[]);
 
 export type RepresentationFidelity = 'source' | 'model' | 'view';
 export type RepresentationDirection = 'read' | 'write';
@@ -348,7 +391,7 @@ export type { CanonicalSourceTag } from './types.js';
  * field actor-only: `manual`, or `<namespace>/<id>` where the namespace is a
  * member of this list and the id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. (The
  * RFC's draft pattern was lowercase-only, which rejected its own worked
- * example `agent/L6-01` and every Bancroft layer id — corrected as errata.)
+ * example and every mixed-case agent id — corrected as errata.)
  * Resolution methods (the {@link SOURCE_TAGS} vocabulary) belong in
  * `_meta.provenance.resolution`.
  *
@@ -1047,7 +1090,6 @@ export interface ModuleManifest extends ModuleConformanceRequirements {
   thresholds?: Partial<FinancialThresholds>;
   view_models?: SectionViewModel[];
   ui?: Record<string, unknown>;     // free-form, host-specific
-  agent_layers?: ModuleAgentLayerDecl[];
   depends_on?: { id: string; version: string }[];
   /**
    * Custom asset classes this module introduces (§X.2, RFC 0003).
@@ -1167,13 +1209,6 @@ export interface ModuleValidationDecl {
   severity: ValidationSeverity;
   message: string;
   rule: string;                     // safe-expression returning boolean
-}
-
-export interface ModuleAgentLayerDecl {
-  id: string;
-  reads: string[];
-  writes: string[];
-  prompt_template: string;
 }
 
 export interface ModuleLoadResult {
@@ -1657,8 +1692,8 @@ export const VALIDATOR_CODE_FAMILIES: readonly ValidatorCodeFamily[] = Object.fr
   { prefix: 'SIZE', description: 'Generic size, count, area and rent contract (RFC 0100)', capabilities: ['validate'] },
   { prefix: 'REC', description: 'Lease recovery admission and reconciliation (RFC 0058, RFC0096)', capabilities: ['validate'] },
   { prefix: 'LU', description: 'Lease-up schedule (RFC 0008)', capabilities: ['validate'] },
-  { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['calc-evaluate'] },
-  { prefix: 'RSV', description: 'Property custody structure and separate balance identity verification (RFC 0064)', capabilities: ['validate'] },
+  { prefix: 'RDB', description: 'Optional reserve draw to gross expenditure binding verification (RFC 0065)', capabilities: ['verify-reserve-draws'] },
+  { prefix: 'RSV', description: 'Property custody structure and separate balance identity verification (RFC 0064)', capabilities: ['validate', 'verify-reserve-accounts'] },
   { prefix: 'HDG', description: 'Hedge structure and separate replacement binding verification (RFC 0070)', capabilities: ['validate'] },
   { prefix: 'ESC', description: 'Escrow funding', capabilities: ['validate'] },
   { prefix: 'CF', description: 'Cash-flow series (RFC 0034)', capabilities: ['validate'] },
@@ -1716,7 +1751,7 @@ export function validatorCodeFamily(code: string): ValidatorCodeFamily | null {
  */
 export const CROSS_CHECK_RULE_IDS: readonly string[] = Object.freeze([
   'CC-01', 'CC-02', 'CC-03', 'CC-04', 'CC-05', 'CC-06', 'CC-07', 'CC-08',
-  'CC-09', 'CC-10', 'CC-11', 'CC-12', 'CC-13', 'CC-14', 'CC-15',
+  'CC-09', 'CC-10', 'CC-11', 'CC-12', 'CC-13', 'CC-14', 'CC-15', 'CC-17',
 ]);
 
 /**
@@ -1808,6 +1843,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A stated field in the Format §5.5 size contract table is negative or non-finite, or, for a count, not an integer (RFC 0100).',
     remediation: 'State the size as a finite number of zero or more, and a count as a whole number. Signed amounts such as concessions and credits belong in their own fields.',
     spec_ref: 'UW_FORMAT_SPEC.md §5.5 SIZE-01',
+  },
+  {
+    code: 'SIZE-02', severity: 'error',
+    title: 'Malformed area measurement',
+    description: 'A stated property.area_measurement is not an object with a standard from the closed list (boma, ipms, rebny, rics, other) and optional string edition and note (RFC 0114).',
+    remediation: 'State area_measurement as { "standard": "boma", "edition": "ANSI/BOMA Z65.1-2017" }, or omit it.',
+    spec_ref: 'UW_FORMAT_SPEC.md §5.5 SIZE-02',
   },
   {
     code: 'WF-16', severity: 'error',
@@ -2019,6 +2061,13 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     description: 'A section a cross-check reads is present as multiple variants and none is named default or base (or the check\'s own preferred variant), so every check that reads it was skipped.',
     remediation: 'Name one variant default (or base) so cross-checks know which block reconciles, or state the section once. The skipped checks are listed in the message and in the validation result\'s coverage record (RFC 0037).',
     spec_ref: '§5.3 CC-16',
+  },
+  {
+    code: 'CC-17', severity: 'error',
+    title: 'Frontmatter purchase price differs from valuation',
+    description: 'frontmatter quick_metrics.purchase_price does not match valuation.purchase_price (within $100). The valuation is the one purchase-price authority; the frontmatter copy is a summary (RFC 0086).',
+    remediation: 'Restate quick_metrics.purchase_price from valuation.purchase_price — the frontmatter summary MUST agree with the valuation it mirrors.',
+    spec_ref: '§5.3 CC-17',
   },
   {
     code: 'RT-01', severity: 'error',
@@ -2461,7 +2510,7 @@ export const BUILTIN_REMEDIATIONS: readonly IssueRemediation[] = Object.freeze([
     code: 'SRC-01', severity: 'error',
     title: 'Unrecognized actor source',
     description: '_meta.provenance.source is not `manual` or a `<namespace>/<id>` pair with a registered actor namespace (Format §2.6, RFC 0031). Always an error.',
-    remediation: 'Rewrite _meta.provenance.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:L0-01` becomes `agent/L0-01`.',
+    remediation: 'Rewrite _meta.provenance.source as `manual` or `<namespace>/<id>` using a registered namespace (agent, document, system, institution) — e.g. `agent:rent-roll-extractor` becomes `agent/rent-roll-extractor`.',
     spec_ref: 'UW_FORMAT_SPEC.md §2.6',
   },
   {
@@ -2613,7 +2662,6 @@ export type {
   DealStage,
   FinancialThresholds,
   ParsedUWFile,
-  PipelineStatus,
   UWBlock,
   UWMeta,
   ValidationMessage,
@@ -2956,4 +3004,56 @@ export interface ReserveDrawBindingVerification {
   stated_digest?: string;
   evidence: ReserveDrawBindingEvidence[];
   issues: ValidationMessage[];
+}
+
+// ─── RFC 0115 — portable Verifier subcommand results (§II.6a.1) ──────────────
+//
+// Each Verifier obligation has one subcommand, and each subcommand prints one
+// of these results (invariant 7: protocol.ts, spec/schemas/ and the Protocol
+// change together). The verifier result types live with their verifiers and
+// are re-exported here unchanged; the section report is the document-level
+// envelope the `verify-cash-flows` CLI already printed, generalized.
+
+export type { StatedMetricsReport, StatedMetricEvidence, StatedMetricOutcome } from './metric-verification.js';
+export type { CashFlowVerification, CashFlowIssue } from './cash-flow-series.js';
+export type { WaterfallVerification, WaterfallIssue } from './waterfall.js';
+export type { CapitalStackVerification, CapitalStackIssue, SizingResult } from './capital-stack.js';
+export type { LeaseUpVerification, LeaseUpIssue } from './lease-up.js';
+export type { UWReceiptVerification, UWReceiptIssue } from './receipts.js';
+
+/**
+ * A section verifier's verdict on one document (RFC 0115): the selected
+ * block's variant and the section verifier's result, unchanged. `status` is
+ * that result's verdict, or `not_applicable` when the document has no current
+ * block of the section, in which case `verification` is null and nothing was
+ * checked (§II.6a.2: exit 0).
+ */
+export interface SectionVerificationReport<V> {
+  section: string;
+  /** The selected block's variant; null for an unlabelled block or an absent section. */
+  variant: string | null;
+  status: 'verified' | 'failed' | 'unverifiable' | 'not_applicable';
+  verification: V | null;
+}
+
+/** `verify-cash-flows` (§VIII.9): also names the stated metrics it checked. */
+export interface CashFlowVerificationReport
+  extends SectionVerificationReport<import('./cash-flow-series.js').CashFlowVerification> {
+  section: 'cash_flow_series';
+  checked_metrics: Array<'total_net' | 'moic' | 'xnpv' | 'xirr'>;
+}
+/** `verify-waterfall` (§VIII.10). */
+export interface WaterfallVerificationReport
+  extends SectionVerificationReport<import('./waterfall.js').WaterfallVerification> {
+  section: 'distribution_waterfall';
+}
+/** `verify-capital-stack` (Format §4.24). */
+export interface CapitalStackVerificationReport
+  extends SectionVerificationReport<import('./capital-stack.js').CapitalStackVerification> {
+  section: 'capital_stack';
+}
+/** `verify-lease-up` (Format §4.25). */
+export interface LeaseUpVerificationReport
+  extends SectionVerificationReport<import('./lease-up.js').LeaseUpVerification> {
+  section: 'lease_up_schedule';
 }

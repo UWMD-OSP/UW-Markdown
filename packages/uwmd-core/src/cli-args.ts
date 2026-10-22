@@ -115,7 +115,7 @@ export function readManifestFile(
  * exited 0 with "OK". For a verifier that is a hazard, so the router refuses
  * any flag outside the command's set before it reads a file (the house
  * pattern of closed vocabularies that refuse unknown values; the same
- * refusal `project-lease-up`, `assemble-property` and `verify-cash-flows`
+ * refusal `project-lease-up`, `verify-property-cash-flows` and `verify-cash-flows`
  * already made for themselves). A flag listed here is one the command's code
  * reads; the usage strings in `cli.ts` are held to this table by
  * `cli-args.test.ts`.
@@ -128,7 +128,6 @@ export const COMMAND_FLAGS: Readonly<Record<string, readonly string[]>> = {
   compact: ['output', 'dry-run'],
   diff: [],
   render: ['format', 'profile', 'sections', 'max-tokens', 'no-meta', 'output', 'tier'],
-  layers: [],
   edit: ['actor', 'source', 'agent-id', 'agent-version', 'confidence', 'output', 'capability-token', 'coord-key', 'json'],
   'project-lease-up': ['json'],
   'verify-reserve-draws': ['json'],
@@ -136,7 +135,13 @@ export const COMMAND_FLAGS: Readonly<Record<string, readonly string[]>> = {
   // Parses `args` itself and refuses under its typed JSON contract; listed
   // for the record, exempt from the router's gate (see `flagVocabulary`).
   'verify-cash-flows': ['variant', 'json'],
-  'assemble-property': ['json'],
+  // RFC 0115: the portable Verifier subcommands (§II.6a.1).
+  'verify-metrics': ['json'],
+  'verify-property-cash-flows': ['json'],
+  'verify-waterfall': ['variant', 'json'],
+  'verify-capital-stack': ['variant', 'json'],
+  'verify-lease-up': ['variant', 'json'],
+  'verify-receipt': ['inputs', 'json'],
   'inspect-property-cash-flows': ['json'],
   calc: ['calc-context', 'json'],
   init: ['name', 'address', 'city', 'state', 'zip', 'asset-class', 'asset-subtype', 'stage', 'scenario', 'tier', 'output'],

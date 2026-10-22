@@ -39,8 +39,9 @@ describe('cash-flow verification command', () => {
     expect(JSON.parse(failed.stdout).verification.verdict).toBe('failed');
     const noClaims = path('docs/examples/property-cash-flow-synthetic.uwx.md');
     const empty = await run([noClaims, '--json']);
-    expect(empty.status, empty.stderr).toBe(3);
-    expect(JSON.parse(empty.stdout)).toMatchObject({ status: 'no_stated_metrics', verification: null });
+    // RFC 0115 (§II.6a.2): nothing checked is not_applicable and exits 0.
+    expect(empty.status, empty.stderr).toBe(0);
+    expect(JSON.parse(empty.stdout)).toMatchObject({ status: 'not_applicable', verification: null });
   });
   it('reports missing files and malformed JSON as machine-readable errors', async () => {
     const bad = join(directory, 'malformed.uwx.md');

@@ -649,7 +649,6 @@ export type {
   UWSignatureAlgorithm,
   MarketDataRef,
   UWFrontmatter,
-  UWPipelineState,
   UWQuickMetrics,
   ParsedUWFile,
   ParsedSections,
@@ -668,7 +667,6 @@ export type {
   FinancialThresholds,
   // Enums
   ConfidenceLevel,
-  PipelineStatus,
   ValidationSeverity,
   DealStage,
   AssetClass,
@@ -680,6 +678,7 @@ export { DEFAULT_THRESHOLDS, ASSET_CLASSES, UW_SIGNATURE_ALGORITHMS, FINANCIAL_V
 // ─── Protocol surface ─────────────────────────────────────────────────────────
 export {
   CONFORMANCE_TARGETS,
+  VERIFIER_OBLIGATION_CAPABILITIES,
   BLOCK_ROLES,
   CROSS_CHECK_ROLE_PREFERENCE,
   PERIOD_SERIES,
@@ -737,7 +736,6 @@ export type {
   ModuleSectionDecl,
   ModuleCalcDecl,
   ModuleValidationDecl,
-  ModuleAgentLayerDecl,
   ModuleLoadResult,
   ProtocolError,
   ProtocolErrorCategory,
@@ -789,6 +787,13 @@ export { verifyReserveAccounts } from './reserve-accounts.js';
 export type { ReserveSource, ReserveMovementKind, ReserveMovement, ReservePeriod, PropertyReserveAccount, ReserveAccounts, ReservePeriodEvidence, ReserveAccountsVerificationIssue, ReserveAccountsVerification } from './protocol.js';
 
 export { verifyReserveDrawBindings } from './reserve-draw-bindings.js';
+
+// RFC 0115 — document-level section verifiers behind the portable Verifier
+// subcommands (§II.6a.1), and the section report each prints.
+export { verifyCapitalStackDocument, verifyLeaseUpDocument, verifyWaterfallDocument } from './section-verification.js';
+export type { SectionVerificationOptions } from './section-verification.js';
+export type { SectionVerificationReport, CashFlowVerificationReport, WaterfallVerificationReport,
+  CapitalStackVerificationReport, LeaseUpVerificationReport } from './protocol.js';
 export type { ReserveDrawReference, ReserveGrossExpenditureReference, ReserveGrossExpenditure, ReserveDrawBinding, ReserveDrawBindingPlan, ReserveDrawBindingEvidence, ReserveDrawBindingVerification } from './protocol.js';
 
 // RFC 0079 stated-metric comparison, independent of packs and defaults.
@@ -800,6 +805,11 @@ export { toBuiltinAssetClass } from './types.js';
 export { checkBuiltinClassContent } from './builtin-class-validation.js';
 // The twelve builtin classes' section, rule and view-model declarations (RFC 0080). Pure data.
 export { BUILTIN_CLASS_CONTENT } from './builtin-class-content.js';
+
+// Verification rule sets (RFC 0111, Protocol §XII.5): the declared Format
+// version selects the bands, dictionary and packs a record is verified under.
+export { RULE_SETS, getRuleSet, ruleSetFor } from './rule-sets.js';
+export type { UWRuleSet } from './rule-sets.js';
 
 // Stated-metric verification against the metric dictionary (RFC 0083 §2).
 export { verifyStatedMetrics } from './metric-verification.js';

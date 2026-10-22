@@ -109,7 +109,7 @@ class MarketReferenceOwnershipTests(unittest.TestCase):
                 self.assertEqual([i["field"] for i in result["errors"] if i["code"] == "META-06"], expected)
                 self.assertEqual(result["errors"], [i for i in result["issues"] if i["severity"] == "error"])
                 self.assertEqual(len(result["stage_readiness"]), 7)
-                self.assertEqual(len(result["coverage"]), 15)
+                self.assertEqual(len(result["coverage"]), 16)
 
 
 if __name__ == "__main__":

@@ -65,7 +65,9 @@ Editing and AI-agent hosting are starter products, outside the Protocol. Conform
 Three independent semvers are tracked:
 
 - **Format version** (`uw_version` in frontmatter, currently `3.0`, the only admitted version)
-  — the bytes-on-disk schema. Bumped on any breaking format change.
+  — the bytes-on-disk schema, and the name of the rule set a record is
+  verified under (§XII.5). Bumped on any breaking format change; from the
+  5.0.0 launch its minor also moves on any change to a rule set's outcome.
 - **Protocol version** (this document, currently `4.1.0`) — the
   verification contract. Bumped on any normative change to required
   behavior. From 3.0.0 it moves only when what a document *means* or
@@ -135,8 +137,8 @@ them.
   computes or projects a document is not part of the standard: display
   conventions and locales, view models, byte-preserving round trips,
   multi-variant edits, frontmatter update rules, the fallback cascade
-  and default tables, refinement, workbook bindings, the AI agent host
-  and capability tokens. The non-normative
+  and default tables, refinement, workbook bindings, the agent writers
+  and context profiles, and capability tokens. The non-normative
   [starter products guide](../docs/starter/README.md) describes how the
   reference tools behave. Those tools keep their test suites and can
   change without a Protocol version (RFC 0078). A rule that protects
@@ -272,7 +274,8 @@ A Verifier MUST satisfy all Reader requirements, and additionally:
 3. Implement the stated-figure verifiers and apply them to the figures
    a document states: calendar-anchored cash flows, including the IRR
    procedure (§VIII.9); property cash-flow assembly (§VIII.9.6);
-   distribution waterfalls (§VIII.10); property reserve accounts
+   distribution waterfalls (§VIII.10); capital-stack sizing (format
+   §4.24); lease-up schedules (format §4.25); property reserve accounts
    (§VIII.11); reserve draw bindings (§VIII.12); and
    replacement-funding bindings (§V.12).
 4. Verify receipts as [`UW_RECEIPT`](UW_RECEIPT.md)
@@ -288,6 +291,9 @@ A Verifier MUST satisfy all Reader requirements, and additionally:
    (function definitions, assignments, lambdas, control flow keywords,
    property access on disallowed targets) with a `ProtocolError` of
    category `calc`.
+7. Verify every record under the rule set its declared Format version
+   names (§XII.5), never another, and name that rule set in each
+   validation result, stated-metric report and receipt it produces.
 
 A Verifier checks numbers. It never produces, defaults or projects one:
 a value a document does not state is never filled in to make a check
@@ -316,12 +322,12 @@ document-declared calculations `unverifiable`, never wrong.
 
 ### II.4 Starter-product claims
 
-Editing, display and AI-agent hosting are not conformance tiers. A tool
-that edits documents or hosts agents compatibly with the reference
-starter products says so as a product claim, against the
+Editing and display are not conformance tiers. A tool that edits
+documents compatibly with the reference starter products says so as a
+product claim, against the
 [starter products guide](../docs/starter/README.md) and its test
 suites, not as Protocol conformance. The capability flags for that work
-(`edit-replace`, `edit-supersede`, `edit-frontmatter`, `agent-host`,
+(`edit-replace`, `edit-supersede`, `edit-frontmatter`,
 `refinement`, `capability-verify` and the `render-*` family) stay in
 `ImplementationManifest.capabilities`, so those claims remain checkable
 against their fixtures (§II.6a.5).
@@ -344,6 +350,18 @@ down.
 A partial claim is **checkable**, not merely declarative: conformance
 cases carry the capabilities they require (§II.6a.5), so a claim can be
 run rather than believed.
+
+**A Verifier tier claim requires every Verifier obligation flag (RFC 0115).**
+Each obligation in §II.2 that a document states figures for has one
+capability flag and one §II.6a.1 subcommand: `verify-metrics` (item 2),
+`verify-cash-flows`, `verify-property-cash-flows`, `verify-waterfall`,
+`verify-capital-stack`, `verify-lease-up`, `verify-reserve-accounts` and
+`verify-reserve-draws` (item 3), and `verify-receipts` (item 4). Item 1
+is `validate`, which also reports replacement-funding bindings (§V.12).
+A manifest that claims `tier: "verifier"` with a nonempty capability list
+MUST list `validate` and every one of these flags. A manifest that omits
+one is a partial claim: it publishes its capabilities and omits the tier,
+and the cases needing the omitted flag are skipped, not failed.
 
 Conformance tier values are only reader and verifier. No legacy value or numeric alias is admitted; modules declare requires_conformance and optional requires_profiles (§VII.4).
 
@@ -395,6 +413,15 @@ language, runtime, or packaging is observable across that boundary.
 | `<bin> render <file> --format <chat\|summary\|json\|csv>` | The rendered body, as text. |
 | `<bin> edit <file> <operation.json> --json` | `{ ok, content?, error? }`. |
 | `<bin> calc <file> <calc.json> --json` | A `CalcResult`, or an array of them for an array input. |
+| `<bin> verify-metrics <file> --json` | A `StatedMetricsReport` (§II.2 item 2, RFC 0099). |
+| `<bin> verify-cash-flows <file> [--variant <name>] --json` | A section report whose `verification` is a `CashFlowVerification` (§VIII.9). |
+| `<bin> verify-property-cash-flows <file> <plan.json> --json` | A `PropertyCashFlowAssembly`, or `{ error }` with its `CALC-CF-ASSEMBLY` refusal (§VIII.9.6). |
+| `<bin> verify-waterfall <file> [--variant <name>] --json` | A section report whose `verification` is a `WaterfallVerification` (§VIII.10). |
+| `<bin> verify-capital-stack <file> [--variant <name>] --json` | A section report whose `verification` is a `CapitalStackVerification` (format §4.24). |
+| `<bin> verify-lease-up <file> [--variant <name>] --json` | A section report whose `verification` is a `LeaseUpVerification` (format §4.25). |
+| `<bin> verify-receipt <receipt.json> <file> [--inputs <inputs.json>] --json` | A `UWReceiptVerification` (§II.2 item 4, UW_RECEIPT §5), or `{ error }` for a receipt that cannot be read. |
+| `<bin> verify-reserve-accounts <file> --json` | A `ReserveAccountsVerification` (§VIII.11). |
+| `<bin> verify-reserve-draws <file> [plan.json] --json` | A `ReserveDrawBindingVerification` (§VIII.12). |
 
 `edit --json` **MUST NOT** write the edited file. A driver that rewrote
 fixtures as a side effect of reading them would corrupt the corpus it is
@@ -407,6 +434,38 @@ nothing a driver can use.
 `render` and `edit` drive starter-product fixtures (§II.4). Neither
 tier requires them: an implementation that does not claim the `render-*`
 or `edit-*` capabilities they need has those cases skipped (§II.6a.5).
+
+**Verifier subcommands (RFC 0115).** Each `verify-*` subcommand drives one
+Verifier obligation and is read-only. Its result types are defined in
+`protocol.ts` and `spec/schemas/` ([`stated-metrics-report`](schemas/stated-metrics-report.schema.json),
+[`section-verification-report`](schemas/section-verification-report.schema.json),
+[`property-cash-flow-assembly`](schemas/property-cash-flow-assembly.schema.json),
+[`receipt-verification`](schemas/receipt-verification.schema.json) and the two
+reserve schemas).
+
+- **Section reports.** `verify-cash-flows`, `verify-waterfall`,
+  `verify-capital-stack` and `verify-lease-up` print
+  `{ section, variant, status, verification }` (`verify-cash-flows` adds
+  `checked_metrics`). They check one current block of the section, selected
+  as §VIII.2 selects: the `--variant` named exactly, otherwise the
+  RFC 0040 primary/default/base/sole order. An ambiguous section or an
+  absent named variant is refused with `{ error }` (`CALC-RESOLVE-002`, or
+  `CALC-PERIOD-003` for cash flows). `verification` is the section verifier's
+  result, unchanged, and `status` is its verdict. With no current block of the
+  section, `status` is `not_applicable` and `verification` is null; a cash-flow
+  block that states no metric is also `not_applicable`. A waterfall's series is
+  the `cash_flow_series` variant its `cash_flow_ref` names, resolved as the
+  WF-02 rule resolves it; an unresolved reference is the verifier's
+  `unverifiable` (§VIII.10 step 6). To check every variant a document states,
+  run the subcommand once per variant.
+- **Receipts.** `verify-receipt` verifies as a Verifier holds the standard:
+  without a calculation pack (packs are starter products, RFC 0078). A
+  receipt's results are its pack's outputs, so after the subject, rule-set and
+  referenced-input checks a pack-named receipt is `unverifiable` with
+  `RCP-05` (UW_RECEIPT §5.1 step 3). `--inputs` supplies the referenced-input
+  digests the verifier holds (UW_RECEIPT §10); without it the verifier holds none.
+  A receipt that cannot be read is refused with `{ error }`, code
+  `RCP_MALFORMED`.
 
 #### II.6a.2 Stream and exit-code contract
 
@@ -424,6 +483,14 @@ or `edit-*` capabilities they need has those cases skipped (§II.6a.5).
   validation error and never sets exit `1` (RFC 0109).
 - **Exit `2`** — unrecoverable internal error. stdout is not required to
   be anything.
+
+For the `verify-*` subcommands (RFC 0115), a **failed** verification exits
+`1`. A verified result, an `unverifiable` result and an absent subject
+(`not_applicable`) exit `0`: they are reported outcomes, not operation
+failures, and `status` or `verdict` says which. A refusal (`{ error }`)
+also exits `1`. `verify-metrics` exits `1` when any statement is `failed`.
+The two reserve subcommands keep their §VIII.11 and §VIII.12 contract, which
+also exits `1` on `unverifiable`.
 
 Selected institution-config failures are operation errors, not ValidationResult
 findings: `validate --json` emits only `{ "error": ProtocolError }` and exits1.
@@ -476,10 +543,14 @@ remain a distinct outcome. Both appear in the report; `--no-skip` makes
 an incomplete claim fail the certification run without treating an
 unsupported profile as a wrong numerical answer.
 
-The portable cases cover checks expressible as one CLI operation. The
-reference runner also checks multi-step contracts, receipt verification,
-integrity, representations and other cross-fixture invariants. Passing
-only the portable subset is not a claim about omitted checks. Existing
+The portable cases cover checks expressible as one CLI operation. Since
+RFC 0115 every Verifier obligation has portable cases: generated from the
+reference suites, with bare-payload fixtures and statement-home edits
+restated as documents under `conformance/runner/derived/`. The reference
+runner also checks multi-step contracts, pack-based receipt verification
+(a starter check, RFC 0115 D4), integrity, representations and other
+cross-fixture invariants. Passing only the portable subset is not a claim
+about omitted checks. Existing
 fixture-family selections remain available in the reference runner via
 `--suite=<family>`. Baseline updates require a full run or `--suite`, because
 target filtering inside a mixed suite must not overwrite unselected
@@ -509,6 +580,13 @@ A driver **SHOULD** offer a mode that treats any skip as a failure. The
 reference implementation claims every capability, so it runs that way
 in CI — otherwise a case tagged with a capability nothing claims stops
 being executed and nothing says so.
+
+Each Verifier obligation case requires `parse` and its own flag
+(RFC 0115 D2): `verify-metrics`, `verify-cash-flows`,
+`verify-property-cash-flows`, `verify-waterfall`, `verify-capital-stack`,
+`verify-lease-up`, `verify-receipts`, `verify-reserve-accounts` or
+`verify-reserve-draws`. An implementation that has built some verifiers
+claims those flags; the cases for the others are skipped, not failed.
 
 Example:
 
@@ -632,8 +710,8 @@ capability is unconditional: every implementation owes it.
 | `ESC-NN` | Escrow and reserve cash lines, and the rate-cap replacement tie (format §4.8, RFC 0056). | `validate` | `error` |
 | `WF-NN` | Distribution waterfall structure (format §4.27, RFC 0035/0036/0051) and the RFC 0059 clawback provision (`WF-10`–`WF-13`, `WF-15`). RFC0096 adds WF-16 stated-claim admission. Stated-figure disagreement is reported by the verifier as `WF-OUTCOME-DISAGREES`, not as a validator code. | `validate` | `WF-15` warning; otherwise `error` |
 | `REC-NN` | Expense recoveries and the CAM true-up (format §4.3, RFC0058), with closed REC-11 admission (RFC0096). The capped amount and the pool allocation are stated, not recomputed; `REC-07` checks only the direction a cap can move. | `validate` | `error` |
-| `RDB-NN` | Optional reserve draw binding plan/source/allocation verification (§VIII.12, RFC 0065); ordinary document validation and assembly unchanged. | `calc-evaluate` | `error` |
-| `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate` | `error` |
+| `RDB-NN` | Optional reserve draw binding plan/source/allocation verification (§VIII.12, RFC 0065); ordinary document validation and assembly unchanged. | `verify-reserve-draws` (RFC 0115) | `error` |
+| `RSV-NN` | Property reserve-account structure (RSV-01–05, Format §4.28, RFC 0064); separate balance verifier findings RSV-06–08 (§VIII.11). No expenditure netting or assembly admission. | `validate`; RSV-06–08 also `verify-reserve-accounts` (RFC 0115) | `error` |
 | `CAPX-NN` | Renovation draw and expense-targeted capex (format §4.8, RFC 0057). `CAPX-07` requires the `in_noi_model` disclosure; no stated saving is ever applied. | `validate` | `error` |
 | `BED-NN` | Student-housing bed counts — in-place and pre-leased beds and the dates they were measured on (format §4.3, RFC 0069). Counts are stated, never derived from one another. | `validate` | `error` |
 | `META-*` | Format 3.0 bare/nested block shape and required nonempty provenance actor and bounded placement/section/quality admission (`META-01`, RFCs 0081/0090/0093), required canonical boolean members (`META-02`/`META-03`, RFC0091), exactly three present-invalid canonical leaves (`META-04`, RFC0094), and closed optional/conditional metadata (`META-05`/`META-06`, RFC0095). | `validate` | `error` |
@@ -994,7 +1072,7 @@ selected findings, and do not expand REC-05–08 arithmetic or unrelated LSE che
 Newly issued receipt policy counts use actual findings under existing issuance
 rules; no subject, digest, signature, result-state or verdict-precedence change.
 
-Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, META-V2-IN-V1 and META-V1-IN-V2. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
+Retired agreement/transition codes are not emitted: HDG-04/05, ESC-03, CAPX-05, REC-10, TAX-04, CLS-01/02/05, PROTO-MOD-055/056/057/058/059/060, META-V2-IN-V1 and META-V1-IN-V2. A retired code stays reserved and is never reused; PROTO-MOD-055 to PROTO-MOD-060 validated the module `agent_layers` declarations that RFC 0112 removed. SRC-01/02 are errors, and SRC-03 refuses any resolution outside the closed vocabulary.
 
 RFC 0072 extends the existing data-quality sequence with `DQ-07`
 (scenario structure/vocabulary), `DQ-08` (BTR subtype carrier disagreement)
@@ -1124,12 +1202,12 @@ grammar — a retired colon form, a bare word, a resolution tag —
 belongs to **no** authority class: it can write where authority is
 `either` and can never satisfy `human_only`, `agent_only`, or
 `system_only`. (The prefix test's negative space used to classify
-`agent:L0-01` as a *human* write.) `document/*` likewise satisfies
+`agent:rent-roll-extractor` as a *human* write.) `document/*` likewise satisfies
 none of the three restricted classes — a document is evidence, not an
 authority class.
 
 A module MAY contribute additional patterns; conflicts resolve in
-favor of the more-specific glob (e.g. `agent/L6` beats `agent/*`), and
+favor of the more-specific glob (e.g. `agent/risk-rater` beats `agent/*`), and
 any module pattern is more specific than the catch-all.
 
 ### V.4 _meta authorship
@@ -2045,7 +2123,7 @@ is expressed via the safe-expression language (§VIII).
    single Format 3.0 and Protocol 4.1.0 values. If incompatible, refuse with `ProtocolError`
    category `module`.
 4. Host registers the module's sections, calculations, validations,
-   thresholds, view models, and agent layers.
+   thresholds and view models.
 5. Host runs subsequent operations with the module's contributions
    merged into its registries.
 
@@ -3676,7 +3754,8 @@ precedes continuity mismatch within a period.
 
 The reference CLI `uwmd verify-reserve-accounts <file> [--json]` returns this
 result, exits 1 on `failed` or `unverifiable`, and exits 0 on `verified`
-or absent/not-applicable. Ordinary `validate` checks structure and does not
+or absent/not-applicable. It is the §II.6a.1 subcommand for this obligation;
+its cases require the `verify-reserve-accounts` capability (RFC 0115). Ordinary `validate` checks structure and does not
 claim arithmetic verification. A custody verifier neither writes the file
 nor alters gross expenditure or relaxes §VIII.9.6's
 `reserve_spending_excluded` refusal. Digest consistency and matching balances
@@ -3777,7 +3856,8 @@ and expenditure totals in their authored order.
 
 The reference CLI `uwmd verify-reserve-draws <file> [plan.json] [--json]`
 returns this result, exits 1 on failed/unverifiable, and 0 on verified or omitted
-plan. Ordinary document validation remains unchanged, with no automatic binding
+plan. It is the §II.6a.1 subcommand for this obligation; its cases require the
+`verify-reserve-draws` capability (RFC 0115). Ordinary document validation remains unchanged, with no automatic binding
 verification. A verifying plan asserts only consistency of declared funding
 identity: it does not authenticate gross classification or evidence, admit
 reserve-dependent RFC 0045 assembly, bind external transfers, create owner cash,
@@ -4178,11 +4258,68 @@ MUST be parsed and surfaced. Validators MAY warn but MUST NOT error.
 
 ### XII.3 Format version skew
 
-A Reader MUST refuse absent or non-`"3.0"` uw_version at parse stage with `UNSUPPORTED_FORMAT_VERSION`, naming the declared value and supported value. No partial read, display-only mode or newer-minor tolerance is admitted.
+A Reader MUST refuse absent or non-`"3.0"` uw_version at parse stage with `UNSUPPORTED_FORMAT_VERSION`, naming the declared value and supported value. No partial read, display-only mode or newer-minor tolerance is admitted. The admitted versions are exactly the rule sets an implementation keeps (§XII.5); Format 3.0 is the only one.
 
 ### XII.4 Protocol version skew
 
 A module MUST NOT load unless its requires_protocol range is satisfied by 4.1.0 and its requires_format range by 3.0. No earlier contract satisfies either range.
+
+### XII.5 Rule sets (RFC 0111)
+
+*Accepted in [RFC 0111](../docs/rfcs/0111-verify-under-declared-rule-set.md).
+The retention and forward-fix obligations take effect at the 5.0.0 launch;
+before it there is one rule set, Format 3.0.*
+
+A **rule set** is everything normative that decides a verification outcome for
+a record:
+
+1. the Format's parse and validation rules, including the
+   [Format](UW_FORMAT_SPEC.md) §5.2 financial-validity
+   bands and the registered validation codes (§III.6a);
+2. the Protocol's verification procedures, including §VIII.5 quantization and
+   the pinned numerical procedures (§VIII.5.2);
+3. the receipt rules ([`UW_RECEIPT`](UW_RECEIPT.md)); and
+4. the [metric dictionary](metrics/README.md) (`spec/metrics/`).
+
+Starter-product code (packs, defaults, the editor, the Excel exporter) is not
+part of a rule set (RFC 0078).
+
+**Selection.** A record's declared Format version (`uw_version`, Format §2.2)
+names its rule set. An implementation MUST verify a record under the rule set
+its declared version names and MUST NOT fall back to another, including its
+newest. A declared version naming no rule set the implementation keeps,
+including one newer than it knows, is refused with `UNSUPPORTED_FORMAT_VERSION`
+(§XII.3). The refusal applies to a record supplied as a document model as well
+as to source: a model is never verified under a rule set its declaration does
+not name.
+
+**New rule sets.** Any change to a rule set's outcome for some record (a
+result-changing fix, a new refusal, a moved band) issues a new Format minor
+version, whose rule set carries the change. [`VERSIONS.md`](../VERSIONS.md)
+maps every Format version to the UWMD release that issued it and the Protocol
+version it pairs with.
+
+**Retention.** A Verifier that claims a UWMD 5.x release MUST keep the rule set
+of every Format version issued in 5.x up to that release, and verify a record
+declaring any of them under that version's rule set. Prelaunch (4.x) Format
+versions are not 5.x rule sets and need not be kept.
+
+**Fixes apply forward.** A fix lands in a new rule set; an earlier rule set is
+never edited, with one exception. A fix that makes verification stricter to
+close a security or soundness flaw applies to every kept rule set, because
+otherwise a record could declare an old version to reach a known flaw. The
+fix's CHANGELOG entry and security advisory say that it does.
+
+**Reporting.** A validation result, a stated-metric verification report and a
+receipt name the rule set applied, by its Format version, as `rule_set`. A
+receipt states it at `computation.rule_set`; a receipt verifier fails a receipt
+that names a rule set other than the one its record declares (`RCP-13`,
+[`UW_RECEIPT`](UW_RECEIPT.md) §5.2.2).
+
+**Conformance.** Each conformance case names the Format version it was written
+for (`format_version`,
+[`conformance-case.schema.json`](schemas/conformance-case.schema.json)). A
+Verifier claiming a 5.x release passes the cases of every rule set it keeps.
 
 ---
 
@@ -4312,9 +4449,6 @@ maintainable copy of the forward plan is [`ROADMAP.md`](../ROADMAP.md).
   carry another currency's amounts.
 - **Lease-up follow-ons** — RFC 0008 deferred the Excel emit of
   `lease_up_schedule`, its coupling to `dcf`, and defaults-table entries.
-- **Portfolio and relationship agent layers (L9 / L10)** — RFC 0015
-  shipped the data surface (§XV); reference layers that consume it are
-  follow-up work the interchange format did not gate on.
 - **Embedding-based corpus retrieval** — RFC 0013 stays a draft by
   decision until an adopter needs semantic (find-similar, risk-pattern)
   retrieval; analytical retrieval is served by the corpus fact table.
@@ -4405,10 +4539,8 @@ validations:
   with `uw:section=…`.
 - **Canonical block**: the most recent, non-superseded block for a
   given section ID (and variant, if applicable).
-- **Layer**: a Bancroft AI agent stage with declared `reads` and
-  `writes`. A starter-product term (starter guide §IX).
 - **Module**: a declarative manifest extending the standard sections,
-  calculations, validations, view models, and/or agent layers.
+  calculations, validations and/or view models.
 - **Provenance**: the `_meta` block carried inside every fenced
   section, recording authorship, timestamp, version, and confidence.
 - **Profile**: an optional, named verification capability added to a

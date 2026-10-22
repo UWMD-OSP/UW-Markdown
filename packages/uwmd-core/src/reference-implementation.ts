@@ -36,8 +36,8 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
   format_version: FORMAT_VERSION,
   // RFC 0078: a Verifier with every optional profile. Editing and rendering
   // stay claimed as capabilities: they are starter-product claims now (§II.4),
-  // still exercised by their fixtures. The toolkit hosts no agents, so it does
-  // not claim the `agent-host` capability the vocabulary still defines.
+  // still exercised by their fixtures. The toolkit hosts no agents, and RFC
+  // 0112 removed the `agent-host` capability from the vocabulary.
   tier: 'verifier',
   profiles: Object.freeze([...CONFORMANCE_PROFILES]) as ConformanceProfile[],
   capabilities: Object.freeze([
@@ -69,6 +69,17 @@ export const REFERENCE_IMPLEMENTATION_MANIFEST: ImplementationManifest = Object.
     'capability-verify',
     'integrity',
     'refinement',
+    // RFC 0115: one flag per Verifier obligation; the Verifier tier claim
+    // requires every one (§II.5). `uwmd verify-*` drives each (§II.6a.1).
+    'verify-metrics',
+    'verify-cash-flows',
+    'verify-property-cash-flows',
+    'verify-waterfall',
+    'verify-capital-stack',
+    'verify-lease-up',
+    'verify-receipts',
+    'verify-reserve-accounts',
+    'verify-reserve-draws',
   ]) as ViewerCapability[],
   // RFC 0001: the reference implementation supports the full first wave, so
   // its own LOC-01 fires only on unregistered tags.

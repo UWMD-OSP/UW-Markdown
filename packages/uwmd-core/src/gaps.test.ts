@@ -160,7 +160,7 @@ describe('inferGaps — merge with existing gaps section', () => {
             blocks_stage: 'scope',
             first_seen: '2026-04-20T00:00:00Z',
             last_checked: '2026-04-20T00:00:00Z',
-            owner: 'agent/L0a',
+            owner: 'agent/scope-reviewer',
             note: 'awaiting OM',
           },
         ],
@@ -170,7 +170,7 @@ describe('inferGaps — merge with existing gaps section', () => {
     const items = inferGaps(file, { mergeWithExisting: true, now: NOW });
     const property = items.find((i) => i.section === 'property');
     expect(property?.first_seen).toBe('2026-04-20T00:00:00Z');
-    expect(property?.owner).toBe('agent/L0a');
+    expect(property?.owner).toBe('agent/scope-reviewer');
     expect(property?.last_checked).toBe(NOW);
     expect(property?.note).toBe('awaiting OM');
   });

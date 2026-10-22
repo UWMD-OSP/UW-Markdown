@@ -1,9 +1,10 @@
 {
   "id": "verifier__reserve-accounts__missing-movements__verify-reserve-accounts",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "parse",
-    "calc-evaluate"
+    "verify-reserve-accounts"
   ],
   "command": "verify-reserve-accounts",
   "args": [

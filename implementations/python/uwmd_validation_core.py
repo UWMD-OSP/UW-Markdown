@@ -9,6 +9,7 @@ import re
 
 from uwmd_binding_sources import finite
 from uwmd_document_sources import metadata_blocks
+from uwmd_instant import epoch_milliseconds, instant_milliseconds
 from uwmd_currency import inspect_document_currency
 from uwmd_reader import APPEND
 from uwmd_source_validation import _inspect_source_roles, _metadata_routing
@@ -30,7 +31,8 @@ BUILTINS = ("multifamily", "office", "retail", "industrial", "self_storage", "ho
 SCENARIOS = ("stabilized_acquisition", "ground_up_development", "value_add", "lease_up",
              "house_flip", "commercial_flip", "property_conversion", "land_banking")
 NAMESPACE = re.compile(r"[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*){2,}\Z")
-CC_IDS = tuple("CC-" + str(i).zfill(2) for i in range(1, 16))
+# CC-16 is the unresolvable-section diagnostic, not a check; CC-17 is RFC 0086.
+CC_IDS = tuple("CC-" + str(i).zfill(2) for i in range(1, 16)) + ("CC-17",)
 
 
 class Ledger:
@@ -281,15 +283,14 @@ def basic_rules(ledger, *, now=None, gap_staleness_days=14, incomplete_policies=
         instant = datetime.fromisoformat(now.replace("Z", "+00:00"))
     if instant.tzinfo is None:
         raise ValueError("Validation freshness time must have a timezone")
+    now_ms = instant_milliseconds(instant)
     for index, gap in enumerate(gaps):
-        if not isinstance(gap, dict) or not isinstance(gap.get("last_checked"), str):
+        # Format §4.22 is silent on date-only/offset-less last_checked; the
+        # reference's ECMAScript reading applies (uwmd_instant).
+        checked = epoch_milliseconds(gap.get("last_checked")) if isinstance(gap, dict) else None
+        if checked is None:
             continue
-        try:
-            checked = datetime.fromisoformat(gap["last_checked"].replace("Z", "+00:00"))
-            stale = checked.tzinfo is not None and (instant - checked).total_seconds() > gap_staleness_days * 86400
-        except ValueError:
-            continue
-        if stale:
+        if now_ms - checked > gap_staleness_days * 86_400_000:
             ledger.issue("DQ-05", "info", "gaps", "items[" + str(index) + "].last_checked", "Gap exceeds the disclosed freshness threshold")
     return metadata_assessment(document, source, missing_meta_blocks=missing_meta_blocks,
                                missing_field_owners=missing_field_owners,

@@ -152,7 +152,7 @@ class RecoveryParentAdmissionTests(unittest.TestCase):
                         self.assertEqual(result[key], [i for i in result["issues"] if i["severity"] == severity])
                     if partial: self.assertNotIn("code", value["error"])
                     else: self.assertNotIn("error", value)
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
 
 
 if __name__ == "__main__":

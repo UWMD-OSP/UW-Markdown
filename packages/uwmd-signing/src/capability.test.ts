@@ -27,7 +27,7 @@ beforeAll(async () => {
 
 const CLAIMS: CapabilityTokenClaims = {
   iss: 'https://coordinator.example.com',
-  sub: 'agent/L2.inst-A',
+  sub: 'agent/underwriter.inst-A',
   aud: CAPABILITY_AUDIENCE,
   deal: 'DEAL-CAP-01',
   sections: ['noi_model', 'debt_structure'],
@@ -38,7 +38,7 @@ const CLAIMS: CapabilityTokenClaims = {
   jti: 'JTI-ROUNDTRIP',
 };
 
-const CTX: CapabilityVerifyContext = { deal_id: 'DEAL-CAP-01', section: 'noi_model', stage: 'screening', op: 'section_supersede', source: 'agent/L2.inst-A' };
+const CTX: CapabilityVerifyContext = { deal_id: 'DEAL-CAP-01', section: 'noi_model', stage: 'screening', op: 'section_supersede', source: 'agent/underwriter.inst-A' };
 
 function verifier(s: InMemoryKeyStore = store) {
   return createCapabilityVerifier(s, { now: () => NOW });
@@ -52,7 +52,7 @@ async function verdictFor(claims: Partial<CapabilityTokenClaims>, ctx: Partial<C
 describe('roundtrip', () => {
   it('accepts an in-scope token and surfaces sub + jti', async () => {
     const verdict = await verdictFor({});
-    expect(verdict).toEqual({ ok: true, sub: 'agent/L2.inst-A', jti: 'JTI-ROUNDTRIP' });
+    expect(verdict).toEqual({ ok: true, sub: 'agent/underwriter.inst-A', jti: 'JTI-ROUNDTRIP' });
   });
 
   it('treats absent sections/stages/ops claims as unconstrained', async () => {
@@ -92,7 +92,7 @@ describe('structure and signature', () => {
   });
 
   it('rejects a sub outside the RFC 0031 actor grammar as malformed', async () => {
-    expect(await verdictFor({ sub: 'agent/L2/inst-A' })).toEqual({ ok: false, reason: 'malformed' });
+    expect(await verdictFor({ sub: 'agent/underwriter/inst-A' })).toEqual({ ok: false, reason: 'malformed' });
   });
 });
 
@@ -127,6 +127,6 @@ describe('scope claims, one rejection each', () => {
   });
 
   it('sub_mismatch', async () => {
-    expect(await verdictFor({}, { source: 'agent/L2.inst-B' })).toEqual({ ok: false, reason: 'sub_mismatch' });
+    expect(await verdictFor({}, { source: 'agent/underwriter.inst-B' })).toEqual({ ok: false, reason: 'sub_mismatch' });
   });
 });

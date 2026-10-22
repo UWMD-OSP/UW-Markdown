@@ -1,5 +1,5 @@
 {
-  "description": "RFC 0080 core builtin control. The builtin data_center pack and validator against the Mesa Gateway example. Eleven calcs compute (power from the stated 65% draw at measured PUE; zero landlord cost under metered pass-through, RFC 0103) - including the two per-unit metrics read from the STANDARD sections (frontmatter quick_metrics and noi_model), the RFC 0039 finding; CC-DC-04 (contracted above commissioned, a pre-leased phase) and CC-DC-07 (rent 20% under the comp set: a 25% mark-to-market) fire; no error.",
+  "description": "RFC 0080 core builtin control. The builtin data_center pack and validator against the Mesa Gateway example. Eleven calcs compute (power from the stated 65% draw at measured PUE; zero landlord cost under metered pass-through, RFC 0103) - including the two per-unit metrics read from the STANDARD sections (valuation, RFC 0086, and noi_model), the RFC 0039 finding; CC-DC-04 (contracted above commissioned, a pre-leased phase) and CC-DC-07 (rent 20% under the comp set: a 25% mark-to-market) fire; no error.",
   "expected_calcs": {
     "utilization": 1.1,
     "commissioned_share": 0.8,

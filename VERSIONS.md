@@ -12,13 +12,13 @@ This file also records the versions actually released.
 
 | Surface | Version | Pairs with |
 |---|---|---|
-| `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3) |
+| `.uw.md` format spec | **3.0** | authors and reads `uw_version: "3.0"` only; any other or absent version is `UNSUPPORTED_FORMAT_VERSION` (Format §2.2, Protocol §XII.3); 3.0 names the one verification rule set (Protocol §XII.5, RFC 0111) |
 | UW Protocol | **4.1.0** | format 3.0 only; RFC 0084 adds detached document snapshot authentication (§V.13) to the 4.0.0 contract; carried by core/CLI 4.3.0. Core/CLI 4.0.0, 4.0.1 and 4.1.0 carry Protocol 4.0.0 |
 | `@uwmd/verify` | **0.2.1** | format 3.0, protocol 4.1.0; the reference implementation of the standard (RFC 0083), with no `@uwmd/*` dependency; `@uwmd/core` 4.3.0 depends on it exactly and re-exports it |
 | `@uwmd/core` | **4.3.0** | format 3.0, protocol 4.1.0; `@uwmd/verify` 0.2.1 |
 | `@uwmd/cli` (CLI) | **4.3.0** | `@uwmd/core` 4.3.0 |
 | `@uwmd/excel` | **0.9.19** | `@uwmd/core` 4.3.0, format 3.0, explicit contextual calculations |
-| `@uwmd/report` | **0.9.0** | `@uwmd/core` 4.3.0, format spec §7.1/§7.2 |
+| `@uwmd/report` | **0.9.0** | `@uwmd/core` 4.3.0, starter renderer reference §7.1/§7.2 |
 | `@uwmd/batch` | **0.9.2** | `@uwmd/verify` 0.2.1, `.uwx.md` collections + corpus fact table (first published at 0.8.0, 2026-09-03) |
 | `@uwmd/lake` | **0.3.2** | `@uwmd/verify` 0.2.1, RFC 0049 warehouse projection; no database driver dependency. Lake schema **0.2** — not backward compatible with 0.1, which could not load a container fact |
 | `@uwmd/signing` | **0.6.0** | `@uwmd/verify` 0.2.1 and `@uwmd/core` 4.3.0, protocol §V.11, §V.13 document snapshot signatures and §XIV capability tokens; signs and verifies `_meta.integrity` under the Format 3.0 block digest (0.1.0 published 2026-09-01 pairs core 1.8.x) |

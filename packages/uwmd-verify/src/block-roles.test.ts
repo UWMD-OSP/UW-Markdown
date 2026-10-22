@@ -19,7 +19,7 @@ function block(content: Record<string, unknown>, section = 'debt_structure', var
     prose: '', rawJson: JSON.stringify(content), lineStart: 1, lineEnd: 1 };
 }
 function file(sections: Record<string, UWBlock | Record<string, UWBlock>>): ParsedUWFile {
-  return { frontmatter: { asset_class: 'multifamily' } as ParsedUWFile['frontmatter'], sections,
+  return { frontmatter: { uw_version: '3.0', asset_class: 'multifamily' } as ParsedUWFile['frontmatter'], sections,
     prose: {}, pipeline_log: [], custom_calculations: [], custom_scenarios: [], extensions: {}, superseded: {}, raw: '' };
 }
 const frontmatter = "---\nuw_version: \"3.0\"\ndeal_id: roles\nasset_class: multifamily\nlast_modified: \"2026-09-11T00:00:00Z\"\n---\n";

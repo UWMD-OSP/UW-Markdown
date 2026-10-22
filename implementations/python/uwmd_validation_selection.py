@@ -81,9 +81,14 @@ def select_section(document, section, *, preferred_key=None, preferred_role=None
     available = {("default" if k is None else k): b
                  for k, b in by_identity.items() if eligible(b)}
     if lease_up_base:
+        # Format §5.3: CC-15 keeps its base/default scenario; roles cannot
+        # choose another one, and the selected schedule must be eligible.
         for key in ("base", "default"):
-            if key in available:
-                return found(available[key], key)
+            block = by_identity.get(None if key == "default" else key)
+            if block is None and key == "default":
+                block = by_identity.get("default")
+            if block is not None:
+                return found(block, key) if eligible(block) else refused("the " + key + " lease-up scenario is not eligible")
         if len(available) == 1:
             return found(next(iter(available.values())), "sole")
         return refused("no base/default/sole lease-up scenario", "not_applicable")

@@ -326,7 +326,7 @@ class MetadataAdmissionTests(unittest.TestCase):
                 if kind == "rationale": expected.append("_meta.provenance.market_data_ref.rationale")
                 self.assertEqual(fields, expected)
         manifest, status = main(["manifest"])
-        self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse", "calc-evaluate"], []))
+        self.assertEqual((status, manifest["capabilities"], manifest["profiles"]), (0, ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"], []))
 
 
 if __name__ == "__main__":

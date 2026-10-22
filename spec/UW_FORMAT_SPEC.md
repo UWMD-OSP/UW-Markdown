@@ -75,30 +75,9 @@ A `.uwx.md` file solves this by being structured enough for machines while stayi
 
 **Resolution-tagged assumptions.** Every assumption carries a resolution tag: `scenario_default | market_data | ai_extracted | user_override | investor_profile | agent_computed`. Users and reviewers always know whether a number came from AI, from market data, or from their own input.
 
-**Pipeline-stateful.** The frontmatter tracks which pipeline stages have run. A tool reading a `.uwx.md` knows immediately what work has been done, what is pending, and what is blocked.
+**Stage-aware.** The frontmatter records where the deal stands in its workflow, in `status` and `deal_stage` (§2.2). A tool reading a `.uwx.md` knows immediately how far the underwriting has progressed, and stage readiness (§5.1) says what each stage still lacks.
 
-**Toolchain-agnostic.** The format is plain Markdown + fenced JSON. It can be read by any text editor, any Markdown renderer, any JSON parser. No proprietary tooling is required to read it. Proprietary tooling (Bancroft agents, uwmd CLI) is required to *generate* sections correctly, but not to read them.
-
-### 1.3 Relationship to the Bancroft Agent Suite
-
-Each Bancroft layer corresponds to one or more `.uwx.md` sections it is responsible for:
-
-| Bancroft Layer | Writes Sections |
-|---|---|
-| L0 — Document Ingestion | `rent_roll`, `operating_statement`, `lease_schedule` |
-| L1 — Screening | `screening`, `preliminary_sizing` |
-| L2 — Underwriting | `noi_model`, `valuation`, `market_analysis`, `borrower_sponsor` |
-| L4 — Structuring | `debt_structure`, `sources_uses`, `covenants` |
-| L5 — Compliance | `compliance` |
-| L6 — Risk Rating | `risk_assessment` |
-| L7 — Assembly | Reads all sections, renders output artifacts |
-| L9 — Portfolio | Appends to `operating_statement`, updates `risk_assessment` |
-
-The wizard populates: `deal_context`, `property`, `rent_roll` (draft), `debt_structure` (terms), `borrower_sponsor` (form inputs), `dcf` (hold period inputs).
-
-The deterministic engine (`calculations.ts`, `dcfEngine.ts`) writes: `noi_model`, `dcf`, `stress_tests`, `validation`, `custom_calculations` (result fields only — definitions are user-authored).
-
-Users and AI assistants write: `deal_context` (narrative), `custom_calculations` (definitions), `custom_scenarios`, `x_*` extension sections.
+**Toolchain-agnostic.** The format is plain Markdown + fenced JSON. It can be read by any text editor, any Markdown renderer, any JSON parser. Any producer that follows this specification can write sections, and no particular tool is required to write or read them.
 
 ---
 
@@ -111,7 +90,7 @@ A `.uwx.md` file is a UTF-8 encoded plain text file with the extension `.uwx.md`
 ```
 [1] YAML Frontmatter          ← delimited by --- / ---
 [2] Deal Header               ← H1, human-readable property title
-[3] Deal Summary Table        ← generated after L7; quick-read metrics
+[3] Deal Summary Table        ← quick-read metrics
 [4] Sections                  ← ordered by section registry (§ 4.x)
     [4a] Section Header       ← H2 with section name and anchor
     [4b] Prose Block          ← human-readable narrative and/or tables
@@ -159,22 +138,6 @@ asset_subtype: "string | null"      # e.g. "garden_style", "strip_center", "ware
 loan_type: "permanent | bridge | construction | value_add | refinance"
 scenario: "stabilized_acquisition | ground_up_development | value_add | lease_up | house_flip | commercial_flip | property_conversion | land_banking"  # optional; null or reverse-DNS extension also admitted (§2.2b)
 
-# ── Pipeline State ────────────────────────────────────────
-# Layer keys correspond 1:1 to BANCROFT_LAYERS in the reference library.
-# L3 is intentionally reserved for a future pre-structuring layer and is
-# omitted; conforming files MUST NOT define L3_* keys. A layer key
-# absent from pipeline_state is treated as "pending" by default. Use
-# "skipped" only when a layer is explicitly bypassed for this deal
-# (e.g. a refinance with no L0 ingestion).
-pipeline_state:
-  L0_ingestion:    "complete | in_progress | pending | skipped | failed"
-  L1_screening:    "complete | in_progress | pending | skipped | failed"
-  L2_underwriting: "complete | in_progress | pending | skipped | failed"
-  L4_structuring:  "complete | in_progress | pending | skipped | failed"
-  L5_compliance:   "complete | in_progress | pending | skipped | failed"
-  L6_risk:         "complete | in_progress | pending | skipped | failed"
-  L7_assembly:     "complete | in_progress | pending | skipped | failed"
-
 # ── Overall Status ────────────────────────────────────────
 status: "draft | in_progress | complete | flagged | archived"
 deal_stage: "scope | screening | term_sheet | full_underwrite | credit_approval | closing | monitoring"
@@ -184,7 +147,7 @@ recommendation: "pending | approve | approve_with_conditions | decline | null"
 # These mirror the financial_model section; kept here for fast lookup
 # without parsing the full document. Updated by the engine after each run.
 quick_metrics:
-  purchase_price: null
+  purchase_price: null              # must match valuation.purchase_price (CC-17, RFC 0086)
   loan_amount: null
   noi_underwritten: null
   dscr: null
@@ -202,13 +165,20 @@ blocking_flags: []
 
 # ── Rendering ────────────────────────────────────────────
 tier: "screener | analyst"           # determines which sections render to output PDF
-institution_config_id: "string | null"  # Bancroft institution profile used
+institution_config_id: "string | null"  # institution configuration used (Appendix C.6)
 
 # ── Provenance ───────────────────────────────────────────
 created_by: "wizard | import | manual | agent"
-source_documents: []                 # list of filenames ingested via L0
+source_documents: []                 # list of source document filenames ingested
 ---
 ```
+
+**Format version.** `uw_version` names the Format version the record is
+written to, and so the rule set it is verified under: its validation rules and
+§5.2 bands, the Protocol's verification procedures, the receipt rules and the
+metric dictionary ([Protocol §XII.5](UW_PROTOCOL.md),
+RFC 0111). A record is always verified under the rule set its declared version
+names; an absent or unkept value is refused (Protocol §XII.3).
 
 **Pipeline stages.** The `deal_stage` enum advances monotonically as
 the deal progresses. The `scope` stage indicates a back-of-napkin
@@ -377,7 +347,7 @@ Every data block is a fenced JSON code block. The opening fence carries a struct
 
 | Key | Values | Description |
 |---|---|---|
-| `source` | `manual`, `agent/L0-01`, `system/calculations.ts`, etc. | Who wrote this block (actor grammar, §2.6) |
+| `source` | `manual`, `agent/rent-roll-extractor`, `system/calculations.ts`, etc. | Who wrote this block (actor grammar, §2.6) |
 | `ts` | ISO8601 | Timestamp of this block |
 | `v` | integer | Version number within this section (starts at 1) |
 | `superseded` | `true` | Marks a block that has been replaced by a newer version |
@@ -387,7 +357,7 @@ Every data block is a fenced JSON code block. The opening fence carries a struct
 **Full example fence tag:**
 
 ```
-```json uw:section=rent_roll source=agent/L0-01 ts=2026-04-24T10:12:00Z v=1 confidence=high
+```json uw:section=rent_roll source=agent/rent-roll-extractor ts=2026-04-24T10:12:00Z v=1 confidence=high
 ```
 
 A Format 3.0 block body is an object containing section payload fields and reserved members. `_meta` is REQUIRED and MUST be the first key; `_role`, `_overrides` and `_notes` are OPTIONAL. Every other member is payload, including a member named `content`. The section id is stated in the fence annotation and `_meta.section`, never as a block member. A top-level `section_id` is refused with `META-01`.
@@ -418,10 +388,10 @@ organized into four named sub-objects by concern:
 "_meta": {
   "section": "rent_roll",
   "provenance": {
-    "source": "agent/L2-01",
+    "source": "agent/rent-roll-extractor",
     "resolution": "ai_extracted",
     "actor": "analyst@example.com",
-    "agent_id": "L2-01",
+    "agent_id": "rent-roll-extractor",
     "agent_version": "1.0.0",
     "timestamp": "2026-09-01T10:12:00Z",
     "notes": null
@@ -458,7 +428,7 @@ organized into four named sub-objects by concern:
 | `source` | string | yes | The actor (§2.6 grammar, RFC 0031): `manual` or `<namespace>/<id>` with a registered namespace. The grammar is enforced (§2.6). |
 | `resolution` | string | no | How the value was resolved — one member of the closed resolution vocabulary (§2.6). Orthogonal to `source`. |
 | `actor` | nonempty string | yes | The principal that initiated the write. Distinct from `source`: `source` is the policy-vocabulary identity of the writer, `actor` is who asked for the write. No trimming, source grammar or attribution inference applies (RFC 0090). |
-| `agent_id` | string\|null | no | Bancroft agent code, or `"wizard"`, `"engine"`, `"user"`. REQUIRED when `source` matches `agent/*`. |
+| `agent_id` | string\|null | no | The agent's identifier, or `"wizard"`, `"engine"`, `"user"`. REQUIRED when `source` matches `agent/*`. |
 | `agent_version` | string\|null | no | Version (semver) of the agent or tool that produced this block. |
 | `timestamp` | T1B UTC-Z string | yes | When this block was written; exact reader domain below (RFC0094). |
 | `notes` | string\|null | no | Free-text notes from the agent or user. |
@@ -677,7 +647,7 @@ transport and resulting validation/receipt-policy accounting.
 
 ### 2.6 Source Identifiers
 
-`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/L0-01`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); any present value outside this grammar is out of grammar, including a non-string, the empty string and `null` (RFC 0101). A `null` source also keeps its existing `META_FIELD_MISSING_SOURCE` warning; an absent source is not `SRC-01`. A resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
+`_meta.provenance.source` names the actor: `manual` or `<namespace>/<id>`, where namespace is one of `agent`, `document`, `system`, `institution`, and id matches `[A-Za-z0-9][A-Za-z0-9._-]*`. `/` is the sole delimiter. Examples: `agent/rent-roll-extractor`, `document/om.pdf`, `system/calculations.ts`, `institution/threshold-override`. An out-of-grammar source is `SRC-01` (error); any present value outside this grammar is out of grammar, including a non-string, the empty string and `null` (RFC 0101). A `null` source also keeps its existing `META_FIELD_MISSING_SOURCE` warning; an absent source is not `SRC-01`. A resolution tag in that field is `SRC-02` (error). Readers never interpret a resolution as an actor or move it between fields.
 
 `_meta.provenance.resolution` is OPTIONAL and describes how values were resolved. It MUST be one member of this closed vocabulary; any other value is `SRC-03` (error). `manual` is actor-only; human-typed values use `user_input`.
 
@@ -699,8 +669,8 @@ transport and resulting validation/receipt-policy accounting.
 Block-level source and resolution also have leaf counterparts in `_overrides`. Defaults and their precedence are starter-product behavior, described in [the starter guide](../docs/starter/defaults-and-cascade.md); these tags record provenance and do not authorize inference by a verifier. The cascade tags are nonetheless normative for cascade resolution: a producer stamping a value resolved by the fallback cascade MUST use the tag of the cascade step that produced the value ([starter guide §V.7](../docs/starter/defaults-and-cascade.md#v7-fallback-cascade) holds the authoritative step table).
 
 Both fields MAY be present; they answer different questions. A block
-written by agent L6-01 from the asset-class default table carries
-`"provenance": { "source": "agent/L6-01", "resolution": "asset_class_default", ... }`.
+written by a risk-rating agent from the asset-class default table carries
+`"provenance": { "source": "agent/risk-rater", "resolution": "asset_class_default", ... }`.
 
 ### 2.7 Update Semantics
 
@@ -712,7 +682,7 @@ When an agent or tool updates a section, it:
 
 This means the file grows; history is always recoverable. The canonical current value of any section is the **last block** where `_meta.lifecycle.superseded === false` for that `uw:section`.
 
-The `uwmd compact` command strips superseded blocks and leaves only current versions.
+A compact operation strips superseded blocks and leaves only current versions.
 
 ### 2.8 Multi-Variant Sections
 
@@ -725,7 +695,7 @@ Some sections have multiple valid instances at the same time (not superseded, ju
 For multi-variant sections, the fence tag carries a `variant=` key:
 
 ```
-```json uw:section=operating_statement variant=t12 source=agent/L0-02 ts=... v=1
+```json uw:section=operating_statement variant=t12 source=agent/statement-extractor ts=... v=1
 ```
 
 Parsers collect non-superseded variants by their declared variant keys.
@@ -818,11 +788,27 @@ in while drafting that the producer plans to overwrite). Validators
 MUST NOT infer one from the other; the existing
 `META_LOW_CONFIDENCE_NO_REVIEW_FLAG` issue is informational only.
 
+### 3.6 Producer Obligations
+
+Any producer writing a data block to a `.uwx.md` file, whatever its source,
+MUST:
+
+1. Produce a single data block JSON object matching the section schema exactly
+2. Include a valid `_meta` object as the first key
+3. Set `_meta.lifecycle.revision` to `previous_revision + 1` (or `1` if no previous block exists)
+4. Set `_meta.lifecycle.superseded = false`
+
+A producer SHOULD NOT set `human_review_required: false` on a block that
+contains any `low` confidence value. This is a producer rule only: validators
+still MUST NOT infer one field from the other (§3.5).
+
 ---
 
 ## Part IV — Section Registry
 
-Each section entry specifies: ID, canonical header, purpose, who writes it, required fields, dependencies, and complete JSON schema.
+Each section entry specifies: ID, canonical header, purpose, required fields, dependencies, and complete JSON schema.
+
+**Source rules.** Where a section restricts what a producer may state, its entry carries a **Source rules** line. A *non-user source* is any `_meta.provenance.source` other than `manual`, `user` or `wizard`; a rule that names one applies to every such block, whichever producer wrote it.
 
 **Universal field — `_notes`:** Every data block in every section (standard and custom) accepts a top-level `_notes` string field immediately after `_meta`. This field is always optional, never validated, and never consumed by agents or the engine. It is a free-text annotation written by users or agents to explain context, flag concerns, or leave instructions for the next reader — human or AI. Example: `"_notes": "Tax assessment will reset at sale — current figure understates by ~$40k. Run revised NOI before credit committee."` Renders display `_notes` as a footnote on the relevant section.
 
@@ -843,7 +829,7 @@ No field is moved and no period is inferred from row position.
 **ID:** `deal_context`  
 **Header:** `## Deal Context {#deal_context}`  
 **Purpose:** The narrative layer. Describes the deal in plain language — what it is, why it's being considered, what the goal is, and any special circumstances that a structured underwriting model cannot capture. This section is the first thing an AI assistant reads to orient itself. It is the only section the user is always expected to write in their own voice.  
-**Written by:** `wizard` (structured form fields), `user` (free narrative prose), `agent/L7-01` (AI-synthesized summary — appended as a second block, never replaces user narrative)  
+**Source rules:** The narrative is user-authored. A non-user source appends a synthesized summary as a separate block and never replaces the user's narrative.  
 **Required for pipeline stage:** All stages (prose block optional; structured block required for screening+)  
 **Dependencies:** None
 
@@ -853,7 +839,7 @@ The Deal Context section has two distinct layers:
 
 2. **Structured data block** — the machine-readable distillation of that context into typed fields. Tools route on these fields, AI assistants read them to calibrate their analysis, and the render engine uses them to frame the output package.
 
-The `ai_synthesis` sub-object is populated by `agent/L7-01` after the full underwriting runs. It summarizes what the data actually shows in one paragraph, identifies strengths and risks from the model's perspective, and gives an overall impression. It is appended as a separate versioned block — the user's narrative is never touched.
+The `ai_synthesis` sub-object is populated by an agent (for example `agent/deal-summarizer`) after the full underwriting runs. It summarizes what the data actually shows in one paragraph, identifies strengths and risks from the model's perspective, and gives an overall impression. It is appended as a separate versioned block — the user's narrative is never touched.
 
 ```json uw:section=deal_context source=manual ts=ISO8601 v=1 confidence=high
 {
@@ -951,7 +937,6 @@ frontmatter fallback. Other free values are unchanged.
 **ID:** `property`  
 **Header:** `## Property {#property}`  
 **Purpose:** Physical asset description, identity, and condition.  
-**Written by:** `wizard:step_1`, `wizard:step_2`, `agent/L1-01` (normalizes)  
 **Required for pipeline stage:** All stages  
 **Dependencies:** None
 
@@ -994,6 +979,7 @@ frontmatter fallback. Other free values are unchanged.
   "rentable_square_feet": null,
   "gross_leasable_area": null,
   "net_rentable_square_feet": null,
+  "area_measurement": { "standard": "boma | ipms | rebny | rics | other", "edition": "string", "note": "string" },
   "rentable_units": null,
   "keys": null,
   "total_beds": null,
@@ -1050,6 +1036,12 @@ Field notes:
   Senior housing sizes per unit and also states beds; student housing sizes
   per bed and also states units. Both figures are legitimate; Protocol §XIII.1
   says which one is the denominator.
+- `area_measurement` — optional: the standard behind every area this record
+  states (RFC 0114). `standard` is `boma`, `ipms`, `rebny`, `rics` or `other`;
+  `edition` names the publication as free text (for example
+  `"ANSI/BOMA Z65.1-2017"`); `note` is optional. No other member is admitted. It
+  changes no metric, and a Verifier neither compares nor converts areas across
+  standards. Absence is not a finding; a malformed value is `SIZE-02` (§5.5).
 
 **Verified statements (RFC 0099).** `property.occupancy_pct`, when stated, is a statement of the dictionary metric `occupancy`. A Verifier checks each one it finds against the dictionary formula (Protocol §II.2); a disagreement is a verification failure.
 
@@ -1060,7 +1052,6 @@ Field notes:
 **ID:** `ownership`  
 **Header:** `## Ownership & Acquisition {#ownership}`  
 **Purpose:** Current ownership, acquisition terms, entity structure, existing debt.  
-**Written by:** `wizard`, `agent/L2-CRE-11`  
 **Required for pipeline stage:** Underwriting and beyond  
 **Dependencies:** None
 
@@ -1115,7 +1106,6 @@ Field notes:
 **ID:** `rent_roll`  
 **Header:** `## Rent Roll {#rent_roll}`  
 **Purpose:** Full unit-level or tenant-level schedule of leases, rents, occupancy, and concessions.  
-**Written by:** `agent/L0-01`, `wizard:step_3` (simplified version)  
 **Variants:** `multifamily` (default), `commercial`  
 **Required for pipeline stage:** Screening and beyond  
 **Dependencies:** `property`
@@ -1597,7 +1587,6 @@ Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `r
 **ID:** `operating_statement`  
 **Header:** `## Operating Statement {#operating_statement}`  
 **Purpose:** Historical income and expense data from the property's financial records.  
-**Written by:** `agent/L0-02`  
 **Variants:** `t12` (required), `t3` (preferred), `ytd`, `budget`, `t24`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `property`
@@ -1688,7 +1677,6 @@ Hospitality states its key count only as `property.keys` (integer ≥ 0). Its `r
 **ID:** `noi_model`  
 **Header:** `## Underwritten NOI {#noi_model}`  
 **Purpose:** Analyst-adjusted income and expense model representing the underwritten stabilized cash flow. All calculations here are deterministic engine outputs, not AI outputs.  
-**Written by:** `system/calculations.ts` (values), `agent/L2-CRE-01` + `agent/L2-CRE-02` (adjustments/rationale)  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `rent_roll`, `operating_statement`, `market_analysis`
 
@@ -1894,7 +1882,6 @@ from `jurisdiction`, which is a label.
 **ID:** `valuation`  
 **Header:** `## Valuation {#valuation}`  
 **Purpose:** Value conclusions using income approach, with third-party appraisal cross-check.  
-**Written by:** `agent/L2-CRE-04`, `system/calculations.ts`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `noi_model`, `market_analysis`
 
@@ -1959,7 +1946,6 @@ from `jurisdiction`, which is a label.
 **ID:** `debt_structure`  
 **Header:** `## Debt Structure {#debt_structure}`  
 **Purpose:** Complete loan terms, sizing metrics, covenants, and rate sensitivity.  
-**Written by:** `wizard:step_4`, `agent/L4-01`, `agent/L4-04`  
 **Required for pipeline stage:** Screening and beyond  
 **Dependencies:** `valuation`, `noi_model`
 
@@ -2127,7 +2113,6 @@ identically.
 **ID:** `sources_uses`  
 **Header:** `## Sources & Uses {#sources_uses}`  
 **Purpose:** Complete capital stack — all equity, debt, and cost components.  
-**Written by:** `wizard:step_4`, `agent/L4-05`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `debt_structure`, `valuation`
 
@@ -2320,7 +2305,6 @@ occupancy carrying its own `ti_lc_capex`, which is what downtime is.
 **ID:** `dcf`  
 **Header:** `## DCF & Hold Period {#dcf}`  
 **Purpose:** Multi-year discounted cash flow model, exit analysis, and returns.  
-**Written by:** `system/dcfEngine.ts`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `noi_model`, `debt_structure`
 
@@ -2472,7 +2456,6 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 **ID:** `stress_tests`  
 **Header:** `## Stress Tests {#stress_tests}`  
 **Purpose:** Scenario analysis showing deal performance under adverse conditions.  
-**Written by:** `system/calculations.ts`, `agent/L2-CRE-12`  
 **Required for pipeline stage:** Credit approval  
 **Dependencies:** `noi_model`, `debt_structure`
 
@@ -2544,7 +2527,6 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 **ID:** `market_analysis`  
 **Header:** `## Market Analysis {#market_analysis}`  
 **Purpose:** Submarket conditions, rent comparables, sales comparables, and demand outlook.  
-**Written by:** `agent/L2-CRE-07`, `agent/L2-CRE-08`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `property`
 
@@ -2649,7 +2631,6 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 **ID:** `borrower_sponsor`  
 **Header:** `## Borrower & Sponsor {#borrower_sponsor}`  
 **Purpose:** Borrowing entity, principals, financial strength, and CRE track record.  
-**Written by:** `wizard` (form), `agent/L2-CRE-09`, `agent/L2-CRE-10`, `agent/L2-CRE-11`  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** `ownership`
 
@@ -2731,7 +2712,6 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 **ID:** `due_diligence`  
 **Header:** `## Due Diligence {#due_diligence}`  
 **Purpose:** Third-party report status, findings, and clearance for all DD items.  
-**Written by:** `agent/L3-01` through `agent/L3-06`  
 **Required for pipeline stage:** Credit approval and closing  
 **Dependencies:** `property`
 
@@ -2867,7 +2847,6 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 **ID:** `risk_assessment`  
 **Header:** `## Risk Assessment {#risk_assessment}`  
 **Purpose:** Component risk scores, composite rating, and credit recommendation.  
-**Written by:** `agent/L6-01` through `agent/L6-06`  
 **Required for pipeline stage:** Credit approval  
 **Dependencies:** `noi_model`, `valuation`, `market_analysis`, `borrower_sponsor`, `debt_structure`
 
@@ -2975,7 +2954,6 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 **ID:** `compliance`  
 **Header:** `## Compliance {#compliance}`  
 **Purpose:** Regulatory classification, AML screening, fair lending, and concentration checks.  
-**Written by:** `agent/L5-01` through `agent/L5-06`  
 **Required for pipeline stage:** Credit approval  
 **Dependencies:** `debt_structure`, `ownership`, `borrower_sponsor`
 
@@ -3066,7 +3044,6 @@ block does not store — the same reason `deriveDCF` leaves it an input.
 **ID:** `assumptions`  
 **Header:** `## Assumptions {#assumptions}`  
 **Purpose:** Complete audit trail of every assumption used in the underwriting, with source and provenance. This is the single source of truth for where every number came from.  
-**Written by:** `system/calculations.ts` (compiles from all sections)  
 **Required for pipeline stage:** Full underwriting  
 **Dependencies:** All financial sections
 
@@ -3141,7 +3118,6 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 **ID:** `validation`  
 **Header:** `## Flags & Validation {#validation}`  
 **Purpose:** All warnings, errors, policy flags, and cross-section consistency checks. This section is the machine-readable deal health signal. Its `financial_validity[]` array records the §5.2 deal flags (RFC 0109); `overall_status` means what the validation result's status means, so it excludes them.  
-**Written by:** `system/financialValidityChecker`  
 **Required for pipeline stage:** All stages  
 **Dependencies:** All sections (reads everything)
 
@@ -3232,7 +3208,7 @@ vocabulary; the keys shown above are illustrative, not exhaustive.
 ```
 
 **Vocabulary (RFC 0108).** The section uses the validation result's words.
-`overall_status` takes the values of §6.2 with the meaning §6.2 gives each, and
+`overall_status` takes the values of §5.6 with the meaning §5.6 gives each, and
 a producer that writes the section SHOULD copy the status of the validation run
 it records; like the result's, it excludes the §5.2 deal flags recorded in
 `financial_validity[]` (RFC 0109). A `financial_validity[]` entry is a deal
@@ -3255,7 +3231,7 @@ implementation reads the section's contents).
 **ID:** `pipeline_log`  
 **Header:** `## Pipeline Log {#pipeline_log}`  
 **Purpose:** Immutable append-only execution history. Every agent run, user edit, render, and validation event is recorded. This is the audit trail.  
-**Written by:** All tools (append-only — never superseded, only appended to)  
+**Source rules:** Every source appends; an entry is never superseded, only appended to.  
 **Required for pipeline stage:** All stages
 
 ```json
@@ -3311,7 +3287,6 @@ file orders them so readers see the most recent run history at the bottom.
 **ID:** `custom_calculations`  
 **Header:** `## Custom Calculations {#custom_calculations}`  
 **Purpose:** User-defined financial calculations specific to this deal, investor, or analysis need. Any metric, ratio, or derived figure not covered by the standard sections lives here — supplemental return metrics, deal-specific ratios, portfolio comparisons, preferred equity waterfall components, or any calculation the user needs.  
-**Written by:** `user`, `wizard`, any agent  
 **Required for pipeline stage:** Never required; optional at any stage  
 **Dependencies:** Any section (via reference paths)
 
@@ -3393,7 +3368,6 @@ file orders them so readers see the most recent run history at the bottom.
 **ID:** `custom_scenarios`  
 **Header:** `## Custom Scenarios {#custom_scenarios}`  
 **Purpose:** User-defined what-if analyses that go beyond the standard stress test matrix. These may model specific market events, construction delays, tenant losses, rate cap expiry, partnership changes, or any deal-specific situation the standard scenarios don't capture.  
-**Written by:** `user`, `wizard`, agents  
 **Required for pipeline stage:** Never required; optional at any stage  
 **Dependencies:** `noi_model`, `debt_structure`, `dcf`, `assumptions` (for baseline values to override)
 
@@ -3498,7 +3472,6 @@ The `sensitivity_sweeps` array supports single-variable sweeps: the user specifi
 **ID:** `x_{user_defined_id}`  
 **Header:** `## {User Label} {#x_{user_defined_id}}`  
 **Purpose:** Fully user-defined sections for content that does not fit any standard section or the `custom_calculations`/`custom_scenarios` frameworks. Extension sections have no enforced schema — they are free-form containers that parsers collect without validating.  
-**Written by:** Any tool, user, or agent  
 **Required for pipeline stage:** Never required  
 **Dependencies:** None (extension sections are isolated by design)
 
@@ -3578,7 +3551,6 @@ The `content` object is entirely free-form. Any valid JSON is accepted.
 **ID:** `gaps`  
 **Header:** `## Gaps {#gaps}`  
 **Purpose:** A first-class inventory of the data the deal does not yet have. Blocks held back by missing inputs, fields filled from defaults, and items deferred for later rounds all surface here. Drives the refinement engine (Protocol §X) and is consulted by every validator that needs to know whether a missing value is intentional or accidental.  
-**Written by:** `agent/L0a` (initial scope), `agent/L0b` (refinement loop), `manual` (analyst notes), or `system/gaps-maintainer` (auto-maintenance hook in the editor)  
 **Required for pipeline stage:** Optional at every stage (a deal with no open gaps simply omits the section)  
 **Dependencies:** None — gaps reference other sections by ID/path but do not require them to exist  
 **Schema:** [`spec/schemas/section-gaps.schema.json`](schemas/section-gaps.schema.json)
@@ -3611,7 +3583,7 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
       "blocks_stage": "screening",
       "first_seen": "2026-04-25T10:00:00Z",
       "last_checked": "2026-04-27T09:00:00Z",
-      "owner": "agent/L0a",
+      "owner": "agent/scope-reviewer",
       "note": "Awaiting unit-level rent roll from broker."
     },
     {
@@ -3642,7 +3614,7 @@ A gap entry names a missing or low-quality field by `(section, field_path)` and 
 **ID:** `components`  
 **Header:** `## Components {#components}`  
 **Purpose:** Decomposes a mixed-use property into its constituent uses, each keyed by its own asset class. A mixed-use property is two or more uses under one purchase price and one loan — apartments over ground-floor retail, an office podium under a hotel — and no single income model or denominator describes it. This section states each use's own income so that property-level figures foot as the sum of the components while use-level metrics stay honest. It is the one section whose presence is gated to a single `asset_class`.  
-**Written by:** `wizard`, `manual`, `agent/L4-*` (component subtotals only — an agent MUST NOT populate `allocation_pct`; see Allocation below)  
+**Source rules:** A block from a non-user source states component subtotals only and MUST NOT populate `allocation_pct` (see Allocation below).  
 **Required for pipeline stage:** Full underwriting, and only when `asset_class` is `mixed_use`  
 **Dependencies:** `valuation`, `noi_model` (the property-level figures the components foot into)  
 **Schema:** [`spec/schemas/section-components.schema.json`](schemas/section-components.schema.json)  
@@ -3714,7 +3686,7 @@ In this example property NOI is `1300000 + 372000 = 1672000`, which `noi_model.n
 **ID:** `capital_stack`  
 **Header:** `## Capital Stack {#capital_stack}`  
 **Purpose:** States a deal's full capital structure as an ordered set of typed tranches — senior debt under mezzanine under preferred equity under common equity, with bridge or seller financing where present — and the stack-aware sizing figures a lender underwrites to. `debt_structure` (§ 4.7) models exactly one loan; this section is where a multi-tranche stack lives, so that per-layer coverage and attachment-point risk are visible rather than collapsed into a single mislabeled DSCR. The stack is **asset-class independent**.  
-**Written by:** `wizard`, `manual`, `agent/L4-*` (tranche amounts and terms are user-supplied capital terms — an agent MUST NOT invent a tranche `rate`, `amount`, or a stated `sizing` value)  
+**Source rules:** Tranche amounts and terms are user-supplied capital terms; a block whose source is not `manual`, `user` or `wizard` MUST NOT state a tranche `rate`, `amount` or a stated `sizing` value.  
 **Required for pipeline stage:** Optional; used whenever a deal carries more than one capital tranche.  
 **Dependencies:** `debt_structure`, `sources_uses` (the senior tranche reconciles with both — see `CC-03`)  
 **Schema:** [`spec/schemas/section-capital-stack.schema.json`](schemas/section-capital-stack.schema.json)  
@@ -3826,7 +3798,7 @@ Here the pref tranche is `accrued`, so it is excluded from `combined_dscr` but i
 **ID:** `lease_up_schedule`  
 **Header:** `## Lease-Up Schedule {#lease_up_schedule}`  
 **Purpose:** Models the trajectory from current to stabilized rents over a defined window. `rent_roll` (§ 4.2) is a snapshot in time and `noi_model` (§ 4.4) a stabilized projection; the path between them — turnover pace, market-rent assumption, vacancy during lease-up, TI/LC capital — is the entire thesis of a value-add or ground-up deal, and this section is where that path lives as structure rather than `_notes`. The section is **asset-class independent** and **multi-variant**: base / upside / downside scenarios coexist under `variant=` exactly as `stress_tests` variants do.  
-**Written by:** `wizard`, `manual`, `agent/L4-*` (the assumption set and stated figures are the deal thesis — an agent MAY draft a schedule but the host stamps `agent/<id>` and the figures remain subject to verification)  
+**Source rules:** The assumption set and stated figures are the deal thesis. A non-user source MAY draft a schedule; the block carries that source's own identity (`agent/<id>` for an agent), and the figures remain subject to verification.  
 **Required for pipeline stage:** Optional; used whenever the underwriting assumes a lease-up path. Never required — a stabilized acquisition legitimately has no lease-up story.  
 **Dependencies:** `rent_roll` (soft — see `LU-04`), `noi_model` (`CC-15`), `property` (the § XIII size denominator for `occupancy_rate` verification)  
 **Schema:** [`spec/schemas/section-lease-up-schedule.schema.json`](schemas/section-lease-up-schedule.schema.json)  
@@ -3944,7 +3916,7 @@ added to these monthly/quarterly identities.
 **ID:** `cash_flow_series`  
 **Header:** `## Cash Flow Series {#cash_flow_series}`  
 **Purpose:** A **dated, irregular** cash-flow series — ISO-8601 calendar dates and signed amounts — for hold-period modeling on real calendars: mid-month closings, irregular draws, anniversary exits. `lease_up_schedule` (§ 4.25) carries *period-cadence* rows on a uniform monthly/quarterly axis; this section carries flows anchored to *calendar dates*, which is a different contract (cadence vs. calendar) and deliberately a different section. The section is **asset-class independent** and **multi-variant**: base / upside / downside scenarios coexist under `variant=` exactly as `stress_tests` variants do.  
-**Written by:** `wizard`, `manual`, `agent/L4-*` (an agent MAY draft a series — e.g. from a vendor projection engine — but the host stamps `agent/<id>` and the stated figures remain subject to verification)  
+**Source rules:** A non-user source MAY draft a series (for example from a vendor projection engine); the block carries that source's own identity (`agent/<id>` for an agent), and the stated figures remain subject to verification.  
 **Required for pipeline stage:** Optional; never required. A deal underwritten on stabilized annual figures alone legitimately has no dated series.  
 **Dependencies:** none required; `dcf` (§ 4.9) is a natural sibling but no cross-check is defined by RFC 0034 (deferred — see the RFC's unresolved questions).  
 **Schema:** [`spec/schemas/section-cash-flow-series.schema.json`](schemas/section-cash-flow-series.schema.json)  
@@ -4020,7 +3992,7 @@ quantum, `xirr` at the 6-decimal rate quantum.)*
 **ID:** `distribution_waterfall`  
 **Header:** `## Distribution Waterfall {#distribution_waterfall}`  
 **Purpose:** The tiered split of a deal's equity cash flows between the aggregate **LP** and the **GP** — return of capital, a preferred return accrued under a day-count convention, a GP catch-up, and residual promote splits. This is the partnership half of the underwriting: `capital_stack` (§ 4.24) is the liability side at one point in time (RFC 0033), and this section is the equity side over the hold — which is why the § 4.24 `CS-WATERFALL-UNSUPPORTED` boundary stays: partnership tiers never live inside the debt stack. The section is **asset-class independent** and **multi-variant** (`variant=` per the `stress_tests` rules).  
-**Written by:** `wizard`, `manual`, `agent/L4-*` — with one prohibition mirroring § 4.24's: an agent MUST NOT invent tier terms, splits, or hurdle levels; they are partnership terms from the operating agreement.  
+**Source rules:** Tier terms, splits and hurdle levels are partnership terms from the operating agreement, mirroring § 4.24: a block from a non-user source MUST NOT invent them.  
 **Required for pipeline stage:** Optional; never required. A single-party deal legitimately has no waterfall.  
 **Dependencies:** `cash_flow_series` (§ 4.26) — the referenced variant is the cash vector (`WF-02`).  
 **Schema:** [`spec/schemas/section-distribution-waterfall.schema.json`](schemas/section-distribution-waterfall.schema.json)  
@@ -4099,7 +4071,7 @@ cross-runtime vectors; the WIP's stronger local date check cannot supply it.
 **ID:** `reserve_accounts`  
 **Header:** `## Property Reserve Accounts {#reserve_accounts}`  
 **Purpose:** Source-attributable stated property cash custody; asset-class independent and multi-variant.  
-**Written by:** `manual`, `wizard`, `agent/L4-*` — source extraction only; agents never reconcile balances or invent classifications.  
+**Source rules:** A non-user source extracts from source documents only; it never reconciles balances or invents classifications.  
 **Required for pipeline stage:** Optional; never required.  
 **Dependencies:** None.  
 **Introduced by:** RFC 0064.
@@ -4402,7 +4374,7 @@ These are the default thresholds. Institution configs may override.
 **Findings are deal flags (RFC 0109).** A band crossed here describes the deal,
 not the record: an honest underwriting of a weak deal is still a valid record.
 A validator MUST report each `FV-NN` finding in the result's `deal_flags` list
-(§6.2) and MUST NOT place it in `issues`, `errors`, `warnings` or `info`. A deal
+(§5.6) and MUST NOT place it in `issues`, `errors`, `warnings` or `info`. A deal
 flag MUST NOT affect `overall_status`, the exit status, `stage_readiness` or a
 receipt's `validation` counts. A flag carries `code`, `section`, `field`,
 `message`, `value`, `threshold` and `band`, where `band` is `"error"` or
@@ -4458,6 +4430,7 @@ Tools MUST run these after each section write:
 | `CC-14` | A deal-record document must have a `property` section (§4.1) (RFC 0028) | `property` |
 | `CC-15` | The lease-up base variant's `stabilized_summary.annualized_noi` must agree with `noi_model.net_operating_income` within `LEASE_UP_STABILIZED_TOLERANCE` (2%) (RFC 0008) | `lease_up_schedule`, `noi_model` |
 | `CC-16` | A section a cross-check reads is present as multiple variants and none resolves under the §5.3 preference order; the checks reading it were skipped (`info`) (RFC 0037) | any |
+| `CC-17` | Purchase price in frontmatter `quick_metrics` must match `valuation.purchase_price` (RFC 0086) | frontmatter, `valuation` |
 
 **Resolution over variant maps (RFC 0037 / RFC 0040).** A cross-check
 reads one block per section. Exclude component-role blocks and invalid roles
@@ -4570,11 +4543,27 @@ band is deliberate. It reads only the **base** variant of
 and `noi_model.net_operating_income` are stated. Non-base variants are
 exempt by design: a downside scenario is supposed to disagree with
 stabilized NOI. `stabilized_summary.annualized_noi` deliberately does **not**
-also cross-check `quick_metrics.noi_underwritten` — `quick_metrics` is a
-frontmatter restatement with no cross-check of its own (`CC-01` compares the
-rent roll to the operating statement, not NOI to the frontmatter), and RFC
-0008 adds one seam, the trajectory endpoint against the stabilized-year
-model, not a second.
+also cross-check `quick_metrics.noi_underwritten` — the frontmatter NOI
+restatement has no cross-check of its own (`CC-01` compares the rent roll to
+the operating statement, not NOI to the frontmatter; `CC-17` checks only the
+purchase price), and RFC 0008 adds one seam, the trajectory endpoint against
+the stabilized-year model, not a second.
+
+**`CC-17` severity and applicability (RFC 0086).** `valuation.purchase_price`
+is the one purchase-price authority; the frontmatter copy is a summary that is
+checked, not trusted. `CC-17` is an **error** when `quick_metrics.purchase_price`
+and `valuation.purchase_price` differ by more than $100 — `CC-10`'s tolerance
+and severity, since both compare a restated purchase price with the same
+authority. It applies to every asset class. The `valuation` block is the one
+the §5.3 preference order selects (there is no binding field, and descriptive
+`scenario` never selects it, §2.2b); when its variants do not resolve the
+check is skipped as `variant_unresolvable` and `CC-16` names it. Coverage
+follows `CC-10`: `skipped` / `section_absent` without a `valuation` section,
+and `skipped` / `field_absent` when either price is not stated as a finite
+number. No price is ever substituted for an absent one: a metric whose
+formula reads `valuation.purchase_price` (`price_per_kw`,
+`price_per_commissioned_kw`) is null when it is absent and never falls back
+to the frontmatter copy.
 
 ---
 
@@ -4618,42 +4607,19 @@ element of that array.
 The table is **closed**; each field keeps its existing path and meaning. A
 class's own contract (`mhc_sites`, `dc_capacity`, `BED-*`, `keys`) is unchanged and
 keeps its own code. Where a class rule also reports the same field, both findings
-stand. A dictionary metric that divides by a registered size is `unverifiable`
+stand.
+
+**Area measurement (RFC 0114).** A stated `property.area_measurement` (§4.1)
+MUST be an object whose `standard` is one of `boma`, `ipms`, `rebny`, `rics` or
+`other`, whose `edition` and `note`, when present, are strings, and which has no
+other member. Otherwise it is `SIZE-02` (error) at the offending member, in every
+current `property` block. `null` and absence are not stated. A dictionary metric that divides by a registered size is `unverifiable`
 when that size is ≤ 0 (`null_semantics: positive_size_denominator`, Protocol
 §II.2), so no Verifier confirms a figure against an impossible size.
 
-## Part VI — Toolchain Interface
+### 5.6 Validation Result
 
-The `uwmd` command-line tool is the reference implementation. Other tools (AI agents, API consumers, rendering pipelines) implement a subset of this interface.
-
-### 6.1 `uwmd parse <file>`
-
-Reads a `.uwx.md` file and outputs a structured JSON object containing:
-- Frontmatter (as-is)
-- All non-superseded data blocks, keyed by section ID and variant
-- Pipeline log entries
-
-```json
-{
-  "frontmatter": { "...": "YAML frontmatter as JSON" },
-  "sections": {
-    "property": { "...": "most recent non-superseded block" },
-    "operating_statement": {
-      "t12": { "...": "t12 variant" },
-      "t3": { "...": "t3 variant" }
-    }
-  },
-  "prose": {
-    "property": "string — the markdown prose block for this section",
-    "...": "..."
-  },
-  "pipeline_log": [ "...entries..." ]
-}
-```
-
-### 6.2 `uwmd validate <file> [--json]`
-
-Runs all validation rules (Part V) and returns, with `--json`:
+Running the Part V rules produces a validation result. Its JSON form:
 
 ```json
 {
@@ -4674,118 +4640,19 @@ Runs all validation rules (Part V) and returns, with `--json`:
 ```
 
 `deal_flags` is always present. Deal flags are not issues: `overall_status`, the
-partitions and the exit status ignore them (§5.2, RFC 0109). Human-readable output
-lists them under their own heading after the validation issues.
+partitions and the exit status ignore them (§5.2, RFC 0109).
 
-Readiness is reported for every `deal_stage` (§2.2). The CLI takes no
-`--stage` flag; read one stage's readiness from `stage_readiness`.
+Readiness is reported for every `deal_stage` (§2.2).
 
-### 6.3 `uwmd run <file> --agent <agent_id>`
+## Part VI — Toolchain Interface
 
-Invokes a Bancroft agent against the file. The agent:
-1. Reads the parsed file via `uwmd parse`
-2. Performs its analysis
-3. Returns a new data block (the section it writes)
-4. `uwmd run` appends the new block to the file, superseding the previous version if one exists
-5. Appends a `pipeline_log` entry
-
-### 6.4 `uwmd render <file> --format <format> [--tier <tier>]`
-
-Renders the file to an output format. Formats:
-
-| Format | Description | Requires |
-|---|---|---|
-| `json` | Extracted data only (no prose) | Any stage |
-| `csv` | Flat metrics summary | Any stage |
-| `chat` | Compressed context for AI assistant | Any stage |
-| `summary` | One-page deal summary markdown | Screening+ |
-
-The `--tier screener` flag renders only the Tier 1 sections (no Bancroft-generated sections). The `--tier analyst` flag renders the full package.
-
-`uwmd render` does not produce PDF or Word output. The lender package and
-credit memo PDFs (Part VII) come from the separate `uwmd-report` tool
-(`@uwmd/report`); no DOCX renderer exists.
-
-### 6.5 `uwmd compact <file>`
-
-Removes all blocks where `_meta.lifecycle.superseded === true`. Preserves the pipeline log. Outputs the compacted file. Appends a `compact` entry to the pipeline log.
-
-### 6.6 `uwmd diff <file_a> <file_b>`
-
-Compares two `.uwx.md` files (or two versions of the same file at different timestamps) and outputs a structured diff showing which sections changed, what values changed, and which source produced the change.
-
-### 6.7 `uwmd init --scenario <scenario> --address <address>`
-
-`--scenario` writes a standard business plan (§2.2b) or a well-formed
-reverse-DNS extension; omitted means null. It refuses unlisted bare or malformed values before writing. Readers still preserve these values and
-warn rather than reject (§5.4). `--asset-subtype` writes the open subtype
-carrier; for single-site BTR use `--asset-class multifamily --asset-subtype
-build_to_rent --scenario stabilized_acquisition` (or the actual plan).
-`uwmd init` writes only bare nested Format 3.0 blocks, with `uw_version: "3.0"`; it takes no `--format`. Lite compilation emits the same Format 3.0 contract for all twelve builtin classes. No migrate command is part of the toolchain.
-
-The new file is named with `--output <file>` (default `new-deal.uwx.md`);
-`init` takes no file argument and refuses to overwrite an existing file.
-
-Creates a new `.uwx.md` file with:
-- Populated frontmatter
-- All section headers in canonical order
-- Empty data block stubs (all fields null) for each section
-- An initial `pipeline_log` entry recording creation
-
-### 6.8 Agent Contract
-
-Any Bancroft agent writing to a `.uwx.md` file MUST:
-
-1. Read the current state of its input sections before running
-2. Produce a single data block JSON object matching the section schema exactly
-3. Include a valid `_meta` object as the first key
-4. Set `_meta.lifecycle.revision` to `previous_revision + 1` (or `1` if no previous block exists)
-5. Set `_meta.lifecycle.superseded = false`
-6. Never write to sections outside its defined scope (see the Part IV "Written by" field)
-7. Never set `human_review_required: false` if the block contains any `low` confidence values
-8. Return `{ "status": "awaiting_input", "required": ["section_id", ...] }` if required input sections are missing, rather than failing
+Moved to the non-normative [starter CLI reference](../docs/starter/cli.md) (RFC 0112); its producer obligations are §3.6 and its validation result is §5.6.
 
 ---
 
 ## Part VII — Rendering Targets
 
-### 7.1 Lender Package PDF (Tier 1)
-
-Sections rendered, in order:
-1. Cover page (property photo, address, date, preparer)
-2. Executive Summary (key metrics table from `quick_metrics`)
-3. Property Overview → `property` section prose + formatted data
-4. Proforma / Cash Flow → `noi_model` formatted table
-5. Rent Roll Summary → `rent_roll` unit_mix_summary table
-6. Debt Structure → `debt_structure` terms table
-7. Sources & Uses → `sources_uses` capital stack
-8. Borrower Summary → `borrower_sponsor.sponsor_narrative` + financial summary
-9. Exit Analysis → `dcf.exit_analysis` + returns table
-10. Assumptions & Disclosures → `assumptions` table with source badges; standard disclaimer
-
-### 7.2 Credit Memo (Tier 2 Analyst)
-
-All Tier 1 sections plus:
-- Market Analysis → `market_analysis` full narrative + comp tables
-- Financial Analysis → Full DCF table + `stress_tests` matrix
-- Due Diligence Summary → `due_diligence` checklist and findings
-- Risk Assessment → `risk_assessment` component scores + narrative
-- Compliance Summary → `compliance` key findings
-- Covenants → `debt_structure.covenants` formatted table
-- Appendices → Raw agent outputs, full rent roll
-
-### 7.3 AI Chat Context (`--format chat`)
-
-A compressed representation of the deal for dropping into an AI assistant. Includes:
-- Full frontmatter
-- Prose sections (not data blocks — AI reads narrative faster)
-- Key metrics table from `quick_metrics`
-- Active flags from `validation`
-- Assumptions summary (by source category counts)
-
-Omits: full unit-level rent roll data, full operating statement line items, pipeline log (included as a one-line summary instead).
-
-Target token count: < 8,000 tokens for Tier 1 deal, < 16,000 for full Tier 2 deal.
+Moved to the non-normative [starter renderer reference](../docs/starter/rendering.md) (RFC 0112).
 
 ---
 

@@ -1,6 +1,7 @@
 {
   "id": "verifier__hedge__0076-sources-refused-replace__validate",
   "target": "verifier",
+  "format_version": "3.0",
   "requires_capabilities": [
     "validate"
   ],

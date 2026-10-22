@@ -13,36 +13,49 @@ def _unit(value):
     return finite(value) and 0 <= value <= 1
 
 
+# Format §4.24 names the waterfall concepts (tiers, promote, IRR hurdles,
+# catch-up) but not their keys; these are the reference's ten markers, each
+# refused at its own key (RFC 0026 §E).
+_WATERFALL_MARKERS = ("waterfall", "distribution_waterfall", "distributions", "distribution_tiers",
+                      "tiers", "promote", "hurdle", "hurdles", "catch_up", "carried_interest")
+_TRANCHE_CLASSES = ("senior_debt", "mezzanine_debt", "preferred_equity", "common_equity",
+                    "bridge", "seller_financing", "other_debt")
+
+
+def _number(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
 def _stack(ledger, payload, section, root):
+    """Format §4.24 CS-04, CS-01, CS-02, CS-02b and CS-WATERFALL-UNSUPPORTED.
+
+    CS-01 is the prose's four required members and the two uniqueness rules,
+    one finding per member; a stated null is not a stated rate (CS-02).
+    """
+    prefix = root + "." if root else ""
     def issue(code, path, message):
-        ledger.issue(code, "error", section, root + ("." if root and path else "") + path, message)
-    if isinstance(payload, dict) and payload.get("point_in_time") not in ("closing", "stabilization"):
+        ledger.issue(code, "error", section, prefix + path, message)
+    content = payload if isinstance(payload, dict) else {}
+    if content.get("point_in_time") not in ("closing", "stabilization"):
         # RFC 0098: the stack names its one point in time.
         issue("CS-04", "point_in_time", "Capital stack must state point_in_time as closing or stabilization")
-    if not isinstance(payload, dict) or not isinstance(payload.get("tranches"), list) or not payload["tranches"]:
-        issue("CS-01", "tranches", "Capital stack must state nonempty tranches")
-        return
-    if any(key in payload for key in ("promote", "hurdles", "tiers", "catch_up", "waterfall")):
-        issue("CS-WATERFALL-UNSUPPORTED", "", "Partnership waterfall terms do not belong in capital_stack")
+    for key in content:
+        if key in _WATERFALL_MARKERS:
+            issue("CS-WATERFALL-UNSUPPORTED", key, "Partnership waterfall terms do not belong in capital_stack")
+    tranches = content.get("tranches")
     ids, positions = set(), set()
-    classes = ("senior_debt", "mezzanine_debt", "preferred_equity", "common_equity", "bridge", "seller_financing", "other_debt")
-    for index, tranche in enumerate(payload["tranches"]):
+    for index, tranche in enumerate(tranches if isinstance(tranches, list) else ()):
         path = "tranches[" + str(index) + "]"
-        if not isinstance(tranche, dict):
-            issue("CS-01", path, "Tranche must be an object")
-            continue
+        tranche = tranche if isinstance(tranche, dict) else {}
         identity, position, kind, amount = (tranche.get(k) for k in ("id", "position", "class", "amount"))
-        # Format 4.24 / RFC0026: independent malformed/duplicate members
-        # retain reference field attribution and order, not one tranche flag.
         # RFC 0104 D3: a tranche is addressed by its index, never its id.
-        physical_path = path
         if not isinstance(identity, str) or not identity:
             issue("CS-01", path + ".id", "Tranche must state a nonempty string id")
         elif identity in ids:
             issue("CS-01", path + ".id", "Tranche id must be unique within its stack")
         else:
             ids.add(identity)
-        if kind not in classes:
+        if kind not in _TRANCHE_CLASSES:
             issue("CS-01", path + ".class", "Tranche class is not admitted")
         if not _integer(position, 1):
             issue("CS-01", path + ".position", "Tranche position must be a positive integer")
@@ -50,35 +63,30 @@ def _stack(ledger, payload, section, root):
             issue("CS-01", path + ".position", "Tranche position must be unique within its stack")
         else:
             positions.add(position)
-        if not finite(amount) or amount < 0:
-            issue("CS-01", path + ".amount", "Tranche amount must be finite and nonnegative")
-        if any(key in tranche for key in ("promote", "hurdles", "tiers", "catch_up", "waterfall")):
-            issue("CS-WATERFALL-UNSUPPORTED", physical_path, "Partnership terms do not belong in a capital tranche")
+        if not _number(amount):
+            issue("CS-01", path + ".amount", "Tranche must state a numeric amount")
         rate, mode = tranche.get("rate"), tranche.get("accrual")
-        if ((kind == "common_equity" and "rate" in tranche)
-                or kind in classes and kind != "common_equity" and not finite(rate)):
-            issue("CS-02", path + ".rate", "Tranche rate must match its class")
+        if kind in _TRANCHE_CLASSES and kind != "common_equity" and rate is None:
+            issue("CS-02", path + ".rate", "Debt and preferred tranches must state a rate")
+        if kind == "common_equity" and rate is not None:
+            issue("CS-02", path + ".rate", "Common equity must not state a rate")
         cash, accrued = tranche.get("cash_rate"), tranche.get("accrued_rate")
-        split = mode == "split"
-        if split:
+        if mode == "split":
             if kind != "preferred_equity":
                 issue("CS-02b", path + ".accrual", "Only preferred equity admits a split coupon")
             if not finite(cash):
                 issue("CS-02b", path + ".cash_rate", "A split coupon requires a finite cash_rate")
             if not finite(accrued):
                 issue("CS-02b", path + ".accrued_rate", "A split coupon requires a finite accrued_rate")
-            # CS-02 owns an absent/invalid total rate independently. A total
-            # disagreement is assessed only with all three finite operands.
-            if all(finite(v) for v in (rate, cash, accrued)) and rate != cash + accrued:
+            # CS-02 owns an absent total rate; a stated total is compared only
+            # with both finite components.
+            if rate is not None and finite(cash) and finite(accrued) and rate != cash + accrued:
                 issue("CS-02b", path + ".rate", "Split rates must reconcile to the stated total")
         elif "cash_rate" in tranche or "accrued_rate" in tranche:
             issue("CS-02b", path + ".accrual", "Component rates must not appear outside a split coupon")
-        # Format 4.24 / tranche schema: omission is optional, authored null
-        # is outside the closed enum. No default/payment mode is inferred.
-        if ("accrual" in tranche and mode not in ("cash", "accrued", "split")
-                or any(tranche.get(k) is not None and not _integer(tranche[k])
-                       for k in ("amortization_months", "io_months", "term_months"))):
-            issue("CS-01", physical_path, "Stated accrual and debt month terms violate the tranche contract")
+        for key in tranche:
+            if key in _WATERFALL_MARKERS:
+                issue("CS-WATERFALL-UNSUPPORTED", path + "." + key, "Partnership terms do not belong in a capital tranche")
 
 
 def composition_rules(ledger):
@@ -102,7 +110,7 @@ def composition_rules(ledger):
                 ledger.issue("MU-04", "error", "components", key + ".net_operating_income", "Present component must state finite NOI")
             if value.get("debt_structure") is not None:
                 ledger.issue("MU-06", "error", "components", key + ".debt_structure", "Use component capital_stack for separately stated financing")
-            if value.get("capital_stack") is not None:
+            if isinstance(value.get("capital_stack"), dict):
                 _stack(ledger, value["capital_stack"], "components", key + ".capital_stack")
         if any(isinstance(v, dict) and v.get("allocation_pct") is not None for v in admitted.values()):
             allocations = [v.get("allocation_pct") if isinstance(v, dict) else None for v in admitted.values()]
@@ -190,16 +198,21 @@ def waterfall_rules(ledger):
         reference = payload.get("cash_flow_ref")
         variant = reference.get("variant") if isinstance(reference, dict) else None
         series = cash.get(variant) if isinstance(variant, str) else None
-        if series is None:
-            issue("WF-02", "cash_flow_ref", "Waterfall must reference a current exact cash-flow variant")
+        if not isinstance(variant, str):
+            issue("WF-02", "cash_flow_ref", "Waterfall must name a cash_flow_series variant")
             rows = None  # No series resolves, so WF-15 has no distribution to judge.
+        elif series is None:
+            issue("WF-02", "cash_flow_ref.variant", "Waterfall must reference a current exact cash-flow variant")
+            rows = None
         elif is_externalized(series):
             rows = None  # Identity exists; contribution/distribution facts are unresolved.
         else:
             rows = series.parsed.value.get("series")
-            rows = rows if isinstance(rows, list) else []
-            if not any(isinstance(row, dict) and finite(row.get("amount")) and row["amount"] < 0 for row in rows):
-                issue("WF-03", "cash_flow_ref", "Referenced vector contains no stated capital contribution")
+            # A non-array series is the CF-02 defect of the cash section; it
+            # carries no contribution or distribution facts for WF-03/WF-15.
+            rows = rows if isinstance(rows, list) else None
+            if rows is not None and not any(isinstance(row, dict) and finite(row.get("amount")) and row["amount"] < 0 for row in rows):
+                issue("WF-03", "cash_flow_ref.variant", "Referenced vector contains no stated capital contribution")
         clawback = payload.get("clawback")
         if clawback is not None:
             if not isinstance(clawback, dict):

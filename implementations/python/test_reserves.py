@@ -34,11 +34,11 @@ class ReserveTests(unittest.TestCase):
         self.assertEqual(len(paths), 28)
         for path in paths:
             case = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(case["requires_capabilities"], ["parse", "calc-evaluate"])
+            self.assertEqual(case["requires_capabilities"], ["parse", "verify-reserve-accounts"])
             with self.subTest(case=case["id"]):
                 _, problems = driver.run_case([sys.executable, "-B", str(ROOT / "implementations/python/uwmd.py")], case, 60)
                 self.assertEqual(problems, [])
-        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate"])
+        self.assertEqual(main(["manifest"])[0]["capabilities"], ["parse", "calc-evaluate", "validate", "verify-reserve-accounts", "verify-reserve-draws"])
         self.assertNotEqual(main(["validate", "unused"])[1], 0)
         self.assertNotEqual(main(["calc", "unused"])[1], 0)
 

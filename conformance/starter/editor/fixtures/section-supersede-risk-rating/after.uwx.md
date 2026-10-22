@@ -20,14 +20,14 @@ tier: analyst
 created_by: "test-fixture"
 ---
 
-```json uw:section=risk_assessment superseded=true source=agent/L6 ts=<volatile> v=1 confidence=medium
+```json uw:section=risk_assessment superseded=true source=agent/risk-rater ts=<volatile> v=1 confidence=medium
 {
   "_meta": {
     "section": "risk_assessment",
     "provenance": {
-      "source": "agent/L6",
+      "source": "agent/risk-rater",
       "actor": "risk-rating-agent",
-      "agent_id": "L6-risk-rating",
+      "agent_id": "risk-rater",
       "agent_version": "0.1.0",
       "timestamp": "<volatile>",
       "notes": null
@@ -55,14 +55,14 @@ created_by: "test-fixture"
 ```
 
 
-```json uw:section=risk_assessment source=agent/L6 ts=<volatile> v=2 confidence=medium
+```json uw:section=risk_assessment source=agent/risk-rater ts=<volatile> v=2 confidence=medium
 {
   "_meta": {
     "section": "risk_assessment",
     "provenance": {
-      "source": "agent/L6",
+      "source": "agent/risk-rater",
       "actor": "risk-rating-agent",
-      "agent_id": "L6-risk-rating",
+      "agent_id": "risk-rater",
       "agent_version": "0.2.0",
       "timestamp": "<volatile>",
       "notes": null

@@ -13,22 +13,80 @@ remain. No package numbers or release publication are changed here.
 seam, Anthropic adapter, record/replay cassettes, `AgentHostCapability`,
 `uwmd run` and core's `agent-host` manifest claim are gone, with the
 `@anthropic-ai/sdk` peer and the four starter checks that needed an agent run
-(1,226 indexed checks now, starter products 102). An unknown command exits 1
-before any I/O. Kept until draft RFC 0112 removes the layer vocabulary:
-`BANCROFT_LAYERS`, the context/prompt builders, `uwmd layers` and the
-layer-profile check (Format §2.2 `pipeline_state` names its keys after the
-layers, and §6.3 still describes `uwmd run`). The generic writers,
+An unknown command exits 1 before any I/O. The generic writers,
 `buildContext` and `uwmd edit` attribution stay.
 
-**Python certified — Issue #354 (2026-10-20).** The independent Python
-implementation's manifest claims the Reader tier plus `calc-evaluate`; CI runs the
-portable Verifier-tier corpus on three OSes and allows only the unclaimed
-`validate` cases to skip. `validate` passes the corpus but waits on its
-differences from the reference outside it (#425 review). Not the Verifier tier:
-dictionary reproduction, stated-figure verifiers and receipts are not implemented
-in Python (Protocol §II.2/§II.5). Divergences found
-while certifying were fixed or filed: #404, #405, #406, #413 (fixed), #424
-(spec-ambiguity, non-portable).
+**Implemented RFC 0086 — one purchase-price authority (owner acceptance 2026-10-22).**
+[RFC 0086](../rfcs/0086-data-center-purchase-price-authority.md) closes #343
+M04 and #493: `price_per_commissioned_kw` now reads `valuation.purchase_price`
+like `price_per_kw` (dictionary, generated mirror, data-center pack and Excel
+layout together), and new `CC-17` (Format §5.3, error, every class) checks
+frontmatter `quick_metrics.purchase_price` against the valuation with CC-10's
+$100 rule, coverage and CC-16 handling. A drifted summary is now a CC-17 error
+instead of a second verified price per kW; with no valuation price both
+metrics are null, never the frontmatter copy. Python implements CC-17. The new
+`cross-checks` conformance suite pins six CC-17 records (issues and coverage,
+twelve portable cases) and two statement-home cases pin the metric against a
+drifted frontmatter (1,257 indexed checks, 571 portable, with RFC 0115). Every repository
+data-center record states equal prices, so no expected value moved.
+
+**Implemented RFC 0115 — portable cases for every Verifier obligation (owner acceptance 2026-10-22, including D2 and D4).**
+[RFC 0115](../rfcs/0115-portable-verifier-cases.md) gives each Verifier
+obligation one §II.6a.1 subcommand and one capability flag: `verify-metrics`,
+`verify-cash-flows`, `verify-property-cash-flows` (was `assemble-property`),
+`verify-waterfall`, `verify-capital-stack`, `verify-lease-up`, `verify-receipt`
+and the two reserve verifiers. A Verifier tier claim requires all nine flags
+(§II.5). The portable corpus grows from 397 to 557 cases; every new case is
+Verifier-owned and generated from an existing fixture, with bare payloads and
+statement-home edits restated as documents under `conformance/runner/derived/`.
+Portable receipt cases are pack-less (D4): a pack-named result is RCP-05
+`unverifiable`, and the pack-based receipt checks are starter checks. The
+Python implementation passes 345 of 345 cases it claims and skips the 160 that
+need its seven unclaimed flags. Open: Receipt §5 has no step that recomputes
+dictionary-defined receipt results without the pack, so a pack-less verifier
+reports every pack-named receipt `unverifiable`.
+
+**Implemented RFC 0111 — verify under the declared rule set (owner acceptance 2026-10-21, including D4).**
+[RFC 0111](../rfcs/0111-verify-under-declared-rule-set.md) is now Protocol
+[§XII.5](../../spec/UW_PROTOCOL.md): a record's declared `uw_version` names the
+rule set it is verified under (Format rules and §5.2 bands, verification
+procedures, receipt rules, metric dictionary); retention and forward-only fixes
+bind from 5.0.0, with stricter security and soundness fixes applying to every
+kept rule set. `@uwmd/verify`'s `RULE_SETS` registry holds the one entry,
+`"3.0"`, pointing at the existing bands, dictionary and builtin packs.
+Validation, stated-metric verification and receipts select from it and refuse
+an unkept declaration, also on a document model (`UNSUPPORTED_FORMAT_VERSION`).
+`ValidationResult`, `StatedMetricsReport`, receipt verification and receipts
+(`computation.rule_set`, required) name the rule set; a receipt naming another
+fails with `RCP-13`. Each portable conformance case names its `format_version`
+and `runner.py --format-version` selects by it. The Python validator reports
+`rule_set` too. Open before a second rule set exists: a UW Lite record may omit
+`uw_version` and is compiled as 3.0 (RFC 0081 D12).
+
+**RFC 0112 implemented: the Bancroft layer vocabulary is gone (2026-10-22).**
+The Format no longer names a producer tool (§1.2), maps layers to sections
+(§1.3 deleted), carries frontmatter `pipeline_state` (a record that still has it
+reads it as an unknown key) or "Written by" lines; eight prohibitions became
+**Source rules** for any non-user source. Spec examples use neutral agent ids
+under the unchanged `agent/<id>` source. §6.8's producer rules are §3.6, the
+validation result is §5.6, and Parts VI and VII are the starter
+[CLI](../starter/cli.md) and [renderer](../starter/rendering.md) references.
+Module manifests refuse `agent_layers` as an unknown member (`PROTO-MOD-055`
+to `-060` retired and reserved), and `agent-host` left the capability
+vocabulary. Core drops the layer registry and its builders, `uwmd layers`,
+`agents/L0b-prompt.md` and the layer-profile check (1,235 indexed checks,
+starter products 101, 397 portable). Examples and fixtures drop
+`pipeline_state` and take neutral agent ids.
+
+**Python certified — Issue #354 (2026-10-21).** The independent Python
+implementation's manifest claims the Reader tier plus `parse`, `calc-evaluate`
+and `validate`; CI runs the portable Verifier-tier corpus on three OSes with
+`--no-skip`, so every case, including all 144 validate cases, must pass. The #425
+validate differences are closed, and `UWMD_SPEC_DIR` lets `validate` run outside
+a checkout. Not the Verifier tier: POL-01/02, dictionary reproduction, the
+stated-figure verifiers and receipts are not implemented in Python (Protocol
+§II.2/§II.5). Divergences found while certifying were fixed or filed: #404, #405,
+#406, #413 (fixed), #424 (spec-ambiguity, non-portable).
 
 **Release rules after launch ratified (owner, 2026-10-21).**
 [RELEASE_RULES](../playbooks/RELEASE_RULES.md) now records the owner's rulings:
@@ -36,8 +94,14 @@ one public number ("UWMD 5.x") while records keep their Format version,
 result-changing fixes as minor releases, a monthly minor train, standing approval
 for green patch releases, the deprecation window, code reservation and key
 rotation. GOVERNANCE.md starts owner-led and switches to collaborative mode when
-the first outside RFC or PR arrives. The verifier rule-set rule waits on draft
-RFC 0111. The lender acceptance kit moves to a post-launch 5.x milestone.
+the first outside RFC or PR arrives. The verifier rule-set rule is accepted
+RFC 0111 (Protocol §XII.5). The lender acceptance kit moves to a post-launch
+5.x milestone.
+
+**Implemented RFC0114 — area measurement standard (owner acceptance 2026-10-21).**
+[RFC0114](../rfcs/0114-area-measurement-standard.md): optional
+`property.area_measurement`; a malformed value is `SIZE-02` in TS and Python.
+Informational only: no metric or conversion depends on it.
 
 **Implemented RFC0113 — paid room nights (owner acceptance 2026-10-21).**
 [RFC0113](../rfcs/0113-paid-room-nights.md): `occupied_room_nights` is paid room

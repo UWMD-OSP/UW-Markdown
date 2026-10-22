@@ -139,7 +139,7 @@ class SourceOwnershipTests(unittest.TestCase):
                 # is complete rather than partial, as in the reference.
                 self.assertEqual(sorted(i["code"] for i in result["errors"]), expected)
                 self.assertNotIn("error", result)
-                self.assertEqual((len(result["stage_readiness"]), len(result["coverage"])), (7, 15))
+                self.assertEqual((len(result["stage_readiness"]), len(result["coverage"])), (7, 16))
 
 
 if __name__ == "__main__":

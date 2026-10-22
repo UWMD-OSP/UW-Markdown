@@ -3,11 +3,18 @@ import { hasBlockShape } from './block-kind.js';
 import {
   verifyReserveDrawBindings,
   verifyReserveAccounts,
+  verifyCapitalStackDocument,
+  verifyLeaseUpDocument,
+  verifyWaterfallDocument,
+  type SectionVerificationOptions,
   verifyReplacementFundingBindings,
   verifyStatedMetrics,
   parseUWFile,
   validateUWFile,
   isScenarioId,
+  ASSET_CLASSES,
+  isCustomAssetClass,
+  STAGE_REQUIREMENTS,
   stringifyUWEnvelope,
   stampEnvelopeDigest,
   toUWEnvelope,
@@ -101,7 +108,6 @@ import { cmdPortfolioValidate, cmdPortfolioEdges } from './cli-portfolio.js';
 import { evaluateCalc } from './calc-display.js';
 import { parseCalculationContext } from './calculation-context.js';
 import { parseCashFlowVerificationArgs, verifyCashFlowDocument } from './cli-cash-flows.js';
-import { BANCROFT_LAYERS } from './context.js';
 import type { RenderFormat, RenderTier } from './renderer.js';
 import { buildContext } from './context-profiles.js';
 import type { ContextProfile } from './context-profiles.js';
@@ -288,6 +294,7 @@ async function cmdValidate(file: string, flags: Record<string, string | boolean>
   console.log(`\n${fundingRefuses ? '✗' : statusEmoji}  Validation result: ${fundingRefuses ? 'REFUSED' : result.overall_status.toUpperCase()} — ${basename(file)}\n`);
 
   console.log(`Complete validation: ${result.errors.length > 0 || fundingRefuses ? 'refused' : 'passed'}`);
+  console.log(`Rule set: Format ${result.rule_set} (the record's declared uw_version, Protocol §XII.5)`);
   console.log(`Structural validation: ${result.overall_status}`);
   console.log(`Replacement funding verification: ${replacement_funding_verification.state}${'reason' in replacement_funding_verification ? ` / ${replacement_funding_verification.reason}` : ''}`);
   for (const issue of replacement_funding_verification.issues) console.log(issue.message);
@@ -472,6 +479,7 @@ async function cmdVerify(file: string, flags: Record<string, string | boolean>):
     if (configError) institutionFailure(configError, false);
     if ('validation' in sections && configError === undefined) {
       const v = sections['validation'] as ReturnType<typeof validateUWFile>;
+      console.log(`Rule set: Format ${v.rule_set} (the record's declared uw_version, Protocol §XII.5)`);
       console.log(`Structural validation: ${v.overall_status} (${v.issues.length} issue${v.issues.length === 1 ? '' : 's'})`);
       for (const issue of v.issues) {
         const tag = issue.severity === 'error' ? '[ERROR]' : issue.severity === 'warning' ? '[WARN] ' : '[INFO] ';
@@ -585,6 +593,22 @@ function cmdInit(flags: Record<string, string | boolean>): void {
       `--scenario must be one of the standard plans (${INIT_SCENARIOS.join(', ')}) or a reverse-DNS identifier (e.g. com.example.repositioning); got ${scenario === true ? 'no value' : `'${scenario}'`}.`,
     );
     process.exit(1);
+  }
+  // The closed vocabularies init writes into frontmatter (#492): a value
+  // outside them would produce a record that fails or misleads its readers.
+  const closed: [flag: string, allowed: readonly string[]][] = [
+    ['asset-class', ASSET_CLASSES],
+    ['stage', Object.keys(STAGE_REQUIREMENTS)],
+    ['tier', ['screener', 'analyst']],
+  ];
+  for (const [flag, allowed] of closed) {
+    const value = flags[flag];
+    // A namespaced custom class (Format §2.2a) is also a lawful asset_class.
+    if (flag === 'asset-class' && typeof value === 'string' && isCustomAssetClass(value)) continue;
+    if (value !== undefined && (typeof value !== 'string' || !allowed.includes(value))) {
+      console.error(`--${flag} must be one of ${allowed.join(', ')}; got ${value === true ? 'no value' : `'${value}'`}.`);
+      process.exit(1);
+    }
   }
   let content: string;
   try {
@@ -953,7 +977,6 @@ function cmdModulesList(files: string[], flags: Record<string, string | boolean>
     calculations: (m.calculations ?? []).length,
     validations: (m.validations ?? []).length,
     sections: (m.sections ?? []).length,
-    agent_layers: (m.agent_layers ?? []).length,
   }));
 
   if (flags['json']) {
@@ -968,7 +991,7 @@ function cmdModulesList(files: string[], flags: Record<string, string | boolean>
     console.log(`    asset classes: ${row.asset_classes.length ? row.asset_classes.join(', ') : 'class-agnostic'}`);
     console.log(
       `    contributes: ${row.calculations} calc, ${row.validations} validation, ` +
-        `${row.sections} section, ${row.agent_layers} agent layer`,
+        `${row.sections} section`,
     );
   }
   console.log('');
@@ -1543,14 +1566,6 @@ switch (command) {
     break;
   }
 
-  case 'layers':
-    console.log('\nBancroft agent layers:\n');
-    for (const layer of BANCROFT_LAYERS) {
-      console.log(`  ${layer.id.padEnd(4)} ${layer.name.padEnd(22)} reads: ${(layer.reads[0] === '*' ? ['all'] : layer.reads).slice(0, 3).join(', ')}${layer.reads.length > 3 ? '…' : ''}`);
-    }
-    console.log('');
-    break;
-
   case 'edit': {
     if (!positional[0] || !positional[1]) {
       console.error('Usage: uwmd edit <file> <operation.json> [--actor <name>] [--source <pattern>] [--agent-id <id>] [--agent-version <v>] [--confidence high|medium|low] [--output <file>] [--capability-token <jwt> --coord-key <keystore.json>]');
@@ -1702,9 +1717,11 @@ switch (command) {
     break;
   }
 
-  case 'assemble-property': {
+  // RFC 0115 D1: the portable Verifier subcommand for §VIII.9.6 (formerly
+  // `assemble-property`; prelaunch, no alias).
+  case 'verify-property-cash-flows': {
     if (positional.length !== 2) {
-      console.error('Usage: uwmd assemble-property <file> <plan.json> [--json]');
+      console.error('Usage: uwmd verify-property-cash-flows <file> <plan.json> [--json]');
       process.exit(1);
     }
     const parsed = parseUWFile(readFile(positional[0]!));
@@ -1721,6 +1738,86 @@ switch (command) {
       else console.error(`${error.message} (${error.proto.pointer})`);
       process.exitCode = 1;
     }
+    break;
+  }
+
+  // RFC 0115: the document-level section verifiers (§II.6a.1). Each prints
+  // a section report; only a failed verification exits 1 (§II.6a.2).
+  case 'verify-waterfall':
+  case 'verify-capital-stack':
+  case 'verify-lease-up': {
+    const [verifier, usage] = command === 'verify-waterfall'
+      ? [verifyWaterfallDocument, 'Usage: uwmd verify-waterfall <file> [--variant <name>] [--json]'] as const
+      : command === 'verify-capital-stack'
+        ? [verifyCapitalStackDocument, 'Usage: uwmd verify-capital-stack <file> [--variant <name>] [--json]'] as const
+        : [verifyLeaseUpDocument, 'Usage: uwmd verify-lease-up <file> [--variant <name>] [--json]'] as const;
+    if (positional.length !== 1 || flags['variant'] === true || flags['variant'] === '') {
+      console.error(usage); process.exit(1);
+    }
+    const options: SectionVerificationOptions = typeof flags['variant'] === 'string' ? { variant: flags['variant'] } : {};
+    try {
+      const report = verifier(parseUWFile(readFile(positional[0]!)), options);
+      if (flags['json']) console.log(JSON.stringify(report, null, 2));
+      else {
+        console.log(`${report.section} (variant: ${report.variant ?? '(unlabelled)'}): ${report.status}`);
+        for (const issue of report.verification?.issues ?? []) console.log(`  [${issue.code}] ${issue.message}`);
+      }
+      process.exitCode = report.status === 'failed' ? 1 : 0;
+    } catch (error) {
+      if (!(error instanceof CalcError)) throw error;
+      if (flags['json']) console.log(JSON.stringify({ error: error.proto }, null, 2));
+      else console.error(`${error.message} (${error.proto.pointer ?? command})`);
+      process.exitCode = 1;
+    }
+    break;
+  }
+
+  // RFC 0115: stated dictionary metrics alone (§II.2.2, RFC 0099). `verify`
+  // stays the combined validation/metrics/integrity/provenance command.
+  case 'verify-metrics': {
+    if (positional.length !== 1) { console.error('Usage: uwmd verify-metrics <file> [--json]'); process.exit(1); }
+    const report = verifyStatedMetrics(parseUWFile(readFile(positional[0]!)));
+    if (flags['json']) console.log(JSON.stringify(report, null, 2));
+    else {
+      console.log(`Stated metrics (rule set ${report.rule_set}): ${report.counts.verified} verified, ${report.counts.failed} failed, ${report.counts.unverifiable} unverifiable`);
+      for (const e of report.evidence.filter((item) => item.state !== 'verified'))
+        console.log(`  ${e.state.toUpperCase()} ${e.path} = ${e.stated}${e.computed === null ? '' : ` (computed ${e.computed})`}${e.reason ? ` [${e.reason}]` : ''}`);
+    }
+    process.exitCode = report.counts.failed > 0 ? 1 : 0;
+    break;
+  }
+
+  // RFC 0115 D4: receipt verification as a Verifier holds it, without a
+  // calculation pack (packs are starter products, RFC 0078), so a pack-named
+  // result is RCP-05 unverifiable. `receipt verify` keeps the pack-based check.
+  case 'verify-receipt': {
+    if (positional.length !== 2 || flags['inputs'] === true) {
+      console.error('Usage: uwmd verify-receipt <receipt.json> <file> [--inputs <inputs.json>] [--json]'); process.exit(1);
+    }
+    let receipt: unknown;
+    try { receipt = JSON.parse(readFile(positional[0]!)); } catch { receipt = undefined; }
+    try {
+      assertUWReceipt(receipt);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const typed = (error as { code?: unknown } | null)?.code;
+      const code = typeof typed === 'string' ? typed : 'RCP_MALFORMED';
+      if (flags['json']) console.log(JSON.stringify({ error: { category: 'parse', code, message, pointer: 'receipt' } }, null, 2));
+      else console.error(`Not a readable receipt: ${message}`);
+      process.exitCode = 1;
+      break;
+    }
+    const inputs = typeof flags['inputs'] === 'string'
+      ? JSON.parse(readFile(flags['inputs'])) as Record<string, string> : undefined;
+    const result = await verifyReceipt(receipt, readFile(positional[1]!), {
+      filename: positional[1]!, packs: [], ...(inputs ? { inputs } : {}),
+    });
+    if (flags['json']) console.log(JSON.stringify(result, null, 2));
+    else {
+      console.log(`Receipt verification verdict (no calculation pack): ${result.verdict.toUpperCase()}`);
+      for (const issue of result.issues) console.log(`  [${issue.code}] ${issue.message}`);
+    }
+    process.exitCode = result.verdict === 'failed' ? 1 : 0;
     break;
   }
 
@@ -1996,8 +2093,13 @@ Commands:
   diff     <file-a> <file-b>  Compare two files section by section
   verify-reserve-draws <file> [plan.json] [--json]  Verify stated gross-expenditure draw bindings (read-only)
   verify-reserve-accounts <file> [--json]  Verify stated property reserve balances (read-only)
+  verify-metrics <file> [--json]  Verify stated dictionary metrics only (read-only; a failed statement exits 1)
   verify-cash-flows <file> [--variant <name>] [--json]  Verify stated dated-cash-flow metrics (read-only)
-  assemble-property <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
+  verify-property-cash-flows <file> <plan.json>  Assemble declared unlevered pre-tax property cash flows (JSON candidate only)
+  verify-waterfall <file> [--variant <name>] [--json]  Verify stated distribution waterfall outcomes (read-only)
+  verify-capital-stack <file> [--variant <name>] [--json]  Verify stated capital-stack sizing (read-only)
+  verify-lease-up <file> [--variant <name>] [--json]  Verify stated lease-up figures (read-only)
+  verify-receipt <receipt.json> <file> [--inputs <inputs.json>] [--json]  Verify a receipt without a calculation pack (read-only)
   inspect-property-cash-flows <file> [--json]  Inventory source inputs needed for an assembly plan (read-only)
   project-lease-up <file> <plan.json>  Project verified lease-up amounts onto explicit cash dates (JSON candidate only)
   calc     <file> <calc.json>  Evaluate a calc declaration or inline formula (Tier-3)
@@ -2018,7 +2120,6 @@ Commands:
   portfolio validate|edges      Validate a .uwportfolio.json sidecar, or list its entity edges (RFC 0015)
   manifest                     Print this implementation's ImplementationManifest (conformance protocol; @uwmd/verify version on stderr)
   --version, -V                Print the @uwmd/core, @uwmd/verify, Protocol and Format versions
-  layers                       List the Bancroft layer registry (runs no agent)
 
 Options (each command accepts only the flags listed for it; an unknown flag exits 1 before any work runs):
   --output <path>    Output file path (compact, init; init refuses an existing file)

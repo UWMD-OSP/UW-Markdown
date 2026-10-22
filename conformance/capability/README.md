@@ -15,7 +15,7 @@ is deterministic, so regeneration is byte-identical (except scenario 06,
 which deliberately signs with a throwaway key under the coordinator's kid).
 
 `expected.json` fields: `op` (default: `section_supersede` on `noi_model`),
-`source` (default `agent/L2.inst-A`, the tokens' `sub`), `no_token`, `ok`,
+`source` (default `agent/underwriter.inst-A`, the tokens' `sub`), `no_token`, `ok`,
 `error_code`, `message_contains`, `notes_contains`.
 
 | Scenario | Pins |
