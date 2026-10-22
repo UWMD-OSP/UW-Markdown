@@ -18,6 +18,10 @@ protocol, and each package each carry an independent semver).
 
 ### Changed
 
+- Fix #410: `render --format chat` shows structured key risks as
+  `<severity>: <description>` (falling back to the risk's `id`) instead of
+  `[object Object]`; plain-text risks are unchanged.
+
 - Scrub spec wording for public launch (cleanup brief phase D): example actors
   in Format §2.5 and the `uwmd-block` and `edit-operation` schemas use
   `analyst@example.com`, and spec and schema references cite an RFC rather than
